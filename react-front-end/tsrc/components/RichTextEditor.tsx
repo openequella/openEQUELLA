@@ -91,7 +91,7 @@ const RichTextEditor = ({
     new Promise<string>(
       (
         resolve: (value: PromiseLike<string> | string) => void,
-        reject: (reason?: string) => void
+        reject: (reason?: string) => void,
       ) => {
         if (imageUploadCallBack) {
           imageUploadCallBack(blobInfo)
@@ -104,7 +104,7 @@ const RichTextEditor = ({
         } else {
           reject("No upload path specified.");
         }
-      }
+      },
     );
 
   const defaultSkinUrl =

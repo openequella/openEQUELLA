@@ -44,7 +44,7 @@ describe("<FavouriteSearchDialog/>", () => {
     const dialog = screen.getByRole("dialog");
     return getMuiTextField(
       dialog,
-      languageStrings.searchpage.favouriteSearch.text
+      languageStrings.searchpage.favouriteSearch.text,
     );
   };
 

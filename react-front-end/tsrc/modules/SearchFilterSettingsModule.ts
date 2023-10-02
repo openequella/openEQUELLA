@@ -29,24 +29,24 @@ export const getMimeTypeFiltersFromServer = (): Promise<
  * @returns { MimeTypeFilter[] | undefined } An array of `MimeTypeFilter` instances matching the provided IDs or `undefined` if none could be found.
  */
 export const getMimeTypeFiltersById = async (
-  filterIds: string[]
+  filterIds: string[],
 ): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[] | undefined> => {
   const allFilters = await getMimeTypeFiltersFromServer();
   return allFilters.filter(({ id }) => id && filterIds.includes(id));
 };
 
 export const batchUpdateOrAdd = (
-  filters: OEQ.SearchFilterSettings.MimeTypeFilter[]
+  filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
 ) =>
   OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
     API_BASE_URL,
-    filters
+    filters,
   ).then((res) => OEQ.BatchOperationResponse.groupErrorMessages(res));
 
 export const batchDelete = (ids: string[]) =>
   OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
     API_BASE_URL,
-    ids
+    ids,
   ).then((res) => OEQ.BatchOperationResponse.groupErrorMessages(res));
 
 export const getMimeTypeDetail = (entry: OEQ.MimeType.MimeTypeEntry) => {
@@ -64,7 +64,7 @@ export const validateMimeTypeName = (name: string | undefined): boolean =>
  * Return a function which does reference comparison for two filters.
  */
 export const filterComparator = (
-  targetFilter: OEQ.SearchFilterSettings.MimeTypeFilter
+  targetFilter: OEQ.SearchFilterSettings.MimeTypeFilter,
 ) => {
   return (filter: OEQ.SearchFilterSettings.MimeTypeFilter) =>
     filter === targetFilter;

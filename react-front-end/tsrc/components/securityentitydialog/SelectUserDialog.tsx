@@ -44,14 +44,14 @@ interface SelectUserDialogProps {
   /** Function which will provide the list of users for UserSearch. */
   userListProvider?: (
     query?: string,
-    groupFilter?: ReadonlySet<string>
+    groupFilter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Function which will resolve group IDs to full group details so that the group names can be
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
@@ -88,19 +88,19 @@ export const SelectUserDialog = ({
                 users,
                 RSET.toReadonlyArray(
                   ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
-                    S.Ord
-                  )
+                    S.Ord,
+                  ),
                 ),
                 // SelectUserDialog is for single users only, so we only use the first selection (just in case)
                 RA.head,
                 O.toUndefined,
-                setSelectedUser
+                setSelectedUser,
               ),
             selections: pipe(
               selectedUser,
               O.fromNullable,
               O.map(RSET.singleton),
-              O.getOrElseW(() => RSET.empty)
+              O.getOrElseW(() => RSET.empty),
             ),
           }}
           groupFilter={groupFilter}

@@ -34,17 +34,17 @@ describe("MyResourcesPageHelper", () => {
   describe("support for Legacy query params", () => {
     it("gets My resources type from Legacy query param", () => {
       history.push(
-        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue"
+        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue",
       );
 
       expect(
-        getMyResourcesTypeFromQueryParam(history.location)
+        getMyResourcesTypeFromQueryParam(history.location),
       ).toBe<MyResourcesType>("Moderation queue");
     });
 
     it("gets Item status from Legacy query param", () => {
       history.push(
-        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue&mstatus=moderating&status=live"
+        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue&mstatus=moderating&status=live",
       );
 
       expect(getSubStatusFromQueryParam(history.location)).toStrictEqual<
@@ -54,11 +54,11 @@ describe("MyResourcesPageHelper", () => {
 
     it("gets sort order from Legacy query param", () => {
       history.push(
-        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue&modsort=lastmod&sort=title&sbsort=datecreated"
+        "http://localhost:8080/fiveo/access/myresources.do?type=modqueue&modsort=lastmod&sort=title&sbsort=datecreated",
       );
 
       expect(
-        getSortOrderFromQueryParam(history.location)
+        getSortOrderFromQueryParam(history.location),
       ).toBe<OEQ.Search.SortOrder>("task_lastaction");
     });
   });
@@ -70,7 +70,7 @@ describe("MyResourcesPageHelper", () => {
       history.push(baseUrl + "?myResourcesType=All resources");
 
       expect(
-        getMyResourcesTypeFromQueryParam(history.location)
+        getMyResourcesTypeFromQueryParam(history.location),
       ).toBe<MyResourcesType>("All resources");
     });
 
@@ -78,14 +78,14 @@ describe("MyResourcesPageHelper", () => {
       history.push(baseUrl + "?myResourcesType=rubbishIn");
 
       expect(
-        getMyResourcesTypeFromQueryParam(history.location)
+        getMyResourcesTypeFromQueryParam(history.location),
       ).toBeUndefined();
     });
 
     it("use the item statuses from searchOptions", () => {
       history.push(
         baseUrl +
-          '?myResourcesType=Moderation+queue&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"task_submitted"%2C"rawMode"%3Afalse%2C"status"%3A["MODERATING"%2C"REVIEW"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+          '?myResourcesType=Moderation+queue&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"task_submitted"%2C"rawMode"%3Afalse%2C"status"%3A["MODERATING"%2C"REVIEW"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}',
       );
 
       expect(getSubStatusFromQueryParam(history.location)).toStrictEqual<
@@ -96,11 +96,11 @@ describe("MyResourcesPageHelper", () => {
     it("uses the sort order from searchOptions", () => {
       history.push(
         baseUrl +
-          '?myResourcesType=Scrapbook&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"datecreated"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+          '?myResourcesType=Scrapbook&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"datecreated"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"TLE_ADMINISTRATOR"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}',
       );
 
       expect(
-        getSortOrderFromQueryParam(history.location)
+        getSortOrderFromQueryParam(history.location),
       ).toBe<OEQ.Search.SortOrder>("datecreated");
     });
   });
@@ -110,7 +110,7 @@ describe("MyResourcesPageHelper", () => {
       const uuid = saveSearchPageOptions(defaultSearchPageOptions);
 
       history.push(
-        `http://localhost:8080/page/myresources?type=scrapbook&newUIStateId=${uuid}`
+        `http://localhost:8080/page/myresources?type=scrapbook&newUIStateId=${uuid}`,
       );
 
       return uuid;
@@ -119,7 +119,7 @@ describe("MyResourcesPageHelper", () => {
     it("gets SearchPageOptions from session storage", () => {
       saveDefaultSearchPageOptions();
       const searchPageOptions = getSearchPageOptionsFromStorage(
-        history.location
+        history.location,
       );
 
       // Do not compare the parsed object with `defaultSearchPageOptions` because they do have some acceptable differences.
@@ -140,7 +140,7 @@ describe("MyResourcesPageHelper", () => {
       getSearchPageOptionsFromStorage(history.location);
 
       expect(mockConsoleError).toHaveBeenLastCalledWith(
-        "SearchPageOptions hash check failed"
+        "SearchPageOptions hash check failed",
       );
     });
   });

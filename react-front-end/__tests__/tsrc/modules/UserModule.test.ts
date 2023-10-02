@@ -36,11 +36,11 @@ describe("resolveUsersCached", () => {
   const retrieveTestUser = async (
     ids: ReadonlySet<string>,
     cache: UserCache,
-    setCache: (_: UserCache) => void
+    setCache: (_: UserCache) => void,
   ) => {
     const result = await pipe(
       ids,
-      resolveUsersCached(cache, setCache, resolveUsers)
+      resolveUsersCached(cache, setCache, resolveUsers),
     )();
 
     return expectRight(result)!;
@@ -49,11 +49,11 @@ describe("resolveUsersCached", () => {
   const lastUserDetailsMagma = last<OEQ.UserQuery.UserDetails>();
 
   const buildCacheFromUsers = (
-    cacheUsers: ReadonlyArray<OEQ.UserQuery.UserDetails>
+    cacheUsers: ReadonlyArray<OEQ.UserQuery.UserDetails>,
   ): UserCache =>
     RR.fromFoldableMap(lastUserDetailsMagma, RA.Foldable)(
       cacheUsers,
-      (u: OEQ.UserQuery.UserDetails) => [u.id, u]
+      (u: OEQ.UserQuery.UserDetails) => [u.id, u],
     );
 
   it("retrieves unknown user, and places the new details in (previously empty) cache", async () => {
@@ -65,12 +65,12 @@ describe("resolveUsersCached", () => {
     const retrievedUser = await retrieveTestUser(
       RSET.singleton(testUser.id),
       emptyCache,
-      setCache
+      setCache,
     );
 
     expect(retrievedUser).toStrictEqual(new Set([testUser]));
     expect(setCache).toHaveBeenLastCalledWith(
-      RR.singleton(testUser.id, testUser)
+      RR.singleton(testUser.id, testUser),
     );
   });
 
@@ -83,15 +83,15 @@ describe("resolveUsersCached", () => {
     const retrievedUser = await retrieveTestUser(
       RSET.singleton(testUser.id),
       existingCache,
-      setCache
+      setCache,
     );
 
     expect(retrievedUser).toStrictEqual(new Set([testUser]));
     expect(setCache).toHaveBeenLastCalledWith(
       pipe(
         existingCache,
-        RR.union(lastUserDetailsMagma)(RR.singleton(testUser.id, testUser))
-      )
+        RR.union(lastUserDetailsMagma)(RR.singleton(testUser.id, testUser)),
+      ),
     );
   });
 
@@ -107,10 +107,10 @@ describe("resolveUsersCached", () => {
     const retrievedUsers = await retrieveTestUser(
       pipe(
         testUsers,
-        RSET.map(S.Eq)(({ id }) => id)
+        RSET.map(S.Eq)(({ id }) => id),
       ),
       existingCache,
-      setCache
+      setCache,
     );
 
     expect(retrievedUsers).toStrictEqual(testUsers);
@@ -130,17 +130,17 @@ describe("resolveUsersCached", () => {
     const retrievedUsers = await retrieveTestUser(
       pipe(
         testUsers,
-        RSET.map(S.Eq)(({ id }) => id)
+        RSET.map(S.Eq)(({ id }) => id),
       ),
       existingCache,
-      setCache
+      setCache,
     );
 
     expect(retrievedUsers).toStrictEqual(testUsers);
     expect(setCache).toHaveBeenLastCalledWith(
       buildCacheFromUsers(
-        RSET.toReadonlyArray<OEQ.UserQuery.UserDetails>(ORD.trivial)(testUsers)
-      )
+        RSET.toReadonlyArray<OEQ.UserQuery.UserDetails>(ORD.trivial)(testUsers),
+      ),
     );
   });
 });

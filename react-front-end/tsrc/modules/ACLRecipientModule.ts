@@ -96,14 +96,14 @@ export const GUEST_USER_ROLE_ID = "TLE_GUEST_USER_ROLE";
  * Eq for `ACLRecipient` with equality based on the recipient's type and expression.
  */
 export const recipientEq: EQ.Eq<ACLRecipient> = EQ.contramap(
-  (r: ACLRecipient) => r.type + r.expression
+  (r: ACLRecipient) => r.type + r.expression,
 )(S.Eq);
 
 /**
  * Ord for `ACLRecipient` with ordering rule based on the recipient's name.
  */
 export const recipientOrd: ORD.Ord<ACLRecipient> = ORD.contramap(
-  (r: ACLRecipient) => r.name ?? r.type + r.expression
+  (r: ACLRecipient) => r.name ?? r.type + r.expression,
 )(S.Ord);
 
 /**
@@ -171,43 +171,43 @@ const generateACLRecipientName =
           pipe(
             TE.tryCatch<string, OEQ.UserQuery.UserDetails | undefined>(
               () => resolveUserProvider(expression),
-              (err) => `Failed to fetch user details: ${err}`
+              (err) => `Failed to fetch user details: ${err}`,
             ),
             TE.chainOptionK<string>(constant(`Can't find user: ${expression}`))(
               flow(
                 O.fromNullable,
                 O.chainNullableK(
-                  (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name
-                )
-              )
-            )
+                  (u: OEQ.UserQuery.UserDetails) => userToRecipient(u).name,
+                ),
+              ),
+            ),
           ),
         G: () =>
           pipe(
             TE.tryCatch(
               () => resolveGroupProvider(expression),
-              (err) => `Failed to fetch group details: ${err}`
+              (err) => `Failed to fetch group details: ${err}`,
             ),
             TE.chainNullableK<string>(`Can't find group: ${expression}`)(
-              (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name
-            )
+              (g: OEQ.UserQuery.GroupDetails | undefined) => g?.name,
+            ),
           ),
         R: () =>
           pipe(
             TE.tryCatch(
               () => resolveRoleProvider(expression),
-              (err) => `Failed to fetch role details: ${err}`
+              (err) => `Failed to fetch role details: ${err}`,
             ),
             TE.chainNullableK<string>(`Can't find role: ${expression}`)(
-              (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name
-            )
+              (r: OEQ.UserQuery.RoleDetails | undefined) => r?.name,
+            ),
           ),
         "*": () => TE.right("Everyone"),
         $OWNER: () => TE.right("Owner"),
         I: () => TE.right("From " + expression),
         F: () => TE.right("From " + decodeURIComponent(expression)),
         T: () => TE.right("Token ID is " + expression),
-      })
+      }),
     );
 
 /**
@@ -236,7 +236,7 @@ export const showRecipientHumanReadable =
  * Parse a given string and return corresponding ACL Recipient type.
  */
 const parseACLRecipientType = (
-  text: string
+  text: string,
 ): E.Either<string, ACLRecipientType> =>
   pipe(
     text,
@@ -244,8 +244,8 @@ const parseACLRecipientType = (
     RNEA.head,
     E.fromPredicate(
       ACLRecipientTypesUnion.is,
-      (invalid) => `Failed to parse recipient: ${invalid}`
-    )
+      (invalid) => `Failed to parse recipient: ${invalid}`,
+    ),
   );
 
 /**
@@ -253,7 +253,7 @@ const parseACLRecipientType = (
  * `ACLRecipient`. However, if there are issues then an error string will be captured in `left`.
  */
 export const createACLRecipient = (
-  expression: string
+  expression: string,
 ): E.Either<string, ACLRecipient> =>
   pipe(
     expression,
@@ -261,5 +261,5 @@ export const createACLRecipient = (
     E.map((recipientType) => ({
       expression: expression.substring(expression.indexOf(":") + 1),
       type: recipientType,
-    }))
+    })),
   );

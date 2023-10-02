@@ -23,7 +23,7 @@ export const getSearchSettingsFromServer =
     OEQ.SearchSettings.getSearchSettings(API_BASE_URL);
 
 export const saveSearchSettingsToServer = (
-  settings: OEQ.SearchSettings.Settings
+  settings: OEQ.SearchSettings.Settings,
 ): Promise<void> =>
   OEQ.SearchSettings.updateSearchSettings(API_BASE_URL, settings);
 

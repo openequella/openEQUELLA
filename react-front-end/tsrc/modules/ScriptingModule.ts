@@ -109,19 +109,19 @@ export const buildVisibilityScript =
         // eslint-disable-next-line no-new-func
         new Function(
           "scriptContext",
-          `"use strict"; const {xml, user} = scriptContext; ${s}`
+          `"use strict"; const {xml, user} = scriptContext; ${s}`,
         ),
         // A `Function` returns `any`, and we want more than just compile time forcing a return
         // of boolean, so with `!!` we force a runtime return value of boolean.
         (f) =>
           (context: ScriptContext): boolean =>
-            !!f(context)
+            !!f(context),
       );
 
     // Rather than just execute the script and hope someone else deals with any issues, we know
     // this could be bad, so let's wrap the result in an Either.
     return E.tryCatch(
       () => pipe(context, toFunction(script)),
-      (e) => new Error(`Failed to execute visibility script: ${e}`)
+      (e) => new Error(`Failed to execute visibility script: ${e}`),
     );
   };

@@ -76,10 +76,10 @@ describe("<OEQThumb/>", () => {
     (
       _: string,
       details: OEQ.Search.ThumbnailDetails | undefined,
-      query: string
+      query: string,
     ) => {
       const { container } = render(<OEQThumb details={details} />);
       expect(queryByLabelText(container, query)).toBeInTheDocument();
-    }
+    },
   );
 });

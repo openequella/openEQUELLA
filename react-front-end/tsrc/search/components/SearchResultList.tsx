@@ -163,7 +163,7 @@ export const SearchResultList = ({
 }: SearchResultListProps) => {
   const inSelectionSession: boolean = isSelectionSessionOpen();
   const isMdDown = useMediaQuery<Theme>((theme) =>
-    theme.breakpoints.down("md")
+    theme.breakpoints.down("md"),
   );
 
   /**
@@ -284,8 +284,8 @@ export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   highlights: string[],
   getViewerDetails?: (
-    mimeType: string
-  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+    mimeType: string,
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>,
 ): React.ReactNode[] =>
   items.map((item) => (
     <SearchResult

@@ -29,7 +29,7 @@ export interface ErrorResponse {
 export const generateNewErrorID = (
   error: string,
   code?: number,
-  description?: string
+  description?: string,
 ): ErrorResponse => {
   return {
     id: v4(),
@@ -59,13 +59,13 @@ export function fromAxiosError(error: AxiosError): ErrorResponse {
         return generateNewErrorID(
           langStrings.newuisettings.errors.permissiontitle,
           error.response.status,
-          langStrings.newuisettings.errors.permissiondescription
+          langStrings.newuisettings.errors.permissiondescription,
         );
       case 404:
         return generateNewErrorID(
           langStrings.settings.searching.searchPageSettings.notFoundError,
           error.response.status,
-          langStrings.settings.searching.searchPageSettings.notFoundErrorDesc
+          langStrings.settings.searching.searchPageSettings.notFoundErrorDesc,
         );
       default:
         return generateFromError(error);
@@ -77,7 +77,7 @@ export function fromAxiosError(error: AxiosError): ErrorResponse {
 }
 
 export function fromAxiosResponse(
-  response: AxiosResponse<ErrorResponse>
+  response: AxiosResponse<ErrorResponse>,
 ): ErrorResponse {
   if (typeof response.data == "object") {
     return { ...response.data, id: v4() };

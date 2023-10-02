@@ -61,7 +61,7 @@ export const WizardListBox = ({
         <MenuItem key={value} value={value}>
           {text}
         </MenuItem>
-      ))
+      )),
     );
   return (
     <>

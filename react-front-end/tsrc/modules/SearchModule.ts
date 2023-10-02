@@ -69,7 +69,7 @@ export const nonDeletedStatuses: OEQ.Common.ItemStatus[] =
 export const isLiveItem = (item: OEQ.Search.SearchResultItem): boolean =>
   pipe(
     OEQ.Codec.Common.ItemStatusCodec.decode(item.status.toUpperCase()),
-    E.fold(constFalse, (s) => liveStatuses.includes(s))
+    E.fold(constFalse, (s) => liveStatuses.includes(s)),
   );
 
 export const DisplayModeCodec = t.union([
@@ -205,7 +205,7 @@ export const formatQuery = (query: string, addWildcard: boolean): string => {
  * @param selectedCategories A list of selected Categories grouped by Classification ID.
  */
 export const generateCategoryWhereQuery = (
-  selectedCategories?: SelectedCategories[]
+  selectedCategories?: SelectedCategories[],
 ): string | undefined => {
   if (!selectedCategories || selectedCategories.length === 0) {
     return undefined;
@@ -215,14 +215,14 @@ export const generateCategoryWhereQuery = (
   const or = " OR ";
   const processNodeTerms = (
     categories: string[],
-    schemaNode?: string
+    schemaNode?: string,
   ): string => categories.map((c) => `/xml${schemaNode}='${c}'`).join(or);
 
   return selectedCategories
     .filter((c) => c.categories.length > 0)
     .map(
       ({ schemaNode, categories }: SelectedCategories) =>
-        `(${processNodeTerms(categories, schemaNode)})`
+        `(${processNodeTerms(categories, schemaNode)})`,
     )
     .join(and);
 };
@@ -296,14 +296,14 @@ const buildSearchAdditionalParams = ({
  * @param searchOptions Search options selected on Search page.
  */
 export const searchItems = (
-  searchOptions: SearchOptions
+  searchOptions: SearchOptions,
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
   const normalParams = buildSearchParams(searchOptions);
   return pipe(
     searchOptions,
     O.fromPredicate(
       ({ advancedSearchCriteria }) =>
-        !!advancedSearchCriteria && A.isNonEmpty(advancedSearchCriteria)
+        !!advancedSearchCriteria && A.isNonEmpty(advancedSearchCriteria),
     ),
     O.match(
       () => OEQ.Search.search(API_BASE_URL, normalParams),
@@ -311,9 +311,9 @@ export const searchItems = (
         OEQ.Search.searchWithAdditionalParams(
           API_BASE_URL,
           buildSearchAdditionalParams(options),
-          normalParams
-        )
-    )
+          normalParams,
+        ),
+    ),
   );
 };
 
@@ -327,25 +327,25 @@ export const searchItems = (
  */
 export const searchItemAttachments = async (
   uuid: string,
-  version: number
+  version: number,
 ): Promise<OEQ.Search.Attachment[]> => {
   const extractAndValidateItem: (
-    searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>
+    searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
   ) => TE.TaskEither<string, OEQ.Search.SearchResultItem> = flow(
     ({ results }) => results,
     TE.fromPredicate(
       A.isNonEmpty,
-      () => `Search for item ${uuid}/${version} returned no results`
+      () => `Search for item ${uuid}/${version} returned no results`,
     ),
-    TE.map(NEA.head)
+    TE.map(NEA.head),
   );
 
   const extractAttachments: (
-    item: OEQ.Search.SearchResultItem
+    item: OEQ.Search.SearchResultItem,
   ) => OEQ.Search.Attachment[] = flow(
     ({ attachments }) => attachments,
     O.fromNullable,
-    O.getOrElse(() => [] as OEQ.Search.Attachment[])
+    O.getOrElse(() => [] as OEQ.Search.Attachment[]),
   );
 
   const attachmentsMaybe = await pipe(
@@ -361,18 +361,18 @@ export const searchItemAttachments = async (
           status: [], // As we are searching for a specific Item we should discard the default Item status.
         }),
       (reason) =>
-        `Failed to retrieve details of item ${uuid}/${version}: ${reason}`
+        `Failed to retrieve details of item ${uuid}/${version}: ${reason}`,
     ),
     TE.chain(extractAndValidateItem),
     TE.map(extractAttachments),
-    TE.mapLeft(E.toError)
+    TE.mapLeft(E.toError),
   )();
 
   return pipe(
     attachmentsMaybe,
     E.getOrElseW((err) => {
       throw err;
-    })
+    }),
   );
 };
 
@@ -384,7 +384,7 @@ export const searchItemAttachments = async (
 export const buildExportUrl = (searchOptions: SearchOptions): string =>
   OEQ.Search.buildExportUrl(
     API_BASE_URL,
-    buildSearchParams({ ...searchOptions, currentPage: 0 })
+    buildSearchParams({ ...searchOptions, currentPage: 0 }),
   );
 
 /**
@@ -395,5 +395,5 @@ export const buildExportUrl = (searchOptions: SearchOptions): string =>
 export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
   OEQ.Search.confirmExportRequest(
     API_BASE_URL,
-    buildSearchParams(searchOptions)
+    buildSearchParams(searchOptions),
   );

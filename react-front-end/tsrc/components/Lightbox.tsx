@@ -232,10 +232,10 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
           openequella: () =>
             pipe(
               buildCustomEmbed(mimeType, src),
-              O.getOrElse(() => unsupportedContent)
+              O.getOrElse(() => unsupportedContent),
             ),
           _: () => unsupportedContent,
-        })
+        }),
       );
 
     setContent(buildContent());
@@ -262,7 +262,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     const unneededAttributes = ["class"];
     const fullHtml: HTMLDocument = domParser.parseFromString(
       currentContent.innerHTML,
-      "text/html"
+      "text/html",
     );
     const contentHtml = fullHtml.body.childNodes[0] as HTMLElement;
     unneededAttributes.forEach((a) => contentHtml.removeAttribute(a));

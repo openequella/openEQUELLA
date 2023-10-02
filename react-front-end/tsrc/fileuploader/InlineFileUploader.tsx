@@ -140,7 +140,7 @@ export const InlineFileUploader = ({
 }: InlineFileUploaderProps) => {
   const initialiseEntry = (
     entry: AjaxFileEntry,
-    indented: boolean
+    indented: boolean,
   ): UploadedFile => ({
     fileEntry: entry,
     status: "uploaded",
@@ -151,11 +151,11 @@ export const InlineFileUploader = ({
     entries.flatMap((entry) => [
       initialiseEntry(entry, false),
       ...entry.children.map((e) => initialiseEntry(e, true)),
-    ])
+    ]),
   );
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [attachmentCount, setAttachmentCount] = useState<number>(
-    uploadedFiles.length
+    uploadedFiles.length,
   );
   const [showDuplicateWarning, setShowDuplicateWarning] = useState<
     boolean | undefined
@@ -174,21 +174,21 @@ export const InlineFileUploader = ({
             replaceElement(
               prev,
               generateUploadingFileComparator(localFile.localId),
-              updatedFile
-            )
+              updatedFile,
+            ),
           );
         // What onError essentially does is the same as what onUpload does - update the Uploading list.
         const onError = onUpload;
         const onSuccessful = (
           uploadedFile: UploadedFile,
-          displayWarningMessage?: boolean
+          displayWarningMessage?: boolean,
         ) => {
           setUploadingFiles((prev) =>
             deleteElement(
               prev,
               generateUploadingFileComparator(localFile.localId),
-              1
-            )
+              1,
+            ),
           );
           setUploadedFiles((prev) => addElement(prev, uploadedFile));
           setShowDuplicateWarning(displayWarningMessage);
@@ -201,7 +201,7 @@ export const InlineFileUploader = ({
           beforeUpload,
           onUpload,
           onSuccessful,
-          onError
+          onError,
         );
       });
     },
@@ -234,7 +234,7 @@ export const InlineFileUploader = ({
           ? buildOEQServerString(
               strings.toomany,
               maxAttachments,
-              remainingQuota
+              remainingQuota,
             )
           : buildOEQServerString(strings.toomany_1, remainingQuota);
       const warningText =
@@ -260,7 +260,7 @@ export const InlineFileUploader = ({
       // Child files must be deleted as well.
       const toRemove = [id, ...children.map((child) => child.id)];
       const remainingFiles = uploadedFiles.filter(
-        (file) => !toRemove.includes(file.fileEntry.id)
+        (file) => !toRemove.includes(file.fileEntry.id),
       );
       setUploadedFiles(remainingFiles);
       setShowDuplicateWarning(displayWarningMessage);
@@ -270,7 +270,7 @@ export const InlineFileUploader = ({
 
     const onError = (file: UploadedFile) => {
       setUploadedFiles(
-        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file)
+        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file),
       );
     };
 
@@ -279,14 +279,14 @@ export const InlineFileUploader = ({
       file,
       onSuccessful,
       onError,
-      strings.deleteConfirm
+      strings.deleteConfirm,
     );
   };
 
   const onCancel = (fileId: string) => {
     cancelUpload(fileId);
     setUploadingFiles(
-      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1)
+      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1),
     );
     setAttachmentCount(attachmentCount - 1);
   };

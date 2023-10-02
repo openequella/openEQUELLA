@@ -27,11 +27,11 @@ export const ignoreId = (aclExpression: ACLExpression): ACLExpression =>
   pipe(
     aclExpression.children,
     A.reduce<ACLExpression, ACLExpression[]>([], (acc, child) =>
-      pipe(child, ignoreId, (newChild) => [...acc, newChild])
+      pipe(child, ignoreId, (newChild) => [...acc, newChild]),
     ),
     (newChildren) => ({
       ...aclExpression,
       children: newChildren,
       id: expect.any(String),
-    })
+    }),
   );

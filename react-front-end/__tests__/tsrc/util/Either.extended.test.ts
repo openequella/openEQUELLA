@@ -30,7 +30,7 @@ describe("Either Extended", () => {
     it("should throw an error if Either is left", () => {
       const leftValue = "Error Message";
       expect(() => pipe(E.left(leftValue), E.getOrThrow)).toThrow(
-        new Error(leftValue)
+        new Error(leftValue),
       );
     });
   });

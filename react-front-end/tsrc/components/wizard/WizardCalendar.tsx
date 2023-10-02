@@ -79,15 +79,15 @@ export const WizardCalendar = ({
       Date.parse,
       E.fromPredicate<number, string>(
         (n) => !isNaN(n),
-        () => `invalid date string: ${dateString}`
+        () => `invalid date string: ${dateString}`,
       ),
       E.fold(
         (left) => {
           console.error(left);
           return undefined;
         },
-        (right) => DateTime.fromMillis(right).toJSDate()
-      )
+        (right) => DateTime.fromMillis(right).toJSDate(),
+      ),
     );
 
   const processDateString = (dateString?: string): Date | undefined =>
@@ -97,11 +97,11 @@ export const WizardCalendar = ({
       O.chain(
         flow(
           pfTernary(S.isEmpty, () => undefined, identity), // Return undefined for empty string.
-          O.fromNullable
-        )
+          O.fromNullable,
+        ),
       ),
       O.map(convertToDate),
-      O.toUndefined
+      O.toUndefined,
     );
 
   const dateRange: DateRange | undefined = pipe(
@@ -111,7 +111,7 @@ export const WizardCalendar = ({
       start: processDateString(start),
       end: processDateString(end),
     })),
-    O.toUndefined
+    O.toUndefined,
   );
 
   // If both start and end are undefined, return an empty array. If either one is undefined, use
@@ -127,7 +127,7 @@ export const WizardCalendar = ({
       O.fromNullable,
       O.map(dateRangeToStringArray),
       O.getOrElse<string[]>(() => []),
-      onChange
+      onChange,
     );
 
   // Function to build DatePicker custom props based on the provided Wizard Control date format.

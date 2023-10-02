@@ -103,14 +103,14 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // But if both are undefined, default to 'Published'.
     history.location.state?.customData?.["myResourcesType"] ??
       getMyResourcesTypeFromQueryParam(history.location) ??
-      "Published"
+      "Published",
   );
 
   // The sub-statuses refer to Item statuses that can be selected from Moderation queue and All resources.
   const [subStatus, setSubStatus] = useState<OEQ.Common.ItemStatus[]>(
     history.location.state?.searchPageOptions?.status ??
       getSubStatusFromQueryParam(history.location) ??
-      []
+      [],
   );
 
   // Anchor used to control where and when to show the menu for creating new Scrapbook.
@@ -126,11 +126,11 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const optionsFromStorage = getSearchPageOptionsFromStorage(
-      history.location
+      history.location,
     );
 
     const customiseInitialSearchOptions = (
-      searchPageOptions: SearchPageOptions
+      searchPageOptions: SearchPageOptions,
     ): SearchPageOptions =>
       optionsFromStorage ?? {
         ...searchPageOptions,
@@ -155,7 +155,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [currentUser, history.location, resourceType, subStatus]);
 
   const customSearchCriteria = (
-    myResourcesType: MyResourcesType
+    myResourcesType: MyResourcesType,
   ): SearchPageOptions => ({
     ...defaultSearchPageOptions,
     owner: currentUser,
@@ -192,7 +192,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       search,
       searchState: { options },
       searchPageErrorHandler,
-    }: SearchContextProps
+    }: SearchContextProps,
   ) =>
     deleteScrapbook(uuid)
       .then(() => {
@@ -221,7 +221,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
         setShowsSpinner(true);
         viewScrapbook(item, openLightbox).finally(() => setShowsSpinner(false));
-      }
+      },
     );
 
     switch (resourceType) {
@@ -233,7 +233,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
               results,
               highlight,
             }: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
-              results.map((item) => renderScrapbook(item, highlight))
+              results.map((item) => renderScrapbook(item, highlight)),
           );
       case "Moderation queue":
         return (searchResult: SearchPageSearchResult) =>
@@ -252,7 +252,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           customUIForMyResources(
             result,
             (items: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>) =>
-              renderAllResources(items, renderScrapbook)
+              renderAllResources(items, renderScrapbook),
           );
       default:
         return undefined;
@@ -328,7 +328,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const searchPageRefinePanelConfig = (
-    searchContextProps: SearchContextProps
+    searchContextProps: SearchContextProps,
   ): SearchPageRefinePanelConfig => ({
     ...defaultSearchPageRefinePanelConfig,
     enableDisplayModeSelector: resourceType !== "Moderation queue",
@@ -354,7 +354,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     enableItemStatusSelector: false,
     statusSelectorCustomConfig: {
       alwaysEnabled: ["Moderation queue", "All resources"].includes(
-        resourceType
+        resourceType,
       ),
       selectorProps: buildStatusSelectorCustomConfig(searchContextProps),
     },
@@ -374,10 +374,10 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
               enableClassification={false}
               headerConfig={searchPageHeaderConfig}
               refinePanelConfig={searchPageRefinePanelConfig(
-                searchContextProps
+                searchContextProps,
               )}
               customRenderSearchResults={customSearchResultBuilder(
-                searchContextProps
+                searchContextProps,
               )}
               customFavouriteUrl={customFavouriteUrl}
               customShowSpinner={showSpinner}
@@ -413,15 +413,15 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                         openLegacyFileCreatingPage(
                           scrapbookType,
                           history,
-                          searchContextProps.searchState.options
+                          searchContextProps.searchState.options,
                         )
                       }
                     >
                       <ListItemIcon>{icon}</ListItemIcon>
                       <ListItemText>{text}</ListItemText>
                     </MenuItem>
-                  )
-                )
+                  ),
+                ),
               )}
             </Menu>
             {lightBoxProps && <Lightbox {...lightBoxProps} />}

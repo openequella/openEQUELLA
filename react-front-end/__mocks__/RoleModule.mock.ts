@@ -68,7 +68,7 @@ export const roles: OEQ.UserQuery.RoleDetails[] = [
  * @param ids A list of role IDs to lookup, should be one of those in `roles`
  */
 export const resolveRoles = async (
-  ids: ReadonlyArray<string>
+  ids: ReadonlyArray<string>,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   Promise.resolve(roles.filter(({ id }) => ids.includes(id)));
 
@@ -85,10 +85,10 @@ export const findRoleById = (id: string) => findEntityById(id, resolveRoles);
  * @param query A simple string to filter by (no wildcard support)
  */
 export const listRoles = async (
-  query?: string
+  query?: string,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   entityDetailsProvider(
     roles,
     (r: OEQ.UserQuery.RoleDetails, q: string) => r.name.search(q) === 0,
-    query
+    query,
   );

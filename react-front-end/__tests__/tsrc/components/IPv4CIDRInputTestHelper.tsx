@@ -36,7 +36,7 @@ export const queryNetmaskInput = (container: HTMLElement) =>
 export const typeInIpInput = async (
   container: HTMLElement,
   text: string,
-  index: number
+  index: number,
 ) => {
   const input = queryIpInput(container, index);
   if (!input) {
@@ -51,7 +51,7 @@ export const typeInIpInput = async (
  */
 export const typeInNetmaskInput = async (
   container: HTMLElement,
-  text: string
+  text: string,
 ) => {
   const input = queryNetmaskInput(container);
   if (!input) {
@@ -61,5 +61,5 @@ export const typeInNetmaskInput = async (
 };
 
 export const renderIPV4CIDRInput = (
-  onChange: (ipAddress: string) => void = jest.fn()
+  onChange: (ipAddress: string) => void = jest.fn(),
 ) => render(<IPV4CIDRInput onChange={onChange} />);

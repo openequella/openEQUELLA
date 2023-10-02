@@ -84,7 +84,7 @@ const UsableByControl = ({
 }: UsableByControlProps) => {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [readableACLExpressionText, setReadableACLExpressionText] = useState(
-    S.empty
+    S.empty,
   );
 
   // generate human readable text for acl expression
@@ -94,7 +94,7 @@ const UsableByControl = ({
         value,
         parse,
         E.map(generateHumanReadable(aclEntityResolversProvider)),
-        E.getOrElse(() => T.of(value))
+        E.getOrElse(() => T.of(value)),
       );
       pipe(await getName(), setReadableACLExpressionText);
     })();

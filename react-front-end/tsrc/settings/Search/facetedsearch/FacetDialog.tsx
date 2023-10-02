@@ -48,7 +48,7 @@ export interface FacetDialogProps {
   addOrEdit: (
     name: string,
     schemaNode: string,
-    maxResults: number | undefined
+    maxResults: number | undefined,
   ) => void;
   /**
    * The facet to be edited; undefined if the action is to add a new one.
@@ -114,7 +114,7 @@ const FacetDialog = ({ open, onClose, addOrEdit, facet }: FacetDialogProps) => {
           fullWidth
           onChange={(event) =>
             setMaxResults(
-              event.target.value ? parseInt(event.target.value) : undefined
+              event.target.value ? parseInt(event.target.value) : undefined,
             )
           }
           helperText={facetFieldStrings.categoryNumberHelper}

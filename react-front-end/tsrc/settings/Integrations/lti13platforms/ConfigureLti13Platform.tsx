@@ -126,7 +126,7 @@ export interface ConfigureLti13PlatformProps
    * Function to configure platform, such as CREATE or EDIT.
    */
   configurePlatformProvider: (
-    platform: OEQ.LtiPlatform.LtiPlatform
+    platform: OEQ.LtiPlatform.LtiPlatform,
   ) => Promise<void>;
   /**
    * Show warning message for group and role selector related controls
@@ -181,7 +181,7 @@ const ConfigureLti13Platform = ({
 
   const [generalDetailsRenderOptions, setGeneralDetailsRenderOptions] =
     React.useState<GeneralDetailsSectionRenderOptions>(
-      value.generalDetailsRenderOptions
+      value.generalDetailsRenderOptions,
     );
 
   const [aclExpression, setAclExpression] = useState(value.aclExpression);
@@ -216,7 +216,7 @@ const ConfigureLti13Platform = ({
 
     const generalDetailsValue = pipe(
       generalDetailsRenderOptions,
-      R.map((r) => r.value)
+      R.map((r) => r.value),
     );
 
     // generate request data to create/update platform
@@ -228,18 +228,18 @@ const ConfigureLti13Platform = ({
       unknownRoles: pipe(roleIds(selectedUnknownRoles), RS.toSet),
       customRoles: pipe(
         selectedCustomRolesMapping,
-        M.map(flow(RS.fromSet, roleIds, RS.toSet))
+        M.map(flow(RS.fromSet, roleIds, RS.toSet)),
       ),
       unknownUserDefaultGroups: pipe(
         groupIds(selectedUnknownUserHandling.groups),
-        RS.toSet
+        RS.toSet,
       ),
       enabled: value.enabled,
     };
 
     const configurePlatformTask: TE.TaskEither<string, void> = TE.tryCatch(
       () => configurePlatformProvider(platformValue),
-      String
+      String,
     );
 
     (async () => {
@@ -255,8 +255,8 @@ const ConfigureLti13Platform = ({
             setPreventNavigation(false);
             setShowSnackBar(true);
             setSaved(true);
-          }
-        )
+          },
+        ),
       );
     })();
   }, [
@@ -284,7 +284,9 @@ const ConfigureLti13Platform = ({
     pipe(
       generalDetailsRenderOptions,
       R.toEntries,
-      A.every(([_, data]) => (data.validate ? data.validate(data.value) : true))
+      A.every(([_, data]) =>
+        data.validate ? data.validate(data.value) : true,
+      ),
     );
 
   const handleSubmit = async () => {

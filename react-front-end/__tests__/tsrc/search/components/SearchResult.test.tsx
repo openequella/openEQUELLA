@@ -104,7 +104,7 @@ describe("<SearchResult/>", () => {
             customOnClickTitleHandler={customOnClickTitleHandler}
           />
         </ThemeProvider>
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     // Make sure we wait for the resolution of viewers - which will update the attachment lists
@@ -117,7 +117,7 @@ describe("<SearchResult/>", () => {
 
   const renderSearchResult = async (
     itemResult: OEQ.Search.SearchResultItem,
-    screenWidth?: number
+    screenWidth?: number,
   ) => renderSearchResultWithConfig({ itemResult, screenWidth });
 
   const keywordFoundInAttachmentLabel =
@@ -125,17 +125,17 @@ describe("<SearchResult/>", () => {
 
   it("Should show indicator in Attachment panel if keyword was found inside attachment", async () => {
     const { queryByLabelText } = await renderSearchResult(
-      mockData.keywordFoundInAttachmentObj
+      mockData.keywordFoundInAttachmentObj,
     );
     expect(queryByLabelText(keywordFoundInAttachmentLabel)).toBeInTheDocument();
   });
 
   it("Should not show indicator in Attachment panel if keyword was not found inside attachment", async () => {
     const { queryByLabelText } = await renderSearchResult(
-      mockData.attachSearchObj
+      mockData.attachSearchObj,
     );
     expect(
-      queryByLabelText(keywordFoundInAttachmentLabel)
+      queryByLabelText(keywordFoundInAttachmentLabel),
     ).not.toBeInTheDocument();
   });
 
@@ -147,68 +147,66 @@ describe("<SearchResult/>", () => {
     async (
       testName: string,
       item: OEQ.Search.SearchResultItem,
-      expectedLinkText: string
+      expectedLinkText: string,
     ) => {
       const { queryByText } = await renderSearchResult(item);
       expect(
-        queryByText(expectedLinkText, { selector: "a" })
+        queryByText(expectedLinkText, { selector: "a" }),
       ).toBeInTheDocument();
-    }
+    },
   );
 
   it("should hide comment count link if count is 0", async () => {
     const { queryByText } = await renderSearchResult(
-      mockData.keywordFoundInAttachmentObj
+      mockData.keywordFoundInAttachmentObj,
     );
     expect(
-      queryByText(languageStrings.searchpage.comments.zero, { selector: "a" })
+      queryByText(languageStrings.searchpage.comments.zero, { selector: "a" }),
     ).toBeNull();
   });
 
   it("should show Star icons to represent Item ratings", async () => {
     const { starRatings } = mockData.attachSearchObj;
     const { queryByLabelText } = await renderSearchResult(
-      mockData.attachSearchObj
+      mockData.attachSearchObj,
     );
     expect(
       queryByLabelText(
-        sprintf(languageStrings.searchpage.starRatings.label, starRatings)
-      )
+        sprintf(languageStrings.searchpage.starRatings.label, starRatings),
+      ),
     ).toBeInTheDocument();
   });
 
   it("displays the lightbox when an image attachment is clicked", async () => {
     const { attachSearchObj } = mockData;
-    const { getByText, queryByLabelText } = await renderSearchResult(
-      attachSearchObj
-    );
+    const { getByText, queryByLabelText } =
+      await renderSearchResult(attachSearchObj);
 
     // Given a user clicks on an attachment
     await userEvent.click(
-      getByText(attachSearchObj.attachments![0].description!)
+      getByText(attachSearchObj.attachments![0].description!),
     );
 
     // Then they see the lightbox
     expect(
-      queryByLabelText(languageStrings.common.action.openInNewTab)
+      queryByLabelText(languageStrings.common.action.openInNewTab),
     ).toBeInTheDocument();
   });
 
   it("disable the access to Item summary page in Lightbox for Scrapbook", async () => {
-    const { getByText, queryByLabelText } = await renderSearchResult(
-      imageScrapbook
-    );
+    const { getByText, queryByLabelText } =
+      await renderSearchResult(imageScrapbook);
 
     await userEvent.click(
-      getByText(imageScrapbook.attachments![0].description!)
+      getByText(imageScrapbook.attachments![0].description!),
     );
 
     // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
     expect(
-      queryByLabelText(languageStrings.embedCode.copy)
+      queryByLabelText(languageStrings.embedCode.copy),
     ).toBeInTheDocument();
     expect(
-      queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+      queryByLabelText(languageStrings.lightboxComponent.openSummaryPage),
     ).not.toBeInTheDocument();
   });
 
@@ -216,19 +214,19 @@ describe("<SearchResult/>", () => {
     const { starRatings, commentCount } = mockData.attachSearchObj;
     const { queryByLabelText, queryByText } = await renderSearchResult(
       mockData.attachSearchObj,
-      600
+      600,
     );
     expect(
       queryByLabelText(
-        sprintf(languageStrings.searchpage.starRatings.label, starRatings)
-      )
+        sprintf(languageStrings.searchpage.starRatings.label, starRatings),
+      ),
     ).not.toBeInTheDocument();
 
     expect(
       queryByText(
         sprintf(languageStrings.searchpage.comments.more, commentCount),
-        { selector: "a" }
-      )
+        { selector: "a" },
+      ),
     ).not.toBeInTheDocument();
   });
 
@@ -251,12 +249,12 @@ describe("<SearchResult/>", () => {
       iconType: string,
       action: string,
       item: OEQ.Search.SearchResultItem,
-      iconLabel: string
+      iconLabel: string,
     ) => {
       const { queryByLabelText } = await renderSearchResult(item);
       const iconButton = queryByLabelText(iconLabel);
       expect(iconButton).toBeInTheDocument();
-    }
+    },
   );
 
   it("displays custom action buttons", async () => {
@@ -282,10 +280,10 @@ describe("<SearchResult/>", () => {
     "should hide %s button in non-Selection session",
     async (selectorLabel: string) => {
       const { queryByLabelText } = await renderSearchResult(
-        mockData.attachSearchObj
+        mockData.attachSearchObj,
       );
       expect(queryByLabelText(selectorLabel)).not.toBeInTheDocument();
-    }
+    },
   );
 
   it("should use different link to open ItemSummary page, depending on renderData", async () => {
@@ -295,7 +293,7 @@ describe("<SearchResult/>", () => {
     const checkItemTitleLink = (page: RenderResult, url: string) => {
       expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
         "href",
-        url
+        url,
       );
     };
     const basicURL = `items/${item.uuid}/${item.version}/`;
@@ -311,7 +309,7 @@ describe("<SearchResult/>", () => {
     page = await renderSearchResult(item);
     checkItemTitleLink(
       page,
-      `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`
+      `${defaultBaseUrl}${basicURL}?_sl.stateId=1&_int.id=2&a=coursesearch`,
     );
   });
 
@@ -335,7 +333,7 @@ describe("<SearchResult/>", () => {
       const { oneDeadAttachObj } = mockData;
       const { queryByLabelText } = await renderSearchResult(oneDeadAttachObj);
       expect(
-        queryByLabelText(languageStrings.searchpage.deadAttachmentWarning)
+        queryByLabelText(languageStrings.searchpage.deadAttachmentWarning),
       ).toBeInTheDocument();
     });
 
@@ -343,27 +341,27 @@ describe("<SearchResult/>", () => {
       //item with one dead attachment and one intact attachment
       const { oneDeadOneAliveAttachObj } = mockData;
       const { getByText, queryByLabelText } = await renderSearchResult(
-        oneDeadOneAliveAttachObj
+        oneDeadOneAliveAttachObj,
       );
 
       // Given a user clicks on a broken attachment
       await userEvent.click(
-        getByText(oneDeadOneAliveAttachObj.attachments![0].description!)
+        getByText(oneDeadOneAliveAttachObj.attachments![0].description!),
       );
 
       // There is no lightbox, as it is not rendered as a link
       expect(
-        queryByLabelText(languageStrings.common.action.openInNewWindow)
+        queryByLabelText(languageStrings.common.action.openInNewWindow),
       ).not.toBeInTheDocument();
 
       // Now if they click on the intact attachment instead...
       await userEvent.click(
-        getByText(oneDeadOneAliveAttachObj.attachments![1].description!)
+        getByText(oneDeadOneAliveAttachObj.attachments![1].description!),
       );
 
       // ...There is a lightbox
       expect(
-        queryByLabelText(languageStrings.common.action.openInNewTab)
+        queryByLabelText(languageStrings.common.action.openInNewTab),
       ).toBeInTheDocument();
     });
   });
@@ -380,19 +378,19 @@ describe("<SearchResult/>", () => {
 
     const mockSelectResourceForCourseList = jest.spyOn(
       LegacySelectionSessionModule,
-      "selectResourceForCourseList"
+      "selectResourceForCourseList",
     );
     mockSelectResourceForCourseList.mockResolvedValue();
 
     const mockSelectResourceForSelectOrAdd = jest.spyOn(
       LegacySelectionSessionModule,
-      "selectResourceForSelectOrAdd"
+      "selectResourceForSelectOrAdd",
     );
     mockSelectResourceForSelectOrAdd.mockResolvedValue();
 
     const mockSelectResourceForSkinny = jest.spyOn(
       LegacySelectionSessionModule,
-      "selectResourceForSkinny"
+      "selectResourceForSkinny",
     );
     mockSelectResourceForSkinny.mockResolvedValue();
 
@@ -461,16 +459,16 @@ describe("<SearchResult/>", () => {
         resourceType: string,
         selectionSessionMode: string,
         selectResourceFunc: selectResourceFuncType,
-        renderData: RenderData
+        renderData: RenderData,
       ) => {
         updateMockGetRenderData(renderData);
 
         const { queryByLabelText } = await renderSearchResult(
-          mockData.attachSearchObj
+          mockData.attachSearchObj,
         );
         await makeSelection(() => queryByLabelText(resourceType));
         expect(selectResourceFunc).toHaveBeenCalled();
-      }
+      },
     );
 
     it("should hide the Select Summary button if it's disabled", async () => {
@@ -479,7 +477,7 @@ describe("<SearchResult/>", () => {
         selectionSessionInfo: selectSummaryButtonDisabled,
       });
       const { queryByLabelText } = await renderSearchResult(
-        mockData.attachSearchObj
+        mockData.attachSearchObj,
       );
       expect(queryByLabelText(selectSummaryPageString)).toBeNull();
     });
@@ -488,10 +486,10 @@ describe("<SearchResult/>", () => {
       updateMockGetRenderData(basicRenderData);
 
       const expandedAttachment = await renderSearchResult(
-        mockData.attachSearchObj
+        mockData.attachSearchObj,
       );
       const collapsedAttachment = await renderSearchResult(
-        mockData.keywordFoundInAttachmentObj
+        mockData.keywordFoundInAttachmentObj,
       );
       expect(expandedAttachment.queryByText("image.png")).toBeVisible();
       expect(collapsedAttachment.queryByText("config.json")).toBeFalsy(); // i.e. not rendered so not visible
@@ -507,7 +505,7 @@ describe("<SearchResult/>", () => {
 
       attachments.forEach((attachment) => {
         expect(
-          getGlobalCourseList().prepareDraggableAndBind
+          getGlobalCourseList().prepareDraggableAndBind,
         ).toHaveBeenCalledWith(`#${attachment.id}`, false);
       });
     });
@@ -517,7 +515,7 @@ describe("<SearchResult/>", () => {
       await renderSearchResult(mockData.nonLiveObj);
 
       expect(
-        getGlobalCourseList().prepareDraggableAndBind
+        getGlobalCourseList().prepareDraggableAndBind,
       ).not.toHaveBeenCalled();
     });
 
@@ -531,22 +529,22 @@ describe("<SearchResult/>", () => {
 
       //expect intact attachment to be draggable
       expect(
-        getGlobalCourseList().prepareDraggableAndBind
+        getGlobalCourseList().prepareDraggableAndBind,
       ).toHaveBeenCalledWith(`#${intactAttachment.id}`, false);
 
       //expect dead attachment not to be draggable
       expect(
-        getGlobalCourseList().prepareDraggableAndBind
+        getGlobalCourseList().prepareDraggableAndBind,
       ).not.toHaveBeenCalledWith(`#${deadAttachment.id}`, false);
     });
 
     it("should hide All attachment button in Skinny", async () => {
       updateMockGetRenderData(renderDataForSkinny);
       const { queryByLabelText } = await renderSearchResult(
-        mockData.attachSearchObj
+        mockData.attachSearchObj,
       );
       expect(
-        queryByLabelText(selectAllAttachmentsString)
+        queryByLabelText(selectAllAttachmentsString),
       ).not.toBeInTheDocument();
     });
 
@@ -557,31 +555,31 @@ describe("<SearchResult/>", () => {
           selectionSessionInfo: selectSummaryButtonDisabled,
         });
         const { queryByLabelText } = await renderSearchResult(
-          mockData.oneDeadAttachObj
+          mockData.oneDeadAttachObj,
         );
         expect(
-          queryByLabelText(selectAttachmentString)
+          queryByLabelText(selectAttachmentString),
         ).not.toBeInTheDocument();
       });
 
       it("Should not show the Select All Attachments button if all attachments are dead", async () => {
         updateMockGetRenderData(basicRenderData);
         const { queryByLabelText } = await renderSearchResult(
-          mockData.oneDeadAttachObj
+          mockData.oneDeadAttachObj,
         );
         expect(
-          queryByLabelText(selectAllAttachmentsString)
+          queryByLabelText(selectAllAttachmentsString),
         ).not.toBeInTheDocument();
       });
 
       it("Should show the Select All Attachments button if at least one attachment is not dead", async () => {
         updateMockGetRenderData(basicRenderData);
         const { queryByLabelText, getByLabelText } = await renderSearchResult(
-          mockData.oneDeadOneAliveAttachObj
+          mockData.oneDeadOneAliveAttachObj,
         );
 
         expect(
-          queryByLabelText(selectAllAttachmentsString)
+          queryByLabelText(selectAllAttachmentsString),
         ).toBeInTheDocument();
         // Given the user clicks Select All Attachments for an item with a dead attachment
         // and an alive attachment...
@@ -591,7 +589,7 @@ describe("<SearchResult/>", () => {
         // 78883eff-7cf6-4b14-ab76-2b7f84dbe833 which is the intact one
         expect(mockSelectResourceForCourseList).toHaveBeenCalledWith(
           "72558c1d-8788-4515-86c8-b24a28cc451e/1",
-          ["78883eff-7cf6-4b14-ab76-2b7f84dbe833"]
+          ["78883eff-7cf6-4b14-ab76-2b7f84dbe833"],
         );
       });
     });
@@ -618,10 +616,10 @@ describe("<SearchResult/>", () => {
 
         await waitFor(() => {
           expect(
-            queryByText(screen.getByRole("dialog"), drmTerms.title)
+            queryByText(screen.getByRole("dialog"), drmTerms.title),
           ).toBeInTheDocument();
         });
-      }
+      },
     );
 
     it.each([
@@ -636,15 +634,15 @@ describe("<SearchResult/>", () => {
 
         await waitFor(() => {
           expect(
-            queryByText(screen.getByRole("dialog"), DRM_VIOLATION)
+            queryByText(screen.getByRole("dialog"), DRM_VIOLATION),
           ).toBeInTheDocument();
         });
-      }
+      },
     );
 
     it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
       const { getByText } = await renderSearchResult(
-        mockData.drmAllowSummaryObj
+        mockData.drmAllowSummaryObj,
       );
       await userEvent.click(getByText(DRM_ITEM_NAME));
 

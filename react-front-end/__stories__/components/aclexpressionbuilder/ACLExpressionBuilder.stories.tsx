@@ -46,7 +46,7 @@ EmptyTreeView.args = {
 };
 
 export const ErrorSSOTokensView: StoryFn<ACLExpressionBuilderProps> = (
-  args
+  args,
 ) => <ACLExpressionBuilder {...args} />;
 ErrorSSOTokensView.args = {
   ...Basic.args,

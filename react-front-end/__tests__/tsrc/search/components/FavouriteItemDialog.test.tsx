@@ -42,22 +42,22 @@ describe("<FavouriteItemDialog />", () => {
         {...commonProps}
         isAddedToFavourite={false}
         isLatestVersion
-      />
+      />,
     );
     expect(
-      queryByText(languageStrings.searchpage.favouriteItem.tags.selectVersion)
+      queryByText(languageStrings.searchpage.favouriteItem.tags.selectVersion),
     ).toBeInTheDocument();
     expect(
       queryByLabelText(
         languageStrings.searchpage.favouriteItem.tags.versionOptions
-          .useThisVersion
-      )
+          .useThisVersion,
+      ),
     ).toBeInTheDocument();
     expect(
       queryByLabelText(
         languageStrings.searchpage.favouriteItem.tags.versionOptions
-          .useLatestVersion
-      )
+          .useLatestVersion,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -67,10 +67,10 @@ describe("<FavouriteItemDialog />", () => {
         {...commonProps}
         isAddedToFavourite={false}
         isLatestVersion={false}
-      />
+      />,
     );
     expect(
-      queryByText(languageStrings.searchpage.favouriteItem.tags.toThisVersion)
+      queryByText(languageStrings.searchpage.favouriteItem.tags.toThisVersion),
     ).toBeInTheDocument();
   });
 
@@ -80,10 +80,10 @@ describe("<FavouriteItemDialog />", () => {
         {...commonProps}
         isAddedToFavourite
         isLatestVersion={false}
-      />
+      />,
     );
     expect(
-      queryByText(languageStrings.searchpage.favouriteItem.removeAlert)
+      queryByText(languageStrings.searchpage.favouriteItem.removeAlert),
     ).toBeInTheDocument();
   });
 });

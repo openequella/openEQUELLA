@@ -48,7 +48,7 @@ export const WizardRawHtml = ({
       pathAndValues,
       M.lookup(S.Eq)(path),
       O.map((controlValue) => controlValue.join()),
-      O.toUndefined
+      O.toUndefined,
     );
 
   const resolveXpath = (description: string): string => {
@@ -67,10 +67,10 @@ export const WizardRawHtml = ({
             const xpath = matched.substring(1).slice(0, -1); // Remove the curly braces.
             const value = getMetadata(xpath);
             return value ? d.replace(matched, value) : d;
-          })
-        )
+          }),
+        ),
       ),
-      O.getOrElse(() => description)
+      O.getOrElse(() => description),
     );
   };
 

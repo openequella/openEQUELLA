@@ -58,7 +58,7 @@ describe("SelectRoleDialog", () => {
           value: SET.singleton(roles[0]),
           onClose,
         }),
-      roles[0].name
+      roles[0].name,
     );
     expect(result).toEqual(new Set());
   });
@@ -89,7 +89,7 @@ describe("SelectRoleDialog", () => {
         ...commonSelectRoleDialogProps,
         value: new Set(roles),
         onClose,
-      })
+      }),
     );
     expect(result).toEqual(new Set());
   });

@@ -36,14 +36,14 @@ describe("<RoleSearch/>", () => {
     renderResult: RenderResult,
     searchFor: string,
     selectEntityName: string,
-    onChange = jest.fn()
+    onChange = jest.fn(),
   ) =>
     searchAndSelect(
       renderResult,
       searchFor,
       selectEntityName,
       onChange,
-      searchRole
+      searchRole,
     );
 
   it("can search and select", async () => {
@@ -67,8 +67,8 @@ describe("<RoleSearch/>", () => {
         renderResult,
         queryName,
         selectRole.name,
-        onChange
-      )
+        onChange,
+      ),
     ).toEqual(expectedSelections);
   });
 });

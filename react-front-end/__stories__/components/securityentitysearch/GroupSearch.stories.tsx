@@ -65,7 +65,7 @@ MultiSelection.args = {
     selections: pipe(
       GroupModuleMock.groups,
       A.filter((g) => pipe(g.name, S.includes("group"))),
-      RSET.fromReadonlyArray(eqGroupById)
+      RSET.fromReadonlyArray(eqGroupById),
     ),
     enableMultiSelection: true,
   },

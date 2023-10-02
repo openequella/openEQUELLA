@@ -29,7 +29,7 @@ const StyledDiv = styled("div", {
     ? {
         padding: 0,
       }
-    : {}
+    : {},
 );
 
 export function LegacyContentRenderer({

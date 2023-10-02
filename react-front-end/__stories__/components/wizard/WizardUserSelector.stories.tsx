@@ -70,7 +70,7 @@ WithGroupFilter.args = {
 };
 
 export const ErrorOnResolvingUserIds: StoryFn<WizardUserSelectorProps> = (
-  args
+  args,
 ) => <WizardUserSelector {...args} />;
 ErrorOnResolvingUserIds.args = {
   ...WithUsers.args,

@@ -134,14 +134,14 @@ export interface LtiRoleDetails {
  */
 const mapRoles = (
   roleIds: Record<string, string>,
-  urnPrefix: string
+  urnPrefix: string,
 ): LtiRoleDetails[] =>
   pipe(
     roleIds,
     R.collect(S.Ord)((roleId, roleName) => ({
       name: roleName,
       urn: `${urnPrefix}${roleId}`,
-    }))
+    })),
   );
 
 /**
@@ -150,15 +150,15 @@ const mapRoles = (
 export const ltiRoles: LtiRoleDetails[] = [
   ...mapRoles(
     ltiRoleIds.system,
-    "http://purl.imsglobal.org/vocab/lis/v2/system/person#"
+    "http://purl.imsglobal.org/vocab/lis/v2/system/person#",
   ),
   ...mapRoles(
     ltiRoleIds.institution,
-    "http://purl.imsglobal.org/vocab/lis/v2/institution/person#"
+    "http://purl.imsglobal.org/vocab/lis/v2/institution/person#",
   ),
   ...mapRoles(
     ltiRoleIds.context,
-    "http://purl.imsglobal.org/vocab/lis/v2/membership#"
+    "http://purl.imsglobal.org/vocab/lis/v2/membership#",
   ),
 ];
 
@@ -173,14 +173,14 @@ export const getRoleNameByUrn = (roleUrn: string): string =>
     ltiRoles,
     A.findFirst(({ urn }) => roleUrn === urn),
     O.map(({ name }) => name),
-    O.getOrElse(constant(roleUrn))
+    O.getOrElse(constant(roleUrn)),
   );
 
 /**
  * Ord for `OEQ.LtiPlatform.LtiPlatform` with order based on the platform's name.
  */
 export const platformOrd: ORD.Ord<OEQ.LtiPlatform.LtiPlatform> = ORD.contramap(
-  (p: OEQ.LtiPlatform.LtiPlatform) => p.name
+  (p: OEQ.LtiPlatform.LtiPlatform) => p.name,
 )(S.Ord);
 
 /**
@@ -188,14 +188,14 @@ export const platformOrd: ORD.Ord<OEQ.LtiPlatform.LtiPlatform> = ORD.contramap(
  */
 export const platformEq = EQ.fromEquals(
   (a: OEQ.LtiPlatform.LtiPlatform, b: OEQ.LtiPlatform.LtiPlatform) =>
-    shallowEqual(a, b)
+    shallowEqual(a, b),
 );
 
 /**
  * Get platform by ID.
  */
 export const getPlatform = (
-  platformId: string
+  platformId: string,
 ): Promise<OEQ.LtiPlatform.LtiPlatform> =>
   OEQ.LtiPlatform.getPlatformById(API_BASE_URL, platformId);
 
@@ -211,7 +211,7 @@ export const getPlatforms = (): Promise<OEQ.LtiPlatform.LtiPlatform[]> =>
  * @params enabledStatus An array of platform id with the new value of enabled status.
  */
 export const updateEnabledPlatforms = (
-  enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
+  enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[],
 ): Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> =>
   OEQ.LtiPlatform.updateEnabledPlatforms(API_BASE_URL, enabledStatus);
 
@@ -219,14 +219,14 @@ export const updateEnabledPlatforms = (
  * Create a new platform.
  */
 export const createPlatform = (
-  platform: OEQ.LtiPlatform.LtiPlatform
+  platform: OEQ.LtiPlatform.LtiPlatform,
 ): Promise<void> => OEQ.LtiPlatform.createPlatform(API_BASE_URL, platform);
 
 /**
  * Update an existing platform.
  */
 export const updatePlatform = (
-  platform: OEQ.LtiPlatform.LtiPlatform
+  platform: OEQ.LtiPlatform.LtiPlatform,
 ): Promise<void> => OEQ.LtiPlatform.updatePlatform(API_BASE_URL, platform);
 
 /**
@@ -235,7 +235,7 @@ export const updatePlatform = (
  * @param platformIds Array of platform identifiers to be deleted.
  */
 export const deletePlatforms = (
-  platformIds: string[]
+  platformIds: string[],
 ): Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> =>
   OEQ.LtiPlatform.deletePlatforms(API_BASE_URL, platformIds);
 

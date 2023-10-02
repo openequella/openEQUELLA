@@ -58,9 +58,9 @@ export const AdvancedSearchSelector = ({
       advancedSearches,
       A.sort(
         ORD.contramap<string, OEQ.Common.BaseEntitySummary>(({ name }) => name)(
-          S.Ord
-        )
-      )
+          S.Ord,
+        ),
+      ),
     )}
     isOptionEqualToValue={(option, selected) => selected.uuid === option.uuid}
     getOptionLabel={({ name }: OEQ.Common.BaseEntitySummary) => name}

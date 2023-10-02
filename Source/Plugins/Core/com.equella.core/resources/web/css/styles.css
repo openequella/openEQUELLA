@@ -1,7 +1,8 @@
 @font-face {
   font-family: "PTSansRegular";
   src: url("../fonts/PTS55F-webfont.eot");
-  src: url("../fonts/PTS55F-webfont.eot?#iefix") format("embedded-opentype"),
+  src:
+    url("../fonts/PTS55F-webfont.eot?#iefix") format("embedded-opentype"),
     url("../fonts/PTS55F-webfont.woff") format("woff"),
     url("../fonts/PTS55F-webfont.ttf") format("truetype"),
     url("../fonts/PTS55F-webfont.svg#PTSansRegular") format("svg");
@@ -169,8 +170,13 @@ kbd {
   min-width: 1em;
   margin: 0 0.5em;
   padding: 0.2em 0.3em 0.3em 0.3em;
-  font: normal 0.85em/1em Monaco, "Bitstream Vera Sans Mono", "andale mono",
-    "lucida console", "courier new", monospace;
+  font:
+    normal 0.85em/1em Monaco,
+    "Bitstream Vera Sans Mono",
+    "andale mono",
+    "lucida console",
+    "courier new",
+    monospace;
   text-align: center;
   -webkit-border-radius: 0.3em;
   -moz-border-radius: 0.3em;
@@ -1753,7 +1759,7 @@ Login Notice Formatting
   margin: 1.5em 10px;
   padding: 0.5em 10px;
   font-style: italic;
-  quotes: "\201C""\201D""\2018""\2019";
+  quotes: "\201C" "\201D" "\2018" "\2019";
 }
 
 #loginNotice blockquote:before {

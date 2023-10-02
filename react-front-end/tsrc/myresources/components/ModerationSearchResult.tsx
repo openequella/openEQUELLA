@@ -90,7 +90,7 @@ export const ModerationSearchResult = ({
         >
           {name ?? uuid}
         </OEQLink>
-      )
+      ),
     );
 
   const buildStatus = ({
@@ -117,7 +117,7 @@ export const ModerationSearchResult = ({
             </TooltipIconButton>
           </>
         )),
-        O.toUndefined
+        O.toUndefined,
       )}
     </>
   );
@@ -126,7 +126,7 @@ export const ModerationSearchResult = ({
     result.results,
     A.filter(
       (r): r is SearchResultItemWithModerationDetails =>
-        r.moderationDetails !== undefined
+        r.moderationDetails !== undefined,
     ),
     A.map((r) => ({
       key: `${r.uuid}/${r.version}`,
@@ -141,7 +141,7 @@ export const ModerationSearchResult = ({
           date={r.moderationDetails.lastActionDate}
         />
       ),
-    }))
+    })),
   );
 
   return (
@@ -166,7 +166,7 @@ export const ModerationSearchResult = ({
                   <TableCell>{submitted}</TableCell>
                   <TableCell>{lastAction}</TableCell>
                 </TableRow>
-              ))
+              )),
             )}
           </TableBody>
         </Table>

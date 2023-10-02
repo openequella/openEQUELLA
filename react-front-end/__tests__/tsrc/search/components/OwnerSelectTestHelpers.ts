@@ -29,7 +29,7 @@ export const clickSelect = async (container: HTMLElement) => {
   const selectButton = getSelectButton(container);
   if (!selectButton) {
     throw new Error(
-      "Was expecting the 'select' button to be available, but no. :/"
+      "Was expecting the 'select' button to be available, but no. :/",
     );
   }
   await userEvent.click(selectButton);
@@ -45,7 +45,7 @@ export const selectUser = async (container: HTMLElement, username: string) => {
   const dialogSelectButton = getSelectButton(screen.getByRole("dialog"));
   if (!dialogSelectButton) {
     throw new Error(
-      "Unable to find the 'select' button in the user select dialog."
+      "Unable to find the 'select' button in the user select dialog.",
     );
   }
   await userEvent.click(dialogSelectButton);
@@ -53,5 +53,5 @@ export const selectUser = async (container: HTMLElement, username: string) => {
 
 export const clearSelection = async () =>
   await userEvent.click(
-    screen.getByLabelText(languageStrings.searchpage.filterOwner.clear)
+    screen.getByLabelText(languageStrings.searchpage.filterOwner.clear),
   );

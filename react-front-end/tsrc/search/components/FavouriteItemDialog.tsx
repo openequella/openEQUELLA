@@ -57,7 +57,7 @@ type FavDialogOnConfirmProps = FavDialogConfirmToAdd | FavDialogConfirmToDelete;
  * Type guard of FavDialogOnConfirmProps to help determine the type of property 'onConfirm'.
  */
 const isConfirmToDelete = (
-  props: FavDialogOnConfirmProps
+  props: FavDialogOnConfirmProps,
 ): props is FavDialogConfirmToDelete => props.action === "delete";
 
 export interface FavouriteItemDialogProps {
@@ -131,7 +131,7 @@ const AddFavouriteItemContent = ({
             row
             onChange={(event) =>
               onChangeVersionOption(
-                event.target.value as FavouriteItemVersionOption
+                event.target.value as FavouriteItemVersionOption,
               )
             }
             defaultValue="latest"

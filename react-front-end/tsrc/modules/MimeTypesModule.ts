@@ -41,10 +41,10 @@ export const getMIMETypesFromServer = (): Promise<
  * @param mimeType the MIME type to get the configuration for
  */
 export const getMimeTypeViewerConfiguration: (
-  mimeType: string
+  mimeType: string,
 ) => Promise<OEQ.MimeType.MimeTypeViewerConfiguration> = memoize(
   async (mimeType: string): Promise<OEQ.MimeType.MimeTypeViewerConfiguration> =>
-    await OEQ.MimeType.getViewersForMimeType(API_BASE_URL, mimeType)
+    await OEQ.MimeType.getViewersForMimeType(API_BASE_URL, mimeType),
 );
 
 /**
@@ -55,7 +55,7 @@ export const getMimeTypeViewerConfiguration: (
  * @param mimeType the MIME type to get default viewer details for
  */
 export const getMimeTypeDefaultViewerDetails = async (
-  mimeType: string
+  mimeType: string,
 ): Promise<OEQ.MimeType.MimeTypeViewerDetail> => {
   if ([CustomMimeTypes.KALTURA, CustomMimeTypes.YOUTUBE].includes(mimeType)) {
     return { viewerId: "htmlFiveViewer" };
@@ -63,11 +63,11 @@ export const getMimeTypeDefaultViewerDetails = async (
 
   const cfg = await getMimeTypeViewerConfiguration(mimeType);
   const viewerDetails = cfg.viewers.find(
-    (v) => v.viewerId === cfg.defaultViewer
+    (v) => v.viewerId === cfg.defaultViewer,
   );
   if (!viewerDetails) {
     throw new ReferenceError(
-      `Missing viewer details for default viewer with id: "${cfg.defaultViewer}"`
+      `Missing viewer details for default viewer with id: "${cfg.defaultViewer}"`,
     );
   }
 
@@ -101,7 +101,7 @@ export const getImageMimeTypes: () => Promise<string[]> = memoize(
   async (): Promise<string[]> =>
     (await getMIMETypesFromServer())
       .filter(mimeTypeEntryTypePredicate("image"))
-      .map((mte) => mte.mimeType)
+      .map((mte) => mte.mimeType),
 );
 
 /**
@@ -120,7 +120,7 @@ export const splitMimeType = (mimeType: string): [string, string] => {
   const validMimeTypeRegex = /^\w+\/[+.=; \w-]+$/i;
   if (!validMimeTypeRegex.test(mimeType)) {
     throw new TypeError(
-      `Provided string [${mimeType}] is NOT a validly formatted MIME type.`
+      `Provided string [${mimeType}] is NOT a validly formatted MIME type.`,
     );
   }
 
@@ -151,5 +151,5 @@ export const isBrowserSupportedAudio = (mimeType: string): boolean =>
  */
 export const isBrowserSupportedVideo = (mimeType: string): boolean =>
   ["video/mp4", "video/webm", "video/ogg"].some((supported) =>
-    mimeType.startsWith(supported)
+    mimeType.startsWith(supported),
   );

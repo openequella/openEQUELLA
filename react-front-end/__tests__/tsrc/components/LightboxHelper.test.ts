@@ -27,10 +27,10 @@ describe("buildCustomEmbed", () => {
     "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739";
 
   const getOptionalComponentName: (
-    c: O.Option<JSX.Element>
+    c: O.Option<JSX.Element>,
   ) => string | undefined = flow(
     O.map((component) => component.type.name),
-    O.toUndefined
+    O.toUndefined,
   );
 
   it("returns O.none if unknown MIME type provided", () => {
@@ -40,7 +40,7 @@ describe("buildCustomEmbed", () => {
   it("correctly builds a YouTubeEmbed when correctly specified", () => {
     const youTubeEmbed = buildCustomEmbed(
       CustomMimeTypes.YOUTUBE,
-      buildViewUrl("fakeId")
+      buildViewUrl("fakeId"),
     );
     expect(youTubeEmbed).toBeSome();
     expect(getOptionalComponentName(youTubeEmbed)).toBe("YouTubeEmbed");
@@ -49,7 +49,7 @@ describe("buildCustomEmbed", () => {
   it("correctly builds a KalturaPlayerEmbed when correctly specified", () => {
     const youTubeEmbed = buildCustomEmbed(
       CustomMimeTypes.KALTURA,
-      `${kalturaAttachmentUrl}&externalId=4211723/48373143/1_d1h8f1dx`
+      `${kalturaAttachmentUrl}&externalId=4211723/48373143/1_d1h8f1dx`,
     );
     expect(youTubeEmbed).toBeSome();
     expect(getOptionalComponentName(youTubeEmbed)).toBe("KalturaPlayerEmbed");
@@ -73,6 +73,6 @@ describe("buildCustomEmbed", () => {
       const component = buildCustomEmbed(mimeType, src);
       expect(component).toBeSome();
       expect(getOptionalComponentName(component)).toBe("LightboxMessage");
-    }
+    },
   );
 });

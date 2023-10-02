@@ -65,7 +65,7 @@ MultiSelection.args = {
     selections: pipe(
       RoleModuleMock.roles,
       A.filter((g) => pipe(g.name, S.includes("role"))),
-      RSET.fromReadonlyArray(eqRoleById)
+      RSET.fromReadonlyArray(eqRoleById),
     ),
     enableMultiSelection: true,
   },

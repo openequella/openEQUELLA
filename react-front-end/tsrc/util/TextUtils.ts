@@ -52,7 +52,7 @@ const highlightsAsRegex = (highlights: string[]) =>
 export const highlight = (
   text: string,
   highlights: string[],
-  cssClass: string
+  cssClass: string,
 ): string => {
   const highlightsRegex = highlightsAsRegex(highlights);
   if (highlights.length < 1) {
@@ -113,5 +113,5 @@ export const buildOEQServerString = (
   ...args: number[]
 ): string =>
   format.replace(/{(\d+)}/g, (match, number) =>
-    typeof args[number] !== "undefined" ? args[number].toString() : match
+    typeof args[number] !== "undefined" ? args[number].toString() : match,
   );

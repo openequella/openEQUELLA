@@ -59,7 +59,7 @@ describe("pathForNode", () => {
 
   it("should correctly include the XML prefix if desired", () =>
     expect(SchemaModule.pathForNode(testNode, false)).toBe(
-      "/xml/child1/child2/child3"
+      "/xml/child1/child2/child3",
     ));
 });
 

@@ -29,7 +29,7 @@ export default {
 } as Meta<SchemaNodeSelectorProps>;
 
 export const SchemaNodeSelectorComponent: StoryFn<SchemaNodeSelectorProps> = (
-  args
+  args,
 ) => <SchemaNodeSelector {...args} />;
 SchemaNodeSelectorComponent.args = {
   tree: testSchema,

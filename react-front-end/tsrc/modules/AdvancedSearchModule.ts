@@ -28,7 +28,7 @@ export const getAdvancedSearchesFromServer: () => Promise<
   OEQ.Common.BaseEntitySummary[]
 > = memoize(
   async (): Promise<OEQ.Common.BaseEntitySummary[]> =>
-    await OEQ.AdvancedSearch.listAdvancedSearches(API_BASE_URL)
+    await OEQ.AdvancedSearch.listAdvancedSearches(API_BASE_URL),
 );
 
 /**
@@ -37,7 +37,7 @@ export const getAdvancedSearchesFromServer: () => Promise<
  * @param uuid UUID of the Advanced search.
  */
 export const getAdvancedSearchByUuid = (
-  uuid: string
+  uuid: string,
 ): Promise<OEQ.AdvancedSearch.AdvancedSearchDefinition> =>
   OEQ.AdvancedSearch.getAdvancedSearchByUuid(API_BASE_URL, uuid);
 
@@ -48,14 +48,14 @@ export const getAdvancedSearchByUuid = (
  * @param location Location of current window.
  */
 export const getAdvancedSearchIdFromLocation = (
-  location: Location
+  location: Location,
 ): string | undefined => {
   // Regex of the new Advanced Search page path. The last group is expected to be a UUID. We can use
   // a more strict regex to ensure it's UUID, but...
   // For example: /page/advancedsearch/c9fd1ae8-0dc1-ab6f-e923-1f195a22d537
   const advancedSearchPagePath = /(\/page\/advancedsearch\/)(.+)/;
   const matches: string[] | null = location.pathname.match(
-    advancedSearchPagePath
+    advancedSearchPagePath,
   );
   if (matches) {
     return matches.pop() ?? undefined;

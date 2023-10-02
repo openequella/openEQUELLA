@@ -4630,7 +4630,9 @@ span.k-numerictextbox {
 .k-colorpalette .k-item.k-state-selected {
   z-index: 100;
   background: transparent;
-  box-shadow: 0 1px 4px #000, inset 0 0 3px #fff;
+  box-shadow:
+    0 1px 4px #000,
+    inset 0 0 3px #fff;
   position: relative;
 }
 .k-flatcolorpicker {
@@ -4698,8 +4700,12 @@ div.k-flatcolorpicker {
   margin: 0 5%;
 }
 .k-flatcolorpicker .k-slider-horizontal .k-slider-track {
-  -webkit-box-shadow: 0 1px 0 #fff, 0 -1px 0 #999;
-  box-shadow: 0 1px 0 #fff, 0 -1px 0 #999;
+  -webkit-box-shadow:
+    0 1px 0 #fff,
+    0 -1px 0 #999;
+  box-shadow:
+    0 1px 0 #fff,
+    0 -1px 0 #999;
 }
 .k-flatcolorpicker .k-hue-slider,
 .k-flatcolorpicker .k-transparency-slider {
@@ -4810,9 +4816,11 @@ div.k-flatcolorpicker {
   width: 6em;
 }
 .k-flatcolorpicker .k-hsv-gradient {
-  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
+  background:
+    -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
     -moz-linear-gradient(left, #fff 0, rgba(255, 255, 255, 0) 100%);
-  background: -webkit-gradient(
+  background:
+    -webkit-gradient(
       linear,
       left top,
       left bottom,
@@ -4820,13 +4828,17 @@ div.k-flatcolorpicker {
       color-stop(100%, #000)
     ),
     -webkit-gradient(linear, left top, right top, color-stop(0%, #fff), color-stop(100%, rgba(255, 255, 255, 0)));
-  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
+  background:
+    -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
     -webkit-linear-gradient(left, #fff 0, rgba(255, 255, 255, 0) 100%);
-  background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
+  background:
+    -o-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
     -o-linear-gradient(left, #fff 0, rgba(255, 255, 255, 0) 100%);
-  background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
+  background:
+    -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
     -ms-linear-gradient(left, #fff 0, rgba(255, 255, 255, 0) 100%);
-  background: -top-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
+  background:
+    -top-linear-gradient(top, rgba(0, 0, 0, 0) 0, #000 100%),
     -left-linear-gradient(left, #fff 0, rgba(255, 255, 255, 0) 100%);
   height: 180px;
   margin-bottom: 5px;

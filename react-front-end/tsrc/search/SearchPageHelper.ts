@@ -139,7 +139,7 @@ export interface SearchContextProps {
   search: (
     searchPageOptions: SearchPageOptions,
     updateClassifications?: boolean,
-    callback?: () => void
+    callback?: () => void,
   ) => void;
   /**
    * The state controlling the status of searching.
@@ -358,7 +358,7 @@ export const DehydratedSearchPageOptionsCodec = t.partial({
   owner: t.type({ id: t.string }),
   status: t.array(OEQ.Codec.Common.ItemStatusCodec),
   selectedCategories: t.array(
-    t.type({ id: t.number, categories: t.array(t.string) })
+    t.type({ id: t.number, categories: t.array(t.string) }),
   ),
   searchAttachments: t.boolean,
   mimeTypeFilters: t.array(t.type({ id: t.string })),
@@ -378,7 +378,7 @@ export type DehydratedSearchPageOptions = t.TypeOf<
  * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
  */
 export const generateSearchPageOptionsFromQueryString = async (
-  location: Location
+  location: Location,
 ): Promise<SearchPageOptions | undefined> => {
   if (!location.search) {
     return undefined;
@@ -408,7 +408,7 @@ export const generateSearchPageOptionsFromQueryString = async (
  * @return url encoded key/value pair of JSON searchOptions
  */
 export const generateQueryStringFromSearchPageOptions = (
-  searchPageOptions: SearchPageOptions
+  searchPageOptions: SearchPageOptions,
 ): string => {
   const params = new URLSearchParams();
   params.set(
@@ -426,15 +426,15 @@ export const generateQueryStringFromSearchPageOptions = (
           advFieldValue: () =>
             pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
           _: () => value ?? undefined,
-        })(key)
-    )
+        })(key),
+    ),
   );
   return params.toString();
 };
 
 // Use a list of Collection IDs extracted from a dehydrated SearchOptions to find Collections.
 const rehydrateCollections = async (
-  options: DehydratedSearchPageOptions
+  options: DehydratedSearchPageOptions,
 ): Promise<Collection[] | undefined> =>
   options.collections
     ? await findCollectionsByUuid(options.collections.map((c) => c.uuid))
@@ -442,7 +442,7 @@ const rehydrateCollections = async (
 
 // Use a list of MIME type filter IDs extracted from a dehydrated SearchOptions to find MIME type filters.
 const rehydrateMIMETypeFilter = async (
-  options: DehydratedSearchPageOptions
+  options: DehydratedSearchPageOptions,
 ): Promise<OEQ.SearchFilterSettings.MimeTypeFilter[] | undefined> =>
   options.mimeTypeFilters
     ? await getMimeTypeFiltersById(options.mimeTypeFilters.map((f) => f.id))
@@ -450,7 +450,7 @@ const rehydrateMIMETypeFilter = async (
 
 // Use a user ID extracted from a dehydrated SearchOptions to find a user's details.
 const rehydrateOwner = async (
-  options: DehydratedSearchPageOptions
+  options: DehydratedSearchPageOptions,
 ): Promise<OEQ.UserQuery.UserDetails | undefined> =>
   options.owner ? await findUserById(options.owner.id) : undefined;
 
@@ -469,7 +469,7 @@ const rehydrateAdvFieldValue = ({
  * @return searchPageOptions A deserialized representation of that provided by `searchOptionsJSON`
  */
 export const newSearchQueryToSearchPageOptions = async (
-  searchOptionsJSON: string
+  searchOptionsJSON: string,
 ): Promise<SearchPageOptions> => {
   const parsedOptions: unknown = JSON.parse(searchOptionsJSON, (key, value) => {
     if (key === "lastModifiedDateRange") {
@@ -504,7 +504,7 @@ type RangeType = "between" | "after" | "before" | "on";
 const getLastModifiedDateRangeFromLegacyParams = (
   rangeType: RangeType,
   primaryDate?: Date,
-  secondaryDate?: Date
+  secondaryDate?: Date,
 ): DateRange | undefined =>
   pipe(
     !primaryDate && !secondaryDate
@@ -522,13 +522,13 @@ const getLastModifiedDateRangeFromLegacyParams = (
         _: (range) => {
           throw new TypeError(`Unknown date range mode [${range}]`);
         },
-      })
+      }),
     ),
-    O.toUndefined
+    O.toUndefined,
   );
 
 const getDisplayModeFromLegacyParams = (
-  legacyDisplayMode: string | undefined
+  legacyDisplayMode: string | undefined,
 ): DisplayMode =>
   pipe(
     legacyDisplayMode,
@@ -547,12 +547,12 @@ const getDisplayModeFromLegacyParams = (
           }
           throw new TypeError(`Unknown Legacy display mode [${mode}]`);
         },
-      })
-    )
+      }),
+    ),
   );
 
 const getCollectionFromLegacyParams = async (
-  collectionUuid: string | undefined
+  collectionUuid: string | undefined,
 ): Promise<Collection[] | undefined> =>
   pipe(
     collectionUuid,
@@ -561,7 +561,7 @@ const getCollectionFromLegacyParams = async (
     TO.fromOption,
     TO.chain((uuid) => TO.tryCatch(() => findCollectionsByUuid([uuid]))),
     TO.filter((collections) => !!collections && A.isNonEmpty(collections)),
-    TO.getOrElse(() => T.of(defaultSearchOptions.collections))
+    TO.getOrElse(() => T.of(defaultSearchOptions.collections)),
   )();
 
 const getOwnerFromLegacyParams = async (ownerId: string | undefined) =>
@@ -582,7 +582,7 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
   // the result is "/item/options/ => ['a', 'b']"
   const mergeMaps = (
     firstMap: Map<string, string[]>,
-    secondMap: Map<string, string[]>
+    secondMap: Map<string, string[]>,
   ) => pipe(firstMap, M.union(S.Eq, A.getUnionSemigroup(S.Eq))(secondMap));
 
   const buildMapForLastNode = () =>
@@ -595,10 +595,10 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
       flow(
         A.map(buildWithFullPath),
         A.filter((m): m is Map<string, string[]> => typeof m !== "undefined"),
-        A.reduce(new Map(), mergeMaps)
+        A.reduce(new Map(), mergeMaps),
       ),
-      buildMapForLastNode
-    )
+      buildMapForLastNode,
+    ),
   );
 
   const attributeMap: Map<string, string[]> = pipe(
@@ -607,7 +607,7 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
       `${fullPath}/@${name}`,
       [value],
     ]),
-    M.fromFoldable(S.Eq, A.getSemigroup<string>(), A.Foldable)
+    M.fromFoldable(S.Eq, A.getSemigroup<string>(), A.Foldable),
   );
 
   return mergeMaps(valueMap, attributeMap);
@@ -620,7 +620,7 @@ const buildPathValueMap = (node: Element, parentPath = ""): PathValueMap => {
  * @param s A XML string representing Legacy Advanced search criteria
  */
 export const processLegacyAdvSearchCriteria = (
-  s: string
+  s: string,
 ): PathValueMap | undefined => {
   const parser = new DOMParser();
 
@@ -628,8 +628,8 @@ export const processLegacyAdvSearchCriteria = (
   const validateFirstNode: (node: Element) => E.Either<string, Element> = flow(
     E.fromPredicate(
       ({ nodeName }) => nodeName === "xml",
-      () => "Failed to find root node `xml`"
-    )
+      () => "Failed to find root node `xml`",
+    ),
   );
 
   return pipe(
@@ -638,14 +638,14 @@ export const processLegacyAdvSearchCriteria = (
       (reason) =>
         reason instanceof Error
           ? reason.message
-          : "Failed to parse the provided XML string"
+          : "Failed to parse the provided XML string",
     ),
     E.map(({ documentElement }) => documentElement),
     E.chain(validateFirstNode),
     E.mapLeft(console.error),
     O.fromEither,
     O.map(buildPathValueMap),
-    O.toUndefined
+    O.toUndefined,
   );
 };
 
@@ -656,7 +656,7 @@ export const processLegacyAdvSearchCriteria = (
  * @return SearchPageOptions object.
  */
 export const legacyQueryStringToSearchPageOptions = async (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): Promise<SearchPageOptions> => {
   const getQueryParam = (paramName: LegacyParams) => {
     return params.get(paramName) ?? undefined;
@@ -667,7 +667,7 @@ export const legacyQueryStringToSearchPageOptions = async (
   const sortOrder = pipe(
     getQueryParam("sort")?.toLowerCase(),
     OEQ.Codec.Search.SortOrderCodec.decode,
-    E.getOrElse(() => defaultSearchOptions.sortOrder)
+    E.getOrElse(() => defaultSearchOptions.sortOrder),
   );
 
   const datePrimary = getQueryParam("dp");
@@ -676,7 +676,7 @@ export const legacyQueryStringToSearchPageOptions = async (
     getLastModifiedDateRangeFromLegacyParams(
       getQueryParam("dr") as RangeType,
       datePrimary ? new Date(parseInt(datePrimary)) : undefined,
-      dateSecondary ? new Date(parseInt(dateSecondary)) : undefined
+      dateSecondary ? new Date(parseInt(dateSecondary)) : undefined,
     ) ?? defaultSearchOptions.lastModifiedDateRange;
 
   const mimeTypeFilters = await getMimeTypeFiltersById(params.getAll("mt"));
@@ -684,7 +684,7 @@ export const legacyQueryStringToSearchPageOptions = async (
   const externalMimeTypes = pipe(
     params.getAll("_int.mimeTypes"),
     O.fromPredicate(A.isNonEmpty),
-    O.toUndefined
+    O.toUndefined,
   );
 
   const displayMode = getDisplayModeFromLegacyParams(getQueryParam("type"));
@@ -704,7 +704,7 @@ export const legacyQueryStringToSearchPageOptions = async (
       getQueryParam("doc"),
       O.fromNullable,
       O.map(processLegacyAdvSearchCriteria),
-      O.toUndefined
+      O.toUndefined,
     ),
   };
 };
@@ -717,7 +717,7 @@ export const legacyQueryStringToSearchPageOptions = async (
  */
 export const getPartialSearchOptions = (
   options: SearchOptions,
-  fields: SearchOptionsFields[]
+  fields: SearchOptionsFields[],
 ) => pick(options, fields);
 
 export const RAW_MODE_STORAGE_KEY = "raw_mode";
@@ -746,7 +746,7 @@ export const deleteRawModeFromStorage = (): void =>
 export const buildOpenSummaryPageHandler = (
   uuid: string,
   version: number,
-  history: History
+  history: History,
 ): {
   url: string;
   onClick: () => void;
@@ -755,7 +755,7 @@ export const buildOpenSummaryPageHandler = (
     routes.ViewItem.to(uuid, version),
     E.fromPredicate<string, string>(
       () => !isSelectionSessionOpen(),
-      () => buildSelectionSessionItemSummaryLink(uuid, version)
+      () => buildSelectionSessionItemSummaryLink(uuid, version),
     ),
     E.fold(
       // Selection session values
@@ -767,8 +767,8 @@ export const buildOpenSummaryPageHandler = (
       (url) => ({
         url,
         onClick: () => history.push(url),
-      })
-    )
+      }),
+    ),
   );
 
 /**
@@ -777,7 +777,7 @@ export const buildOpenSummaryPageHandler = (
  * @param error API error captured when exporting a search result.
  */
 export const generateExportErrorMessage = (
-  error: OEQ.Errors.ApiError
+  error: OEQ.Errors.ApiError,
 ): string => {
   const { badRequest, unauthorised, notFound } =
     languageStrings.searchpage.export.errorMessages;
@@ -789,7 +789,7 @@ export const generateExportErrorMessage = (
       403: () => unauthorised,
       404: () => notFound,
       _: () => error.message,
-    })
+    }),
   );
 };
 
@@ -803,7 +803,7 @@ export const generateExportErrorMessage = (
  */
 export const navigateTo = (
   { path, selectionSessionPathBuilder }: SearchPageNavigationConfig,
-  history: History
+  history: History,
 ) => {
   isSelectionSessionOpen()
     ? window.open(selectionSessionPathBuilder(), "_self")
@@ -815,7 +815,7 @@ export const navigateTo = (
  * @param searchPageOptions
  */
 export const buildSearchPageNavigationConfig = (
-  searchPageOptions: SearchPageOptions
+  searchPageOptions: SearchPageOptions,
 ): SearchPageNavigationConfig => ({
   path: NEW_SEARCH_PATH,
   selectionSessionPathBuilder: () =>

@@ -27,7 +27,7 @@ import userEvent from "@testing-library/user-event";
  */
 export const clickSelect = async (
   container: HTMLElement,
-  selector: string
+  selector: string,
 ): Promise<Element> => {
   const muiSelect = container.querySelector(selector);
   if (!muiSelect) {
@@ -71,7 +71,7 @@ export const querySelectOption = (optionText: string): HTMLElement | null =>
 export const selectOption = async (
   container: HTMLElement,
   selector: string,
-  optionText: string
+  optionText: string,
 ) => {
   // Click the <Select>
   await clickSelect(container, selector);

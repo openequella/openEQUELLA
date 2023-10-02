@@ -45,11 +45,11 @@ describe("newSearchQueryToSearchOptions", () => {
   const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
   const mockedCollectionListSummary = jest.spyOn(
     CollectionsModule,
-    "collectionListSummary"
+    "collectionListSummary",
   );
   const mockGetMimeTypeFiltersFromServer = jest.spyOn(
     SearchFilterSettingsModule,
-    "getMimeTypeFiltersFromServer"
+    "getMimeTypeFiltersFromServer",
   );
 
   beforeEach(() => {
@@ -65,9 +65,8 @@ describe("newSearchQueryToSearchOptions", () => {
   it("should convert query string to searchOptions", async () => {
     const longSearch =
       '{"rowsPerPage":10,"currentPage":0,"sortOrder":"name","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}],"advFieldValue": [[{"schemaNode": ["/controls/editbox"], "type": "editbox", "isValueTokenised": true}, ["hello world"]]] }';
-    const convertedParamsPromise = await newSearchQueryToSearchPageOptions(
-      longSearch
-    );
+    const convertedParamsPromise =
+      await newSearchQueryToSearchPageOptions(longSearch);
     expect(convertedParamsPromise).toEqual(allSearchPageOptions);
   });
 
@@ -118,12 +117,12 @@ describe("newSearchQueryToSearchOptions", () => {
     async (
       dateRangeType: string,
       queryString: string,
-      expectedSearchOptions: SearchOptions
+      expectedSearchOptions: SearchOptions,
     ) => {
       expect(await newSearchQueryToSearchPageOptions(queryString)).toEqual(
-        expectedSearchOptions
+        expectedSearchOptions,
       );
-    }
+    },
   );
 
   it("should be able to convert SearchOptions to a query string, and back to SearchOptions again", async () => {
@@ -132,9 +131,9 @@ describe("newSearchQueryToSearchOptions", () => {
     expect(
       await newSearchQueryToSearchPageOptions(
         new URLSearchParams(queryStringFromSearchOptions).get(
-          "searchOptions"
-        ) ?? ""
-      )
+          "searchOptions",
+        ) ?? "",
+      ),
     ).toEqual(allSearchPageOptions);
   });
 });
@@ -157,7 +156,7 @@ describe("legacyQueryStringToSearchOptions", () => {
   const mockedResolvedUser = jest.spyOn(UserModule, "resolveUsers");
   const mockedCollectionListSummary = jest.spyOn(
     CollectionsModule,
-    "collectionListSummary"
+    "collectionListSummary",
   );
   jest
     .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
@@ -171,8 +170,8 @@ describe("legacyQueryStringToSearchOptions", () => {
     const unsupportedQueryString = "?test=nothing&cool=beans";
     expect(
       await legacyQueryStringToSearchPageOptions(
-        new URLSearchParams(unsupportedQueryString)
-      )
+        new URLSearchParams(unsupportedQueryString),
+      ),
     ).toEqual(defaultConvertedSearchOptions);
   });
 
@@ -185,7 +184,7 @@ describe("legacyQueryStringToSearchOptions", () => {
       "?in=C8e3caf16-f3cb-b3dd-d403-e5eb8d545fff&q=test&sort=datecreated&owner=680f5eb7-22e2-4ab6-bcea-25205165e36e&dp=1601510400000&dr=AFTER&doc=<xml><editbox>box</editbox></xml>";
 
     const convertedParamsPromise = await legacyQueryStringToSearchPageOptions(
-      new URLSearchParams(fullQueryString)
+      new URLSearchParams(fullQueryString),
     );
 
     const expectedSearchOptions: SearchPageOptions = {
@@ -248,13 +247,13 @@ describe("legacyQueryStringToSearchOptions", () => {
     "converts legacy date range query params: %s to search options containing lastModifiedDateRange of %s",
     async (queryString, expectedRange) => {
       const convertedSearchOptions = await legacyQueryStringToSearchPageOptions(
-        new URLSearchParams(queryString)
+        new URLSearchParams(queryString),
       );
       expect(convertedSearchOptions).toEqual({
         ...defaultConvertedSearchOptions,
         lastModifiedDateRange: expectedRange,
       });
-    }
+    },
   );
 
   it("should return default search options when collectionId and userId do not exist", async () => {
@@ -262,14 +261,14 @@ describe("legacyQueryStringToSearchOptions", () => {
     mockedCollectionListSummary.mockResolvedValue(getCollectionMap);
     const collectionQueryString = "?in=Cunknowncollection&owner=unknown";
     const convertedSearchOptions = await legacyQueryStringToSearchPageOptions(
-      new URLSearchParams(collectionQueryString)
+      new URLSearchParams(collectionQueryString),
     );
     expect(convertedSearchOptions).toEqual(defaultConvertedSearchOptions);
   });
 
   it("throws an error when unknown display mode is provided", async () => {
     await expect(
-      legacyQueryStringToSearchPageOptions(new URLSearchParams("?type=test"))
+      legacyQueryStringToSearchPageOptions(new URLSearchParams("?type=test")),
     ).rejects.toThrow();
   });
 });
@@ -277,7 +276,7 @@ describe("legacyQueryStringToSearchOptions", () => {
 describe("generateQueryStringFromSearchPageOptions", () => {
   it("converts all searchOptions to a url encoded json string", () => {
     expect(generateQueryStringFromSearchPageOptions(allSearchPageOptions)).toBe(
-      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22name%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22advFieldValue%22%3A%5B%5B%7B%22schemaNode%22%3A%5B%22%2Fcontrols%2Feditbox%22%5D%2C%22type%22%3A%22editbox%22%2C%22isValueTokenised%22%3Atrue%7D%2C%5B%22hello+world%22%5D%5D%5D%7D"
+      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22name%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22advFieldValue%22%3A%5B%5B%7B%22schemaNode%22%3A%5B%22%2Fcontrols%2Feditbox%22%5D%2C%22type%22%3A%22editbox%22%2C%22isValueTokenised%22%3Atrue%7D%2C%5B%22hello+world%22%5D%5D%5D%7D",
     );
   });
 
@@ -285,15 +284,15 @@ describe("generateQueryStringFromSearchPageOptions", () => {
     "always skips field %s",
     (field: string) => {
       expect(
-        generateQueryStringFromSearchPageOptions(defaultSearchPageOptions)
+        generateQueryStringFromSearchPageOptions(defaultSearchPageOptions),
       ).not.toContain(field);
-    }
+    },
   );
 
   it("excludes any undefined properties", () => {
     //defaultSearchOptions contains an undefined sortOrder property
     expect(
-      generateQueryStringFromSearchPageOptions(defaultSearchPageOptions)
+      generateQueryStringFromSearchPageOptions(defaultSearchPageOptions),
     ).not.toContain("sortOrder");
   });
 });
@@ -313,7 +312,7 @@ describe("builderOpenSummaryPageHandler", () => {
     updateMockGetRenderData(basicRenderData);
     const { url } = buildOpenSummaryPageHandler(UUID, VERSION, history);
     expect(url).toBe(
-      "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch"
+      "http://localhost:8080/vanilla/items/369c92fa-ae59-4845-957d-8fcaa22c15e3/1/?_sl.stateId=1&a=coursesearch",
     );
   });
 });
@@ -321,37 +320,37 @@ describe("builderOpenSummaryPageHandler", () => {
 describe("processLegacyAdvSearchCriteria", () => {
   it("converts a XML string into a PathValueMap", () => {
     const pathValueMap = processLegacyAdvSearchCriteria(
-      "<xml><name>hello</name></xml>"
+      "<xml><name>hello</name></xml>",
     );
     expect(pathValueMap).toStrictEqual(new Map([["/name", ["hello"]]]));
   });
 
   it("supports one path which has multiple values", () => {
     const pathValueMap = processLegacyAdvSearchCriteria(
-      "<xml><name>hello</name><name>world</name></xml>"
+      "<xml><name>hello</name><name>world</name></xml>",
     );
     expect(pathValueMap).toStrictEqual(
-      new Map([["/name", ["hello", "world"]]])
+      new Map([["/name", ["hello", "world"]]]),
     );
   });
 
   it("drops path which does not have values", () => {
     const pathValueMap = processLegacyAdvSearchCriteria(
-      "<xml><country>aus</country><city></city><town/></xml>"
+      "<xml><country>aus</country><city></city><town/></xml>",
     );
     expect(pathValueMap).toStrictEqual(new Map([["/country", ["aus"]]]));
   });
 
   it("supports a Schema node that targets to an attribute", () => {
     const pathValueMap = processLegacyAdvSearchCriteria(
-      "<xml><country population='100'><city size='small'>Hobart</city><city size='small'>Darwin</city><city size='medium'>Canberra</city></country></xml>"
+      "<xml><country population='100'><city size='small'>Hobart</city><city size='small'>Darwin</city><city size='medium'>Canberra</city></country></xml>",
     );
     expect(pathValueMap).toStrictEqual(
       new Map([
         ["/country/city", ["Hobart", "Darwin", "Canberra"]],
         ["/country/city/@size", ["small", "medium"]],
         ["/country/@population", ["100"]],
-      ])
+      ]),
     );
   });
 });

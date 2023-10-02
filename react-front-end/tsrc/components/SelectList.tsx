@@ -76,8 +76,8 @@ export const SelectList = ({
                 </TooltipIconButton>
               </ListItemSecondaryAction>
             </ListItemButton>
-          )
-        )
+          ),
+        ),
       )}
     </List>
   );

@@ -34,8 +34,8 @@ describe("collectUnOrd", () => {
     expect(
       pipe(
         map,
-        collectUnOrd((key, value) => `${key}-${value}`)
-      )
+        collectUnOrd((key, value) => `${key}-${value}`),
+      ),
     ).toEqual(expectedResult);
   });
 });

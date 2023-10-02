@@ -48,7 +48,7 @@ export const defaultRoleSearchProps: BaseSearchProps<OEQ.UserQuery.RoleDetails> 
  * Helper to render RoleSearch and wait for component under test
  */
 export const renderRoleSearch = async (
-  props: RoleSearchProps = defaultRoleSearchProps
+  props: RoleSearchProps = defaultRoleSearchProps,
 ): Promise<RenderResult> => {
   const renderResult = render(<RoleSearch {...props} />);
 
@@ -75,5 +75,5 @@ export const findRoleFromMockData = (name: string): OEQ.UserQuery.RoleDetails =>
   findEntityFromMockData(
     RoleModuleMock.roles,
     (u: OEQ.UserQuery.RoleDetails) => u.name === name,
-    name
+    name,
   );

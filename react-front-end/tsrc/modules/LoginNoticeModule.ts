@@ -63,7 +63,7 @@ export function clearPostLoginNotice(): AxiosPromise {
 }
 
 export function unMarshallPreLoginNotice(
-  marshalled: PreLoginNotice
+  marshalled: PreLoginNotice,
 ): PreLoginNotice {
   return {
     notice: marshalled.notice,

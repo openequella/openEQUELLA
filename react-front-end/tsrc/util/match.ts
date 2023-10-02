@@ -82,7 +82,7 @@ export const simpleMatchD =
       matchers,
       A.findFirstMap(([m, f]) => (m === match ? O.some(f) : O.none)),
       O.getOrElse(() => noMatch),
-      (f: MatchFn<R>) => f(match)
+      (f: MatchFn<R>) => f(match),
     );
 
 /**
@@ -139,7 +139,7 @@ export const simpleMatchD =
 export const simpleUnionMatch =
   <T extends string | number, R>(
     matchers: Partial<Record<T, (match: T) => R>>,
-    defaultMatcher?: (other: T) => R
+    defaultMatcher?: (other: T) => R,
   ) =>
   (value: T): R =>
     pipe(
@@ -149,5 +149,5 @@ export const simpleUnionMatch =
       O.map((matcher) => matcher(value)),
       O.getOrElseW(() => {
         throw new Error(`Missing matcher for literal type: ${value}`);
-      })
+      }),
     );

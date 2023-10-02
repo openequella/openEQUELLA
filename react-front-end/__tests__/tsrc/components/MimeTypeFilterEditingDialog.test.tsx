@@ -26,7 +26,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
   const onClose = jest.fn();
   const addOrUpdate = jest.fn();
   const renderDialog = async (
-    filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined = undefined
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined = undefined,
   ) => {
     render(
       <MimeTypeFilterEditingDialog
@@ -35,7 +35,7 @@ describe("<MimeTypeFilterEditingDialog />", () => {
         addOrUpdate={addOrUpdate}
         mimeTypeFilter={filter}
         mimeTypeSupplier={jest.fn().mockResolvedValue(getMimeTypesFromServer)}
-      />
+      />,
     );
 
     await waitFor(() => screen.getByRole("dialog"));
@@ -59,12 +59,12 @@ describe("<MimeTypeFilterEditingDialog />", () => {
     async (
       text: string,
       condition: string,
-      filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined
+      filter: OEQ.SearchFilterSettings.MimeTypeFilter | undefined,
     ) => {
       await renderDialog(filter);
 
       expect(getSaveButton()).toHaveTextContent(text);
-    }
+    },
   );
 
   it("should disable the Save button when filter name is empty", async () => {

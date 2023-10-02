@@ -49,7 +49,7 @@ const sharedPaginationArgs = {
 };
 
 export const EmptyResultListComponent: StoryFn<SearchResultListProps> = (
-  args
+  args,
 ) => <SearchResultList {...args} />;
 
 EmptyResultListComponent.args = {
@@ -78,7 +78,7 @@ EmptyResultListComponent.args = {
 };
 
 export const BasicSearchResultListComponent: StoryFn<SearchResultListProps> = (
-  args
+  args,
 ) => (
   <SearchResultList {...args}>
     {mapSearchResultItems(singlePageSearch.results, [], async () => ({
