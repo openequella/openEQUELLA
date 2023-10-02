@@ -21,8 +21,8 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "18.2.24",
+    "@types/react-dom": "18.2.8",
     "mkdirp": "3.0.1",
     "parcel-bundler": "1.12.5",
     "pulp": "16.0.2",
