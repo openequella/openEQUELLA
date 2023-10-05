@@ -29,6 +29,8 @@ import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.encryption.EncryptionService;
+import com.tle.core.events.UserSuspendEvent;
+import com.tle.core.events.listeners.UserSuspendListener;
 import com.tle.core.guice.Bind;
 import com.tle.core.i18n.CoreStrings;
 import com.tle.core.i18n.service.LanguageService;
@@ -52,9 +54,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -69,7 +74,8 @@ import net.oauth.signature.OAuthSignatureMethod;
 @SuppressWarnings({"nls"})
 @Bind(OAuthWebService.class)
 @Singleton
-public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEventListener {
+public class OAuthWebServiceImpl
+    implements OAuthWebService, DeleteOAuthTokensEventListener, UserSuspendListener {
   private static final long DEFAULT_MAX_TIMESTAMP_AGE = TimeUnit.MINUTES.toMillis(5);
 
   private static final String KEY_CODE_NOT_FOUND = "oauth.error.codenotfound";
@@ -379,6 +385,22 @@ public class OAuthWebServiceImpl implements OAuthWebService, DeleteOAuthTokensEv
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public void userSuspendEvent(UserSuspendEvent event) {
+    Set<String> suspendedUserIds = event.getSuspendedUserId();
+    Cache<String, UserState> cache = getUserCache(CurrentInstitution.get());
+
+    // A set of tokens generated for users that have been suspended.
+    Set<String> tokensToBeSuspended =
+        cache.asMap().entrySet().stream()
+            .filter(
+                entry -> suspendedUserIds.contains(entry.getValue().getUserBean().getUniqueID()))
+            .map(Entry::getKey)
+            .collect(Collectors.toSet());
+
+    cache.invalidateAll(tokensToBeSuspended);
   }
 
   private static final class CodeReg implements Serializable {

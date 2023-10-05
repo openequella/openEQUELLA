@@ -20,6 +20,7 @@ package com.tle.core.remoting;
 
 import com.tle.beans.user.TLEUser;
 import java.util.List;
+import java.util.Set;
 
 public interface RemoteTLEUserService {
   String add(TLEUser newUser);
@@ -39,4 +40,6 @@ public interface RemoteTLEUserService {
   void delete(String uuid);
 
   List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
+
+  void suspend(Set<String> uuid);
 }

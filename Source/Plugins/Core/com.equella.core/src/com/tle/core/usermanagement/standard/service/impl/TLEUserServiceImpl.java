@@ -40,6 +40,7 @@ import com.tle.core.events.GroupIdChangedEvent;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
+import com.tle.core.events.UserSuspendEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
 import com.tle.core.events.services.EventService;
@@ -55,6 +56,7 @@ import com.tle.exceptions.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -266,6 +268,11 @@ public class TLEUserServiceImpl
     } else {
       throw new NotFoundException("Cannot find user with ID " + uuid + " to delete.");
     }
+  }
+
+  @Override
+  public void suspend(Set<String> uuid) {
+    eventService.publishApplicationEvent(new UserSuspendEvent(uuid));
   }
 
   @Override

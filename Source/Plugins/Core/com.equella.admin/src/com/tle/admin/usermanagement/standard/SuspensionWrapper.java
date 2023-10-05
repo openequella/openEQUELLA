@@ -27,6 +27,7 @@ import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSetting
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
+import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,14 @@ import org.apache.commons.logging.LogFactory;
 public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSettings> {
   private static final Log LOGGER = LogFactory.getLog(SuspensionWrapper.class);
   private FilteredShuffleBox<UserBean> fsb;
+
+  private RemoteTLEUserService userService;
+
+  @Override
+  public void init() {
+    super.init();
+    userService = clientService.getService(RemoteTLEUserService.class);
+  }
 
   public SuspensionWrapper() {
     fsb = new FilteredShuffleBox<UserBean>(new GroupFilter());
@@ -71,6 +80,7 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
     boolean saved = false;
     try {
       xml.setSuspendedUsers(right);
+      userService.suspend(right);
       saved = true;
     } catch (Exception e) {
       displayError(
