@@ -4,6 +4,7 @@
 package integtester
 
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
+import integtester.oauthredirector.OAuthRedirector
 import integtester.testprovider.TestingCloudProvider
 import io.circe.syntax._
 import org.http4s._
@@ -94,6 +95,8 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
     case request @ (GET | POST) -> Root / "viewitem.html"     => viewItemHtml(request)
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
+    case request @ (GET | POST) -> Root / "oauthredirector" =>
+      OAuthRedirector.oauthRedirector(request)
   }
 
   def stream(args: List[String]) =

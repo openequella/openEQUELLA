@@ -22,12 +22,16 @@ libraryDependencies ++= Seq(
 ).map(_ % CirceVersion)
 
 libraryDependencies ++= Seq(
-  "org.http4s"    %% "http4s-blaze-server" % Http4sVersion,
-  "org.http4s"    %% "http4s-dsl"          % Http4sVersion,
-  "org.http4s"    %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"     % "slf4j-simple"         % "2.0.9",
-  "org.jsoup"     % "jsoup"                % jsoupVersion,
-  "com.nulab-inc" %% "scala-oauth2-core"   % "1.5.0"
+  "org.http4s"       %% "http4s-blaze-server" % Http4sVersion,
+  "org.http4s"       %% "http4s-dsl"          % Http4sVersion,
+  "org.http4s"       %% "http4s-circe"        % Http4sVersion,
+  "org.slf4j"        % "slf4j-simple"         % "2.0.9",
+  "org.jsoup"        % "jsoup"                % jsoupVersion,
+  "com.nulab-inc"    %% "scala-oauth2-core"   % "1.5.0",
+  "javax.servlet"    % "javax.servlet-api"    % "4.0.1",
+  "com.google.guava" % "guava"                % "32.1.2-jre",
+  jacksonDataBind,
+  jacksonModuleScala
 )
 
 (Compile / resourceGenerators) += Def.task {
