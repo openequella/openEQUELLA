@@ -170,7 +170,8 @@ public class OAuthTest extends AbstractRestApiTest {
     clients.add(client);
 
     ErrorPage errorPage =
-        OAuthTokenRedirect.redirect(context, "testIDontKnowThisClient", new ErrorPage(context));
+        OAuthTokenRedirect.redirect(
+            context, "testIDontKnowThisClient", new ErrorPage(context, true));
 
     Assert.assertTrue(
         errorPage.getDetail().contains("No OAuth client can be found with the supplied client_id"),
