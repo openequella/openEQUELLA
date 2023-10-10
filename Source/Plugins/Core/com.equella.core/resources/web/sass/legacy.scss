@@ -5679,3 +5679,10 @@ button:focus {
     }
   }
 }
+
+// fix the layout of `Fixed user` section on `OAuth` setting page.
+#userAjaxDiv .settingField .control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
