@@ -152,9 +152,9 @@ export interface WizardControlFieldValue {
 }
 
 /**
- * Body of the search2 POST request.
+ * Body of the search2 POST request for Advanced search.
  */
-export interface SearchAdditionalParams {
+export interface AdvancedSearchParams {
   /**
    * A list of `WizardControlFieldValue` to build Advanced search criteria.
    */
@@ -523,6 +523,7 @@ const processSearchParams = (
   params ? { ...params, musts: processMusts(params.musts) } : undefined;
 
 const SEARCH2_API_PATH = '/search2';
+const ADVANCED_API_PATH = `${SEARCH2_API_PATH}/advanced`;
 const EXPORT_PATH = `${SEARCH2_API_PATH}/export`;
 
 const searchResultValidator = validate(
@@ -554,22 +555,38 @@ export const search = (
   ).then(processRawSearchResult);
 
 /**
- * Communicate with the variation of REST endpoint 'search2' which handles a POST request. General search
- * criteria and Advanced search criteria are both supported.
+ * Communicate with POST endpoint 'search2' to do a search with large number of search criteria.
  *
  * @param apiBasePath Base URI to the oEQ institution and API.
- * @param additionalParams Additional parameters (e.g. Advanced search criteria).
- * @param normalParams Query parameters as general search criteria.
+ * @param params Query parameters as search criteria.
  */
-export const searchWithAdditionalParams = (
+export const searchWithPOST = (
   apiBasePath: string,
-  additionalParams: SearchAdditionalParams,
-  normalParams?: SearchParams
+  params?: SearchParams
 ): Promise<SearchResult<SearchResultItem>> =>
-  POST<SearchAdditionalParams, SearchResult<SearchResultItemRaw>>(
+  POST<SearchParamsProcessed, SearchResult<SearchResultItemRaw>>(
     apiBasePath + SEARCH2_API_PATH,
     searchResultValidator,
-    additionalParams,
+    processSearchParams(params)
+  ).then(processRawSearchResult);
+
+/**
+ * Communicate with the variation of REST endpoint 'GET search2' which handles a POST request ('POST search2/advanced').
+ * General search criteria and Advanced search criteria are both supported.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param advancedParams Advanced parameters (e.g. Advanced search criteria).
+ * @param normalParams Query parameters as general search criteria.
+ */
+export const searchWithAdvancedParams = (
+  apiBasePath: string,
+  advancedParams: AdvancedSearchParams,
+  normalParams?: SearchParams
+): Promise<SearchResult<SearchResultItem>> =>
+  POST<AdvancedSearchParams, SearchResult<SearchResultItemRaw>>(
+    apiBasePath + ADVANCED_API_PATH,
+    searchResultValidator,
+    advancedParams,
     processSearchParams(normalParams)
   ).then(processRawSearchResult);
 

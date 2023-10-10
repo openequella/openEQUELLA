@@ -19,6 +19,8 @@
 package com.tle.web.api.search
 
 import cats.Semigroup
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.ValidatedNec
 import cats.implicits._
 import com.dytech.devlib.PropBagEx
 import com.dytech.edge.exceptions.{BadRequestException, DRMException}
@@ -48,13 +50,12 @@ import com.tle.web.api.search.AttachmentHelper.{
   sanitiseAttachmentBean,
   toSearchResultAttachment
 }
-import com.tle.web.api.search.model.AdditionalSearchParameters.buildAdvancedSearchCriteria
+import com.tle.web.api.search.model.AdvancedSearchParameters.buildAdvancedSearchCriteria
 import com.tle.web.api.search.model._
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
-import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters._
 
 /**
@@ -94,12 +95,12 @@ object SearchHelper {
     * @param fieldValues An option of an array of `WizardControlFieldValue`.
     * @return An instance of DefaultSearch
     */
-  def createSearch(params: SearchParam,
+  def createSearch(params: SearchCriteria,
                    fieldValues: Option[Array[WizardControlFieldValue]] = None): DefaultSearch = {
     val search = new DefaultSearch
     search.setUseServerTimeZone(true)
-    search.setQuery(params.query)
-    search.setOwner(params.owner)
+    search.setQuery(params.query.orNull)
+    search.setOwner(params.owner.orNull)
     search.setMimeTypes(params.mimeTypes.toList.asJava)
 
     search.setSortFields(handleOrder(params))
@@ -118,7 +119,7 @@ object SearchHelper {
     }
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
       params.dynaCollection)
-    val whereQuery: Option[FreeTextBooleanQuery] = Option(params.whereClause).map(WhereParser.parse)
+    val whereQuery: Option[FreeTextBooleanQuery] = params.whereClause.map(WhereParser.parse)
     val advSearchCriteria: Option[FreeTextBooleanQuery] =
       fieldValues.map(buildAdvancedSearchCriteria)
 
@@ -145,10 +146,10 @@ object SearchHelper {
     * @param params the parameters supplied to a search request
     * @return the definition of ordering to be used with DefaultSearch
     */
-  def handleOrder(params: SearchParam): SortField = {
-    val providedOrder = Option(params.order).map(_.toLowerCase)
+  def handleOrder(params: SearchCriteria): SortField = {
+    val providedOrder = params.order.map(_.toLowerCase)
     val order: SortField = providedOrder.flatMap(TaskSortOrder.apply) getOrElse DefaultSearch
-      .getOrderType(providedOrder.orNull, params.query)
+      .getOrderType(providedOrder.orNull, params.query.orNull)
       .getSortField
 
     if (params.reverseOrder) order.reversed() else order
@@ -159,20 +160,23 @@ object SearchHelper {
     * @param dynaCollectionUuid The uuid of a dynamic collection.
     * @return An option which wraps an instance of FreeTextBooleanQuery.
     */
-  def handleDynaCollection(dynaCollectionUuid: String): Option[FreeTextBooleanQuery] = {
-    if (Check.isEmpty(dynaCollectionUuid)) {
-      return None
-    }
-    val virtualDynaColl = LegacyGuice.dynaCollectionService.getByCompoundId(dynaCollectionUuid)
-    Option(virtualDynaColl) match {
-      case Some(v) =>
-        val dynaCollection: DynaCollection = v.getVt
-        val uuidAndVirtual: Array[String]  = dynaCollectionUuid.split(":")
-        val virtual                        = if (uuidAndVirtual.length > 1) uuidAndVirtual(1) else null
-        Some(LegacyGuice.dynaCollectionService.getSearchClause(dynaCollection, virtual))
-      case None =>
-        throw new NotFoundException(s"No dynamic collection matching UUID $dynaCollectionUuid")
-    }
+  def handleDynaCollection(dynaCollectionUuid: Option[String]): Option[FreeTextBooleanQuery] = {
+    dynaCollectionUuid
+      .filter(_.nonEmpty)
+      .flatMap(
+        uuid => {
+          val virtualDynaColl = LegacyGuice.dynaCollectionService.getByCompoundId(uuid)
+          Option(virtualDynaColl) match {
+            case Some(v) =>
+              val dynaCollection: DynaCollection = v.getVt
+              val uuidAndVirtual: Array[String]  = uuid.split(":")
+              val virtual                        = if (uuidAndVirtual.length > 1) uuidAndVirtual(1) else null
+              Some(LegacyGuice.dynaCollectionService.getSearchClause(dynaCollection, virtual))
+            case None =>
+              throw new NotFoundException(s"No dynamic collection matching UUID $uuid")
+          }
+        }
+      )
   }
 
   /**
@@ -181,17 +185,17 @@ object SearchHelper {
     * @param time The time added to a date.
     * @return An Option which wraps an instance of Date, combining the successfully parsed dateString and provided time (based on the system's default timezone).
     */
-  def handleModifiedDate(dateString: String, time: LocalTime): Option[Date] = {
-    if (Check.isEmpty(dateString)) {
-      return None
-    }
-    try {
-      val dateTime = LocalDateTime.of(LocalDate.parse(dateString), time)
-      //Need to convert back to util.date to work compatibly with old methods.
-      Some(Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant))
-    } catch {
-      case _: DateTimeParseException => throw new BadRequestException(s"Invalid date: $dateString")
-    }
+  def handleModifiedDate(dateString: Option[String], time: LocalTime): Option[Date] = {
+    dateString
+      .filter(_.nonEmpty)
+      .map(date =>
+        try {
+          val dateTime = LocalDateTime.of(LocalDate.parse(date), time)
+          //Need to convert back to util.date to work compatibly with old methods.
+          Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant)
+        } catch {
+          case _: DateTimeParseException => throw new BadRequestException(s"Invalid date: $date")
+      })
   }
 
   /**
@@ -200,30 +204,32 @@ object SearchHelper {
     * @param collections A list of Collection IDs.
     * @return An option which wraps a list of Collection IDs.
     */
-  def handleCollections(advancedSearch: String,
+  def handleCollections(advancedSearch: Option[String],
                         collections: Array[String]): Option[java.util.Collection[String]] = {
-    if (!Check.isEmpty(advancedSearch)) {
-      Option(LegacyGuice.powerSearchService.getByUuid(advancedSearch)) match {
-        case Some(ps) =>
-          var collectionUuids = ListBuffer[String]()
-          ps.getItemdefs.asScala.foreach(collectionUuids += _.getUuid)
-          return Some(collectionUuids.toList.asJava)
-        case None =>
-          throw new NotFoundException(s"No advanced search UUID matching $advancedSearch")
-      }
-    }
+    def checkCollection(collection: String): ValidatedNec[String, String] =
+      Option(LegacyGuice.itemDefinitionService.getByUuid(collection))
+        .toValidNec(s"No collection matching UUID $collection")
+        .map(_.getUuid)
 
-    if (collections.isEmpty) {
-      return None
+    advancedSearch
+      .filter(_.nonEmpty)
+      .map(
+        adSearch =>
+          Option(LegacyGuice.powerSearchService.getByUuid(adSearch))
+            .map(ps => ps.getItemdefs.asScala.map(_.getUuid).toList)
+            .toValidNec(s"No advanced search UUID matching $adSearch"))
+      .getOrElse(
+        Option
+          .when(collections.nonEmpty)(
+            collections
+              .map(checkCollection)
+              .toList
+              .sequence)
+          .getOrElse(Valid(List.empty[String]))
+      ) match {
+      case Invalid(err) => throw new NotFoundException(err.mkString_("\n"))
+      case Valid(value) => Option.when(value.nonEmpty)(value.asJava)
     }
-
-    val collectionIds = ListBuffer[String]()
-    collections.foreach(c =>
-      Option(LegacyGuice.itemDefinitionService.getByUuid(c)) match {
-        case Some(_) => collectionIds += c
-        case None    => throw new NotFoundException(s"No collection UUID matching $c")
-    })
-    Some(collectionIds.toList.asJava)
   }
 
   /**

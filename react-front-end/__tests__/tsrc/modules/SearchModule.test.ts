@@ -31,7 +31,7 @@ jest.mock("@openequella/rest-api-client", () => {
     ...restModule,
     Search: {
       search: jest.fn(),
-      searchWithAdditionalParams: jest.fn(),
+      searchWithAdvancedParams: jest.fn(),
     },
   };
 });
@@ -42,8 +42,8 @@ const mockedSearch = (
   >
 ).mockResolvedValue(getSearchResult);
 
-const mockedSearchWithAdditionalParams = (
-  OEQ.Search.searchWithAdditionalParams as jest.Mock<
+const mockedSearchWithAdvancedParams = (
+  OEQ.Search.searchWithAdvancedParams as jest.Mock<
     Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
   >
 ).mockResolvedValue(getSearchResult);
@@ -93,17 +93,17 @@ describe("searchItems", () => {
     expectSearchQueryToBeValid(`${queryTerm}`);
   });
 
-  it("supports searching with additional params", async () => {
+  it("supports searching with advanced params", async () => {
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       advancedSearchCriteria: mockedAdvancedSearchCriteria,
     });
 
-    expect(mockedSearchWithAdditionalParams).toHaveBeenCalledTimes(1);
+    expect(mockedSearchWithAdvancedParams).toHaveBeenCalledTimes(1);
 
-    const calls = mockedSearchWithAdditionalParams.mock.calls;
-    const { advancedSearchCriteria }: OEQ.Search.SearchAdditionalParams =
-      calls[0][1]; // Second parameter of the call is the additional params.
+    const calls = mockedSearchWithAdvancedParams.mock.calls;
+    const { advancedSearchCriteria }: OEQ.Search.AdvancedSearchParams =
+      calls[0][1]; // Second parameter of the call is the advanced params.
     expect(advancedSearchCriteria).toStrictEqual(mockedAdvancedSearchCriteria);
   });
 });

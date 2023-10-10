@@ -20,6 +20,7 @@ package com.tle.web.api.search.model
 
 import com.tle.beans.item.ItemStatus
 import io.swagger.annotations.ApiParam
+
 import javax.ws.rs.{DefaultValue, QueryParam}
 
 /**
@@ -47,7 +48,7 @@ class SearchParam {
             allowableValues =
               "relevance,modified,name,rating,created,task_submitted,task_lastaction")
   @QueryParam("order")
-  var order: String = ""
+  var order: String = _
 
   @ApiParam("Reverse the order of the search results")
   @QueryParam("reverseOrder")
@@ -102,4 +103,52 @@ class SearchParam {
     "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
   @QueryParam("musts")
   var musts: Array[String] = _
+}
+
+/**
+  * Data structure to represent all the supported search criteria, which is typically used as the type of POST request payload.
+  * It also supports the transformation from [[SearchParam]].
+  */
+case class SearchCriteria(
+    query: Option[String],
+    start: Int = 0,
+    length: Int = 10,
+    collections: Array[String] = Array(),
+    order: Option[String],
+    reverseOrder: Boolean = false,
+    searchAttachments: Boolean = true,
+    includeAttachments: Boolean = true,
+    advancedSearch: Option[String],
+    whereClause: Option[String],
+    status: Array[ItemStatus] = Array(),
+    modifiedBefore: Option[String],
+    modifiedAfter: Option[String],
+    owner: Option[String],
+    dynaCollection: Option[String],
+    mimeTypes: Array[String] = Array(),
+    musts: Array[String] = Array()
+)
+
+object SearchCriteria {
+
+  def apply(searchParam: SearchParam): SearchCriteria =
+    SearchCriteria(
+      query = Option(searchParam.query),
+      start = searchParam.start,
+      length = searchParam.length,
+      collections = searchParam.collections,
+      order = Option(searchParam.order),
+      reverseOrder = searchParam.reverseOrder,
+      searchAttachments = searchParam.searchAttachments,
+      includeAttachments = searchParam.includeAttachments,
+      advancedSearch = Option(searchParam.advancedSearch),
+      whereClause = Option(searchParam.whereClause),
+      status = searchParam.status,
+      modifiedBefore = Option(searchParam.modifiedBefore),
+      modifiedAfter = Option(searchParam.modifiedAfter),
+      owner = Option(searchParam.owner),
+      dynaCollection = Option(searchParam.dynaCollection),
+      mimeTypes = searchParam.mimeTypes,
+      musts = searchParam.musts
+    )
 }

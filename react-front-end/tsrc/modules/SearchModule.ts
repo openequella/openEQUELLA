@@ -278,13 +278,13 @@ const buildSearchParams = ({
 };
 
 /**
- * A function that converts search options to search additional params.
+ * A function that converts search options to search advanced search params.
  *
- * @param searchOptions Search options to be converted to search additional params.
+ * @param searchOptions Search options to be converted to search advanced params.
  */
-const buildSearchAdditionalParams = ({
+const buildAdvancedSearchParams = ({
   advancedSearchCriteria,
-}: SearchOptions): OEQ.Search.SearchAdditionalParams => ({
+}: SearchOptions): OEQ.Search.AdvancedSearchParams => ({
   advancedSearchCriteria,
 });
 
@@ -308,9 +308,9 @@ export const searchItems = (
     O.match(
       () => OEQ.Search.search(API_BASE_URL, normalParams),
       (options) =>
-        OEQ.Search.searchWithAdditionalParams(
+        OEQ.Search.searchWithAdvancedParams(
           API_BASE_URL,
-          buildSearchAdditionalParams(options),
+          buildAdvancedSearchParams(options),
           normalParams
         )
     )
