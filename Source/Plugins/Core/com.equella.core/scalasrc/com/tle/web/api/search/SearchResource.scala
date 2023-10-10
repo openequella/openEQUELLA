@@ -32,29 +32,15 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
 import com.tle.web.api.search.SearchHelper._
-import com.tle.web.api.search.model.{
-  AdditionalSearchParameters,
-  SearchParam,
-  SearchResult,
-  SearchResultItem
-}
+import com.tle.web.api.search.model._
 import io.swagger.annotations.{Api, ApiOperation}
-import javax.ws.rs.core.{Context, Response}
-import javax.ws.rs.{
-  BadRequestException,
-  BeanParam,
-  GET,
-  HEAD,
-  NotFoundException,
-  POST,
-  Path,
-  Produces
-}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import java.io.BufferedOutputStream
-import scala.jdk.CollectionConverters._
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs._
+import javax.ws.rs.core.{Context, Response}
+import scala.jdk.CollectionConverters._
 
 @NoCache
 @Path("search2")
@@ -68,11 +54,26 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
+    val searchCriteria = SearchCriteria(params)
+    val searchResult: SearchResult[SearchResultItem] =
+      doSearch(createSearch(searchCriteria), searchCriteria)
+    Response.ok.entity(searchResult).build()
+  }
+
+  @POST
+  @ApiOperation(
+    value = "Search items - typically used to perform a search with large search criteria",
+    notes =
+      "This endpoint supports searching for items based on large search criteria such a hundreds of MIME types.",
+    response = classOf[SearchResult[SearchResultItem]],
+  )
+  def searchItemsPostVersion(params: SearchCriteria): Response = {
     val searchResult: SearchResult[SearchResultItem] = doSearch(createSearch(params), params)
     Response.ok.entity(searchResult).build()
   }
 
   @POST
+  @Path("/advanced")
   @ApiOperation(
     value = "Search items with Advanced search criteria",
     notes =
@@ -80,16 +81,17 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
-                                 advancedSearchCriteria: AdditionalSearchParameters): Response = {
-    val AdditionalSearchParameters(criteria) = advancedSearchCriteria
+                                 advancedSearchCriteria: AdvancedSearchParameters): Response = {
+    val searchCriteria                     = SearchCriteria(params)
+    val AdvancedSearchParameters(criteria) = advancedSearchCriteria
     val searchResult: SearchResult[SearchResultItem] =
-      doSearch(createSearch(params, Option(criteria)), params)
+      doSearch(createSearch(searchCriteria, Option(criteria)), searchCriteria)
 
     Response.ok.entity(searchResult).build()
   }
 
   def doSearch(searchRequest: DefaultSearch,
-               params: SearchParam): SearchResult[SearchResultItem] = {
+               params: SearchCriteria): SearchResult[SearchResultItem] = {
     val searchResults =
       search(searchRequest, params.start, params.length, params.searchAttachments)
 
@@ -98,7 +100,7 @@ class SearchResource {
     val serializer              = createSerializer(itemIds)
     val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
     val highlight =
-      new DefaultSearch.QueryParser(params.query).getHilightedList.asScala.toList
+      new DefaultSearch.QueryParser(params.query.orNull).getHilightedList.asScala.toList
 
     SearchResult(
       searchResults.getOffset,
@@ -131,7 +133,7 @@ class SearchResource {
     val csvHeaders = buildCSVHeaders(schema)
     writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
 
-    LegacyGuice.exportService.export(createSearch(params),
+    LegacyGuice.exportService.export(createSearch(SearchCriteria(params)),
                                      params.searchAttachments,
                                      csvHeaders,
                                      writeRow(bos, _))

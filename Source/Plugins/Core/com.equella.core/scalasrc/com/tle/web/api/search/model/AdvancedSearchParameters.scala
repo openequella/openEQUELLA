@@ -22,7 +22,7 @@ import com.dytech.edge.queries.FreeTextQuery
 import com.tle.common.i18n.CurrentTimeZone
 import com.tle.common.util.{Dates, LocalDate}
 import com.tle.core.freetext.queries.{FreeTextBooleanQuery, FreeTextDateQuery, FreeTextFieldQuery}
-import javax.ws.rs.BadRequestException
+
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -41,9 +41,9 @@ case class WizardControlFieldValue(schemaNodes: Array[String],
   *
   * @param advancedSearchCriteria A list of `WizardControlFieldValue`.
   */
-case class AdditionalSearchParameters(advancedSearchCriteria: Array[WizardControlFieldValue])
+case class AdvancedSearchParameters(advancedSearchCriteria: Array[WizardControlFieldValue])
 
-object AdditionalSearchParameters {
+object AdvancedSearchParameters {
   // Build FreeTextFieldQuery for each value and put all values into one FreeTextBooleanQuery.
   // The relationship between each FreeTextFieldQuery is `OR`.
   private def buildTextFieldQuery(field: String,

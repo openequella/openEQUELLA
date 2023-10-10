@@ -19,15 +19,16 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-/** This test focuses on the variation of search2 which supports Advanced search criteria. */
+/** This test focuses on the Advanced search criteria. */
 @TestInstitution("fiveo")
-public class Search2ApiAdditionalTest extends AbstractRestApiTest {
-  private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
+public class Search2AdvancedApiTest extends AbstractRestApiTest {
+  private final String SEARCH_API_ENDPOINT =
+      getTestConfig().getInstitutionUrl() + "api/search2/advanced";
 
   @Override
   protected TestConfig getTestConfig() {
     if (testConfig == null) {
-      testConfig = new TestConfig(Search2ApiAdditionalTest.class);
+      testConfig = new TestConfig(Search2AdvancedApiTest.class);
     }
     return testConfig;
   }
