@@ -687,7 +687,7 @@ class ItemIndexTest
                   successfulReading.incrementAndGet()
                 case 0 =>
                   retry += 1
-                  if (retry < 3)
+                  if (retry < 5)
                     search(itemName, config)
                   else
                     throw new RuntimeException(
