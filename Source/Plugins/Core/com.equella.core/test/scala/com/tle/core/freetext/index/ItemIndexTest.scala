@@ -24,7 +24,6 @@ import com.tle.beans.Institution
 import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{Item, ItemIdKey, ItemStatus}
-import com.tle.common.Triple
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.search.DefaultSearch
@@ -33,6 +32,7 @@ import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState}
+import com.tle.common.{NamedThreadFactory, Triple}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -61,9 +61,15 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, GivenWhenThen, Outcome}
 import java.io.File
 import java.nio.file.Files
 import java.text.SimpleDateFormat
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.{Executors, LinkedBlockingQueue}
 import java.util.{Date, Locale, UUID}
+import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.reflect.io.Directory
+import scala.util.Random
 
 class ItemIndexTest
     extends FixtureAnyFunSpec
@@ -156,11 +162,13 @@ class ItemIndexTest
                            itemDescription: String = "",
                            properties: PropBagEx = new PropBagEx,
                            privilege: Option[String] = None,
-                           itemDef: ItemDefinition = collection): List[IndexedItem] = {
+                           itemDef: ItemDefinition = collection,
+                           itemUuid: String = itemUuid,
+                           key: Long = Random.nextLong()): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
-      .map(key => {
+      .map(_ => {
         val item = new Item()
         item.setUuid(itemUuid)
         item.setInstitution(inst)
@@ -234,8 +242,7 @@ class ItemIndexTest
 
     try withFixture(test.toNoArgTest(itemIndex, buildDefaultSearch))
   }
-
-  override def beforeAll = {
+  private def prepareMocks = {
     mockStatic(classOf[CurrentInstitution])
     when(CurrentInstitution.get()).thenReturn(inst)
 
@@ -257,6 +264,8 @@ class ItemIndexTest
 
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
+
+  override def beforeAll = prepareMocks
 
   override def afterAll = {
     new File(System.getProperty("java.io.tmpdir")).listFiles
@@ -634,4 +643,103 @@ class ItemIndexTest
       suggestion shouldBe "apple"
     }
   }
+
+  describe("concurrency") {
+    it("supports writing and reading indexes concurrently") { f =>
+      val (itemIndex, searchConfig) = f
+
+      // Blocking queue for new Items.
+      val newItems = new LinkedBlockingQueue[String](10)
+      // Blocking queue for new indexes.
+      val indexQueue = new LinkedBlockingQueue[String](10)
+      // We have 10000 Items to be contributed.
+      val range = Range(0, 10000)
+      // Counter used to count successful index reading.
+      val successfulReading: AtomicInteger = new AtomicInteger(0)
+
+      // Thread pools for Index writing and reading. In the real world, reading happens a lot more frequently than writing does
+      // so we use 8 threads to read and 2 threads to write.
+      val writingPool = ExecutionContext.fromExecutor(
+        Executors.newScheduledThreadPool(2, new CustomThreadFactory("writing pool")))
+      val readingPool = ExecutionContext.fromExecutor(
+        Executors.newScheduledThreadPool(8, new CustomThreadFactory("reading pool")))
+
+      // Initialise the mocks in one thread.
+      def initialise(): Unit = {
+        if (!CustomThreadFactory.isInitialized.get()) {
+          prepareMocks
+          CustomThreadFactory.isInitialized.set(true)
+        }
+      }
+
+      Given("A task to read indexes for 10000 Items in the dedicated reading thread pool")
+      def readingTask =
+        range.map(_ =>
+          Future {
+            initialise()
+            var retry = 0
+
+            @tailrec
+            def search(itemName: String, config: DefaultSearch): Int = {
+              val result = itemIndex.search(buildSearcher(itemIndex, config))
+              result.length match {
+                case 1 =>
+                  successfulReading.incrementAndGet()
+                case 0 =>
+                  retry += 1
+                  if (retry < 3)
+                    search(itemName, config)
+                  else
+                    throw new RuntimeException(
+                      s"Tried 3 times to read indexes for Item $itemName but still got nothing back")
+                case incorrect =>
+                  throw new RuntimeException(
+                    s"Found $incorrect Items for $itemName but there should be one only")
+              }
+            }
+
+            val itemName = indexQueue.take
+            searchConfig.setQuery(itemName)
+            search(itemName, searchConfig)
+          }(readingPool))
+
+      Given("A task to write indexes for 10000 Items in a dedicated writing thread pool")
+      def writingTask =
+        range.map(_ =>
+          Future {
+            initialise()
+
+            val itemName = newItems.take
+            createIndexes(itemIndex,
+                          generateIndexedItems(itemName = itemName,
+                                               itemUuid = UUID.randomUUID().toString))
+            indexQueue.put(itemName)
+          }(writingPool))
+
+      Given("A task to contribute 10000 Items in the global thread pool")
+      def contributionTask =
+        Seq(Future {
+          range.foreach(_ => newItems.put(Random.alphanumeric take 10 mkString ""))
+        })
+
+      When("the three tasks are executed simultaneously")
+      // Run the task and wait for the result.
+      Await.result(Future
+                     .sequence(contributionTask ++ writingTask ++ readingTask),
+                   scala.concurrent.duration.Duration.Inf)
+
+      Then("Each task should complete 10000 computations successfully")
+      // If reading is all good, then writing must also be good.
+      successfulReading.get() shouldBe range.end
+    }
+  }
+}
+
+/**
+  * Thread factory used to support custom naming and initialisation of mocks.
+  */
+class CustomThreadFactory(name: String) extends NamedThreadFactory(name)
+
+object CustomThreadFactory {
+  val isInitialized: ThreadLocal[Boolean] = ThreadLocal.withInitial(() => false)
 }
