@@ -687,11 +687,14 @@ class ItemIndexTest
                   successfulReading.incrementAndGet()
                 case 0 =>
                   retry += 1
-                  if (retry < 5)
+                  if (retry < 3) {
+                    // Sleep a little while as the indexes were not ready in last attempt.
+                    Thread.sleep(100)
                     search(itemName, config)
-                  else
+                  } else {
                     throw new RuntimeException(
                       s"Tried 3 times to read indexes for Item $itemName but still got nothing back")
+                  }
                 case incorrect =>
                   throw new RuntimeException(
                     s"Found $incorrect Items for $itemName but there should be one only")
