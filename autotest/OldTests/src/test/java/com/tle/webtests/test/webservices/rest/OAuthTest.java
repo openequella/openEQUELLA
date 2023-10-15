@@ -1,25 +1,24 @@
-package com.tle.webtests.bugs;
+package com.tle.webtests.test.webservices.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ErrorPage;
+import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.oauth.OAuthDefaultRedirectPage;
 import com.tle.webtests.pageobject.oauth.OAuthLogonPage;
 import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
-import com.tle.webtests.test.webservices.rest.AbstractRestApiTest;
-import com.tle.webtests.test.webservices.rest.ApiAssertions;
-import com.tle.webtests.test.webservices.rest.OAuthClient;
-import com.tle.webtests.test.webservices.rest.OAuthUtils;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
+import org.openqa.selenium.Cookie;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +29,7 @@ public class OAuthTest extends AbstractRestApiTest {
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
-    clients.add(new Pair<String, String>(CLIENT_ID, "AutoTest"));
+    clients.add(new Pair<>(CLIENT_ID, "AutoTest"));
   }
 
   private OAuthLogonPage defaultClientTokenRequest(String... otherParams) {
@@ -72,8 +71,11 @@ public class OAuthTest extends AbstractRestApiTest {
   }
 
   private void assertNoCookies() {
-    Assert.assertTrue(
-        context.getDriver().manage().getCookies().isEmpty(), "Shouldn't have created any cookies");
+    //
+    Stream<Cookie> nonJSessionCookies =
+        context.getDriver().manage().getCookies().stream()
+            .filter(cookie -> !cookie.getName().startsWith("JSESSIONID"));
+    Assert.assertTrue(nonJSessionCookies.findAny().isEmpty(), "Shouldn't have created any cookies");
   }
 
   /**
@@ -85,6 +87,8 @@ public class OAuthTest extends AbstractRestApiTest {
    */
   @Test
   public void testOAuthServerSideFlow() throws IllegalStateException, IOException, ParseException {
+    IntegrationTesterPage.getUrl(context);
+
     logon("AutoTest", "automated");
     OAuthClient client = new OAuthClient();
     client.setName(CLIENT_ID_SERVER_FLOW);
@@ -166,7 +170,8 @@ public class OAuthTest extends AbstractRestApiTest {
     clients.add(client);
 
     ErrorPage errorPage =
-        OAuthTokenRedirect.redirect(context, "testIDontKnowThisClient", new ErrorPage(context));
+        OAuthTokenRedirect.redirect(
+            context, "testIDontKnowThisClient", new ErrorPage(context, true));
 
     Assert.assertTrue(
         errorPage.getDetail().contains("No OAuth client can be found with the supplied client_id"),

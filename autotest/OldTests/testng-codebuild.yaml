@@ -130,6 +130,7 @@ tests:
       - com.tle.webtests.test.webservices.rest.MyResourcesApiTest
       - com.tle.webtests.test.webservices.rest.NotificationsApiTest
       - com.tle.webtests.test.webservices.rest.OAuthClientEditorTest
+      - com.tle.webtests.test.webservices.rest.OAuthTest
       - com.tle.webtests.test.webservices.rest.SchemaApiTest
       - com.tle.webtests.test.webservices.rest.ScrapbookApiTest
       - com.tle.webtests.test.webservices.rest.SearchApiTest
