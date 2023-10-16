@@ -1,3 +1,14 @@
+<!--
+  This entrance provides access to the New UI of `My resources` page in Selection Session with the New UI
+  turned on, namely Legacy content.
+
+  The script must be placed within a div because any script outside the div will be placed in the head
+  by the back-end. Since head scripts are executed only once, it will lead to an issue in the Selection Session
+  where the new UI pages fail to re-render upon switching pages.
+
+  The global object `window` has a property named `oEQRender` which provides a function to output
+  the New UI of `My resources` page to the div mentioned above.
+-->
 <div id="myResourcesPage">
-  <script type="module" src="MyResourcesPage.ts"></script>
+  <script>Window["oEQRender"].myResourcesPage()</script>
 </div>
