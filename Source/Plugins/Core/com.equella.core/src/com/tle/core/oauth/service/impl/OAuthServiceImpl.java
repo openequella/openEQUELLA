@@ -55,10 +55,12 @@ import com.tle.core.services.ValidationHelper;
 import com.tle.exceptions.AccessDeniedException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -67,7 +69,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(OAuthService.class)
@@ -334,20 +335,32 @@ public class OAuthServiceImpl
   @Override
   public OAuthToken getOrCreateToken(
       String userId, String username, OAuthClient client, String code) {
-    OAuthToken token = tokenDao.getToken(userId, client);
-    if (token == null) {
-      token =
-          new OAuthToken(
-              userId,
-              username,
-              UUID.randomUUID().toString(),
-              new Date(),
-              client,
-              CurrentInstitution.get());
-      token.setCode(code);
-      tokenDao.save(token);
-    }
-    return token;
+    return Optional.ofNullable(tokenDao.getToken(userId, client))
+        .orElseGet(
+            () -> {
+              OAuthToken newToken =
+                  new OAuthToken(
+                      userId,
+                      username,
+                      UUID.randomUUID().toString(),
+                      new Date(),
+                      client,
+                      CurrentInstitution.get());
+              newToken.setCode(code);
+
+              Optional.of(client.getTokenValidity())
+                  .filter(v -> v > 0)
+                  .ifPresent(
+                      v -> {
+                        Instant tokenExpiry =
+                            Instant.now().plus(v, java.time.temporal.ChronoUnit.DAYS);
+                        newToken.setExpiry(Date.from(tokenExpiry));
+                      });
+
+              tokenDao.save(newToken);
+
+              return newToken;
+            });
   }
 
   @Override
