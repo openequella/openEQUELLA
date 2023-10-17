@@ -129,7 +129,9 @@ public final class OAuthClient extends BaseEntity {
    * @param tokenValidity number of days tokens generated for this client are valid.
    */
   public void setTokenValidity(int tokenValidity) {
-    if (tokenValidity < 0) throw new IllegalArgumentException("Token validity must be >= 0");
+    if (tokenValidity < 0) {
+      throw new IllegalArgumentException("Token validity must be >= 0");
+    }
 
     this.tokenValidity = tokenValidity;
   }
