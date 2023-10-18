@@ -192,4 +192,16 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
       e.printStackTrace();
     }
   }
+
+  /** Enable or disable new search UI. Only works when new UI is enabled. */
+  public void setNewSearchUI(boolean enable) {
+    WebElement newSearchUI =
+        openGroupContaining(
+            "UI", By.xpath(".//label[./span[text() = 'Enable new search page']]/span[1]/span"));
+    boolean isChecked = newSearchUI.getAttribute("class").contains("Mui-checked");
+
+    if (enable != isChecked) {
+      newSearchUI.click();
+    }
+  }
 }
