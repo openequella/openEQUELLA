@@ -262,7 +262,7 @@ public abstract class AbstractPage<T extends PageObject>
     return findLoadedElement().isDisplayed();
   }
 
-  protected boolean isVisible(By by) {
+  public boolean isVisible(By by) {
     return isVisible(driver, by);
   }
 
