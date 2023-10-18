@@ -67,7 +67,7 @@ public final class OAuthToken implements Serializable, FieldEquality<OAuthToken>
   @Column(nullable = false)
   private Date created;
 
-  /** Currently, tokens never expire */
+  /** The date/time that this token expires. If null, the token never expires. */
   @Column private Date expiry;
 
   /**
