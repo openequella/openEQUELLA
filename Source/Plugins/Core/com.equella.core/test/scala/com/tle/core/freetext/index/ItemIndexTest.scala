@@ -648,21 +648,25 @@ class ItemIndexTest
     it("supports writing and reading indexes concurrently") { f =>
       val (itemIndex, searchConfig) = f
 
-      // Blocking queue for new Items.
-      val newItems = new LinkedBlockingQueue[String](10)
-      // Blocking queue for new indexes.
-      val indexQueue = new LinkedBlockingQueue[String](10)
       // We have 10000 Items to be contributed.
       val range = Range(0, 10000)
+
+      // Blocking queue for new Items.
+      val newItems = new LinkedBlockingQueue[String](
+        range.map(_ => Random.alphanumeric take 10 mkString "").toList.asJava)
+
+      // Blocking queue for new indexes.
+      val indexQueue = new LinkedBlockingQueue[String](10)
+
       // Counter used to count successful index reading.
       val successfulReading: AtomicInteger = new AtomicInteger(0)
 
-      // Thread pools for Index writing and reading. In the real world, reading happens a lot more frequently than writing does
-      // so we use 8 threads to read and 2 threads to write.
+      // Thread pools for Index writing and reading. Allocate half of the available processors to each pool.
+      val processors = Runtime.getRuntime.availableProcessors
       val writingPool = ExecutionContext.fromExecutor(
-        Executors.newScheduledThreadPool(2, new CustomThreadFactory("writing pool")))
+        Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("writing pool")))
       val readingPool = ExecutionContext.fromExecutor(
-        Executors.newScheduledThreadPool(8, new CustomThreadFactory("reading pool")))
+        Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("reading pool")))
 
       // Initialise the mocks in one thread.
       def initialise(): Unit = {
@@ -671,40 +675,6 @@ class ItemIndexTest
           CustomThreadFactory.isInitialized.set(true)
         }
       }
-
-      Given("A task to read indexes for 10000 Items in the dedicated reading thread pool")
-      def readingTask =
-        range.map(_ =>
-          Future {
-            initialise()
-            var retry = 0
-
-            @tailrec
-            def search(itemName: String, config: DefaultSearch): Int = {
-              val result = itemIndex.search(buildSearcher(itemIndex, config))
-              result.length match {
-                case 1 =>
-                  successfulReading.incrementAndGet()
-                case 0 =>
-                  retry += 1
-                  if (retry < 3) {
-                    // Sleep a little while as the indexes were not ready in last attempt.
-                    Thread.sleep(100)
-                    search(itemName, config)
-                  } else {
-                    throw new RuntimeException(
-                      s"Tried 3 times to read indexes for Item $itemName but still got nothing back")
-                  }
-                case incorrect =>
-                  throw new RuntimeException(
-                    s"Found $incorrect Items for $itemName but there should be one only")
-              }
-            }
-
-            val itemName = indexQueue.take
-            searchConfig.setQuery(itemName)
-            search(itemName, searchConfig)
-          }(readingPool))
 
       Given("A task to write indexes for 10000 Items in a dedicated writing thread pool")
       def writingTask =
@@ -719,16 +689,42 @@ class ItemIndexTest
             indexQueue.put(itemName)
           }(writingPool))
 
-      Given("A task to contribute 10000 Items in the global thread pool")
-      def contributionTask =
-        Seq(Future {
-          range.foreach(_ => newItems.put(Random.alphanumeric take 10 mkString ""))
-        })
+      Given("A task to read indexes for 10000 Items in the dedicated reading thread pool")
+      def readingTask =
+        range.map(_ =>
+          Future {
+            initialise()
 
-      When("the three tasks are executed simultaneously")
+            @tailrec
+            def search(itemName: String, config: DefaultSearch, retries: Int): Int = {
+              val result = itemIndex.search(buildSearcher(itemIndex, config))
+              result.length match {
+                case 1 =>
+                  successfulReading.incrementAndGet()
+                case 0 =>
+                  if (retries < 3) {
+                    // Sleep a little while as the indexes were not ready in last attempt.
+                    Thread.sleep(100)
+                    search(itemName, config, retries + 1)
+                  } else {
+                    throw new RuntimeException(
+                      s"Tried 3 times to read indexes for Item $itemName but still got nothing back")
+                  }
+                case incorrect =>
+                  throw new RuntimeException(
+                    s"Found $incorrect Items for $itemName but there should be one only")
+              }
+            }
+
+            val itemName = indexQueue.take
+            searchConfig.setQuery(itemName)
+            search(itemName, searchConfig, 0)
+          }(readingPool))
+
+      When("the two tasks are executed simultaneously")
       // Run the task and wait for the result.
       Await.result(Future
-                     .sequence(contributionTask ++ writingTask ++ readingTask),
+                     .sequence(writingTask ++ readingTask),
                    scala.concurrent.duration.Duration.Inf)
 
       Then("Each task should complete 10000 computations successfully")
