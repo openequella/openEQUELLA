@@ -271,8 +271,8 @@ public class TLEUserServiceImpl
   }
 
   @Override
-  public void suspend(Set<String> uuid) {
-    eventService.publishApplicationEvent(new UserSuspendEvent(uuid));
+  public void onSuspension(Set<String> uuids) {
+    eventService.publishApplicationEvent(new UserSuspendEvent(uuids));
   }
 
   @Override

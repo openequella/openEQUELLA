@@ -41,5 +41,10 @@ public interface RemoteTLEUserService {
 
   List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
 
-  void suspend(Set<String> uuid);
+  /**
+   * Fired when the list of suspended user accounts has been updated.
+   *
+   * @param uuids UUIDs of suspended user accounts
+   */
+  void onSuspension(Set<String> uuids);
 }

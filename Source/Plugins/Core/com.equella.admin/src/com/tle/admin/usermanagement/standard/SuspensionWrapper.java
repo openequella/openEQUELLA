@@ -37,6 +37,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * This Admin Console UI component targets to the configuration for suspended user account {@link
+ * SuspendedUserWrapperSettings} and provides supports for user account suspension.
+ */
 public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSettings> {
   private static final Log LOGGER = LogFactory.getLog(SuspensionWrapper.class);
   private FilteredShuffleBox<UserBean> fsb;
@@ -80,7 +84,7 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
     boolean saved = false;
     try {
       xml.setSuspendedUsers(right);
-      userService.suspend(right);
+      userService.onSuspension(right);
       saved = true;
     } catch (Exception e) {
       displayError(
