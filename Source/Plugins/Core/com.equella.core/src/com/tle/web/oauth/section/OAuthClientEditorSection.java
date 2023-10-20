@@ -77,6 +77,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.Div;
+import com.tle.web.sections.standard.NumberField;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -134,6 +135,9 @@ public class OAuthClientEditorSection
   @PlugKey("client.editor.error.clientid.unique")
   private static String KEY_ERROR_CLIENTID_UNIQUE;
 
+  @PlugKey("client.editor.error.tokenValidity")
+  private static String KEY_ERROR_VALIDITY;
+
   @PlugKey("client.editor.error.redirecturl.mandatory")
   private static String KEY_ERROR_REDIRECTURL;
 
@@ -164,6 +168,11 @@ public class OAuthClientEditorSection
 
   @Component(name = "i", stateful = false)
   private TextField clientIdField;
+
+  @Component(name = "tv", stateful = false)
+  private NumberField tokenValidity;
+
+  private static int DEFAULT_TOKEN_VALIDITY = 30;
 
   @PlugKey("client.editor.button.reset")
   @Component(name = "rs", stateful = false)
@@ -325,6 +334,9 @@ public class OAuthClientEditorSection
 
     saveHandler = events.getNamedHandler("save");
     cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+
+    tokenValidity.setIntegersOnly(true);
+    tokenValidity.setMin(0);
   }
 
   private void ensureCreatePriv() {
@@ -360,6 +372,10 @@ public class OAuthClientEditorSection
       if (old != null && old.getId() != oauth.getId()) {
         errors.put("clientid", CurrentLocale.get(KEY_ERROR_CLIENTID_UNIQUE));
       }
+    }
+
+    if (tokenValidity.getValue(info).intValue() < 0) {
+      errors.put("tokenValidity", CurrentLocale.get(KEY_ERROR_VALIDITY));
     }
 
     if (selectFlow.getSelectedValue(info) == null) {
@@ -406,6 +422,7 @@ public class OAuthClientEditorSection
     // is valid
     oauth.setName(nameField.getLanguageBundle(info));
     oauth.setClientId(clientIdField.getValue(info));
+    oauth.setTokenValidity(tokenValidity.getValue(info).intValue());
     oauth.setFlowDef(selectFlow.getSelectedValue(info));
 
     if (selectFlow.getSelectedValue(info) != null
@@ -437,10 +454,17 @@ public class OAuthClientEditorSection
     return getModel(info).getClient();
   }
 
-  private void startSession(SectionInfo info, OAuthClientEditingSession session) {
+  private void startSession(
+      SectionInfo info, OAuthClientEditingSession session, boolean isEditing) {
     getModel(info).setEditing(true);
     final OAuthClientEditingBean oauth = session.getBean();
     oauth.setFlowDef(getFlow(oauth));
+
+    // Section components persist their values, but here we want to display the default whenever we
+    // start to create a new client. So we need to set the value based on whether we are creating a
+    // new client or editing an existing one.
+    tokenValidity.setValue(info, isEditing ? oauth.getTokenValidity() : DEFAULT_TOKEN_VALIDITY);
+
     loadInternal(info, session);
     getModel(info).setSessionId(session.getSessionId());
   }
@@ -639,7 +663,7 @@ public class OAuthClientEditorSection
     model.setEditing(true);
 
     final OAuthClientEditingSession session = oauthService.startNewSession(new OAuthClient());
-    startSession(info, session);
+    startSession(info, session, false);
   }
 
   /**
@@ -651,7 +675,7 @@ public class OAuthClientEditorSection
    */
   public void startEdit(SectionInfo info, String oauthUuid) {
     final OAuthClientEditingSession session = oauthService.startEditingSession(oauthUuid);
-    startSession(info, session);
+    startSession(info, session, true);
   }
 
   private void returnFromEdit(SectionInfo info) {
@@ -670,6 +694,10 @@ public class OAuthClientEditorSection
 
   public TextField getClientIdField() {
     return clientIdField;
+  }
+
+  public NumberField getTokenValidity() {
+    return tokenValidity;
   }
 
   public Div getRedirectUrlDiv() {
