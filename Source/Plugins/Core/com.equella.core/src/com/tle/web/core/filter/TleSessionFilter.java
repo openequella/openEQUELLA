@@ -31,6 +31,7 @@ import com.tle.core.plugins.PluginTracker;
 import com.tle.core.plugins.PluginTracker.ExtensionParamComparator;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.exceptions.AuthenticationException;
 import com.tle.web.core.filter.UserStateResult.Result;
 import com.tle.web.dispatcher.AbstractWebFilter;
 import com.tle.web.dispatcher.FilterResult;
@@ -103,6 +104,8 @@ public class TleSessionFilter extends AbstractWebFilter {
       userService.logoutToGuest(userService.getWebAuthenticationDetails(request), false);
       if (t instanceof WebException) {
         response.sendError(((WebException) t).getCode());
+      } else if (t instanceof AuthenticationException) {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
       } else {
         throw t;
       }

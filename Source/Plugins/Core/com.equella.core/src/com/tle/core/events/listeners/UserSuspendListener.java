@@ -16,35 +16,11 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.core.events.listeners;
 
-import com.tle.beans.user.TLEUser;
-import java.util.List;
-import java.util.Set;
+import com.tle.core.events.UserSuspendEvent;
 
-public interface RemoteTLEUserService {
-  String add(TLEUser newUser);
-
-  String add(TLEUser newUser, boolean passwordNotHashed);
-
-  String add(TLEUser newUser, List<String> groups);
-
-  String add(String username, List<String> groups);
-
-  TLEUser get(String id);
-
-  TLEUser getByUsername(String username);
-
-  String edit(TLEUser user, boolean passwordNotHashed);
-
-  void delete(String uuid);
-
-  List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
-
-  /**
-   * Fired when the list of suspended user accounts has been updated.
-   *
-   * @param uuids UUIDs of suspended user accounts
-   */
-  void onSuspension(Set<String> uuids);
+/** Listener for {@link UserSuspendEvent}. */
+public interface UserSuspendListener extends ApplicationListener {
+  void userSuspendEvent(UserSuspendEvent event);
 }
