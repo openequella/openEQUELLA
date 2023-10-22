@@ -5686,3 +5686,31 @@ button:focus {
   align-items: center;
   gap: 8px;
 }
+
+// Fix the layout of authorize page.
+// The layout below is modeled after the login page of the new UI.
+#oauthdialog {
+  padding: 16px;
+
+  #oauth_title {
+    font-size: 2.125rem;
+    line-height: 2.5rem;
+    font-weight: 400;
+  }
+
+  #oauth_wrap {
+    margin-top: 20px;
+    padding-left: 20px;
+
+    #oauth_content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .buttons {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+}
