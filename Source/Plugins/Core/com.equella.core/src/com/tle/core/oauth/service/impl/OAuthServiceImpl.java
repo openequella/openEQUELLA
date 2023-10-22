@@ -410,6 +410,7 @@ public class OAuthServiceImpl
     OAuthClientEditingBean bean = session.getBean();
     bean.setClientSecret(UUID.randomUUID().toString());
     bean.setClientId(UUID.randomUUID().toString());
+    bean.setTokenValidity(30);
     return session;
   }
 

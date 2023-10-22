@@ -460,11 +460,6 @@ public class OAuthClientEditorSection
     final OAuthClientEditingBean oauth = session.getBean();
     oauth.setFlowDef(getFlow(oauth));
 
-    // Section components persist their values, but here we want to display the default whenever we
-    // start to create a new client. So we need to set the value based on whether we are creating a
-    // new client or editing an existing one.
-    tokenValidity.setValue(info, isEditing ? oauth.getTokenValidity() : DEFAULT_TOKEN_VALIDITY);
-
     loadInternal(info, session);
     getModel(info).setSessionId(session.getSessionId());
   }
@@ -479,6 +474,7 @@ public class OAuthClientEditorSection
       nameField.setLanguageBundle(info, name);
     }
     clientIdField.setValue(info, oauth.getClientId());
+    tokenValidity.setValue(info, oauth.getTokenValidity());
     model.setClientSecret(oauth.getClientSecret());
     selectFlow.setSelectedValue(info, oauth.getFlowDef());
     model.setFlow(oauth.getFlowDef());
