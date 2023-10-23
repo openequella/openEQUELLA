@@ -34,6 +34,7 @@ public class OAuthClientEditingBean extends EntityEditingBean {
   private boolean requiresApproval;
   private AccessExpression usersExpression;
   private OAuthFlowDefinition flowDef;
+  private int tokenValidity;
 
   public String getClientId() {
     return clientId;
@@ -97,5 +98,13 @@ public class OAuthClientEditingBean extends EntityEditingBean {
 
   public void setFlowDef(OAuthFlowDefinition flowDef) {
     this.flowDef = flowDef;
+  }
+
+  public int getTokenValidity() {
+    return tokenValidity;
+  }
+
+  public void setTokenValidity(int tokenValidity) {
+    this.tokenValidity = tokenValidity;
   }
 }

@@ -245,6 +245,7 @@ public class OAuthServiceImpl
     ocBean.setRedirectUrl(entity.getRedirectUrl());
     ocBean.setRequiresApproval(entity.isRequiresApproval());
     ocBean.setUserId(entity.getUserId());
+    ocBean.setTokenValidity(entity.getTokenValidity());
     if (entity.getAttribute(KEY_OAUTH_FLOW) != null) {
       ocBean.setFlowDef(OAuthFlowDefinitions.getForId(entity.getAttribute(KEY_OAUTH_FLOW)));
     }
@@ -266,6 +267,7 @@ public class OAuthServiceImpl
     entity.setRedirectUrl(ocBean.getRedirectUrl());
     entity.setRequiresApproval(ocBean.isRequiresApproval());
     entity.setUserId(ocBean.getUserId());
+    entity.setTokenValidity(ocBean.getTokenValidity());
     if (ocBean.getFlowDef() != null) {
       entity.setAttribute(KEY_OAUTH_FLOW, ocBean.getFlowDef().getId());
     }
@@ -408,6 +410,7 @@ public class OAuthServiceImpl
     OAuthClientEditingBean bean = session.getBean();
     bean.setClientSecret(UUID.randomUUID().toString());
     bean.setClientId(UUID.randomUUID().toString());
+    bean.setTokenValidity(30);
     return session;
   }
 
