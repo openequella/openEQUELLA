@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
+import com.tle.webtests.pageobject.oauth.OAuthClientEditorPage;
 import com.tle.webtests.pageobject.oauth.OAuthDefaultRedirectPage;
 import com.tle.webtests.pageobject.oauth.OAuthLogonPage;
+import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
 import java.io.IOException;
@@ -237,6 +239,35 @@ public class OAuthTest extends AbstractRestApiTest {
             new HttpGet(context.getBaseUrl() + "api/item/b5a24157-37cf-4d1f-a2e6-8382edccc7a8/1"),
             "access_token=" + tokes);
     assertResponse(response, 200, "Valid token, valid format didn't give 200");
+  }
+
+  @Test
+  public void testOAuthTokenValidity() throws IOException {
+    int validity = 10;
+
+    logon();
+    OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
+
+    OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID);
+    String clientId = editorPage.getClientId();
+    String secret = editorPage.getSecret();
+    editorPage.setValidity(validity);
+
+    editorPage.save();
+
+    final String tokenGetUrl =
+        context.getBaseUrl()
+            + "oauth/access_token?grant_type=client_credentials&client_id="
+            + clientId
+            + "&redirect_uri=default&client_secret="
+            + secret;
+    final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
+    final JsonNode tokenNode = readJson(mapper, response);
+    System.out.println();
+
+    // Mills to days - the result should be 9.999xxx because some mills have gone. So we round up.
+    int days = (int) Math.ceil(tokenNode.get("expires_in").asDouble() / (60 * 60 * 24 * 1000));
+    Assert.assertEquals(days, validity);
   }
 
   private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws Exception {

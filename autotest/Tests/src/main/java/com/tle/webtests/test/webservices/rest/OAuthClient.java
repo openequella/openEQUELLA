@@ -7,6 +7,7 @@ public class OAuthClient {
   private String url;
   private String username;
   private boolean defaultRedirect;
+  private int validity = 30;
 
   public String getName() {
     return name;
@@ -54,5 +55,13 @@ public class OAuthClient {
 
   public void setClientId(String clientId) {
     this.clientId = clientId;
+  }
+
+  public int getValidity() {
+    return validity;
+  }
+
+  public void setValidity(int validity) {
+    this.validity = validity;
   }
 }
