@@ -60,6 +60,7 @@ import {
 } from "../modules/SearchModule";
 import { DateRange } from "../util/Date";
 import { languageStrings } from "../util/langstrings";
+import { validateGrouping } from "../util/TextUtils";
 import { AdvancedSearchSelector } from "./components/AdvancedSearchSelector";
 import { AuxiliarySearchSelector } from "./components/AuxiliarySearchSelector";
 import { CollectionSelector } from "./components/CollectionSelector";
@@ -384,16 +385,16 @@ export const SearchPageBody = ({
 
   const handleQueryChanged = useMemo(
     () =>
-      debounce(
-        (query: string) =>
+      debounce((query: string) => {
+        if (validateGrouping(query)) {
           doSearch({
             ...searchPageOptions,
             query: query,
             currentPage: 0,
             selectedCategories: undefined,
-          }),
-        500
-      ),
+          });
+        }
+      }, 500),
     [doSearch, searchPageOptions]
   );
 

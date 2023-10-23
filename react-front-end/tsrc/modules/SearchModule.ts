@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe, constFalse } from "fp-ts/function";
+import { constFalse, flow, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
 import type { Collection } from "./CollectionsModule";
