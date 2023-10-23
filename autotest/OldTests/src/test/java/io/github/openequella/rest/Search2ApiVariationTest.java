@@ -24,6 +24,13 @@ public class Search2ApiVariationTest extends AbstractRestApiTest {
     doSearch(400, mapper.createObjectNode().set("status", mapper.valueToTree(status)));
   }
 
+  @Test(description = "Invalid query should return 400 status")
+  public void invalidQuery() throws IOException {
+    ObjectNode payload = mapper.createObjectNode();
+    payload.set("query", mapper.valueToTree("\"("));
+    doSearch(400, payload);
+  }
+
   @Test(description = "Search for a large number of MIME types")
   public void largeNumberOfParametersSearch() throws IOException {
     // Create a large number of mime-types which include an existing one,
@@ -48,6 +55,11 @@ public class Search2ApiVariationTest extends AbstractRestApiTest {
 
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, expectedCode);
+
+    // return empty node if status is not 200, because the response body is not a valid JSON
+    if (statusCode != 200) {
+      return mapper.createObjectNode();
+    }
 
     return mapper.readTree(method.getResponseBody());
   }

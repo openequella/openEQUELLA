@@ -18,6 +18,7 @@
 
 package com.tle.web.api.search
 
+import com.dytech.edge.exceptions.InvalidSearchQueryException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
@@ -39,8 +40,10 @@ import org.jboss.resteasy.annotations.cache.NoCache
 import java.io.BufferedOutputStream
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs._
+import javax.ws.rs.core.Response.Status
 import javax.ws.rs.core.{Context, Response}
 import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 @NoCache
 @Path("search2")
@@ -55,9 +58,7 @@ class SearchResource {
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
     val searchCriteria = SearchCriteria(params)
-    val searchResult: SearchResult[SearchResultItem] =
-      doSearch(createSearch(searchCriteria), searchCriteria)
-    Response.ok.entity(searchResult).build()
+    doSearch(createSearch(searchCriteria), searchCriteria)
   }
 
   @POST
@@ -68,8 +69,7 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItemsPostVersion(params: SearchCriteria): Response = {
-    val searchResult: SearchResult[SearchResultItem] = doSearch(createSearch(params), params)
-    Response.ok.entity(searchResult).build()
+    doSearch(createSearch(params), params)
   }
 
   @POST
@@ -84,31 +84,37 @@ class SearchResource {
                                  advancedSearchCriteria: AdvancedSearchParameters): Response = {
     val searchCriteria                     = SearchCriteria(params)
     val AdvancedSearchParameters(criteria) = advancedSearchCriteria
-    val searchResult: SearchResult[SearchResultItem] =
-      doSearch(createSearch(searchCriteria, Option(criteria)), searchCriteria)
-
-    Response.ok.entity(searchResult).build()
+    doSearch(createSearch(searchCriteria, Option(criteria)), searchCriteria)
   }
 
-  def doSearch(searchRequest: DefaultSearch,
-               params: SearchCriteria): SearchResult[SearchResultItem] = {
-    val searchResults =
-      search(searchRequest, params.start, params.length, params.searchAttachments)
+  def doSearch(searchRequest: DefaultSearch, params: SearchCriteria): Response = {
+    Try {
+      val searchResults =
+        search(searchRequest, params.start, params.length, params.searchAttachments)
 
-    val freetextResults         = searchResults.getSearchResults.asScala.toList
-    val itemIds                 = freetextResults.map(_.getItemIdKey)
-    val serializer              = createSerializer(itemIds)
-    val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
-    val highlight =
-      new DefaultSearch.QueryParser(params.query.orNull).getHilightedList.asScala.toList
+      val freetextResults         = searchResults.getSearchResults.asScala.toList
+      val itemIds                 = freetextResults.map(_.getItemIdKey)
+      val serializer              = createSerializer(itemIds)
+      val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
+      val highlight =
+        new DefaultSearch.QueryParser(params.query.orNull).getHilightedList.asScala.toList
 
-    SearchResult(
-      searchResults.getOffset,
-      searchResults.getCount,
-      searchResults.getAvailable,
-      items.map(convertToItem(_, params.includeAttachments)),
-      highlight
-    )
+      SearchResult(
+        searchResults.getOffset,
+        searchResults.getCount,
+        searchResults.getAvailable,
+        items.map(convertToItem(_, params.includeAttachments)),
+        highlight
+      )
+    } match {
+      case Success(searchResult) => Response.ok.entity(searchResult).build()
+      case Failure(e: InvalidSearchQueryException) =>
+        Response
+          .status(Status.BAD_REQUEST)
+          .entity("Invalid search query - please remove any special characters.")
+          .build()
+      case Failure(e) => throw e
+    }
   }
 
   @HEAD

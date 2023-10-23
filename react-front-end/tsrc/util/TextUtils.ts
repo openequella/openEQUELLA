@@ -15,6 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { constFalse, constTrue, flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as t from "io-ts";
+
 /**
  * Based on work from com.tle.web.sections.render.TextUtils
  */
@@ -115,3 +121,108 @@ export const buildOEQServerString = (
   format.replace(/{(\d+)}/g, (match, number) =>
     typeof args[number] !== "undefined" ? args[number].toString() : match
   );
+
+/**
+ * Given a text which has groups constructed by parentheses or double quotes, validate whether the
+ * groups have a pair of opening and closing chars.
+ *
+ * Examples:
+ * - validateGrouping('"Hello, World!') returns false, because the closing double quote is missing.
+ * - validateGrouping('word A) B') returns false because the opening parenthesis is missing.
+ * - validateGrouping('(word A) B') returns true.
+ *
+ * @return `false` if either an opening or closing char is missing; otherwise `true`.
+ */
+export const validateGrouping = (input: string): boolean => {
+  // double quote,
+  const dq = t.literal('"');
+  // opening parenthesis,
+  const op = t.literal("(");
+  // closing parenthesis
+  const cp = t.literal(")");
+
+  const GroupingSymbolUnion = t.union([dq, op, cp]);
+  type GroupingSymbol = t.TypeOf<typeof GroupingSymbolUnion>;
+
+  // represents a pair of symbols fetched from the input string,
+  // for example: `"` and `"` or `(` and `)`
+  interface Grouping {
+    opening: GroupingSymbol;
+    closing?: GroupingSymbol;
+  }
+
+  // Check if opening symbol and closing symbol are real opening and closing symbols,
+  // and then check if they are matched or not.
+  const areSymbolsMatches = (
+    opening: GroupingSymbol,
+    closing: GroupingSymbol
+  ): boolean =>
+    (dq.is(opening) && dq.is(closing)) || (op.is(opening) && cp.is(closing));
+
+  // Split all the collected symbols into two arrays, and later check if elements are matched and are real closing and opening symbols.
+  const groupingSymbols = (symbols: GroupingSymbol[]): Grouping[] =>
+    pipe(
+      symbols,
+      A.splitAt(A.size(symbols) / 2),
+      ([opening, closing]) => [opening, A.reverse(closing)],
+      ([opening, closing]) =>
+        opening.map((openingSymbol, i) => ({
+          opening: openingSymbol,
+          closing: pipe(closing, A.lookup(i), O.toUndefined),
+        }))
+    );
+
+  /**
+   * Reduce function to process each symbol group, checking if it has correct closing and opening symbols.
+   *
+   * For example, given the string `"(A B)"`, the symbol group array would be:
+   * ```
+   * [
+   *   {
+   *     opening: ",
+   *     closing: "
+   *   },
+   *   {
+   *     opening: (,
+   *     closing: )
+   *   }
+   * ]
+   * ```
+   * The function checks if the elements in each symbol group are matched and are real closing and opening symbols.
+   * Finally, this result array helps determine whether all symbol groups are properly closed.
+   */
+  const processSymbolGroup = (
+    areMatched: E.Either<string, GroupingSymbol>[],
+    { opening, closing }: Grouping
+  ): E.Either<string, GroupingSymbol>[] => {
+    const result = pipe(
+      closing,
+      E.fromNullable("No corresponding symbol found"),
+      E.chainW(
+        E.fromPredicate(
+          (closingSymbol) => areSymbolsMatches(opening, closingSymbol),
+          () => "Symbol not matched"
+        )
+      )
+    );
+    return [result, ...areMatched];
+  };
+
+  const validating: (groups: Grouping[]) => boolean = flow(
+    A.reduce<Grouping, E.Either<string, GroupingSymbol>[]>(
+      [],
+      processSymbolGroup
+    ),
+    E.sequenceArray,
+    E.fold(constFalse, constTrue)
+  );
+
+  return pipe(
+    Array.from(input),
+    A.filter(GroupingSymbolUnion.is),
+    // If the number of symbols is odd, then the symbols are definitely not closed properly
+    O.fromPredicate((array) => A.size(array) % 2 === 0),
+    O.map(flow(groupingSymbols, validating)),
+    O.getOrElse(constFalse)
+  );
+};

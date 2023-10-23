@@ -49,6 +49,10 @@ const mockedSearchWithAdvancedParams = (
 ).mockResolvedValue(getSearchResult);
 
 describe("searchItems", () => {
+  beforeEach(() => {
+    mockedSearch.mockClear();
+  });
+
   it("should provide a list of items", async () => {
     const searchResult = await SearchModule.searchItems(
       SearchModule.defaultSearchOptions
@@ -64,7 +68,6 @@ describe("searchItems", () => {
   };
 
   it("should not append a wildcard for a search which is empty when trimmed", async () => {
-    mockedSearch.mockReset();
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       query: "   ",
@@ -73,7 +76,6 @@ describe("searchItems", () => {
   });
 
   it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
-    mockedSearch.mockReset();
     const queryTerm = "non RAW";
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
@@ -83,7 +85,6 @@ describe("searchItems", () => {
   });
 
   it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
-    mockedSearch.mockReset();
     const queryTerm = "RAW mode!";
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
