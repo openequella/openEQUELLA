@@ -27,11 +27,13 @@ import org.testng.annotations.Test;
 public class OAuthTest extends AbstractRestApiTest {
   private static final String CLIENT_ID_SERVER_FLOW = "testOAuthServerSideFlowClient";
   private static final String CLIENT_ID = "testOAuthTokenLoginClient";
+  private static final String CLIENT_ID_VALIDITY = "testOAuthTokenValidityClient";
   private static final String REDIRECT_URI = "default";
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
     clients.add(new Pair<>(CLIENT_ID, "AutoTest"));
+    clients.add(new Pair<>(CLIENT_ID_VALIDITY, "AutoTest"));
   }
 
   private OAuthLogonPage defaultClientTokenRequest(String... otherParams) {
@@ -248,8 +250,7 @@ public class OAuthTest extends AbstractRestApiTest {
     logon();
     OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
 
-    OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID);
-    String clientId = editorPage.getClientId();
+    OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID_VALIDITY);
     String secret = editorPage.getSecret();
     editorPage.setValidity(validity);
 
@@ -258,7 +259,7 @@ public class OAuthTest extends AbstractRestApiTest {
     final String tokenGetUrl =
         context.getBaseUrl()
             + "oauth/access_token?grant_type=client_credentials&client_id="
-            + clientId
+            + CLIENT_ID_VALIDITY
             + "&redirect_uri=default&client_secret="
             + secret;
     final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
