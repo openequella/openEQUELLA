@@ -264,7 +264,6 @@ public class OAuthTest extends AbstractRestApiTest {
             + secret;
     final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
     final JsonNode tokenNode = readJson(mapper, response);
-    System.out.println();
 
     // Mills to days - the result should be 9.999xxx because some mills have gone. So we round up.
     int days = (int) Math.ceil(tokenNode.get("expires_in").asDouble() / (60 * 60 * 24 * 1000));
