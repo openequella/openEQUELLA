@@ -172,8 +172,6 @@ public class OAuthClientEditorSection
   @Component(name = "tv", stateful = false)
   private NumberField tokenValidity;
 
-  public static int DEFAULT_TOKEN_VALIDITY = 30;
-
   @PlugKey("client.editor.button.reset")
   @Component(name = "rs", stateful = false)
   private Button resetSecretButton;
