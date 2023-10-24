@@ -53,6 +53,7 @@ import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.services.ValidationHelper;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.web.oauth.section.OAuthClientEditorSection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -410,7 +411,7 @@ public class OAuthServiceImpl
     OAuthClientEditingBean bean = session.getBean();
     bean.setClientSecret(UUID.randomUUID().toString());
     bean.setClientId(UUID.randomUUID().toString());
-    bean.setTokenValidity(30);
+    bean.setTokenValidity(OAuthClientEditorSection.DEFAULT_TOKEN_VALIDITY);
     return session;
   }
 
