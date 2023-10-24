@@ -34,6 +34,9 @@ public interface OAuthService extends AbstractEntityService<OAuthClientEditingBe
 
   OAuthToken getToken(String tokenData);
 
+  /** Has the 'expiry' of this token passed? */
+  boolean isExpired(OAuthToken token);
+
   boolean canAdministerTokens();
 
   boolean deleteToken(long id);

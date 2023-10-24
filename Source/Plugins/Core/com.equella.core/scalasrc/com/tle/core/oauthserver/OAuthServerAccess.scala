@@ -18,7 +18,9 @@
 
 package com.tle.core.oauthserver
 
+import com.tle.common.ExpiringValue
 import com.tle.common.institution.CurrentInstitution
+
 import java.time.{Duration, Instant}
 import java.util.{Date, UUID}
 import com.tle.common.oauth.beans.{OAuthClient, OAuthToken}
@@ -34,6 +36,7 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.oauth.OAuthException
 import com.tle.web.oauth.service.OAuthWebService.AuthorisationDetails
 import com.tle.web.oauth.service.{IOAuthClient, IOAuthToken}
+
 import java.nio.charset.StandardCharsets
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.NotFoundException
@@ -161,10 +164,9 @@ object OAuthServerAccess {
 
     impersonateId match {
       case Some(userid) =>
-        val impUser = Option(LegacyGuice.userService.getInformationForUser(userid)).getOrElse(
-          throw new OAuthException(403,
-                                   OAuthConstants.ERROR_ACCESS_DENIED,
-                                   CoreStrings.text(KEY_USER_NOT_FOUND, userid)))
+        val impUser = Option(LegacyGuice.userService.getInformationForUser(userid)).getOrElse {
+          throw tokenNotFound()
+        }
         val user =
           authWithUsername(impUser.getUsername, request).asInstanceOf[ModifiableUserState]
         user.setImpersonatedBy(getCloudProviderName)
@@ -173,16 +175,29 @@ object OAuthServerAccess {
     }
   }
 
-  def findUserState(tokenData: String, request: HttpServletRequest): UserState = {
+  def findUserState(tokenData: String, request: HttpServletRequest): ExpiringValue[UserState] = {
     Option(LegacyGuice.oAuthService.getToken(tokenData))
       .map { token =>
-        authWithUsername(token.getUsername, request)
+        val us = authWithUsername(token.getUsername, request)
+        if (token.getExpiry == null) ExpiringValue.expireNever(us)
+        else ExpiringValue.expireAt(us, token.getExpiry.getTime)
       }
-      .orElse(lookupCloudToken(tokenData, request))
+      .orElse {
+        // Failed to find a plain OAuth token, try a cloud provider token
+        lookupCloudToken(tokenData, request)
+          .map(ExpiringValue.expireNever)
+          // Following asInstanceOf required for Java interop - AFAICT
+          .map(_.asInstanceOf[ExpiringValue[UserState]])
+      }
       .getOrElse {
-        throw new OAuthException(403,
-                                 OAuthConstants.ERROR_ACCESS_DENIED,
-                                 CoreStrings.text(KEY_TOKEN_NOT_FOUND))
+        // Ultimately if no token was found, then treat it as an authentication failure
+        throw tokenNotFound()
       }
+  }
+
+  def tokenNotFound(): OAuthException = {
+    new OAuthException(403,
+                       OAuthConstants.ERROR_ACCESS_DENIED,
+                       CoreStrings.text(KEY_TOKEN_NOT_FOUND))
   }
 }

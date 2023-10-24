@@ -398,9 +398,27 @@ public class OAuthServiceImpl
   }
 
   /** Unsecured */
+  @Transactional
   @Override
   public OAuthToken getToken(String tokenData) {
-    return tokenDao.getToken(tokenData);
+    OAuthToken token = tokenDao.getToken(tokenData);
+    if (!isExpired(token)) {
+      return token;
+    }
+
+    // When a token has expired, remove it from the database and publish an event
+    tokenDao.delete(token);
+    eventService.publishApplicationEvent(new DeleteOAuthTokensEvent(Lists.newArrayList(tokenData)));
+
+    return null;
+  }
+
+  @Override
+  public boolean isExpired(OAuthToken token) {
+    return Optional.ofNullable(token.getExpiry())
+        .map(e -> Instant.ofEpochMilli(e.getTime()))
+        .map(e -> e.isBefore(Instant.now()))
+        .orElse(false);
   }
 
   @Override
