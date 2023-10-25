@@ -401,16 +401,20 @@ public class OAuthServiceImpl
   @Transactional
   @Override
   public OAuthToken getToken(String tokenData) {
-    OAuthToken token = tokenDao.getToken(tokenData);
-    if (!isExpired(token)) {
-      return token;
-    }
+    return Optional.ofNullable(tokenDao.getToken(tokenData))
+        .flatMap(
+            t -> {
+              if (isExpired(t)) {
+                // When a token has expired, remove it from the database and publish an event
+                tokenDao.delete(t);
+                eventService.publishApplicationEvent(
+                    new DeleteOAuthTokensEvent(Lists.newArrayList(tokenData)));
+                return Optional.empty();
+              }
 
-    // When a token has expired, remove it from the database and publish an event
-    tokenDao.delete(token);
-    eventService.publishApplicationEvent(new DeleteOAuthTokensEvent(Lists.newArrayList(tokenData)));
-
-    return null;
+              return Optional.of(t);
+            })
+        .orElse(null);
   }
 
   @Override
