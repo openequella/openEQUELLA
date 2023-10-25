@@ -83,6 +83,7 @@ public class OAuthServiceImpl
       "com.tle.core.oauth.error.validation.clientidunique";
   private static final String KEY_ERROR_VALIDATION_REDIRECTURL_INVALID =
       "com.tle.core.oauth.error.validation.redirecturlinvalid";
+  public static int DEFAULT_TOKEN_VALIDITY = 30;
 
   public static final String KEY_OAUTH_FLOW = "oauth.flow";
 
@@ -410,7 +411,7 @@ public class OAuthServiceImpl
     OAuthClientEditingBean bean = session.getBean();
     bean.setClientSecret(UUID.randomUUID().toString());
     bean.setClientId(UUID.randomUUID().toString());
-    bean.setTokenValidity(30);
+    bean.setTokenValidity(DEFAULT_TOKEN_VALIDITY);
     return session;
   }
 

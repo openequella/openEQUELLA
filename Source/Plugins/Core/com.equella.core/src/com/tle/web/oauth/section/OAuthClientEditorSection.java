@@ -172,8 +172,6 @@ public class OAuthClientEditorSection
   @Component(name = "tv", stateful = false)
   private NumberField tokenValidity;
 
-  private static int DEFAULT_TOKEN_VALIDITY = 30;
-
   @PlugKey("client.editor.button.reset")
   @Component(name = "rs", stateful = false)
   private Button resetSecretButton;
@@ -454,12 +452,10 @@ public class OAuthClientEditorSection
     return getModel(info).getClient();
   }
 
-  private void startSession(
-      SectionInfo info, OAuthClientEditingSession session, boolean isEditing) {
+  private void startSession(SectionInfo info, OAuthClientEditingSession session) {
     getModel(info).setEditing(true);
     final OAuthClientEditingBean oauth = session.getBean();
     oauth.setFlowDef(getFlow(oauth));
-
     loadInternal(info, session);
     getModel(info).setSessionId(session.getSessionId());
   }
@@ -659,7 +655,7 @@ public class OAuthClientEditorSection
     model.setEditing(true);
 
     final OAuthClientEditingSession session = oauthService.startNewSession(new OAuthClient());
-    startSession(info, session, false);
+    startSession(info, session);
   }
 
   /**
@@ -671,7 +667,7 @@ public class OAuthClientEditorSection
    */
   public void startEdit(SectionInfo info, String oauthUuid) {
     final OAuthClientEditingSession session = oauthService.startEditingSession(oauthUuid);
-    startSession(info, session, true);
+    startSession(info, session);
   }
 
   private void returnFromEdit(SectionInfo info) {
