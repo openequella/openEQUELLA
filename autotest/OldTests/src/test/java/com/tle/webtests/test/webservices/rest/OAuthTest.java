@@ -12,16 +12,21 @@ import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Cookie;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class OAuthTest extends AbstractRestApiTest {
@@ -268,6 +273,23 @@ public class OAuthTest extends AbstractRestApiTest {
     // Mills to days - the result should be 9.999xxx because some mills have gone. So we round up.
     int days = (int) Math.ceil(tokenNode.get("expires_in").asDouble() / (60 * 60 * 24 * 1000));
     Assert.assertEquals(days, validity);
+  }
+
+  @DataProvider(name = "tokenProvider")
+  public Object[][] tokenProvider() throws IOException {
+    return new Object[][] {{requestToken(CLIENT_ID_VALIDITY)}, {"bad token"}};
+  }
+
+  @Test(dataProvider = "tokenProvider")
+  public void testOAuthTokenRevocation(String token) throws IOException {
+    HttpPost post = new HttpPost(context.getBaseUrl() + "oauth/revoke");
+
+    UrlEncodedFormEntity payload =
+        new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("token", token)));
+    post.setEntity(payload);
+
+    HttpResponse response = execute(post, false);
+    assertResponse(response, 200, "Token revocation should return 200");
   }
 
   private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws Exception {
