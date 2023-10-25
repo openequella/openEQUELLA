@@ -244,6 +244,11 @@ public class OAuthWebServiceImpl
     return OAuthServerAccess.byClientIdAndRedirect(clientId, redirectUrl);
   }
 
+  @Override
+  public void revokeToken(String token) {
+    oauthService.deleteToken(token);
+  }
+
   /** Throw an exception if any SINGLE_PARAMETERS occur repeatedly. */
   private void checkSingleParameters(OAuthMessage message)
       throws IOException, net.oauth.OAuthException {

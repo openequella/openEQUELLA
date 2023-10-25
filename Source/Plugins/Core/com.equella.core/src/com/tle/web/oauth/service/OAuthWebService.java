@@ -102,6 +102,13 @@ public interface OAuthWebService {
 
   IOAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl);
 
+  /**
+   * Revoke a token from the current Institution.
+   *
+   * @param token Token to be revoked - may be invalid already
+   */
+  void revokeToken(String token);
+
   class AuthorisationDetails {
     private String userId;
     private String username;

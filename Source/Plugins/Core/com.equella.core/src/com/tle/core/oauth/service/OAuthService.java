@@ -21,6 +21,7 @@ package com.tle.core.oauth.service;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.entity.service.AbstractEntityService;
+import com.tle.core.oauth.event.DeleteOAuthTokensEvent;
 import java.util.List;
 
 /** @author aholland */
@@ -37,6 +38,13 @@ public interface OAuthService extends AbstractEntityService<OAuthClientEditingBe
   boolean canAdministerTokens();
 
   boolean deleteToken(long id);
+
+  /**
+   * Delete a token by its value. An {@link DeleteOAuthTokensEvent} will be published as well.
+   *
+   * @param token Token to be Deleted
+   */
+  void deleteToken(String token);
 
   void deleteTokens(OAuthClient client);
 

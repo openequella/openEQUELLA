@@ -37,11 +37,15 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.NamedQuery;
 
 /** @author aholland */
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "client_id"})})
+@NamedQuery(
+    name = "deleteByToken",
+    query = "DELETE FROM OAuthToken WHERE institution = :institution" + " AND token = :token")
 public final class OAuthToken implements Serializable, FieldEquality<OAuthToken> {
   private static final long serialVersionUID = 1L;
 

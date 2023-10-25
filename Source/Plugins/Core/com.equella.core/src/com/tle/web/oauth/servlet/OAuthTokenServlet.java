@@ -22,7 +22,6 @@ import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
-import com.tle.core.services.user.UserService;
 import com.tle.web.oauth.OAuthException;
 import com.tle.web.oauth.OAuthWebConstants;
 import com.tle.web.oauth.response.ErrorResponse;
@@ -35,25 +34,65 @@ import java.io.IOException;
 import java.time.Instant;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
 public class OAuthTokenServlet extends AbstractOAuthServlet {
+
   private static final long serialVersionUID = 1L;
 
   private static final String KEY_CLIENT_NOT_FOUND = "oauth.error.clientnotfound";
+  private static final String REVOKE_ENDPOINT = "/oauth/revoke";
+  private static final String TOKEN_PARAM = "token";
 
-  @Inject private UserService userService;
   @Inject private OAuthWebService oauthWebService;
 
   @Override
   protected void doService(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException, WebException {
+      throws WebException {
+    if (request.getServletPath().equals(REVOKE_ENDPOINT)) {
+      revokeToken(request);
+    } else {
+      getOrCreateToken(request, response);
+    }
+  }
+
+  @Override
+  protected void respondWithError(
+      HttpServletRequest request, HttpServletResponse response, int code, String error, Throwable t)
+      throws IOException {
+    final ErrorResponse r = new ErrorResponse();
+    r.setError(error);
+    r.setErrorDescription(t.getMessage());
+
+    response.setStatus(code);
+    response.setContentType("application/json");
+    mapper.writeValue(response.getOutputStream(), r);
+  }
+
+  protected void respondWithToken(
+      HttpServletResponse response, IOAuthToken token, String tokenType, String state)
+      throws IOException {
+    final TokenResponse r = new TokenResponse();
+    r.setAccessToken(token.getToken());
+    r.setTokenType(tokenType);
+    r.setExpiresIn(token.getExpiry() == null ? Long.MAX_VALUE : calcExpiresIn(token.getExpiry()));
+    r.setState(state);
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.setContentType("application/json");
+    mapper.writeValue(response.getOutputStream(), r);
+  }
+
+  private long calcExpiresIn(Instant expiry) {
+    long now = Instant.now().toEpochMilli();
+    long then = expiry.toEpochMilli();
+    return then - now;
+  }
+
+  private void getOrCreateToken(HttpServletRequest request, HttpServletResponse response) {
     final String clientId = getParameter(request, OAuthWebConstants.PARAM_CLIENT_ID, true);
 
     // must be one of 'authorization_code' (4.1), 'client_credentials' (4.4)
@@ -126,35 +165,14 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
     }
   }
 
-  @Override
-  protected void respondWithError(
-      HttpServletRequest request, HttpServletResponse response, int code, String error, Throwable t)
-      throws IOException, ServletException {
-    final ErrorResponse r = new ErrorResponse();
-    r.setError(error);
-    r.setErrorDescription(t.getMessage());
-
-    response.setStatus(code);
-    response.setContentType("application/json");
-    mapper.writeValue(response.getOutputStream(), r);
-  }
-
-  protected void respondWithToken(
-      HttpServletResponse response, IOAuthToken token, String tokenType, String state)
-      throws IOException {
-    final TokenResponse r = new TokenResponse();
-    r.setAccessToken(token.getToken());
-    r.setTokenType(tokenType);
-    r.setExpiresIn(token.getExpiry() == null ? Long.MAX_VALUE : calcExpiresIn(token.getExpiry()));
-    r.setState(state);
-    response.setHeader("Access-Control-Allow-Origin", "*");
-    response.setContentType("application/json");
-    mapper.writeValue(response.getOutputStream(), r);
-  }
-
-  private long calcExpiresIn(Instant expiry) {
-    long now = Instant.now().toEpochMilli();
-    long then = expiry.toEpochMilli();
-    return then - now;
+  /**
+   * According to <a href="https://tools.ietf.org/html/rfc7009#section-2.2">the spec for OAuth 2.0
+   * Token Revocation </a>>, the response code should be 200 regardless whether the token is valid
+   * or not. Hence, token validation is not needed. However, if a token is not present in the
+   * request payload, return a 400 error.
+   */
+  private void revokeToken(HttpServletRequest request) {
+    String token = getParameter(request, TOKEN_PARAM, true);
+    oauthWebService.revokeToken(token);
   }
 }
