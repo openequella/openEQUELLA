@@ -179,15 +179,15 @@ object OAuthServerAccess {
     Option(LegacyGuice.oAuthService.getToken(tokenData))
       .map { token =>
         val us = authWithUsername(token.getUsername, request)
-        if (token.getExpiry == null) ExpiringValue.expireNever(us)
-        else ExpiringValue.expireAt(us, token.getExpiry.getTime)
+        Option(token.getExpiry)
+          .map(_.getTime)
+          .map(ExpiringValue.expireAt(us, _))
+          .getOrElse(ExpiringValue.expireNever(us))
       }
       .orElse {
         // Failed to find a plain OAuth token, try a cloud provider token
         lookupCloudToken(tokenData, request)
-          .map(ExpiringValue.expireNever)
-          // Following asInstanceOf required for Java interop - AFAICT
-          .map(_.asInstanceOf[ExpiringValue[UserState]])
+          .map(ExpiringValue.expireNever[UserState])
       }
       .getOrElse {
         // Ultimately if no token was found, then treat it as an authentication failure
@@ -195,9 +195,8 @@ object OAuthServerAccess {
       }
   }
 
-  def tokenNotFound(): OAuthException = {
+  def tokenNotFound(): OAuthException =
     new OAuthException(403,
                        OAuthConstants.ERROR_ACCESS_DENIED,
                        CoreStrings.text(KEY_TOKEN_NOT_FOUND))
-  }
 }
