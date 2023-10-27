@@ -18,12 +18,12 @@
 
 package com.tle.web.oauth.service;
 
-import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.tle.beans.Institution;
 import com.tle.common.Check;
+import com.tle.common.ExpiringValue;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.common.usermanagement.user.UserState;
@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -70,8 +71,6 @@ import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.signature.OAuthSignatureMethod;
 
-/** @author Aaron */
-@SuppressWarnings({"nls"})
 @Bind(OAuthWebService.class)
 @Singleton
 public class OAuthWebServiceImpl
@@ -97,7 +96,7 @@ public class OAuthWebServiceImpl
   // Not cluster safe, but that's ok, we will re-evaluate ACLs if the user
   // hits another node. The first key is institution uniqueId, second token
   // key.
-  private InstitutionCache<Cache<String, UserState>> userStateMap;
+  private InstitutionCache<Cache<String, ExpiringValue<UserState>>> userStateMap;
 
   @Inject
   public void setReplicatedCache(ReplicatedCacheService service) {
@@ -109,9 +108,9 @@ public class OAuthWebServiceImpl
   public void setInstitutionService(InstitutionService service) {
     userStateMap =
         service.newInstitutionAwareCache(
-            new CacheLoader<Institution, Cache<String, UserState>>() {
+            new CacheLoader<>() {
               @Override
-              public Cache<String, UserState> load(Institution key) throws Exception {
+              public Cache<String, ExpiringValue<UserState>> load(Institution key) {
                 return CacheBuilder.newBuilder()
                     .concurrencyLevel(10)
                     .maximumSize(50000)
@@ -137,8 +136,8 @@ public class OAuthWebServiceImpl
   @Override
   public AuthorisationDetails getAuthorisationDetailsByCode(IOAuthClient client, String code) {
     // code must be in the map
-    Optional<CodeReg> codeOptional = oAuthCodesCache.get(code);
-    if (!codeOptional.isPresent()) {
+    Optional<CodeReg> codeOptional = oAuthCodesCache.get(code).toJavaUtil();
+    if (codeOptional.isEmpty()) {
       throw new OAuthException(400, OAuthConstants.ERROR_INVALID_GRANT, text(KEY_CODE_NOT_FOUND));
     }
 
@@ -188,22 +187,29 @@ public class OAuthWebServiceImpl
 
   @Override
   public UserState getUserState(String tokenData, HttpServletRequest request) {
-    Cache<String, UserState> userCache = getUserCache(CurrentInstitution.get());
-    UserState oauthUserState = userCache.getIfPresent(tokenData);
+    Cache<String, ExpiringValue<UserState>> userCache = getUserCache(CurrentInstitution.get());
+    ExpiringValue<UserState> oauthUserState = userCache.getIfPresent(tokenData);
     if (oauthUserState == null) {
       // find the token and the user associated with it
+      // - throws exception if not available
       oauthUserState = OAuthServerAccess.findUserState(tokenData, request);
       userCache.put(tokenData, oauthUserState);
     }
 
     try {
-      return oauthUserState.clone();
+      return Optional.ofNullable(oauthUserState.getValue())
+          .orElseThrow(
+              () -> {
+                userCache.invalidate(tokenData);
+                return OAuthServerAccess.tokenNotFound();
+              })
+          .clone();
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private Cache<String, UserState> getUserCache(Institution institution) {
+  private Cache<String, ExpiringValue<UserState>> getUserCache(Institution institution) {
     return userStateMap.getCache(institution);
   }
 
@@ -215,7 +221,7 @@ public class OAuthWebServiceImpl
 
   @Override
   public void deleteOAuthTokensEvent(DeleteOAuthTokensEvent event) {
-    Cache<String, UserState> userCache = getUserCache(CurrentInstitution.get());
+    Cache<String, ExpiringValue<UserState>> userCache = getUserCache(CurrentInstitution.get());
     userCache.invalidateAll(event.getTokens());
   }
 
@@ -390,13 +396,17 @@ public class OAuthWebServiceImpl
   @Override
   public void userSuspendEvent(UserSuspendEvent event) {
     Set<String> suspendedUserIds = event.getSuspendedUserId();
-    Cache<String, UserState> cache = getUserCache(CurrentInstitution.get());
+    Cache<String, ExpiringValue<UserState>> cache = getUserCache(CurrentInstitution.get());
 
     // A set of tokens generated for users that have been suspended.
     Set<String> tokensToBeSuspended =
         cache.asMap().entrySet().stream()
             .filter(
-                entry -> suspendedUserIds.contains(entry.getValue().getUserBean().getUniqueID()))
+                entry ->
+                    Optional.ofNullable(entry.getValue().getValue())
+                        .map(us -> us.getUserBean().getUniqueID())
+                        .map(suspendedUserIds::contains)
+                        .orElse(false))
             .map(Entry::getKey)
             .collect(Collectors.toSet());
 

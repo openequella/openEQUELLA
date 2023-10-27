@@ -32,7 +32,15 @@ public interface OAuthService extends AbstractEntityService<OAuthClientEditingBe
 
   OAuthToken getOrCreateToken(String userId, String username, OAuthClient client, String code);
 
+  /**
+   * Retrieve the OAuthToken with a {@code token} field matching {@code tokenData}, or {@code null}
+   * if no matching token is found. If a matched token is found which has been expired, then it will
+   * be removed from the database and {@code null} will be returned.
+   */
   OAuthToken getToken(String tokenData);
+
+  /** Has the 'expiry' of this token passed? */
+  boolean isExpired(OAuthToken token);
 
   boolean canAdministerTokens();
 
