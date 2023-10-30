@@ -264,6 +264,7 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="oauthTokenServlet">
     <parameter id="bean" value="bean:com.tle.web.oauth.servlet.OAuthTokenServlet" />
     <parameter id="url-pattern" value="/oauth/access_token" />
+    <parameter id="url-pattern" value="/oauth/revoke" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="oauthDefaultRedirectServlet">
     <parameter id="bean" value="bean:com.tle.web.sections.registry.SectionsServlet" />
@@ -274,6 +275,7 @@
     <parameter id="url-pattern" value="/oauth/access_token" />
     <parameter id="url-pattern" value="/oauth/authorise" />
     <parameter id="url-pattern" value="/oauth/authorize" />
+    <parameter id="url-pattern" value="/oauth/revoke" />
     <parameter id="order" value="650" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="userStateHook" id="oauthUserStateHook">

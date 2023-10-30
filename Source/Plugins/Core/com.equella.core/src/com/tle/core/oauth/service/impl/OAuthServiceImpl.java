@@ -56,6 +56,7 @@ import com.tle.exceptions.AccessDeniedException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -388,6 +389,14 @@ public class OAuthServiceImpl
       return true;
     }
     return false;
+  }
+
+  @Transactional
+  @Override
+  public void deleteToken(String token) {
+    tokenDao.deleteByToken(token);
+    eventService.publishApplicationEvent(
+        new DeleteOAuthTokensEvent(Collections.singletonList(token)));
   }
 
   @Override

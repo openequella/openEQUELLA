@@ -70,6 +70,8 @@ import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.signature.OAuthSignatureMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(OAuthWebService.class)
 @Singleton
@@ -85,6 +87,8 @@ public class OAuthWebServiceImpl
   @Inject private UserService userService;
   @Inject private LanguageService languageService;
   @Inject private EncryptionService encryptionService;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(OAuthWebServiceImpl.class);
 
   protected String text(String key, Object... vals) {
     return CoreStrings.lookup().getString(key, vals);
@@ -248,6 +252,12 @@ public class OAuthWebServiceImpl
   @Override
   public IOAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl) {
     return OAuthServerAccess.byClientIdAndRedirect(clientId, redirectUrl);
+  }
+
+  @Override
+  public void revokeToken(String token) {
+    LOGGER.info("OAUTH token revoked: " + token);
+    oauthService.deleteToken(token);
   }
 
   /** Throw an exception if any SINGLE_PARAMETERS occur repeatedly. */

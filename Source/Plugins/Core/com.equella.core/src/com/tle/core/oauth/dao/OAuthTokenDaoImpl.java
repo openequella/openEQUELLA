@@ -26,9 +26,9 @@ import com.tle.core.hibernate.dao.GenericInstitionalDaoImpl;
 import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 /** @author Aaron */
@@ -123,6 +123,18 @@ public class OAuthTokenDaoImpl extends GenericInstitionalDaoImpl<OAuthToken, Lon
                 query.setParameter("institution", CurrentInstitution.get());
                 return query.executeUpdate();
               }
+            });
+  }
+
+  @Override
+  public void deleteByToken(String token) {
+    getHibernateTemplate()
+        .execute(
+            session -> {
+              Query q = session.getNamedQuery("deleteByToken");
+              q.setParameter("institution", CurrentInstitution.get());
+              q.setParameter("token", token);
+              return q.executeUpdate();
             });
   }
 }

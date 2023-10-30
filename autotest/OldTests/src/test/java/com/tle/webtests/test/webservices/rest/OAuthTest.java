@@ -1,5 +1,7 @@
 package com.tle.webtests.test.webservices.rest;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.common.Pair;
 import com.tle.webtests.pageobject.ErrorPage;
@@ -12,14 +14,18 @@ import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Cookie;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -29,6 +35,7 @@ public class OAuthTest extends AbstractRestApiTest {
   private static final String CLIENT_ID = "testOAuthTokenLoginClient";
   private static final String CLIENT_ID_VALIDITY = "testOAuthTokenValidityClient";
   private static final String REDIRECT_URI = "default";
+  private static final String TOKEN_REVOCATION = "oauth/revoke";
 
   @Override
   protected void addOAuthClients(List<Pair<String, String>> clients) {
@@ -270,9 +277,46 @@ public class OAuthTest extends AbstractRestApiTest {
     Assert.assertEquals(days, validity);
   }
 
-  private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws Exception {
+  @Test(description = "Revoke valid tokens")
+  public void testOAuthTokenRevocation() throws IOException {
+    String token = requestToken(CLIENT_ID_VALIDITY);
+    String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
+
+    // The token should work before being revoked.
+    HttpResponse response = rawTokenExecute(currentUserAPIPath, token);
+    assertEquals(200, response.getStatusLine().getStatusCode());
+
+    // Now revoke the token.
+    response = revokeOauthToken(token);
+    assertResponse(response, 200, "Token revocation should return 200");
+
+    // The token should not work now.
+    response = rawTokenExecute(currentUserAPIPath, token);
+    assertEquals(403, response.getStatusLine().getStatusCode());
+  }
+
+  @Test(description = "Revoke invalid tokens")
+  public void testOAuthInvalidTokenRevocation() throws IOException {
+    HttpResponse response = revokeOauthToken("bad token");
+    assertResponse(response, 200, "Revoking invalid token should return 200");
+  }
+
+  private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws IOException {
     final Header tokenHeader = new BasicHeader("X-Authorization", rawToken);
     request.setHeader(tokenHeader);
     return execute(request, true);
+  }
+
+  private HttpResponse rawTokenExecute(String requestUrl, String token) throws IOException {
+    return rawTokenExecute(new HttpGet(requestUrl), "access_token=" + token);
+  }
+
+  private HttpResponse revokeOauthToken(String token) throws IOException {
+    HttpPost post = new HttpPost(context.getBaseUrl() + TOKEN_REVOCATION);
+    UrlEncodedFormEntity payload =
+        new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("token", token)));
+    post.setEntity(payload);
+
+    return execute(post, false);
   }
 }
