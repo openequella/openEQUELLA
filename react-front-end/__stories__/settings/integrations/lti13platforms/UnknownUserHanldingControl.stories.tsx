@@ -32,7 +32,7 @@ export default {
 } as Meta<UnknownUserHandlingControlProps>;
 
 export const DefaultOption: StoryFn<UnknownUserHandlingControlProps> = (
-  args
+  args,
 ) => <UnknownUserHandlingControl {...args} />;
 DefaultOption.args = {
   onChange: action("onChange"),
@@ -40,7 +40,7 @@ DefaultOption.args = {
 };
 
 export const CreateOption: StoryFn<UnknownUserHandlingControlProps> = (
-  args
+  args,
 ) => <UnknownUserHandlingControl {...args} />;
 CreateOption.args = {
   ...DefaultOption.args,

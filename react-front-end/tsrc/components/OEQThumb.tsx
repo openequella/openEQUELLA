@@ -120,19 +120,19 @@ export default function OEQThumb({ details }: OEQThumbProps) {
             <VideoIcon aria-label={thumbLabels.video} {...generalThumbStyles} />
           ),
           _: defaultThumb,
-        })
+        }),
       );
 
     return pipe(
       mimeType,
       O.fromNullable,
       O.map(flow(S.split("/"), RNEA.head, mimeTypeBasedThumb)),
-      O.getOrElse(defaultThumb)
+      O.getOrElse(defaultThumb),
     );
   };
 
   const buildGenericResourceAttachmentThumb = (
-    mimeType?: string
+    mimeType?: string,
   ): JSX.Element =>
     pipe(
       mimeType,
@@ -149,14 +149,14 @@ export default function OEQThumb({ details }: OEQThumbProps) {
             <WebIcon aria-label={thumbLabels.html} {...generalThumbStyles} />
           ),
           _: defaultThumb,
-        })
+        }),
       ),
-      O.getOrElse(defaultThumb)
+      O.getOrElse(defaultThumb),
     );
 
   const buildGenericThumb = (
     attachmentType: string,
-    mimeType?: string
+    mimeType?: string,
   ): JSX.Element =>
     pipe(
       attachmentType,
@@ -170,7 +170,7 @@ export default function OEQThumb({ details }: OEQThumbProps) {
         file: () => buildGenericFileThumb(mimeType),
         "custom/resource": () => buildGenericResourceAttachmentThumb(mimeType),
         _: defaultThumb,
-      })
+      }),
     );
 
   return (
@@ -181,14 +181,14 @@ export default function OEQThumb({ details }: OEQThumbProps) {
         O.map(({ attachmentType, mimeType, link }) =>
           link
             ? buildServerProvidedThumb(link)
-            : buildGenericThumb(attachmentType, mimeType)
+            : buildGenericThumb(attachmentType, mimeType),
         ),
         O.getOrElse(() => (
           <PlaceholderIcon
             aria-label={thumbLabels.placeholder}
             {...generalThumbStyles}
           />
-        ))
+        )),
       )}
     </Root>
   );

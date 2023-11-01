@@ -63,13 +63,13 @@ export const mockedTaxonomyTerms: OEQ.Taxonomy.Term[] = [
 ];
 
 export const mockedSearchTaxonomyTerms = (
-  query: string
+  query: string,
 ): Promise<OEQ.Common.PagedResult<OEQ.Taxonomy.Term>> =>
   Promise.resolve({
     start: 0,
     length: 6,
     available: 6,
     results: mockedTaxonomyTerms.filter(({ term }) =>
-      term.includes(query.replace(/\*/g, ""))
+      term.includes(query.replace(/\*/g, "")),
     ),
   });

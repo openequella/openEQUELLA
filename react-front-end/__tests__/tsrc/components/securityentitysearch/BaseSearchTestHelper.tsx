@@ -64,7 +64,7 @@ const { queryFieldLabel: groupQueryFieldLabel } =
 export const doSearch = async (
   dialog: HTMLElement,
   queryName: string,
-  queryValue: string
+  queryValue: string,
 ) => {
   const queryField = queryMuiTextField(dialog, queryName);
   if (!queryField) {
@@ -107,7 +107,7 @@ const clickByText = async ({ findByText }: RenderResult, text: string) =>
  * @param renderResult a root container within which <BaseSearch/> exists
  */
 export const clickFilterByGroupButton = async (
-  renderResult: RenderResult
+  renderResult: RenderResult,
 ): Promise<void> => await clickByText(renderResult, filterByGroupsButtonLabel);
 
 /**
@@ -116,7 +116,7 @@ export const clickFilterByGroupButton = async (
  * @param renderResult a root container within which <BaseSearch/> exists
  */
 export const clickEntitySelectButton = async (
-  renderResult: RenderResult
+  renderResult: RenderResult,
 ): Promise<void> => await clickByText(renderResult, selectLabel);
 
 /**
@@ -125,7 +125,7 @@ export const clickEntitySelectButton = async (
  * @param renderResult a root container within which <BaseSearch/> exists
  */
 export const clickCancelGroupFilterButton = async (
-  renderResult: RenderResult
+  renderResult: RenderResult,
 ): Promise<void> => await clickByText(renderResult, cancelLabel);
 
 /**
@@ -134,7 +134,7 @@ export const clickCancelGroupFilterButton = async (
  * @param renderResult a root container within which <BaseSearch/> exists
  */
 export const clickEditGroupFilterButton = (
-  renderResult: RenderResult
+  renderResult: RenderResult,
 ): Promise<void> => clickByText(renderResult, editLabel);
 
 /**
@@ -143,7 +143,7 @@ export const clickEditGroupFilterButton = (
  * @param container a root container within which <BaseSearch/> exists
  */
 export const findGroupFilterSearch = (
-  container: HTMLElement
+  container: HTMLElement,
 ): Promise<Element> =>
   waitFor(() => {
     const search = container.querySelector("#GroupFilter-BaseSearch");
@@ -194,7 +194,7 @@ export const defaultBaseSearchProps: BaseSearchProps<OEQ.UserQuery.UserDetails> 
 
 // Helper to render BaseSearch and wait for component under test
 export const renderBaseSearch = async (
-  props: BaseSearchProps<OEQ.UserQuery.UserDetails> = defaultBaseSearchProps
+  props: BaseSearchProps<OEQ.UserQuery.UserDetails> = defaultBaseSearchProps,
 ): Promise<RenderResult> => {
   const renderResult = render(<BaseSearch {...props} />);
 
@@ -221,7 +221,7 @@ export const searchAndSelect = async <T,>(
   searchFor: string,
   selectEntityName: string,
   onChange = jest.fn(),
-  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>
+  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>,
 ): Promise<ReadonlySet<T>> => {
   const { container } = renderResult;
   // Attempt search for a specific entity
@@ -229,7 +229,7 @@ export const searchAndSelect = async <T,>(
 
   // Wait for the results, and then click our entity of interest
   const entityName = await renderResult.findByText(
-    new RegExp(`.*${selectEntityName}.*`)
+    new RegExp(`.*${selectEntityName}.*`),
   );
   await userEvent.click(entityName);
 
@@ -246,7 +246,7 @@ export const searchAndSelect = async <T,>(
 export const findEntityFromMockData = <T,>(
   mockEntities: T[],
   predicate: Predicate<T>,
-  name: string
+  name: string,
 ): T =>
   pipe(
     mockEntities,
@@ -254,14 +254,14 @@ export const findEntityFromMockData = <T,>(
     O.getOrElseW(() => {
       throw new Error(
         "Looks like mocked data set has changed, unable to find test entity: " +
-          name
+          name,
       );
-    })
+    }),
   );
 
 export const selectEntitiesInOneClickMode = async (
   container: HTMLElement,
-  selectNames: string[]
+  selectNames: string[],
 ) => {
   // Wait for the results, and then click entity
   const selectEntity = async (name: string) => {

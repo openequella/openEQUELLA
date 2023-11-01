@@ -38,7 +38,7 @@ const {
 export const doSearch = async (
   dialog: HTMLElement,
   queryName: string,
-  queryValue: string
+  queryValue: string,
 ) => {
   const queryField = queryMuiTextField(dialog, queryName);
   if (!queryField) {
@@ -60,7 +60,7 @@ export const searchAndSelect = async (
   dialog: HTMLElement,
   searchFor: string,
   selectEntityName: string,
-  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>
+  doSearch: (dialog: HTMLElement, queryValue: string) => Promise<void>,
 ): Promise<void> => {
   // Attempt search for a specific entity
   await doSearch(dialog, searchFor);
@@ -76,7 +76,7 @@ export const searchAndSelect = async (
  */
 export const clickDeleteIconForEntity = async (
   dialog: HTMLElement,
-  name: string
+  name: string,
 ): Promise<void> => {
   const deleteIcon = (await findByText(dialog, name)).parentElement
     ?.parentElement?.nextElementSibling?.firstElementChild;
@@ -118,7 +118,7 @@ export const clickRemoveAllButton = (dialog: HTMLElement) =>
  */
 export const testRemoveEntity = async (
   render: (onClose: jest.Mock) => RenderResult,
-  entityName: string
+  entityName: string,
 ) => {
   const onClose = jest.fn();
   const { getByRole } = render(onClose);
@@ -138,7 +138,7 @@ export const testRemoveEntity = async (
  *               The mock function is used to get the final result when dialog is closed.
  */
 export const testRemoveAllAsync = async (
-  render: (onClose: jest.Mock) => Promise<RenderResult>
+  render: (onClose: jest.Mock) => Promise<RenderResult>,
 ) => {
   const onClose = jest.fn();
   const { getByRole } = await render(onClose);
@@ -157,5 +157,5 @@ export const testRemoveAllAsync = async (
  * @param render An non-async render function which takes a mock function to render the dialog.
  */
 export const testRemoveAll = async (
-  render: (onClose: jest.Mock) => RenderResult
+  render: (onClose: jest.Mock) => RenderResult,
 ) => await testRemoveAllAsync((onClose) => Promise.resolve(render(onClose)));

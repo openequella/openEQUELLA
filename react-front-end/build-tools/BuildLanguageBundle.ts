@@ -36,7 +36,7 @@ const buildLanguageBundle = () => {
  */
 const generateLanguageBundle = (
   key: string,
-  value: LanguageStrings | string
+  value: LanguageStrings | string,
 ): LanguageStrings[] => {
   const output: LanguageStrings[] = [];
   if (typeof value === "string") {
@@ -46,7 +46,7 @@ const generateLanguageBundle = (
       if (Object.prototype.hasOwnProperty.call(value, subKey)) {
         const nestedStrings = generateLanguageBundle(
           `${key}.${subKey}`,
-          value[subKey]
+          value[subKey],
         );
         output.push(...nestedStrings);
       }

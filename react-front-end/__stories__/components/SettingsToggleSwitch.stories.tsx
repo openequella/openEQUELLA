@@ -30,7 +30,7 @@ export default {
 } as Meta<SettingsToggleSwitchProps>;
 
 export const ToggleSwitchControl: StoryFn<SettingsToggleSwitchProps> = (
-  args
+  args,
 ) => <SettingsToggleSwitch {...args} />;
 ToggleSwitchControl.args = {
   disabled: false,

@@ -32,7 +32,7 @@ export const searchTaxonomyTerms = (
   restriction: OEQ.Taxonomy.SelectionRestriction,
   maxTermNum: number,
   isSearchFullTerm: boolean,
-  taxonomyUuid: string
+  taxonomyUuid: string,
 ): Promise<OEQ.Common.PagedResult<OEQ.Taxonomy.Term>> =>
   OEQ.Taxonomy.searchTaxonomyTerms(
     API_BASE_URL,
@@ -40,5 +40,5 @@ export const searchTaxonomyTerms = (
     query,
     restriction,
     maxTermNum,
-    isSearchFullTerm
+    isSearchFullTerm,
   );

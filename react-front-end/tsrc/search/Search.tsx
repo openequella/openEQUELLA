@@ -105,7 +105,7 @@ export interface InitialSearchConfig {
    */
   customiseInitialSearchOptions: (
     searchPageOptions: SearchPageOptions,
-    queryStringSearchOptions?: SearchPageOptions
+    queryStringSearchOptions?: SearchPageOptions,
   ) => SearchPageOptions;
 }
 
@@ -155,7 +155,7 @@ export const Search = ({
   const { options: searchPageOptions } = searchState;
 
   const [searchSettings, setSearchSettings] = useState<GeneralSearchSettings>(
-    defaultGeneralSearchSettings
+    defaultGeneralSearchSettings,
   );
 
   const { appErrorHandler } = useContext(AppContext);
@@ -163,14 +163,14 @@ export const Search = ({
     (error: Error) => {
       dispatch({ type: "error", cause: error });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const search = useCallback(
     (
       searchPageOptions: SearchPageOptions,
       updateClassifications = true,
-      callback: () => void = nop
+      callback: () => void = nop,
     ): void => {
       dispatch({
         type: "search",
@@ -179,7 +179,7 @@ export const Search = ({
         callback,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /**
@@ -250,11 +250,11 @@ export const Search = ({
               sortOrder:
                 searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
             })),
-            mergeSearchPageOptions
+            mergeSearchPageOptions,
           );
 
           ready && search(initialSearchPageOptions, listInitialClassifications);
-        }
+        },
       )
       .catch(searchPageErrorHandler);
 
@@ -285,7 +285,7 @@ export const Search = ({
 
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
-        options: SearchPageOptions
+        options: SearchPageOptions,
       ): Promise<SearchPageSearchResult> => ({
         from: "gallery-search",
         content: await search({
@@ -296,7 +296,7 @@ export const Search = ({
       });
 
       const doSearch = async (
-        searchPageOptions: SearchPageOptions
+        searchPageOptions: SearchPageOptions,
       ): Promise<SearchPageSearchResult> => {
         switch (searchPageOptions.displayMode) {
           case "gallery-image":
@@ -319,7 +319,7 @@ export const Search = ({
       // Depending on what display mode we're in, determine which function we use to list
       // the classifications to match the search.
       const getClassifications: (
-        _: SearchOptions
+        _: SearchOptions,
       ) => Promise<Classification[]> = pipe(options.displayMode, (mode) => {
         switch (mode) {
           case "gallery-image":
@@ -330,7 +330,7 @@ export const Search = ({
             return listClassifications;
           default:
             throw new TypeError(
-              "Unexpected `displayMode` for determining classifications listing function"
+              "Unexpected `displayMode` for determining classifications listing function",
             );
         }
       });
@@ -363,7 +363,7 @@ export const Search = ({
           searchPageErrorHandler(
             error instanceof Error
               ? error
-              : new Error(`Failed to perform a search: ${error}`)
+              : new Error(`Failed to perform a search: ${error}`),
           );
         }
         console.timeEnd(timerId);

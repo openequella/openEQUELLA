@@ -32,6 +32,6 @@ describe("getAdvancedSearchIdFromLocation", function () {
     "supports getting the ID for %s Advanced search URL",
     (_: string, location: Location) => {
       expect(getAdvancedSearchIdFromLocation(location)).toBe(uuid);
-    }
+    },
   );
 });

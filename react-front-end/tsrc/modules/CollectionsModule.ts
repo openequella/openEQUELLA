@@ -39,7 +39,7 @@ export interface Collection {
  * @param requiredPrivileges Privileges required to access Collections.
  */
 export const collectionListSummary = (
-  requiredPrivileges?: string[]
+  requiredPrivileges?: string[],
 ): Promise<Collection[]> => {
   const getCollections = (resumptionToken: string) =>
     OEQ.Collection.listCollections(API_BASE_URL, {
@@ -47,7 +47,7 @@ export const collectionListSummary = (
       resumption: resumptionToken,
     });
   return listEntities<OEQ.Common.BaseEntity>(getCollections).then(
-    (results) => results
+    (results) => results,
   );
 };
 
@@ -58,13 +58,13 @@ export const collectionListSummary = (
  * @returns { Collection[] | undefined } An array of `Collection` instances matching the specified UUIDs or undefined if none could be found.
  */
 export const findCollectionsByUuid = async (
-  collectionUuids: string[]
+  collectionUuids: string[],
 ): Promise<Collection[] | undefined> => {
   const collectionList = await collectionListSummary([
     OEQ.Acl.ACL_SEARCH_COLLECTION,
   ]);
   const filteredCollectionList = collectionList.filter((c) =>
-    collectionUuids.includes(c.uuid)
+    collectionUuids.includes(c.uuid),
   );
   return filteredCollectionList.length > 0 ? filteredCollectionList : undefined;
 };

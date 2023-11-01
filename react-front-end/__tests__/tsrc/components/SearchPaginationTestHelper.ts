@@ -70,7 +70,7 @@ interface PaginatorQueries extends PaginatorBaseQueries {
 }
 
 export const queryPaginatorControls = (
-  component: Element
+  component: Element,
 ): PaginatorQueries => {
   const _queryCaption = () =>
     component.querySelector<HTMLElement>("p.MuiTablePagination-selectLabel");
@@ -93,7 +93,7 @@ export const queryPaginatorControls = (
       component.querySelector<HTMLElement>("#lastPageButton"),
     queryPageCount: () =>
       component.querySelector<HTMLElement>(
-        ".MuiTablePagination-toolbar p:nth-of-type(2)"
+        ".MuiTablePagination-toolbar p:nth-of-type(2)",
       ),
     queryItemsPerPageOption: (pageItems: number) => {
       const c = _queryCaption();
@@ -106,7 +106,7 @@ export const queryPaginatorControls = (
     },
     queryItemsPerPageSelect: () =>
       component.querySelector<HTMLElement>(
-        'div[role="button"].MuiTablePagination-select'
+        'div[role="button"].MuiTablePagination-select',
       ),
   };
 
@@ -119,7 +119,7 @@ export const queryPaginatorControls = (
 
     if (!e) {
       throw new Error(
-        `Failed to get element: Items per page option (${pageItems})`
+        `Failed to get element: Items per page option (${pageItems})`,
       );
     }
 
@@ -131,25 +131,25 @@ export const queryPaginatorControls = (
     getCaption: _getCaption,
     getFirstPageButton: createGetQuery(
       "First page button",
-      baseQueries.queryFirstPageButton
+      baseQueries.queryFirstPageButton,
     ),
     getPreviousPageButton: createGetQuery(
       "Previous page button",
-      baseQueries.queryPreviousPageButton
+      baseQueries.queryPreviousPageButton,
     ),
     getNextPageButton: createGetQuery(
       "Next page button",
-      baseQueries.queryNextPageButton
+      baseQueries.queryNextPageButton,
     ),
     getLastPageButton: createGetQuery(
       "Last page button",
-      baseQueries.queryLastPageButton
+      baseQueries.queryLastPageButton,
     ),
     getPageCount: createGetQuery("Page count", baseQueries.queryPageCount),
     getItemsPerPageOption: _getItemsPerPageOption,
     getItemsPerPageSelect: createGetQuery(
       "Items per page select",
-      baseQueries.queryItemsPerPageSelect
+      baseQueries.queryItemsPerPageSelect,
     ),
   };
 };

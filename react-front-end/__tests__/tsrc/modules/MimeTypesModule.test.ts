@@ -53,7 +53,7 @@ describe("splitMimeTypes()", () => {
     'invalidates: "%s"',
     (invalidMimeType) => {
       expect(() => splitMimeType(invalidMimeType)).toThrow(TypeError);
-    }
+    },
   );
 });
 
@@ -102,9 +102,8 @@ describe("getMimeTypeDefaultViewerDetails()", () => {
 
   it("gets the correct default viewer details", async () => {
     mockedGetViewersForMimeType.mockResolvedValue(simpleFileViewerConfig);
-    const viewerDetails = await getMimeTypeDefaultViewerDetails(
-      "application/pdf"
-    );
+    const viewerDetails =
+      await getMimeTypeDefaultViewerDetails("application/pdf");
     expect(viewerDetails.viewerId).toEqual(defaultViewerId);
     expect(viewerDetails.config).toBeTruthy();
   });
@@ -116,7 +115,7 @@ describe("getMimeTypeDefaultViewerDetails()", () => {
       defaultViewer: htmlFiveViewerId,
     });
     await expect(getMimeTypeDefaultViewerDetails("image/jpeg")).rejects.toThrow(
-      ReferenceError
+      ReferenceError,
     );
   });
 });

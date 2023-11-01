@@ -28,7 +28,7 @@ const buildErrorFromValidation: (e: Errors) => Error = flow(
   A.map(({ message }) => message),
   A.filter(S.isString),
   A.intercalate(S.Monoid)("\n"),
-  (error) => new Error(error)
+  (error) => new Error(error),
 );
 
 const buildErrorFromString = (e: string | Errors): Error =>
@@ -43,10 +43,10 @@ const buildError = (e: string | Error | Errors): Error =>
  * @param either Either where the left could be a string, an instance of Error, or an instance of io-ts Errors
  */
 export const getOrThrow: <T>(
-  either: E.Either<string | Error | Errors, T>
+  either: E.Either<string | Error | Errors, T>,
 ) => T = flow(
   E.mapLeft(buildError),
   E.getOrElseW((error) => {
     throw error;
-  })
+  }),
 );

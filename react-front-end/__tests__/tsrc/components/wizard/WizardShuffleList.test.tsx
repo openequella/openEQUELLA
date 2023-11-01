@@ -40,7 +40,7 @@ describe("<WizardShuffleList/>", () => {
         values={new Set(values)}
         onChange={jest.fn()}
         mandatory={false}
-      />
+      />,
     );
 
     expect(values.every((v) => queryByText(v))).toBeTruthy();
@@ -58,13 +58,13 @@ describe("<WizardShuffleList/>", () => {
           values={new Set()}
           onChange={onChange}
           mandatory={false}
-        />
+        />,
       );
 
       const doAdd = async (value: string) => {
         await userEvent.type(
           getByLabelText(shuffleListStrings.newEntry),
-          `${value}${pressEnterKey ? "{enter}" : ""}`
+          `${value}${pressEnterKey ? "{enter}" : ""}`,
         );
         if (!pressEnterKey) {
           await userEvent.click(getByLabelText(addString));
@@ -74,7 +74,7 @@ describe("<WizardShuffleList/>", () => {
       const me = "Add me";
       await doAdd(me);
       expect(onChange).toHaveBeenLastCalledWith(new Set([me]));
-    }
+    },
   );
 
   it("supports removing a value", async () => {
@@ -90,13 +90,13 @@ describe("<WizardShuffleList/>", () => {
         values={testValues}
         onChange={onChange}
         mandatory={false}
-      />
+      />,
     );
 
     await userEvent.click(getByLabelText(`${deleteString} ${deleteMe}`));
 
     expect(onChange).toHaveBeenLastCalledWith(
-      pipe(testValues, RSET.remove(S.Eq)(deleteMe))
+      pipe(testValues, RSET.remove(S.Eq)(deleteMe)),
     );
   });
 });

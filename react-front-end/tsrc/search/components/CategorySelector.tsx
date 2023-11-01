@@ -86,7 +86,9 @@ export const CategorySelector = ({
   const [expandedClassifications, setExpandedClassifications] = useState<
     Map<number, boolean>
   >(
-    new Map(classifications.map((classification) => [classification.id, false]))
+    new Map(
+      classifications.map((classification) => [classification.id, false]),
+    ),
   );
 
   /**
@@ -110,10 +112,10 @@ export const CategorySelector = ({
    */
   const handleSelectCategories = (
     classificationID: number,
-    category: string
+    category: string,
   ) => {
     const categoryGroupIndex = selectedCategories.findIndex(
-      (c) => c.id === classificationID
+      (c) => c.id === classificationID,
     );
     const copiedCategoryGroups = [...selectedCategories];
 
@@ -268,12 +270,12 @@ export const CategorySelector = ({
           ? [applicable.concat(applicableCategory), notApplicable]
           : [applicable, notApplicable.concat({ term: term, count: 0 })];
       },
-      [[], []]
+      [[], []],
     );
 
     // Categories that apply to current search criteria but have not been selected.
     const notSelected = categories.filter(
-      (c) => !selectedTerms.includes(c.term)
+      (c) => !selectedTerms.includes(c.term),
     );
 
     return [...selectedApplicable, ...selectedNotApplicable, ...notSelected];
@@ -318,7 +320,7 @@ export const CategorySelector = ({
     .filter((classification) => classification.categories.length > 0)
     .sort(
       (prevClassification, nextClassification) =>
-        prevClassification.orderIndex - nextClassification.orderIndex
+        prevClassification.orderIndex - nextClassification.orderIndex,
     )
     .map((classification) => {
       const { id, name, maxDisplay } = classification;

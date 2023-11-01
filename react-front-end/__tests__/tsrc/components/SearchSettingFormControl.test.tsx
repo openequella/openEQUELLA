@@ -31,7 +31,7 @@ describe("SearchSettingFormControl.tsx", () => {
           <TextField id="testTextField" value="test" onChange={onChange} />
         }
         onChange={onChange}
-      />
+      />,
     );
   });
 

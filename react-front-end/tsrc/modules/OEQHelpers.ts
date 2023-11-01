@@ -28,7 +28,7 @@ export const summarisePagedBaseEntities = (list: OEQ.Common.BaseEntity[]) =>
   list.reduce(
     (prev: Map<string, string>, curr: OEQ.Common.BaseEntity) =>
       prev.set(curr.uuid, curr.name),
-    new Map<string, string>()
+    new Map<string, string>(),
   );
 
 const DEFAULT_RESUMPTION_TOKEN = "0:10";
@@ -42,7 +42,7 @@ const DEFAULT_RESUMPTION_TOKEN = "0:10";
  *        such as schemas and collections.
  */
 export const listEntities = async <T extends OEQ.Common.BaseEntity>(
-  getData: (resumptionToken: string) => Promise<OEQ.Common.PagedResult<T>>
+  getData: (resumptionToken: string) => Promise<OEQ.Common.PagedResult<T>>,
 ): Promise<T[]> => {
   const entities: T[] = [];
   let token: string | undefined = DEFAULT_RESUMPTION_TOKEN;

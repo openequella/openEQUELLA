@@ -62,7 +62,7 @@ describe("<GallerySearchResult />", () => {
     render(
       <Router history={createMemoryHistory()}>
         <GallerySearchResult items={items} />
-      </Router>
+      </Router>,
     ); // 16 entries in total.
 
   it("displays the lightbox when the image is clicked on", async () => {
@@ -108,12 +108,12 @@ describe("<GallerySearchResult />", () => {
         direction: string,
         newPosition: string,
         index: number,
-        arrowButtonLabel: string
+        arrowButtonLabel: string,
       ) => {
         const { getAllByLabelText, queryByLabelText } = renderGallery();
         await userEvent.click(getAllByLabelText(ariaLabel)[index]);
         expect(queryByLabelText(arrowButtonLabel)).toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -137,10 +137,10 @@ describe("<GallerySearchResult />", () => {
 
         await waitFor(() => {
           expect(
-            queryByText(screen.getByRole("dialog"), drmTerms.title)
+            queryByText(screen.getByRole("dialog"), drmTerms.title),
           ).toBeInTheDocument();
         });
-      }
+      },
     );
 
     it.each([
@@ -156,10 +156,10 @@ describe("<GallerySearchResult />", () => {
 
         await waitFor(() => {
           expect(
-            queryByText(screen.getByRole("dialog"), DRM_VIOLATION)
+            queryByText(screen.getByRole("dialog"), DRM_VIOLATION),
           ).toBeInTheDocument();
         });
-      }
+      },
     );
 
     it("supports viewing a DRM Item's summary page without accepting the terms", async () => {

@@ -69,13 +69,13 @@ export const commonCreateLti13PlatformProps: CreateLti13PlatformProps = {
  * Helper to render CreateLti13Platform page.
  */
 export const renderCreateLti13Platform = async (
-  props: CreateLti13PlatformProps = commonCreateLti13PlatformProps
+  props: CreateLti13PlatformProps = commonCreateLti13PlatformProps,
 ): Promise<RenderResult> => {
   const history = createMemoryHistory();
   const renderResult = render(
     <Router history={history}>
       <CreateLti13Platform {...props} />
-    </Router>
+    </Router>,
   );
 
   await renderResult.findByText(saveLabel);
@@ -88,7 +88,7 @@ export const renderCreateLti13Platform = async (
  */
 const getGeneralDetailsInput = (
   container: HTMLElement,
-  label: string
+  label: string,
 ): Element => {
   const input = container.querySelector(`div[aria-label='${label}'] input`);
   if (!input) {
@@ -102,7 +102,7 @@ const getGeneralDetailsInput = (
  */
 export const getGeneralDetailsInputOutline = (
   container: HTMLElement,
-  label: string
+  label: string,
 ) => {
   const outline = getGeneralDetailsInput(container, label).parentElement;
   if (!outline) {
@@ -118,7 +118,7 @@ export const getGeneralDetailsInputOutline = (
 export const typeGeneralDetails = async (
   container: HTMLElement,
   label: string,
-  value: string
+  value: string,
 ): Promise<void> => {
   const input = getGeneralDetailsInput(container, label);
   await userEvent.type(input, `${value}`);
@@ -132,7 +132,7 @@ export const typeGeneralDetails = async (
  */
 export const configureGeneralDetails = async (
   container: HTMLElement,
-  detailsMap: Map<string, string>
+  detailsMap: Map<string, string>,
 ): Promise<void> => {
   for (const [label, value] of Array.from(detailsMap)) {
     await typeGeneralDetails(container, label, value);
@@ -147,11 +147,11 @@ export const configureGeneralDetails = async (
  */
 export const configureUsableBy = async (
   renderResult: RenderResult,
-  username: string
+  username: string,
 ): Promise<void> => {
   // open usable by control
   await userEvent.click(
-    renderResult.getByLabelText(`${editLabel} ${usableByLabel}`)
+    renderResult.getByLabelText(`${editLabel} ${usableByLabel}`),
   );
   // add a new user in acl expression builder
   const aclExpressionBuilderDialog = renderResult.getByRole("dialog");
@@ -169,13 +169,13 @@ export const configureUsableBy = async (
 export const configureUnknownUserHandling = async (
   renderResult: RenderResult,
   option: string,
-  groupName: string
+  groupName: string,
 ): Promise<void> => {
   //choose the value provided in `option` for unknown user handling
   await selectOption(
     renderResult.container,
     `div[aria-label='${selectLabel} ${unknownUserHandlingLabel}'] div`,
-    option
+    option,
   );
   const selectGroupsButton = await renderResult.findByText(selectGroupsLabel);
   await userEvent.click(selectGroupsButton);
@@ -194,7 +194,7 @@ export const configureUnknownUserHandling = async (
 const configureSelectRoleDialog = async (
   renderResult: RenderResult,
   label: string,
-  roleName: string
+  roleName: string,
 ): Promise<void> => {
   await userEvent.click(renderResult.getByLabelText(`${editLabel} ${label}`));
   const dialog = renderResult.getByRole("dialog");
@@ -210,7 +210,7 @@ const configureSelectRoleDialog = async (
  */
 export const configureInstructorRoles = async (
   renderResult: RenderResult,
-  roleName: string
+  roleName: string,
 ): Promise<void> =>
   configureSelectRoleDialog(renderResult, instructorRolesLabel, roleName);
 
@@ -222,7 +222,7 @@ export const configureInstructorRoles = async (
  */
 export const configureUnknownRoles = async (
   renderResult: RenderResult,
-  roleName: string
+  roleName: string,
 ): Promise<void> =>
   configureSelectRoleDialog(renderResult, unknownRolesLabel, roleName);
 
@@ -236,11 +236,11 @@ export const configureUnknownRoles = async (
 export const configureCustomRoles = async (
   renderResult: RenderResult,
   ltiRoleName: string,
-  oeqRoleName: string
+  oeqRoleName: string,
 ): Promise<void> => {
   // select custom roles
   await userEvent.click(
-    renderResult.getByLabelText(`${editLabel} ${customRolesLabel}`)
+    renderResult.getByLabelText(`${editLabel} ${customRolesLabel}`),
   );
   const selectCustomRoleDialog = renderResult.getByRole("dialog");
   await selectLtiRole(selectCustomRoleDialog, ltiRoleName);

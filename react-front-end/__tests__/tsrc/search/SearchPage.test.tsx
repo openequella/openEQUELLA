@@ -146,7 +146,7 @@ describe("<SearchPage/>", () => {
 
         const dialog = page.getByRole("dialog");
         const confirmBtn = dialog.querySelector(
-          "#confirm-dialog-confirm-button"
+          "#confirm-dialog-confirm-button",
         );
         if (!confirmBtn) {
           throw new Error("Failed to find confirm button.");
@@ -159,10 +159,10 @@ describe("<SearchPage/>", () => {
           updatedIcon,
           {
             selector: "button",
-          }
+          },
         );
         expect(updatedHeartIcon).toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -170,7 +170,7 @@ describe("<SearchPage/>", () => {
     it("supports creating a favourite of the current search", async () => {
       const successfulSave = await addSearchToFavourites(
         await renderSearchPage(),
-        "new favourite"
+        "new favourite",
       );
       expect(successfulSave).toBe(true);
     });
@@ -239,7 +239,7 @@ describe("<SearchPage/>", () => {
         mode: string,
         gallerySearch,
         listClassifications,
-        mockResponse
+        mockResponse,
       ) => {
         expect(queryListItems().length).toBeGreaterThan(0);
         expect(queryGalleryItems()).toHaveLength(0);
@@ -248,7 +248,7 @@ describe("<SearchPage/>", () => {
         await Promise.all([
           gallerySearch.mockResolvedValue(mockResponse),
           listClassifications.mockResolvedValue(
-            CategorySelectorMock.classifications
+            CategorySelectorMock.classifications,
           ),
           changeMode(mode),
         ]);
@@ -261,7 +261,7 @@ describe("<SearchPage/>", () => {
         expect(queryGalleryItems().length).toBeGreaterThan(0);
         expect(queryListItems()).toHaveLength(0);
         expect(queryMimeTypesSelector(page.container)).not.toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -293,7 +293,7 @@ describe("<SearchPage/>", () => {
           ...defaultSearchPageOptions,
           selectedCategories: selectedCategories,
         },
-        "includeAttachments"
+        "includeAttachments",
       );
 
       expect(mockListClassification).toHaveBeenLastCalledWith(expected);
@@ -309,38 +309,38 @@ describe("<SearchPage/>", () => {
     it("Should contain the correct controls", async () => {
       const refineSearchPanel = getRefineSearchPanel(page.container);
       const collapsibleSection = refineSearchPanel.querySelector(
-        ".collapsibleRefinePanel"
+        ".collapsibleRefinePanel",
       );
       if (!collapsibleSection) {
         throw new Error(
-          "Unable to find collapsible filter section inside refine search panel"
+          "Unable to find collapsible filter section inside refine search panel",
         );
       }
 
       expect(collapsibleSection).toContainElement(
-        queryOwnerSelector(refineSearchPanel)
+        queryOwnerSelector(refineSearchPanel),
       );
       expect(collapsibleSection).toContainElement(
-        queryDateRangeSelector(refineSearchPanel)
+        queryDateRangeSelector(refineSearchPanel),
       );
       expect(collapsibleSection).toContainElement(
-        querySearchAttachmentsSelector(refineSearchPanel)
+        querySearchAttachmentsSelector(refineSearchPanel),
       );
       expect(collapsibleSection).not.toContainElement(
-        queryCollectionSelector(refineSearchPanel)
+        queryCollectionSelector(refineSearchPanel),
       );
     });
 
     it("Should change button text when clicked", async () => {
       const expansionButton = page.container.querySelector(
-        "#collapsibleRefinePanelButton"
+        "#collapsibleRefinePanelButton",
       );
       if (!expansionButton) {
         throw new Error("Unable to find collapsible refine panel button");
       }
       await userEvent.click(expansionButton);
       expect(expansionButton).toHaveTextContent(
-        languageStrings.common.action.showLess
+        languageStrings.common.action.showLess,
       );
     });
   });
@@ -353,17 +353,19 @@ describe("<SearchPage/>", () => {
 
       const { getByLabelText } = await renderSearchPage();
       const copySearchButton = getByLabelText(
-        languageStrings.searchpage.shareSearchHelperText
+        languageStrings.searchpage.shareSearchHelperText,
       );
 
       await userEvent.click(copySearchButton);
 
       expect(mockConvertParamsToSearchOptions).toHaveBeenCalledTimes(1);
       expect(mockClipboard).toHaveBeenCalledWith(
-        "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
+        "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
       );
       expect(
-        screen.getByText(languageStrings.searchpage.shareSearchConfirmationText)
+        screen.getByText(
+          languageStrings.searchpage.shareSearchConfirmationText,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -374,12 +376,14 @@ describe("<SearchPage/>", () => {
       ...collectionNames: string[]
     ) => {
       await userEvent.click(
-        page.getByLabelText(languageStrings.searchpage.collectionSelector.title)
+        page.getByLabelText(
+          languageStrings.searchpage.collectionSelector.title,
+        ),
       );
       await Promise.all(
         collectionNames.map(
-          async (name) => await userEvent.click(screen.getByText(name))
-        )
+          async (name) => await userEvent.click(screen.getByText(name)),
+        ),
       );
     };
 
@@ -387,7 +391,7 @@ describe("<SearchPage/>", () => {
       const page = await renderSearchPage();
       await selectCollections(page, getCollectionMap[0].name);
       expect(
-        page.queryByLabelText(languageStrings.searchpage.export.title)
+        page.queryByLabelText(languageStrings.searchpage.export.title),
       ).toBeInTheDocument();
     });
 
@@ -400,12 +404,12 @@ describe("<SearchPage/>", () => {
         const page = await renderSearchPage();
         await selectCollections(page, ...collections);
         await userEvent.click(
-          page.getByLabelText(languageStrings.searchpage.export.title)
+          page.getByLabelText(languageStrings.searchpage.export.title),
         );
         expect(
-          screen.getByText(languageStrings.searchpage.export.collectionLimit)
+          screen.getByText(languageStrings.searchpage.export.collectionLimit),
         ).toBeInTheDocument();
-      }
+      },
     );
 
     it("doesn't show the Download button if user have no permission", async () => {
@@ -416,11 +420,11 @@ describe("<SearchPage/>", () => {
         {
           ...getCurrentUserMock,
           canDownloadSearchResult: false,
-        }
+        },
       );
 
       expect(
-        queryByLabelText(languageStrings.searchpage.export.title)
+        queryByLabelText(languageStrings.searchpage.export.title),
       ).not.toBeInTheDocument();
     });
   });
@@ -466,17 +470,17 @@ describe("<SearchPage/>", () => {
         mode: string,
         settings: OEQ.SearchSettings.Settings,
         enabledModes: string[],
-        disabledModes: string[]
+        disabledModes: string[],
       ) => {
         mockSearchSettings.mockResolvedValueOnce(settings);
         const { queryByLabelText } = await renderSearchPage();
         disabledModes.forEach((hiddenLabel) =>
-          expect(queryByLabelText(hiddenLabel)).not.toBeInTheDocument()
+          expect(queryByLabelText(hiddenLabel)).not.toBeInTheDocument(),
         );
         enabledModes.forEach((visibleLabel) =>
-          expect(queryByLabelText(visibleLabel)).toBeInTheDocument()
+          expect(queryByLabelText(visibleLabel)).toBeInTheDocument(),
         );
-      }
+      },
     );
   });
 
@@ -509,12 +513,12 @@ describe("<SearchPage/>", () => {
       async (
         testName: string,
         getSelector: (container: HTMLElement) => HTMLElement | null,
-        disableSelector: OEQ.SearchSettings.Settings
+        disableSelector: OEQ.SearchSettings.Settings,
       ) => {
         mockSearchSettings.mockResolvedValueOnce(disableSelector);
         const page = await renderSearchPage();
         expect(getSelector(page.container)).toBeNull();
-      }
+      },
     );
 
     it("If not MIME type filters are available, the selector should be hidden", async () => {
@@ -540,7 +544,7 @@ describe("<SearchPage/>", () => {
 
       searchResults.filter(SearchModule.isLiveItem).forEach(({ uuid }) => {
         expect(
-          getGlobalCourseList().prepareDraggableAndBind
+          getGlobalCourseList().prepareDraggableAndBind,
         ).toHaveBeenCalledWith(`#${uuid}`, true);
       });
     });
@@ -549,7 +553,7 @@ describe("<SearchPage/>", () => {
       const { queryByTitle } = await renderSearchPage();
 
       const copySearchButton = queryByTitle(
-        languageStrings.searchpage.shareSearchHelperText
+        languageStrings.searchpage.shareSearchHelperText,
       );
       expect(copySearchButton).not.toBeInTheDocument();
     });
@@ -559,7 +563,7 @@ describe("<SearchPage/>", () => {
     it("should clear search options and perform a new search", async () => {
       await renderSearchPage();
       const newSearchButton = screen.getByText(
-        languageStrings.searchpage.newSearch
+        languageStrings.searchpage.newSearch,
       );
 
       await userEvent.click(newSearchButton);
@@ -606,14 +610,14 @@ describe("<SearchPage/>", () => {
 
       // Test going to the last page
       const lastPageButton = screen.getByLabelText(
-        languageStrings.searchpage.pagination.lastPageButton
+        languageStrings.searchpage.pagination.lastPageButton,
       );
 
       await userEvent.click(lastPageButton);
       expect(getPageCount()).toHaveTextContent("11–12 of 12");
 
       const firstPageButton = screen.getByLabelText(
-        languageStrings.searchpage.pagination.firstPageButton
+        languageStrings.searchpage.pagination.firstPageButton,
       );
       // ... and now back to the first
       await userEvent.click(firstPageButton);
@@ -636,8 +640,8 @@ describe("<SearchPage/>", () => {
 
       await userEvent.click(
         screen.getByLabelText(
-          languageStrings.searchpage.collectionSelector.title
-        )
+          languageStrings.searchpage.collectionSelector.title,
+        ),
       );
       await userEvent.click(screen.getByText(targetCollection.name));
 
@@ -676,7 +680,7 @@ describe("<SearchPage/>", () => {
     it("Should search attachments if Yes is selected", async () => {
       await changeOption(
         getSearchAttachmentsSelector(page.container),
-        yesLabel
+        yesLabel,
       );
       expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
     });
@@ -687,7 +691,7 @@ describe("<SearchPage/>", () => {
       languageStrings.searchpage.statusSelector;
 
     const expectSearchItemsCalledWithStatus = (
-      status: OEQ.Common.ItemStatus[]
+      status: OEQ.Common.ItemStatus[],
     ) =>
       expect(mockSearch).toHaveBeenLastCalledWith({
         ...defaultSearchPageOptions,
@@ -777,7 +781,7 @@ describe("<SearchPage/>", () => {
       await waitForSearchCompleted();
 
       expect(SearchModule.searchItems).toHaveBeenCalledWith(
-        defaultSearchPageOptions
+        defaultSearchPageOptions,
       );
     });
   });
@@ -788,13 +792,13 @@ describe("<SearchPage/>", () => {
       const page = await renderSearchPage();
       await userEvent.click(
         page.getByLabelText(
-          languageStrings.searchpage.mimeTypeFilterSelector.helperText
-        )
+          languageStrings.searchpage.mimeTypeFilterSelector.helperText,
+        ),
       );
       await Promise.all(
         filters.map(
-          async ({ name }) => await userEvent.click(screen.getByText(name))
-        )
+          async ({ name }) => await userEvent.click(screen.getByText(name)),
+        ),
       );
 
       expect(mockSearch).toHaveBeenLastCalledWith({
@@ -834,7 +838,7 @@ describe("<SearchPage/>", () => {
     it("should display the button controlling the side panel visibility", async () => {
       const page = await renderSearchPage(undefined, 600);
       const refineSearchButton = page.queryByLabelText(
-        languageStrings.searchpage.refineSearchPanel.title
+        languageStrings.searchpage.refineSearchPanel.title,
       );
       expect(refineSearchButton).toBeInTheDocument();
       await userEvent.click(refineSearchButton!); // It's safe to add a '!' now.
@@ -864,7 +868,7 @@ describe("<SearchPage/>", () => {
       });
 
       expect(container).toHaveTextContent(
-        "266bb0ff-a730-4658-aec0-c68bbefc227c"
+        "266bb0ff-a730-4658-aec0-c68bbefc227c",
       );
       expect(container).not.toHaveTextContent("No results found."); // Should be the lang string
     });
@@ -894,7 +898,7 @@ describe("<SearchPage/>", () => {
       await selectOption(
         container,
         SORTORDER_SELECT_ID,
-        languageStrings.settings.searching.searchPageSettings.lastModified
+        languageStrings.settings.searching.searchPageSettings.lastModified,
       );
 
       // Because sorting is done on the server-side and we are using mock data, we can only check if the selected
@@ -911,7 +915,7 @@ describe("<SearchPage/>", () => {
       await renderSearchPage();
 
       const wildcardModeSwitch = screen.getByText(
-        languageStrings.searchpage.wildcardSearch
+        languageStrings.searchpage.wildcardSearch,
       );
       await userEvent.click(wildcardModeSwitch);
 

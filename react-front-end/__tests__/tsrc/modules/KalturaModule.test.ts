@@ -28,7 +28,7 @@ describe("parseExternalId", () => {
       entryId: "1_asdf1234",
     };
     const result = parseExternalId(
-      `${playerDetails.partnerId}/${playerDetails.uiconfId}/${playerDetails.entryId}`
+      `${playerDetails.partnerId}/${playerDetails.uiconfId}/${playerDetails.entryId}`,
     );
     expect(result).toStrictEqual(playerDetails);
   });
@@ -43,6 +43,6 @@ describe("parseExternalId", () => {
     "throws for malformed externalId inputs - %s",
     (_: string, testExternalId: string) => {
       expect(() => parseExternalId(testExternalId)).toThrow(TypeError);
-    }
+    },
   );
 });

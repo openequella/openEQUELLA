@@ -104,7 +104,7 @@ describe("buildFieldValueMapFromPathValueMap", () => {
     const pathValueMap: PathValueMap = new Map([[path, ["hello"]]]);
     const updatedMap = buildFieldValueMapFromPathValueMap(
       pathValueMap,
-      fieldValueMap
+      fieldValueMap,
     );
 
     expect(updatedMap).toStrictEqual(new Map([[controlTarget, ["hello"]]]));

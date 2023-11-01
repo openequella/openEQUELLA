@@ -57,7 +57,7 @@ KeywordFoundInAttachmentSearchResult.args = {
 };
 
 export const CustomMetadataSearchResult: StoryFn<SearchResultProps> = (
-  args
+  args,
 ) => <SearchResult {...args} />;
 CustomMetadataSearchResult.args = {
   ...BasicSearchResult.args,
@@ -83,7 +83,7 @@ HighlightedSearchResult.args = {
 };
 
 export const CustomActionButtonSearchResult: StoryFn<SearchResultProps> = (
-  args
+  args,
 ) => <SearchResult {...args} />;
 
 CustomActionButtonSearchResult.args = {
@@ -96,7 +96,7 @@ CustomActionButtonSearchResult.args = {
 };
 
 export const CustomTitleHandlerSearchResult: StoryFn<SearchResultProps> = (
-  args
+  args,
 ) => <SearchResult {...args} />;
 
 CustomTitleHandlerSearchResult.args = {

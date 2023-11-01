@@ -56,7 +56,7 @@ describe("isLightboxSupportedMimeType", () => {
     [CustomMimeTypes.YOUTUBE, true],
     [CustomMimeTypes.KALTURA, true],
   ])("MIME type: %s, supported: %s", (mimeType: string, expected: boolean) =>
-    expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected)
+    expect(isLightboxSupportedMimeType(mimeType)).toEqual(expected),
   );
 });
 
@@ -105,13 +105,13 @@ describe("view previous/next attachment", () => {
       config: LightboxConfig,
       handler: jest.Mock,
       buttonText: string,
-      updatedTitle: string
+      updatedTitle: string,
     ) => {
       const { getByLabelText, queryByText } = renderLightbox(config);
       await userEvent.click(getByLabelText(buttonText));
       expect(handler).toHaveBeenCalledTimes(1);
       expect(queryByText(updatedTitle)).toBeInTheDocument();
-    }
+    },
   );
 });
 
@@ -121,7 +121,7 @@ describe("Support for YouTube videos", () => {
   it("displays an embedded YouTube player for valid view URL src", () => {
     const { queryByTitle } = renderLightbox(youTubeLightboxConfig);
     expect(
-      queryByTitle(languageStrings.youTubePlayer.title)
+      queryByTitle(languageStrings.youTubePlayer.title),
     ).toBeInTheDocument();
   });
 
@@ -131,7 +131,7 @@ describe("Support for YouTube videos", () => {
       src: "https://www.youtube.com/watch/", // missing param v=1234xyz
     });
     expect(
-      queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId)
+      queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId),
     ).toBeInTheDocument();
   });
 });
@@ -145,7 +145,7 @@ describe("supports viewing Item Summary page", () => {
     async (
       _: string,
       inSelectionSession: boolean,
-      onClick: jest.Mock | jest.SpyInstance
+      onClick: jest.Mock | jest.SpyInstance,
     ) => {
       if (inSelectionSession) {
         updateMockGetBaseUrl();
@@ -160,19 +160,19 @@ describe("supports viewing Item Summary page", () => {
         },
       });
       const viewSummaryPageButton = queryByLabelText(
-        languageStrings.lightboxComponent.openSummaryPage
+        languageStrings.lightboxComponent.openSummaryPage,
       );
       expect(viewSummaryPageButton).toBeInTheDocument();
       await userEvent.click(viewSummaryPageButton!);
       expect(onClick).toHaveBeenCalledTimes(1);
-    }
+    },
   );
 
   it("does not display a item summary button if no item details provided", () => {
     const { queryByLabelText } = renderLightbox(displayImage.args!.config!);
 
     const viewSummaryPageButton = queryByLabelText(
-      languageStrings.lightboxComponent.openSummaryPage
+      languageStrings.lightboxComponent.openSummaryPage,
     );
     expect(viewSummaryPageButton).not.toBeInTheDocument();
   });
@@ -186,7 +186,7 @@ describe("Provide embed code", () => {
     });
     await userEvent.click(codeIconButton);
     expect(
-      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label)
+      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label),
     ).toBeInTheDocument();
   });
 });

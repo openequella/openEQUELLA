@@ -61,7 +61,7 @@ LotsOfOptions.args = {
     NEA.range(100, 200),
     NEA.map((n) => `Option ${n}`),
     NEA.reduce(new Map<string, string>(), (m, label) =>
-      m.set(label.toLowerCase().replace(" ", ""), label)
-    )
+      m.set(label.toLowerCase().replace(" ", ""), label),
+    ),
   ),
 };

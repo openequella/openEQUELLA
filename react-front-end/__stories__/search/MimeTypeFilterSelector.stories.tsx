@@ -39,7 +39,7 @@ const commonProps = {
 };
 
 export const NoFilterSelected: StoryFn<MimeTypeFilterSelectorProps> = (
-  args
+  args,
 ) => <MimeTypeFilterSelector {...args} />;
 
 NoFilterSelected.args = {

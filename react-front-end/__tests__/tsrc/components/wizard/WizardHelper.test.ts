@@ -58,7 +58,7 @@ describe("render()", () => {
       controls,
       noFieldValues,
       logOnChange,
-      buildVisibilityScriptContext(noFieldValues, guestUser)
+      buildVisibilityScriptContext(noFieldValues, guestUser),
     );
     expect(elements).toHaveLength(controls.length);
 
@@ -78,13 +78,13 @@ describe("render()", () => {
             userselector: () => "WizardUserSelector",
             termselector: () => "WizardSimpleTermSelector",
             _: () => "WizardUnsupported",
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
     const componentCount = pipe(
       elements,
-      countBy<JSX.Element>((e) => e.type.name)
+      countBy<JSX.Element>((e) => e.type.name),
     );
 
     expect(componentCount).toStrictEqual(expectedComponentCount);
@@ -95,10 +95,10 @@ describe("render()", () => {
       controls,
       noFieldValues,
       logOnChange,
-      buildVisibilityScriptContext(noFieldValues, guestUser)
+      buildVisibilityScriptContext(noFieldValues, guestUser),
     );
     expect(
-      elements.filter((e) => e.type.name === "WizardUnsupported")
+      elements.filter((e) => e.type.name === "WizardUnsupported"),
     ).toHaveLength(1);
   });
 
@@ -107,10 +107,10 @@ describe("render()", () => {
       [{ controlType: "unknown" }],
       noFieldValues,
       logOnChange,
-      buildVisibilityScriptContext(noFieldValues, guestUser)
+      buildVisibilityScriptContext(noFieldValues, guestUser),
     );
     expect(
-      elements.filter((e) => e.type.name === "WizardUnsupported")
+      elements.filter((e) => e.type.name === "WizardUnsupported"),
     ).toHaveLength(1);
   });
 
@@ -142,13 +142,13 @@ describe("render()", () => {
         controls,
         fieldValues,
         logOnChange,
-        buildVisibilityScriptContext(fieldValues, guestUser)
+        buildVisibilityScriptContext(fieldValues, guestUser),
       );
       // Test the field(s) were set
       expect(
-        elements.filter((e) => e.props.value === value.value[0])
+        elements.filter((e) => e.props.value === value.value[0]),
       ).toHaveLength(fieldsSet);
-    }
+    },
   );
 
   it("throws an error if the incorrect control value type is provided", () => {
@@ -158,8 +158,8 @@ describe("render()", () => {
         controls,
         fieldValues,
         logOnChange,
-        buildVisibilityScriptContext(fieldValues, guestUser)
-      )
+        buildVisibilityScriptContext(fieldValues, guestUser),
+      ),
     ).toThrow(TypeError);
   });
 
@@ -167,7 +167,7 @@ describe("render()", () => {
   const checkboxValues = (values: string[]): FieldValueMap =>
     M.singleton(
       { schemaNode: [checkBoxSchemaNode], type: "checkboxgroup" },
-      values
+      values,
     );
   const simpleContainsScript = `return xml.contains('${checkBoxSchemaNode}', 'one');`;
   const simpleGetScript = `return xml.get('${checkBoxSchemaNode}') === 'one';`;
@@ -241,10 +241,10 @@ describe("render()", () => {
         buildVisibilityScriptContext(values, {
           ...guestUser,
           roles: [aRoleUuid],
-        })
+        }),
       );
       expect(visibleControls).toHaveLength(controlsVisible);
-    }
+    },
   );
 
   it("calls onChange to clear the value for any hidden control", () => {
@@ -272,7 +272,7 @@ describe("render()", () => {
       ],
       testValues,
       mockOnChange,
-      buildVisibilityScriptContext(testValues, guestUser)
+      buildVisibilityScriptContext(testValues, guestUser),
     );
 
     expect(mockOnChange).toHaveBeenCalledTimes(1);

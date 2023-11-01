@@ -67,7 +67,7 @@ export interface UnknownUserHandlingControlProps
    */
   onChange: (
     selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
+    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
   ) => void;
 }
 
@@ -118,7 +118,7 @@ const UnknownUserHandlingControl = ({
                 onChange(
                   event.target.value as OEQ.LtiPlatform.UnknownUserHandling,
                   // if user regret and switch back to CREATE, still keep the default group.
-                  event.target.value === "CREATE" ? defaultGroups : RS.empty
+                  event.target.value === "CREATE" ? defaultGroups : RS.empty,
                 );
               }}
             >

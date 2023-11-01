@@ -28,7 +28,7 @@ export default {
 } as Meta<KalturaPlayerEmbedProps>;
 
 export const EmbeddedKalturaVideoPlayer: StoryFn<KalturaPlayerEmbedProps> = (
-  args
+  args,
 ) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayer.args = {
   // These video details were figured out from the publicly accessible demo video at:

@@ -47,7 +47,7 @@ import { Template, TemplateProps, TemplateUpdate } from "./Template";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
-  () => import("../search/AdvancedSearchPage")
+  () => import("../search/AdvancedSearchPage"),
 );
 
 const renderData = getRenderData();
@@ -64,7 +64,7 @@ const beforeunload = function (e: BeforeUnloadEvent) {
 const removeLegacyCss = (): void => {
   const head = document.getElementsByTagName("head")[0];
   const legacyCss = window.document.querySelector(
-    `link[href="${LEGACY_CSS_URL}"]`
+    `link[href="${LEGACY_CSS_URL}"]`,
   );
   if (legacyCss) {
     head.removeChild(legacyCss);
@@ -98,7 +98,7 @@ export default function IndexPage() {
       }
       setPreventNavMessage(message);
     },
-    [setPreventNavMessage]
+    [setPreventNavMessage],
   );
 
   const nonBlankNavMessage = preventNavMessage ? preventNavMessage : "";
@@ -118,7 +118,7 @@ export default function IndexPage() {
       setPreventNavigation,
       isReloadNeeded: !renderData?.newUI, // Indicate that new UI is displayed but not enabled.
     }),
-    [setPreventNavigation, updateTemplate]
+    [setPreventNavigation, updateTemplate],
   );
 
   const newUIRoutes = React.useMemo(
@@ -148,7 +148,7 @@ export default function IndexPage() {
             }}
           />
         )),
-    [mkRouteProps]
+    [mkRouteProps],
   );
 
   const errorCallback = React.useCallback((err: ErrorResponse) => {

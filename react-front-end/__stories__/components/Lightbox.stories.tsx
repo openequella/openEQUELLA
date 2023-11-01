@@ -93,7 +93,7 @@ displayYouTube.args = {
 };
 
 export const unsupportedContent: StoryFn<LightboxProps> = (
-  args: LightboxProps
+  args: LightboxProps,
 ) => <Lightbox {...args} />;
 unsupportedContent.args = {
   open: true,
@@ -105,7 +105,7 @@ unsupportedContent.args = {
 };
 
 export const NavigateAttachments: StoryFn<LightboxProps> = (
-  args: LightboxProps
+  args: LightboxProps,
 ) => <Lightbox {...args} />;
 NavigateAttachments.args = {
   ...displayImage.args,
@@ -117,7 +117,7 @@ NavigateAttachments.args = {
 };
 
 export const enableSummaryPage: StoryFn<LightboxProps> = (
-  args: LightboxProps
+  args: LightboxProps,
 ) => <Lightbox {...args} />;
 enableSummaryPage.args = {
   ...displayImage.args,

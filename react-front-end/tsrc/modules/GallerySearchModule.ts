@@ -104,15 +104,15 @@ const warnOnLeft = E.mapLeft((left) => {
  * @param attachment validation candidate
  */
 const validateAttachmentType = (
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): E.Either<string, string> =>
   pipe(
     attachment.attachmentType,
     E.fromPredicate(
       (type) => [ATYPE_FILE, ATYPE_KALTURA, ATYPE_YOUTUBE].includes(type),
       (type) =>
-        `Attachments of type ${type} are not supported. Attachment ID: ${attachment.id}`
-    )
+        `Attachments of type ${type} are not supported. Attachment ID: ${attachment.id}`,
+    ),
   );
 
 /**
@@ -122,7 +122,7 @@ const validateAttachmentType = (
  * @param attachment validation candidate
  */
 const validateThumbnailRequirements = (
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): E.Either<string, OEQ.Search.Attachment> =>
   pipe(
     attachment,
@@ -131,8 +131,8 @@ const validateThumbnailRequirements = (
         a.attachmentType === ATYPE_FILE
           ? !!a.hasGeneratedThumb // result based on what the server tells us
           : true, // For non `file` attachments, we currently do thumbnails ourselves
-      (a) => `Attachment ${a.id} does not meet thumbnail requirements.`
-    )
+      (a) => `Attachment ${a.id} does not meet thumbnail requirements.`,
+    ),
   );
 
 /**
@@ -156,15 +156,15 @@ const mimeType = ({
             pipe(
               mimeType,
               E.fromNullable(
-                `File attachment ${id} is missing a defined MIME type`
-              )
+                `File attachment ${id} is missing a defined MIME type`,
+              ),
             ),
         ],
         [ATYPE_KALTURA, () => E.right(CustomMimeTypes.KALTURA)],
         [ATYPE_YOUTUBE, () => E.right(CustomMimeTypes.YOUTUBE)],
       ],
-      () => unsupportedAttachmentType(id, attachmentType)
-    )
+      () => unsupportedAttachmentType(id, attachmentType),
+    ),
   );
 
 /**
@@ -176,7 +176,7 @@ const mimeType = ({
  */
 const thumbnailLink = (
   { attachmentType, id, links }: OEQ.Search.Attachment,
-  type: "small" | "large"
+  type: "small" | "large",
 ): E.Either<string, string> => {
   const isSmall = type === "small";
   const fileThumbnailLink = (basePath: string): string =>
@@ -189,9 +189,9 @@ const thumbnailLink = (
     : pipe(
         links.externalId,
         E.fromNullable(
-          `Expected 'links.externalId' missing for attachment ${id} with type ${attachmentType}`
+          `Expected 'links.externalId' missing for attachment ${id} with type ${attachmentType}`,
         ),
-        E.map(youTubeLink)
+        E.map(youTubeLink),
       );
 };
 
@@ -208,7 +208,7 @@ const thumbnailLink = (
 const directUrl = (
   itemUuid: string,
   itemVersion: number,
-  { attachmentType, filePath, id, links }: OEQ.Search.Attachment
+  { attachmentType, filePath, id, links }: OEQ.Search.Attachment,
 ): E.Either<string, string> =>
   pipe(
     attachmentType,
@@ -221,8 +221,8 @@ const directUrl = (
               filePath,
               E.fromNullable(`File attachment ${id} is missing a 'filePath'.`),
               E.map((path) =>
-                buildFileAttachmentUrl(itemUuid, itemVersion, path)
-              )
+                buildFileAttachmentUrl(itemUuid, itemVersion, path),
+              ),
             ),
         ],
         // For Kaltura media we don't really have a direct URL, we can only view them via the
@@ -234,11 +234,11 @@ const directUrl = (
             pipe(
               links.externalId,
               E.fromNullable(
-                `Kaltura attachment ${id} is missing an 'externalId'.`
+                `Kaltura attachment ${id} is missing an 'externalId'.`,
               ),
               E.map((externalId) =>
-                kaltura.buildViewUrl(links.view, externalId)
-              )
+                kaltura.buildViewUrl(links.view, externalId),
+              ),
             ),
         ],
         [
@@ -247,14 +247,14 @@ const directUrl = (
             pipe(
               links.externalId,
               E.fromNullable(
-                `YouTube attachment ${id} is missing an 'externalId'.`
+                `YouTube attachment ${id} is missing an 'externalId'.`,
               ),
-              E.map(yt.buildViewUrl)
+              E.map(yt.buildViewUrl),
             ),
         ],
       ],
-      () => unsupportedAttachmentType(id, attachmentType)
-    )
+      () => unsupportedAttachmentType(id, attachmentType),
+    ),
   );
 
 /**
@@ -267,7 +267,7 @@ const directUrl = (
 export const buildGalleryEntry = (
   itemUuid: string,
   itemVersion: number,
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): E.Either<string, GalleryEntry> =>
   Do(E.either)
     .do(validateAttachmentType(attachment))
@@ -291,15 +291,15 @@ export const buildGalleryEntry = (
 const createMainEntry = (
   itemUuid: string,
   itemVersion: number,
-  attachments: OEQ.Search.Attachment[]
+  attachments: OEQ.Search.Attachment[],
 ): E.Either<string, GalleryEntry> =>
   pipe(
     attachments,
     A.head,
     E.fromOption(() => "Missing attachment for main entry"),
     E.chain((attachment) =>
-      buildGalleryEntry(itemUuid, itemVersion, attachment)
-    )
+      buildGalleryEntry(itemUuid, itemVersion, attachment),
+    ),
   );
 
 const attachmentToGalleryEntry =
@@ -308,7 +308,7 @@ const attachmentToGalleryEntry =
     pipe(
       buildGalleryEntry(itemUuid, itemVersion, attachment),
       // Let's log any issues - just so we're aware of any odd data
-      warnOnLeft
+      warnOnLeft,
     ) as E.Either<string, GalleryEntry>;
 
 /**
@@ -324,7 +324,7 @@ const attachmentToGalleryEntry =
 const createAdditionalEntries = (
   itemUuid: string,
   itemVersion: number,
-  attachments: O.Option<OEQ.Search.Attachment[]>
+  attachments: O.Option<OEQ.Search.Attachment[]>,
 ): O.Option<GalleryEntry[]> =>
   pipe(
     attachments,
@@ -332,16 +332,16 @@ const createAdditionalEntries = (
       flow(
         A.map(attachmentToGalleryEntry(itemUuid, itemVersion)),
         A.filter(E.isRight),
-        A.map((e) => e.right)
-      )
-    )
+        A.map((e) => e.right),
+      ),
+    ),
   );
 
 /**
  * Type for functions used for filtering attachments.
  */
 export type AttachmentFilter = (
-  attachments: OEQ.Search.Attachment[]
+  attachments: OEQ.Search.Attachment[],
 ) => O.Option<OEQ.Search.Attachment[]>;
 
 /**
@@ -363,8 +363,8 @@ const attachmentMimeTypePredicate =
       O.fromNullable,
       O.fold(
         () => false,
-        (mt: string) => mt.match(typeRegex) !== null
-      )
+        (mt: string) => mt.match(typeRegex) !== null,
+      ),
     );
 
 /**
@@ -380,7 +380,7 @@ const filterAttachments =
     pipe(
       attachments,
       A.filter(predicate),
-      O.fromPredicate<OEQ.Search.Attachment[]>(A.isNonEmpty)
+      O.fromPredicate<OEQ.Search.Attachment[]>(A.isNonEmpty),
     );
 
 /**
@@ -394,7 +394,7 @@ const filterAttachmentsByMimeType =
   (attachments: OEQ.Search.Attachment[]): O.Option<OEQ.Search.Attachment[]> =>
     pipe(
       attachments,
-      filterAttachments(attachmentMimeTypePredicate(typeRegex))
+      filterAttachments(attachmentMimeTypePredicate(typeRegex)),
     );
 
 /**
@@ -404,7 +404,7 @@ const filterAttachmentsByMimeType =
  * @param attachments the attachments to be filtered
  */
 const filterAttachmentsByVideo: AttachmentFilter = (
-  attachments: OEQ.Search.Attachment[]
+  attachments: OEQ.Search.Attachment[],
 ): O.Option<OEQ.Search.Attachment[]> => {
   const videoMimeTypePredicate: AttachmentPredicate =
     attachmentMimeTypePredicate("video");
@@ -414,7 +414,7 @@ const filterAttachmentsByVideo: AttachmentFilter = (
   // The above predicates combined into one
   const combinedPredicate: AttachmentPredicate = (a) =>
     [videoMimeTypePredicate, attachmentTypePredicate].some((predicate) =>
-      predicate(a)
+      predicate(a),
     );
 
   // Do the filtering
@@ -450,14 +450,14 @@ export const buildGallerySearchResultItem =
               attachmentFilter,
               E.fromOption(
                 () =>
-                  `No attachments remain for item ${uuid}/${version} after MIME type filter`
-              )
-            )
-          )
-        )
+                  `No attachments remain for item ${uuid}/${version} after MIME type filter`,
+              ),
+            ),
+          ),
+        ),
       )
       .bindL("mainEntry", ({ attachmentsNotEmpty }) =>
-        createMainEntry(uuid, version, attachmentsNotEmpty)
+        createMainEntry(uuid, version, attachmentsNotEmpty),
       )
       .bindL("additionalEntries", ({ attachmentsNotEmpty }) =>
         pipe(
@@ -465,8 +465,8 @@ export const buildGallerySearchResultItem =
           A.tail,
           (attachments) => createAdditionalEntries(uuid, version, attachments),
           O.getOrElse(() => [] as GalleryEntry[]),
-          E.right
-        )
+          E.right,
+        ),
       )
       .return(({ mainEntry, additionalEntries }) => ({
         uuid,
@@ -489,10 +489,10 @@ export const buildGallerySearchResultItem =
  */
 const gallerySearch = async (
   options: SearchOptions,
-  attachmentFilter: AttachmentFilter
+  attachmentFilter: AttachmentFilter,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
   const processSearchResultItem = (
-    sri: OEQ.Search.SearchResultItem
+    sri: OEQ.Search.SearchResultItem,
   ): E.Either<string, GallerySearchResultItem> =>
     pipe(
       sri,
@@ -501,7 +501,7 @@ const gallerySearch = async (
         const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
         console.error(msg);
         return msg;
-      })
+      }),
     );
 
   const searchResults = await searchItems(options);
@@ -509,7 +509,7 @@ const gallerySearch = async (
     searchResults.results,
     A.map(processSearchResultItem),
     A.filter(E.isRight),
-    A.map((a) => a.right)
+    A.map((a) => a.right),
   );
 
   return { ...searchResults, length: items.length, results: items };
@@ -523,11 +523,11 @@ const gallerySearch = async (
  * @param options Standard `SearchOptions` to refine the search by
  */
 export const imageGallerySearch = async (
-  options: SearchOptions
+  options: SearchOptions,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
   gallerySearch(
     { ...options, mimeTypes: await getImageMimeTypes() },
-    filterAttachmentsByMimeType("image")
+    filterAttachmentsByMimeType("image"),
   );
 
 const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
@@ -539,11 +539,11 @@ const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
  * @param options Standard `SearchOptions` to refine the search by
  */
 export const videoGallerySearch = async (
-  options: SearchOptions
+  options: SearchOptions,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
   gallerySearch(
     { ...options, musts: videoGalleryMusts, mimeTypes: undefined },
-    filterAttachmentsByVideo
+    filterAttachmentsByVideo,
   );
 
 /**
@@ -554,7 +554,7 @@ export const videoGallerySearch = async (
  * @param options Standard `SearchOptions` to refine the faceting by
  */
 export const listImageGalleryClassifications = async (
-  options: SearchOptions
+  options: SearchOptions,
 ): Promise<Classification[]> =>
   listClassifications({ ...options, mimeTypes: await getImageMimeTypes() });
 
@@ -566,7 +566,7 @@ export const listImageGalleryClassifications = async (
  * @param options Standard `SearchOptions` to refine the faceting by
  */
 export const listVideoGalleryClassifications = async (
-  options: SearchOptions
+  options: SearchOptions,
 ): Promise<Classification[]> =>
   listClassifications({
     ...options,

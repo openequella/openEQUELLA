@@ -29,7 +29,7 @@ export function addElement<T>(objects: Array<T>, element: T): Array<T> {
 export function replaceElement<T>(
   objects: Array<T>,
   comparator: (element: T) => void,
-  replaceElement: T
+  replaceElement: T,
 ): Array<T> {
   const index = objects.findIndex(comparator);
   if (index < 0) {
@@ -47,7 +47,7 @@ export function replaceElement<T>(
 export function deleteElement<T>(
   objects: Array<T>,
   comparator: (element: T) => void,
-  deleteCount: number
+  deleteCount: number,
 ): Array<T> {
   const index = objects.findIndex(comparator);
   if (index < 0) {

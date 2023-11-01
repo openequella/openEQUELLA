@@ -79,7 +79,7 @@ class PostLoginNoticeConfigurator extends React.Component<
   };
 
   handlePostTextFieldChange = (
-    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    e: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   ) => {
     this.setState({ postNotice: e.value });
     this.props.preventNav(e.value !== this.state.dbPostNotice);

@@ -34,7 +34,7 @@ export interface SettingGroup {
  * @returns SettingGroup[] A array of SettingGroup which includes a category and settings of the category
  */
 export const groupMap = (
-  settings: OEQ.Settings.GeneralSetting[]
+  settings: OEQ.Settings.GeneralSetting[],
 ): SettingGroup[] => {
   const settingCategories: { [key: string]: SettingCategory } =
     languageStrings.settings;

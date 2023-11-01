@@ -69,12 +69,12 @@ export interface CustomRoleMappingsResult {
  */
 export const generateWarnMsgForMissingIds = (
   missingIds: ReadonlySet<string>,
-  entityType: "role" | "group"
+  entityType: "role" | "group",
 ): string =>
   sprintf(
     mismatchWarning,
     entityType,
-    pipe(missingIds, RS.toReadonlyArray(S.Ord), RA.intercalate(S.Monoid)(", "))
+    pipe(missingIds, RS.toReadonlyArray(S.Ord), RA.intercalate(S.Monoid)(", ")),
   ) + savingWarning;
 
 /**
@@ -89,13 +89,13 @@ export const generateWarnMsgForMissingIds = (
 const getEntitiesTask = <T extends BaseSecurityEntity>(
   entityType: "role" | "group",
   ids: ReadonlySet<string>,
-  resolveEntitiesProvider: (ids: ReadonlyArray<string>) => Promise<T[]>
+  resolveEntitiesProvider: (ids: ReadonlyArray<string>) => Promise<T[]>,
 ): TE.TaskEither<string, EntityResult<T>> => {
   const task = (ids: ReadonlySet<string>) =>
     pipe(
       TE.tryCatch(
         () => resolveEntitiesProvider(RS.toReadonlyArray(S.Ord)(ids)),
-        (e) => `Failed to get ${entityType}s by IDs: ${e}`
+        (e) => `Failed to get ${entityType}s by IDs: ${e}`,
       ),
       TE.map(RS.fromReadonlyArray(eqEntityById<T>())),
       TE.map((rolesSet) => ({
@@ -107,9 +107,9 @@ const getEntitiesTask = <T extends BaseSecurityEntity>(
           O.map((missingIds) => [
             generateWarnMsgForMissingIds(missingIds, entityType),
           ]),
-          O.toUndefined
+          O.toUndefined,
         ),
-      }))
+      })),
     );
 
   return pipe(
@@ -121,8 +121,8 @@ const getEntitiesTask = <T extends BaseSecurityEntity>(
           entities: new Set<T>(),
           warning: undefined,
         }),
-      task
-    )
+      task,
+    ),
   );
 };
 
@@ -136,8 +136,8 @@ const getEntitiesTask = <T extends BaseSecurityEntity>(
 export const getRolesTask = (
   roleIds: ReadonlySet<string>,
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>
-  ) => Promise<OEQ.UserQuery.RoleDetails[]>
+    ids: ReadonlyArray<string>,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>,
 ): TE.TaskEither<string, EntityResult<OEQ.UserQuery.RoleDetails>> =>
   getEntitiesTask("role", roleIds, resolveRolesProvider);
 
@@ -151,8 +151,8 @@ export const getRolesTask = (
 export const getGroupsTask = (
   groupsIds: ReadonlySet<string>,
   resolveGroupsProvider: (
-    ids: ReadonlyArray<string>
-  ) => Promise<OEQ.UserQuery.GroupDetails[]>
+    ids: ReadonlyArray<string>,
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>,
 ): TE.TaskEither<string, EntityResult<OEQ.UserQuery.GroupDetails>> =>
   getEntitiesTask("group", groupsIds, resolveGroupsProvider);
 
@@ -168,8 +168,8 @@ export const getGroupsTask = (
 export const generateCustomRoles = (
   customRoles: Map<string, Set<string>>,
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>
-  ) => Promise<OEQ.UserQuery.RoleDetails[]>
+    ids: ReadonlyArray<string>,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>,
 ): TE.TaskEither<string, CustomRoleMappingsResult> => {
   // Raw mapping result for each LTI role
   type LtiRoleMappingResult = [string, EntityResult<OEQ.UserQuery.RoleDetails>];
@@ -179,14 +179,14 @@ export const generateCustomRoles = (
   // the resolved oEQ role details with possible warning message.
   const resolveRolesForLtiRole = (
     ltiRole: string,
-    oeqRoleIds: ReadonlySet<string>
+    oeqRoleIds: ReadonlySet<string>,
   ): TE.TaskEither<string, LtiRoleMappingResult> =>
     pipe(
       getRolesTask(oeqRoleIds, resolveRolesProvider),
       TE.map((roleDetailsSetWithMessage) => [
         ltiRole,
         roleDetailsSetWithMessage,
-      ])
+      ]),
     );
 
   // This function creates a JSX Element warning message for the provided LTI role.
@@ -197,30 +197,30 @@ export const generateCustomRoles = (
     pipe(
       warning,
       O.fromNullable,
-      O.map((m) => `LTI role: ${ltiRole} - ${m}`)
+      O.map((m) => `LTI role: ${ltiRole} - ${m}`),
     );
 
   // generate the final Map structure from rawMappings
   const generateMappings: (
-    rawMappings: ReadonlyArray<LtiRoleMappingResult>
+    rawMappings: ReadonlyArray<LtiRoleMappingResult>,
   ) => Map<string, Set<OEQ.UserQuery.RoleDetails>> = flow(
     // Get role set
     RA.map<LtiRoleMappingResult, [string, Set<OEQ.UserQuery.RoleDetails>]>(
       ([ltiRole, roleDetailsWithWarningMessage]) => [
         ltiRole,
         pipe(roleDetailsWithWarningMessage.entities, RS.toSet),
-      ]
+      ],
     ),
     // Remove empty elements
     RA.filter(([_, oeqRoleSet]) => !SET.isEmpty(oeqRoleSet)),
     // Build map
-    (mappings) => new Map(mappings)
+    (mappings) => new Map(mappings),
   );
 
   // This function first maps the input role Map to a TaskEither array with each TaskEither resolving
   // to a raw mapping. Then, the array of raw mappings is used to generate warning messages and final mappings
   const task = (
-    roles: Map<string, Set<string>>
+    roles: Map<string, Set<string>>,
   ): TE.TaskEither<string, CustomRoleMappingsResult> =>
     pipe(
       roles,
@@ -236,13 +236,13 @@ export const generateCustomRoles = (
           RA.compact,
           O.fromPredicate(not(RA.isEmpty)),
           O.map(RA.toArray),
-          O.toUndefined
+          O.toUndefined,
         ),
-      }))
+      })),
     );
 
   return pipe(
     customRoles,
-    pfTernary(M.isEmpty, (_) => TE.of({ mappings: new Map() }), task)
+    pfTernary(M.isEmpty, (_) => TE.of({ mappings: new Map() }), task),
   );
 };

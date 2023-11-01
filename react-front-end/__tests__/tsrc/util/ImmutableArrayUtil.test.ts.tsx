@@ -71,7 +71,7 @@ describe("ImmutableArrayUtil", () => {
       newArray = replaceElement(testingArray, comparator, gifFilter);
       expect(newArray).toHaveLength(1);
       expect(
-        newArray.some((filter) => filter.name === "GIF Image filter")
+        newArray.some((filter) => filter.name === "GIF Image filter"),
       ).toBeTruthy();
     });
 

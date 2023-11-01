@@ -54,7 +54,7 @@ describe("simpleMatchDynamic", () => {
       [createOption(1), identity],
       [createOption("two"), identity],
     ],
-    identity
+    identity,
   );
 
   it("matches the default clause when no match found", () => {
@@ -93,7 +93,7 @@ describe("simpleUnionTypeMatch", () => {
   it("throws an error if the literal type does not have any function to be executed", () => {
     const noMatcher = simpleUnionMatch(cases);
     expect(() => noMatcher("world")).toThrow(
-      "Missing matcher for literal type: world"
+      "Missing matcher for literal type: world",
     );
   });
 });

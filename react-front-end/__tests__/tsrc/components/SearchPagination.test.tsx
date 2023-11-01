@@ -28,7 +28,7 @@ describe("<SearchPagination/>", () => {
   const searchPagination = (
     resultCount: number,
     currentPage: number,
-    rowsPerPage: number
+    rowsPerPage: number,
   ) =>
     render(
       <SearchPagination
@@ -37,7 +37,7 @@ describe("<SearchPagination/>", () => {
         rowsPerPage={rowsPerPage}
         onPageChange={mockOnPageChange}
         onRowsPerPageChange={mockOnRowsPerPageChange}
-      />
+      />,
     );
 
   it("Goes back to the first page of results when First Page Button is clicked", async () => {
@@ -135,7 +135,7 @@ describe("<SearchPagination/>", () => {
     await userEvent.click(getItemsPerPageOption(itemsPerPageDesired));
 
     expect(mockOnRowsPerPageChange).toHaveBeenLastCalledWith(
-      itemsPerPageDesired
+      itemsPerPageDesired,
     );
   });
 });

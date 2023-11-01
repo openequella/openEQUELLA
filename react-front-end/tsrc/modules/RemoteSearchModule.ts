@@ -27,5 +27,5 @@ export const getRemoteSearchesFromServer: () => Promise<
   OEQ.Common.BaseEntitySummary[]
 > = memoize(
   async (): Promise<OEQ.Common.BaseEntitySummary[]> =>
-    await OEQ.RemoteSearch.listRemoteSearches(API_BASE_URL)
+    await OEQ.RemoteSearch.listRemoteSearches(API_BASE_URL),
 );

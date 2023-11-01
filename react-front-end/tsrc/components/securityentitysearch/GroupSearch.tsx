@@ -31,7 +31,7 @@ export interface GroupSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.GroupDetails> {
   search?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 

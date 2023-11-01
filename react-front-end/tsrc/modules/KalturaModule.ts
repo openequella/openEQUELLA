@@ -53,7 +53,7 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
     externalId.split("/"),
     E.fromPredicate(
       (xs) => xs.length === 3,
-      (xs) => `externalId should have three parts, but has ${xs.length}`
+      (xs) => `externalId should have three parts, but has ${xs.length}`,
     ),
     E.map(([partnerId, uiconfId, entryId]) => ({
       partnerId: Number.parseInt(partnerId),
@@ -62,12 +62,12 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
     })),
     E.filterOrElse(
       ({ partnerId }) => Number.isInteger(partnerId),
-      () => "partnerId should be a number"
+      () => "partnerId should be a number",
     ),
     E.filterOrElse(
       ({ uiconfId }) => Number.isInteger(uiconfId),
-      () => "uiconfId should be a number"
-    )
+      () => "uiconfId should be a number",
+    ),
   );
 
   if (E.isLeft(result)) {
@@ -81,7 +81,7 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
  */
 export const buildViewUrl = (
   attachmentViewLink: string,
-  externalId: string
+  externalId: string,
 ): string => {
   const u = new URL(attachmentViewLink);
   u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
@@ -94,7 +94,7 @@ export const buildViewUrl = (
  * @param attachment A Kaltura media attachment
  */
 export const updateKalturaAttachment = (
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): OEQ.Search.Attachment => {
   const { links } = attachment;
   const { externalId } = links;

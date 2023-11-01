@@ -90,8 +90,8 @@ export const DrmAcceptanceDialog = ({
         await runInTask(onAccept),
         E.fold<Error, void, void>(
           flow(buildActionForError, dispatch),
-          onAcceptCallBack
-        )
+          onAcceptCallBack,
+        ),
       );
     };
 
@@ -106,9 +106,9 @@ export const DrmAcceptanceDialog = ({
               drmDetails,
               rejectTerms: onReject,
               acceptTerms: acceptDrmTerms,
-            })
+            }),
           ),
-          dispatch
+          dispatch,
         );
       })();
     }

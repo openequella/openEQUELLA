@@ -89,7 +89,7 @@ const ItemAttachmentLink = ({
 
     if (!mimeType) {
       throw new Error(
-        "'mimeType' must be specified when viewer is 'lightbox'."
+        "'mimeType' must be specified when viewer is 'lightbox'.",
       );
     }
 
@@ -127,9 +127,9 @@ const ItemAttachmentLink = ({
       pfTernaryTypeGuard(
         isViewerLightboxConfig,
         buildLightboxLink,
-        buildSimpleLink
-      )
-    )
+        buildSimpleLink,
+      ),
+    ),
   );
 };
 

@@ -63,12 +63,11 @@ const searchPageBodyProps: SearchPageBodyProps = {
 
 const buildSearchContextDecorator =
   (searchContextProps: SearchContextProps = defaultSearchContextProps) =>
-  (Story: Story) =>
-    (
-      <SearchContext.Provider value={searchContextProps}>
-        <Story />
-      </SearchContext.Provider>
-    );
+  (Story: Story) => (
+    <SearchContext.Provider value={searchContextProps}>
+      <Story />
+    </SearchContext.Provider>
+  );
 
 export default {
   title: "Search/SearchPageBody",
@@ -154,7 +153,7 @@ CustomSortingOptions.args = {
 };
 
 export const ShowAdvancedSearchFilter: StoryFn<SearchPageBodyProps> = (
-  args
+  args,
 ) => <SearchPageBody {...args} />;
 ShowAdvancedSearchFilter.args = {
   ...searchPageBodyProps,
@@ -167,7 +166,7 @@ ShowAdvancedSearchFilter.args = {
 };
 
 export const CustomRefinePanelControls: StoryFn<SearchPageBodyProps> = (
-  args
+  args,
 ) => <SearchPageBody {...args} />;
 CustomRefinePanelControls.args = {
   ...searchPageBodyProps,

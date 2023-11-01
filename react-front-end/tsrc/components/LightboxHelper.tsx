@@ -41,14 +41,14 @@ const buildKaltura = (src: string): O.Option<JSX.Element> =>
         (e) => {
           console.error("Failed to display Kaltura media in Lightbox: " + e);
           return kalturaExternalIdIssue;
-        }
-      )
+        },
+      ),
     ),
     E.fold(
       (e) => <LightboxMessage message={e} />,
-      (playerDetails) => <KalturaPlayerEmbed {...playerDetails} />
+      (playerDetails) => <KalturaPlayerEmbed {...playerDetails} />,
     ),
-    O.some
+    O.some,
   );
 
 const buildYouTube = (src: string): O.Option<JSX.Element> =>
@@ -56,7 +56,7 @@ const buildYouTube = (src: string): O.Option<JSX.Element> =>
     extractVideoId(src),
     O.fromNullable,
     O.map((id) => <YouTubeEmbed videoId={id} />),
-    O.alt(() => O.some(<LightboxMessage message={youTubeVideoMissingId} />))
+    O.alt(() => O.some(<LightboxMessage message={youTubeVideoMissingId} />)),
   );
 
 /**
@@ -73,7 +73,7 @@ const buildYouTube = (src: string): O.Option<JSX.Element> =>
  */
 export const buildCustomEmbed = (
   mimeType: string,
-  src: string
+  src: string,
 ): O.Option<JSX.Element> =>
   pipe(
     mimeType,
@@ -82,6 +82,6 @@ export const buildCustomEmbed = (
         [CustomMimeTypes.KALTURA, () => buildKaltura(src)],
         [CustomMimeTypes.YOUTUBE, () => buildYouTube(src)],
       ],
-      () => O.none
-    )
+      () => O.none,
+    ),
   );

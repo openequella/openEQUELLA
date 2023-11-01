@@ -36,16 +36,16 @@ mockNewUpload.mockImplementation(() =>
   Promise.resolve({
     ...successfulUploadResponse,
     entry: { ...uploadedFileEntry, id: v4() },
-  })
+  }),
 );
 const mockUpdateDuplicateMessage = jest.spyOn(
   FileUploaderModule,
-  "updateDuplicateMessage"
+  "updateDuplicateMessage",
 );
 mockUpdateDuplicateMessage.mockImplementation(jest.fn);
 const mockUpdateCtrlErrorText = jest.spyOn(
   FileUploaderModule,
-  "updateCtrlErrorText"
+  "updateCtrlErrorText",
 );
 mockUpdateCtrlErrorText.mockImplementation(jest.fn);
 
@@ -106,7 +106,7 @@ describe("<InlineFileUploader />", () => {
     // The first upload fails so show the file name in a 'div' and failure reason in a 'p'.
     expect(queryByText("test1.png", { selector: "div" })).toBeInTheDocument();
     expect(
-      queryByText("File is too large", { selector: "div" })
+      queryByText("File is too large", { selector: "div" }),
     ).toBeInTheDocument();
     // The second upload succeeds so show the file name as a link.
     expect(queryByText("test2.png", { selector: "a" })).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe("<InlineFileUploader />", () => {
     // the function that updates the warning has been called or not.
     expect(mockUpdateCtrlErrorText).toHaveBeenLastCalledWith(
       "P0C0",
-      "Max number of attachments is 2 please remove 1 attachment(s)"
+      "Max number of attachments is 2 please remove 1 attachment(s)",
     );
   });
 

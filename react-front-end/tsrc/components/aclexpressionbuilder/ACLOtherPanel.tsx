@@ -130,7 +130,7 @@ const ACLOtherPanel = ({
       event.target.value,
       OtherACLTypesUnion.decode,
       E.getOrThrow,
-      setActiveACLType
+      setActiveACLType,
     );
 
   const handleAddButtonClicked = async () => {
@@ -156,14 +156,14 @@ const ACLOtherPanel = ({
       activeACLType,
       generateExpression,
       O.fromNullable,
-      O.chain(flow(createACLRecipient, O.fromEither))
+      O.chain(flow(createACLRecipient, O.fromEither)),
     );
 
     // fetch the human-readable name
     const nameTask: TE.TaskEither<string, string> = pipe(
       optionRecipient,
       O.map(showRecipientHumanReadable(aclEntityResolvers)),
-      O.getOrElse(() => TE.left(""))
+      O.getOrElse(() => TE.left("")),
     );
 
     const name = pipe(await nameTask(), E.getOrElse(identity));
@@ -175,7 +175,7 @@ const ACLOtherPanel = ({
         ...r,
         name,
       })),
-      O.map(onAdd)
+      O.map(onAdd),
     );
   };
 
@@ -245,9 +245,9 @@ const ACLOtherPanel = ({
               <ACLHTTPReferrerInput onChange={setHTTPReferrer} />
             </OtherControl>
           ),
-        })
+        }),
       ),
-    [activeACLType, ssoTokensProvider]
+    [activeACLType, ssoTokensProvider],
   );
 
   return (
@@ -262,7 +262,7 @@ const ACLOtherPanel = ({
             label={typeLabel}
           >
             {OtherACLTypesUnion.types.map((aclType) =>
-              buildSelections(aclType.value)
+              buildSelections(aclType.value),
             )}
           </Select>
         </FormControl>

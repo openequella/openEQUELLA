@@ -48,7 +48,7 @@ describe("<ShuffleBox/>", () => {
         options={optionsMap}
         values={new Set<string>([selectedOption])}
         onSelect={jest.fn()}
-      />
+      />,
     );
 
     // expect helper
@@ -56,7 +56,7 @@ describe("<ShuffleBox/>", () => {
       getByText(option).parentElement!.id.startsWith(listId);
 
     expect(
-      isInList(selectionsListId(id), optionValue(selectedOption))
+      isInList(selectionsListId(id), optionValue(selectedOption)),
     ).toBeTruthy();
     expect(isInList(optionsListId(id), options.one)).toBeTruthy();
   });
@@ -69,14 +69,14 @@ describe("<ShuffleBox/>", () => {
         options={optionsMap}
         values={new Set<string>([existingSelection])}
         onSelect={onSelect}
-      />
+      />,
     );
 
     await userEvent.click(getByText(options.two));
     await userEvent.click(getByLabelText(shuffleBoxStrings.addSelected));
 
     expect(onSelect).toHaveBeenCalledWith(
-      new Set<string>([existingSelection, optionKey("two")])
+      new Set<string>([existingSelection, optionKey("two")]),
     );
   });
 
@@ -89,7 +89,7 @@ describe("<ShuffleBox/>", () => {
         options={optionsMap}
         values={new Set<string>([selectedOption, remainingOption])}
         onSelect={onSelect}
-      />
+      />,
     );
 
     await userEvent.click(getByText(optionValue(selectedOption)));
@@ -105,7 +105,7 @@ describe("<ShuffleBox/>", () => {
         options={optionsMap}
         values={new Set<string>()}
         onSelect={onSelect}
-      />
+      />,
     );
 
     await userEvent.click(getByLabelText(shuffleBoxStrings.addAll));
@@ -119,7 +119,7 @@ describe("<ShuffleBox/>", () => {
         options={optionsMap}
         values={new Set<string>()}
         onSelect={onSelect}
-      />
+      />,
     );
 
     await userEvent.click(getByLabelText(shuffleBoxStrings.removeAll));

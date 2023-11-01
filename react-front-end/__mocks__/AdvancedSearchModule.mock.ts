@@ -29,7 +29,7 @@ interface TargetNodeEssentials
   extends Pick<OEQ.WizardCommonTypes.TargetNode, "target" | "attribute"> {}
 
 export const buildTargetNodes = (
-  nodes: TargetNodeEssentials[]
+  nodes: TargetNodeEssentials[],
 ): OEQ.WizardCommonTypes.TargetNode[] =>
   nodes.map(({ target, attribute }) => {
     const fullPath = `${target}${attribute}`;
@@ -59,7 +59,7 @@ export interface BasicControlEssentials
 }
 
 const mockBasicControl = (
-  mockDetails: BasicControlEssentials
+  mockDetails: BasicControlEssentials,
 ): OEQ.WizardControl.WizardBasicControl => ({
   description: mockDetails.description,
   include: true,
@@ -76,14 +76,14 @@ const mockBasicControl = (
 });
 
 const mockOptionTypeControl = (
-  mockDetails: BasicControlEssentials
+  mockDetails: BasicControlEssentials,
 ): OEQ.WizardControl.WizardBasicControl => ({
   ...mockBasicControl(mockDetails),
   size1: 3,
 });
 
 const mockEditbox = (
-  mockDetails: BasicControlEssentials
+  mockDetails: BasicControlEssentials,
 ): OEQ.WizardControl.WizardEditBoxControl => ({
   ...mockBasicControl(mockDetails),
   controlType: "editbox",
@@ -95,7 +95,7 @@ const mockEditbox = (
 });
 
 const mockCalendar = (
-  mockDetails: BasicControlEssentials
+  mockDetails: BasicControlEssentials,
 ): OEQ.WizardControl.WizardCalendarControl => ({
   ...mockBasicControl(mockDetails),
   isRange: true,
@@ -106,7 +106,7 @@ const mockCalendar = (
 export const mockRawHtmlContent = `<div><p>label for raw HTML control</p><hr></div>`;
 
 export const mockWizardControlFactory = (
-  mockDetails: BasicControlEssentials
+  mockDetails: BasicControlEssentials,
 ): OEQ.WizardControl.WizardBasicControl => {
   const { controlType } = mockDetails;
   switch (controlType) {
@@ -129,7 +129,7 @@ export const mockWizardControlFactory = (
     case "termselector":
     case "userselector":
       throw new Error(
-        `Unsupported controlType [${controlType}] - please implement!`
+        `Unsupported controlType [${controlType}] - please implement!`,
       );
     default:
       return absurd(controlType);

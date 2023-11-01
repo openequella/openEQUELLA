@@ -69,14 +69,14 @@ export interface ACLHomePanelProps {
    */
   searchUserProvider?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Function used to replace the default `search` prop for `GroupSearch` component.
    */
   searchGroupProvider?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Function used to replace the default `search` prop for `RoleSearch` component.
@@ -86,7 +86,7 @@ export interface ACLHomePanelProps {
    * Function used to replace the default `resolveGroupsProvider` prop for `UserSearch` and `GroupSearch` component.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
@@ -105,12 +105,12 @@ const ACLHomePanel = ({
       event.target.value,
       SearchFilterTypesUnion.decode,
       E.getOrThrow,
-      setActiveSearchFilterType
+      setActiveSearchFilterType,
     );
 
   const handleOnAdded = <T,>(
     selections: ReadonlySet<T>,
-    entityToRecipient: (entity: T) => ACLRecipient
+    entityToRecipient: (entity: T) => ACLRecipient,
   ) => pipe(selections, RSET.map(recipientEq)(entityToRecipient), onAdd);
 
   const sharedProps = {
@@ -192,7 +192,7 @@ const ACLHomePanel = ({
               showHelpText
             />
           ),
-        })
+        }),
       )}
     </FormControl>
   );

@@ -72,8 +72,8 @@ export const WizardShuffleList = ({
         pipe(values, RSET.insert(S.Eq)(s), (updatedValues) => {
           onChange(updatedValues);
           setNewEntry("");
-        })
-      )
+        }),
+      ),
     );
 
   return (
@@ -128,7 +128,7 @@ export const WizardShuffleList = ({
                     </TooltipIconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
-              ))
+              )),
             )}
           </List>
         </Grid>

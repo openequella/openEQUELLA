@@ -31,7 +31,7 @@ export default {
 } as Meta<EmbedCodeDialogProps>;
 
 export const Standard: StoryFn<EmbedCodeDialogProps> = (
-  args: EmbedCodeDialogProps
+  args: EmbedCodeDialogProps,
 ) => <EmbedCodeDialog {...args} />;
 
 Standard.args = {

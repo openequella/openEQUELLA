@@ -39,12 +39,12 @@ ListSelection.args = {
 };
 
 export const ImageGallerySelection: StoryFn<DisplayModeSelectorProps> = (
-  args
+  args,
 ) => <DisplayModeSelector {...args} />;
 ImageGallerySelection.args = { ...ListSelection.args, value: "gallery-image" };
 
 export const ImageGalleryDisabled: StoryFn<DisplayModeSelectorProps> = (
-  args
+  args,
 ) => <DisplayModeSelector {...args} />;
 ImageGalleryDisabled.args = {
   ...ImageGallerySelection.args,
@@ -53,12 +53,12 @@ ImageGalleryDisabled.args = {
 };
 
 export const VideoGallerySelection: StoryFn<DisplayModeSelectorProps> = (
-  args
+  args,
 ) => <DisplayModeSelector {...args} />;
 VideoGallerySelection.args = { ...ListSelection.args, value: "gallery-video" };
 
 export const VideoGalleryDisabled: StoryFn<DisplayModeSelectorProps> = (
-  args
+  args,
 ) => <DisplayModeSelector {...args} />;
 VideoGalleryDisabled.args = {
   ...VideoGallerySelection.args,

@@ -35,7 +35,7 @@ import { CustomMimeTypes } from "./MimeTypesModule";
  */
 export const buildThumbnailUrl = (
   videoId: string,
-  quality: "default" | "medium" | "high" | "max"
+  quality: "default" | "medium" | "high" | "max",
 ): string => {
   const baseUrl = `https://i.ytimg.com/vi/${videoId}/`;
   switch (quality) {
@@ -67,7 +67,7 @@ export const extractVideoId = (viewUrl: string): string | null =>
  * @param attachment An Youtube Video Attachment
  */
 export const updateYoutubeAttachment = (
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): OEQ.Search.Attachment => {
   const { links } = attachment;
   const { externalId } = links;

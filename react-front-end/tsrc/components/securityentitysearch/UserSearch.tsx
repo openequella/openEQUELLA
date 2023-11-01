@@ -31,7 +31,7 @@ export interface UserSearchProps
   extends CommonEntitySearchProps<OEQ.UserQuery.UserDetails> {
   search?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
 }
 
@@ -59,7 +59,7 @@ const UserSearch = ({
     <BaseSearch<OEQ.UserQuery.UserDetails>
       strings={languageStrings.userSearchComponent}
       itemOrd={ORD.contramap((u: OEQ.UserQuery.UserDetails) => u.username)(
-        S.Ord
+        S.Ord,
       )}
       itemDetailsToEntry={userEntry}
       search={search}

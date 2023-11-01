@@ -35,7 +35,7 @@ export function getCloudProviders(): Promise<
   OEQ.Common.PagedResult<CloudProviderEntity>
 > {
   return Axios.get<OEQ.Common.PagedResult<CloudProviderEntity>>(
-    GET_CLOUD_PROVIDER_LIST_URL
+    GET_CLOUD_PROVIDER_LIST_URL,
   ).then((res) => res.data);
 }
 
@@ -45,12 +45,12 @@ export function deleteCloudProvider(cloudProviderId: string): AxiosPromise {
 
 export function refreshCloudProvider(cloudProviderId: string): AxiosPromise {
   return Axios.post(
-    BASE_CLOUD_PROVIDER_URL + "/" + cloudProviderId + "/refresh"
+    BASE_CLOUD_PROVIDER_URL + "/" + cloudProviderId + "/refresh",
   );
 }
 
 export function registerCloudProviderInit(
-  cloudProviderUrl: string
+  cloudProviderUrl: string,
 ): Promise<CloudProviderInitResponse> {
   const params = {
     url: cloudProviderUrl,
@@ -60,6 +60,6 @@ export function registerCloudProviderInit(
     null,
     {
       params: params,
-    }
+    },
   ).then((res) => res.data);
 }

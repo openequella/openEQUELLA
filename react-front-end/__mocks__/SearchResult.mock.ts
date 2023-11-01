@@ -298,7 +298,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
   };
 
 export const getSearchResultsCustom = (
-  numberOfResults: number
+  numberOfResults: number,
 ): OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> => ({
   start: 0,
   length: 10,

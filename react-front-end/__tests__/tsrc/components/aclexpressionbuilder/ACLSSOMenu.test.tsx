@@ -66,7 +66,7 @@ describe("<ACLSSOMenu />", () => {
     });
 
     const errorMessage = await findByText(
-      `${ssoTokensFailed}: ${failedMessage}`
+      `${ssoTokensFailed}: ${failedMessage}`,
     );
     const select = queryByText(defaultSelectedToken);
 

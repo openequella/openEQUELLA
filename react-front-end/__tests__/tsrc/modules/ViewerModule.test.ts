@@ -107,7 +107,7 @@ describe("determineViewer()", () => {
       fileAttachmentType,
       fileViewUrl,
       "not/used",
-      "save"
+      "save",
     );
     expect(viewer).toEqual(linkViewerId);
     expect(url.endsWith("?.vi=save")).toBe(true);
@@ -121,9 +121,9 @@ describe("determineViewer()", () => {
           fileAttachmentType,
           fileViewUrl,
           "audio/x-mp3", // rather than test every supported MIME type, just using one to keep things short
-          mimeTypeViewerId
-        )
-      ).toEqual(["lightbox", fileViewUrl])
+          mimeTypeViewerId,
+        ),
+      ).toEqual(["lightbox", fileViewUrl]),
   );
 
   it.each([
@@ -138,10 +138,10 @@ describe("determineViewer()", () => {
           attachmentType,
           testUrl,
           mimeType,
-          (await getMimeTypeDefaultViewerDetails(mimeType)).viewerId
-        )
+          (await getMimeTypeDefaultViewerDetails(mimeType)).viewerId,
+        ),
       ).toEqual(["lightbox", testUrl]);
-    }
+    },
   );
 });
 
@@ -152,7 +152,7 @@ describe("determineAttachmentViewUrl()", () => {
 
   it("returns the viewUrl for non 'file' attachmentType", () =>
     expect(
-      determineAttachmentViewUrl(uuid, version, "link", viewUrl, undefined)
+      determineAttachmentViewUrl(uuid, version, "link", viewUrl, undefined),
     ).toEqual(viewUrl));
 
   it("returns an oEQ 'file' URL for attachmentType 'file'", () =>
@@ -162,8 +162,8 @@ describe("determineAttachmentViewUrl()", () => {
         version,
         "file",
         viewUrl,
-        "directory/file.txt"
-      )
+        "directory/file.txt",
+      ),
     ).toBe("file/uuid/1/directory/file.txt"));
 });
 
@@ -175,7 +175,7 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
         attachments,
         testItem.uuid,
         testItem.version,
-        mockGetViewerDetails
+        mockGetViewerDetails,
       );
     expect(attachmentsAndViewerDefinitions).toBeLeft();
   });
@@ -187,7 +187,7 @@ describe("buildAttachmentsAndViewerDefinitions()", () => {
         attachments,
         testItem.uuid,
         testItem.version,
-        mockGetViewerDetails
+        mockGetViewerDetails,
       );
     expect(attachmentsAndViewerDefinitions).toBeRight();
   });
@@ -200,8 +200,8 @@ describe("buildViewerConfigForAttachment", () => {
       buildViewerConfigForAttachments(
         testItem,
         attachments,
-        mockGetViewerDetails
-      )
+        mockGetViewerDetails,
+      ),
     ).rejects.toBeTruthy();
   });
 
@@ -211,8 +211,8 @@ describe("buildViewerConfigForAttachment", () => {
       buildViewerConfigForAttachments(
         testItem,
         attachments,
-        mockGetViewerDetails
-      )
+        mockGetViewerDetails,
+      ),
     ).resolves.toBeTruthy();
   });
 });

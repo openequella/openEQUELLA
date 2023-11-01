@@ -29,28 +29,28 @@ import { findEntityById } from "./ACLEntityModule";
  * Eq for `OEQ.UserQuery.GroupDetails` with equality based on the user's UUID.
  */
 export const eqGroupById: Eq<OEQ.UserQuery.GroupDetails> = contramap(
-  (group: OEQ.UserQuery.GroupDetails) => group.id
+  (group: OEQ.UserQuery.GroupDetails) => group.id,
 )(S.Eq);
 
 /**
  * Ord for `OEQ.UserQuery.GroupDetails` with order based on the group's name.
  */
 export const ordGroup: ORD.Ord<OEQ.UserQuery.GroupDetails> = ORD.contramap(
-  (g: OEQ.UserQuery.GroupDetails) => g.name
+  (g: OEQ.UserQuery.GroupDetails) => g.name,
 )(S.Ord);
 
 /**
  * Given a set of `OEQ.UserQuery.GroupDetails`, return a set of UUIDs for all the groups.
  */
 export const groupIds: (
-  a: ReadonlySet<OEQ.UserQuery.GroupDetails>
+  a: ReadonlySet<OEQ.UserQuery.GroupDetails>,
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
  * Ord for `OEQ.UserQuery.GroupDetails` with ordering rule based on the group's name.
  */
 export const groupOrd = ORD.contramap(
-  (u: OEQ.UserQuery.GroupDetails) => u.name
+  (u: OEQ.UserQuery.GroupDetails) => u.name,
 )(S.Ord);
 
 /**
@@ -59,7 +59,7 @@ export const groupOrd = ORD.contramap(
  * @param ids An array of oEQ ids
  */
 export const resolveGroups = async (
-  ids: ReadonlyArray<string>
+  ids: ReadonlyArray<string>,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
   (
     await OEQ.UserQuery.lookup(API_BASE_URL, {
@@ -85,7 +85,7 @@ export const findGroupById = (groupId: string) =>
  */
 export const listGroups = async (
   query?: string,
-  groupFilter?: ReadonlySet<string>
+  groupFilter?: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
   await OEQ.UserQuery.filteredGroups(API_BASE_URL, {
     q: query,

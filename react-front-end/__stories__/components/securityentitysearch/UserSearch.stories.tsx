@@ -62,7 +62,7 @@ GroupFilter.args = {
 };
 
 export const GroupFilterWithFailedGroupsResolver: StoryFn<UserSearchProps> = (
-  args
+  args,
 ) => <UserSearch {...args} />;
 GroupFilterWithFailedGroupsResolver.args = {
   ...GroupFilter.args,
@@ -81,7 +81,7 @@ MultiSelection.args = {
     selections: pipe(
       UserModuleMock.users,
       A.filter((user) => pipe(user.username, S.includes("user"))),
-      RSET.fromReadonlyArray(eqUserById)
+      RSET.fromReadonlyArray(eqUserById),
     ),
     enableMultiSelection: true,
   },

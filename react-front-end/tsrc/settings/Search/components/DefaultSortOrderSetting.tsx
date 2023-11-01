@@ -66,7 +66,7 @@ export default function DefaultSortOrderSetting({
             event.target.value,
             OEQ.Codec.Search.SortOrderCodec.decode,
             E.getOrThrow,
-            setValue
+            setValue,
           )
         }
         variant="outlined"

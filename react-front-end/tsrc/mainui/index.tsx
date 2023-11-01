@@ -55,11 +55,11 @@ export default function main(entry: EntryPage) {
     ReactDOM.createRoot(rootElement).render(
       <React.Suspense fallback={<>loading</>}>
         <App entryPage={entry} />
-      </React.Suspense>
+      </React.Suspense>,
     );
   } else {
     throw new Error(
-      `Failed to render the New UI: root element ${entry} is missing.`
+      `Failed to render the New UI: root element ${entry} is missing.`,
     );
   }
 }

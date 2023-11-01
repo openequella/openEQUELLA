@@ -49,7 +49,7 @@ export const commonEditLti13PlatformProps: EditLti13PlatformProps = {
  */
 export const renderEditLti13Platform = async (
   props: EditLti13PlatformProps = commonEditLti13PlatformProps,
-  encodedPlatformId: string
+  encodedPlatformId: string,
 ): Promise<RenderResult> => {
   const urlPrefix = "/page/editLti13Platform/";
   const history = createMemoryHistory();
@@ -60,7 +60,7 @@ export const renderEditLti13Platform = async (
       <Route path={`${urlPrefix}:platformIdBase64`}>
         <EditLti13Platform {...props} />
       </Route>
-    </Router>
+    </Router>,
   );
 
   await renderResult.findByText(cancelLabel);

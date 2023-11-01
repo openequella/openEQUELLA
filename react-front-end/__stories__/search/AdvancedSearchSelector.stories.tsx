@@ -39,7 +39,7 @@ NoValueSelected.args = {
 };
 
 export const InitialValueSelected: StoryFn<AdvancedSearchSelectorProps> = (
-  args
+  args,
 ) => <AdvancedSearchSelector {...args} />;
 InitialValueSelected.args = {
   ...NoValueSelected.args,

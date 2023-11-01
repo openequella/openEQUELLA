@@ -87,7 +87,7 @@ class LoginNoticeConfigPage extends React.Component<
     }
     if (errResponse) {
       this.props.appErrorHandler(
-        errResponse.error_description ?? errResponse.error
+        errResponse.error_description ?? errResponse.error,
       );
     }
   };
@@ -106,7 +106,7 @@ class LoginNoticeConfigPage extends React.Component<
       this.handleError(
         isAxiosError(error) || error instanceof Error
           ? error
-          : new Error(stringsCommonResults.fail)
+          : new Error(stringsCommonResults.fail),
       );
     }
   };

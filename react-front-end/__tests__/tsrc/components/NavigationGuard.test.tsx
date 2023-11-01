@@ -32,7 +32,7 @@ jest.mock("react-router-dom", () => ({
 
 const mockBlockNavigationWithBrowser = jest.spyOn(
   NavigationGuardModule,
-  "blockNavigationWithBrowser"
+  "blockNavigationWithBrowser",
 );
 
 describe("<NavigationGuard />", () => {
@@ -41,7 +41,7 @@ describe("<NavigationGuard />", () => {
     return render(
       <Router history={history}>
         <NavigationGuardModule.NavigationGuard when={when} />
-      </Router>
+      </Router>,
     );
   };
 

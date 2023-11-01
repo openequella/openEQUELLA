@@ -114,7 +114,7 @@ describe("<ACLExpressionBuilder/>", () => {
     // delete recipient
     await clickDeleteButtonForRecipient(
       container,
-      user200RecipientWithName.name!
+      user200RecipientWithName.name!,
     );
     // click ok button to see if the result is what we want
     await userEvent.click(getByText(okLabel));
@@ -153,7 +153,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
       const result = onFinish.mock.lastCall[0];
       expect(result).toEqual(expectedResult);
-    }
+    },
   );
 
   it("should be able to add a sub group for ACLExpression", async () => {
@@ -177,7 +177,7 @@ describe("<ACLExpressionBuilder/>", () => {
     const result = await selectAndFinished(
       container,
       ["user300", "user400"],
-      onFinish
+      onFinish,
     );
 
     expect(result).toEqual(expectedResult);
@@ -210,7 +210,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
     await clickDeleteButtonForRecipient(
       container,
-      user100RecipientHumanReadableExpression
+      user100RecipientHumanReadableExpression,
     );
     // click ok button to see if the result is what we want
     await userEvent.click(getByText(okLabel));
@@ -266,9 +266,9 @@ describe("<ACLExpressionBuilder/>", () => {
         entityToSelect: string,
         searchEntity: (
           dialog: HTMLElement,
-          queryValue: string
+          queryValue: string,
         ) => Promise<void>,
-        expectedACLExpressionResult: string
+        expectedACLExpressionResult: string,
       ) => {
         const onFinish = jest.fn();
         const { getByText, container } = renderACLExpressionBuilder({
@@ -291,7 +291,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
         const result = onFinish.mock.lastCall[0];
         expect(result).toEqual(expectedACLExpressionResult);
-      }
+      },
     );
 
     it.each<
@@ -301,7 +301,7 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string[],
         (dialog: HTMLElement, queryValue: string) => Promise<void>,
-        string
+        string,
       ]
     >([
       [
@@ -336,7 +336,7 @@ describe("<ACLExpressionBuilder/>", () => {
         searchFor,
         selectEntitiesName,
         searchEntity,
-        expectedACLExpressionResult
+        expectedACLExpressionResult,
       ) => {
         const onFinish = jest.fn();
         const { getByText, container } = renderACLExpressionBuilder({
@@ -356,11 +356,11 @@ describe("<ACLExpressionBuilder/>", () => {
         const result = await selectAndFinished(
           container,
           selectEntitiesName,
-          onFinish
+          onFinish,
         );
 
         expect(result).toEqual(expectedACLExpressionResult);
-      }
+      },
     );
   });
 
@@ -396,7 +396,7 @@ describe("<ACLExpressionBuilder/>", () => {
         _,
         recipientLabel: string,
         recipientName: string | undefined,
-        expectedResult: string
+        expectedResult: string,
       ) => {
         const onFinish = jest.fn();
         const { findAllByText, getByText, container } =
@@ -419,7 +419,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
         const result = onFinish.mock.lastCall[0];
         expect(result).toEqual(expectedResult);
-      }
+      },
     );
 
     it("should be able to add an IPv4 CIDR specifier to the expression", async () => {
@@ -478,7 +478,7 @@ describe("<ACLExpressionBuilder/>", () => {
         // input an referrer
         await userEvent.type(
           getByLabelText(referrerLabel),
-          "https://edalex.com"
+          "https://edalex.com",
         );
         // select http referrer type
         await selectReferrerType(renderResult, httpReferrerType);
@@ -492,7 +492,7 @@ describe("<ACLExpressionBuilder/>", () => {
         await userEvent.click(getByText(okLabel));
         const result = onFinish.mock.lastCall[0];
         expect(result).toEqual(expectedResult);
-      }
+      },
     );
 
     it("should be able to add a SSO token ID to the expression", async () => {
@@ -512,7 +512,7 @@ describe("<ACLExpressionBuilder/>", () => {
       await selectOption(
         container,
         "#sso-select",
-        ssoMoodleRecipientWithName.expression
+        ssoMoodleRecipientWithName.expression,
       );
       // click add button
       await userEvent.click(getByText(addLabel));
@@ -542,7 +542,7 @@ describe("<ACLExpressionBuilder/>", () => {
       await findByText(ssoType);
       // get error message
       const errorMessage = await getByText(
-        `Failed to get SSO tokens: ${error}`
+        `Failed to get SSO tokens: ${error}`,
       );
 
       expect(errorMessage).toBeInTheDocument();

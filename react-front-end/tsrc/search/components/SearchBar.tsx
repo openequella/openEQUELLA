@@ -136,7 +136,7 @@ export default function SearchBar({
         query,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   // The state query should be consistent with prop query. But there are two situations where they

@@ -37,7 +37,7 @@ export const buildStorageKey = (key: string) => `${getBaseUrl()}_${key}`;
 export const readDataFromStorage = <T>(
   key: string,
   validator: (value: unknown) => value is T,
-  storage: Storage = localStorage
+  storage: Storage = localStorage,
 ): T | undefined =>
   pipe(
     storage.getItem(buildStorageKey(key)),
@@ -48,13 +48,13 @@ export const readDataFromStorage = <T>(
         E.mapLeft((error) => `Failed to parse data due to ${error}`),
         E.filterOrElse(
           validator,
-          () => "Data format mismatch with data read from storage"
+          () => "Data format mismatch with data read from storage",
         ),
         E.mapLeft(console.error),
-        O.fromEither
-      )
+        O.fromEither,
+      ),
     ),
-    O.toUndefined
+    O.toUndefined,
   );
 
 /**
@@ -69,19 +69,19 @@ export const saveDataToStorage = (
   key: string,
   value: unknown,
   valueTransformer: (value: string) => string = identity,
-  storage: Storage = localStorage
+  storage: Storage = localStorage,
 ): void =>
   pipe(
     value,
     J.stringify,
     E.mapLeft(
       (error) =>
-        `Failed to stringify the provided value to JSON format: ${error}`
+        `Failed to stringify the provided value to JSON format: ${error}`,
     ),
     E.map(valueTransformer),
     E.fold(console.error, (right) =>
-      storage.setItem(buildStorageKey(key), right)
-    )
+      storage.setItem(buildStorageKey(key), right),
+    ),
   );
 
 /**

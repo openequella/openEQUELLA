@@ -133,19 +133,19 @@ export type SubmitResponse =
   | ChangeRoute;
 
 export function isPageContent(
-  response: SubmitResponse
+  response: SubmitResponse,
 ): response is LegacyContentResponse {
   return (response as LegacyContentResponse).html !== undefined;
 }
 
 export function isChangeRoute(
-  response: SubmitResponse
+  response: SubmitResponse,
 ): response is ChangeRoute {
   return (response as ChangeRoute).route !== undefined;
 }
 
 export function isExternalRedirect(
-  response: SubmitResponse
+  response: SubmitResponse,
 ): response is ExternalRedirect {
   return (response as ExternalRedirect).href !== undefined;
 }
@@ -153,7 +153,7 @@ export function isExternalRedirect(
 function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
     "api/content/submit" + encodeURI(path),
-    vals
+    vals,
   ).then((res) => res.data);
 }
 
@@ -207,7 +207,7 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   function updatePageContent(
     content: LegacyContentResponse,
-    scrollTop: boolean
+    scrollTop: boolean,
   ) {
     // Setting the below flag and page content in `flushSync` is crucial, as it forces the DOM to change immediately (to display a spinner)
     // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web browser where it would've
@@ -261,14 +261,14 @@ export const LegacyContent = React.memo(function LegacyContent({
     pipe(
       O.fromNullable(submitValues["temp.hn"]),
       O.chain<string[], FullscreenMode>(([firstValue]) =>
-        firstValue === "true" ? O.some("YES") : O.none
+        firstValue === "true" ? O.some("YES") : O.none,
       ),
       O.map((value) =>
         updateTemplate((tp) => ({
           ...tp,
           fullscreenMode: value,
-        }))
-      )
+        })),
+      ),
     );
   };
 
@@ -277,7 +277,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     scrollTop: boolean,
     formAction: string | undefined,
     submitValues: StateData,
-    callback?: (response: SubmitResponse) => void
+    callback?: (response: SubmitResponse) => void,
   ) {
     if (formAction) {
       const { submitting, action, payload } = submittingForm.current;
@@ -350,7 +350,7 @@ export const LegacyContent = React.memo(function LegacyContent({
             name: "stdSubmit Failure",
             message:
               "stdSubmit unable to proceed due to missing " + legacyFormId,
-          })
+          }),
         );
       } else {
         const vals = collectParams(form, command, [].slice.call(arguments, 1));
@@ -369,20 +369,20 @@ export const LegacyContent = React.memo(function LegacyContent({
         name: string,
         params: string[],
         callback: (response: SubmitResponse) => void,
-        errorcallback: () => void
+        errorcallback: () => void,
       ) {
         submitCurrentForm(
           false,
           false,
           form.action,
           collectParams(form, name, params),
-          callback
+          callback,
         );
         return false;
       },
       updateIncludes(
         includes: { js: string[]; css?: string[]; script: string },
-        cb: () => void
+        cb: () => void,
       ) {
         updateIncludes(includes.js, includes.css).then((_) => {
           // eslint-disable-next-line no-eval
@@ -431,7 +431,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           ? templatePropsForLegacy(content)
           : templateDefaults("Missing content!")),
       })),
-    [content, updateTemplate]
+    [content, updateTemplate],
   );
 
   return !updatingContent && content ? (
@@ -447,7 +447,7 @@ function resolveUrl(url: string) {
 
 async function updateIncludes(
   js: string[],
-  css?: string[]
+  css?: string[],
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const extraCss = await updateStylesheets(css);
   await loadMissingScripts(js);
@@ -455,7 +455,7 @@ async function updateIncludes(
 }
 
 function updateStylesheets(
-  _sheets?: string[]
+  _sheets?: string[],
 ): Promise<{ [url: string]: HTMLLinkElement }> {
   const sheets = _sheets
     ? _sheets.map(resolveUrl)
@@ -491,7 +491,7 @@ function updateStylesheets(
             console.error(`Failed to load css: ${newCss.href}`);
             resolve(undefined);
           },
-          false
+          false,
         );
       });
       lastLink.push(p);
@@ -533,7 +533,7 @@ function loadMissingScripts(_scripts: string[]) {
           return newScript;
         }
       },
-      null
+      null,
     );
     if (!lastScript) resolve(undefined);
     else {
@@ -544,7 +544,7 @@ function loadMissingScripts(_scripts: string[]) {
           console.error(`Failed to load script: ${lastScript.src}`);
           resolve(undefined);
         },
-        false
+        false,
       );
     }
   });
@@ -553,7 +553,7 @@ function loadMissingScripts(_scripts: string[]) {
 function collectParams(
   form: HTMLFormElement,
   command: string | null,
-  args: string[]
+  args: string[],
 ) {
   const vals: { [index: string]: string[] } = {};
   if (command) {

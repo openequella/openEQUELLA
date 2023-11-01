@@ -63,7 +63,7 @@ export interface LanguageStrings {
  */
 export function prepLangStrings(
   prefix: string,
-  strings: LanguageStrings | string
+  strings: LanguageStrings | string,
 ): LanguageStrings | string {
   if (typeof bundle == "undefined") return strings;
   const overrideVal = (prefix: string, val: LanguageStrings | string) => {
@@ -92,7 +92,7 @@ export function initStrings() {
   >) {
     (languageStrings as LanguageStrings)[key] = prepLangStrings(
       key,
-      languageStrings[key]
+      languageStrings[key],
     );
   }
 }

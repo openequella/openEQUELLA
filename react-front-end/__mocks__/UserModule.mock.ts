@@ -84,7 +84,7 @@ export const tokens: string[] = ["moodle", "token1", "token2"];
  * @param ids A list of user IDs to lookup, should be one of those in `users`
  */
 export const resolveUsers = async (
-  ids: ReadonlyArray<string>
+  ids: ReadonlyArray<string>,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   Promise.resolve(users.filter(({ id }) => ids.includes(id)));
 
@@ -101,12 +101,12 @@ export const findUserById = (id: string) => findEntityById(id, resolveUsers);
  * @param query A simple string to filter by (no wildcard support)
  */
 export const listUsers = async (
-  query?: string
+  query?: string,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   entityDetailsProvider(
     users,
     (u: OEQ.UserQuery.UserDetails, q) => u.username.search(q) === 0,
-    query
+    query,
   );
 
 /**

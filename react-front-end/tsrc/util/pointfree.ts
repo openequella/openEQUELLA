@@ -41,7 +41,7 @@ export const pfTernary =
   <A, B>(
     predicate: (a: A) => boolean,
     onRight: (a: A) => B,
-    onLeft: (a: A) => B
+    onLeft: (a: A) => B,
   ) =>
   (a: A): B =>
     pipe(a, E.fromPredicate(predicate, identity), E.match(onLeft, onRight));
@@ -53,13 +53,13 @@ export const pfTernaryTypeGuard =
   <A, B, C>(
     guard: (a: A | B) => a is A,
     onRight: (a: A) => C,
-    onLeft: (a: B) => C
+    onLeft: (a: B) => C,
   ) =>
   (a: A | B): C =>
     pipe(
       a,
       (a) => (guard(a) ? E.right(a) : E.left(a)),
-      E.match(onLeft, onRight)
+      E.match(onLeft, onRight),
     );
 
 /**
@@ -98,5 +98,4 @@ export const pfSlice =
  */
 export const pfSplitAt =
   (index: number) =>
-  (s: string): [string, string] =>
-    [s.substring(0, index), s.substring(index)];
+  (s: string): [string, string] => [s.substring(0, index), s.substring(index)];

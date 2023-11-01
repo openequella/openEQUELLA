@@ -84,7 +84,7 @@ export interface SelectedCategories {
  * with reasonable performance. (Important seeing it's also doing some data conversion.)
  */
 const convertSearchOptions: (
-  options: SearchOptions
+  options: SearchOptions,
 ) => OEQ.SearchFacets.SearchFacetsParams = memoize(
   (options: SearchOptions): OEQ.SearchFacets.SearchFacetsParams => {
     const {
@@ -105,7 +105,7 @@ const convertSearchOptions: (
       owner: owner?.id,
       showall: isEqual(
         status?.sort(),
-        OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value).sort()
+        OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value).sort(),
       ),
       mimeTypes,
       musts,
@@ -116,7 +116,7 @@ const convertSearchOptions: (
           collections: collections.map((c) => c.uuid),
         }
       : searchFacetsParams;
-  }
+  },
 );
 
 /**
@@ -127,10 +127,10 @@ const convertSearchOptions: (
  * @param options The control parameters for the generation of the categories
  */
 export const listCategories = async (
-  options: OEQ.SearchFacets.SearchFacetsParams
+  options: OEQ.SearchFacets.SearchFacetsParams,
 ): Promise<OEQ.SearchFacets.Facet[]> =>
   (await OEQ.SearchFacets.searchFacets(API_BASE_URL, options)).results.filter(
-    (r) => r.term
+    (r) => r.term,
   );
 
 /**
@@ -147,7 +147,7 @@ export const listCategories = async (
  * @param options The standard options used for searching, as these also filter the generated categories
  */
 export const listClassifications = async (
-  options: SearchOptions
+  options: SearchOptions,
 ): Promise<Classification[]> =>
   Promise.all(
     (await getFacetsFromServer()).map<Promise<Classification>>(
@@ -163,10 +163,10 @@ export const listClassifications = async (
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
           where: generateCategoryWhereQuery(
-            options.selectedCategories?.filter((c) => c.id !== settings.id)
+            options.selectedCategories?.filter((c) => c.id !== settings.id),
           ),
         }),
         schemaNode: settings.schemaNode,
-      })
-    )
+      }),
+    ),
   );

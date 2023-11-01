@@ -106,7 +106,7 @@ describe("buildGalleryEntry", () => {
     (_: string, attachment: OEQ.Search.Attachment) => {
       const galleryEntry = buildGalleryEntry(itemUuid, itemVersion, attachment);
       expectRight(galleryEntry);
-    }
+    },
   );
 
   it("fails if Attachment is an unsupported attachment type", () => {
@@ -141,7 +141,7 @@ describe("buildGalleryEntry", () => {
         hasGeneratedThumb,
       });
       expect(galleryEntry).toBeLeft();
-    }
+    },
   );
 });
 
@@ -222,17 +222,17 @@ describe("buildGallerySearchResultItem", () => {
   };
 
   const passThroughAttachmentFilter: AttachmentFilter = (
-    a: OEQ.Search.Attachment[]
+    a: OEQ.Search.Attachment[],
   ) => (A.isNonEmpty(a) ? O.some(a) : O.none);
 
   it("builds a GallerySearchResultItem from a valid SearchResultItem", () => {
     const result = buildGallerySearchResultItem(passThroughAttachmentFilter)(
-      searchItem
+      searchItem,
     );
     const { mainEntry, additionalEntries } = expectRight(result)!;
     expect(mainEntry.directUrl).toBe(
       // Based on the fact there is no base URL set in Jest tests
-      "file/535e4e9b-4836-4011-8857-eb29260bf155/1/content.zip/images/ima_3166d0f.jpeg"
+      "file/535e4e9b-4836-4011-8857-eb29260bf155/1/content.zip/images/ima_3166d0f.jpeg",
     );
     expect(additionalEntries).toHaveLength(2);
   });
@@ -283,7 +283,7 @@ describe("buildGallerySearchResultItem", () => {
 const expectValidGalleryResult = (
   result: OEQ.Search.SearchResult<GallerySearchResultItem>,
   expectLength: number,
-  mimeTypesValidator: (s: string) => boolean
+  mimeTypesValidator: (s: string) => boolean,
 ) => {
   // The below is validating a variable, not the length of an array
   // eslint-disable-next-line jest/prefer-to-have-length
@@ -297,7 +297,7 @@ const expectValidGalleryResult = (
         cur.mainEntry,
         ...cur.additionalEntries,
       ],
-      [] as GalleryEntry[]
+      [] as GalleryEntry[],
     )
     .map((entry: GalleryEntry) => entry.mimeType);
   expect(mimeTypes.length).toBeGreaterThan(1);
@@ -312,7 +312,7 @@ describe("imageGallerySearch", () => {
 
     const result = await imageGallerySearch(defaultSearchOptions);
     expectValidGalleryResult(result, basicImageSearchResponse.length, (s) =>
-      s.startsWith("image")
+      s.startsWith("image"),
     );
   });
 
@@ -340,7 +340,7 @@ describe("videoGallerySearch", () => {
       basicVideoSearchResponse.length,
       (s) =>
         s.startsWith("video") ||
-        [CustomMimeTypes.YOUTUBE, CustomMimeTypes.KALTURA].includes(s)
+        [CustomMimeTypes.YOUTUBE, CustomMimeTypes.KALTURA].includes(s),
     );
   });
 });

@@ -87,7 +87,7 @@ const ACLExpressionTree = ({
     const handleRecipientDelete = (recipient: ACLRecipient) => {
       const newRecipients = pipe(
         recipients,
-        A.filter((r) => !recipientEq.equals(r, recipient))
+        A.filter((r) => !recipientEq.equals(r, recipient)),
       );
 
       onChange({
@@ -105,7 +105,10 @@ const ACLExpressionTree = ({
       });
       // expand current and new group node for user
       setExpanded(
-        pipe([...expanded, aclExpression.id, newACLExpression.id], A.uniq(S.Eq))
+        pipe(
+          [...expanded, aclExpression.id, newACLExpression.id],
+          A.uniq(S.Eq),
+        ),
       );
       // select new group node for user
       // `setSelected` won't trigger the `onSelect` event for operator node, but it can update the UI.
