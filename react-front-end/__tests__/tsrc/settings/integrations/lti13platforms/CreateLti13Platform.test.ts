@@ -157,10 +157,11 @@ describe("CreateLti13Platform", () => {
         ...commonCreateLti13PlatformProps,
         createPlatformProvider: createPlatform,
       });
+      const { container } = renderResult;
 
       // General details are always required.
       await configureGeneralDetails(
-        renderResult,
+        container,
         new Map([
           [platformIdLabel, expectedResult.platformId],
           [nameLabel, expectedResult.name],
@@ -173,7 +174,7 @@ describe("CreateLti13Platform", () => {
       );
 
       await configuration(renderResult);
-      await savePlatform(renderResult);
+      await savePlatform(container);
 
       const result = createPlatform.mock.lastCall[0];
       expect(result).toEqual(expectedResult);
@@ -183,12 +184,12 @@ describe("CreateLti13Platform", () => {
 
   it("highlights any required fields whose value is empty", async () => {
     const createPlatform = jest.fn();
-    const renderResult = await renderCreateLti13Platform({
+    const { container } = await renderCreateLti13Platform({
       ...commonCreateLti13PlatformProps,
       createPlatformProvider: createPlatform,
     });
 
-    await savePlatform(renderResult);
+    await savePlatform(container);
 
     pipe(
       [
@@ -199,7 +200,7 @@ describe("CreateLti13Platform", () => {
         platformAuthenticationRequestURLLabel,
       ],
       A.map((label) =>
-        expect(getGeneralDetailsInputOutline(renderResult, label)).toHaveClass(
+        expect(getGeneralDetailsInputOutline(container, label)).toHaveClass(
           errorOutlineClass,
         ),
       ),
@@ -213,19 +214,19 @@ describe("CreateLti13Platform", () => {
       [platformAuthenticationRequestURLLabel, "httpstest://www.test.com"],
     ]);
     const createPlatform = jest.fn();
-    const renderResult = await renderCreateLti13Platform({
+    const { container } = await renderCreateLti13Platform({
       ...commonCreateLti13PlatformProps,
       createPlatformProvider: createPlatform,
     });
 
-    await configureGeneralDetails(renderResult, controls);
+    await configureGeneralDetails(container, controls);
 
-    await savePlatform(renderResult);
+    await savePlatform(container);
 
     pipe(
       Array.from(controls.keys()),
       A.map((label) =>
-        expect(getGeneralDetailsInputOutline(renderResult, label)).toHaveClass(
+        expect(getGeneralDetailsInputOutline(container, label)).toHaveClass(
           errorOutlineClass,
         ),
       ),

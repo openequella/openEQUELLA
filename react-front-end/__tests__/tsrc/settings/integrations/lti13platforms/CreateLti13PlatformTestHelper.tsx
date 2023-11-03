@@ -101,7 +101,7 @@ const getGeneralDetailsInput = (
  * Helper to get general details input parent element (outline) by aria label.
  */
 export const getGeneralDetailsInputOutline = (
-  { container }: RenderResult,
+  container: HTMLElement,
   label: string,
 ) => {
   const outline = getGeneralDetailsInput(container, label).parentElement;
@@ -131,7 +131,7 @@ export const typeGeneralDetails = async (
  * @param detailsMap - A Map where each key-value pair represents an input field's label and the value to be filled.
  */
 export const configureGeneralDetails = async (
-  { container }: RenderResult,
+  container: HTMLElement,
   detailsMap: Map<string, string>,
 ): Promise<void> => {
   for (const [label, value] of Array.from(detailsMap)) {
@@ -249,5 +249,5 @@ export const configureCustomRoles = async (
 };
 
 /** Helper function to click save button. */
-export const savePlatform = ({ container }: RenderResult) =>
+export const savePlatform = (container: HTMLElement) =>
   userEvent.click(getByText(container, saveLabel));
