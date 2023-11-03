@@ -344,6 +344,16 @@ public class OAuthClientEditorSection
     }
   }
 
+  // Parse the value of Token validity component to a numeric value and return it. However, if the
+  // parsing fails, return -1 which will fail the validation process.
+  private int getTokenValidity(SectionInfo info) {
+    try {
+      return tokenValidity.getIntValue(info);
+    } catch (NumberFormatException nfe) {
+      return -1;
+    }
+  }
+
   /**
    * Srsly, this should be in the service
    *
@@ -372,7 +382,7 @@ public class OAuthClientEditorSection
       }
     }
 
-    if (tokenValidity.getValue(info).intValue() < 0) {
+    if (getTokenValidity(info) < 0) {
       errors.put("tokenValidity", CurrentLocale.get(KEY_ERROR_VALIDITY));
     }
 
@@ -420,7 +430,7 @@ public class OAuthClientEditorSection
     // is valid
     oauth.setName(nameField.getLanguageBundle(info));
     oauth.setClientId(clientIdField.getValue(info));
-    oauth.setTokenValidity(tokenValidity.getValue(info).intValue());
+    oauth.setTokenValidity(getTokenValidity(info));
     oauth.setFlowDef(selectFlow.getSelectedValue(info));
 
     if (selectFlow.getSelectedValue(info) != null
@@ -470,7 +480,12 @@ public class OAuthClientEditorSection
       nameField.setLanguageBundle(info, name);
     }
     clientIdField.setValue(info, oauth.getClientId());
-    tokenValidity.setValue(info, oauth.getTokenValidity());
+
+    int validity = oauth.getTokenValidity();
+    // Only update the token validity component when the value is valid.
+    if (validity >= 0) {
+      tokenValidity.setValue(info, validity);
+    }
     model.setClientSecret(oauth.getClientSecret());
     selectFlow.setSelectedValue(info, oauth.getFlowDef());
     model.setFlow(oauth.getFlowDef());
