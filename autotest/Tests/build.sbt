@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
   "com.jcraft"                % "jsch"                      % "0.1.55",
   "org.jacoco"                % "org.jacoco.report"         % "0.8.10",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
-  "com.typesafe"              % "config"                    % "1.4.2",
+  "com.typesafe"              % "config"                    % "1.4.3",
   "org.slf4j"                 % "slf4j-simple"              % "2.0.9",
   "org.scalacheck"            %% "scalacheck"               % "1.17.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
