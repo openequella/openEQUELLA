@@ -68,7 +68,7 @@ export const AuxiliarySearchSelector = ({
 
   useEffect(() => {
     auxiliarySearchesSupplier().then((searches) =>
-      setAuxiliarySearches(searches)
+      setAuxiliarySearches(searches),
     );
   }, [auxiliarySearchesSupplier]);
 

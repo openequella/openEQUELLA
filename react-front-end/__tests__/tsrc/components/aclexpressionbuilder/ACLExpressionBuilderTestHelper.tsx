@@ -56,7 +56,7 @@ export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
 
 // Helper to render ACLExpressionBuilder and wait for component under test
 export const renderACLExpressionBuilder = (
-  props: ACLExpressionBuilderProps = defaultACLExpressionBuilderProps
+  props: ACLExpressionBuilderProps = defaultACLExpressionBuilderProps,
 ): RenderResult => render(<ACLExpressionBuilder {...props} />);
 
 /**
@@ -65,7 +65,7 @@ export const renderACLExpressionBuilder = (
  */
 export const selectAndConfirm = async (
   container: HTMLElement,
-  selectNames: string[]
+  selectNames: string[],
 ) => {
   // wait for the results, and then click all entities
   await selectEntitiesInOneClickMode(container, selectNames);
@@ -80,7 +80,7 @@ export const selectAndConfirm = async (
 export const selectAndFinished = async (
   container: HTMLElement,
   selectNames: string[],
-  onFinish = jest.fn()
+  onFinish = jest.fn(),
 ): Promise<string> => {
   await selectAndConfirm(container, selectNames);
   // get the result of ACLExpression
@@ -92,7 +92,7 @@ export const selectAndFinished = async (
  */
 export const selectRecipientType = async (
   container: HTMLElement,
-  recipientLabel: string
+  recipientLabel: string,
 ) => selectOption(container, `#recipient-type-select`, recipientLabel);
 
 /**
@@ -100,7 +100,7 @@ export const selectRecipientType = async (
  */
 export const selectReferrerType = async (
   { getByText }: RenderResult,
-  type: ReferrerType
+  type: ReferrerType,
 ) => {
   const text = type === "Contain" ? containReferrerDesc : exactReferrerDesc;
   const radio = getByText(text);

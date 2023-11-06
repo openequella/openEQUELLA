@@ -73,13 +73,13 @@ export interface EditLti13PlatformProps
    * Function to get platform by ID.
    */
   getPlatformProvider?: (
-    platformId: string
+    platformId: string,
   ) => Promise<OEQ.LtiPlatform.LtiPlatform>;
   /**
    * Function to update platform.
    */
   updatePlatformProvider?: (
-    platform: OEQ.LtiPlatform.LtiPlatform
+    platform: OEQ.LtiPlatform.LtiPlatform,
   ) => Promise<void>;
   /**
    * Function to rotate keypair for platform.
@@ -124,15 +124,15 @@ const EditLti13Platform = ({
     // decode platform ID and update state
     const pid: E.Either<string, string> = E.tryCatch(
       () => atob(platformIdBase64),
-      (e) => `${wrongURL}: ${e}`
+      (e) => `${wrongURL}: ${e}`,
     );
 
     const getPlatformTask = (
-      platformId: string
+      platformId: string,
     ): TE.TaskEither<string, OEQ.LtiPlatform.LtiPlatform> =>
       TE.tryCatch<string, OEQ.LtiPlatform.LtiPlatform>(
         () => getPlatformProvider(platformId),
-        (e) => `Failed to get platform: ${e}`
+        (e) => `Failed to get platform: ${e}`,
       );
 
     // execute get platform task if platform ID is not None
@@ -140,7 +140,7 @@ const EditLti13Platform = ({
       pid,
       TE.fromEither,
       TE.chain(getPlatformTask),
-      TE.match(appErrorHandler, setPlatform)
+      TE.match(appErrorHandler, setPlatform),
     )();
   }, [getPlatformProvider, appErrorHandler, platformIdBase64]);
 
@@ -160,40 +160,40 @@ const EditLti13Platform = ({
           value: platform[key] ?? "",
           // disable platform ID field since ID can't be changed in edit page
           disabled: key === "platformId",
-        }))
+        })),
       );
 
       // initialize groups and roles details
       const unknownUserDefaultGroupsWithMsgTask = pipe(
         getGroupsTask(
           platform.unknownUserDefaultGroups ?? new Set(),
-          aclEntityResolversMultiProvider.resolveGroupsProvider
+          aclEntityResolversMultiProvider.resolveGroupsProvider,
         ),
-        TE.getOrThrow
+        TE.getOrThrow,
       );
 
       const instructorRolesWithMsgTask = pipe(
         getRolesTask(
           platform.instructorRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider
+          aclEntityResolversMultiProvider.resolveRolesProvider,
         ),
-        TE.getOrThrow
+        TE.getOrThrow,
       );
 
       const customRolesWithMsgTask = pipe(
         generateCustomRoles(
           platform.customRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider
+          aclEntityResolversMultiProvider.resolveRolesProvider,
         ),
-        TE.getOrThrow
+        TE.getOrThrow,
       );
 
       const unknownRolesWithMsgTask = pipe(
         getRolesTask(
           platform.unknownRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider
+          aclEntityResolversMultiProvider.resolveRolesProvider,
         ),
-        TE.getOrThrow
+        TE.getOrThrow,
       );
 
       // execute tasks
@@ -229,7 +229,7 @@ const EditLti13Platform = ({
               customRolesMapping: customRolesWithMsg.warnings,
               warningMessageForGroups: unknownUserDefaultGroupsWithMsg.warning,
             });
-          }
+          },
         )
         .catch((e) => {
           console.warn(e);
@@ -242,20 +242,20 @@ const EditLti13Platform = ({
     const task = pipe(
       platform?.platformId,
       TE.fromNullable(
-        "Platform ID is missing in the provided LTI 1.3 Platform"
+        "Platform ID is missing in the provided LTI 1.3 Platform",
       ),
       TE.chain((id) =>
         TE.tryCatch(
           () => rotateKeyPairProvider(id),
-          (e) => `Failed to rotate key pair: ${e}`
-        )
-      )
+          (e) => `Failed to rotate key pair: ${e}`,
+        ),
+      ),
     );
 
     pipe(
       await task(),
       E.foldW(appErrorHandler, () => setShowKeyRotatedMessage(true)),
-      () => setOpenRotateKeyPairDialog(false)
+      () => setOpenRotateKeyPairDialog(false),
     );
   };
 

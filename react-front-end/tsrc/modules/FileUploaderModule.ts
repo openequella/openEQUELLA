@@ -105,7 +105,7 @@ export interface UploadingFile {
  * @param file An object that is either a UploadedFile or a UploadingFile
  */
 export const isUploadedFile = (
-  file: UploadedFile | UploadingFile
+  file: UploadedFile | UploadingFile,
 ): file is UploadedFile => file.status === "uploaded";
 
 /**
@@ -225,11 +225,11 @@ export interface NewUploadResponse extends BasicUploadResponse {
  * @param uploadResponse An object that is either a UpdateEntry or a UploadFailed
  */
 export const isUpdateEntry = (
-  uploadResponse: BasicUploadResponse
+  uploadResponse: BasicUploadResponse,
 ): uploadResponse is UpdateEntry => uploadResponse.response === "updateentry";
 
 const isUploadFailed = (
-  uploadResponse: BasicUploadResponse
+  uploadResponse: BasicUploadResponse,
 ): uploadResponse is UploadFailed => uploadResponse.response === "uploadfailed";
 
 /**
@@ -255,7 +255,7 @@ export const getAxiosSource = (id: string) => axiosSourceMap.get(id);
 export const newUpload = (
   path: string,
   uploadingFile: UploadingFile,
-  updateUploadProgress: (file: UploadingFile) => void
+  updateUploadProgress: (file: UploadingFile) => void,
 ): Promise<UpdateEntry | UploadFailed> => {
   const {
     fileEntry: { name, size },
@@ -269,7 +269,7 @@ export const newUpload = (
     ({ data }) =>
       isUploadFailed(data)
         ? data
-        : doUpload(data.uploadUrl, uploadingFile, updateUploadProgress)
+        : doUpload(data.uploadUrl, uploadingFile, updateUploadProgress),
   );
 };
 
@@ -284,7 +284,7 @@ export const newUpload = (
 const doUpload = (
   path: string,
   uploadingFile: UploadingFile,
-  updateUploadProgress: (file: UploadingFile) => void
+  updateUploadProgress: (file: UploadingFile) => void,
 ): Promise<UpdateEntry | UploadFailed> => {
   const { fileEntry } = uploadingFile;
 
@@ -302,7 +302,7 @@ const doUpload = (
     cancelToken: token,
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
       const uploadPercentage = Math.floor(
-        (progressEvent.loaded / fileEntry.size) * 100
+        (progressEvent.loaded / fileEntry.size) * 100,
       );
 
       updateUploadProgress({
@@ -329,9 +329,9 @@ export const upload = (
   onUpload: (file: UploadingFile) => void,
   onSuccessful: (
     uploadedFile: UploadedFile,
-    displayWarningMessage?: boolean
+    displayWarningMessage?: boolean,
   ) => void,
-  onError: (file: UploadingFile) => void
+  onError: (file: UploadingFile) => void,
 ) => {
   beforeUpload();
   newUpload(uploadURL, file, onUpload)
@@ -345,7 +345,7 @@ export const upload = (
         };
         onSuccessful(
           uploadedFile,
-          attachmentDuplicateInfo?.displayWarningMessage ?? false
+          attachmentDuplicateInfo?.displayWarningMessage ?? false,
         );
       } else {
         throw new Error(uploadResponse.reason);
@@ -380,7 +380,7 @@ export const deleteUpload = (
   file: UploadedFile,
   onSuccessful: (displayWarningMessage?: boolean) => void,
   onError: (file: UploadedFile) => void,
-  deleteConfirmText?: string
+  deleteConfirmText?: string,
 ) => {
   const { id, name } = file.fileEntry;
   const deleteConfirmed =
@@ -398,7 +398,7 @@ export const deleteUpload = (
           errorMessage: sprintf(
             languageStrings.fileUploader.failedToDelete,
             name,
-            error.message
+            error.message,
           ),
         });
       });
@@ -427,7 +427,7 @@ export const cancelUpload = (id: string) => {
  */
 export const updateDuplicateMessage = (ctrlId: string, display: boolean) => {
   const duplicateMessageDiv = document.querySelector(
-    `#${ctrlId}_attachment_duplicate_warning`
+    `#${ctrlId}_attachment_duplicate_warning`,
   );
   if (duplicateMessageDiv) {
     if (display) {

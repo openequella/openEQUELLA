@@ -30,7 +30,7 @@ import {
 
 // A type guard used to check if the props passed from server is 'InlineFileUploaderProps' or 'UniversalFileUploaderProps'.
 const isInlineFileUploaderProps = (
-  props: InlineFileUploaderProps | UniversalFileUploaderProps
+  props: InlineFileUploaderProps | UniversalFileUploaderProps,
 ): props is InlineFileUploaderProps =>
   (props as InlineFileUploaderProps).reloadState !== undefined;
 
@@ -47,7 +47,7 @@ const isInlineFileUploaderProps = (
  * @param props Props that will be passed to InlineFileUploader or UniversalFileUploader
  */
 export const render = (
-  props: InlineFileUploaderProps | UniversalFileUploaderProps
+  props: InlineFileUploaderProps | UniversalFileUploaderProps,
 ) => {
   const fileUploader = isInlineFileUploaderProps(props) ? (
     <InlineFileUploader {...props} />
@@ -61,11 +61,13 @@ export const render = (
     import("../modules/ThemeModule")
       .then(({ getOeqTheme }) => {
         root.render(
-          <ThemeProvider theme={getOeqTheme()}>{fileUploader}</ThemeProvider>
+          <ThemeProvider theme={getOeqTheme()}>{fileUploader}</ThemeProvider>,
         );
       })
       .catch((error: Error) =>
-        console.error(`Fail to load oEQ Theme settings due to ${error.message}`)
+        console.error(
+          `Fail to load oEQ Theme settings due to ${error.message}`,
+        ),
       );
   } else {
     root.render(fileUploader);

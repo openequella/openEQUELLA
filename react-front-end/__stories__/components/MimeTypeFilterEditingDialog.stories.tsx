@@ -47,7 +47,7 @@ withFilterNotProvided.args = {
 };
 
 export const withFilterProvided: StoryFn<MimeTypeFilterEditingDialogProps> = (
-  args
+  args,
 ) => <MimeTypeFilterEditingDialog {...args} />;
 withFilterProvided.args = {
   ...withFilterNotProvided.args,

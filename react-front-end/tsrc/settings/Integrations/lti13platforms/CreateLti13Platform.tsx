@@ -36,7 +36,7 @@ export interface CreateLti13PlatformProps
    * Function to create platform.
    */
   createPlatformProvider?: (
-    platform: OEQ.LtiPlatform.LtiPlatform
+    platform: OEQ.LtiPlatform.LtiPlatform,
   ) => Promise<void>;
 }
 

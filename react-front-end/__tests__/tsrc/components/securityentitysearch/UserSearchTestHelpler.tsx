@@ -35,7 +35,7 @@ const { queryFieldLabel } = languageStrings.userSearchComponent;
  * Helper to render UserSearch and wait for component under test
  */
 export const renderUserSearch = async (
-  props: UserSearchProps = defaultBaseSearchProps
+  props: UserSearchProps = defaultBaseSearchProps,
 ): Promise<RenderResult> => {
   const renderResult = render(<UserSearch {...props} />);
 
@@ -59,10 +59,10 @@ export const searchUser = (dialog: HTMLElement, queryValue: string) =>
  * Helper function to assist in finding the specific User from mock data.
  */
 export const findUserFromMockData = (
-  username: string
+  username: string,
 ): OEQ.UserQuery.UserDetails =>
   findEntityFromMockData(
     UserModuleMock.users,
     (u: OEQ.UserQuery.UserDetails) => u.username === username,
-    username
+    username,
   );

@@ -61,7 +61,7 @@ const mockedSearchFacets = (
 ).mockImplementation(
   (
     _: string,
-    params?: OEQ.SearchFacets.SearchFacetsParams
+    params?: OEQ.SearchFacets.SearchFacetsParams,
   ): Promise<OEQ.SearchFacets.SearchFacetsResult> => {
     const mockData = new Map<string, OEQ.SearchFacets.Facet[]>([
       [CLASSIFICATION_SUBJECT.schemaNode, CATEGORIES_SUBJECT],
@@ -73,7 +73,7 @@ const mockedSearchFacets = (
     return Promise.resolve({
       results: mockData.get(params.nodes[0]),
     } as OEQ.SearchFacets.SearchFacetsResult);
-  }
+  },
 );
 
 describe("SearchFacetsModule", () => {

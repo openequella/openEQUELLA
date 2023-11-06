@@ -82,7 +82,7 @@ export const SearchOrderSelect = ({
             event.target.value,
             OEQ.Codec.Search.SortOrderCodec.decode,
             E.getOrThrow,
-            onChange
+            onChange,
           )
         }
         variant="standard"

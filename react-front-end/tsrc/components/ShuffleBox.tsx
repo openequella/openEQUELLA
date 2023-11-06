@@ -98,7 +98,7 @@ export const ShuffleBox = ({
   values,
 }: ShuffleBoxProps): JSX.Element => {
   const [checkedChoices, setCheckedChoices] = useState<ReadonlySet<string>>(
-    RSET.empty
+    RSET.empty,
   );
   const [checkedSelections, setCheckedSelections] = useState<
     ReadonlySet<string>
@@ -110,7 +110,7 @@ export const ShuffleBox = ({
       options,
       M.keys<string>(OrdAsIs),
       RSET.fromReadonlyArray(S.Eq),
-      onSelect
+      onSelect,
     );
   };
 
@@ -122,7 +122,7 @@ export const ShuffleBox = ({
   const handleAddSelected = () => {
     const newValues: ReadonlySet<string> = pipe(
       values,
-      RSET.union(S.Eq)(checkedChoices)
+      RSET.union(S.Eq)(checkedChoices),
     );
     setCheckedChoices(RSET.empty);
     onSelect(newValues);
@@ -131,7 +131,7 @@ export const ShuffleBox = ({
   const handleRemoveSelected = () => {
     const newValues: ReadonlySet<string> = pipe(
       values,
-      RSET.difference(S.Eq)(checkedSelections)
+      RSET.difference(S.Eq)(checkedSelections),
     );
     setCheckedSelections(RSET.empty);
     onSelect(newValues);
@@ -142,7 +142,7 @@ export const ShuffleBox = ({
     pipe(
       options,
       M.partitionWithIndex((k) => pipe(values, RSET.elem(S.Eq)(k))),
-      ({ left, right }) => [left, right]
+      ({ left, right }) => [left, right],
     );
 
   const buttons: [string, () => void, JSX.Element][] = [

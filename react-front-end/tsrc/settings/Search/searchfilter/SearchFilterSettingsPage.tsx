@@ -104,7 +104,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     useState<boolean>(false);
   const [openMessageDialog, setOpenMessageDialog] = useState<boolean>(false);
   const [messageDialogMessages, setMessageDialogMessages] = useState<string[]>(
-    []
+    [],
   );
   const [reset, setReset] = useState<boolean>(true);
   const { appErrorHandler } = useContext(AppContext);
@@ -166,7 +166,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * with 'filter'.
    */
   const addOrUpdateMimeTypeFilter = (
-    filter: OEQ.SearchFilterSettings.MimeTypeFilter
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter,
   ) => {
     if (!selectedMimeTypeFilter) {
       setMimeTypeFilters(addElement(mimeTypeFilters, filter));
@@ -176,15 +176,15 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
         replaceElement(
           mimeTypeFilters,
           filterComparator(selectedMimeTypeFilter),
-          filter
-        )
+          filter,
+        ),
       );
       setChangedMimeTypeFilters(
         replaceElement(
           changedMimeTypeFilters,
           filterComparator(selectedMimeTypeFilter),
-          filter
-        )
+          filter,
+        ),
       );
     }
   };
@@ -195,13 +195,13 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * If the filter has an ID then add it to 'deletedMimeTypeFilters'.
    */
   const deleteMimeTypeFilter = (
-    filter: OEQ.SearchFilterSettings.MimeTypeFilter
+    filter: OEQ.SearchFilterSettings.MimeTypeFilter,
   ) => {
     setMimeTypeFilters(
-      deleteElement(mimeTypeFilters, filterComparator(filter), 1)
+      deleteElement(mimeTypeFilters, filterComparator(filter), 1),
     );
     setChangedMimeTypeFilters(
-      deleteElement(changedMimeTypeFilters, filterComparator(filter), 1)
+      deleteElement(changedMimeTypeFilters, filterComparator(filter), 1),
     );
 
     // Only put filters that already have an id into deletedMimeTypeFilters
@@ -211,7 +211,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const openMimeTypeFilterDialog = (
-    filter?: OEQ.SearchFilterSettings.MimeTypeFilter
+    filter?: OEQ.SearchFilterSettings.MimeTypeFilter,
   ) => {
     setOpenMimeTypeFilterEditor(true);
     setSelectedMimeTypeFilter(filter);
@@ -243,25 +243,25 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const saveTask: Promise<E.Either<Error, string[]>> = pipe(
       TE.tryCatch<Error, void>(
         () => saveSearchSettingsToServer(searchSettings),
-        (error) => new Error(`Failed to update Search settings: ${error}`)
+        (error) => new Error(`Failed to update Search settings: ${error}`),
       ),
       TE.chain<Error, void, string[]>(() =>
         TE.tryCatch(
           searchFilterUpdateTask,
-          (error) => new Error(`Failed to update Search filters: ${error}`)
-        )
+          (error) => new Error(`Failed to update Search filters: ${error}`),
+        ),
       ),
       TE.chain<Error, string[], string[]>((previousMessages: string[]) =>
         pipe(
           TE.tryCatch(
             searchFilterDeleteTask,
-            (error) => new Error(`Failed to delete Search filters: ${error}`)
+            (error) => new Error(`Failed to delete Search filters: ${error}`),
           ),
           TE.map((messages: string[]) => {
             return previousMessages.concat(messages);
-          })
-        )
-      )
+          }),
+        ),
+      ),
     )();
 
     pipe(
@@ -274,7 +274,7 @@ const SearchFilterPage = ({ updateTemplate }: TemplateUpdateProps) => {
           setShowSnackBar(true);
         }
         setReset(!reset);
-      })
+      }),
     );
   };
 

@@ -58,7 +58,7 @@ const highlightsAsRegex = (highlights: string[]) =>
 export const highlight = (
   text: string,
   highlights: string[],
-  cssClass: string
+  cssClass: string,
 ): string => {
   const highlightsRegex = highlightsAsRegex(highlights);
   if (highlights.length < 1) {
@@ -119,7 +119,7 @@ export const buildOEQServerString = (
   ...args: number[]
 ): string =>
   format.replace(/{(\d+)}/g, (match, number) =>
-    typeof args[number] !== "undefined" ? args[number].toString() : match
+    typeof args[number] !== "undefined" ? args[number].toString() : match,
   );
 
 /**
@@ -155,7 +155,7 @@ export const validateGrouping = (input: string): boolean => {
   // and then check if they are matched or not.
   const areSymbolsMatches = (
     opening: GroupingSymbol,
-    closing: GroupingSymbol
+    closing: GroupingSymbol,
   ): boolean =>
     (dq.is(opening) && dq.is(closing)) || (op.is(opening) && cp.is(closing));
 
@@ -169,7 +169,7 @@ export const validateGrouping = (input: string): boolean => {
         opening.map((openingSymbol, i) => ({
           opening: openingSymbol,
           closing: pipe(closing, A.lookup(i), O.toUndefined),
-        }))
+        })),
     );
 
   /**
@@ -193,7 +193,7 @@ export const validateGrouping = (input: string): boolean => {
    */
   const processSymbolGroup = (
     areMatched: E.Either<string, GroupingSymbol>[],
-    { opening, closing }: Grouping
+    { opening, closing }: Grouping,
   ): E.Either<string, GroupingSymbol>[] => {
     const result = pipe(
       closing,
@@ -201,9 +201,9 @@ export const validateGrouping = (input: string): boolean => {
       E.chainW(
         E.fromPredicate(
           (closingSymbol) => areSymbolsMatches(opening, closingSymbol),
-          () => "Symbol not matched"
-        )
-      )
+          () => "Symbol not matched",
+        ),
+      ),
     );
     return [result, ...areMatched];
   };
@@ -211,10 +211,10 @@ export const validateGrouping = (input: string): boolean => {
   const validating: (groups: Grouping[]) => boolean = flow(
     A.reduce<Grouping, E.Either<string, GroupingSymbol>[]>(
       [],
-      processSymbolGroup
+      processSymbolGroup,
     ),
     E.sequenceArray,
-    E.fold(constFalse, constTrue)
+    E.fold(constFalse, constTrue),
   );
 
   return pipe(
@@ -223,6 +223,6 @@ export const validateGrouping = (input: string): boolean => {
     // If the number of symbols is odd, then the symbols are definitely not closed properly
     O.fromPredicate((array) => A.size(array) % 2 === 0),
     O.map(flow(groupingSymbols, validating)),
-    O.getOrElse(constFalse)
+    O.getOrElse(constFalse),
   );
 };

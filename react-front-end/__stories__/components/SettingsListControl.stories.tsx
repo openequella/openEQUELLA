@@ -50,7 +50,7 @@ type ToggleSwitchControlProps = Pick<
 > &
   Pick<SettingsToggleSwitchProps, "disabled" | "setValue" | "value">;
 export const ToggleSwitchControl: StoryFn<ToggleSwitchControlProps> = (
-  args
+  args,
 ) => (
   <SettingsListControl
     primaryText={args.primaryText}

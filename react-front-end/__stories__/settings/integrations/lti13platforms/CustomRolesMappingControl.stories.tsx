@@ -45,6 +45,6 @@ Standard.args = {
   ...Empty.args,
   value: new Map().set(
     "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
-    SET.fromArray(eqRoleById)(roles)
+    SET.fromArray(eqRoleById)(roles),
   ),
 };

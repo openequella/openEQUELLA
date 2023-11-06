@@ -35,7 +35,7 @@ describe("<OwnerSelector/>", () => {
 
   it("should show the select button when no user selected", () => {
     const { container } = render(
-      <OwnerSelector onClearSelect={jest.fn()} onSelect={jest.fn()} />
+      <OwnerSelector onClearSelect={jest.fn()} onSelect={jest.fn()} />,
     );
     expect(getSelectButton(container)).toBeInTheDocument();
   });
@@ -46,7 +46,7 @@ describe("<OwnerSelector/>", () => {
         onClearSelect={jest.fn()}
         onSelect={jest.fn()}
         value={testUser}
-      />
+      />,
     );
     expect(getSelectButton(container)).not.toBeInTheDocument();
     expect(queryByText(testUser.username)).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("<OwnerSelector/>", () => {
         onClearSelect={clearCallback}
         onSelect={jest.fn()}
         value={testUser}
-      />
+      />,
     );
 
     await clearSelection();
@@ -69,13 +69,13 @@ describe("<OwnerSelector/>", () => {
 
   it("should display the select user dialog when select is clicked", async () => {
     const { container, queryByText } = render(
-      <OwnerSelector onClearSelect={jest.fn()} onSelect={jest.fn()} />
+      <OwnerSelector onClearSelect={jest.fn()} onSelect={jest.fn()} />,
     );
 
     await clickSelect(container);
 
     expect(
-      queryByText(languageStrings.searchpage.filterOwner.selectTitle)
+      queryByText(languageStrings.searchpage.filterOwner.selectTitle),
     ).toBeInTheDocument();
   });
 
@@ -86,7 +86,7 @@ describe("<OwnerSelector/>", () => {
         onClearSelect={jest.fn()}
         onSelect={onSelectCallback}
         userListProvider={UserModuleMock.listUsers}
-      />
+      />,
     );
 
     await selectUser(container, testUser.username);
@@ -98,17 +98,17 @@ describe("<OwnerSelector/>", () => {
   it("should not call the onSelect callback if cancel is clicked", async () => {
     const onSelectCallback = jest.fn();
     const { container, getByRole } = render(
-      <OwnerSelector onClearSelect={jest.fn()} onSelect={onSelectCallback} />
+      <OwnerSelector onClearSelect={jest.fn()} onSelect={onSelectCallback} />,
     );
 
     await clickSelect(container);
     const dialogCancelButton = queryMuiButtonByText(
       getByRole("dialog"),
-      languageStrings.common.action.cancel
+      languageStrings.common.action.cancel,
     );
     if (!dialogCancelButton) {
       throw new Error(
-        "Unable to find 'cancel' button in the user select dialog"
+        "Unable to find 'cancel' button in the user select dialog",
       );
     }
     await userEvent.click(dialogCancelButton);

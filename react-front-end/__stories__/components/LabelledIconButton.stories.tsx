@@ -32,7 +32,7 @@ export default {
 } as Meta<LabelledIconButtonProps>;
 
 export const addButton: StoryFn<LabelledIconButtonProps> = (
-  args: LabelledIconButtonProps
+  args: LabelledIconButtonProps,
 ) => <LabelledIconButton {...args} />;
 
 addButton.args = {

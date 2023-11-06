@@ -42,19 +42,19 @@ export interface ACLEntityResolvers {
    * Lookup user known in oEQ.
    */
   resolveUserProvider: (
-    id: string
+    id: string,
   ) => Promise<OEQ.UserQuery.UserDetails | undefined>;
   /**
    * Lookup group known in oEQ.
    */
   resolveGroupProvider: (
-    id: string
+    id: string,
   ) => Promise<OEQ.UserQuery.GroupDetails | undefined>;
   /**
    * Lookup role known in oEQ.
    */
   resolveRoleProvider: (
-    id: string
+    id: string,
   ) => Promise<OEQ.UserQuery.RoleDetails | undefined>;
 }
 
@@ -67,19 +67,19 @@ export interface ACLEntityResolversMulti {
    * Lookup users known in oEQ.
    */
   resolveUsersProvider: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Lookup groups known in oEQ.
    */
   resolveGroupsProvider: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Lookup roles known in oEQ.
    */
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
@@ -93,7 +93,7 @@ export const eqEntityById = <T extends BaseSecurityEntity>() =>
  * Given a set of `Entities`, return a set of UUIDs for all the entities.
  */
 export const entityIds: <T extends BaseSecurityEntity>(
-  e: ReadonlySet<T>
+  e: ReadonlySet<T>,
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
@@ -104,16 +104,16 @@ export const entityIds: <T extends BaseSecurityEntity>(
  */
 export const findEntityById = async <T>(
   entityId: string,
-  resolveEntities: (ids: ReadonlyArray<string>) => Promise<T[]>
+  resolveEntities: (ids: ReadonlyArray<string>) => Promise<T[]>,
 ): Promise<T | undefined> =>
   pipe(
     await resolveEntities([entityId]),
     E.fromPredicate(
       (a) => a.length <= 1,
-      constant(`More than one entity was resolved for id: ${entityId}`)
+      constant(`More than one entity was resolved for id: ${entityId}`),
     ),
     E.map(flow(A.head, O.toUndefined)),
     E.getOrElseW((error) => {
       throw new Error(error);
-    })
+    }),
   );

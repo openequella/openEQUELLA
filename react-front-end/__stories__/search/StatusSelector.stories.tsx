@@ -39,7 +39,7 @@ BasicSelectorLiveOnly.args = {
 };
 
 export const BasicSelectorAllStatuses: StoryFn<StatusSelectorProps> = (
-  args
+  args,
 ) => <StatusSelector {...args} />;
 BasicSelectorAllStatuses.args = {
   ...BasicSelectorLiveOnly.args,
@@ -47,7 +47,7 @@ BasicSelectorAllStatuses.args = {
 };
 
 export const AdvancedSelectorCustomOptions: StoryFn<StatusSelectorProps> = (
-  args
+  args,
 ) => <StatusSelector {...args} />;
 AdvancedSelectorCustomOptions.args = {
   ...BasicSelectorLiveOnly.args,

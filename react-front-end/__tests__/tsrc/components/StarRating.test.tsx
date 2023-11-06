@@ -28,7 +28,7 @@ describe("<StarRating />", () => {
     ["max plus 1", 6],
   ])("supports ratings of %s", (_, rating: number) => {
     const { container } = render(
-      <StarRating numberOfStars={5} rating={rating} />
+      <StarRating numberOfStars={5} rating={rating} />,
     );
     const starIcons = container.querySelectorAll("svg");
     // Regardless of the rating, 5 stars should be always displayed.
@@ -39,12 +39,12 @@ describe("<StarRating />", () => {
     "displays a specified number of stars: %d",
     (numberOfStars: number) => {
       const { container } = render(
-        <StarRating numberOfStars={numberOfStars} rating={1} />
+        <StarRating numberOfStars={numberOfStars} rating={1} />,
       );
       const starIcons = container.querySelectorAll("svg");
       // Regardless of the rating, the maximum number of stars should be displayed.
       expect(starIcons).toHaveLength(numberOfStars);
-    }
+    },
   );
 
   it.each([
@@ -58,13 +58,13 @@ describe("<StarRating />", () => {
       rating: number,
       roundRating: number,
       fullStarNumber: number,
-      halfStarNumber
+      halfStarNumber,
     ) => {
       const { queryAllByLabelText } = render(
-        <StarRating numberOfStars={5} rating={rating} />
+        <StarRating numberOfStars={5} rating={rating} />,
       );
       expect(queryAllByLabelText("full-star")).toHaveLength(fullStarNumber);
       expect(queryAllByLabelText("half-star")).toHaveLength(halfStarNumber);
-    }
+    },
   );
 });

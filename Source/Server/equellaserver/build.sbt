@@ -17,8 +17,8 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.6.Final"
-val SwaggerVersion    = "1.6.11"
-val TomcatVersion     = "9.0.80"
+val SwaggerVersion    = "1.6.12"
+val TomcatVersion     = "9.0.82"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
@@ -26,11 +26,11 @@ val cxfVersion        = "3.6.2"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
-val jsoupVersion      = "1.16.1"
+val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.0"
-val luceneVersion     = "9.7.0"
+val luceneVersion     = "9.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -72,10 +72,10 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230904-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20231011-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "32.1.2-jre",
+  "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -115,7 +115,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.13.0",
+  "commons-io"                % "commons-io"            % "2.15.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",

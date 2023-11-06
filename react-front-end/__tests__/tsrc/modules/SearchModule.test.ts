@@ -25,7 +25,7 @@ jest.mock("@openequella/rest-api-client", () => {
   // We only want to mock module 'Search' because mocking the whole module
   // will break Runtypes.
   const restModule: typeof OEQ = jest.requireActual(
-    "@openequella/rest-api-client"
+    "@openequella/rest-api-client",
   );
   return {
     ...restModule,
@@ -55,7 +55,7 @@ describe("searchItems", () => {
 
   it("should provide a list of items", async () => {
     const searchResult = await SearchModule.searchItems(
-      SearchModule.defaultSearchOptions
+      SearchModule.defaultSearchOptions,
     );
     expect(searchResult.available).toBe(12);
     expect(searchResult.results).toHaveLength(12);
@@ -126,13 +126,13 @@ describe("generateCategoryWhereQuery", () => {
   it("should generate a where clause for one category", () => {
     const singleCategory = [selectedCategories[1]];
     expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
-      "(/xml/item/city='Hobart')"
+      "(/xml/item/city='Hobart')",
     );
   });
 
   it("should generate a where clause for multiple groups of categories", () => {
     expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
-      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')"
+      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')",
     );
   });
 

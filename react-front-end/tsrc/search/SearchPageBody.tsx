@@ -146,7 +146,7 @@ export interface SearchPageBodyProps {
    * Function to render custom UI for a list of SearchResultItem or GallerySearchResultItem.
    */
   customRenderSearchResults?: (
-    searchResult: SearchPageSearchResult
+    searchResult: SearchPageSearchResult,
   ) => ReactNode;
   /**
    * Function to customise the URL which is used when saving favourites.
@@ -230,7 +230,7 @@ export const SearchPageBody = ({
     useState<boolean>(false);
   const [filterExpansion, setFilterExpansion] = useState(
     searchPageOptions?.filterExpansion ??
-      defaultSearchPageOptions?.filterExpansion
+      defaultSearchPageOptions?.filterExpansion,
   );
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -248,14 +248,14 @@ export const SearchPageBody = ({
 
       search(searchPageOptions, enableClassification, callback);
     },
-    [enableClassification, search, customSearchCallback]
+    [enableClassification, search, customSearchCallback],
   );
 
   const navigationWithHistory = (config: SearchPageNavigationConfig) =>
     navigateTo(config, history);
 
   const handleAdvancedSearchChanged = (
-    advancedSearch: OEQ.Common.BaseEntitySummary | null
+    advancedSearch: OEQ.Common.BaseEntitySummary | null,
   ) =>
     pipe(
       O.fromNullable(advancedSearch),
@@ -264,12 +264,12 @@ export const SearchPageBody = ({
         selectionSessionPathBuilder: () =>
           buildSelectionSessionAdvancedSearchLink(
             uuid,
-            searchPageOptions.externalMimeTypes
+            searchPageOptions.externalMimeTypes,
           ),
       })),
       // Go to the normal Search page if none is selected.
       O.getOrElse(() => buildSearchPageNavigationConfig(searchPageOptions)),
-      navigationWithHistory
+      navigationWithHistory,
     );
 
   const handleClearSearchOptions = () => {
@@ -290,7 +290,7 @@ export const SearchPageBody = ({
     pipe(
       newSearchConfig?.navigationTo,
       O.fromNullable,
-      O.map(navigationWithHistory)
+      O.map(navigationWithHistory),
     );
   };
 
@@ -311,7 +311,7 @@ export const SearchPageBody = ({
     //base institution urls have a trailing / that we need to get rid of
     const instUrl = getBaseUrl().slice(0, -1);
     const searchUrl = `${instUrl}${pathname}?${generateQueryStringFromSearchPageOptions(
-      searchPageOptions
+      searchPageOptions,
     )}`;
     navigator.clipboard
       .writeText(searchUrl)
@@ -344,7 +344,7 @@ export const SearchPageBody = ({
         setSnackBar({
           message: generateExportErrorMessage(error),
           variant: "warning",
-        })
+        }),
       );
   };
 
@@ -356,7 +356,7 @@ export const SearchPageBody = ({
     });
 
   const handleMimeTypeFilterChange = (
-    filters: OEQ.SearchFilterSettings.MimeTypeFilter[]
+    filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
   ) =>
     doSearch({
       ...searchPageOptions,
@@ -395,12 +395,12 @@ export const SearchPageBody = ({
           });
         }
       }, 500),
-    [doSearch, searchPageOptions]
+    [doSearch, searchPageOptions],
   );
 
   const handleQuickDateRangeModeChange = (
     quickDateRangeMode: boolean,
-    dateRange?: DateRange
+    dateRange?: DateRange,
   ) =>
     doSearch({
       ...searchPageOptions,
@@ -418,7 +418,7 @@ export const SearchPageBody = ({
         currentPage: 0,
         rowsPerPage: rowsPerPage,
       },
-      false
+      false,
     );
 
   const handleSaveFavouriteSearch = async (name: string): Promise<void> =>
@@ -426,7 +426,7 @@ export const SearchPageBody = ({
       {
         path: pathname,
         params: new URLSearchParams(
-          generateQueryStringFromSearchPageOptions(searchPageOptions)
+          generateQueryStringFromSearchPageOptions(searchPageOptions),
         ),
       },
       customFavouriteUrl,
@@ -438,9 +438,9 @@ export const SearchPageBody = ({
         }),
         constant({
           message: searchStrings.favouriteSearch.saveSearchConfirmationText,
-        })
+        }),
       ),
-      T.map(setSnackBar)
+      T.map(setSnackBar),
     )();
 
   const handleSearchAttachmentsChange = (searchAttachments: boolean) => {
@@ -451,7 +451,7 @@ export const SearchPageBody = ({
   };
 
   const handleSelectedCategoriesChange = (
-    selectedCategories: SelectedCategories[]
+    selectedCategories: SelectedCategories[],
   ) => {
     const getSchemaNode = (id: number) => {
       const node =
@@ -500,7 +500,7 @@ export const SearchPageBody = ({
     ];
     return !isEqual(
       getPartialSearchOptions(defaultSearchPageOptions, fields),
-      getPartialSearchOptions(searchPageOptions, fields)
+      getPartialSearchOptions(searchPageOptions, fields),
     );
   };
 
@@ -519,14 +519,14 @@ export const SearchPageBody = ({
 
     const isQueryOrFiltersSet = !isEqual(
       getPartialSearchOptions(defaultSearchPageOptions, fields),
-      getPartialSearchOptions(searchPageOptions, fields)
+      getPartialSearchOptions(searchPageOptions, fields),
     );
 
     // Field 'selectedCategories' is a bit different. Once a classification is selected, the category will persist in searchPageOptions.
     // What we really care is if we have got any category that has any classification selected.
     const isClassificationSelected: boolean =
       searchPageOptions.selectedCategories?.some(
-        ({ categories }: SelectedCategories) => categories.length > 0
+        ({ categories }: SelectedCategories) => categories.length > 0,
       ) ?? false;
 
     return isQueryOrFiltersSet || isClassificationSelected;
@@ -540,7 +540,7 @@ export const SearchPageBody = ({
         value: searchPageOptions.status,
         onChange: handleStatusChange,
       })),
-      (props) => <StatusSelector {...props} />
+      (props) => <StatusSelector {...props} />,
     );
 
   const refinePanelControls: RefinePanelControl[] =
@@ -584,7 +584,7 @@ export const SearchPageBody = ({
             onSelectionChange={handleAdvancedSearchChanged}
             value={advancedSearches.find(
               ({ uuid }) =>
-                uuid === getAdvancedSearchIdFromLocation(history.location)
+                uuid === getAdvancedSearchIdFromLocation(history.location),
             )}
           />
         ),
@@ -727,7 +727,7 @@ export const SearchPageBody = ({
   };
 
   const defaultRenderSearchResults = (
-    searchPageSearchResult: SearchPageSearchResult
+    searchPageSearchResult: SearchPageSearchResult,
   ): ReactNode => {
     const {
       from,
@@ -739,11 +739,11 @@ export const SearchPageBody = ({
     }
 
     const isListItems = (
-      items: unknown
+      items: unknown,
     ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
 
     const isGalleryItems = (
-      items: unknown
+      items: unknown,
     ): items is GallerySearchResultItem[] => from === "gallery-search";
 
     if (isListItems(searchResults)) {
@@ -822,7 +822,7 @@ export const SearchPageBody = ({
               >
                 {pipe(
                   searchResult(),
-                  customRenderSearchResults ?? defaultRenderSearchResults
+                  customRenderSearchResults ?? defaultRenderSearchResults,
                 )}
               </SearchResultList>
             </Grid>

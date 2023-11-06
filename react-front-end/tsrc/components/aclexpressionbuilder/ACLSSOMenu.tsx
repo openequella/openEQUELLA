@@ -58,14 +58,14 @@ const ACLSSOMenu = ({
     const task = pipe(
       TE.tryCatch(
         () => getSSOTokens(),
-        (err) => `${ssoTokensFailed}: ${err}`
+        (err) => `${ssoTokensFailed}: ${err}`,
       ),
       TE.chain(
         flow(
           NA.fromArray,
-          TE.fromOption(() => ssoTokensNotFound)
-        )
-      )
+          TE.fromOption(() => ssoTokensNotFound),
+        ),
+      ),
     );
 
     (async () =>
@@ -75,7 +75,7 @@ const ACLSSOMenu = ({
           setSSOTokens(tokens);
           // set default sso token
           pipe(tokens, NA.head, (token) => onChange(token));
-        })
+        }),
       ))();
   }, [getSSOTokens, onChange]);
 
@@ -99,8 +99,8 @@ const ACLSSOMenu = ({
       pfTernary(
         S.isEmpty,
         () => <LoadingCircle />,
-        () => <Alert severity="warning">{errorMessage}</Alert>
-      )
+        () => <Alert severity="warning">{errorMessage}</Alert>,
+      ),
     )
   );
 };

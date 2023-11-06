@@ -27,9 +27,9 @@ export const renderUnknownUserHandlingControl = (
   selection: OEQ.LtiPlatform.UnknownUserHandling = "ERROR",
   onChange: (
     selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
-  ) => void
+    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
+  ) => void,
 ): RenderResult =>
   render(
-    <UnknownUserHandlingControl selection={selection} onChange={onChange} />
+    <UnknownUserHandlingControl selection={selection} onChange={onChange} />,
   );

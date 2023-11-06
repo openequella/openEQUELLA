@@ -104,7 +104,7 @@ const SelectCustomRoleDialog = ({
   roleListProvider,
 }: SelectCustomRoleDialogProps) => {
   const [selectedLtiRole, setSelectedLtiRole] = React.useState(
-    defaultSelectedRoleUrn
+    defaultSelectedRoleUrn,
   );
   // state for final selections which will be returned to the calling component when the user clicks OK
   const [rolesMapping, setRolesMapping] =
@@ -136,7 +136,7 @@ const SelectCustomRoleDialog = ({
   // oEQ role entry in the `oEQ column`
   const oeqRoleEntry = (
     ltiRoleUri: string,
-    role: OEQ.UserQuery.RoleDetails
+    role: OEQ.UserQuery.RoleDetails,
   ) => (
     <SecurityEntityEntry
       key={role.id}
@@ -152,12 +152,12 @@ const SelectCustomRoleDialog = ({
           O.chain((newRoles) =>
             SET.isEmpty(newRoles)
               ? pipe(rolesMapping, M.deleteAt(S.Eq)(ltiRoleUri), O.of)
-              : pipe(rolesMapping, M.updateAt(S.Eq)(ltiRoleUri, newRoles))
+              : pipe(rolesMapping, M.updateAt(S.Eq)(ltiRoleUri, newRoles)),
           ),
           O.map(setRolesMapping),
           O.getOrElse(() =>
-            console.warn(`Can't find lti role: ${ltiRoleUri} in map`)
-          )
+            console.warn(`Can't find lti role: ${ltiRoleUri} in map`),
+          ),
         )
       }
     />
@@ -167,7 +167,7 @@ const SelectCustomRoleDialog = ({
   const ltiRoleRow = (
     ltiRoleUri: string,
     ltiRoleName: string,
-    roles: Set<OEQ.UserQuery.RoleDetails>
+    roles: Set<OEQ.UserQuery.RoleDetails>,
   ) => (
     <TableRow
       key={ltiRoleUri}
@@ -181,7 +181,7 @@ const SelectCustomRoleDialog = ({
           {pipe(
             roles,
             SET.toArray(ordRole),
-            A.map((r) => oeqRoleEntry(ltiRoleUri, r))
+            A.map((r) => oeqRoleEntry(ltiRoleUri, r)),
           )}
         </List>
       </TableCell>
@@ -190,7 +190,7 @@ const SelectCustomRoleDialog = ({
 
   // the table shows the mapping relationships between lti roles and oEQ roles
   const ltiOeqRoleMappingTable = (
-    roleMaps: Map<string, Set<OEQ.UserQuery.RoleDetails>>
+    roleMaps: Map<string, Set<OEQ.UserQuery.RoleDetails>>,
   ) => (
     <TableContainer>
       <Table>
@@ -209,7 +209,7 @@ const SelectCustomRoleDialog = ({
             >([], (ltiRoleUri, result, oEQRoles) => {
               const ltiRoleName = getRoleNameByUrn(ltiRoleUri);
               return [...result, ltiRoleRow(ltiRoleUri, ltiRoleName, oEQRoles)];
-            })
+            }),
           )}
         </TableBody>
       </Table>
@@ -217,7 +217,7 @@ const SelectCustomRoleDialog = ({
   );
 
   const handleRoleSearchOnSelect = (
-    selectedOeqRoles: Set<OEQ.UserQuery.RoleDetails>
+    selectedOeqRoles: Set<OEQ.UserQuery.RoleDetails>,
   ) =>
     pipe(
       rolesMapping,
@@ -230,7 +230,7 @@ const SelectCustomRoleDialog = ({
       // replace old oeq role set in map
       (newRoles) =>
         pipe(rolesMapping, M.upsertAt(S.Eq)(selectedLtiRole, newRoles)),
-      setRolesMapping
+      setRolesMapping,
     );
 
   const handleOnConfirm = () => {

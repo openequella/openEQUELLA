@@ -48,7 +48,7 @@ export const defaultGroupSearchProps: BaseSearchProps<OEQ.UserQuery.GroupDetails
  * Helper to render GroupSearch and wait for component under test
  */
 export const renderGroupSearch = async (
-  props: GroupSearchProps = defaultGroupSearchProps
+  props: GroupSearchProps = defaultGroupSearchProps,
 ): Promise<RenderResult> => {
   const renderResult = render(<GroupSearch {...props} />);
 
@@ -72,10 +72,10 @@ export const searchGroup = (dialog: HTMLElement, queryValue: string) =>
  * Helper function to assist in finding the specific Group from mock data.
  */
 export const findGroupFromMockData = (
-  name: string
+  name: string,
 ): OEQ.UserQuery.GroupDetails =>
   findEntityFromMockData(
     GroupModuleMock.groups,
     (u: OEQ.UserQuery.GroupDetails) => u.name === name,
-    name
+    name,
   );

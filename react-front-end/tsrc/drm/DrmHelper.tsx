@@ -57,7 +57,7 @@ export const createDrmDialog = async (
   drmStatus: OEQ.Search.DrmStatus = defaultDrmStatus,
   updateDrmStatus: (status: OEQ.Search.DrmStatus) => void,
   closeDrmDialog: () => void,
-  drmProtectedHandler: () => void
+  drmProtectedHandler: () => void,
 ): Promise<JSX.Element | undefined> => {
   const { isAuthorised, termsAccepted } = drmStatus;
   if (isAuthorised) {
@@ -96,15 +96,15 @@ export const createDrmDialog = async (
 // list violations and Right is the retrieved violation.
 const listDrmViolationsInTask = (
   uuid: string,
-  version: number
+  version: number,
 ): Promise<string> =>
   pipe(
     TE.tryCatch<Error, OEQ.Drm.DrmViolation>(
       () => listDrmViolations(uuid, version),
-      (error) => new Error(`${error}`)
+      (error) => new Error(`${error}`),
     ),
     TE.map<OEQ.Drm.DrmViolation, string>(({ violation }) => violation),
     TE.getOrElse((error) =>
-      T.of(`Failed to list DRM violations due to ${error.message}`)
-    )
+      T.of(`Failed to list DRM violations due to ${error.message}`),
+    ),
   )();

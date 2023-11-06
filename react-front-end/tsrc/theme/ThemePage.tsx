@@ -92,7 +92,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
   const { appErrorHandler } = useContext(AppContext);
 
   const mapSettingsToColors = (
-    settings: OEQ.Theme.ThemeSettings
+    settings: OEQ.Theme.ThemeSettings,
   ): ThemeColors => ({
     primary: settings.primaryColor,
     secondary: settings.secondaryColor,
@@ -107,7 +107,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
 
   const mapColorsToSettings = (
     colors: ThemeColors,
-    fontSize = 14
+    fontSize = 14,
   ): OEQ.Theme.ThemeSettings => ({
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
@@ -128,7 +128,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
   });
 
   const [themeColors, setThemeColors] = useState<ThemeColors>(
-    mapSettingsToColors(themeSettings)
+    mapSettingsToColors(themeSettings),
   );
   const [isChangesUnsaved, setIsChangesUnsaved] = useState(false);
   const [isShowSuccess, setIsShowSuccess] = useState(false);

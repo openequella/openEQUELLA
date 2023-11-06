@@ -57,7 +57,7 @@ describe("SelectGroupDialog", () => {
           value: SET.singleton(groups[0]),
           onClose,
         }),
-      groups[0].name
+      groups[0].name,
     );
     expect(result).toEqual(new Set());
   });
@@ -88,7 +88,7 @@ describe("SelectGroupDialog", () => {
         ...commonSelectGroupDialogProps,
         value: new Set(groups),
         onClose,
-      })
+      }),
     );
 
     expect(result).toEqual(new Set());

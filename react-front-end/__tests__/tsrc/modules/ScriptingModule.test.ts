@@ -68,7 +68,7 @@ return bRet;
     const result = pipe(
       scriptContext,
       buildVisibilityScript(expectTrueScript),
-      expectRight
+      expectRight,
     );
     expect(result).toBe(true);
   });
@@ -76,7 +76,7 @@ return bRet;
   it("returns a left if there's issues with the script", () => {
     const result = pipe(
       scriptContext,
-      buildVisibilityScript("this is not a valid script!!")
+      buildVisibilityScript("this is not a valid script!!"),
     );
     expect(result).toBeLeft();
   });
@@ -91,10 +91,10 @@ return bRet;
       const result = pipe(
         scriptContext,
         buildVisibilityScript(script),
-        expectRight
+        expectRight,
       );
 
       expect(result).toBe(expectedResult);
-    }
+    },
   );
 });

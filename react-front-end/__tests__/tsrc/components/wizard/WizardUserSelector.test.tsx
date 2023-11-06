@@ -32,11 +32,11 @@ describe("<WizardUserSelector/>", () => {
         users={new Set([testUser.id])}
         mandatory={false}
         resolveUsersProvider={UserModuleMock.resolveUsers}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(queryByText(testUser.username)).toBeInTheDocument()
+      expect(queryByText(testUser.username)).toBeInTheDocument(),
     );
   });
 });

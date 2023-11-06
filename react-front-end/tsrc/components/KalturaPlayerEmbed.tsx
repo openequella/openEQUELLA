@@ -74,7 +74,7 @@ export const KalturaPlayerEmbed = ({
   useEffect(() => {
     if (divElem.current) {
       const src = new URL(
-        `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`
+        `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`,
       );
       (
         [

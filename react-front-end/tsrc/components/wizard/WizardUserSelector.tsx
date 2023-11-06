@@ -132,20 +132,20 @@ export interface WizardUserSelectorProps extends WizardControlBasicProps {
    */
   userListProvider?: (
     query?: string,
-    groupFilter?: ReadonlySet<string>
+    groupFilter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Function which will resolve group IDs to full group details so that the group names can be
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Function which can provide the full details of specified users based on id.
    */
   resolveUsersProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
 }
 
@@ -182,9 +182,9 @@ export const WizardUserSelector = ({
     // Update `fullUsers` but only if there's a change
     const updateFullUsers: (updatedList: typeof fullUsers) => void = flow(
       O.fromPredicate(
-        (updatedList) => !RSET.getEq(eqUserById).equals(updatedList, fullUsers)
+        (updatedList) => !RSET.getEq(eqUserById).equals(updatedList, fullUsers),
       ),
-      O.map(setFullUsers)
+      O.map(setFullUsers),
     );
 
     const processUsersUpdate: T.Task<void> = pipe(
@@ -204,23 +204,23 @@ export const WizardUserSelector = ({
               username: id,
               firstName: S.empty,
               lastName: S.empty,
-            }))
+            })),
           ),
-        identity
+        identity,
       ),
-      T.map(updateFullUsers)
+      T.map(updateFullUsers),
     );
 
     (async () => await processUsersUpdate())();
   }, [fullUsers, handleError, resolveUsersProvider, users]);
 
   const handleCloseSelectUserDialog = (
-    selection?: OEQ.UserQuery.UserDetails
+    selection?: OEQ.UserQuery.UserDetails,
   ) => {
     setShowSelectUserDialog(false);
 
     const callOnChange = (
-      updatedFullUsers: ReadonlySet<OEQ.UserQuery.UserDetails>
+      updatedFullUsers: ReadonlySet<OEQ.UserQuery.UserDetails>,
     ) => pipe(updatedFullUsers, userIds, onChange);
 
     pipe(
@@ -229,17 +229,17 @@ export const WizardUserSelector = ({
       O.map((u) =>
         multiple
           ? pipe(fullUsers, RSET.insert(eqUserById)(u))
-          : RSET.singleton(u)
+          : RSET.singleton(u),
       ),
-      O.map(callOnChange)
+      O.map(callOnChange),
     );
   };
 
   const fullUsersArray: ReadonlyArray<OEQ.UserQuery.UserDetails> = pipe(
     fullUsers,
     RSET.toReadonlyArray<OEQ.UserQuery.UserDetails>(
-      ORD.contramap((ud: OEQ.UserQuery.UserDetails) => ud.username)(S.Ord)
-    )
+      ORD.contramap((ud: OEQ.UserQuery.UserDetails) => ud.username)(S.Ord),
+    ),
   );
 
   return (
@@ -279,8 +279,8 @@ export const WizardUserSelector = ({
                     }
                     userDetails={{ firstName, lastName, username }}
                   />
-                )
-              )
+                ),
+              ),
             )}
           </List>
         </Grid>

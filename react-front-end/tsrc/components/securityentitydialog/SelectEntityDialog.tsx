@@ -70,7 +70,7 @@ export interface SelectEntityDialogProps<T extends BaseSecurityEntity> {
    */
   searchComponent: (
     onAdd: (entity: T) => void,
-    onSelectAll: (entities: ReadonlySet<T>) => void
+    onSelectAll: (entities: ReadonlySet<T>) => void,
   ) => JSX.Element;
   /** The message is displayed in the right-hand result list when there is no selected entity. */
   addEntityMessage: string;
@@ -116,7 +116,7 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
     pipe(
       selectedEntities,
       RS.remove(EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq))(entity),
-      setSelectedEntities
+      setSelectedEntities,
     );
 
   const hasSelectedEntities = !RS.isEmpty(selectedEntities);
@@ -157,9 +157,9 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
                   RS.toReadonlyArray(itemOrd),
                   RA.map((entity) =>
                     entityDetailsToEntry(entity, () =>
-                      handleDeleteForEachEntry(entity)
-                    )
-                  )
+                      handleDeleteForEachEntry(entity),
+                    ),
+                  ),
                 )
               ) : (
                 <ListItem>

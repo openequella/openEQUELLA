@@ -49,9 +49,9 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
       },
       mainEntry: buildGalleryEntry(`Main Entry #${i}`),
       additionalEntries: range([0, 1, 2, 3, 5][i % 5]).map((_, idx) =>
-        buildGalleryEntry(`Additional Entry #${i}/${idx}`)
+        buildGalleryEntry(`Additional Entry #${i}/${idx}`),
       ),
-    })
+    }),
   );
 
 export const galleryDrmItem: GallerySearchResultItem = {

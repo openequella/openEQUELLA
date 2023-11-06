@@ -82,7 +82,7 @@ const lightboxAttachmentAndViewer: AttachmentAndViewerConfig = {
 };
 
 export const linkToLightbox: StoryFn<ItemAttachmentLinkProps> = (
-  args: ItemAttachmentLinkProps
+  args: ItemAttachmentLinkProps,
 ) => (
   <ItemAttachmentLink {...args}>
     <p>Click to show lightbox</p>
@@ -93,7 +93,7 @@ linkToLightbox.args = {
 };
 
 export const linkToURL: StoryFn<ItemAttachmentLinkProps> = (
-  args: ItemAttachmentLinkProps
+  args: ItemAttachmentLinkProps,
 ) => (
   <ItemAttachmentLink {...args}>
     <p>Click to go to link</p>

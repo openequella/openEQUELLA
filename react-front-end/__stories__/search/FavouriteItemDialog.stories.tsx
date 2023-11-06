@@ -55,7 +55,7 @@ AddFavouriteItemOnLatestVersion.args = {
 };
 
 export const RemoveFavouriteItem: StoryFn<FavouriteItemDialogProps> = (
-  args
+  args,
 ) => <FavouriteItemDialog {...args} />;
 
 RemoveFavouriteItem.args = {

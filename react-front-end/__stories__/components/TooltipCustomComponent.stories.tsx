@@ -29,7 +29,7 @@ export default {
 } as Meta<TooltipCustomComponentProps>;
 
 export const TooltipToggleSwitch: StoryFn<TooltipCustomComponentProps> = (
-  args
+  args,
 ) => (
   <TooltipCustomComponent {...args}>
     <SettingsToggleSwitch id="toggle" setValue={() => {}} />

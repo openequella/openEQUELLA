@@ -46,7 +46,7 @@ const SelectRoleDialog = ({
 }: SelectRoleDialogProps) => {
   const roleSearch = (
     onAdd: (roles: OEQ.UserQuery.RoleDetails) => void,
-    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void
+    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void,
   ) => (
     <RoleSearch
       mode={{

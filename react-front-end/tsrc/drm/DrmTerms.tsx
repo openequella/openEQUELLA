@@ -80,7 +80,7 @@ export const DrmTerms = ({
     transformer: (p: T) => {
       title: string;
       terms: string[];
-    }
+    },
   ) =>
     pipe(
       terms,
@@ -89,7 +89,7 @@ export const DrmTerms = ({
       O.map(({ title, terms }) => (
         <NonStandardDrmTerms title={title} terms={terms} />
       )),
-      O.toUndefined
+      O.toUndefined,
     );
 
   const partyDetails = buildNonStandardDrmTerms<OEQ.Drm.DrmParties>(
@@ -97,7 +97,7 @@ export const DrmTerms = ({
     ({ title, partyList }: OEQ.Drm.DrmParties) => ({
       title,
       terms: partyList,
-    })
+    }),
   );
 
   const customTermDetails = buildNonStandardDrmTerms<OEQ.Drm.DrmCustomTerms>(
@@ -105,7 +105,7 @@ export const DrmTerms = ({
     ({ title, terms: customTerms }: OEQ.Drm.DrmCustomTerms) => ({
       title,
       terms: customTerms.split("\n"),
-    })
+    }),
   );
 
   return (

@@ -108,14 +108,14 @@ export interface SearchResultAttachmentsListProps {
    * A function which can provide Viewer Details for attachments.
    */
   getViewerDetails: (
-    mimeType: string
+    mimeType: string,
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
    * A function which can retrieve attachments for a specified item.
    */
   getItemAttachments: (
     uuid: string,
-    version: number
+    version: number,
   ) => Promise<OEQ.Search.Attachment[]>;
   /**
    * `true` if the Item which the attachments belong to is live.
@@ -145,7 +145,7 @@ export const SearchResultAttachmentsList = ({
   const [attachExpanded, setAttachExpanded] = useState<boolean>(
     (inSelectionSession
       ? displayOptions?.integrationOpen
-      : displayOptions?.standardOpen) ?? false
+      : displayOptions?.standardOpen) ?? false,
   );
 
   const [attachmentsAndViewerConfigs, setAttachmentsAndViewerConfigs] =
@@ -197,14 +197,14 @@ export const SearchResultAttachmentsList = ({
       try {
         const attachments: OEQ.Search.Attachment[] = await getItemAttachments(
           uuid,
-          version
+          version,
         );
 
         const attachmentsAndViewerDefinitions =
           await buildViewerConfigForAttachments(
             item,
             attachments,
-            viewerDetails
+            viewerDetails,
           );
         if (mounted) {
           setAttachmentsAndViewerConfigs(attachmentsAndViewerDefinitions);
@@ -213,7 +213,7 @@ export const SearchResultAttachmentsList = ({
         setError(
           error instanceof Error
             ? error
-            : new Error(`${stringGetViewerDetailsFailure}: ${error}`)
+            : new Error(`${stringGetViewerDetailsFailure}: ${error}`),
         );
       }
     })();
@@ -278,7 +278,7 @@ export const SearchResultAttachmentsList = ({
             <Skeleton variant="text" animation="wave" />
           </ListItemText>
         </ListItem>
-      ))
+      )),
     );
 
   const attachmentsList = attachmentsAndViewerConfigs.map(
@@ -317,7 +317,7 @@ export const SearchResultAttachmentsList = ({
           )}
         </ListItem>
       );
-    }
+    },
   );
 
   const buildErrorListItem = (e: Error) => (
@@ -336,7 +336,7 @@ export const SearchResultAttachmentsList = ({
         : pipe(
             attachmentsList,
             O.fromPredicate(not(A.isEmpty)),
-            O.getOrElse(() => buildSkeletonList(attachmentCount))
+            O.getOrElse(() => buildSkeletonList(attachmentCount)),
           )}
     </List>
   );
@@ -350,7 +350,7 @@ export const SearchResultAttachmentsList = ({
 
   // Only show the Select All Attachments button if at least one attachment is not dead
   const atLeastOneIntactAttachment = attachmentsAndViewerConfigs.some(
-    ({ attachment }) => !attachment.brokenAttachment
+    ({ attachment }) => !attachment.brokenAttachment,
   );
 
   const accordionSummaryContent = inSelectionSession ? (
@@ -365,7 +365,7 @@ export const SearchResultAttachmentsList = ({
               const attachments = attachmentsAndViewerConfigs
                 .filter(
                   // filter out dead attachments from select all function
-                  ({ attachment }) => !attachment.brokenAttachment
+                  ({ attachment }) => !attachment.brokenAttachment,
                 )
                 .map(({ attachment }) => attachment.id);
               return selectResource(itemKey, attachments);

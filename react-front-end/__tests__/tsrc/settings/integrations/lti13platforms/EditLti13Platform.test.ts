@@ -48,7 +48,7 @@ describe("EditLti13Platform", () => {
         updatePlatformProvider: updatePlatform,
       },
       // http://blackboard:8200
-      "aHR0cDovL2JsYWNrYm9hcmQ6ODIwMA=="
+      "aHR0cDovL2JsYWNrYm9hcmQ6ODIwMA==",
     );
     const { container, findByDisplayValue, findByText } = renderResult;
 
@@ -62,8 +62,8 @@ describe("EditLti13Platform", () => {
         expectedPlatform.platformId,
       ],
       A.map(async (expectedValue) =>
-        expect(await findByDisplayValue(expectedValue)).toBeInTheDocument()
-      )
+        expect(await findByDisplayValue(expectedValue)).toBeInTheDocument(),
+      ),
     );
     // other text which are not displayed in input, textarea, or select element
     const otherChecks = pipe(
@@ -74,8 +74,8 @@ describe("EditLti13Platform", () => {
         "Racheal Carlyle [user200]",
       ],
       A.map(async (expectedValue) =>
-        expect(await findByText(expectedValue)).toBeInTheDocument()
-      )
+        expect(await findByText(expectedValue)).toBeInTheDocument(),
+      ),
     );
     const uiChecks = [...generalDetailsChecks, ...otherChecks];
     await Promise.all(uiChecks);
@@ -102,28 +102,28 @@ describe("EditLti13Platform", () => {
       const renderResult = await renderEditLti13Platform(
         commonEditLti13PlatformProps,
         // http://localhost:8100
-        "aHR0cDovL2xvY2FsaG9zdDo4MTAw"
+        "aHR0cDovL2xvY2FsaG9zdDo4MTAw",
       );
       const { getByText } = renderResult;
       const expectedWarnMsg = generateWarnMsgForMissingIds(
         missingIds,
-        entityType
+        entityType,
       );
 
       expect(getByText(expectedWarnMsg)).toBeInTheDocument();
-    }
+    },
   );
 
   it("shows warning messages for CustomRoles if any role has been deleted but still selected in platform", async () => {
     const renderResult = await renderEditLti13Platform(
       commonEditLti13PlatformProps,
       // http://localhost:8100
-      "aHR0cDovL2xvY2FsaG9zdDo4MTAw"
+      "aHR0cDovL2xvY2FsaG9zdDo4MTAw",
     );
     const { getByText } = renderResult;
     const expectedWarnMsg = `LTI role: http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator - ${generateWarnMsgForMissingIds(
       new Set(["deletedRole3"]),
-      "role"
+      "role",
     )}`;
 
     expect(getByText(expectedWarnMsg)).toBeInTheDocument();
@@ -138,7 +138,7 @@ describe("EditLti13Platform", () => {
         rotateKeyPairProvider: rotateKeyPair,
       },
       // http://blackboard:8200
-      "aHR0cDovL2JsYWNrYm9hcmQ6ODIwMA=="
+      "aHR0cDovL2JsYWNrYm9hcmQ6ODIwMA==",
     );
 
     // click rotate key pair button

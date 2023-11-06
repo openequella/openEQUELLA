@@ -50,7 +50,7 @@ export interface DateProps {
 export default function Date({ displayRelative, date }: DateProps) {
   const luxDate = DateTime.fromJSDate(date);
   let primaryDate: string | null = luxDate.toLocaleString(
-    DateTime.DATETIME_MED
+    DateTime.DATETIME_MED,
   );
   let hoverDate = luxDate.toRelative();
   if (displayRelative) {

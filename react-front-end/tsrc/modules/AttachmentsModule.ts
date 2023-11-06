@@ -43,7 +43,7 @@ export const ATYPE_YOUTUBE = "custom/youtube";
 export const buildFileAttachmentUrl = (
   itemUuid: string,
   itemVersion: number,
-  fileAttachmentPath: string
+  fileAttachmentPath: string,
 ) => `${getBaseUrl()}file/${itemUuid}/${itemVersion}/${fileAttachmentPath}`;
 
 /**
@@ -53,7 +53,7 @@ export const buildFileAttachmentUrl = (
  * @param attachment An attachment that might need custom information
  */
 export const updateAttachmentForCustomInfo = (
-  attachment: OEQ.Search.Attachment
+  attachment: OEQ.Search.Attachment,
 ): OEQ.Search.Attachment => {
   const updateFn = pipe(
     attachment.attachmentType,
@@ -62,8 +62,8 @@ export const updateAttachmentForCustomInfo = (
         [ATYPE_KALTURA, () => updateKalturaAttachment],
         [ATYPE_YOUTUBE, () => updateYoutubeAttachment],
       ],
-      () => identity
-    )
+      () => identity,
+    ),
   );
 
   return updateFn(attachment);

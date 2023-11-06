@@ -112,8 +112,8 @@ export const UniversalFileUploader = ({
             replaceElement(
               prev,
               generateUploadingFileComparator(localFile.localId),
-              updatedFile
-            )
+              updatedFile,
+            ),
           );
         const onError = onUpload;
         const onSuccessful = (uploadedFile: UploadedFile) => {
@@ -121,8 +121,8 @@ export const UniversalFileUploader = ({
             deleteElement(
               prev,
               generateUploadingFileComparator(localFile.localId),
-              1
-            )
+              1,
+            ),
           );
           setUploadedFiles((prev) => addElement(prev, uploadedFile));
           updateFooter();
@@ -134,7 +134,7 @@ export const UniversalFileUploader = ({
           beforeUpload,
           onUpload,
           onSuccessful,
-          onError
+          onError,
         );
       });
     },
@@ -144,13 +144,13 @@ export const UniversalFileUploader = ({
     const { id } = file.fileEntry;
     const onSuccessful = () => {
       setUploadedFiles(
-        deleteElement(uploadedFiles, generateUploadedFileComparator(id), 1)
+        deleteElement(uploadedFiles, generateUploadedFileComparator(id), 1),
       );
       updateFooter();
     };
     const onError = (file: UploadedFile) => {
       setUploadedFiles(
-        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file)
+        replaceElement(uploadedFiles, generateUploadedFileComparator(id), file),
       );
     };
     deleteUpload(commandUrl, file, onSuccessful, onError);
@@ -159,7 +159,7 @@ export const UniversalFileUploader = ({
   const onCancel = (fileId: string) => {
     cancelUpload(fileId);
     setUploadingFiles(
-      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1)
+      deleteElement(uploadingFiles, generateUploadingFileComparator(fileId), 1),
     );
   };
 

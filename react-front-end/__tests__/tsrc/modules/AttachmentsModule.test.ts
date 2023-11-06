@@ -68,7 +68,7 @@ describe("updateAttachmentForCustomInfo", () => {
     const updated = updateAttachmentForCustomInfo(kalturaAttachment);
     expect(updated.mimeType).toEqual(CustomMimeTypes.KALTURA);
     expect(updated.links.view).toBe(
-      "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739&externalId=4211234%2F48123443%2F1_d1h8f1dx"
+      "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739&externalId=4211234%2F48123443%2F1_d1h8f1dx",
     );
   });
 
@@ -76,13 +76,13 @@ describe("updateAttachmentForCustomInfo", () => {
     const updated = updateAttachmentForCustomInfo(youTubeAttachment);
     expect(updated.mimeType).toBe(CustomMimeTypes.YOUTUBE);
     expect(updated.links.view).toBe(
-      "https://www.youtube.com/watch?v=9VCudo90K5I"
+      "https://www.youtube.com/watch?v=9VCudo90K5I",
     );
   });
 
   it("leaves 'normal' attachments alone", () => {
     expect(updateAttachmentForCustomInfo(fileAttachment)).toStrictEqual(
-      fileAttachment
+      fileAttachment,
     );
   });
 });

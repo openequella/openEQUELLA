@@ -104,7 +104,7 @@ import { ignoreId } from "./ACLExpressionModuleTestHelper";
 
 describe("ACLExpressionModule", () => {
   const handleParse = (
-    result: E.Either<string[], ACLExpression>
+    result: E.Either<string[], ACLExpression>,
   ): ACLExpression =>
     pipe(
       result,
@@ -112,19 +112,19 @@ describe("ACLExpressionModule", () => {
         (errors) => {
           throw Error(errors.toString());
         },
-        (result) => result
-      )
+        (result) => result,
+      ),
     );
 
   const expectedRightResult = (
-    aclExpression: ACLExpression
+    aclExpression: ACLExpression,
   ): E.Either<never, ACLExpression> => pipe(aclExpression, ignoreId, E.right);
 
   const commonACLExpressionForParametricTests: [
     string,
     string,
     string,
-    ACLExpression
+    ACLExpression,
   ][] = [
     ["everyone", aclEveryone, aclEveryoneInfix, everyoneACLExpression],
     ["aclOwner", aclOwner, aclOwnerInfix, ownerACLExpression],
@@ -186,14 +186,14 @@ describe("ACLExpressionModule", () => {
       "parse %s as ACL Expressions",
       (_, aclExpression, _infix, expectedExpression) => {
         expect(parse(aclExpression)).toEqual(
-          expectedRightResult(expectedExpression)
+          expectedRightResult(expectedExpression),
         );
-      }
+      },
     );
 
     it("text with a blank space at the end should still be able to parsed", () => {
       expect(parse(aclWithComplexSubExpression + " ")).toEqual(
-        expectedRightResult(complexExpressionACLExpression)
+        expectedRightResult(complexExpressionACLExpression),
       );
     });
   });
@@ -201,16 +201,16 @@ describe("ACLExpressionModule", () => {
   describe("compactACLExpressions", () => {
     it("lift recipient and children into `NOT` ACLExpression", () => {
       expect(compactACLExpressions(notNestedExpression)).toEqual(
-        ignoreId(notNestedCompactedExpression)
+        ignoreId(notNestedCompactedExpression),
       );
       expect(compactACLExpressions(notExpression)).toEqual(
-        ignoreId(notExpression)
+        ignoreId(notExpression),
       );
       expect(compactACLExpressions(notWithChildExpression)).toEqual(
-        ignoreId(notWithChildCompactedExpression)
+        ignoreId(notWithChildCompactedExpression),
       );
       expect(compactACLExpressions(notUnexpectedExpression)).toEqual(
-        ignoreId(notUnexpectedCompactedExpression)
+        ignoreId(notUnexpectedCompactedExpression),
       );
     });
   });
@@ -218,16 +218,16 @@ describe("ACLExpressionModule", () => {
   describe("revertCompactedACLExpressions", () => {
     it("wrap recipient and children into an `OR` ACLExpression", () => {
       expect(revertCompactedACLExpressions(notExpression)).toEqual(
-        ignoreId(notExpression)
+        ignoreId(notExpression),
       );
       expect(
-        revertCompactedACLExpressions(notWithChildCompactedExpression)
+        revertCompactedACLExpressions(notWithChildCompactedExpression),
       ).toEqual(ignoreId(notWithChildExpression));
       expect(
-        revertCompactedACLExpressions(notNestedCompactedExpression)
+        revertCompactedACLExpressions(notNestedCompactedExpression),
       ).toEqual(ignoreId(notNestedExpression));
       expect(
-        revertCompactedACLExpressions(notUnexpectedCompactedExpression)
+        revertCompactedACLExpressions(notUnexpectedCompactedExpression),
       ).toEqual(ignoreId(notUnexpectedRevertCompactExpression));
     });
 
@@ -236,29 +236,29 @@ describe("ACLExpressionModule", () => {
         pipe(
           notExpression,
           revertCompactedACLExpressions,
-          revertCompactedACLExpressions
-        )
+          revertCompactedACLExpressions,
+        ),
       ).toEqual(ignoreId(notExpression));
       expect(
         pipe(
           notWithChildCompactedExpression,
           revertCompactedACLExpressions,
-          revertCompactedACLExpressions
-        )
+          revertCompactedACLExpressions,
+        ),
       ).toEqual(ignoreId(notWithChildExpression));
       expect(
         pipe(
           notNestedCompactedExpression,
           revertCompactedACLExpressions,
-          revertCompactedACLExpressions
-        )
+          revertCompactedACLExpressions,
+        ),
       ).toEqual(ignoreId(notNestedExpression));
       expect(
         pipe(
           notUnexpectedCompactedExpression,
           revertCompactedACLExpressions,
-          revertCompactedACLExpressions
-        )
+          revertCompactedACLExpressions,
+        ),
       ).toEqual(ignoreId(notUnexpectedRevertCompactExpression));
     });
   });
@@ -268,7 +268,7 @@ describe("ACLExpressionModule", () => {
       "generate postfix ACL Expression text from %s",
       (_, expectedExpression, _infix, aclExpression) => {
         expect(generate(aclExpression)).toEqual(expectedExpression);
-      }
+      },
     );
   });
 
@@ -286,9 +286,9 @@ describe("ACLExpressionModule", () => {
       "generate infix ACL Expression text (human readable text) from %s",
       async (_, _acl, expectedInfixText, aclExpression) => {
         await expect(
-          generateHumanReadableWithMocks(aclExpression)()
+          generateHumanReadableWithMocks(aclExpression)(),
         ).resolves.toEqual(expectedInfixText);
-      }
+      },
     );
   });
 
@@ -333,9 +333,9 @@ describe("ACLExpressionModule", () => {
       "remove redundant expressions in objects of ACL Expression",
       (_, rawACLExpression, simplifiedACLExpression) => {
         expect(removeRedundantExpressions(rawACLExpression)).toEqual(
-          ignoreId(simplifiedACLExpression)
+          ignoreId(simplifiedACLExpression),
         );
-      }
+      },
     );
   });
 
@@ -367,7 +367,7 @@ describe("ACLExpressionModule", () => {
 
     it("should return undefined if it not exists", () => {
       expect(
-        pipe(aclExpression, getACLExpressionById("non-exist"))
+        pipe(aclExpression, getACLExpressionById("non-exist")),
       ).toBeUndefined();
     });
 
@@ -397,13 +397,13 @@ describe("ACLExpressionModule", () => {
       };
 
       expect(
-        pipe(initialACLExpression, removeACLExpression(NODE_ID_TEST))
+        pipe(initialACLExpression, removeACLExpression(NODE_ID_TEST)),
       ).toEqual(O.some(expectedResult));
     });
 
     it("should return Option none if the given id represents the root ACLExpression", () => {
       expect(
-        pipe(initialACLExpression, removeACLExpression(NODE_ID_ROOT))
+        pipe(initialACLExpression, removeACLExpression(NODE_ID_ROOT)),
       ).toEqual(O.none);
     });
   });
@@ -413,18 +413,18 @@ describe("ACLExpressionModule", () => {
       "parse -> generate -> parse: %s",
       (_, acl, _infix, expectedACLExpression) => {
         expect(pipe(acl, parse, handleParse, generate, parse)).toEqual(
-          expectedRightResult(expectedACLExpression)
+          expectedRightResult(expectedACLExpression),
         );
-      }
+      },
     );
 
     it.each(commonACLExpressionForParametricTests)(
       "generate -> parse -> generate: %s",
       (_, expectedText, _infix, aclExpression) => {
         expect(
-          pipe(aclExpression, generate, parse, handleParse, generate)
+          pipe(aclExpression, generate, parse, handleParse, generate),
         ).toEqual(expectedText);
-      }
+      },
     );
   });
 });

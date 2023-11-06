@@ -45,7 +45,7 @@ describe("Highlighting of Text", () => {
     "Produces a string containing the text highlighted with <span>s - %s",
     (text, highlights, expected) => {
       expect(highlight(text, highlights, className)).toEqual(expected);
-    }
+    },
   );
 });
 
@@ -54,7 +54,7 @@ describe("Build oEQ server language strings", () => {
     const format =
       "Maximum attachment number is {0} and please remove {1} attachments.";
     expect(buildOEQServerString(format, 1, 2)).toBe(
-      "Maximum attachment number is 1 and please remove 2 attachments."
+      "Maximum attachment number is 1 and please remove 2 attachments.",
     );
   });
 });
@@ -78,6 +78,6 @@ describe("validateGrouping", () => {
     "given a text %s : %s the group validation result should be %s",
     (_, input, expected) => {
       expect(validateGrouping(input)).toBe(expected);
-    }
+    },
   );
 });

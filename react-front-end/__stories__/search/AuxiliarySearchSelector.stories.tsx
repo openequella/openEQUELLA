@@ -29,7 +29,7 @@ export default {
 } as Meta<AuxiliarySearchSelectorProps>;
 
 export const standard: StoryFn<AuxiliarySearchSelectorProps> = (
-  args: AuxiliarySearchSelectorProps
+  args: AuxiliarySearchSelectorProps,
 ) => <AuxiliarySearchSelector {...args} />;
 standard.args = {
   auxiliarySearchesSupplier: () =>

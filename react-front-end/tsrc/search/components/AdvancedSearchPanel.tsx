@@ -93,15 +93,15 @@ export const AdvancedSearchPanel = ({
         wizardControls,
         A.filter(OEQ.WizardControl.isWizardBasicControl),
         A.map(({ controlType, targetNodes }) =>
-          targetNodes.map(({ fullTarget }) => ({ controlType, fullTarget }))
+          targetNodes.map(({ fullTarget }) => ({ controlType, fullTarget })),
         ),
         A.flatten,
         (xs) => {
           const set = SET.fromArray(eqFullTargetAndControlType)(xs);
           return SET.size(set) < A.size(xs);
-        }
+        },
       ),
-    [wizardControls]
+    [wizardControls],
   );
 
   // Keep the values in state (CurrentValues) in sync with those passed in
@@ -116,14 +116,14 @@ export const AdvancedSearchPanel = ({
       flow(
         O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
         O.map((c) => c.mandatory),
-        O.getOrElse(constFalse)
-      )
-    )
+        O.getOrElse(constFalse),
+      ),
+    ),
   );
 
   const handleSubmitAdvancedSearch = async (
     advFieldValue: FieldValueMap,
-    openPanel = true
+    openPanel = true,
   ) => {
     updateFieldValueMap(advFieldValue);
     openAdvancedSearchPanel(openPanel);
@@ -147,13 +147,13 @@ export const AdvancedSearchPanel = ({
           currentValues,
           (
             valueMap: WizardHelper.FieldValueMap,
-            { target, value }: WizardHelper.FieldValue
-          ) => pipe(valueMap, WizardHelper.fieldValueMapInsert(target, value))
+            { target, value }: WizardHelper.FieldValue,
+          ) => pipe(valueMap, WizardHelper.fieldValueMapInsert(target, value)),
         ),
-        setCurrentValues
+        setCurrentValues,
       );
     },
-    [currentValues, setCurrentValues]
+    [currentValues, setCurrentValues],
   );
 
   const idPrefix = "advanced-search-panel";
@@ -190,7 +190,7 @@ export const AdvancedSearchPanel = ({
                 wizardControls,
                 currentValues,
                 onChangeHandler,
-                buildVisibilityScriptContext(currentValues, currentUser)
+                buildVisibilityScriptContext(currentValues, currentUser),
               ).map((e) => (
                 // width is a tricky way to fix additional whitespace issue caused by user selector
                 <Grid key={e.props.id} item style={{ width: "100%" }}>

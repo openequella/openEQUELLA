@@ -38,7 +38,7 @@ describe("<WizardRawHtml/>", () => {
         mandatory={false}
         fieldValueMap={mockedMap}
         description={`name: {${xpath}}`}
-      />
+      />,
     );
 
     expect(queryByText("name: test")).toBeInTheDocument();

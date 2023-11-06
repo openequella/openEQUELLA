@@ -100,19 +100,19 @@ describe("CreateLti13Platform", () => {
         [platformAuthenticationRequestURLLabel, expectedResult.authUrl],
         [usernamePrefixLabel, expectedResult.usernamePrefix!],
         [usernameSuffixLabel, expectedResult.usernameSuffix!],
-      ])
+      ]),
     );
     await configureUsableBy(renderResult, usableByUser);
     await configureUnknownUserHandling(
       renderResult,
       unknownUserHandlingCreateLabel,
-      unknownUserDefaultGroup
+      unknownUserDefaultGroup,
     );
     await configureInstructorRoles(renderResult, defaultRole);
     await configureCustomRoles(
       renderResult,
       ltiRoles.institution.Guest,
-      defaultRole
+      defaultRole,
     );
     await configureUnknownRoles(renderResult, defaultRole);
 
@@ -141,9 +141,9 @@ describe("CreateLti13Platform", () => {
       ],
       A.map((label) =>
         expect(getGeneralDetailsInputOutline(container, label)).toHaveClass(
-          errorOutlineClass
-        )
-      )
+          errorOutlineClass,
+        ),
+      ),
     );
     expect(createPlatform).not.toHaveBeenCalled();
   });
@@ -167,9 +167,9 @@ describe("CreateLti13Platform", () => {
       Array.from(controls.keys()),
       A.map((label) =>
         expect(getGeneralDetailsInputOutline(container, label)).toHaveClass(
-          errorOutlineClass
-        )
-      )
+          errorOutlineClass,
+        ),
+      ),
     );
     expect(createPlatform).not.toHaveBeenCalled();
   });

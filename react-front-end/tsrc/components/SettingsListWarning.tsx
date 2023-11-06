@@ -50,7 +50,7 @@ const SettingsListWarning = ({
       {pipe(
         messages,
         A.head,
-        O.getOrElse(() => S.empty)
+        O.getOrElse(() => S.empty),
       )}
 
       {/*show the rest of each message in new line*/}
@@ -58,7 +58,7 @@ const SettingsListWarning = ({
         messages,
         A.tail,
         O.map(A.map((m) => <p key={m}>{m}</p>)),
-        O.getOrElseW(() => [])
+        O.getOrElseW(() => []),
       )}
     </Alert>
   );

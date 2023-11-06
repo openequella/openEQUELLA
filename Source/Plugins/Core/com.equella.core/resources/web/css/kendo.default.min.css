@@ -188,7 +188,8 @@ textarea.k-textbox:hover,
 .k-panelbar .k-tabstrip-items .k-item,
 .km-pane-wrapper > .km-pane > .km-view > .km-content {
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
             255,
             255,
@@ -196,10 +197,12 @@ textarea.k-textbox:hover,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -428,7 +431,8 @@ html .km-pane-wrapper .k-header {
   border-color: #c5c5c5;
   background-color: #e3e3e3;
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
             255,
             255,
@@ -436,10 +440,12 @@ html .km-pane-wrapper .k-header {
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -628,7 +634,8 @@ td.k-state-focused.k-state-selected {
 div.k-filebrowser-dropzone em,
 .k-draghandle:hover {
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
             255,
             255,
@@ -636,10 +643,12 @@ div.k-filebrowser-dropzone em,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -669,7 +678,8 @@ div.k-filebrowser-dropzone em,
 .k-button.k-state-active,
 .k-draghandle.k-state-selected:hover {
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(
             255,
             255,
@@ -677,10 +687,12 @@ div.k-filebrowser-dropzone em,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -713,7 +725,8 @@ div.k-filebrowser-dropzone em {
 .k-dropdown-wrap.k-state-focused {
   background-color: #bcb4b0;
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
             255,
             255,
@@ -721,10 +734,12 @@ div.k-filebrowser-dropzone em {
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -1395,7 +1410,8 @@ html .km-pane-wrapper .km-widget,
 .k-numeric-wrap.k-state-default,
 .k-dropdown-wrap.k-state-default {
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
             255,
             255,
@@ -1403,10 +1419,12 @@ html .km-pane-wrapper .km-widget,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -1425,7 +1443,8 @@ html .km-pane-wrapper .km-widget,
 .k-dropdown-wrap.k-state-hover {
   background-color: #bcb4b0;
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
             255,
             255,
@@ -1433,10 +1452,12 @@ html .km-pane-wrapper .km-widget,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -1461,7 +1482,8 @@ html .km-pane-wrapper .km-widget,
 .k-multiselect.k-header.k-state-focused {
   background-color: #bcb4b0;
   background-image: url("textures/highlight.png");
-  background-image: none,
+  background-image:
+    none,
     -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
             255,
             255,
@@ -1469,10 +1491,12 @@ html .km-pane-wrapper .km-widget,
             0
           )
           100%);
-  background-image: none,
+  background-image:
+    none,
     -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
-  background-image: none,
+  background-image:
+    none,
     -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
           100%);
   background-image: none,
@@ -1550,7 +1574,9 @@ html .km-pane-wrapper .km-widget,
   border-color: #c5c5c5;
 }
 .k-overflow-container .k-overflow-group {
-  box-shadow: inset 0 1px 0 #fff, 0 1px 0 #fff;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 1px 0 #fff;
 }
 .k-toolbar-first-visible.k-overflow-group,
 .k-overflow-container .k-overflow-group + .k-overflow-group {
@@ -1599,9 +1625,15 @@ html .km-pane-wrapper .km-widget,
   color: #fff;
   border-color: #ef671a;
   background-image: url("textures/highlight.png");
-  background-image: none, -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
   background-image: none, linear-gradient(to bottom, #f6813f 0, #f35a03 100%);
   background-position: 50% 50%;
   background-color: #f35800;
@@ -1613,9 +1645,15 @@ html .km-pane-wrapper .km-widget,
   color: #fff;
   border-color: #e84200;
   background-image: url("textures/highlight.png");
-  background-image: none, -webkit-linear-gradient(top, #f1713f 0, #ed4503 100%);
-  background-image: none, -moz-linear-gradient(top, #f1713f 0, #ed4503 100%);
-  background-image: none, -o-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -webkit-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -moz-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -o-linear-gradient(top, #f1713f 0, #ed4503 100%);
   background-image: none, linear-gradient(to bottom, #f1713f 0, #ed4503 100%);
   -webkit-box-shadow: 0 0 3px 1px #e10000;
   box-shadow: 0 0 3px 1px #e10000;
@@ -1624,9 +1662,15 @@ html .km-pane-wrapper .km-widget,
   color: #fff;
   border-color: #ef671a;
   background-image: url("textures/highlight.png");
-  background-image: none, -webkit-linear-gradient(top, #f1713f 0, #ed4503 100%);
-  background-image: none, -moz-linear-gradient(top, #f1713f 0, #ed4503 100%);
-  background-image: none, -o-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -webkit-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -moz-linear-gradient(top, #f1713f 0, #ed4503 100%);
+  background-image:
+    none,
+    -o-linear-gradient(top, #f1713f 0, #ed4503 100%);
   background-image: none, linear-gradient(to bottom, #f1713f 0, #ed4503 100%);
   background-color: #ed4300;
   -webkit-box-shadow: none;
@@ -1641,9 +1685,15 @@ html .km-pane-wrapper .km-widget,
   color: #fff;
   border-color: #ef671a;
   background-image: url("textures/highlight.png");
-  background-image: none, -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
   background-image: none, linear-gradient(to bottom, #f6813f 0, #f35a03 100%);
   background-color: #f35800;
   -webkit-box-shadow: none;
@@ -1660,9 +1710,15 @@ html .km-pane-wrapper .km-widget,
   border-color: #ef671a;
   background-color: #f35800;
   background-image: url("textures/highlight.png");
-  background-image: none, -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
-  background-image: none, -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -webkit-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -moz-linear-gradient(top, #f6813f 0, #f35a03 100%);
+  background-image:
+    none,
+    -o-linear-gradient(top, #f6813f 0, #f35a03 100%);
   background-image: none, linear-gradient(to bottom, #f6813f 0, #f35a03 100%);
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -1896,7 +1952,8 @@ html .km-pane-wrapper .km-widget,
   .k-ff .k-pager-numbers .k-current-page .k-link,
   .k-ie11 .k-pager-numbers .k-current-page .k-link {
     background-image: url("textures/highlight.png");
-    background-image: none,
+    background-image:
+      none,
       -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
               255,
               255,
@@ -1904,7 +1961,8 @@ html .km-pane-wrapper .km-widget,
               0
             )
             100%);
-    background-image: none,
+    background-image:
+      none,
       -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
               255,
               255,
@@ -1912,7 +1970,8 @@ html .km-pane-wrapper .km-widget,
               0
             )
             100%);
-    background-image: none,
+    background-image:
+      none,
       -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
             100%);
     background-image: none,
@@ -1990,7 +2049,8 @@ html .km-pane-wrapper .km-widget,
     > li.k-current-view:hover {
     border-color: #bcb4b0;
     background-image: url("textures/highlight.png");
-    background-image: none,
+    background-image:
+      none,
       -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
               255,
               255,
@@ -1998,7 +2058,8 @@ html .km-pane-wrapper .km-widget,
               0
             )
             100%);
-    background-image: none,
+    background-image:
+      none,
       -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
               255,
               255,
@@ -2006,7 +2067,8 @@ html .km-pane-wrapper .km-widget,
               0
             )
             100%);
-    background-image: none,
+    background-image:
+      none,
       -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
             100%);
     background-image: none,

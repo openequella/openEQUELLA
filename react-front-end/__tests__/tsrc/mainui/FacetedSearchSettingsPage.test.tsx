@@ -91,16 +91,16 @@ jest.mock("../../../tsrc/components/NavigationGuard", () => ({
 
 const mockGetFacetsFromServer = jest.spyOn(
   FacetedSearchSettingsModule,
-  "getFacetsFromServer"
+  "getFacetsFromServer",
 );
 const mockBatchDelete = jest.spyOn(FacetedSearchSettingsModule, "batchDelete");
 const mockBatchUpdateOrAdd = jest.spyOn(
   FacetedSearchSettingsModule,
-  "batchUpdateOrAdd"
+  "batchUpdateOrAdd",
 );
 
 const getFacetsPromise = mockGetFacetsFromServer.mockImplementation(() =>
-  Promise.resolve(mockFacets)
+  Promise.resolve(mockFacets),
 );
 
 describe("<FacetedSearchSettingsPage />", () => {
@@ -125,7 +125,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       A.head,
       O.getOrElse<HTMLElement>(() => {
         throw new Error(`Failed to find classification ${facetName}`);
-      })
+      }),
     );
 
   const getEditButton = (name: string): HTMLElement =>
@@ -138,7 +138,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     await userEvent.click(
       name
         ? getEditButton(name)
-        : page.getByLabelText(facetedSearchSettingStrings.add)
+        : page.getByLabelText(facetedSearchSettingStrings.add),
     );
     return screen.getByRole("dialog");
   };
@@ -153,7 +153,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, updatedName);
     await userEvent.click(
-      getMuiButtonByText(dialog, languageStrings.common.action.ok)
+      getMuiButtonByText(dialog, languageStrings.common.action.ok),
     );
   };
 
@@ -167,7 +167,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     fireEvent.change(schemaInput, { target: { value: "item/year" } });
 
     await userEvent.click(
-      getMuiButtonByText(dialog, languageStrings.common.action.add)
+      getMuiButtonByText(dialog, languageStrings.common.action.add),
     );
   };
 
@@ -179,7 +179,7 @@ describe("<FacetedSearchSettingsPage />", () => {
 
   it("should fetch facets", () => {
     expect(
-      FacetedSearchSettingsModule.getFacetsFromServer
+      FacetedSearchSettingsModule.getFacetsFromServer,
     ).toHaveBeenCalledTimes(1);
   });
 
@@ -190,14 +190,14 @@ describe("<FacetedSearchSettingsPage />", () => {
   it("should show a dialog when an Edit button is clicked", async () => {
     await openDialog(mockFacets[0].name);
     expect(
-      page.queryByText(facetedSearchSettingStrings.edit)
+      page.queryByText(facetedSearchSettingStrings.edit),
     ).toBeInTheDocument();
   });
 
   it("should show a dialog when the Add button is clicked", async () => {
     await openDialog();
     expect(
-      page.queryByText(facetedSearchSettingStrings.add)
+      page.queryByText(facetedSearchSettingStrings.add),
     ).toBeInTheDocument();
   });
 
@@ -228,7 +228,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     mockBatchUpdateOrAdd.mockResolvedValueOnce([]);
     await makeChanges();
     expect(
-      screen.getByText(languageStrings.common.result.success)
+      screen.getByText(languageStrings.common.result.success),
     ).toBeInTheDocument();
   });
 
@@ -249,7 +249,7 @@ describe("<FacetedSearchSettingsPage />", () => {
     const reorderFacets = FacetedSearchSettingsModule.reorder(
       mockFacetsWithFlags,
       1,
-      2
+      2,
     );
     // The second facet's order index should be changed from 1 to 2.
     expect(reorderFacets.find((f) => f.id === 2)!.orderIndex).toBe(2);
@@ -275,7 +275,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       // Remove the second facet which has an ID.
       const updatedFacets = FacetedSearchSettingsModule.removeFacetFromList(
         mockFacetsWithFlags,
-        facetToRemove.orderIndex
+        facetToRemove.orderIndex,
       );
       // The total number of facets stored in state should keep 4.
       expect(updatedFacets).toHaveLength(4);
@@ -290,7 +290,7 @@ describe("<FacetedSearchSettingsPage />", () => {
       // Remove the last one.
       const updatedFacets = FacetedSearchSettingsModule.removeFacetFromList(
         mockFacetsWithFlags,
-        newFacet.orderIndex
+        newFacet.orderIndex,
       );
       // The total number of facets stored in state should change to 3.
       expect(updatedFacets).toHaveLength(3);

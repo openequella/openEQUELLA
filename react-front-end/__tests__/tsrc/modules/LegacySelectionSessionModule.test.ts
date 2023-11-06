@@ -60,7 +60,7 @@ describe("buildSelectionSessionItemSummaryLink", () => {
     updateMockGetRenderData(basicRenderData);
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
-      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch`
+      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&a=coursesearch`,
     );
   });
 
@@ -72,7 +72,7 @@ describe("buildSelectionSessionItemSummaryLink", () => {
 
     const link = buildSelectionSessionItemSummaryLink(uuid, version);
     expect(link).toBe(
-      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&_int.id=2&a=coursesearch`
+      `${defaultBaseUrl}items/9b9bf5a9-c5af-490b-88fe-7e330679fad2/1/?_sl.stateId=1&_int.id=2&a=coursesearch`,
     );
   });
 });
@@ -91,11 +91,11 @@ describe("isSelectionSessionOpen", () => {
     (
       when: string,
       inSelectionSession: boolean,
-      renderData: RenderData | undefined
+      renderData: RenderData | undefined,
     ) => {
       updateMockGetRenderData(renderData);
       expect(isSelectionSessionOpen()).toBe(inSelectionSession);
-    }
+    },
   );
 });
 
@@ -123,7 +123,7 @@ describe("buildPostDataForStructured", () => {
     ...basicPostData,
     eventp__0: [
       `{${ajaxIds},"event":["_slcl.selectAllAttachments","${attachmentUUIDs.join(
-        ","
+        ",",
       )}","${itemKey}",null]}`,
     ],
   };
@@ -137,15 +137,15 @@ describe("buildPostDataForStructured", () => {
     (
       resourceType: string,
       attachmentUUIDs: string[],
-      expectedPostData: SelectionSessionPostData
+      expectedPostData: SelectionSessionPostData,
     ) => {
       updateMockGetRenderData(basicRenderData);
       const data: SelectionSessionPostData = buildPostDataForStructured(
         itemKey,
-        attachmentUUIDs
+        attachmentUUIDs,
       );
       expect(data).toMatchObject(expectedPostData);
-    }
+    },
   );
 });
 
@@ -188,15 +188,15 @@ describe("buildPostDataForSelectOrAdd", () => {
     (
       resourceType: string,
       attachmentUUIDs: string[],
-      expectedPostData: SelectionSessionPostData
+      expectedPostData: SelectionSessionPostData,
     ) => {
       updateMockGetRenderData(renderDataForSelectOrAdd);
       const data: SelectionSessionPostData = buildPostDataForSelectOrAdd(
         itemKey,
-        attachmentUUIDs
+        attachmentUUIDs,
       );
       expect(data).toMatchObject(expectedPostData);
-    }
+    },
   );
 });
 
@@ -222,11 +222,11 @@ describe("isSelectSummaryButtonDisabled", () => {
     (
       when: string,
       isButtonDisabled: boolean,
-      renderData: RenderData | undefined
+      renderData: RenderData | undefined,
     ) => {
       updateMockGetRenderData(renderData);
       expect(isSelectSummaryButtonDisabled()).toBe(isButtonDisabled);
-    }
+    },
   );
 });
 
@@ -241,7 +241,7 @@ describe("buildSelectionSessionAdvancedSearchLink", () => {
   it("builds a link for accessing an Advanced search", () => {
     const link = buildSelectionSessionAdvancedSearchLink(advSearchId);
     expect(link).toBe(
-      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1"
+      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1",
     );
   });
 
@@ -250,7 +250,7 @@ describe("buildSelectionSessionAdvancedSearchLink", () => {
       "image/gif",
     ]);
     expect(link).toBe(
-      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1&_int.mimeTypes=image%2Fgif"
+      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1&_int.mimeTypes=image%2Fgif",
     );
   });
 });
@@ -276,8 +276,8 @@ describe("buildSelectionSessionSearchPageLink", () => {
       const link = buildSelectionSessionSearchPageLink(["image/gif"]);
 
       expect(link).toBe(
-        `http://localhost:8080/vanilla/${path}/searching.do?_sl.stateId=1&_int.mimeTypes=image%2Fgif`
+        `http://localhost:8080/vanilla/${path}/searching.do?_sl.stateId=1&_int.mimeTypes=image%2Fgif`,
       );
-    }
+    },
   );
 });

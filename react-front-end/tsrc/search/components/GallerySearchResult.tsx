@@ -63,10 +63,10 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
   const lightboxHandler = (
     item: BasicSearchResultItem,
     lightboxEntries: LightboxEntry[],
-    { mimeType, directUrl: src, name, id }: GalleryEntry
+    { mimeType, directUrl: src, name, id }: GalleryEntry,
   ) => {
     const initialLightboxEntryIndex = lightboxEntries.findIndex(
-      (entry) => entry.id === id
+      (entry) => entry.id === id,
     );
 
     return setLightboxProps({
@@ -80,12 +80,12 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
         onNext: buildLightboxNavigationHandler(
           lightboxEntries,
           initialLightboxEntryIndex + 1,
-          true
+          true,
         ),
         onPrevious: buildLightboxNavigationHandler(
           lightboxEntries,
           initialLightboxEntryIndex - 1,
-          true
+          true,
         ),
       },
     });
@@ -93,10 +93,10 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   // Function to update the Item list, rebuild the Lightbox entry list and return a lightboxHandler.
   const updateGalleryItemList = (
-    newItem: GallerySearchResultItem
+    newItem: GallerySearchResultItem,
   ): LightboxHandler => {
     const updatedItems = galleryItems.map((i) =>
-      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i
+      i.uuid === newItem.uuid && i.version === newItem.version ? newItem : i,
     );
     setGalleryItems(updatedItems);
 
@@ -122,8 +122,8 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
               version,
               status,
             },
-          })
-        )
+          }),
+        ),
       );
 
     return (item: BasicSearchResultItem, entry: GalleryEntry) =>
