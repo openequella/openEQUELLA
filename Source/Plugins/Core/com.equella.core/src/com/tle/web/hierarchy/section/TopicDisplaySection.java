@@ -199,12 +199,13 @@ public class TopicDisplaySection
     }
 
     final Collection<String> collectionUuids = getSelectionSessionCollections(context);
+    List<HierarchyTopic> subTopics = hierarchyService.getChildTopics(topic);
+
     // Go through the child topics and get item counts for them, either as
     // calculated (if by Contributed virtualiser) or as a one-at-a-time
     // search (if manual virtualiser).
     final List<VirtualisableAndValue<HierarchyTopic>> childTopics =
-        hierarchyService.expandVirtualisedTopics(
-            hierarchyService.getChildTopics(topic), values, collectionUuids);
+        hierarchyService.expandVirtualisedTopics(subTopics, values, collectionUuids);
     for (VirtualisableAndValue<HierarchyTopic> p : childTopics) {
       HierarchyTopic childTopic = p.getVt();
       String childValue = p.getVirtualisedValue();

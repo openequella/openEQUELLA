@@ -1,0 +1,48 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>112610</id>
+  <uuid>886aa61d-f8df-4e82-8984-c487849f80ff</uuid>
+  <subTopics/>
+  <listPosition>2</listPosition>
+  <keyResources/>
+  <showResults>true</showResults>
+  <freetext></freetext>
+  <inheritFreetext>false</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <virtualisationId>contributedValuesVirtualiser</virtualisationId>
+  <virtualisationPath>/item/copyright/authors/author</virtualisationPath>
+  <name>
+    <id>112664</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>112665</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Virtual Topics: Author %s</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <shortDescription>
+    <id>112666</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>112667</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Author: %s</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </shortDescription>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

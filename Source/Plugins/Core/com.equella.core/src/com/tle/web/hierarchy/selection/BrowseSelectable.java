@@ -71,7 +71,7 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
     // This seems really expensive...
     return (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()))
         && !hierarchyService
-            .expandVirtualisedTopics(hierarchyService.getChildTopics(null), null, null)
+            .expandVirtualisedTopics(hierarchyService.getRootTopics(), null, null)
             .isEmpty();
   }
 

@@ -38,6 +38,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.auth.Auth;
+import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
 import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
@@ -107,8 +108,9 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   @Inject private ObjectMapperService objectMapperService;
   @Inject private InstitutionSecurityFilter institutionSecurityFilter;
 
-  // API Classes which have been implemented in Scala
-  private static final List<Class> scalaApiClasses =
+  // API Classes utilising `LegacyGuice` which will ideally be migrated to normal Dependency
+  // Injection in the future.
+  private static final List<Class> legacyGuiceApiClasses =
       Arrays.asList(
           AclResource.class,
           AdvancedSearchResource.class,
@@ -131,10 +133,13 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           UserQueryResource.class,
           WizardApi.class);
 
-  // API Classes which have been implemented in Java
-  private static final List<Class> javaApiClasses =
+  // API classes which can use Guice normal Dependency Injection.
+  private static final List<Class> apiClasses =
       Arrays.asList(
-          NewUIThemeResource.class, PostLoginNoticeResource.class, PreLoginNoticeResource.class);
+          NewUIThemeResource.class,
+          PostLoginNoticeResource.class,
+          PreLoginNoticeResource.class,
+          BrowseHierarchyResource.class);
 
   @Override
   protected void service(
@@ -166,7 +171,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
-    scalaApiClasses.forEach(
+    legacyGuiceApiClasses.forEach(
         clazz -> {
           try {
             registry.addSingletonResource(clazz.newInstance());
@@ -175,7 +180,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
             LOGGER.error("Failed to register API class: " + clazz.getCanonicalName(), e);
           }
         });
-    javaApiClasses.forEach(
+    apiClasses.forEach(
         clazz -> {
           registry.addResourceFactory(new BeanLocatorResource(clazz, coreLocator));
           classes.add(clazz);
