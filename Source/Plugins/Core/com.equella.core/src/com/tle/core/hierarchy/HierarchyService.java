@@ -31,15 +31,44 @@ import com.tle.core.search.VirtualisableAndValue;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-/** @author Nicholas Read */
+/**
+ * In the context of Hierarchy, a hierarchy represents a tree structure for all the topics. And a
+ * topic refers to a pre-defined search configuration, and it can have multiple sub topics.
+ */
 public interface HierarchyService extends RemoteHierarchyService {
+  /** Get all root topics for current institution with permission `VIEW_HIERARCHY_TOPIC`. */
+  List<HierarchyTopic> getRootTopics();
+
+  /** Get all filtered sub topics for a given topic with permission `VIEW_HIERARCHY_TOPIC`. */
+  List<HierarchyTopic> getSubTopics(HierarchyTopic topic);
+
+  /**
+   * Legacy function. Get all sub topics for a given topic, if topic is null get all root topics
+   * instead. Keep this one as a helper function to minimise the changes on other Legacy code.
+   */
+  List<HierarchyTopic> getChildTopics(HierarchyTopic topic);
+
+  /**
+   * Calculate the total number of items matching a given hierarchy topic, including key resources.
+   *
+   * @param topic The topic to be counted.
+   * @param matchedVirtualText Name of a virtual topic to assist in counting items for the virtual
+   *     topic.
+   */
+  int getMatchingItemCount(HierarchyTopic topic, String matchedVirtualText);
+
+  /** Fetch the UUIDs of Collections configured for a topic. */
+  Optional<List<String>> getCollectionUuids(HierarchyTopic topic);
+
   LanguageBundle getHierarchyTopicName(long topicID);
 
+  /** Extract the full free-text query for a given hierarchy topic. */
   String getFullFreetextQuery(HierarchyTopic topic);
 
   FreeTextBooleanQuery getSearchClause(
-      HierarchyTopic topic, Map<String, String> virtualisationValues);
+      HierarchyTopic topic, Map<String, String> topicUuidWithMatchedText);
 
   HierarchyTopic getHierarchyTopicByUuid(String uuid);
 
@@ -52,13 +81,26 @@ public interface HierarchyService extends RemoteHierarchyService {
   List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
       String dynamicHierarchyId, String itemUuid, int itemVersion);
 
-  List<HierarchyTopic> getChildTopics(HierarchyTopic topic);
-
   int countChildTopics(HierarchyTopic topic);
 
+  /**
+   * This method takes a list of topics, both normal and virtual, and performs two main operations.
+   * First, it will resolve the raw virtual topics to real topics, and if topic is a normal topic it
+   * will just keep it as it. Second, it wraps all the topics, including the normal ones and the
+   * resolved virtual ones, into a new class that provides additional properties and methods to
+   * interact with the topics.
+   *
+   * @param topics List of topics to be processed, which may include both normal and raw virtual
+   *     topics.
+   * @param compoundUuidMap If parent is a virtual topic then it need parent's compound uuid map to
+   *     filter the topics.
+   * @param collectionUuids The resolved virtual topic should be limited to parent's collections.
+   * @return A list of the VirtualisableAndValue class instances, each containing a topic and extra
+   *     attributes.
+   */
   List<VirtualisableAndValue<HierarchyTopic>> expandVirtualisedTopics(
       List<HierarchyTopic> topics,
-      Map<String, String> mappedValues,
+      Map<String, String> compoundUuidMap,
       Collection<String> collectionUuids);
 
   void addKeyResource(HierarchyTreeNode node, ItemKey item);
@@ -83,10 +125,6 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   Collection<String> getTopicIdsWithKeyResource(Item item);
 
-  /**
-   * Used only for ExportTask. Do not use.
-   *
-   * @return
-   */
+  /** Used only for ExportTask. Do not use. */
   XStream getXStream();
 }

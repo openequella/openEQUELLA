@@ -77,7 +77,7 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
 
     final List<VirtualisableAndValue<HierarchyTopic>> rootTopics =
         hierarchyService.expandVirtualisedTopics(
-            hierarchyService.getChildTopics(null), null, collectionUuids);
+            hierarchyService.getRootTopics(), null, collectionUuids);
     Collection<String> keyResPrivs =
         Collections.singleton(selectionService.getSearchPrivilege(context));
     if (!Check.isEmpty(rootTopics)) {
@@ -169,7 +169,7 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
     // Always show unless we're in a selection session with zero topics.
     return selectionService.getCurrentSession(info) == null
         || !hierarchyService
-            .expandVirtualisedTopics(hierarchyService.getChildTopics(null), null, null)
+            .expandVirtualisedTopics(hierarchyService.getRootTopics(), null, null)
             .isEmpty();
   }
 

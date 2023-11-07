@@ -73,8 +73,7 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
       showMoreLink = false;
 
       List<VirtualisableAndValue<HierarchyTopic>> pageTopics =
-          hierarchyService.expandVirtualisedTopics(
-              hierarchyService.getChildTopics(null), null, null);
+          hierarchyService.expandVirtualisedTopics(hierarchyService.getRootTopics(), null, null);
       Iterator<VirtualisableAndValue<HierarchyTopic>> iter = pageTopics.iterator();
 
       int show = pageTopics.size();

@@ -99,20 +99,15 @@ public class BrowseHierarchyResource {
    * @see com.tle.web.api.hierarchy.EditHierarchyResource#listTopLevel<br>
    *     except the former returns links for edit mode without resolving virtual placeholders,
    *     whereas here the nodes are expanded, and links point to display/browse mode
-   * @return
    */
   @GET
   @Path("/")
   @ApiOperation(value = "List top-level hierarchies")
   public Response listTopLevel() {
-    List<HierarchyTopic> topLevelNodes = hierarchyService.getChildTopics(null);
-
-    Collection<HierarchyTopic> allowedTopics =
-        aclManager.filterNonGrantedObjects(
-            Collections.singleton("VIEW_HIERARCHY_TOPIC"), topLevelNodes);
+    List<HierarchyTopic> topLevelNodes = hierarchyService.getRootTopics();
 
     final List<VirtualisableAndValue<HierarchyTopic>> topicValues =
-        hierarchyService.expandVirtualisedTopics((List<HierarchyTopic>) allowedTopics, null, null);
+        hierarchyService.expandVirtualisedTopics((List<HierarchyTopic>) topLevelNodes, null, null);
 
     List<HierarchyBrowseBean> results = new ArrayList<HierarchyBrowseBean>(topLevelNodes.size());
 
@@ -204,14 +199,12 @@ public class BrowseHierarchyResource {
       }
       verifyTopic = hierarchyService.assertViewAccess(verifyTopic);
 
-      // assertViewAccess doesn't actually throw an error (despite the
-      // name of the function).
+      // assertViewAccess doesn't actually throw an error (despite the name of the function).
       // It just returns null if privilege not granted.
       if (verifyTopic == null) {
         return Response.status(Status.FORBIDDEN).build();
       } else if (topicThisLevel == null) {
-        // initialise the hierarchy for this level - it will be the
-        // first
+        // initialise the hierarchy for this level - it will be the first
         // (or only) in the compound sequence
         topicThisLevel = verifyTopic;
       }
