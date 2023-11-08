@@ -15,18 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosError } from 'axios';
-import { ErrorResponseCodec } from './gen/Errors';
-import { validate } from './Utils';
+import { AxiosError, isAxiosError } from 'axios';
+import { ApiErrorResponseCodec, LegacyErrorResponseCodec } from './gen/Errors';
+import * as A from 'fp-ts/Array';
+import * as O from 'fp-ts/Option';
+import * as S from 'fp-ts/string';
+import { pipe, flow } from 'fp-ts/function';
 
-export interface ErrorResponse {
+interface LegacyErrorResponse {
   code: number;
   error: string;
   error_description: string;
 }
 
+interface ApiResponseMessage {
+  message: string;
+}
+
+interface ApiErrorResponse {
+  errors: ApiResponseMessage[];
+}
+
+export type ErrorResponse = LegacyErrorResponse | ApiErrorResponse;
+
 export class ApiError extends Error {
-  constructor(message: string, public status?: number) {
+  constructor(
+    message: string,
+    public status?: number
+  ) {
     super(message);
     this.status = status;
   }
@@ -34,16 +50,36 @@ export class ApiError extends Error {
   errorResponse?: ErrorResponse;
 }
 
-export const repackageError = (error: AxiosError | Error): Error => {
-  if ('isAxiosError' in error) {
-    const validator = validate(ErrorResponseCodec);
-    const apiError = new ApiError(error.message, error.response?.status);
-    if (validator(error.response?.data)) {
-      apiError.errorResponse = error.response?.data;
-    }
+const handleLegacyErrorResponse: (responseData: unknown) => O.Option<ApiError> =
+  flow(
+    O.fromPredicate(LegacyErrorResponseCodec.is),
+    O.map(
+      ({ error_description, code }) => new ApiError(error_description, code)
+    )
+  );
 
-    return apiError;
-  } else {
-    return error;
-  }
+const handleAxiosError = (error: AxiosError): O.Option<ApiError> => {
+  const responseData = error.response?.data;
+  const apiErrorMessage = ({ errors }: ApiErrorResponse): string =>
+    pipe(
+      errors,
+      A.map(({ message }) => message),
+      A.intercalate(S.Monoid)('\n')
+    );
+
+  return pipe(
+    responseData,
+    O.fromPredicate(ApiErrorResponseCodec.is),
+    O.map(apiErrorMessage),
+    O.map((message) => new ApiError(message, error.status)),
+    O.alt(() => handleLegacyErrorResponse(responseData))
+  );
 };
+
+export const repackageError = (error: AxiosError | Error): Error =>
+  pipe(
+    error,
+    O.fromPredicate(isAxiosError),
+    O.chain(handleAxiosError),
+    O.getOrElse(() => error)
+  );
