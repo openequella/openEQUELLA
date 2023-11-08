@@ -22,6 +22,7 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.ValueThoroughIterator;
 import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.dytech.edge.wizard.beans.control.WizardControlItem;
+import com.google.common.base.Throwables;
 import com.tle.common.i18n.LangUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +55,7 @@ public abstract class AbstractListBirtType extends AbstractBirtType {
     List<?> errors = paramTask.getErrors();
     for (Object o : errors) {
       if (o instanceof Throwable) {
+        Throwables.throwIfUnchecked((Throwable) o);
         throw new RuntimeException((Throwable) o);
       }
       throw new RuntimeException("An unknown error occurred");

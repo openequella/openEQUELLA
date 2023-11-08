@@ -65,7 +65,8 @@ jpfLibraryJars := {
         "javax.xml_1.3.4.v201005080400.jar",
         "js.jar",
         "BirtSample.jar",
-        "sampledb.jar"
+        "sampledb.jar",
+        "guava-r09.jar"
       ).contains(file.getName)
 
     val fileFilter = "*.jar" -- new SimpleFileFilter(exclusionRule)
