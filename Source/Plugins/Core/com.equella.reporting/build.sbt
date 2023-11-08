@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
 ).map(_ % Birt)
 
-resolvers += Resolver.url("my-test-repo",
+resolvers += Resolver.url("SpringSource Ivy Repository",
                           url("https://repository.springsource.com/ivy/bundles/external/"))(
   Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
 
