@@ -340,6 +340,7 @@ public class OAuthServiceImpl
   public OAuthToken getOrCreateToken(
       String userId, String username, OAuthClient client, String code) {
     return Optional.ofNullable(tokenDao.getToken(userId, client))
+        .flatMap(this::handleTokenExpiry)
         .orElseGet(
             () -> {
               OAuthToken newToken =
@@ -412,18 +413,7 @@ public class OAuthServiceImpl
   @Override
   public OAuthToken getToken(String tokenData) {
     return Optional.ofNullable(tokenDao.getToken(tokenData))
-        .flatMap(
-            t -> {
-              if (isExpired(t)) {
-                // When a token has expired, remove it from the database and publish an event
-                tokenDao.delete(t);
-                eventService.publishApplicationEvent(
-                    new DeleteOAuthTokensEvent(Lists.newArrayList(tokenData)));
-                return Optional.empty();
-              }
-
-              return Optional.of(t);
-            })
+        .flatMap(this::handleTokenExpiry)
         .orElse(null);
   }
 
@@ -433,6 +423,24 @@ public class OAuthServiceImpl
         .map(e -> Instant.ofEpochMilli(e.getTime()))
         .map(e -> e.isBefore(Instant.now()))
         .orElse(false);
+  }
+
+  /**
+   * If the token has expired, remove it from the database and publish an event. Otherwise, return
+   * the token.
+   *
+   * @param token A token of unknown validity
+   * @return The token if it is valid, or empty if it has expired
+   */
+  private Optional<OAuthToken> handleTokenExpiry(OAuthToken token) {
+    if (isExpired(token)) {
+      // When a token has expired, remove it from the database and publish an event
+      deleteToken(token.getToken());
+
+      return Optional.empty();
+    }
+
+    return Optional.of(token);
   }
 
   @Override
