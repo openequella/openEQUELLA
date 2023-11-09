@@ -19,6 +19,7 @@ import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { constFalse, constTrue, flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import * as t from "io-ts";
 
 /**
@@ -38,11 +39,19 @@ const removeNonWordCharacters = (highlight: string): string =>
     .replace(/\*/g, "\\w*")
     .replace(/\|/g, "");
 
+/**
+ * Takes a list of words/phrase and returns a regex text which will match these words/phrases.
+ *
+ * Since the words/phrase can be in some strange formats,
+ * such as when the user's query is `"quick ()"` (including the quotation marks),
+ * it will get a highlight phrase `quick (), and the regex should match the word `quick`, not `quick `.
+ * Therefore, there is a trim operation after the `removeNonWordCharacters`.
+ */
 const highlightsAsRegex = (highlights: string[]) =>
   highlights
     .map((h) => h.trim())
     .filter((h) => h.length > 0)
-    .map((h) => removeNonWordCharacters(h))
+    .map((h) => removeNonWordCharacters(h).trim())
     .filter((h) => h.length > 0)
     .join("|");
 
@@ -52,7 +61,7 @@ const highlightsAsRegex = (highlights: string[]) =>
  * having the specified `class`.
  *
  * @param text Plain text to be highlighted
- * @param highlights A list of words to highlight
+ * @param highlights A list of words/phrase to highlight
  * @param cssClass The CSS class to apply to the highlighting spans
  */
 export const highlight = (
@@ -61,7 +70,8 @@ export const highlight = (
   cssClass: string,
 ): string => {
   const highlightsRegex = highlightsAsRegex(highlights);
-  if (highlights.length < 1) {
+  // Return the original text if either the list of highlight or the regex generated from the list is empty.
+  if (A.isEmpty(highlights) || S.isEmpty(highlightsRegex)) {
     // Nothing to highlight
     return text;
   }

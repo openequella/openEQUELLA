@@ -41,6 +41,24 @@ describe("Highlighting of Text", () => {
       ["an*"],
       `There was <span class="${className}">an</span> Australian`,
     ],
+    [
+      // If highlight text only contains special characters, it should return the original text.
+      "This is a random text",
+      ["()"],
+      "This is a random text",
+    ],
+    [
+      // If highlight text contains both normal word and special characters,
+      // the normal word should still be highlighted.
+      "This is a random word",
+      ["word ()"],
+      `This is a random <span class="${className}">word</span>`,
+    ],
+    [
+      "The quick brown fox",
+      ["quick brown"],
+      `The <span class="${className}">quick brown</span> fox`,
+    ],
   ])(
     "Produces a string containing the text highlighted with <span>s - %s",
     (text, highlights, expected) => {
