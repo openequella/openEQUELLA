@@ -8,27 +8,78 @@ libraryDependencies ++= Seq(
     "birt-report-framework",
     Artifact.DefaultType,
     "zip"),
-  "com.github.equella.reporting" % "reporting-common"         % "6.5",
-  "com.github.equella.reporting" % "reporting-oda"            % "6.5",
-  "com.github.equella.reporting" % "reporting-oda-connectors" % "6.5",
-  "rhino"                        % "js"                       % "1.7R2"
+  "com.github.openequella" % "birt-osgi" % "4.9.2" artifacts Artifact("birt-osgi",
+                                                                      Artifact.DefaultType,
+                                                                      "zip"),
+  "com.github.equella.reporting" % "reporting-common"                               % "6.5",
+  "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
+  "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",
+  "org.apache.commons"           % "com.springsource.org.apache.commons.httpclient" % "3.1.0",
+  "org.apache.commons"           % "com.springsource.org.apache.commons.logging"    % "1.1.1",
+  "org.apache.commons"           % "com.springsource.org.apache.commons.codec"      % "1.6.0",
+  xstreamDep,
+  "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
 ).map(_ % Birt)
+
+resolvers += Resolver.url("SpringSource Ivy Repository",
+                          url("https://repository.springsource.com/ivy/bundles/external/"))(
+  Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
 
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
 // This setting should include all the managed JARs and unmanaged JARs extracted from zip file
-// birt-report-framework.
+// birt-report-framework and birt-osgi.
 jpfLibraryJars := {
+  val updateReport     = update.value
   val unmanagedJarBase = baseDirectory.value / "lib"
+  val osgiBaseDir      = (Compile / resourceManaged).value / "ReportEngine"
 
-  // Copy managed Jars to unmanaged Jar base.
-  val updateReport = update.value
-  val managedJars: Seq[File] =
-    Classpaths.managedJars(Birt, Set("jar"), updateReport).files.filter(_.getName.endsWith(".jar"))
-  IO.copy(managedJars.pair(flat(unmanagedJarBase), errorIfNone = false))
+  // Copy managed Jars to the unmanaged Jar base.
+  def copyManagedJars: Set[File] = {
+    val managedJars: Seq[File] =
+      Classpaths
+        .managedJars(Birt, Set("jar"), updateReport)
+        .files
+        .filter(_.getName.endsWith(".jar"))
+    IO.copy(managedJars.pair(flat(unmanagedJarBase), errorIfNone = false))
+  }
 
-  IO.unzip(updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head,
-           unmanagedJarBase)
+  // Unzip framework to the unmanaged Jar base.
+  def unzipFramework: Set[File] = {
+    val framework =
+      updateReport.select(artifact = artifactFilter(name = "birt-report-framework")).head
+    IO.unzip(framework, unmanagedJarBase)
+  }
 
+  // Unzip osgi to the managed resources directory and classes directory, which will achieve
+  // the same result as `Compile / resourceGenerators`.
+  def unzipOSGI(): Unit = {
+    val osgi = updateReport.select(artifact = artifactFilter(name = "birt-osgi")).head
+    Array(osgiBaseDir, (Compile / classDirectory).value / "ReportEngine").foreach(IO.unzip(osgi, _))
+  }
+
+  // Copy OSGI Jars to unmanaged Jar base, excluding Jars that cause dependency conflicts.
+  def copyOSGIToUnmanagedJars: Set[File] = {
+    def exclusionRule(file: File) =
+      List(
+        "javax.xml_1.3.4.v201005080400.jar",
+        "js.jar",
+        "BirtSample.jar",
+        "sampledb.jar",
+        "guava-r09.jar"
+      ).contains(file.getName)
+
+    val fileFilter = "*.jar" -- new SimpleFileFilter(exclusionRule)
+    val jars       = osgiBaseDir / "platform" / "plugins" ** fileFilter
+
+    IO.copy(jars.pair(flat(unmanagedJarBase), errorIfNone = false))
+  }
+
+  copyManagedJars
+  unzipFramework
+  unzipOSGI()
+  copyOSGIToUnmanagedJars
+
+  // Return all the Jars in the unmanaged Jar base.
   (unmanagedJarBase ** "*.jar").classpath
 }
