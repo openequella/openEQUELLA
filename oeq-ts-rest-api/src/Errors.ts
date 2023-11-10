@@ -58,7 +58,7 @@ const handleLegacyErrorResponse: (responseData: unknown) => O.Option<ApiError> =
     )
   );
 
-const handleAxiosError = (error: AxiosError): O.Option<ApiError> => {
+const handleAxiosError = (error: AxiosError): ApiError => {
   const responseData = error.response?.data;
   const apiErrorMessage = ({ errors }: ApiErrorResponse): string =>
     pipe(
@@ -71,8 +71,9 @@ const handleAxiosError = (error: AxiosError): O.Option<ApiError> => {
     responseData,
     O.fromPredicate(ApiErrorResponseCodec.is),
     O.map(apiErrorMessage),
-    O.map((message) => new ApiError(message, error.status)),
-    O.alt(() => handleLegacyErrorResponse(responseData))
+    O.map((message) => new ApiError(message, error.response?.status)),
+    O.alt(() => handleLegacyErrorResponse(responseData)),
+    O.getOrElse(() => new ApiError(error.message, error.response?.status))
   );
 };
 
@@ -80,6 +81,6 @@ export const repackageError = (error: AxiosError | Error): Error =>
   pipe(
     error,
     O.fromPredicate(isAxiosError),
-    O.chain(handleAxiosError),
+    O.map(handleAxiosError),
     O.getOrElse(() => error)
   );
