@@ -54,7 +54,7 @@ class BrowseHierarchyResource {
         .expandVirtualisedTopics(topLevelHierarchies, null, null)
         .asScala
         .toList
-        .map(browseHierarchyHelper.buildHierarchyTopic)
+        .map(browseHierarchyHelper.buildHierarchyTopic(_))
 
     Response.ok(result).build
   }

@@ -152,12 +152,7 @@ public class HierarchyServiceImpl
   }
 
   /** Build a search for counting the items matching this topic. */
-  private PresetSearch buildSearch(HierarchyTopic topic, String virtualTopicName) {
-    Map<String, String> compoundUuidMap =
-        Optional.ofNullable(virtualTopicName)
-            .map(t -> Collections.singletonMap(topic.getUuid(), t))
-            .orElse(Collections.emptyMap());
-
+  private PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
     FreeTextBooleanQuery searchClause = getSearchClause(topic, compoundUuidMap);
     String freetextQuery = getFullFreetextQuery(topic);
 
@@ -169,8 +164,8 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  public int getMatchingItemCount(HierarchyTopic topic, String matchedVirtualText) {
-    PresetSearch search = buildSearch(topic, matchedVirtualText);
+  public int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
+    PresetSearch search = buildSearch(topic, compoundUuidMap);
 
     // search items
     int itemCount = freeTextService.searchIds(search, 0, -1).getCount();
