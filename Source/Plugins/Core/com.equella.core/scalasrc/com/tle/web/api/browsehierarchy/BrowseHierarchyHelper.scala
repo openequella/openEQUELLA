@@ -18,6 +18,7 @@
 
 package com.tle.web.api.browsehierarchy
 
+import cats.implicits._
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
 import com.tle.common.interfaces.equella.BundleString
@@ -55,34 +56,45 @@ class BrowseHierarchyHelper {
       })
   }
 
+  /**
+    * Constructs a HierarchyTopic instance with the given topic and its parent's compound uuid map.
+    *
+    * @param topicWrapper The wrapper object encapsulating the topic entity to be converted.
+    * @param parentCompoundUuidMap A map contains the given topic's virtual ancestors (all virtual parents),
+    *                               which key is the topic uuid and value is the virtual topic name.
+    */
   def buildHierarchyTopic(
-      topicWrapper: VirtualisableAndValue[HierarchyTopicEntity]): HierarchyTopic = {
+      topicWrapper: VirtualisableAndValue[HierarchyTopicEntity],
+      parentCompoundUuidMap: Option[Map[String, String]] = None): HierarchyTopic = {
     val topic: HierarchyTopicEntity = topicWrapper.getVt
     val matchedVirtualText          = Option(topicWrapper.getVirtualisedValue)
-    buildHierarchyTopic(topic, matchedVirtualText)
+    buildHierarchyTopic(topic, matchedVirtualText, parentCompoundUuidMap)
   }
 
-  /**
-    * Build an instance of HierarchyTopic based on the supplied entity and virtual topic name.
-    */
-  def buildHierarchyTopic(topic: HierarchyTopicEntity,
-                          virtualTopicName: Option[String]): HierarchyTopic = {
+  private def buildHierarchyTopic(
+      topic: HierarchyTopicEntity,
+      virtualTopicName: Option[String],
+      parentCompoundUuidMap: Option[Map[String, String]]): HierarchyTopic = {
     val uuid            = topic.getUuid
     val collectionUuids = hierarchyService.getCollectionUuids(topic)
-    val compoundUuidMap = virtualTopicName.map(t => Map(uuid -> t))
+    val currentTopicMap = virtualTopicName.map(t => Map(uuid -> t))
+
+    // Merge current virtual topic info
+    val compoundUuidMap     = currentTopicMap |+| parentCompoundUuidMap
+    val compoundUuidJavaMap = compoundUuidMap.getOrElse(Map.empty).asJava
 
     // Normal sub topics and sub virtual topics.
     val subTopics = hierarchyService
       .expandVirtualisedTopics(hierarchyService.getSubTopics(topic),
-                               compoundUuidMap.orNull.asJava,
+                               compoundUuidJavaMap,
                                collectionUuids.orElse(null))
       .asScala
       .toList
-      .map(buildHierarchyTopic)
+      .map(t => buildHierarchyTopic(t, compoundUuidMap))
 
     HierarchyTopic(
       virtualTopicName.map(uuid + ":" + _).getOrElse(uuid),
-      hierarchyService.getMatchingItemCount(topic, virtualTopicName.orNull),
+      hierarchyService.getMatchingItemCount(topic, compoundUuidJavaMap),
       buildVirtualTopicText(topic.getName, virtualTopicName),
       buildVirtualTopicText(topic.getShortDescription, virtualTopicName),
       buildVirtualTopicText(topic.getLongDescription, virtualTopicName),
