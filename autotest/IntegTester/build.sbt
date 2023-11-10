@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
   "org.http4s"       %% "http4s-circe"        % Http4sVersion,
   "org.slf4j"        % "slf4j-simple"         % "2.0.9",
   "org.jsoup"        % "jsoup"                % jsoupVersion,
-  "com.nulab-inc"    %% "scala-oauth2-core"   % "1.5.0",
+  "com.nulab-inc"    %% "scala-oauth2-core"   % "1.6.0",
   "javax.servlet"    % "javax.servlet-api"    % "4.0.1",
   "com.google.guava" % "guava"                % "32.1.2-jre",
   jacksonDataBind,
