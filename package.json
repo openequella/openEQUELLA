@@ -24,13 +24,13 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.7.2",
-    "@commitlint/config-conventional": "17.7.0",
+    "@commitlint/cli": "17.8.1",
+    "@commitlint/config-conventional": "17.8.1",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "@babel/eslint-parser": "7.22.15",
     "cross-env": "7.0.3",
-    "eslint": "8.49.0",
+    "eslint": "8.53.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-flowtype": "8.0.3",

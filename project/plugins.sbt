@@ -2,7 +2,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-license-report" % "1.2.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.10.0")
 
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.1.3")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.1.4")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 
@@ -55,4 +55,4 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-nop"             % "2.0.9",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
-dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "10.12.3"
+dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "10.12.4"
