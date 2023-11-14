@@ -22,21 +22,31 @@ import * as O from 'fp-ts/Option';
 import * as S from 'fp-ts/string';
 import { pipe, flow } from 'fp-ts/function';
 
+/**
+ * Type definition for the API Response structure mostly used in oEQ Legacy code
+ */
 interface LegacyErrorResponse {
   code: number;
   error: string;
   error_description: string;
 }
 
+/**
+ * Represent a single error message returned from server
+ */
 interface ApiResponseMessage {
   message: string;
 }
 
+/**
+ * Type definition for the API Response structure used in REST endpoints implemented in Scala
+ */
 interface ApiErrorResponse {
+  /**
+   * List of error messages returned from server
+   */
   errors: ApiResponseMessage[];
 }
-
-export type ErrorResponse = LegacyErrorResponse | ApiErrorResponse;
 
 export class ApiError extends Error {
   constructor(
@@ -46,34 +56,35 @@ export class ApiError extends Error {
     super(message);
     this.status = status;
   }
-
-  errorResponse?: ErrorResponse;
 }
 
 const handleLegacyErrorResponse: (responseData: unknown) => O.Option<ApiError> =
   flow(
     O.fromPredicate(LegacyErrorResponseCodec.is),
     O.map(
-      ({ error_description, code }) => new ApiError(error_description, code)
+      ({ error_description, code }: LegacyErrorResponse) =>
+        new ApiError(error_description, code)
     )
   );
 
 const handleAxiosError = (error: AxiosError): ApiError => {
-  const responseData = error.response?.data;
-  const apiErrorMessage = ({ errors }: ApiErrorResponse): string =>
+  const { message, response } = error;
+  const { data, status } = response ?? { data: undefined, status: undefined };
+
+  const handleApiErrorResponse = ({ errors }: ApiErrorResponse): ApiError =>
     pipe(
       errors,
       A.map(({ message }) => message),
-      A.intercalate(S.Monoid)('\n')
+      A.intercalate(S.Monoid)('\n'),
+      (apiErrorMessages) => new ApiError(apiErrorMessages, status)
     );
 
   return pipe(
-    responseData,
+    data,
     O.fromPredicate(ApiErrorResponseCodec.is),
-    O.map(apiErrorMessage),
-    O.map((message) => new ApiError(message, error.response?.status)),
-    O.alt(() => handleLegacyErrorResponse(responseData)),
-    O.getOrElse(() => new ApiError(error.message, error.response?.status))
+    O.map(handleApiErrorResponse),
+    O.alt(() => handleLegacyErrorResponse(data)),
+    O.getOrElse(() => new ApiError(message, status))
   );
 };
 
