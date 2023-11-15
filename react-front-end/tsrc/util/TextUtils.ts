@@ -26,18 +26,21 @@ import * as t from "io-ts";
  * Based on work from com.tle.web.sections.render.TextUtils
  */
 
+// Removes all non-word characters from a string, except for asterisks and spaces between words.
 const removeNonWordCharacters = (highlight: string): string =>
-  highlight
-    .replace(/\\/g, "")
-    .replace(/\./g, "")
-    .replace(/\(/g, "")
-    .replace(/\)/g, "")
-    .replace(/\[/g, "")
-    .replace(/]/g, "")
-    .replace(/\+/g, "")
-    .replace(/\?/g, ".?")
-    .replace(/\*/g, "\\w*")
-    .replace(/\|/g, "");
+  highlight.replace(/[^\w\s*]/g, "").trim();
+
+/**
+ * Replaces asterisks in the input string with "\w*" if any non-asterisk and non-empty characters are present.
+ *
+ * Examples:
+ * replaceAsterisks("*hello*") returns "\w*hello\w*"
+ * replaceAsterisks("*") returns empty string
+ * replaceAsterisks(" *") returns empty string
+ * replaceAsterisks("example*text") returns "example\w*text"
+ */
+const replaceAsterisks = (highlight: string): string =>
+  /[^\s*]/.test(highlight) ? highlight.replace(/\*/g, "\\w*") : S.empty;
 
 /**
  * Takes a list of words/phrase and returns a regex text which will match these words/phrases.
@@ -51,7 +54,8 @@ const highlightsAsRegex = (highlights: string[]) =>
   highlights
     .map((h) => h.trim())
     .filter((h) => h.length > 0)
-    .map((h) => removeNonWordCharacters(h).trim())
+    .map(removeNonWordCharacters)
+    .map(replaceAsterisks)
     .filter((h) => h.length > 0)
     .join("|");
 
