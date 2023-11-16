@@ -46,7 +46,13 @@ class UpdateApacheDaemon extends AbstractUpgrader {
   val MANAGER_SERVER_LINUX   = "manager"
   val MANAGER_SERVER_WINDOWS = "manager.bat"
 
-  override def getId: String = s"UpdateApacheDaemon-${UpgradeMain.getCommit}"
+  // The ID of this upgrade was initially done by using `UpgradeMain.getCommit`, which results in
+  // different IDs in each release. This will break the upgrade process because this upgrade is
+  // mandatory so its ID MUST be consistent across all the releases; otherwise, an exception about
+  // missing this upgrade will be thrown during the upgrade.
+  // Considering this upgrade was implemented in 2023.1, it makes sense to use the short commit hash
+  // tagged by '2023.1' as the ID.
+  override def getId: String = s"UpdateApacheDaemon-g448a8ab"
 
   override def isBackwardsCompatible: Boolean = false
 
