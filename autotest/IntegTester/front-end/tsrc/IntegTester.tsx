@@ -148,18 +148,8 @@ const defaultConfiguration: IntegTesterProps = {
   powerXml: "",
 };
 
-interface ReturnProps
-  extends Omit<
-    IntegTesterProps,
-    "username" | "sharedSecretId" | "sharedSecret"
-  > {
-  token?: string;
-  returnurl?: string;
-  returnprefix?: string;
-  links?: string;
-}
 // variable dynamically created by IntegTester.
-declare const postValues: ReturnProps;
+declare const postValues: Record<string, string>;
 
 const buildTextBoxControl = (
   label: string,
