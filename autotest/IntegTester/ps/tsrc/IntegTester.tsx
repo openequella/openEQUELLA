@@ -33,22 +33,18 @@ import {
 } from "@mui/material";
 import { md5 } from "js-md5";
 
-type Action =
-  | "contribute"
-  | "searchResources"
-  | "selectOrAdd"
-  | "searchThin"
-  | "structured";
-const actions: Action[] = [
+const actions = [
   "contribute",
   "searchResources",
   "selectOrAdd",
   "searchThin",
   "structured",
-];
+] as const;
 
-type Method = "lms" | "vista";
-const methods: Method[] = ["lms", "vista"];
+type Action = (typeof actions)[number];
+
+const methods = ["lms", "vista"] as const;
+type Method = (typeof methods)[number];
 
 interface IntegTesterProps {
   method: Method;
