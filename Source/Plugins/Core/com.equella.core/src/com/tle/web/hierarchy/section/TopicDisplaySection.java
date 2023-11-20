@@ -22,6 +22,7 @@ import static com.tle.common.hierarchy.VirtualTopicUtils.buildTopicId;
 import static com.tle.web.hierarchy.TopicUtils.labelForValue;
 
 import com.dytech.common.GeneralConstants;
+import com.google.api.client.util.Lists;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.Maps;
@@ -90,6 +91,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -313,6 +315,11 @@ public class TopicDisplaySection
       return topic;
     }
 
+    public List<Item> getKeyResources() {
+      ensureParsed();
+      return Lists.newArrayList(topic.getKeyResources());
+    }
+
     public String getTopicValue() {
       ensureParsed();
       return topicValue;
@@ -476,11 +483,9 @@ public class TopicDisplaySection
         (List<Item>)
             aclManager.filterNonGrantedObjects(
                 Collections.singleton(selectionService.getSearchPrivilege(info)),
-                getModel(info).getTopic().getKeyResources());
+                getModel(info).getKeyResources());
 
-    if (getDynamicKeyResourceItems(info) != null) {
-      keyResources.addAll(getDynamicKeyResourceItems(info));
-    }
+    Optional.ofNullable(getDynamicKeyResourceItems(info)).ifPresent(keyResources::addAll);
 
     int offset = searchEvent.getOffset() - keyResources.size();
     if (offset < 0) {
