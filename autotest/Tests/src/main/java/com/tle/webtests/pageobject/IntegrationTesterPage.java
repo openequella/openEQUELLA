@@ -23,9 +23,6 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   @FindBy(name = "action")
   private WebElement actionDropdown;
 
-  @FindBy(name = "makeReturn")
-  private WebElement makeReturn;
-
   @FindBy(name = "url")
   private WebElement signonUrlField;
 
@@ -88,9 +85,6 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     driver.findElement(By.id("select-action")).click();
     driver.findElement(By.xpath("//li[@role='option' and text() = '" + action + "']")).click();
 
-    if (!makeReturn.isSelected()) {
-      makeReturn.click();
-    }
     executeButton.click();
     get();
     return driver.findElement(By.xpath("//a")).getAttribute("href");

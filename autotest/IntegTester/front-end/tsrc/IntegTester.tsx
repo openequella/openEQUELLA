@@ -114,7 +114,6 @@ interface IntegTesterProps {
    * Whether to include attachment UUID in the URL for viewing an attachment.
    */
   attachmentUuidUrls: boolean;
-  makeReturn: boolean;
   /**
    * Initial XML of an item.
    */
@@ -123,7 +122,6 @@ interface IntegTesterProps {
    * Initial XML of an Advanced search.
    */
   powerXml: string;
-  clickUrl?: string;
 }
 
 const defaultConfiguration: IntegTesterProps = {
@@ -143,7 +141,6 @@ const defaultConfiguration: IntegTesterProps = {
   forcePost: false,
   cancelDisabled: false,
   attachmentUuidUrls: false,
-  makeReturn: false,
   itemXml: "",
   powerXml: "",
 };
@@ -334,13 +331,6 @@ const IntegTester = (props: IntegTesterProps) => {
       setConfiguration({ ...configuration, attachmentUuidUrls: value }),
   );
 
-  const MakeReturn = buildCheckboxControl(
-    "Generate Return URL",
-    "makeReturn",
-    (value: boolean) =>
-      setConfiguration({ ...configuration, makeReturn: value }),
-  );
-
   const ItemXml = buildTextareaControl(
     "Initial item XML",
     "itemXml",
@@ -429,7 +419,6 @@ const IntegTester = (props: IntegTesterProps) => {
       {ForcePost}
       {CancelDisabled}
       {AttachmentUuidUrls}
-      {MakeReturn}
       {ItemXml}
       {PowerXml}
       <Grid item xs={12}>
