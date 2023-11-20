@@ -17,7 +17,7 @@
  */
 import { useState } from "react";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import {
   TextField,
   Checkbox,
@@ -419,7 +419,8 @@ const IntegTester = (props: IntegTesterProps) => {
   );
 };
 
-ReactDOM.render(
-  <IntegTester {...defaultConfiguration} />,
-  document.getElementById("app"),
+ReactDOM.createRoot(document.getElementById("app") as HTMLElement).render(
+  <React.StrictMode>
+    <IntegTester {...defaultConfiguration} />
+  </React.StrictMode>,
 );
