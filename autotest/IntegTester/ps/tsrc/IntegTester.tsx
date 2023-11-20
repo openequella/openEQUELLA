@@ -46,25 +46,82 @@ type Action = (typeof actions)[number];
 const methods = ["lms", "vista"] as const;
 type Method = (typeof methods)[number];
 
+/**
+ * Type definition for a variety of configurations used in the oEQ integration.
+ */
 interface IntegTesterProps {
+  /**
+   * Method to determine what service to be used to set up the integration.
+   */
   method: Method;
+  /**
+   * What action to be performed in the integration.
+   */
   action: Action;
+  /**
+   * URL of oEQ server
+   */
   url: string;
+  /**
+   * Additional options to be applied in the integration.
+   */
   options: string;
+  /**
+   * Username to be used as part of the token generation on oEQ server.
+   */
   username: string;
+  /**
+   * Shared secret configured on oEQ server.
+   */
   sharedSecret: string;
+  /**
+   * Identifier of the shared secret.
+   */
   sharedSecretId: string;
+  /**
+   * Identifier of the course that deals with the integration.
+   */
   courseId: string;
+  /**
+   * Whether to select item only.
+   */
   itemOnly: boolean;
+  /**
+   * Whether to select package only.
+   */
   packageOnly: boolean;
+  /**
+   * Whether to select attachment only.
+   */
   attachmentOnly: boolean;
+  /**
+   * Whether to allow multiple selections.
+   */
   selectMultiple: boolean;
+  /**
+   * Whether to use the Download privilege.
+   */
   useDownloadPrivilege: boolean;
+  /**
+   * Whether to force the return to be a POST request.
+   */
   forcePost: boolean;
+  /**
+   * Whether to allow cancelling a selection.
+   */
   cancelDisabled: boolean;
+  /**
+   * Whether to include attachment UUID in the URL for viewing an attachment.
+   */
   attachmentUuidUrls: boolean;
   makeReturn: boolean;
+  /**
+   * Initial XML of an item.
+   */
   itemXml: string;
+  /**
+   * Initial XML of an Advanced search.
+   */
   powerXml: string;
   clickUrl?: string;
 }
@@ -359,6 +416,9 @@ const IntegTester = (props: IntegTesterProps) => {
     );
   };
 
+  // Convert the instance of ReturnProps dynamically created in `IntegTester.scala`
+  // to an array of key-value pairs. And later on we use this array to control whether
+  // to display the values returned from oEQ server.
   const returnedValues = Object.entries(postValues);
 
   return (
