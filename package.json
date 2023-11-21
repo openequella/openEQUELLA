@@ -14,7 +14,7 @@
     "check:scss": "prettier --check ${npm_package_config_stylesheet_glob}",
     "check:ts": "eslint ${npm_package_config_typescript_glob}",
     "check:ts-types-source": "tsc --noEmit --project react-front-end/tsconfig.json",
-    "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/ps/tsconfig.json\"",
+    "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/front-end/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*",
     "prepare": "husky install"
