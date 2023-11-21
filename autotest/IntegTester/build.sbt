@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
 )
 
 (Compile / resourceGenerators) += Def.task {
-  val baseJs = baseDirectory.value / "ps"
+  val baseJs = baseDirectory.value / "front-end"
   val cached = FileFunction.cached(target.value / "pscache") { files =>
     Common.nodeInstall(baseJs)
     Common.nodeScript("build", baseJs)
