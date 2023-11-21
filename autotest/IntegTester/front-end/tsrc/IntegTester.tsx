@@ -31,7 +31,7 @@ import {
   CardHeader,
   CardContent,
 } from "@mui/material";
-import { md5 } from "js-md5";
+import md5 from "md5";
 
 const actions = [
   "contribute",
@@ -345,16 +345,13 @@ const IntegTester = (props: IntegTesterProps) => {
 
   const buildForm = () => {
     const now = Date.now();
-    console.log(`Username ${configuration.username}`);
-    console.log(`secret ${configuration.sharedSecret}`);
-    console.log(`secret ID ${configuration.sharedSecretId}`);
-    console.log(
-      `token ${configuration.username}${configuration.sharedSecretId}${now}${configuration.sharedSecret}`,
-    );
-    const encoded = md5.base64(
+    const hash = md5(
       `${configuration.username}${configuration.sharedSecretId}${now}${configuration.sharedSecret}`,
+      { asString: true },
     );
-    const token = `${configuration.username}:${configuration.sharedSecretId}:${now}:${encoded}`;
+    const token = `${configuration.username}:${
+      configuration.sharedSecretId
+    }:${now}:${btoa(hash)}`;
     const returnUrl = `${window.location.host}${window.location.pathname}?method=showReturn`;
     const urlParams = new URLSearchParams();
 
