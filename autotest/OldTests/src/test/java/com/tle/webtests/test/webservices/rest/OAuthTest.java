@@ -35,6 +35,7 @@ public class OAuthTest extends AbstractRestApiTest {
   private static final String CLIENT_ID_SERVER_FLOW = "testOAuthServerSideFlowClient";
   private static final String CLIENT_ID = "testOAuthTokenLoginClient";
   private static final String CLIENT_ID_VALIDITY = "testOAuthTokenValidityClient";
+  private String clientSecretValidity;
   private static final String REDIRECT_URI = "default";
   private static final String TOKEN_REVOCATION = "oauth/revoke";
 
@@ -259,7 +260,7 @@ public class OAuthTest extends AbstractRestApiTest {
     OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
 
     OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID_VALIDITY);
-    String secret = editorPage.getSecret();
+    clientSecretValidity = editorPage.getSecret();
     editorPage.setValidity(validity);
 
     editorPage.save();
@@ -269,7 +270,7 @@ public class OAuthTest extends AbstractRestApiTest {
             + "oauth/access_token?grant_type=client_credentials&client_id="
             + CLIENT_ID_VALIDITY
             + "&redirect_uri=default&client_secret="
-            + secret;
+            + clientSecretValidity;
     final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
     final JsonNode tokenNode = readJson(mapper, response);
 
@@ -278,12 +279,10 @@ public class OAuthTest extends AbstractRestApiTest {
     Assert.assertEquals(days, validity);
   }
 
-  @Test(description = "Revoke valid tokens")
+  @Test(
+      description = "Revoke valid tokens",
+      dependsOnMethods = {"testOAuthTokenValidity"})
   public void testOAuthTokenRevocation() throws IOException {
-    String[] credentials = getClientCredentials();
-    String clientId = credentials[0];
-    String clientSecret = credentials[1];
-
     String token = requestToken(CLIENT_ID_VALIDITY);
     String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
 
@@ -292,7 +291,7 @@ public class OAuthTest extends AbstractRestApiTest {
     assertEquals(200, response.getStatusLine().getStatusCode());
 
     // Now revoke the token.
-    response = revokeOauthToken(token, clientId, clientSecret);
+    response = revokeOauthToken(token, CLIENT_ID_VALIDITY, clientSecretValidity);
     assertResponse(response, 200, "Token revocation should return 200");
 
     // The token should not work now.
@@ -300,13 +299,9 @@ public class OAuthTest extends AbstractRestApiTest {
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
-  @Test(description = "Revoke invalid tokens")
+  @Test(description = "Revoke invalid tokens", dependsOnMethods = "testOAuthTokenValidity")
   public void testOAuthInvalidTokenRevocation() throws IOException {
-    String[] credentials = getClientCredentials();
-    String clientId = credentials[0];
-    String clientSecret = credentials[1];
-
-    HttpResponse response = revokeOauthToken("bad token", clientId, clientSecret);
+    HttpResponse response = revokeOauthToken("bad token", CLIENT_ID_VALIDITY, clientSecretValidity);
     assertResponse(response, 200, "Revoking invalid token should return 200");
   }
 
