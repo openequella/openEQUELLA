@@ -14,6 +14,7 @@ import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,7 @@ public class OAuthTest extends AbstractRestApiTest {
   private static final String CLIENT_ID_SERVER_FLOW = "testOAuthServerSideFlowClient";
   private static final String CLIENT_ID = "testOAuthTokenLoginClient";
   private static final String CLIENT_ID_VALIDITY = "testOAuthTokenValidityClient";
+  private String clientSecretValidity;
   private static final String REDIRECT_URI = "default";
   private static final String TOKEN_REVOCATION = "oauth/revoke";
 
@@ -258,7 +260,7 @@ public class OAuthTest extends AbstractRestApiTest {
     OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
 
     OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID_VALIDITY);
-    String secret = editorPage.getSecret();
+    clientSecretValidity = editorPage.getSecret();
     editorPage.setValidity(validity);
 
     editorPage.save();
@@ -268,7 +270,7 @@ public class OAuthTest extends AbstractRestApiTest {
             + "oauth/access_token?grant_type=client_credentials&client_id="
             + CLIENT_ID_VALIDITY
             + "&redirect_uri=default&client_secret="
-            + secret;
+            + clientSecretValidity;
     final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
     final JsonNode tokenNode = readJson(mapper, response);
 
@@ -277,7 +279,9 @@ public class OAuthTest extends AbstractRestApiTest {
     Assert.assertEquals(days, validity);
   }
 
-  @Test(description = "Revoke valid tokens")
+  @Test(
+      description = "Revoke valid tokens",
+      dependsOnMethods = {"testOAuthTokenValidity"})
   public void testOAuthTokenRevocation() throws IOException {
     String token = requestToken(CLIENT_ID_VALIDITY);
     String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
@@ -287,7 +291,7 @@ public class OAuthTest extends AbstractRestApiTest {
     assertEquals(200, response.getStatusLine().getStatusCode());
 
     // Now revoke the token.
-    response = revokeOauthToken(token);
+    response = revokeOauthToken(token, CLIENT_ID_VALIDITY, clientSecretValidity);
     assertResponse(response, 200, "Token revocation should return 200");
 
     // The token should not work now.
@@ -295,10 +299,16 @@ public class OAuthTest extends AbstractRestApiTest {
     assertEquals(403, response.getStatusLine().getStatusCode());
   }
 
-  @Test(description = "Revoke invalid tokens")
+  @Test(description = "Revoke invalid tokens", dependsOnMethods = "testOAuthTokenValidity")
   public void testOAuthInvalidTokenRevocation() throws IOException {
-    HttpResponse response = revokeOauthToken("bad token");
+    HttpResponse response = revokeOauthToken("bad token", CLIENT_ID_VALIDITY, clientSecretValidity);
     assertResponse(response, 200, "Revoking invalid token should return 200");
+  }
+
+  @Test(description = "Revoke token with bad credentials")
+  public void testOAuthTokenRevocationBadCred() throws IOException {
+    HttpResponse response = revokeOauthToken("token", "bad client ID", "bad client secret");
+    assertResponse(response, 401, "Revoking token without correct credentials should return 401");
   }
 
   private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws IOException {
@@ -311,12 +321,26 @@ public class OAuthTest extends AbstractRestApiTest {
     return rawTokenExecute(new HttpGet(requestUrl), "access_token=" + token);
   }
 
-  private HttpResponse revokeOauthToken(String token) throws IOException {
+  private HttpResponse revokeOauthToken(String token, String clientId, String clientSecret)
+      throws IOException {
     HttpPost post = new HttpPost(context.getBaseUrl() + TOKEN_REVOCATION);
+    post.addHeader(
+        "Authorization",
+        "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()));
     UrlEncodedFormEntity payload =
         new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("token", token)));
     post.setEntity(payload);
 
     return execute(post, false);
+  }
+
+  private String[] getClientCredentials() {
+    logon();
+    OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
+    OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID_VALIDITY);
+    String clientId = editorPage.getClientId();
+    String clientSecret = editorPage.getSecret();
+
+    return new String[] {clientId, clientSecret};
   }
 }
