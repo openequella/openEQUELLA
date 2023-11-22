@@ -12,6 +12,7 @@ import com.tle.webtests.pageobject.oauth.OAuthLogonPage;
 import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
+import com.unboundid.util.Base64;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -279,6 +280,10 @@ public class OAuthTest extends AbstractRestApiTest {
 
   @Test(description = "Revoke valid tokens")
   public void testOAuthTokenRevocation() throws IOException {
+    String[] credentials = getClientCredentials();
+    String clientId = credentials[0];
+    String clientSecret = credentials[1];
+
     String token = requestToken(CLIENT_ID_VALIDITY);
     String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
 
@@ -287,7 +292,7 @@ public class OAuthTest extends AbstractRestApiTest {
     assertEquals(200, response.getStatusLine().getStatusCode());
 
     // Now revoke the token.
-    response = revokeOauthToken(token);
+    response = revokeOauthToken(token, clientId, clientSecret);
     assertResponse(response, 200, "Token revocation should return 200");
 
     // The token should not work now.
@@ -297,8 +302,18 @@ public class OAuthTest extends AbstractRestApiTest {
 
   @Test(description = "Revoke invalid tokens")
   public void testOAuthInvalidTokenRevocation() throws IOException {
-    HttpResponse response = revokeOauthToken("bad token");
+    String[] credentials = getClientCredentials();
+    String clientId = credentials[0];
+    String clientSecret = credentials[1];
+
+    HttpResponse response = revokeOauthToken("bad token", clientId, clientSecret);
     assertResponse(response, 200, "Revoking invalid token should return 200");
+  }
+
+  @Test(description = "Revoke token with bad credentials")
+  public void testOAuthTokenRevocationBadCred() throws IOException {
+    HttpResponse response = revokeOauthToken("token", "bad client ID", "bad client secret");
+    assertResponse(response, 401, "Revoking token without correct credentials should return 401");
   }
 
   private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws IOException {
@@ -311,12 +326,25 @@ public class OAuthTest extends AbstractRestApiTest {
     return rawTokenExecute(new HttpGet(requestUrl), "access_token=" + token);
   }
 
-  private HttpResponse revokeOauthToken(String token) throws IOException {
+  private HttpResponse revokeOauthToken(String token, String clientId, String clientSecret)
+      throws IOException {
     HttpPost post = new HttpPost(context.getBaseUrl() + TOKEN_REVOCATION);
+    post.addHeader(
+        "Authorization", "Basic " + Base64.encode((clientId + ":" + clientSecret).getBytes()));
     UrlEncodedFormEntity payload =
         new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("token", token)));
     post.setEntity(payload);
 
     return execute(post, false);
+  }
+
+  private String[] getClientCredentials() {
+    logon();
+    OAuthSettingsPage oAuthSettingsPage = new OAuthSettingsPage(context).load();
+    OAuthClientEditorPage editorPage = oAuthSettingsPage.editClient(CLIENT_ID_VALIDITY);
+    String clientId = editorPage.getClientId();
+    String clientSecret = editorPage.getSecret();
+
+    return new String[] {clientId, clientSecret};
   }
 }

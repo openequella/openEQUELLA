@@ -53,6 +53,8 @@ public final class OAuthWebConstants {
   public static final String OAUTH_TOKEN_URL = "oauth/access_token";
 
   public static final String HEADER_AUTHORIZATION = "Authorization";
+
+  public static final String BASIC_AUTHORIZATION_PREFIX = "basic ";
   public static final String HEADER_X_AUTHORIZATION = "X-Authorization";
   public static final String AUTHORIZATION_ACCESS_TOKEN = "access_token";
   public static final String AUTHORIZATION_BEARER = "Bearer";
