@@ -173,11 +173,12 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   private boolean validateCredentials(String auth) {
     if (auth.toLowerCase().startsWith(OAuthWebConstants.BASIC_AUTHORIZATION_PREFIX)) {
       // Remove the prefix `Basic `.
-      byte[] decoded = Base64.getDecoder().decode(auth.substring(6));
-      String[] credentials = new String(decoded).split(":");
-      if (credentials.length >= 2) {
-        String clientId = credentials[0];
-        String clientSecret = credentials[1];
+      String decoded = new String(Base64.getDecoder().decode(auth.substring(6)));
+      // Use index of the last colon because a Client ID may have colons.
+      int delimiterIndex = decoded.lastIndexOf(":");
+      if (delimiterIndex > 0) {
+        String clientId = decoded.substring(0, delimiterIndex);
+        String clientSecret = decoded.substring(delimiterIndex + 1);
 
         IOAuthClient client = oauthWebService.getByClientIdOnly(clientId);
 
