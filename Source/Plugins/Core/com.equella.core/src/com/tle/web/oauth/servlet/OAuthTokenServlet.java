@@ -19,7 +19,6 @@
 package com.tle.web.oauth.servlet;
 
 import com.dytech.edge.exceptions.WebException;
-import com.rometools.rome.io.impl.Base64;
 import com.tle.common.Check;
 import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
@@ -34,6 +33,7 @@ import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.oauth.service.OAuthWebService.AuthorisationDetails;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -173,8 +173,8 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   private boolean validateCredentials(String auth) {
     if (auth.toLowerCase().startsWith(OAuthWebConstants.BASIC_AUTHORIZATION_PREFIX)) {
       // Remove the prefix `Basic `.
-      String decoded = Base64.decode(auth.substring(6));
-      String[] credentials = decoded.split(":");
+      byte[] decoded = Base64.getDecoder().decode(auth.substring(6));
+      String[] credentials = new String(decoded).split(":");
       if (credentials.length >= 2) {
         String clientId = credentials[0];
         String clientSecret = credentials[1];

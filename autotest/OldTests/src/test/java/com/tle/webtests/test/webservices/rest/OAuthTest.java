@@ -12,9 +12,9 @@ import com.tle.webtests.pageobject.oauth.OAuthLogonPage;
 import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.oauth.OAuthTokenRedirect;
 import com.tle.webtests.test.users.TokenSecurity;
-import com.unboundid.util.Base64;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -330,7 +330,8 @@ public class OAuthTest extends AbstractRestApiTest {
       throws IOException {
     HttpPost post = new HttpPost(context.getBaseUrl() + TOKEN_REVOCATION);
     post.addHeader(
-        "Authorization", "Basic " + Base64.encode((clientId + ":" + clientSecret).getBytes()));
+        "Authorization",
+        "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()));
     UrlEncodedFormEntity payload =
         new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("token", token)));
     post.setEntity(payload);
