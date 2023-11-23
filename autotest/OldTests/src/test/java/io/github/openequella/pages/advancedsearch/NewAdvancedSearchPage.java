@@ -147,9 +147,14 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     input.sendKeys(Keys.ENTER);
 
     // Select the target result.
-    dialog.findElement(By.xpath(".//p[text()='Auto Test']")).click();
+    WebElement targetUser = dialog.findElement(By.xpath(".//p[text()='Auto Test']"));
+    waiter.until(ExpectedConditions.elementToBeClickable(targetUser));
+    targetUser.click();
+
     // Confirm the selection.
-    dialog.findElement(By.xpath(".//button[text()='Select']")).click();
+    WebElement confirmButton = dialog.findElement(By.xpath(".//button[text()='Select']"));
+    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
+    confirmButton.click();
   }
 
   private WebElement getAdvancedSearchInput() {
