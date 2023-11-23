@@ -4681,10 +4681,6 @@
     <parameter id="class" value="bean:loginService" />
     <parameter id="order" value="1000" />
   </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="jsonServlet">
-    <parameter id="url-pattern" value="*.json.service" />
-    <parameter id="bean" value="bean:com.tle.web.remoting.impl.JSONExporterHandler" />
-  </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="indexConverter">
     <parameter id="id" value="SYNCHRONIZEITEMS" />
     <parameter id="class" value="bean:com.tle.core.freetext.convert.SynchronizeIndexConverter" />

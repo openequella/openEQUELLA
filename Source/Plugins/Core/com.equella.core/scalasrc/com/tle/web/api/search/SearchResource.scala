@@ -30,6 +30,7 @@ import com.tle.core.item.serializer.ItemSerializerItemBean
 import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
 import com.tle.web.api.search.SearchHelper._
@@ -109,10 +110,7 @@ class SearchResource {
     } match {
       case Success(searchResult) => Response.ok.entity(searchResult).build()
       case Failure(e: InvalidSearchQueryException) =>
-        Response
-          .status(Status.BAD_REQUEST)
-          .entity("Invalid search query - please remove any special characters.")
-          .build()
+        ApiErrorResponse.badRequest("Invalid search query - please remove any special characters.")
       case Failure(e) => throw e
     }
   }

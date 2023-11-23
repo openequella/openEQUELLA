@@ -334,7 +334,7 @@ There are also a couple of other places which utilise JS, TS and even Purescript
 being:
 
 - The support for Swagger UI at `Source/Plugins/Core/com.equella.core/swaggerui`
-- The IntegTester used for the integration tests and found at `/autotest/IntegTester/ps`
+- The IntegTester used for the integration tests and found at `/autotest/IntegTester/front-end`
 
 ## IDE
 

@@ -29,13 +29,13 @@ libraryDependencies ++= Seq(
   "org.jsoup"        % "jsoup"                % jsoupVersion,
   "com.nulab-inc"    %% "scala-oauth2-core"   % "1.5.0",
   "javax.servlet"    % "javax.servlet-api"    % "4.0.1",
-  "com.google.guava" % "guava"                % "32.1.2-jre",
+  "com.google.guava" % "guava"                % "32.1.3-jre",
   jacksonDataBind,
   jacksonModuleScala
 )
 
 (Compile / resourceGenerators) += Def.task {
-  val baseJs = baseDirectory.value / "ps"
+  val baseJs = baseDirectory.value / "front-end"
   val cached = FileFunction.cached(target.value / "pscache") { files =>
     Common.nodeInstall(baseJs)
     Common.nodeScript("build", baseJs)
