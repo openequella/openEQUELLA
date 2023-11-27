@@ -75,7 +75,7 @@ jobs:
           npm ci
 
       - name: Install node dependencies (IntegTester)
-        working-directory: autotest/IntegTester/ps
+        working-directory: autotest/IntegTester/front-end
         run: |
           npm ci
 

@@ -15,35 +15,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosError } from 'axios';
-import { ErrorResponseCodec } from './gen/Errors';
-import { validate } from './Utils';
+import { AxiosError, isAxiosError } from 'axios';
+import { ApiErrorResponseCodec, LegacyErrorResponseCodec } from './gen/Errors';
+import * as A from 'fp-ts/Array';
+import * as O from 'fp-ts/Option';
+import * as S from 'fp-ts/string';
+import { pipe, flow } from 'fp-ts/function';
 
-export interface ErrorResponse {
+/**
+ * Type definition for the API Response structure mostly used in oEQ Legacy code
+ */
+interface LegacyErrorResponse {
   code: number;
   error: string;
   error_description: string;
 }
 
+/**
+ * Represent a single error message returned from server
+ */
+interface ApiResponseMessage {
+  message: string;
+}
+
+/**
+ * Type definition for the API Response structure used in REST endpoints implemented in Scala
+ */
+interface ApiErrorResponse {
+  /**
+   * List of error messages returned from server
+   */
+  errors: ApiResponseMessage[];
+}
+
 export class ApiError extends Error {
-  constructor(message: string, public status?: number) {
+  constructor(
+    message: string,
+    public status?: number
+  ) {
     super(message);
     this.status = status;
   }
-
-  errorResponse?: ErrorResponse;
 }
 
-export const repackageError = (error: AxiosError | Error): Error => {
-  if ('isAxiosError' in error) {
-    const validator = validate(ErrorResponseCodec);
-    const apiError = new ApiError(error.message, error.response?.status);
-    if (validator(error.response?.data)) {
-      apiError.errorResponse = error.response?.data;
-    }
+const handleLegacyErrorResponse: (responseData: unknown) => O.Option<ApiError> =
+  flow(
+    O.fromPredicate(LegacyErrorResponseCodec.is),
+    O.map(
+      ({ error_description, code }: LegacyErrorResponse) =>
+        new ApiError(error_description, code)
+    )
+  );
 
-    return apiError;
-  } else {
-    return error;
-  }
+const handleAxiosError = (error: AxiosError): ApiError => {
+  const { message, response } = error;
+  const { data, status } = response ?? { data: undefined, status: undefined };
+
+  const handleApiErrorResponse = ({ errors }: ApiErrorResponse): ApiError =>
+    pipe(
+      errors,
+      A.map(({ message }) => message),
+      A.intercalate(S.Monoid)('\n'),
+      (apiErrorMessages) => new ApiError(apiErrorMessages, status)
+    );
+
+  return pipe(
+    data,
+    O.fromPredicate(ApiErrorResponseCodec.is),
+    O.map(handleApiErrorResponse),
+    O.alt(() => handleLegacyErrorResponse(data)),
+    O.getOrElse(() => new ApiError(message, status))
+  );
 };
+
+export const repackageError = (error: AxiosError | Error): Error =>
+  pipe(
+    error,
+    O.fromPredicate(isAxiosError),
+    O.map(handleAxiosError),
+    O.getOrElse(() => error)
+  );

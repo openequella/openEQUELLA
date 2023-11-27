@@ -70,7 +70,7 @@ describe('Retrieval of a specific schema', () => {
     await expect(() =>
       OEQ.Schema.getSchema(TC.API_PATH, 'fake-uuid')
     ).rejects.toThrow(
-      new OEQ.Errors.ApiError('Request failed with status code 404', 404)
+      new OEQ.Errors.ApiError('Entity with UUID fake-uuid not found', 404)
     );
   });
 });

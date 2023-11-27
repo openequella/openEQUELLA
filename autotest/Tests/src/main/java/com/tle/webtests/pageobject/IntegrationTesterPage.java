@@ -4,7 +4,6 @@ import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.Select;
 
 public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   private final String secret;
@@ -24,9 +23,6 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   @FindBy(name = "action")
   private WebElement actionDropdown;
 
-  @FindBy(name = "makeReturn")
-  private WebElement makeReturn;
-
   @FindBy(name = "url")
   private WebElement signonUrlField;
 
@@ -39,7 +35,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   @FindBy(name = "selectMultiple")
   private WebElement selectMultipleCheck;
 
-  @FindBy(xpath = "//input[@type='submit']")
+  @FindBy(xpath = "//button[text()='Generate request URL']")
   private WebElement executeButton;
 
   @FindBy(name = "itemXml")
@@ -48,7 +44,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   @FindBy(name = "powerXml")
   private WebElement powerXml;
 
-  @FindBy(xpath = "//input[@value='POST to this URL']")
+  @FindBy(xpath = "//button[@type='submit']")
   private WebElement inputPostToUrl;
 
   public IntegrationTesterPage(PageContext context, String shareId, String secret) {
@@ -85,10 +81,10 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     if (selectMultipleCheck.isSelected() != selectMultiple) {
       selectMultipleCheck.click();
     }
-    new Select(actionDropdown).selectByValue(action);
-    if (!makeReturn.isSelected()) {
-      makeReturn.click();
-    }
+
+    driver.findElement(By.id("select-action")).click();
+    driver.findElement(By.xpath("//li[@role='option' and text() = '" + action + "']")).click();
+
     executeButton.click();
     get();
     return driver.findElement(By.xpath("//a")).getAttribute("href");

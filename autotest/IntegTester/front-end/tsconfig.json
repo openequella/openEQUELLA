@@ -18,7 +18,8 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "esModuleInterop": true,
   },
   "include": ["tsrc/**/*"],
   "exclude": [
