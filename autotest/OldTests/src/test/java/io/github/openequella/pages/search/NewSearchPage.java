@@ -3,6 +3,8 @@ package io.github.openequella.pages.search;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -265,6 +267,36 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
     WebElement snackbar =
         driver.findElement(By.xpath("//span[@id='client-snackbar' and text()='" + message + "']"));
     getWaiter().until(ExpectedConditions.visibilityOf(snackbar));
+  }
+
+  /**
+   * Get the names of a list of Items in the specified the ranage.
+   *
+   * @param start The start index of the range.
+   * @param end The end index of the range.
+   */
+  public String[] getItemNamesByRange(int start, int end) {
+    return IntStream.range(start, end).mapToObj(this::getItemNameByIndex).toArray(String[]::new);
+  }
+
+  public String[] getTopNItemNames(int n) {
+    return getItemNamesByRange(0, n);
+  }
+
+  /**
+   * Get the name of an Item by its index in the search result list.
+   *
+   * @param index The position in which the target Item sits in the search result list.
+   */
+  public String getItemNameByIndex(int index) {
+    List<WebElement> items =
+        driver.findElements(By.xpath("//li[@aria-label='Search result list item']"));
+    try {
+      WebElement item = items.get(index);
+      return item.findElement(By.tagName("a")).getText();
+    } catch (IndexOutOfBoundsException e) {
+      return "Unable to locate the target item";
+    }
   }
 
   /**
