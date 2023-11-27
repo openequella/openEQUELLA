@@ -300,6 +300,25 @@ public class NewSearchPage extends AbstractPage<NewSearchPage> {
   }
 
   /**
+   * Save a search to Favourite.
+   *
+   * @param name Name of the favourite search
+   */
+  public void addToFavouriteSearch(String name) {
+    WebElement favouriteButton =
+        driver.findElement(By.xpath("//button[@aria-label='Add search to favourites']"));
+    favouriteButton.click();
+
+    WebElement favouriteDialog = driver.findElement(By.xpath("//div[@role='dialog']"));
+    WebElement nameInput = favouriteDialog.findElement(By.tagName("input"));
+    nameInput.sendKeys(name);
+
+    WebElement confirmButton = favouriteDialog.findElement(By.id("confirm-dialog-confirm-button"));
+    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
+    confirmButton.click();
+  }
+
+  /**
    * Get one Refine Search control by ID.
    *
    * @param id The ID of a Refine Search control, excluding its prefix.
