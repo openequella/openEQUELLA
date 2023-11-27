@@ -6,12 +6,14 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
+import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.FavouritesPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import com.tle.webtests.test.searching.PowerSearchTest;
 import io.github.openequella.pages.advancedsearch.NewAdvancedSearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -27,6 +29,13 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   }
 
   private static final String EDITBOX_VALUE = "An Edit box";
+
+  // Must turn on New Search UI for the favourite integration test case.
+  @BeforeClass
+  public void enableNewSearchUI() {
+    SettingsPage settingsPage = new SettingsPage(context).load();
+    settingsPage.setNewSearchUI(true);
+  }
 
   @BeforeMethod
   public void loadAdvancedSearchPage() {
