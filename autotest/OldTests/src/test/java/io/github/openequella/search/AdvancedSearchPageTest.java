@@ -67,6 +67,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "Search by using the Calendar control", dataProvider = "calendarTestData")
+  @NewUIOnly
   public void calender(String[] dataRange, int expectItemCount, String[] expectedItemNames) {
     advancedSearchPage.selectDateRange(dataRange);
     advancedSearchPage.search();
@@ -120,7 +121,8 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
     assertEquals(actualItemNames, expectedItemNames);
   }
 
-  @Test
+  @Test(description = "Interact with a raw HTML control")
+  @NewUIOnly
   public void rawHtml() {
     WebElement rawHtml = getContext().getDriver().findElement(By.id("wiz-7-html"));
     assertEquals(rawHtml.getText(), "test");
@@ -171,6 +173,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   //  }
 
   @Test(description = "Search by using the User selector control")
+  @NewUIOnly
   public void userSelector() {
     advancedSearchPage.selectUser("AutoTest");
     advancedSearchPage.search();
@@ -179,6 +182,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "Search by using different controls together")
+  @NewUIOnly
   public void multipleControls() {
     advancedSearchPage.updateEditBox("An Edit box");
     advancedSearchPage.selectCheckbox("1");
@@ -191,6 +195,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   }
 
   @Test(description = "visibility of controls controlled by scripting")
+  @NewUIOnly
   public void script() {
     advancedSearchPage.clearSelection();
     advancedSearchPage.selectAdvancedSearch("script test");
