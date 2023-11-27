@@ -34,7 +34,7 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
     final List<BaseEntitySummary> searches = getAdvancedSearches();
     assertEquals(
         "The number of returned advanced searches should match the institution total.",
-        3,
+        4,
         searches.size());
   }
 
