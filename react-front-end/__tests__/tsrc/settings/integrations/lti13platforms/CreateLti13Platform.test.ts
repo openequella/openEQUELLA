@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
-import { RenderResult } from "@testing-library/react";
+import type { RenderResult } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as SET from "fp-ts/Set";
