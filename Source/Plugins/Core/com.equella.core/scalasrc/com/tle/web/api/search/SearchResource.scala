@@ -22,12 +22,9 @@ import com.dytech.edge.exceptions.InvalidSearchQueryException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
-import com.tle.beans.item.ItemIdKey
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.search.DefaultSearch
 import com.tle.common.security.SecurityConstants
-import com.tle.core.item.serializer.ItemSerializerItemBean
-import com.tle.core.services.item.FreetextResult
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse
@@ -179,25 +176,5 @@ class SearchResource {
         throw new NotFoundException(
           s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}")
     }
-  }
-}
-
-/**
-  * This class provides general information of an Item to be used inside a SearchResult.
-  * @param idKey An ItemIdKey
-  * @param bean An EquellaItemBean
-  * @param keywordFound Indicates if a search term has been found inside attachment content
-  */
-case class SearchItem(idKey: ItemIdKey, bean: EquellaItemBean, keywordFound: Boolean)
-object SearchItem {
-  def apply(item: FreetextResult, serializer: ItemSerializerItemBean): SearchItem = {
-    val keywordFoundInAttachment = item.isKeywordFoundInAttachment
-    val itemId                   = item.getItemIdKey
-    val itemBean                 = new EquellaItemBean
-    itemBean.setUuid(itemId.getUuid)
-    itemBean.setVersion(itemId.getVersion)
-    serializer.writeItemBeanResult(itemBean, itemId.getKey)
-    LegacyGuice.itemLinkService.addLinks(itemBean)
-    SearchItem(itemId, itemBean, keywordFoundInAttachment)
   }
 }

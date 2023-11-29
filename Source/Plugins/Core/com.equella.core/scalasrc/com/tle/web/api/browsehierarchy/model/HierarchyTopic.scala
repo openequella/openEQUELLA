@@ -18,27 +18,46 @@
 
 package com.tle.web.api.browsehierarchy.model
 
+import com.tle.web.api.search.model.SearchResultItem
+
 /**
-  * Represents a topic in the hierarchy.
+  * Provides summary of a topic, including the number of matching Items and summaries of child topics.
   *
   * @param compoundUuid The unique identifier for the topic.
   *                      For virtual topics, the compoundUuid consist with uuid and match text,
   *                     for example: `0a8bde97-66f8-4114-8c7c-365545ce00da:textA`.
-  * @param matchingItemCount Count of items matching this topic (including key resources).
+  * @param matchingItemCount Count of items matching this topic (including key resources and dynamic key resources).
   * @param name Name of the topic.
   * @param shortDescription A brief description of the topic.
   * @param longDescription A detailed description of the topic.
   * @param showResults Flag to determine if results should be shown.
-  * @param inheritFreetext Flag to determine if free text should be inherited.
   * @param hideSubtopicsWithNoResults Flag to hide subtopics when there are no results.
   * @param subHierarchyTopics A list of subtopics under this topic.
   */
-case class HierarchyTopic(compoundUuid: String,
-                          matchingItemCount: Int = 0,
-                          name: Option[String],
-                          shortDescription: Option[String],
-                          longDescription: Option[String],
-                          showResults: Boolean = false,
-                          inheritFreetext: Boolean = false,
-                          hideSubtopicsWithNoResults: Boolean = false,
-                          subHierarchyTopics: List[HierarchyTopic])
+case class HierarchyTopicSummary(compoundUuid: String,
+                                 matchingItemCount: Int,
+                                 name: Option[String],
+                                 shortDescription: Option[String],
+                                 longDescription: Option[String],
+                                 showResults: Boolean,
+                                 hideSubtopicsWithNoResults: Boolean,
+                                 subHierarchyTopics: List[HierarchyTopicSummary])
+
+/**
+  * Contains basic topic info to represent an parent topic.
+  *
+  * @param compoundUuid The compound uuid of the topic.
+  * @param name The name of the topic.
+  */
+case class ParentTopic(compoundUuid: String, name: Option[String])
+
+/**
+  * Based on [[HierarchyTopicSummary]], provides more information about parent topics and key resources.
+  *
+  * @param summary Basic information of the topic.
+  * @param parents Basic information of all the parent topics.
+  * @param keyResources The key resources of the given topic (include dynamic key resources).
+  */
+case class HierarchyTopic(summary: HierarchyTopicSummary,
+                          parents: List[ParentTopic],
+                          keyResources: List[SearchResultItem])

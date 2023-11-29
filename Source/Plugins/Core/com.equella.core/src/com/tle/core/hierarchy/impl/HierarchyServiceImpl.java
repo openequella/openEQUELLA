@@ -38,6 +38,7 @@ import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.hierarchy.SearchSetAdapter;
+import com.tle.common.hierarchy.VirtualTopicUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.institution.CurrentInstitution;
@@ -171,7 +172,13 @@ public class HierarchyServiceImpl
     int itemCount = freeTextService.searchIds(search, 0, -1).getCount();
     int keyResourcesCount = topic.getKeyResources().size();
 
-    return itemCount + keyResourcesCount;
+    String encodedId =
+        VirtualTopicUtils.buildTopicId(
+            topic, compoundUuidMap.get(topic.getUuid()), compoundUuidMap);
+    int dynamicKeyResourcesCount =
+        Optional.ofNullable(getDynamicKeyResource(encodedId)).map(List::size).orElse(0);
+
+    return itemCount + keyResourcesCount + dynamicKeyResourcesCount;
   }
 
   @Override
@@ -403,6 +410,11 @@ public class HierarchyServiceImpl
   @Transactional
   public HierarchyTopic assertViewAccess(HierarchyTopic topic) {
     return topic;
+  }
+
+  @Override
+  public Boolean hasViewAccess(HierarchyTopic topic) {
+    return Optional.ofNullable(assertViewAccess(topic)).isPresent();
   }
 
   @Override

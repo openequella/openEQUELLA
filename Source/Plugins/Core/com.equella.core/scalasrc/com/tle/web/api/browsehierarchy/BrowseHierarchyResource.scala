@@ -20,13 +20,15 @@ package com.tle.web.api.browsehierarchy
 
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
-import com.tle.web.api.browsehierarchy.model.HierarchyTopic
-import io.swagger.annotations.{Api, ApiOperation}
+import com.tle.core.item.service.ItemService
+import com.tle.web.api.ApiErrorResponse
+import com.tle.web.api.browsehierarchy.model.{HierarchyTopic, HierarchyTopicSummary}
+import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, Produces}
+import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
 
 @Bind
@@ -38,15 +40,16 @@ import scala.jdk.CollectionConverters._
 class BrowseHierarchyResource {
   @Inject private var browseHierarchyHelper: BrowseHierarchyHelper = _
   @Inject private var hierarchyService: HierarchyService           = _
+  @Inject private var itemService: ItemService                     = _
 
   @GET
   @ApiOperation(
-    value = "Browse hierarchy",
+    value = "Browse hierarchies",
     notes = "Retrieve all Hierarchy topics for the current institution.",
     responseContainer = "List",
-    response = classOf[HierarchyTopic],
+    response = classOf[HierarchyTopicSummary],
   )
-  def browseHierarchy(): Response = {
+  def browseHierarchies(): Response = {
     // Fetch all topics with permission check for `VIEW_HIERARCHY_TOPIC`
     val topLevelHierarchies = hierarchyService.getRootTopics
     val result =
@@ -54,8 +57,43 @@ class BrowseHierarchyResource {
         .expandVirtualisedTopics(topLevelHierarchies, null, null)
         .asScala
         .toList
-        .map(browseHierarchyHelper.buildHierarchyTopic(_))
+        .map(browseHierarchyHelper.buildHierarchyTopicSummary(_))
 
     Response.ok(result).build
+  }
+
+  @GET
+  @Path("/{compound-uuid}")
+  @ApiOperation(
+    value = "Browse a hierarchy",
+    notes =
+      "Retrieve a Hierarchy topic details for a given topic compound UUID. This compound UUID MUST include compound UUIDs of all the virtual parent topic, seperated by comma.",
+    response = classOf[HierarchyTopic],
+  )
+  def browseHierarchy(
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String): Response = {
+    val topicsCompoundUuids = compoundUuids.split(",")
+
+    val currentTopicCompoundUuid = topicsCompoundUuids.headOption.getOrElse(compoundUuids)
+    val (currentTopicUuid, currentVirtualTopicName) =
+      browseHierarchyHelper.getUuidAndName(currentTopicCompoundUuid)
+    val parentCompoundUuidMap =
+      topicsCompoundUuids.tail.flatMap(browseHierarchyHelper.buildCompoundUuidMap).toMap
+
+    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+      case Some(topic) if !hierarchyService.hasViewAccess(topic) =>
+        ApiErrorResponse.forbiddenRequest(s"Permission denied to access topic $currentTopicUuid")
+      case Some(topicEntity) =>
+        val topicSummary =
+          browseHierarchyHelper.getTopicSummary(topicEntity,
+                                                currentVirtualTopicName,
+                                                parentCompoundUuidMap)
+        val parents         = browseHierarchyHelper.getParents(topicEntity, parentCompoundUuidMap)
+        val allKeyResources = browseHierarchyHelper.getAllKeyResources(topicEntity, compoundUuids)
+
+        val result = HierarchyTopic(topicSummary, parents, allKeyResources)
+        Response.ok(result).build
+      case None => ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")
+    }
   }
 }

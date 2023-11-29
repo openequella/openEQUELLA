@@ -18,6 +18,7 @@
 
 package com.tle.beans.item;
 
+/** Represents an item with its database id, uuid and version. */
 public class ItemIdKey extends AbstractItemKey {
   private static final long serialVersionUID = 1;
 
