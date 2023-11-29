@@ -18,6 +18,7 @@
 
 package com.tle.core.lti13
 
+import cats.implicits._
 import com.tle.beans.Institution
 import com.tle.common.NameValue
 import com.tle.common.filesystem.handle.{SubTemporaryFile, TemporaryFileHandle}
@@ -28,11 +29,10 @@ import com.tle.core.institution.convert.service.InstitutionImportService.Convert
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks
 import com.tle.core.lti13.bean.LtiPlatformBean
 import com.tle.core.lti13.service.LtiPlatformService
-import cats.implicits._
-import com.tle.beans.lti.LtiPlatform
 
-import scala.jdk.CollectionConverters._
+import java.net.URLEncoder
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
 
 @Bind
 @Singleton
@@ -45,10 +45,13 @@ class LtiPlatformConverter extends AbstractJsonConverter[Object] {
   override def doExport(staging: TemporaryFileHandle,
                         institution: Institution,
                         callback: ConverterParams): Unit = {
-    def writePlatformToJson(platform: LtiPlatformBean): Unit =
-      json.write(new SubTemporaryFile(staging, s"$EXPORT_FOLDER/${platform.platformId}"),
-                 s"${platform.platformId}.json",
-                 LtiPlatformBean)
+    def writePlatformToJson(platform: LtiPlatformBean): Unit = {
+      // An LTI platform ID is typically in the URL format, so we encode it and then use it as the export path.
+      val encodedPlatformId = URLEncoder.encode(platform.platformId, "UTF-8")
+      json.write(new SubTemporaryFile(staging, s"$EXPORT_FOLDER/$encodedPlatformId"),
+                 s"$encodedPlatformId.json",
+                 platform)
+    }
 
     Either
       .catchNonFatal {
