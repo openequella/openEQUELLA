@@ -51,7 +51,8 @@ public interface HierarchyService extends RemoteHierarchyService {
   List<HierarchyTopic> getChildTopics(HierarchyTopic topic);
 
   /**
-   * Calculate the total number of items matching a given hierarchy topic, including key resources.
+   * Calculate the total number of items matching a given hierarchy topic, including key resources
+   * and dynamic key resources.
    *
    * @param topic The topic to be counted.
    * @param compoundUuidMap A map linking any virtual ancestor topic and its UUID to the
@@ -73,10 +74,18 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   HierarchyTopic getHierarchyTopicByUuid(String uuid);
 
+  /**
+   * Legacy function to check weather user has permission to view the hierarchy topic. If user has
+   * permission, return the topic itself, otherwise return null.
+   */
   HierarchyTopic assertViewAccess(HierarchyTopic topic);
+
+  /** Check whether user has permission to view the hierarchy topic. */
+  Boolean hasViewAccess(HierarchyTopic topic);
 
   HierarchyTopic getHierarchyTopic(long id);
 
+  /** All name of the virtual topics in compound ID must be encoded. */
   List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String dynamicHierarchyId);
 
   List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
