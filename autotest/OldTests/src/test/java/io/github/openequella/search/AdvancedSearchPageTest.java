@@ -13,6 +13,7 @@ import com.tle.webtests.test.searching.PowerSearchTest;
 import io.github.openequella.pages.advancedsearch.NewAdvancedSearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -35,6 +36,14 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   public void enableNewSearchUI() {
     SettingsPage settingsPage = new SettingsPage(context).load();
     settingsPage.setNewSearchUI(true);
+  }
+
+  // Must turn off New Search UI in the end so that tests that do not run against NEW Search UI
+  // can run properly.
+  @AfterClass
+  public void disableNewSearchUI() {
+    SettingsPage settingsPage = new SettingsPage(context).load();
+    settingsPage.setNewSearchUI(false);
   }
 
   @BeforeMethod
