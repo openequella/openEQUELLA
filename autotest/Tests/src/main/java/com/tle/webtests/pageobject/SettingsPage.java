@@ -76,7 +76,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page) {
-    By linkByTitle = By.linkText(title);
+    By linkByTitle = By.xpath("//div[@id='settingsPage']//a[text()='" + title + "']");
     WebElement groupElem = openGroup(group, linkByTitle);
     groupElem.findElement(linkByTitle).click();
     return page.get();
