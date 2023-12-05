@@ -13,6 +13,7 @@ tests:
       - com.tle.webtests.test.searching.GallerySearchTest
       - com.tle.webtests.test.searching.GuidedSearchingTest
       - com.tle.webtests.test.searching.PowerSearchTest
+      - com.tle.webtests.test.searching.FavouritesPowerSearchIntegration
       - com.tle.webtests.test.searching.SearchAutoCompleteTest
       - com.tle.webtests.test.searching.SearchEnhancementsTest
       - com.tle.webtests.test.searching.SearchFiltersTest

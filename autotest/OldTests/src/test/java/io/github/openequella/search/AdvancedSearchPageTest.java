@@ -3,13 +3,18 @@ package io.github.openequella.search;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
+import com.tle.webtests.pageobject.SettingsPage;
+import com.tle.webtests.pageobject.searching.FavouritesPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import com.tle.webtests.test.searching.PowerSearchTest;
 import io.github.openequella.pages.advancedsearch.NewAdvancedSearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -22,6 +27,23 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   @Override
   protected void prepareBrowserSession() {
     logon();
+  }
+
+  private static final String EDITBOX_VALUE = "An Edit box";
+
+  // Must turn on New Search UI for the favourite integration test case.
+  @BeforeClass
+  public void enableNewSearchUI() {
+    SettingsPage settingsPage = new SettingsPage(context).load();
+    settingsPage.setNewSearchUI(true);
+  }
+
+  // Must turn off New Search UI in the end so that tests that do not run against NEW Search UI
+  // can run properly.
+  @AfterClass
+  public void disableNewSearchUI() {
+    SettingsPage settingsPage = new SettingsPage(context).load();
+    settingsPage.setNewSearchUI(false);
   }
 
   @BeforeMethod
@@ -184,7 +206,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   @Test(description = "Search by using different controls together")
   @NewUIOnly
   public void multipleControls() {
-    advancedSearchPage.updateEditBox("An Edit box");
+    advancedSearchPage.updateEditBox(EDITBOX_VALUE);
     advancedSearchPage.selectCheckbox("1");
     advancedSearchPage.selectRadio("1");
     advancedSearchPage.selectShuffleBox("1");
@@ -212,6 +234,38 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
     assertNotNull(cityTitle);
   }
 
+  @Test(description = "Integration with favourite searches")
+  @NewUIOnly
+  public void favouriteIntegration() {
+    String favouriteName = "Favourite advanced search";
+
+    advancedSearchPage.updateEditBox(EDITBOX_VALUE);
+    advancedSearchPage.selectCheckbox("1");
+    advancedSearchPage.search();
+    advancedSearchPage.waitForSearchCompleted(1);
+    assertEquals(advancedSearchPage.getItemNameByIndex(0), PowerSearchTest.FIRST);
+
+    advancedSearchPage.addToFavouriteSearch(favouriteName);
+
+    // Access Favorites Search Page
+    FavouritesPage favouritePage = new FavouritesPage(context).load();
+    assertTrue(favouritePage.searches().results().doesResultExist(favouriteName));
+    favouritePage.accessSavedSearches(favouriteName);
+
+    // There should be only 1 item in the search result.
+    advancedSearchPage.waitForSearchCompleted(1);
+    assertEquals(advancedSearchPage.getItemNameByIndex(0), PowerSearchTest.FIRST);
+
+    // Advanced search panel should be opened with values populated.
+    WebElement advancedSearchPanel = advancedSearchPage.getAdvancedSearchPanel();
+    WebElement checkedBox =
+        advancedSearchPanel.findElement(By.xpath("//input[@type='checkbox' and @value='1']"));
+    assertTrue(checkedBox.isSelected());
+
+    WebElement editbox = advancedSearchPanel.findElement(By.id("wiz-3-editbox"));
+    assertEquals(editbox.getAttribute("value"), EDITBOX_VALUE);
+  }
+
   @DataProvider
   private Object[][] calendarTestData() {
     return new Object[][] {
@@ -228,7 +282,7 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   @DataProvider
   private Object[][] editBoxTestData() {
     return new Object[][] {
-      {"An Edit box", 1, new String[] {PowerSearchTest.FIRST}},
+      {EDITBOX_VALUE, 1, new String[] {PowerSearchTest.FIRST}},
       {"Something else", 1, new String[] {PowerSearchTest.SECOND}},
       // Todo: Enable below test case after OEQ-1755 is resolved.
       // {"*", 3, new String[]{PowerSearchTest.FIRST, PowerSearchTest.SECOND,
