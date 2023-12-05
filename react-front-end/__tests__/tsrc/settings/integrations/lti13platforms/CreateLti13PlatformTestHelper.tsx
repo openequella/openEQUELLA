@@ -28,7 +28,7 @@ import CreateLti13Platform, {
   CreateLti13PlatformProps,
 } from "../../../../../tsrc/settings/Integrations/lti13platforms/CreateLti13Platform";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
-import { selectAndConfirm } from "../../../components/aclexpressionbuilder/ACLExpressionBuilderTestHelper";
+import { selectAllAndConfirm } from "../../../components/aclexpressionbuilder/ACLExpressionBuilderTestHelper";
 import { clickOkButton } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import { searchAndSelectGroup } from "../../../components/securityentitydialog/SelectGroupDialogTestHelper";
 import { searchAndSelectRole } from "../../../components/securityentitydialog/SelectRoleDialogTestHelper";
@@ -156,7 +156,7 @@ export const configureUsableBy = async (
   // add a new user in acl expression builder
   const aclExpressionBuilderDialog = renderResult.getByRole("dialog");
   await searchUser(aclExpressionBuilderDialog, username);
-  await selectAndConfirm(aclExpressionBuilderDialog, [username]);
+  await selectAllAndConfirm(aclExpressionBuilderDialog);
 };
 
 /**
