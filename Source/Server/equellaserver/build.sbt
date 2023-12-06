@@ -3,7 +3,7 @@ import Path.rebase
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-javacOptions ++= Seq("--release", "11")
+javacOptions ++= Seq("--release", "17")
 
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
