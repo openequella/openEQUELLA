@@ -26,6 +26,7 @@ import com.tle.common.Check;
 import com.tle.common.ExpiringValue;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.oauth.beans.OAuthClient;
+import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.encryption.EncryptionService;
@@ -255,9 +256,15 @@ public class OAuthWebServiceImpl
   }
 
   @Override
-  public void revokeToken(String token) {
-    LOGGER.info("OAUTH token revoked: " + token);
-    oauthService.deleteToken(token);
+  public void revokeTokenForClient(String token, String clientId) {
+    Optional.ofNullable(oauthService.getToken(token))
+        .map(OAuthToken::getClient)
+        .filter(c -> c.getClientId().equals(clientId))
+        .ifPresent(
+            (client) -> {
+              oauthService.deleteToken(token);
+              LOGGER.info("OAUTH token revoked: " + token);
+            });
   }
 
   /** Throw an exception if any SINGLE_PARAMETERS occur repeatedly. */

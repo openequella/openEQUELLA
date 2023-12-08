@@ -279,9 +279,7 @@ public class OAuthTest extends AbstractRestApiTest {
     Assert.assertEquals(days, validity);
   }
 
-  @Test(
-      description = "Revoke valid tokens",
-      dependsOnMethods = {"testOAuthTokenValidity"})
+  @Test(description = "Revoke valid tokens", dependsOnMethods = "testOAuthTokenValidity")
   public void testOAuthTokenRevocation() throws IOException {
     String token = requestToken(CLIENT_ID_VALIDITY);
     String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
@@ -309,6 +307,24 @@ public class OAuthTest extends AbstractRestApiTest {
   public void testOAuthTokenRevocationBadCred() throws IOException {
     HttpResponse response = revokeOauthToken("token", "bad client ID", "bad client secret");
     assertResponse(response, 401, "Revoking token without correct credentials should return 401");
+  }
+
+  @Test(
+      description = "Credentials are good, but the token was not generate from this client.",
+      dependsOnMethods = "testOAuthTokenValidity")
+  public void testTokenRevocationWrongClient() throws IOException {
+    String token = requestToken(CLIENT_ID);
+    HttpResponse response =
+        revokeOauthToken(requestToken(CLIENT_ID), CLIENT_ID_VALIDITY, clientSecretValidity);
+    assertResponse(
+        response,
+        200,
+        "Good credentials should return 200 although the token was not generated from the client");
+
+    // The token should still work.
+    String currentUserAPIPath = context.getBaseUrl() + "api/content/currentuser";
+    response = rawTokenExecute(currentUserAPIPath, token);
+    assertEquals(200, response.getStatusLine().getStatusCode());
   }
 
   private HttpResponse rawTokenExecute(HttpUriRequest request, String rawToken) throws IOException {

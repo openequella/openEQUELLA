@@ -170,7 +170,7 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
     }
   }
 
-  private boolean validateCredentials(String auth) {
+  private Optional<String> validateCredentials(String auth) {
     if (auth.toLowerCase().startsWith(OAuthWebConstants.BASIC_AUTHORIZATION_PREFIX)) {
       // Remove the prefix `Basic `.
       String decoded = new String(Base64.getDecoder().decode(auth.substring(6)));
@@ -183,14 +183,12 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
         IOAuthClient client = oauthWebService.getByClientIdOnly(clientId);
 
         return Optional.ofNullable(client)
-            .map(IOAuthClient::getClientSecret)
-            .map(secret -> encryptionService.decrypt(secret))
-            .map(secret -> secret.equals(clientSecret))
-            .orElse(false);
+            .filter(c -> encryptionService.decrypt(c.getClientSecret()).equals(clientSecret))
+            .map(IOAuthClient::getClientId);
       }
     }
 
-    return false;
+    return Optional.empty();
   }
 
   /**
@@ -204,11 +202,11 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
    */
   private void revokeToken(HttpServletRequest request) {
     Optional.ofNullable(request.getHeader(OAuthWebConstants.HEADER_AUTHORIZATION))
-        .filter(this::validateCredentials)
+        .flatMap(this::validateCredentials)
         .ifPresentOrElse(
-            (auth) -> {
+            (client) -> {
               String token = getParameter(request, TOKEN_PARAM, true);
-              oauthWebService.revokeToken(token);
+              oauthWebService.revokeTokenForClient(token, client);
             },
             () -> {
               throw new OAuthException(
