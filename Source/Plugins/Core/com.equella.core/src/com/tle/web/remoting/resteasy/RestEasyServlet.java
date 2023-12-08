@@ -42,6 +42,7 @@ import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
 import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
+import com.tle.web.api.hierarchy.HierarchyResource;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
@@ -136,10 +137,11 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   // API classes which can use Guice normal Dependency Injection.
   private static final List<Class> apiClasses =
       Arrays.asList(
+          BrowseHierarchyResource.class,
+          HierarchyResource.class,
           NewUIThemeResource.class,
           PostLoginNoticeResource.class,
-          PreLoginNoticeResource.class,
-          BrowseHierarchyResource.class);
+          PreLoginNoticeResource.class);
 
   @Override
   protected void service(
