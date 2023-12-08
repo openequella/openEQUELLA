@@ -188,7 +188,7 @@ class BrowseHierarchyHelper {
     * Output:
     * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
     */
-  private def encodeCompoundUuid(compoundUuid: String): String =
+  def encodeCompoundUuid(compoundUuid: String): String =
     compoundUuid
       .split(",")
       .map(getUuidAndName)

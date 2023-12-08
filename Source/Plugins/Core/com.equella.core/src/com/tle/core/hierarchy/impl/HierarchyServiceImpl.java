@@ -34,6 +34,7 @@ import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
@@ -44,6 +45,7 @@ import com.tle.common.i18n.LangUtils;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.search.PresetSearch;
 import com.tle.common.search.searchset.SearchSet;
+import com.tle.common.security.Privilege;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
@@ -203,10 +205,8 @@ public class HierarchyServiceImpl
 
   @Override
   @Transactional(propagation = Propagation.REQUIRED)
-  public void addKeyResource(String uuid, ItemKey itemId) {
-    final String[] uv = uuid.split(":", 2);
-
-    final HierarchyTopic topic = getHierarchyTopicByUuid(uv[0]);
+  public void addKeyResource(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
     final Item item = itemService.get(itemId);
 
     // if the hierarchy is dynamic
@@ -214,13 +214,13 @@ public class HierarchyServiceImpl
       String itemUuid = item.getUuid();
       int itemVersion = item.getVersion();
       List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-          getDynamicKeyResource(uuid, itemUuid, itemVersion);
+          getDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
       if (dynamicKeyResources == null) {
-        saveDynamicKeyResource(uuid, itemUuid, itemVersion);
+        saveDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
       } else {
         for (HierarchyTopicDynamicKeyResources k : dynamicKeyResources) {
           if (!k.getUuid().equals(itemUuid) || k.getVersion() != itemVersion) {
-            saveDynamicKeyResource(uuid, itemUuid, itemVersion);
+            saveDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
           }
         }
       }
@@ -236,6 +236,16 @@ public class HierarchyServiceImpl
       }
       dao.saveOrUpdate(topic);
     }
+  }
+
+  @Override
+  public boolean hasKeyResource(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
+
+    // check if the topic is a virtual topic
+    return Optional.ofNullable(topic.getVirtualisationId())
+        .map(id -> hasDynamicKeyResource(compoundUuid, itemId))
+        .orElseGet(() -> hasNormalKeyResource(topic, itemId));
   }
 
   @Transactional
@@ -259,15 +269,13 @@ public class HierarchyServiceImpl
 
   @Override
   @Transactional
-  public void deleteKeyResources(String uuid, ItemKey itemId) {
-    final String[] uv = uuid.split(":", 2);
-
-    final HierarchyTopic topic = getHierarchyTopicByUuid(uv[0]);
+  public void deleteKeyResources(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
     final Item item = itemService.get(itemId);
 
     // if the hierarchy is dynamic
     if (topic.getVirtualisationId() != null) {
-      dao.removeDynamicKeyResource(uuid, item.getUuid(), item.getVersion());
+      dao.removeDynamicKeyResource(compoundUuid, item.getUuid(), item.getVersion());
     } else {
       dao.removeReferencesToItem(item, topic.getId());
     }
@@ -401,7 +409,8 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  public HierarchyTopic getHierarchyTopicByUuid(String uuid) {
+  public HierarchyTopic getHierarchyTopicByUuid(String compoundUuid) {
+    String uuid = compoundUuid.split(":", 2)[0];
     return dao.findByUuid(uuid, CurrentInstitution.get());
   }
 
@@ -414,7 +423,12 @@ public class HierarchyServiceImpl
 
   @Override
   public Boolean hasViewAccess(HierarchyTopic topic) {
-    return Optional.ofNullable(assertViewAccess(topic)).isPresent();
+    return aclManager.hasPrivilege(topic, Privilege.VIEW_HIERARCHY_TOPIC);
+  }
+
+  @Override
+  public Boolean hasModifyKeyResourceAccess(HierarchyTopic topic) {
+    return aclManager.hasPrivilege(topic, Privilege.MODIFY_KEY_RESOURCE);
   }
 
   @Override
@@ -753,9 +767,9 @@ public class HierarchyServiceImpl
 
   @Override
   public List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
-      String dynamicHierarchyId, String itemUuid, int itemVersion) {
+      String encodedCompoundUuid, String itemUuid, int itemVersion) {
     return dao.getDynamicKeyResource(
-        dynamicHierarchyId, itemUuid, itemVersion, CurrentInstitution.get());
+        encodedCompoundUuid, itemUuid, itemVersion, CurrentInstitution.get());
   }
 
   @Override
@@ -795,5 +809,29 @@ public class HierarchyServiceImpl
             .collect(Collectors.toSet());
 
     return Optional.of(allSchema).filter(set -> !set.isEmpty());
+  }
+
+  /**
+   * Check whether the given item is a dynamic key resource of the given hierarchy topic compound
+   * uuid.
+   */
+  private boolean hasDynamicKeyResource(String encodedCompoundUuid, ItemKey itemId) {
+    String itemUuid = itemId.getUuid();
+    int itemVersion = itemId.getVersion();
+    List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
+        getDynamicKeyResource(encodedCompoundUuid, itemUuid, itemVersion);
+
+    return Stream.ofNullable(dynamicKeyResources)
+        .flatMap(Collection::stream)
+        .map(keyResource -> new ItemId(keyResource.getUuid(), keyResource.getVersion()))
+        .anyMatch(id -> id.equals(itemId));
+  }
+
+  /** Check whether the given item is a key resource of the given hierarchy topic. */
+  private boolean hasNormalKeyResource(HierarchyTopic topic, ItemKey itemId) {
+    return Stream.ofNullable(topic.getKeyResources())
+        .flatMap(Collection::stream)
+        .map(Item::getItemId)
+        .anyMatch(id -> id.equals(itemId));
   }
 }

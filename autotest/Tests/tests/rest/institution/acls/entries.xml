@@ -340,7 +340,7 @@
   <com.tle.beans.security.AccessEntry>
     <id>117682</id>
     <expression>
-      <id>2923</id>
+      <id>933466</id>
       <dynamic>false</dynamic>
     </expression>
     <targetObject>*</targetObject>

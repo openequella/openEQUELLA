@@ -72,7 +72,13 @@ public interface HierarchyService extends RemoteHierarchyService {
   FreeTextBooleanQuery getSearchClause(
       HierarchyTopic topic, Map<String, String> topicUuidWithMatchedText);
 
-  HierarchyTopic getHierarchyTopicByUuid(String uuid);
+  /**
+   * Get the hierarchy topic by its compound UUID or UUID.
+   *
+   * @param compoundUuid The compound UUID or UUID of the topic. For virtual topic it also accepts
+   *     the raw UUID without virtual name.
+   */
+  HierarchyTopic getHierarchyTopicByUuid(String compoundUuid);
 
   /**
    * Legacy function to check weather user has permission to view the hierarchy topic. If user has
@@ -82,6 +88,9 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   /** Check whether user has permission to view the hierarchy topic. */
   Boolean hasViewAccess(HierarchyTopic topic);
+
+  /** Check whether user has permission to modify KeyResource for the given hierarchy topic. */
+  Boolean hasModifyKeyResourceAccess(HierarchyTopic topic);
 
   HierarchyTopic getHierarchyTopic(long id);
 
@@ -115,7 +124,17 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   void addKeyResource(HierarchyTreeNode node, ItemKey item);
 
-  void addKeyResource(String uuid, ItemKey item);
+  /**
+   * Add key resource to a topic. Based on the topic type it will either add to key resource table
+   * or dynamic key resource table. Compound uuid must be encoded.
+   */
+  void addKeyResource(String encodedCompoundUuid, ItemKey item);
+
+  /**
+   * Check whether a topic has the given key resource. Based on the topic type it will either check
+   * key resource table or dynamic key resource table.
+   */
+  boolean hasKeyResource(String compoundUuid, ItemKey item);
 
   void edit(HierarchyTopic topic);
 
