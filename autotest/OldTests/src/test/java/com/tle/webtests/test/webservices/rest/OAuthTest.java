@@ -314,8 +314,7 @@ public class OAuthTest extends AbstractRestApiTest {
       dependsOnMethods = "testOAuthTokenValidity")
   public void testTokenRevocationWrongClient() throws IOException {
     String token = requestToken(CLIENT_ID);
-    HttpResponse response =
-        revokeOauthToken(requestToken(CLIENT_ID), CLIENT_ID_VALIDITY, clientSecretValidity);
+    HttpResponse response = revokeOauthToken(token, CLIENT_ID_VALIDITY, clientSecretValidity);
     assertResponse(
         response,
         200,
