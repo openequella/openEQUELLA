@@ -1,4 +1,5 @@
 import Path.rebase
+import sbt.Package.ManifestAttributes
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -431,6 +432,8 @@ run := {
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
+
+assembly / packageOptions += ManifestAttributes("Multi-Release" -> "true")
 
 lazy val collectJars = taskKey[Set[File]]("Collect jars")
 
