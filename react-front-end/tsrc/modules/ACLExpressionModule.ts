@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { constant, flow, identity, pipe } from "fp-ts/function";
@@ -28,9 +29,9 @@ import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import { Literal, Static, Union } from "runtypes";
 import { v4 as uuidv4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
+import { simpleUnionMatch } from "../util/match";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
 import { ACLEntityResolversMulti, ACLEntityResolvers } from "./ACLEntityModule";
 import {
@@ -54,21 +55,21 @@ const {
  *
  * `UNKNOWN` is only used as a placeholder while parsing an ACL recipient string.
  */
-export const ACLOperatorTypesUnion = Union(
-  Literal("OR"),
-  Literal("AND"),
-  Literal("NOT"),
-  Literal("UNKNOWN")
-);
+export const ACLOperatorTypesUnion = t.union([
+  t.literal("OR"),
+  t.literal("AND"),
+  t.literal("NOT"),
+  t.literal("UNKNOWN"),
+]);
 
-export type ACLOperatorType = Static<typeof ACLOperatorTypesUnion>;
+export type ACLOperatorType = t.TypeOf<typeof ACLOperatorTypesUnion>;
 
-export const getOperatorLabel = ACLOperatorTypesUnion.match(
-  (OR) => orLabel,
-  (AND) => andLabel,
-  (NOT) => notLabel,
-  (UNKNOWN) => UNKNOWN
-);
+export const getOperatorLabel = simpleUnionMatch<ACLOperatorType, string>({
+  OR: () => orLabel,
+  AND: () => andLabel,
+  NOT: () => notLabel,
+  UNKNOWN: () => "UNKNOWN",
+});
 
 /**
  * Represents the ACL Expression string.
@@ -100,7 +101,7 @@ export interface ACLExpression {
  */
 export const generateACLExpressionDisplayString = (
   { operator, children, recipients }: ACLExpression,
-  padding = ""
+  padding = "",
 ): string =>
   pipe(
     [padding, operator],
@@ -110,10 +111,10 @@ export const generateACLExpressionDisplayString = (
     A.concat(
       pipe(
         children,
-        A.map((c) => generateACLExpressionDisplayString(c, padding + " "))
-      )
+        A.map((c) => generateACLExpressionDisplayString(c, padding + " ")),
+      ),
     ),
-    A.intercalate(S.Monoid)("\n")
+    A.intercalate(S.Monoid)("\n"),
   );
 
 /**
@@ -122,7 +123,7 @@ export const generateACLExpressionDisplayString = (
 export const createACLExpression = (
   operator: ACLOperatorType,
   recipients: ACLRecipient[] = [],
-  children: ACLExpression[] = []
+  children: ACLExpression[] = [],
 ): ACLExpression => ({
   id: uuidv4(),
   operator: operator,
@@ -158,7 +159,7 @@ const addChildren =
  * All returned result will be a new object.
  */
 export const replaceACLExpression = (
-  newACLExpression: ACLExpression
+  newACLExpression: ACLExpression,
 ): ((originalACLExpression: ACLExpression) => ACLExpression) =>
   pfTernary(
     (originalACLExpression: ACLExpression) =>
@@ -171,15 +172,15 @@ export const replaceACLExpression = (
         (newChildren) => ({
           ...originalACLExpression,
           children: newChildren,
-        })
-      )
+        }),
+      ),
   );
 
 /**
  * Find the `aclExpression` by id in `originalACLExpression` and remove it (recursively).
  */
 export const removeACLExpression = (
-  id: string
+  id: string,
 ): ((originalACLExpression: ACLExpression) => O.Option<ACLExpression>) =>
   pfTernary(
     (aclExpression: ACLExpression) => aclExpression.id === id,
@@ -192,8 +193,8 @@ export const removeACLExpression = (
           O.some({
             ...originalACLExpression,
             children: newChildren,
-          })
-      )
+          }),
+      ),
   );
 
 /**
@@ -203,7 +204,7 @@ export const removeACLExpression = (
  * It will return `undefined` if multiple ACLExpression are found.
  */
 export const getACLExpressionById = (
-  id: string
+  id: string,
 ): ((aclExpression: ACLExpression) => ACLExpression | undefined) =>
   pfTernary<ACLExpression, ACLExpression | undefined>(
     (aclExpression) => aclExpression.id === id,
@@ -217,12 +218,12 @@ export const getACLExpressionById = (
           E.fromPredicate(
             (a) => A.size(a) <= 1,
             (error) =>
-              console.warn(`Find more than one ACLExpression with ID ${id}`)
-          )
+              console.warn(`Find more than one ACLExpression with ID ${id}`),
+          ),
         ),
         O.map(NEA.head),
-        O.toUndefined
-      )
+        O.toUndefined,
+      ),
   );
 
 /**
@@ -256,7 +257,7 @@ const getChildrenCount = (expression: ACLExpression): number =>
  * Tells whether the provide piece of text is an ACL Operator.
  */
 const isACLOperator = (text: string): text is ACLOperatorType =>
-  ACLOperatorTypesUnion.guard(text);
+  ACLOperatorTypesUnion.is(text);
 
 /**
  * Merge a given base ACL Expression with a new ACL Expression.
@@ -313,14 +314,14 @@ const isACLOperator = (text: string): text is ACLOperatorType =>
  */
 const merge = (
   baseExpression: ACLExpression,
-  newExpression: ACLExpression
+  newExpression: ACLExpression,
 ): ACLExpression => {
   return baseExpression.operator === newExpression.operator ||
     newExpression.operator === "UNKNOWN"
     ? pipe(
         baseExpression,
         addChildren(newExpression.children),
-        addRecipients(newExpression.recipients)
+        addRecipients(newExpression.recipients),
       )
     : pipe(baseExpression, addChildren([newExpression]));
 };
@@ -366,9 +367,9 @@ const buildACLExpression = (text: string): E.Either<string, ACLExpression> =>
       flow(createACLExpression, E.right),
       flow(
         createACLRecipient,
-        E.map((recipient) => createACLExpression("UNKNOWN", [recipient]))
-      )
-    )
+        E.map((recipient) => createACLExpression("UNKNOWN", [recipient])),
+      ),
+    ),
   );
 
 /**
@@ -475,7 +476,7 @@ interface AclExpressionBuildingState {
  * @param expression Raw ACL expression string.
  */
 export const parse = (
-  expression: string
+  expression: string,
 ): E.Either<string[], ACLExpression> => {
   /**
    * Assumes `currentExpression` has an operator other than `UNKNOWN` then merges the `previousExpressions` from state into the `currentExpression`.
@@ -484,7 +485,7 @@ export const parse = (
    */
   const handleKnownExpression = (
     { result, previousExpressions }: AclExpressionBuildingState,
-    currentExpression: ACLExpression
+    currentExpression: ACLExpression,
   ): AclExpressionBuildingState =>
     pipe(
       previousExpressions,
@@ -492,16 +493,16 @@ export const parse = (
       A.reduce<ACLExpression, ACLExpression>(
         currentExpression,
         (mergedExpressions, nextExpression) =>
-          merge(mergedExpressions, nextExpression)
+          merge(mergedExpressions, nextExpression),
       ),
       (fullExpression) => ({
         result: fullExpression,
         previousExpressions: pipe(
           previousExpressions,
           A.dropRight(howManyOperands(currentExpression.operator)),
-          A.append(fullExpression)
+          A.append(fullExpression),
         ),
-      })
+      }),
     );
 
   /**
@@ -509,7 +510,7 @@ export const parse = (
    */
   const handleUnknownExpression = (
     { result, previousExpressions }: AclExpressionBuildingState,
-    currentExpression: ACLExpression
+    currentExpression: ACLExpression,
   ) => ({
     result,
     previousExpressions: [...previousExpressions, currentExpression],
@@ -519,7 +520,7 @@ export const parse = (
    * Traverse a give aclExpression list, merge them one by one and generate a final ACLExpression object.
    */
   const parseACLExpressions = (
-    aclExpressions: ReadonlyNonEmptyArray<ACLExpression>
+    aclExpressions: ReadonlyNonEmptyArray<ACLExpression>,
   ): ACLExpression =>
     pipe(
       aclExpressions,
@@ -533,8 +534,8 @@ export const parse = (
             pipe(
               aclExpressions,
               RNEA.head,
-              (expression) => expression.recipients
-            )
+              (expression) => expression.recipients,
+            ),
           ),
         (expressions) =>
           pipe(
@@ -555,11 +556,11 @@ export const parse = (
                     ? handleKnownExpression
                     : handleUnknownExpression;
                 return handler(currentState, currentExpression);
-              }
+              },
             ),
-            ({ result }) => result
-          )
-      )
+            ({ result }) => result,
+          ),
+      ),
     );
 
   return pipe(
@@ -568,7 +569,7 @@ export const parse = (
     RA.filter(not(S.isEmpty)),
     RA.map(buildACLExpression),
     E.fromPredicate(not(RA.some(E.isLeft)), (errors) =>
-      pipe(errors, RA.lefts, RA.toArray)
+      pipe(errors, RA.lefts, RA.toArray),
     ),
     E.chain((expressions) =>
       pipe(
@@ -576,9 +577,9 @@ export const parse = (
         RA.rights,
         RNEA.fromReadonlyArray,
         O.map(parseACLExpressions),
-        E.fromOption(() => ["Received empty ACLExpression list"])
-      )
-    )
+        E.fromOption(() => ["Received empty ACLExpression list"]),
+      ),
+    ),
   );
 };
 
@@ -673,7 +674,7 @@ export const parse = (
  * ```
  * */
 export const compactACLExpressions = (
-  aclExpression: ACLExpression
+  aclExpression: ACLExpression,
 ): ACLExpression =>
   pipe(
     aclExpression.children,
@@ -683,13 +684,13 @@ export const compactACLExpressions = (
       A.reduce<ACLExpression, ACLExpression>(
         createACLExpression("NOT", aclExpression.recipients),
         (result, { recipients, children }) =>
-          pipe(result, addRecipients(recipients), addChildren(children))
+          pipe(result, addRecipients(recipients), addChildren(children)),
       ),
       (newChildren) => ({
         ...aclExpression,
         children: newChildren,
-      })
-    )
+      }),
+    ),
   );
 
 /**
@@ -702,14 +703,14 @@ export const compactACLExpressions = (
  */
 const handleNotACLExpression = (
   aclExpression: ACLExpression,
-  revertedChildren: ACLExpression[]
+  revertedChildren: ACLExpression[],
 ) =>
   A.isEmpty(revertedChildren) && getRecipientCount(aclExpression) === 1
     ? aclExpression
     : pipe(
         createACLExpression("OR", aclExpression.recipients, revertedChildren),
         (result) => createACLExpression("NOT", [], [result]),
-        removeRedundantExpressions
+        removeRedundantExpressions,
       );
 
 /**
@@ -795,7 +796,7 @@ const handleNotACLExpression = (
  * ```
  * */
 export const revertCompactedACLExpressions = (
-  aclExpression: ACLExpression
+  aclExpression: ACLExpression,
 ): ACLExpression =>
   pipe(
     aclExpression.children,
@@ -806,7 +807,7 @@ export const revertCompactedACLExpressions = (
         : {
             ...aclExpression,
             children: revertedChildren,
-          }
+          },
   );
 
 /**
@@ -835,15 +836,15 @@ const filterEmptyChildren = (expression: ACLExpression): ACLExpression =>
     expression.children,
     A.filter(
       ({ children, recipients }) =>
-        A.isNonEmpty(children) || A.isNonEmpty(recipients)
+        A.isNonEmpty(children) || A.isNonEmpty(recipients),
     ),
     A.map(filterEmptyChildren),
     (results) =>
       createACLExpression(
         expression.operator,
         [...expression.recipients],
-        [...results]
-      )
+        [...results],
+      ),
   );
 
 /** Does this expression have _only_ a single recipient and no children? */
@@ -920,7 +921,7 @@ const mergeChildren = (expression: ACLExpression): ACLExpression => {
 
   return pipe(
     expression.children,
-    A.foldMap(mergeChildrenMonoid)(mergeChildren)
+    A.foldMap(mergeChildrenMonoid)(mergeChildren),
   );
 };
 
@@ -976,7 +977,7 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
   // 2. Otherwise, encapsulate the expression in a single element array. i.e. `[expression]`
   const handleSingleRecipient = (
     operator: ACLOperatorType,
-    recipient: ACLRecipient
+    recipient: ACLRecipient,
   ): string[] =>
     operator === "NOT"
       ? [showRecipient(recipient), operator]
@@ -992,20 +993,20 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
           // Insert an operator between each elements, except for the first element.
           index > 1
             ? [...acc, aclExpression.operator, ...childResult]
-            : [...acc, ...childResult]
+            : [...acc, ...childResult],
         ),
         // Make sure the operator is always added on the end
-        pfTernary(A.isNonEmpty, A.append(operator), identity)
+        pfTernary(A.isNonEmpty, A.append(operator), identity),
       );
 
   const handleRecipients = (
     operator: ACLOperatorType,
-    recipients: ACLRecipient[]
+    recipients: ACLRecipient[],
   ): string[] =>
     pipe(
       recipients,
       A.map((r) => [showRecipient(r)]),
-      insertOperators(operator)
+      insertOperators(operator),
     );
 
   // generate results from children and combine it with recipients result
@@ -1021,7 +1022,7 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
             ? [recipientResult, ...results]
             : results,
         // Insert operators between results
-        insertOperators(aclExpression.operator)
+        insertOperators(aclExpression.operator),
       );
 
   return pipe(
@@ -1038,8 +1039,8 @@ const generatePostfixResults = (aclExpression: ACLExpression): string[] => {
         aclExpression.children,
         O.fromPredicate(A.isNonEmpty),
         O.map(handleWithChildren(recipientResult)),
-        O.getOrElse(() => recipientResult)
-      )
+        O.getOrElse(() => recipientResult),
+      ),
   );
 };
 
@@ -1092,7 +1093,7 @@ const generateInfixResults =
         TE.match((err: string) => {
           console.error(err);
           return showRecipient(recipient);
-        }, identity)
+        }, identity),
       );
 
     // For expressions with single recipients:
@@ -1100,25 +1101,25 @@ const generateInfixResults =
     // 2. Otherwise, encapsulate the expression in a single element array. i.e. `[expression]`
     const handleSingleRecipient = (
       operator: ACLOperatorType,
-      recipient: ACLRecipient
+      recipient: ACLRecipient,
     ): T.Task<string[]> =>
       pipe(
         recipient,
         getHumanReadableResult,
         T.map<string, string[]>((name) =>
-          operator === "NOT" ? [operator, name] : [name]
-        )
+          operator === "NOT" ? [operator, name] : [name],
+        ),
       );
 
     const handleRecipients = (
       operator: ACLOperatorType,
-      recipients: ACLRecipient[]
+      recipients: ACLRecipient[],
     ): T.Task<string[]> =>
       pipe(
         recipients,
         A.map(getHumanReadableResult),
         T.sequenceArray,
-        T.map(flow(RA.intersperse<string>(operator), RA.toArray))
+        T.map(flow(RA.intersperse<string>(operator), RA.toArray)),
       );
 
     const processRecipients = ({ operator, recipients }: ACLExpression) =>
@@ -1140,10 +1141,10 @@ const generateInfixResults =
               pfTernary(
                 RA.isNonEmpty,
                 (result) => ["(", ...result, ")"],
-                RA.toArray
-              )
-            )
-          )
+                RA.toArray,
+              ),
+            ),
+          ),
         );
 
     /**
@@ -1168,7 +1169,7 @@ const generateInfixResults =
      */
     const combineRecipientAndChildrenResult = (
       recipientsResult: string[],
-      childrenResult: string[]
+      childrenResult: string[],
     ) => {
       if (A.isEmpty(recipientsResult) && A.isEmpty(childrenResult)) {
         return [];
@@ -1199,10 +1200,10 @@ const generateInfixResults =
           aclExpression.children,
           processChildren(aclExpression.operator),
           T.map((childrenResult: string[]) =>
-            combineRecipientAndChildrenResult(recipientsResult, childrenResult)
-          )
-        )
-      )
+            combineRecipientAndChildrenResult(recipientsResult, childrenResult),
+          ),
+        ),
+      ),
     );
   };
 
@@ -1216,7 +1217,7 @@ export const generateHumanReadable =
     pipe(
       aclExpression,
       generateInfixResults(providers),
-      T.map(A.intercalate(S.Monoid)(" "))
+      T.map(A.intercalate(S.Monoid)(" ")),
     );
 
 /**

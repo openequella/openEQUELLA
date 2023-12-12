@@ -52,7 +52,7 @@ export const commonCustomRolesMappingControlProps: CustomRolesMappingControlProp
  * Helper to render CustomRolesMappingControl.
  */
 export const renderCustomRolesMappingControl = (
-  props: CustomRolesMappingControlProps = commonCustomRolesMappingControlProps
+  props: CustomRolesMappingControlProps = commonCustomRolesMappingControlProps,
 ): RenderResult => render(<CustomRolesMappingControl {...props} />);
 
 /**
@@ -70,7 +70,7 @@ const searchRole = (dialog: HTMLElement, queryName: string) =>
 export const doSearchAndSelectRole = async (
   dialog: HTMLElement,
   searchFor: string,
-  selectEntityName: string
+  selectEntityName: string,
 ) => searchAndSelect(dialog, searchFor, selectEntityName, searchRole);
 
 /**

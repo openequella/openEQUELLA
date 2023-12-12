@@ -82,5 +82,72 @@ export const simpleMatchD =
       matchers,
       A.findFirstMap(([m, f]) => (m === match ? O.some(f) : O.none)),
       O.getOrElse(() => noMatch),
-      (f: MatchFn<R>) => f(match)
+      (f: MatchFn<R>) => f(match),
+    );
+
+/**
+ * Similar to {@link simpleMatch} but for simple Union types where each member is either a string literal
+ * or a number literal. An optional function can be provided to return a default value for members that do
+ * not have specific matchers. However, if neither a specific matcher nor a default matcher is available for
+ * a member, an error will be thrown.
+ *
+ * Example:
+ *
+ * ```
+ * type TestUnion = "hello" | "world" | 1;
+ *
+ * pipe(
+ *  "hello",
+ *  simpleUnionTypeMatch<TestUnion, string>(
+ *   {
+ *    "hello": () => "HELLO",
+ *    "world": () => "WORLD",
+ *   }, () => "default"
+ *  ),
+ *  console.log, // output: HELLO
+ * )
+ *
+ * pipe(
+ *  1,
+ *  simpleUnionTypeMatch<TestUnion, string>(
+ *   {
+ *    "hello": () => "HELLO",
+ *    "world": () => "WORLD",
+ *   }, () => "default"
+ *  ),
+ *  console.log, // output: default
+ * )
+ *
+ * pipe(
+ *  1,
+ *  simpleUnionTypeMatch<TestUnion, string>(
+ *   {
+ *    "hello": () => "HELLO",
+ *    "world": () => "WORLD",
+ *   }
+ *  ), // throw an error due to no matcher for 1
+ *  console.log,
+ * )
+ * ```
+ *
+ * @typeParam T Union type for strings or numbers only
+ * @typeParam R Return type for the execution of matchers
+ *
+ * @param matchers Record where keys are members of the union type and values are functions for each member.
+ * @param defaultMatcher Optional function to return the default value.
+ */
+export const simpleUnionMatch =
+  <T extends string | number, R>(
+    matchers: Partial<Record<T, (match: T) => R>>,
+    defaultMatcher?: (other: T) => R,
+  ) =>
+  (value: T): R =>
+    pipe(
+      matchers[value],
+      O.fromNullable,
+      O.alt(() => O.fromNullable(defaultMatcher)),
+      O.map((matcher) => matcher(value)),
+      O.getOrElseW(() => {
+        throw new Error(`Missing matcher for literal type: ${value}`);
+      }),
     );

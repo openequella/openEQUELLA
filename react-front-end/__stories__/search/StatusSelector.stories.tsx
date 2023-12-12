@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { liveStatuses, nonLiveStatuses } from "../../tsrc/modules/SearchModule";
 import StatusSelector, {
@@ -30,7 +30,7 @@ export default {
 
 const onChange = action("onChange");
 
-export const BasicSelectorLiveOnly: Story<StatusSelectorProps> = (args) => (
+export const BasicSelectorLiveOnly: StoryFn<StatusSelectorProps> = (args) => (
   <StatusSelector {...args} />
 );
 BasicSelectorLiveOnly.args = {
@@ -38,16 +38,16 @@ BasicSelectorLiveOnly.args = {
   onChange,
 };
 
-export const BasicSelectorAllStatuses: Story<StatusSelectorProps> = (args) => (
-  <StatusSelector {...args} />
-);
+export const BasicSelectorAllStatuses: StoryFn<StatusSelectorProps> = (
+  args,
+) => <StatusSelector {...args} />;
 BasicSelectorAllStatuses.args = {
   ...BasicSelectorLiveOnly.args,
   value: liveStatuses.concat(nonLiveStatuses),
 };
 
-export const AdvancedSelectorCustomOptions: Story<StatusSelectorProps> = (
-  args
+export const AdvancedSelectorCustomOptions: StoryFn<StatusSelectorProps> = (
+  args,
 ) => <StatusSelector {...args} />;
 AdvancedSelectorCustomOptions.args = {
   ...BasicSelectorLiveOnly.args,

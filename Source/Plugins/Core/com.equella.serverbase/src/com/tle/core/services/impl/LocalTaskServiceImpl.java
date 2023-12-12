@@ -18,7 +18,6 @@
 
 package com.tle.core.services.impl;
 
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
@@ -130,7 +129,7 @@ public class LocalTaskServiceImpl extends AbstractTaskServiceImpl {
       }
       throw new RuntimeException("Failed to start global task:" + globalId);
     } catch (InterruptedException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

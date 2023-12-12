@@ -110,32 +110,32 @@ export const mockCollaborators = () => {
     mockCurrentUser: jest.spyOn(UserModule, "getCurrentUserDetails"),
     mockListClassification: jest.spyOn(
       SearchFacetsModule,
-      "listClassifications"
+      "listClassifications",
     ),
     mockSearch: jest.spyOn(SearchModule, "searchItems"),
     mockImageGallerySearch: jest.spyOn(
       GallerySearchModule,
-      "imageGallerySearch"
+      "imageGallerySearch",
     ),
     mockVideoGallerySearch: jest.spyOn(
       GallerySearchModule,
-      "videoGallerySearch"
+      "videoGallerySearch",
     ),
     mockListImageGalleryClassifications: jest.spyOn(
       GallerySearchModule,
-      "listImageGalleryClassifications"
+      "listImageGalleryClassifications",
     ),
     mockListVideoGalleryClassifications: jest.spyOn(
       GallerySearchModule,
-      "listVideoGalleryClassifications"
+      "listVideoGalleryClassifications",
     ),
     mockSearchSettings: jest.spyOn(
       SearchSettingsModule,
-      "getSearchSettingsFromServer"
+      "getSearchSettingsFromServer",
     ),
     mockConvertParamsToSearchOptions: jest.spyOn(
       SearchPageHelper,
-      "generateSearchPageOptionsFromQueryString"
+      "generateSearchPageOptionsFromQueryString",
     ),
     mockMimeTypeFilters: jest
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
@@ -145,11 +145,11 @@ export const mockCollaborators = () => {
       .mockImplementation(jest.fn),
     mockReadDataFromLocalStorage: jest.spyOn(
       BrowserStorageModule,
-      "readDataFromStorage"
+      "readDataFromStorage",
     ),
     mockGetAdvancedSearchByUuid: jest.spyOn(
       AdvancedSearchModule,
-      "getAdvancedSearchByUuid"
+      "getAdvancedSearchByUuid",
     ),
     mockAddFavouriteSearch: jest
       .spyOn(FavouriteModule, "addFavouriteSearch")
@@ -179,10 +179,10 @@ export const initialiseEssentialMocks = ({
   mockCollections.mockResolvedValue(getCollectionMap);
   mockCurrentUser.mockResolvedValue(getCurrentUserMock);
   mockListClassification.mockResolvedValue(
-    CategorySelectorMock.classifications
+    CategorySelectorMock.classifications,
   );
   mockSearchSettings.mockResolvedValue(
-    SearchSettingsModule.defaultSearchSettings
+    SearchSettingsModule.defaultSearchSettings,
   );
 };
 
@@ -200,7 +200,7 @@ export type MockedSearchPromise = jest.SpyInstance<
  */
 export const waitForSearchCompleted = async () =>
   await waitForElementToBeRemoved(() =>
-    screen.getByLabelText(languageStrings.searchpage.loading)
+    screen.getByLabelText(languageStrings.searchpage.loading),
   );
 
 /**
@@ -216,7 +216,7 @@ export const waitForSearchCompleted = async () =>
 export const renderSearchPage = async (
   queryString?: string,
   screenWidth: number = 1280,
-  currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
+  currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock,
 ): Promise<RenderResult> => {
   window.matchMedia = createMatchMedia(screenWidth);
 
@@ -237,7 +237,7 @@ export const renderSearchPage = async (
           <SearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </ThemeProvider>
+    </ThemeProvider>,
   );
   // Wait for the first completion of initial search
   await waitForSearchCompleted();
@@ -250,7 +250,7 @@ export const renderSearchPage = async (
  * @param container The root container where <RefineSearchPanel/> exists
  */
 export const queryRefineSearchPanel = (
-  container: Element
+  container: Element,
 ): HTMLDivElement | null =>
   container.querySelector<HTMLDivElement>("#refine-panel");
 
@@ -276,7 +276,7 @@ export const getRefineSearchPanel = (container: Element): HTMLDivElement => {
  */
 export const getRefineSearchComponent = (
   container: Element,
-  componentSuffix: string
+  componentSuffix: string,
 ) => {
   const e = queryRefineSearchComponent(container, componentSuffix);
   if (!e) {
@@ -295,7 +295,7 @@ export const getRefineSearchComponent = (
  */
 export const queryRefineSearchComponent = (
   container: Element,
-  componentSuffix: string
+  componentSuffix: string,
 ): HTMLElement | null => {
   const id = `#RefineSearchPanel-${componentSuffix}`;
   return container.querySelector(id);
@@ -354,7 +354,7 @@ export const queryStatusSelector = (container: HTMLElement) =>
  * @param container The root container where <ClassificationsPanel/> exists
  */
 export const queryClassificationPanel = (
-  container: Element
+  container: Element,
 ): HTMLDivElement | null =>
   container.querySelector<HTMLDivElement>("#classification-panel");
 
@@ -378,7 +378,7 @@ export const getClassificationPanel = (container: Element): HTMLDivElement => {
  */
 export const addSearchToFavourites = async (
   { getByLabelText, getByRole }: RenderResult,
-  favouriteName: string
+  favouriteName: string,
 ): Promise<boolean> => {
   const {
     saveSearchConfirmationText: successMsg,
@@ -389,26 +389,26 @@ export const addSearchToFavourites = async (
     languageStrings.searchpage.favouriteSearch.title,
     {
       selector: "button",
-    }
+    },
   );
   await userEvent.click(heartIcon);
 
   const dialog = getByRole("dialog");
   const favouriteNameInput = getMuiTextField(
     dialog,
-    languageStrings.searchpage.favouriteSearch.text
+    languageStrings.searchpage.favouriteSearch.text,
   );
   await userEvent.type(favouriteNameInput, favouriteName);
   const confirmButton = getMuiButtonByText(
     dialog,
-    languageStrings.common.action.ok
+    languageStrings.common.action.ok,
   );
 
   await userEvent.click(confirmButton);
 
   // Now wait until either a success or fail message is displayed
   await waitFor(() =>
-    screen.getByText(new RegExp(`(${successMsg})|(${failMsg})`))
+    screen.getByText(new RegExp(`(${successMsg})|(${failMsg})`)),
   );
 
   return !!screen.queryByText(successMsg);
@@ -449,7 +449,7 @@ export const getQueryBar = (container: Element): HTMLElement => {
 export const changeQuery = async (
   container: Element,
   query: string,
-  wildcardMode: boolean = true
+  wildcardMode: boolean = true,
 ) => {
   const fakeTimerUser = userEvent.setup({
     advanceTimers: jest.advanceTimersByTime,

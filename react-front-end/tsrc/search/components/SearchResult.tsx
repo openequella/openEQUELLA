@@ -129,14 +129,14 @@ export interface SearchResultProps {
    * @param mimeType MIME type to determine the viewer setup for
    */
   getViewerDetails?: (
-    mimeType: string
+    mimeType: string,
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>;
   /**
    * A function which can retrieve attachments for a specified item.
    */
   getItemAttachments?: (
     uuid: string,
-    version: number
+    version: number,
   ) => Promise<OEQ.Search.Attachment[]>;
   /**
    * The list of words which should be highlighted.
@@ -209,13 +209,13 @@ export default function SearchResult({
   const [showFavouriteItemDialog, setShowFavouriteItemDialog] =
     useState<boolean>(false);
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
-    bookmarkDefaultId
+    bookmarkDefaultId,
   );
 
   const history = useHistory();
 
   const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
-    undefined
+    undefined,
   );
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
@@ -237,7 +237,7 @@ export default function SearchResult({
             drmStatus,
             setDrmStatus,
             () => setDrmCheckOnSuccessHandler(undefined),
-            drmCheckOnSuccessHandler
+            drmCheckOnSuccessHandler,
           )
         : undefined;
 
@@ -255,7 +255,7 @@ export default function SearchResult({
     action: "add",
     onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
       addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest).then(
-        ({ bookmarkID }) => setBookmarkId(bookmarkID)
+        ({ bookmarkID }) => setBookmarkId(bookmarkID),
       ),
   };
 
@@ -266,7 +266,7 @@ export default function SearchResult({
         throw new Error("Bookmark ID can't be falsy.");
       }
       return deleteFavouriteItem(bookmarkId).then(() =>
-        setBookmarkId(undefined)
+        setBookmarkId(undefined),
       );
     },
   };
@@ -365,7 +365,7 @@ export default function SearchResult({
           </Typography>
         </ListItem>
       );
-    }
+    },
   );
 
   const highlightField = (fieldValue: string) =>
@@ -376,7 +376,7 @@ export default function SearchResult({
     const { url, onClick } = buildOpenSummaryPageHandler(
       uuid,
       version,
-      history
+      history,
     );
 
     return (
@@ -390,12 +390,12 @@ export default function SearchResult({
             O.alt(() =>
               drmStatus.isAllowSummary
                 ? O.none
-                : O.of(() => checkDrmPermission(onClick))
+                : O.of(() => checkDrmPermission(onClick)),
             ),
             O.map((handler) => {
               e.preventDefault();
               return handler();
-            })
+            }),
           );
         }}
       >

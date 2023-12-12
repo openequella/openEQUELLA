@@ -18,16 +18,21 @@
 
 package com.tle.core.freetext.index
 
+import com.dytech.devlib.PropBagEx
 import com.dytech.edge.queries.FreeTextQuery
 import com.tle.beans.Institution
+import com.tle.beans.entity.Schema
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.item.{Item, ItemIdKey, ItemStatus}
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.search.DefaultSearch
 import com.tle.common.searching.Search.SortType
+import com.tle.common.security.SecurityConstants
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.common.settings.standard.SearchSettings
+import com.tle.common.usermanagement.user.{AbstractUserState, CurrentUser, DefaultUserState}
+import com.tle.common.{NamedThreadFactory, Triple}
 import com.tle.core.events.services.EventService
 import com.tle.core.freetext.index.AbstractIndexEngine.Searcher
 import com.tle.core.freetext.indexer.StandardIndexer
@@ -42,7 +47,9 @@ import com.tle.core.services.user.UserPreferenceService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.core.zookeeper.ZookeeperService
 import com.tle.freetext.{FreetextIndexConfiguration, FreetextIndexImpl, IndexedItem}
-import org.apache.lucene.document.Document
+import org.apache.lucene.document.{Document, Field, FieldType}
+import org.apache.lucene.index.IndexOptions
+import org.apache.lucene.search.TotalHits.Relation
 import org.apache.lucene.search._
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyInt}
@@ -54,9 +61,15 @@ import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, GivenWhenThen, Outcome}
 import java.io.File
 import java.nio.file.Files
 import java.text.SimpleDateFormat
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.{Executors, LinkedBlockingQueue}
 import java.util.{Date, Locale, UUID}
+import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.reflect.io.Directory
+import scala.util.Random
 
 class ItemIndexTest
     extends FixtureAnyFunSpec
@@ -64,15 +77,39 @@ class ItemIndexTest
     with GivenWhenThen
     with BeforeAndAfterAll
     with BeforeAndAfter {
+  val schemaUuid      = "adfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val collectionUuid  = "bdfcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val itemUuid        = "zzzcaf58-241b-4eca-9740-6a26d1c3dd58"
+  val currentUserUuid = "sdscaf66-241b-4eca-9740-6a26d1c3dd58"
+
   val inst = new Institution
-  inst.setUniqueId(new scala.util.Random().nextLong)
+  inst.setUniqueId(2023L)
+
+  val schema = new Schema
+  schema.setUuid(schemaUuid)
+  schema.setDefinition(
+    new PropBagEx(
+      "<xml><item><name field='true'></name><description field='true'></description></item></xml>"))
 
   val collection = new ItemDefinition
-  collection.setUuid(UUID.randomUUID().toString)
+  collection.setUuid(collectionUuid)
+  collection.setSchema(schema)
 
   val owner = "admin"
 
   val indexRootDirectoryName = "ItemIndexTest"
+
+  val commonAclEntryID = 1000L
+  val ownerAclEntryID  = 1001L
+
+  // The field format for ACL permission is "ACLx-y" where "x" is the shortcut for the permission
+  // and "y" is the unique ID of the permission. The mapping between permissions and their shortcuts
+  // is defined in class `ItemIndex`.
+  def aclField(privilege: String, aclEntryID: Long) =
+    s"${ItemIndex.convertStdPriv(privilege)}$aclEntryID"
+  // The value format for ACL permission is "xxxG" where "xxx" must be a three-digit number which starts
+  // from 000 and "G" stands for "Grant".
+  val aclValue = "001G"
 
   def initialiseItemIndex(testCaseName: String): ItemIndex[FreetextResult] = {
     val freetextIndexConfiguration = new FreetextIndexConfiguration {
@@ -121,17 +158,24 @@ class ItemIndexTest
                            itemStatus: ItemStatus = ItemStatus.LIVE,
                            moderating: Boolean = false,
                            rating: Float = 3.5f,
-                           dateModified: Date = new Date): List[IndexedItem] = {
+                           dateModified: Date = new Date,
+                           itemDescription: String = "",
+                           properties: PropBagEx = new PropBagEx,
+                           privilege: Option[String] = None,
+                           itemDef: ItemDefinition = collection,
+                           itemUuid: String = itemUuid,
+                           key: Long = Random.nextLong()): List[IndexedItem] = {
     val indexer = new StandardIndexer
 
     Range(0, howMany)
-      .map(key => {
+      .map(_ => {
         val item = new Item()
-        item.setUuid(UUID.randomUUID().toString)
+        item.setUuid(itemUuid)
         item.setInstitution(inst)
-        item.setItemDefinition(collection)
+        item.setItemDefinition(itemDef)
         item.setOwner(owner)
         item.setName(LangUtils.createTextTempLangugageBundle(itemName))
+        item.setDescription(LangUtils.createTextTempLangugageBundle(itemDescription))
         item.setStatus(itemStatus)
         item.setModerating(moderating)
         item.setRating(rating)
@@ -139,11 +183,26 @@ class ItemIndexTest
         item.setDateForIndex(dateModified)
         item.setDateModified(dateModified)
 
-        val indexedItem = new IndexedItem(new ItemIdKey(key, UUID.randomUUID().toString, 1), inst)
+        val indexedItem = new IndexedItem(new ItemIdKey(key, itemUuid, 1), inst)
         indexedItem.setItem(item)
+        indexedItem.setItemXml(properties)
         indexedItem.setAdd(true)
         indexedItem.setNewSearcherRequired(true)
         indexer.getBasicFields(indexedItem).asScala.foreach(indexedItem.getItemdoc.add)
+
+        privilege match {
+          case Some(p) =>
+            val ft = new FieldType()
+            ft.setIndexOptions(IndexOptions.DOCS)
+            ft.setStored(true)
+            ft.setTokenized(false)
+            indexedItem.getAclMap.put(
+              SecurityConstants.DISCOVER_ITEM,
+              List(new Field(aclField(p, commonAclEntryID), aclValue, ft),
+                   new Field(aclField(p, ownerAclEntryID), aclValue, ft)).asJava)
+            indexer.addAllFields(indexedItem.getItemdoc, indexedItem.getACLEntries(p))
+          case None =>
+        }
 
         indexedItem
       })
@@ -168,14 +227,11 @@ class ItemIndexTest
   def buildSearcher(itemIndex: ItemIndex[_], searchConfig: DefaultSearch) =
     new Searcher[SearchResult] {
       override def search(searcher: IndexSearcher): SearchResult = {
-        def filters =
-          new ChainedFilter(itemIndex.getFilters(searchConfig).asScala.toArray, ChainedFilter.AND)
-
         def query = itemIndex.getQuery(searchConfig, searcher.getIndexReader, false)
 
         def sorter = itemIndex.getSorter(searchConfig)
 
-        searcher.search(query, filters, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
+        searcher.search(query, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
       }
     }
 
@@ -186,16 +242,30 @@ class ItemIndexTest
 
     try withFixture(test.toNoArgTest(itemIndex, buildDefaultSearch))
   }
-
-  override def beforeAll = {
+  private def prepareMocks = {
     mockStatic(classOf[CurrentInstitution])
     when(CurrentInstitution.get()).thenReturn(inst)
 
     mockStatic(classOf[CurrentLocale])
     when(CurrentLocale.getLocale).thenReturn(Locale.getDefault)
 
+    val userState: AbstractUserState = new DefaultUserState
+    // User state contains a `Triple` where the first element is a list of common ACL expression and the second element is
+    // a list of Owner ACL expressions and the third element is a list of Not Owner ACL expressions.
+    // Not Owner ACL expressions work similarily to Owner ACL expressions, so we just add mocks for the first two lists.
+    // This will test whether the mix of Common ACL expressions and Owner ACL expressions work correctly.
+    userState.setAclExpressions(
+      new Triple(java.util.Collections.singleton(commonAclEntryID),
+                 java.util.Collections.singleton(ownerAclEntryID),
+                 java.util.Collections.emptyList()))
+    mockStatic(classOf[CurrentUser])
+    when(CurrentUser.getUserState).thenReturn(userState)
+    when(CurrentUser.getUserID).thenReturn(currentUserUuid)
+
     AbstractPluginService.thisService = mock(classOf[PluginServiceImpl])
   }
+
+  override def beforeAll = prepareMocks
 
   override def afterAll = {
     new File(System.getProperty("java.io.tmpdir")).listFiles
@@ -203,6 +273,10 @@ class ItemIndexTest
       .filter(_.getName.contains(indexRootDirectoryName))
       .map(new Directory(_))
       .foreach(_.deleteRecursively)
+  }
+
+  def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
+    itemIndex.indexBatch(indexedItems.asJava)
   }
 
   describe("index manipulation") {
@@ -238,14 +312,10 @@ class ItemIndexTest
     }
   }
 
-  describe("searching") {
+  describe("document searching") {
     val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
-    def createIndexes(itemIndex: ItemIndex[_], indexedItems: List[IndexedItem]): Unit = {
-      itemIndex.indexBatch(indexedItems.asJava)
-    }
-
-    describe("filtering") {
+    describe("basic filtering") {
       it("supports filtering by text field") { f =>
         val (itemIndex, searchConfig) = f
 
@@ -302,7 +372,7 @@ class ItemIndexTest
       it("supports filtering by date range field") { f =>
         val (itemIndex, searchConfig) = f
 
-        Given("a list of Items where only one item is last modified yesterday")
+        Given("a list of Items where only one item is last modified within the date range")
         val start          = dateFormatter.parse("2023-07-10")
         val end            = dateFormatter.parse("2023-07-20")
         val modifiedDate   = dateFormatter.parse("2023-07-15")
@@ -312,10 +382,10 @@ class ItemIndexTest
                       generateIndexedItems(1, dateModified = modifiedDate) ++ generateIndexedItems(
                         2,
                         dateModified = outOfRangeDate))
-        When("a date range for yesterday is set in the search configuration")
+        When("the search configuration uses this date range for last modified date")
         searchConfig.setDateRange(Array(start, end))
 
-        Then("the search result should only return Items modified yesterday")
+        Then("the search result should only return Items modified within the date range")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         result.length shouldBe 1
 
@@ -323,6 +393,83 @@ class ItemIndexTest
           dateFormatter.parse(result.head.get(FreeTextQuery.FIELD_REALLASTMODIFIED))
         realModifiedDate should be > start
         realModifiedDate should be < end
+      }
+    }
+
+    describe("advanced filtering") {
+      val newCollection = new ItemDefinition()
+      newCollection.setUuid("46392820-5bce-3d29-b4b3-61131cfe20a4")
+
+      it("supports filtering by ACL expressions") { f =>
+        val (itemIndex, searchConfig) = f
+
+        Given("two Items where the first one requires ACL 'DISCOVER_ITEM'")
+        val itemName = "acl_item"
+        val permissionItem = generateIndexedItems(itemName = itemName,
+                                                  privilege =
+                                                    Option(SecurityConstants.DISCOVER_ITEM))
+        val nonPermissionItem = generateIndexedItems()
+        createIndexes(itemIndex, permissionItem ++ nonPermissionItem)
+
+        When("ACL 'DISCOVER_ITEM' is configured in the search configuration")
+        searchConfig.setPrivilege(SecurityConstants.DISCOVER_ITEM)
+
+        Then("the search result should only return the Item that require this ACL")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(itemName)
+      }
+
+      it("supports filtering by Must clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val moderatingItemName        = "moderating item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING,
+                                                               itemName = moderatingItemName,
+                                                               itemDef = newCollection)
+        val oldCollectionItem = generateIndexedItems(itemStatus = ItemStatus.DRAFT)
+
+        createIndexes(itemIndex,
+                      newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionItem)
+
+        When("a search configuration has Must clauses for Collection and Item status")
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMust(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that belong to the specified Collection and have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(moderatingItemName)
+      }
+
+      it("supports filtering by Must Not clauses") { f =>
+        val (itemIndex, searchConfig) = f
+        val draftItemName             = "draft item"
+
+        Given("Items generated in different Collections with different Item status")
+        val newCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemDef = newCollection)
+        val newCollectionModeratingItem =
+          generateIndexedItems(itemStatus = ItemStatus.MODERATING, itemDef = newCollection)
+        val oldCollectionDraftItem =
+          generateIndexedItems(itemStatus = ItemStatus.DRAFT, itemName = draftItemName)
+        val oldCollectionModeratingItem = generateIndexedItems(itemStatus = ItemStatus.MODERATING)
+
+        createIndexes(
+          itemIndex,
+          newCollectionDraftItem ++ newCollectionModeratingItem ++ oldCollectionDraftItem ++ oldCollectionModeratingItem)
+
+        When("a search configuration has multiple Must Not clause for Collection and Item status")
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMDEFID, newCollection.getUuid)
+        searchConfig.addMustNot(FreeTextQuery.FIELD_ITEMSTATUS, List("moderating").asJava)
+
+        Then(
+          "the search result should only return Items that don't belong to the specified Collection and don't have the specified Item status")
+        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        result.map(_.get(FreeTextQuery.FIELD_NAME)) shouldBe Array(draftItemName)
+
       }
     }
 
@@ -428,9 +575,12 @@ class ItemIndexTest
         Then("the search API should be called with those terms without the stopping words")
         // Mock an IndexSearcher.
         val mockedSearcher = mock(classOf[IndexSearcher])
-        doReturn(new TopFieldDocs(0, Array.empty[ScoreDoc], Array.empty[SortField], 0.0f))
+        doReturn(
+          new TopFieldDocs(new TotalHits(0, Relation.EQUAL_TO),
+                           Array.empty[ScoreDoc],
+                           Array.empty[SortField]))
           .when(mockedSearcher)
-          .search(any(classOf[Query]), any(classOf[Filter]), anyInt(), any(classOf[Sort]))
+          .search(any(classOf[Query]), anyInt(), any(classOf[Sort]))
 
         // Do the search with the mocked IndexSearcher.
         buildSearcher(itemIndex, searchConfig).search(mockedSearcher)
@@ -440,14 +590,155 @@ class ItemIndexTest
 
         verify(mockedSearcher).search(
           queryCaptor.capture(),
-          ArgumentCaptor.forClass[Filter, Filter](classOf[Filter]).capture(),
           ArgumentCaptor.forClass[Int, Int](classOf[Int]).capture(),
           ArgumentCaptor.forClass[Sort, Sort](classOf[Sort]).capture()
         )
 
         val processedQuery = queryCaptor.getValue.toString
-        processedQuery shouldBe "(+(name_vectored:java^2.0 body:java) +(name_vectored:scala^2.0 body:scala) +(name_vectored:interest^2.0 body:interest))"
+        processedQuery should (include("(name_vectored:java)^2.0 (body:java)^1.0") and
+          include("(name_vectored:scala)^2.0 (body:scala)^1.0") and
+          include("(name_vectored:interest)^2.0 (body:interest)^1.0"))
+      }
+    }
+
+    describe("classification searching") {
+      it("search classifications through schema nodes") { f =>
+        val (itemIndex, searchConfig) = f
+        val java8                     = "java 8"
+        val java11                    = "java 11"
+        val scala                     = "scala 3"
+        val node                      = "/item/name"
+        def properties(name: String)  = new PropBagEx(s"<xml><item><name>$name</name></item></xml>")
+
+        Given(s"a list of Items where the schema node for Item name is $node")
+        val java8Item  = generateIndexedItems(itemName = java8, properties = properties(java8))
+        val java11Item = generateIndexedItems(itemName = java11, properties = properties(java11))
+        val scalaItem  = generateIndexedItems(itemName = scala, properties = properties(scala))
+
+        createIndexes(itemIndex, java8Item ++ java11Item ++ scalaItem)
+
+        When("a classification search is performed to search for this schema node and a query")
+        searchConfig.setQuery("java")
+        val result = itemIndex.matrixSearch(searchConfig, List("/item/name").asJava, false, false)
+
+        Then("the search result should only return classifications that match the query")
+        result.getEntries.size() shouldBe 2
+
+        result.getEntries.asScala.flatMap(_.getFieldValues.asScala).toArray shouldBe Array(java11,
+                                                                                           java8)
       }
     }
   }
+
+  describe("term searching") {
+    it("supports making a term suggestion") { f =>
+      val (itemIndex, _) = f
+      Given("an Item where the keyword is in the description")
+      createIndexes(itemIndex, generateIndexedItems(11, itemDescription = "This is an apple."))
+
+      When("the search query is partial of the keyword")
+      val suggestion = itemIndex.suggestTerm(buildDefaultSearch, "appl", false)
+
+      Then("the search result should return the full word of the keyword")
+      suggestion shouldBe "apple"
+    }
+  }
+
+  describe("concurrency") {
+    it("supports writing and reading indexes concurrently") { f =>
+      val (itemIndex, searchConfig) = f
+
+      // We have 10000 Items to be contributed.
+      val range = Range(0, 10000)
+
+      // Blocking queue for new Items.
+      val newItems = new LinkedBlockingQueue[String](
+        range.map(_ => Random.alphanumeric take 10 mkString "").toList.asJava)
+
+      // Blocking queue for new indexes.
+      val indexQueue = new LinkedBlockingQueue[String](10)
+
+      // Counter used to count successful index reading.
+      val successfulReading: AtomicInteger = new AtomicInteger(0)
+
+      // Thread pools for Index writing and reading. Allocate half of the available processors to each pool.
+      val processors = Runtime.getRuntime.availableProcessors
+      val writingPool = ExecutionContext.fromExecutor(
+        Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("writing pool")))
+      val readingPool = ExecutionContext.fromExecutor(
+        Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("reading pool")))
+
+      // Initialise the mocks in one thread.
+      def initialise(): Unit = {
+        if (!CustomThreadFactory.isInitialized.get()) {
+          prepareMocks
+          CustomThreadFactory.isInitialized.set(true)
+        }
+      }
+
+      Given("A task to write indexes for 10000 Items in a dedicated writing thread pool")
+      def writingTask =
+        range.map(_ =>
+          Future {
+            initialise()
+
+            val itemName = newItems.take
+            createIndexes(itemIndex,
+                          generateIndexedItems(itemName = itemName,
+                                               itemUuid = UUID.randomUUID().toString))
+            indexQueue.put(itemName)
+          }(writingPool))
+
+      Given("A task to read indexes for 10000 Items in the dedicated reading thread pool")
+      def readingTask =
+        range.map(_ =>
+          Future {
+            initialise()
+
+            @tailrec
+            def search(itemName: String, config: DefaultSearch, retries: Int): Int = {
+              val result = itemIndex.search(buildSearcher(itemIndex, config))
+              result.length match {
+                case 1 =>
+                  successfulReading.incrementAndGet()
+                case 0 =>
+                  if (retries < 3) {
+                    // Sleep a little while as the indexes were not ready in last attempt.
+                    Thread.sleep(100)
+                    search(itemName, config, retries + 1)
+                  } else {
+                    throw new RuntimeException(
+                      s"Tried 3 times to read indexes for Item $itemName but still got nothing back")
+                  }
+                case incorrect =>
+                  throw new RuntimeException(
+                    s"Found $incorrect Items for $itemName but there should be one only")
+              }
+            }
+
+            val itemName = indexQueue.take
+            searchConfig.setQuery(itemName)
+            search(itemName, searchConfig, 0)
+          }(readingPool))
+
+      When("the two tasks are executed simultaneously")
+      // Run the task and wait for the result.
+      Await.result(Future
+                     .sequence(writingTask ++ readingTask),
+                   scala.concurrent.duration.Duration.Inf)
+
+      Then("Each task should complete 10000 computations successfully")
+      // If reading is all good, then writing must also be good.
+      successfulReading.get() shouldBe range.end
+    }
+  }
+}
+
+/**
+  * Thread factory used to support custom naming and initialisation of mocks.
+  */
+class CustomThreadFactory(name: String) extends NamedThreadFactory(name)
+
+object CustomThreadFactory {
+  val isInitialized: ThreadLocal[Boolean] = ThreadLocal.withInitial(() => false)
 }

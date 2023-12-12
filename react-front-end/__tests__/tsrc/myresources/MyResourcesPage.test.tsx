@@ -19,7 +19,7 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { CurrentUserDetails } from "@openequella/rest-api-client/dist/LegacyContent";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import {
   getByLabelText,
   getByText,
@@ -81,7 +81,7 @@ import {
 const history = createMemoryHistory();
 const buildMyResourcesSearchPageOptions = (
   status: OEQ.Common.ItemStatus[],
-  resourcesType: MyResourcesType
+  resourcesType: MyResourcesType,
 ) => ({
   ...defaultSearchPageOptions,
   status,
@@ -115,7 +115,7 @@ describe("<MyResourcesPage/>", () => {
   // `renderMyResourcesPage`. A key use if is you want to control the Location to
   // influence how the page is rendered.
   const renderMyResourcesPageWithUser = async (
-    currentUser: OEQ.LegacyContent.CurrentUserDetails
+    currentUser: OEQ.LegacyContent.CurrentUserDetails,
   ) => {
     window.matchMedia = createMatchMedia(1280);
 
@@ -132,7 +132,7 @@ describe("<MyResourcesPage/>", () => {
             <MyResourcesPage updateTemplate={jest.fn()} />
           </AppContext.Provider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     await waitForSearchCompleted();
@@ -142,7 +142,7 @@ describe("<MyResourcesPage/>", () => {
 
   const renderMyResourcesPage = async (
     resourceType: MyResourcesType = "Published",
-    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock
+    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock,
   ) => {
     history.push("/page/myresources", {
       customData: {
@@ -177,14 +177,14 @@ describe("<MyResourcesPage/>", () => {
       async (
         _: string,
         resourcesType: MyResourcesType,
-        statuses: OEQ.Common.ItemStatus[]
+        statuses: OEQ.Common.ItemStatus[],
       ) => {
         await renderMyResourcesPage(resourcesType);
         expect(mockSearch).toHaveBeenLastCalledWith({
           ...buildMyResourcesSearchPageOptions(statuses, resourcesType),
           includeAttachments: false,
         });
-      }
+      },
     );
   });
 
@@ -192,7 +192,7 @@ describe("<MyResourcesPage/>", () => {
     it("always displays MyResourcesSelector", async () => {
       const { container } = await renderMyResourcesPage();
       expect(
-        queryRefineSearchComponent(container, "MyResourcesSelector")
+        queryRefineSearchComponent(container, "MyResourcesSelector"),
       ).toBeInTheDocument();
     });
 
@@ -204,8 +204,8 @@ describe("<MyResourcesPage/>", () => {
         "OwnerSelector",
       ].forEach((componentSuffix) =>
         expect(
-          queryRefineSearchComponent(container, componentSuffix)
-        ).not.toBeInTheDocument()
+          queryRefineSearchComponent(container, componentSuffix),
+        ).not.toBeInTheDocument(),
       );
 
       expect.assertions(3);
@@ -214,10 +214,10 @@ describe("<MyResourcesPage/>", () => {
     it("hides Collection selector for Scrapbook", async () => {
       const { container } = await renderMyResourcesPage(
         "Scrapbook",
-        getCurrentUserMock
+        getCurrentUserMock,
       );
       expect(
-        queryRefineSearchComponent(container, "CollectionSelector")
+        queryRefineSearchComponent(container, "CollectionSelector"),
       ).not.toBeInTheDocument();
     });
 
@@ -230,20 +230,20 @@ describe("<MyResourcesPage/>", () => {
         });
 
         const { container } = await renderMyResourcesPage(
-          resourceType as MyResourcesType
+          resourceType as MyResourcesType,
         );
 
         const statusSelector = queryRefineSearchComponent(
           container,
-          "StatusSelector"
+          "StatusSelector",
         );
         expect(statusSelector).toBeInTheDocument();
 
         // The selector is used in advanced mode so there should be a text input within it.
         expect(
-          statusSelector?.querySelector("input[type='text']")
+          statusSelector?.querySelector("input[type='text']"),
         ).toBeInTheDocument();
-      }
+      },
     );
 
     it.each([
@@ -254,9 +254,9 @@ describe("<MyResourcesPage/>", () => {
       async (_: string, componentSuffix: string) => {
         const { container } = await renderMyResourcesPage();
         expect(
-          queryRefineSearchComponent(container, componentSuffix)
+          queryRefineSearchComponent(container, componentSuffix),
         ).toBeInTheDocument();
-      }
+      },
     );
   });
 
@@ -267,7 +267,7 @@ describe("<MyResourcesPage/>", () => {
       expect(history.location.state).toEqual({
         searchPageOptions: buildMyResourcesSearchPageOptions(
           ["ARCHIVED"],
-          resourceType
+          resourceType,
         ),
         customData: {
           myResourcesType: "Archive",
@@ -278,12 +278,12 @@ describe("<MyResourcesPage/>", () => {
 
   describe("Support for Scrapbook", () => {
     const renderWithViewerConfiguration = async (
-      viewerConfig: ViewerConfig
+      viewerConfig: ViewerConfig,
     ) => {
       jest
         .spyOn(MyResourcesPageHelper, "getScrapbookViewerConfig")
         .mockReturnValueOnce(
-          TE.right<string, O.Option<ViewerConfig>>(O.of(viewerConfig))
+          TE.right<string, O.Option<ViewerConfig>>(O.of(viewerConfig)),
         );
       searchPromise.mockResolvedValueOnce(getScrapbookItemSearchResult());
       return await renderMyResourcesPage("Scrapbook");
@@ -298,22 +298,22 @@ describe("<MyResourcesPage/>", () => {
         _: string,
         status: string,
         userDetails: CurrentUserDetails | undefined,
-        expecting: boolean
+        expecting: boolean,
       ) => {
         const { getByText } = await renderMyResourcesPage(
           "Published",
-          userDetails
+          userDetails,
         );
 
         await user.click(
-          getByText(languageStrings.myResources.resourceType.published)
+          getByText(languageStrings.myResources.resourceType.published),
         );
         const scrapbookOptionFound = !!screen.queryByText("Scrapbook", {
           selector: "li",
         });
 
         expect(scrapbookOptionFound).toBe(expecting);
-      }
+      },
     );
 
     it("supports editing a Scrapbook", async () => {
@@ -324,7 +324,7 @@ describe("<MyResourcesPage/>", () => {
       const { container } = await renderMyResourcesPage("Scrapbook");
       const editIcon = getByLabelText(
         getScrapbook(container),
-        languageStrings.common.action.edit
+        languageStrings.common.action.edit,
       );
 
       await user.click(editIcon);
@@ -339,7 +339,7 @@ describe("<MyResourcesPage/>", () => {
       const { container } = await renderMyResourcesPage("Scrapbook");
       const binButton = getByLabelText(
         getScrapbook(container),
-        languageStrings.common.action.delete
+        languageStrings.common.action.delete,
       );
 
       // Click the bin icon should show a dialog which has an 'OK' button.
@@ -367,12 +367,12 @@ describe("<MyResourcesPage/>", () => {
       // Confirm that the lightbox has now been displayed - with the unique element being
       // the lightbox's 'embed code' button.
       expect(
-        queryByLabelText(languageStrings.embedCode.copy)
+        queryByLabelText(languageStrings.embedCode.copy),
       ).toBeInTheDocument();
 
       // Access to summary page is disabled.
       expect(
-        queryByLabelText(languageStrings.lightboxComponent.openSummaryPage)
+        queryByLabelText(languageStrings.lightboxComponent.openSummaryPage),
       ).not.toBeInTheDocument();
     });
 
@@ -398,7 +398,7 @@ describe("<MyResourcesPage/>", () => {
         await user.click(getByText(scrapbookTitle, { selector: "a" }));
 
         expect(mockWindowOpen).toHaveBeenLastCalledWith(url, "_blank");
-      }
+      },
     );
   });
 
@@ -417,7 +417,7 @@ describe("<MyResourcesPage/>", () => {
         throw new Error("Failed to render SearchResult for Scrapbook");
       }
       expect(
-        queryByLabelText(scrapbook, languageStrings.common.action.edit)
+        queryByLabelText(scrapbook, languageStrings.common.action.edit),
       ).toBeInTheDocument();
 
       // There is one moderating Item in the search result so the text of 'Moderating since'
@@ -425,7 +425,7 @@ describe("<MyResourcesPage/>", () => {
       const moderatingItem = getByText("moderating").closest("li");
       if (!moderatingItem) {
         throw new Error(
-          "Failed to render SearchResult for Items in moderation"
+          "Failed to render SearchResult for Items in moderation",
         );
       }
       expect(queryByText(moderatingItem, since)).toBeInTheDocument();
@@ -447,7 +447,7 @@ describe("<MyResourcesPage/>", () => {
       const { queryByLabelText } = await renderMyResourcesPage();
 
       expect(
-        queryByLabelText(languageStrings.searchpage.shareSearchHelperText)
+        queryByLabelText(languageStrings.searchpage.shareSearchHelperText),
       ).not.toBeInTheDocument();
     });
   });
@@ -460,7 +460,7 @@ describe("<MyResourcesPage/>", () => {
         options,
         A.map(querySelectOption),
         A.filter((r) => r !== null),
-        A.size
+        A.size,
       );
 
     it.each<[MyResourcesType, string[]]>([
@@ -500,7 +500,7 @@ describe("<MyResourcesPage/>", () => {
       "does not display the moderation sort options in non-moderation views (%s)",
       async (nonModerationType: MyResourcesType) => {
         const countModOptions = async (
-          type: MyResourcesType
+          type: MyResourcesType,
         ): Promise<number> => {
           const moderationSortOptions = [
             sortOptions.submitted,
@@ -513,7 +513,7 @@ describe("<MyResourcesPage/>", () => {
         };
 
         expect(await countModOptions(nonModerationType)).toBe(0);
-      }
+      },
     );
   });
 
@@ -528,13 +528,13 @@ describe("<MyResourcesPage/>", () => {
       const { queryByLabelText } = await renderModerationQueue();
 
       expect(
-        queryByLabelText(moderationQueueStrings.ariaLabel)
+        queryByLabelText(moderationQueueStrings.ariaLabel),
       ).toBeInTheDocument();
     });
 
     it("has a dialog to display rejection comments for rejected items", async () => {
       mockSearch.mockImplementationOnce(() =>
-        Promise.resolve(getModerationItemsSearchResult())
+        Promise.resolve(getModerationItemsSearchResult()),
       );
       const { getByText } = await renderModerationQueue();
 
@@ -545,8 +545,8 @@ describe("<MyResourcesPage/>", () => {
       await user.click(displayRejectionButton!);
       expect(
         await screen.findByText(
-          moderationQueueStrings.rejectionCommentDialogTitle
-        )
+          moderationQueueStrings.rejectionCommentDialogTitle,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -557,14 +557,13 @@ describe("<MyResourcesPage/>", () => {
     it("selects the resource type based on myResourcesType", async () => {
       history.push(baseUrl + "?myResourcesType=Moderation queue");
       mockSearch.mockResolvedValueOnce(getModerationItemsSearchResult());
-      const { queryByLabelText } = await renderMyResourcesPageWithUser(
-        getCurrentUserMock
-      );
+      const { queryByLabelText } =
+        await renderMyResourcesPageWithUser(getCurrentUserMock);
 
       expect(
         queryByLabelText(
-          languageStrings.myResources.moderationItemTable.ariaLabel
-        )
+          languageStrings.myResources.moderationItemTable.ariaLabel,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -576,7 +575,7 @@ describe("<MyResourcesPage/>", () => {
 
       history.push(
         baseUrl +
-          '?myResourcesType=All+resources&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"name"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"%2C"LIVE"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"680f5eb7-22e2-4ab6-bcea-25205165e36e"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}'
+          '?myResourcesType=All+resources&searchOptions={"rowsPerPage"%3A10%2C"currentPage"%3A0%2C"sortOrder"%3A"name"%2C"rawMode"%3Afalse%2C"status"%3A["PERSONAL"%2C"LIVE"]%2C"searchAttachments"%3Atrue%2C"query"%3A""%2C"collections"%3A[]%2C"lastModifiedDateRange"%3A{}%2C"owner"%3A{"id"%3A"680f5eb7-22e2-4ab6-bcea-25205165e36e"}%2C"mimeTypeFilters"%3A[]%2C"displayMode"%3A"list"%2C"dateRangeQuickModeEnabled"%3Atrue}',
       );
       await renderMyResourcesPageWithUser(getCurrentUserMock);
 
@@ -595,7 +594,7 @@ describe("<MyResourcesPage/>", () => {
       const resourceType: MyResourcesType = "All resources";
       const successfulSave = await addSearchToFavourites(
         await renderMyResourcesPage(resourceType),
-        "new favourite"
+        "new favourite",
       );
 
       // Pull out the params from the mocked call to save
@@ -607,18 +606,18 @@ describe("<MyResourcesPage/>", () => {
         // check type - perhaps excessively
         O.chain(
           O.fromPredicate(
-            (a): a is FavouriteURL => typeof a === "object" && "params" in a
-          )
+            (a): a is FavouriteURL => typeof a === "object" && "params" in a,
+          ),
         ),
         O.map((url) => url.params),
-        O.toUndefined
+        O.toUndefined,
       );
 
       // Now see if it all worked
       expect(successfulSave).toBe(true);
       expect(params).toBeDefined();
       expect(params!.get(PARAM_MYRESOURCES_TYPE)).toBe<MyResourcesType>(
-        resourceType
+        resourceType,
       );
     });
   });

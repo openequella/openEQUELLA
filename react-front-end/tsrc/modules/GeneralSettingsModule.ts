@@ -26,7 +26,7 @@ export const fetchUISetting = (): Promise<OEQ.Settings.UISettings> =>
 
 export const saveUISetting = (
   newUIEnabled: boolean,
-  newSearchEnabled: boolean
+  newSearchEnabled: boolean,
 ): Promise<void> =>
   OEQ.Settings.updateUiSettings(API_BASE_URL, {
     newUI: {

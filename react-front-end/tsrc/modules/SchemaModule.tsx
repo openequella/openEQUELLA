@@ -47,7 +47,7 @@ export const schemaListSummary = async (): Promise<Map<string, string>> => {
       resumption: resumptionToken,
     });
   return listEntities<OEQ.Common.BaseEntity>(getSchemas).then((entities) =>
-    summarisePagedBaseEntities(entities)
+    summarisePagedBaseEntities(entities),
   );
 };
 
@@ -68,7 +68,7 @@ const isDefinition = (value: unknown): value is Definition =>
 export const buildSchemaTree = (
   definition: Definition | unknown,
   name: string,
-  parent?: SchemaNode
+  parent?: SchemaNode,
 ): SchemaNode => {
   const node: SchemaNode = { name: name, parent: parent };
   if (!isDefinition(definition))
@@ -76,7 +76,7 @@ export const buildSchemaTree = (
   node.children = Object.entries(definition)
     .filter((entry): entry is [string, Definition] => isDefinition(entry[1]))
     .map(([childName, childDefinition]) =>
-      buildSchemaTree(childDefinition, childName, node)
+      buildSchemaTree(childDefinition, childName, node),
     );
 
   return node;
@@ -99,11 +99,11 @@ export const schemaTree = (uuid: string): Promise<SchemaNode> =>
       const standardRoot = "xml";
       if (elements.length !== 1 && elements[0] !== standardRoot) {
         throw new Error(
-          "Received schema does not start with the standard <xml> root element."
+          "Received schema does not start with the standard <xml> root element.",
         );
       }
       return buildSchemaTree(schema.definition[standardRoot], standardRoot);
-    }
+    },
   );
 
 /**
@@ -138,12 +138,12 @@ export const pathForNode = (node: SchemaNode, stripXml = true): string => {
 export const getAllPaths = (
   nodes: SchemaNode,
   stripXml = true,
-  paths: string[] = []
+  paths: string[] = [],
 ): string[] =>
   paths
     .concat(pathForNode(nodes, stripXml))
     .concat(
       nodes.children?.flatMap((childNode) =>
-        getAllPaths(childNode, stripXml, paths)
-      ) ?? []
+        getAllPaths(childNode, stripXml, paths),
+      ) ?? [],
     );

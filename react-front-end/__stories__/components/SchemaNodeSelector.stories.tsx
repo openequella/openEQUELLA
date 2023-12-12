@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import SchemaNodeSelector, {
   SchemaNodeSelectorProps,
 } from "../../tsrc/settings/SchemaNodeSelector";
@@ -28,8 +28,8 @@ export default {
   argTypes: { setSelectedNode: { action: "setSelectedNode" } },
 } as Meta<SchemaNodeSelectorProps>;
 
-export const SchemaNodeSelectorComponent: Story<SchemaNodeSelectorProps> = (
-  args
+export const SchemaNodeSelectorComponent: StoryFn<SchemaNodeSelectorProps> = (
+  args,
 ) => <SchemaNodeSelector {...args} />;
 SchemaNodeSelectorComponent.args = {
   tree: testSchema,

@@ -86,7 +86,7 @@ export const reducer = (state: State, action: Action): State => {
           callback: action.callback,
           updateClassifications: action.updateClassifications,
           ...prevResults,
-        })
+        }),
       );
     case "search-complete":
       return {

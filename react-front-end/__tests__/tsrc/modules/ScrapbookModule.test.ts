@@ -30,7 +30,7 @@ describe("saveSearchPageOptions", () => {
       J.stringify,
       E.match((error) => {
         throw new Error(`Failed to parse 'defaultSearchPageOptions': ${error}`);
-      }, identity)
+      }, identity),
     );
     const hash = MD5(jsonString);
 

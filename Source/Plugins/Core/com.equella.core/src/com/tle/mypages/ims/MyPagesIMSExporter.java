@@ -23,7 +23,6 @@ import static com.tle.common.PathUtils.filePath;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.google.common.base.Function;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
@@ -56,6 +55,7 @@ import com.tle.mypages.web.attachments.MyPagesSummariser;
 import com.tle.web.htmleditor.service.HtmlEditorService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -130,7 +130,7 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
             myPagesService.forFile(
                 imsRoot,
                 page.getFilename(),
-                new Function<Reader, String>() {
+                new Function<>() {
                   @Override
                   @Nullable
                   public String apply(@Nullable Reader input) {
@@ -151,8 +151,8 @@ public class MyPagesIMSExporter implements IMSFileExporter, IMSAttachmentExporte
             new InputStreamReader(viewPage.getContentStream().getInputStream(), Constants.UTF8)) {
           // write it out again
           myPagesService.saveHtml(imsRoot, page.getFilename(), viewedRdr);
-        } catch (Exception io) {
-          throw Throwables.propagate(io);
+        } catch (IOException io) {
+          throw new RuntimeException(io);
         }
       }
     }

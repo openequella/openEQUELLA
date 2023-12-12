@@ -38,17 +38,17 @@ export const getFacetsFromServer = (): Promise<
  * * * Remove the flags and then save to the server.
  */
 export const batchUpdateOrAdd = (
-  facets: FacetedSearchClassificationWithFlags[]
+  facets: FacetedSearchClassificationWithFlags[],
 ): Promise<string[]> =>
   OEQ.FacetedSearchSettings.batchUpdateFacetedSearchSetting(
     API_BASE_URL,
-    facets.map((facet) => removeFlags(facet))
+    facets.map((facet) => removeFlags(facet)),
   ).then((data) => OEQ.BatchOperationResponse.groupErrorMessages(data));
 
 export const batchDelete = (ids: string[]): Promise<string[]> =>
   OEQ.FacetedSearchSettings.batchDeleteFacetedSearchSetting(
     API_BASE_URL,
-    ids.map((id) => parseInt(id))
+    ids.map((id) => parseInt(id)),
   ).then((data) => {
     return OEQ.BatchOperationResponse.groupErrorMessages(data);
   });
@@ -77,18 +77,20 @@ export const removeFlags = ({
  * If the list is empty then return -1.
  */
 export const getHighestOrderIndex = (
-  facets: FacetedSearchClassificationWithFlags[]
+  facets: FacetedSearchClassificationWithFlags[],
 ) => {
   if (facets.length === 0) {
     return -1;
   }
   return Math.max(
-    ...facets.filter((facet) => !facet.deleted).map((facet) => facet.orderIndex)
+    ...facets
+      .filter((facet) => !facet.deleted)
+      .map((facet) => facet.orderIndex),
   );
 };
 
 export const facetComparator = (
-  target: FacetedSearchClassificationWithFlags
+  target: FacetedSearchClassificationWithFlags,
 ) => {
   return (facet: FacetedSearchClassificationWithFlags) => facet === target;
 };
@@ -109,7 +111,7 @@ export const facetComparator = (
 export const reorder = (
   facets: FacetedSearchClassificationWithFlags[],
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ): FacetedSearchClassificationWithFlags[] =>
   facets.map((facet) => {
     let newOrderIndex = 0;
@@ -142,7 +144,7 @@ export const reorder = (
  */
 export const removeFacetFromList = (
   facets: FacetedSearchClassificationWithFlags[],
-  deletedOrderIndex: number
+  deletedOrderIndex: number,
 ): FacetedSearchClassificationWithFlags[] => {
   return facets
     .map((facet) => {

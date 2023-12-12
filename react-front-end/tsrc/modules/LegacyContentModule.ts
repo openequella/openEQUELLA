@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import type { ChangeRoute } from "../legacycontent/LegacyContent";
@@ -22,6 +23,20 @@ import type { ScrapbookType } from "./ScrapbookModule";
 
 const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
 
+export const ScrapbookLiteral = t.literal("scrapbook");
+export const ModQueueLiteral = t.literal("modqueue");
+
+export const LegacyMyResourcesCodec = t.union([
+  t.literal("published"),
+  t.literal("draft"),
+  ScrapbookLiteral,
+  ModQueueLiteral,
+  t.literal("archived"),
+  t.literal("all"),
+  t.literal("defaultValue"),
+]);
+
+export type LegacyMyResourcesTypes = t.TypeOf<typeof LegacyMyResourcesCodec>;
 /**
  * Send a Legacy content request to trigger server side event 'contributeFromNewUI', which will
  * return a route for accessing the Legacy Scrapbook creating page. To support the requirement
@@ -33,7 +48,7 @@ const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.
  */
 export const getLegacyScrapbookCreatingPageRoute = async (
   scrapbookType: ScrapbookType,
-  searchPageOptionsID: String
+  searchPageOptionsID: String,
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
     event__: [
@@ -51,7 +66,7 @@ export const getLegacyScrapbookCreatingPageRoute = async (
  */
 export const getLegacyScrapbookEditingPageRoute = async (
   itemKey: string,
-  searchOptionID: String
+  searchOptionID: String,
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
     event__: ["mcile.editFromNewUI"],

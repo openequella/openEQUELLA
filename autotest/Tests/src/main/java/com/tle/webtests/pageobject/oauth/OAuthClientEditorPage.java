@@ -54,6 +54,9 @@ public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage> {
   @FindBy(id = "clientSecretDiv")
   private WebElement clientSecretDiv;
 
+  @FindBy(id = "oace_tv")
+  private WebElement validityField;
+
   public OAuthClientEditorPage(PageContext context) {
     super(context, By.xpath("//h2[contains(text(), 'OAuth client')]"));
   }
@@ -194,6 +197,12 @@ public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage> {
       defaultUrlBox.click();
       return removalWaiter.get();
     }
+    return this;
+  }
+
+  public OAuthClientEditorPage setValidity(int validity) {
+    validityField.clear();
+    validityField.sendKeys(String.valueOf(validity));
     return this;
   }
 }

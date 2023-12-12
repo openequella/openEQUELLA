@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import YouTubeEmbed, {
   YouTubeEmbedProps,
@@ -26,14 +26,14 @@ export default {
   component: YouTubeEmbed,
 } as Meta<YouTubeEmbedProps>;
 
-export const EmbeddedYouTubeVideo: Story<YouTubeEmbedProps> = (args) => (
+export const EmbeddedYouTubeVideo: StoryFn<YouTubeEmbedProps> = (args) => (
   <YouTubeEmbed {...args} />
 );
 EmbeddedYouTubeVideo.args = {
   videoId: "OsctbVek0hs",
 };
 
-export const EmbeddedYouTubeVideoLarge: Story<YouTubeEmbedProps> = (args) => (
+export const EmbeddedYouTubeVideoLarge: StoryFn<YouTubeEmbedProps> = (args) => (
   <YouTubeEmbed {...args} />
 );
 EmbeddedYouTubeVideoLarge.args = {

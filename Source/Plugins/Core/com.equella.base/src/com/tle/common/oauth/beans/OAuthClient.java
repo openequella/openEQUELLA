@@ -28,7 +28,6 @@ import javax.persistence.Lob;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 // TODO: how do you do this when it's across two tables????
@@ -61,6 +60,12 @@ public final class OAuthClient extends BaseEntity {
   /** Currently, no clients require user approval */
   @Column(nullable = false)
   private boolean requiresApproval;
+
+  /**
+   * The number of days tokens generated for this client are valid for. 0 means they never expire.
+   */
+  @Column(nullable = false)
+  private int tokenValidity;
 
   public String getClientId() {
     return clientId;
@@ -108,5 +113,26 @@ public final class OAuthClient extends BaseEntity {
 
   public void setRequiresApproval(boolean requiresApproval) {
     this.requiresApproval = requiresApproval;
+  }
+
+  /**
+   * Returns the number of days for which tokens generated for this client are valid. 0 means they
+   * never expire.
+   */
+  public int getTokenValidity() {
+    return tokenValidity;
+  }
+
+  /**
+   * Where tokenValidity is 0, tokens never expire, and all other values should be positive.
+   *
+   * @param tokenValidity number of days tokens generated for this client are valid.
+   */
+  public void setTokenValidity(int tokenValidity) {
+    if (tokenValidity < 0) {
+      throw new IllegalArgumentException("Token validity must be >= 0");
+    }
+
+    this.tokenValidity = tokenValidity;
   }
 }

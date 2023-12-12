@@ -56,7 +56,7 @@ interface WizardIds {
 
 interface CloudControlRegisterImpl extends CloudControlRegister {
   createRender: <T extends object = object>(
-    data: WizardIds
+    data: WizardIds,
   ) => (params: ControlApi<T>) => void;
 
   forceReload(): void;
@@ -130,7 +130,7 @@ async function getState(wizid: string): Promise<VersionedItemState> {
 async function putEdits(itemEdit: ItemEdit): Promise<ItemCommandResponses> {
   const res = await Axios.put<ItemCommandResponses>(
     wizardUri("edit"),
-    itemEdit
+    itemEdit,
   );
   return res.data;
 }
@@ -145,7 +145,7 @@ const observer = new MutationObserver(function () {
     document,
     null,
     XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE,
-    null
+    null,
   );
   const res: Element[] = [];
   for (let i = 0; i < liveElements.snapshotLength; i++) {
@@ -189,7 +189,7 @@ $(window).bind("presubmit", () => {
             value: required.toString(),
           })
           .appendTo("#cloudState");
-      }
+      },
     );
     allValid = allValid && valid;
   });
@@ -200,7 +200,7 @@ $(window).bind("presubmit", () => {
       .attr({ type: "hidden", name: "xmldoc", value: xmlDoc })
       .appendTo("#cloudState");
     currentState = currentState.then((state) =>
-      runListeners({ ...state, xml: latestXml })
+      runListeners({ ...state, xml: latestXml }),
     );
   }
 });
@@ -216,7 +216,7 @@ export const CloudControl: CloudControlRegisterImpl = {
     vendorId: string,
     controlType: string,
     mount: (params: ControlApi<T>) => void,
-    unmount: (removed: Element) => void
+    unmount: (removed: Element) => void,
   ) {
     registrations[vendorId + "_" + controlType] = { mount, unmount };
   },
@@ -232,12 +232,12 @@ export const CloudControl: CloudControlRegisterImpl = {
       let nextState = await getState(wizardIds.wizId);
       if (nextState.stateVersion < state.stateVersion) {
         console.log(
-          `Out of order state detected, already had ${state.stateVersion} but got ${nextState.stateVersion}`
+          `Out of order state detected, already had ${state.stateVersion} but got ${nextState.stateVersion}`,
         );
         console.log(
           `Already had ${serializer.serializeToString(
-            state.xml
-          )} but got ${serializer.serializeToString(nextState.xml)}`
+            state.xml,
+          )} but got ${serializer.serializeToString(nextState.xml)}`,
         );
         nextState = state;
       }
@@ -273,7 +273,7 @@ export const CloudControl: CloudControlRegisterImpl = {
             break;
           case "edited": {
             const ind = att.findIndex(
-              (at) => at.uuid === change.attachment.uuid
+              (at) => at.uuid === change.attachment.uuid,
             );
             att[ind] = change.attachment;
             break;
@@ -349,7 +349,7 @@ export const CloudControl: CloudControlRegisterImpl = {
 
       function uploadFile(name: string, file: File): Promise<void> {
         return Axios.put(stagingPath(name), file).then(
-          CloudControl.forceReload
+          CloudControl.forceReload,
         );
       }
 
@@ -360,8 +360,8 @@ export const CloudControl: CloudControlRegisterImpl = {
       function registerNotification() {
         Axios.post(
           wizardUri(
-            "notify?providerId=" + encodeURIComponent(params.providerId)
-          )
+            "notify?providerId=" + encodeURIComponent(params.providerId),
+          ),
         );
       }
 
@@ -380,7 +380,7 @@ export const CloudControl: CloudControlRegisterImpl = {
           "provider/" +
             encodeURIComponent(params.providerId) +
             "/" +
-            encodeURIComponent(serviceId)
+            encodeURIComponent(serviceId),
         );
       }
 
@@ -390,7 +390,7 @@ export const CloudControl: CloudControlRegisterImpl = {
 
       function deregisterValidator(validator: ControlValidator) {
         controlValidators.splice(
-          controlValidators.findIndex((v) => v.validator === validator)
+          controlValidators.findIndex((v) => v.validator === validator),
         );
       }
 
@@ -421,7 +421,7 @@ export const CloudControl: CloudControlRegisterImpl = {
 const missingControl: Registration = {
   mount: (params) => {
     const errText = $(
-      `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${params.vendorId}_${params.controlType}"</p></div>`
+      `<div class="control ctrlinvalid"><p class="ctrlinvalidmessage">Failed to find registration for cloud control: "${params.vendorId}_${params.controlType}"</p></div>`,
     );
     $(params.element).append(errText);
     console.error("Parameters for failed cloud control", params);

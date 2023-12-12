@@ -291,7 +291,7 @@ public class EditUserSection extends TwoColumnLayout<EditUserSection.EditUserMod
     }
   }
 
-  private class DateFormatModel extends DynamicHtmlListModel<NameValue> {
+  private final class DateFormatModel extends DynamicHtmlListModel<NameValue> {
     @Override
     protected Iterable<NameValue> populateModel(SectionInfo info) {
       List<NameValue> values = new ArrayList<NameValue>();

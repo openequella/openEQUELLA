@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { getAdvancedSearchesFromServerResult } from "../../__mocks__/AdvancedSearchModule.mock";
 import {
@@ -31,15 +31,15 @@ export default {
   },
 } as Meta<AdvancedSearchSelectorProps>;
 
-export const NoValueSelected: Story<AdvancedSearchSelectorProps> = (args) => (
+export const NoValueSelected: StoryFn<AdvancedSearchSelectorProps> = (args) => (
   <AdvancedSearchSelector {...args} />
 );
 NoValueSelected.args = {
   advancedSearches: getAdvancedSearchesFromServerResult,
 };
 
-export const InitialValueSelected: Story<AdvancedSearchSelectorProps> = (
-  args
+export const InitialValueSelected: StoryFn<AdvancedSearchSelectorProps> = (
+  args,
 ) => <AdvancedSearchSelector {...args} />;
 InitialValueSelected.args = {
   ...NoValueSelected.args,

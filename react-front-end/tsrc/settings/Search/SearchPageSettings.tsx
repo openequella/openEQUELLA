@@ -55,7 +55,7 @@ const SearchPageSettings = ({ updateTemplate }: TemplateUpdateProps) => {
       appErrorHandler(error);
       setDisableSettings(true);
     },
-    [appErrorHandler]
+    [appErrorHandler],
   );
 
   const changesUnsaved = !shallowEqual(searchSettings, initialSearchSettings);

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import Error, { ErrorProps } from "../../tsrc/components/Error";
 
 export default {
@@ -24,7 +24,7 @@ export default {
   component: Error,
 } as Meta<ErrorProps>;
 
-export const WithWarningMessage: Story<ErrorProps> = (args) => (
+export const WithWarningMessage: StoryFn<ErrorProps> = (args) => (
   <Error {...args} />
 );
 WithWarningMessage.args = {

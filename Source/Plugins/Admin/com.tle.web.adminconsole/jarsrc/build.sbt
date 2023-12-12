@@ -1,8 +1,8 @@
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"            % "1.0.7",
-  "com.google.guava"       % "guava"          % "31.1-jre",
-  "org.slf4j"              % "jcl-over-slf4j" % "2.0.7",
-  "org.slf4j"              % "slf4j-simple"   % "2.0.7",
+  "com.google.guava"       % "guava"          % "32.1.3-jre",
+  "org.slf4j"              % "jcl-over-slf4j" % "2.0.9",
+  "org.slf4j"              % "slf4j-simple"   % "2.0.9",
   springWeb,
   springAop,
   springContext,

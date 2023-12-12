@@ -23,3 +23,7 @@ export const getRemoteSearchesFromServerResult: OEQ.Common.BaseEntitySummary[] =
     { name: "Remote Search 2", uuid: "a590e7bf-6fa9-4737-9a93-16b0e9ea82c9" },
     { name: "Remote Search 3", uuid: "2c949159-6b61-41b7-964b-0cea6c67730f" },
   ];
+
+export const getRemoteSearchesFromServer = (): Promise<
+  OEQ.Common.BaseEntitySummary[]
+> => Promise.resolve(getRemoteSearchesFromServerResult);

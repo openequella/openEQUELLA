@@ -93,7 +93,7 @@ public class GPassword extends GuiControl {
     }
   }
 
-  private static class ConfirmPassword {
+  private static final class ConfirmPassword {
     private boolean confirmed = false;
 
     private ConfirmPassword(final JPasswordField fieldToConfirm) {

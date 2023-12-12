@@ -33,8 +33,17 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.DataSourceService;
 import com.tle.core.hibernate.SystemDatabase;
 import com.tle.core.hibernate.event.SchemaEvent;
-import com.tle.core.migration.*;
+import com.tle.core.migration.InstallSettings;
+import com.tle.core.migration.Migration;
+import com.tle.core.migration.MigrationErrorReport;
+import com.tle.core.migration.MigrationExt;
+import com.tle.core.migration.MigrationService;
+import com.tle.core.migration.MigrationState;
+import com.tle.core.migration.MigrationStatus;
+import com.tle.core.migration.MigrationStatusLog;
 import com.tle.core.migration.MigrationStatusLog.LogType;
+import com.tle.core.migration.SchemaInfo;
+import com.tle.core.migration.SchemaInfoImpl;
 import com.tle.core.migration.impl.MigrationMessage.AddMessage;
 import com.tle.core.migration.impl.MigrationMessage.InstallMessage;
 import com.tle.core.migration.impl.MigrationMessage.MigrateMessage;
@@ -402,8 +411,10 @@ public class MigrationServiceImpl implements MigrationService, StartupBean, Task
     if (response.getStatus() != null) {
       migrationStatus = response.getStatus();
     }
-    if (response.getError() != null) {
-      Throwables.propagate(response.getError());
+    Throwable error = response.getError();
+    if (error != null) {
+      Throwables.throwIfUnchecked(error);
+      throw new RuntimeException(error);
     }
     return response.getContents();
   }

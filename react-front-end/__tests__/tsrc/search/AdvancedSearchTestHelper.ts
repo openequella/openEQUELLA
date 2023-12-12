@@ -52,11 +52,11 @@ export const editBoxEssentials: BasicControlEssentials = {
 
 export const oneEditBoxWizard = (
   mandatory: boolean,
-  defaultValues: string[] = []
+  defaultValues: string[] = [],
 ): OEQ.AdvancedSearch.AdvancedSearchDefinition => ({
   ...getAdvancedSearchDefinition,
   controls: [{ ...editBoxEssentials, mandatory, defaultValues }].map(
-    mockWizardControlFactory
+    mockWizardControlFactory,
   ),
 });
 
@@ -245,7 +245,7 @@ export const isStringArrayValues = (x: string | string[]): x is string[] =>
  */
 export type MockedControlValue = [
   OEQ.WizardControl.WizardBasicControl,
-  WizardControlLabelValue
+  WizardControlLabelValue,
 ];
 
 /**
@@ -258,7 +258,7 @@ export type MockedControlValue = [
  */
 const getWizardControlByTitle = (
   container: HTMLElement,
-  title: string
+  title: string,
 ): HTMLElement =>
   pipe(
     (getByText(container, title).parentElement as HTMLLabelElement)?.htmlFor,
@@ -266,37 +266,37 @@ const getWizardControlByTitle = (
     E.chain((id) =>
       pipe(
         container.querySelector<HTMLElement>(`#${id}`),
-        E.fromNullable(`Failed to locate main div with id of ${id}`)
-      )
+        E.fromNullable(`Failed to locate main div with id of ${id}`),
+      ),
     ),
     E.getOrElseW((e) => {
       throw new TypeError(e);
-    })
+    }),
   );
 
 // Function to build a `WizardControlLabelValue` for an Option type control with supplied values.
 const buildLabelValueForOption = (
   options: OEQ.WizardCommonTypes.WizardControlOption[],
-  values: string[]
+  values: string[],
 ): WizardControlLabelValue =>
   pipe(
     options,
     A.zip(values),
     A.reduce(new Map<string, string>(), (m, [{ text }, value]) =>
-      pipe(m, M.upsertAt(S.Eq)(text ?? wizardControlBlankLabel, value))
-    )
+      pipe(m, M.upsertAt(S.Eq)(text ?? wizardControlBlankLabel, value)),
+    ),
   );
 
 // Function to build a `WizardControlLabelValue` for controls that only need title and one value.
 const buildLabelValueForControl = (
   title: string = wizardControlBlankLabel,
-  value: string | string[]
+  value: string | string[],
 ) => new Map([[title, value]]);
 
 // Function to build a `WizardControlLabelValue` for the supplied control and its values.
 const buildLabelValue = (
   { controlType, title, options }: BasicControlEssentials,
-  values: string[]
+  values: string[],
 ): WizardControlLabelValue => {
   switch (controlType) {
     case "editbox":
@@ -319,14 +319,14 @@ const buildLabelValue = (
             text,
             E.fromPredicate(
               S.isString,
-              () => "Shufflebox requires 'text' to be defined"
+              () => "Shufflebox requires 'text' to be defined",
             ),
             E.getOrElseW((s) => {
               throw new TypeError(s);
-            })
-          )
+            }),
+          ),
         ),
-        (labels: string[]) => buildLabelValueForControl(title, labels)
+        (labels: string[]) => buildLabelValueForControl(title, labels),
       );
     case "html":
       return new Map(); // Nothing to do
@@ -335,7 +335,7 @@ const buildLabelValue = (
     case "termselector":
     case "userselector":
       throw new Error(
-        `Unsupported controlType [${controlType}] - please implement!`
+        `Unsupported controlType [${controlType}] - please implement!`,
       );
     default:
       return absurd(controlType);
@@ -348,7 +348,7 @@ const buildLabelValue = (
  * @param useDefaultValues `true` to use each mocked control's default values.
  */
 export const generateMockedControls = (
-  useDefaultValues: boolean
+  useDefaultValues: boolean,
 ): MockedControlValue[] => {
   const orderByTitle: Ord<BasicControlEssentials> = contramap<
     O.Option<string>,
@@ -358,7 +358,7 @@ export const generateMockedControls = (
   const collectByTitle = M.collect<BasicControlEssentials>(orderByTitle);
   const buildControlValue = (
     control: BasicControlEssentials,
-    values: string[]
+    values: string[],
   ): MockedControlValue => [
     mockWizardControlFactory(control),
     buildLabelValue(control, useDefaultValues ? control.defaultValues : values),
@@ -366,7 +366,7 @@ export const generateMockedControls = (
 
   return pipe(
     controlValues,
-    collectByTitle<string[], MockedControlValue>(buildControlValue)
+    collectByTitle<string[], MockedControlValue>(buildControlValue),
   );
 };
 
@@ -386,19 +386,19 @@ const selectShuffleBoxOption =
       pipe(
         id.match(/.+-(options|selections)-label-.+/), // based on IDs in <ShuffleBox>
         O.fromNullable,
-        O.chain(A.lookup(1))
+        O.chain(A.lookup(1)),
       );
 
     // Capture what list the specified label is in - or undefined if unknown
     const withList = (
-      element: HTMLElement
+      element: HTMLElement,
     ): { element: HTMLElement; list?: string } =>
       pipe(
         element.parentElement?.id,
         O.fromNullable,
         O.chain(listFromId),
         O.toUndefined,
-        (list) => ({ element, list })
+        (list) => ({ element, list }),
       );
 
     // Functionality to select an option and add it to the 'selections'
@@ -408,7 +408,7 @@ const selectShuffleBoxOption =
         withList,
         E.fromPredicate(
           ({ list }) => list !== undefined,
-          () => `Option "${label}" is in the wrong place!`
+          () => `Option "${label}" is in the wrong place!`,
         ),
         E.fold(
           (e) => {
@@ -419,7 +419,7 @@ const selectShuffleBoxOption =
             O.match(
               () => {
                 console.debug(
-                  `No action taken on "${label}" as already in target list`
+                  `No action taken on "${label}" as already in target list`,
                 );
                 return Promise.resolve();
               },
@@ -428,12 +428,12 @@ const selectShuffleBoxOption =
                 await userEvent.click(optionCheckbox);
                 // click button to add to selections
                 await userEvent.click(
-                  getByLabelText(shuffleBox, shuffleBoxStrings.addSelected)
+                  getByLabelText(shuffleBox, shuffleBoxStrings.addSelected),
                 );
-              }
-            )
-          )
-        )
+              },
+            ),
+          ),
+        ),
       );
   };
 
@@ -448,7 +448,7 @@ const selectShuffleBoxOption =
 export const updateControlValue = async (
   container: HTMLElement,
   updates: WizardControlLabelValue,
-  controlType: OEQ.WizardControl.ControlType
+  controlType: OEQ.WizardControl.ControlType,
 ): Promise<void> => {
   const [labels, values] = A.unzip(M.toArray(S.Ord)(updates));
   // Filter down `updates` to only those which have a single value (string vs string[])
@@ -458,7 +458,7 @@ export const updateControlValue = async (
   const traverseUpdates = (f: (label: string, value: string) => T.Task<void>) =>
     M.getTraversableWithIndex(S.Ord).traverseWithIndex(T.ApplicativeSeq)(
       singleValueUpdates(),
-      f
+      f,
     );
   const inputFieldDetails = (): { label: string; value: string } =>
     pipe(
@@ -469,9 +469,9 @@ export const updateControlValue = async (
             x[1], // i.e. `values`
             A.head,
             O.map(S.isString), // is it a `string` (or a `string[]`)
-            O.getOrElse(constFalse)
+            O.getOrElse(constFalse),
           ),
-        () => "Unexpected labels/values combination"
+        () => "Unexpected labels/values combination",
       ),
       E.map(([ls, vs]) => ({
         label: ls[0],
@@ -479,19 +479,19 @@ export const updateControlValue = async (
       })),
       E.getOrElseW((e) => {
         throw new TypeError(e);
-      })
+      }),
     );
   const updateShuffleValues = (f: (value: string) => T.Task<void>) =>
     pipe(
       values[0],
       E.fromPredicate(
         isStringArrayValues,
-        () => "Shuffle controls require 'values' to be an array of strings"
+        () => "Shuffle controls require 'values' to be an array of strings",
       ),
       E.getOrElseW((e) => {
         throw new TypeError(e);
       }),
-      A.traverse(T.ApplicativeSeq)(f)
+      A.traverse(T.ApplicativeSeq)(f),
     );
 
   switch (controlType) {
@@ -511,14 +511,14 @@ export const updateControlValue = async (
             value,
             E.fromPredicate<string, string>(
               (v) => ["true", "false"].includes(v),
-              () => "Non-boolean specifier provided"
+              () => "Non-boolean specifier provided",
             ),
             E.map<string, boolean>((v) => v === "true"),
             E.chain<string, boolean, boolean>(
               E.fromPredicate(
                 (toBeSelected) => toBeSelected !== checkbox.checked,
-                () => "CheckBox status does not match the new value"
-              )
+                () => "CheckBox status does not match the new value",
+              ),
             ),
             E.fold<string, boolean, Promise<void>>(
               (error) => {
@@ -527,8 +527,8 @@ export const updateControlValue = async (
               },
               async () => {
                 await userEvent.click(checkbox);
-              }
-            )
+              },
+            ),
           );
         };
 
@@ -545,7 +545,7 @@ export const updateControlValue = async (
       await pipe(
         inputFieldDetails(),
         async ({ label, value }) =>
-          await selectOption(container, `#${label}-select`, value)
+          await selectOption(container, `#${label}-select`, value),
       );
       break;
     case "calendar": {
@@ -567,25 +567,25 @@ export const updateControlValue = async (
         values,
         E.fromPredicate(
           A.isNonEmpty,
-          () => "No values provided to update Calendar"
+          () => "No values provided to update Calendar",
         ),
         E.chain(
           flow(
             NEA.head,
             E.fromPredicate(
               isStringArrayValues,
-              () => "The type of Calendar values must be a string array"
-            )
-          )
+              () => "The type of Calendar values must be a string array",
+            ),
+          ),
         ),
         E.fold<string, string[], string[]>(
           (e) => {
             throw new TypeError(e);
           },
-          (vs) => vs
+          (vs) => vs,
         ),
         A.zip<string>(datePickerLabels),
-        A.traverse(T.ApplicativeSeq)(pickDate)
+        A.traverse(T.ApplicativeSeq)(pickDate),
       )();
 
       break;
@@ -594,7 +594,7 @@ export const updateControlValue = async (
       await pipe(
         getWizardControlByTitle(container, labels[0]),
         selectShuffleBoxOption,
-        updateShuffleValues
+        updateShuffleValues,
       )();
       break;
     case "shufflelist":
@@ -607,13 +607,13 @@ export const updateControlValue = async (
           async () => {
             await userEvent.type(newEntryField, value + "{enter}");
           },
-        updateShuffleValues
+        updateShuffleValues,
       )();
       break;
     case "termselector":
     case "userselector":
       throw new Error(
-        `Unsupported controlType [${controlType}] - please implement!`
+        `Unsupported controlType [${controlType}] - please implement!`,
       );
     default:
       return absurd(controlType);
@@ -632,7 +632,7 @@ export const getControlValue = (
   container: HTMLElement,
   labels: string[],
   controlType: OEQ.WizardControl.ControlType,
-  useOptionStatus: boolean = false
+  useOptionStatus: boolean = false,
 ): WizardControlLabelValue | undefined => {
   const getInput = (label: string) =>
     getByLabelText(container, label) as HTMLInputElement;
@@ -640,7 +640,7 @@ export const getControlValue = (
 
   const inputValueIfChecked = (
     checked: boolean,
-    value: string
+    value: string,
   ): O.Option<string> => (checked ? O.some(value) : O.none);
 
   // Function to build WizardControlLabelValue for CheckBox type controls.
@@ -653,18 +653,18 @@ export const getControlValue = (
           value: useOptionStatus
             ? O.some(`${input.checked}`)
             : inputValueIfChecked(input.checked, input.value),
-        }))
+        })),
       ),
       A.filter((a): a is { label: string; value: O.Some<string> } =>
-        O.isSome(a.value)
+        O.isSome(a.value),
       ),
       A.map(({ value, label }) => ({
         label,
         value: value.value,
       })),
       A.reduce(new Map<string, string>(), (m, { label, value }) =>
-        pipe(m, M.upsertAt(S.Eq)(label, value))
-      )
+        pipe(m, M.upsertAt(S.Eq)(label, value)),
+      ),
     );
 
   // Function to build WizardControlLabelValue for controls that have only one input.
@@ -673,7 +673,7 @@ export const getControlValue = (
       _labels,
       A.head,
       O.map((label) => buildMap(label, getInput(label).value)),
-      O.toUndefined
+      O.toUndefined,
     );
 
   // Gets the string values for <ListItem>s in a <List>
@@ -682,7 +682,7 @@ export const getControlValue = (
       list.querySelectorAll("span.MuiTypography-root"),
       Array.from,
       A.map<HTMLSpanElement, string>((e) => e.textContent ?? ""),
-      A.filter(not(S.isEmpty))
+      A.filter(not(S.isEmpty)),
     );
 
   switch (controlType) {
@@ -706,8 +706,8 @@ export const getControlValue = (
             [
               languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
               languageStrings.dateRangeSelector.defaultEndDatePickerLabel,
-            ].map(getDateValue)
-          )
+            ].map(getDateValue),
+          ),
       );
     case "shufflebox":
       return pipe(
@@ -715,14 +715,14 @@ export const getControlValue = (
         (shuffleBox) =>
           getByLabelText(
             shuffleBox,
-            shuffleBoxStrings.currentSelections
+            shuffleBoxStrings.currentSelections,
           ).querySelector("ul"),
         E.fromNullable("Failed to find the selections list!"),
         E.map(getListValues),
         E.getOrElseW((e) => {
           throw new Error(e);
         }),
-        (shuffleBoxSelections) => M.singleton(labels[0], shuffleBoxSelections)
+        (shuffleBoxSelections) => M.singleton(labels[0], shuffleBoxSelections),
       );
     case "html":
       return new Map(); // Nothing to do
@@ -731,24 +731,24 @@ export const getControlValue = (
         getWizardControlByTitle(container, labels[0]),
         (shuffleList) => shuffleList.querySelector("ul"),
         E.fromNullable(
-          "Failed to find the unordered list of shuffle list values"
+          "Failed to find the unordered list of shuffle list values",
         ),
         E.map(
           flow(
             getListValues,
             // Strip out the text for the input field
-            A.filter(not(S.startsWith(shuffleListStrings.newEntry)))
-          )
+            A.filter(not(S.startsWith(shuffleListStrings.newEntry))),
+          ),
         ),
         E.getOrElseW((e) => {
           throw new Error(e);
         }),
-        (shuffleListValues) => M.singleton(labels[0], shuffleListValues)
+        (shuffleListValues) => M.singleton(labels[0], shuffleListValues),
       );
     case "termselector":
     case "userselector":
       throw new Error(
-        `Unsupported controlType [${controlType}] - please implement!`
+        `Unsupported controlType [${controlType}] - please implement!`,
       );
     default:
       return absurd(controlType);
@@ -762,7 +762,7 @@ export const getControlValue = (
  * @param labelsAndValues Array contains label and it's value
  */
 export const filterEmptyValues = (
-  labelsAndValues: (WizardControlLabelValue | undefined)[]
+  labelsAndValues: (WizardControlLabelValue | undefined)[],
 ): WizardControlLabelValue[] =>
   pipe(
     labelsAndValues,
@@ -770,8 +770,8 @@ export const filterEmptyValues = (
     A.map(
       flow(
         O.fromNullable,
-        O.getOrElse(() => new Map())
-      )
+        O.getOrElse(() => new Map()),
+      ),
     ),
     // convert "" and [] to {}
     A.map(
@@ -779,9 +779,9 @@ export const filterEmptyValues = (
         pfTernaryTypeGuard<string, string[], boolean>(
           S.isString,
           not(S.isEmpty),
-          not(A.isEmpty)
-        )
-      )
+          not(A.isEmpty),
+        ),
+      ),
     ),
     // convert ["", ""] to {}
     A.map(
@@ -789,10 +789,10 @@ export const filterEmptyValues = (
         pfTernaryTypeGuard<string[], string, boolean>(
           isStringArrayValues,
           flow(A.filter(not(S.isString)), A.isNonEmpty),
-          constTrue
-        )
-      )
+          constTrue,
+        ),
+      ),
     ),
     // filter all empty map
-    A.filter(not(M.isEmpty))
+    A.filter(not(M.isEmpty)),
   );

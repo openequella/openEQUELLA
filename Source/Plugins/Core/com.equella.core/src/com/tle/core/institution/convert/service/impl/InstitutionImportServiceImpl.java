@@ -19,7 +19,6 @@
 package com.tle.core.institution.convert.service.impl;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -42,7 +41,14 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.institution.InstitutionValidationError;
 import com.tle.core.institution.RunAsInstitution;
-import com.tle.core.institution.convert.*;
+import com.tle.core.institution.convert.Converter;
+import com.tle.core.institution.convert.ConverterParams;
+import com.tle.core.institution.convert.InstitutionImport;
+import com.tle.core.institution.convert.InstitutionInfo;
+import com.tle.core.institution.convert.ItemXmlMigrator;
+import com.tle.core.institution.convert.Migrator;
+import com.tle.core.institution.convert.PostReadMigrator;
+import com.tle.core.institution.convert.ZippingConverter;
 import com.tle.core.institution.convert.extension.InstitutionInfoInitialiser;
 import com.tle.core.institution.convert.service.InstitutionImportService;
 import com.tle.core.newentity.convert.NewEntityConverter;
@@ -281,30 +287,27 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
         instService.createInstitution(newInstitution, targetSchemaId);
     runAs.executeAsSystem(
         cloneFrom,
-        new Runnable() {
-          @Override
-          public void run() {
-            ConverterTasks tasks = getConverterTasksInternal(ConvertType.CLONE, params);
-            StagingFile staging = stagingService.createStagingArea();
-            List<String> tasksDone = new ArrayList<String>();
-            try {
-              for (NameValue task : tasks.getNormalTasks()) {
-                String value = task.getValue();
-                tasksDone.add(value);
-                getConverter(value).clone(staging, newCloneInstitution, params, value);
-                params.getCallback().incrementCurrent();
-              }
-              for (NameValue task : tasks.getAfterTasks()) {
-                String value = task.getValue();
-                tasksDone.add(value);
-                getConverter(value).clone(staging, newCloneInstitution, params, value);
-                params.getCallback().incrementCurrent();
-              }
-
-            } catch (Exception t) {
-              doErrorCleanup(staging, tasksDone, newCloneInstitution, params);
-              Throwables.propagate(t);
+        () -> {
+          ConverterTasks tasks = getConverterTasksInternal(ConvertType.CLONE, params);
+          StagingFile staging = stagingService.createStagingArea();
+          List<String> tasksDone = new ArrayList<>();
+          try {
+            for (NameValue task : tasks.getNormalTasks()) {
+              String value = task.getValue();
+              tasksDone.add(value);
+              getConverter(value).clone(staging, newCloneInstitution, params, value);
+              params.getCallback().incrementCurrent();
             }
+            for (NameValue task : tasks.getAfterTasks()) {
+              String value = task.getValue();
+              tasksDone.add(value);
+              getConverter(value).clone(staging, newCloneInstitution, params, value);
+              params.getCallback().incrementCurrent();
+            }
+
+          } catch (IOException t) {
+            doErrorCleanup(staging, tasksDone, newCloneInstitution, params);
+            throw new RuntimeException(t);
           }
         });
     instService.setEnabled(newCloneInstitution.getUniqueId(), true);
@@ -370,7 +373,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
                 params.getCallback().incrementCurrent();
               }
             } catch (IOException e) {
-              Throwables.propagate(e);
+              throw new RuntimeException(e);
             } finally {
               if (fileSystemService.fileExists(new ExportFile(exportName + ".tgz"))) {
                 fileSystemService.removeFile(export);
@@ -396,7 +399,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
         return (InstitutionInfo)
             xmlService.deserialiseFromXml(getClass().getClassLoader(), xml.toString());
       } catch (IOException ex) {
-        throw Throwables.propagate(ex);
+        throw new RuntimeException(ex);
       }
     } else if (fileSystemService.fileExists(staging, OLD_INSTITUTION_FILE)) {
       // Massage InstitutionImport into InstitutionInfo
@@ -408,7 +411,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
                 xmlService.deserialiseFromXml(getClass().getClassLoader(), xml.toString());
         return createInfoFromImport(imp);
       } catch (IOException ex) {
-        throw Throwables.propagate(ex);
+        throw new RuntimeException(ex);
       }
     } else {
       throw new RuntimeException("NO INSTITUTION INFO/DATA FOUND");
@@ -488,7 +491,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
         new Runnable() {
           @Override
           public void run() {
-            doImport(params, staging, newInstInfo, createdInst, callback);
+            doImport(params, staging, createdInst);
           }
         });
     instService.setEnabled(createdInst.getUniqueId(), true);
@@ -496,15 +499,10 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
   }
 
   @Transactional(propagation = Propagation.NEVER)
-  protected void doImport(
-      ConverterParams params,
-      ImportFile staging,
-      InstitutionInfo newInstInfo,
-      Institution createdInst,
-      ListProgressCallback callback) {
+  public void doImport(ConverterParams params, ImportFile staging, Institution createdInst) {
     params.setCurrentServerURL(instService.getInstitutionUrl());
     ConverterTasks tasks = getConverterTasksInternal(ConvertType.IMPORT, params);
-    List<String> tasksDone = new ArrayList<String>();
+    List<String> tasksDone = new ArrayList<>();
     try {
       for (NameValue task : tasks.getNormalTasks()) {
         String value = task.getValue();
@@ -519,15 +517,8 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
         params.getCallback().incrementCurrent();
       }
     } catch (Exception t) {
-      try {
-        doErrorCleanup(staging, tasksDone, createdInst, params);
-      } catch (Exception t2) {
-        LOGGER.error("Error cleaning up", t2);
-      }
-      if (t instanceof RuntimeException) {
-        throw (RuntimeException) t;
-      }
-      throw new RuntimeException(t);
+      doErrorCleanup(staging, tasksDone, createdInst, params);
+      throw (t instanceof RuntimeException) ? (RuntimeException) t : new RuntimeException(t);
     } finally {
       fileSystemService.removeFile(staging, "");
     }

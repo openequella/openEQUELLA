@@ -60,7 +60,7 @@ describe("showRecipient", () => {
     "should return the raw expression for %s",
     (_, recipient, expectedExpression) => {
       expect(showRecipient(recipient)).toEqual(expectedExpression);
-    }
+    },
   );
 });
 
@@ -91,9 +91,9 @@ describe("showRecipientHumanReadable", () => {
     "should return a human-readable expression for %s",
     async (_, recipient, expectedExpression) => {
       await expect(
-        showRecipientHumanReadableWithMocks(recipient)()
+        showRecipientHumanReadableWithMocks(recipient)(),
       ).resolves.toEqual(E.right(expectedExpression));
-    }
+    },
   );
 
   it.each([
@@ -107,8 +107,8 @@ describe("showRecipientHumanReadable", () => {
         showRecipientHumanReadableWithMocks({
           ...recipient,
           expression: "nonexistent-id",
-        })()
+        })(),
       ).resolves.toEqual(E.left(errorMessage));
-    }
+    },
   );
 });

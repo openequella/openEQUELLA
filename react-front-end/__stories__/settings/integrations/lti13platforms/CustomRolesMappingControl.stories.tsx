@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as SET from "fp-ts/Set";
 import * as React from "react";
 import { listRoles, roles } from "../../../../__mocks__/RoleModule.mock";
@@ -29,7 +29,7 @@ export default {
   title: "settings/Integrations/Lti13Platforms/CustomRolesMappingControl",
   component: CustomRolesMappingControl,
 } as Meta<CustomRolesMappingControlProps>;
-export const Empty: Story<CustomRolesMappingControlProps> = (args) => (
+export const Empty: StoryFn<CustomRolesMappingControlProps> = (args) => (
   <CustomRolesMappingControl {...args} />
 );
 Empty.args = {
@@ -38,13 +38,13 @@ Empty.args = {
   roleListProvider: listRoles,
 };
 
-export const Standard: Story<CustomRolesMappingControlProps> = (args) => (
+export const Standard: StoryFn<CustomRolesMappingControlProps> = (args) => (
   <CustomRolesMappingControl {...args} />
 );
 Standard.args = {
   ...Empty.args,
   value: new Map().set(
     "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
-    SET.fromArray(eqRoleById)(roles)
+    SET.fromArray(eqRoleById)(roles),
   ),
 };

@@ -38,7 +38,7 @@ export const commonSelectGroupDialogProps: SelectGroupDialogProps = {
  * Helper to render SelectGroupDialog.
  */
 export const renderSelectGroupDialog = (
-  props: SelectGroupDialogProps = commonSelectGroupDialogProps
+  props: SelectGroupDialogProps = commonSelectGroupDialogProps,
 ): RenderResult => render(<SelectGroupDialog {...props} />);
 
 const searchGroup = (dialog: HTMLElement, queryName: string) =>
@@ -50,5 +50,5 @@ const searchGroup = (dialog: HTMLElement, queryName: string) =>
 export const searchAndSelectGroup = (
   dialog: HTMLElement,
   searchFor: string,
-  selectEntityName: string
+  selectEntityName: string,
 ) => searchAndSelect(dialog, searchFor, selectEntityName, searchGroup);

@@ -23,7 +23,6 @@ import com.dytech.edge.common.FileInfo;
 import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableCollection;
 import com.tle.beans.Language;
 import com.tle.beans.item.Item;
@@ -183,7 +182,7 @@ public class MyPagesRepository implements LERepository {
     try {
       return fsys.write(stagingHandle, filename, inp, false);
     } catch (IOException ex) {
-      throw Throwables.propagate(ex);
+      throw new RuntimeException(ex);
     }
   }
 

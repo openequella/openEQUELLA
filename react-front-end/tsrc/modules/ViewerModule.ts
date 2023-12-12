@@ -80,7 +80,7 @@ export interface LightboxEntry {
 export type ViewerConfig = ViewerLinkConfig | ViewerLightboxConfig;
 
 export const isViewerLightboxConfig = (
-  config: ViewerConfig
+  config: ViewerConfig,
 ): config is ViewerLightboxConfig => config.viewerType === "lightbox";
 
 export interface AttachmentAndViewerDefinition {
@@ -112,7 +112,7 @@ export interface AttachmentAndViewerConfig {
  * @param item potential item
  */
 export const maybeIncludeItemInLightbox = (
-  item: BasicSearchResultItem
+  item: BasicSearchResultItem,
 ): BasicSearchResultItem | undefined =>
   item.status !== "personal" ? item : undefined;
 
@@ -130,13 +130,13 @@ export const determineViewer = (
   attachmentType: string,
   viewUrl: string,
   mimeType?: string,
-  mimeTypeViewerId?: OEQ.MimeType.ViewerId
+  mimeTypeViewerId?: OEQ.MimeType.ViewerId,
 ): ViewerDefinition => {
   const simpleLinkView: ViewerDefinition = ["link", viewUrl];
   // For an attachment that is not one of the following, refer to the link provided by the server.
   if (
     ![ATYPE_FILE, ATYPE_KALTURA, ATYPE_RESOURCE, ATYPE_YOUTUBE].includes(
-      attachmentType
+      attachmentType,
     )
   ) {
     return simpleLinkView;
@@ -146,7 +146,7 @@ export const determineViewer = (
   // MIME type viewer ID
   if (!mimeType || !mimeTypeViewerId) {
     console.warn(
-      "When determining viewer for 'file' attachments, please supply both mimeType and mimeTypeViewerId. Falling back to simple link viewer."
+      "When determining viewer for 'file' attachments, please supply both mimeType and mimeTypeViewerId. Falling back to simple link viewer.",
     );
 
     return simpleLinkView;
@@ -179,7 +179,7 @@ export const determineAttachmentViewUrl = (
   itemVersion: number,
   attachmentType: string,
   viewUrl: string,
-  fileAttachmentPath?: string
+  fileAttachmentPath?: string,
 ): string =>
   attachmentType === "file" && fileAttachmentPath
     ? buildFileAttachmentUrl(itemUuid, itemVersion, fileAttachmentPath)
@@ -197,7 +197,7 @@ export const getViewerDefinitionForAttachment = (
   itemUuid: string,
   itemVersion: number,
   attachment: OEQ.Search.Attachment,
-  mimeTypeViewerId?: OEQ.MimeType.ViewerId
+  mimeTypeViewerId?: OEQ.MimeType.ViewerId,
 ): ViewerDefinition => {
   const {
     attachmentType,
@@ -210,7 +210,7 @@ export const getViewerDefinitionForAttachment = (
     itemVersion,
     attachmentType,
     defaultViewUrl,
-    filePath
+    filePath,
   );
 
   return determineViewer(attachmentType, viewUrl, mimeType, mimeTypeViewerId);
@@ -225,7 +225,7 @@ export const getViewerDefinitionForAttachment = (
 export const buildLightboxNavigationHandler = (
   entries: LightboxEntry[],
   entryIndex: number,
-  isLoopBack = false
+  isLoopBack = false,
 ): (() => LightboxConfig) | undefined => {
   const buildIndexForLoop = (index: number, start: number, end: number) => {
     if (index < start) {
@@ -253,16 +253,16 @@ export const buildLightboxNavigationHandler = (
           onNext: buildLightboxNavigationHandler(
             entries,
             index + 1,
-            isLoopBack
+            isLoopBack,
           ),
           onPrevious: buildLightboxNavigationHandler(
             entries,
             index - 1,
-            isLoopBack
+            isLoopBack,
           ),
         });
-      }
-    )
+      },
+    ),
   );
 };
 
@@ -272,8 +272,8 @@ const buildLiveAttachmentsAndViewerDefinitions = (
   uuid: string,
   version: number,
   getViewerDetails: (
-    mimeType: string
-  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+    mimeType: string,
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>,
 ) =>
   pipe(
     attachment.mimeType,
@@ -284,8 +284,8 @@ const buildLiveAttachmentsAndViewerDefinitions = (
       () => TE.right<string, OEQ.MimeType.ViewerId | undefined>(undefined),
       flow(
         TE.tryCatchK(getViewerDetails, String),
-        TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId)
-      )
+        TE.map((resp: OEQ.MimeType.MimeTypeViewerDetail) => resp?.viewerId),
+      ),
     ),
     // Then we map ViewerId to AttachmentAndViewerDefinition.
     TE.map((viewerId: OEQ.MimeType.ViewerId | undefined) => ({
@@ -294,9 +294,9 @@ const buildLiveAttachmentsAndViewerDefinitions = (
         uuid,
         version,
         attachment,
-        viewerId
+        viewerId,
       ),
-    }))
+    })),
   )();
 
 /**
@@ -314,8 +314,8 @@ export const buildAttachmentsAndViewerDefinitions = async (
   uuid: string,
   version: number,
   getViewerDetails: (
-    mimeType: string
-  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+    mimeType: string,
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>,
 ): Promise<E.Either<string[], AttachmentAndViewerDefinition[]>> => {
   const either: E.Either<string, AttachmentAndViewerDefinition>[] =
     await Promise.all(
@@ -327,16 +327,16 @@ export const buildAttachmentsAndViewerDefinitions = async (
             : E.right({
                 index,
                 attachment: updateAttachmentForCustomInfo(attachment),
-              })
+              }),
         ),
         ({ left, right }) => {
           const brokenAttachmentsAndViewerDefinition = left.map(
             ({ index, attachment }) => ({
               viewerDefinition: Promise.resolve(
-                E.right<string, AttachmentAndViewerDefinition>({ attachment })
+                E.right<string, AttachmentAndViewerDefinition>({ attachment }),
               ),
               index,
-            })
+            }),
           );
           const liveAttachmentsAndViewerDefinition = right.map(
             ({ index, attachment }) => ({
@@ -344,10 +344,10 @@ export const buildAttachmentsAndViewerDefinitions = async (
                 attachment,
                 uuid,
                 version,
-                getViewerDetails
+                getViewerDetails,
               ),
               index,
-            })
+            }),
           );
 
           // Merge the two collections and sort as per the order on the server.
@@ -355,15 +355,15 @@ export const buildAttachmentsAndViewerDefinitions = async (
             .concat(liveAttachmentsAndViewerDefinition)
             .sort(
               ({ index: prevIndex }, { index: nextIndex }) =>
-                prevIndex - nextIndex
+                prevIndex - nextIndex,
             )
             .map(({ viewerDefinition }) => viewerDefinition);
-        }
-      )
+        },
+      ),
     );
 
   return pipe(either, A.separate, ({ left, right }) =>
-    A.isEmpty(left) ? E.right(right) : E.left(left)
+    A.isEmpty(left) ? E.right(right) : E.left(left),
   );
 };
 
@@ -376,7 +376,7 @@ export const buildAttachmentsAndViewerDefinitions = async (
  */
 export const buildLightboxEntries = (
   item: BasicSearchResultItem,
-  attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[]
+  attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
 ): LightboxEntry[] =>
   pipe(
     attachmentsAndViewerDefinitions,
@@ -391,10 +391,10 @@ export const buildLightboxEntries = (
           mimeType: mimeType ?? "",
           id,
           item: maybeIncludeItemInLightbox(item),
-        }))
-      )
+        })),
+      ),
     ),
-    A.compact
+    A.compact,
   );
 
 /**
@@ -407,13 +407,13 @@ export const buildLightboxEntries = (
 export const convertViewerDefinitionToViewerConfig = (
   attachmentsAndViewerDefinitions: AttachmentAndViewerDefinition[],
   lightboxEntries: LightboxEntry[],
-  item: BasicSearchResultItem
+  item: BasicSearchResultItem,
 ): AttachmentAndViewerConfig[] =>
   pipe(
     attachmentsAndViewerDefinitions,
     A.map(({ attachment, viewerDefinition }) => {
       const initialLightboxEntryIndex = lightboxEntries.findIndex(
-        (entry) => entry.id === attachment.id
+        (entry) => entry.id === attachment.id,
       );
       return pipe(
         viewerDefinition,
@@ -427,12 +427,12 @@ export const convertViewerDefinitionToViewerConfig = (
                   viewUrl,
                   lightboxEntries,
                   initialLightboxEntryIndex,
-                  item
+                  item,
                 )
-              : buildBasicViewerConfig(attachment, viewUrl)
-        )
+              : buildBasicViewerConfig(attachment, viewUrl),
+        ),
       );
-    })
+    }),
   );
 
 const buildLightboxViewerConfig = (
@@ -440,7 +440,7 @@ const buildLightboxViewerConfig = (
   viewUrl: string,
   lightboxEntries: LightboxEntry[],
   initialLightboxEntryIndex: number,
-  item: BasicSearchResultItem
+  item: BasicSearchResultItem,
 ): AttachmentAndViewerConfig => ({
   attachment,
   viewerConfig: {
@@ -452,11 +452,11 @@ const buildLightboxViewerConfig = (
       mimeType: attachment.mimeType ?? "",
       onNext: buildLightboxNavigationHandler(
         lightboxEntries,
-        initialLightboxEntryIndex + 1
+        initialLightboxEntryIndex + 1,
       ),
       onPrevious: buildLightboxNavigationHandler(
         lightboxEntries,
-        initialLightboxEntryIndex - 1
+        initialLightboxEntryIndex - 1,
       ),
     },
   },
@@ -464,7 +464,7 @@ const buildLightboxViewerConfig = (
 
 const buildBasicViewerConfig = (
   attachment: OEQ.Search.Attachment,
-  viewUrl: string
+  viewUrl: string,
 ): AttachmentAndViewerConfig => ({
   attachment,
   viewerConfig: {
@@ -484,8 +484,8 @@ export const buildViewerConfigForAttachments = async (
   item: BasicSearchResultItem,
   attachments: OEQ.Search.Attachment[],
   getViewerDetails: (
-    mimeType: string
-  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>
+    mimeType: string,
+  ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>,
 ): Promise<AttachmentAndViewerConfig[]> => {
   const attachmentsAndViewerDefinitions: E.Either<
     string[],
@@ -494,24 +494,24 @@ export const buildViewerConfigForAttachments = async (
     attachments,
     item.uuid,
     item.version,
-    getViewerDetails
+    getViewerDetails,
   );
 
   return pipe(
     Do(E.either)
       .bind("ad", attachmentsAndViewerDefinitions)
       .bindL("lightboxEntries", ({ ad }) =>
-        E.right(buildLightboxEntries(item, ad))
+        E.right(buildLightboxEntries(item, ad)),
       )
       .bindL("ac", ({ ad, lightboxEntries }) =>
         E.right(
-          convertViewerDefinitionToViewerConfig(ad, lightboxEntries, item)
-        )
+          convertViewerDefinitionToViewerConfig(ad, lightboxEntries, item),
+        ),
       )
       .return(({ ac }) => ac),
     E.fold(
       (error: string[]) => Promise.reject(error),
-      (ac: AttachmentAndViewerConfig[]) => Promise.resolve(ac)
-    )
+      (ac: AttachmentAndViewerConfig[]) => Promise.resolve(ac),
+    ),
   );
 };

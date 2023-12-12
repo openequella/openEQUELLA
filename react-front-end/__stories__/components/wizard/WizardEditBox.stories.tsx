@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Typography } from "@mui/material";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   WizardEditBox,
@@ -33,7 +33,7 @@ export default {
   },
 } as Meta<WizardEditBoxProps>;
 
-export const Normal: Story<WizardEditBoxProps> = (args) => (
+export const Normal: StoryFn<WizardEditBoxProps> = (args) => (
   <WizardEditBox {...args} />
 );
 Normal.args = {
@@ -42,22 +42,22 @@ Normal.args = {
   description: "This an example EditBox",
 };
 
-export const Mandatory: Story<WizardEditBoxProps> = (args) => (
+export const Mandatory: StoryFn<WizardEditBoxProps> = (args) => (
   <WizardEditBox {...args} mandatory />
 );
 Mandatory.args = { ...Normal.args };
 
-export const Multiline: Story<WizardEditBoxProps> = (args) => (
+export const Multiline: StoryFn<WizardEditBoxProps> = (args) => (
   <WizardEditBox {...args} />
 );
 Multiline.args = { ...Normal.args, description: "With three rows", rows: 3 };
 
-export const NoDescription: Story<WizardEditBoxProps> = (args) => (
+export const NoDescription: StoryFn<WizardEditBoxProps> = (args) => (
   <WizardEditBox {...args} />
 );
 NoDescription.args = { ...Normal.args, description: undefined };
 
-export const NoTitle: Story<WizardEditBoxProps> = (args) => (
+export const NoTitle: StoryFn<WizardEditBoxProps> = (args) => (
   <WizardEditBox {...args} />
 );
 NoTitle.args = {
@@ -66,7 +66,7 @@ NoTitle.args = {
   label: undefined,
 };
 
-export const NoDescriptionOrTitle: Story<WizardEditBoxProps> = (args) => (
+export const NoDescriptionOrTitle: StoryFn<WizardEditBoxProps> = (args) => (
   <div>
     <WizardEditBox {...args} />
     <br />

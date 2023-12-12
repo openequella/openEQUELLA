@@ -19,7 +19,6 @@
 package com.tle.web.viewable.impl;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.google.inject.Provider;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -79,7 +78,7 @@ public class ViewableItemFactory {
     try {
       return new URI(null, null, PREVIEW_CONTEXT + new ItemId(previewId, 1).toString() + '/', null);
     } catch (URISyntaxException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

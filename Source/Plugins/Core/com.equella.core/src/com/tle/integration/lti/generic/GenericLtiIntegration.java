@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.item.IItem;
@@ -37,6 +36,7 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.connectors.blackboard.BlackboardRESTConnectorConstants;
+import com.tle.core.connectors.exception.LmsUserNotFoundException;
 import com.tle.core.connectors.service.ConnectorRepositoryService;
 import com.tle.core.connectors.service.ConnectorService;
 import com.tle.core.guice.Bind;
@@ -65,6 +65,7 @@ import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import com.tle.web.viewurl.ViewableResource;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
@@ -352,7 +353,7 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       try {
         structure = objectMapper.writer().with(pp).writeValueAsString(root);
       } catch (JsonProcessingException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
 
@@ -491,8 +492,8 @@ public class GenericLtiIntegration extends AbstractIntegrationService<GenericLti
       }
 
       return false;
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException | LmsUserNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 

@@ -154,7 +154,7 @@ class CloudProviderListPage extends React.Component<
             open={deleteDialogOpen}
             title={sprintf(
               cloudProviderLangStrings.deletecloudprovider.title,
-              this.state.deleteDetails.name
+              this.state.deleteDetails.name,
             )}
             onConfirm={this.confirmDeleteCloudProvider}
             onCancel={this.cancelDeleteCloudProvider}
@@ -172,7 +172,7 @@ class CloudProviderListPage extends React.Component<
           id="cloudProviderList"
           resultsText={formatSize(
             cloudProviders.length,
-            cloudProviderLangStrings.cloudprovideravailable
+            cloudProviderLangStrings.cloudprovideravailable,
           )}
           progress={false}
           createOnClick={this.registerCloudProvider}

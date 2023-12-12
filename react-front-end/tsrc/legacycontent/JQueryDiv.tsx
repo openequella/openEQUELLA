@@ -46,7 +46,7 @@ const JQueryDiv = React.memo(({ html, ...withoutOthers }: JQueryDivProps) => {
         $(divElem.current).empty();
       }
     },
-    []
+    [],
   );
 
   return (

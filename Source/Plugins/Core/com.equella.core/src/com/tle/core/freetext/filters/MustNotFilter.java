@@ -19,37 +19,46 @@
 package com.tle.core.freetext.filters;
 
 import com.tle.common.searching.Field;
-import java.io.IOException;
 import java.util.List;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermDocs;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.TermQuery;
 
+/**
+ * Custom filter to generate a Lucene Boolean query for a list of MUST NOT clauses. All the criteria
+ * are joined by `Occur.SHOULD`, but the whole query is negated by `Occur.MUST_NOT`.
+ *
+ * <p>For example, given two clauses for Collection and Item status, the result is {@code
+ * -(collection:A status:live status:archived)}.
+ */
 public class MustNotFilter extends MustFilter {
+  public MustNotFilter(List<List<Field>> mustNotClauses) {
+    super(mustNotClauses);
+  }
 
-  private static final long serialVersionUID = 1L;
+  public BooleanQuery buildQuery() {
+    List<List<Field>> nonEmptyClauses = getNonEmptyClauses();
 
-  public MustNotFilter(List<List<Field>> terms) {
-    super(terms);
+    if (nonEmptyClauses.isEmpty()) {
+      return null;
+    }
+
+    Builder builder = new Builder();
+    nonEmptyClauses.forEach(
+        clause ->
+            clause.forEach(
+                mustNot ->
+                    builder.add(
+                        new TermQuery(new Term(mustNot.getField(), mustNot.getValue())),
+                        Occur.SHOULD)));
+
+    return builder.build();
   }
 
   @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-    int max = reader.maxDoc();
-    OpenBitSet good = new OpenBitSet(max);
-    good.set(0, max);
-    for (List<Field> values : terms) {
-      for (Field nv : values) {
-        Term term = new Term(nv.getField(), nv.getValue());
-        TermDocs docs = reader.termDocs(term);
-        while (docs.next()) {
-          good.clear(docs.doc());
-        }
-        docs.close();
-      }
-    }
-    return good;
+  public Occur getOccur() {
+    return Occur.MUST_NOT;
   }
 }

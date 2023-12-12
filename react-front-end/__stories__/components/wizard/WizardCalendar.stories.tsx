@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   WizardCalendar,
@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<WizardCalendarProps>;
 
-export const Normal: Story<WizardCalendarProps> = (args) => (
+export const Normal: StoryFn<WizardCalendarProps> = (args) => (
   <WizardCalendar {...args} />
 );
 Normal.args = {
@@ -41,7 +41,7 @@ Normal.args = {
   description: "This an example EditBox",
 };
 
-export const ValueSelected: Story<WizardCalendarProps> = (args) => (
+export const ValueSelected: StoryFn<WizardCalendarProps> = (args) => (
   <WizardCalendar {...args} />
 );
 ValueSelected.args = {
@@ -49,7 +49,7 @@ ValueSelected.args = {
   values: ["2021-10-01", "2021-10-10"],
 };
 
-export const YearOnly: Story<WizardCalendarProps> = (args) => (
+export const YearOnly: StoryFn<WizardCalendarProps> = (args) => (
   <WizardCalendar {...args} />
 );
 YearOnly.args = {
@@ -57,7 +57,7 @@ YearOnly.args = {
   dateFormat: "Y",
 };
 
-export const YearAndMonth: Story<WizardCalendarProps> = (args) => (
+export const YearAndMonth: StoryFn<WizardCalendarProps> = (args) => (
   <WizardCalendar {...args} />
 );
 YearAndMonth.args = {

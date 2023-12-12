@@ -151,7 +151,7 @@ public class EchoServerListSection
     return ListEchoServersSectionModel.class;
   }
 
-  private class EchoServerModel extends DynamicSelectionsTableModel<BaseEntityLabel> {
+  private final class EchoServerModel extends DynamicSelectionsTableModel<BaseEntityLabel> {
     @Override
     protected List<BaseEntityLabel> getSourceList(SectionInfo info) {
       return echoService.listEditable();

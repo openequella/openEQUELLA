@@ -25,13 +25,13 @@ jest.mock("@openequella/rest-api-client", () => {
   // We only want to mock module 'Search' because mocking the whole module
   // will break Runtypes.
   const restModule: typeof OEQ = jest.requireActual(
-    "@openequella/rest-api-client"
+    "@openequella/rest-api-client",
   );
   return {
     ...restModule,
     Search: {
       search: jest.fn(),
-      searchWithAdditionalParams: jest.fn(),
+      searchWithAdvancedParams: jest.fn(),
     },
   };
 });
@@ -42,16 +42,20 @@ const mockedSearch = (
   >
 ).mockResolvedValue(getSearchResult);
 
-const mockedSearchWithAdditionalParams = (
-  OEQ.Search.searchWithAdditionalParams as jest.Mock<
+const mockedSearchWithAdvancedParams = (
+  OEQ.Search.searchWithAdvancedParams as jest.Mock<
     Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>
   >
 ).mockResolvedValue(getSearchResult);
 
 describe("searchItems", () => {
+  beforeEach(() => {
+    mockedSearch.mockClear();
+  });
+
   it("should provide a list of items", async () => {
     const searchResult = await SearchModule.searchItems(
-      SearchModule.defaultSearchOptions
+      SearchModule.defaultSearchOptions,
     );
     expect(searchResult.available).toBe(12);
     expect(searchResult.results).toHaveLength(12);
@@ -64,7 +68,6 @@ describe("searchItems", () => {
   };
 
   it("should not append a wildcard for a search which is empty when trimmed", async () => {
-    mockedSearch.mockReset();
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       query: "   ",
@@ -73,7 +76,6 @@ describe("searchItems", () => {
   });
 
   it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
-    mockedSearch.mockReset();
     const queryTerm = "non RAW";
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
@@ -83,7 +85,6 @@ describe("searchItems", () => {
   });
 
   it("should NOT append a wildcard for a rawMode search with a non-empty query", async () => {
-    mockedSearch.mockReset();
     const queryTerm = "RAW mode!";
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
@@ -93,17 +94,17 @@ describe("searchItems", () => {
     expectSearchQueryToBeValid(`${queryTerm}`);
   });
 
-  it("supports searching with additional params", async () => {
+  it("supports searching with advanced params", async () => {
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
       advancedSearchCriteria: mockedAdvancedSearchCriteria,
     });
 
-    expect(mockedSearchWithAdditionalParams).toHaveBeenCalledTimes(1);
+    expect(mockedSearchWithAdvancedParams).toHaveBeenCalledTimes(1);
 
-    const calls = mockedSearchWithAdditionalParams.mock.calls;
-    const { advancedSearchCriteria }: OEQ.Search.SearchAdditionalParams =
-      calls[0][1]; // Second parameter of the call is the additional params.
+    const calls = mockedSearchWithAdvancedParams.mock.calls;
+    const { advancedSearchCriteria }: OEQ.Search.AdvancedSearchParams =
+      calls[0][1]; // Second parameter of the call is the advanced params.
     expect(advancedSearchCriteria).toStrictEqual(mockedAdvancedSearchCriteria);
   });
 });
@@ -125,13 +126,13 @@ describe("generateCategoryWhereQuery", () => {
   it("should generate a where clause for one category", () => {
     const singleCategory = [selectedCategories[1]];
     expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
-      "(/xml/item/city='Hobart')"
+      "(/xml/item/city='Hobart')",
     );
   });
 
   it("should generate a where clause for multiple groups of categories", () => {
     expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
-      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')"
+      "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')",
     );
   });
 

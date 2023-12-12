@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnnotatedResourceHelperScanner {
-  private static class ResourceData {
+  private static final class ResourceData {
     Field field;
     Class<?> clazz;
   }

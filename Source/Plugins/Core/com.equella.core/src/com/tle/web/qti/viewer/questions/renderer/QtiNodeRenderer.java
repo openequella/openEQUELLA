@@ -18,7 +18,6 @@
 
 package com.tle.web.qti.viewer.questions.renderer;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tle.annotation.NonNullByDefault;
@@ -231,7 +230,7 @@ public abstract class QtiNodeRenderer implements NestedRenderable {
       renderable.preRender(writer);
       renderable.realRender(writer);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
     return sw.toString();
   }

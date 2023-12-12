@@ -235,7 +235,7 @@ public abstract class AbstractMyPagesPageActionsSection
     return pagesTable;
   }
 
-  private class MyPagesModel extends DynamicSelectionsTableModel<HtmlAttachment> {
+  private final class MyPagesModel extends DynamicSelectionsTableModel<HtmlAttachment> {
     @Override
     protected List<HtmlAttachment> getSourceList(SectionInfo info) {
       final MyPagesContributeModel contribModel = contribSection.getModel(info);

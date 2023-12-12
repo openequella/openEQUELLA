@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { roles } from "../../../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../../../tsrc/modules/RoleModule";
@@ -43,13 +43,13 @@ describe("CustomRolesMappingControl", () => {
 
   const sharedRoleMapping = new Map().set(
     systemAdminUri,
-    SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails)
+    SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
   );
 
   it("Should be able to select different LTI roles", async () => {
     const expectedResult = new Map().set(
       "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
-      SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails)
+      SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
     );
     const selectedRoleName = roles[0].name;
     const onChange = jest.fn();
@@ -88,7 +88,7 @@ describe("CustomRolesMappingControl", () => {
   it("Should be able to remove one oEQ role from an existing LTI row", async () => {
     const initialRoleMapping = new Map().set(
       systemAdminUri,
-      SET.fromArray(eqRoleById)([roles[0], roles[1]])
+      SET.fromArray(eqRoleById)([roles[0], roles[1]]),
     );
     const onChange = jest.fn();
     const { container, getByRole } = renderCustomRolesMappingControl({
@@ -126,7 +126,7 @@ describe("CustomRolesMappingControl", () => {
   it("Should be able to add a oEQ role to an existing LTI row", async () => {
     const expectedResult = new Map().set(
       systemAdminUri,
-      SET.fromArray(eqRoleById)([roles[0], roles[1]])
+      SET.fromArray(eqRoleById)([roles[0], roles[1]]),
     );
     const selectedRoleName = roles[1].name;
     const onChange = jest.fn();

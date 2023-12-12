@@ -23,7 +23,6 @@ import ORG.oclc.oai.server.crosswalk.CrosswalkItem;
 import ORG.oclc.oai.server.crosswalk.Crosswalks;
 import ORG.oclc.oai.server.verb.CannotDisseminateFormatException;
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.SchemaTransform;
 import com.tle.beans.item.Item;
@@ -68,11 +67,11 @@ public class TLECrosswalk extends Crosswalks {
   private void setupMap() {
     Field field;
     try {
-      field = Crosswalks.class.getDeclaredField("crosswalksMap"); // $NON-NLS-1$
+      field = Crosswalks.class.getDeclaredField("crosswalksMap");
       field.setAccessible(true);
       crosswalksMap = (Map<String, CrosswalkItem>) field.get(this);
-    } catch (Exception e) {
-      Throwables.propagate(e);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw new RuntimeException(e);
     }
   }
 

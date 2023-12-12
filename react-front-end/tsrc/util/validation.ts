@@ -26,7 +26,7 @@
 export function isInteger(
   val?: number,
   required?: boolean,
-  positive?: boolean
+  positive?: boolean,
 ): boolean {
   if (typeof val === "undefined") {
     return !required;

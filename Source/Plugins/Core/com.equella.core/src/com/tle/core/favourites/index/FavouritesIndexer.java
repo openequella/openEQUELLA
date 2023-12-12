@@ -45,14 +45,28 @@ public class FavouritesIndexer extends AbstractIndexingExtension {
     if (bookmarks != null) {
       Document doc = indexedItem.getItemdoc();
 
+      Map<String, String> bookmarkFields = new HashMap<>();
       for (Bookmark b : bookmarks) {
         doc.add(indexed(FreeTextQuery.FIELD_BOOKMARK_OWNER, b.getOwner()));
         UtcDate date = new UtcDate(b.getDateModified());
-        doc.add(indexed(FreeTextQuery.FIELD_BOOKMARK_DATE + b.getOwner(), date.format(Dates.ISO)));
+
+        String bookmarkDateField = FreeTextQuery.FIELD_BOOKMARK_DATE + b.getOwner();
+        String bookmarkDateValue = date.format(Dates.ISO);
+
+        doc.add(indexed(bookmarkDateField, bookmarkDateValue));
+        // It's possible that different bookmarks have the same owner so their bookmark date fields
+        // are identical.
+        // We cannot add duplicated sorting fields to the document. As a result, we add these fields
+        // to a map first,
+        // and once the for loop is completed, we use the map to add all the fields to the document.
+        bookmarkFields.put(bookmarkDateField, bookmarkDateValue);
+
         for (String tag : b.getKeywords()) {
           doc.add(indexed(FreeTextQuery.FIELD_BOOKMARK_TAGS, tag));
         }
       }
+
+      bookmarkFields.forEach((field, value) -> doc.add(stringSortingField(field, value)));
     }
   }
 

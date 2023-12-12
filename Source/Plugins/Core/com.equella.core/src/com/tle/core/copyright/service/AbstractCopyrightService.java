@@ -20,7 +20,6 @@ package com.tle.core.copyright.service;
 
 import com.dytech.common.collections.CombinedCollection;
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -292,11 +291,10 @@ public abstract class AbstractCopyrightService<
           ActivateRequest cloned = (ActivateRequest) request.clone();
           cloned.setItem(null);
           cloned.setCourse(null);
-          xml.appendChildren(
-              "request", new PropBagEx(xmlService.serialiseToXml(cloned))); // $NON-NLS-1$
-          xml.append("holding", getUnifiedXml(holding.getItem())); // $NON-NLS-1$
+          xml.appendChildren("request", new PropBagEx(xmlService.serialiseToXml(cloned)));
+          xml.append("holding", getUnifiedXml(holding.getItem()));
         } catch (CloneNotSupportedException e) {
-          throw Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
 
         return xsltService.transform(new EntityFile(schema), file, xml, true);

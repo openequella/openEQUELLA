@@ -51,11 +51,11 @@ const { delete: deleteLabel } = languageStrings.common.action;
  */
 export const renderLti13PlatformsSettings = async (
   updateEnabledPlatformsProvider: (
-    enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[]
+    enabledStatus: OEQ.LtiPlatform.LtiPlatformEnabledStatus[],
   ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> = jest.fn(),
   deletePlatformsProvider: (
-    platformIds: string[]
-  ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> = jest.fn()
+    platformIds: string[],
+  ) => Promise<OEQ.BatchOperationResponse.BatchOperationResponse[]> = jest.fn(),
 ): Promise<RenderResult> => {
   const props = {
     ...commonProps,
@@ -66,7 +66,7 @@ export const renderLti13PlatformsSettings = async (
   const result = render(
     <Router history={history}>
       <Lti13PlatformsSettings {...props} />
-    </Router>
+    </Router>,
   );
   // wait for platform list rendered
   await waitFor(() => result.getByText(platforms[0].name));
@@ -91,11 +91,11 @@ export const getPlatformsSection = (container: HTMLElement) => {
  */
 export const clickEnabledSwitchForPlatform = async (
   page: HTMLElement,
-  platformId: string
+  platformId: string,
 ) => {
   const enabledSwitch = getByText(
     page,
-    platformId
+    platformId,
   ).parentElement?.parentElement?.querySelector("input[type='checkbox']");
 
   if (!enabledSwitch) {
@@ -110,11 +110,11 @@ export const clickEnabledSwitchForPlatform = async (
  */
 export const clickDeleteButtonForPlatform = async (
   container: HTMLElement,
-  platformName: string
+  platformName: string,
 ) => {
   const deleteButton = getByLabelText(
     container,
-    `${deleteLabel} ${platformName}`
+    `${deleteLabel} ${platformName}`,
   );
 
   if (!deleteButton) {

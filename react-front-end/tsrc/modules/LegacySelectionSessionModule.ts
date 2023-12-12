@@ -149,7 +149,7 @@ export const getSearchPageAttachmentClass = (): string =>
  * @param data The data to be checked
  */
 const isSelectionSessionInfo = (
-  data: unknown
+  data: unknown,
 ): data is { [K in keyof SelectionSessionInfo]: unknown } =>
   typeof data === "object" && data !== null && "stateId" in data;
 
@@ -226,13 +226,13 @@ const getBasicPostData = () => {
 const submitSelection = <T>(
   path: string,
   data: SelectionSessionPostData,
-  callback: (result: T) => void
+  callback: (result: T) => void,
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
 const buildSelectionSessionLink = (
   routerPath: string,
   includeLayout = false,
-  externalMimeTypes: string[] = []
+  externalMimeTypes: string[] = [],
 ) => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
   const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
@@ -248,8 +248,8 @@ const buildSelectionSessionLink = (
   pipe(
     externalMimeTypes,
     A.traverse(IO.Applicative)(
-      (mimeType) => () => url.searchParams.append("_int.mimeTypes", mimeType)
-    )
+      (mimeType) => () => url.searchParams.append("_int.mimeTypes", mimeType),
+    ),
   )();
 
   return url.toString();
@@ -263,7 +263,7 @@ const buildSelectionSessionLink = (
  */
 export const buildSelectionSessionItemSummaryLink = (
   uuid: string,
-  version: number
+  version: number,
 ): string => buildSelectionSessionLink(routes.ViewItem.to(uuid, version), true);
 
 /**
@@ -283,12 +283,12 @@ export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
  */
 export const buildSelectionSessionAdvancedSearchLink = (
   uuid: string,
-  externalMimeTypes?: string[]
+  externalMimeTypes?: string[],
 ): string =>
   buildSelectionSessionLink(
     routes.OldAdvancedSearch.to(uuid),
     false,
-    externalMimeTypes
+    externalMimeTypes,
   );
 
 /**
@@ -307,7 +307,7 @@ export const buildSelectionSessionScrapbookLink = (url: string): string =>
  * @param externalMimeTypes A list of MIME types provided by LMS.
  */
 export const buildSelectionSessionSearchPageLink = (
-  externalMimeTypes?: string[]
+  externalMimeTypes?: string[],
 ) => {
   const { layout } = getSelectionSessionInfo();
   const legacySelectionSessionPath = pipe(
@@ -319,13 +319,13 @@ export const buildSelectionSessionSearchPageLink = (
       _: () => {
         throw new Error("Unknown Selection Session layout");
       },
-    })
+    }),
   );
 
   return buildSelectionSessionLink(
     `/${legacySelectionSessionPath}/searching.do`,
     false,
-    externalMimeTypes
+    externalMimeTypes,
   );
 };
 
@@ -342,7 +342,7 @@ export const buildSelectionSessionSearchPageLink = (
 const updateSelectionSummary = (legacyContent: LegacyContentResponse) => {
   const bodyContent = new DOMParser().parseFromString(
     legacyContent.html.body,
-    "text/html"
+    "text/html",
   );
   const selectionSummary = bodyContent.getElementById("selection-summary");
   if (!selectionSummary) {
@@ -363,7 +363,7 @@ const leaveSearchPage = (href: string) => (window.location.href = href);
  */
 export const buildPostDataForStructured = (
   itemKey: string,
-  attachmentUUIDs: string[]
+  attachmentUUIDs: string[],
 ): SelectionSessionPostData => {
   const serverSideEvent: (string | null)[] =
     attachmentUUIDs.length > 0
@@ -392,7 +392,7 @@ export const buildPostDataForStructured = (
  */
 export const buildPostDataForSelectOrAdd = (
   itemKey: string,
-  attachmentUUIDs: string[]
+  attachmentUUIDs: string[],
 ): SelectionSessionPostData =>
   attachmentUUIDs.length > 0
     ? {
@@ -414,7 +414,7 @@ export const buildPostDataForSelectOrAdd = (
  */
 export const buildPostDataForSkinny = (
   itemKey: string,
-  attachmentUUID?: string
+  attachmentUUID?: string,
 ): SelectionSessionPostData =>
   attachmentUUID
     ? {
@@ -437,17 +437,17 @@ export const buildPostDataForSkinny = (
  */
 export const selectResourceForCourseList = (
   itemKey: string,
-  attachmentUUIDs: string[] = []
+  attachmentUUIDs: string[] = [],
 ): Promise<void> => {
   const postData: SelectionSessionPostData = buildPostDataForStructured(
     itemKey,
-    attachmentUUIDs
+    attachmentUUIDs,
   );
 
   return submitSelection<unknown>(
     `${submitBaseUrl}/access/course/searching.do`,
     postData,
-    getGlobalCourseList().updateCourseList
+    getGlobalCourseList().updateCourseList,
   );
 };
 
@@ -458,11 +458,11 @@ export const selectResourceForCourseList = (
  */
 export const selectResourceForSelectOrAdd = (
   itemKey: string,
-  attachmentUUIDs: string[]
+  attachmentUUIDs: string[],
 ): Promise<void> => {
   const postData: SelectionSessionPostData = buildPostDataForSelectOrAdd(
     itemKey,
-    attachmentUUIDs
+    attachmentUUIDs,
   );
   const callback = (response: SubmitResponse) => {
     if (isChangeRoute(response)) {
@@ -475,7 +475,7 @@ export const selectResourceForSelectOrAdd = (
   return submitSelection<SubmitResponse>(
     `${submitBaseUrl}/selectoradd/searching.do`,
     postData,
-    callback
+    callback,
   );
 };
 
@@ -488,11 +488,11 @@ export const selectResourceForSelectOrAdd = (
  */
 export const selectResourceForSkinny = (
   itemKey: string,
-  attachmentUUID?: string
+  attachmentUUID?: string,
 ): Promise<void> => {
   const postData: SelectionSessionPostData = buildPostDataForSkinny(
     itemKey,
-    attachmentUUID
+    attachmentUUID,
   );
 
   const callback = (response: SubmitResponse) => {
@@ -517,7 +517,7 @@ export const selectResourceForSkinny = (
   return submitSelection<ExternalRedirect>(
     `${submitBaseUrl}/access/skinny/searching.do`,
     postData,
-    callback
+    callback,
   );
 };
 /**
@@ -527,7 +527,7 @@ export const selectResourceForSkinny = (
  */
 export const selectResource = (
   itemKey: string,
-  attachments: string[] = []
+  attachments: string[] = [],
 ): Promise<void> =>
   pipe(
     getSelectionSessionInfo().layout,
@@ -541,8 +541,8 @@ export const selectResource = (
             (xs: string[]) => xs.length <= 1, // Each selection in Skinny can only have one attachment.
             () =>
               new Error(
-                "Only one attachment is allowed in Skinny Selection Session."
-              )
+                "Only one attachment is allowed in Skinny Selection Session.",
+              ),
           ),
           E.map(A.head),
           E.match(
@@ -552,12 +552,12 @@ export const selectResource = (
               // indicates no attachment is selected - just the item.
               O.toUndefined,
               (attachmentUUID) =>
-                selectResourceForSkinny(itemKey, attachmentUUID)
-            )
-          )
+                selectResourceForSkinny(itemKey, attachmentUUID),
+            ),
+          ),
         ),
       _: (layout) => {
         throw new TypeError(`Unsupported selection session layout: ${layout}`);
       },
-    })
+    }),
   );

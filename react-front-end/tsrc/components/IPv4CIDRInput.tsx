@@ -15,30 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import { Grid, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import { constant, constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as S from "fp-ts/string";
 import * as React from "react";
 import { createRef, RefObject, useState, useRef } from "react";
-import { Literal, Union } from "runtypes";
 import * as N from "fp-ts/number";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
+import { simpleUnionMatch } from "../util/match";
 
 /**
  * Runtypes definition for key code which need to be handled here.
  */
-const KeyCodeTypesUnion = Union(
-  Literal("Enter"),
-  Literal("Backspace"),
-  Literal("Period"),
-  Literal("NumpadDecimal")
-);
+const KeyCodeTypesUnion = t.union([
+  t.literal("Enter"),
+  t.literal("Backspace"),
+  t.literal("Period"),
+  t.literal("NumpadDecimal"),
+]);
+
+type KeyCodeTypes = t.TypeOf<typeof KeyCodeTypesUnion>;
 
 const PREFIX = "IPv4CIDRInput";
 const classes = {
@@ -90,20 +94,20 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       RNEA.head,
       S.split("."),
       O.fromPredicate(
-        (ip: RNEA.ReadonlyNonEmptyArray<string>) => ip.length === ipElements
+        (ip: RNEA.ReadonlyNonEmptyArray<string>) => ip.length === ipElements,
       ),
-      O.getOrElse(() => pipe(ipElements, RNEA.replicate("")))
-    )
+      O.getOrElse(() => pipe(ipElements, RNEA.replicate(""))),
+    ),
   );
   const [netmask, setNetmask] = useState<string>(
-    pipe(separatedValue, RNEA.last)
+    pipe(separatedValue, RNEA.last),
   );
 
   const ipInputRefs = useRef<NEA.NonEmptyArray<RefObject<HTMLInputElement>>>(
     pipe(
       NEA.range(1, ipElements),
-      NEA.map((_) => createRef())
-    )
+      NEA.map((_) => createRef()),
+    ),
   );
   const netmaskInputRef = useRef<HTMLInputElement>();
 
@@ -114,8 +118,8 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       A.lookup(index),
       O.fold(
         () => netmaskInputRef.current?.focus(),
-        (input) => input.current?.focus()
-      )
+        (input) => input.current?.focus(),
+      ),
     );
 
   /**
@@ -148,7 +152,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
    */
   const generateIPV4CIDRString = (
     ip: RNEA.ReadonlyNonEmptyArray<string>,
-    netmask: string
+    netmask: string,
   ): O.Option<string> =>
     pipe(
       ip,
@@ -156,8 +160,8 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       O.map(RNEA.intercalate(S.Monoid)(".")),
       O.map(
         (ipResult: string) =>
-          `${ipResult}/${S.isEmpty(netmask) ? defaultNetmask : netmask}`
-      )
+          `${ipResult}/${S.isEmpty(netmask) ? defaultNetmask : netmask}`,
+      ),
     );
 
   const isEmptyOrInRange = (min: number, max: number) => (text: string) =>
@@ -167,12 +171,12 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       parseInt,
       O.fromPredicate(N.isNumber), // deal with NaN
       O.map((n) => n >= min && n <= max),
-      O.getOrElse(constFalse)
+      O.getOrElse(constFalse),
     );
 
   const handleOnChanged = (
     newIP: RNEA.ReadonlyNonEmptyArray<string>,
-    newNetmask: string
+    newNetmask: string,
   ) => {
     setIPAddress(newIP);
     setNetmask(newNetmask);
@@ -183,7 +187,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
 
   const handleIpChanged = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index: number
+    index: number,
   ) => {
     const newIpUnit = event.target.value;
 
@@ -204,20 +208,20 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
         pipe(
           ipAddress,
           RNEA.updateAt(index, ipUnit),
-          O.map((newIp) => handleOnChanged(newIp, netmask))
-        )
-      )
+          O.map((newIp) => handleOnChanged(newIp, netmask)),
+        ),
+      ),
     );
   };
 
   const handleNetmaskChanged = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) =>
     pipe(
       event.target.value,
       // accept empty string or 0 ~ 32
       O.fromPredicate(isEmptyOrInRange(0, 32)),
-      O.map((newNetmask: string) => handleOnChanged(ipAddress, newNetmask))
+      O.map((newNetmask: string) => handleOnChanged(ipAddress, newNetmask)),
     );
 
   /**
@@ -230,42 +234,43 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
   const handleKeyDownEvent = (
     event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number,
-    inputValue: string
+    inputValue: string,
   ) =>
     pipe(
       event.code,
-      O.fromPredicate(KeyCodeTypesUnion.guard),
-      O.map(
-        KeyCodeTypesUnion.match(
-          (Enter) => focusInput(index + 1),
-          (Backspace) => {
+      KeyCodeTypesUnion.decode,
+      E.fold(
+        console.error,
+        simpleUnionMatch<KeyCodeTypes, void>({
+          Enter: () => focusInput(index + 1),
+          Backspace: () => {
             if (S.isEmpty(inputValue)) {
               focusInput(index - 1);
             }
           },
-          (Period) => {
+          Period: () => {
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `Period` will trigger focus event on current input, thus prevent it.
               event.preventDefault();
             }
           },
-          (NumpadDecimal) => {
+          NumpadDecimal: () => {
             if (!S.isEmpty(inputValue)) {
               focusInput(index + 1);
               // key `NumpadDecimal` will trigger focus event on current input.
               event.preventDefault();
             }
-          }
-        )
-      )
+          },
+        }),
+      ),
     );
 
   const ipInput = (index: number) => {
     const currentValue = pipe(
       ipAddress as readonly string[],
       RA.lookup(index),
-      O.getOrElse(constant(""))
+      O.getOrElse(constant("")),
     );
 
     return (
@@ -299,7 +304,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
       {pipe(
         A.makeBy(ipElements, ipInput),
         A.intersperse(dot()),
-        A.mapWithIndex(wrapGrid)
+        A.mapWithIndex(wrapGrid),
       )}
       <Grid item className={classes.infix}>
         /

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import FacetDialog, {
   FacetDialogProps,
 } from "../../tsrc/settings/Search/facetedsearch/FacetDialog";
@@ -40,7 +40,7 @@ const facet: FacetedSearchClassificationWithFlags = {
   deleted: false,
 };
 
-export const withFacetProvided: Story<FacetDialogProps> = (args) => (
+export const withFacetProvided: StoryFn<FacetDialogProps> = (args) => (
   <FacetDialog {...args} />
 );
 withFacetProvided.args = {
@@ -48,7 +48,7 @@ withFacetProvided.args = {
   facet,
 };
 
-export const withFacetNotProvided: Story<FacetDialogProps> = (args) => (
+export const withFacetNotProvided: StoryFn<FacetDialogProps> = (args) => (
   <FacetDialog {...args} />
 );
 withFacetNotProvided.args = { open: true };

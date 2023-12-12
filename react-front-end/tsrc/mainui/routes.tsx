@@ -22,35 +22,35 @@ import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const LtiPlatformsSettingsPage = React.lazy(
-  () => import("../settings/Integrations/Lti13PlatformsSettings")
+  () => import("../settings/Integrations/Lti13PlatformsSettings"),
 );
 const CreateLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/CreateLti13Platform")
+  () => import("../settings/Integrations/lti13platforms/CreateLti13Platform"),
 );
 const EditLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/EditLti13Platform")
+  () => import("../settings/Integrations/lti13platforms/EditLti13Platform"),
 );
 const CloudProviderListPage = React.lazy(
-  () => import("../cloudprovider/CloudProviderListPage")
+  () => import("../cloudprovider/CloudProviderListPage"),
 );
 const SearchPageSettings = React.lazy(
-  () => import("../settings/Search/SearchPageSettings")
+  () => import("../settings/Search/SearchPageSettings"),
 );
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
 const SearchFilterPage = React.lazy(
-  () => import("../settings/Search/searchfilter/SearchFilterSettingsPage")
+  () => import("../settings/Search/searchfilter/SearchFilterSettingsPage"),
 );
 const LoginNoticeConfigPage = React.lazy(
-  () => import("../loginnotice/LoginNoticeConfigPage")
+  () => import("../loginnotice/LoginNoticeConfigPage"),
 );
 const FacetedSearchSettingsPage = React.lazy(
-  () => import("../settings/Search/facetedsearch/FacetedSearchSettingsPage")
+  () => import("../settings/Search/facetedsearch/FacetedSearchSettingsPage"),
 );
 const ContentIndexSettings = React.lazy(
-  () => import("../settings/Search/ContentIndexSettings")
+  () => import("../settings/Search/ContentIndexSettings"),
 );
 const MyResourcesPage = React.lazy(
-  () => import("../myresources/MyResourcesPage")
+  () => import("../myresources/MyResourcesPage"),
 );
 
 export interface BaseOEQRouteComponentProps {

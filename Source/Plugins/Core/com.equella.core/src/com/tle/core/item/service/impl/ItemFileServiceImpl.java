@@ -18,7 +18,6 @@
 
 package com.tle.core.item.service.impl;
 
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -140,7 +139,7 @@ public class ItemFileServiceImpl implements ItemFileService, ItemMovedCollection
     try {
       return cache.getCache().get(ItemId.fromKey(itemId), new FilestoreCacheLoader(itemId));
     } catch (ExecutionException ee) {
-      throw Throwables.propagate(ee);
+      throw new RuntimeException(ee);
     }
   }
 

@@ -34,4 +34,6 @@ public interface OAuthTokenDao extends GenericInstitutionalDao<OAuthToken, Long>
   void deleteAllForUser(String userId);
 
   void changeUserId(String fromUserId, String toUserId);
+
+  void deleteByToken(String token);
 }

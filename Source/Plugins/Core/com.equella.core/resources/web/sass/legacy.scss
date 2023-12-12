@@ -52,8 +52,10 @@ $small-breakpoint-max: "768px";
 $medium-breakpoint-max: "1200px";
 $large-breakpoint-max: "1500px";
 $extra-large-breakpoint-max: "1800px";
-$boxShadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-  0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+$boxShadow:
+  0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+  0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+  0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 $hoverBackgroundColor: transparentize(#000, 0.9);
 $activeBackgroundColor: transparentize(#000, 0.7);
 $modalFooterHeight: 50px;
@@ -1771,7 +1773,9 @@ Alerts
   @include curvedCorners;
   padding: 14px 35px $singleMargin 35px;
   background-color: #fcf8e3;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
   position: fixed;
   color: white;
   right: 35vw;
@@ -2958,7 +2962,9 @@ Contribution wizard styling
 }
 
 #wizard-pagelist {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
   margin: 15px 0;
   background: #fff;
 }
@@ -4108,13 +4114,17 @@ table#copyright-table tr td {
 .attachments-browse.structured li.attachmentrow.active {
   border: none;
   background-color: white;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .attachments-browse.structured li.attachmentrow .detail {
   border: none;
   background-color: white;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
   right: 0px !important;
   top: 35px !important;
 }
@@ -4155,7 +4165,9 @@ table#copyright-table tr td {
 }
 
 .attachments-browse.structured li.attachmentrow.active {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .attachments-browse.structured li.attachmentrow,
@@ -4178,7 +4190,9 @@ table#copyright-table tr td {
 .attachments-browse.thumbs li.attachmentrow .detail {
   background-color: white;
   border: none;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .attachments-browse li.attachmentrow .attachments-meta {
@@ -5333,7 +5347,7 @@ Login Notice Formatting
   margin: 1.5em 10px;
   padding: 0.5em 10px;
   font-style: italic;
-  quotes: "\201C""\201D""\2018""\2019";
+  quotes: "\201C" "\201D" "\2018" "\2019";
 }
 
 #loginNotice blockquote:before {
@@ -5660,4 +5674,57 @@ button:focus {
 
 .itemsummary-layout #col2 hr {
   display: none;
+}
+
+// fix the layout of custom link on setting page,
+// make sure the icon is on the left and the button is on the right
+#cls_us {
+  .ui-state-default {
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 8px;
+
+    .link-name {
+      padding-left: 48px;
+    }
+  }
+}
+
+// fix the layout of `Fixed user` section on `OAuth` setting page.
+#userAjaxDiv .settingField .control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Fix the layout of authorize page.
+// The layout below is modeled after the login page of the new UI.
+#oauthdialog {
+  padding: 16px;
+
+  #oauth_title {
+    font-size: 2.125rem;
+    line-height: 2.5rem;
+    font-weight: 400;
+  }
+
+  #oauth_wrap {
+    margin-top: 20px;
+    padding-left: 20px;
+
+    #oauth_content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .buttons {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
 }

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {
@@ -29,7 +29,7 @@ export default {
   component: SearchResult,
 } as Meta<SearchResultProps>;
 
-export const BasicSearchResult: Story<SearchResultProps> = (args) => (
+export const BasicSearchResult: StoryFn<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
 BasicSearchResult.args = {
@@ -38,7 +38,7 @@ BasicSearchResult.args = {
   getViewerDetails: async () => ({ viewerId: "fancy" }),
 };
 
-export const AttachmentSearchResult: Story<SearchResultProps> = (args) => (
+export const AttachmentSearchResult: StoryFn<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
 AttachmentSearchResult.args = {
@@ -47,18 +47,18 @@ AttachmentSearchResult.args = {
   getItemAttachments: async () => mockData.attachSearchObj.attachments ?? [],
 };
 
-export const KeywordFoundInAttachmentSearchResult: Story<SearchResultProps> = (
-  args
-) => <SearchResult {...args} />;
+export const KeywordFoundInAttachmentSearchResult: StoryFn<
+  SearchResultProps
+> = (args) => <SearchResult {...args} />;
 KeywordFoundInAttachmentSearchResult.args = {
   ...BasicSearchResult.args,
   item: { ...mockData.attachSearchObj, keywordFoundInAttachment: true },
   getItemAttachments: async () => mockData.attachSearchObj.attachments ?? [],
 };
 
-export const CustomMetadataSearchResult: Story<SearchResultProps> = (args) => (
-  <SearchResult {...args} />
-);
+export const CustomMetadataSearchResult: StoryFn<SearchResultProps> = (
+  args,
+) => <SearchResult {...args} />;
 CustomMetadataSearchResult.args = {
   ...BasicSearchResult.args,
   item: {
@@ -69,7 +69,7 @@ CustomMetadataSearchResult.args = {
     mockData.customMetaSearchObj.attachments ?? [],
 };
 
-export const HighlightedSearchResult: Story<SearchResultProps> = (args) => (
+export const HighlightedSearchResult: StoryFn<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
 HighlightedSearchResult.args = {
@@ -82,8 +82,8 @@ HighlightedSearchResult.args = {
   highlights: ["cat", "dog*"],
 };
 
-export const CustomActionButtonSearchResult: Story<SearchResultProps> = (
-  args
+export const CustomActionButtonSearchResult: StoryFn<SearchResultProps> = (
+  args,
 ) => <SearchResult {...args} />;
 
 CustomActionButtonSearchResult.args = {
@@ -95,8 +95,8 @@ CustomActionButtonSearchResult.args = {
   ],
 };
 
-export const CustomTitleHandlerSearchResult: Story<SearchResultProps> = (
-  args
+export const CustomTitleHandlerSearchResult: StoryFn<SearchResultProps> = (
+  args,
 ) => <SearchResult {...args} />;
 
 CustomTitleHandlerSearchResult.args = {

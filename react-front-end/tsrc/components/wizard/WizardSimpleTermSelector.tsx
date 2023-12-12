@@ -84,7 +84,7 @@ export interface WizardSimpleTermSelectorProps extends WizardControlBasicProps {
     restriction: OEQ.Taxonomy.SelectionRestriction,
     maxTermNum: number,
     isSearchFullTerm: boolean,
-    taxonomy: string
+    taxonomy: string,
   ) => Promise<OEQ.Common.PagedResult<OEQ.Taxonomy.Term>>;
 }
 
@@ -123,25 +123,25 @@ export const WizardSimpleTermSelector = ({
                 selectionRestriction,
                 maxTermNum,
                 true, // Always searches full terms.
-                selectedTaxonomy
+                selectedTaxonomy,
               ),
-            (e) => `Failed to search terms for query [${query}]: ${e}`
+            (e) => `Failed to search terms for query [${query}]: ${e}`,
           ),
-          TE.map(flow(({ results }) => results))
+          TE.map(flow(({ results }) => results)),
         );
 
         const taskChain = pipe(
           T.fromIO(() => setLoading(true)),
           T.chain(() => searchTermTask),
-          T.chainFirst(() => T.fromIO(() => setLoading(false)))
+          T.chainFirst(() => T.fromIO(() => setLoading(false))),
         );
 
         pipe(
           await taskChain(),
-          E.fold(flow(E.toError, handleError), setOptions)
+          E.fold(flow(E.toError, handleError), setOptions),
         );
       }, 500),
-    [handleError, selectedTaxonomy, selectionRestriction, termProvider]
+    [handleError, selectedTaxonomy, selectionRestriction, termProvider],
   );
 
   const removeSelectedTerm = (term: string) =>
@@ -151,7 +151,7 @@ export const WizardSimpleTermSelector = ({
     pipe(
       values,
       isAllowMultiple ? RSET.insert(S.Eq)(term) : () => RSET.singleton(term),
-      onSelect
+      onSelect,
     );
 
   const terms = pipe(
@@ -169,7 +169,7 @@ export const WizardSimpleTermSelector = ({
           </TooltipIconButton>
         </ListItemSecondaryAction>
       </ListItem>
-    ))
+    )),
   );
 
   return (
@@ -191,9 +191,9 @@ export const WizardSimpleTermSelector = ({
                 value,
                 O.fromNullable,
                 O.map(({ term, fullTerm }) =>
-                  termStorageFormat === "LEAF_ONLY" ? term : fullTerm
+                  termStorageFormat === "LEAF_ONLY" ? term : fullTerm,
                 ),
-                O.map(insertSingleTerm)
+                O.map(insertSingleTerm),
               );
 
               // Clear the value as we don't want to show the value in the TextField.
@@ -212,7 +212,7 @@ export const WizardSimpleTermSelector = ({
               pipe(
                 value.trim(),
                 O.fromPredicate(not(S.isEmpty)),
-                O.map(searchTerms)
+                O.map(searchTerms),
               );
             }}
             renderInput={(params) => (

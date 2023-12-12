@@ -1,5 +1,7 @@
 package testng;
 
+import java.lang.reflect.Method;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.IRetryAnalyzer;
@@ -10,11 +12,21 @@ public class FailureRetryAnalyzer implements IRetryAnalyzer {
   int currentRetry = 0;
   Logger LOGGER = LoggerFactory.getLogger(FailureRetryAnalyzer.class.getName());
 
+  /**
+   * Get the retry count from the method annotation. If the method is not annotated, get the retry
+   * count from the class annotation.
+   */
+  public static int getRetryCount(Method method) {
+    return Optional.ofNullable(method.getAnnotation(RetryTest.class))
+        .or(() -> Optional.ofNullable(method.getDeclaringClass().getAnnotation(RetryTest.class)))
+        .map(RetryTest::value)
+        .orElse(0);
+  }
+
   @Override
   public boolean retry(ITestResult result) {
-    RetryTest failureRetryCount =
-        result.getMethod().getConstructorOrMethod().getMethod().getAnnotation(RetryTest.class);
-    int maxRetryCount = (failureRetryCount == null) ? 0 : failureRetryCount.value();
+    int maxRetryCount = this.getRetryCount(result.getMethod().getConstructorOrMethod().getMethod());
+
     if (++currentRetry > maxRetryCount) {
       return false;
     } else {

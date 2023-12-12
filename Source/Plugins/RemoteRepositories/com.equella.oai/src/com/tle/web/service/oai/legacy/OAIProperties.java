@@ -19,7 +19,6 @@
 package com.tle.web.service.oai.legacy;
 
 import ORG.oclc.oai.server.catalog.AbstractCatalog;
-import com.google.common.base.Throwables;
 import com.tle.common.Utils;
 import com.tle.common.settings.standard.MailSettings;
 import com.tle.core.guice.Bind;
@@ -37,17 +36,10 @@ public class OAIProperties {
   @Inject private ConfigurationService configConstants;
   @Inject private InstitutionService institutionService;
 
-  // Sonar objects to 'throws Throwable' but here we're bound by the
-  // declaration in external jar
   @Inject
-  public OAIProperties(@Named("oaiLegacyProps") Properties properties) throws Throwable // NOSONAR
-      {
+  public OAIProperties(@Named("oaiLegacyProps") Properties properties) throws Throwable {
     this.properties = new OAIExtendedProperties(properties);
-    try {
-      AbstractCatalog.factory(this.properties, null);
-    } catch (Exception e) {
-      Throwables.propagate(e);
-    }
+    AbstractCatalog.factory(this.properties, null);
   }
 
   // Unfortunately we can't extend OAIProperties from Properties

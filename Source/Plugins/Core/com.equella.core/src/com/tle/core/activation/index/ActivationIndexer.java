@@ -34,7 +34,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.Field;
 
 @Bind
 @Singleton
@@ -71,7 +71,7 @@ public class ActivationIndexer extends AbstractIndexingExtension {
     List<ActivateRequest> activateRequests = activationService.getAllRequests(item);
 
     Document itemdoc = indexedItem.getItemdoc();
-    List<Fieldable> basicFields = indexedItem.getBasicFields();
+    List<Field> basicFields = indexedItem.getBasicFields();
     List<Document> activationDocs =
         indexedItem.getDocumentsForIndex(ActivationConstants.ACTIVATION_INDEX_ID);
     for (ActivateRequest request : activateRequests) {

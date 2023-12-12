@@ -60,14 +60,14 @@ export const ACLTreeRecipient = ({
   ...other
 }: ACLTreeRecipientProps): JSX.Element => {
   const [expressionName, setExpressionName] = useState(
-    recipient.name ?? showRecipient(recipient)
+    recipient.name ?? showRecipient(recipient),
   );
 
   useEffect(() => {
     (async () => {
       const getName: TE.TaskEither<string, string> = pipe(
         recipient,
-        showRecipientHumanReadable(aclEntityResolvers)
+        showRecipientHumanReadable(aclEntityResolvers),
       );
       pipe(await getName(), E.fold(console.warn, setExpressionName));
     })();

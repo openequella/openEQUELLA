@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
   WizardShuffleList,
@@ -32,7 +32,7 @@ export default {
   },
 } as Meta<WizardShuffleListProps>;
 
-export const NoValues: Story<WizardShuffleListProps> = (args) => (
+export const NoValues: StoryFn<WizardShuffleListProps> = (args) => (
   <WizardShuffleList {...args} />
 );
 NoValues.args = {
@@ -42,7 +42,7 @@ NoValues.args = {
   values: new Set<string>([]),
 };
 
-export const WithValues: Story<WizardShuffleListProps> = (args) => (
+export const WithValues: StoryFn<WizardShuffleListProps> = (args) => (
   <WizardShuffleList {...args} />
 );
 WithValues.args = {

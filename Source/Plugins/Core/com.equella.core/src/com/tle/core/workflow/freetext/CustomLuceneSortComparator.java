@@ -20,17 +20,23 @@ package com.tle.core.workflow.freetext;
 
 import com.tle.common.Check;
 import java.io.IOException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.FieldCache;
-import org.apache.lucene.search.FieldComparator;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.PostingsEnum;
+import org.apache.lucene.index.SortedDocValues;
+import org.apache.lucene.search.SimpleFieldComparator;
 
-public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
+public final class CustomLuceneSortComparator extends SimpleFieldComparator<Integer> {
 
   private final String userId;
-  private int[] values;
+  private final int[] values;
+
   private String[] currentReaderValues;
   private final String field;
   private int bottom;
+  private int top;
 
   public CustomLuceneSortComparator(int numHits, String field, String userId) {
     values = new int[numHits];
@@ -56,18 +62,39 @@ public final class CustomLuceneSortComparator extends FieldComparator<Integer> {
   }
 
   @Override
+  public int compareTop(int doc) {
+    final int val2 = isCurrentUser(currentReaderValues[doc]);
+    return top - val2;
+  }
+
+  @Override
   public void copy(int slot, int doc) {
     values[slot] = isCurrentUser(currentReaderValues[doc]);
   }
 
   @Override
-  public void setNextReader(IndexReader reader, int docBase) throws IOException {
-    currentReaderValues = FieldCache.DEFAULT.getStrings(reader, field);
+  public void doSetNextReader(LeafReaderContext context) throws IOException {
+    LeafReader reader = context.reader();
+    int maxDoc = reader.maxDoc();
+    currentReaderValues = new String[maxDoc];
+
+    List<String> values = new ArrayList<>();
+    SortedDocValues docValues = reader.getSortedDocValues(field);
+    while (docValues.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+      values.add(docValues.lookupOrd(docValues.ordValue()).utf8ToString());
+    }
+
+    currentReaderValues = values.toArray(new String[0]);
   }
 
   @Override
   public void setBottom(final int bottom) {
     this.bottom = values[bottom];
+  }
+
+  @Override
+  public void setTopValue(Integer top) {
+    this.top = top;
   }
 
   @Override

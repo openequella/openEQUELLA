@@ -18,7 +18,6 @@
 
 package com.tle.core.migration;
 
-import com.google.common.base.Throwables;
 import com.tle.core.hibernate.CurrentDataSource;
 import com.tle.core.hibernate.HibernateFactory;
 import com.tle.core.hibernate.HibernateFactoryService;
@@ -49,17 +48,9 @@ public abstract class AbstractHibernateMigration extends AbstractMigration {
       final List<String> sqlStatements,
       SessionFactory factory,
       final MigrationResult result,
-      String statusKey)
-      throws Exception {
+      String statusKey) {
     result.setupSubTaskStatus(statusKey, sqlStatements.size());
-    runInTransaction(
-        factory,
-        new HibernateCall() {
-          @Override
-          public void run(Session session) throws Exception {
-            executeSqlStatements(result, session, sqlStatements);
-          }
-        });
+    runInTransaction(factory, session -> executeSqlStatements(result, session, sqlStatements));
   }
 
   protected void executeSqlStatements(
@@ -70,18 +61,16 @@ public abstract class AbstractHibernateMigration extends AbstractMigration {
         result.addLogEntry(new MigrationStatusLog(statement, false));
         result.incrementStatus();
       } catch (Exception e) {
-        result.setMessage("Error running SQL: '" + statement + "' "); // $NON-NLS-1$ //$NON-NLS-2$
+        result.setMessage("Error running SQL: '" + statement + "' ");
         result.addLogEntry(new MigrationStatusLog(statement, true));
         throw e;
       }
     }
   }
 
-  protected void runInTransaction(SessionFactory factory, HibernateCall call) throws Exception {
+  protected void runInTransaction(SessionFactory factory, HibernateCall call) {
     Transaction trans = null;
-    Session session = null;
-    try {
-      session = factory.openSession();
+    try (Session session = factory.openSession()) {
       trans = session.beginTransaction();
       call.run(session);
       trans.commit();
@@ -89,11 +78,7 @@ public abstract class AbstractHibernateMigration extends AbstractMigration {
       if (trans != null) {
         trans.rollback();
       }
-      Throwables.propagate(t);
-    } finally {
-      if (session != null) {
-        session.close();
-      }
+      throw (t instanceof RuntimeException) ? (RuntimeException) t : new RuntimeException(t);
     }
   }
 

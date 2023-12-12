@@ -224,7 +224,7 @@ public class GroupSelectorWebControl
     return groupsTable;
   }
 
-  private class GroupsModel extends DynamicSelectionsTableModel<String> {
+  private final class GroupsModel extends DynamicSelectionsTableModel<String> {
     @Override
     protected List<String> getSourceList(SectionInfo info) {
       return storageControl.getValues();

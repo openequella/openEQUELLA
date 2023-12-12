@@ -18,7 +18,6 @@
 
 package com.tle.core.qti.service.impl;
 
-import com.google.common.base.Throwables;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.services.FileSystemService;
@@ -49,7 +48,7 @@ public class FileSystemResourceLocator implements ResourceLocator {
       }
       return fileSystemService.read(handle, path);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 }

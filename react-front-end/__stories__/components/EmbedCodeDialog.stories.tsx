@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import {
   EmbedCodeDialog,
   EmbedCodeDialogProps,
@@ -30,8 +30,8 @@ export default {
   },
 } as Meta<EmbedCodeDialogProps>;
 
-export const Standard: Story<EmbedCodeDialogProps> = (
-  args: EmbedCodeDialogProps
+export const Standard: StoryFn<EmbedCodeDialogProps> = (
+  args: EmbedCodeDialogProps,
 ) => <EmbedCodeDialog {...args} />;
 
 Standard.args = {

@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 import { identity } from "fp-ts/function";
-import { simpleMatch, simpleMatchD } from "../../../tsrc/util/match";
+import {
+  simpleMatch,
+  simpleMatchD,
+  simpleUnionMatch,
+} from "../../../tsrc/util/match";
 
 describe("simpleMatch", () => {
   const unmatched = (s: string | number): string =>
@@ -50,7 +54,7 @@ describe("simpleMatchDynamic", () => {
       [createOption(1), identity],
       [createOption("two"), identity],
     ],
-    identity
+    identity,
   );
 
   it("matches the default clause when no match found", () => {
@@ -61,5 +65,35 @@ describe("simpleMatchDynamic", () => {
   it("executes the function matching the provided value", () => {
     const knownMatch = createOption("two");
     expect(testMatchD(knownMatch)).toMatch(`${knownMatch}`);
+  });
+});
+
+describe("simpleUnionTypeMatch", () => {
+  type TestUnion = "hello" | "world" | 1;
+  const cases: Partial<Record<TestUnion, () => string>> = {
+    hello: () => "hello",
+    1: () => "1",
+  };
+  const defaultValue = "default";
+  const buildDefault = jest.fn().mockReturnValue(defaultValue);
+  const testMatch = simpleUnionMatch(cases, buildDefault);
+
+  it("executes the function matching the provided literal type", () => {
+    const knownMatch = "hello";
+    expect(testMatch(knownMatch)).toMatch(knownMatch);
+  });
+
+  it("executes the default function if the literal type does not have any function to be executed", () => {
+    const knownMatch = "world";
+    const result = testMatch(knownMatch);
+    expect(buildDefault).toHaveBeenCalledTimes(1);
+    expect(result).toMatch(defaultValue);
+  });
+
+  it("throws an error if the literal type does not have any function to be executed", () => {
+    const noMatcher = simpleUnionMatch(cases);
+    expect(() => noMatcher("world")).toThrow(
+      "Missing matcher for literal type: world",
+    );
   });
 });

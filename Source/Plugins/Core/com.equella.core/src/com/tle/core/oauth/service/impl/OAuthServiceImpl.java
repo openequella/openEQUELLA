@@ -55,10 +55,13 @@ import com.tle.core.services.ValidationHelper;
 import com.tle.exceptions.AccessDeniedException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -67,7 +70,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(OAuthService.class)
@@ -82,6 +84,7 @@ public class OAuthServiceImpl
       "com.tle.core.oauth.error.validation.clientidunique";
   private static final String KEY_ERROR_VALIDATION_REDIRECTURL_INVALID =
       "com.tle.core.oauth.error.validation.redirecturlinvalid";
+  public static int DEFAULT_TOKEN_VALIDITY = 30;
 
   public static final String KEY_OAUTH_FLOW = "oauth.flow";
 
@@ -244,6 +247,7 @@ public class OAuthServiceImpl
     ocBean.setRedirectUrl(entity.getRedirectUrl());
     ocBean.setRequiresApproval(entity.isRequiresApproval());
     ocBean.setUserId(entity.getUserId());
+    ocBean.setTokenValidity(entity.getTokenValidity());
     if (entity.getAttribute(KEY_OAUTH_FLOW) != null) {
       ocBean.setFlowDef(OAuthFlowDefinitions.getForId(entity.getAttribute(KEY_OAUTH_FLOW)));
     }
@@ -265,6 +269,7 @@ public class OAuthServiceImpl
     entity.setRedirectUrl(ocBean.getRedirectUrl());
     entity.setRequiresApproval(ocBean.isRequiresApproval());
     entity.setUserId(ocBean.getUserId());
+    entity.setTokenValidity(ocBean.getTokenValidity());
     if (ocBean.getFlowDef() != null) {
       entity.setAttribute(KEY_OAUTH_FLOW, ocBean.getFlowDef().getId());
     }
@@ -334,20 +339,33 @@ public class OAuthServiceImpl
   @Override
   public OAuthToken getOrCreateToken(
       String userId, String username, OAuthClient client, String code) {
-    OAuthToken token = tokenDao.getToken(userId, client);
-    if (token == null) {
-      token =
-          new OAuthToken(
-              userId,
-              username,
-              UUID.randomUUID().toString(),
-              new Date(),
-              client,
-              CurrentInstitution.get());
-      token.setCode(code);
-      tokenDao.save(token);
-    }
-    return token;
+    return Optional.ofNullable(tokenDao.getToken(userId, client))
+        .flatMap(this::handleTokenExpiry)
+        .orElseGet(
+            () -> {
+              OAuthToken newToken =
+                  new OAuthToken(
+                      userId,
+                      username,
+                      UUID.randomUUID().toString(),
+                      new Date(),
+                      client,
+                      CurrentInstitution.get());
+              newToken.setCode(code);
+
+              Optional.of(client.getTokenValidity())
+                  .filter(v -> v > 0)
+                  .ifPresent(
+                      v -> {
+                        Instant tokenExpiry =
+                            Instant.now().plus(v, java.time.temporal.ChronoUnit.DAYS);
+                        newToken.setExpiry(Date.from(tokenExpiry));
+                      });
+
+              tokenDao.save(newToken);
+
+              return newToken;
+            });
   }
 
   @Override
@@ -374,6 +392,14 @@ public class OAuthServiceImpl
     return false;
   }
 
+  @Transactional
+  @Override
+  public void deleteToken(String token) {
+    tokenDao.deleteByToken(token);
+    eventService.publishApplicationEvent(
+        new DeleteOAuthTokensEvent(Collections.singletonList(token)));
+  }
+
   @Override
   public List<OAuthToken> listAllTokens() {
     if (!canAdministerTokens()) {
@@ -383,9 +409,38 @@ public class OAuthServiceImpl
   }
 
   /** Unsecured */
+  @Transactional
   @Override
   public OAuthToken getToken(String tokenData) {
-    return tokenDao.getToken(tokenData);
+    return Optional.ofNullable(tokenDao.getToken(tokenData))
+        .flatMap(this::handleTokenExpiry)
+        .orElse(null);
+  }
+
+  @Override
+  public boolean isExpired(OAuthToken token) {
+    return Optional.ofNullable(token.getExpiry())
+        .map(e -> Instant.ofEpochMilli(e.getTime()))
+        .map(e -> e.isBefore(Instant.now()))
+        .orElse(false);
+  }
+
+  /**
+   * If the token has expired, remove it from the database and publish an event. Otherwise, return
+   * the token.
+   *
+   * @param token A token of unknown validity
+   * @return The token if it is valid, or empty if it has expired
+   */
+  private Optional<OAuthToken> handleTokenExpiry(OAuthToken token) {
+    if (isExpired(token)) {
+      // When a token has expired, remove it from the database and publish an event
+      deleteToken(token.getToken());
+
+      return Optional.empty();
+    }
+
+    return Optional.of(token);
   }
 
   @Override
@@ -395,6 +450,7 @@ public class OAuthServiceImpl
     OAuthClientEditingBean bean = session.getBean();
     bean.setClientSecret(UUID.randomUUID().toString());
     bean.setClientId(UUID.randomUUID().toString());
+    bean.setTokenValidity(DEFAULT_TOKEN_VALIDITY);
     return session;
   }
 

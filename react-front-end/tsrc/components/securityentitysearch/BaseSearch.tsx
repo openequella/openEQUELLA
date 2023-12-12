@@ -82,7 +82,7 @@ const {
  * Given a set of items, return a set of UUIDs for all the items.
  */
 const itemIds: <T extends BaseSecurityEntity>(
-  a: ReadonlySet<T>
+  a: ReadonlySet<T>,
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
@@ -98,7 +98,7 @@ interface OneClickMode<T> {
  * Type guard function to check if it's checkbox mode.
  */
 const checkIsCheckboxMode = <T,>(
-  mode: OneClickMode<T> | CheckboxMode<T>
+  mode: OneClickMode<T> | CheckboxMode<T>,
 ): mode is CheckboxMode<T> => mode.type === "checkbox";
 
 /**
@@ -189,7 +189,7 @@ export interface CommonEntitySearchProps<T> {
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /** Function which will provide the list of group. Used to let user choose what groups are used to filter the result.
    *
@@ -288,7 +288,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   // look-up of the group details for groupFilter
   useEffect(() => {
     const updateGroupDetails = (
-      groups: ReadonlySet<OEQ.UserQuery.GroupDetails>
+      groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
     ) => {
       setGroupDetails(groups);
       setGroupFilterSearchGroupDetails(groups);
@@ -296,12 +296,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
     // generate a collection of GroupDetails from groupIds where the name is simply the same as the id
     const buildUnnamedGroupDetails = (
-      groupIds: ReadonlySet<string>
+      groupIds: ReadonlySet<string>,
     ): ReadonlyArray<OEQ.UserQuery.GroupDetails> =>
       pipe(
         groupIds,
         RSET.map(eqGroupById)((gid: string) => ({ name: gid, id: gid })),
-        RSET.toReadonlyArray(groupOrd)
+        RSET.toReadonlyArray(groupOrd),
       );
 
     const nonUndefinedGroupFilter: ReadonlySet<string> =
@@ -315,20 +315,20 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           RSET.toReadonlyArray<string>(OrdAsIs),
           TE.tryCatchK(
             resolveGroupsProvider,
-            (reason) => `Failed to retrieve full group details: ${reason}`
+            (reason) => `Failed to retrieve full group details: ${reason}`,
           ),
           TE.mapLeft((e: string) => {
             console.error(e);
             return buildUnnamedGroupDetails(nonUndefinedGroupFilter);
           }),
           TE.getOrElse(TASK.of),
-          TASK.map(RSET.fromReadonlyArray(eqGroupById))
-        )
+          TASK.map(RSET.fromReadonlyArray(eqGroupById)),
+        ),
       ),
       O.getOrElse<TASK.Task<ReadonlySet<OEQ.UserQuery.GroupDetails>>>(() =>
-        TASK.of(RSET.empty)
+        TASK.of(RSET.empty),
       ),
-      TASK.map(updateGroupDetails)
+      TASK.map(updateGroupDetails),
     );
 
     (async () => await retrieveGroupDetails())();
@@ -350,9 +350,9 @@ const BaseSearch = <T extends BaseSecurityEntity>({
             groupDetails,
             RSET.toReadonlyArray(groupOrd),
             RA.sort(
-              ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord)
+              ORD.contramap((g: OEQ.UserQuery.GroupDetails) => g.name)(S.Ord),
             ),
-            RA.map(({ id, name }) => <li key={id}>{name}</li>)
+            RA.map(({ id, name }) => <li key={id}>{name}</li>),
           )}
         </ul>
       </>
@@ -463,7 +463,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           mode.enableMultiSelection
             ? currentSelectedEntries
             : RSET.difference(itemEq)(currentSelectedEntries, mode.selections),
-        mode.onChange
+        mode.onChange,
       );
 
   const handleQueryFieldKeypress = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -508,8 +508,8 @@ const BaseSearch = <T extends BaseSecurityEntity>({
    */
   const itemDetailsToEntriesMap: (_: T[]) => Map<string, JSX.Element> = flow(
     A.reduce(new Map<string, JSX.Element>(), (entries, item) =>
-      pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item)))
-    )
+      pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item))),
+    ),
   );
 
   const warningMessage = (
@@ -540,7 +540,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
           pipe(
             items,
             A.findFirst(({ id }) => id === itemId),
-            O.map(mode.onAdd)
+            O.map(mode.onAdd),
           )
         }
       />
@@ -573,7 +573,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
               items,
               RSET.fromReadonlyArray(itemEq),
               RSET.union(itemEq)(isCheckboxMode ? mode.selections : RSET.empty),
-              onSelectAll
+              onSelectAll,
             )
           }
         >

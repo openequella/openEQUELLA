@@ -32,7 +32,7 @@ export const defaultDrmStatus: OEQ.Search.DrmStatus = {
  */
 export const listDrmTerms = (
   uuid: string,
-  version: number
+  version: number,
 ): Promise<OEQ.Drm.ItemDrmDetails> =>
   OEQ.Drm.listDrmTerms(API_BASE_URL, uuid, version);
 
@@ -54,6 +54,6 @@ export const acceptDrmTerms = (uuid: string, version: number): Promise<void> =>
  */
 export const listDrmViolations = (
   uuid: string,
-  version: number
+  version: number,
 ): Promise<OEQ.Drm.DrmViolation> =>
   OEQ.Drm.listDrmViolations(API_BASE_URL, uuid, version);

@@ -77,7 +77,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
   const [showEditingDialog, setShowEditingDialog] = useState<boolean>(false);
   const [facets, setFacets] = useState<FacetedSearchClassificationWithFlags[]>(
-    []
+    [],
   );
   const [currentFacet, setCurrentFacet] = useState<
     FacetedSearchClassificationWithFlags | undefined
@@ -86,10 +86,10 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler } = useContext(AppContext);
 
   const listOfUpdates: FacetedSearchClassificationWithFlags[] = facets.filter(
-    (facet) => facet.updated && !facet.deleted
+    (facet) => facet.updated && !facet.deleted,
   );
   const listOfDeleted: FacetedSearchClassificationWithFlags[] = facets.filter(
-    (facet) => facet.deleted
+    (facet) => facet.deleted,
   );
   const changesUnsaved = listOfUpdates.length > 0 || listOfDeleted.length > 0;
 
@@ -112,8 +112,8 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         setFacets(
           facets.map((facet) => {
             return { ...facet, updated: false, deleted: false };
-          })
-        )
+          }),
+        ),
       )
       .catch(appErrorHandler);
   }, [reset, appErrorHandler]);
@@ -151,7 +151,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const addOrEdit = (
     name: string,
     schemaNode: string,
-    maxResults: number | undefined
+    maxResults: number | undefined,
   ) => {
     let newFacet: FacetedSearchClassificationWithFlags;
     if (currentFacet) {
@@ -163,7 +163,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
         updated: true,
       };
       setFacets(
-        replaceElement(facets, facetComparator(currentFacet), newFacet)
+        replaceElement(facets, facetComparator(currentFacet), newFacet),
       );
     } else {
       newFacet = {
@@ -195,7 +195,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     const reorderedFacets = reorder(
       facets,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
     setFacets(reorderedFacets);
   };

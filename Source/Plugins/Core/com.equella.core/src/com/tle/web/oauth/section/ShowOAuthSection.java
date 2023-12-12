@@ -43,6 +43,7 @@ import com.tle.web.sections.equella.component.model.DynamicSelectionsTableModel;
 import com.tle.web.sections.equella.component.model.SelectionsTableSelection;
 import com.tle.web.sections.equella.layout.OneColumnLayout;
 import com.tle.web.sections.equella.render.DateRendererFactory;
+import com.tle.web.sections.equella.render.JQueryTimeAgo;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -61,8 +62,10 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.AbstractTable.Sort;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
+import com.tle.web.sections.standard.renderers.SpanRenderer;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -122,6 +125,9 @@ public class ShowOAuthSection
   @PlugKey("oauth.tokens.column.created")
   private static Label LABEL_TOKENS_CREATED;
 
+  @PlugKey("oauth.tokens.column.expiry")
+  private static Label LABEL_TOKENS_EXPIRY;
+
   @PlugKey("oauth.clients.refuse.delete")
   private static String KEY_OAUTH_CLIENT_IN_USE;
 
@@ -149,6 +155,9 @@ public class ShowOAuthSection
   private JSCallable deleteClientFunction;
   private JSCallable deleteTokenFunction;
 
+  private static final SpanRenderer TOKEN_EXPIRY_NOT_APPLICABLE =
+      new SpanRenderer(new TextLabel("N/A"));
+
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
     final ShowOAuthSectionModel model = getModel(context);
@@ -167,6 +176,8 @@ public class ShowOAuthSection
             .isEmpty());
 
     final GenericTemplateResult templateResult = new GenericTemplateResult();
+
+    JQueryTimeAgo.enableFutureTimes(context); // Enable this for token expiry
     templateResult.addNamedResult(
         OneColumnLayout.BODY, viewFactory.createResult("oauth.ftl", this));
     return templateResult;
@@ -207,9 +218,11 @@ public class ShowOAuthSection
         LABEL_TOKENS_TOKEN,
         LABEL_TOKENS_USERNAME,
         LABEL_TOKENS_CLIENTID,
+        LABEL_TOKENS_EXPIRY,
         LABEL_TOKENS_CREATED,
         null);
-    tokenTable.setColumnSorts(Sort.NONE, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
+    tokenTable.setColumnSorts(
+        Sort.NONE, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.SORTABLE_ASC, Sort.PRIMARY_ASC);
     tokenTable.setSelectionsModel(new OAuthTokensModel());
     tokenTable.setNothingSelectedText(LABEL_TOKENS_NONE);
   }
@@ -255,7 +268,7 @@ public class ShowOAuthSection
     return tokenTable;
   }
 
-  private class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient> {
+  private final class OAuthClientsModel extends DynamicSelectionsTableModel<OAuthClient> {
     @Override
     protected List<OAuthClient> getSourceList(SectionInfo info) {
       return oauthService.enumerateEditable();
@@ -290,7 +303,7 @@ public class ShowOAuthSection
     }
   }
 
-  private class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken> {
+  private final class OAuthTokensModel extends DynamicSelectionsTableModel<OAuthToken> {
     @Override
     protected List<OAuthToken> getSourceList(SectionInfo info) {
       return oauthService.listAllTokens();
@@ -311,6 +324,16 @@ public class ShowOAuthSection
 
       selection.addColumn(username).setSortData(username);
       selection.addColumn(clientId).setSortData(clientId);
+
+      Date expiry = token.getExpiry();
+      SectionRenderable expiryRenderer =
+          Optional.ofNullable(expiry)
+              .<SectionRenderable>map(dateRendererFactory::createDateRenderer)
+              .orElse(TOKEN_EXPIRY_NOT_APPLICABLE);
+      Date expirySorting = Optional.ofNullable(expiry).orElse(new Date(Long.MAX_VALUE));
+
+      selection.addColumn(expiryRenderer).setSortData(expirySorting);
+
       selection.addColumn(dateRendererFactory.createDateRenderer(created)).setSortData(created);
 
       if (oauthService.canAdministerTokens()) {

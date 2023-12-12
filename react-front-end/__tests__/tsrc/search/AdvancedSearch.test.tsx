@@ -18,7 +18,7 @@
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
@@ -110,7 +110,7 @@ const renderAdvancedSearchPage = async () => {
           <AdvancedSearchPage updateTemplate={jest.fn()} />
         </AppContext.Provider>
       </Router>
-    </ThemeProvider>
+    </ThemeProvider>,
   );
   // Wait for the first completion of initial search
   await act(async () => await searchPromise);
@@ -123,7 +123,7 @@ const queryAdvSearchPanel = (container: Element): HTMLElement | null =>
 
 const clickSearchButton = async (container: Element): Promise<void> => {
   const searchButton = container.querySelector(
-    "#advanced-search-panel-searchBtn"
+    "#advanced-search-panel-searchBtn",
   );
   if (!searchButton) {
     throw new Error("Failed to locate Advanced Search 'search' button.");
@@ -134,7 +134,7 @@ const clickSearchButton = async (container: Element): Promise<void> => {
 
 const clickClearButton = async (container: Element) => {
   const clearButton = container.querySelector(
-    "#advanced-search-panel-clearBtn"
+    "#advanced-search-panel-clearBtn",
   );
   if (!clearButton) {
     throw new Error("Failed to locate Advanced Search 'clear' button.");
@@ -174,7 +174,7 @@ describe("Advanced Search filter button", () => {
 
     const getHighlightedFilterButton = () =>
       getByLabelText(
-        languageStrings.searchpage.showAdvancedSearchFilter
+        languageStrings.searchpage.showAdvancedSearchFilter,
       ).querySelector(".MuiSvgIcon-colorSecondary");
 
     // The filter button is not highlighted yet.
@@ -218,7 +218,7 @@ describe("Rendering of wizard", () => {
   // Function to build mocked Wizard controls. The parameter determines whether to use
   // each control's default values or the values specified in `controlValues`.
   const buildMockedControls = (
-    useDefaultValues: boolean = false
+    useDefaultValues: boolean = false,
   ): MockedControlValue[] => generateMockedControls(useDefaultValues);
 
   it("shows an explanatory caption for mandatory fields", async () => {
@@ -237,7 +237,7 @@ describe("Rendering of wizard", () => {
     // Mandatory controls should be suffixed '*' - let's match against the title without it here.
     expect(queryByText(`${editBoxEssentials.title}`)).toBeInTheDocument();
     expect(
-      queryByText(languageStrings.common.required)
+      queryByText(languageStrings.common.required),
     ).not.toBeInTheDocument();
   });
 
@@ -280,7 +280,7 @@ describe("Rendering of wizard", () => {
     // Now update all the controls in sequential tasks.
     await pipe(
       mockedControls,
-      A.traverse(T.ApplicativeSeq)(updateControlValueTask)
+      A.traverse(T.ApplicativeSeq)(updateControlValueTask),
     )();
 
     setValuesTimeSummary.push(elapsedTime(setValuesTimer));
@@ -298,8 +298,8 @@ describe("Rendering of wizard", () => {
         container,
         Array.from(controlValue.keys()),
         c.controlType,
-        true
-      )
+        true,
+      ),
     );
 
     expect(labelsAndValues).toEqual(mockedLabelsAndValues);
@@ -349,8 +349,8 @@ describe("Rendering of wizard", () => {
         getControlValue(
           container,
           Array.from(controlValue.keys()),
-          c.controlType
-        )
+          c.controlType,
+        ),
       );
 
     // Make sure the current values match the default
@@ -367,13 +367,13 @@ describe("search with Advanced search criteria", () => {
     jest.clearAllMocks();
     const defaultValue = ["hello world"];
     mockGetAdvancedSearchByUuid.mockResolvedValue(
-      oneEditBoxWizard(false, defaultValue)
+      oneEditBoxWizard(false, defaultValue),
     );
     await renderAdvancedSearchPage();
 
     const [searchOptions] = mockSearch.mock.calls[0];
     expect(searchOptions.advancedSearchCriteria).toStrictEqual(
-      mockedAdvancedSearchCriteria
+      mockedAdvancedSearchCriteria,
     );
   });
 });

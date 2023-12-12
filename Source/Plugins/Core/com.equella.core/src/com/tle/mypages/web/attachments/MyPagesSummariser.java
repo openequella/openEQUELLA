@@ -18,8 +18,6 @@
 
 package com.tle.mypages.web.attachments;
 
-import com.dytech.edge.common.Constants;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
@@ -64,7 +62,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -115,14 +113,7 @@ public class MyPagesSummariser
     return new MyPagesResource(info, resource, attachment);
   }
 
-  /**
-   * This only exists for the IMS exporter. Don't use it.
-   *
-   * @param title
-   * @param fileHandle
-   * @param filename
-   * @return
-   */
+  /** This only exists for the IMS exporter. Don't use it. */
   public MyPagesResource createMyPagesResourceFromHtml(
       SectionInfo info, HtmlAttachment page, String html) {
     return new MyPagesResource(info, page, html, true);
@@ -157,13 +148,9 @@ public class MyPagesSummariser
       this.info = info;
       this.handle = null;
       this.attachment = page;
-      try {
-        stream =
-            new MyPagesContentStream(
-                new ByteArrayContentStream(html.getBytes(Constants.UTF8), "", "text/html"));
-      } catch (UnsupportedEncodingException use) {
-        throw new RuntimeException(use);
-      }
+      stream =
+          new MyPagesContentStream(
+              new ByteArrayContentStream(html.getBytes(StandardCharsets.UTF_8), "", "text/html"));
       this.noBaseHref = noBaseHref;
       rawLength = 1; // prevent handle from being referenced
     }
@@ -237,9 +224,8 @@ public class MyPagesSummariser
       private byte[] getContentBytes() {
         if (contentBytes == null) {
           final MyPagesResourceModel model = new MyPagesResourceModel();
-          InputStreamReader reader;
-          try {
-            reader = new InputStreamReader(inner.getInputStream(), Constants.UTF8);
+          try (InputStreamReader reader =
+              new InputStreamReader(inner.getInputStream(), StandardCharsets.UTF_8)) {
             StringWriter writer = new StringWriter();
             CharStreams.copy(reader, writer);
             Closeables.close(reader, false);
@@ -266,9 +252,9 @@ public class MyPagesSummariser
                 SectionUtils.renderToString(
                     info.getRootRenderContext(),
                     viewFactory.createResultWithModel("viewpage.ftl", model));
-            contentBytes = finishedPage.getBytes(Constants.UTF8);
-          } catch (Exception e) {
-            throw Throwables.propagate(e);
+            contentBytes = finishedPage.getBytes(StandardCharsets.UTF_8);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
           }
         }
         return contentBytes;

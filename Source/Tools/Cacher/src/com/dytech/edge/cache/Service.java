@@ -365,7 +365,7 @@ public class Service extends Thread {
    *
    * @author Nicholas Read
    */
-  private static class NobodyCaresAboutThisOutputStream extends OutputStream {
+  private static final class NobodyCaresAboutThisOutputStream extends OutputStream {
     @Override
     public void write(int b) {
       // Nobody cares
@@ -387,7 +387,7 @@ public class Service extends Thread {
    *
    * @author Nicholas Read
    */
-  private class MyHandler implements WgetConnectionHandler {
+  private final class MyHandler implements WgetConnectionHandler {
     @Override
     public void connectionMade(URLConnection connection) {
       if (connection instanceof HttpURLConnection) {

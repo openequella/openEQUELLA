@@ -195,7 +195,8 @@ public class InstitutionServiceImpl
     }
     Throwable error = response.getError();
     if (error != null) {
-      Throwables.propagate(error);
+      Throwables.throwIfUnchecked(error);
+      throw new RuntimeException(error);
     }
     return response;
   }

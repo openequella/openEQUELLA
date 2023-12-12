@@ -33,7 +33,7 @@ import {
   collectionListSummary,
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchContext } from "../Search";
+import { SearchContext } from "../SearchPageHelper";
 
 interface CollectionSelectorProps {
   /**
@@ -68,11 +68,11 @@ export const CollectionSelector = ({
             collections,
             A.sort(
               ORD.contramap<string, Collection>(({ name }) =>
-                name.toLowerCase()
-              )(S.Ord)
-            )
-          )
-        )
+                name.toLowerCase(),
+              )(S.Ord),
+            ),
+          ),
+        ),
       )
       .catch(searchPageErrorHandler);
   }, [searchPageErrorHandler]);
@@ -83,7 +83,7 @@ export const CollectionSelector = ({
       limitTags={2}
       renderTags={(
         collections: Collection[],
-        getTagProps: AutocompleteGetTagProps
+        getTagProps: AutocompleteGetTagProps,
       ) =>
         collections.map((collection: Collection, index: number) => (
           <TooltipChip

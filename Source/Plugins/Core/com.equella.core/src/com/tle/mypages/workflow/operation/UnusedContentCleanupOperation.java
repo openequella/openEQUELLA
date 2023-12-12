@@ -18,7 +18,6 @@
 
 package com.tle.mypages.workflow.operation;
 
-import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
 /** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
+public final class UnusedContentCleanupOperation extends AbstractWorkflowOperation // NOSONAR
 {
   private static final Logger LOGGR = LoggerFactory.getLogger(UnusedContentCleanupOperation.class);
 
@@ -80,7 +79,7 @@ public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // 
         try {
           scanHtml(metadataHtmls, staging, HtmlEditorService.CONTENT_DIRECTORY);
         } catch (IOException e) {
-          Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
 
@@ -90,7 +89,7 @@ public class UnusedContentCleanupOperation extends AbstractWorkflowOperation // 
         try {
           scanHtml(Collections.singletonList(getHtml(staging, page)), staging, page.getFolder());
         } catch (IOException e) {
-          Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
     }

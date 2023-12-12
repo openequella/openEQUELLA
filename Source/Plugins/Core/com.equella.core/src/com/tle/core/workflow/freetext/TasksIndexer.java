@@ -85,6 +85,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
 
     Document itemdoc = indexedItem.getItemdoc();
     itemdoc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+    itemdoc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
 
     for (WorkflowNodeStatus nodestatus : modstatus.getStatuses()) {
       if (nodestatus.getNode().getType() == WorkflowNode.ITEM_TYPE
@@ -109,14 +110,14 @@ public class TasksIndexer extends AbstractIndexingExtension {
             assignedTo = ""; // $NON-NLS-1$
           }
           doc.add(indexed(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
-          doc.add(
-              indexed(
-                  FIELD_PRIORITY,
-                  Integer.toString(((WorkflowItem) taskstatus.getNode()).getPriority())));
+          doc.add(stringSortingField(FreeTextQuery.FIELD_WORKFLOW_ASSIGNEDTO, assignedTo));
 
-          addDateField(
-              doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG, Long.MAX_VALUE);
-          addDateField(doc, FIELD_STARTED, taskstatus.getStarted(), DateFilter.Format.LONG, null);
+          int priority = ((WorkflowItem) taskstatus.getNode()).getPriority();
+          doc.add(indexed(FIELD_PRIORITY, Integer.toString(priority)));
+          doc.add(numericSortingField(FIELD_PRIORITY, priority));
+
+          addDateField(doc, FIELD_DUEDATE, taskstatus.getDateDue(), DateFilter.Format.LONG);
+          addDateField(doc, FIELD_STARTED, taskstatus.getStarted(), DateFilter.Format.LONG);
 
           for (String userid : taskstatus.getAcceptedUsers()) {
             doc.add(indexed(FreeTextQuery.FIELD_WORKFLOW_ACCEPTED, userid));
@@ -133,6 +134,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
                   itemTask, MODERATE_ITEM, ItemIndex.convertStdPriv(MODERATE_ITEM)));
 
           doc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+          doc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
           indexedItem.getDocumentsForIndex(Search.INDEX_TASK).add(doc);
         }
       } else if (nodestatus.getNode().getType() == WorkflowNode.SCRIPT_TYPE
@@ -148,6 +150,7 @@ public class TasksIndexer extends AbstractIndexingExtension {
           doc.add(taskField);
 
           doc.add(indexed(FIELD_WORKFLOW, workflow.getUuid()));
+          doc.add(stringSortingField(FIELD_WORKFLOW, workflow.getUuid()));
           indexedItem.getDocumentsForIndex(Search.INDEX_SCRIPT_TASK).add(doc);
         }
       }
@@ -164,8 +167,8 @@ public class TasksIndexer extends AbstractIndexingExtension {
     Document doc = indexedItem.getItemdoc();
     ModerationStatus modStatus = indexedItem.getItem().getModeration();
     if (modStatus != null) {
-      addDateField(doc, FIELD_LASTACTION, modStatus.getLastAction(), Format.LONG, null);
-      addDateField(doc, FIELD_STARTWORKFLOW, modStatus.getStart(), Format.LONG, null);
+      addDateField(doc, FIELD_LASTACTION, modStatus.getLastAction(), Format.LONG);
+      addDateField(doc, FIELD_STARTWORKFLOW, modStatus.getStart(), Format.LONG);
     }
   }
 

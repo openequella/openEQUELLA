@@ -5,7 +5,7 @@ import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -65,7 +65,7 @@ lazy val equella = (project in file("."))
              learningedge_config)
 
 checkJavaCodeStyle := {
-  import com.etsy.sbt.checkstyle._
+  import com.etsy.sbt.checkstyle.*
   val rootDirectory       = (LocalProject("equella") / baseDirectory).value
   val rootTargetDirectory = (LocalProject("equella") / target).value
   def countErrorNumber: Int = {
@@ -91,10 +91,14 @@ checkJavaCodeStyle := {
     streams = streams.value
   )
   val errorNumber     = countErrorNumber
-  val thresholdNumber = 569
+  val thresholdNumber = 449
   if (errorNumber > thresholdNumber) {
     throw new MessageOnlyException(
       "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
+  } else if (errorNumber < thresholdNumber) {
+    throw new MessageOnlyException(
+      "Checkstyle errors has been reduced. Threshold of " + thresholdNumber + " has been reduced to " +
+        errorNumber + " please reduce thresholdNumber in build.sbt.")
   }
 }
 
@@ -115,16 +119,16 @@ ThisBuild / assemblyMergeStrategy := {
     false
   }
 }
-(ThisBuild / oracleDriverMavenCoordinate) := Seq(
-  "com.oracle.database.jdbc" % "ojdbc8" % "21.10.0.0")
+(ThisBuild / oracleDriverMavenCoordinate) :=
+  Seq("com.oracle.database.jdbc" % "ojdbc8" % "23.3.0.23.09")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
 name := "Equella"
 
 (ThisBuild / equellaMajor) := 2023
-(ThisBuild / equellaMinor) := 1
-(ThisBuild / equellaPatch) := 1
+(ThisBuild / equellaMinor) := 2
+(ThisBuild / equellaPatch) := 0
 (ThisBuild / equellaStream) := "Stable"
 (ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
@@ -210,7 +214,7 @@ val pluginAndLibs = Def.task {
 
 mergeJPF := {
 
-  import complete.DefaultParsers._
+  import complete.DefaultParsers.*
 
   val adminConsole = false
   val args         = spaceDelimited("<arg>").parsed

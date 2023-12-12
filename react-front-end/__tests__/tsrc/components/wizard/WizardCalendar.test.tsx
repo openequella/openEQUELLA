@@ -39,11 +39,11 @@ describe("<WizardCalendar/>", () => {
         mandatory
         onChange={onChange}
         values={providedDateRange}
-      />
+      />,
     );
 
     const displayedRange = Array.from(
-      container.querySelectorAll<HTMLInputElement>("input")
+      container.querySelectorAll<HTMLInputElement>("input"),
     ).map((input) => input.value);
     expect(displayedRange).toEqual(providedDateRange);
   });
@@ -60,7 +60,7 @@ describe("<WizardCalendar/>", () => {
       _: string,
       wizardControlDateformat: OEQ.WizardCommonTypes.WizardDateFormat,
       displayFormat: ISODateFormat,
-      dateRange: string[]
+      dateRange: string[],
     ) => {
       const { container } = render(
         <WizardCalendar
@@ -68,17 +68,17 @@ describe("<WizardCalendar/>", () => {
           mandatory
           onChange={onChange}
           dateFormat={wizardControlDateformat}
-        />
+        />,
       );
 
       const start = container.querySelectorAll<HTMLInputElement>("input")[0]; // The component must have at least one DatePicker.
       await userEvent.type(start, today);
       expect(start.value).toEqual(
-        DateTime.fromISO(today).toFormat(displayFormat)
+        DateTime.fromISO(today).toFormat(displayFormat),
       );
 
       // We only set `start` so the
       expect(onChange).toHaveBeenLastCalledWith(dateRange);
-    }
+    },
   );
 });

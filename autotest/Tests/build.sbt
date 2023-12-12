@@ -8,8 +8,8 @@ inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
-val catsVersion   = "2.9.0"
-val cxfVersion    = "3.6.1"
+val catsVersion   = "2.10.0"
+val cxfVersion    = "3.6.2"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
@@ -22,28 +22,29 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"             % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"             % "1.1",
-  "org.apache.commons"        % "commons-lang3"             % "3.12.0",
+  "org.apache.commons"        % "commons-lang3"             % "3.13.0",
   "org.seleniumhq.selenium"   % "selenium-java"             % "3.141.59",
   "org.easytesting"           % "fest-util"                 % "1.2.5",
   "org.easytesting"           % "fest-swing"                % "1.2.1",
-  "xalan"                     % "xalan"                     % "2.7.2",
+  "xalan"                     % "xalan"                     % "2.7.3",
+  "xalan"                     % "serializer"                % "2.7.3",
   "org.apache.cxf"            % "cxf-rt-frontend-simple"    % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-databinding-aegis"  % cxfVersion,
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"                % "4.5.14",
   "com.jcraft"                % "jsch"                      % "0.1.55",
-  "org.jacoco"                % "org.jacoco.report"         % "0.8.10",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.11",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
-  "com.typesafe"              % "config"                    % "1.4.2",
-  "org.slf4j"                 % "slf4j-simple"              % "2.0.7",
+  "com.typesafe"              % "config"                    % "1.4.3",
+  "org.slf4j"                 % "slf4j-simple"              % "2.0.9",
   "org.scalacheck"            %% "scalacheck"               % "1.17.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"                %% "http4s-circe"             % http4sVersion,
   "org.typelevel"             %% "cats-free"                % catsVersion,
-  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.9",
+  "com.unboundid"             % "unboundid-ldapsdk"         % "6.0.10",
   jacksonDataBind,
-  "com.auth0" % "jwks-rsa" % "0.22.0"
+  "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

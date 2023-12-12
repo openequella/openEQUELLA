@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from "io-ts";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
@@ -39,16 +40,6 @@ import { first } from "fp-ts/Semigroup";
 import * as SEP from "fp-ts/Separated";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import {
-  Array as RuntypeArray,
-  Boolean,
-  Number,
-  Optional,
-  Record,
-  Static,
-  String,
-  Union,
-} from "runtypes";
 import {
   buildVisibilityScript,
   ScriptContext,
@@ -103,40 +94,35 @@ export interface WizardControlBasicProps {
 /**
  * Runtypes definition for ControlTarget.
  */
-export const RuntypesControlTarget = Record({
-  /**
-   * The 'fullPath's for the targetNode.
-   */
-  schemaNode: RuntypeArray(String),
-  /**
-   * The type of control that is being targeted.
-   */
-  type: OEQ.WizardControl.RuntypesControlType,
-  /**
-   * Whether to tokenise the value.
-   */
-  isValueTokenised: Optional(Boolean),
-});
+export const ControlTargetCodec = t.intersection([
+  t.type({
+    schemaNode: t.array(t.string),
+    type: OEQ.Codec.WizardControl.ControlTypeCodec,
+  }),
+  t.partial({
+    isValueTokenised: t.boolean,
+  }),
+]);
 
 /**
  * Used to loosely target what a value (typically a `ControlValue`) is being used for.
  */
-export type ControlTarget = Static<typeof RuntypesControlTarget>;
+export type ControlTarget = t.TypeOf<typeof ControlTargetCodec>;
 
 /**
  * Runtypes definition for ControlValue.
  */
-export const RuntypesControlValue = Union(
-  RuntypeArray(String),
-  RuntypeArray(Number)
-);
+export const ControlValueCodec = t.union([
+  t.array(t.string),
+  t.array(t.number),
+]);
 
 /**
  * Convenience type for our way of storing the two main value types across our controls. Represents
  * that some controls are textual, and some are numeric; and that some controls store more than one
  * value.
  */
-export type ControlValue = Static<typeof RuntypesControlValue>;
+export type ControlValue = t.TypeOf<typeof ControlValueCodec>;
 
 /**
  * Identifies a Wizard 'field' and specifies its value.
@@ -162,7 +148,7 @@ export type PathValueMap = Map<string, ControlValue>;
  * @param m A map that is either a PathValueMap or FieldValueMap.
  */
 export const isPathValueMap = (
-  m: PathValueMap | FieldValueMap
+  m: PathValueMap | FieldValueMap,
 ): m is PathValueMap =>
   pipe(m, M.keys(OrdAsIs), isHeadType<string>(S.isString));
 
@@ -184,7 +170,7 @@ const isHeadType =
  * (Not a general purpose array util!)
  */
 export const isStringArray = (
-  xs: ControlValue
+  xs: ControlValue,
 ): xs is NEA.NonEmptyArray<string> =>
   pipe(xs as unknown[], isHeadType<string>(S.isString));
 
@@ -200,11 +186,11 @@ export const isControlValueNonEmpty = (xs: ControlValue): boolean =>
  * numbers.
  */
 export const controlValueToStringArray: (
-  _: ControlValue
+  _: ControlValue,
 ) => ReadonlyArray<string> = pfTernaryTypeGuard<string[], number[], string[]>(
   isStringArray,
   identity,
-  A.map(N.Show.show)
+  A.map(N.Show.show),
 );
 
 /**
@@ -244,7 +230,7 @@ export const fieldValueMapInsert = M.upsertAt(eqControlTarget);
 export const fieldValueMapLookup = M.lookup(eqControlTarget);
 
 export const buildControlTarget = (
-  c: OEQ.WizardControl.WizardBasicControl
+  c: OEQ.WizardControl.WizardBasicControl,
 ): ControlTarget => ({
   /*
    * Target nodes are stored in several different ways, for our purposes we just need a single
@@ -278,20 +264,21 @@ export const getStringControlValue = (value: ControlValue): string =>
  * @param value A ControlValue which should have at least one string value.
  */
 export const getStringArrayControlValue = (
-  value: ControlValue
+  value: ControlValue,
 ): NEA.NonEmptyArray<string> =>
   pipe(
     value,
     E.fromPredicate(
       isStringArray,
-      () => new TypeError("Expected non-empty string[] but got something else!")
+      () =>
+        new TypeError("Expected non-empty string[] but got something else!"),
     ),
     E.matchW(
       (error) => {
         throw error;
       },
-      (value) => value
-    )
+      (value) => value,
+    ),
   );
 
 /**
@@ -303,22 +290,22 @@ export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
   const buildPathValue = (
     k: ControlTarget,
     fullMap: PathValueMap,
-    v: ControlValue
+    v: ControlValue,
   ) =>
     pipe(
       k.schemaNode,
       A.reduce<string, PathValueMap>(new Map(), (m, path) =>
-        pipe(m, M.upsertAt(S.Eq)(path, v))
+        pipe(m, M.upsertAt(S.Eq)(path, v)),
       ),
-      M.union<string, ControlValue>(S.Eq, first<ControlValue>())(fullMap)
+      M.union<string, ControlValue>(S.Eq, first<ControlValue>())(fullMap),
     );
 
   return pipe(
     fieldValueMap,
     M.reduceWithIndex<ControlTarget>(OrdAsIs)<PathValueMap, ControlValue>(
       new Map(),
-      buildPathValue
-    )
+      buildPathValue,
+    ),
   );
 };
 
@@ -329,11 +316,11 @@ export const valuesByNode = (fieldValueMap: FieldValueMap): PathValueMap => {
  * Map obviously those are dropped and the last entry wins.)
  */
 const wizardControlOptionsToMap: (
-  _: OEQ.WizardCommonTypes.WizardControlOption[]
+  _: OEQ.WizardCommonTypes.WizardControlOption[],
 ) => Map<string, string> = flow(
   A.reduce(new Map<string, string>(), (acc, { text, value }) =>
-    pipe(acc, M.upsertAt(S.Eq)(value, text ?? value))
-  )
+    pipe(acc, M.upsertAt(S.Eq)(value, text ?? value)),
+  ),
 );
 
 /**
@@ -345,7 +332,7 @@ const controlFactory = (
   control: OEQ.WizardControl.WizardControl,
   onChange: (_: ControlValue) => void,
   fieldValueMap: FieldValueMap,
-  value?: ControlValue
+  value?: ControlValue,
 ): JSX.Element => {
   if (!OEQ.WizardControl.isWizardBasicControl(control)) {
     return <WizardUnsupported />;
@@ -353,14 +340,14 @@ const controlFactory = (
 
   const ifAvailable = <T,>(
     value: ControlValue | undefined,
-    getter: (_: ControlValue) => T
+    getter: (_: ControlValue) => T,
   ): T | undefined =>
     pipe(
       value,
       O.fromNullable,
       O.filter(isControlValueNonEmpty),
       O.map(getter),
-      O.toUndefined
+      O.toUndefined,
     );
 
   const valueAsStringSet = (): Set<string> =>
@@ -386,7 +373,7 @@ const controlFactory = (
   const onChangeForStringSet = flow(
     RSET.toReadonlyArray<string>(OrdAsIs),
     RA.toArray,
-    onChange
+    onChange,
   );
 
   switch (controlType) {
@@ -430,7 +417,7 @@ const controlFactory = (
             dateFormat={dateFormat}
             isRange={isRange}
           />
-        )
+        ),
       );
     case "html":
       return <WizardRawHtml {...commonProps} fieldValueMap={fieldValueMap} />;
@@ -471,7 +458,7 @@ const controlFactory = (
             onChange={onChangeForStringSet}
             users={valueAsStringSet()}
           />
-        )
+        ),
       );
     case "termselector":
       return pipe(
@@ -492,7 +479,7 @@ const controlFactory = (
             selectionRestriction={selectionRestriction}
             termStorageFormat={termStorageFormat}
           />
-        )
+        ),
       );
     default:
       return absurd(controlType);
@@ -512,26 +499,26 @@ const buildXmlScriptObject = (values: PathValueMap): XmlScriptType =>
           m,
           M.lookup(S.Eq)(node),
           O.map(RA.elem(S.Eq)(value)),
-          O.getOrElse(constFalse)
+          O.getOrElse(constFalse),
         ),
       get: (node): string =>
         pipe(
           m,
           M.lookup(S.Eq)(node),
           O.chain(RA.head),
-          O.getOrElse(() => S.empty) // as per legacy code
+          O.getOrElse(() => S.empty), // as per legacy code
         ),
       getAll: (node): ReadonlyArray<string> =>
         pipe(
           m,
           M.lookup(S.Eq)(node),
-          O.getOrElse<ReadonlyArray<string>>(() => RA.empty)
+          O.getOrElse<ReadonlyArray<string>>(() => RA.empty),
         ),
-    })
+    }),
   );
 
 const buildUserScriptObject = (
-  userDetails: OEQ.LegacyContent.CurrentUserDetails
+  userDetails: OEQ.LegacyContent.CurrentUserDetails,
 ): UserScriptObject => ({
   getEmail: () => userDetails.emailAddress,
   getFirstName: () => userDetails.firstName,
@@ -549,7 +536,7 @@ const buildUserScriptObject = (
  */
 export const buildVisibilityScriptContext = (
   fieldValues: FieldValueMap,
-  user: OEQ.LegacyContent.CurrentUserDetails
+  user: OEQ.LegacyContent.CurrentUserDetails,
 ): ScriptContext => ({
   xml: pipe(fieldValues, valuesByNode, buildXmlScriptObject),
   user: buildUserScriptObject(user),
@@ -579,17 +566,17 @@ export const render = (
   controls: OEQ.WizardControl.WizardControl[],
   values: FieldValueMap,
   onChange: (updates: FieldValue[]) => void,
-  visibilityScriptContext: ScriptContext
+  visibilityScriptContext: ScriptContext,
 ): JSX.Element[] => {
   const buildOnChangeHandler = (
-    c: OEQ.WizardControl.WizardControl
+    c: OEQ.WizardControl.WizardControl,
   ): ((value: ControlValue) => void) =>
     OEQ.WizardControl.isWizardBasicControl(c)
       ? (value: ControlValue) =>
           onChange([{ target: buildControlTarget(c), value }])
       : (_) => {
           throw new Error(
-            "Unexpected onChange called for non-WizardBasicControl."
+            "Unexpected onChange called for non-WizardBasicControl.",
           );
         };
 
@@ -598,11 +585,11 @@ export const render = (
 
   // Retrieve the value of the specified control
   const retrieveControlsValue: (
-    _: OEQ.WizardControl.WizardControl
+    _: OEQ.WizardControl.WizardControl,
   ) => ControlValue | undefined = flow(
     O.fromPredicate(OEQ.WizardControl.isWizardBasicControl),
     O.chain(flow(buildControlTarget, getValue)),
-    O.toUndefined
+    O.toUndefined,
   );
 
   // Check to see if the control currently has a value
@@ -610,11 +597,11 @@ export const render = (
     retrieveControlsValue,
     O.fromNullable,
     O.map(isControlValueNonEmpty),
-    O.getOrElse(constFalse)
+    O.getOrElse(constFalse),
   );
 
   const clearControls: (
-    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>,
   ) => O.Option<void> = flow(
     RA.filter(OEQ.WizardControl.isWizardBasicControl),
     // Only call the onChange if field currently has a value - or we'll end up in an infinite render
@@ -625,13 +612,13 @@ export const render = (
       flow(
         RA.map((c) => ({ target: buildControlTarget(c), value: [] })),
         RA.toArray,
-        onChange
-      )
-    )
+        onChange,
+      ),
+    ),
   );
 
   const buildWizardControls: (
-    _: ReadonlyArray<OEQ.WizardControl.WizardControl>
+    _: ReadonlyArray<OEQ.WizardControl.WizardControl>,
   ) => JSX.Element[] = flow(
     RA.mapWithIndex((idx, c) =>
       controlFactory(
@@ -639,10 +626,10 @@ export const render = (
         c,
         buildOnChangeHandler(c),
         values,
-        retrieveControlsValue(c)
-      )
+        retrieveControlsValue(c),
+      ),
     ),
-    RA.toArray
+    RA.toArray,
   );
 
   // Using a control's visibility script (if available) and the current values of other controls,
@@ -653,19 +640,19 @@ export const render = (
     O.chain<OEQ.WizardControl.WizardBasicControl, string>(
       flow(
         O.fromNullableK(({ visibilityScript }) => visibilityScript),
-        O.filter(not(S.isEmpty))
-      )
+        O.filter(not(S.isEmpty)),
+      ),
     ),
     O.chain((script) =>
       pipe(
         visibilityScriptContext,
         buildVisibilityScript(script),
         E.mapLeft((e: Error) => console.error(e.message, script)),
-        O.fromEither
-      )
+        O.fromEither,
+      ),
     ),
     // Default to isVisible if there's no script (or it's not a WizardBasicControl)
-    O.getOrElse(constTrue)
+    O.getOrElse(constTrue),
   );
 
   return pipe(
@@ -675,7 +662,7 @@ export const render = (
     SEP.mapLeft(clearControls),
     // For all visible controls, build JSX.Elements
     SEP.map(buildWizardControls),
-    SEP.right
+    SEP.right,
   );
 };
 
@@ -686,15 +673,15 @@ export const render = (
  * @param controls A list of Wizard controls.
  */
 export const extractDefaultValues = (
-  controls: OEQ.WizardControl.WizardControl[]
+  controls: OEQ.WizardControl.WizardControl[],
 ): FieldValueMap => {
   const addQueryValueToMap = (
     m: FieldValueMap,
-    c: OEQ.WizardControl.WizardBasicControl
+    c: OEQ.WizardControl.WizardBasicControl,
   ) =>
     fieldValueMapInsert<ControlValue>(
       buildControlTarget(c),
-      c.defaultValues
+      c.defaultValues,
     )(m);
 
   return pipe(
@@ -702,7 +689,7 @@ export const extractDefaultValues = (
     A.filter(OEQ.WizardControl.isWizardBasicControl),
     A.reduce<OEQ.WizardControl.WizardBasicControl, FieldValueMap>(
       new Map(),
-      addQueryValueToMap
-    )
+      addQueryValueToMap,
+    ),
   );
 };

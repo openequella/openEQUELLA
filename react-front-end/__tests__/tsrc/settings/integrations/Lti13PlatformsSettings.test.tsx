@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { getAllByRole } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import {
   blackboard,
@@ -53,9 +53,8 @@ describe("Lti13PlatformsSettings", () => {
       },
       { platformId: moodle.platformId, enabled: false },
     ];
-    const { container, getByText } = await renderLti13PlatformsSettings(
-      onUpdatePlatform
-    );
+    const { container, getByText } =
+      await renderLti13PlatformsSettings(onUpdatePlatform);
 
     await clickEnabledSwitchForPlatform(container, canvas.platformId);
     await clickEnabledSwitchForPlatform(container, moodle.platformId);
@@ -75,7 +74,7 @@ describe("Lti13PlatformsSettings", () => {
       },
     ];
     const { container, getByText } = await renderLti13PlatformsSettings(
-      onUpdateEnabledPlatforms
+      onUpdateEnabledPlatforms,
     );
 
     await clickEnabledSwitchForPlatform(container, blackboard.platformId);
@@ -109,7 +108,7 @@ describe("Lti13PlatformsSettings", () => {
     ]);
     const { container, getByText } = await renderLti13PlatformsSettings(
       jest.fn(),
-      onDeletePlatforms
+      onDeletePlatforms,
     );
 
     await clickDeleteButtonForPlatform(container, moodle.name);

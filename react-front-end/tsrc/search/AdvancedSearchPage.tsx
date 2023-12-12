@@ -21,13 +21,7 @@ import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import {
   extractDefaultValues,
@@ -44,41 +38,20 @@ import {
   generateAdvancedSearchCriteria,
   confirmInitialFieldValueMap,
   isAdvSearchCriteriaSet,
+  AdvancedSearchPageContext,
 } from "./AdvancedSearchHelper";
 import { AdvancedSearchPanel } from "./components/AdvancedSearchPanel";
-import { Search, SearchContext, SearchContextProps } from "./Search";
+import { Search } from "./Search";
 import { SearchPageBody } from "./SearchPageBody";
 import {
   buildSearchPageNavigationConfig,
   defaultSearchPageHeaderConfig,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
+  SearchContextProps,
   SearchPageHeaderConfig,
   SearchPageOptions,
 } from "./SearchPageHelper";
-
-interface AdvancedSearchPageContextProps {
-  /**
-   * Function to update each control's value.
-   */
-  updateFieldValueMap: (fieldValueMap: FieldValueMap) => void;
-  /**
-   * Function to control whether the Advanced search panel is open.
-   */
-  openAdvancedSearchPanel: (open: boolean) => void;
-  /**
-   * `true` when the Advanced search definition is retrieved from server.
-   */
-  definitionRetrieved: boolean;
-}
-
-const nop = () => {};
-
-export const AdvancedSearchPageContext =
-  createContext<AdvancedSearchPageContextProps>({
-    updateFieldValueMap: nop,
-    openAdvancedSearchPanel: nop,
-    definitionRetrieved: false,
-  });
 
 /**
  * This component controls how to render the Advanced search page, including:
@@ -94,7 +67,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const location = useLocation();
   const [advancedSearchId] = useState(
-    getAdvancedSearchIdFromLocation(location)
+    getAdvancedSearchIdFromLocation(location),
   );
   const { appErrorHandler } = useContext(AppContext);
 
@@ -107,16 +80,16 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           TE.tryCatchK(
             getAdvancedSearchByUuid,
             () =>
-              `Failed to retrieve Advanced search definition for ${advancedSearchId}`
-          )
-        )
-      )
+              `Failed to retrieve Advanced search definition for ${advancedSearchId}`,
+          ),
+        ),
+      ),
     );
 
     (async () => {
       pipe(
         await getDefinition(),
-        E.fold(appErrorHandler, setAdvancedSearchDefinition)
+        E.fold(appErrorHandler, setAdvancedSearchDefinition),
       );
     })();
   }, [advancedSearchId, appErrorHandler]);
@@ -126,7 +99,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const buildInitialAdvancedSearchOptions = useCallback(
     (
       searchPageOptions: SearchPageOptions,
-      queryStringSearchOptions?: SearchPageOptions
+      queryStringSearchOptions?: SearchPageOptions,
     ): SearchPageOptions => {
       const initialFieldValueMap = pipe(
         advancedSearchDefinition,
@@ -135,16 +108,16 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
           confirmInitialFieldValueMap(
             extractDefaultValues(def.controls),
             searchPageOptions,
-            queryStringSearchOptions
-          )
+            queryStringSearchOptions,
+          ),
         ),
-        O.getOrElse(() => searchPageOptions.advFieldValue)
+        O.getOrElse(() => searchPageOptions.advFieldValue),
       );
       const initialAdvancedSearchCriteria = pipe(
         initialFieldValueMap,
         O.fromNullable,
         O.map(generateAdvancedSearchCriteria),
-        O.toUndefined
+        O.toUndefined,
       );
 
       setFieldValueMap(initialFieldValueMap);
@@ -156,7 +129,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
         advancedSearchCriteria: initialAdvancedSearchCriteria,
       };
     },
-    [advancedSearchDefinition]
+    [advancedSearchDefinition],
   );
 
   const panel = (
@@ -171,13 +144,13 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     fieldValueMap,
     O.fromNullable,
     O.map(isAdvSearchCriteriaSet),
-    O.getOrElse(constFalse)
+    O.getOrElse(constFalse),
   );
 
   const definitionRetrieved = advancedSearchDefinition !== undefined;
 
   const searchPageHeaderConfig = (
-    options: SearchPageOptions
+    options: SearchPageOptions,
   ): SearchPageHeaderConfig => ({
     ...defaultSearchPageHeaderConfig,
     newSearchConfig: {
@@ -206,7 +179,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <SearchPageBody
               pathname={`${NEW_ADVANCED_SEARCH_PATH}/${advancedSearchId}`}
               headerConfig={searchPageHeaderConfig(
-                searchContextProps.searchState.options
+                searchContextProps.searchState.options,
               )}
               additionalPanels={openAdvSearchPanel ? [panel] : undefined}
               searchBarConfig={{

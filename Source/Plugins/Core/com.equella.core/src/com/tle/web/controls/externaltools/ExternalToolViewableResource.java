@@ -18,7 +18,6 @@
 
 package com.tle.web.controls.externaltools;
 
-import com.google.common.base.Throwables;
 import com.tle.common.Check;
 import com.tle.common.externaltools.constants.ExternalToolConstants;
 import com.tle.common.i18n.CurrentLocale;
@@ -104,7 +103,7 @@ public class ExternalToolViewableResource extends AbstractWrappedResource {
     try {
       return new ThumbRef(new URL(getThumbUrl()));
     } catch (MalformedURLException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

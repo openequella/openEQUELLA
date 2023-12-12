@@ -60,14 +60,14 @@ export const guestUser: OEQ.LegacyContent.CurrentUserDetails = {
  * Eq for `OEQ.UserQuery.UserDetails` with equality based on the user's UUID.
  */
 export const eqUserById: Eq<OEQ.UserQuery.UserDetails> = contramap(
-  (user: OEQ.UserQuery.UserDetails) => user.id
+  (user: OEQ.UserQuery.UserDetails) => user.id,
 )(S.Eq);
 
 /**
  * Given a set of `OEQ.UserQuery.UserDetails`, return a set of UUIDs for all the users.
  */
 export const userIds: (
-  a: ReadonlySet<OEQ.UserQuery.UserDetails>
+  a: ReadonlySet<OEQ.UserQuery.UserDetails>,
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
@@ -78,7 +78,7 @@ export const userIds: (
  */
 export const listUsers = async (
   query?: string,
-  groupFilter?: ReadonlySet<string>
+  groupFilter?: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   await OEQ.UserQuery.filtered(API_BASE_URL, {
     q: query,
@@ -90,7 +90,7 @@ export const listUsers = async (
  */
 export const getCurrentUserDetails = () =>
   OEQ.LegacyContent.getCurrentUserDetails(API_BASE_URL).then(
-    (result: OEQ.LegacyContent.CurrentUserDetails) => result
+    (result: OEQ.LegacyContent.CurrentUserDetails) => result,
   );
 
 /**
@@ -99,7 +99,7 @@ export const getCurrentUserDetails = () =>
  * @param ids An array of oEQ ids
  */
 export const resolveUsers = (
-  ids: ReadonlyArray<string>
+  ids: ReadonlyArray<string>,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   OEQ.UserQuery.lookup(API_BASE_URL, {
     users: RA.toArray<string>(ids),
@@ -140,14 +140,14 @@ export const resolveUsersCached =
     cache: UserCache,
     setCache: (c: UserCache) => void,
     resolver: (
-      ids: ReadonlyArray<string>
-    ) => Promise<OEQ.UserQuery.UserDetails[]>
+      ids: ReadonlyArray<string>,
+    ) => Promise<OEQ.UserQuery.UserDetails[]>,
   ) =>
   (
-    users: ReadonlySet<string>
+    users: ReadonlySet<string>,
   ): TE.TaskEither<string, ReadonlySet<OEQ.UserQuery.UserDetails>> => {
     const updateCache = (
-      newUsers: ReadonlyArray<OEQ.UserQuery.UserDetails>
+      newUsers: ReadonlyArray<OEQ.UserQuery.UserDetails>,
     ): ReadonlyArray<OEQ.UserQuery.UserDetails> => {
       const magmaLast = Semigroup.last<OEQ.UserQuery.UserDetails>();
 
@@ -156,40 +156,40 @@ export const resolveUsersCached =
         (xs): UserCache =>
           RR.fromFoldableMap(magmaLast, RA.Foldable)(
             xs,
-            (x: OEQ.UserQuery.UserDetails) => [x.id, x]
+            (x: OEQ.UserQuery.UserDetails) => [x.id, x],
           ),
         // Before updating the cache, just be sure there is an update required
         O.fromPredicate(not(RR.isEmpty)),
-        O.map(flow(RR.union(magmaLast)(cache), setCache))
+        O.map(flow(RR.union(magmaLast)(cache), setCache)),
       );
 
       return newUsers;
     };
 
     const retrieveUserDetails: (
-      userIds: ReadonlySet<string>
+      userIds: ReadonlySet<string>,
     ) => TE.TaskEither<string, ReadonlySet<OEQ.UserQuery.UserDetails>> = flow(
       RSET.toReadonlyArray<string>(OrdAsIs),
       (ids) =>
         TE.tryCatch<string, OEQ.UserQuery.UserDetails[]>(
           () => resolver(ids),
-          (reason) => `Failed to retrieve users: ${reason}`
+          (reason) => `Failed to retrieve users: ${reason}`,
         ),
       TE.map(updateCache),
-      TE.map(RSET.fromReadonlyArray(eqUserById))
+      TE.map(RSET.fromReadonlyArray(eqUserById)),
     );
 
     return pipe(
       users,
       RSET.partitionMap<string, OEQ.UserQuery.UserDetails>(
         S.Eq,
-        eqUserById
+        eqUserById,
       )((id) =>
         pipe(
           cache,
           R.lookup(id),
-          E.fromOption(() => id)
-        )
+          E.fromOption(() => id),
+        ),
       ),
       // We now have previously cached users on the `right`, and on the `left` we potentially have
       // users we need to go and retrieve
@@ -201,12 +201,12 @@ export const resolveUsersCached =
           O.fromPredicate(not(RSET.isEmpty)),
           O.map(retrieveUserDetails),
           O.getOrElse(() =>
-            TE.right<string, ReadonlySet<OEQ.UserQuery.UserDetails>>(new Set())
-          )
-        )
+            TE.right<string, ReadonlySet<OEQ.UserQuery.UserDetails>>(new Set()),
+          ),
+        ),
       ),
       // Now merge the cached users with those retrieved
       ({ left: retrievalResult, right: cachedUsers }) =>
-        pipe(retrievalResult, TE.map(RSET.union(eqUserById)(cachedUsers)))
+        pipe(retrievalResult, TE.map(RSET.union(eqUserById)(cachedUsers))),
     );
   };

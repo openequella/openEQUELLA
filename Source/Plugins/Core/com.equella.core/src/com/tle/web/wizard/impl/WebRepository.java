@@ -24,7 +24,6 @@ import com.dytech.edge.common.FileNode;
 import com.dytech.edge.common.PropBagWrapper;
 import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
-import com.google.common.base.Throwables;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Lists;
@@ -77,7 +76,15 @@ import com.tle.web.wizard.scripting.objects.impl.PageScriptWrapper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.inject.Inject;
 import org.slf4j.Logger;
@@ -270,13 +277,7 @@ public class WebRepository implements LERepository {
   @Override
   public FileInfo uploadStream(String filename, InputStream inp, boolean calcMd5)
       throws IOException {
-    try {
-      return fsys.write(stagingHandle, filename, inp, false, calcMd5);
-    } catch (IOException io) {
-      throw io;
-    } catch (Exception ex) {
-      throw Throwables.propagate(ex);
-    }
+    return fsys.write(stagingHandle, filename, inp, false, calcMd5);
   }
 
   @Override

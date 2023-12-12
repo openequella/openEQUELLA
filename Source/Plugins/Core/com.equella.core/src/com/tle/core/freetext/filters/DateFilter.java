@@ -21,30 +21,26 @@ package com.tle.core.freetext.filters;
 import com.tle.common.util.Dates;
 import com.tle.common.util.LocalDate;
 import com.tle.common.util.UtcDate;
-import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermRangeQuery;
 
-/**
- * Filters dates out. Most of the work is simply delegated to a ComparisonFilter.
- *
- * @author Nicholas Read
- */
-public class DateFilter extends Filter {
-  private static final long serialVersionUID = 1L;
-  private final ComparisonFilter subfilter;
+/** Custom filter to generate a Lucene Range query for date range. */
+public class DateFilter implements CustomFilter {
+
+  private final Query dateFilterQuery;
 
   public DateFilter(
       String field, Date startDate, Date endDate, Dates indexedDateFormat, TimeZone timeZone) {
-    Date newStart = startDate;
-    Date newEnd = endDate;
+    String start = dateToString(startDate, 0, indexedDateFormat, timeZone);
+    String end = dateToString(endDate, Long.MAX_VALUE, indexedDateFormat, timeZone);
+    this.dateFilterQuery = TermRangeQuery.newStringRange(field, start, end, true, false);
+  }
 
-    String start = dateToString(newStart, 0, indexedDateFormat, timeZone);
-    String end = dateToString(newEnd, Long.MAX_VALUE, indexedDateFormat, timeZone);
-    subfilter = new ComparisonFilter(field, start, end);
+  @Override
+  public Query buildQuery() {
+    return dateFilterQuery;
   }
 
   /**
@@ -64,10 +60,5 @@ public class DateFilter extends Filter {
       return new LocalDate(date, timeZone).format(indexedDateFormat);
     }
     return new UtcDate(date).format(indexedDateFormat);
-  }
-
-  @Override
-  public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-    return subfilter.getDocIdSet(reader);
   }
 }

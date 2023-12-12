@@ -18,7 +18,6 @@
 
 package com.tle.web.connectors.manage;
 
-import com.google.common.base.Throwables;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.common.ExpiringValue;
 import com.tle.common.NameValue;
@@ -62,6 +61,7 @@ public class FilterByCourseSection extends AbstractPrototypeSection<FilterByCour
     implements SearchEventListener<ConnectorManagementSearchEvent>,
         HtmlRenderer,
         ResetFiltersListener {
+
   @PlugKey("manage.filter.course.select")
   private static String KEY_SELECT;
 
@@ -137,6 +137,7 @@ public class FilterByCourseSection extends AbstractPrototypeSection<FilterByCour
   }
 
   protected static class Model {
+
     private boolean disabled;
 
     public Model(boolean disabled) {
@@ -189,14 +190,13 @@ public class FilterByCourseSection extends AbstractPrototypeSection<FilterByCour
       try {
         return getCourses(info);
       } catch (LmsUserNotFoundException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
 
     @Override
     protected Option<ConnectorCourse> convertToOption(SectionInfo info, ConnectorCourse course) {
-      return new NameValueOption<ConnectorCourse>(
-          new NameValue(course.getName(), course.getId()), course);
+      return new NameValueOption<>(new NameValue(course.getName(), course.getId()), course);
     }
 
     @Override

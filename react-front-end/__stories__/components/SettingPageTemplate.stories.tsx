@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import SettingPageTemplate, {
   SettingPageTemplateProps,
 } from "../../tsrc/components/SettingPageTemplate";
@@ -33,11 +33,11 @@ export default {
 
 const children = (
   <Card>
-    <h3>SettingPageTemplate Story</h3>
+    <h3>SettingPageTemplate StoryFn</h3>
   </Card>
 );
 
-export const saveButtonEnabled: Story<SettingPageTemplateProps> = (args) => (
+export const saveButtonEnabled: StoryFn<SettingPageTemplateProps> = (args) => (
   <SettingPageTemplate {...args} />
 );
 saveButtonEnabled.args = {

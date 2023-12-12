@@ -89,7 +89,7 @@ export const RefineSearchPanel = ({
   onClose,
 }: RefinePanelProps) => {
   const isMdDown = useMediaQuery<Theme>((theme) =>
-    theme.breakpoints.down("md")
+    theme.breakpoints.down("md"),
   );
 
   const { title } = languageStrings.searchpage.refineSearchPanel;
@@ -107,7 +107,7 @@ export const RefineSearchPanel = ({
         {
           visible: [] as RefinePanelControl[],
           collapsed: [] as RefinePanelControl[],
-        }
+        },
       );
 
   const alwaysVisibleSection = (controls: RefinePanelControl[]) =>

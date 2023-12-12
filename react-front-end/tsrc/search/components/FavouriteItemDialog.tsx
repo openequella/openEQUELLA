@@ -31,7 +31,7 @@ import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
-import { SearchContext } from "../Search";
+import { SearchContext } from "../SearchPageHelper";
 
 /**
  * Type that includes a function which is fired to add a favourite Item and
@@ -57,7 +57,7 @@ type FavDialogOnConfirmProps = FavDialogConfirmToAdd | FavDialogConfirmToDelete;
  * Type guard of FavDialogOnConfirmProps to help determine the type of property 'onConfirm'.
  */
 const isConfirmToDelete = (
-  props: FavDialogOnConfirmProps
+  props: FavDialogOnConfirmProps,
 ): props is FavDialogConfirmToDelete => props.action === "delete";
 
 export interface FavouriteItemDialogProps {
@@ -131,7 +131,7 @@ const AddFavouriteItemContent = ({
             row
             onChange={(event) =>
               onChangeVersionOption(
-                event.target.value as FavouriteItemVersionOption
+                event.target.value as FavouriteItemVersionOption,
               )
             }
             defaultValue="latest"

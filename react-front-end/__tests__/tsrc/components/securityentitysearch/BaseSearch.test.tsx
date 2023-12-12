@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
@@ -76,14 +76,14 @@ describe("<BaseSearch/>", () => {
     renderResult: RenderResult,
     searchFor: string,
     selectEntityName: string,
-    onChange = jest.fn()
+    onChange = jest.fn(),
   ) =>
     searchAndSelect(
       renderResult,
       searchFor,
       selectEntityName,
       onChange,
-      searchEntity
+      searchEntity,
     );
 
   describe("general features", () => {
@@ -102,7 +102,7 @@ describe("<BaseSearch/>", () => {
       });
 
       const activeNotice = await renderResult.findByText(
-        languageStrings.baseSearchComponent.filterActiveNotice
+        languageStrings.baseSearchComponent.filterActiveNotice,
       );
       expect(activeNotice).toBeInTheDocument();
     });
@@ -116,7 +116,7 @@ describe("<BaseSearch/>", () => {
 
       // Ensure an error was displayed
       const errorMessage = await findByText(
-        sprintf(failedToFindMessage, noSuchEntity)
+        sprintf(failedToFindMessage, noSuchEntity),
       );
       expect(errorMessage).toBeInTheDocument();
     });
@@ -153,7 +153,7 @@ describe("<BaseSearch/>", () => {
         renderResult,
         queryName,
         selectEntity.username,
-        onChange
+        onChange,
       );
       expect(selections).toEqual(expectedSelections);
     });
@@ -164,7 +164,7 @@ describe("<BaseSearch/>", () => {
       const initialSelect = findUserFromMockData("admin999");
       const initialSelections = pipe(
         [initialSelect],
-        RSET.fromReadonlyArray(eqUserById)
+        RSET.fromReadonlyArray(eqUserById),
       );
 
       const onSelectAll = jest.fn();
@@ -173,7 +173,7 @@ describe("<BaseSearch/>", () => {
         UserModuleMock.users,
         A.filter((user) => pipe(user.username, S.includes(queryName))),
         A.concat([initialSelect]),
-        RSET.fromReadonlyArray(eqUserById)
+        RSET.fromReadonlyArray(eqUserById),
       );
 
       const { container, getByText, findAllByText } = await renderBaseSearch({
@@ -240,7 +240,7 @@ describe("<BaseSearch/>", () => {
     const groupFilterSelections = pipe(
       GroupModuleMock.groups,
       A.filter((group) => pipe(group.name, S.includes("group"))),
-      RSET.fromReadonlyArray(eqGroupById)
+      RSET.fromReadonlyArray(eqGroupById),
     );
     const groupFilterIds = groupIds(groupFilterSelections);
 
@@ -253,7 +253,7 @@ describe("<BaseSearch/>", () => {
       await clickFilterByGroupButton(renderResult);
 
       expect(
-        await findGroupFilterSearch(renderResult.container)
+        await findGroupFilterSearch(renderResult.container),
       ).toBeInTheDocument();
     });
 
@@ -268,7 +268,7 @@ describe("<BaseSearch/>", () => {
       await userEvent.click(editGroupFilterButton);
 
       expect(
-        await findGroupFilterSearch(renderResult.container)
+        await findGroupFilterSearch(renderResult.container),
       ).toBeInTheDocument();
     });
 
@@ -317,7 +317,7 @@ describe("<BaseSearch/>", () => {
       // Wait for the results, and then click each group
       for (const group of pipe(
         groupFilterSelections,
-        RSET.toReadonlyArray(groupOrd)
+        RSET.toReadonlyArray(groupOrd),
       )) {
         await userEvent.click(await screen.findByText(group.name));
       }
@@ -349,7 +349,7 @@ describe("<BaseSearch/>", () => {
       await clickEditGroupFilterButton(renderResult);
 
       expect(
-        await findGroupFilterSearch(renderResult.container)
+        await findGroupFilterSearch(renderResult.container),
       ).toBeInTheDocument();
     });
 
@@ -405,8 +405,8 @@ describe("<BaseSearch/>", () => {
           renderResult,
           queryName,
           selectEntity.username,
-          onChange
-        )
+          onChange,
+        ),
       ).toEqual(expectedSelections);
     });
   });
@@ -415,7 +415,7 @@ describe("<BaseSearch/>", () => {
     const initialSelections = pipe(
       UserModuleMock.users,
       A.filter((user) => pipe(user.username, S.includes("user"))),
-      RSET.fromReadonlyArray(eqUserById)
+      RSET.fromReadonlyArray(eqUserById),
     );
 
     it("returns the single selection when there are no previous selections", async () => {
@@ -437,8 +437,8 @@ describe("<BaseSearch/>", () => {
           renderResult,
           "user",
           clickedEntity.username,
-          onChange
-        )
+          onChange,
+        ),
       ).toEqual(expectedSelections);
     });
 
@@ -446,7 +446,7 @@ describe("<BaseSearch/>", () => {
       const selectUser = findUserFromMockData("admin999");
       const expectedSelections = pipe(
         initialSelections,
-        RSET.insert(eqUserById)(selectUser)
+        RSET.insert(eqUserById)(selectUser),
       );
       const onChange = jest.fn();
 
@@ -465,8 +465,8 @@ describe("<BaseSearch/>", () => {
           renderResult,
           "",
           selectUser.username,
-          onChange
-        )
+          onChange,
+        ),
       ).toEqual(expectedSelections);
     });
 
@@ -474,7 +474,7 @@ describe("<BaseSearch/>", () => {
       const selectEntity = findUserFromMockData("user100");
       const expectedSelections = pipe(
         initialSelections,
-        RSET.remove(eqUserById)(selectEntity)
+        RSET.remove(eqUserById)(selectEntity),
       );
       const onChange = jest.fn();
 
@@ -493,8 +493,8 @@ describe("<BaseSearch/>", () => {
           renderResult,
           "",
           selectEntity.username,
-          onChange
-        )
+          onChange,
+        ),
       ).toEqual(expectedSelections);
     });
   });

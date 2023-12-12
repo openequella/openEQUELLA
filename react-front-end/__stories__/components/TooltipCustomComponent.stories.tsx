@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
 import {
@@ -28,8 +28,8 @@ export default {
   component: TooltipCustomComponent,
 } as Meta<TooltipCustomComponentProps>;
 
-export const TooltipToggleSwitch: Story<TooltipCustomComponentProps> = (
-  args
+export const TooltipToggleSwitch: StoryFn<TooltipCustomComponentProps> = (
+  args,
 ) => (
   <TooltipCustomComponent {...args}>
     <SettingsToggleSwitch id="toggle" setValue={() => {}} />

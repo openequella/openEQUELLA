@@ -90,7 +90,7 @@ export interface TemplateUpdateProps {
 }
 
 export type TemplateUpdate = (
-  templateProps: Readonly<TemplateProps>
+  templateProps: Readonly<TemplateProps>,
 ) => TemplateProps;
 
 /**
@@ -126,7 +126,7 @@ export function templateDefaults(title: string): TemplateUpdate {
       menuMode: undefined,
       disableNotifications: undefined,
       metaTags: undefined,
-    } as TemplateProps);
+    }) as TemplateProps;
 }
 
 export function templateError(errorResponse: ErrorResponse): TemplateUpdate {
@@ -356,7 +356,7 @@ export const Template = ({
         // The meta tags generated on the server side, separated by new line symbols
         newMetaTags.forEach((newMetaTag) => {
           head.appendChild(
-            document.createRange().createContextualFragment(newMetaTag)
+            document.createRange().createContextualFragment(newMetaTag),
           );
         });
         setGoogleMetaTags(newMetaTags);
@@ -379,12 +379,12 @@ export const Template = ({
   function linkItem(
     link: LocationDescriptor,
     serverSide: boolean,
-    text: string
+    text: string,
   ) {
     return (
       <MenuItem
         onClick={() => setMenuAnchorEl(undefined)}
-        component={(p) =>
+        component={(p: React.AnchorHTMLAttributes<HTMLAnchorElement>) =>
           serverSide ? (
             <a {...p} href={link as string}>
               {}
@@ -403,7 +403,7 @@ export const Template = ({
     icon: React.ReactNode,
     count: number,
     uri: string,
-    title: string
+    title: string,
   ) {
     return (
       <Tooltip title={title}>
@@ -436,7 +436,7 @@ export const Template = ({
         )}
       </div>
     ),
-    [currentUser, hasMenu]
+    [currentUser, hasMenu],
   );
 
   const itemCounts = currentUser.counts
@@ -487,13 +487,13 @@ export const Template = ({
                   <AssignmentIcon />,
                   itemCounts.tasks,
                   legacyPageUrl(routes.TaskList.to),
-                  topBarString.tasks
+                  topBarString.tasks,
                 )}
                 {badgedLink(
                   <NotificationsIcon />,
                   itemCounts.notifications,
                   legacyPageUrl(routes.Notifications.to),
-                  topBarString.notifications
+                  topBarString.notifications,
                 )}
               </>
             )}
@@ -518,13 +518,13 @@ export const Template = ({
               {linkItem(
                 legacyPageUrl(routes.Logout.to),
                 true,
-                strings.menu.logout
+                strings.menu.logout,
               )}
               {currentUser.prefsEditable &&
                 linkItem(
                   legacyPageUrl(routes.UserPreferences.to),
                   false,
-                  strings.menu.prefs
+                  strings.menu.prefs,
                 )}
             </Menu>
           </>

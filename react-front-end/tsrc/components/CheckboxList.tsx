@@ -94,8 +94,8 @@ export const CheckboxList = ({
                 content
               )}
             </ListItemButton>
-          )
-        )
+          ),
+        ),
       )}
     </List>
   );

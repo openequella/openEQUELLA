@@ -71,13 +71,13 @@ const isValidURL = (str: string): boolean =>
   pipe(
     E.tryCatch(
       () => new URL(str),
-      () => false
+      () => false,
     ),
     E.fold(
       identity,
       // match http:// or https://
-      ({ protocol }) => ["http:", "https:"].includes(protocol)
-    )
+      ({ protocol }) => ["http:", "https:"].includes(protocol),
+    ),
   );
 
 /**
@@ -202,7 +202,7 @@ const GeneralDetailsSection = ({
             }
           />
         );
-      })
+      }),
     )}
     <Typography variant="caption" color="textSecondary">
       {languageStrings.common.required}

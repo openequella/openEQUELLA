@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class RelationOperation extends AbstractWorkflowOperation // NOSONAR
+public final class RelationOperation extends AbstractWorkflowOperation // NOSONAR
 {
   @Inject private RelationService relationService;
 

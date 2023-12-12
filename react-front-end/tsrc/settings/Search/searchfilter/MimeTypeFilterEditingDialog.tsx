@@ -76,11 +76,11 @@ const MimeTypeFilterEditingDialog = ({
   >([]);
   // Used to store the name of a MIME type filter.
   const [filterName, setFilterName] = useState<string>(
-    mimeTypeFilter ? mimeTypeFilter.name : ""
+    mimeTypeFilter ? mimeTypeFilter.name : "",
   );
   // Used to store the MIME types of a MIME type filter.
   const [selectedMimeTypes, setSelectedMimeTypes] = useState<string[]>(
-    mimeTypeFilter ? mimeTypeFilter.mimeTypes : []
+    mimeTypeFilter ? mimeTypeFilter.mimeTypes : [],
   );
   const { appErrorHandler } = useContext(AppContext);
 
@@ -107,12 +107,12 @@ const MimeTypeFilterEditingDialog = ({
           deleteElement(
             selectedMimeTypes,
             (type: string) => type === mimeType,
-            1
-          )
+            1,
+          ),
         );
       }
     },
-    [selectedMimeTypes]
+    [selectedMimeTypes],
   );
 
   const onAddOrUpdate = () => {

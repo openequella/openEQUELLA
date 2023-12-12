@@ -17,14 +17,14 @@
  */
 import * as React from "react";
 import { queryByText, render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { drmTerms, drmTermsResolved } from "../../../../__mocks__/Drm.mock";
 import { DrmAcceptanceDialog } from "../../../../tsrc/drm/DrmAcceptanceDialog";
 import * as OEQ from "@openequella/rest-api-client";
 
 describe("<DrmAcceptanceDialog />", () => {
   const renderDrmDialog = (
-    termsProvider: () => Promise<OEQ.Drm.ItemDrmDetails>
+    termsProvider: () => Promise<OEQ.Drm.ItemDrmDetails>,
   ) =>
     render(
       <DrmAcceptanceDialog
@@ -33,15 +33,15 @@ describe("<DrmAcceptanceDialog />", () => {
         onAcceptCallBack={jest.fn()}
         onReject={jest.fn()}
         open
-      />
+      />,
     );
 
   it("shows a list of DRM terms", async () => {
     renderDrmDialog(drmTermsResolved);
     await waitFor(() =>
       expect(
-        queryByText(screen.getByRole("dialog"), drmTerms.title)
-      ).toBeInTheDocument()
+        queryByText(screen.getByRole("dialog"), drmTerms.title),
+      ).toBeInTheDocument(),
     );
   });
 
@@ -50,7 +50,9 @@ describe("<DrmAcceptanceDialog />", () => {
     renderDrmDialog(() => Promise.reject(error));
 
     await waitFor(() =>
-      expect(queryByText(screen.getByRole("dialog"), error)).toBeInTheDocument()
+      expect(
+        queryByText(screen.getByRole("dialog"), error),
+      ).toBeInTheDocument(),
     );
   });
 });

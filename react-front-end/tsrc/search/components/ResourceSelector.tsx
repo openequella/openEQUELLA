@@ -19,7 +19,7 @@ import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import { useContext } from "react";
 import * as React from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
-import { SearchContext } from "../Search";
+import { SearchContext } from "../SearchPageHelper";
 
 export interface ResourceSelectorProps {
   /**

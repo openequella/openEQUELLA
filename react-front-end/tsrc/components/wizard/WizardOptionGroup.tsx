@@ -47,7 +47,7 @@ export interface WizardCheckBoxGroupTemplateProps
    * Function to build a JSX.Element for one option.
    */
   buildOption: (
-    option: OEQ.WizardCommonTypes.WizardControlOption
+    option: OEQ.WizardCommonTypes.WizardControlOption,
   ) => JSX.Element;
 }
 
@@ -75,7 +75,7 @@ export const WizardOptionGroup = ({
       />
       {chunk<OEQ.WizardCommonTypes.WizardControlOption>(
         options,
-        columnNumber
+        columnNumber,
       ).map((row, rowIndex) => (
         <StyledDiv
           optionWidth={Math.round(100 / columnNumber)}

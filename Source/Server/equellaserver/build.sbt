@@ -16,27 +16,28 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
-val RestEasyVersion   = "3.15.3.Final"
-val SwaggerVersion    = "1.6.11"
-val TomcatVersion     = "9.0.76"
+val RestEasyVersion   = "3.15.6.Final"
+val SwaggerVersion    = "1.6.12"
+val TomcatVersion     = "9.0.82"
 val axis2Version      = "1.8.2"
-val circeVersion      = "0.12.1"
+val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
-val cxfVersion        = "3.6.1"
+val cxfVersion        = "3.6.2"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
-val jsoupVersion      = "1.16.1"
+val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
-val sttpVersion       = "1.7.2"
-val tikaVersion       = "2.8.0"
+val sttpVersion       = "2.3.0"
+val tikaVersion       = "2.9.0"
+val luceneVersion     = "9.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
   "io.circe" %% "circe-generic",
-  "io.circe" %% "circe-parser",
-  "io.circe" %% "circe-generic-extras"
+  "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
+libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.3"
 
 val prometheusGroup = "io.prometheus"
 libraryDependencies ++= Seq(
@@ -47,15 +48,15 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
-  "com.auth0" % "java-jwt" % "4.3.0",
-  "com.auth0" % "jwks-rsa" % "0.22.0"
+  "com.auth0" % "java-jwt" % "4.4.0",
+  "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
 libraryDependencies ++= Seq(
   "co.fs2"                         %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp"          %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp"          %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp"          %% "circe"                         % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp.client"   %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
@@ -71,10 +72,10 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20230521-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20231011-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
-  "com.google.guava"      % "guava"                       % "31.1-jre",
+  "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance",
@@ -90,7 +91,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "aopalliance",
                   name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "72.1",
+  "com.ibm.icu" % "icu4j" % "73.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -98,13 +99,13 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout" % "miglayout-swing"       % "4.2",
-  "com.ning"      % "async-http-client"     % "1.9.40",
-  "com.rometools" % "rome"                  % "1.19.0",
-  "io.swagger"    % "swagger-core"          % SwaggerVersion,
-  "io.swagger"    % "swagger-annotations"   % SwaggerVersion,
-  "io.swagger"    % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"    %% "swagger-scala-module" % "1.0.6",
+  "com.miglayout"       % "miglayout-swing"       % "4.2",
+  "org.asynchttpclient" % "async-http-client"     % "2.12.3",
+  "com.rometools"       % "rome"                  % "2.1.0",
+  "io.swagger"          % "swagger-core"          % SwaggerVersion,
+  "io.swagger"          % "swagger-annotations"   % SwaggerVersion,
+  "io.swagger"          % "swagger-jaxrs"         % SwaggerVersion,
+  "io.swagger"          %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
@@ -114,7 +115,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.13.0",
+  "commons-io"                % "commons-io"            % "2.15.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -136,7 +137,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.23.0",
+  "org.apache.commons" % "commons-compress"         % "1.24.0",
   "org.apache.curator" % "curator-client"           % curatorVersion,
   "org.apache.curator" % "curator-framework"        % curatorVersion,
   "org.apache.curator" % "curator-recipes"          % curatorVersion,
@@ -167,12 +168,14 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.fastinfoset"),
     ExclusionRule(organization = "net.sf.ehcache")
   ),
-  "org.apache.httpcomponents" % "httpclient"       % "4.5.14",
-  "org.apache.httpcomponents" % "httpcore"         % "4.4.16",
-  "org.apache.lucene"         % "lucene-analyzers" % "3.6.2",
-  "org.apache.lucene"         % "lucene-core"      % "3.6.2",
-  "org.apache.lucene"         % "lucene-queries"   % "3.6.2",
-  "org.apache.rampart"        % "rampart-core"     % "1.6.3" excludeAll (
+  "org.apache.httpcomponents" % "httpclient"             % "4.5.14",
+  "org.apache.httpcomponents" % "httpcore"               % "4.4.16",
+  "org.apache.lucene"         % "lucene-core"            % luceneVersion,
+  "org.apache.lucene"         % "lucene-analysis-common" % luceneVersion,
+  "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
+  "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
+  "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
+  "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
@@ -187,44 +190,38 @@ libraryDependencies ++= Seq(
   "org.apache.tika" % "tika-core"                     % tikaVersion,
   "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
     organization = "org.apache.logging.log4j"),
-  "org.apache.tomcat"      % "tomcat-annotations-api" % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-api"             % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-catalina"        % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-catalina-ha"     % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-coyote"          % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-jsp-api"         % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-juli"            % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-servlet-api"     % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-tribes"          % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-util"            % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-util-scan"       % TomcatVersion,
-  "org.apache.tomcat"      % "tomcat-ssi"             % TomcatVersion,
-  "org.apache.ws.security" % "wss4j"                  % "1.6.19",
-  "org.ccil.cowan.tagsoup" % "tagsoup"                % "1.2.1",
-  // Removed due to deduplication issues with woodstox-core. core-asl has not been updated for years.
-  //   com.fasterxml.woodstox/woodstox-core/bundles/woodstox-core-5.0.3.jar:...
-  //   org.codehaus.woodstox/woodstox-core-asl/jars/woodstox-core-asl-4.4.1.jar:...
-  //"org.codehaus.woodstox"  % "woodstox-core-asl" % "5.0.3",
-  "org.codehaus.xfire"              % "xfire-aegis"                    % "1.2.6",
-  "org.dspace"                      % "cql-java"                       % "1.0",
-  "org.omegat"                      % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.freemarker"                  % "freemarker"                     % "2.3.23",
-  "com.github.equella.legacy"       % "hurl"                           % "1.1",
-  "org.jboss.resteasy"              % "resteasy-jaxrs"                 % RestEasyVersion,
-  "org.jboss.spec.javax.annotation" % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
-  "org.reactivestreams"             % "reactive-streams"               % "1.0.4",
-  // Upgraded to 2.0.1.Final due to a deduplication issue with jakarta.ws.rs-api
-  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"     % "2.0.2.Final",
-  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api" % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"      % "3.0.3",
-  "javax.json.bind"                      % "javax.json.bind-api"          % "1.0",
-  "org.jsoup"                            % "jsoup"                        % jsoupVersion,
+  "org.apache.tomcat"                    % "tomcat-annotations-api"         % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-api"                     % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-catalina"                % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-catalina-ha"             % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-coyote"                  % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-jsp-api"                 % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-juli"                    % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-servlet-api"             % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-tribes"                  % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
+  "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
+  "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
+  "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
+  "org.dspace"                           % "cql-java"                       % "1.0",
+  "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
+  "org.freemarker"                       % "freemarker"                     % "2.3.23",
+  "com.github.equella.legacy"            % "hurl"                           % "1.1",
+  "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
+  "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
+  "org.reactivestreams"                  % "reactive-streams"               % "1.0.4",
+  "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
+  "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "3.0.1",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.0.3",
+  "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
+  "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.7",
-  "org.slf4j"        % "slf4j-api"      % "2.0.7",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.9",
+  "org.slf4j"        % "slf4j-api"      % "2.0.9",
   springAop,
   springWeb,
   springContext,
@@ -242,11 +239,11 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.8.1",
+  "org.scala-sbt"                 %% "io"                       % "1.9.1",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.2.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.161",
+  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
+  "io.github.classgraph"          % "classgraph"                % "4.8.164",
   "com.fasterxml"                 % "classmate"                 % "1.5.1",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",

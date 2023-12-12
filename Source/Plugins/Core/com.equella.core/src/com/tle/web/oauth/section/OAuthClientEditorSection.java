@@ -77,6 +77,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.Div;
+import com.tle.web.sections.standard.NumberField;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
@@ -134,6 +135,9 @@ public class OAuthClientEditorSection
   @PlugKey("client.editor.error.clientid.unique")
   private static String KEY_ERROR_CLIENTID_UNIQUE;
 
+  @PlugKey("client.editor.error.tokenValidity")
+  private static String KEY_ERROR_VALIDITY;
+
   @PlugKey("client.editor.error.redirecturl.mandatory")
   private static String KEY_ERROR_REDIRECTURL;
 
@@ -164,6 +168,9 @@ public class OAuthClientEditorSection
 
   @Component(name = "i", stateful = false)
   private TextField clientIdField;
+
+  @Component(name = "tv", stateful = false)
+  private NumberField tokenValidity;
 
   @PlugKey("client.editor.button.reset")
   @Component(name = "rs", stateful = false)
@@ -325,12 +332,25 @@ public class OAuthClientEditorSection
 
     saveHandler = events.getNamedHandler("save");
     cancelButton.setClickHandler(events.getNamedHandler("cancel"));
+
+    tokenValidity.setIntegersOnly(true);
+    tokenValidity.setMin(0);
   }
 
   private void ensureCreatePriv() {
     if (aclService.filterNonGrantedPrivileges(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT).isEmpty()) {
       throw new AccessDeniedException(
           CurrentLocale.get(KEY_ERROR_ACCESS_DENIED, OAuthConstants.PRIV_CREATE_OAUTH_CLIENT));
+    }
+  }
+
+  // Parse the value of Token validity component to a numeric value and return it. However, if the
+  // parsing fails, return -1 which will fail the validation process.
+  private int getTokenValidity(SectionInfo info) {
+    try {
+      return tokenValidity.getIntValue(info);
+    } catch (NumberFormatException nfe) {
+      return -1;
     }
   }
 
@@ -360,6 +380,10 @@ public class OAuthClientEditorSection
       if (old != null && old.getId() != oauth.getId()) {
         errors.put("clientid", CurrentLocale.get(KEY_ERROR_CLIENTID_UNIQUE));
       }
+    }
+
+    if (getTokenValidity(info) < 0) {
+      errors.put("tokenValidity", CurrentLocale.get(KEY_ERROR_VALIDITY));
     }
 
     if (selectFlow.getSelectedValue(info) == null) {
@@ -406,6 +430,7 @@ public class OAuthClientEditorSection
     // is valid
     oauth.setName(nameField.getLanguageBundle(info));
     oauth.setClientId(clientIdField.getValue(info));
+    oauth.setTokenValidity(getTokenValidity(info));
     oauth.setFlowDef(selectFlow.getSelectedValue(info));
 
     if (selectFlow.getSelectedValue(info) != null
@@ -455,6 +480,12 @@ public class OAuthClientEditorSection
       nameField.setLanguageBundle(info, name);
     }
     clientIdField.setValue(info, oauth.getClientId());
+
+    int validity = oauth.getTokenValidity();
+    // Only update the token validity component when the value is valid.
+    if (validity >= 0) {
+      tokenValidity.setValue(info, validity);
+    }
     model.setClientSecret(oauth.getClientSecret());
     selectFlow.setSelectedValue(info, oauth.getFlowDef());
     model.setFlow(oauth.getFlowDef());
@@ -670,6 +701,10 @@ public class OAuthClientEditorSection
 
   public TextField getClientIdField() {
     return clientIdField;
+  }
+
+  public NumberField getTokenValidity() {
+    return tokenValidity;
   }
 
   public Div getRedirectUrlDiv() {

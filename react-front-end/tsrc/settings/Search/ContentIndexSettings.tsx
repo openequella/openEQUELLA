@@ -64,7 +64,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
       appErrorHandler(error);
       setDisableSettings(true);
     },
-    [appErrorHandler]
+    [appErrorHandler],
   );
 
   const boostVals: { label: string; value: number }[] = [

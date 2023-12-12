@@ -36,14 +36,14 @@ describe("<UserSearch/>", () => {
     renderResult: RenderResult,
     searchFor: string,
     selectEntityName: string,
-    onChange = jest.fn()
+    onChange = jest.fn(),
   ) =>
     searchAndSelect(
       renderResult,
       searchFor,
       selectEntityName,
       onChange,
-      searchUser
+      searchUser,
     );
 
   it("can search and select", async () => {
@@ -67,8 +67,8 @@ describe("<UserSearch/>", () => {
         renderResult,
         queryName,
         selectUser.username,
-        onChange
-      )
+        onChange,
+      ),
     ).toEqual(expectedSelections);
   });
 });

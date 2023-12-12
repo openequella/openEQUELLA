@@ -58,7 +58,7 @@ export const MimeTypeFilterSelector = ({
     multiple
     renderTags={(
       filters: OEQ.SearchFilterSettings.MimeTypeFilter[],
-      getTagProps: AutocompleteRenderGetTagProps
+      getTagProps: AutocompleteRenderGetTagProps,
     ) =>
       filters.map((filter, index) => (
         <TooltipChip

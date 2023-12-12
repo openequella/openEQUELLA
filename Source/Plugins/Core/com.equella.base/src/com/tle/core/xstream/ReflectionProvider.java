@@ -18,14 +18,13 @@
 
 package com.tle.core.xstream;
 
-import com.google.common.base.Throwables;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 /** */
 public class ReflectionProvider {
-  private static Class<?>[] BLANK_CLASSES = new Class[0];
-  private static Object[] BLANK_OBJECTS = new Object[0];
+  private static final Class<?>[] BLANK_CLASSES = new Class[0];
+  private static final Object[] BLANK_OBJECTS = new Object[0];
 
   public ReflectionProvider() {
     super();
@@ -73,10 +72,8 @@ public class ReflectionProvider {
     if (write) {
       try {
         getField(definedIn, fieldName).set(object, value);
-      } catch (IllegalArgumentException e) {
-        Throwables.propagate(e);
       } catch (IllegalAccessException e) {
-        Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
   }
@@ -88,10 +85,8 @@ public class ReflectionProvider {
       if (ffield != null) {
         try {
           value = ffield.get(object);
-        } catch (IllegalArgumentException e) {
-          Throwables.propagate(e);
         } catch (IllegalAccessException e) {
-          Throwables.propagate(e);
+          throw new RuntimeException(e);
         }
       }
     }
@@ -110,7 +105,7 @@ public class ReflectionProvider {
       }
     }
     if (field == null) {
-      throw new RuntimeException(name + " doesn't exist in class " + c); // $NON-NLS-1$
+      throw new RuntimeException(name + " doesn't exist in class " + c);
     }
     return field;
   }

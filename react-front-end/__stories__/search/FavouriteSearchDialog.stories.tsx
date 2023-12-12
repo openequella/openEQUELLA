@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import type { Meta, Story } from "@storybook/react";
+import type { Meta, StoryFn } from "@storybook/react";
 import {
   FavouriteSearchDialog,
   FavouriteSearchDialogProps,
@@ -33,7 +33,7 @@ export default {
   },
 } as Meta<FavouriteSearchDialogProps>;
 
-export const Standard: Story<FavouriteSearchDialogProps> = (args) => (
+export const Standard: StoryFn<FavouriteSearchDialogProps> = (args) => (
   <FavouriteSearchDialog {...args} />
 );
 

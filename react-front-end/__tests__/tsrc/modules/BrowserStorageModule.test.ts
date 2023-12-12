@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Boolean } from "runtypes";
+import * as t from "io-ts";
 import {
   readDataFromStorage,
   saveDataToStorage,
@@ -25,7 +25,7 @@ const mockGetItem = jest.spyOn(Storage.prototype, "getItem");
 const mockSetItem = jest
   .spyOn(Storage.prototype, "setItem")
   .mockImplementation(jest.fn);
-const booleanValidator = Boolean.guard;
+const booleanValidator = t.boolean.is;
 const mockConsoleError = jest.spyOn(console, "error");
 const KEY = "test";
 

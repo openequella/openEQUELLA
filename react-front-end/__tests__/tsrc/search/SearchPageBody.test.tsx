@@ -17,7 +17,7 @@
  */
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
@@ -35,7 +35,6 @@ import {
 import * as CollectionsModule from "../../../tsrc/modules/CollectionsModule";
 import * as RemoteSearchModule from "../../../tsrc/modules/RemoteSearchModule";
 import { defaultSearchSettings } from "../../../tsrc/modules/SearchSettingsModule";
-import { SearchContext } from "../../../tsrc/search/Search";
 import {
   SearchPageBody,
   SearchPageBodyProps,
@@ -44,6 +43,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  SearchContext,
   SearchPageOptions,
 } from "../../../tsrc/search/SearchPageHelper";
 import {
@@ -77,7 +77,7 @@ describe("<SearchPageBody />", () => {
     state: State = {
       status: "initialising",
       options: defaultSearchPageOptions,
-    }
+    },
   ) => {
     window.matchMedia = createMatchMedia(1280);
 
@@ -99,7 +99,7 @@ describe("<SearchPageBody />", () => {
             <SearchPageBody {...props} />
           </ThemeProvider>
         </SearchContext.Provider>
-      </Router>
+      </Router>,
     );
 
     await act(async () => {
@@ -111,7 +111,7 @@ describe("<SearchPageBody />", () => {
   };
 
   const renderSearchPageBody = async (
-    props: SearchPageBodyProps = defaultSearchPageBodyProps
+    props: SearchPageBodyProps = defaultSearchPageBodyProps,
   ) => {
     return await renderSearchPageBodyWithContext(props);
   };
@@ -177,7 +177,7 @@ describe("<SearchPageBody />", () => {
     });
 
     expect(
-      queryRefineSearchComponent(container, customRefinePanelControl.idSuffix)
+      queryRefineSearchComponent(container, customRefinePanelControl.idSuffix),
     ).toBeInTheDocument();
   });
 
@@ -206,9 +206,8 @@ describe("<SearchPageBody />", () => {
       },
     };
 
-    const { getByText } = await renderSearchPageBodyWithContext(
-      searchPageBodyProps
-    );
+    const { getByText } =
+      await renderSearchPageBodyWithContext(searchPageBodyProps);
 
     const newSearchButton = getByText(languageStrings.searchpage.newSearch);
     await userEvent.click(newSearchButton);
@@ -242,7 +241,7 @@ describe("<SearchPageBody />", () => {
         ...defaultSearchPageBodyProps,
         customShowSpinner: true,
       },
-      state
+      state,
     );
 
     // The spinner should still be displayed although the state status is "success".
@@ -269,7 +268,7 @@ describe("<SearchPageBody />", () => {
           content: getSearchResult,
         },
         classifications,
-      }
+      },
     );
 
     // The search result list has 12 Items, so we should see that text 12 times.
@@ -287,11 +286,11 @@ describe("<SearchPageBody />", () => {
           content: getEmptySearchResult,
         },
         classifications,
-      }
+      },
     );
 
     expect(container).toHaveTextContent(
-      languageStrings.searchpage.noResultsFound
+      languageStrings.searchpage.noResultsFound,
     );
   });
 });

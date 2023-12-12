@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import SearchIcon from "@mui/icons-material/Search";
+import TuneIcon from "@mui/icons-material/Tune";
 import {
   Divider,
   FormControlLabel,
@@ -24,8 +26,6 @@ import {
   Switch,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import SearchIcon from "@mui/icons-material/Search";
-import TuneIcon from "@mui/icons-material/Tune";
 import * as React from "react";
 import { useCallback, useEffect, useReducer } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
@@ -130,13 +130,12 @@ export default function SearchBar({
   const [state, dispatch] = useReducer(reducer, { status: "init", query });
 
   const search = useCallback(
-    (query: string) => {
+    (query: string) =>
       dispatch({
         type: "updateQuery",
         query,
-      });
-    },
-    [dispatch]
+      }),
+    [dispatch],
   );
 
   // The state query should be consistent with prop query. But there are two situations where they

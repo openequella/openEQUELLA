@@ -22,27 +22,35 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.util.BytesRef;
 
 @SuppressWarnings("nls")
+/** Iterates over Lucene terms for the provided field which typically is in the format of XPATH. */
 public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
   private final String field;
 
-  private TermEnum enumerator;
+  private TermsEnum enumerator;
   private Term current;
 
   private Pattern pattern;
 
-  public XPathFieldIterator(IndexReader reader, String field, String start) throws IOException {
-
+  public XPathFieldIterator(IndexReader reader, String field) throws IOException {
     int hasIndex = field.indexOf('[');
     if (hasIndex >= 0) {
       pattern = Pattern.compile(field.replaceAll("\\[\\]", "(\\\\[\\\\d*\\\\])?") + "/\\$XPATH\\$");
       field = field.substring(0, hasIndex);
     }
-    enumerator = reader.terms(new Term(field, start));
-    current = enumerator.term();
+
+    Terms terms = MultiTerms.getTerms(reader, field);
+    if (terms != null) {
+      enumerator = terms.iterator();
+      current = new Term(field, new BytesRef(enumerator.next().utf8ToString()));
+    }
+
     this.field = field;
     findNextMatch();
   }
@@ -78,14 +86,14 @@ public class XPathFieldIterator implements Iterator<Term>, Iterable<Term> {
     }
 
     if (current == null) {
-      enumerator.close();
       enumerator = null;
     }
   }
 
   private void goNext() throws IOException {
-    if (enumerator.next()) {
-      current = enumerator.term();
+    if (enumerator.next() != null) {
+      current = new Term(field, new BytesRef(enumerator.term().utf8ToString()));
+
       if (!current.field().startsWith(field)) {
         current = null;
       }

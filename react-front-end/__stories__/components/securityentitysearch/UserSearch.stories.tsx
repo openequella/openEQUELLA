@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { action } from "@storybook/addon-actions";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -42,7 +42,7 @@ const defaultCheckboxModeProps: CheckboxMode<OEQ.UserQuery.UserDetails> = {
   selections: RSET.empty,
 };
 
-export const Default: Story<UserSearchProps> = (args) => (
+export const Default: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 Default.args = {
@@ -51,7 +51,7 @@ Default.args = {
   search: UserModuleMock.listUsers,
 };
 
-export const GroupFilter: Story<UserSearchProps> = (args) => (
+export const GroupFilter: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 GroupFilter.args = {
@@ -61,8 +61,8 @@ GroupFilter.args = {
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
 
-export const GroupFilterWithFailedGroupsResolver: Story<UserSearchProps> = (
-  args
+export const GroupFilterWithFailedGroupsResolver: StoryFn<UserSearchProps> = (
+  args,
 ) => <UserSearch {...args} />;
 GroupFilterWithFailedGroupsResolver.args = {
   ...GroupFilter.args,
@@ -71,7 +71,7 @@ GroupFilterWithFailedGroupsResolver.args = {
   },
 };
 
-export const MultiSelection: Story<UserSearchProps> = (args) => (
+export const MultiSelection: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 MultiSelection.args = {
@@ -81,13 +81,13 @@ MultiSelection.args = {
     selections: pipe(
       UserModuleMock.users,
       A.filter((user) => pipe(user.username, S.includes("user"))),
-      RSET.fromReadonlyArray(eqUserById)
+      RSET.fromReadonlyArray(eqUserById),
     ),
     enableMultiSelection: true,
   },
 };
 
-export const GroupFilterEditable: Story<UserSearchProps> = (args) => (
+export const GroupFilterEditable: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 GroupFilterEditable.args = {
@@ -99,7 +99,7 @@ GroupFilterEditable.args = {
   resolveGroupsProvider: GroupModuleMock.resolveGroups,
 };
 
-export const SelectAndCancelButton: Story<UserSearchProps> = (args) => (
+export const SelectAndCancelButton: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 SelectAndCancelButton.args = {
@@ -113,7 +113,7 @@ SelectAndCancelButton.argTypes = {
   onCancel: { action: "onCancel triggered" },
 };
 
-export const SelectAllAndClearAllButton: Story<UserSearchProps> = (args) => (
+export const SelectAllAndClearAllButton: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 SelectAllAndClearAllButton.args = {
@@ -124,7 +124,7 @@ SelectAllAndClearAllButton.argTypes = {
   onClearAll: { action: "onClearAll triggered" },
 };
 
-export const OneClickMode: Story<UserSearchProps> = (args) => (
+export const OneClickMode: StoryFn<UserSearchProps> = (args) => (
   <UserSearch {...args} />
 );
 OneClickMode.args = {

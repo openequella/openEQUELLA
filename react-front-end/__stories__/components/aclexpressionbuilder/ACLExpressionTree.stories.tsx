@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
+import { defaultACLEntityResolvers } from "../../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../../__mocks__/ACLExpressionModule.mock";
 import ACLExpressionTree, {
   ACLExpressionTreeProps,
@@ -27,10 +28,11 @@ export default {
   component: ACLExpressionTree,
 } as Meta<ACLExpressionTreeProps>;
 
-export const Basic: Story<ACLExpressionTreeProps> = (args) => (
+export const Basic: StoryFn<ACLExpressionTreeProps> = (args) => (
   <ACLExpressionTree {...args} />
 );
 
 Basic.args = {
   aclExpression: complexExpressionACLExpression,
+  aclEntityResolvers: defaultACLEntityResolvers,
 };

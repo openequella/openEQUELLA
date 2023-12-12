@@ -70,7 +70,7 @@ public class TransactionThreadPool {
     return closing;
   }
 
-  private class TransactionThread extends AuthenticatedThread {
+  private final class TransactionThread extends AuthenticatedThread {
     private Runnable runnable;
     private boolean end;
 

@@ -89,7 +89,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     getPreLoginNotice()
       .then((response: AxiosResponse<PreLoginNotice>) => {
         const preLoginNotice: PreLoginNotice = unMarshallPreLoginNotice(
-          response.data
+          response.data,
         );
         if (preLoginNotice.notice !== undefined) {
           this.setState({
@@ -108,7 +108,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       this.state.db.scheduleSettings !== this.state.current.scheduleSettings ||
         this.state.db.endDate !== this.state.current.endDate ||
         this.state.db.startDate !== this.state.current.startDate ||
-        this.state.db.notice !== this.state.current.notice
+        this.state.db.notice !== this.state.current.notice,
     );
   };
 
@@ -117,7 +117,7 @@ class PreLoginNoticeConfigurator extends React.Component<
       {
         current: { ...this.state.current, notice: html },
       },
-      () => this.setPreventNav()
+      () => this.setPreventNav(),
     );
   };
 
@@ -129,7 +129,7 @@ class PreLoginNoticeConfigurator extends React.Component<
     if (startDate) {
       this.setState(
         { current: { ...this.state.current, startDate: startDate.toJSDate() } },
-        () => this.setPreventNav()
+        () => this.setPreventNav(),
       );
     }
   };
@@ -143,14 +143,14 @@ class PreLoginNoticeConfigurator extends React.Component<
             endDate: new Date(endDate.toJSDate()),
           },
         },
-        () => this.setPreventNav()
+        () => this.setPreventNav(),
       );
     }
   };
 
   handleScheduleTypeSelectionChange = (
     event: ChangeEvent<{}>,
-    value: string
+    value: string,
   ) => {
     this.setState(
       {
@@ -160,7 +160,7 @@ class PreLoginNoticeConfigurator extends React.Component<
             ScheduleTypeSelection[value as ScheduleTypeSelection],
         },
       },
-      () => this.setPreventNav()
+      () => this.setPreventNav(),
     );
   };
 

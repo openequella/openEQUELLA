@@ -29,7 +29,7 @@ public class ItemListModule extends SectionsModule {
     install(new Trackers());
   }
 
-  private static class Trackers extends PluginTrackerModule {
+  private static final class Trackers extends PluginTrackerModule {
     @Override
     protected String getPluginId() {
       return "com.tle.web.itemlist";

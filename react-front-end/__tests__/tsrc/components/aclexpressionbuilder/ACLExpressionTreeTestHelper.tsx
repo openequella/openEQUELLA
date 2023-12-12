@@ -35,7 +35,7 @@ import { getSelectOption } from "../../MuiTestHelpers";
 
 // Helper to render ACLExpressionTree
 export const renderACLExpressionTree = (
-  aclExpression: ACLExpression
+  aclExpression: ACLExpression,
 ): RenderResult =>
   render(
     <ACLExpressionTree
@@ -43,7 +43,7 @@ export const renderACLExpressionTree = (
       onSelect={jest.fn()}
       onDelete={jest.fn()}
       onChange={jest.fn()}
-    />
+    />,
   );
 
 /**
@@ -55,7 +55,7 @@ export const renderACLExpressionTree = (
  */
 export const selectOperatorNode = async (
   container: HTMLElement,
-  nodeIndex: number
+  nodeIndex: number,
 ) => {
   const nodes = getAllByTestId(container, "ACLTreeOperator-label");
   const operator = nodes[nodeIndex];
@@ -78,10 +78,10 @@ export const selectOperatorNode = async (
 export const selectOperatorForNode = async (
   container: HTMLElement,
   nodeIndex: number,
-  operator: ACLOperatorType
+  operator: ACLOperatorType,
 ) => {
   const selects = container.querySelectorAll(
-    `.${classes.labelSelect} div[role="button"]`
+    `.${classes.labelSelect} div[role="button"]`,
   );
   const select = selects[nodeIndex];
 
@@ -97,7 +97,7 @@ export const selectOperatorForNode = async (
 // Helper function to mock click the delete button for a gaven recipient (located by name) in the tree view.
 export const clickDeleteButtonForRecipient = async (
   container: HTMLElement,
-  name: string
+  name: string,
 ) => {
   const deleteButton = (await findByText(container, name)).nextElementSibling;
   if (!deleteButton) {
@@ -110,7 +110,7 @@ export const clickDeleteButtonForRecipient = async (
 // Helper function to mock click the delete button for the operator node in the tree view.
 export const clickDeleteButtonForOperatorNode = async (
   container: HTMLElement,
-  nodeIndex: number
+  nodeIndex: number,
 ) => {
   const nodes = getAllByTestId(container, "ACLTreeOperator-delete");
   // the root node doesn't have `delete` button

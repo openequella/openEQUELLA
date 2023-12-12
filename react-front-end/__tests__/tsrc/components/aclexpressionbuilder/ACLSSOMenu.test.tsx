@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
 import { getTokens, tokens } from "../../../../__mocks__/UserModule.mock";
@@ -66,7 +66,7 @@ describe("<ACLSSOMenu />", () => {
     });
 
     const errorMessage = await findByText(
-      `${ssoTokensFailed}: ${failedMessage}`
+      `${ssoTokensFailed}: ${failedMessage}`,
     );
     const select = queryByText(defaultSelectedToken);
 

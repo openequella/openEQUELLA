@@ -29,13 +29,13 @@ export const entityDetailsProvider = async <T>(
    * @param q A query string used to filter entity
    */
   filterCondition: (e: T, q: string) => boolean,
-  query?: string
+  query?: string,
 ): Promise<T[]> => {
   // A sleep to emulate latency
   await new Promise((resolve) => setTimeout(resolve, 500));
   return Promise.resolve(
     query
       ? mockEntities.filter((r: T) => filterCondition(r, query))
-      : mockEntities
+      : mockEntities,
   );
 };

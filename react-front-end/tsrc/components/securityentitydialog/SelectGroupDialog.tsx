@@ -47,7 +47,7 @@ const SelectGroupDialog = ({
 }: SelectGroupDialogProps) => {
   const groupSearch = (
     onAdd: (group: OEQ.UserQuery.GroupDetails) => void,
-    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void
+    onSelectAll: (entities: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void,
   ) => (
     <GroupSearch
       mode={{

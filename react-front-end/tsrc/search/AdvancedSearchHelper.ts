@@ -26,6 +26,7 @@ import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as S from "fp-ts/string";
+import { createContext } from "react";
 import {
   ControlTarget,
   ControlValue,
@@ -42,6 +43,30 @@ import { OrdAsIs } from "../util/Ord";
 import { pfTernaryTypeGuard } from "../util/pointfree";
 import type { SearchPageOptions } from "./SearchPageHelper";
 
+const nop = () => {};
+
+interface AdvancedSearchPageContextProps {
+  /**
+   * Function to update each control's value.
+   */
+  updateFieldValueMap: (fieldValueMap: FieldValueMap) => void;
+  /**
+   * Function to control whether the Advanced search panel is open.
+   */
+  openAdvancedSearchPanel: (open: boolean) => void;
+  /**
+   * `true` when the Advanced search definition is retrieved from server.
+   */
+  definitionRetrieved: boolean;
+}
+
+export const AdvancedSearchPageContext =
+  createContext<AdvancedSearchPageContextProps>({
+    updateFieldValueMap: nop,
+    openAdvancedSearchPanel: nop,
+    definitionRetrieved: false,
+  });
+
 /**
  *  Function to pull values of PathValueMap and copy to FieldValueMap for each unique Schema node.
  *
@@ -50,7 +75,7 @@ import type { SearchPageOptions } from "./SearchPageHelper";
  */
 export const buildFieldValueMapFromPathValueMap = (
   pathValueMap: PathValueMap,
-  fieldValueMap: FieldValueMap
+  fieldValueMap: FieldValueMap,
 ): FieldValueMap => {
   const pMap = pipe(pathValueMap, M.map(controlValueToStringArray));
 
@@ -58,7 +83,7 @@ export const buildFieldValueMapFromPathValueMap = (
   // one array.
   const fromPathValueMap = (
     { schemaNode }: ControlTarget,
-    defaultValue: ReadonlyArray<string>
+    defaultValue: ReadonlyArray<string>,
   ): ControlValue =>
     pipe(
       schemaNode,
@@ -66,19 +91,19 @@ export const buildFieldValueMapFromPathValueMap = (
         pipe(
           pMap,
           M.lookup(S.Eq)(node),
-          O.getOrElse(() => defaultValue)
-        )
+          O.getOrElse(() => defaultValue),
+        ),
       ),
       RA.flatten,
-      RA.toArray
+      RA.toArray,
     );
 
   return pipe(
     fieldValueMap,
     M.map(controlValueToStringArray),
     M.mapWithIndex<ControlTarget, ReadonlyArray<string>, ControlValue>(
-      fromPathValueMap
-    )
+      fromPathValueMap,
+    ),
   );
 };
 
@@ -98,14 +123,14 @@ export const buildFieldValueMapFromPathValueMap = (
 export const confirmInitialFieldValueMap = (
   defaultValues: FieldValueMap,
   stateSearchOptions: SearchPageOptions,
-  queryStringSearchOptions?: SearchPageOptions
+  queryStringSearchOptions?: SearchPageOptions,
 ): FieldValueMap =>
   pipe(
     queryStringSearchOptions,
     O.fromNullable,
     O.map(
       ({ advFieldValue, legacyAdvSearchCriteria }) =>
-        advFieldValue ?? legacyAdvSearchCriteria
+        advFieldValue ?? legacyAdvSearchCriteria,
     ),
     O.getOrElseW(() => stateSearchOptions.advFieldValue),
     flow(
@@ -114,17 +139,17 @@ export const confirmInitialFieldValueMap = (
         pfTernaryTypeGuard<PathValueMap, FieldValueMap, FieldValueMap>(
           isPathValueMap,
           (m) => buildFieldValueMapFromPathValueMap(m, defaultValues),
-          identity
-        )
-      )
+          identity,
+        ),
+      ),
     ),
-    O.getOrElse(() => defaultValues)
+    O.getOrElse(() => defaultValues),
   );
 
 // Function to create an Advanced search criterion for each control type.
 const queryFactory = (
   { type, schemaNode, isValueTokenised }: ControlTarget,
-  values: ControlValue
+  values: ControlValue,
 ): OEQ.Search.WizardControlFieldValue | undefined => {
   const buildTextFieldQuery = (): OEQ.Search.WizardControlFieldValue => ({
     schemaNodes: schemaNode,
@@ -137,17 +162,17 @@ const queryFactory = (
     flow(
       E.fromPredicate(
         isStringArray,
-        () => "Calendar must have at least one value"
+        () => "Calendar must have at least one value",
       ),
       E.chain(
         E.fromPredicate(
           (dates) => A.size(dates) <= 2,
-          () => "Calendar cannot have more than 2 values"
-        )
+          () => "Calendar cannot have more than 2 values",
+        ),
       ),
       E.fold((e) => {
         throw new TypeError(e);
-      }, identity)
+      }, identity),
     );
 
   switch (type) {
@@ -161,9 +186,9 @@ const queryFactory = (
             schemaNodes: schemaNode,
             values: vs,
             queryType: "DateRange",
-          })
+          }),
         ),
-        O.toUndefined
+        O.toUndefined,
       );
     case "checkboxgroup":
       return buildTextFieldQuery();
@@ -194,7 +219,7 @@ const queryFactory = (
  * @param m Map which provides ControlTarget and ControlValue.
  */
 export const generateAdvancedSearchCriteria = (
-  m: FieldValueMap
+  m: FieldValueMap,
 ): OEQ.Search.WizardControlFieldValue[] =>
   pipe(
     m,
@@ -202,8 +227,8 @@ export const generateAdvancedSearchCriteria = (
     M.collect<ControlTarget>(OrdAsIs)(queryFactory),
     A.filter(
       (criterion): criterion is OEQ.Search.WizardControlFieldValue =>
-        criterion !== undefined
-    )
+        criterion !== undefined,
+    ),
   );
 
 /**
@@ -218,7 +243,7 @@ export const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
     // filtered out.
     M.map(A.filter(isNonEmptyString)),
     M.values<ControlValue>(OrdAsIs),
-    A.some(isControlValueNonEmpty)
+    A.some(isControlValueNonEmpty),
   );
   const isValueMapNotEmpty = !M.isEmpty(queryValues);
 

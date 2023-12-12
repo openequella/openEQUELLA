@@ -243,6 +243,10 @@
     <parameter id="path" value="/oauth/authorise" />
     <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
   </extension>
+  <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthLogonAmericanSpell">
+    <parameter id="path" value="/oauth/authorize" />
+    <parameter id="root" value="bean:com.tle.web.oauth.section.OAuthLogonSection" />
+  </extension>
   <extension plugin-id="com.tle.web.sections" point-id="sectionTree" id="oauthRedirect">
     <parameter id="path" value="/oauth/redirect" />
     <parameter id="root" value="bean:com.tle.web.oauth.servlet.OAuthDefaultRedirectSection" />
@@ -260,6 +264,7 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="oauthTokenServlet">
     <parameter id="bean" value="bean:com.tle.web.oauth.servlet.OAuthTokenServlet" />
     <parameter id="url-pattern" value="/oauth/access_token" />
+    <parameter id="url-pattern" value="/oauth/revoke" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="oauthDefaultRedirectServlet">
     <parameter id="bean" value="bean:com.tle.web.sections.registry.SectionsServlet" />
@@ -270,6 +275,7 @@
     <parameter id="url-pattern" value="/oauth/access_token" />
     <parameter id="url-pattern" value="/oauth/authorise" />
     <parameter id="url-pattern" value="/oauth/authorize" />
+    <parameter id="url-pattern" value="/oauth/revoke" />
     <parameter id="order" value="650" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="userStateHook" id="oauthUserStateHook">
@@ -2222,6 +2228,9 @@
   </extension>
   <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="listeners_7">
     <parameter id="listenerClass" value="com.tle.core.events.listeners.UserChangeListener" />
+  </extension>
+  <extension plugin-id="com.tle.core.events" point-id="applicationEventListener" id="userSuspendListener">
+    <parameter id="listenerClass" value="com.tle.core.events.listeners.UserSuspendListener" />
   </extension>
   <extension plugin-id="com.tle.core.mimetypes" point-id="textExtracter" id="htmlExtracter">
     <parameter id="id" value="htmlExtracter" />
@@ -6084,6 +6093,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20211.EnableDefaultViewerMigration"/>
     <parameter id="date" value="2021-06-01"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddOAuthClientTokenValidity">
+    <parameter id="id" value="com.tle.core.institution.migration.v20232.AddOAuthClientTokenValidity"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20232.AddOAuthClientTokenValidity"/>
+    <parameter id="date" value="2023-10-17"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

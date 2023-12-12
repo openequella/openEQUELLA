@@ -53,7 +53,7 @@ export const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
     uuid,
     searchPageOptions,
     (json: string) => `${MD5(json)}${json}`,
-    window.sessionStorage
+    window.sessionStorage,
   );
 
   return uuid;
@@ -83,7 +83,7 @@ const openScrapbookLegacyPage = (path: string, history: History) => {
 export const openLegacyFileCreatingPage = async (
   scrapbookType: ScrapbookType,
   history: History,
-  searchPageOptions: SearchPageOptions
+  searchPageOptions: SearchPageOptions,
 ): Promise<void> => {
   const uuid = saveSearchPageOptions(searchPageOptions);
   const path = await getLegacyScrapbookCreatingPageRoute(scrapbookType, uuid);
@@ -101,7 +101,7 @@ export const openLegacyFileCreatingPage = async (
 export const openLegacyFileEditingPage = async (
   key: string,
   history: History,
-  searchPageOptions: SearchPageOptions
+  searchPageOptions: SearchPageOptions,
 ): Promise<void> => {
   const uuid = saveSearchPageOptions(searchPageOptions);
   const path = await getLegacyScrapbookEditingPageRoute(key, uuid);

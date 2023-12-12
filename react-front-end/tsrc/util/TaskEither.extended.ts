@@ -31,5 +31,5 @@ export const getOrThrow = <T>(task: TaskEither<string, T>) =>
     task,
     getOrElse((e) => {
       throw new Error(e);
-    })
+    }),
   );

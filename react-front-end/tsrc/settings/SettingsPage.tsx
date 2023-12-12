@@ -161,7 +161,7 @@ const SettingsPage = ({
           onClick={(
             e:
               | React.MouseEvent<HTMLAnchorElement>
-              | React.MouseEvent<HTMLSpanElement>
+              | React.MouseEvent<HTMLSpanElement>,
           ) => {
             e.preventDefault();
             setAdminDialogOpen(true);

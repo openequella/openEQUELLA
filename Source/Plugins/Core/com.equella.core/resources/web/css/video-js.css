@@ -21,8 +21,10 @@ The control icons are from a custom font. Each icon corresponds to a character
 @font-face {
   font-family: "VideoJS";
   src: url("font/vjs.eot");
-  src: url("font/vjs.eot?#iefix") format("embedded-opentype"),
-    url("font/vjs.woff") format("woff"), url("font/vjs.ttf") format("truetype");
+  src:
+    url("font/vjs.eot?#iefix") format("embedded-opentype"),
+    url("font/vjs.woff") format("woff"),
+    url("font/vjs.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -98,10 +100,18 @@ The default control bar that is a container for most of the controls.
   visibility: visible;
   opacity: 1;
   /* transition */
-  -webkit-transition: visibility 0.1s, opacity 0.1s;
-  -moz-transition: visibility 0.1s, opacity 0.1s;
-  -o-transition: visibility 0.1s, opacity 0.1s;
-  transition: visibility 0.1s, opacity 0.1s;
+  -webkit-transition:
+    visibility 0.1s,
+    opacity 0.1s;
+  -moz-transition:
+    visibility 0.1s,
+    opacity 0.1s;
+  -o-transition:
+    visibility 0.1s,
+    opacity 0.1s;
+  transition:
+    visibility 0.1s,
+    opacity 0.1s;
 }
 /* Hide the control bar when the video is playing and the user is inactive  */
 .vjs-default-skin.vjs-has-started.vjs-user-inactive.vjs-playing
@@ -110,10 +120,18 @@ The default control bar that is a container for most of the controls.
   visibility: hidden;
   opacity: 0;
   /* transition */
-  -webkit-transition: visibility 1s, opacity 1s;
-  -moz-transition: visibility 1s, opacity 1s;
-  -o-transition: visibility 1s, opacity 1s;
-  transition: visibility 1s, opacity 1s;
+  -webkit-transition:
+    visibility 1s,
+    opacity 1s;
+  -moz-transition:
+    visibility 1s,
+    opacity 1s;
+  -o-transition:
+    visibility 1s,
+    opacity 1s;
+  transition:
+    visibility 1s,
+    opacity 1s;
 }
 .vjs-default-skin.vjs-controls-disabled .vjs-control-bar {
   display: none;

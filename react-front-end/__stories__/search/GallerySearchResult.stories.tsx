@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { buildItems } from "../../__tests__/tsrc/search/components/GallerySearchResultHelpers";
 import GallerySearchResult, {
@@ -27,7 +27,7 @@ export default {
   component: GallerySearchResult,
 } as Meta<GallerySearchResultProps>;
 
-export const TenItems: Story<GallerySearchResultProps> = (args) => (
+export const TenItems: StoryFn<GallerySearchResultProps> = (args) => (
   <GallerySearchResult {...args} />
 );
 TenItems.args = {

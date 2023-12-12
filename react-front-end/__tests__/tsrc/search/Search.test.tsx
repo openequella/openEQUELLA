@@ -57,7 +57,7 @@ const renderSearch = async (queryString?: string) => {
       <Search updateTemplate={jest.fn()}>
         <div />
       </Search>
-    </Router>
+    </Router>,
   );
 
   await act(async () => {

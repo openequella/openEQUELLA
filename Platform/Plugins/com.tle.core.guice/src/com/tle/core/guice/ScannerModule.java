@@ -18,7 +18,6 @@
 
 package com.tle.core.guice;
 
-import com.google.common.base.Throwables;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Provider;
@@ -62,7 +61,7 @@ public class ScannerModule extends AbstractModule {
   private static final String BINDINGS_ANNOTATION = fullName(Bindings.class);
   private static final String BINDFACTORY_ANNOTATION = fullName(BindFactory.class);
 
-  private static Set<String> ALL_ANNOTATIONS =
+  private static final Set<String> ALL_ANNOTATIONS =
       new HashSet<String>(
           Arrays.asList(BIND_ANNOTATION, BINDINGS_ANNOTATION, BINDFACTORY_ANNOTATION));
 
@@ -70,8 +69,8 @@ public class ScannerModule extends AbstractModule {
   private final PluginService pluginService;
   private final List<BeanChecker> beanCheckers;
 
-  private Map<Class<?>, Set<Class<?>>> interfaceMap = new HashMap<Class<?>, Set<Class<?>>>();
-  private List<String> bindingClasses = new ArrayList<String>();
+  private final Map<Class<?>, Set<Class<?>>> interfaceMap = new HashMap<>();
+  private final List<String> bindingClasses = new ArrayList<>();
 
   private static String fullName(Class<? extends Annotation> annot) {
     return 'L' + annot.getName().replace('.', '/') + ';';
@@ -96,9 +95,7 @@ public class ScannerModule extends AbstractModule {
           visitJar(url);
         }
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (URISyntaxException e) {
+    } catch (IOException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -131,7 +128,7 @@ public class ScannerModule extends AbstractModule {
       ClassReader reader = new ClassReader(bufInp);
       reader.accept(new Visitor(), ClassReader.SKIP_CODE);
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

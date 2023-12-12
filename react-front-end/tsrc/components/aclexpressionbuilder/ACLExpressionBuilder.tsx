@@ -111,14 +111,14 @@ export interface ACLExpressionBuilderProps {
    */
   searchUserProvider?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Function used to replace the default `search` prop for `GroupSearch` component.
    */
   searchGroupProvider?: (
     query?: string,
-    filter?: ReadonlySet<string>
+    filter?: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Function used to replace the default `search` prop for `RoleSearch` component.
@@ -128,7 +128,7 @@ export interface ACLExpressionBuilderProps {
    * Function used to replace the default `resolveGroupsProvider` prop for `UserSearch` and `GroupSearch` component.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>
+    ids: ReadonlyArray<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Object includes functions used to replace default acl entity resolvers for `ACLOtherPanel`
@@ -168,14 +168,14 @@ const ACLExpressionBuilder = ({
     parse,
     E.map(compactACLExpressions),
     E.mapLeft((err) =>
-      console.warn(`Set ACLExpression with default value because: ${err}`)
+      console.warn(`Set ACLExpression with default value because: ${err}`),
     ),
-    E.getOrElse(() => defaultACLExpression)
+    E.getOrElse(() => defaultACLExpression),
   );
 
   const [currentACLExpression, setCurrentACLExpression] =
     useState<ACLExpression>(
-      aclExpression ? parseACLExpression(aclExpression) : defaultACLExpression
+      aclExpression ? parseACLExpression(aclExpression) : defaultACLExpression,
     );
 
   const [activeTabValue, setActiveTabValue] = useState(homeTabLabel);
@@ -188,7 +188,7 @@ const ACLExpressionBuilder = ({
 
   // Update an ACLExpression when the expression has changes like operator changed and recipient deleted.
   const updateACLExpressionRelatedStates = (
-    updatedACLExpression: ACLExpression
+    updatedACLExpression: ACLExpression,
   ) => {
     // get new selected ACLExpression from new current ACLExpression by id and then update the state
     const updateSelectedACLExpression = (aclExpression: ACLExpression) =>
@@ -196,17 +196,17 @@ const ACLExpressionBuilder = ({
         aclExpression,
         getACLExpressionById(selectedACLExpression.id),
         (newSelectedACL) =>
-          setSelectedACLExpression(newSelectedACL ?? aclExpression)
+          setSelectedACLExpression(newSelectedACL ?? aclExpression),
       );
 
     const newCurrentACLExpression = pipe(
       currentACLExpression,
-      replaceACLExpression(updatedACLExpression)
+      replaceACLExpression(updatedACLExpression),
     );
 
     pipe(
       [setCurrentACLExpression, updateSelectedACLExpression],
-      A.flap(newCurrentACLExpression)
+      A.flap(newCurrentACLExpression),
     );
   };
 
@@ -215,7 +215,7 @@ const ACLExpressionBuilder = ({
     const existingRecipients = pipe(
       currentACLExpression,
       flattenRecipients,
-      RSET.fromReadonlyArray(recipientEq)
+      RSET.fromReadonlyArray(recipientEq),
     );
 
     // if the recipient is already exiting in the currentAclExpression, ignore it.
@@ -223,23 +223,23 @@ const ACLExpressionBuilder = ({
       recipients,
       RSET.difference(recipientEq)(existingRecipients),
       RSET.toReadonlyArray(recipientOrd),
-      RA.toArray
+      RA.toArray,
     );
 
     pipe(
       selectedACLExpression,
       addRecipients(filteredRecipients),
-      updateACLExpressionRelatedStates
+      updateACLExpressionRelatedStates,
     );
   };
 
   const handleACLExpressionTreeChanged = (
-    changedACLExpression: ACLExpression
+    changedACLExpression: ACLExpression,
   ) =>
     pipe(
       currentACLExpression,
       replaceACLExpression(changedACLExpression),
-      updateACLExpressionRelatedStates
+      updateACLExpressionRelatedStates,
     );
 
   const handleACLExpressionDelete = (deleteACLExpression: ACLExpression) =>
@@ -249,7 +249,7 @@ const ACLExpressionBuilder = ({
       // in theory root ACL expression (currentACLExpression) can't be deleted by user
       // and the result should never be none after removeACLExpression.
       O.getOrElse(() => currentACLExpression),
-      updateACLExpressionRelatedStates
+      updateACLExpressionRelatedStates,
     );
 
   const handleACLOtherPanelAdded = (recipient: ACLRecipient) =>
@@ -324,9 +324,9 @@ const ACLExpressionBuilder = ({
                 pfTernary(
                   S.isEmpty,
                   constant(ACLRecipientTypes.Everyone),
-                  identity
+                  identity,
                 ),
-                onFinish
+                onFinish,
               )
             }
           >

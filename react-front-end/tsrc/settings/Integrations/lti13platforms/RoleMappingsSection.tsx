@@ -62,7 +62,7 @@ export interface RoleMappingsSectionProps {
    * Function to update the value of `customRolesMapping`.
    */
   setCustomRolesMapping: (
-    mappings: Map<string, Set<OEQ.UserQuery.RoleDetails>>
+    mappings: Map<string, Set<OEQ.UserQuery.RoleDetails>>,
   ) => void;
   /**
    * The roles that should be used for all unmapped LTI roles.

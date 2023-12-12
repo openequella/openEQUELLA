@@ -43,7 +43,7 @@ import javax.inject.Inject;
 
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
-public class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
+public final class EditMyContentOperation extends AbstractWorkflowOperation // NOSONAR
 {
   private final String filename;
   private final boolean removeExistingAttachments;

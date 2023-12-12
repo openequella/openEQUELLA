@@ -1,6 +1,5 @@
 package com.tle.webtests.framework;
 
-import com.google.common.base.Throwables;
 import com.tle.common.Check;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -104,7 +103,7 @@ public class TestConfig {
           serverUrl = new URL("https", url.getHost(), sslPort, url.getFile()).toExternalForm();
         }
       } catch (MalformedURLException e) {
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
       }
     }
     return serverUrl;

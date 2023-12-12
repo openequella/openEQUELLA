@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class CachedPropertyInfo {
+public final class CachedPropertyInfo {
   private static CacheHolder cache = new CacheHolder();
 
   private Map<String, PropertyDescriptor> propertyMap = Maps.newHashMap();
@@ -75,7 +75,7 @@ public class CachedPropertyInfo {
     return cache.getForClass(clazz);
   }
 
-  private static class CacheHolder extends CachedClassData<CachedPropertyInfo> {
+  private static final class CacheHolder extends CachedClassData<CachedPropertyInfo> {
     @Override
     protected CachedPropertyInfo newEntry(Class<?> clazz) {
       try {

@@ -29,21 +29,21 @@ import { findEntityById } from "./ACLEntityModule";
  * Eq for `OEQ.UserQuery.RoleDetails` with equality based on the role's UUID.
  */
 export const eqRoleById: EQ.Eq<OEQ.UserQuery.RoleDetails> = EQ.contramap(
-  (role: OEQ.UserQuery.RoleDetails) => role.id
+  (role: OEQ.UserQuery.RoleDetails) => role.id,
 )(S.Eq);
 
 /**
  * Ord for `OEQ.UserQuery.RoleDetails` with order based on the role's name.
  */
 export const ordRole: ORD.Ord<OEQ.UserQuery.RoleDetails> = ORD.contramap(
-  (r: OEQ.UserQuery.RoleDetails) => r.name
+  (r: OEQ.UserQuery.RoleDetails) => r.name,
 )(S.Ord);
 
 /**
  * Given a set of `OEQ.UserQuery.RoleDetails`, return a set of UUIDs for all the roles.
  */
 export const roleIds: (
-  r: ReadonlySet<OEQ.UserQuery.RoleDetails>
+  r: ReadonlySet<OEQ.UserQuery.RoleDetails>,
 ) => ReadonlySet<string> = flow(RSET.map(S.Eq)(({ id }) => id));
 
 /**
@@ -52,7 +52,7 @@ export const roleIds: (
  * @param ids An array of oEQ ids
  */
 export const resolveRoles = async (
-  ids: ReadonlyArray<string>
+  ids: ReadonlyArray<string>,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   (
     await OEQ.UserQuery.lookup(API_BASE_URL, {
@@ -76,7 +76,7 @@ export const findRoleById = (roleId: string) =>
  * @param query A wildcard supporting string to filter the result based on name
  */
 export const listRoles = async (
-  query?: string
+  query?: string,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   (
     await OEQ.UserQuery.search(API_BASE_URL, {

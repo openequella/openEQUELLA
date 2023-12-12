@@ -4,9 +4,13 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
+import com.tle.webtests.pageobject.IntegrationTesterPage;
+import com.tle.webtests.pageobject.SettingsPage;
+import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import io.github.openequella.pages.search.NewSearchPage;
+import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 import testng.annotation.NewUIOnly;
 
@@ -144,5 +148,25 @@ public class NewSearchPageTest extends AbstractSessionTest {
     searchPage.export();
     // Show snackbar again to indicate the Collection selection error.
     searchPage.verifySnackbarMessage(COLLECTION_ERROR_MESSAGE);
+  }
+
+  // To ensure that new search page bundled by Parcel 2 can be rendered correctly within the
+  // selection session.
+  @Test(description = "Show new search page in selection session")
+  @NewUIOnly
+  public void testSelection() {
+    logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+    new SettingsPage(context).load().setNewSearchUI(true);
+
+    IntegrationTesterPage itp = new IntegrationTesterPage(context, "test", "test").load();
+    itp.getSignonUrl("searchResources", "AutoTest", "", "", true);
+    SelectionSession session = itp.clickPostToUrlButton(new SelectionSession(context));
+
+    // make sure we can see the new search page
+    assertTrue(
+        session.isVisible(By.xpath("//*[contains(text(),'Search result')]")),
+        "search Page is not loaded");
+
+    new SettingsPage(context).load().setNewSearchUI(false);
   }
 }

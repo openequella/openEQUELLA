@@ -151,18 +151,17 @@ public class WizardDrmHelper {
     multi.setTitle(bundle("creator.others.title"));
     multi.setSize1(4);
     multi.getTargetnodes().add(OTHER_NODE);
-    // multi.setSelectMultiple(true);
-    {
-      EditBox name = new EditBox();
-      name.setTitle(bundle("creator.others.name"));
-      name.getTargetnodes().add(OTHER_NAME_NODE);
-      multi.getControls().add(name);
 
-      EditBox email = new EditBox();
-      email.setTitle(bundle("creator.others.email"));
-      email.getTargetnodes().add(OTHER_EMAIL_NODE);
-      multi.getControls().add(email);
-    }
+    EditBox name = new EditBox();
+    name.setTitle(bundle("creator.others.name"));
+    name.getTargetnodes().add(OTHER_NAME_NODE);
+    multi.getControls().add(name);
+
+    EditBox email = new EditBox();
+    email.setTitle(bundle("creator.others.email"));
+    email.getTargetnodes().add(OTHER_EMAIL_NODE);
+    multi.getControls().add(email);
+
     multi.setScript(
         "return xml.get('item/rights/party/owner') == 'everyone' || "
             + "xml.get('item/rights/party/owner') == 'others';");
@@ -313,41 +312,41 @@ public class WizardDrmHelper {
     if (contributor.isCount()) {
       Group group = new Group();
       group.getTargetnodes().add(COUNTSPECIFIED_NODE);
-      {
-        GroupItem item = new GroupItem();
-        item.setValue("true");
-        item.setName(bundle("restrictaccess.title"));
-        {
-          EditBox box = new EditBox();
-          box.setMandatory(true);
-          box.setSize1(35);
-          box.setTitle(bundle("restrictaccess.count"));
-          box.getTargetnodes().add(COUNT_NODE);
-          box.getItems().add(new WizardControlItem(null, Integer.toString(contributor.getCount())));
-          item.getControls().add(box);
-        }
-        group.getGroups().add(item);
-      }
+
+      GroupItem item = new GroupItem();
+      item.setValue("true");
+      item.setName(bundle("restrictaccess.title"));
+
+      EditBox box = new EditBox();
+      box.setMandatory(true);
+      box.setSize1(35);
+      box.setTitle(bundle("restrictaccess.count"));
+      box.getTargetnodes().add(COUNT_NODE);
+      box.getItems().add(new WizardControlItem(null, Integer.toString(contributor.getCount())));
+      item.getControls().add(box);
+
+      group.getGroups().add(item);
+
       page.getControls().add(group);
     }
 
     if (contributor.isDatetime()) {
       Group group = new Group();
       group.getTargetnodes().add(DATESPECIFIED_NODE);
-      {
-        GroupItem item = new GroupItem();
-        item.setValue("true");
-        item.setName(bundle("restrictdate.title"));
-        {
-          Calendar cal = new Calendar();
-          cal.setRange(true);
-          cal.setTitle(bundle("restrictdate.range.title"));
-          cal.setMandatory(true);
-          cal.getTargetnodes().add(DATERANGE_NODE);
-          item.getControls().add(cal);
-        }
-        group.getGroups().add(item);
-      }
+
+      GroupItem item = new GroupItem();
+      item.setValue("true");
+      item.setName(bundle("restrictdate.title"));
+
+      Calendar cal = new Calendar();
+      cal.setRange(true);
+      cal.setTitle(bundle("restrictdate.range.title"));
+      cal.setMandatory(true);
+      cal.getTargetnodes().add(DATERANGE_NODE);
+      item.getControls().add(cal);
+
+      group.getGroups().add(item);
+
       page.getControls().add(group);
     }
 
@@ -370,20 +369,20 @@ public class WizardDrmHelper {
     if (contributor.isTerms()) {
       Group group = new Group();
       group.getTargetnodes().add(TERMSSPECIFIED_NODE);
-      {
-        GroupItem item = new GroupItem();
-        item.setValue("true");
-        item.setName(bundle("requireterms.title"));
-        {
-          EditBox box = new EditBox();
-          box.setMandatory(true);
-          box.setSize2(5);
-          box.setTitle(bundle("requireterms.terms"));
-          box.getTargetnodes().add(TERMS_NODE);
-          item.getControls().add(box);
-        }
-        group.getGroups().add(item);
-      }
+
+      GroupItem item = new GroupItem();
+      item.setValue("true");
+      item.setName(bundle("requireterms.title"));
+
+      EditBox box = new EditBox();
+      box.setMandatory(true);
+      box.setSize2(5);
+      box.setTitle(bundle("requireterms.terms"));
+      box.getTargetnodes().add(TERMS_NODE);
+      item.getControls().add(box);
+
+      group.getGroups().add(item);
+
       page.getControls().add(group);
     }
 

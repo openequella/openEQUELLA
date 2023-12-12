@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as React from "react";
 import {
   ReactNode,
   useCallback,
@@ -26,7 +27,6 @@ import {
   useReducer,
   useState,
 } from "react";
-import * as React from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -54,12 +54,15 @@ import {
 import { getSearchSettingsFromServer } from "../modules/SearchSettingsModule";
 import { languageStrings } from "../util/langstrings";
 import {
+  defaultGeneralSearchSettings,
   defaultSearchPageOptions,
+  GeneralSearchSettings,
   generateSearchPageOptionsFromQueryString,
   getRawModeFromStorage,
+  SearchContext,
   SearchPageOptions,
 } from "./SearchPageHelper";
-import { reducer, SearchPageSearchResult, State } from "./SearchPageReducer";
+import { reducer, SearchPageSearchResult } from "./SearchPageReducer";
 
 /**
  * Structure of data stored in browser history state, to capture the current state of SearchPage as well as
@@ -80,57 +83,6 @@ export interface SearchPageHistoryState<T = unknown> {
 
 const { searchpage: searchStrings } = languageStrings;
 const nop = () => {};
-
-interface GeneralSearchSettings {
-  core: OEQ.SearchSettings.Settings | undefined;
-  mimeTypeFilters: OEQ.SearchFilterSettings.MimeTypeFilter[];
-  advancedSearches: OEQ.Common.BaseEntitySummary[];
-}
-
-const defaultGeneralSearchSettings: GeneralSearchSettings = {
-  core: undefined,
-  mimeTypeFilters: [],
-  advancedSearches: [],
-};
-
-/**
- * Data structure for what SearchContext provides.
- */
-export interface SearchContextProps {
-  /**
-   * Function to perform a search.
-   * @param searchPageOptions The SearchPageOptions to be applied in a search.
-   * @param updateClassifications Whether to update the list of classifications based on the current search criteria.
-   * @param callback Callback fired after a search is completed.
-   */
-  search: (
-    searchPageOptions: SearchPageOptions,
-    updateClassifications?: boolean,
-    callback?: () => void
-  ) => void;
-  /**
-   * The state controlling the status of searching.
-   */
-  searchState: State;
-  /**
-   * Search settings retrieved from server, including MIME type filters and Advanced searches.
-   */
-  searchSettings: GeneralSearchSettings;
-  /**
-   * Error handler specific to the New Search UI.
-   */
-  searchPageErrorHandler: (error: Error) => void;
-}
-
-export const SearchContext = React.createContext<SearchContextProps>({
-  search: nop,
-  searchState: {
-    status: "initialising",
-    options: defaultSearchPageOptions,
-  },
-  searchSettings: defaultGeneralSearchSettings,
-  searchPageErrorHandler: nop,
-});
 
 /**
  * Type definition for configuration of the initial search.
@@ -153,7 +105,7 @@ export interface InitialSearchConfig {
    */
   customiseInitialSearchOptions: (
     searchPageOptions: SearchPageOptions,
-    queryStringSearchOptions?: SearchPageOptions
+    queryStringSearchOptions?: SearchPageOptions,
   ) => SearchPageOptions;
 }
 
@@ -203,7 +155,7 @@ export const Search = ({
   const { options: searchPageOptions } = searchState;
 
   const [searchSettings, setSearchSettings] = useState<GeneralSearchSettings>(
-    defaultGeneralSearchSettings
+    defaultGeneralSearchSettings,
   );
 
   const { appErrorHandler } = useContext(AppContext);
@@ -211,14 +163,14 @@ export const Search = ({
     (error: Error) => {
       dispatch({ type: "error", cause: error });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const search = useCallback(
     (
       searchPageOptions: SearchPageOptions,
       updateClassifications = true,
-      callback: () => void = nop
+      callback: () => void = nop,
     ): void => {
       dispatch({
         type: "search",
@@ -227,7 +179,7 @@ export const Search = ({
         callback,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /**
@@ -298,11 +250,11 @@ export const Search = ({
               sortOrder:
                 searchPageOptions.sortOrder ?? searchSettings.defaultSearchSort,
             })),
-            mergeSearchPageOptions
+            mergeSearchPageOptions,
           );
 
           ready && search(initialSearchPageOptions, listInitialClassifications);
-        }
+        },
       )
       .catch(searchPageErrorHandler);
 
@@ -333,7 +285,7 @@ export const Search = ({
 
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
-        options: SearchPageOptions
+        options: SearchPageOptions,
       ): Promise<SearchPageSearchResult> => ({
         from: "gallery-search",
         content: await search({
@@ -344,7 +296,7 @@ export const Search = ({
       });
 
       const doSearch = async (
-        searchPageOptions: SearchPageOptions
+        searchPageOptions: SearchPageOptions,
       ): Promise<SearchPageSearchResult> => {
         switch (searchPageOptions.displayMode) {
           case "gallery-image":
@@ -367,7 +319,7 @@ export const Search = ({
       // Depending on what display mode we're in, determine which function we use to list
       // the classifications to match the search.
       const getClassifications: (
-        _: SearchOptions
+        _: SearchOptions,
       ) => Promise<Classification[]> = pipe(options.displayMode, (mode) => {
         switch (mode) {
           case "gallery-image":
@@ -378,7 +330,7 @@ export const Search = ({
             return listClassifications;
           default:
             throw new TypeError(
-              "Unexpected `displayMode` for determining classifications listing function"
+              "Unexpected `displayMode` for determining classifications listing function",
             );
         }
       });
@@ -411,7 +363,7 @@ export const Search = ({
           searchPageErrorHandler(
             error instanceof Error
               ? error
-              : new Error(`Failed to perform a search: ${error}`)
+              : new Error(`Failed to perform a search: ${error}`),
           );
         }
         console.timeEnd(timerId);

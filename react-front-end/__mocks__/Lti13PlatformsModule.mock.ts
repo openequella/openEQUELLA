@@ -98,11 +98,11 @@ export const getPlatform = async (platformId: string) => {
     pipe(
       platforms,
       A.findFirst(
-        (p: OEQ.LtiPlatform.LtiPlatform) => p.platformId === platformId
+        (p: OEQ.LtiPlatform.LtiPlatform) => p.platformId === platformId,
       ),
       O.getOrElseW(() => {
         throw new Error(`Can't find platform with ID: ${platformId}`);
-      })
-    )
+      }),
+    ),
   );
 };

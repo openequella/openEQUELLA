@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject;
 
-import com.google.common.base.Throwables;
 import com.tle.common.NameValue;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.factory.RefreshingFieldDecorator;
@@ -263,7 +262,7 @@ public abstract class AbstractPage<T extends PageObject>
     return findLoadedElement().isDisplayed();
   }
 
-  protected boolean isVisible(By by) {
+  public boolean isVisible(By by) {
     return isVisible(driver, by);
   }
 
@@ -517,7 +516,7 @@ public abstract class AbstractPage<T extends PageObject>
     try {
       Thread.sleep(time);
     } catch (InterruptedException e) {
-      Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 

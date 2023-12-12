@@ -38,7 +38,7 @@ export const commonSelectRoleDialogProps: SelectRoleDialogProps = {
  * Helper to render SelectRoleDialog.
  */
 export const renderSelectRoleDialog = (
-  props: SelectRoleDialogProps = commonSelectRoleDialogProps
+  props: SelectRoleDialogProps = commonSelectRoleDialogProps,
 ): RenderResult => render(<SelectRoleDialog {...props} />);
 
 const searchRole = (dialog: HTMLElement, queryName: string) =>
@@ -50,5 +50,5 @@ const searchRole = (dialog: HTMLElement, queryName: string) =>
 export const searchAndSelectRole = (
   dialog: HTMLElement,
   searchFor: string,
-  selectEntityName: string
+  selectEntityName: string,
 ) => searchAndSelect(dialog, searchFor, selectEntityName, searchRole);

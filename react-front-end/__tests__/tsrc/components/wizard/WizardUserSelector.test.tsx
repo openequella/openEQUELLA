@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
 import * as React from "react";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
@@ -32,11 +32,11 @@ describe("<WizardUserSelector/>", () => {
         users={new Set([testUser.id])}
         mandatory={false}
         resolveUsersProvider={UserModuleMock.resolveUsers}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(queryByText(testUser.username)).toBeInTheDocument()
+      expect(queryByText(testUser.username)).toBeInTheDocument(),
     );
   });
 });

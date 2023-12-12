@@ -21,10 +21,18 @@ package com.tle.web.api.item.resource.impl;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.FileInfo;
 import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.tle.beans.item.*;
+import com.tle.beans.item.Comment;
+import com.tle.beans.item.HistoryEvent;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemEditingException;
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.ItemLock;
+import com.tle.beans.item.ItemPack;
+import com.tle.beans.item.ItemTaskId;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.Check;
 import com.tle.common.Pair;
@@ -64,7 +72,16 @@ import com.tle.web.api.item.ItemSummaryApi;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.ItemLockResource;
 import com.tle.web.api.item.interfaces.ItemResource;
-import com.tle.web.api.item.interfaces.beans.*;
+import com.tle.web.api.item.interfaces.beans.AttachmentBean;
+import com.tle.web.api.item.interfaces.beans.CommentBean;
+import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
+import com.tle.web.api.item.interfaces.beans.ItemBean;
+import com.tle.web.api.item.interfaces.beans.ItemExportBean;
+import com.tle.web.api.item.interfaces.beans.ItemLockBean;
+import com.tle.web.api.item.interfaces.beans.ItemSummary;
+import com.tle.web.api.item.interfaces.beans.NavigationNodeBean;
+import com.tle.web.api.item.interfaces.beans.NavigationTabBean;
+import com.tle.web.api.item.interfaces.beans.NavigationTreeBean;
 import com.tle.web.api.item.resource.EquellaItemResource;
 import com.tle.web.remoting.rest.service.RestImportExportHelper;
 import com.tle.web.remoting.rest.service.UrlLinkService;
@@ -520,7 +537,7 @@ public class ItemResourceImpl implements EquellaItemResource {
       }
       return builder.build();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -536,8 +553,8 @@ public class ItemResourceImpl implements EquellaItemResource {
       return Response.status(Status.CREATED)
           .location(itemLinkService.getItemURI(attInfo.getFirst()))
           .build();
-    } catch (Exception e) {
-      throw Throwables.propagate(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

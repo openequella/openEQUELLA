@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { mockedSearchTaxonomyTerms } from "../../../__mocks__/TaxonomyTerms.mock";
 import {
   WizardSimpleTermSelector,
@@ -33,7 +33,7 @@ export default {
   },
 } as Meta<WizardSimpleTermSelectorProps>;
 
-export const NoValues: Story<WizardSimpleTermSelectorProps> = (args) => (
+export const NoValues: StoryFn<WizardSimpleTermSelectorProps> = (args) => (
   <WizardSimpleTermSelector {...args} />
 );
 NoValues.args = {
@@ -45,7 +45,7 @@ NoValues.args = {
   termProvider: mockedSearchTaxonomyTerms,
 };
 
-export const WithValues: Story<WizardSimpleTermSelectorProps> = (args) => (
+export const WithValues: StoryFn<WizardSimpleTermSelectorProps> = (args) => (
   <WizardSimpleTermSelector {...args} />
 );
 WithValues.args = {

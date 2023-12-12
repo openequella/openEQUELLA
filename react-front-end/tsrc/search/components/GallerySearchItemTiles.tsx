@@ -51,7 +51,7 @@ export type LightboxHandler = (
   /**
    * @param entry A Gallery Entry to be viewed in the Lightbox.
    */
-  entry: GalleryEntry
+  entry: GalleryEntry,
 ) => void;
 
 export interface GallerySearchTileProps {
@@ -91,13 +91,13 @@ export const GallerySearchItemTiles = ({
   const itemName = name ?? uuid;
 
   const [drmStatus, setDrmStatus] = useState<OEQ.Search.DrmStatus | undefined>(
-    initialDrmStatus
+    initialDrmStatus,
   );
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
   const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
-    undefined
+    undefined,
   );
 
   const checkDrmPermission = (onSuccess: () => void) =>
@@ -112,7 +112,7 @@ export const GallerySearchItemTiles = ({
             drmStatus,
             setDrmStatus,
             () => setDrmCheckOnSuccessHandler(undefined),
-            drmCheckOnSuccessHandler
+            drmCheckOnSuccessHandler,
           )
         : undefined;
 
@@ -134,7 +134,7 @@ export const GallerySearchItemTiles = ({
     key: string,
     imgSrc: string,
     altText: string,
-    onClick: () => void
+    onClick: () => void,
   ) => (
     <ImageListItem onClick={onClick} aria-label={ariaLabel} key={key}>
       <GalleryThumbnail src={imgSrc} alt={altText} />
@@ -165,15 +165,15 @@ export const GallerySearchItemTiles = ({
       `${uuid}-mainEntry`,
       mainEntry.thumbnailLarge,
       `${itemName} - Main Entry (${mainEntry.name})`,
-      buildOnClickHandler(mainEntry)
+      buildOnClickHandler(mainEntry),
     ),
     additionalEntries.map((ae, idx) =>
       buildTile(
         `${uuid}-additionalEntry-${idx}`,
         ae.thumbnailLarge,
         `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-        buildOnClickHandler(ae)
-      )
+        buildOnClickHandler(ae),
+      ),
     ),
   ];
 

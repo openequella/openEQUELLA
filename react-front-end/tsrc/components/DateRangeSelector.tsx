@@ -79,7 +79,7 @@ export interface DatePickerCustomProps {
  * @param format Date format which must one of the three standard ISO date formats.
  */
 export const buildDatePickerCustomProps = (
-  format: ISODateFormat = "yyyy-MM-dd"
+  format: ISODateFormat = "yyyy-MM-dd",
 ): DatePickerCustomProps => ({
   views: ["year", "month", "day"],
   format,
@@ -180,7 +180,7 @@ export const DateRangeSelector = ({
    * in order to properly parse and validate TextField inputs.
    */
   const [stateDateRange, setStateDateRange] = useState<DateRange | undefined>(
-    dateRange
+    dateRange,
   );
   const [showCalenderIcon, setShowCalenderIcon] = useState<boolean>(false);
 
@@ -264,7 +264,7 @@ export const DateRangeSelector = ({
         if (dateTime?.toISODate() === start.toISODate()) {
           option = label;
         }
-      }
+      },
     );
 
     return option;
@@ -366,7 +366,7 @@ export const DateRangeSelector = ({
                 };
                 setStateDateRange(newRange);
                 handleDateRangeChange(newRange);
-              }
+              },
             )}
           />
         </StyledGrid>

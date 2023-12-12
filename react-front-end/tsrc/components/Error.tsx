@@ -40,7 +40,7 @@ export interface ErrorProps {
 const Error = ({ children }: ErrorProps) => {
   return (
     <StyledPaper className={classes.error}>
-      <Typography color="error" align="center">
+      <Typography component="div" color="error" align="center">
         {children}
       </Typography>
     </StyledPaper>

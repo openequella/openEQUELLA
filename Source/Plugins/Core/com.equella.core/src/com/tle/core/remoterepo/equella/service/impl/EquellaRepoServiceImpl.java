@@ -18,8 +18,9 @@
 
 package com.tle.core.remoterepo.equella.service.impl;
 
+import static com.google.common.base.Throwables.throwIfUnchecked;
+
 import com.dytech.devlib.PropBagEx;
-import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tle.beans.search.TLESettings;
@@ -162,7 +163,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService {
     }
     final Exception e = session.getError();
     if (e != null) {
-      Throwables.propagate(e);
+      throwIfUnchecked(e);
+      throw new RuntimeException(e);
     }
     return session;
   }
@@ -197,8 +199,8 @@ public class EquellaRepoServiceImpl implements EquellaRepoService {
       }
       return xml;
     } catch (Exception e) {
-      Throwables.propagate(e);
-      return null; // not possible
+      throwIfUnchecked(e);
+      throw new RuntimeException(e);
     }
   }
 
@@ -369,7 +371,7 @@ public class EquellaRepoServiceImpl implements EquellaRepoService {
     }
   }
 
-  private static class XFireReturnTypeConfig extends AbstractServiceConfiguration {
+  private static final class XFireReturnTypeConfig extends AbstractServiceConfiguration {
     @Override
     public QName getInParameterName(OperationInfo op, Method method, int paramNumber) {
       return new QName(op.getName().getNamespaceURI(), "in" + paramNumber);

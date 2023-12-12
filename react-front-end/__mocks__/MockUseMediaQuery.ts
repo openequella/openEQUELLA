@@ -30,7 +30,7 @@ import mediaQuery from "css-mediaquery";
  */
 export const createMatchMedia = (
   width: number,
-  pointerFine = false
+  pointerFine = false,
 ): ((query: string) => MediaQueryList) => {
   const nop = () => {};
   return (query) => ({

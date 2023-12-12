@@ -33,7 +33,7 @@ export type FavouriteItemVersionOption = "latest" | "this";
 export const addFavouriteItem = (
   itemID: string,
   keywords: string[],
-  isAlwaysLatest: boolean
+  isAlwaysLatest: boolean,
 ): Promise<OEQ.Favourite.FavouriteItem> =>
   OEQ.Favourite.addFavouriteItem(API_BASE_URL, {
     itemID,
@@ -64,7 +64,7 @@ export interface FavouriteURL {
  */
 export const addFavouriteSearch = (
   name: string,
-  { path, params }: FavouriteURL
+  { path, params }: FavouriteURL,
 ): Promise<OEQ.Favourite.FavouriteSearchModel> =>
   OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
     name,

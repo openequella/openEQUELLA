@@ -154,7 +154,7 @@ public class WebDavControl extends AbstractWebControl<WebDavControl.WebDavContro
     return null;
   }
 
-  private class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
+  private final class FilesModel extends DynamicSelectionsTableModel<FileAttachment> {
     @Override
     protected List<FileAttachment> getSourceList(SectionInfo info) {
       return getFiles();

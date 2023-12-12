@@ -68,7 +68,7 @@ export const MyResourcesSelector = ({
         {value}
       </MenuItem>
     )),
-    M.values<JSX.Element>(OrdAsIs)
+    M.values<JSX.Element>(OrdAsIs),
   );
 
   return (

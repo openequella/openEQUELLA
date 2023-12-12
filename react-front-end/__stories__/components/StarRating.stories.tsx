@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { StarRating, StarRatingProps } from "../../tsrc/components/StarRating";
 
@@ -24,7 +24,7 @@ export default {
   component: StarRating,
 } as Meta<StarRatingProps>;
 
-export const HalfStar: Story<StarRatingProps> = (args) => (
+export const HalfStar: StoryFn<StarRatingProps> = (args) => (
   <StarRating {...args} />
 );
 HalfStar.args = {
@@ -32,7 +32,7 @@ HalfStar.args = {
   numberOfStars: 1,
 };
 
-export const FullStar: Story<StarRatingProps> = (args) => (
+export const FullStar: StoryFn<StarRatingProps> = (args) => (
   <StarRating {...args} />
 );
 FullStar.args = {
@@ -40,7 +40,7 @@ FullStar.args = {
   rating: 5,
 };
 
-export const EmptyStar: Story<StarRatingProps> = (args) => (
+export const EmptyStar: StoryFn<StarRatingProps> = (args) => (
   <StarRating {...args} />
 );
 EmptyStar.args = {
@@ -48,7 +48,7 @@ EmptyStar.args = {
   rating: 0,
 };
 
-export const MixedStars: Story<StarRatingProps> = (args) => (
+export const MixedStars: StoryFn<StarRatingProps> = (args) => (
   <StarRating {...args} />
 );
 MixedStars.args = {

@@ -83,7 +83,7 @@ export const drmReducer = (state: State, action: Action): State => {
       color: ButtonProps["color"];
       text: string;
       autoFocus: boolean;
-    }[]
+    }[],
   ): JSX.Element[] =>
     buttons.map(({ handler, color, text, autoFocus }) => (
       <Button
@@ -138,7 +138,7 @@ export const drmReducer = (state: State, action: Action): State => {
               },
             ]),
           },
-        })
+        }),
       );
     case "error":
       return {
