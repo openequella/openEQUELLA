@@ -36,7 +36,6 @@ object CommonSettings extends AutoPlugin {
       settingKey[File]("The output/target directory of the ReactJS project")
     lazy val reactFrontEndLanguageBundle =
       settingKey[File]("The language bundle file for the ReactJS front-end project")
-    lazy val checkJavaCodeStyle = taskKey[Unit]("Run checkstyle")
 
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
