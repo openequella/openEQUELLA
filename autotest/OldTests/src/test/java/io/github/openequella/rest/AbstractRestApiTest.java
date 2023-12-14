@@ -39,6 +39,10 @@ public class AbstractRestApiTest {
     return testConfig;
   }
 
+  public void loginAsLowPrivilegeUser() throws IOException {
+    makeClientRequest(authHelper.buildLoginMethod(LOW_PRIVILEGE_USERNAME, PASSWORD));
+  }
+
   @BeforeClass
   public void login() throws IOException {
     makeClientRequest(authHelper.buildLoginMethod(USERNAME, PASSWORD));

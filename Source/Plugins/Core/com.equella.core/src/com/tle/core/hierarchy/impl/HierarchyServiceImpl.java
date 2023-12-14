@@ -427,6 +427,11 @@ public class HierarchyServiceImpl
   }
 
   @Override
+  public Boolean hasEditAccess(HierarchyTopic topic) {
+    return aclManager.hasPrivilege(topic, Privilege.EDIT_HIERARCHY_TOPIC);
+  }
+
+  @Override
   public Boolean hasModifyKeyResourceAccess(HierarchyTopic topic) {
     return aclManager.hasPrivilege(topic, Privilege.MODIFY_KEY_RESOURCE);
   }

@@ -14,85 +14,123 @@ class HierarchyApiTest extends AbstractRestApiTest {
   private val itemUuid = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
   private val version  = 2
 
-  private val normaTopicUuid = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
+  private val nonExistingUuid  = "non-existing-uuid"
+  private val normaTopicUuid   = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
+  private val virtualTopicUuid = "886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James"
+
+  @Test(description = "Get ACLs for a non-existing topic")
+  def aclNotFound(): Unit = getAcls(nonExistingUuid, 404)
+
+  @Test(description = "Get ACLs for a topic")
+  def aclsForTopic(): Unit = {
+    val result = getAcls(normaTopicUuid, 200)
+    assertAcls(hasPermission = true, result)
+  }
+
+  @Test(description = "Get ACLs for a virtual topic")
+  def aclsForVirtualTopic(): Unit = {
+    val result = getAcls(virtualTopicUuid, 200)
+    assertAcls(hasPermission = true, result)
+  }
+
+  @Test(description = "Low privilege user gets ACLs for a topic")
+  def lowPrivilegeAclsForTopic(): Unit = {
+    loginAsLowPrivilegeUser()
+    val result = getAcls(normaTopicUuid, 200)
+    assertAcls(hasPermission = false, result)
+    // Login as a normal user in the end to let other test cases properly run.
+    login()
+  }
 
   @Test(description = "Add a key resources to a non-existing topic")
   def topicNotFound(): Unit = {
     val compoundUuid = "non-existing-uuid"
     // add key resource
-    post(compoundUuid, itemUuid, version, 404)
+    addKeyResource(compoundUuid, itemUuid, version, 404)
   }
 
   @Test(description = "Add an non-existing key resources to an unknown topic")
   def addItemNotFound(): Unit = {
     // add key resource
-    post(normaTopicUuid, "non-existing-uuid", version, 404)
+    addKeyResource(normaTopicUuid, "non-existing-uuid", version, 404)
   }
 
   @Test(description = "Add a key resources")
-  def addKeyResource(): Unit = {
+  def addKeyResourceToTopic(): Unit = {
     assertAddKeyResourceIsSucceed(normaTopicUuid)
   }
 
-  @Test(description = "Add a duplicated key resources", dependsOnMethods = Array("addKeyResource"))
+  @Test(description = "Add a duplicated key resources",
+        dependsOnMethods = Array("addKeyResourceToTopic"))
   def addDuplicatedKeyResource(): Unit = {
     // add key resource
-    post(normaTopicUuid, itemUuid, version, 409)
+    addKeyResource(normaTopicUuid, itemUuid, version, 409)
   }
 
   @Test(description = "Delete non key resource from topic")
   def deleteItemNotFound(): Unit = {
     // delete key resource
-    delete(normaTopicUuid, "e35390cf-7c45-4f71-bb94-e6ccc1f09394", 1, 404)
+    deleteKeyResource(normaTopicUuid, "e35390cf-7c45-4f71-bb94-e6ccc1f09394", 1, 404)
   }
 
   @Test(description = "Delete a key resources",
         dependsOnMethods = Array("addDuplicatedKeyResource"))
-  def deleteKeyResource(): Unit = {
+  def deleteKeyResourceFromTopic(): Unit = {
     assertDeleteKeyResourceIsSucceed(normaTopicUuid)
   }
 
   @Test(description = "Add a key resource to a virtual topic")
   def addKeyResourceToVirtualTopic(): Unit = {
-    assertAddKeyResourceIsSucceed("886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James", itemUuid, 1)
+    assertAddKeyResourceIsSucceed(virtualTopicUuid, itemUuid, 1)
   }
 
   @Test(description = "Delete a key resource from a virtual topic",
         dependsOnMethods = Array("addKeyResourceToVirtualTopic"))
   def deleteKeyResourceFromVirtualTopic(): Unit = {
-    assertDeleteKeyResourceIsSucceed("886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James",
-                                     itemUuid,
-                                     1)
+    assertDeleteKeyResourceIsSucceed(virtualTopicUuid, itemUuid, 1)
   }
 
   @Test(description = "Add a key resource to a sub virtual topic")
   def addKeyResourceToSubVirtualTopic(): Unit = {
+    // 46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James
     assertAddKeyResourceIsSucceed(
-      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%2BJames")
+      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James")
   }
 
   @Test(description = "Delete a key resource to a sub virtual topic",
         dependsOnMethods = Array("addKeyResourceToSubVirtualTopic"))
   def deleteKeyResourceFromSubVirtualTopic(): Unit = {
     assertDeleteKeyResourceIsSucceed(
-      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%2BJames")
+      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James")
   }
 
   @Test(description = "Add a key resource without modify key resource permission")
   def noEditPermission(): Unit = {
-    makeClientRequest(
-      authHelper.buildLoginMethod(AbstractRestApiTest.LOW_PRIVILEGE_USERNAME,
-                                  AbstractRestApiTest.PASSWORD))
-    post("91a08805-d5f9-478d-aaaf-eff61a266667", itemUuid, version, 403)
+    loginAsLowPrivilegeUser()
+    addKeyResource("91a08805-d5f9-478d-aaaf-eff61a266667", itemUuid, version, 403)
     // Login as a normal user in the end to let other test cases properly run.
     login()
   }
 
+  private def getAcls(compoundUuid: String, expectedCode: Int): JsonNode = {
+    val url        = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/my-acls"
+    val method     = new GetMethod(url)
+    val statusCode = makeClientRequest(method)
+    assertEquals(statusCode, expectedCode)
+    mapper.readTree(method.getResponseBody)
+  }
+
+  private def assertAcls(hasPermission: Boolean, acls: JsonNode): Unit = {
+    assertEquals(acls.get("VIEW_HIERARCHY_TOPIC").asBoolean(), hasPermission)
+    assertEquals(acls.get("EDIT_HIERARCHY_TOPIC").asBoolean(), hasPermission)
+    assertEquals(acls.get("MODIFY_KEY_RESOURCE").asBoolean(), hasPermission)
+  }
+
   // Add a key resource
-  private def post(compoundUuid: String,
-                   itemUuid: String,
-                   itemVersion: Int,
-                   expectedCode: Int): JsonNode = {
+  private def addKeyResource(compoundUuid: String,
+                             itemUuid: String,
+                             itemVersion: Int,
+                             expectedCode: Int): JsonNode = {
     val url        = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
     val method     = new PostMethod(url)
     val statusCode = makeClientRequest(method)
@@ -101,10 +139,10 @@ class HierarchyApiTest extends AbstractRestApiTest {
   }
 
   // Delete a key resource
-  private def delete(compoundUuid: String,
-                     itemUuid: String,
-                     itemVersion: Int,
-                     expectedCode: Int): JsonNode = {
+  private def deleteKeyResource(compoundUuid: String,
+                                itemUuid: String,
+                                itemVersion: Int,
+                                expectedCode: Int): JsonNode = {
     val url        = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
     val method     = new DeleteMethod(url)
     val statusCode = makeClientRequest(method)
@@ -138,7 +176,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertFalse(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // add key resource
-    post(compoundUuid, itemUuid, version, 200)
+    addKeyResource(compoundUuid, itemUuid, version, 200)
     val newHierarchyTopic = getHierarchyTopic(compoundUuid)
     // make sure key resources is added
     assertTrue(containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, version))
@@ -153,7 +191,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertTrue(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // delete key resource
-    delete(compoundUuid, itemUuid, version, 200)
+    deleteKeyResource(compoundUuid, itemUuid, version, 200)
     val newHierarchyTopic = getHierarchyTopic(compoundUuid)
     assertFalse(containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, version))
   }
