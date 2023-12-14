@@ -5,7 +5,7 @@
     "coursier:checkstyle": "./coursier bootstrap com.puppycrawl.tools:checkstyle:10.12.6 -f -o node_modules/.bin/checkstyle -M com.puppycrawl.tools.checkstyle.Main",
     "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.7 -f -o node_modules/.bin/google-java-format",
     "coursier:scalafmt": "./coursier bootstrap com.geirsson:scalafmt-cli_2.12:1.5.1 -f -o node_modules/.bin/scalafmt",
-    "postinstall": "run-p coursier:*",
+    "postinstall": "run-s coursier:*",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
     "format:java": "find . -name \"*.java\" | xargs google-java-format -r",
     "format:scss": "prettier --write ${npm_package_config_stylesheet_glob}",
