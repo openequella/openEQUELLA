@@ -24,6 +24,7 @@ import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.service.ItemService
 import com.tle.web.api.ApiErrorResponse
 import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper
+import com.tle.web.api.hierarchy.model.HierarchyTopicAcl
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import org.slf4j.{Logger, LoggerFactory}
@@ -46,14 +47,40 @@ class HierarchyResource {
   @Inject private var itemService: ItemService                     = _
   @Inject private var browseHierarchyHelper: BrowseHierarchyHelper = _
 
+  @GET
+  @Path("/{compound-uuid}/my-acls")
+  @ApiOperation(
+    value = "Get my ACLs for a hierarchy topic",
+    response = classOf[HierarchyTopicAcl],
+  )
+  def getAcls(
+      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String): Response = {
+    val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(compoundUuid)
+
+    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+      case Some(topicEntity) =>
+        Response
+          .ok(
+            HierarchyTopicAcl(
+              hierarchyService.hasViewAccess(topicEntity),
+              hierarchyService.hasEditAccess(topicEntity),
+              hierarchyService.hasModifyKeyResourceAccess(topicEntity),
+            ))
+          .build
+      case None =>
+        ApiErrorResponse.resourceNotFound(s"Failed to get ACLs: topic $currentTopicUuid not found")
+    }
+  }
+
   @POST
   @Path("/{compound-uuid}/keyresource/{item-uuid}/{version}")
   @ApiOperation(
     value = "Add an Item to a Hierarchy topic as a key resource",
   )
-  def addKeyResource(@ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
-                     @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
-                     @ApiParam("The item version") @PathParam("version") version: Int): Response =
+  def addKeyResource(
+      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
+      @ApiParam("The item version") @PathParam("version") version: Int): Response =
     updateKeyResources(compoundUuid, itemUuid, version)
 
   @DELETE
@@ -62,7 +89,7 @@ class HierarchyResource {
     value = "Delete a key resource from a Hierarchy topic",
   )
   def deleteKeyResource(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
       @ApiParam("The item version") @PathParam("version") version: Int): Response =
     updateKeyResources(compoundUuid, itemUuid, version, addResource = false)

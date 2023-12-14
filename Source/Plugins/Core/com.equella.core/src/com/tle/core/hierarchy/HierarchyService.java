@@ -89,6 +89,9 @@ public interface HierarchyService extends RemoteHierarchyService {
   /** Check whether user has permission to view the hierarchy topic. */
   Boolean hasViewAccess(HierarchyTopic topic);
 
+  /** Check whether user has permission to edit the hierarchy topic. */
+  Boolean hasEditAccess(HierarchyTopic topic);
+
   /** Check whether user has permission to modify KeyResource for the given hierarchy topic. */
   Boolean hasModifyKeyResourceAccess(HierarchyTopic topic);
 
