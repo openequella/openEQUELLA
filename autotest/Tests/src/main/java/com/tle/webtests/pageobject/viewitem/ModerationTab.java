@@ -46,7 +46,8 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
   public long waitTime() throws ParseException {
     WebElement time = driver.findElement(By.xpath("//div[1]/span/abbr[@class='timeago_nosuf']"));
     String timeStamp = time.getAttribute("title");
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy, hh:mm a");
+    // Since Java 20, the "NARROW NO-BREAK SPACE" character is used before the AM/PM marker.
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy, hh:mm\u202Fa");
     dateFormat.setTimeZone(TimeZone.getTimeZone("Australia/Hobart"));
     Date d = dateFormat.parse(timeStamp);
     return d.getTime();
