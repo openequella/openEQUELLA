@@ -20,6 +20,7 @@ package com.tle.web.oauth.servlet;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
+import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.web.oauth.OAuthException;
@@ -32,6 +33,8 @@ import com.tle.web.oauth.service.OAuthWebService;
 import com.tle.web.oauth.service.OAuthWebService.AuthorisationDetails;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Base64;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,8 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   private static final String TOKEN_PARAM = "token";
 
   @Inject private OAuthWebService oauthWebService;
+
+  @Inject private EncryptionService encryptionService;
 
   @Override
   protected void doService(HttpServletRequest request, HttpServletResponse response)
@@ -165,14 +170,49 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
     }
   }
 
+  private Optional<String> validateCredentials(String auth) {
+    if (auth.toLowerCase().startsWith(OAuthWebConstants.BASIC_AUTHORIZATION_PREFIX)) {
+      // Remove the prefix `Basic `.
+      String decoded = new String(Base64.getDecoder().decode(auth.substring(6)));
+      // Use index of the last colon because a Client ID may have colons.
+      int delimiterIndex = decoded.lastIndexOf(":");
+      if (delimiterIndex > 0) {
+        String clientId = decoded.substring(0, delimiterIndex);
+        String clientSecret = decoded.substring(delimiterIndex + 1);
+
+        IOAuthClient client = oauthWebService.getByClientIdOnly(clientId);
+
+        return Optional.ofNullable(client)
+            .filter(c -> encryptionService.decrypt(c.getClientSecret()).equals(clientSecret))
+            .map(IOAuthClient::getClientId);
+      }
+    }
+
+    return Optional.empty();
+  }
+
   /**
-   * According to <a href="https://tools.ietf.org/html/rfc7009#section-2.2">the spec for OAuth 2.0
-   * Token Revocation </a>>, the response code should be 200 regardless whether the token is valid
-   * or not. Hence, token validation is not needed. However, if a token is not present in the
+   * Revoke an Oauth token. Client credentials must be validated first. If the validation fails,
+   * return a 401 error.
+   *
+   * <p>According to <a href="https://tools.ietf.org/html/rfc7009#section-2.2">the spec for OAuth
+   * 2.0 Token Revocation </a>>, the response code should be 200 regardless whether the token is
+   * valid or not. Hence, token validation is not needed. However, if a token is not present in the
    * request payload, return a 400 error.
    */
   private void revokeToken(HttpServletRequest request) {
-    String token = getParameter(request, TOKEN_PARAM, true);
-    oauthWebService.revokeToken(token);
+    Optional.ofNullable(request.getHeader(OAuthWebConstants.HEADER_AUTHORIZATION))
+        .flatMap(this::validateCredentials)
+        .ifPresentOrElse(
+            (client) -> {
+              String token = getParameter(request, TOKEN_PARAM, true);
+              oauthWebService.revokeTokenForClient(token, client);
+            },
+            () -> {
+              throw new OAuthException(
+                  HttpServletResponse.SC_UNAUTHORIZED,
+                  OAuthConstants.ERROR_INVALID_REQUEST,
+                  text("oauth.error.validationfailed"));
+            });
   }
 }
