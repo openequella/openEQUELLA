@@ -22,6 +22,10 @@ import com.dytech.edge.common.Constants
 import com.tle.common.util.ExecUtils
 import com.tle.upgrade.{LineFileModifier, UpgradeResult}
 import com.tle.upgrade.upgraders.AbstractUpgrader
+import com.tle.upgrade.upgraders.AbstractUpgrader.{
+  EQUELLA_SERVER_CONFIG_LINUX,
+  EQUELLA_SERVER_CONFIG_WINDOWS
+}
 
 import java.io.File
 import scala.util.{Failure, Success, Try}
@@ -32,8 +36,6 @@ import scala.util.{Failure, Success, Try}
   * some libraries like XStream which is not fully compatible with Java 17 by 12/12/2023.
   */
 class UpdateJavaOpts extends AbstractUpgrader {
-  val EQUELLA_SERVER_CONFIG_LINUX   = "equellaserver-config.sh"
-  val EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat"
 
   override def getId: String = "UpdateJavaOpts"
 
@@ -59,8 +61,8 @@ class UpdateJavaOpts extends AbstractUpgrader {
       }
 
       updateResult match {
-        case Success(_)     => result.info("Successfully update Java Opts.")
-        case Failure(error) => result.info(s"Failed to update Java Opts: ${error.getMessage}")
+        case Success(_)     => result.info("Successfully updated Java options.")
+        case Failure(error) => result.info(s"Failed to update Java options: ${error.getMessage}")
       }
     }
 
