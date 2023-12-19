@@ -4,8 +4,6 @@ import sbt.Package.ManifestAttributes
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-javacOptions ++= Seq("--release", "21")
-
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
 (Compile / javaSource) := baseDirectory.value / "src"
