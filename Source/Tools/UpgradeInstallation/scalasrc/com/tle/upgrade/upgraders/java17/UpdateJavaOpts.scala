@@ -47,7 +47,7 @@ class UpdateJavaOpts extends AbstractUpgrader {
         new LineFileModifier(new File(managerDir, configFile), result) {
           override protected def processLine(line: String): String = {
             val RemovedOption =
-              "(-XX:CMSInitiatingOccupancyFraction=\\d+)".r
+              ".*(-XX:CMSInitiatingOccupancyFraction=\\d+).*".r
 
             line match {
               case RemovedOption(option) =>
