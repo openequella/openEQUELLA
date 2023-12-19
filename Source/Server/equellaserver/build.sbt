@@ -433,6 +433,8 @@ run := {
     oldStrategy(x)
 }
 
+// In order to work properly with Java 21, Some libraries like Lucene v9 requires flag 'Multi-Release' to
+// be true in the manifest file.
 assembly / packageOptions += ManifestAttributes("Multi-Release" -> "true")
 
 lazy val collectJars = taskKey[Set[File]]("Collect jars")
