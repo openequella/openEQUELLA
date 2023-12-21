@@ -127,7 +127,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           MimeTypeResource.class,
           RemoteSearchResource.class,
           SearchFilterResource.class,
-          SearchResource.class,
           SearchSettingsResource.class,
           SelectionApi.class,
           SettingsResource.class,
@@ -141,7 +140,8 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           HierarchyResource.class,
           NewUIThemeResource.class,
           PostLoginNoticeResource.class,
-          PreLoginNoticeResource.class);
+          PreLoginNoticeResource.class,
+          SearchResource.class);
 
   @Override
   protected void service(

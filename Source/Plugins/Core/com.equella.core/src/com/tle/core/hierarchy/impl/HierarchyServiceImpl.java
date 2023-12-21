@@ -155,7 +155,8 @@ public class HierarchyServiceImpl
   }
 
   /** Build a search for counting the items matching this topic. */
-  private PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
+  @Override
+  public PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
     FreeTextBooleanQuery searchClause = getSearchClause(topic, compoundUuidMap);
     String freetextQuery = getFullFreetextQuery(topic);
 
