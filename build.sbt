@@ -64,44 +64,6 @@ lazy val equella = (project in file("."))
              UpgradeInstallation,
              learningedge_config)
 
-checkJavaCodeStyle := {
-  import com.etsy.sbt.checkstyle.*
-  val rootDirectory       = (LocalProject("equella") / baseDirectory).value
-  val rootTargetDirectory = (LocalProject("equella") / target).value
-  def countErrorNumber: Int = {
-    val outputFile = new File("target/checkstyle-report.xml")
-    if (outputFile.exists()) {
-      val report = scala.xml.XML.loadFile(outputFile)
-      (report \\ "file" \ "error").length
-    } else {
-      throw new FileNotFoundException("checkstyle report is missing")
-    }
-  }
-  // As we will specify where the config file is, the resource file can be null
-  // We don't want to exit SBT if checkstyle finds any issue, so severityLevel should be None
-  Checkstyle.checkstyle(
-    javaSource = rootDirectory,
-    resources = null,
-    outputFile = rootTargetDirectory / "checkstyle-report.xml",
-    configLocation = CheckstyleConfigLocation.File("checkstyle-config.xml"),
-    xsltTransformations = Some(
-      Set(CheckstyleXSLTSettings(rootDirectory / "checkstyle-report-template.xml",
-                                 rootTargetDirectory / "checkstyle-report.html"))),
-    severityLevel = None,
-    streams = streams.value
-  )
-  val errorNumber     = countErrorNumber
-  val thresholdNumber = 449
-  if (errorNumber > thresholdNumber) {
-    throw new MessageOnlyException(
-      "Checkstyle error threshold (" + thresholdNumber + ") exceeded with error count of " + errorNumber)
-  } else if (errorNumber < thresholdNumber) {
-    throw new MessageOnlyException(
-      "Checkstyle errors has been reduced. Threshold of " + thresholdNumber + " has been reduced to " +
-        errorNumber + " please reduce thresholdNumber in build.sbt.")
-  }
-}
-
 // We currently build for Java 8, so let's drop module info files
 ThisBuild / assemblyMergeStrategy := {
   case PathList("module-info.class")         => MergeStrategy.discard

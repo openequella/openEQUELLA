@@ -257,7 +257,7 @@ public class ScannerModule extends AbstractModule {
 
   class Visitor extends ClassVisitor {
     public Visitor() {
-      super(Opcodes.ASM7);
+      super(Opcodes.ASM9);
     }
 
     String name;

@@ -18,7 +18,12 @@
 
 package com.tle.web.endpoint.srw;
 
-import ORG.oclc.os.SRW.*;
+import ORG.oclc.os.SRW.QueryResult;
+import ORG.oclc.os.SRW.Record;
+import ORG.oclc.os.SRW.RecordIterator;
+import ORG.oclc.os.SRW.SRWDatabase;
+import ORG.oclc.os.SRW.SRWDiagnostic;
+import ORG.oclc.os.SRW.TermList;
 import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.item.Item;
