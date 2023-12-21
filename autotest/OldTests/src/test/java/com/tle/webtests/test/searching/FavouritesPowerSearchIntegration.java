@@ -1,4 +1,4 @@
-package com.tle.webtests.rewrite;
+package com.tle.webtests.test.searching;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.searching.FavouriteSearchesPage;

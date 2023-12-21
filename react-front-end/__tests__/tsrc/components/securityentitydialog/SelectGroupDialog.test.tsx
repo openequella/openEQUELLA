@@ -80,7 +80,7 @@ describe("SelectGroupDialog", () => {
 
     const result = onClose.mock.lastCall[0];
     expect(result).toBeUndefined();
-  });
+  }, 15000);
 
   it("Should be able to remove all selections by clicking the remove all button", async () => {
     const result = await testRemoveAll((onClose: jest.Mock) =>

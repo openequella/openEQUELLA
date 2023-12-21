@@ -15,7 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getByText, render, RenderResult } from "@testing-library/react";
+import {
+  findByText,
+  getByText,
+  render,
+  RenderResult,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
@@ -31,7 +36,6 @@ import ACLExpressionBuilder, {
 import type { ReferrerType } from "../../../../tsrc/components/aclexpressionbuilder/ACLHTTPReferrerInput";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { selectOption } from "../../MuiTestHelpers";
-import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
 
 const { ok: okLabel } = languageStrings.common.action;
 
@@ -60,16 +64,15 @@ export const renderACLExpressionBuilder = (
 ): RenderResult => render(<ACLExpressionBuilder {...props} />);
 
 /**
- * Attempt to select the entities show in the `EntitySearch` (User/Group/RoleSearch) result list.
- * It then clicks `select` and then `ok` button.
+ * Select all the entities shown in the `EntitySearch` (User/Group/RoleSearch) result list by
+ * clicking the `Select all` button and then `ok` button.
  */
-export const selectAndConfirm = async (
-  container: HTMLElement,
-  selectNames: string[],
-) => {
-  // wait for the results, and then click all entities
-  await selectEntitiesInOneClickMode(container, selectNames);
-  // click ok button
+export const selectAllAndConfirm = async (container: HTMLElement) => {
+  // Select all entities.
+  const selectAllButton = await findByText(container, "Select all", {
+    selector: "button",
+  });
+  await userEvent.click(selectAllButton);
   await userEvent.click(getByText(container, okLabel));
 };
 
@@ -79,10 +82,9 @@ export const selectAndConfirm = async (
  */
 export const selectAndFinished = async (
   container: HTMLElement,
-  selectNames: string[],
   onFinish = jest.fn(),
 ): Promise<string> => {
-  await selectAndConfirm(container, selectNames);
+  await selectAllAndConfirm(container);
   // get the result of ACLExpression
   return onFinish.mock.lastCall[0];
 };

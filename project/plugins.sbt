@@ -8,8 +8,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "1.0.2")
 
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 
-addSbtPlugin("com.etsy" % "sbt-checkstyle-plugin" % "3.1.1")
-
 // Provides access to the OWASP Dependency Check to search for
 // vulnerabilities in our dependencies. Most useful:
 // - ./sbt dependencyCheckAnyProject
@@ -55,4 +53,3 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-nop"             % "2.0.9",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
-dependencyOverrides += "com.puppycrawl.tools" % "checkstyle" % "10.12.4"

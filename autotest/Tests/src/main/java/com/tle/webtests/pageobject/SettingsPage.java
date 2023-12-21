@@ -24,7 +24,6 @@ import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class SettingsPage extends AbstractPage<SettingsPage> {
@@ -66,10 +65,8 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
                 ExpectedConditions.visibilityOfNestedElementsLocatedBy(
                     getSettingsGroup(), By.xpath("div[" + titlePath + "]")))
             .get(0);
-    ExpectedCondition<?> appears =
-        ExpectedConditions.visibilityOfNestedElementsLocatedBy(settingGroup, untilVisible);
     settingGroup.findElement(By.xpath(titlePath)).click();
-    waiter.until(appears);
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(untilVisible));
     return settingGroup;
   }
 
@@ -79,7 +76,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page) {
-    By linkByTitle = By.linkText(title);
+    By linkByTitle = By.xpath("//div[@id='settingsPage']//a[text()='" + title + "']");
     WebElement groupElem = openGroup(group, linkByTitle);
     groupElem.findElement(linkByTitle).click();
     return page.get();

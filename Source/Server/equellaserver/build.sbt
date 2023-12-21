@@ -1,9 +1,8 @@
 import Path.rebase
+import sbt.Package.ManifestAttributes
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-javacOptions ++= Seq("--release", "11")
 
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
@@ -431,6 +430,10 @@ run := {
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
+
+// In order to work properly with Java 21, Some libraries like Lucene v9 requires flag 'Multi-Release' to
+// be true in the manifest file.
+assembly / packageOptions += ManifestAttributes("Multi-Release" -> "true")
 
 lazy val collectJars = taskKey[Set[File]]("Collect jars")
 

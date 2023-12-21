@@ -15,7 +15,6 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.util.Collection;
 import org.fest.swing.annotation.GUITest;
-import org.fest.swing.security.NoExitSecurityManager;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
@@ -107,8 +106,6 @@ public class AdminConsoleTest extends AbstractTest {
       throw new Error(e);
     }
 
-    System.setSecurityManager(new NoExitSecurityManager());
-
     admin = new AdminConsoleWindow(context);
     admin.launch("contribute");
   }
@@ -116,7 +113,6 @@ public class AdminConsoleTest extends AbstractTest {
   @Override
   @AfterClass(alwaysRun = true)
   public void finishedClass(ITestContext testContext) throws Exception {
-    System.setSecurityManager(null);
     super.finishedClass(testContext);
   }
 }

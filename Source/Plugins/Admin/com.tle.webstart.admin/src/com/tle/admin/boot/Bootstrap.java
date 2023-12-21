@@ -106,8 +106,6 @@ public final class Bootstrap {
 
   private void run() {
     try {
-      System.setSecurityManager(null);
-
       final URL endpointUrl = new URL(endpointParam);
       if (login(endpointUrl)) {
         final PluginServiceImpl pluginService =
