@@ -23,31 +23,48 @@ import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.beans.entity.Schema
 import com.tle.common.i18n.CurrentLocale
-import com.tle.common.search.DefaultSearch
+import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.security.SecurityConstants
+import com.tle.core.auditlog.AuditLogService
+import com.tle.core.collection.service.ItemDefinitionService
+import com.tle.core.guice.Bind
+import com.tle.core.hierarchy.HierarchyService
+import com.tle.core.security.TLEAclManager
 import com.tle.exceptions.PrivilegeRequiredException
-import com.tle.legacy.LegacyGuice
 import com.tle.web.api.ApiErrorResponse
-import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
+import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
-import com.tle.web.api.search.SearchHelper._
+import com.tle.web.api.search.SearchHelper.{search, _}
 import com.tle.web.api.search.model._
+import com.tle.web.api.search.service.ExportService
 import io.swagger.annotations.{Api, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
+import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.BufferedOutputStream
+import javax.inject.{Inject, Singleton}
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs._
-import javax.ws.rs.core.Response.Status
 import javax.ws.rs.core.{Context, Response}
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
+@Bind
+@Singleton
 @NoCache
 @Path("search2")
 @Produces(Array("application/json"))
 @Api("Search V2")
 class SearchResource {
+  val Logger: Logger = LoggerFactory.getLogger(getClass)
+
+  @Inject private var browseHierarchyHelper: BrowseHierarchyHelper = _
+  @Inject private var hierarchyService: HierarchyService           = _
+  @Inject private var auditLogService: AuditLogService             = _
+  @Inject private var exportService: ExportService                 = _
+  @Inject private var itemDefinitionService: ItemDefinitionService = _
+  @Inject private var aclManager: TLEAclManager                    = _
+
   @GET
   @ApiOperation(
     value = "Search items",
@@ -55,8 +72,8 @@ class SearchResource {
     response = classOf[SearchResult[SearchResultItem]],
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
-    val searchCriteria = SearchCriteria(params)
-    doSearch(createSearch(searchCriteria), searchCriteria)
+    val searchPayload = SearchPayload(params)
+    doSearch(searchPayload)
   }
 
   @POST
@@ -66,8 +83,8 @@ class SearchResource {
       "This endpoint supports searching for items based on large search criteria such a hundreds of MIME types.",
     response = classOf[SearchResult[SearchResultItem]],
   )
-  def searchItemsPostVersion(params: SearchCriteria): Response = {
-    doSearch(createSearch(params), params)
+  def searchItemsPostVersion(payload: SearchPayload): Response = {
+    doSearch(payload)
   }
 
   @POST
@@ -80,36 +97,9 @@ class SearchResource {
   )
   def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
                                  advancedSearchCriteria: AdvancedSearchParameters): Response = {
-    val searchCriteria                     = SearchCriteria(params)
+    val searchPayload                      = SearchPayload(params)
     val AdvancedSearchParameters(criteria) = advancedSearchCriteria
-    doSearch(createSearch(searchCriteria, Option(criteria)), searchCriteria)
-  }
-
-  def doSearch(searchRequest: DefaultSearch, params: SearchCriteria): Response = {
-    Try {
-      val searchResults =
-        search(searchRequest, params.start, params.length, params.searchAttachments)
-
-      val freetextResults         = searchResults.getSearchResults.asScala.toList
-      val itemIds                 = freetextResults.map(_.getItemIdKey)
-      val serializer              = createSerializer(itemIds)
-      val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
-      val highlight =
-        new DefaultSearch.QueryParser(params.query.orNull).getHilightedList.asScala.toList
-
-      SearchResult(
-        searchResults.getOffset,
-        searchResults.getCount,
-        searchResults.getAvailable,
-        items.map(convertToItem(_, params.includeAttachments)),
-        highlight
-      )
-    } match {
-      case Success(searchResult) => Response.ok.entity(searchResult).build()
-      case Failure(e: InvalidSearchQueryException) =>
-        ApiErrorResponse.badRequest("Invalid search query - please remove any special characters.")
-      case Failure(e) => throw e
-    }
+    doNormalSearch(createSearch(searchPayload, Option(criteria)), searchPayload)
   }
 
   @HEAD
@@ -124,7 +114,7 @@ class SearchResource {
   @Path("/export")
   def exportCSV(@BeanParam params: SearchParam, @Context resp: HttpServletResponse): Unit = {
     val schema = confirmExport(params)
-    LegacyGuice.auditLogService.logSearchExport("CSV", convertParamsToJsonString(params))
+    auditLogService.logSearchExport("CSV", convertParamsToJsonString(params))
 
     resp.setContentType("text/csv")
     resp.setHeader("Content-Disposition", " attachment; filename=search.csv")
@@ -134,10 +124,10 @@ class SearchResource {
     val csvHeaders = buildCSVHeaders(schema)
     writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
 
-    LegacyGuice.exportService.export(createSearch(SearchCriteria(params)),
-                                     params.searchAttachments,
-                                     csvHeaders,
-                                     writeRow(bos, _))
+    exportService.export(createSearch(SearchPayload(params)),
+                         params.searchAttachments,
+                         csvHeaders,
+                         writeRow(bos, _))
 
     bos.close()
   }
@@ -159,12 +149,12 @@ class SearchResource {
     }
 
     val collectionId = params.collections(0)
-    val collection = Option(LegacyGuice.itemDefinitionService.getByUuid(collectionId)) match {
+    val collection = Option(itemDefinitionService.getByUuid(collectionId)) match {
       case Some(c) => c
       case None    => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
     }
 
-    if (LegacyGuice.aclManager
+    if (aclManager
           .filterNonGrantedPrivileges(collection, SecurityConstants.EXPORT_SEARCH_RESULT)
           .isEmpty) {
       throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
@@ -177,4 +167,60 @@ class SearchResource {
           s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}")
     }
   }
+
+  // create a PresetSearch for a hierarchy search
+  private def createPresetSearch(hierarchyCompoundUuid: String): Either[String, PresetSearch] = {
+    val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(hierarchyCompoundUuid)
+
+    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+      case Some(topic) =>
+        val compoundUuidMap =
+          hierarchyCompoundUuid.split(",").flatMap(browseHierarchyHelper.buildCompoundUuidMap).toMap
+        Right(hierarchyService.buildSearch(topic, compoundUuidMap.asJava))
+      case None =>
+        Left(s"Failed to get preset search: Topic $hierarchyCompoundUuid not found.")
+    }
+  }
+
+  private def doNormalSearch(searchRequest: DefaultSearch, payload: SearchPayload): Response = {
+    Try {
+      val searchResults =
+        search(searchRequest, payload.start, payload.length, payload.searchAttachments)
+
+      val freetextResults         = searchResults.getSearchResults.asScala.toList
+      val itemIds                 = freetextResults.map(_.getItemIdKey)
+      val serializer              = createSerializer(itemIds)
+      val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
+      val highlight =
+        new DefaultSearch.QueryParser(payload.query.orNull).getHilightedList.asScala.toList
+
+      SearchResult(
+        searchResults.getOffset,
+        searchResults.getCount,
+        searchResults.getAvailable,
+        items.map(convertToItem(_, payload.includeAttachments)),
+        highlight
+      )
+    } match {
+      case Success(searchResult) => Response.ok.entity(searchResult).build()
+      case Failure(_: InvalidSearchQueryException) =>
+        ApiErrorResponse.badRequest("Invalid search query - please remove any special characters.")
+      case Failure(e) => throw e
+    }
+  }
+
+  private def doHierarchySearch(compoundUuid: String, searchPayload: SearchPayload): Response =
+    createPresetSearch(compoundUuid) match {
+      case Right(hierarchySearch) =>
+        val search = createSearch(searchPayload, None, Option(hierarchySearch))
+        doNormalSearch(search, searchPayload)
+      case Left(errorMessage) =>
+        ApiErrorResponse.resourceNotFound(s"Failed to get search result: $errorMessage")
+    }
+
+  private def doSearch(searchPayload: SearchPayload): Response =
+    searchPayload.hierarchy match {
+      case Some(hierarchy) => doHierarchySearch(hierarchy, searchPayload)
+      case None            => doNormalSearch(createSearch(searchPayload), searchPayload)
+    }
 }

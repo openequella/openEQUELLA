@@ -103,13 +103,17 @@ class SearchParam {
     "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
   @QueryParam("musts")
   var musts: Array[String] = _
+
+  @ApiParam("Hierarchy topic compound UUID. Only used for hierarchy search.")
+  @QueryParam("hierarchy")
+  var hierarchy: String = _
 }
 
 /**
   * Data structure to represent all the supported search criteria, which is typically used as the type of POST request payload.
   * It also supports the transformation from [[SearchParam]].
   */
-case class SearchCriteria(
+case class SearchPayload(
     query: Option[String],
     start: Int = 0,
     length: Int = 10,
@@ -126,13 +130,13 @@ case class SearchCriteria(
     owner: Option[String],
     dynaCollection: Option[String],
     mimeTypes: Array[String] = Array(),
-    musts: Array[String] = Array()
+    musts: Array[String] = Array(),
+    hierarchy: Option[String]
 )
 
-object SearchCriteria {
-
-  def apply(searchParam: SearchParam): SearchCriteria =
-    SearchCriteria(
+object SearchPayload {
+  def apply(searchParam: SearchParam): SearchPayload =
+    SearchPayload(
       query = Option(searchParam.query),
       start = searchParam.start,
       length = searchParam.length,
@@ -149,6 +153,7 @@ object SearchCriteria {
       owner = Option(searchParam.owner),
       dynaCollection = Option(searchParam.dynaCollection),
       mimeTypes = searchParam.mimeTypes,
-      musts = searchParam.musts
+      musts = searchParam.musts,
+      hierarchy = Option(searchParam.hierarchy)
     )
 }

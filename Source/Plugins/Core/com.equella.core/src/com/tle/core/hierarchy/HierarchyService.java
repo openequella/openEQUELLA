@@ -26,6 +26,7 @@ import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.hierarchy.RemoteHierarchyService;
+import com.tle.common.search.PresetSearch;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.search.VirtualisableAndValue;
 import java.util.Collection;
@@ -79,6 +80,16 @@ public interface HierarchyService extends RemoteHierarchyService {
    *     the raw UUID without virtual name.
    */
   HierarchyTopic getHierarchyTopicByUuid(String compoundUuid);
+
+  /**
+   * Build a preset search for a given hierarchy topic.
+   *
+   * @param topic The topic to be searched.
+   * @param compoundUuidMap A map linking any virtual ancestor topic and its UUID to the
+   *     corresponding virtual topic name. It is used when the given topic is virtual topic or any
+   *     of its ancestor is a virtual topic.
+   */
+  PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap);
 
   /**
    * Legacy function to check weather user has permission to view the hierarchy topic. If user has
