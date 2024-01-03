@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-alpine as baseequella
+FROM eclipse-temurin:21-alpine as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 
