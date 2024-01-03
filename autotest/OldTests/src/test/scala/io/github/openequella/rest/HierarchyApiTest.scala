@@ -11,8 +11,8 @@ class HierarchyApiTest extends AbstractRestApiTest {
   private val HIERARCHY_API_ENDPOINT        = getTestConfig.getInstitutionUrl + "api/hierarchy"
   private val BROWSE_HIERARCHY_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/browsehierarchy2"
 
-  private val itemUuid = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
-  private val version  = 2
+  private val DEFAULT_ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
+  private val DEFAULT_VERSION   = 2
 
   private val nonExistingUuid  = "non-existing-uuid"
   private val normaTopicUuid   = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
@@ -46,13 +46,13 @@ class HierarchyApiTest extends AbstractRestApiTest {
   def topicNotFound(): Unit = {
     val compoundUuid = "non-existing-uuid"
     // add key resource
-    addKeyResource(compoundUuid, itemUuid, version, 404)
+    addKeyResource(compoundUuid, DEFAULT_ITEM_UUID, DEFAULT_VERSION, 404)
   }
 
   @Test(description = "Add an non-existing key resources to an unknown topic")
   def addItemNotFound(): Unit = {
     // add key resource
-    addKeyResource(normaTopicUuid, "non-existing-uuid", version, 404)
+    addKeyResource(normaTopicUuid, "non-existing-uuid", DEFAULT_VERSION, 404)
   }
 
   @Test(description = "Add a key resources")
@@ -60,11 +60,16 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertAddKeyResourceIsSucceed(normaTopicUuid)
   }
 
+  @Test(description = "Version 0 should add a latest item as a key resource")
+  def addLatestKeyResourceToTopic(): Unit = {
+    assertAddKeyResourceIsSucceed(normaTopicUuid, "2534e329-e37e-4851-896e-51d8b39104c4", 0, 1)
+  }
+
   @Test(description = "Add a duplicated key resources",
         dependsOnMethods = Array("addKeyResourceToTopic"))
   def addDuplicatedKeyResource(): Unit = {
     // add key resource
-    addKeyResource(normaTopicUuid, itemUuid, version, 409)
+    addKeyResource(normaTopicUuid, DEFAULT_ITEM_UUID, DEFAULT_VERSION, 409)
   }
 
   @Test(description = "Delete non key resource from topic")
@@ -81,13 +86,13 @@ class HierarchyApiTest extends AbstractRestApiTest {
 
   @Test(description = "Add a key resource to a virtual topic")
   def addKeyResourceToVirtualTopic(): Unit = {
-    assertAddKeyResourceIsSucceed(virtualTopicUuid, itemUuid, 1)
+    assertAddKeyResourceIsSucceed(virtualTopicUuid, DEFAULT_ITEM_UUID, 1, 1)
   }
 
   @Test(description = "Delete a key resource from a virtual topic",
         dependsOnMethods = Array("addKeyResourceToVirtualTopic"))
   def deleteKeyResourceFromVirtualTopic(): Unit = {
-    assertDeleteKeyResourceIsSucceed(virtualTopicUuid, itemUuid, 1)
+    assertDeleteKeyResourceIsSucceed(virtualTopicUuid, DEFAULT_ITEM_UUID, 1)
   }
 
   @Test(description = "Add a key resource to a sub virtual topic")
@@ -107,7 +112,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
   @Test(description = "Add a key resource without modify key resource permission")
   def noEditPermission(): Unit = {
     loginAsLowPrivilegeUser()
-    addKeyResource("91a08805-d5f9-478d-aaaf-eff61a266667", itemUuid, version, 403)
+    addKeyResource("91a08805-d5f9-478d-aaaf-eff61a266667", DEFAULT_ITEM_UUID, DEFAULT_VERSION, 403)
     // Login as a normal user in the end to let other test cases properly run.
     login()
   }
@@ -168,8 +173,9 @@ class HierarchyApiTest extends AbstractRestApiTest {
   }
 
   private def assertAddKeyResourceIsSucceed(compoundUuid: String,
-                                            itemUuid: String = itemUuid,
-                                            version: Int = version): Unit = {
+                                            itemUuid: String = DEFAULT_ITEM_UUID,
+                                            version: Int = DEFAULT_VERSION,
+                                            expectedVersion: Int = DEFAULT_VERSION): Unit = {
     val hierarchyTopic = getHierarchyTopic(compoundUuid)
 
     // make sure the ket resource is not existing
@@ -179,12 +185,13 @@ class HierarchyApiTest extends AbstractRestApiTest {
     addKeyResource(compoundUuid, itemUuid, version, 200)
     val newHierarchyTopic = getHierarchyTopic(compoundUuid)
     // make sure key resources is added
-    assertTrue(containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, version))
+    assertTrue(
+      containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, expectedVersion))
   }
 
   private def assertDeleteKeyResourceIsSucceed(compoundUuid: String,
-                                               itemUuid: String = itemUuid,
-                                               version: Int = version): Unit = {
+                                               itemUuid: String = DEFAULT_ITEM_UUID,
+                                               version: Int = DEFAULT_VERSION): Unit = {
     val hierarchyTopic = getHierarchyTopic(compoundUuid);
 
     // make sure the ket resource is existing

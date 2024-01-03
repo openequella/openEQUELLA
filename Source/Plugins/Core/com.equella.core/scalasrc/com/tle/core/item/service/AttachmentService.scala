@@ -74,30 +74,15 @@ object AttachmentService {
   }
 
   /**
-    * Find out the latest version of the Item which a Custom Attachment points to.
-    *
-    * @param version Version of a linked Item. It is either 0 or 1 where 0 means using the latest version
-    *                and 1 means always using version 1.
-    * @param uuid UUID of the linked Item.
-    */
-  def getLatestVersionForCustomAttachment(version: Int, uuid: String): Int = {
-    version match {
-      // If version of is 0, find the real latest version of this Item.
-      case 0           => LegacyGuice.itemService.getLatestVersion(uuid)
-      case realVersion => realVersion
-    }
-  }
-
-  /**
     * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
     * @param customAttachment The attachment to check.
     * @return If true, this attachment is broken.
     */
-  def isCustomAttachmentBroken(customAttachment: CustomAttachment): Boolean = {
+  private def isCustomAttachmentBroken(customAttachment: CustomAttachment): Boolean = {
     val uuid    = customAttachment.getData("uuid").asInstanceOf[String]
     val version = customAttachment.getData("version").asInstanceOf[Int]
 
-    val key = new ItemId(uuid, getLatestVersionForCustomAttachment(version, uuid))
+    val key = new ItemId(uuid, LegacyGuice.itemService.getRealVersion(version, uuid))
 
     if (customAttachment.getType != "resource") {
       return false

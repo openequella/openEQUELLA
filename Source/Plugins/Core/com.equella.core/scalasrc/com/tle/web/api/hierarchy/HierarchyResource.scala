@@ -99,7 +99,8 @@ class HierarchyResource {
                                  itemUuid: String,
                                  itemVersion: Int,
                                  addResource: Boolean = true) = {
-    val itemId                = new ItemId(itemUuid, itemVersion)
+    val version               = itemService.getRealVersion(itemVersion, itemUuid)
+    val itemId                = new ItemId(itemUuid, version)
     val encodedCompoundUuid   = browseHierarchyHelper.encodeCompoundUuid(compoundUuid)
     val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(compoundUuid)
 
