@@ -162,6 +162,10 @@ export interface SearchOptions {
    * Advanced search criteria defined by Wizard controls' schema nodes and values.
    */
   advancedSearchCriteria?: OEQ.Search.WizardControlFieldValue[];
+  /**
+   * The UUID of a hierarchy topic.
+   */
+  hierarchy?: string;
 }
 
 /**
@@ -249,6 +253,7 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
+  hierarchy,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -263,7 +268,7 @@ const buildSearchParams = ({
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: status,
+    status,
     order: sortOrder,
     collections: collections?.map((collection) => collection.uuid),
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
@@ -273,7 +278,8 @@ const buildSearchParams = ({
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
-    musts: musts,
+    musts,
+    hierarchy,
   };
 };
 
