@@ -313,7 +313,7 @@ jobs:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
 
-       - name: Save Memory Logs
+      - name: Save Memory Logs
         if: failure()
         uses: actions/upload-artifact@v3.1.3
         with:
