@@ -313,6 +313,13 @@ jobs:
           name: CoverageReport-newui-${{ matrix.newui }}
           path: coverage_report.tar
 
+       - name: Save Memory Logs
+        if: failure()
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: memLogs-new_${{ matrix.newui }}-psql_${{ matrix.pgsql-image }}
+          path: /tmp/sbt*
+
   rest-module-testing:
     needs: build_and_check
 
