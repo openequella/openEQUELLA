@@ -2,3 +2,4 @@
 -Xmx2048m
 -XX:ReservedCodeCacheSize=256m
 -XX:MaxMetaspaceSize=512m
+-XX:+UseG1GC
