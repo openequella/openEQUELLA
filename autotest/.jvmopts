@@ -3,5 +3,5 @@
 -XX:+UseG1GC
 -Xlog:gc*:file=/tmp/sbt-gc-%t.log:tags,time,uptime,level:filecount=10,filesize=2M
 -XX:+HeapDumpOnOutOfMemoryError
--XX:HeapDumpPath=/tmp/sbt-%p.hprof
+-XX:HeapDumpPath=/tmp/sbt.hprof
 -XX:+UseGCOverheadLimit
