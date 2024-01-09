@@ -252,15 +252,14 @@ jobs:
 
       - name: Setup for tests
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          ./sbt "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
       - name: Run Scalacheck tests
         # We only need to run these once, so we focus on the New UI
         if: matrix.newui
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-            Tests/test Tests/Serial/test dumpCoverage
+          ./sbt "project autotest" Tests/test Tests/Serial/test dumpCoverage
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
@@ -271,8 +270,7 @@ jobs:
 
       - name: Run TestNG tests
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-            OldTests/test dumpCoverage
+          ./sbt "project autotest" OldTests/test dumpCoverage
 
       - name: Save TestNG Reports
         if: failure()
@@ -297,8 +295,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-            coverageReport
+          ./sbt "project autotest" coverageReport
 
       # To save significant time on file upload, we first tar up the directory
       # as it contains > 10k files and the artefact upload was taking almost
@@ -382,7 +379,7 @@ jobs:
 
       - name: Install openEquella
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
+          ./sbt "project autotest" \
             installEquella startEquella configureInstall setupForTests
 
       - name: Run tests
@@ -393,8 +390,7 @@ jobs:
       - name: Stop oEQ
         if: failure()
         run: |
-          ./sbt -jvm-opts autotest/.jvmopts "project autotest" \
-          stopEquella
+          ./sbt "project autotest" stopEquella
 
       - name: Save oEQ logs for REST Module
         if: failure()
