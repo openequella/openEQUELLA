@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.82"
+val TomcatVersion     = "9.0.83"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
@@ -28,7 +28,7 @@ val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.0"
+val tikaVersion       = "2.9.1"
 val luceneVersion     = "9.8.0"
 
 libraryDependencies ++= Seq(
@@ -114,7 +114,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.15.0",
+  "commons-io"                % "commons-io"            % "2.15.1",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -238,12 +238,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.9.1",
+  "org.scala-sbt"                 %% "io"                       % "1.9.7",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
   "io.github.classgraph"          % "classgraph"                % "4.8.164",
-  "com.fasterxml"                 % "classmate"                 % "1.5.1",
+  "com.fasterxml"                 % "classmate"                 % "1.6.0",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
