@@ -38,7 +38,9 @@ FROM baseequella as equella
 
 EXPOSE 8080
 
-ARG JVM_ARGS="-Xmx512m"
+ARG MEM=512
+ARG JVM_ARGS
+ENV MEM $MEM
 ENV JVM_ARGS $JVM_ARGS
 
 # Properties in the optional-config, mandatory-config, and hibernate files can be
