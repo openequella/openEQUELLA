@@ -9,4 +9,4 @@ JVM_ARGS="$STANDARD_JVM_ARGS $JVM_ARGS -Xmx${MEM}m"
 echo Starting openEQUELLA with following JVM arguments:
 echo $JVM_ARGS
 
-#java $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
+java $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
