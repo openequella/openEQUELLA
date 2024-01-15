@@ -24,6 +24,8 @@ enablePlugins(TestNGPlugin)
 testNGOutputDirectory := (target.value / "testng").absolutePath
 
 testNGParameters ++= Seq("-log", autotestBuildConfig.value.getInt("tests.verbose").toString)
+// Disable generating the HTML report, as it's running out of memory on GitHub Actions.
+testNGParameters ++= Seq("-usedefaultlisteners", "false")
 
 testNGSuites := {
   val tc = autotestBuildConfig.value.getConfig("tests")
