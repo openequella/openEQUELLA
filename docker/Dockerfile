@@ -30,6 +30,7 @@ RUN unzip $OEQ_INSTALL_FILE -d /tmp \
   && chown -R equella:equella /home/equella
 WORKDIR /home/equella/equella
 USER equella
+COPY entrypoint.sh .
 COPY learningedge-log4j.yaml learningedge-config/
 
 # Now build the final image
@@ -66,4 +67,4 @@ WORKDIR /home/equella/equella
 USER equella
 VOLUME ["/home/equella/equella/filestore/", "/home/equella/equella/freetext/"]
 
-CMD java -Xmx${MEM}m $JVM_ARGS -cp learningedge-config:server/equella-server.jar com.tle.core.equella.runner.EQUELLAServer
+ENTRYPOINT ["./entrypoint.sh"]
