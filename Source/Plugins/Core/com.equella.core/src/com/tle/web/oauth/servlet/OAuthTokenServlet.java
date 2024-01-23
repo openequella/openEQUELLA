@@ -20,7 +20,6 @@ package com.tle.web.oauth.servlet;
 
 import com.dytech.edge.exceptions.WebException;
 import com.tle.common.Check;
-import com.tle.core.encryption.EncryptionService;
 import com.tle.core.guice.Bind;
 import com.tle.core.oauth.OAuthConstants;
 import com.tle.web.oauth.OAuthException;
@@ -52,8 +51,6 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
   private static final String TOKEN_PARAM = "token";
 
   @Inject private OAuthWebService oauthWebService;
-
-  @Inject private EncryptionService encryptionService;
 
   @Override
   protected void doService(HttpServletRequest request, HttpServletResponse response)
@@ -99,15 +96,12 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
 
   private void getOrCreateToken(HttpServletRequest request, HttpServletResponse response) {
     final String clientId = getParameter(request, OAuthWebConstants.PARAM_CLIENT_ID, true);
-
-    // must be one of 'authorization_code' (4.1), 'client_credentials' (4.4)
+    final String clientSecret = getParameter(request, OAuthWebConstants.PARAM_CLIENT_SECRET, true);
     final String grantType = getParameter(request, OAuthWebConstants.PARAM_GRANT_TYPE, true);
-    // 4.4
     final boolean isClientCredentials =
         (grantType != null && grantType.equals(OAuthWebConstants.GRANT_TYPE_CREDENTIALS));
     final boolean isAuthorizationCode =
         (grantType != null && grantType.equals(OAuthWebConstants.GRANT_TYPE_CODE));
-
     final String code = getParameter(request, OAuthWebConstants.PARAM_CODE, isAuthorizationCode);
     final String state = getParameter(request, OAuthWebConstants.PARAM_STATE, false);
 
@@ -119,7 +113,9 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
         final String redirectUrl =
             getParameter(request, OAuthWebConstants.PARAM_REDIRECT_URI, true);
         client = oauthWebService.getByClientIdAndRedirectUrl(clientId, redirectUrl);
-        if (client == null) {
+        // Authenticate the client with the provided secret for the potential interception
+        // of authorisation code.
+        if (client == null || !client.secretMatches(clientSecret)) {
           throw new OAuthException(
               400,
               OAuthConstants.ERROR_INVALID_CLIENT,
@@ -138,8 +134,6 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
               text("oauth.error.clientnotfoundnoredir", clientId),
               true);
         }
-        final String clientSecret =
-            getParameter(request, OAuthWebConstants.PARAM_CLIENT_SECRET, true);
         auth = oauthWebService.getAuthorisationDetailsBySecret(client, clientSecret);
 
         if (Check.isEmpty(client.getUserId())) {
@@ -183,7 +177,7 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
         IOAuthClient client = oauthWebService.getByClientIdOnly(clientId);
 
         return Optional.ofNullable(client)
-            .filter(c -> encryptionService.decrypt(c.getClientSecret()).equals(clientSecret))
+            .filter(c -> c.secretMatches(clientSecret))
             .map(IOAuthClient::getClientId);
       }
     }
