@@ -77,7 +77,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -174,14 +173,6 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
    */
   private boolean redirectToLogonnotice(SectionInfo info) {
     sessionService.forceSession();
-    HttpServletRequest request = info.getRequest();
-    // This is a dodgy hack to get around the fact that tomcat
-    // will set a cookie marked as "Secure" if the session was created on
-    // ssl
-    if (request.isSecure()) {
-      Cookie k = new Cookie("JSESSIONID", request.getSession().getId());
-      info.getResponse().addCookie(k);
-    }
     LogonModel model = getModel(info);
     // Save the page parameter for redirection fun later - see
     // LogonNoticeAction class
