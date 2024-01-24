@@ -52,6 +52,9 @@ const ContentIndexSettings = React.lazy(
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
+const BrowseHierarchyPage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage"),
+);
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -94,6 +97,7 @@ interface Routes {
   ThemeConfig: OEQRouteNewUI;
   UserPreferences: OEQRouteTo<string>;
   ViewItem: OEQRouteTo<ToVersionFunc>;
+  BrowseHierarchy: OEQRouteNewUI;
 }
 
 /**
@@ -206,5 +210,9 @@ export const routes: Routes = {
   },
   ViewItem: {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
+  },
+  BrowseHierarchy: {
+    path: "/page/hierarchy",
+    component: BrowseHierarchyPage,
   },
 };

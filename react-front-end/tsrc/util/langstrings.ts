@@ -372,6 +372,11 @@ export const languageStrings = {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
   },
+  hierarchy: {
+    viewHierarchy: "View hierarchy",
+    browseHierarchyPageTitle: "Browse hierarchies",
+    noHierarchy: "No hierarchies available",
+  },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   lightboxComponent: {
