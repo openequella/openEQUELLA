@@ -110,6 +110,11 @@ class LtiPlatform {
   var usernameSuffix: String = _
 
   /**
+    * The claim which can be used to retrieve username from the LTI request.
+    */
+  var usernameClaim: String = _
+
+  /**
     * How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
     */
   @Column(nullable = false, length = 10)

@@ -6095,6 +6095,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20232.AddOAuthClientTokenValidity"/>
     <parameter id="date" value="2023-10-17"/>
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddLTI13UsernameClaim">
+    <parameter id="id" value="com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
+    <parameter id="date" value="2024-01-24"/>
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
   </extension>
