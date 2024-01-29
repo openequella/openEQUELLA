@@ -133,13 +133,11 @@ public class OAuthTokenServlet extends AbstractOAuthServlet {
               OAuthConstants.ERROR_INVALID_CLIENT,
               text("oauth.error.clientnotfoundnoredir", clientId),
               true);
-        }
-        auth = oauthWebService.getAuthorisationDetailsBySecret(client, clientSecret);
-
-        if (Check.isEmpty(client.getUserId())) {
+        } else if (Check.isEmpty(client.getUserId())) {
           throw new OAuthException(
               400, OAuthConstants.ERROR_INVALID_CLIENT, text("oauth.error.musthavefixeduser"));
         }
+        auth = oauthWebService.getAuthorisationDetailsBySecret(client, clientSecret);
       } else {
         // Invalid grant type
         throw new OAuthException(
