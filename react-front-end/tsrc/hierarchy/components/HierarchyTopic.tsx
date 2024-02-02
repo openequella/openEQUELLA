@@ -15,11 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ExpandLess } from "@mui/icons-material";
+import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import TopicOutlinedIcon from "@mui/icons-material/TopicOutlined";
+import FolderIcon from "@mui/icons-material/Folder";
 import {
-  Badge,
   Collapse,
   ListItem,
   ListItemAvatar,
@@ -32,6 +31,11 @@ import * as A from "fp-ts/Array";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { languageStrings } from "../../util/langstrings";
+
+const { expandHierarchy: expandText, collapseHierarchy: collapseText } =
+  languageStrings.hierarchy;
 
 export interface HierarchyTopicProps {
   /**
@@ -47,7 +51,9 @@ export interface HierarchyTopicProps {
 const PREFIX = "HierarchyTopic";
 export const classes = {
   label: `${PREFIX}-label`,
+  icon: `${PREFIX}-icon`,
   name: `${PREFIX}-name`,
+  count: `${PREFIX}-count`,
   description: `${PREFIX}-description`,
 };
 
@@ -63,8 +69,15 @@ export const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
   [`& .${classes.label}`]: {
     padding: theme.spacing(1, 0),
   },
+  [`& .${classes.icon}`]: {
+    color: theme.palette.text.secondary,
+  },
   [`& .${classes.name}`]: {
     textDecoration: "none",
+  },
+  [`& .${classes.count}`]: {
+    marginLeft: theme.spacing(1),
+    color: theme.palette.text.secondary,
   },
   [`& .${classes.description}`]: {
     marginLeft: theme.spacing(2),
@@ -87,23 +100,33 @@ const HierarchyTopic = ({
 }: HierarchyTopicProps): React.JSX.Element => {
   const isExpanded = expandedNodes.includes(compoundUuid);
 
-  const expandIcon = () => (isExpanded ? <ExpandLess /> : <ExpandMore />);
+  const expandIcon = () =>
+    isExpanded ? (
+      <TooltipIconButton title={collapseText}>
+        <ExpandLess />
+      </TooltipIconButton>
+    ) : (
+      <TooltipIconButton title={expandText}>
+        <ExpandMore />
+      </TooltipIconButton>
+    );
 
   const itemLabel = () => (
     // Because it's parent TreeItem is using <li> as well.
     // Use div to avoid error: "<li> cannot appear as a descendant of <li>".
     <ListItem className={classes.label} component="div">
       <ListItemAvatar>
-        <Badge badgeContent={matchingItemCount} color="primary">
-          <TopicOutlinedIcon color="primary" />
-        </Badge>
+        <FolderIcon className={classes.icon} />
       </ListItemAvatar>
       <ListItemText
         primary={
-          /*TODO: This should be a link to the hierarchy page*/
-          <Link className={classes.name} to="">
-            {name}
-          </Link>
+          <>
+            {/*TODO: This should be a link to the hierarchy page*/}
+            <Link className={classes.name} to="">
+              {name}
+            </Link>
+            <span className={classes.count}>({matchingItemCount})</span>
+          </>
         }
         // Use `div` instead of default tag `p` to avoid HTML semantic error.
         secondaryTypographyProps={{ component: "div" }}
