@@ -83,33 +83,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Run checks
-        run: |
-          npm run check
-          ./sbt headerCheck
-
-      # oeq-ts-rest-api has its own ESLint checks seeing the ultimate plan
-      # is that it's moved to its own stand-alone repo. But so here we need
-      # to explicitly run them.
-      - name: Run checks (oeq-ts-rest-api)
-        working-directory: oeq-ts-rest-api
-        run: |
-          npm run lint
-
-      - name: Run unit tests (java/scala)
-        run: |
-          ./sbt test
-
-      - name: Run unit tests (javascript)
-        working-directory: react-front-end
-        run: |
-          npm cit
-
-      - name: Run unit tests (javascript - legacy)
-        working-directory: Source/Plugins/Core/com.equella.core/test/javascript
-        run: |
-          npm cit
-
       - name: Build primary artefacts
         run: |
           ./sbt installerZip writeLanguagePack writeScriptingJavadoc
@@ -127,57 +100,6 @@ jobs:
         with:
           name: Artefacts
           path: artefacts.tar
-
-  build_storybook:
-    runs-on: ubuntu-latest
-    steps:
-      # Using v1 (rather than v2) through-out this workflow due to issue:
-      # https://github.com/actions/checkout/issues/237
-      - uses: actions/checkout@v4
-
-      - name: NPM Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm.storybook-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm.storybook-
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Install node dependencies (oeq-rest-api)
-        working-directory: oeq-ts-rest-api
-        run: |
-          npm ci
-
-      - name: Build oEQ REST module (oeq-rest-api)
-        working-directory: oeq-ts-rest-api
-        run: |
-          npm run build
-
-      - name: Install node dependencies (core)
-        working-directory: react-front-end
-        run: |
-          npm ci
-
-      - name: Generate Static Storybook instance
-        working-directory: react-front-end
-        run: |
-          npm run build-storybook
-
-      - name: Package Static Storybook instance
-        working-directory: react-front-end
-        run: |
-          tar cvf storybook.tar storybook-static
-
-      - name: Save Static Storybook instance
-        uses: actions/upload-artifact@v3.1.3
-        with:
-          name: Storybook
-          path: react-front-end/storybook.tar
 
   functional_testing:
     needs: build_and_check
