@@ -4779,6 +4779,11 @@
     <parameter id="url-pattern" value="/*" />
     <parameter id="order" value="850" />
   </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webFilter" id="CHIPSFilter">
+    <parameter id="bean" value="bean:com.tle.web.core.filter.CHIPSFilter" />
+    <parameter id="url-pattern" value="/*" />
+    <parameter id="order" value="860" />
+  </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="doNotServeServlet">
     <parameter id="bean" value="bean:com.tle.web.core.servlet.DoNotServeServlet" />
     <parameter id="url-pattern" value="/WEB-INF/*" />
