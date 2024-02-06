@@ -17,10 +17,36 @@ import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.ResourceUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+// TODO: remove disableNewUI and restoreNewUISettings in OEQ-1702
 @TestInstitution("fiveo")
 public class HierarchyTopicTest extends AbstractCleanupTest {
+  // TODO: Create hierarchy tests for NEW UI. And remove this method in OEQ-1702.
+  // Because hierarchy page is is not completed in new UI, turn off New UI for the old integration
+  // test cases.
+  @BeforeClass
+  public void disableNewUI() {
+    // disable new UI if test env is set to new UI.
+    if (isNewUIEnv) {
+      logon("AutoTest", "automated");
+      setNewUI(false);
+    }
+  }
+
+  // TODO: Remove this method in OEQ-1702.
+  // Restore the new UI settings to avoid interfering with other tests.
+  @AfterClass
+  public void restoreNewUISettings() {
+    // Restore new UI if test env is set to new UI.
+    if (isNewUIEnv) {
+      logon("AutoTest", "automated");
+      setNewUI(true);
+    }
+  }
+
   @Test(enabled = false, dependsOnMethods = "childInheritance")
   public void addKeyResource() {
     logon("AutoTest", "automated");
@@ -78,7 +104,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     String itemOne = "SearchFilters - Basic Item";
     String itemTwo = "SearchSettings - Random Item";
 
-    TopicPage topicPage = new MenuSection(context).get().clickTopic(topic);
+    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
 
     topicPage.setSort("name");
     TopicListPage results = topicPage.results();
@@ -100,7 +126,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     String topic = "Power Search";
     String powerSearch = "A Power Search";
 
-    TopicPage topicPage = new MenuSection(context).get().clickTopic(topic);
+    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
     Assert.assertTrue(topicPage.hasPowerSearch());
 
     SearchPage search = topicPage.clickPowerSearch();
@@ -112,14 +138,14 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     logon("AutoTest", "automated");
     String topic = "A Topic";
 
-    MenuSection menuSection = new MenuSection(context).get();
+    MenuSection menuSection = new MenuSection(context, false).get();
     TopicPage topicPage = menuSection.clickTopic(topic);
 
     String searchName = context.getFullName(topic) + " saved";
     topicPage.saveSearch(searchName, topicPage);
 
     FavouritesPage favouritesPage =
-        menuSection.clickMenu("Favourites", new FavouritesPage(context));
+        menuSection.clickMenuForceOldUI("Favourites", new FavouritesPage(context));
     FavouriteSearchList searches = favouritesPage.searches().results();
     searches.doesResultExist(searchName, 1);
     searches.getResultForTitle(searchName, 1).clickTitle();
@@ -146,7 +172,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
 
-    TopicPage topicPage = new MenuSection(context).get().clickTopic(topic);
+    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
 
     Assert.assertEquals(topicPage.getSubtopicSectionName(), "A name");
   }
@@ -170,7 +196,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     TopicPage browseAll = new TopicPage(context).load();
     Assert.assertTrue(browseAll.topicCount(topic) > 0);
 
-    TopicPage topicPage = new MenuSection(context).get().clickTopic(topic);
+    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
 
     Assert.assertFalse(topicPage.topicExists("Hidden"));
 
@@ -179,13 +205,13 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     wiz.editbox(1, context.getFullName("SuperSecretWord"));
     wiz.save().publish();
 
-    topicPage = new MenuSection(context).get().clickTopic(topic);
+    topicPage = new MenuSection(context, false).get().clickTopic(topic);
     Assert.assertTrue(topicPage.topicExists("Hidden"));
     topicPage = topicPage.clickSubTopic("Hidden");
     wiz = topicPage.results().getResult(1).viewSummary().adminTab().edit();
     wiz.editbox(1, context.getFullName("NoMore"));
     wiz.saveNoConfirm();
-    topicPage = new MenuSection(context).get().clickTopic(topic);
+    topicPage = new MenuSection(context, false).get().clickTopic(topic);
     Assert.assertFalse(topicPage.topicExists("Hidden"));
   }
 

@@ -36,6 +36,8 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,9 +107,15 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
 
     int linkPriority = 0;
     List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
     for (NameValue topic : topics) {
-      HtmlLinkState hls =
-          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + topic.getValue()));
+      String encodedTopicCUuid = topic.getValue();
+      String topicHref =
+          newUIEnabled
+              ? NewUiRoutes.hierarchy(encodedTopicCUuid)
+              : "hierarchy.do?topic=" + encodedTopicCUuid;
+
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(topicHref));
       hls.setLabel(new TextLabel(topic.getName()));
 
       MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub");
@@ -115,7 +123,9 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
     }
 
     if (showMoreLink) {
-      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=ALL"));
+      String moreHref =
+          newUIEnabled ? NewUiRoutes.PATH_BROWSE_HIERARCHIES() : "hierarchy.do?topic=ALL";
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(moreHref));
       hls.setLabel(MORE);
 
       MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++);

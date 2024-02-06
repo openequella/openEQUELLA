@@ -178,10 +178,17 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
         GROUP_INTEGRATIONS, "LTI 1.3 platforms", new LTI13PlatformsSettingsPage(context));
   }
 
-  public void enableNewUI() {
+  /** Enable or disable new search UI. */
+  public void setNewUI(boolean enable) {
     WebElement newUI =
-        openGroupContaining("UI", By.xpath(".//label[./span[text() = 'Enable new UI']]"));
-    newUI.click();
+        openGroupContaining(
+            "UI", By.xpath(".//label[./span[text() = 'Enable new UI']]/span[1]/span"));
+    boolean isChecked = newUI.getAttribute("class").contains("Mui-checked");
+
+    if ((enable && !isChecked) || (!enable && isChecked)) {
+      newUI.click();
+    }
+
     // Yeah this sucks, it auto saves in the background
     try {
       Thread.sleep(1000);
@@ -190,7 +197,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     }
   }
 
-  /** Enable or disable new search UI. Only works when new UI is enabled. */
+  /** Enable or disable new search UI. NewSearch only works when new UI is enabled. */
   public void setNewSearchUI(boolean enable) {
     WebElement newSearchUI =
         openGroupContaining(
