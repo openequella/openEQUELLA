@@ -55,6 +55,7 @@ const MyResourcesPage = React.lazy(
 const BrowseHierarchyPage = React.lazy(
   () => import("../hierarchy/BrowseHierarchyPage"),
 );
+const HierarchyPage = React.lazy(() => import("../hierarchy/HierarchyPage"));
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -98,6 +99,7 @@ interface Routes {
   UserPreferences: OEQRouteTo<string>;
   ViewItem: OEQRouteTo<ToVersionFunc>;
   BrowseHierarchy: OEQRouteNewUI;
+  Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
 }
 
 /**
@@ -211,8 +213,13 @@ export const routes: Routes = {
   ViewItem: {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
+  Hierarchy: {
+    path: "/page/hierarchy/:compoundUuid",
+    to: (compoundUuid: string) => `/page/hierarchy/${compoundUuid}`,
+    component: HierarchyPage,
+  },
   BrowseHierarchy: {
-    path: "/page/hierarchy",
+    path: "/page/hierarchies",
     component: BrowseHierarchyPage,
   },
 };

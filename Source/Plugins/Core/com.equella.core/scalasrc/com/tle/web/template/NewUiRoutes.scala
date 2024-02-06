@@ -18,13 +18,24 @@
 
 package com.tle.web.template
 
+import com.tle.common.URLUtils
 import io.lemonlabs.uri.{QueryString, RelativeUrl}
 
 /**
   * Centralises the various routes for the New UI - especially useful when doing `forwardToUrl`.
   */
 object NewUiRoutes {
-  val PATH_MYRESOURCES: String = "page/myresources"
+  val PATH_MYRESOURCES: String        = "page/myresources"
+  val PATH_BROWSE_HIERARCHIES: String = "page/hierarchies"
+  val PATH_HIERARCHY: String          = "page/hierarchy"
+
+  /**
+    * Builds a relative URL for the New UI Hierarchy pages.
+    *
+    * @param encodedCompoundUuid The encoded UUID of the hierarchy to view.
+    */
+  def hierarchy(encodedCompoundUuid: String): String =
+    s"$PATH_HIERARCHY/${URLUtils.basicUrlDecode(encodedCompoundUuid)}"
 
   private def buildRelativeUrl(path: String, params: Vector[(String, Option[String])]): String =
     RelativeUrl.parse(path).withQueryString(QueryString(params)).toString()
