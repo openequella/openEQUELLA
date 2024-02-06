@@ -5,6 +5,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.FavouritesPage;
@@ -197,6 +198,12 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   @Test(description = "Search by using the User selector control")
   @NewUIOnly
   public void userSelector() {
+    ScreenshotTaker.takeScreenshot(
+        advancedSearchPage.getContext().getDriver(),
+        testConfig.getScreenshotFolder(),
+        "userSelector-before",
+        testConfig.isChromeDriverSet());
+
     advancedSearchPage.selectUser("AutoTest");
     advancedSearchPage.search();
     advancedSearchPage.waitForSearchCompleted(1);
