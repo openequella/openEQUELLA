@@ -5,6 +5,5 @@ listeners:
 tests:
   - name: OneAfterAnother
     packages:
-      - io.github.openequella.search
     classes:
-      - io.github.openequella.search.AdvancedSearchPageTest
+      - - com.tle.webtests.test.cal.CALBookActivationTest
