@@ -4,6 +4,5 @@ listeners:
   - testng.TestAnnotationTransformer
 tests:
   - name: OneAfterAnother
-    packages:
     classes:
       - - com.tle.webtests.test.cal.CALBookActivationTest
