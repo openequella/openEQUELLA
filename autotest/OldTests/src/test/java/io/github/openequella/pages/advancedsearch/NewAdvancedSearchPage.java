@@ -140,17 +140,18 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     WebElement userSelector = driver.findElement(By.id("wiz-12-userselector"));
 
     // Open the dialog and search for the target user.
-    userSelector.findElement(By.tagName("button")).click();
+    WebElement button = userSelector.findElement(By.tagName("button"));
+    scrollToElement(button);
+    button.click();
+
     WebElement dialog = driver.findElement(By.xpath("//div[@role='dialog']"));
     WebElement input = dialog.findElement(By.tagName("input"));
     input.sendKeys(username);
     input.sendKeys(Keys.ENTER);
 
+    WebElement user = dialog.findElement(By.xpath(".//span[text()='" + username + "']"));
     // Select the target result.
-    WebElement targetUser =
-        waiter.until(
-            ExpectedConditions.elementToBeClickable(
-                dialog.findElement(By.xpath(".//span[text()='" + username + "']"))));
+    WebElement targetUser = waiter.until(ExpectedConditions.elementToBeClickable(user));
     targetUser.click();
 
     // Confirm the selection.
