@@ -149,10 +149,11 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     input.sendKeys(username);
     input.sendKeys(Keys.ENTER);
 
-    By user = By.xpath(".//span[text()='" + username + "']");
-
     // Select the target result.
-    WebElement targetUser = waiter.until(ExpectedConditions.elementToBeClickable(user));
+    WebElement targetUser =
+        waiter.until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//div[@role='dialog']//span[text()='" + username + "']")));
     targetUser.click();
 
     // Confirm the selection.
