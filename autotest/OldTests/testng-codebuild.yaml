@@ -5,4 +5,4 @@ listeners:
 tests:
   - name: OneAfterAnother
     classes:
-      - - com.tle.webtests.test.cal.CALBookActivationTest
+      - - com.tle.webtests.test.searching.FavouritesPowerSearchIntegration
