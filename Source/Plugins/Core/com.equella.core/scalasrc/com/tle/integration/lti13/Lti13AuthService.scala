@@ -25,6 +25,7 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
+import com.jayway.jsonpath.JsonPath
 import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
@@ -41,7 +42,9 @@ import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
 
 import java.net.{URI, URL}
+import java.nio.charset.StandardCharsets
 import java.security.interfaces.RSAPublicKey
+import java.util.Base64
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
@@ -153,15 +156,25 @@ case class UserDetails(platformId: String,
                        lastName: String,
                        email: Option[String])
 object UserDetails {
-  def apply(jwt: DecodedJWT): Either[InvalidJWT, UserDetails] = {
+  def apply(jwt: DecodedJWT, usernameClaim: Option[String]): Either[InvalidJWT, UserDetails] = {
     val claim = getClaim(jwt)
+
+    // Use the custom username claim if present, otherwise use the Subject claim.
+    // The payload is in JSON format so use 'JsonPath' to read the value.
+    def getUserId: Option[String] = {
+      val jwtPayload =
+        new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
+      usernameClaim
+        .map(claim => JsonPath.read[String](jwtPayload, s"$$.$claim"))
+        .orElse(Option(jwt.getSubject))
+    }
 
     for {
       platformId <- Option(jwt.getIssuer)
         .toRight(
           InvalidJWT(
             "No issuer claim provided in the JWT, unable to determine origin LTI platform."))
-      userId <- Option(jwt.getSubject)
+      userId <- getUserId
         .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
       emptyRoles = List() // helper for readability
       // Attempt to get the claim with the roles. However it could be absent or empty
