@@ -42,9 +42,21 @@ class UpdateJavaOpts extends AbstractUpgrader {
   override def isBackwardsCompatible: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
-    val managerDir = new File(installDir, Constants.MANAGER_FOLDER)
+    val managerDir                = new File(installDir, Constants.MANAGER_FOLDER)
+    val JAVA_OPTS_DELIMITER_WIN   = ";"
+    val JAVA_OPTS_DELIMITER_LINUX = " "
 
-    def update(configFile: String): Unit = {
+    def update(configFile: String, javaOptsDelimiter: String): Unit = {
+      // List of Java packages which we need to make accessible through java_opts.
+      val openPackages = Array(
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED",
+        "--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming.directory=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED",
+      )
+
       val updateResult = Try {
         new LineFileModifier(new File(managerDir, configFile), result) {
           override protected def processLine(line: String): String = {
@@ -53,7 +65,7 @@ class UpdateJavaOpts extends AbstractUpgrader {
 
             line match {
               case RemovedOption(option) =>
-                line.replace(option, "--add-opens=java.base/java.util=ALL-UNNAMED")
+                line.replace(option, openPackages.mkString(javaOptsDelimiter))
               case _ => line
             }
           }
@@ -68,9 +80,9 @@ class UpdateJavaOpts extends AbstractUpgrader {
 
     ExecUtils.determinePlatform() match {
       case ExecUtils.PLATFORM_WIN64 =>
-        update(EQUELLA_SERVER_CONFIG_WINDOWS)
+        update(EQUELLA_SERVER_CONFIG_WINDOWS, JAVA_OPTS_DELIMITER_WIN)
       case ExecUtils.PLATFORM_LINUX64 =>
-        update(EQUELLA_SERVER_CONFIG_LINUX)
+        update(EQUELLA_SERVER_CONFIG_LINUX, JAVA_OPTS_DELIMITER_LINUX)
       case other => result.info(s"Unsupported OS $other")
     }
   }

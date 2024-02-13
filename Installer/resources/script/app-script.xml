@@ -40,7 +40,7 @@
 				</control>
 				<control class="directoryselector">
 					<title>Select JDK directory</title>
-					<description>It is required that you have installed the Java Development Kit version 11.  If this is not installed, please do so now.</description>
+					<description>It is required that you have installed the Java Development Kit version 21.  If this is not installed, please do so now.</description>
 					<target>java/jdk</target>
 					<items>
 						<item name="" value=""/>

@@ -5,6 +5,7 @@ import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -57,7 +58,7 @@ public class ConfirmationDialog extends AbstractPage<ConfirmationDialog> {
   private void confirm(ConfirmButton cb) {
     WebElement confirmButton =
         getWaiter().until(ExpectedConditions.elementToBeClickable(By.id(cb.getId())));
-    confirmButton.click();
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmButton);
   }
 
   public SummaryPage submit() {
