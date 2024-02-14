@@ -20,6 +20,7 @@ package com.tle.core.hierarchy.impl;
 
 import com.dytech.common.collections.CombinedCollection;
 import com.dytech.devlib.PropBagEx;
+import com.dytech.edge.queries.FreeTextQuery;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.EntityScript;
 import com.tle.beans.ItemDefinitionScript;
@@ -169,19 +170,32 @@ public class HierarchyServiceImpl
 
   @Override
   public int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
-    PresetSearch search = buildSearch(topic, compoundUuidMap);
-
-    // search items
-    int itemCount = freeTextService.searchIds(search, 0, -1).getCount();
-    int keyResourcesCount = topic.getKeyResources().size();
-
     String encodedId =
         VirtualTopicUtils.buildTopicId(
             topic, compoundUuidMap.get(topic.getUuid()), compoundUuidMap);
-    int dynamicKeyResourcesCount =
-        Optional.ofNullable(getDynamicKeyResource(encodedId)).map(List::size).orElse(0);
 
-    return itemCount + keyResourcesCount + dynamicKeyResourcesCount;
+    Collection<String> keyResourcesIds =
+        topic.getKeyResources().stream().map(Item::getId).map(String::valueOf).toList();
+
+    Collection<String> dynamicKeyResourcesIds =
+        Optional.ofNullable(getDynamicKeyResource(encodedId)).orElseGet(Collections::emptyList)
+            .stream()
+            .map(resources -> new ItemId(resources.getUuid(), resources.getVersion()))
+            .flatMap(itemId -> Stream.ofNullable(itemService.getUnsecureIfExists(itemId)))
+            .map(Item::getId)
+            .map(String::valueOf)
+            .toList();
+
+    PresetSearch search = buildSearch(topic, compoundUuidMap);
+    // exclude key resource item from search result
+    search.addMustNot(FreeTextQuery.FIELD_ID, keyResourcesIds);
+    // exclude dynamic key resource item from search result
+    search.addMustNot(FreeTextQuery.FIELD_ID, dynamicKeyResourcesIds);
+
+    // search items
+    int itemCount = freeTextService.searchIds(search, 0, -1).getCount();
+
+    return itemCount + keyResourcesIds.size() + dynamicKeyResourcesIds.size();
   }
 
   @Override
