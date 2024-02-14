@@ -88,8 +88,10 @@ public abstract class AbstractResultList<
 
     if (isResultsAvailable()) {
       WebElement result = getResultsDiv();
+      By find = By.xpath("//div[@class='itemresult-wrapper']");
+      waiter.until(ExpectedConditions.presenceOfAllElementsLocatedBy(find));
 
-      int count = result.findElements(By.xpath("//div[@class='itemresult-wrapper']")).size();
+      int count = result.findElements(find).size();
 
       for (int i = 1; i <= count; i++) {
         results.add(getResult(i));
