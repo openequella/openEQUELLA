@@ -87,8 +87,9 @@ public abstract class AbstractResultList<
     List<SR> results = new ArrayList<SR>();
 
     if (isResultsAvailable()) {
-      int count =
-          getResultsDiv().findElements(By.xpath("//div[@class='itemresult-wrapper']")).size();
+      By items = By.xpath("//div[@class='itemresult-wrapper']");
+      waiter.until(ExpectedConditions.presenceOfAllElementsLocatedBy(items));
+      int count = getResultsDiv().findElements(items).size();
 
       for (int i = 1; i <= count; i++) {
         results.add(getResult(i));
