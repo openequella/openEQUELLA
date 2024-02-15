@@ -123,7 +123,7 @@ public abstract class AbstractResultList<
   public boolean doesResultExist(String title) {
     boolean found = false;
     int size = getResults().size();
-    System.out.println("Hello protal test the size is: " + size);
+    System.out.println("Hello test the size is: " + size);
     for (int i = 1; i <= size; i++) {
       found = doesResultExist(title, i);
       if (found) {
