@@ -4,15 +4,14 @@ import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractItemList<
         T extends AbstractItemList<T, SR>, SR extends AbstractItemSearchResult<SR>>
     extends AbstractResultList<T, SR> {
-  @FindBy(className = "searchresults")
-  private WebElement resultDiv;
-
   @FindBy(id = "searchresults-stats")
   private WebElement statsDiv;
 
@@ -22,7 +21,7 @@ public abstract class AbstractItemList<
 
   @Override
   public WebElement getResultsDiv() {
-    return resultDiv;
+    return waiter.until(ExpectedConditions.presenceOfElementLocated(By.className("searchresults")));
   }
 
   public SummaryPage viewFromTitle(PrefixedName title) {
