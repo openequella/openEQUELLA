@@ -12,6 +12,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public abstract class AbstractItemList<
         T extends AbstractItemList<T, SR>, SR extends AbstractItemSearchResult<SR>>
     extends AbstractResultList<T, SR> {
+
+  @FindBy(className = "searchresults")
+  private WebElement resultDiv;
+
   @FindBy(id = "searchresults-stats")
   private WebElement statsDiv;
 
@@ -21,7 +25,8 @@ public abstract class AbstractItemList<
 
   @Override
   public WebElement getResultsDiv() {
-    return waiter.until(ExpectedConditions.presenceOfElementLocated(By.className("searchresults")));
+    waiter.until(ExpectedConditions.presenceOfElementLocated(By.className("searchresults")));
+    return resultDiv;
   }
 
   public SummaryPage viewFromTitle(PrefixedName title) {
