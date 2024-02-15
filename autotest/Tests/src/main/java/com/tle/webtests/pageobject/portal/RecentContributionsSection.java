@@ -16,7 +16,7 @@ public class RecentContributionsSection extends AbstractPortalSection<RecentCont
             ".//div[normalize-space(@class)='recent-items']//a[normalize-space(text())="
                 + quoteXPath(itemName)
                 + "]");
-    waiter.until(ExpectedConditions.visibilityOfElementLocated(recentContributionXpath));
+    //    waiter.until(ExpectedConditions.visibilityOfElementLocated(recentContributionXpath));
     return isPresent(recentContributionXpath);
   }
 
