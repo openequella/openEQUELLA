@@ -134,6 +134,13 @@ public abstract class AbstractResultList<
   }
 
   public boolean isResultsAvailable() {
-    return isPresent(By.xpath("//div[@class='itemresult-wrapper']"));
+    try {
+      waiter.until(
+          ExpectedConditions.presenceOfElementLocated(
+              By.xpath("//div[@class='itemresult-wrapper']")));
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }
