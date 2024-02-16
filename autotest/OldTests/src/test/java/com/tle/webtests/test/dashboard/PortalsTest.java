@@ -4,6 +4,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.portal.BrowsePortalEditPage;
@@ -308,11 +309,17 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard1.editbox(1, liveItemName);
     wizard1.save().publish();
 
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "live", true);
+
     String draftItemName = context.getFullName("draft item");
     WizardPageTab wizard2 =
         new ContributePage(context).load().openWizard("Simple Controls Collection");
     wizard2.editbox(1, draftItemName);
     wizard2.save().draft();
+
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft", true);
 
     // Check that the live item is displayed
     home = new MenuSection(context).home();
