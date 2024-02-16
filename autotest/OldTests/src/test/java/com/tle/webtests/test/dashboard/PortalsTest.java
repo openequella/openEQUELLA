@@ -347,6 +347,9 @@ public class PortalsTest extends AbstractCleanupTest {
 
     wizard3.save().publish();
 
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "query", true);
+
     // Edit portlet for query option
     home = new MenuSection(context).home();
     edit = recent.edit(portal);
