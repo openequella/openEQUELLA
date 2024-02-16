@@ -6203,4 +6203,10 @@
     <parameter id="order" value="817" />
   </extension>
   <!-- endregion -->
+  <!-- region GraphQL Support-->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="graphQLServlet">
+    <parameter id="bean" value="bean:com.tle.web.remoting.graphql.GraphQLServlet" />
+    <parameter id="url-pattern" value="/graphql" />
+  </extension>
+  <!-- endregion -->
 </plugin>

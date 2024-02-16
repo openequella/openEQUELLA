@@ -51,6 +51,11 @@ libraryDependencies ++= Seq(
   "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
+// Libraries needed for GraphQL
+libraryDependencies ++= Seq(
+  "com.github.ghostdogpr" %% "caliban" % "2.5.1",
+)
+
 libraryDependencies ++= Seq(
   "co.fs2"                         %% "fs2-io"                        % fs2Version,
   "com.jayway.jsonpath"            % "json-path"                      % "2.9.0",
