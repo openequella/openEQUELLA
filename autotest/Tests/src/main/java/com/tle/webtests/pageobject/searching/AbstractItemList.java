@@ -4,10 +4,8 @@ import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractItemList<
         T extends AbstractItemList<T, SR>, SR extends AbstractItemSearchResult<SR>>
@@ -24,7 +22,6 @@ public abstract class AbstractItemList<
 
   @Override
   public WebElement getResultsDiv() {
-    waiter.until(ExpectedConditions.presenceOfElementLocated(By.className("searchresults")));
     return resultDiv;
   }
 
