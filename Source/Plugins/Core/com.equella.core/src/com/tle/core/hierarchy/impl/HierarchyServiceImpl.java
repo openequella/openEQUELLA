@@ -20,7 +20,6 @@ package com.tle.core.hierarchy.impl;
 
 import com.dytech.common.collections.CombinedCollection;
 import com.dytech.devlib.PropBagEx;
-import com.dytech.edge.queries.FreeTextQuery;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.EntityScript;
 import com.tle.beans.ItemDefinitionScript;
@@ -40,7 +39,6 @@ import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.hierarchy.SearchSetAdapter;
-import com.tle.common.hierarchy.VirtualTopicUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.institution.CurrentInstitution;
@@ -170,32 +168,10 @@ public class HierarchyServiceImpl
 
   @Override
   public int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
-    String encodedId =
-        VirtualTopicUtils.buildTopicId(
-            topic, compoundUuidMap.get(topic.getUuid()), compoundUuidMap);
-
-    Collection<String> keyResourcesIds =
-        topic.getKeyResources().stream().map(Item::getId).map(String::valueOf).toList();
-
-    Collection<String> dynamicKeyResourcesIds =
-        Optional.ofNullable(getDynamicKeyResource(encodedId)).orElseGet(Collections::emptyList)
-            .stream()
-            .map(resources -> new ItemId(resources.getUuid(), resources.getVersion()))
-            .flatMap(itemId -> Stream.ofNullable(itemService.getUnsecureIfExists(itemId)))
-            .map(Item::getId)
-            .map(String::valueOf)
-            .toList();
-
     PresetSearch search = buildSearch(topic, compoundUuidMap);
-    // exclude key resource item from search result
-    search.addMustNot(FreeTextQuery.FIELD_ID, keyResourcesIds);
-    // exclude dynamic key resource item from search result
-    search.addMustNot(FreeTextQuery.FIELD_ID, dynamicKeyResourcesIds);
-
-    // search items
-    int itemCount = freeTextService.searchIds(search, 0, -1).getCount();
-
-    return itemCount + keyResourcesIds.size() + dynamicKeyResourcesIds.size();
+    return Arrays.stream(freeTextService.countsFromFilters(Collections.singletonList(search)))
+        .findFirst()
+        .orElse(0);
   }
 
   @Override

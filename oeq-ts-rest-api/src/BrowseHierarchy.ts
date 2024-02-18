@@ -43,7 +43,7 @@ export interface HierarchyTopicSummary {
    */
   compoundUuid: string;
   /**
-   * Count of items matching this topic (including key resources and dynamic key resources).
+   * Count of items matching this topic.
    */
   matchingItemCount: number;
   /**

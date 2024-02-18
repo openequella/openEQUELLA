@@ -20,30 +20,18 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
     // Should be able to get all top level hierarchies
     assertEquals(hierarchies.size(), 4);
-    // Should be able to get all matched Items including key resources.
+    // Should be able to get all matched Items
     assertEquals(
         getTopic(hierarchies, "43e60e9a-a3ed-497d-b79d-386fed23675c")
             .get("matchingItemCount")
             .asInt(),
-        14);
-    // Key resource items shouldn't be counted twice.
-    assertEquals(getTopic(hierarchies, VIRTUAL_TOPIC_ID).get("matchingItemCount").asInt(), 2);
-
+        12);
     // Should be able to get all sub topics.
     assertEquals(
         getTopic(hierarchies, "6135b550-ce1c-43c2-b34c-0a3cf793759d")
             .get("subHierarchyTopics")
             .size(),
         1);
-    // The virtual topic matched Items should include dynamic key resources.
-    JsonNode subTopics = getTopic(hierarchies, VIRTUAL_TOPIC_ID).get("subHierarchyTopics");
-    int keyResources =
-        getTopic(
-                subTopics,
-                "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James")
-            .get("matchingItemCount")
-            .asInt();
-    assertEquals(keyResources, 2);
   }
 
   @Test(description = "Get a hierarchy topic")
