@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public abstract class AbstractItemList<
         T extends AbstractItemList<T, SR>, SR extends AbstractItemSearchResult<SR>>
     extends AbstractResultList<T, SR> {
-
   @FindBy(className = "searchresults")
   private WebElement resultDiv;
 
