@@ -87,11 +87,9 @@ public abstract class AbstractResultList<
     List<SR> results = new ArrayList<SR>();
 
     if (isResultsAvailable()) {
-      WebElement result = getResultsDiv();
-      By find = By.xpath("//div[@class='itemresult-wrapper']");
-      waiter.until(ExpectedConditions.presenceOfAllElementsLocatedBy(find));
-
-      int count = result.findElements(find).size();
+      By items = By.xpath("//div[@class='itemresult-wrapper']");
+      waiter.until(ExpectedConditions.presenceOfAllElementsLocatedBy(items));
+      int count = getResultsDiv().findElements(items).size();
 
       for (int i = 1; i <= count; i++) {
         results.add(getResult(i));
@@ -125,7 +123,7 @@ public abstract class AbstractResultList<
   public boolean doesResultExist(String title) {
     boolean found = false;
     int size = getResults().size();
-    System.out.println("Hello protal test the size is: " + size);
+
     for (int i = 1; i <= size; i++) {
       found = doesResultExist(title, i);
       if (found) {
@@ -136,6 +134,13 @@ public abstract class AbstractResultList<
   }
 
   public boolean isResultsAvailable() {
-    return isPresent(By.xpath("//div[@class='itemresult-wrapper']"));
+    try {
+      waiter.until(
+          ExpectedConditions.presenceOfElementLocated(
+              By.xpath("//div[@class='itemresult-wrapper']")));
+      return true;
+    } catch (TimeoutException Time) {
+      return false;
+    }
   }
 }
