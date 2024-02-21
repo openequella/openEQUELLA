@@ -11,7 +11,7 @@
     "@types/node": "18.18.7",
     "@types/yargs": "17.0.29",
     "ts-morph": "19.0.0",
-    "ts-node": "10.9.1",
+    "ts-node": "10.9.2",
     "typescript": "5.2.2",
     "yargs": "17.7.2",
     "fp-ts": "2.16.1",
