@@ -21,7 +21,7 @@ import * as React from "react";
 import {
   simpleTopic,
   topicWithChildren,
-  topicWithHtmlShortDesc,
+  topicWithHtmlDesc,
   topicWithShortAndLongDesc,
 } from "../../__mocks__/Hierarchy.mock";
 import HierarchyTopic, {
@@ -59,7 +59,7 @@ export const WithHtmlShortDesc: StoryFn<HierarchyTopicProps> = (args) => (
   </TreeView>
 );
 WithHtmlShortDesc.args = {
-  topic: topicWithHtmlShortDesc,
+  topic: topicWithHtmlDesc,
   expandedNodes: [],
 };
 
