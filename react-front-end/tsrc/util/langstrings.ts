@@ -232,6 +232,7 @@ export const languageStrings = {
       view: "View",
       yes: "Yes",
     },
+    breadcrumb: "breadcrumb",
     required: "* Required",
     result: {
       success: "Saved successfully.",
@@ -378,6 +379,7 @@ export const languageStrings = {
     noHierarchy: "No hierarchies available",
     expandHierarchy: "Expand hierarchy",
     collapseHierarchy: "Collapse hierarchy",
+    browse: "Browse",
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",

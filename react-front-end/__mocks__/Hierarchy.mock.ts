@@ -17,6 +17,162 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 
+export const keyResources: OEQ.Search.SearchResultItem[] = [
+  {
+    uuid: "cadcd296-a4d7-4024-bb5d-6c7507e6872a",
+    version: 2,
+    name: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+    description:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    status: "live",
+    createdDate: new Date("2023-11-21T10:30:41.728+11:00"),
+    modifiedDate: new Date("2023-11-21T10:30:41.726+11:00"),
+    collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
+    commentCount: 0,
+    starRatings: -1.0,
+    attachmentCount: 0,
+    attachments: [],
+    thumbnail: "default",
+    displayFields: [],
+    keywordFoundInAttachment: false,
+    links: {
+      view: "http://localhost:8080/rest/items/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
+      self: "http://localhost:8080/rest/api/item/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
+    },
+    isLatestVersion: true,
+  },
+  {
+    uuid: "724fda1c-11d0-4304-9653-8e3bc17a2fa0",
+    version: 1,
+    name: "Keyword found in attachment test item",
+    status: "live",
+    createdDate: new Date("2020-08-13T14:42:57.662+10:00"),
+    modifiedDate: new Date("2020-08-13T14:42:57.661+10:00"),
+    collectionId: "b28f1ffe-2008-4f5e-d559-83c8acd79316",
+    commentCount: 0,
+    starRatings: -1.0,
+    attachmentCount: 1,
+    attachments: [
+      {
+        attachmentType: "file",
+        id: "c409f228-36aa-4979-ab0c-f05a9f43ba7a",
+        description: "amphibians.pdf",
+        brokenAttachment: false,
+        preview: false,
+        mimeType: "application/pdf",
+        hasGeneratedThumb: false,
+        links: {
+          view: "http://localhost:8080/rest/items/724fda1c-11d0-4304-9653-8e3bc17a2fa0/1/?attachment.uuid=c409f228-36aa-4979-ab0c-f05a9f43ba7a",
+          thumbnail:
+            "http://localhost:8080/rest/thumbs/724fda1c-11d0-4304-9653-8e3bc17a2fa0/1/c409f228-36aa-4979-ab0c-f05a9f43ba7a",
+        },
+        filePath: "amphibians.pdf",
+      },
+    ],
+    thumbnail: "default",
+    thumbnailDetails: {
+      attachmentType: "file",
+      mimeType: "application/pdf",
+    },
+    displayFields: [],
+    keywordFoundInAttachment: false,
+    links: {
+      view: "http://localhost:8080/rest/items/724fda1c-11d0-4304-9653-8e3bc17a2fa0/1/",
+      self: "http://localhost:8080/rest/api/item/724fda1c-11d0-4304-9653-8e3bc17a2fa0/1/",
+    },
+    isLatestVersion: true,
+  },
+  {
+    uuid: "e35390cf-7c45-4f71-bb94-e6ccc1f09394",
+    version: 1,
+    name: "Book B",
+    status: "live",
+    createdDate: new Date("2023-11-08T15:05:38.347+11:00"),
+    modifiedDate: new Date("2023-11-08T15:19:02.590+11:00"),
+    collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
+    commentCount: 0,
+    starRatings: -1.0,
+    attachmentCount: 0,
+    attachments: [],
+    thumbnail: "default",
+    displayFields: [],
+    keywordFoundInAttachment: false,
+    links: {
+      view: "http://localhost:8080/rest/items/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
+      self: "http://localhost:8080/rest/api/item/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
+    },
+    isLatestVersion: true,
+  },
+  {
+    uuid: "7e633e1d-e343-4e51-babc-403265c7b7c4",
+    version: 1,
+    name: "Coelacanthia",
+    description: "Both finny and a little bit leggy",
+    status: "live",
+    createdDate: new Date("2003-09-13T00:00:00.000+10:00"),
+    modifiedDate: new Date("2023-11-08T15:05:38.347+11:00"),
+    collectionId: "802fc4ca-ba19-49d1-a59b-05c917400808",
+    commentCount: 0,
+    starRatings: -1.0,
+    attachmentCount: 0,
+    attachments: [],
+    thumbnail: "initial",
+    displayFields: [
+      {
+        type: "node",
+        name: "abstract",
+        html: "SearchApiTestClient",
+      },
+    ],
+    displayOptions: {
+      attachmentType: "THUMBNAILS",
+      disableThumbnail: false,
+      standardOpen: false,
+      integrationOpen: false,
+    },
+    keywordFoundInAttachment: false,
+    links: {
+      view: "http://localhost:8080/rest/items/7e633e1d-e343-4e51-babc-403265c7b7c4/1/",
+      self: "http://localhost:8080/rest/api/item/7e633e1d-e343-4e51-babc-403265c7b7c4/1/",
+    },
+    isLatestVersion: true,
+  },
+  {
+    uuid: "37b2291c-0f08-4cc0-8ce5-176ebb6471a9",
+    version: 1,
+    name: "Lepidoptera",
+    description: "Flappy",
+    status: "live",
+    createdDate: new Date("2003-09-13T00:00:00.000+10:00"),
+    modifiedDate: new Date("2013-03-17T00:00:00.000+11:00"),
+    collectionId: "802fc4ca-ba19-49d1-a59b-05c917400808",
+    commentCount: 0,
+    starRatings: -1.0,
+    attachmentCount: 0,
+    attachments: [],
+    thumbnail: "initial",
+    displayFields: [
+      {
+        type: "node",
+        name: "abstract",
+        html: "SearchApiTestClient",
+      },
+    ],
+    displayOptions: {
+      attachmentType: "THUMBNAILS",
+      disableThumbnail: false,
+      standardOpen: false,
+      integrationOpen: false,
+    },
+    keywordFoundInAttachment: false,
+    links: {
+      view: "http://localhost:8080/rest/items/37b2291c-0f08-4cc0-8ce5-176ebb6471a9/1/",
+      self: "http://localhost:8080/rest/api/item/37b2291c-0f08-4cc0-8ce5-176ebb6471a9/1/",
+    },
+    isLatestVersion: true,
+  },
+];
+
 export const topicWithShortAndLongDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary =
   {
     compoundUuid: "43e60e9a-a3ed-497d-b79d-386fed23675c",
@@ -31,16 +187,17 @@ export const topicWithShortAndLongDesc: OEQ.BrowseHierarchy.HierarchyTopicSummar
     subHierarchyTopics: [],
   };
 
-export const topicWithHtmlShortDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary =
-  {
-    compoundUuid: "91a08805-d5f9-478d-aaaf-eff61a266667",
-    matchingItemCount: 4,
-    name: "Browse 4 book",
-    shortDescription: "a simple text with <h1>HTML</h1> tag.",
-    showResults: true,
-    hideSubtopicsWithNoResults: true,
-    subHierarchyTopics: [],
-  };
+export const topicWithHtmlDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid: "91a08805-d5f9-478d-aaaf-eff61a266667",
+  matchingItemCount: 4,
+  name: "Browse 4 book",
+  shortDescription: "a simple text with <h1>HTML</h1> tag.",
+  longDescription:
+    "a long long long long long long long long text with img <img src='./thumb.jpg' alt='thumb'></img> and <h1>HTML</h1> tag.",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  subHierarchyTopics: [],
+};
 
 export const simpleTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   compoundUuid: "59214785-a3ed-478d-aaaf-eff61a266667",
@@ -54,8 +211,10 @@ export const simpleTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
 export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   compoundUuid: "6135b550-ce1c-43c2-b34c-0a3cf793759d",
   matchingItemCount: 53,
-  name: "Parent Topics",
+  name: "Parent Topic",
   showResults: true,
+  longDescription:
+    "This is long long long long long long long long long long long long long long long description",
   hideSubtopicsWithNoResults: true,
   subHierarchyTopics: [
     {
@@ -118,7 +277,7 @@ export const virtualTopics = {
 
 export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithShortAndLongDesc,
-  topicWithHtmlShortDesc,
+  topicWithHtmlDesc,
   virtualTopics,
   topicWithChildren,
 ];

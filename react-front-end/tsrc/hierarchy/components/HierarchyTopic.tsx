@@ -32,6 +32,7 @@ import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { routes } from "../../mainui/routes";
 import { languageStrings } from "../../util/langstrings";
 
 const { expandHierarchy: expandText, collapseHierarchy: collapseText } =
@@ -121,8 +122,10 @@ const HierarchyTopic = ({
       <ListItemText
         primary={
           <>
-            {/*TODO: This should be a link to the hierarchy page*/}
-            <Link className={classes.name} to="">
+            <Link
+              className={classes.name}
+              to={routes.Hierarchy.to(compoundUuid)}
+            >
               {name}
             </Link>
             <span className={classes.count}>({matchingItemCount})</span>
