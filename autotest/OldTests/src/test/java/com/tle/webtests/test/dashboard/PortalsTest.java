@@ -4,6 +4,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.portal.BrowsePortalEditPage;
@@ -331,7 +332,10 @@ public class PortalsTest extends AbstractCleanupTest {
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit", true);
     edit.save(new HomePage(context));
+    ;
 
     // Check that the draft item is displayed
     home = new MenuSection(context).home();
@@ -354,7 +358,10 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.setQuery("query item");
     edit.setStatus("live");
     edit.checkSelectedCollection();
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit2", true);
     edit.save(new HomePage(context));
+
     // Check that the queried item is displayed
     home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
@@ -367,6 +374,8 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
     edit.checkSelectedCollection();
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit3", true);
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
