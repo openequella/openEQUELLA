@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.portal.BrowsePortalEditPage;
@@ -33,6 +32,10 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -287,6 +290,10 @@ public class PortalsTest extends AbstractCleanupTest {
 
   @Test
   public void testRecentPortal() {
+    ExpectedCondition<WebElement> successMessage =
+        ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//*[contains(text(), 'Successfully saved')]"));
+
     HomePage home = dash();
     String recentName = context.getFullName("Recent Contributions Portal");
 
@@ -307,19 +314,13 @@ public class PortalsTest extends AbstractCleanupTest {
     WizardPageTab wizard1 =
         new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
     wizard1.editbox(1, liveItemName);
-    wizard1.save().publish();
-
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "live", true);
+    wizard1.save().publish().getWaiter().until(successMessage);
 
     String draftItemName = context.getFullName("draft item");
     WizardPageTab wizard2 =
         new ContributePage(context).load().openWizard("Simple Controls Collection");
     wizard2.editbox(1, draftItemName);
-    wizard2.save().draft();
-
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft", true);
+    wizard2.save().draft().getWaiter().until(successMessage);
 
     // Check that the live item is displayed
     home = new MenuSection(context).home();
@@ -345,10 +346,7 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard3.editbox(1, itemToQuery);
     wizard3.editbox(2, description);
 
-    wizard3.save().publish();
-
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "query", true);
+    wizard3.save().publish().getWaiter().until(successMessage);
 
     // Edit portlet for query option
     home = new MenuSection(context).home();
