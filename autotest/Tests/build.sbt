@@ -11,7 +11,7 @@ val http4sVersion = "0.21.8"
 val catsVersion   = "2.10.0"
 val cxfVersion    = "3.6.2"
 
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
