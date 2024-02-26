@@ -13,7 +13,7 @@ scalaVersion := "2.13.12"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
