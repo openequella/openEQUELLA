@@ -15,19 +15,202 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PushPin, PushPinOutlined } from "@mui/icons-material";
+import { Grid } from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
+import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { TooltipIconButton } from "../components/TooltipIconButton";
+import { AppContext } from "../mainui/App";
+import { HIERARCHY_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
+import {
+  addKeyResource,
+  deleteKeyResource,
+  getHierarchy,
+} from "../modules/HierarchyModule";
+import { itemEq } from "../modules/SearchModule";
+import SearchResult from "../search/components/SearchResult";
+import { InitialSearchConfig, Search } from "../search/Search";
+import { SearchPageBody } from "../search/SearchPageBody";
+import {
+  SearchContext,
+  SearchContextProps,
+  SearchPageOptions,
+  SearchPageRefinePanelConfig,
+} from "../search/SearchPageHelper";
+import { SearchPageSearchResult } from "../search/SearchPageReducer";
+import { languageStrings } from "../util/langstrings";
+import HierarchyPanel from "./components/HierarchyPanel";
+import HierarchyPanelSkeleton from "./components/HierarchyPanelSkeleton";
 
-/**
- * TODO: This is a placeholder for the Hierarchy page.
- */
+const {
+  addKeyResource: addKeyResourceText,
+  removeKeyResource: removeKeyResourceText,
+  hierarchyPageTitle,
+} = languageStrings.hierarchy;
+
+const refinePanelConfig: SearchPageRefinePanelConfig = {
+  enableDisplayModeSelector: true,
+  enableCollectionSelector: false,
+  enableAdvancedSearchSelector: false,
+  enableDateRangeSelector: true,
+  enableRemoteSearchSelector: false,
+  enableMimeTypeSelector: false,
+  enableOwnerSelector: true,
+  enableSearchAttachmentsSelector: false,
+  enableItemStatusSelector: false,
+};
+
 const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
+  const { appErrorHandler } = useContext(AppContext);
   const { compoundUuid } = useParams<{
     compoundUuid: string;
   }>();
 
-  return <p>{compoundUuid}</p>;
+  const [hierarchy, setHierarchy] = useState<
+    OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
+  >();
+
+  // Get hierarchy
+  useEffect(() => {
+    pipe(
+      TE.tryCatch(
+        () => getHierarchy(compoundUuid),
+        (e) => `Failed to get hierarchy: ${e}`,
+      ),
+      TE.match(appErrorHandler, setHierarchy),
+    )();
+  }, [appErrorHandler, compoundUuid]);
+
+  const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
+    const customiseInitialSearchOptions = (
+      searchPageOptions: SearchPageOptions,
+    ): SearchPageOptions => ({
+      ...searchPageOptions,
+      filterExpansion: true,
+      hierarchy: compoundUuid,
+    });
+
+    return {
+      // Wait for the hierarchy query since it needs key resource info to render the search result (the pin button).
+      ready: hierarchy !== undefined,
+      listInitialClassifications: true,
+      customiseInitialSearchOptions,
+    };
+  }, [compoundUuid, hierarchy]);
+
+  /**
+   * Generate a search result item with update key resource button.
+   *
+   * @param compoundUuid the compound uuid for current hierarchy.
+   * @param item the search result item to map over.
+   * @param highlights a list of highlight terms.
+   */
+  const mapSearchResultItem = (
+    compoundUuid: string,
+    item: OEQ.Search.SearchResultItem,
+    highlights: string[],
+  ): React.ReactNode => {
+    const isKeyResource = pipe(
+      hierarchy?.keyResources ?? [],
+      A.exists((resource) => itemEq.equals(item, resource)),
+    );
+
+    const title = isKeyResource ? removeKeyResourceText : addKeyResourceText;
+    const { uuid, version } = item;
+
+    const updateKeyResourceButton = (
+      <TooltipIconButton
+        aria-label={title}
+        title={title}
+        onClick={() =>
+          (isKeyResource ? deleteKeyResource : addKeyResource)(
+            compoundUuid,
+            uuid,
+            version,
+          )
+        }
+        size="small"
+      >
+        {isKeyResource ? <PushPin color="secondary" /> : <PushPinOutlined />}
+      </TooltipIconButton>
+    );
+
+    return (
+      <SearchResult
+        key={`${item.uuid}/${item.version}`}
+        item={item}
+        highlights={highlights}
+        customActionButtons={[updateKeyResourceButton]}
+      />
+    );
+  };
+
+  const customSearchResultBuilder = (
+    searchResult: SearchPageSearchResult,
+  ): ReactNode => {
+    // If there is no hierarchy,then there is no search result that needs to be displayed.
+    if (hierarchy === undefined) {
+      return null;
+    }
+
+    const {
+      from,
+      content: { results: searchResults, highlight },
+    } = searchResult;
+
+    const isItems = (items: unknown): items is OEQ.Search.SearchResultItem[] =>
+      from === "item-search";
+
+    if (isItems(searchResults)) {
+      return pipe(
+        searchResults,
+        A.map((item) =>
+          mapSearchResultItem(hierarchy.summary.compoundUuid, item, highlight),
+        ),
+      );
+    }
+
+    //TODO: ADD image and video gallery mode
+
+    throw new TypeError("Unexpected display mode for hierarchy result");
+  };
+
+  return (
+    <Search
+      updateTemplate={updateTemplate}
+      initialSearchConfig={initialSearchConfig}
+      pageTitle={hierarchyPageTitle}
+    >
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          {hierarchy ? (
+            <HierarchyPanel hierarchy={hierarchy} />
+          ) : (
+            <HierarchyPanelSkeleton />
+          )}
+        </Grid>
+
+        <Grid item xs={12}>
+          <SearchContext.Consumer>
+            {(_: SearchContextProps) => (
+              <SearchPageBody
+                pathname={HIERARCHY_PATH}
+                enableClassification
+                refinePanelConfig={refinePanelConfig}
+                customRenderSearchResults={customSearchResultBuilder}
+              />
+            )}
+          </SearchContext.Consumer>
+        </Grid>
+      </Grid>
+    </Search>
+  );
 };
 
 export default HierarchyPage;
