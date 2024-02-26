@@ -133,6 +133,8 @@ export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
 export const NEW_MY_RESOURCES_PATH = "/page/myresources";
 export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
+export const HIERARCHY_PATH = "/page/hierarchy";
+
 export const routes: Routes = {
   OldAdvancedSearch: {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
@@ -214,8 +216,8 @@ export const routes: Routes = {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
   },
   Hierarchy: {
-    path: "/page/hierarchy/:compoundUuid",
-    to: (compoundUuid: string) => `/page/hierarchy/${compoundUuid}`,
+    path: `${HIERARCHY_PATH}/:compoundUuid`,
+    to: (compoundUuid: string) => `${HIERARCHY_PATH}/${compoundUuid}`,
     component: HierarchyPage,
   },
   BrowseHierarchy: {

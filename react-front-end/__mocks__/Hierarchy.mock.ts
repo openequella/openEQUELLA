@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { itemWithAttachment, normalItem } from "./SearchResult.mock";
 
 export const keyResources: OEQ.Search.SearchResultItem[] = [
   {
@@ -103,74 +106,8 @@ export const keyResources: OEQ.Search.SearchResultItem[] = [
     },
     isLatestVersion: true,
   },
-  {
-    uuid: "7e633e1d-e343-4e51-babc-403265c7b7c4",
-    version: 1,
-    name: "Coelacanthia",
-    description: "Both finny and a little bit leggy",
-    status: "live",
-    createdDate: new Date("2003-09-13T00:00:00.000+10:00"),
-    modifiedDate: new Date("2023-11-08T15:05:38.347+11:00"),
-    collectionId: "802fc4ca-ba19-49d1-a59b-05c917400808",
-    commentCount: 0,
-    starRatings: -1.0,
-    attachmentCount: 0,
-    attachments: [],
-    thumbnail: "initial",
-    displayFields: [
-      {
-        type: "node",
-        name: "abstract",
-        html: "SearchApiTestClient",
-      },
-    ],
-    displayOptions: {
-      attachmentType: "THUMBNAILS",
-      disableThumbnail: false,
-      standardOpen: false,
-      integrationOpen: false,
-    },
-    keywordFoundInAttachment: false,
-    links: {
-      view: "http://localhost:8080/rest/items/7e633e1d-e343-4e51-babc-403265c7b7c4/1/",
-      self: "http://localhost:8080/rest/api/item/7e633e1d-e343-4e51-babc-403265c7b7c4/1/",
-    },
-    isLatestVersion: true,
-  },
-  {
-    uuid: "37b2291c-0f08-4cc0-8ce5-176ebb6471a9",
-    version: 1,
-    name: "Lepidoptera",
-    description: "Flappy",
-    status: "live",
-    createdDate: new Date("2003-09-13T00:00:00.000+10:00"),
-    modifiedDate: new Date("2013-03-17T00:00:00.000+11:00"),
-    collectionId: "802fc4ca-ba19-49d1-a59b-05c917400808",
-    commentCount: 0,
-    starRatings: -1.0,
-    attachmentCount: 0,
-    attachments: [],
-    thumbnail: "initial",
-    displayFields: [
-      {
-        type: "node",
-        name: "abstract",
-        html: "SearchApiTestClient",
-      },
-    ],
-    displayOptions: {
-      attachmentType: "THUMBNAILS",
-      disableThumbnail: false,
-      standardOpen: false,
-      integrationOpen: false,
-    },
-    keywordFoundInAttachment: false,
-    links: {
-      view: "http://localhost:8080/rest/items/37b2291c-0f08-4cc0-8ce5-176ebb6471a9/1/",
-      self: "http://localhost:8080/rest/api/item/37b2291c-0f08-4cc0-8ce5-176ebb6471a9/1/",
-    },
-    isLatestVersion: true,
-  },
+  itemWithAttachment,
+  normalItem,
 ];
 
 export const topicWithShortAndLongDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary =
@@ -281,3 +218,26 @@ export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   virtualTopics,
   topicWithChildren,
 ];
+
+/**
+ * Mock async function to get hierarchy.
+ */
+export const getHierarchy = (
+  compoundUuid: string,
+): Promise<OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>> =>
+  pipe(
+    hierarchies.find((h) => h.compoundUuid === compoundUuid),
+    O.fromNullable,
+    O.fold(
+      () => Promise.reject(`Can't find hierarchy: ${compoundUuid}`),
+      (hierarchy) =>
+        Promise.resolve({
+          summary: hierarchy,
+          keyResources,
+          parents: [
+            { name: "Parent1", compoundUuid: "uuid1" },
+            { name: "Parent2", compoundUuid: "uuid2" },
+          ],
+        }),
+    ),
+  );
