@@ -34,7 +34,9 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import testng.annotation.RetryTest;
 
+@RetryTest
 @TestInstitution("vanilla")
 public class PortalsTest extends AbstractCleanupTest {
   public PortalsTest() {
