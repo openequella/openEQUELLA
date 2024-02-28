@@ -317,11 +317,17 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard1.editbox(1, liveItemName);
     wizard1.save().publish().getWaiter().until(successMessage);
 
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "live item", true);
+
     String draftItemName = context.getFullName("draft item");
     WizardPageTab wizard2 =
         new ContributePage(context).load().openWizard("Simple Controls Collection");
     wizard2.editbox(1, draftItemName);
     wizard2.save().draft().getWaiter().until(successMessage);
+
+    ScreenshotTaker.takeScreenshot(
+        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft item", true);
 
     // Check that the live item is displayed
     home = new MenuSection(context).home();
@@ -335,7 +341,6 @@ public class PortalsTest extends AbstractCleanupTest {
     ScreenshotTaker.takeScreenshot(
         context.getDriver(), this.testConfig.getScreenshotFolder(), "edit", true);
     edit.save(new HomePage(context));
-    ;
 
     // Check that the draft item is displayed
     home = new MenuSection(context).home();
