@@ -21,7 +21,6 @@ package com.tle.admin;
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Version;
 import com.dytech.gui.ExceptionDialog;
-import com.tle.admin.boot.Bootstrap;
 import com.tle.admin.controls.ControlRepositoryImpl;
 import com.tle.admin.controls.repository.ControlRepository;
 import com.tle.common.Check;
@@ -45,7 +44,9 @@ import org.java.plugin.JpfException;
  */
 public final class Driver {
   private static final Log LOGGER = LogFactory.getLog(Driver.class);
-  private static final String COLON = ":"; // $NON-NLS-1$
+
+  private static final String COLON = ":";
+  private static final String SERVER_NAME_PARAMETER = "SERVER_NAME";
 
   private static Driver driver = null;
 
@@ -81,7 +82,7 @@ public final class Driver {
 
     SessionHolder session = clientService.getSession();
     loggedInUserID = session.getLoginService().getLoggedInUserId();
-    institutionName = clientService.getParameter(Bootstrap.SERVER_NAME_PARAMETER);
+    institutionName = clientService.getParameter(SERVER_NAME_PARAMETER);
 
     version = Version.load();
 
