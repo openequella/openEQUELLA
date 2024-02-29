@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import com.tle.webtests.framework.ScreenshotTaker;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.portal.BrowsePortalEditPage;
@@ -290,7 +289,7 @@ public class PortalsTest extends AbstractCleanupTest {
   }
 
   @Test
-  public void testRecentPortal() {
+  public void testRecentPortal() throws InterruptedException {
     ExpectedCondition<WebElement> successMessage =
         ExpectedConditions.visibilityOfElementLocated(
             By.xpath("//*[contains(text(), 'Successfully saved')]"));
@@ -317,8 +316,8 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard1.editbox(1, liveItemName);
     wizard1.save().publish().getWaiter().until(successMessage);
 
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "live item", true);
+    //    ScreenshotTaker.takeScreenshot(
+    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "live item", true);
 
     String draftItemName = context.getFullName("draft item");
     WizardPageTab wizard2 =
@@ -326,9 +325,10 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard2.editbox(1, draftItemName);
     wizard2.save().draft().getWaiter().until(successMessage);
 
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft item", true);
+    //    ScreenshotTaker.takeScreenshot(
+    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft item", true);
 
+    Thread.sleep(1000);
     // Check that the live item is displayed
     home = new MenuSection(context).home();
     RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
@@ -338,9 +338,11 @@ public class PortalsTest extends AbstractCleanupTest {
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit", true);
+    //    ScreenshotTaker.takeScreenshot(
+    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit", true);
     edit.save(new HomePage(context));
+
+    Thread.sleep(1000);
 
     // Check that the draft item is displayed
     home = new MenuSection(context).home();
@@ -363,9 +365,11 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.setQuery("query item");
     edit.setStatus("live");
     edit.checkSelectedCollection();
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit2", true);
+    //    ScreenshotTaker.takeScreenshot(
+    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit2", true);
     edit.save(new HomePage(context));
+
+    //    Thread.sleep(1000);
 
     // Check that the queried item is displayed
     home = new MenuSection(context).home();
@@ -379,9 +383,11 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
     edit.checkSelectedCollection();
-    ScreenshotTaker.takeScreenshot(
-        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit3", true);
+    //    ScreenshotTaker.takeScreenshot(
+    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit3", true);
     edit.save(new HomePage(context));
+
+    //    Thread.sleep(1000);
 
     // Check that the description not displayed
     home = new MenuSection(context).home();
