@@ -39,6 +39,7 @@ export const itemWithAttachment: OEQ.Search.SearchResultItem = {
   modifiedDate: new Date("2014-06-11T10:28:58.393+10:00"),
   collectionId: "6b356e2e-e6a0-235a-5730-15ad1d8ad630",
   commentCount: 0,
+  attachmentCount: 1,
   attachments: [
     {
       attachmentType: "file",
@@ -63,7 +64,7 @@ export const itemWithAttachment: OEQ.Search.SearchResultItem = {
   isLatestVersion: true,
 };
 
-export const normalItem: OEQ.Search.SearchResultItem = {
+export const normalItemWithoutName: OEQ.Search.SearchResultItem = {
   uuid: "266bb0ff-a730-4658-aec0-c68bbefc227c",
   version: 1,
   status: "live",
@@ -89,7 +90,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
     available: 12,
     results: [
       itemWithAttachment,
-      normalItem,
+      normalItemWithoutName,
       {
         uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
         version: 1,

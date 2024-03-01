@@ -242,6 +242,7 @@ export const languageStrings = {
     users: "Users",
     groups: "Groups",
     roles: "Roles",
+    thumbnail: "Thumbnail",
   },
   courseedit: {
     title: "Editing course - %s",
@@ -383,6 +384,7 @@ export const languageStrings = {
     addKeyResource: "Add as a key resource",
     removeKeyResource: "Remove key resource",
     hierarchyPageTitle: "Hierarchy",
+    attachmentCount: "Attachment count",
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",

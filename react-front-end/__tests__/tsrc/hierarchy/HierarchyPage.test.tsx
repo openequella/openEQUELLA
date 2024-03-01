@@ -20,6 +20,7 @@ import { createTheme } from "@mui/material/styles";
 import {
   act,
   getAllByLabelText,
+  getByText,
   render,
   RenderResult,
 } from "@testing-library/react";
@@ -29,6 +30,7 @@ import { Route, Router } from "react-router-dom";
 import {
   getHierarchy,
   topicWithChildren,
+  topicWithShortAndLongDesc,
 } from "../../../__mocks__/Hierarchy.mock";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
@@ -129,6 +131,19 @@ describe("<HierarchyPage/>", () => {
       expect(getByText(name!)).toBeInTheDocument(),
     );
     expect.assertions(hierarchy.summary.subHierarchyTopics.length + 2);
+  });
+
+  it("displays key resource panel if it has key resources", async () => {
+    const compoundUuid = topicWithShortAndLongDesc.compoundUuid;
+    const hierarchy = await getHierarchy(compoundUuid);
+    const { getByTestId } = await renderHierarchyPage(compoundUuid);
+
+    const keyResourcePanel = getByTestId("key-resource-panel");
+
+    hierarchy.keyResources.forEach(({ name, uuid }) =>
+      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument(),
+    );
+    expect.assertions(hierarchy.keyResources.length);
   });
 
   it("displays normal search result with outline pin icon", async () => {

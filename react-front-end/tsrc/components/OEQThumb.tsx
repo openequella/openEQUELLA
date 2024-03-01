@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { styled } from "@mui/material/styles";
 import DefaultFileIcon from "@mui/icons-material/InsertDriveFile";
 import WebIcon from "@mui/icons-material/Language";
 import LinkIcon from "@mui/icons-material/Link";
@@ -23,18 +22,20 @@ import VideoIcon from "@mui/icons-material/Movie";
 import ImageIcon from "@mui/icons-material/Panorama";
 import PlaceholderIcon from "@mui/icons-material/TextFields";
 import Web from "@mui/icons-material/Web";
+import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
+import * as S from "fp-ts/string";
 import * as React from "react";
 import { languageStrings } from "../util/langstrings";
-import * as O from "fp-ts/Option";
 import { simpleMatch } from "../util/match";
-import * as S from "fp-ts/string";
-import * as RNEA from "fp-ts/ReadonlyNonEmptyArray";
 
 const PREFIX = "OEQThumb";
 
-const classes = {
+export const classes = {
+  root: `${PREFIX}-root`,
   thumbnail: `${PREFIX}-thumbnail`,
   placeholderThumbnail: `${PREFIX}-placeholderThumbnail`,
 };
@@ -69,13 +70,17 @@ export interface OEQThumbProps {
    * display an image based thumbnail.
    */
   details?: OEQ.Search.ThumbnailDetails;
+  /**
+   * If `true` use the preview(larger) thumbnail from the server, otherwise use the standard thumbnail.
+   */
+  large?: boolean;
 }
 
 /**
  * Displays a standard thumbnail using either the details provided to display an appropriate icon or
  * image from the server. Of if no details provided will display a generic placeholder.
  */
-export default function OEQThumb({ details }: OEQThumbProps) {
+export default function OEQThumb({ details, large }: OEQThumbProps) {
   const thumbLabels = languageStrings.searchpage.thumbnails;
   const generalThumbStyles: ThumbProps = {
     className: `MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail} ${classes.placeholderThumbnail}`,
@@ -85,6 +90,9 @@ export default function OEQThumb({ details }: OEQThumbProps) {
   const defaultThumb = () => (
     <DefaultFileIcon aria-label={thumbLabels.file} {...generalThumbStyles} />
   );
+
+  const thumbnailLink = (basePath: string): string =>
+    basePath + (large ? "?gallery=preview" : "");
 
   /**
    * Build an `img` based thumb if link is available, otherwise use the `defaultThumb`.
@@ -96,7 +104,7 @@ export default function OEQThumb({ details }: OEQThumbProps) {
       <img
         aria-label={thumbLabels.provided}
         className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
-        src={link}
+        src={thumbnailLink(link)}
         alt={thumbLabels.provided}
       />
     ) : (
@@ -174,7 +182,7 @@ export default function OEQThumb({ details }: OEQThumbProps) {
     );
 
   return (
-    <Root>
+    <Root className={classes.root}>
       {pipe(
         details,
         O.fromNullable,
