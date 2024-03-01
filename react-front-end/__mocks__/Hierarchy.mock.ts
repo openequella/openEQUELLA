@@ -18,32 +18,61 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { itemWithAttachment, normalItem } from "./SearchResult.mock";
+import { itemWithAttachment, normalItemWithoutName } from "./SearchResult.mock";
+
+export const normalItem: OEQ.Search.SearchResultItem = {
+  uuid: "cadcd296-a4d7-4024-bb5d-6c7507e6872a",
+  version: 2,
+  name: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  description:
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+  status: "live",
+  createdDate: new Date("2023-11-21T10:30:41.728+11:00"),
+  modifiedDate: new Date("2023-11-21T10:30:41.726+11:00"),
+  collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
+  commentCount: 0,
+  starRatings: -1.0,
+  attachmentCount: 0,
+  attachments: [],
+  thumbnail: "default",
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
+    self: "http://localhost:8080/rest/api/item/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
+  },
+  isLatestVersion: true,
+};
+
+export const itemWithThumbnail: OEQ.Search.SearchResultItem = {
+  uuid: "e35390cf-7c45-4f71-bb94-e6ccc1f09394",
+  version: 1,
+  name: "Book B",
+  status: "live",
+  createdDate: new Date("2023-11-08T15:05:38.347+11:00"),
+  modifiedDate: new Date("2023-11-08T15:19:02.590+11:00"),
+  collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
+  commentCount: 0,
+  starRatings: -1.0,
+  attachmentCount: 0,
+  attachments: [],
+  thumbnail: "default",
+  thumbnailDetails: {
+    attachmentType: "file",
+    mimeType: "image/jpeg",
+    link: "./thumb.jpg",
+  },
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
+    self: "http://localhost:8080/rest/api/item/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
+  },
+  isLatestVersion: true,
+};
 
 export const keyResources: OEQ.Search.SearchResultItem[] = [
-  {
-    uuid: "cadcd296-a4d7-4024-bb5d-6c7507e6872a",
-    version: 2,
-    name: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-    description:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    status: "live",
-    createdDate: new Date("2023-11-21T10:30:41.728+11:00"),
-    modifiedDate: new Date("2023-11-21T10:30:41.726+11:00"),
-    collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
-    commentCount: 0,
-    starRatings: -1.0,
-    attachmentCount: 0,
-    attachments: [],
-    thumbnail: "default",
-    displayFields: [],
-    keywordFoundInAttachment: false,
-    links: {
-      view: "http://localhost:8080/rest/items/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
-      self: "http://localhost:8080/rest/api/item/cadcd296-a4d7-4024-bb5d-6c7507e6872a/2/",
-    },
-    isLatestVersion: true,
-  },
+  normalItem,
   {
     uuid: "724fda1c-11d0-4304-9653-8e3bc17a2fa0",
     version: 1,
@@ -85,29 +114,9 @@ export const keyResources: OEQ.Search.SearchResultItem[] = [
     },
     isLatestVersion: true,
   },
-  {
-    uuid: "e35390cf-7c45-4f71-bb94-e6ccc1f09394",
-    version: 1,
-    name: "Book B",
-    status: "live",
-    createdDate: new Date("2023-11-08T15:05:38.347+11:00"),
-    modifiedDate: new Date("2023-11-08T15:19:02.590+11:00"),
-    collectionId: "4c147089-cddb-e67c-b5ab-189614eb1463",
-    commentCount: 0,
-    starRatings: -1.0,
-    attachmentCount: 0,
-    attachments: [],
-    thumbnail: "default",
-    displayFields: [],
-    keywordFoundInAttachment: false,
-    links: {
-      view: "http://localhost:8080/rest/items/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
-      self: "http://localhost:8080/rest/api/item/e35390cf-7c45-4f71-bb94-e6ccc1f09394/1/",
-    },
-    isLatestVersion: true,
-  },
+  itemWithThumbnail,
   itemWithAttachment,
-  normalItem,
+  normalItemWithoutName,
 ];
 
 export const topicWithShortAndLongDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary =

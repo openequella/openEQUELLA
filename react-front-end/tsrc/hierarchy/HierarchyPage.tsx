@@ -20,6 +20,7 @@ import { Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
@@ -47,6 +48,8 @@ import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import HierarchyPanel from "./components/HierarchyPanel";
 import HierarchyPanelSkeleton from "./components/HierarchyPanelSkeleton";
+import KeyResourcePanel from "./components/KeyResourcePanel";
+import KeyResourcePanelSkeleton from "./components/KeyResourcePanelSkeleton";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -195,6 +198,28 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <HierarchyPanelSkeleton />
           )}
         </Grid>
+
+        {pipe(
+          O.fromNullable(hierarchy),
+          O.fold(
+            () => (
+              <Grid item xs={12}>
+                <KeyResourcePanelSkeleton />
+              </Grid>
+            ),
+            (h) =>
+              pipe(
+                h.keyResources,
+                O.fromPredicate(A.isNonEmpty),
+                O.map((keyResources) => (
+                  <Grid item xs={12}>
+                    <KeyResourcePanel items={keyResources} />
+                  </Grid>
+                )),
+                O.toNullable,
+              ),
+          ),
+        )}
 
         <Grid item xs={12}>
           <SearchContext.Consumer>
