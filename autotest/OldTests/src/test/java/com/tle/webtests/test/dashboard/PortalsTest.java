@@ -33,9 +33,11 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -314,39 +316,27 @@ public class PortalsTest extends AbstractCleanupTest {
     WizardPageTab wizard1 =
         new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
     wizard1.editbox(1, liveItemName);
-    wizard1.save().publish().getWaiter().until(successMessage);
-
-    //    ScreenshotTaker.takeScreenshot(
-    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "live item", true);
+    wizard1.save().publish();
 
     String draftItemName = context.getFullName("draft item");
+
     WizardPageTab wizard2 =
         new ContributePage(context).load().openWizard("Simple Controls Collection");
     wizard2.editbox(1, draftItemName);
-    wizard2.save().draft().getWaiter().until(successMessage);
+    WebDriverWait waiter = wizard2.save().draft().getWaiter();
 
-    //    ScreenshotTaker.takeScreenshot(
-    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "draft item", true);
-
-    Thread.sleep(1000);
     // Check that the live item is displayed
-    home = new MenuSection(context).home();
-    RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
-    assertTrue(recent.recentContributionExists(liveItemName));
+    assertTrue(waiter.until(waitForItem(recentName, liveItemName)));
 
     // Edit the portal
+    new MenuSection(context).home();
+    RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
-    //    ScreenshotTaker.takeScreenshot(
-    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit", true);
     edit.save(new HomePage(context));
 
-    Thread.sleep(1000);
-
     // Check that the draft item is displayed
-    home = new MenuSection(context).home();
-    recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.recentContributionExists(draftItemName));
 
     String itemToQuery = context.getFullName("query item");
@@ -365,16 +355,12 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.setQuery("query item");
     edit.setStatus("live");
     edit.checkSelectedCollection();
-    //    ScreenshotTaker.takeScreenshot(
-    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit2", true);
     edit.save(new HomePage(context));
 
-    //    Thread.sleep(1000);
-
     // Check that the queried item is displayed
-    home = new MenuSection(context).home();
-    recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.recentContributionExists(itemToQuery));
+    new MenuSection(context).home();
+    recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.descriptionExists(description, true));
 
     // Edit portlet for description option
@@ -383,14 +369,10 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
     edit.checkSelectedCollection();
-    //    ScreenshotTaker.takeScreenshot(
-    //        context.getDriver(), this.testConfig.getScreenshotFolder(), "edit3", true);
     edit.save(new HomePage(context));
 
-    //    Thread.sleep(1000);
-
     // Check that the description not displayed
-    home = new MenuSection(context).home();
+    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertFalse(recent.descriptionExists(description, false));
   }
@@ -469,5 +451,17 @@ public class PortalsTest extends AbstractCleanupTest {
     String prefix = context.getNamePrefix();
     new DashboardAdminPage(context).load().deleteAll(prefix);
     super.cleanupAfterClass();
+  }
+
+  private ExpectedCondition<Boolean> waitForItem(String sectionTitle, String itemName) {
+    return new ExpectedCondition<Boolean>() {
+      @Override
+      public Boolean apply(WebDriver driver) {
+        new MenuSection(context).home();
+        RecentContributionsSection recent =
+            new RecentContributionsSection(context, sectionTitle).get();
+        return recent.recentContributionExists(itemName);
+      }
+    };
   }
 }
