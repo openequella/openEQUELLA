@@ -32,6 +32,8 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -312,14 +314,14 @@ public class PortalsTest extends AbstractCleanupTest {
     WizardPageTab wizard2 =
         new ContributePage(context).load().openWizard("Simple Controls Collection");
     wizard2.editbox(1, draftItemName);
-    wizard2.save().draft();
+    WebDriverWait waiter = wizard2.save().draft().getWaiter();
 
-    // Check that the live item is displayed
-    home = new MenuSection(context).home();
-    RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
-    assertTrue(recent.recentContributionExists(liveItemName));
+    // Check that the live item is displayed.
+    assertTrue(checkContributionExistence(waiter, recentName, liveItemName));
 
     // Edit the portal
+    new MenuSection(context).home();
+    RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
@@ -337,7 +339,6 @@ public class PortalsTest extends AbstractCleanupTest {
         new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
     wizard3.editbox(1, itemToQuery);
     wizard3.editbox(2, description);
-
     wizard3.save().publish();
 
     // Edit portlet for query option
@@ -346,11 +347,12 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.setQuery("query item");
     edit.setStatus("live");
     edit.checkSelectedCollection();
-    edit.save(new HomePage(context));
+    waiter = edit.save(new HomePage(context)).getWaiter();
+
     // Check that the queried item is displayed
-    home = new MenuSection(context).home();
+    assertTrue(checkContributionExistence(waiter, recentName, itemToQuery));
+    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
-    assertTrue(recent.recentContributionExists(itemToQuery));
     assertTrue(recent.descriptionExists(description, true));
 
     // Edit portlet for description option
@@ -362,7 +364,7 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
-    home = new MenuSection(context).home();
+    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertFalse(recent.descriptionExists(description, false));
   }
@@ -441,5 +443,29 @@ public class PortalsTest extends AbstractCleanupTest {
     String prefix = context.getNamePrefix();
     new DashboardAdminPage(context).load().deleteAll(prefix);
     super.cleanupAfterClass();
+  }
+
+  /**
+   * Checks if a contribution item exists in the recent contributions section.
+   *
+   * @param waiter The WebDriverWait object to wait for the condition.
+   * @param sectionTitle The title of the recent contributions section.
+   * @param itemName The name of the contribution item.
+   * @return true if the contribution item exists, false otherwise.
+   */
+  private boolean checkContributionExistence(
+      WebDriverWait waiter, String sectionTitle, String itemName) {
+    try {
+      waiter.until(
+          driver -> {
+            new MenuSection(context).home();
+            RecentContributionsSection recent =
+                new RecentContributionsSection(context, sectionTitle).get();
+            return recent.recentContributionExists(itemName);
+          });
+      return true;
+    } catch (TimeoutException e) {
+      return false;
+    }
   }
 }
