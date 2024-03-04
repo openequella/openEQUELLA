@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -87,8 +88,9 @@ public abstract class AbstractResultList<
     List<SR> results = new ArrayList<SR>();
 
     if (isResultsAvailable()) {
-      int count =
-          getResultsDiv().findElements(By.xpath("//div[@class='itemresult-wrapper']")).size();
+      By items = By.xpath("//div[@class='itemresult-wrapper']");
+      waiter.until(ExpectedConditions.presenceOfAllElementsLocatedBy(items));
+      int count = getResultsDiv().findElements(items).size();
 
       for (int i = 1; i <= count; i++) {
         results.add(getResult(i));
@@ -122,6 +124,7 @@ public abstract class AbstractResultList<
   public boolean doesResultExist(String title) {
     boolean found = false;
     int size = getResults().size();
+
     for (int i = 1; i <= size; i++) {
       found = doesResultExist(title, i);
       if (found) {
@@ -132,6 +135,13 @@ public abstract class AbstractResultList<
   }
 
   public boolean isResultsAvailable() {
-    return isPresent(By.xpath("//div[@class='itemresult-wrapper']"));
+    try {
+      waiter.until(
+          ExpectedConditions.presenceOfElementLocated(
+              By.xpath("//div[@class='itemresult-wrapper']")));
+      return true;
+    } catch (TimeoutException Time) {
+      return false;
+    }
   }
 }
