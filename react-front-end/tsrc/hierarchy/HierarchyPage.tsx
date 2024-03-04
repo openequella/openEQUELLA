@@ -78,17 +78,43 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [hierarchy, setHierarchy] = useState<
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
   >();
+  const [needUpdateHierarchy, setNeedUpdateHierarchy] = useState(true);
 
   // Get hierarchy
   useEffect(() => {
+    if (needUpdateHierarchy) {
+      pipe(
+        TE.tryCatch(
+          () => getHierarchy(compoundUuid),
+          (e) => `Failed to get hierarchy: ${e}`,
+        ),
+        TE.match(appErrorHandler, (h) => {
+          setHierarchy(h);
+          setNeedUpdateHierarchy(false);
+        }),
+      )();
+    }
+  }, [appErrorHandler, compoundUuid, needUpdateHierarchy]);
+
+  /**
+   * Add/Delete a key resource to the hierarchy and then update the `needUpdateHierarchy` flag.
+   *
+   * @param item the search result item to add/delete as a key resource.
+   * @param isDelete true if the item is to be deleted, false if the item is to be added.
+   */
+  const updateKeyResource = (
+    item: OEQ.Search.SearchResultItem,
+    isDelete: boolean,
+  ) => {
+    const action = isDelete ? deleteKeyResource : addKeyResource;
     pipe(
       TE.tryCatch(
-        () => getHierarchy(compoundUuid),
-        (e) => `Failed to get hierarchy: ${e}`,
+        () => action(compoundUuid, item.uuid, item.version),
+        (e) => `Failed to update key resource: ${e}`,
       ),
-      TE.match(appErrorHandler, setHierarchy),
+      TE.match(appErrorHandler, (_) => setNeedUpdateHierarchy(true)),
     )();
-  }, [appErrorHandler, compoundUuid]);
+  };
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const customiseInitialSearchOptions = (
@@ -125,19 +151,12 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
     );
 
     const title = isKeyResource ? removeKeyResourceText : addKeyResourceText;
-    const { uuid, version } = item;
 
     const updateKeyResourceButton = (
       <TooltipIconButton
         aria-label={title}
         title={title}
-        onClick={() =>
-          (isKeyResource ? deleteKeyResource : addKeyResource)(
-            compoundUuid,
-            uuid,
-            version,
-          )
-        }
+        onClick={() => updateKeyResource(item, isKeyResource)}
         size="small"
       >
         {isKeyResource ? <PushPin color="secondary" /> : <PushPinOutlined />}
@@ -213,7 +232,10 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 O.fromPredicate(A.isNonEmpty),
                 O.map((keyResources) => (
                   <Grid item xs={12}>
-                    <KeyResourcePanel items={keyResources} />
+                    <KeyResourcePanel
+                      items={keyResources}
+                      onPinIconClick={(item) => updateKeyResource(item, true)}
+                    />
                   </Grid>
                 )),
                 O.toNullable,

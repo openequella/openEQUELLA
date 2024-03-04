@@ -26,16 +26,23 @@ export interface KeyResourcePanelProps {
    * A list of key resource items to display.
    */
   items: OEQ.Search.SearchResultItem[];
+  /**
+   * The handler for each key resource item's pin icon click event.
+   */
+  onPinIconClick: (item: OEQ.Search.SearchResultItem) => void;
 }
 
 /**
  * Displays a list of key resource items.
  */
-const KeyResourcePanel = ({ items }: KeyResourcePanelProps) => (
+const KeyResourcePanel = ({ items, onPinIconClick }: KeyResourcePanelProps) => (
   <Grid container spacing={2} data-testid="key-resource-panel">
     {items.map((item) => (
       <Grid key={`${item.uuid}/${item.version}`} item xs={12} lg={6} xl={4}>
-        <KeyResource item={item}></KeyResource>
+        <KeyResource
+          item={item}
+          onPinIconClick={() => onPinIconClick(item)}
+        ></KeyResource>
       </Grid>
     ))}
   </Grid>

@@ -51,6 +51,10 @@ export interface KeyResourceProps {
    * The key resource item to display.
    */
   item: OEQ.Search.SearchResultItem;
+  /**
+   * The handler for the pin icon click event.
+   */
+  onPinIconClick: (item: OEQ.Search.SearchResultItem) => void;
 }
 
 const PREFIX = "KeyResource";
@@ -114,7 +118,7 @@ export const StyledCard = styled(Card)(({ theme }) => {
 /**
  * A card view of a key resource for hierarchy.
  */
-const KeyResource = ({ item }: KeyResourceProps) => {
+const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
   const history = useHistory();
 
   const {
@@ -231,7 +235,7 @@ const KeyResource = ({ item }: KeyResourceProps) => {
           <TooltipIconButton
             id={`${uuid}-${version}-unpin`}
             title={removeKeyResourceText}
-            onClick={() => {}}
+            onClick={() => onPinIconClick(item)}
             aria-label={removeKeyResourceText}
           >
             <PushPin color="secondary" />

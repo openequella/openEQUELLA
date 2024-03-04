@@ -28,6 +28,7 @@ import KeyResourcePanel, {
 export default {
   title: "Hierarchy/KeyResourcePanel",
   component: KeyResource,
+  argTypes: { onPinIconClick: { action: "PinIcon clicked" } },
 } as Meta<KeyResourceProps>;
 
 export const Standard: StoryFn<KeyResourcePanelProps> = (args) => (
