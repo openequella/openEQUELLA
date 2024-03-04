@@ -39,7 +39,7 @@ const renderKeyResource = (item: OEQ.Search.SearchResultItem): RenderResult => {
   return render(
     <Router history={history}>
       <Route path={path}>
-        <KeyResource item={item} />
+        <KeyResource item={item} onPinIconClick={() => {}} />
       </Route>
     </Router>,
   );

@@ -25,6 +25,7 @@ import KeyResource, {
 export default {
   title: "Hierarchy/KeyResource",
   component: KeyResource,
+  argTypes: { onPinIconClick: { action: "PinIcon clicked" } },
 } as Meta<KeyResourceProps>;
 
 export const Standard: StoryFn<KeyResourceProps> = (args) => (
