@@ -103,6 +103,8 @@ class BrowseHierarchyHelper {
       buildVirtualTopicText(topic.getName, virtualTopicName),
       buildVirtualTopicText(topic.getShortDescription, virtualTopicName),
       buildVirtualTopicText(topic.getLongDescription, virtualTopicName),
+      buildVirtualTopicText(topic.getSubtopicsSectionName, virtualTopicName),
+      buildVirtualTopicText(topic.getResultsSectionName, virtualTopicName),
       topic.isShowResults,
       topic.isHideSubtopicsWithNoResults,
       subTopics
