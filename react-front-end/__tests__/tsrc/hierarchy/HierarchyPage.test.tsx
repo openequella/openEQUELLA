@@ -127,11 +127,15 @@ describe("<HierarchyPage/>", () => {
     ).toBeInTheDocument();
     // Display long description.
     expect(getByText(hierarchy.summary.longDescription!)).toBeInTheDocument();
+    // Display sub topic section name.
+    expect(
+      getByText(hierarchy.summary.subTopicSectionName!),
+    ).toBeInTheDocument();
     // Display hierarchy summary.
     hierarchy.summary.subHierarchyTopics.forEach(({ name }) =>
       expect(getByText(name!)).toBeInTheDocument(),
     );
-    expect.assertions(hierarchy.summary.subHierarchyTopics.length + 2);
+    expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
   });
 
   it("displays key resource panel if it has key resources", async () => {
@@ -178,5 +182,19 @@ describe("<HierarchyPage/>", () => {
 
     const resultList = queryByTestId("search-result-list");
     expect(resultList).not.toBeInTheDocument();
+  });
+
+  it("display search result section name if it has been set", async () => {
+    const compoundUuid = topicWithChildren.compoundUuid;
+    const hierarchy = await getHierarchy(compoundUuid);
+    const { getByText } = await renderHierarchyPage(compoundUuid);
+
+    expect(
+      getByText(
+        `${hierarchy.summary.searchResultSectionName!} (${
+          getSearchResult.available
+        })`,
+      ),
+    ).toBeInTheDocument();
   });
 });

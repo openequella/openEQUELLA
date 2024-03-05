@@ -160,6 +160,10 @@ export interface SearchPageBodyProps {
    * Function to get the list of remote searches from the server.
    */
   getRemoteSearchesProvider?: () => Promise<OEQ.Common.BaseEntitySummary[]>;
+  /**
+   * The title of the search result list.
+   */
+  searchResultTitle?: string;
 }
 
 /**
@@ -183,6 +187,7 @@ export const SearchPageBody = ({
   customFavouriteUrl = identity,
   customShowSpinner = false,
   getRemoteSearchesProvider = getRemoteSearchesFromServer,
+  searchResultTitle,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -789,6 +794,7 @@ export const SearchPageBody = ({
             ))}
             <Grid item xs={12}>
               <SearchResultList
+                title={searchResultTitle}
                 showSpinner={
                   customShowSpinner ||
                   state.status === "initialising" ||

@@ -254,6 +254,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   enableClassification
                   refinePanelConfig={refinePanelConfig}
                   customRenderSearchResults={customSearchResultBuilder}
+                  searchResultTitle={hierarchy?.summary.searchResultSectionName}
                 />
               )}
             </SearchContext.Consumer>

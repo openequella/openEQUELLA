@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
@@ -86,22 +92,30 @@ export interface HierarchyPanelProps {
 const HierarchyPanel = ({
   hierarchy,
 }: HierarchyPanelProps): React.JSX.Element => {
-  const { name, longDescription, subHierarchyTopics, compoundUuid } =
-    hierarchy.summary;
+  const {
+    name,
+    longDescription,
+    subHierarchyTopics,
+    compoundUuid,
+    subTopicSectionName,
+  } = hierarchy.summary;
   return (
     <Card>
       <CardHeader title={buildBreadcrumbs(hierarchy)} />
       <CardContent>
-        <Typography variant="h4" gutterBottom>
-          {name ?? compoundUuid}
-        </Typography>
+        <Stack spacing={2}>
+          <Typography variant="h4">{name ?? compoundUuid}</Typography>
 
-        {longDescription && (
-          <Typography variant="body1" gutterBottom>
-            {HTMLReactParser(longDescription)}
-          </Typography>
-        )}
+          {longDescription && (
+            <Typography variant="body1">
+              {HTMLReactParser(longDescription)}
+            </Typography>
+          )}
 
+          {subTopicSectionName && (
+            <Typography variant="h5">{subTopicSectionName}</Typography>
+          )}
+        </Stack>
         <HierarchyTree hierarchies={subHierarchyTopics} />
       </CardContent>
     </Card>

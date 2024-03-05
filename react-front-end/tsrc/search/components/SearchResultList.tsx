@@ -85,6 +85,10 @@ interface RefineSearchProps {
  */
 export interface SearchResultListProps {
   /**
+   * Title of the search result list. The default value is the `searchpage.subtitle` from languageStrings.
+   */
+  title?: string;
+  /**
    * Ideally a collection of `<SearchResult>` elements.
    */
   children?: React.ReactNode;
@@ -143,6 +147,7 @@ const searchPageStrings = languageStrings.searchpage;
  * The pagination is displayed in CardActions.
  */
 export const SearchResultList = ({
+  title,
   children,
   showSpinner,
   orderSelectProps,
@@ -187,7 +192,7 @@ export const SearchResultList = ({
   return (
     <StyledCard>
       <CardHeader
-        title={searchPageStrings.subtitle + ` (${count})`}
+        title={(title ?? searchPageStrings.subtitle) + ` (${count})`}
         action={
           <Grid container spacing={1} alignItems="center">
             <Grid item>
