@@ -59,6 +59,14 @@ export interface HierarchyTopicSummary {
    */
   longDescription?: string;
   /**
+   * The name of the subtopic section, shown above the sub topic section.
+   */
+  subTopicSectionName?: string;
+  /**
+   * The name of the search result section, shown above the results section.
+   */
+  searchResultSectionName?: string;
+  /**
    * Flag to determine if results should be shown.
    */
   showResults: boolean;

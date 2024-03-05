@@ -30,6 +30,8 @@ import com.tle.web.api.search.model.SearchResultItem
   * @param name Name of the topic.
   * @param shortDescription A brief description of the topic.
   * @param longDescription A detailed description of the topic.
+  * @param subTopicSectionName The name of the subtopic section, shown above the sub topic section.
+  * @param searchResultSectionName The name of the search result section, shown above the results section.
   * @param showResults Flag to determine if results should be shown.
   * @param hideSubtopicsWithNoResults Flag to hide subtopics when there are no results.
   * @param subHierarchyTopics A list of subtopics under this topic.
@@ -39,6 +41,8 @@ case class HierarchyTopicSummary(compoundUuid: String,
                                  name: Option[String],
                                  shortDescription: Option[String],
                                  longDescription: Option[String],
+                                 subTopicSectionName: Option[String],
+                                 searchResultSectionName: Option[String],
                                  showResults: Boolean,
                                  hideSubtopicsWithNoResults: Boolean,
                                  subHierarchyTopics: List[HierarchyTopicSummary])
