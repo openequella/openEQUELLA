@@ -63,7 +63,7 @@ const refinePanelConfig: SearchPageRefinePanelConfig = {
   enableAdvancedSearchSelector: false,
   enableDateRangeSelector: true,
   enableRemoteSearchSelector: false,
-  enableMimeTypeSelector: false,
+  enableMimeTypeSelector: true,
   enableOwnerSelector: true,
   enableSearchAttachmentsSelector: false,
   enableItemStatusSelector: false,
