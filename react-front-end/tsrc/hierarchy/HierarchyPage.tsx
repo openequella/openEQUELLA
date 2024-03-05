@@ -79,6 +79,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
   >();
   const [needUpdateHierarchy, setNeedUpdateHierarchy] = useState(true);
+  const [showSearchResult, setShowSearchResult] = useState(false);
 
   // Get hierarchy
   useEffect(() => {
@@ -91,6 +92,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
         TE.match(appErrorHandler, (h) => {
           setHierarchy(h);
           setNeedUpdateHierarchy(false);
+          setShowSearchResult(h.summary.showResults);
         }),
       )();
     }
@@ -243,18 +245,20 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
           ),
         )}
 
-        <Grid item xs={12}>
-          <SearchContext.Consumer>
-            {(_: SearchContextProps) => (
-              <SearchPageBody
-                pathname={HIERARCHY_PATH}
-                enableClassification
-                refinePanelConfig={refinePanelConfig}
-                customRenderSearchResults={customSearchResultBuilder}
-              />
-            )}
-          </SearchContext.Consumer>
-        </Grid>
+        {showSearchResult && (
+          <Grid item xs={12}>
+            <SearchContext.Consumer>
+              {(_: SearchContextProps) => (
+                <SearchPageBody
+                  pathname={HIERARCHY_PATH}
+                  enableClassification
+                  refinePanelConfig={refinePanelConfig}
+                  customRenderSearchResults={customSearchResultBuilder}
+                />
+              )}
+            </SearchContext.Consumer>
+          </Grid>
+        )}
       </Grid>
     </Search>
   );

@@ -30,6 +30,7 @@ import { Route, Router } from "react-router-dom";
 import {
   getHierarchy,
   topicWithChildren,
+  topicWithoutSearchResults,
   topicWithShortAndLongDesc,
 } from "../../../__mocks__/Hierarchy.mock";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
@@ -169,5 +170,13 @@ describe("<HierarchyPage/>", () => {
     expect(getAllByLabelText(resultList, removeKeyResourceText)).toHaveLength(
       2,
     );
+  });
+
+  it("hide search result if 'Display resources' is set to false", async () => {
+    const compoundUuid = topicWithoutSearchResults.compoundUuid;
+    const { queryByTestId } = await renderHierarchyPage(compoundUuid);
+
+    const resultList = queryByTestId("search-result-list");
+    expect(resultList).not.toBeInTheDocument();
   });
 });
