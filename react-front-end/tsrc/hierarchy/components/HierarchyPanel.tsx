@@ -44,7 +44,7 @@ const buildBreadcrumbs = (
           color="inherit"
           to={routes.Hierarchy.to(compoundUuid)}
         >
-          {name}
+          {name ?? compoundUuid}
         </Link>
       );
     }),
@@ -86,13 +86,14 @@ export interface HierarchyPanelProps {
 const HierarchyPanel = ({
   hierarchy,
 }: HierarchyPanelProps): React.JSX.Element => {
-  const { name, longDescription, subHierarchyTopics } = hierarchy.summary;
+  const { name, longDescription, subHierarchyTopics, compoundUuid } =
+    hierarchy.summary;
   return (
     <Card>
       <CardHeader title={buildBreadcrumbs(hierarchy)} />
       <CardContent>
         <Typography variant="h4" gutterBottom>
-          {name}
+          {name ?? compoundUuid}
         </Typography>
 
         {longDescription && (

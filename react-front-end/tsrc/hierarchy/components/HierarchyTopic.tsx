@@ -126,7 +126,7 @@ const HierarchyTopic = ({
               className={classes.name}
               to={routes.Hierarchy.to(compoundUuid)}
             >
-              {name}
+              {name ?? compoundUuid}
             </Link>
             <span className={classes.count}>({matchingItemCount})</span>
           </>

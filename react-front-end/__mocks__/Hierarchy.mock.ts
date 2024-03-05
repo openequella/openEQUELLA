@@ -221,11 +221,22 @@ export const virtualTopics = {
   ],
 };
 
+export const topicWithoutSearchResults: OEQ.BrowseHierarchy.HierarchyTopicSummary =
+  {
+    compoundUuid: "e7d262b5-1a95-4a22-bfa1-127ac5584298",
+    matchingItemCount: 0,
+    name: "No Search Results Topic",
+    showResults: false,
+    hideSubtopicsWithNoResults: true,
+    subHierarchyTopics: [],
+  };
+
 export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithShortAndLongDesc,
   topicWithHtmlDesc,
   virtualTopics,
   topicWithChildren,
+  topicWithoutSearchResults,
 ];
 
 /**
