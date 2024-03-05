@@ -55,7 +55,7 @@
     "@mui/material": "5.14.10",
     "@mui/x-date-pickers": "5.0.20",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
-    "@tinymce/tinymce-react": "4.3.0",
+    "@tinymce/tinymce-react": "4.3.2",
     "axios": "1.6.0",
     "clsx": "1.2.1",
     "es6-object-assign": "1.1.0",
