@@ -162,6 +162,8 @@ export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   longDescription:
     "This is long long long long long long long long long long long long long long long description",
   hideSubtopicsWithNoResults: true,
+  subTopicSectionName: "Subtopic Section",
+  searchResultSectionName: "Search Result Section",
   subHierarchyTopics: [
     {
       compoundUuid: "8dcb1d04-33cb-4935-9fa3-d753daca0b17",
