@@ -28,6 +28,7 @@ import { styled } from "@mui/material/styles";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { Link } from "react-router-dom";
@@ -96,10 +97,18 @@ const HierarchyTopic = ({
     compoundUuid,
     shortDescription,
     subHierarchyTopics,
+    hideSubtopicsWithNoResults,
   },
   expandedNodes,
 }: HierarchyTopicProps): React.JSX.Element => {
   const isExpanded = expandedNodes.includes(compoundUuid);
+
+  const filteredSubTopics = hideSubtopicsWithNoResults
+    ? pipe(
+        subHierarchyTopics,
+        A.filter((subTopic) => subTopic.matchingItemCount > 0),
+      )
+    : subHierarchyTopics;
 
   const expandIcon = () =>
     isExpanded ? (
@@ -136,14 +145,14 @@ const HierarchyTopic = ({
         // The short description field support raw html syntax.
         secondary={shortDescription && HTMLReactParser(shortDescription)}
       />
-      {A.isNonEmpty(subHierarchyTopics) && expandIcon()}
+      {A.isNonEmpty(filteredSubTopics) && expandIcon()}
     </ListItem>
   );
 
   return (
     <StyledTreeItem label={itemLabel()} nodeId={compoundUuid}>
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-        {subHierarchyTopics.map((subTopic) => (
+        {filteredSubTopics.map((subTopic) => (
           <HierarchyTopic
             key={subTopic.compoundUuid}
             topic={subTopic}

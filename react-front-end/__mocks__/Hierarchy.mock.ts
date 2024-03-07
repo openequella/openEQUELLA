@@ -194,6 +194,44 @@ export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   ],
 };
 
+export const topicWithNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSummary =
+  {
+    compoundUuid: "d562df2a-dbe5-4765-9a55-6babcfbfe91f",
+    matchingItemCount: 53,
+    name: "topicWithNoResultChild",
+    showResults: true,
+    hideSubtopicsWithNoResults: false,
+    subHierarchyTopics: [
+      {
+        compoundUuid: "bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc",
+        matchingItemCount: 0,
+        name: "Topic with no result",
+        showResults: true,
+        hideSubtopicsWithNoResults: true,
+        subHierarchyTopics: [],
+      },
+    ],
+  };
+
+export const topicWithHideNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSummary =
+  {
+    compoundUuid: "5ae138de-c371-45e3-a77b-ced81a2172d0",
+    matchingItemCount: 53,
+    name: "topicWithHideNoResultChild",
+    showResults: true,
+    hideSubtopicsWithNoResults: true,
+    subHierarchyTopics: [
+      {
+        compoundUuid: "6a96be3c-a23a-4b16-af57-547222f6f6ea",
+        matchingItemCount: 0,
+        name: "Topic with no result",
+        showResults: true,
+        hideSubtopicsWithNoResults: true,
+        subHierarchyTopics: [],
+      },
+    ],
+  };
+
 export const virtualTopics = {
   compoundUuid: "886aa61d-f8df-4e82-8984-c487849f80ff:A James",
   matchingItemCount: 3,
@@ -239,6 +277,8 @@ export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   virtualTopics,
   topicWithChildren,
   topicWithoutSearchResults,
+  topicWithNoResultChild,
+  topicWithHideNoResultChild,
 ];
 
 /**
