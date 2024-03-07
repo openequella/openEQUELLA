@@ -22,6 +22,8 @@ import * as React from "react";
 import { Router } from "react-router-dom";
 import {
   hierarchies,
+  topicWithHideNoResultChild,
+  topicWithNoResultChild,
   topicWithShortAndLongDesc,
   virtualTopics,
 } from "../../../__mocks__/Hierarchy.mock";
@@ -64,4 +66,39 @@ describe("<BrowseHierarchyPage/>", () => {
     );
     expect.assertions(virtualTopics.subHierarchyTopics.length);
   });
+
+  it("hide sub hierarchy topic if it has no result when `hideSubtopicsWithNoResults` is set to `true`", async () => {
+    const { container, queryByText } = await renderBrowseHierarchyPage();
+
+    await selectHierarchy(container, topicWithHideNoResultChild.name!);
+
+    expect(
+      queryByText(topicWithHideNoResultChild.subHierarchyTopics[0].name!),
+    ).not.toBeInTheDocument();
+  });
+
+  it("show sub hierarchy topic even if it has no result when `hideSubtopicsWithNoResults` is set to `false`", async () => {
+    const { container, queryByText } = await renderBrowseHierarchyPage();
+
+    await selectHierarchy(container, topicWithNoResultChild.name!);
+
+    expect(
+      queryByText(topicWithNoResultChild.subHierarchyTopics[0].name!),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    { text: "show", topic: topicWithNoResultChild, show: true },
+    { text: "hide", topic: topicWithHideNoResultChild, show: false },
+  ])(
+    "should $text sub hierarchy topic if `hideSubtopicsWithNoResults` is set to $show",
+    async ({ topic, show }) => {
+      const { container, queryByText } = await renderBrowseHierarchyPage();
+
+      await selectHierarchy(container, topic.name!);
+
+      const isPresent = !!queryByText(topic.subHierarchyTopics[0].name!);
+      expect(isPresent).toBe(show);
+    },
+  );
 });
