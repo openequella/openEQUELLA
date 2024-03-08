@@ -34,7 +34,7 @@
     "@babel/eslint-parser": "7.23.10",
     "cross-env": "7.0.3",
     "eslint": "8.57.0",
-    "eslint-config-prettier": "9.0.0",
+    "eslint-config-prettier": "9.1.0",
     "eslint-config-react-app": "7.0.1",
     "eslint-plugin-flowtype": "8.0.3",
     "eslint-plugin-import": "2.29.1",
