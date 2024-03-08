@@ -138,7 +138,10 @@ export default function SchemaNodeSelector({
         defaultCollapseIcon={<Remove />}
         selected={selectedNode}
         expanded={expanded}
-        onNodeToggle={(event, paths) => {
+        onNodeToggle={(
+          event: React.SyntheticEvent<Element, Event>,
+          paths: string[],
+        ) => {
           setExpanded(paths);
         }}
         onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
