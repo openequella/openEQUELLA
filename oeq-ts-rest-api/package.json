@@ -50,7 +50,7 @@
     "core-js": "3.36.0",
     "eslint": "8.57.0",
     "eslint-plugin-unused-imports": "2.0.0",
-    "eslint-config-prettier": "9.0.0",
+    "eslint-config-prettier": "9.1.0",
     "eslint-plugin-jest": "27.6.0",
     "eslint-plugin-notice": "0.9.10",
     "eslint-plugin-prettier": "5.1.3",
