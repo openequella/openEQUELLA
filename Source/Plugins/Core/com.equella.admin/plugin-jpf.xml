@@ -22,8 +22,13 @@
     <import plugin-id="com.tle.platform.common" exported="true" />
     <import plugin-id="com.tle.platform.equella" exported="true" />
     <import plugin-id="com.tle.platform.swing" exported="true" />
-    <import plugin-id="com.tle.webstart.admin" exported="true" optional="true" />
   </requires>
+  <runtime>
+    <library type="code" path="classes/" id="core">
+      <export prefix="*" />
+    </library>
+    <library type="resources" path="resources/" id="resources" />
+  </runtime>
   <extension plugin-id="com.tle.admin.tools" point-id="tool" id="harvestertool">
     <parameter id="displayorder" value="900" />
     <parameter id="name" value="com.equella.admin.harvester.name" />

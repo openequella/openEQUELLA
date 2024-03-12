@@ -1,10 +1,11 @@
-import Common._
-import JPFPlugin.autoImport._
-import sbt.Keys._
-import sbt._
+import Common.*
+import JPFPlugin.autoImport.*
+import sbt.Keys.*
+import sbt.*
 
+import scala.Console.println
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 object JPFScanPlugin extends AutoPlugin {
   val serverRef = LocalProject("equellaserver")
@@ -19,7 +20,7 @@ object JPFScanPlugin extends AutoPlugin {
     def isExtensionOnly: Boolean = group == "Extensions"
   }
 
-  def parseJPF(f: File): ParsedJPF = {
+  def parseJPF(baseDir: File)(f: File): ParsedJPF = {
     val x        = saxBuilder.build(f)
     val root     = x.getRootElement
     val pluginId = root.getAttribute("id").getValue
@@ -41,12 +42,16 @@ object JPFScanPlugin extends AutoPlugin {
       }
       .exists(_.getAttributeValue("value") == "admin-console")
 
-    ParsedJPF(f.getParentFile,
-              f.getParentFile.getParentFile.getName,
-              pluginId,
-              deps.toSet,
-              extDeps.toSet,
-              adminConsole)
+    val result = ParsedJPF(f.getParentFile,
+                           f.getParentFile.getParentFile.getName,
+                           pluginId,
+                           deps.toSet,
+                           extDeps.toSet,
+                           adminConsole)
+
+    val jpfPath = f.relativeTo(baseDir).get
+    println(s"Parsed JPF for ${pluginId.padTo(30, " ").mkString} from ${jpfPath}")
+    result
   }
 
   def toLocalProject(pluginId: String) = LocalProject(toSbtPrj(pluginId))
@@ -120,9 +125,9 @@ object JPFScanPlugin extends AutoPlugin {
   }
 
   lazy val minimumPlugins = Seq(
+    "com.equella.admin",
     "com.tle.platform.swing",
     "com.tle.platform.equella",
-    "com.tle.webstart.admin",
     "com.tle.platform.common",
     "com.tle.platform.equella",
     "com.tle.web.adminconsole"
@@ -137,7 +142,7 @@ object JPFScanPlugin extends AutoPlugin {
       (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get ++
       // Also include UpgradeInstallation and UpgradeManager
       (baseDir / "Source/Tools" * "Upgrade*" / "plugin-jpf.xml").get
-    val manifestMap = allManifests.map(parseJPF).map(p => (p.id, p)).toMap
+    val manifestMap = allManifests.map(parseJPF(baseDir)).map(p => (p.id, p)).toMap
 
 //    val adminPlugins = manifestMap.values.filter(_.adminConsole).map(_.id).toSet
     val pluginList = (if (buildConfig.hasPath("plugin.whitelist"))

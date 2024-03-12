@@ -38,4 +38,4 @@ excludeDependencies ++= Seq(
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
-dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_tle_webstart_admin"))
+dependsOn(platformCommon, platformSwing, platformEquella, LocalProject("com_equella_admin"))
