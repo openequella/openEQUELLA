@@ -50,7 +50,11 @@ class UpdateJavaOpts extends AbstractUpgrader {
       // List of Java packages which we need to make accessible through java_opts.
       val openPackages = Array(
         "--add-opens=java.base/java.util=ALL-UNNAMED",
-        "--add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED"
+        "--add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED",
+        "--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming.directory=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED",
       )
 
       val updateResult = Try {

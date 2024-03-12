@@ -150,7 +150,7 @@ public class NewAdvancedSearchPage extends NewSearchPage {
     WebElement targetUser =
         waiter.until(
             ExpectedConditions.elementToBeClickable(
-                dialog.findElement(By.xpath(".//span[text()='" + username + "']"))));
+                By.xpath("//div[@role='dialog']//span[text()='" + username + "']")));
     targetUser.click();
 
     // Confirm the selection.

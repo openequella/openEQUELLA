@@ -11,6 +11,7 @@ import com.tle.webtests.pageobject.selection.SelectionStatusPage;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.interactions.Actions;
@@ -214,7 +215,10 @@ public class AttachmentsPage extends AbstractPage<AttachmentsPage> {
    * @return
    */
   public PackageViewer chooseFullscreenToView(String index) {
-    driver.findElement(By.id("sc_attachments" + index + "_fullScreenLink")).click();
+    WebElement link = driver.findElement(By.id("sc_attachments" + index + "_fullScreenLink"));
+    // When there is resource crunch, the selenium `click` function become unstable, thus use JS to
+    // trigger the action.
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", link);
     return new PackageViewer(context).get();
   }
 

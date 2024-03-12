@@ -1,4 +1,4 @@
--Xms2048m
--Xmx2048m
+-Xms2g
+-Xmx4g
 -XX:ReservedCodeCacheSize=256m
 -XX:MaxMetaspaceSize=512m

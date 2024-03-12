@@ -48,7 +48,7 @@ object CommonSettings extends AutoPlugin {
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core" % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
 
-    lazy val springVersion = "5.3.30"
+    lazy val springVersion = "5.3.32"
     lazy val springWeb     = "org.springframework" % "spring-web" % springVersion
     lazy val springAop     = "org.springframework" % "spring-aop" % springVersion
     lazy val springContext = "org.springframework" % "spring-context" % springVersion
@@ -94,7 +94,7 @@ object CommonSettings extends AutoPlugin {
     ),
     libraryDependencies ++= Seq(
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest"  %% "scalatest"      % "3.2.17" % Test,
+      "org.scalatest"  %% "scalatest"      % "3.2.18" % Test,
     )
   )
 }
