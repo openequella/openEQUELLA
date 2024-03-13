@@ -60,6 +60,7 @@ libraryDependencies ++= Seq(
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"          % jacksonVersion,
   "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,

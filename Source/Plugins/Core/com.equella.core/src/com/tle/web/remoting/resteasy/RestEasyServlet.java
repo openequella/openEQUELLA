@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
@@ -292,6 +293,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     mapper.registerModule(new JavaTypesModule());
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(new RestStringsModule());
+    mapper.registerModule(new Jdk8Module());
     mapper.setSerializationInclusion(Include.NON_ABSENT);
 
     // dev mode!
