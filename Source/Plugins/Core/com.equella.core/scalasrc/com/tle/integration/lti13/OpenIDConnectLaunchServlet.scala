@@ -136,7 +136,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
       decodedJWT      = verifiedResult._1
       platformDetails = verifiedResult._2
-      userDetails  <- UserDetails(decodedJWT)
+      userDetails  <- UserDetails(decodedJWT, platformDetails.usernameClaim)
       _            <- lti13AuthService.loginUser(wad, userDetails)
       lti13Request <- getLtiRequestDetails(decodedJWT)
     } yield (lti13Request, platformDetails)
