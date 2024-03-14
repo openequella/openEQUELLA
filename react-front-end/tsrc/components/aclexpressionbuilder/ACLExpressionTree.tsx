@@ -17,7 +17,7 @@
  */
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { TreeView } from "@mui/lab";
+import { TreeView } from "@mui/x-tree-view/TreeView";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
@@ -78,7 +78,7 @@ const ACLExpressionTree = ({
   const handleTreeToggle = (_: ChangeEvent<{}>, nodeIds: string[]) =>
     setExpanded(nodeIds);
 
-  const handleTreeSelect = (_: ChangeEvent<{}>, nodeIds: string[]) =>
+  const handleTreeSelect = (_: React.SyntheticEvent, nodeIds: string[]) =>
     setSelected(nodeIds);
 
   const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => {
@@ -152,6 +152,7 @@ const ACLExpressionTree = ({
 
   return (
     <TreeView
+      multiSelect
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       expanded={expanded}

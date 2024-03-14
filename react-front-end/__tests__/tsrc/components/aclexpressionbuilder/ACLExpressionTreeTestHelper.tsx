@@ -81,7 +81,7 @@ export const selectOperatorForNode = async (
   operator: ACLOperatorType,
 ) => {
   const selects = container.querySelectorAll(
-    `.${classes.labelSelect} div[role="button"]`,
+    `.${classes.labelSelect} div[role="combobox"]`,
   );
   const select = selects[nodeIndex];
 
