@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TreeItemProps } from "@mui/lab/TreeItem";
+import { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { Typography } from "@mui/material";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";

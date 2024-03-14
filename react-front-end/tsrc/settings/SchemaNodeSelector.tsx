@@ -17,7 +17,8 @@
  */
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import { TreeItem, TreeView } from "@mui/lab";
+import { TreeView } from "@mui/x-tree-view/TreeView";
+import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
 import { getAllPaths, pathForNode, SchemaNode } from "../modules/SchemaModule";
@@ -138,7 +139,10 @@ export default function SchemaNodeSelector({
         defaultCollapseIcon={<Remove />}
         selected={selectedNode}
         expanded={expanded}
-        onNodeToggle={(event, paths) => {
+        onNodeToggle={(
+          event: React.SyntheticEvent<Element, Event>,
+          paths: string[],
+        ) => {
           setExpanded(paths);
         }}
         onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
