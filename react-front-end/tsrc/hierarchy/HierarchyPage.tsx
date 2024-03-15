@@ -31,8 +31,10 @@ import { HIERARCHY_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import {
   addKeyResource,
+  defaultHierarchyAcl,
   deleteKeyResource,
   getHierarchy,
+  getMyAcls,
 } from "../modules/HierarchyModule";
 import { itemEq } from "../modules/SearchModule";
 import SearchResult from "../search/components/SearchResult";
@@ -78,6 +80,9 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [hierarchy, setHierarchy] = useState<
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
   >();
+  const [hierarchyAcls, setHierarchyAcls] =
+    useState<OEQ.Hierarchy.HierarchyTopicAcl>(defaultHierarchyAcl);
+
   const [needUpdateHierarchy, setNeedUpdateHierarchy] = useState(true);
   const [showSearchResult, setShowSearchResult] = useState(false);
 
@@ -97,6 +102,17 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )();
     }
   }, [appErrorHandler, compoundUuid, needUpdateHierarchy]);
+
+  // Get hierarchy ACLs
+  useEffect(() => {
+    pipe(
+      TE.tryCatch(
+        () => getMyAcls(compoundUuid),
+        (e) => `Failed to get hierarchy ACLs: ${e}`,
+      ),
+      TE.match(appErrorHandler, setHierarchyAcls),
+    )();
+  }, [appErrorHandler, compoundUuid]);
 
   /**
    * Add/Delete a key resource to the hierarchy and then update the `needUpdateHierarchy` flag.
@@ -138,12 +154,10 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
   /**
    * Generate a search result item with update key resource button.
    *
-   * @param compoundUuid the compound uuid for current hierarchy.
    * @param item the search result item to map over.
    * @param highlights a list of highlight terms.
    */
   const mapSearchResultItem = (
-    compoundUuid: string,
     item: OEQ.Search.SearchResultItem,
     highlights: string[],
   ): React.ReactNode => {
@@ -170,7 +184,11 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
         key={`${item.uuid}/${item.version}`}
         item={item}
         highlights={highlights}
-        customActionButtons={[updateKeyResourceButton]}
+        customActionButtons={
+          hierarchyAcls.MODIFY_KEY_RESOURCE
+            ? [updateKeyResourceButton]
+            : undefined
+        }
       />
     );
   };
@@ -194,9 +212,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
     if (isItems(searchResults)) {
       return pipe(
         searchResults,
-        A.map((item) =>
-          mapSearchResultItem(hierarchy.summary.compoundUuid, item, highlight),
-        ),
+        A.map((item) => mapSearchResultItem(item, highlight)),
       );
     }
 
@@ -236,7 +252,11 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   <Grid item xs={12}>
                     <KeyResourcePanel
                       items={keyResources}
-                      onPinIconClick={(item) => updateKeyResource(item, true)}
+                      onPinIconClick={
+                        hierarchyAcls.MODIFY_KEY_RESOURCE
+                          ? (item) => updateKeyResource(item, true)
+                          : undefined
+                      }
                     />
                   </Grid>
                 )),
