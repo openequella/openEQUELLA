@@ -29,7 +29,7 @@ export interface KeyResourcePanelProps {
   /**
    * The handler for each key resource item's pin icon click event.
    */
-  onPinIconClick: (item: OEQ.Search.SearchResultItem) => void;
+  onPinIconClick?: (item: OEQ.Search.SearchResultItem) => void;
 }
 
 /**
@@ -39,10 +39,7 @@ const KeyResourcePanel = ({ items, onPinIconClick }: KeyResourcePanelProps) => (
   <Grid container spacing={2} data-testid="key-resource-panel">
     {items.map((item) => (
       <Grid key={`${item.uuid}/${item.version}`} item xs={12} lg={6} xl={4}>
-        <KeyResource
-          item={item}
-          onPinIconClick={() => onPinIconClick(item)}
-        ></KeyResource>
+        <KeyResource item={item} onPinIconClick={onPinIconClick}></KeyResource>
       </Grid>
     ))}
   </Grid>

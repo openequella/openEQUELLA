@@ -29,7 +29,9 @@ import * as React from "react";
 import { Route, Router } from "react-router-dom";
 import {
   getHierarchy,
+  getMyAcls,
   topicWithChildren,
+  topicWithoutModifyKeyResources,
   topicWithoutSearchResults,
   topicWithShortAndLongDesc,
 } from "../../../__mocks__/Hierarchy.mock";
@@ -65,6 +67,7 @@ const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
 jest.mock("../../../tsrc/modules/HierarchyModule", () => ({
   getHierarchy: jest.fn(getHierarchy),
+  getMyAcls: jest.fn(getMyAcls),
 }));
 
 const renderHierarchyPage = async (
@@ -196,5 +199,13 @@ describe("<HierarchyPage/>", () => {
         })`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("hide all pin icons if user doesn't have MODIFY_KEY_RESOURCE ACL", async () => {
+    const compoundUuid = topicWithoutModifyKeyResources.compoundUuid;
+    const { queryAllByLabelText } = await renderHierarchyPage(compoundUuid);
+
+    expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
+    expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
   });
 });

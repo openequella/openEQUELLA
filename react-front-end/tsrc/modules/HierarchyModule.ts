@@ -82,3 +82,9 @@ export const deleteKeyResource = (
     itemUuid,
     itemVersion,
   );
+
+export const defaultHierarchyAcl: OEQ.Hierarchy.HierarchyTopicAcl = {
+  VIEW_HIERARCHY_TOPIC: false,
+  EDIT_HIERARCHY_TOPIC: false,
+  MODIFY_KEY_RESOURCE: false,
+};

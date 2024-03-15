@@ -52,9 +52,9 @@ export interface KeyResourceProps {
    */
   item: OEQ.Search.SearchResultItem;
   /**
-   * The handler for the pin icon click event.
+   * The handler for the pin icon click event. Hide the pin icon if it's undefined.
    */
-  onPinIconClick: (item: OEQ.Search.SearchResultItem) => void;
+  onPinIconClick?: (item: OEQ.Search.SearchResultItem) => void;
 }
 
 const PREFIX = "KeyResource";
@@ -68,7 +68,27 @@ export const classes = {
 };
 // The height of the card content before a thumbnail is added.
 const thumbSize = 138;
-export const StyledCard = styled(Card)(({ theme }) => {
+export const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== "hidePinIcon",
+})<{ hidePinIcon?: boolean }>(({ hidePinIcon }) => {
+  const baseActionCss = {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  };
+
+  const actionCss = hidePinIcon
+    ? {
+        ...baseActionCss,
+        justifyContent: "flex-end",
+        // Same as the margin of the pin icon.
+        marginRight: "8px",
+      }
+    : {
+        ...baseActionCss,
+        justifyContent: "space-between",
+      };
+
   return {
     [`&`]: {
       // Make sure every card has the same height in the row.
@@ -102,12 +122,7 @@ export const StyledCard = styled(Card)(({ theme }) => {
       // Need a width property to make text ellipsis work.
       minWidth: thumbSize,
     },
-    [`& .${classes.action}`]: {
-      display: "flex",
-      alignItems: "center",
-      flexDirection: "column",
-      justifyContent: "space-between",
-    },
+    [`& .${classes.action}`]: actionCss,
     [`& .${classes.attachmentCount}`]: {
       // Ensure its style is consistent with the pin icon.
       marginBottom: "8px",
@@ -220,7 +235,7 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
   );
 
   return (
-    <StyledCard>
+    <StyledCard hidePinIcon={onPinIconClick === undefined}>
       <Box className={classes.container}>
         <OEQThumb
           details={
@@ -232,14 +247,16 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
         <CardContent className={classes.info}>{itemInfo()}</CardContent>
 
         <Box className={classes.action}>
-          <TooltipIconButton
-            id={`${uuid}-${version}-unpin`}
-            title={removeKeyResourceText}
-            onClick={() => onPinIconClick(item)}
-            aria-label={removeKeyResourceText}
-          >
-            <PushPin color="secondary" />
-          </TooltipIconButton>
+          {onPinIconClick ? (
+            <TooltipIconButton
+              id={`${uuid}-${version}-unpin`}
+              title={removeKeyResourceText}
+              onClick={() => onPinIconClick(item)}
+              aria-label={removeKeyResourceText}
+            >
+              <PushPin color="secondary" />
+            </TooltipIconButton>
+          ) : undefined}
 
           {attachmentCount > 0 && (
             <Tooltip

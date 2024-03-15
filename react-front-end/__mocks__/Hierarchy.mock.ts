@@ -271,6 +271,16 @@ export const topicWithoutSearchResults: OEQ.BrowseHierarchy.HierarchyTopicSummar
     subHierarchyTopics: [],
   };
 
+export const topicWithoutModifyKeyResources: OEQ.BrowseHierarchy.HierarchyTopicSummary =
+  {
+    compoundUuid: "a41caa74-9fb5-4379-8252-27ac5d056d3a",
+    matchingItemCount: 50,
+    name: "You can't modify key resources",
+    showResults: false,
+    hideSubtopicsWithNoResults: true,
+    subHierarchyTopics: [],
+  };
+
 export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithShortAndLongDesc,
   topicWithHtmlDesc,
@@ -279,6 +289,7 @@ export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithoutSearchResults,
   topicWithNoResultChild,
   topicWithHideNoResultChild,
+  topicWithoutModifyKeyResources,
 ];
 
 /**
@@ -301,5 +312,41 @@ export const getHierarchy = (
             { name: "Parent2", compoundUuid: "uuid2" },
           ],
         }),
+    ),
+  );
+
+const defaultAcls: OEQ.Hierarchy.HierarchyTopicAcl = {
+  VIEW_HIERARCHY_TOPIC: true,
+  EDIT_HIERARCHY_TOPIC: true,
+  MODIFY_KEY_RESOURCE: true,
+};
+
+const hierarchyAcls: {
+  compoundUuid: string;
+  acls: OEQ.Hierarchy.HierarchyTopicAcl;
+}[] = [
+  {
+    compoundUuid: topicWithoutModifyKeyResources.compoundUuid,
+    acls: {
+      VIEW_HIERARCHY_TOPIC: true,
+      EDIT_HIERARCHY_TOPIC: true,
+      MODIFY_KEY_RESOURCE: false,
+    },
+  },
+];
+
+/**
+ * Mock async function to get hierarchy ACLs.
+ * If the ACLs is not found, it will return the default ACLs of the first hierarchy.
+ */
+export const getMyAcls = (
+  compoundUuid: string,
+): Promise<OEQ.Hierarchy.HierarchyTopicAcl> =>
+  pipe(
+    hierarchyAcls.find((h) => h.compoundUuid === compoundUuid),
+    O.fromNullable,
+    O.fold(
+      () => Promise.resolve(defaultAcls),
+      (acl) => Promise.resolve(acl.acls),
     ),
   );
