@@ -53,7 +53,6 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "co.fs2"                         %% "fs2-io"                        % fs2Version,
-  "com.jayway.jsonpath"            % "json-path"                      % "2.9.0",
   "com.softwaremill.sttp.client"   %% "core"                          % sttpVersion,
   "com.softwaremill.sttp.client"   %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp.client"   %% "circe"                         % sttpVersion,
