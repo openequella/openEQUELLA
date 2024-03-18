@@ -23,6 +23,7 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.gui.common.actions.CancelAction;
 import com.tle.admin.gui.common.actions.OkAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SchemaNode;
 import com.tle.admin.schema.SchemaTree;
@@ -34,8 +35,7 @@ import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.event.ActionEvent;
@@ -55,6 +55,9 @@ import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("nls")
 public class SchemaAndTargetChooserDialog {
+  private static final StringLookup strings =
+      Lookup.withPrefix("searchset.virtualisation.xpathchooser");
+
   private final ClientService clientService;
   private final JComboBox chooser;
   private final SchemaTree tree;
@@ -64,15 +67,6 @@ public class SchemaAndTargetChooserDialog {
   private final boolean indexedForPowersearchOnly;
 
   private String selectedNode;
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public SchemaAndTargetChooserDialog(
       final ClientService clientService,
@@ -107,7 +101,7 @@ public class SchemaAndTargetChooserDialog {
     dialog = ComponentHelper.createJDialog(parent);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.setContentPane(panel);
-    dialog.setTitle(getString("searchset.virtualisation.xpathchooser.dialogtitle"));
+    dialog.setTitle(strings.text("dialogtitle"));
     dialog.setModal(true);
     dialog.pack();
 
@@ -173,8 +167,7 @@ public class SchemaAndTargetChooserDialog {
 
         @Override
         public void finished() {
-          chooser.addItem(
-              new NameValue(getString("searchset.virtualisation.xpathchooser.schemadropdown"), ""));
+          chooser.addItem(new NameValue(strings.text("schemadropdown"), ""));
           AppletGuiUtils.addItemsToJCombo(chooser, get());
 
           chooser.addActionListener(schemaChoiceListener);

@@ -21,12 +21,13 @@ package com.dytech.edge.admin.wizard.model;
 import com.dytech.edge.admin.wizard.editor.Editor;
 import com.tle.admin.controls.repository.ControlDefinition;
 import com.tle.admin.controls.repository.ControlRepository;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,15 +44,12 @@ public abstract class Control {
   private final List<Control> children = new ArrayList<Control>();
   private Component editor;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
+  private static final StringLookup strings = Lookup.lookup;
 
   protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
+    return strings.text(key);
   }
 
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
   /** Constructs a new Control. */
   public Control(ControlDefinition definition) {
     this.definition = definition;

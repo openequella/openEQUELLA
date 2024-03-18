@@ -92,8 +92,8 @@ public class RoleSelectorControlEditor extends AbstractControlEditor<CustomContr
     final Set<Locale> langs = BundleCache.getLanguages();
     title = new I18nTextField(langs);
     description = new I18nTextField(langs);
-    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
-    selectMultiple = new JCheckBox(getString("rolesel.selectmultiple")); // $NON-NLS-1$
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
+    selectMultiple = new JCheckBox(strings.text("rolesel.selectmultiple"));
 
     final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
 

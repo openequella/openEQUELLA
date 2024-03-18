@@ -56,11 +56,12 @@ public class FreemarkerConfig extends AbstractTemplatingConfig {
     editor = new EquellaSyntaxTextArea(SyntaxConstants.SYNTAX_STYLE_HTML, 500, 2000);
     add(new RTextScrollPane(editor), "grow, push");
 
-    add(new JLabel(getString("summarysections.freemarker.label.script")));
+    add(new JLabel(strings.text("summarysections.freemarker.label.script")));
     script = new EquellaSyntaxTextArea(500, 2000);
     add(new RTextScrollPane(script), "grow, push");
 
-    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    final JButton showFiles =
+        new JButton(strings.text("summarydisplay.abstracttemplating.showfiles"));
     showFiles.addActionListener(
         new ActionListener() {
           @Override
@@ -114,6 +115,6 @@ public class FreemarkerConfig extends AbstractTemplatingConfig {
 
   @Override
   public String getEditorLabelKey() {
-    return getKey("summarysections.freemarker.label.markup");
+    return strings.key("summarysections.freemarker.label.markup");
   }
 }

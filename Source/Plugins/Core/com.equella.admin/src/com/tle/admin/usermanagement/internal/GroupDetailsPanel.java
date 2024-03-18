@@ -27,6 +27,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.helper.FilterUserBeanModel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.usermanagement.internal.GroupsTab.TreeUpdateName;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
@@ -35,8 +36,8 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
@@ -67,16 +68,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
   private JTextArea description;
   private FilteredShuffleList<UserBean> users;
 
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(GroupDetailsPanel.class) + ".";
-
-  private static String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
-  private static String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
+  private static final StringLookup strings = Lookup.lookup;
 
   public GroupDetailsPanel(ClientService services, TLEAction saveAction) {
     this.saveAction = saveAction;
@@ -118,12 +110,11 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
 
     users =
         new FilteredShuffleList<UserBean>(
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.search"), //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.search"),
             new FilterUserBeanModel(userService),
             Format.USER_BEAN_COMPARATOR);
-    users.setSearchText(getString("internal.groupdetailspanel.searchbutton")); // $NON-NLS-1$
-    users.setRemoveText(getString("internal.groupdetailspanel.removebutton")); // $NON-NLS-1$
+    users.setSearchText(strings.text("internal.groupdetailspanel.searchbutton"));
+    users.setRemoveText(strings.text("internal.groupdetailspanel.removebutton"));
 
     JButton save = new JButton(saveAction);
 

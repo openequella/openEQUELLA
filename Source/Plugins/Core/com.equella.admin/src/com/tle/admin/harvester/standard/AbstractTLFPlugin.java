@@ -20,10 +20,12 @@ package com.tle.admin.harvester.standard;
 
 import com.dytech.devlib.PropBagEx;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.NameValue;
 import com.tle.common.harvester.AbstractTLFHarvesterSettings;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteSchemaService;
 import java.util.Map;
@@ -37,6 +39,8 @@ import javax.swing.JTextField;
 @SuppressWarnings("nls")
 public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
     extends HarvesterPlugin<T> {
+  protected static final StringLookup loraxPluginStrings = Lookup.withPrefix("loraxplugin");
+
   private JTextField userField;
   private JPasswordField passField;
 
@@ -59,13 +63,13 @@ public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
     harvestLearningObjects = new JCheckBox();
     harvestResources = new JCheckBox();
 
-    panel.addComponent(new JLabel(getString(getPluginsFieldString())));
-    panel.addNameAndComponent(getString("detailstab.user"), userField);
-    panel.addNameAndComponent(getString("detailstab.pass"), passField);
+    panel.addComponent(new JLabel(strings.text(getPluginsFieldString())));
+    panel.addNameAndComponent(strings.text("detailstab.user"), userField);
+    panel.addNameAndComponent(strings.text("detailstab.pass"), passField);
 
-    panel.addNameAndComponent(getString("loraxplugin.live"), liveOnly);
-    panel.addNameAndComponent(getString("loraxplugin.harvestlo"), harvestLearningObjects);
-    panel.addNameAndComponent(getString("loraxplugin.harvestre"), harvestResources);
+    panel.addNameAndComponent(loraxPluginStrings.text("live"), liveOnly);
+    panel.addNameAndComponent(loraxPluginStrings.text("harvestlo"), harvestLearningObjects);
+    panel.addNameAndComponent(loraxPluginStrings.text("harvestre"), harvestResources);
   }
 
   @Override
@@ -92,11 +96,11 @@ public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
   @Override
   public void validation() throws EditorException {
     if (userField.getText().isEmpty()) {
-      throw new EditorException(getString("loraxplugin.userfield"));
+      throw new EditorException(loraxPluginStrings.text("userfield"));
     }
 
     if (!harvestLearningObjects.isSelected() && !harvestResources.isSelected()) {
-      throw new EditorException(getString("loraxplugin.harvest"));
+      throw new EditorException(loraxPluginStrings.text("harvest"));
     }
   }
 
@@ -125,7 +129,7 @@ public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
     }
 
     if (!nodeExists) {
-      JOptionPane.showMessageDialog(panel.getComponent(), getString("loraxplugin.schema"));
+      JOptionPane.showMessageDialog(panel.getComponent(), loraxPluginStrings.text("schema"));
     }
   }
 }

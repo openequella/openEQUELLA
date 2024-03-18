@@ -27,7 +27,7 @@ import javax.swing.JCheckBox;
 @SuppressWarnings("nls")
 public class LinksSettingsPanel extends UniversalControlSettingPanel {
   private final JCheckBox linkDuplicationCheck =
-      new JCheckBox(getString("links.settings.duplicate.check"));
+      new JCheckBox(strings.text("links.settings.duplicate.check"));
 
   public LinksSettingsPanel() {
     super();
@@ -36,7 +36,7 @@ public class LinksSettingsPanel extends UniversalControlSettingPanel {
 
   @Override
   protected String getTitleKey() {
-    return getKey("links.settings.title");
+    return strings.key("links.settings.title");
   }
 
   @Override

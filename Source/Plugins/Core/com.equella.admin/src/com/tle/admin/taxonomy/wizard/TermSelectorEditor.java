@@ -319,7 +319,7 @@ public class TermSelectorEditor extends AbstractPowerSearchControlEditor<TermSel
   }
 
   private String s(String keyEnd) {
-    return getString("wizard.termselector." + keyEnd);
+    return strings.text("wizard.termselector." + keyEnd);
   }
 
   private void selectTaxonomy(final String taxUuid) {

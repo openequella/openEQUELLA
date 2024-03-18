@@ -30,6 +30,7 @@ import com.tle.admin.gui.common.actions.SearchAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.item.Item;
 import com.tle.client.gui.popup.TablePopupListener;
@@ -37,6 +38,7 @@ import com.tle.common.adminconsole.RemoteAdminService;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SearchResults;
 import com.tle.common.searching.VeryBasicSearch;
@@ -66,6 +68,8 @@ import javax.swing.table.AbstractTableModel;
 
 /** @author Nicholas Read */
 public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionListener {
+  private static final StringLookup strings = Lookup.withPrefix("keyresourcestab");
+
   private static final long serialVersionUID = 1L;
 
   private static final int RESULTS_PER_PAGE = 10;
@@ -99,8 +103,8 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
   @Override
   @SuppressWarnings("nls")
   public void setup(ChangeDetector changeDetector) {
-    JLabel selectedLabel = new JLabel(getString("keyresourcestab.selected"));
-    JLabel searchLabel = new JLabel(getString("keyresourcestab.find"));
+    JLabel selectedLabel = new JLabel(strings.text("selected"));
+    JLabel searchLabel = new JLabel(strings.text("find"));
 
     final int height1 = selectedLabel.getPreferredSize().height;
     final int width1 = 20;
@@ -189,7 +193,7 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
               }
             });
 
-    addAsKeyResource = new JButton(getString("keyresourcestab.add")); // $NON-NLS-1$
+    addAsKeyResource = new JButton(strings.text("add"));
     addAsKeyResource.addActionListener(this);
     addAsKeyResource.setEnabled(false);
 
@@ -266,10 +270,10 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
           tip = model.getItemDescription(rowIndex);
         }
 
-        if (tip == null || tip.trim().length() == 0) {
-          tip = getString("keyresourcestab.nodesc"); // $NON-NLS-1$
+        if (tip == null || tip.trim().isEmpty()) {
+          tip = strings.text("nodesc");
         } else if (tip.length() > 100) {
-          tip = tip.substring(0, 100) + "..."; // $NON-NLS-1$
+          tip = tip.substring(0, 100) + "...";
         }
 
         return tip;
@@ -295,22 +299,18 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
       Set<Integer> versions = selectedModel.getItemVersions(entry.getUuid());
       if (versions.contains(entry.getVersion())) {
         JOptionPane.showMessageDialog(
-            this,
-            getString("keyresourcestab.warn"),
-            CurrentLocale //$NON-NLS-1$
-                .get(getKey("keyresourcestab.already")), // $NON-NLS-1$
-            JOptionPane.ERROR_MESSAGE);
+            this, strings.text("warn"), strings.text("already"), JOptionPane.ERROR_MESSAGE);
       } else if (!versions.isEmpty()) {
         String message = null;
         if (versions.size() == 1) {
           final int otherVersion = versions.iterator().next();
           if (otherVersion < entry.getVersion()) {
-            message = getString("keyresourcestab.earlier"); // $NON-NLS-1$
+            message = strings.text("earlier");
           } else {
-            message = getString("keyresourcestab.newer"); // $NON-NLS-1$
+            message = strings.text("newer");
           }
         } else {
-          message = getString("keyresourcestab.other"); // $NON-NLS-1$
+          message = strings.text("other");
         }
 
         if (JOptionPane.showConfirmDialog(
@@ -434,8 +434,7 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
 
           @Override
           public void exception() {
-            Driver.displayInformation(
-                getComponent(), getString("keyresourcestab.invalid")); // $NON-NLS-1$
+            Driver.displayInformation(getComponent(), strings.text("invalid"));
             getException().printStackTrace();
 
             doInAnyCase();
@@ -443,11 +442,11 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
 
           public void doInAnyCase() {
             countLabel.setText(
-                CurrentLocale.get(
-                    getKey("keyresourcestab.results"),
-                    new Object[] { // $NON-NLS-1$
-                      startResult + 1, startResult + searchModel.getRowCount(), totalResults
-                    }));
+                strings.text(
+                    "results",
+                    startResult + 1,
+                    startResult + searchModel.getRowCount(),
+                    totalResults));
 
             prevPage.setEnabled(startResult > 0);
             firstPage.setEnabled(startResult > 0);
@@ -464,9 +463,9 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
   /** @author Nicholas Read */
   private class MyTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
-    private final String FIRST = getString("keyresourcestab.name"); // $NON-NLS-1$
-    private final String SECOND = getString("keyresourcestab.version"); // $NON-NLS-1$
-    private final String THIRD = getString("keyresourcestab.status"); // $NON-NLS-1$
+    private final String FIRST = strings.text("name"); // $NON-NLS-1$
+    private final String SECOND = strings.text("version"); // $NON-NLS-1$
+    private final String THIRD = strings.text("status"); // $NON-NLS-1$
 
     private final List<Item> entries = new ArrayList<Item>();
 

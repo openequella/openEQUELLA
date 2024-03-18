@@ -21,12 +21,12 @@ package com.tle.admin.harvester.standard;
 import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.EntityPack;
 import com.tle.common.NameValue;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.HarvesterProfileSettings;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import javax.swing.JComboBox;
 
 public abstract class HarvesterPlugin<T extends HarvesterProfileSettings> {
@@ -34,15 +34,7 @@ public abstract class HarvesterPlugin<T extends HarvesterProfileSettings> {
   protected JNameValuePanel panel;
   protected Driver driver;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   public HarvesterPlugin(Class<T> settingsClass) {
     this.settingsClass = settingsClass;

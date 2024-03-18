@@ -19,7 +19,9 @@
 package com.tle.admin.fedsearch.standard;
 
 import com.tle.admin.fedsearch.SearchPlugin;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.search.SRWSettings;
+import com.tle.common.i18n.StringLookup;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -43,8 +45,10 @@ public class SRWPlugin extends SearchPlugin<SRWSettings> {
     panel.add(schemaIdField);
   }
 
-  private String s(String keyPart) {
-    return getString("srwplugin." + keyPart);
+  private static final StringLookup strings = Lookup.withPrefix("srwplugin");
+
+  private String s(String key) {
+    return strings.text(key);
   }
 
   @Override

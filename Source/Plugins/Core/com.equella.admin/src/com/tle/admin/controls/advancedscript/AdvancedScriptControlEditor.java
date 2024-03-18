@@ -185,7 +185,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
   }
 
   private JComponent createDetailsSection() {
-    final JLabel notesLabel = new JLabel(getString("label.notes")); // $NON-NLS-1$
+    final JLabel notesLabel = new JLabel(strings.text("label.notes"));
 
     notes = new JTextArea();
     notes.setWrapStyleWord(true);
@@ -207,9 +207,9 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
   }
 
   protected JComponent createExportSection() {
-    JLabel importExport = new JLabel(getString("label.importexport")); // $NON-NLS-1$
-    exportButton = new JButton(getString("button.export")); // $NON-NLS-1$
-    importButton = new JButton(getString("button.import")); // $NON-NLS-1$
+    JLabel importExport = new JLabel(strings.text("label.importexport"));
+    exportButton = new JButton(strings.text("button.export"));
+    importButton = new JButton(strings.text("button.import"));
 
     final int height1 = importExport.getPreferredSize().height;
     final int height2 = exportButton.getPreferredSize().height;
@@ -240,7 +240,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
     addCodeTab(clientEditors, "tab.template", new RTextScrollPane(freemarker)); // $NON-NLS-1$
     addCodeTab(clientEditors, "tab.onload", new RTextScrollPane(onloadJs)); // $NON-NLS-1$
     addCodeTab(clientEditors, "tab.onsubmit", new RTextScrollPane(onsubmitJs)); // $NON-NLS-1$
-    clientEditors.addTab(getString("tab.libraries"), jquery); // $NON-NLS-1$
+    clientEditors.addTab(strings.text("tab.libraries"), jquery);
     clientEditors.setPreferredSize(new Dimension(clientEditors.getWidth(), CODE_HEIGHT));
 
     return clientEditors;
@@ -275,7 +275,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
   }
 
   private void addCodeTab(JTabbedPane tabs, String titleKey, RTextScrollPane codePane) {
-    JLabel helpLabel = new JLabel(getString(titleKey + ".help")); // $NON-NLS-1$
+    JLabel helpLabel = new JLabel(strings.text(titleKey + ".help"));
 
     final int[] rows = {helpLabel.getPreferredSize().height, TableLayout.FILL};
     final int[] cols = {TableLayout.FILL};
@@ -284,7 +284,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
     tabArea.add(helpLabel, new Rectangle(0, 0, 1, 1));
     tabArea.add(codePane, new Rectangle(0, 1, 1, 1));
 
-    tabs.add(getString(titleKey), tabArea);
+    tabs.add(strings.text(titleKey), tabArea);
   }
 
   @SuppressWarnings("deprecation")
@@ -350,29 +350,24 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
         // it may have a title, they used to have one in RC1
         controlName = CurrentLocale.get(getWizardControl().getTitle(), Constants.BLANK);
         if (Check.isEmpty(controlName)) {
-          controlName = getString("untitledexport"); // $NON-NLS-1$
+          controlName = strings.text("untitledexport");
         }
       }
       DialogUtils.doSaveDialog(
           this,
-          getString("export"), // $NON-NLS-1$
+          strings.text("export"),
           new AdvancedScriptConfigFileFilter(),
           DialogUtils.getSuggestedFileName(controlName, EXPORT_FILE_EXTENSION),
           createExporter());
     } else if (e.getSource() == importButton) {
       DialogUtils.doOpenDialog(
-          this,
-          getString("import"), // $NON-NLS-1$
-          new AdvancedScriptConfigFileFilter(),
-          createImporter());
+          this, strings.text("import"), new AdvancedScriptConfigFileFilter(), createImporter());
     }
   }
 
   private FileWorker createImporter() {
     return new AbstractFileWorker<Object>(
-        getString("success.import"), // $NON-NLS-1$
-        getString("error.import")) // $NON-NLS-1$
-    {
+        strings.text("success.import"), strings.text("error.import")) {
       @Override
       public Object construct() throws Exception {
         final PropBagEx imp = new PropBagEx(file);
@@ -389,10 +384,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
   }
 
   private FileWorker createExporter() {
-    return new AbstractFileWorker<Object>(
-        getString("success.export"), // $NON-NLS-1$
-        getString("error.export")) // $NON-NLS-1$
-    {
+    return new AbstractFileWorker<>(strings.text("success.export"), strings.text("error.export")) {
       @Override
       public Object construct() throws Exception {
         final PropBagEx exp = new PropBagEx();

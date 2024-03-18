@@ -33,6 +33,6 @@ public class LORAXPlugin extends AbstractTLFPlugin<LORAXHarvesterSettings> {
 
   @Override
   protected String getPluginsFieldString() {
-    return "loraxplugin.settings";
+    return loraxPluginStrings.key("settings");
   }
 }
