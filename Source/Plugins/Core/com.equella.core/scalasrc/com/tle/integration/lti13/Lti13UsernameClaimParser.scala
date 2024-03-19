@@ -58,13 +58,13 @@ object Lti13UsernameClaimParser {
     * @param claim The LTI custom user name claim to be verified.
     * @return Either an array of verified paths or an error
     */
-  def parse(claim: String): Either[PlatformDetailsError, Array[String]] = {
+  def parse(claim: String): Either[String, Array[String]] = {
     val paths = USERNAME_CLAIM_REGEX.findAllMatchIn(claim).toArray
 
     Either.cond(
       paths.map(_.matched.length).sum == claim.length, // including brackets
       paths.map(_.group(1)), // Only need the content within the brackets
-      PlatformDetailsError(s"Syntax error in claim $claim")
+      s"Syntax error in claim $claim"
     )
   }
 }
