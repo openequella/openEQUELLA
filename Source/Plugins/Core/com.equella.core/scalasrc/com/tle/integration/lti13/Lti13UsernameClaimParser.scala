@@ -62,7 +62,7 @@ object Lti13UsernameClaimParser {
     val paths = USERNAME_CLAIM_REGEX.findAllMatchIn(claim).toList
 
     Either.cond(
-      paths.map(_.matched.length).sum == claim.length, // including brackets
+      claim.nonEmpty && paths.map(_.matched.length).sum == claim.length, // including brackets
       paths.map(_.group(1)), // Only need the content within the brackets
       s"Syntax error in claim $claim"
     )

@@ -34,6 +34,8 @@ class Lti13UsernameClaimParserTest extends AnyFunSpec with Matchers with GivenWh
         s"[[[[$FIRST_PATH]",
         s"[$FIRST_PATH",
         s"$FIRST_PATH]",
+        "[]",
+        ""
       )
 
       Then("The result of parsing these claims should all be an Either of left")
