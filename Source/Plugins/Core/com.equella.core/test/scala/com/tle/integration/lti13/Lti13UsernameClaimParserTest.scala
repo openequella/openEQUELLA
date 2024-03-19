@@ -20,7 +20,7 @@ class Lti13UsernameClaimParserTest extends AnyFunSpec with Matchers with GivenWh
       r.isRight shouldBe true
 
       And("The value of the Either should be an array of the paths")
-      r.value.get should equal(Array(FIRST_PATH, SECOND_PATH, THIRD_PATH))
+      r.value should equal(Array(FIRST_PATH, SECOND_PATH, THIRD_PATH))
     }
 
     it("should return an error if the claim is invalid") {

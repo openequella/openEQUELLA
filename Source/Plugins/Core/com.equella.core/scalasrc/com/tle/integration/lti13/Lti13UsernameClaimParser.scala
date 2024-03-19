@@ -58,7 +58,7 @@ object Lti13UsernameClaimParser {
     * @param claim The LTI custom user name claim to be verified.
     * @return Either an array of verified paths or an error
     */
-  def parse(claim: String): Either[PlatformDetailsError, Option[Array[String]]] = {
+  def parse(claim: String): Either[PlatformDetailsError, Array[String]] = {
     val paths = USERNAME_CLAIM_REGEX.findAllMatchIn(claim).toArray
 
     Either.cond(

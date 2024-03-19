@@ -138,7 +138,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       platformDetails = verifiedResult._2
       usernameClaimPaths <- platformDetails.usernameClaim
         .map(Lti13UsernameClaimParser.parse)
-        .getOrElse(Right(None))
+        .getOrElse(Right(Array.empty[String]))
       userDetails  <- UserDetails(decodedJWT, usernameClaimPaths)
       _            <- lti13AuthService.loginUser(wad, userDetails)
       lti13Request <- getLtiRequestDetails(decodedJWT)
