@@ -158,7 +158,8 @@ case class UserDetails(platformId: String,
                        lastName: String,
                        email: Option[String])
 object UserDetails {
-  def apply(jwt: DecodedJWT, usernameClaimPaths: Array[String]): Either[InvalidJWT, UserDetails] = {
+  def apply(jwt: DecodedJWT,
+            usernameClaimPaths: Option[List[String]]): Either[InvalidJWT, UserDetails] = {
     val claim = getClaim(jwt)
 
     // Use the custom username claim if present, otherwise use the Subject claim.
@@ -166,15 +167,15 @@ object UserDetails {
     // The claim has been verified earlier, so if parsing the token or reading the value
     // fails, it's mostly because the token is invalid.
     def getUserId: Either[InvalidJWT, String] = {
-      def fromCustomClaim: Either[InvalidJWT, String] = {
+      def fromCustomClaim(paths: List[String]): Either[InvalidJWT, String] = {
         val jwtPayload =
           new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
 
         // The claim is verified so we can simply build the original string in the required format.
-        def originalClaim = usernameClaimPaths.map(c => s"[$c]").mkString
+        def originalClaim = paths.map(c => s"[$c]").mkString
 
         def read(doc: Json): Decoder.Result[String] =
-          usernameClaimPaths
+          paths
             .foldLeft[ACursor](doc.hcursor) { (cursor, key) =>
               cursor.downField(key)
             }
@@ -189,7 +190,7 @@ object UserDetails {
         Option(jwt.getSubject)
           .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
 
-      if (usernameClaimPaths.nonEmpty) fromCustomClaim else fromSubjectClaim
+      usernameClaimPaths.map(fromCustomClaim).getOrElse(fromSubjectClaim)
     }
 
     for {

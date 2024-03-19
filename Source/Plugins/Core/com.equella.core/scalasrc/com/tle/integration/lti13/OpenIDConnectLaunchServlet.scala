@@ -86,12 +86,8 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   }
 
   private def verifyUsernameClaim(
-      usernameClaim: Option[String]): Either[PlatformDetailsError, Array[String]] =
-    usernameClaim match {
-      case Some(claim) =>
-        Lti13UsernameClaimParser.parse(claim).leftMap(PlatformDetailsError)
-      case None => Right(Array.empty[String])
-    }
+      usernameClaim: Option[String]): Option[Either[PlatformDetailsError, List[String]]] =
+    usernameClaim.map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
 
   private def handleInitiateLoginRequest(initLogin: InitiateLoginRequest,
                                          resp: HttpServletResponse): Unit = {
@@ -145,7 +141,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
       decodedJWT      = verifiedResult._1
       platformDetails = verifiedResult._2
-      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
+      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim).sequence // Flip the monads
       userDetails        <- UserDetails(decodedJWT, usernameClaimPaths)
       _                  <- lti13AuthService.loginUser(wad, userDetails)
       lti13Request       <- getLtiRequestDetails(decodedJWT)
