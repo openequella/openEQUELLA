@@ -41,7 +41,6 @@ import { routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
-import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -89,6 +88,8 @@ import {
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
+  isGalleryItems,
+  isListItems,
   navigateTo,
   SearchContext,
   SearchPageHeaderConfig,
@@ -750,17 +751,9 @@ export const SearchPageBody = ({
       return null;
     }
 
-    const isListItems = (
-      items: unknown,
-    ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
-
-    const isGalleryItems = (
-      items: unknown,
-    ): items is GallerySearchResultItem[] => from === "gallery-search";
-
-    if (isListItems(searchResults)) {
+    if (isListItems(from, searchResults)) {
       return mapSearchResultItems(searchResults, highlights);
-    } else if (isGalleryItems(searchResults)) {
+    } else if (isGalleryItems(from, searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
 

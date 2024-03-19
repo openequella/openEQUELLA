@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as t from "io-ts";
-import * as td from "io-ts-types";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
@@ -27,6 +25,8 @@ import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
 import { History, Location } from "history";
+import * as t from "io-ts";
+import * as td from "io-ts-types";
 import { pick } from "lodash";
 import { createContext } from "react";
 import type {
@@ -47,6 +47,7 @@ import {
   Collection,
   findCollectionsByUuid,
 } from "../modules/CollectionsModule";
+import { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import { LegacyMyResourcesCodec } from "../modules/LegacyContentModule";
 import {
   buildSelectionSessionItemSummaryLink,
@@ -821,3 +822,27 @@ export const buildSearchPageNavigationConfig = (
   selectionSessionPathBuilder: () =>
     buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
 });
+
+/**
+ * Type guard for item-search results.
+ *
+ * @param from - The `from` attribute in `SearchPageSearchResult` context,
+ *               expected be "item-search" for a positive check.
+ * @param items - The data to be checked, expected to come from a search operation.
+ */
+export const isListItems = (
+  from: string,
+  items: unknown,
+): items is OEQ.Search.SearchResultItem[] => from === "item-search";
+
+/**
+ * Type guard for gallery-search results.
+ *
+ * @param from - The `from` attribute in `SearchPageSearchResult` context,
+ *               expected be "gallery-search" for a positive check.
+ * @param items - The data to be checked, expected to come from a search operation.
+ */
+export const isGalleryItems = (
+  from: string,
+  items: unknown,
+): items is GallerySearchResultItem[] => from === "gallery-search";
