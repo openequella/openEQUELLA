@@ -170,6 +170,9 @@ object UserDetails {
         val jwtPayload =
           new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
 
+        // The claim is verified so we can simply build the original string in the required format.
+        def originalClaim = usernameClaimPaths.map(c => s"[$c]").mkString
+
         def read(doc: Json): Decoder.Result[String] =
           usernameClaimPaths
             .foldLeft[ACursor](doc.hcursor) { (cursor, key) =>
@@ -179,7 +182,7 @@ object UserDetails {
 
         parse(jwtPayload)
           .flatMap(read)
-          .leftMap(_ => InvalidJWT(s"Unable to determine user ID by claim $claim"))
+          .leftMap(_ => InvalidJWT(s"Unable to determine user ID by claim $originalClaim"))
       }
 
       def fromSubjectClaim: Either[InvalidJWT, String] =
