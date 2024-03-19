@@ -271,6 +271,10 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
               {(_: SearchContextProps) => (
                 <SearchPageBody
                   pathname={HIERARCHY_PATH}
+                  headerConfig={{
+                    enableCSVExportButton: false,
+                    enableShareSearchButton: false,
+                  }}
                   enableClassification
                   refinePanelConfig={refinePanelConfig}
                   customRenderSearchResults={customSearchResultBuilder}
