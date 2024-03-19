@@ -37,10 +37,13 @@ import {
   getMyAcls,
 } from "../modules/HierarchyModule";
 import { itemEq } from "../modules/SearchModule";
+import GallerySearchResult from "../search/components/GallerySearchResult";
 import SearchResult from "../search/components/SearchResult";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
+  isGalleryItems,
+  isListItems,
   SearchContext,
   SearchContextProps,
   SearchPageOptions,
@@ -157,7 +160,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
    * @param item the search result item to map over.
    * @param highlights a list of highlight terms.
    */
-  const mapSearchResultItem = (
+  const mapListItemResult = (
     item: OEQ.Search.SearchResultItem,
     highlights: string[],
   ): React.ReactNode => {
@@ -206,17 +209,14 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
       content: { results: searchResults, highlight },
     } = searchResult;
 
-    const isItems = (items: unknown): items is OEQ.Search.SearchResultItem[] =>
-      from === "item-search";
-
-    if (isItems(searchResults)) {
+    if (isListItems(from, searchResults)) {
       return pipe(
         searchResults,
-        A.map((item) => mapSearchResultItem(item, highlight)),
+        A.map((item) => mapListItemResult(item, highlight)),
       );
+    } else if (isGalleryItems(from, searchResults)) {
+      return <GallerySearchResult items={searchResults} />;
     }
-
-    //TODO: ADD image and video gallery mode
 
     throw new TypeError("Unexpected display mode for hierarchy result");
   };

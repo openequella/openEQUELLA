@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import { absurd, pipe } from "fp-ts/function";
 import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import type { Classification } from "../modules/SearchFacetsModule";
 import type { SearchPageOptions } from "./SearchPageHelper";
-import { absurd } from "fp-ts/function";
 
 /**
  * The types of SearchResultItem that we support within an `OEQ.Search.SearchResult`.
