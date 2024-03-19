@@ -27,10 +27,13 @@ class Lti13UsernameClaimParserTest extends AnyFunSpec with Matchers with GivenWh
       Given("a list of claims not properly constructed in the bracket notation format")
       val badClaims = Array(
         s"[[$FIRST_PATH][$SECOND_PATH][$THIRD_PATH]]",
+        s"[$FIRST_PATH]$SECOND_PATH][$THIRD_PATH]",
+        s"[$FIRST_PATH[$SECOND_PATH][$THIRD_PATH]",
+        s"[$FIRST_PATH]$SECOND_PATH[$THIRD_PATH]",
         s"[$FIRST_PATH]]]]",
         s"[[[[$FIRST_PATH]",
         s"[$FIRST_PATH",
-        s"$FIRST_PATH]"
+        s"$FIRST_PATH]",
       )
 
       Then("The result of parsing these claims should all be an Either of left")
