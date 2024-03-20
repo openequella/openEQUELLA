@@ -22,7 +22,6 @@
     <import plugin-id="com.tle.platform.common" exported="true" />
     <import plugin-id="com.tle.platform.equella" exported="true" />
     <import plugin-id="com.tle.platform.swing" exported="true" />
-    <import plugin-id="com.tle.webstart.admin" exported="true" optional="true" />
   </requires>
   <extension plugin-id="com.tle.admin.tools" point-id="tool" id="harvestertool">
     <parameter id="displayorder" value="900" />

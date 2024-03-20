@@ -22,6 +22,6 @@ package com.tle.admin.taxonomy.wizard;
 public class WidePopupBrowserConfig extends PopupBrowserConfig {
   @Override
   protected String getDescription() {
-    return getString("wizard.widePopupBrowser.description");
+    return strings.text("wizard.widePopupBrowser.description");
   }
 }

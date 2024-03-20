@@ -70,7 +70,9 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
 
     groupRestriction =
         new GroupPanel(
-            getString("restrict.groups"), getString("groups.select"), getString("groups.selected"));
+            strings.text("restrict.groups"),
+            strings.text("groups.select"),
+            strings.text("groups.selected"));
 
     addSection(groupRestriction);
 
@@ -105,15 +107,14 @@ public class GroupSelectorControlEditor extends AbstractControlEditor<CustomCont
   }
 
   private JComponent createDetailsSection() {
-    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
-    final JLabel descriptionLabel =
-        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
+    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title"));
+    final JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description"));
 
     final Set<Locale> langs = BundleCache.getLanguages();
     title = new I18nTextField(langs);
     description = new I18nTextField(langs);
-    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
-    selectMultiple = new JCheckBox(getString("selectmultiple")); // $NON-NLS-1$
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
+    selectMultiple = new JCheckBox(strings.text("selectmultiple"));
 
     final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
 

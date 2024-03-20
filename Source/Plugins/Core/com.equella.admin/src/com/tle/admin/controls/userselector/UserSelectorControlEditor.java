@@ -73,9 +73,9 @@ public class UserSelectorControlEditor extends AbstractControlEditor<CustomContr
 
     groupRestriction =
         new UserGroupPanel(
-            getString("usersel.restrict.groups"), // $NON-NLS-1$
-            getString("groups.select"),
-            getString("groups.selected")); // $NON-NLS-1$//$NON-NLS-2$
+            strings.text("usersel.restrict.groups"),
+            strings.text("groups.select"),
+            strings.text("groups.selected"));
 
     addSection(groupRestriction);
 
@@ -110,15 +110,14 @@ public class UserSelectorControlEditor extends AbstractControlEditor<CustomContr
   }
 
   private JComponent createDetailsSection() {
-    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title")); // $NON-NLS-1$
-    final JLabel descriptionLabel =
-        new JLabel(CurrentLocale.get("wizard.controls.description")); // $NON-NLS-1$
+    final JLabel titleLabel = new JLabel(CurrentLocale.get("wizard.controls.title"));
+    final JLabel descriptionLabel = new JLabel(CurrentLocale.get("wizard.controls.description"));
 
     final Set<Locale> langs = BundleCache.getLanguages();
     title = new I18nTextField(langs);
     description = new I18nTextField(langs);
-    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory")); // $NON-NLS-1$
-    selectMultiple = new JCheckBox(getString("usersel.selectmultiple")); // $NON-NLS-1$
+    mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
+    selectMultiple = new JCheckBox(strings.text("usersel.selectmultiple"));
 
     final JPanel all = new JPanel(new MigLayout("wrap", "[][grow, fill]"));
 

@@ -23,6 +23,7 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.common.gui.tree.AbstractTreeNodeEditor;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.common.LazyTreeNode;
@@ -31,7 +32,7 @@ import com.tle.common.applet.client.EntityCache;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.hierarchy.RemoteHierarchyService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -40,6 +41,8 @@ import javax.swing.JTabbedPane;
 /** @author Nicholas Read */
 public class TopicEditor extends AbstractTreeNodeEditor {
   private static final long serialVersionUID = 1L;
+
+  private static final StringLookup topicStrings = Lookup.withPrefix("topiceditor");
 
   private final RemoteHierarchyService hierarchyService;
   private final HierarchyPack pack;
@@ -73,16 +76,16 @@ public class TopicEditor extends AbstractTreeNodeEditor {
   private void setup(ClientService clientService, EntityCache cache) {
     tabs = new JTabbedPane();
 
-    tabs.addTab(getString("topiceditor.details"), new DetailsTab(cache));
-    tabs.addTab(getString("topiceditor.filtering"), new FilteringTab(cache, clientService));
+    tabs.addTab(topicStrings.text("details"), new DetailsTab(cache));
+    tabs.addTab(topicStrings.text("filtering"), new FilteringTab(cache, clientService));
     if (pack.getTopic().getParent() != null) {
-      tabs.addTab(getString("topiceditor.inheritance"), new InheritanceTab(cache, clientService));
+      tabs.addTab(topicStrings.text("inheritance"), new InheritanceTab(cache, clientService));
     }
     tabs.addTab(
-        getString("topiceditor.virtual"),
+        topicStrings.text("virtual"),
         new VirtualisationTab(Driver.instance().getPluginService(), clientService));
-    tabs.addTab(getString("topiceditor.resources"), new KeyResourcesTab(clientService));
-    tabs.addTab(getString("topiceditor.control"), new AccessControlTab(clientService));
+    tabs.addTab(topicStrings.text("resources"), new KeyResourcesTab(clientService));
+    tabs.addTab(topicStrings.text("control"), new AccessControlTab(clientService));
 
     JButton save = new JButton(createSaveAction());
 
@@ -154,16 +157,6 @@ public class TopicEditor extends AbstractTreeNodeEditor {
 
   /** @author Nicholas Read */
   public abstract static class AbstractTopicEditorTab extends JPanel {
-    private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-    protected String getString(String key) {
-      return CurrentLocale.get(getKey(key));
-    }
-
-    protected String getKey(String key) {
-      return KEY_PFX + key;
-    }
-
     private static final long serialVersionUID = 1L;
 
     public AbstractTopicEditorTab() {

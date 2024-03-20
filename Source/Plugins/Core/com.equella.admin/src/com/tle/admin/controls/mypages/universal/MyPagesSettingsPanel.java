@@ -26,7 +26,7 @@ public class MyPagesSettingsPanel extends UniversalControlSettingPanel {
   @SuppressWarnings("nls")
   @Override
   protected String getTitleKey() {
-    return getKey("mypages.settings.title");
+    return strings.key("mypages.settings.title");
   }
 
   @Override

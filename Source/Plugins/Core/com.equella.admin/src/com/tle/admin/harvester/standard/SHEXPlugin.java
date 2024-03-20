@@ -28,6 +28,6 @@ public class SHEXPlugin extends AbstractTLFPlugin<SHEXHarvesterSettings> {
 
   @Override
   protected String getPluginsFieldString() {
-    return "shexplugin.settings";
+    return strings.key("shexplugin.settings");
   }
 }

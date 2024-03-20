@@ -168,6 +168,6 @@ public class AttachmentsSectionConfig extends AbstractOnlyTitleConfig {
   }
 
   private final String s(String keypart) {
-    return getString("summarysections.attachments." + keypart);
+    return strings.text("summarysections.attachments." + keypart);
   }
 }

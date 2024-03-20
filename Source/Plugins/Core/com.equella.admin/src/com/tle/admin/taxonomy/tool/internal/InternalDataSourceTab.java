@@ -23,13 +23,14 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.common.gui.tree.AbstractTreeEditor;
 import com.tle.admin.common.gui.tree.AbstractTreeEditorTree;
 import com.tle.admin.common.gui.tree.AbstractTreeNodeEditor;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.Pair;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.RemoteTaxonomyService;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.terms.RemoteTermService;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
 import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
@@ -51,17 +52,6 @@ public class InternalDataSourceTab extends JPanel implements Changeable {
 
   private AbstractTreeEditor<TermTreeNode> tree;
   private Taxonomy taxonomy;
-
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(InternalDataSourceTab.class) + ".";
-
-  protected static String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected static String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public InternalDataSourceTab(ClientService clientService, PluginService pluginService) {
     super(new GridLayout(1, 1));
@@ -183,7 +173,9 @@ public class InternalDataSourceTab extends JPanel implements Changeable {
     worker.start();
   }
 
+  private static final StringLookup strings = Lookup.withPrefix("internal.tab");
+
   static String s(String keyEnd) {
-    return getString("internal.tab." + keyEnd);
+    return strings.text(keyEnd);
   }
 }

@@ -23,6 +23,7 @@ import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
@@ -31,6 +32,7 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.OAIHarvesterSettings;
 import com.tle.common.harvester.RemoteOAIHarvesterService;
+import com.tle.common.i18n.StringLookup;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteSchemaService;
 import java.awt.Rectangle;
@@ -49,6 +51,8 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("nls")
 public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements ActionListener {
+  private static final StringLookup oaiStrings = Lookup.withPrefix("oaiplugin");
+
   private JTextField serverField;
 
   private JComboBox<NameValue> aSetField;
@@ -70,7 +74,7 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
     JPanel setsPanel = new JPanel();
     aSetField = new JComboBox<>();
     aSetField.setEditable(true);
-    getSetsButton = new JButton(getString("oaiplugin.getsets"));
+    getSetsButton = new JButton(oaiStrings.text("getsets"));
     getSetsButton.addActionListener(this);
 
     setupPanel(setsPanel, aSetField, getSetsButton);
@@ -78,15 +82,15 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
     JPanel metaPanel = new JPanel();
     metaField = new JComboBox<>();
     metaField.setEditable(true);
-    getMetaButton = new JButton(getString("oaiplugin.getmetas"));
+    getMetaButton = new JButton(oaiStrings.text("getmetas"));
     getMetaButton.addActionListener(this);
 
     setupPanel(metaPanel, metaField, getMetaButton);
 
-    panel.addComponent(new JLabel(getString("oaiplugin.settings")));
-    panel.addNameAndComponent(getString("oaiplugin.server"), serverField);
-    panel.addNameAndComponent(getString("oaiplugin.format"), metaPanel);
-    panel.addNameAndComponent(getString("oaiplugin.aset"), setsPanel);
+    panel.addComponent(new JLabel(oaiStrings.text("settings")));
+    panel.addNameAndComponent(oaiStrings.text("server"), serverField);
+    panel.addNameAndComponent(oaiStrings.text("format"), metaPanel);
+    panel.addNameAndComponent(oaiStrings.text("aset"), setsPanel);
   }
 
   private void setupPanel(JPanel aPanel, JComboBox<?> aField, JButton aButton) {
@@ -131,7 +135,7 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
   @SuppressWarnings("unused")
   public void validation() throws EditorException {
     if (serverField.getText().isEmpty()) {
-      throw new EditorException(getString("oaiplugin.serverfield"));
+      throw new EditorException(oaiStrings.text("serverfield"));
 
     } else {
       try {
@@ -139,7 +143,7 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
         serverField.setText(url);
         new URL(url);
       } catch (MalformedURLException e) {
-        throw new EditorException(getString("oaiplugin.serverfieldinvalid"));
+        throw new EditorException(oaiStrings.text("serverfieldinvalid"));
       }
     }
   }
@@ -246,7 +250,7 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
     }
 
     if (!nodeExists) {
-      JOptionPane.showMessageDialog(panel.getComponent(), getString("oaiplugin.schema"));
+      JOptionPane.showMessageDialog(panel.getComponent(), oaiStrings.text("schema"));
     }
   }
 }

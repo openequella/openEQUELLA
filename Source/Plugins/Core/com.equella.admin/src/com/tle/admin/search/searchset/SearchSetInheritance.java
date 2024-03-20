@@ -23,6 +23,7 @@ import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.search.searchset.scripting.ScriptingCellEditor;
 import com.tle.admin.search.searchset.scripting.ScriptingTableCellRenderer;
 import com.tle.admin.search.searchset.scripting.ScriptingTableModelInterface;
@@ -35,9 +36,8 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.search.searchset.SearchSet;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +58,8 @@ import javax.swing.table.TableColumn;
 
 /** @author Nicholas Read */
 public class SearchSetInheritance extends JPanel implements Changeable {
+  private static final StringLookup strings = Lookup.withPrefix("searchset.searchsetinheritance");
+
   private static final long serialVersionUID = 1L;
 
   private final ChangeDetector changeDetector;
@@ -65,34 +67,16 @@ public class SearchSetInheritance extends JPanel implements Changeable {
   private final InheritedTableModel<Schema, SchemaScript> schemasModel;
   private final InheritedTableModel<ItemDefinition, ItemDefinitionScript> itemDefsModel;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
-
   public SearchSetInheritance(final EntityCache cache, final ClientService clientService) {
-    final JLabel schemasLabel =
-        new JLabel(getString("searchset.searchsetinheritance.inheritschemas")); // $NON-NLS-1$
-    final JLabel itemDefsLabel =
-        new JLabel(getString("searchset.searchsetinheritance.inheritcollections")); // $NON-NLS-1$
+    final JLabel schemasLabel = new JLabel(strings.text("inheritschemas"));
+    final JLabel itemDefsLabel = new JLabel(strings.text("inheritcollections"));
 
-    inheritFreetext =
-        new JCheckBox(getString("searchset.searchsetinheritance.inheritfreetext")); // $NON-NLS-1$
+    inheritFreetext = new JCheckBox(strings.text("inheritfreetext"));
     schemasModel =
-        new InheritedTableModel<Schema, SchemaScript>(
-            cache.getSchemaMap(),
-            SchemaScript.class,
-            getString("searchset.searchsetinheritance.schema")); // $NON-NLS-1$
+        new InheritedTableModel<>(cache.getSchemaMap(), SchemaScript.class, strings.text("schema"));
     itemDefsModel =
-        new InheritedTableModel<ItemDefinition, ItemDefinitionScript>(
-            cache.getItemDefinitionMap(),
-            ItemDefinitionScript.class,
-            getString("searchset.searchsetinheritance.collection")); // $NON-NLS-1$
+        new InheritedTableModel<>(
+            cache.getItemDefinitionMap(), ItemDefinitionScript.class, strings.text("collection"));
 
     final JTable schemasTable = generateTable(schemasModel, clientService);
     final JTable itemDefTable = generateTable(itemDefsModel, clientService);
@@ -318,11 +302,11 @@ public class SearchSetInheritance extends JPanel implements Changeable {
     public String getColumnName(int column) {
       switch (column) {
         case 0:
-          return getString("searchset.searchsetinheritance.inherited"); // $NON-NLS-1$
+          return strings.text("inherited");
         case 1:
           return entityDisplayName;
         case 2:
-          return getString("searchset.searchsetinheritance.scripting"); // $NON-NLS-1$
+          return strings.text("scripting");
         default:
           throw new IllegalStateException();
       }
