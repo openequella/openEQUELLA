@@ -52,6 +52,10 @@ export interface LtiPlatformBase {
    */
   keysetUrl: string;
   /**
+   * The claim used to retrieve username from the LTI request.
+   */
+  usernameClaim?: string;
+  /**
    * Prefix added to the user ID from the LTI request
    */
   usernamePrefix?: string;
