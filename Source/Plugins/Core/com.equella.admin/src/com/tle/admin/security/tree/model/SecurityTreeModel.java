@@ -29,8 +29,8 @@ import static com.tle.common.security.PrivilegeTree.Node.FEDERATED_SEARCH;
 import static com.tle.common.security.PrivilegeTree.Node.POWER_SEARCH;
 import static com.tle.common.security.PrivilegeTree.Node.SCHEMA;
 
+import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.BaseEntityLabel;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService;

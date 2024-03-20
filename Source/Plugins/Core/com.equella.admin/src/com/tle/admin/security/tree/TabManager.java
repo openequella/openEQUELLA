@@ -20,8 +20,8 @@ package com.tle.admin.security.tree;
 
 import com.tle.admin.security.tree.model.ItemSearchNode;
 import com.tle.admin.security.tree.model.SecurityTreeNode;
+import com.tle.applet.client.ClientService;
 import com.tle.beans.item.Item;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import java.awt.GridLayout;

@@ -19,10 +19,10 @@
 package com.tle.admin.fedsearch;
 
 import com.tle.admin.gui.EditorException;
+import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.SearchSettings;
 import com.tle.common.EntityPack;
-import com.tle.common.applet.client.ClientService;
 import javax.swing.JPanel;
 
 public abstract class SearchPlugin<T extends SearchSettings> {

@@ -1,0 +1,58 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.tle.applet;
+
+import com.tle.applet.client.ClientProxyFactory;
+import com.tle.core.remoting.RemoteLoginService;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class LoginService {
+  @SuppressWarnings("nls")
+  public static final String LOGON_PATH =
+      "invoker/" + RemoteLoginService.class.getName() + ".service";
+
+  private final URL server;
+  private final RemoteLoginService service;
+
+  public LoginService(SessionHolder session) {
+    server = session.getUrl();
+    service = ClientProxyFactory.createProxy(RemoteLoginService.class, getLoginURL());
+  }
+
+  public URL getLoginURL() {
+    try {
+      return new URL(server, server.getPath() + LOGON_PATH);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void keepAlive() {
+    service.keepAlive();
+  }
+
+  public void logout() {
+    service.logout();
+  }
+
+  public String getLoggedInUserId() {
+    return service.getLoggedInUserId();
+  }
+}

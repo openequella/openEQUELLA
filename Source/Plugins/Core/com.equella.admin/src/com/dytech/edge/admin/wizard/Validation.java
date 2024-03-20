@@ -21,8 +21,8 @@ package com.dytech.edge.admin.wizard;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.dytech.edge.wizard.TargetNode;
 import com.dytech.edge.wizard.beans.control.WizardControl;
+import com.tle.applet.client.ClientService;
 import com.tle.common.Check;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 

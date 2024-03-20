@@ -21,9 +21,9 @@ package com.tle.admin.controls.cloudcontrol;
 import com.dytech.edge.admin.wizard.model.CustomControlModel;
 import com.tle.admin.controls.CloudControlDefinitionImpl;
 import com.tle.admin.i18n.Lookup;
+import com.tle.applet.client.ClientService;
 import com.tle.beans.cloudproviders.CloudControlConfig;
 import com.tle.beans.cloudproviders.CloudControlConfigType;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.wizard.controls.cloud.CloudControl;
 import java.util.List;
 

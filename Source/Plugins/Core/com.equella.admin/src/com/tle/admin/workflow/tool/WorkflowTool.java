@@ -21,7 +21,7 @@ package com.tle.admin.workflow.tool;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.tools.common.BaseEntityTool;
 import com.tle.admin.workflow.WorkflowEditor;
-import com.tle.common.applet.client.ClientService;
+import com.tle.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;

@@ -20,8 +20,8 @@ package com.tle.admin.controls.itunesu.universal;
 
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.admin.controls.universal.UniversalPanelValidator;
+import com.tle.applet.client.ClientService;
 import com.tle.common.Check;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.wizard.controls.universal.UniversalControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.common.wizard.controls.universal.handlers.ITunesUSettings;

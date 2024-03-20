@@ -20,7 +20,7 @@ package com.tle.admin.taxonomy.tool;
 
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.tools.common.BaseEntityTool;
-import com.tle.common.applet.client.ClientService;
+import com.tle.applet.client.ClientService;
 import com.tle.common.taxonomy.RemoteTaxonomyService;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.remoting.RemoteAbstractEntityService;

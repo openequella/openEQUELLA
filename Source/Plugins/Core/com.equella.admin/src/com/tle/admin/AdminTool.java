@@ -18,7 +18,7 @@
 
 package com.tle.admin;
 
-import com.tle.common.applet.client.ClientService;
+import com.tle.applet.client.ClientService;
 import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JPanel;

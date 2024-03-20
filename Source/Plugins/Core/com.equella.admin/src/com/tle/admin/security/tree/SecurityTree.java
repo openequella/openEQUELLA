@@ -26,7 +26,7 @@ import com.tle.admin.gui.common.actions.CloseAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.security.tree.model.SecurityTreeModel;
 import com.tle.admin.security.tree.model.SecurityTreeNode;
-import com.tle.common.applet.client.ClientService;
+import com.tle.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.plugins.PluginService;

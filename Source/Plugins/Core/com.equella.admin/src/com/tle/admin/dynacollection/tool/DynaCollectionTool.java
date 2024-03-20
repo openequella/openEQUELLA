@@ -21,8 +21,8 @@ package com.tle.admin.dynacollection.tool;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.dynacollection.DynaCollectionEditor;
 import com.tle.admin.tools.common.BaseEntityTool;
+import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.DynaCollection;
-import com.tle.common.applet.client.ClientService;
 import com.tle.common.dynacollection.RemoteDynaCollectionService;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 
