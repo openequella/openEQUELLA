@@ -426,6 +426,7 @@ export const generateQueryStringFromSearchPageOptions = (
           advancedSearchCriteria: () => undefined, // Skip advancedSearchCriteria as we can build it from `advFieldValue`.
           advFieldValue: () =>
             pipe(value, O.fromNullable, O.map(Array.from), O.toUndefined),
+          hierarchy: () => undefined, // Skip hierarchy as it's already included in URL `/hierarchy/uuid`.
           _: () => value ?? undefined,
         })(key),
     ),
