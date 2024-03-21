@@ -25,7 +25,6 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
-import com.jayway.jsonpath.JsonPath
 import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
@@ -51,6 +50,8 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 import cats.implicits._
+import io.circe._
+import io.circe.parser._
 
 /**
   * Captures the parameters which make up the first part of a 'Third-party Initiated Login' as part
@@ -157,27 +158,39 @@ case class UserDetails(platformId: String,
                        lastName: String,
                        email: Option[String])
 object UserDetails {
-  def apply(jwt: DecodedJWT, usernameClaim: Option[String]): Either[InvalidJWT, UserDetails] = {
+  def apply(jwt: DecodedJWT,
+            usernameClaimPaths: Option[List[String]]): Either[InvalidJWT, UserDetails] = {
     val claim = getClaim(jwt)
 
     // Use the custom username claim if present, otherwise use the Subject claim.
-    // The payload is in JSON format so use 'JsonPath' to read the value.
-    // The claim has been verified earlier, so if the read fails it's mostly because
-    // the token is invalid.
+    // The payload is in JSON format so use Circe to parse and traverse the JSON string.
+    // The claim has been verified earlier, so if parsing the token or reading the value
+    // fails, it's mostly because the token is invalid.
     def getUserId: Either[InvalidJWT, String] = {
-      val jwtPayload =
-        new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
+      def fromCustomClaim(paths: List[String]): Either[InvalidJWT, String] = {
+        val jwtPayload =
+          new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
 
-      def fromCustomClaim(claim: String): Either[InvalidJWT, String] =
-        Either
-          .catchNonFatal(JsonPath.read[String](jwtPayload, s"$$.$claim"))
-          .leftMap(_ => InvalidJWT(s"Unable to determine user ID by claim $claim"))
+        // The claim is verified so we can simply build the original string in the required format.
+        def originalClaim = paths.map(c => s"[$c]").mkString
+
+        def read(doc: Json): Decoder.Result[String] =
+          paths
+            .foldLeft[ACursor](doc.hcursor) { (cursor, key) =>
+              cursor.downField(key)
+            }
+            .as[String]
+
+        parse(jwtPayload)
+          .flatMap(read)
+          .leftMap(_ => InvalidJWT(s"Unable to determine user ID by claim $originalClaim"))
+      }
 
       def fromSubjectClaim: Either[InvalidJWT, String] =
         Option(jwt.getSubject)
           .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
 
-      usernameClaim.map(fromCustomClaim).getOrElse(fromSubjectClaim)
+      usernameClaimPaths.map(fromCustomClaim).getOrElse(fromSubjectClaim)
     }
 
     for {
@@ -329,9 +342,6 @@ class Lti13AuthService {
       // Get details of the platform and verify the custom username claim
       platform <- getPlatform(platformId)
         .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
-      _ <- platform.usernameClaim
-        .map(verifyUsernameClaim)
-        .getOrElse(Right("No verification required"))
 
       // -- next, validation of the actual JWT
       jwkProvider <- getJwkProvider(platform.keysetUrl)
@@ -565,12 +575,6 @@ class Lti13AuthService {
         LOGGER.error(s"Attempt to access unauthorised platform $platform")
         None
     }
-
-  // Check whether the username claim configured in the Platform is a valid JSON path or not.
-  private def verifyUsernameClaim(usernameClaim: String): Either[PlatformDetailsError, JsonPath] =
-    Either
-      .catchNonFatal(JsonPath.compile(usernameClaim))
-      .leftMap(_ => PlatformDetailsError("Invalid JSON path for custom username claim"))
 
   /**
     * Generates a unique structured identifier for the provided user from the specified platform.

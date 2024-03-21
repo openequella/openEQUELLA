@@ -18,6 +18,7 @@
 
 package com.tle.integration.lti13
 
+import cats.implicits._
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
@@ -84,6 +85,12 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     LOGGER.debug("doPost() complete")
   }
 
+  private def verifyUsernameClaim(
+      usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
+    usernameClaim
+      .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
+      .sequence
+
   private def handleInitiateLoginRequest(initLogin: InitiateLoginRequest,
                                          resp: HttpServletResponse): Unit = {
     LOGGER.debug("Received a request to initiate a login. Supplied values:")
@@ -136,9 +143,10 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
       decodedJWT      = verifiedResult._1
       platformDetails = verifiedResult._2
-      userDetails  <- UserDetails(decodedJWT, platformDetails.usernameClaim)
-      _            <- lti13AuthService.loginUser(wad, userDetails)
-      lti13Request <- getLtiRequestDetails(decodedJWT)
+      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
+      userDetails        <- UserDetails(decodedJWT, usernameClaimPaths)
+      _                  <- lti13AuthService.loginUser(wad, userDetails)
+      lti13Request       <- getLtiRequestDetails(decodedJWT)
     } yield (lti13Request, platformDetails)
 
     authResult match {
