@@ -26,6 +26,7 @@ import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import { languageStrings } from "../../../util/langstrings";
 import { OrdAsIs } from "../../../util/Ord";
+import { validateUsernameClaim } from "./LtiUsernameClaimParser";
 
 const {
   name,
@@ -34,6 +35,8 @@ const {
   clientId,
   platformAuthenticationRequestURL,
   platformKeysetURL,
+  usernameClaim,
+  usernameClaimDesc,
   usernamePrefix,
   usernameSuffix,
   needUrl,
@@ -116,6 +119,14 @@ export const generalDetailsDefaultRenderOption: GeneralDetailsSectionRenderOptio
       required: true,
       value: "",
       validate: (v) => !S.isEmpty(v) && isValidURL(v),
+    },
+    usernameClaim: {
+      name: usernameClaim,
+      desc: usernameClaimDesc,
+      required: false,
+      value: "",
+      // An empty string should be allowed as users may put some values in and delete them later.
+      validate: (claim) => S.isEmpty(claim) || validateUsernameClaim(claim),
     },
     usernamePrefix: {
       name: usernamePrefix,

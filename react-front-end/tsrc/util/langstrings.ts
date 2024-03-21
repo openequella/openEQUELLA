@@ -692,6 +692,9 @@ export const languageStrings = {
             platformKeysetURL: "Platform Keyset URL",
             platformAuthenticationRequestURL:
               "Platform Authentication Request URL",
+            usernameClaim: "Custom username claim",
+            usernameClaimDesc:
+              "A JWT claim provided during the LTI Authentication to determine the user’s username. If not specified, the standard claim 'sub' will be used. Each path of the claim must be placed within a pair of square brackets. For example: [https://purl.imsglobal.org/spec/lti/claim/lis][person_sourcedid]",
             usernamePrefix: "Username Prefix",
             usernameSuffix: "Username Suffix",
           },
