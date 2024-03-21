@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet.client;
 
 import com.tle.common.Pair;
 import com.tle.common.i18n.CurrentLocale;

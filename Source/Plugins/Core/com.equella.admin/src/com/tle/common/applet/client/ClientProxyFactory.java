@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet.client;
 
-import com.tle.applet.SessionHolder;
+import com.tle.common.applet.SessionHolder;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import java.io.IOException;

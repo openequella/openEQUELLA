@@ -19,12 +19,12 @@
 package com.tle.admin;
 
 import com.tle.admin.boot.LoadingDialog;
-import com.tle.applet.SessionHolder;
-import com.tle.applet.client.ClientService;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.client.impl.CurrentTimeZoneClientSide;
+import com.tle.common.applet.SessionHolder;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.core.remoting.RemoteLanguageService;

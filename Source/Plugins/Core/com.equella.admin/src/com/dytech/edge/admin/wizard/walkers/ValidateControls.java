@@ -20,7 +20,7 @@ package com.dytech.edge.admin.wizard.walkers;
 
 import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.admin.wizard.model.Control;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.client.ClientService;
 
 /** @author Nicholas Read */
 public class ValidateControls extends ControlTreeWalker {

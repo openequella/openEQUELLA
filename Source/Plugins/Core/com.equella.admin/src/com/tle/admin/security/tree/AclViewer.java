@@ -20,9 +20,9 @@ package com.tle.admin.security.tree;
 
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.accesscontrolbuilder.ActionTableCellRenderer;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.ExpressionTableCellRenderer;

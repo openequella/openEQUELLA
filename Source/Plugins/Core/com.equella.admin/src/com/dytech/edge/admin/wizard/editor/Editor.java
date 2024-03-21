@@ -32,7 +32,7 @@ import com.tle.admin.gui.EditorInterface;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
 import java.awt.Color;

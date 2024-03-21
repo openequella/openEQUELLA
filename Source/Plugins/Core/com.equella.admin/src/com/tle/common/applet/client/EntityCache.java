@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet.client;
 
 import com.tle.beans.NameId;
 import com.tle.common.Format;

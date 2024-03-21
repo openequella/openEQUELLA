@@ -22,9 +22,9 @@ import com.dytech.gui.ChangeDetector;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.hierarchy.TopicEditor.AbstractTopicEditorTab;
 import com.tle.admin.search.searchset.SearchSetInheritance;
-import com.tle.applet.client.ClientService;
-import com.tle.applet.client.EntityCache;
 import com.tle.beans.hierarchy.HierarchyPack;
+import com.tle.common.applet.client.ClientService;
+import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.SearchSetAdapter;
 import java.awt.GridLayout;
 

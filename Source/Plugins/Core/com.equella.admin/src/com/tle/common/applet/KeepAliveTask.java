@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.applet;
+package com.tle.common.applet;
 
 import java.util.Timer;
 import java.util.TimerTask;

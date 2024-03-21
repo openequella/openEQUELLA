@@ -21,8 +21,8 @@ package com.dytech.edge.admin.wizard.model;
 import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.wizard.beans.NavPage;
 import com.tle.admin.controls.repository.ControlDefinition;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.LanguageBundle;
+import com.tle.common.applet.client.ClientService;
 import java.util.List;
 
 public class NavigationPageModel extends AbstractPageModel<NavPage> {

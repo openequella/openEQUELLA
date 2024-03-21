@@ -20,9 +20,9 @@ package com.tle.admin.collection.summarydisplay;
 
 import com.tle.admin.baseentity.EditorState;
 import com.tle.admin.schema.SchemaModel;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.SummarySectionsConfig;
+import com.tle.common.applet.client.ClientService;
 import java.awt.Component;
 
 public interface SummaryDisplayConfig {

@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet.client;
 
-import com.tle.applet.SessionHolder;
+import com.tle.common.applet.SessionHolder;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

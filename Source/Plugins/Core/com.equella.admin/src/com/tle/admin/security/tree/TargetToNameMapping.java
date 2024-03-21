@@ -28,9 +28,9 @@ import static com.tle.common.security.SecurityConstants.PRIORITY_INSTITUTION;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.security.ACLEntryMapping;
 import com.tle.common.Check;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.remoting.RemotePrivilegeTreeService;

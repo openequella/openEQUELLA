@@ -19,8 +19,8 @@
 package com.tle.admin.itemdefinition;
 
 import com.tle.admin.i18n.Lookup;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.StringLookup;
 import javax.swing.JPanel;
 

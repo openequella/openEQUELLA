@@ -16,23 +16,38 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet;
 
-import com.tle.applet.SessionHolder;
 import java.net.URL;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-public interface ClientService {
-  void showDocument(URL url);
+public class SessionHolder {
+  static final Log LOGGER = LogFactory.getLog(SessionHolder.class);
 
-  void stop();
+  private final LoginService loginService;
+  private final KeepAliveTask keepAliveTask;
+  private final URL url;
 
-  String getParameter(String key);
+  public SessionHolder(URL url) {
+    this.url = url;
+    loginService = new LoginService(this);
+    keepAliveTask = new KeepAliveTask(this);
+  }
 
-  URL getServerURL();
+  public void enableKeepAlive(boolean b) {
+    if (b) {
+      keepAliveTask.onSchedule();
+    } else {
+      keepAliveTask.cancel();
+    }
+  }
 
-  SessionHolder getSession();
+  public URL getUrl() {
+    return url;
+  }
 
-  /* SERVICES */
-
-  <T> T getService(Class<T> clazz);
+  public LoginService getLoginService() {
+    return loginService;
+  }
 }

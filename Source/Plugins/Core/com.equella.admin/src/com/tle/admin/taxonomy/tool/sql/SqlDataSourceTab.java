@@ -27,7 +27,7 @@ import com.dytech.gui.Changeable;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.remotesqlquerying.QueryState;
 import com.tle.admin.remotesqlquerying.SqlConnectionAndQueryPanel;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.common.taxonomy.datasource.sql.SqlTaxonomyDataSourceConstants.Query;

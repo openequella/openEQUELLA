@@ -20,7 +20,7 @@ package com.tle.admin.plugin;
 
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.client.ClientService;
 import java.awt.Dialog;
 
 public abstract class GeneralPlugin<T> extends JNameValuePanel {

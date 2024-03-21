@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.applet;
+package com.tle.common.applet;
 
 /** @author Nicholas Read */
 public interface TimeoutHandler {

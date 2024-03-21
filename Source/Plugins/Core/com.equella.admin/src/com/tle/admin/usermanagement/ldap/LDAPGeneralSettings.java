@@ -20,8 +20,8 @@ package com.tle.admin.usermanagement.ldap;
 
 import com.dytech.gui.ChangeDetector;
 import com.tle.admin.i18n.Lookup;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.usermanagement.standard.LDAPSettings;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.encryption.RemoteEncryptionService;
 import com.tle.common.i18n.StringLookup;
 import javax.swing.JCheckBox;

@@ -20,11 +20,11 @@ package com.tle.admin.search.searchset.scripting;
 
 import com.dytech.edge.admin.script.ScriptEditor;
 import com.dytech.edge.admin.script.ScriptModel;
-import com.tle.applet.client.ClientService;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
+import com.tle.common.applet.client.ClientService;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

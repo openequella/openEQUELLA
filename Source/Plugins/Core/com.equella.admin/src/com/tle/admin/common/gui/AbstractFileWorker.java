@@ -20,7 +20,7 @@ package com.tle.admin.common.gui;
 
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
-import com.tle.applet.client.FileWorker;
+import com.tle.common.applet.client.FileWorker;
 import java.io.File;
 import javax.swing.JComponent;
 

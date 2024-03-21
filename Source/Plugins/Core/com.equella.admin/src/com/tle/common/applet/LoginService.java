@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.tle.applet;
+package com.tle.common.applet;
 
-import com.tle.applet.client.ClientProxyFactory;
+import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.core.remoting.RemoteLoginService;
 import java.net.MalformedURLException;
 import java.net.URL;

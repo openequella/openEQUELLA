@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-package com.tle.applet.client;
+package com.tle.common.applet.client;
 
-import java.awt.Component;
-import java.io.File;
+import com.tle.common.applet.KeepAliveTask;
+import com.tle.common.applet.TimeoutHandler;
 
-public interface FileWorker {
-  void setFile(File file);
+public interface ClientInterface {
+  KeepAliveTask getKeepAliveTask();
 
-  void setComponent(Component component);
+  TimeoutHandler getTimeoutHandler();
 
-  void start();
+  String getSession();
 }

@@ -20,8 +20,8 @@ package com.tle.admin.harvester.tool;
 
 import com.tle.admin.harvester.standard.HarvesterPlugin;
 import com.tle.admin.tools.common.BaseEntityTool;
-import com.tle.applet.client.ClientService;
 import com.tle.common.EntityPack;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.RemoteHarvesterProfileService;
 import com.tle.core.remoting.RemoteAbstractEntityService;

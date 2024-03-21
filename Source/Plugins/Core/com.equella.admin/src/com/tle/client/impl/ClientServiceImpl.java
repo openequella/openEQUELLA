@@ -20,9 +20,9 @@ package com.tle.client.impl;
 
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
-import com.tle.applet.SessionHolder;
-import com.tle.applet.client.ClientProxyFactory;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.SessionHolder;
+import com.tle.common.applet.client.ClientProxyFactory;
+import com.tle.common.applet.client.ClientService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Desktop;
 import java.io.IOException;

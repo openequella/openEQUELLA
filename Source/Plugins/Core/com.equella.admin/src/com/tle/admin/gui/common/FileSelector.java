@@ -19,8 +19,8 @@
 package com.tle.admin.gui.common;
 
 import com.dytech.gui.file.JFileSelector;
-import com.tle.applet.client.DialogUtils;
-import com.tle.applet.client.DialogUtils.DialogResult;
+import com.tle.common.applet.client.DialogUtils;
+import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.filechooser.FileFilter;
 

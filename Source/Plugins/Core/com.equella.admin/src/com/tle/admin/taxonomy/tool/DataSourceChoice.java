@@ -22,7 +22,7 @@ import com.dytech.gui.Changeable;
 import com.tle.admin.baseentity.DynamicTabService;
 import com.tle.admin.gui.common.DynamicChoicePanel;
 import com.tle.admin.i18n.Lookup;
-import com.tle.applet.client.ClientService;
+import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.Taxonomy;
 import com.tle.core.plugins.PluginService;
