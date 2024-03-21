@@ -270,7 +270,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <SearchContext.Consumer>
               {(_: SearchContextProps) => (
                 <SearchPageBody
-                  pathname={HIERARCHY_PATH}
+                  pathname={`${HIERARCHY_PATH}/${compoundUuid}`}
                   headerConfig={{
                     enableCSVExportButton: false,
                     enableShareSearchButton: false,
