@@ -117,9 +117,9 @@ public class UniversalControlEditor extends AbstractControlEditor<CustomControl>
     title = new I18nTextField(BundleCache.getLanguages());
     description = new I18nTextField(BundleCache.getLanguages());
     mandatory = new JCheckBox(CurrentLocale.get("wizard.controls.mandatory"));
-    multiple = new JCheckBox(getString("universal.multiple"));
-    maxFiles = new JCheckBox(getString("maxfiles"));
-    preview = new JCheckBox(getString("preview"));
+    multiple = new JCheckBox(s("universal.multiple"));
+    maxFiles = new JCheckBox(s("maxfiles"));
+    preview = new JCheckBox(s("preview"));
     maxFilesModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1);
     maxFilesEdit = new JSpinner(maxFilesModel);
 
@@ -158,7 +158,7 @@ public class UniversalControlEditor extends AbstractControlEditor<CustomControl>
     JPanel typesPanel = new JPanel(new MigLayout("", "[grow]"));
 
     types =
-        new CheckboxChoiceList<UniversalSettings, Extension>(getString("selecttypes"), 2) {
+        new CheckboxChoiceList<>(s("selecttypes"), 2) {
           @Override
           public Collection<String> getSavedChoiceIds(UniversalSettings state) {
             return state.getAttachmentTypes();
@@ -253,7 +253,7 @@ public class UniversalControlEditor extends AbstractControlEditor<CustomControl>
     types.save(settings);
   }
 
-  protected static String getString(String partKey, Object... params) {
-    return CurrentLocale.get("com.tle.admin.controls.universal." + partKey, params);
+  private static String s(String key) {
+    return strings.text(key);
   }
 }
