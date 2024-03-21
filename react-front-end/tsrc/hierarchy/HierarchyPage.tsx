@@ -24,10 +24,11 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router";
 import { useParams } from "react-router-dom";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
-import { HIERARCHY_PATH } from "../mainui/routes";
+import { NEW_HIERARCHY_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import {
   addKeyResource,
@@ -55,6 +56,7 @@ import HierarchyPanel from "./components/HierarchyPanel";
 import HierarchyPanelSkeleton from "./components/HierarchyPanelSkeleton";
 import KeyResourcePanel from "./components/KeyResourcePanel";
 import KeyResourcePanelSkeleton from "./components/KeyResourcePanelSkeleton";
+import { getHierarchyIdFromLegacyQueryParam } from "./HierarchyPageHelper";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -74,11 +76,18 @@ const refinePanelConfig: SearchPageRefinePanelConfig = {
   enableItemStatusSelector: false,
 };
 
+// Used with React-Router useParams to get a compound UUID from the route path.
+interface CompoundUUID {
+  compoundUuid: string;
+}
+
 const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler } = useContext(AppContext);
-  const { compoundUuid } = useParams<{
-    compoundUuid: string;
-  }>();
+  const location = useLocation();
+
+  const compoundUuid =
+    useParams<CompoundUUID>().compoundUuid ??
+    getHierarchyIdFromLegacyQueryParam(location);
 
   const [hierarchy, setHierarchy] = useState<
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
@@ -270,7 +279,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <SearchContext.Consumer>
               {(_: SearchContextProps) => (
                 <SearchPageBody
-                  pathname={HIERARCHY_PATH}
+                  pathname={NEW_HIERARCHY_PATH}
                   headerConfig={{
                     enableCSVExportButton: false,
                     enableShareSearchButton: false,

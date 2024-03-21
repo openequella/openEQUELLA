@@ -30,7 +30,6 @@ import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
-import MyResourcesPage from "../myresources/MyResourcesPage";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
@@ -39,6 +38,7 @@ import {
   isNewUIRoute,
   NEW_SEARCH_PATH,
   OEQRouteNewUI,
+  OLD_HIERARCHY_PATH,
   OLD_MY_RESOURCES_PATH,
   OLD_SEARCH_PATH,
   routes,
@@ -48,6 +48,10 @@ import { Template, TemplateProps, TemplateUpdate } from "./Template";
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage"),
+);
+const HierarchyPage = React.lazy(() => import("../hierarchy/HierarchyPage"));
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage"),
 );
 
 const renderData = getRenderData();
@@ -211,6 +215,10 @@ export default function IndexPage() {
               <MyResourcesPage {...mkRouteProps(p)} />
             )
           }
+        />
+        <Route
+          path={OLD_HIERARCHY_PATH}
+          render={(p) => <HierarchyPage {...mkRouteProps(p)} />}
         />
         <Route render={renderLegacyContent} />
       </Switch>
