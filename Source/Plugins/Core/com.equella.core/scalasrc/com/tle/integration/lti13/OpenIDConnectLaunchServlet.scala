@@ -88,6 +88,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   private def verifyUsernameClaim(
       usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
     usernameClaim
+      .filter(_.nonEmpty)
       .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
       .sequence
 
