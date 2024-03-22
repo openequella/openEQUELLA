@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { useLocation } from "react-router";
 import { useParams } from "react-router-dom";
 import { generateNewErrorID } from "../api/errors";
 import ErrorPage from "../mainui/ErrorPage";
@@ -35,8 +36,9 @@ interface CompoundUUID {
 const RootHierarchyPage = (props: TemplateUpdateProps) => {
   const uuidFromRoute: string | undefined =
     useParams<CompoundUUID>().compoundUuid;
+  const location = useLocation();
   const getUuidFromQueryParam = (): string | null =>
-    new URLSearchParams(window.location.search).get("uuid");
+    new URLSearchParams(location.search).get("topic");
 
   const compoundUuid = uuidFromRoute ?? getUuidFromQueryParam();
 

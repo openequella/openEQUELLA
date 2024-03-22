@@ -38,8 +38,7 @@ import {
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import * as HierarchyModule from "../../../tsrc//modules/HierarchyModule";
-import * as HierarchyPageHelper from "../../../tsrc/hierarchy/HierarchyPageHelper";
-import HierarchyPage from "../../../tsrc/hierarchy/HierarchyPage";
+import RootHierarchyPage from "../../../tsrc/hierarchy/RootHierarchyPage";
 import "@testing-library/jest-dom";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -95,7 +94,7 @@ const renderHierarchyPage = async (
             inNewUI ? `${NEW_HIERARCHY_PATH}:compoundUuid` : OLD_HIERARCHY_PATH
           }
         >
-          <HierarchyPage updateTemplate={jest.fn()} />
+          <RootHierarchyPage updateTemplate={jest.fn()} />
         </Route>
       </Router>
     </ThemeProvider>,
@@ -224,14 +223,8 @@ describe("<HierarchyPage/>", () => {
 
   it("supports using the Hierarchy ID retrieved from Legacy query param", async () => {
     const uuid = topicWithChildren.compoundUuid;
-    const mockGetIdFromLegacyQueryParam = jest.spyOn(
-      HierarchyPageHelper,
-      "getHierarchyIdFromLegacyQueryParam",
-    );
-
     await renderHierarchyPage(uuid, false);
 
-    expect(mockGetIdFromLegacyQueryParam).toHaveLastReturnedWith(uuid);
     expect(mockGetHierarchy).toHaveBeenLastCalledWith(uuid);
   });
 });
