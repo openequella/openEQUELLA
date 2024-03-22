@@ -19,16 +19,27 @@
 package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
-import javax.swing.Action;
 
-/** @author Nicholas Read */
-public abstract class SaveAction extends TLEAction {
-  @SuppressWarnings("nls")
-  public SaveAction() {
-    setIcon("/icons/save.gif");
-    putValue(Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.saveaction.name"));
+public abstract class SortChildrenAction extends TLEAction {
+  public SortChildrenAction() {
+    setIcon(SortChildrenAction.class, "sortasc.png");
+    setSortRootTerms(true);
     putValue(
-        Action.SHORT_DESCRIPTION,
-        CurrentLocale.get("com.tle.admin.gui.common.actions.saveaction.desc"));
+        SHORT_DESCRIPTION,
+        CurrentLocale.get("com.tle.admin.gui.common.actions.sortchildrenaction.desc"));
+  }
+
+  protected void setSortRootTerms(boolean sortRoots) {
+    if (sortRoots) {
+      putValue(
+          NAME,
+          CurrentLocale.get("com.tle.admin.gui.common.actions.sortchildrenaction.sortroot.name"));
+
+    } else {
+      putValue(
+          NAME,
+          CurrentLocale.get(
+              "com.tle.admin.gui.common.actions.sortchildrenaction.sortchildren.name"));
+    }
   }
 }

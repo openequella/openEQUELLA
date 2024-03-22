@@ -19,7 +19,6 @@
 package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
-import javax.swing.Action;
 
 /** @author aholland */
 public abstract class ArchiveAction extends TLEAction {
@@ -28,10 +27,10 @@ public abstract class ArchiveAction extends TLEAction {
   public ArchiveAction() {
     setIcon("/icons/archive.gif"); // $NON-NLS-1$
     putValue(
-        Action.NAME,
+        NAME,
         CurrentLocale.get("com.tle.admin.gui.common.actions.archiveaction.name")); // $NON-NLS-1$
     putValue(
-        Action.SHORT_DESCRIPTION,
+        SHORT_DESCRIPTION,
         CurrentLocale.get("com.tle.admin.gui.common.actions.archiveaction.desc")); // $NON-NLS-1$
   }
 }

@@ -19,16 +19,13 @@
 package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
-import javax.swing.Action;
 
 /** @author Nicholas Read */
 @SuppressWarnings("nls")
-public abstract class UpAction extends TLEAction {
-  public UpAction() {
-    setIcon(UpAction.class, "up.gif");
-    putValue(Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.upaction.name"));
+public abstract class OkAction extends TLEAction {
+  public OkAction() {
+    putValue(NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.okaction.name"));
     putValue(
-        Action.SHORT_DESCRIPTION,
-        CurrentLocale.get("com.tle.admin.gui.common.actions.upaction.desc"));
+        SHORT_DESCRIPTION, CurrentLocale.get("com.tle.admin.gui.common.actions.okaction.desc"));
   }
 }

@@ -15,7 +15,6 @@
     <import plugin-id="com.tle.admin.taxonomy.tool" />
     <import plugin-id="com.tle.admin.tools" />
     <import plugin-id="com.tle.admin.usermanagement.tool" />
-    <import plugin-id="com.tle.common.applet" exported="true" />
     <import plugin-id="com.tle.common.dynacollection" />
     <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.common.wizard.controls.resource" />

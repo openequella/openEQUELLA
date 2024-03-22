@@ -19,15 +19,14 @@
 package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
-import javax.swing.Action;
 
 /** @author Nicholas Read */
-public abstract class CloseAction extends TLEAction {
-  @SuppressWarnings("nls")
-  public CloseAction() {
-    putValue(Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.closeaction.name"));
+@SuppressWarnings("nls")
+public abstract class RemoveAction extends TLEAction {
+  public RemoveAction() {
+    setIcon(RemoveAction.class, "remove.png");
+    putValue(NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.removeaction.name"));
     putValue(
-        Action.SHORT_DESCRIPTION,
-        CurrentLocale.get("com.tle.admin.gui.common.actions.closeaction.desc"));
+        SHORT_DESCRIPTION, CurrentLocale.get("com.tle.admin.gui.common.actions.removeaction.desc"));
   }
 }

@@ -19,17 +19,14 @@
 package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
-import javax.swing.Action;
 
 /** @author Nicholas Read */
-public abstract class AddChildAction extends TLEAction {
+public abstract class CloneAction extends TLEAction {
   @SuppressWarnings("nls")
-  public AddChildAction() {
-    setIcon(AddChildAction.class, "add.png");
+  public CloneAction() {
+    setIcon("/icons/clone.gif");
+    putValue(NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.cloneaction.name"));
     putValue(
-        Action.NAME, CurrentLocale.get("com.tle.admin.gui.common.actions.addchildaction.name"));
-    putValue(
-        Action.SHORT_DESCRIPTION,
-        CurrentLocale.get("com.tle.admin.gui.common.actions.addchildaction.desc"));
+        SHORT_DESCRIPTION, CurrentLocale.get("com.tle.admin.gui.common.actions.cloneaction.desc"));
   }
 }
