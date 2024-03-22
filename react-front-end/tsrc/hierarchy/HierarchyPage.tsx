@@ -24,8 +24,6 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router";
-import { useParams } from "react-router-dom";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_HIERARCHY_PATH } from "../mainui/routes";
@@ -56,7 +54,6 @@ import HierarchyPanel from "./components/HierarchyPanel";
 import HierarchyPanelSkeleton from "./components/HierarchyPanelSkeleton";
 import KeyResourcePanel from "./components/KeyResourcePanel";
 import KeyResourcePanelSkeleton from "./components/KeyResourcePanelSkeleton";
-import { getHierarchyIdFromLegacyQueryParam } from "./HierarchyPageHelper";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -76,18 +73,26 @@ const refinePanelConfig: SearchPageRefinePanelConfig = {
   enableItemStatusSelector: false,
 };
 
-// Used with React-Router useParams to get a compound UUID from the route path.
-interface CompoundUUID {
+interface HierarchyPageProps extends TemplateUpdateProps {
+  /**
+   * Compound UUID of the Hierarchy topic to be displayed in this page.
+   */
   compoundUuid: string;
 }
 
-const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
+/**
+ * This component controls how to render Hierarchy page, including:
+ * 1. getting details of the topic;
+ * 2. getting the hierarchy ACLs configured for the topic;
+ * 3. controlling how to display Hierarchy panel;
+ * 4. controlling how to display and update key resources;
+ * 5. preparing functions for customising search result list.
+ */
+const HierarchyPage = ({
+  updateTemplate,
+  compoundUuid,
+}: HierarchyPageProps) => {
   const { appErrorHandler } = useContext(AppContext);
-  const location = useLocation();
-
-  const compoundUuid =
-    useParams<CompoundUUID>().compoundUuid ??
-    getHierarchyIdFromLegacyQueryParam(location);
 
   const [hierarchy, setHierarchy] = useState<
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined

@@ -49,7 +49,9 @@ const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage"),
 );
-const HierarchyPage = React.lazy(() => import("../hierarchy/HierarchyPage"));
+const RootHierarchyPage = React.lazy(
+  () => import("../hierarchy/RootHierarchyPage"),
+);
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
@@ -218,7 +220,7 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_HIERARCHY_PATH}
-          render={(p) => <HierarchyPage {...mkRouteProps(p)} />}
+          render={(p) => <RootHierarchyPage {...mkRouteProps(p)} />}
         />
         <Route render={renderLegacyContent} />
       </Switch>
