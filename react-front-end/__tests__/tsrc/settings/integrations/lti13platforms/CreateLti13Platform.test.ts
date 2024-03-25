@@ -69,6 +69,7 @@ describe("CreateLti13Platform", () => {
     clientId: "client name",
     keysetUrl: "http://www.platformKeyset.com",
     authUrl: "https://www.test.com",
+    usernameClaim: "",
     usernamePrefix: "prefix",
     usernameSuffix: "suffix",
     unknownUserHandling: "ERROR",
