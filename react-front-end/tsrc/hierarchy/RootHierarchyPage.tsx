@@ -21,12 +21,17 @@ import { useParams } from "react-router-dom";
 import { generateNewErrorID } from "../api/errors";
 import ErrorPage from "../mainui/ErrorPage";
 import { TemplateUpdateProps } from "../mainui/Template";
+import { languageStrings } from "../util/langstrings";
 import HierarchyPage from "./HierarchyPage";
 
 // Used with React-Router useParams to get a compound UUID from the route path.
 interface CompoundUUID {
   compoundUuid?: string;
 }
+
+const {
+  hierarchy: { error },
+} = languageStrings;
 
 /**
  * Root component for Hierarchy search to retrieve the compound UUID from the URL
@@ -45,11 +50,7 @@ const RootHierarchyPage = (props: TemplateUpdateProps) => {
   return compoundUuid ? (
     <HierarchyPage {...props} compoundUuid={compoundUuid} />
   ) : (
-    <ErrorPage
-      error={generateNewErrorID(
-        "Failed to open Hierarchy page: topic ID is not found.",
-      )}
-    />
+    <ErrorPage error={generateNewErrorID(error.missingTopicUUID)} />
   );
 };
 
