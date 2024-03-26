@@ -27,9 +27,9 @@ class TLEUserSchema {
   case class UserByUsernameArgs(username: String)
   case class UserByIdArgs(id: String)
   case class Queries(
-      users: ListUsersArgs => List[User],
-      userByUsername: UserByUsernameArgs => Option[User],
-      userById: UserByIdArgs => Option[User]
+      internalUsers: ListUsersArgs => List[User],
+      internalUserByUsername: UserByUsernameArgs => Option[User],
+      internalUserById: UserByIdArgs => Option[User]
   )
 
   case class CreateUserArgs(
@@ -39,27 +39,51 @@ class TLEUserSchema {
       lastName: String,
       password: String
   )
+  case class UpdateUserArgs(
+      username: String,
+      email: Option[String],
+      firstName: Option[String],
+      lastName: Option[String],
+      password: Option[String]
+  )
+  case class DeleteUserArgs(id: String)
   case class Mutations(
-      createUser: CreateUserArgs => IO[ExecutionError, User]
+      internalUserCreate: CreateUserArgs => IO[ExecutionError, User],
+      internalUserUpdate: UpdateUserArgs => IO[ExecutionError, User],
+      internalUserDelete: DeleteUserArgs => IO[ExecutionError, Unit]
   )
 
   private val queries = Queries(
-    users = args => tleUserProvider.listUsers(args.query),
-    userByUsername = args => tleUserProvider.userByUsername(args.username),
-    userById = args => tleUserProvider.userById(args.id)
+    internalUsers = args => tleUserProvider.listUsers(args.query),
+    internalUserByUsername = args => tleUserProvider.userByUsername(args.username),
+    internalUserById = args => tleUserProvider.userById(args.id)
   )
 
   private val mutations = Mutations(
-    createUser = {
+    internalUserCreate = {
       case _ @CreateUserArgs(username, email, firstName, lastName, password) =>
         tleUserProvider.createUser(username, email, firstName, lastName, password) match {
           case Left(error)   => ZIO.fail(ExecutionError(msg = error.message))
           case Right(result) => ZIO.succeed(result)
         }
+    },
+    internalUserUpdate = {
+      case _ @UpdateUserArgs(username, email, firstName, lastName, password) =>
+        tleUserProvider.updateUser(username, email, firstName, lastName, password) match {
+          case Left(error)   => ZIO.fail(ExecutionError(msg = error.message))
+          case Right(result) => ZIO.succeed(result)
+        }
+    },
+    internalUserDelete = {
+      case _ @DeleteUserArgs(id) =>
+        tleUserProvider.deleteUser(id) match {
+          case Left(error) => ZIO.fail(ExecutionError(msg = error.message))
+          case Right(_)    => ZIO.succeed(())
+        }
     }
   )
 
-  def getApi() =
+  def getApi: GraphQL[Any] =
     graphQL(
       RootResolver(
         queries,

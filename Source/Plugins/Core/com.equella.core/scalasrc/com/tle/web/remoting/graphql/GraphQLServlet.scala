@@ -16,7 +16,7 @@ class GraphQLServlet extends HttpServlet {
   private var graphQL: GraphQL[Any] = _
   @Inject def this(schema: Schema) = {
     this()
-    this.graphQL = schema.getFullApi()
+    this.graphQL = schema.getFullApi
     Console.println(graphQL.render)
   }
 

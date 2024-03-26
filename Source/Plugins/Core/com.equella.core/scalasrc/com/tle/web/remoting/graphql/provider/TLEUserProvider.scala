@@ -56,5 +56,37 @@ class TLEUserProvider {
       newUser = User(tleUser)
     } yield newUser
   }
+
+  def updateUser(username: String,
+                 email: Option[String],
+                 firstName: Option[String],
+                 lastName: Option[String],
+                 password: Option[String]): Either[ProviderError, User] =
+    Option(tleUserService.getByUsername(username))
+      .toRight(ProviderError(s"User with username $username not found"))
+      .flatMap { u =>
+        email.foreach(u.setEmailAddress)
+        firstName.foreach(u.setFirstName)
+        lastName.foreach(u.setLastName)
+        password.foreach(u.setPassword)
+
+        Try {
+          val uuid = tleUserService.edit(u, password.isDefined)
+          tleUserService.get(uuid)
+        } match {
+          case Success(u) => Right(User(u))
+          case Failure(e) => Left(ProviderError("Failed to update user: " + e.getMessage, Some(e)))
+        }
+      }
+
+  def deleteUser(id: String): Either[ProviderError, Unit] = {
+    Try {
+      tleUserService.delete(id)
+    } match {
+      case Success(_) => Right(())
+      case Failure(e) => Left(ProviderError("Failed to delete user: " + e.getMessage, Some(e)))
+    }
+  }
+
   private implicit def optionalUser(u: TLEUser): Option[User] = Option(u).map(User(_))
 }
