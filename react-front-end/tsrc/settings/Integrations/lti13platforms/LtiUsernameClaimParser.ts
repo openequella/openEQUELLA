@@ -45,7 +45,7 @@ export const validateUsernameClaim = (claim: string): boolean =>
   pipe(
     claim.match(USERNAME_CLAIM_REGEX),
     O.fromNullable,
-    O.map(flow(Array.from<string>, A.foldMap(N.MonoidSum)(S.size))),
+    O.map(flow(A.foldMap(N.MonoidSum)(S.size))),
     O.map((total) => total === claim.length),
     O.getOrElse(constFalse),
   );
