@@ -70,6 +70,7 @@ export const blackboard: OEQ.LtiPlatform.LtiPlatform = {
   clientId: "test client blackboard",
   authUrl: "http://blackboard/auth",
   keysetUrl: "http://blackboard/jwks",
+  usernameClaim: "[https://edalex.com][id]",
   usernamePrefix: "hello",
   usernameSuffix: "blackboard",
   unknownUserHandling: "CREATE",

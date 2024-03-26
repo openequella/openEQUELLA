@@ -46,6 +46,7 @@ const {
     clientId: clientIdLabel,
     platformKeysetURL: platformKeysetURLLabel,
     platformAuthenticationRequestURL: platformAuthenticationRequestURLLabel,
+    usernameClaim: usernameClaimLabel,
     usernamePrefix: usernamePrefixLabel,
     usernameSuffix: usernameSuffixLabel,
   },
@@ -68,6 +69,7 @@ describe("CreateLti13Platform", () => {
     clientId: "client name",
     keysetUrl: "http://www.platformKeyset.com",
     authUrl: "https://www.test.com",
+    usernameClaim: "",
     usernamePrefix: "prefix",
     usernameSuffix: "suffix",
     unknownUserHandling: "ERROR",
@@ -208,10 +210,11 @@ describe("CreateLti13Platform", () => {
     expect(createPlatform).not.toHaveBeenCalled();
   });
 
-  it("highlights URL fields if URL value misses the protocol", async () => {
+  it("highlights any field where the value is invalid", async () => {
     const controls = new Map([
       [platformKeysetURLLabel, "www.platformKeyset.com"],
       [platformAuthenticationRequestURLLabel, "httpstest://www.test.com"],
+      [usernameClaimLabel, "[[[username]"],
     ]);
     const createPlatform = jest.fn();
     const { container } = await renderCreateLti13Platform({

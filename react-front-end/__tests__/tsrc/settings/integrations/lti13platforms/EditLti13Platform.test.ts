@@ -59,6 +59,7 @@ describe("EditLti13Platform", () => {
         expectedPlatform.authUrl,
         expectedPlatform.clientId,
         expectedPlatform.keysetUrl,
+        expectedPlatform.usernameClaim!,
         expectedPlatform.platformId,
       ],
       A.map(async (expectedValue) =>
