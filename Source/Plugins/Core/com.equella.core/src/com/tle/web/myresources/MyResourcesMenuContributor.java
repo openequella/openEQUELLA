@@ -50,10 +50,7 @@ public class MyResourcesMenuContributor implements MenuContributor {
     }
 
     boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
-    HtmlLinkState hls =
-        new HtmlLinkState(
-            new SimpleBookmark(
-                newUIEnabled ? NewUiRoutes.PATH_MYRESOURCES() : "access/myresources.do"));
+    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/myresources.do"));
     hls.setLabel(LABEL_KEY);
     MenuContribution mc =
         new MenuContribution(
@@ -62,7 +59,7 @@ public class MyResourcesMenuContributor implements MenuContributor {
             1,
             20,
             "assignment_ind",
-            newUIEnabled ? ("/" + NewUiRoutes.PATH_MYRESOURCES()) : null);
+            newUIEnabled ? (NewUiRoutes.PATH_MYRESOURCES()) : null);
     return Collections.singletonList(mc);
   }
 

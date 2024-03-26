@@ -110,25 +110,24 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
     boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
     for (NameValue topic : topics) {
       String encodedTopicCUuid = topic.getValue();
-      String topicHref =
-          newUIEnabled
-              ? NewUiRoutes.hierarchy(encodedTopicCUuid)
-              : "hierarchy.do?topic=" + encodedTopicCUuid;
 
-      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(topicHref));
+      HtmlLinkState hls =
+          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + encodedTopicCUuid));
+      String route = newUIEnabled ? NewUiRoutes.hierarchy(encodedTopicCUuid) : null;
       hls.setLabel(new TextLabel(topic.getName()));
 
-      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub");
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub", route);
       mcs.add(mc);
     }
 
     if (showMoreLink) {
-      String moreHref =
-          newUIEnabled ? NewUiRoutes.PATH_BROWSE_HIERARCHIES() : "hierarchy.do?topic=ALL";
-      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(moreHref));
+      HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=ALL"));
       hls.setLabel(MORE);
 
-      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++);
+      String browseRoute = newUIEnabled ? NewUiRoutes.PATH_BROWSE_HIERARCHIES() : null;
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 10, linkPriority++, null, browseRoute);
       mcs.add(mc);
     }
 
