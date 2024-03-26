@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as A from "fp-ts/Array";
-import { constFalse, flow, pipe } from "fp-ts/function";
+import { constFalse, pipe } from "fp-ts/function";
 import * as N from "fp-ts/number";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
@@ -45,7 +45,7 @@ export const validateUsernameClaim = (claim: string): boolean =>
   pipe(
     claim.match(USERNAME_CLAIM_REGEX),
     O.fromNullable,
-    O.map(flow(A.foldMap(N.MonoidSum)(S.size))),
+    O.map(A.foldMap(N.MonoidSum)(S.size)),
     O.map((total) => total === claim.length),
     O.getOrElse(constFalse),
   );
