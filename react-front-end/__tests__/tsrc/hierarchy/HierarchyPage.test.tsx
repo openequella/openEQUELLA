@@ -24,6 +24,7 @@ import {
   render,
   RenderResult,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Route, Router } from "react-router-dom";
@@ -34,6 +35,7 @@ import {
   topicWithoutModifyKeyResources,
   topicWithoutSearchResults,
   topicWithShortAndLongDesc,
+  virtualTopics,
 } from "../../../__mocks__/Hierarchy.mock";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
@@ -226,5 +228,24 @@ describe("<HierarchyPage/>", () => {
     await renderHierarchyPage(uuid, false);
 
     expect(mockGetHierarchy).toHaveBeenLastCalledWith(uuid);
+  });
+
+  it("generates a link for sharing the current Hierarchy search", async () => {
+    const mockClipboard = jest
+      .spyOn(navigator.clipboard, "writeText")
+      .mockResolvedValueOnce();
+
+    const compoundUuid = virtualTopics.compoundUuid;
+    const { getByLabelText } = await renderHierarchyPage(compoundUuid);
+
+    const copySearchButton = getByLabelText(
+      languageStrings.searchpage.shareSearchHelperText,
+    );
+
+    await userEvent.click(copySearchButton);
+
+    expect(mockClipboard).toHaveBeenCalledWith(
+      "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D",
+    );
   });
 });

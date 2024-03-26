@@ -285,10 +285,7 @@ const HierarchyPage = ({
               {(_: SearchContextProps) => (
                 <SearchPageBody
                   pathname={`${NEW_HIERARCHY_PATH}/${compoundUuid}`}
-                  headerConfig={{
-                    enableCSVExportButton: false,
-                    enableShareSearchButton: false,
-                  }}
+                  headerConfig={{ enableCSVExportButton: false }}
                   enableClassification
                   refinePanelConfig={refinePanelConfig}
                   customRenderSearchResults={customSearchResultBuilder}
