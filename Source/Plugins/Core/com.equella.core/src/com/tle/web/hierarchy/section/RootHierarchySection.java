@@ -89,7 +89,11 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
   @Override
   protected void addBreadcrumbsAndTitle(
       SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
-    topicSection.addCrumbs(info, crumbs);
+    // Skip Breadcrumbs when the New UI is used in Selection Session
+    if (!isNewUIInSelectionSession(info)) {
+      topicSection.addCrumbs(info, crumbs);
+    }
+
     decorations.setTitle(getTitle(info));
     decorations.setContentBodyClass("browse-layout search-layout");
   }
