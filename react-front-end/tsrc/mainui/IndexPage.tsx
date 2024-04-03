@@ -29,6 +29,7 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import ErrorPage from "./ErrorPage";
@@ -51,6 +52,9 @@ const AdvancedSearchPage = React.lazy(
 );
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
+);
+const BrowseHierarchyPage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage"),
 );
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
@@ -220,7 +224,18 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_HIERARCHY_PATH}
-          render={(p) => <RootHierarchyPage {...mkRouteProps(p)} />}
+          render={(p) => {
+            const searchParams = new URLSearchParams(p.location.search);
+            const topic = searchParams.get("topic");
+
+            // When the legacy path doesn't have query param 'topic or when it has but the value
+            // is 'ALL', render 'BrowseHierarchyPage'.
+            return topic === null || LegacyBrowseHierarchyLiteral.is(topic) ? (
+              <BrowseHierarchyPage {...mkRouteProps(p)} />
+            ) : (
+              <RootHierarchyPage {...mkRouteProps(p)} />
+            );
+          }}
         />
         <Route render={renderLegacyContent} />
       </Switch>
