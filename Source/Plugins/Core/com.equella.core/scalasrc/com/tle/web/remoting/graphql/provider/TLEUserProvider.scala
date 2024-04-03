@@ -3,12 +3,13 @@ package com.tle.web.remoting.graphql.provider
 import com.tle.beans.user.TLEUser
 import com.tle.core.guice.Bind
 import com.tle.core.usermanagement.standard.service.TLEUserService
+import com.tle.web.remoting.graphql.ErrorCodes
 import com.tle.web.remoting.graphql.schema.User
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 @Bind
 @Singleton
@@ -21,6 +22,7 @@ class TLEUserProvider {
   }
 
   def listUsers(query: Option[String]): List[User] = {
+    // TODO: This has no ACL protection - I remember we had to add somthing to the REST API to handle this
     tleUserService
       .searchUsers(query.getOrElse(""), "", true)
       .asScala
@@ -29,10 +31,12 @@ class TLEUserProvider {
   }
 
   def userByUsername(username: String): Option[User] = {
+    // TODO: Should this have an ACL?
     tleUserService.getByUsername(username)
   }
 
   def userById(id: String): Option[User] = {
+    // TODO: Should this have an ACL?
     tleUserService.get(id)
   }
 
@@ -50,9 +54,9 @@ class TLEUserProvider {
 
     for {
       id <- Try(tleUserService.add(u)).toEither.left.map(e =>
-        ProviderError("Failed to add new user: " + e.getMessage, Some(e)))
+        ProviderError("Failed to add new user: " + e.getMessage, e))
       tleUser <- Try(tleUserService.get(id)).toEither.left.map(e =>
-        ProviderError("Failed to retrieve new user:" + e.getMessage, Some(e)))
+        ProviderError("Failed to retrieve new user:" + e.getMessage, e))
       newUser = User(tleUser)
     } yield newUser
   }
@@ -63,30 +67,23 @@ class TLEUserProvider {
                  lastName: Option[String],
                  password: Option[String]): Either[ProviderError, User] =
     Option(tleUserService.getByUsername(username))
-      .toRight(ProviderError(s"User with username $username not found"))
+      .toRight(ProviderError(s"User with username $username not found", ErrorCodes.NOT_FOUND))
       .flatMap { u =>
         email.foreach(u.setEmailAddress)
         firstName.foreach(u.setFirstName)
         lastName.foreach(u.setLastName)
         password.foreach(u.setPassword)
 
-        Try {
+        ProviderError.Try("Failed to update user: ") {
           val uuid = tleUserService.edit(u, password.isDefined)
-          tleUserService.get(uuid)
-        } match {
-          case Success(u) => Right(User(u))
-          case Failure(e) => Left(ProviderError("Failed to update user: " + e.getMessage, Some(e)))
+          User(tleUserService.get(uuid))
         }
       }
 
-  def deleteUser(id: String): Either[ProviderError, Unit] = {
-    Try {
+  def deleteUser(id: String): Either[ProviderError, Unit] =
+    ProviderError.Try("Failed to delete user: ") {
       tleUserService.delete(id)
-    } match {
-      case Success(_) => Right(())
-      case Failure(e) => Left(ProviderError("Failed to delete user: " + e.getMessage, Some(e)))
     }
-  }
 
   private implicit def optionalUser(u: TLEUser): Option[User] = Option(u).map(User(_))
 }

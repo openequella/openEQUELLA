@@ -1,6 +1,7 @@
 package com.tle.web.remoting.graphql
 
-import caliban.GraphQL
+import caliban.CalibanError.ExecutionError
+import caliban.{CalibanError, GraphQL}
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.schema.Schema
 import org.slf4j.LoggerFactory
@@ -56,10 +57,30 @@ class GraphQLServlet extends HttpServlet {
   private def execute(query: String): Either[Throwable, String] = zio.Unsafe.unsafe {
     implicit unsafe =>
       val calibanExecute = for {
-        interpreter <- graphQL.interpreter
+        // Setup the interpreter with `mapError` so that we can customise the error handling and
+        // provide more informative errors to users. Caliban defaults to a generic "Effect failure"
+        // message which is not helpful. See more in the Caliban FAQ at:
+        // https://ghostdogpr.github.io/caliban/faq/#my-query-fails-with-an-effect-failure-error-how-can-i-get-more-details
+        interpreter <- graphQL.interpreter.map(_.mapError(errorHandler))
         result      <- interpreter.execute(query)
       } yield result
 
       Runtime.default.unsafe.run(calibanExecute).toEither.map(_.toResponseValue.toString)
+  }
+
+  /**
+    * Handles errors that occur during the execution of a GraphQL query, rather than simply ending
+    * up with error responses with a message of "Effect failure".
+    */
+  private def errorHandler(error: CalibanError): CalibanError = {
+    error match {
+      case e: ExecutionError =>
+        e.innerThrowable match {
+          case Some(cause: Throwable) =>
+            e.copy(msg = cause.getMessage, extensions = Some(Errors.buildCauseObjectValue(cause)))
+          case _ => e
+        }
+      case otherError => otherError
+    }
   }
 }

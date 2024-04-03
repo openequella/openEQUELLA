@@ -1,21 +1,16 @@
 package com.tle.web.remoting.graphql.schema
 
-import caliban.CalibanError.ExecutionError
 import caliban._
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.TLEUserProvider
-import org.slf4j.LoggerFactory
-import zio.{IO, ZIO}
 
 import javax.inject.{Inject, Singleton}
 
 @Bind
 @Singleton
 class TLEUserSchema {
-  private val LOGGER = LoggerFactory.getLogger(classOf[TLEUserSchema])
-
   private var tleUserProvider: TLEUserProvider = _
 
   @Inject def this(tleUserService: TLEUserProvider) = {
@@ -48,9 +43,9 @@ class TLEUserSchema {
   )
   case class DeleteUserArgs(id: String)
   case class Mutations(
-      internalUserCreate: CreateUserArgs => IO[ExecutionError, User],
-      internalUserUpdate: UpdateUserArgs => IO[ExecutionError, User],
-      internalUserDelete: DeleteUserArgs => IO[ExecutionError, Unit]
+      internalUserCreate: CreateUserArgs => ResultWithErrors[User],
+      internalUserUpdate: UpdateUserArgs => ResultWithErrors[User],
+      internalUserDelete: DeleteUserArgs => ResultWithErrors[Unit]
   )
 
   private val queries = Queries(
@@ -60,27 +55,19 @@ class TLEUserSchema {
   )
 
   private val mutations = Mutations(
-    internalUserCreate = {
-      case _ @CreateUserArgs(username, email, firstName, lastName, password) =>
-        tleUserProvider.createUser(username, email, firstName, lastName, password) match {
-          case Left(error)   => ZIO.fail(ExecutionError(msg = error.message))
-          case Right(result) => ZIO.succeed(result)
-        }
-    },
-    internalUserUpdate = {
-      case _ @UpdateUserArgs(username, email, firstName, lastName, password) =>
-        tleUserProvider.updateUser(username, email, firstName, lastName, password) match {
-          case Left(error)   => ZIO.fail(ExecutionError(msg = error.message))
-          case Right(result) => ZIO.succeed(result)
-        }
-    },
-    internalUserDelete = {
-      case _ @DeleteUserArgs(id) =>
-        tleUserProvider.deleteUser(id) match {
-          case Left(error) => ZIO.fail(ExecutionError(msg = error.message))
-          case Right(_)    => ZIO.succeed(())
-        }
-    }
+    internalUserCreate = args =>
+      tleUserProvider.createUser(args.username,
+                                 args.email,
+                                 args.firstName,
+                                 args.lastName,
+                                 args.password),
+    internalUserUpdate = args =>
+      tleUserProvider.updateUser(args.username,
+                                 args.email,
+                                 args.firstName,
+                                 args.lastName,
+                                 args.password),
+    internalUserDelete = args => tleUserProvider.deleteUser(args.id)
   )
 
   def getApi: GraphQL[Any] =
