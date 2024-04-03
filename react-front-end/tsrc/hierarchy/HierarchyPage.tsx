@@ -24,10 +24,9 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
-import { HIERARCHY_PATH } from "../mainui/routes";
+import { NEW_HIERARCHY_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import {
   addKeyResource,
@@ -74,11 +73,26 @@ const refinePanelConfig: SearchPageRefinePanelConfig = {
   enableItemStatusSelector: false,
 };
 
-const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
+interface HierarchyPageProps extends TemplateUpdateProps {
+  /**
+   * Compound UUID of the Hierarchy topic to be displayed in this page.
+   */
+  compoundUuid: string;
+}
+
+/**
+ * This component controls how to render Hierarchy page, including:
+ * 1. getting details of the topic;
+ * 2. getting the hierarchy ACLs configured for the topic;
+ * 3. controlling how to display Hierarchy panel;
+ * 4. controlling how to display and update key resources;
+ * 5. preparing functions for customising search result list.
+ */
+const HierarchyPage = ({
+  updateTemplate,
+  compoundUuid,
+}: HierarchyPageProps) => {
   const { appErrorHandler } = useContext(AppContext);
-  const { compoundUuid } = useParams<{
-    compoundUuid: string;
-  }>();
 
   const [hierarchy, setHierarchy] = useState<
     OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
@@ -270,7 +284,7 @@ const HierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
             <SearchContext.Consumer>
               {(_: SearchContextProps) => (
                 <SearchPageBody
-                  pathname={`${HIERARCHY_PATH}/${compoundUuid}`}
+                  pathname={`${NEW_HIERARCHY_PATH}/${compoundUuid}`}
                   headerConfig={{ enableCSVExportButton: false }}
                   enableClassification
                   refinePanelConfig={refinePanelConfig}

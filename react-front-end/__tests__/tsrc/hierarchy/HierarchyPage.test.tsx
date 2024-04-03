@@ -39,7 +39,8 @@ import {
 } from "../../../__mocks__/Hierarchy.mock";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import HierarchyPage from "../../../tsrc/hierarchy/HierarchyPage";
+import * as HierarchyModule from "../../../tsrc//modules/HierarchyModule";
+import RootHierarchyPage from "../../../tsrc/hierarchy/RootHierarchyPage";
 import "@testing-library/jest-dom";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
@@ -67,24 +68,35 @@ initialiseEssentialMocks({
 });
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
-jest.mock("../../../tsrc/modules/HierarchyModule", () => ({
-  getHierarchy: jest.fn(getHierarchy),
-  getMyAcls: jest.fn(getMyAcls),
-}));
+const mockGetHierarchy = jest
+  .spyOn(HierarchyModule, "getHierarchy")
+  .mockImplementation(getHierarchy);
+
+jest.spyOn(HierarchyModule, "getMyAcls").mockImplementation(getMyAcls);
 
 const renderHierarchyPage = async (
   compoundUuid: string,
+  inNewUI: boolean = true,
 ): Promise<RenderResult> => {
-  const urlPrefix = "/page/hierarchy/";
+  const NEW_HIERARCHY_PATH = "/page/hierarchy/";
+  const OLD_HIERARCHY_PATH = "/hierarchy.do";
+
   const history = createMemoryHistory();
-  history.push(`${urlPrefix}${compoundUuid}`);
+  const location = inNewUI
+    ? `${NEW_HIERARCHY_PATH}${compoundUuid}`
+    : `${OLD_HIERARCHY_PATH}?topic=${compoundUuid}`;
+  history.push(location);
   window.matchMedia = createMatchMedia(1280);
 
   const result = render(
     <ThemeProvider theme={createTheme()}>
       <Router history={history}>
-        <Route path={`${urlPrefix}:compoundUuid`}>
-          <HierarchyPage updateTemplate={jest.fn()} />
+        <Route
+          path={
+            inNewUI ? `${NEW_HIERARCHY_PATH}:compoundUuid` : OLD_HIERARCHY_PATH
+          }
+        >
+          <RootHierarchyPage updateTemplate={jest.fn()} />
         </Route>
       </Router>
     </ThemeProvider>,
@@ -209,6 +221,13 @@ describe("<HierarchyPage/>", () => {
 
     expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
     expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
+  });
+
+  it("supports using the Hierarchy ID retrieved from Legacy query param", async () => {
+    const uuid = topicWithChildren.compoundUuid;
+    await renderHierarchyPage(uuid, false);
+
+    expect(mockGetHierarchy).toHaveBeenLastCalledWith(uuid);
   });
 
   it("generates a link for sharing the current Hierarchy search", async () => {

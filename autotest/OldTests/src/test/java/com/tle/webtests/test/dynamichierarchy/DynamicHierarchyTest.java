@@ -19,6 +19,8 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
 
+// todo: lots of switching between UI modes were added to get the test passed.
+// We will remove these once we work on OEQ-1701 and OEQ-1702
 @TestInstitution("hierarchy")
 public class DynamicHierarchyTest extends AbstractCleanupTest {
   final String TOPIC_1 = "dynamic_topic 1";
@@ -50,6 +52,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     // add key resource to first dynamic hierarchy
     keyResourcePage.addToHierarchy(TOPIC_1);
 
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(false);
+    }
     TopicPage browseAll = new TopicPage(context).load();
     TopicPage topicPage = browseAll.clickSubTopic(TOPIC_1);
     TopicListPage results = topicPage.results();
@@ -58,6 +64,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     assertTrue(
         results.doesKeyResourceExist(TESTING_ITEM, 1),
         TESTING_ITEM + " doesn't exist in " + TOPIC_1);
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(true);
+    }
   }
 
   @Test(dependsOnMethods = "modifyKeyResourceLinkOnItemSummary")
@@ -74,6 +84,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     keyResourcePage.removeKeyResourceFromHierarchy(TOPIC_1);
     keyResourcePage.addToHierarchy(TOPIC_2);
 
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(false);
+    }
     TopicPage browseAll1 = new TopicPage(context).load();
     TopicPage topicPage1 = browseAll1.clickSubTopic(TOPIC_1);
     TopicListPage itemList1 = topicPage1.results();
@@ -85,6 +99,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     TopicPage topicPage2 = browseAll2.clickSubTopic(TOPIC_2);
     TopicListPage itemList2 = topicPage2.results();
     assertTrue(itemList2.doesKeyResourceExist(TESTING_ITEM, 1));
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(true);
+    }
   }
 
   @Test(dependsOnMethods = "addToHierarchyLinkOnSearchPage")
@@ -92,6 +110,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     logon("AutoTest", "automated");
     String itemName = "Testing item 1";
 
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(false);
+    }
     TopicPage browseAll = new TopicPage(context).load();
     TopicPage topicPage = browseAll.clickSubTopic(TOPIC_1);
     TopicListPage results = topicPage.results();
@@ -112,6 +134,10 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     TopicPage browseAgain = topicPage.clickBrowseBreadcrumb();
     int countAgain = browseAgain.topicCount(TOPIC_1);
     assertEquals(Integer.toString(resultRecord), Integer.toString(countAgain));
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(true);
+    }
   }
 
   @Test
@@ -133,9 +159,17 @@ public class DynamicHierarchyTest extends AbstractCleanupTest {
     item.delete();
     item.purge();
 
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(false);
+    }
     TopicPage browseAll = new TopicPage(context).load();
     TopicPage topicPage = browseAll.clickSubTopic(TOPIC_1);
     TopicListPage results = topicPage.results();
     assertFalse(results.doesKeyResourceExist(itemName, 1));
+    if (getTestConfig().isNewUI()) {
+      logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
+      setNewUI(true);
+    }
   }
 }

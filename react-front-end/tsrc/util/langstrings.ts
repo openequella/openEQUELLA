@@ -385,6 +385,9 @@ export const languageStrings = {
     removeKeyResource: "Remove key resource",
     hierarchyPageTitle: "Hierarchy",
     attachmentCount: "Attachment count",
+    error: {
+      missingTopicUUID: "Failed to open Hierarchy page: topic ID is not found.",
+    },
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
