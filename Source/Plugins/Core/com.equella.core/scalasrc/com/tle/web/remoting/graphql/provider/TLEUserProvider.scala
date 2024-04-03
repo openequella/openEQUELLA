@@ -2,6 +2,7 @@ package com.tle.web.remoting.graphql.provider
 
 import com.tle.beans.user.TLEUser
 import com.tle.core.guice.Bind
+import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
 import com.tle.web.remoting.graphql.ErrorCodes
 import com.tle.web.remoting.graphql.schema.User
@@ -14,6 +15,8 @@ import scala.util.Try
 @Bind
 @Singleton
 class TLEUserProvider {
+  private final val EDIT_USER_MANAGEMENT = "EDIT_USER_MANAGEMENT"
+
   private var tleUserService: TLEUserService = _
 
   @Inject def this(tleUserService: TLEUserService) = {
@@ -21,25 +24,25 @@ class TLEUserProvider {
     this.tleUserService = tleUserService
   }
 
-  def listUsers(query: Option[String]): List[User] = {
-    // TODO: This has no ACL protection - I remember we had to add somthing to the REST API to handle this
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  def listUsers(query: Option[String]): List[User] =
     tleUserService
       .searchUsers(query.getOrElse(""), "", true)
       .asScala
       .map(User(_))
       .toList
-  }
 
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def userByUsername(username: String): Option[User] = {
-    // TODO: Should this have an ACL?
     tleUserService.getByUsername(username)
   }
 
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def userById(id: String): Option[User] = {
-    // TODO: Should this have an ACL?
     tleUserService.get(id)
   }
 
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def createUser(username: String,
                  email: String,
                  firstName: String,
@@ -61,6 +64,7 @@ class TLEUserProvider {
     } yield newUser
   }
 
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def updateUser(username: String,
                  email: Option[String],
                  firstName: Option[String],
@@ -80,6 +84,7 @@ class TLEUserProvider {
         }
       }
 
+  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def deleteUser(id: String): Either[ProviderError, Unit] =
     ProviderError.Try("Failed to delete user: ") {
       tleUserService.delete(id)
