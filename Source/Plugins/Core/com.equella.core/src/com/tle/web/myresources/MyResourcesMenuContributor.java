@@ -59,7 +59,7 @@ public class MyResourcesMenuContributor implements MenuContributor {
             1,
             20,
             "assignment_ind",
-            newUIEnabled ? (NewUiRoutes.PATH_MYRESOURCES()) : null);
+            newUIEnabled ? ("/" + NewUiRoutes.PATH_MYRESOURCES()) : null);
     return Collections.singletonList(mc);
   }
 

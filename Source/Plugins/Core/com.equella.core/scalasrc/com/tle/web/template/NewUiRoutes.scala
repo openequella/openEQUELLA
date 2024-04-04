@@ -25,10 +25,9 @@ import io.lemonlabs.uri.{QueryString, RelativeUrl}
   * Centralises the various routes for the New UI - especially useful when doing `forwardToUrl`.
   */
 object NewUiRoutes {
-  val RELATIVE_PATH_MYRESOURCES: String = "page/myresources"
-  val PATH_MYRESOURCES: String          = "/" + RELATIVE_PATH_MYRESOURCES
-  val PATH_BROWSE_HIERARCHIES: String   = "/page/hierarchies"
-  val PATH_HIERARCHY: String            = "/page/hierarchy"
+  val PATH_MYRESOURCES: String        = "page/myresources"
+  val PATH_BROWSE_HIERARCHIES: String = "page/hierarchies"
+  val PATH_HIERARCHY: String          = "page/hierarchy"
 
   /**
     * Builds a relative URL for the New UI Hierarchy pages.
@@ -63,6 +62,6 @@ object NewUiRoutes {
         .filter({
           case (_, v) => v.isDefined
         })
-    buildRelativeUrl(path = RELATIVE_PATH_MYRESOURCES, params)
+    buildRelativeUrl(path = PATH_MYRESOURCES, params)
   }
 }
