@@ -8,11 +8,18 @@ import com.tle.web.remoting.graphql.provider.TLEUserProvider
 
 import javax.inject.{Inject, Singleton}
 
+/**
+  * The schema for the TLE User GraphQL API. Because `TLEUser`s are effectively 'internal' users, all
+  * operations in this schema using the namespace prefix of `internalUser`.
+  */
 @Bind
 @Singleton
 class TLEUserSchema {
   private var tleUserProvider: TLEUserProvider = _
 
+  /**
+    * Default constructor for Guice.
+    */
   @Inject def this(tleUserService: TLEUserProvider) = {
     this()
     this.tleUserProvider = tleUserService
@@ -70,6 +77,9 @@ class TLEUserSchema {
     internalUserDelete = args => tleUserProvider.deleteUser(args.id)
   )
 
+  /**
+    * Get the API for the TLE User GraphQL schema.
+    */
   def getApi: GraphQL[Any] =
     graphQL(
       RootResolver(

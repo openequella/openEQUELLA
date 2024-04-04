@@ -9,16 +9,24 @@ import org.slf4j.LoggerFactory
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
+/**
+  * Servlet for handling GraphQL requests. Relies on standard oEQ servlet security/authentication
+  * filters/mechanisms.
+  */
 @Bind
 @Singleton
 class GraphQLServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[GraphQLServlet])
 
   private var graphQL: GraphQL[Any] = _
+
+  /**
+    * Default constructor for Guice.
+    */
   @Inject def this(schema: Schema) = {
     this()
     this.graphQL = schema.getFullApi
-    Console.println(graphQL.render)
+    Console.println(graphQL.render) // temporary until OEQ-1854 is implemented
   }
 
   /**
@@ -54,6 +62,9 @@ class GraphQLServlet extends HttpServlet {
 
   import zio._
 
+  /**
+    * Executes a GraphQL query and returns the result as a JSON string.
+    */
   private def execute(query: String): Either[Throwable, String] = zio.Unsafe.unsafe {
     implicit unsafe =>
       val calibanExecute = for {

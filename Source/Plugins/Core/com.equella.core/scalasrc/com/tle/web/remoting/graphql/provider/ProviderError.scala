@@ -14,6 +14,14 @@ import scala.util.{Failure, Success}
 case class ProviderError(message: String, cause: String)
 
 object ProviderError {
+
+  /**
+    * Create a `ProviderError` with the provided human readable message and the `Throwable` which
+    * caused the error.
+    *
+    * @param message human readable message
+    * @param cause the `Throwable` that caused the error, from which an error code will be extracted
+    */
   def apply(message: String, cause: Throwable): ProviderError =
     ProviderError(message, Errors.mapException(cause))
 

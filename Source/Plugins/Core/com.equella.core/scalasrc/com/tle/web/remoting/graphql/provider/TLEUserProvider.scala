@@ -12,6 +12,12 @@ import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 import scala.util.Try
 
+/**
+  * A Provider for operations involving TLE User entities. Ultimately proxied to the `TLEUserService`.
+  * Although some service methods have appropriate access control, this provider enforces the `EDIT_USER_MANAGEMENT`
+  * privilege on most operations. This is done even for operations using service methods which already enforce
+  * the privilege, to ensure that the privilege is always checked.
+  */
 @Bind
 @Singleton
 class TLEUserProvider {
@@ -19,11 +25,21 @@ class TLEUserProvider {
 
   private var tleUserService: TLEUserService = _
 
+  /**
+    * Default constructor for Guice.
+    *
+    * @param tleUserService the `TLEUserService` to use for operations
+    */
   @Inject def this(tleUserService: TLEUserService) = {
     this()
     this.tleUserService = tleUserService
   }
 
+  /**
+    * List all users in the system, filtered by `query`. If `query` is `None`, all users are returned.
+    *
+    * @param query an optional query string to filter users by
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def listUsers(query: Option[String]): List[User] =
     tleUserService
@@ -32,16 +48,36 @@ class TLEUserProvider {
       .map(User(_))
       .toList
 
+  /**
+    * Retrieve a user by their username, if the user can't be found `None` is returned.
+    *
+    * @param username the username of the user to retrieve
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def userByUsername(username: String): Option[User] = {
     tleUserService.getByUsername(username)
   }
 
+  /**
+    * Retrieve a user by their ID, if the user can't be found `None` is returned.
+    *
+    * @param id The ID is the DB identifier for the user - typically a UUID, but can be anything.
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def userById(id: String): Option[User] = {
     tleUserService.get(id)
   }
 
+  /**
+    * Create a new user with the provided details.
+    *
+    * @param username the username of the new user
+    * @param email the email address of the new user
+    * @param firstName the first name of the new user
+    * @param lastName the last name of the new user
+    * @param password the password of the new user - which will be hashed before storage
+    * @return the new user, or an error if the user could not be created
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def createUser(username: String,
                  email: String,
@@ -64,6 +100,16 @@ class TLEUserProvider {
     } yield newUser
   }
 
+  /**
+    * Update a user with the provided details - any which are Some.
+    *
+    * @param username the username of the user to update
+    * @param email a new email address for the user
+    * @param firstName a new first name for the user
+    * @param lastName a new last name for the user
+    * @param password a new password for the user - which will be hashed before storage
+    * @return the updated user, or an error if the user could not be updated
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def updateUser(username: String,
                  email: Option[String],
@@ -84,6 +130,11 @@ class TLEUserProvider {
         }
       }
 
+  /**
+    * Delete a user by their ID.
+    *
+    * @param id the database ID of the user to delete - typically a UUID but can be anything.
+    */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def deleteUser(id: String): Either[ProviderError, Unit] =
     ProviderError.Try("Failed to delete user: ") {
