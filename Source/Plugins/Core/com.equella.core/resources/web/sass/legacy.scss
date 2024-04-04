@@ -5728,3 +5728,42 @@ button:focus {
     }
   }
 }
+
+.taskstatsresults TABLE {
+  width: 100%;
+}
+
+.taskstatsresults th {
+  text-align: left;
+}
+
+.taskstatsresults td,
+.taskstatsresults th {
+  padding: 9px 10px 9px 32px;
+}
+
+.taskstatsresults .waiting,
+.taskstatsresults .trend {
+  text-align: center;
+  width: 15px;
+  padding: 9px 10px;
+}
+.taskstatsresults .resourcecount {
+  display: block;
+  padding: 15px 18px;
+  text-align: left;
+}
+
+div.controlcontainer {
+  padding: 15px 18px;
+}
+
+div.statscontrols {
+  position: relative;
+}
+
+div.trend {
+  position: absolute;
+  bottom: 18px;
+  right: 0;
+}
