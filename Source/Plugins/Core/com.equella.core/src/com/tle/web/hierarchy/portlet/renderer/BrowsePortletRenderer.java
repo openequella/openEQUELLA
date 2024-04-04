@@ -43,8 +43,11 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.model.HtmlLinkState;
+import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,10 +114,15 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
           searchCount += dynamicKeyResources.size();
         }
 
+        String uuid = buildTopicId(childTopic, childValue, null);
+
         final SectionInfo fwd = context.createForward("/hierarchy.do");
         final TopicDisplaySection topicDisplay = fwd.lookupSection(TopicDisplaySection.class);
-        topicDisplay.changeTopic(fwd, buildTopicId(childTopic, childValue, null));
-        final HtmlLinkState link = new HtmlLinkState(new InfoBookmark(fwd));
+        topicDisplay.changeTopic(fwd, uuid);
+        final HtmlLinkState link =
+            RenderNewTemplate.isNewUIEnabled()
+                ? new HtmlLinkState(new SimpleBookmark(NewUiRoutes.hierarchy(uuid)))
+                : new HtmlLinkState(new InfoBookmark(fwd));
 
         subNodes.add(
             new DisplayHierarchyNode(

@@ -113,7 +113,7 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
 
       HtmlLinkState hls =
           new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + encodedTopicCUuid));
-      String route = newUIEnabled ? NewUiRoutes.hierarchy(encodedTopicCUuid) : null;
+      String route = newUIEnabled ? "/" + NewUiRoutes.hierarchy(encodedTopicCUuid) : null;
       hls.setLabel(new TextLabel(topic.getName()));
 
       MenuContribution mc =
@@ -125,7 +125,7 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
       HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=ALL"));
       hls.setLabel(MORE);
 
-      String browseRoute = newUIEnabled ? NewUiRoutes.PATH_BROWSE_HIERARCHIES() : null;
+      String browseRoute = newUIEnabled ? "/" + NewUiRoutes.PATH_BROWSE_HIERARCHIES() : null;
       MenuContribution mc =
           new MenuContribution(hls, ICON_PATH, 10, linkPriority++, null, browseRoute);
       mcs.add(mc);
