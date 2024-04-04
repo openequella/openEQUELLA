@@ -225,7 +225,7 @@ export default function IndexPage() {
         <Route
           path={OLD_HIERARCHY_PATH}
           render={(p) => {
-            if(isSelectionSessionOpen()) {
+            if (isSelectionSessionOpen()) {
               return renderLegacyContent(p);
             }
 
