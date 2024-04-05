@@ -1564,7 +1564,6 @@ div[class*="fancy-bg"] {
   -moz-background-origin: padding;
   padding: 25px;
   background-color: white;
-  position: relative;
 }
 
 .modal-footer {
@@ -5728,4 +5727,8 @@ button:focus {
       }
     }
   }
+}
+
+.moderation_comments_dialog {
+  position: relative;
 }
