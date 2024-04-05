@@ -23,6 +23,7 @@ import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -78,7 +79,9 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page) {
     By linkByTitle = By.xpath("//div[@id='settingsPage']//a[text()='" + title + "']");
     WebElement groupElem = openGroup(group, linkByTitle);
-    groupElem.findElement(linkByTitle).click();
+
+    WebElement link = groupElem.findElement(linkByTitle);
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click()", link);
     return page.get();
   }
 

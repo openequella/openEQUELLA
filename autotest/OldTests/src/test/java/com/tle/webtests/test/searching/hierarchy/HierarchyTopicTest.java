@@ -70,6 +70,14 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
   @Test(dependsOnMethods = "childInheritance")
   public void lotsOfKeyResources() {
     logon("AutoTest", "automated");
+
+    // TODO: remove me in OEQ-1702
+    // disable new UI if test env is set to new UI. This test is flaky so make sure it is run in old
+    // UI.
+    if (isNewUIEnv) {
+      setNewUI(false);
+    }
+
     String topic = "A Topic";
     String itemName = context.getFullName("Lots of Key Resources");
 
