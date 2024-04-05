@@ -165,6 +165,39 @@
                 </entry>
               </attributes>
             </com.dytech.edge.wizard.beans.control.CustomControl>
+            <com.dytech.edge.wizard.beans.control.ShuffleList>
+              <mandatory>false</mandatory>
+              <reload>false</reload>
+              <include>true</include>
+              <size1>0</size1>
+              <size2>0</size2>
+              <title>
+                <id>0</id>
+                <strings>
+                  <entry>
+                    <string>en</string>
+                    <com.tle.beans.entity.LanguageString>
+                      <id>0</id>
+                      <locale>en</locale>
+                      <priority>1</priority>
+                      <text>Authors</text>
+                      <bundle reference="../../../.."/>
+                    </com.tle.beans.entity.LanguageString>
+                  </entry>
+                </strings>
+              </title>
+              <targetnodes>
+                <com.dytech.edge.wizard.TargetNode>
+                  <target>/item/copyright/authors/author</target>
+                  <attribute></attribute>
+                </com.dytech.edge.wizard.TargetNode>
+              </targetnodes>
+              <items/>
+              <controls/>
+              <tokenise>true</tokenise>
+              <forceUnique>false</forceUnique>
+              <checkDuplication>false</checkDuplication>
+            </com.dytech.edge.wizard.beans.control.ShuffleList>
           </controls>
         </com.dytech.edge.wizard.beans.DefaultWizardPage>
       </pages>

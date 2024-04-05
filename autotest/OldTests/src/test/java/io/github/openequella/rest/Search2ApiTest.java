@@ -59,7 +59,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     JsonNode result =
         doSearch(
             200, null, new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"));
-    assertEquals(getAvailable(result), 5);
+    assertEquals(getAvailable(result), 7);
   }
 
   @Test(description = "Search for items belonging to a specific owner")
@@ -375,7 +375,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a hierarchy topic result")
   public void hierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
-    assertEquals(getAvailable(result), 53);
+    assertEquals(getAvailable(result), 55);
   }
 
   @Test(description = "Search for a non-existent hierarchy topic result")
@@ -407,7 +407,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
             new NameValuePair("owner", "adfcaf58-241b-4eca-9740-6a26d1c3dd58"));
 
-    assertEquals(getAvailable(result), 46);
+    assertEquals(getAvailable(result), 47);
   }
 
   @Test(description = "Search with criteria defined in a virtual hierarchy topic with date range")
@@ -432,7 +432,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
             new NameValuePair("collections", "non-existing"),
             new NameValuePair("status", "ARCHIVED"));
-    assertEquals(getAvailable(result), 53);
+    assertEquals(getAvailable(result), 55);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)

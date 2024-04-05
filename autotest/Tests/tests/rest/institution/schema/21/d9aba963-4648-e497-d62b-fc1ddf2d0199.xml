@@ -52,6 +52,6 @@
   </impTransforms>
   <itemNamePath>/item/name</itemNamePath>
   <itemDescriptionPath>/item/description</itemDescriptionPath>
-  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;files type=&quot;text&quot;/&gt;&lt;rights&gt;&lt;offer&gt;&lt;party&gt;&lt;context&gt;&lt;name field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/context&gt;&lt;/party&gt;&lt;/offer&gt;&lt;/rights&gt;&lt;mod_date type=&quot;text&quot;/&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;files type=&quot;text&quot;/&gt;&lt;rights&gt;&lt;offer&gt;&lt;party&gt;&lt;context&gt;&lt;name field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/context&gt;&lt;/party&gt;&lt;/offer&gt;&lt;/rights&gt;&lt;mod_date type=&quot;text&quot;/&gt;&lt;copyright&gt;&lt;authors&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/authors&gt;&lt;/copyright&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
   <citations/>
 </com.tle.beans.entity.Schema>
