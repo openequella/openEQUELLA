@@ -1,6 +1,7 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban._
+import caliban.schema.Annotations.GQLDescription
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
@@ -25,33 +26,51 @@ class TLEUserSchema {
     this.tleUserProvider = tleUserService
   }
 
-  case class ListUsersArgs(query: Option[String])
-  case class UserByUsernameArgs(username: String)
-  case class UserByIdArgs(id: String)
+  case class ListUsersArgs(@GQLDescription("A string to filter users by") query: Option[String])
+  case class UserByUsernameArgs(
+      @GQLDescription("Username of the user to retrieve") username: String)
+  case class UserByIdArgs(@GQLDescription("Unique ID of the user to retrieve") id: String)
   case class Queries(
+      @GQLDescription("List all internal users, optionally filtered by a query")
       internalUsers: ListUsersArgs => List[User],
+      @GQLDescription("Retrieve details of a user based on username")
       internalUserByUsername: UserByUsernameArgs => Option[User],
+      @GQLDescription("Retrieve details of a user based on unique ID")
       internalUserById: UserByIdArgs => Option[User]
   )
 
   case class CreateUserArgs(
+      @GQLDescription(
+        "Username of the user to create which they'll use for authentication - must be unique")
       username: String,
+      @GQLDescription("Email address of the user")
       email: String,
+      @GQLDescription("First name of the user")
       firstName: String,
+      @GQLDescription("Last name of the user")
       lastName: String,
+      @GQLDescription("Password of the user - will be hashed on store")
       password: String
   )
   case class UpdateUserArgs(
+      @GQLDescription("Username of existing user to update")
       username: String,
+      @GQLDescription("New email address of the user")
       email: Option[String],
+      @GQLDescription("New first name of the user")
       firstName: Option[String],
+      @GQLDescription("New last name of the user")
       lastName: Option[String],
+      @GQLDescription("New password of the user - will be hashed on store")
       password: Option[String]
   )
-  case class DeleteUserArgs(id: String)
+  case class DeleteUserArgs(@GQLDescription("The unique ID of the user to delete") id: String)
   case class Mutations(
+      @GQLDescription("Create a new internal user")
       internalUserCreate: CreateUserArgs => ResultWithErrors[User],
+      @GQLDescription("Update an existing internal user")
       internalUserUpdate: UpdateUserArgs => ResultWithErrors[User],
+      @GQLDescription("Delete an existing internal user")
       internalUserDelete: DeleteUserArgs => ResultWithErrors[Unit]
   )
 
