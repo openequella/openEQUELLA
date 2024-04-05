@@ -18,6 +18,7 @@
 
 package com.tle.web.api.search
 
+import cats.implicits.toTraverseOps
 import com.dytech.edge.exceptions.InvalidSearchQueryException
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -27,8 +28,10 @@ import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.security.SecurityConstants
 import com.tle.core.auditlog.AuditLogService
 import com.tle.core.collection.service.ItemDefinitionService
+import com.tle.core.freetext.service.FreeTextService
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
+import com.tle.core.remoting.MatrixResults
 import com.tle.core.security.TLEAclManager
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.web.api.ApiErrorResponse
@@ -64,6 +67,7 @@ class SearchResource {
   @Inject private var exportService: ExportService                 = _
   @Inject private var itemDefinitionService: ItemDefinitionService = _
   @Inject private var aclManager: TLEAclManager                    = _
+  @Inject private var freetextService: FreeTextService             = _
 
   @GET
   @ApiOperation(
@@ -74,6 +78,26 @@ class SearchResource {
   def searchItems(@BeanParam params: SearchParam): Response = {
     val searchPayload = SearchPayload(params)
     doSearch(searchPayload)
+  }
+
+  @GET
+  @Path("/facet")
+  @ApiOperation(
+    value = "Faceted search",
+    notes =
+      "This endpoint is used to a faceted search and returns a list of terms and the number of Items matching the terms by a list of Schema nodes and general search queries.",
+    response = classOf[FacetedSearchResult],
+  )
+  def searchFacet(@BeanParam params: FacetedSearchParam): Response = {
+    val searchPayload = SearchPayload(params)
+
+    searchPayload.hierarchy.map(createPresetSearch).sequence match {
+      case Right(hierarchySearch) =>
+        val search = createSearch(searchPayload, None, hierarchySearch)
+        doFacetSearch(search, params)
+      case Left(errorMessage) =>
+        ApiErrorResponse.resourceNotFound(s"Failed to get facet search result: $errorMessage")
+    }
   }
 
   @POST
@@ -99,7 +123,7 @@ class SearchResource {
                                  advancedSearchCriteria: AdvancedSearchParameters): Response = {
     val searchPayload                      = SearchPayload(params)
     val AdvancedSearchParameters(criteria) = advancedSearchCriteria
-    doNormalSearch(createSearch(searchPayload, Option(criteria)), searchPayload)
+    getSearchResult(createSearch(searchPayload, Option(criteria)), searchPayload)
   }
 
   @HEAD
@@ -182,7 +206,7 @@ class SearchResource {
     }
   }
 
-  private def doNormalSearch(searchRequest: DefaultSearch, payload: SearchPayload): Response = {
+  private def getSearchResult(searchRequest: DefaultSearch, payload: SearchPayload): Response = {
     Try {
       val searchResults =
         search(searchRequest, payload.start, payload.length, payload.searchAttachments)
@@ -209,18 +233,27 @@ class SearchResource {
     }
   }
 
-  private def doHierarchySearch(compoundUuid: String, searchPayload: SearchPayload): Response =
-    createPresetSearch(compoundUuid) match {
+  private def doSearch(searchPayload: SearchPayload): Response = {
+    searchPayload.hierarchy.map(createPresetSearch).sequence match {
       case Right(hierarchySearch) =>
-        val search = createSearch(searchPayload, None, Option(hierarchySearch))
-        doNormalSearch(search, searchPayload)
+        val search = createSearch(searchPayload, None, hierarchySearch)
+        getSearchResult(search, searchPayload)
       case Left(errorMessage) =>
         ApiErrorResponse.resourceNotFound(s"Failed to get search result: $errorMessage")
     }
+  }
 
-  private def doSearch(searchPayload: SearchPayload): Response =
-    searchPayload.hierarchy match {
-      case Some(hierarchy) => doHierarchySearch(hierarchy, searchPayload)
-      case None            => doNormalSearch(createSearch(searchPayload), searchPayload)
-    }
+  private def doFacetSearch(search: DefaultSearch, params: FacetedSearchParam) = {
+    val matrixResults: MatrixResults =
+      freetextService.matrixSearch(search, params.nodes.toList.asJava, true, true)
+    val results = matrixResults.getEntries.asScala
+      .map(
+        matrixEntry =>
+          FacetedResultItem(
+            term = matrixEntry.getFieldValues.toArray.mkString(","),
+            count = matrixEntry.getCount
+        ))
+      .toList
+    Response.ok.entity(FacetedSearchResult(results)).build()
+  }
 }

@@ -12,14 +12,13 @@ import org.testng.annotations.Test;
 public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
   private final String BROWSE_HIERARCHY_API_ENDPOINT =
       getTestConfig().getInstitutionUrl() + "api/browsehierarchy2";
-  private final String VIRTUAL_TOPIC_ID = "886aa61d-f8df-4e82-8984-c487849f80ff:A James";
 
   @Test(description = "Get all hierarchies")
   public void browseHierarchy() throws IOException {
     JsonNode hierarchies = request(null);
 
     // Should be able to get all top level hierarchies
-    assertEquals(hierarchies.size(), 4);
+    assertEquals(hierarchies.size(), 7);
     // Should be able to get all matched Items
     assertEquals(
         getTopic(hierarchies, "43e60e9a-a3ed-497d-b79d-386fed23675c")

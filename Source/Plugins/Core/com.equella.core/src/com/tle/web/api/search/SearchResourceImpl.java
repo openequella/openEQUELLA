@@ -214,7 +214,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     final String whereClause = where;
     final boolean onlyLive = !(showall != null && Utils.parseLooseBool(showall, false));
     final Collection<String> cols = (collections == null ? null : CsvList.asList(collections));
-    final int width = (breadth < 0 ? 10 : breadth);
+
     final List<String> nodeList = CsvList.asList(nodes);
 
     final DefaultSearch search =
@@ -250,8 +250,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
                             entry -> CollectionConverters.SeqHasAsJava(entry.getValue()).asJava())))
         .ifPresent(ms -> ms.forEach(search::addMust));
 
-    final MatrixResults matrixResults =
-        freetextService.matrixSearch(search, nodeList, true, width, true);
+    final MatrixResults matrixResults = freetextService.matrixSearch(search, nodeList, true, true);
 
     final FacetSearchBean resultsBean = new FacetSearchBean();
     final List<FacetBean> facetBeans = Lists.newArrayList();
