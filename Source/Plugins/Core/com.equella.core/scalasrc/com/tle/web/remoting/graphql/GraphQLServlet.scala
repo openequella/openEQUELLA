@@ -6,6 +6,7 @@ import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.schema.Schema
 import org.slf4j.LoggerFactory
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
@@ -48,15 +49,26 @@ class GraphQLServlet extends HttpServlet {
       return
     }
 
-    val query = new String(req.getInputStream.readAllBytes())
-    execute(query) match {
-      case Left(error) =>
-        LOGGER.error("Error executing query", error)
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
-      case Right(result) =>
-        resp.setStatus(HttpServletResponse.SC_OK)
+    try {
+      val query = new String(req.getInputStream.readAllBytes())
+      execute(query) match {
+        case Left(error) =>
+          LOGGER.error("Error executing query", error)
+          resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+        case Right(result) =>
+          resp.setStatus(HttpServletResponse.SC_OK)
+          resp.setContentType("application/json")
+          resp.getWriter.write(result)
+      }
+    } catch {
+      case e: Exception =>
+        // UUID for easy tracking of the error in logs to client side
+        val msg = s"Error executing query (${UUID.randomUUID()})"
+        LOGGER.error(msg, e)
+
+        resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
         resp.setContentType("application/json")
-        resp.getWriter.write(result)
+        resp.getWriter.write(s"""{"errors": [{"message": "$msg"}]}""")
     }
   }
 
