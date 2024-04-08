@@ -5731,44 +5731,47 @@ button:focus {
 
 // Fix the layout of task statistics portlet in EBP
 // Make sure the layout the same with old UI
-.taskstatsresults {
-  TABLE {
-    width: 100%;
+.portlet_taskstatistics_content {
+  .taskstatsresults {
+    table {
+      width: 100%;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    td,
+    th {
+      padding: $singleMargin $singleMargin $singleMargin 32px;
+    }
+
+    .waiting,
+    .trend {
+      text-align: center;
+      width: $doubleMargin;
+      padding: $singleMargin;
+    }
+
+    .resourcecount {
+      display: block;
+      padding: $doubleMargin;
+      text-align: left;
+    }
   }
 
-  th {
-    text-align: left;
-  }
-
-  td,
-  th {
-    padding: $singleMargin $singleMargin $singleMargin 32px;
-  }
-
-  .waiting,
-  .trend {
-    text-align: center;
-    width: 15px;
-    padding: $singleMargin;
-  }
-
-  .resourcecount {
-    display: block;
+  .controlcontainer {
     padding: $doubleMargin;
-    text-align: left;
   }
-}
 
-div.controlcontainer {
-  padding: $doubleMargin;
-}
+  .statscontrols {
+    position: relative;
+  }
 
-div.statscontrols {
-  position: relative;
-}
-
-div.trend {
-  position: absolute;
-  bottom: 18px;
-  right: 0;
+  // Add div to avoid conflict on class trend of table
+  div.trend {
+    position: absolute;
+    bottom: $doubleMargin;
+    right: 0;
+  }
 }
