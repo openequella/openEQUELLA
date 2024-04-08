@@ -44,7 +44,7 @@ class TLEUserSchema {
         "Username of the user to create which they'll use for authentication - must be unique")
       username: String,
       @GQLDescription("Email address of the user")
-      email: String,
+      email: Option[String],
       @GQLDescription("First name of the user")
       firstName: String,
       @GQLDescription("Last name of the user")

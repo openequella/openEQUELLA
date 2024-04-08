@@ -80,16 +80,18 @@ class TLEUserProvider {
     */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
   def createUser(username: String,
-                 email: String,
+                 email: Option[String],
                  firstName: String,
                  lastName: String,
                  password: String): Either[ProviderError, User] = {
     val u = new TLEUser()
     u.setUsername(username)
-    u.setEmailAddress(email)
     u.setFirstName(firstName)
     u.setLastName(lastName)
     u.setPassword(password)
+
+    // Optional fields
+    email.foreach(u.setEmailAddress)
 
     for {
       id <- Try(tleUserService.add(u)).toEither.left.map(e =>
