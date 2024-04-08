@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import { GET } from './AxiosInstance';
-import type { UuidString } from './Common';
+import type { ItemStatus, UuidString } from './Common';
 import { SearchFacetsResultCodec } from './gen/SearchFacets';
 import type { Must } from './Search';
 import { processMusts } from './Search';
-import { asCsvList, validate } from './Utils';
+import { validate } from './Utils';
 
 interface SearchFacetsParamsBase {
   /**
@@ -34,14 +34,14 @@ interface SearchFacetsParamsBase {
   /**
    * A query string for the filter the resultant 'terms' by.
    */
-  q?: string;
+  query?: string;
   /**
    * The number of term combinations to search for, a higher number will return more results and
    * more accurate counts, but will take longer. Default 10.
    */
   breadth?: number;
   /**
-   * Collections to filter by.
+   * Collections to filter by. (ignored if hierarchy is set)
    */
   collections?: UuidString[];
   /**
@@ -49,7 +49,7 @@ interface SearchFacetsParamsBase {
    * be found at the documentation site in the
    * [REST API Guide](https://openequella.github.io/guides/RestAPIGuide.html).
    */
-  where?: string;
+  whereClause?: string;
   /**
    * An ISO date format (yyyy-MM-dd)
    */
@@ -63,13 +63,18 @@ interface SearchFacetsParamsBase {
    */
   owner?: UuidString;
   /**
-   * If `true` then includes items that are not live.
+   * A list of statuses to filter items based on their status. (ignored if hierarchy is set)
    */
-  showall?: boolean;
+  status?: ItemStatus[];
   /**
    * A list of MIME types to filter items based on their attachments matching the specified types.
    */
   mimeTypes?: string[];
+  /**
+   * Hierarchy compound UUID.
+   * When set, the collections and status are ignored.
+   */
+  hierarchy?: string;
 }
 
 /**
@@ -142,7 +147,7 @@ const processSearchFacetsParams = (
 ): SearchFacetsParamsProcessed | undefined =>
   params ? { ...params, musts: processMusts(params.musts) } : undefined;
 
-const SEARCH_FACETS_API_PATH = '/search/facet';
+const SEARCH_FACETS_API_PATH = '/search2/facet';
 
 export const searchFacets = (
   apiBasePath: string,
@@ -151,9 +156,5 @@ export const searchFacets = (
   GET<SearchFacetsResult>(
     apiBasePath + SEARCH_FACETS_API_PATH,
     validate(SearchFacetsResultCodec),
-    {
-      ...processSearchFacetsParams(params),
-      nodes: asCsvList<string>(params.nodes),
-      collections: asCsvList<string>(params.collections),
-    }
+    processSearchFacetsParams(params)
   );
