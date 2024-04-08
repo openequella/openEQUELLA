@@ -66,3 +66,6 @@ conversionService.disableConversion = true
 
 # Zip extraction charset. If omitted, defaults to UTF-8.
 #filestore.zipExtractCharset = ISO_8859_1
+
+# Enable the /graphql/schema endpoint - which provides the schema for the GraphQL API
+graphql.schema = false

@@ -21,11 +21,12 @@ package com.tle.web.remoting.graphql
 import caliban.CalibanError.ExecutionError
 import caliban.{CalibanError, GraphQL}
 import com.tle.core.guice.Bind
+import com.tle.web.remoting.graphql.GraphQLConfig.CFG_GRAPHQL_SCHEMA
 import com.tle.web.remoting.graphql.schema.Schema
 import org.slf4j.LoggerFactory
 
 import java.util.UUID
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Named, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
 /**
@@ -37,15 +38,29 @@ import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 class GraphQLServlet extends HttpServlet {
   private val LOGGER = LoggerFactory.getLogger(classOf[GraphQLServlet])
 
-  private var graphQL: GraphQL[Any] = _
+  private var graphQL: GraphQL[Any]          = _
+  private var schemaEndpointEnabled: Boolean = false
 
   /**
     * Default constructor for Guice.
     */
-  @Inject def this(schema: Schema) = {
+  @Inject def this(schema: Schema, @Named(CFG_GRAPHQL_SCHEMA) graphQLSchemaEnabled: Boolean) = {
     this()
     this.graphQL = schema.getFullApi
-    Console.println(graphQL.render) // temporary until OEQ-1854 is implemented
+    this.schemaEndpointEnabled = graphQLSchemaEnabled
+  }
+
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
+    LOGGER.debug("doGet() called")
+
+    if (schemaEndpointEnabled && req.getServletPath.endsWith("/schema")) {
+      resp.setStatus(HttpServletResponse.SC_OK)
+      resp.setContentType("text/plain")
+      resp.getWriter.write(graphQL.render)
+      return
+    }
+
+    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "GET requests are not supported")
   }
 
   /**
