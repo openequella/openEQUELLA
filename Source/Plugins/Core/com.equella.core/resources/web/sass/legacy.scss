@@ -5729,33 +5729,38 @@ button:focus {
   }
 }
 
-.taskstatsresults TABLE {
-  width: 100%;
-}
+// Fix the layout of task statistics portlet in EBP
+// Make sure the layout the same with old UI
+.taskstatsresults {
+  TABLE {
+    width: 100%;
+  }
 
-.taskstatsresults th {
-  text-align: left;
-}
+  th {
+    text-align: left;
+  }
 
-.taskstatsresults td,
-.taskstatsresults th {
-  padding: 9px 10px 9px 32px;
-}
+  td,
+  th {
+    padding: $singleMargin $singleMargin $singleMargin 32px;
+  }
 
-.taskstatsresults .waiting,
-.taskstatsresults .trend {
-  text-align: center;
-  width: 15px;
-  padding: 9px 10px;
-}
-.taskstatsresults .resourcecount {
-  display: block;
-  padding: 15px 18px;
-  text-align: left;
+  .waiting,
+  .trend {
+    text-align: center;
+    width: 15px;
+    padding: $singleMargin;
+  }
+
+  .resourcecount {
+    display: block;
+    padding: $doubleMargin;
+    text-align: left;
+  }
 }
 
 div.controlcontainer {
-  padding: 15px 18px;
+  padding: $doubleMargin;
 }
 
 div.statscontrols {
