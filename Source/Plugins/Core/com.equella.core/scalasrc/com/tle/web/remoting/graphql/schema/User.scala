@@ -8,7 +8,7 @@ import com.tle.beans.user.TLEUser
   */
 case class User(@GQLDescription("The unique identifier for the user") uniqueId: String,
                 @GQLDescription("The username a user authenticates with") username: String,
-                @GQLDescription("User's email address") email: String,
+                @GQLDescription("User's email address") email: Option[String],
                 @GQLDescription("User's first name") firstName: String,
                 @GQLDescription("User's last name") lastName: String)
 
@@ -17,6 +17,6 @@ case class User(@GQLDescription("The unique identifier for the user") uniqueId: 
   */
 object User {
   def apply(u: TLEUser): User =
-    User(u.getUniqueID, u.getUsername, u.getEmailAddress, u.getFirstName, u.getLastName)
+    User(u.getUniqueID, u.getUsername, Option(u.getEmailAddress), u.getFirstName, u.getLastName)
 
 }
