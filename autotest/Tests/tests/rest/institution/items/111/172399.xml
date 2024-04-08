@@ -1,0 +1,85 @@
+<com.tle.beans.item.Item>
+  <id>172399</id>
+  <uuid>cadcd296-a4d7-4024-bb5d-6c7507e6872a</uuid>
+  <version>2</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2023-11-21 10:30:41.726</dateModified>
+  <dateCreated class="sql-timestamp">2023-11-21 10:30:41.728</dateCreated>
+  <dateForIndex class="sql-timestamp">2023-11-21 10:30:41.726</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4c147089-cddb-e67c-b5ab-189614eb1463"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>172401</id>
+    <liveApprovalDate class="sql-timestamp">2023-11-21 10:30:41.726</liveApprovalDate>
+    <lastAction class="sql-timestamp">2023-11-21 10:30:41.726</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>172404</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2023-11-21 10:30:22.802</date>
+      <applies>false</applies>
+      <type>newversion</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>172405</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2023-11-21 10:30:41.726</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>172406</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2023-11-21 10:30:41.726</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>172407</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2023-11-21 10:30:41.726</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>172402</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>172403</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Book A v2</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

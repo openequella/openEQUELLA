@@ -21,11 +21,13 @@ package com.tle.web.api.search
 import com.tle.beans.item.ItemIdKey
 import com.tle.beans.item.attachments.Attachment
 import com.tle.core.item.service.AttachmentService._
+import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.SearchHelper.getLinksFromBean
 import com.tle.web.api.search.model.SearchResultAttachment
 import com.tle.web.controls.resource.ResourceAttachmentBean
 import com.tle.web.controls.youtube.YoutubeAttachmentBean
+
 import java.util.Optional
 import scala.jdk.CollectionConverters._
 
@@ -67,7 +69,7 @@ object AttachmentHelper {
     att match {
       case bean: ResourceAttachmentBean =>
         val latestVersion =
-          getLatestVersionForCustomAttachment(bean.getItemVersion, bean.getItemUuid)
+          LegacyGuice.itemService.getRealVersion(bean.getItemVersion, bean.getItemUuid)
         bean.setItemVersion(latestVersion)
       case _ =>
     }

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { ItemStatus } from "@openequella/rest-api-client/dist/Common";
 import * as FacetedSearchSettingsModule from "../../../tsrc/modules/FacetedSearchSettingsModule";
 import {
   Classification,
@@ -53,7 +54,19 @@ jest
   .spyOn(FacetedSearchSettingsModule, "getFacetsFromServer")
   .mockResolvedValue([CLASSIFICATION_SUBJECT, CLASSIFICATION_KEYWORD]);
 
-jest.mock("@openequella/rest-api-client");
+jest.mock("@openequella/rest-api-client", () => {
+  // We only want to mock module 'Search' because mocking the whole module will break Runtypes.
+  const restModule: typeof OEQ = jest.requireActual(
+    "@openequella/rest-api-client",
+  );
+  return {
+    ...restModule,
+    SearchFacets: {
+      searchFacets: jest.fn(),
+    },
+  };
+});
+
 const mockedSearchFacets = (
   OEQ.SearchFacets.searchFacets as jest.Mock<
     Promise<OEQ.SearchFacets.SearchFacetsResult>
@@ -74,6 +87,10 @@ const mockedSearchFacets = (
       results: mockData.get(params.nodes[0]),
     } as OEQ.SearchFacets.SearchFacetsResult);
   },
+);
+
+const allStatuses: ItemStatus[] = OEQ.Codec.Common.ItemStatusCodec.types.map(
+  ({ value }) => value,
 );
 
 describe("SearchFacetsModule", () => {
@@ -104,7 +121,7 @@ describe("SearchFacetsModule", () => {
         firstName: "Test",
         lastName: "Owner",
       },
-      status: OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value), // i.e. All statuses
+      status: allStatuses,
       sortOrder: undefined,
       mimeTypes: mimeTypes,
     });
@@ -131,12 +148,12 @@ describe("SearchFacetsModule", () => {
     // ... and that the SearchOptions are correctly converted
     expect(mockedSearchFacets).toHaveBeenLastCalledWith("api", {
       nodes: [CLASSIFICATION_KEYWORD.schemaNode],
-      q: `${queryString}*`,
+      query: `${queryString}*`,
       collections: collections,
       modifiedAfter: dateStart,
       modifiedBefore: dateEnd,
       owner: ownerUuid,
-      showall: true,
+      status: allStatuses,
       mimeTypes: mimeTypes,
     } as OEQ.SearchFacets.SearchFacetsParams);
   });

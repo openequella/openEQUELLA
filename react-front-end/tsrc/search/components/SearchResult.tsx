@@ -73,7 +73,7 @@ import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 
 const PREFIX = "ItemDrmContext";
 
-const classes = {
+export const classes = {
   inline: `${PREFIX}-inline`,
   heading: `${PREFIX}-heading`,
   itemDescription: `${PREFIX}-itemDescription`,
@@ -83,7 +83,7 @@ const classes = {
   divider: `${PREFIX}-divider`,
 };
 
-const Root = styled("div")(({ theme }) => {
+export const Root = styled("div")(({ theme }) => {
   return {
     [`& .${classes.inline}`]: {
       display: "inline",

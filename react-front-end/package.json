@@ -54,6 +54,7 @@
     "@mui/lab": "5.0.0-alpha.140",
     "@mui/material": "5.14.10",
     "@mui/x-date-pickers": "5.0.20",
+    "@mui/x-tree-view": "6.17.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "4.3.2",
     "axios": "1.6.7",
