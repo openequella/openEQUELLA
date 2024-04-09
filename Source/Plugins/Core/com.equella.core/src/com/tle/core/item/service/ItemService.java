@@ -86,6 +86,15 @@ public interface ItemService
 
   int getLatestVersion(String uuid);
 
+  /**
+   * If the target version is 0, return the latest version instead. Otherwise, return the target
+   * version.
+   *
+   * @param version Version of an Item. Being 0 means using the latest version.
+   * @param uuid UUID of the Item.
+   */
+  int getRealVersion(int version, String uuid);
+
   Item getLatestVersionOfItem(String uuid);
 
   int getLiveItemVersion(String uuid);

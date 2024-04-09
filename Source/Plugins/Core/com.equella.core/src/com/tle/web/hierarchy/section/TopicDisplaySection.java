@@ -22,6 +22,7 @@ import static com.tle.common.hierarchy.VirtualTopicUtils.buildTopicId;
 import static com.tle.web.hierarchy.TopicUtils.labelForValue;
 
 import com.dytech.common.GeneralConstants;
+import com.google.api.client.util.Lists;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.Maps;
@@ -199,12 +200,13 @@ public class TopicDisplaySection
     }
 
     final Collection<String> collectionUuids = getSelectionSessionCollections(context);
+    List<HierarchyTopic> subTopics = hierarchyService.getChildTopics(topic);
+
     // Go through the child topics and get item counts for them, either as
     // calculated (if by Contributed virtualiser) or as a one-at-a-time
     // search (if manual virtualiser).
     final List<VirtualisableAndValue<HierarchyTopic>> childTopics =
-        hierarchyService.expandVirtualisedTopics(
-            hierarchyService.getChildTopics(topic), values, collectionUuids);
+        hierarchyService.expandVirtualisedTopics(subTopics, values, collectionUuids);
     for (VirtualisableAndValue<HierarchyTopic> p : childTopics) {
       HierarchyTopic childTopic = p.getVt();
       String childValue = p.getVirtualisedValue();
@@ -310,6 +312,11 @@ public class TopicDisplaySection
     public HierarchyTopic getTopic() {
       ensureParsed();
       return topic;
+    }
+
+    public List<Item> getKeyResources() {
+      ensureParsed();
+      return Lists.newArrayList(topic.getKeyResources());
     }
 
     public String getTopicValue() {
@@ -471,15 +478,8 @@ public class TopicDisplaySection
    */
   public FreetextSearchResults<? extends FreetextResult> processFreetextResults(
       SectionInfo info, FreetextSearchEvent searchEvent) {
-    List<Item> keyResources =
-        (List<Item>)
-            aclManager.filterNonGrantedObjects(
-                Collections.singleton(selectionService.getSearchPrivilege(info)),
-                getModel(info).getTopic().getKeyResources());
-
-    if (getDynamicKeyResourceItems(info) != null) {
-      keyResources.addAll(getDynamicKeyResourceItems(info));
-    }
+    List<Item> keyResources = new ArrayList<>(getNormalKeyResources(info));
+    keyResources.addAll(getDynamicKeyResources(info));
 
     int offset = searchEvent.getOffset() - keyResources.size();
     if (offset < 0) {
@@ -535,10 +535,8 @@ public class TopicDisplaySection
     Collection<String> words = event.getSearchEvent().getFinalSearch().getTokenisedQuery();
     ListSettings<StandardItemListEntry> settings = itemList.getListSettings(info);
     settings.setHilightedWords(words);
-    int keySize = getModel(info).getTopic().getKeyResources().size();
-    if (getDynamicKeyResourceItems(info) != null) {
-      keySize += getDynamicKeyResourceItems(info).size();
-    }
+    int keySize = getNormalKeyResources(info).size() + getDynamicKeyResources(info).size();
+
     int count = results.getCount();
     int offset = results.getOffset();
     for (int i = 0; i < count; i++) {
@@ -561,6 +559,22 @@ public class TopicDisplaySection
     if (loggable) {
       logFilterByKeyword(info, searchEvent, results.getAvailable());
     }
+  }
+
+  private Collection<Item> filterKeyResourcesByACLs(SectionInfo info, Collection<Item> items) {
+    Collection<String> privileges =
+        Collections.singleton(selectionService.getSearchPrivilege(info));
+    return aclManager.filterNonGrantedObjects(privileges, items);
+  }
+
+  // Get normal key resources filter by `DISCOVER_ITEM` ACL.
+  private Collection<Item> getNormalKeyResources(SectionInfo info) {
+    return filterKeyResourcesByACLs(info, getModel(info).getKeyResources());
+  }
+
+  // Get dynamic key resources filter by `DISCOVER_ITEM` ACL.
+  private Collection<Item> getDynamicKeyResources(SectionInfo info) {
+    return filterKeyResourcesByACLs(info, getDynamicKeyResourceItems(info));
   }
 
   private void logFilterByKeyword(

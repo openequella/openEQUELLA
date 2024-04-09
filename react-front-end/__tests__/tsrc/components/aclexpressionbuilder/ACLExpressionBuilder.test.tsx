@@ -528,9 +528,7 @@ describe("<ACLExpressionBuilder/>", () => {
       // wait for getting tokens from API
       await findByText(ssoType);
       // get error message
-      const errorMessage = await getByText(
-        `Failed to get SSO tokens: ${error}`,
-      );
+      const errorMessage = getByText(`Failed to get SSO tokens: ${error}`);
 
       expect(errorMessage).toBeInTheDocument();
     });

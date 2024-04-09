@@ -34,6 +34,7 @@ import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
@@ -41,7 +42,9 @@ import com.tle.common.hierarchy.SearchSetAdapter;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.common.search.PresetSearch;
 import com.tle.common.search.searchset.SearchSet;
+import com.tle.common.security.Privilege;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
@@ -49,6 +52,7 @@ import com.tle.core.dao.AbstractTreeDao.DeleteAction;
 import com.tle.core.entity.registry.EntityRegistry;
 import com.tle.core.entity.service.impl.BaseEntityXmlConverter;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
+import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.guice.Bindings;
 import com.tle.core.hierarchy.HierarchyDao;
@@ -83,7 +87,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Propagation;
@@ -106,11 +114,65 @@ public class HierarchyServiceImpl
   @Inject private HierarchyDao dao;
   @Inject private EntityRegistry registry;
   @Inject private TLEAclManager aclManager;
+  @Inject private FreeTextService freeTextService;
   @Inject private ItemService itemService;
   @Inject private SearchSetService searchSetService;
   @Inject private TaskService taskService;
   @Inject private XmlService xmlService;
   private XStream xstream;
+
+  @Override
+  @SecureOnReturn(priv = "VIEW_HIERARCHY_TOPIC")
+  @Transactional(propagation = Propagation.REQUIRED)
+  public List<HierarchyTopic> getRootTopics() {
+    return dao.getRootNodes(TOPIC_ORDERING);
+  }
+
+  @Override
+  @SecureOnReturn(priv = "VIEW_HIERARCHY_TOPIC")
+  public List<HierarchyTopic> getSubTopics(HierarchyTopic topic) {
+    return topic.getSubTopics();
+  }
+
+  @Override
+  public List<HierarchyTopic> getChildTopics(HierarchyTopic topic) {
+    return Optional.ofNullable(topic).map(this::getSubTopics).orElseGet(this::getRootTopics);
+  }
+
+  @Override
+  public Optional<List<String>> getCollectionUuids(HierarchyTopic hierarchy) {
+    List<ItemDefinitionScript> additionalItemDefs =
+        new ArrayList<>(hierarchy.getAdditionalItemDefs());
+    List<ItemDefinitionScript> inheritedItemDefs =
+        new ArrayList<>(hierarchy.getInheritedItemDefs());
+
+    List<String> uuids =
+        Stream.concat(inheritedItemDefs.stream(), additionalItemDefs.stream())
+            .map(itemDef -> itemDef.getEntity().getUuid())
+            .collect(Collectors.toList());
+    return Optional.of(uuids).filter(set -> !set.isEmpty());
+  }
+
+  /** Build a search for counting the items matching this topic. */
+  @Override
+  public PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
+    FreeTextBooleanQuery searchClause = getSearchClause(topic, compoundUuidMap);
+    String freetextQuery = getFullFreetextQuery(topic);
+
+    PresetSearch search = new PresetSearch(freetextQuery, searchClause, true);
+    getCollectionUuids(topic).ifPresent(search::setCollectionUuids);
+    getAllSchema(topic).ifPresent(search::setSchemas);
+
+    return search;
+  }
+
+  @Override
+  public int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
+    PresetSearch search = buildSearch(topic, compoundUuidMap);
+    return Arrays.stream(freeTextService.countsFromFilters(Collections.singletonList(search)))
+        .findFirst()
+        .orElse(0);
+  }
 
   @Override
   @Transactional(propagation = Propagation.REQUIRED)
@@ -134,10 +196,8 @@ public class HierarchyServiceImpl
 
   @Override
   @Transactional(propagation = Propagation.REQUIRED)
-  public void addKeyResource(String uuid, ItemKey itemId) {
-    final String[] uv = uuid.split(":", 2);
-
-    final HierarchyTopic topic = getHierarchyTopicByUuid(uv[0]);
+  public void addKeyResource(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
     final Item item = itemService.get(itemId);
 
     // if the hierarchy is dynamic
@@ -145,13 +205,13 @@ public class HierarchyServiceImpl
       String itemUuid = item.getUuid();
       int itemVersion = item.getVersion();
       List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-          getDynamicKeyResource(uuid, itemUuid, itemVersion);
+          getDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
       if (dynamicKeyResources == null) {
-        saveDynamicKeyResource(uuid, itemUuid, itemVersion);
+        saveDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
       } else {
         for (HierarchyTopicDynamicKeyResources k : dynamicKeyResources) {
           if (!k.getUuid().equals(itemUuid) || k.getVersion() != itemVersion) {
-            saveDynamicKeyResource(uuid, itemUuid, itemVersion);
+            saveDynamicKeyResource(compoundUuid, itemUuid, itemVersion);
           }
         }
       }
@@ -167,6 +227,16 @@ public class HierarchyServiceImpl
       }
       dao.saveOrUpdate(topic);
     }
+  }
+
+  @Override
+  public boolean hasKeyResource(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
+
+    // check if the topic is a virtual topic
+    return Optional.ofNullable(topic.getVirtualisationId())
+        .map(id -> hasDynamicKeyResource(compoundUuid, itemId))
+        .orElseGet(() -> hasNormalKeyResource(topic, itemId));
   }
 
   @Transactional
@@ -190,15 +260,13 @@ public class HierarchyServiceImpl
 
   @Override
   @Transactional
-  public void deleteKeyResources(String uuid, ItemKey itemId) {
-    final String[] uv = uuid.split(":", 2);
-
-    final HierarchyTopic topic = getHierarchyTopicByUuid(uv[0]);
+  public void deleteKeyResources(String compoundUuid, ItemKey itemId) {
+    final HierarchyTopic topic = getHierarchyTopicByUuid(compoundUuid);
     final Item item = itemService.get(itemId);
 
     // if the hierarchy is dynamic
     if (topic.getVirtualisationId() != null) {
-      dao.removeDynamicKeyResource(uuid, item.getUuid(), item.getVersion());
+      dao.removeDynamicKeyResource(compoundUuid, item.getUuid(), item.getVersion());
     } else {
       dao.removeReferencesToItem(item, topic.getId());
     }
@@ -332,7 +400,8 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  public HierarchyTopic getHierarchyTopicByUuid(String uuid) {
+  public HierarchyTopic getHierarchyTopicByUuid(String compoundUuid) {
+    String uuid = compoundUuid.split(":", 2)[0];
     return dao.findByUuid(uuid, CurrentInstitution.get());
   }
 
@@ -344,14 +413,18 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  @SecureOnReturn(priv = "VIEW_HIERARCHY_TOPIC")
-  @Transactional(propagation = Propagation.REQUIRED)
-  public List<HierarchyTopic> getChildTopics(HierarchyTopic topic) {
-    if (topic == null) {
-      return dao.getRootNodes(TOPIC_ORDERING);
-    } else {
-      return dao.getChildrenForNode(topic, TOPIC_ORDERING);
-    }
+  public Boolean hasViewAccess(HierarchyTopic topic) {
+    return aclManager.hasPrivilege(topic, Privilege.VIEW_HIERARCHY_TOPIC);
+  }
+
+  @Override
+  public Boolean hasEditAccess(HierarchyTopic topic) {
+    return aclManager.hasPrivilege(topic, Privilege.EDIT_HIERARCHY_TOPIC);
+  }
+
+  @Override
+  public Boolean hasModifyKeyResourceAccess(HierarchyTopic topic) {
+    return aclManager.hasPrivilege(topic, Privilege.MODIFY_KEY_RESOURCE);
   }
 
   @Override
@@ -454,13 +527,13 @@ public class HierarchyServiceImpl
   public List<HierarchyTreeNode> listTreeNodes(long parentTopicID) {
     HierarchyTopic parent = parentTopicID <= 0 ? null : getHierarchyTopic(parentTopicID);
 
-    List<HierarchyTopic> childTopics = getChildTopics(parent);
+    List<HierarchyTopic> subTopics = getChildTopics(parent);
 
     Collection<HierarchyTopic> topicsGrantedEdit =
-        aclManager.filterNonGrantedObjects(EDIT_PRIV_LIST, childTopics);
+        aclManager.filterNonGrantedObjects(EDIT_PRIV_LIST, subTopics);
 
     List<HierarchyTreeNode> results = new ArrayList<HierarchyTreeNode>();
-    for (HierarchyTopic childTopic : getChildTopics(parent)) {
+    for (HierarchyTopic childTopic : subTopics) {
       HierarchyTreeNode childNode = new HierarchyTreeNode();
       childNode.setId(childTopic.getId());
       childNode.setName(CurrentLocale.get(childTopic.getName()));
@@ -503,7 +576,6 @@ public class HierarchyServiceImpl
       final HierarchyTopic child, final HierarchyTopic parent, final int position) {
     List<HierarchyTopic> children = getChildTopics(parent);
     child.setInstitution(CurrentInstitution.get());
-
     // zap the all parents collection as this is re-initialised during save
     child.setAllParents(null);
 
@@ -691,9 +763,9 @@ public class HierarchyServiceImpl
 
   @Override
   public List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
-      String dynamicHierarchyId, String itemUuid, int itemVersion) {
+      String encodedCompoundUuid, String itemUuid, int itemVersion) {
     return dao.getDynamicKeyResource(
-        dynamicHierarchyId, itemUuid, itemVersion, CurrentInstitution.get());
+        encodedCompoundUuid, itemUuid, itemVersion, CurrentInstitution.get());
   }
 
   @Override
@@ -717,5 +789,45 @@ public class HierarchyServiceImpl
       }
     }
     return ids;
+  }
+
+  /**
+   * Fetch all schema (includes inherited schema and additional schema) associated with a given
+   * hierarchy topic.
+   */
+  private Optional<Set<Schema>> getAllSchema(HierarchyTopic hierarchy) {
+    List<SchemaScript> additionalSchema = hierarchy.getAdditionalSchemas();
+    List<SchemaScript> inheritedSchemas = hierarchy.getInheritedSchemas();
+
+    Set<Schema> allSchema =
+        Stream.concat(additionalSchema.stream(), inheritedSchemas.stream())
+            .map(SchemaScript::getEntity)
+            .collect(Collectors.toSet());
+
+    return Optional.of(allSchema).filter(set -> !set.isEmpty());
+  }
+
+  /**
+   * Check whether the given item is a dynamic key resource of the given hierarchy topic compound
+   * uuid.
+   */
+  private boolean hasDynamicKeyResource(String encodedCompoundUuid, ItemKey itemId) {
+    String itemUuid = itemId.getUuid();
+    int itemVersion = itemId.getVersion();
+    List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
+        getDynamicKeyResource(encodedCompoundUuid, itemUuid, itemVersion);
+
+    return Stream.ofNullable(dynamicKeyResources)
+        .flatMap(Collection::stream)
+        .map(keyResource -> new ItemId(keyResource.getUuid(), keyResource.getVersion()))
+        .anyMatch(id -> id.equals(itemId));
+  }
+
+  /** Check whether the given item is a key resource of the given hierarchy topic. */
+  private boolean hasNormalKeyResource(HierarchyTopic topic, ItemKey itemId) {
+    return Stream.ofNullable(topic.getKeyResources())
+        .flatMap(Collection::stream)
+        .map(Item::getItemId)
+        .anyMatch(id -> id.equals(itemId));
   }
 }

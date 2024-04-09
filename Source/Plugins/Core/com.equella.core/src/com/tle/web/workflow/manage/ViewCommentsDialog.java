@@ -75,6 +75,11 @@ public class ViewCommentsDialog extends EquellaDialog<ViewCommentsDialog.Model> 
   }
 
   @Override
+  protected String getContentBodyClass(RenderContext context) {
+    return "moderation_comments_dialog";
+  }
+
+  @Override
   protected ParameterizedEvent getAjaxShowEvent() {
     return events.getEventHandler("openComments");
   }

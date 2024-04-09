@@ -1,0 +1,11 @@
+<list>
+  <com.tle.core.facetedsearch.bean.FacetedSearchClassification>
+    <id>78874</id>
+    <dateCreated class="sql-timestamp">2024-03-15 10:15:22.326</dateCreated>
+    <dateModified class="sql-timestamp">2024-03-15 10:25:47.003</dateModified>
+    <name>Author</name>
+    <schemaNode>/item/copyright/authors/author</schemaNode>
+    <maxResults>0</maxResults>
+    <orderIndex>0</orderIndex>
+  </com.tle.core.facetedsearch.bean.FacetedSearchClassification>
+</list>

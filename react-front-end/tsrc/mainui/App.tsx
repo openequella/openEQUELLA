@@ -132,7 +132,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
   const appContent = () =>
     pipe(
       entryPage,
-      simpleMatch<JSX.Element>({
+      simpleMatch<React.JSX.Element>({
         mainDiv: () => {
           startHeartbeat();
           return (

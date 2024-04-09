@@ -21,6 +21,13 @@ import * as t from 'io-ts';
 import * as PathReporter from 'io-ts/PathReporter';
 import { cloneDeep, isArray, set } from 'lodash';
 
+export const STANDARD_DATE_FIELDS = [
+  'createdDate',
+  'modifiedDate',
+  'lastActionDate',
+  'submittedDate',
+];
+
 /**
  * Function that receives an IO-TS codec and returns a new function which uses the codec to validate the provided data.
  *

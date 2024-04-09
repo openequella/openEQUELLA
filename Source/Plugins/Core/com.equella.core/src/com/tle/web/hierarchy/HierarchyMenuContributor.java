@@ -36,6 +36,8 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.AbstractUpdatableMenuContributor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,8 +75,7 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
       showMoreLink = false;
 
       List<VirtualisableAndValue<HierarchyTopic>> pageTopics =
-          hierarchyService.expandVirtualisedTopics(
-              hierarchyService.getChildTopics(null), null, null);
+          hierarchyService.expandVirtualisedTopics(hierarchyService.getRootTopics(), null, null);
       Iterator<VirtualisableAndValue<HierarchyTopic>> iter = pageTopics.iterator();
 
       int show = pageTopics.size();
@@ -106,12 +107,17 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
 
     int linkPriority = 0;
     List<MenuContribution> mcs = new ArrayList<MenuContribution>();
+    boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
     for (NameValue topic : topics) {
+      String encodedTopicCUuid = topic.getValue();
+
       HtmlLinkState hls =
-          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + topic.getValue()));
+          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + encodedTopicCUuid));
+      String route = newUIEnabled ? "/" + NewUiRoutes.hierarchy(encodedTopicCUuid) : null;
       hls.setLabel(new TextLabel(topic.getName()));
 
-      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub");
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 10, linkPriority++, "device_hub", route);
       mcs.add(mc);
     }
 
@@ -119,7 +125,9 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
       HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=ALL"));
       hls.setLabel(MORE);
 
-      MenuContribution mc = new MenuContribution(hls, ICON_PATH, 10, linkPriority++);
+      String browseRoute = newUIEnabled ? "/" + NewUiRoutes.PATH_BROWSE_HIERARCHIES() : null;
+      MenuContribution mc =
+          new MenuContribution(hls, ICON_PATH, 10, linkPriority++, null, browseRoute);
       mcs.add(mc);
     }
 

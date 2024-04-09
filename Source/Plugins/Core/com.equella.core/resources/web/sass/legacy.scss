@@ -5775,3 +5775,9 @@ button:focus {
     right: 0;
   }
 }
+
+// Fix the position of the close button on the Moderation Comment Dialog
+// Currently, the close button has a position absolute and make sure it locate inside the dialog
+.moderation_comments_dialog {
+  position: relative;
+}

@@ -8,4 +8,9 @@ public class DefaultSearchPageScreenOptions
   public DefaultSearchPageScreenOptions(PageContext context) {
     super(context);
   }
+
+  // TODO: Remove me in OEQ-1702.
+  public DefaultSearchPageScreenOptions(PageContext context, Boolean forceOldUI) {
+    super(context, forceOldUI);
+  }
 }

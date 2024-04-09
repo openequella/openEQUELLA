@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { isEqual, memoize } from "lodash";
+import { memoize } from "lodash";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
@@ -96,19 +96,18 @@ const convertSearchOptions: (
       rawMode,
       mimeTypes,
       musts,
+      hierarchy,
     } = options;
     const searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
-      q: query ? formatQuery(query, !rawMode) : undefined,
+      query: query ? formatQuery(query, !rawMode) : undefined,
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
       modifiedBefore: getISODateString(lastModifiedDateRange?.end),
       owner: owner?.id,
-      showall: isEqual(
-        status?.sort(),
-        OEQ.Codec.Common.ItemStatusCodec.types.map(({ value }) => value).sort(),
-      ),
+      status,
       mimeTypes,
       musts,
+      hierarchy,
     };
     return collections && collections.length > 0
       ? {
@@ -162,7 +161,7 @@ export const listClassifications = async (
         categories: await listCategories({
           ...convertSearchOptions(options),
           nodes: [settings.schemaNode],
-          where: generateCategoryWhereQuery(
+          whereClause: generateCategoryWhereQuery(
             options.selectedCategories?.filter((c) => c.id !== settings.id),
           ),
         }),

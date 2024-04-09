@@ -46,7 +46,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Cascade;
@@ -78,6 +80,10 @@ public class HierarchyTopic
   @ManyToOne(fetch = FetchType.LAZY)
   @Index(name = "parentTopic")
   private HierarchyTopic parent;
+
+  @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+  @OrderBy("listPosition")
+  private List<HierarchyTopic> subTopics = new ArrayList<HierarchyTopic>();
 
   @ManyToMany(fetch = FetchType.LAZY)
   @IndexColumn(name = "list_position")
@@ -187,6 +193,10 @@ public class HierarchyTopic
   @Override
   public void setParent(HierarchyTopic parent) {
     this.parent = parent;
+  }
+
+  public List<HierarchyTopic> getSubTopics() {
+    return subTopics;
   }
 
   @Override

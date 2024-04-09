@@ -261,6 +261,15 @@ describe('Search with POST:', () => {
   });
 });
 
+describe('Hierarchy search:', () => {
+  it('should be able to search with criteria defined in a hierarchy topic', async () => {
+    const results = await doSearch({
+      hierarchy: '6135b550-ce1c-43c2-b34c-0a3cf793759d',
+    });
+    expect(results.available).toBe(55);
+  });
+});
+
 describe('Advanced search:', () => {
   it('supports searching with advanced search params and normal params', async () => {
     const advancedParams: OEQ.Search.AdvancedSearchParams = {
