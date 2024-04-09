@@ -39,9 +39,9 @@ class TLEUserSchema {
   /**
     * Default constructor for Guice.
     */
-  @Inject def this(tleUserService: TLEUserProvider) = {
+  @Inject def this(tleUserProvider: TLEUserProvider) = {
     this()
-    this.tleUserProvider = tleUserService
+    this.tleUserProvider = tleUserProvider
   }
 
   case class ListUsersArgs(@GQLDescription("A string to filter users by") query: Option[String])
@@ -71,8 +71,10 @@ class TLEUserSchema {
       password: String
   )
   case class UpdateUserArgs(
-      @GQLDescription("Username of existing user to update")
-      username: String,
+      @GQLDescription("ID of existing user to update - used to find target user")
+      id: String,
+      @GQLDescription("New username of the user - should be unique")
+      username: Option[String],
       @GQLDescription("New email address of the user")
       email: Option[String],
       @GQLDescription("New first name of the user")
@@ -106,7 +108,8 @@ class TLEUserSchema {
                                  args.lastName,
                                  args.password),
     internalUserUpdate = args =>
-      tleUserProvider.updateUser(args.username,
+      tleUserProvider.updateUser(args.id,
+                                 args.username,
                                  args.email,
                                  args.firstName,
                                  args.lastName,

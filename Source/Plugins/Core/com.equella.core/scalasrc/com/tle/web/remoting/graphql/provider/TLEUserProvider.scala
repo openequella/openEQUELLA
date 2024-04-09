@@ -54,6 +54,12 @@ class TLEUserProvider {
   }
 
   /**
+    * Retrieval of TLEUser objects often result in `null` values, so this helper `implicit`
+    * conversion is used to convert `null` to `None`.
+    */
+  private implicit def optionalUser(u: TLEUser): Option[User] = Option(u).map(User(_))
+
+  /**
     * List all users in the system, filtered by `query`. If `query` is `None`, all users are returned.
     *
     * @param query an optional query string to filter users by
@@ -123,6 +129,7 @@ class TLEUserProvider {
   /**
     * Update a user with the provided details - any which are Some.
     *
+    * @param id the database ID of the user to update - typically a UUID but can be anything.
     * @param username the username of the user to update
     * @param email a new email address for the user
     * @param firstName a new first name for the user
@@ -131,14 +138,16 @@ class TLEUserProvider {
     * @return the updated user, or an error if the user could not be updated
     */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
-  def updateUser(username: String,
+  def updateUser(id: String,
+                 username: Option[String],
                  email: Option[String],
                  firstName: Option[String],
                  lastName: Option[String],
                  password: Option[String]): Either[ProviderError, User] =
-    Option(tleUserService.getByUsername(username))
-      .toRight(ProviderError(s"User with username $username not found", ErrorCodes.NOT_FOUND))
+    Option(tleUserService.get(id))
+      .toRight(ProviderError(s"User with id of $id not found", ErrorCodes.NOT_FOUND))
       .flatMap { u =>
+        username.foreach(u.setUsername)
         email.foreach(u.setEmailAddress)
         firstName.foreach(u.setFirstName)
         lastName.foreach(u.setLastName)
@@ -160,6 +169,4 @@ class TLEUserProvider {
     ProviderError.Try("Failed to delete user: ") {
       tleUserService.delete(id)
     }
-
-  private implicit def optionalUser(u: TLEUser): Option[User] = Option(u).map(User(_))
 }
