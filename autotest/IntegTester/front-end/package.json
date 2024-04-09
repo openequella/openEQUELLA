@@ -7,10 +7,10 @@
     "dev": "parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@emotion/react": "11.11.1",
+    "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.0",
-    "@mui/material": "5.14.5",
-    "axios": "1.6.7",
+    "@mui/material": "5.15.13",
+    "axios": "1.6.8",
     "babel-polyfill": "6.26.0",
     "jss": "10.10.0",
     "md5": "2.3.0",
@@ -20,11 +20,11 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.64",
-    "@types/react-dom": "18.2.20",
+    "@types/react": "18.2.66",
+    "@types/react-dom": "18.2.22",
     "@types/md5": "2.3.5",
     "mkdirp": "3.0.1",
     "parcel-bundler": "1.12.5",
-    "typescript": "5.2.2"
+    "typescript": "5.4.2"
   }
 }
