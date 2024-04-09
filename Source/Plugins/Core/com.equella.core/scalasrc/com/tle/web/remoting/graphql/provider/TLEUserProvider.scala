@@ -22,7 +22,7 @@ import com.tle.beans.user.TLEUser
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
-import com.tle.web.remoting.graphql.ErrorCodes
+import com.tle.web.remoting.graphql.ErrorCode
 import com.tle.web.remoting.graphql.schema.User
 
 import javax.inject.{Inject, Singleton}
@@ -145,7 +145,7 @@ class TLEUserProvider {
                  lastName: Option[String],
                  password: Option[String]): Either[ProviderError, User] =
     Option(tleUserService.get(id))
-      .toRight(ProviderError(s"User with id of $id not found", ErrorCodes.NOT_FOUND))
+      .toRight(ProviderError(s"User with id of $id not found", ErrorCode.NOT_FOUND))
       .flatMap { u =>
         username.foreach(u.setUsername)
         email.foreach(u.setEmailAddress)

@@ -19,7 +19,7 @@
 package com.tle.web.remoting.graphql.provider
 
 import caliban.CalibanError.ExecutionError
-import com.tle.web.remoting.graphql.Errors
+import com.tle.web.remoting.graphql.{ErrorCode, Errors}
 
 import scala.util.{Failure, Success}
 
@@ -42,6 +42,16 @@ object ProviderError {
     */
   def apply(message: String, cause: Throwable): ProviderError =
     ProviderError(message, Errors.mapException(cause))
+
+  /**
+    * Create a `ProviderError` with the provided human readable message and the `ErrorCode` which
+    * caused the error.
+    *
+    * @param message human readable message
+    * @param cause the `ErrorCode` which best represents the cause
+    */
+  def apply(message: String, cause: ErrorCode.Code): ProviderError =
+    ProviderError(message, cause.toString)
 
   /**
     * Extractor for a `ProviderError` into an `ExecutionError`, where the message is the same and the

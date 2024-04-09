@@ -25,23 +25,10 @@ import com.dytech.edge.exceptions.InUseException
 import com.tle.beans.item.ItemEditingException
 import com.tle.common.beans.exception.{InvalidDataException, NotFoundException}
 import com.tle.exceptions.AccessDeniedException
-import com.tle.web.remoting.graphql.ErrorCodes._
+import com.tle.web.remoting.graphql.ErrorCode._
 import org.apache.catalina.connector.ClientAbortException
 
 import java.io.IOException
-
-/**
-  * Codifies all the possible error codes we may return to a client.
-  */
-object ErrorCodes {
-  val ACCESS_DENIED  = "access_denied"
-  val BAD_REQUEST    = "bad_request"
-  val CLIENT_ABORT   = "client_abort"
-  val INTERNAL_ERROR = "internal_error"
-  val IO_ERROR       = "io_error"
-  val LOCKED         = "locked"
-  val NOT_FOUND      = "not_found"
-}
 
 /**
   * Utility object for handling during the processing of GraphQL requests.
@@ -55,7 +42,7 @@ object Errors {
     * @param throwable the exception to map
     * @return the error code
     */
-  def mapException(throwable: Throwable): String = throwable match {
+  def mapException(throwable: Throwable): ErrorCode.Code = throwable match {
     case _: ItemEditingException | _: InvalidDataException | _: InUseException => BAD_REQUEST
     case _: AccessDeniedException                                              => ACCESS_DENIED
     case _: LockedException                                                    => LOCKED
@@ -83,5 +70,5 @@ object Errors {
     * @return an `ObjectValue` to be added to `extensions`
     */
   def buildCauseObjectValue(cause: Throwable): ObjectValue =
-    buildCauseObjectValue(mapException(cause))
+    buildCauseObjectValue(mapException(cause).toString)
 }
