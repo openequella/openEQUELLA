@@ -35,6 +35,15 @@ public interface RemoteTLEUserService {
 
   TLEUser getByUsername(String username);
 
+  /**
+   * Given an existing user's TLEUser entity which has been modified, update the user in the
+   * database.
+   *
+   * @param user The user to update
+   * @param passwordNotHashed Whether the password is already hashed - if not, validate it meets
+   *     password requirements and hash it before updating the user.
+   * @return The UUID of the updated user
+   */
   String edit(TLEUser user, boolean passwordNotHashed);
 
   void delete(String uuid);
