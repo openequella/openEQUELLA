@@ -28,6 +28,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.gui.common.actions.AddAction;
 import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.search.searchset.scripting.ScriptingCellEditor;
 import com.tle.admin.search.searchset.scripting.ScriptingTableCellRenderer;
 import com.tle.admin.search.searchset.scripting.ScriptingTableModelInterface;
@@ -43,7 +44,6 @@ import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.client.EntityCache;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -74,16 +74,6 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
   private MyTableModel<T, U> model;
   private JTable table;
   private ChangeDetector changeDetector;
-
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public EntityWhereEditor(
       Map<Long, NameId> cache,
@@ -365,7 +355,7 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
       long id = u.getEntity().getId();
       NameId nameId = entityCache.get(id);
       if (nameId == null) {
-        nameId = new NameId(getString("unknownentity"), id); // $NON-NLS-1$
+        nameId = new NameId(Lookup.lookup.text("unknownentity"), id);
       }
       return nameId;
     }

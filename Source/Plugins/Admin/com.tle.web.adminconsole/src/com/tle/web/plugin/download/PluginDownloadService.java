@@ -58,8 +58,7 @@ public class PluginDownloadService implements RemotePluginDownloadService {
           "com.tle.core.guice",
           "com.tle.core.spring",
           "org.hibernate",
-          "org.springframework.httpinvoker",
-          "com.tle.webstart.admin");
+          "org.springframework.httpinvoker");
 
   /** Don't use directly - call getJarMap(). */
   private Map<String, TLEPluginLocation> jarMap;

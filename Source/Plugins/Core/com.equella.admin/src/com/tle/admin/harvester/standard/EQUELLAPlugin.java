@@ -22,6 +22,7 @@ import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
+import com.tle.admin.i18n.Lookup;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.URLUtils;
@@ -29,7 +30,7 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.EQUELLAHarvesterSettings;
 import com.tle.common.harvester.RemoteEQUELLAHarvesterService;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -94,8 +95,8 @@ public class EQUELLAPlugin extends HarvesterPlugin<EQUELLAHarvesterSettings>
 
     panel.addNameAndComponent(s("server"), serverField);
 
-    panel.addNameAndComponent(getString("detailstab.user"), userField);
-    panel.addNameAndComponent(getString("detailstab.pass"), passField);
+    panel.addNameAndComponent(strings.text("detailstab.user"), userField);
+    panel.addNameAndComponent(strings.text("detailstab.pass"), passField);
 
     panel.addNameAndComponent(s("remotecollection"), collPanel);
     panel.addNameAndComponent(s("live"), liveOnly);
@@ -222,11 +223,9 @@ public class EQUELLAPlugin extends HarvesterPlugin<EQUELLAHarvesterSettings>
     }
   }
 
-  /**
-   * @param partKey Will be prefixed with com.tle.admin.harvester.tool.equellaplugin.
-   * @return
-   */
+  private static final StringLookup pluginStrings = Lookup.withPrefix("equellaplugin");
+
   private String s(String partKey, Object... params) {
-    return CurrentLocale.get(getKey("equellaplugin." + partKey), params);
+    return pluginStrings.text(partKey, params);
   }
 }

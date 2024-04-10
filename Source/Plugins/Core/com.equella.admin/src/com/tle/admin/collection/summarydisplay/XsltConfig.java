@@ -30,6 +30,6 @@ public class XsltConfig extends AbstractTemplatingConfig {
 
   @Override
   public String getEditorLabelKey() {
-    return getKey("summarysections.xslt.desc");
+    return strings.key("summarysections.xslt.desc");
   }
 }

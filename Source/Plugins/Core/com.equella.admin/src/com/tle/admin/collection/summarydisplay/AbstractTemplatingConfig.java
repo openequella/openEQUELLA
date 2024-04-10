@@ -59,7 +59,8 @@ public abstract class AbstractTemplatingConfig extends AbstractOnlyTitleConfig {
     editor = new RSyntaxTextArea(500, 2000);
     add(new RTextScrollPane(editor), "grow, push");
 
-    final JButton showFiles = new JButton(getString("summarydisplay.abstracttemplating.showfiles"));
+    final JButton showFiles =
+        new JButton(strings.text("summarydisplay.abstracttemplating.showfiles"));
     showFiles.addActionListener(
         new ActionListener() {
           @Override

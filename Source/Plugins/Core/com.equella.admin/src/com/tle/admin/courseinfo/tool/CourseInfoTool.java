@@ -47,12 +47,12 @@ public class CourseInfoTool extends BaseEntityTool<CourseInfo> {
 
   @Override
   protected String getEntityName() {
-    return getString("courses.name"); // $NON-NLS-1$
+    return strings.text("courses.name");
   }
 
   @Override
   protected String getErrorPath() {
-    return "courseInfo"; //$NON-NLS-1$
+    return "courseInfo";
   }
 
   @Override

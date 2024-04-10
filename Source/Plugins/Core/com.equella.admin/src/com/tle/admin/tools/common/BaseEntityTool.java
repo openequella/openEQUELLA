@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.BaseEntityEditor;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
@@ -38,8 +39,8 @@ import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.SecurityConstants;
-import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.i18n.BundleCache;
 import java.io.ByteArrayInputStream;
@@ -63,11 +64,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolListClone {
   static final Log LOGGER = LogFactory.getLog(BaseEntityTool.class);
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(KEY_PFX + key);
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   // //////// ABSTRACT ///////////
 

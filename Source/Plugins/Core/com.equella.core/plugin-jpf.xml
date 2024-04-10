@@ -4,7 +4,6 @@
   <requires>
     <import plugin-id="com.equella.base" />
     <import plugin-id="com.equella.serverbase" />
-    <import plugin-id="com.tle.common.applet" />
     <import plugin-id="com.tle.common.i18n" />
     <import plugin-id="com.tle.core.activation" />
     <import plugin-id="com.tle.core.application" />
@@ -6202,6 +6201,12 @@
     <parameter id="id" value="lti_platform" />
     <parameter id="class" value="bean:com.tle.core.lti13.LtiPlatformConverter" />
     <parameter id="order" value="817" />
+  </extension>
+  <!-- endregion -->
+  <!-- region GraphQL Support-->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="graphQLServlet">
+    <parameter id="bean" value="bean:com.tle.web.remoting.graphql.GraphQLServlet" />
+    <parameter id="url-pattern" value="/graphql" />
   </extension>
   <!-- endregion -->
 </plugin>

@@ -12,7 +12,7 @@
     <import plugin-id="com.tle.web.core"/>
     <import plugin-id="com.tle.web.sections"/>
     <import plugin-id="com.tle.web.services"/>
-    <import plugin-id="com.tle.webstart.admin"/>
+    <import plugin-id="com.equella.admin"/>
     <import plugin-id="com.equella.base" exported="true"/>
     <import plugin-id="com.equella.core"/>
   </requires>

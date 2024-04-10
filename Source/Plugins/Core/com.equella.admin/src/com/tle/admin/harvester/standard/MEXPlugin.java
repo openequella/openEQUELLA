@@ -28,6 +28,6 @@ public class MEXPlugin extends AbstractTLFPlugin<MEXHarvesterSettings> {
 
   @Override
   protected String getPluginsFieldString() {
-    return "mexplugin.settings";
+    return strings.key("mexplugin.settings");
   }
 }

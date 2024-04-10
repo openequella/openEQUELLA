@@ -19,12 +19,13 @@
 package com.tle.admin.controls.universal;
 
 import com.tle.admin.gui.common.DynamicChoicePanel;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.wizard.controls.universal.UniversalControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
-import com.tle.core.plugins.AbstractPluginService;
 import java.awt.Font;
 import java.awt.LayoutManager;
 import javax.swing.JLabel;
@@ -37,15 +38,7 @@ public abstract class UniversalControlSettingPanel extends DynamicChoicePanel<Un
   private UniversalControl control;
   private ClientService clientService;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  protected static final StringLookup strings = Lookup.lookup;
 
   /** Uses a MigLayout("wrap 2, insets 10 15 20 5", "[][fill, grow]") */
   protected UniversalControlSettingPanel() {

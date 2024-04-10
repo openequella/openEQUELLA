@@ -56,8 +56,8 @@ public class CommentsConfig extends AbstractOnlyTitleConfig {
   private JRadioButton hideIdenty;
   private ChangeDetector changeDetector;
 
-  private final String s(String key) {
-    return getString("summarysections.comments." + key);
+  private String s(String key) {
+    return strings.text("summarysections.comments." + key);
   }
 
   @SuppressWarnings("nls")

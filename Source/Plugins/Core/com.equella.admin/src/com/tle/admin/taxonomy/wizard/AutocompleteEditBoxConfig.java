@@ -19,10 +19,10 @@
 package com.tle.admin.taxonomy.wizard;
 
 import com.tle.admin.gui.common.DynamicChoicePanel;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.admin.i18n.Lookup;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.taxonomy.wizard.AutocompleteEditBoxConstants;
 import com.tle.common.taxonomy.wizard.TermSelectorControl;
-import com.tle.core.plugins.AbstractPluginService;
 import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -32,16 +32,6 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("nls")
 public class AutocompleteEditBoxConfig extends DynamicChoicePanel<TermSelectorControl> {
   private final JCheckBox reloadOnTermSelection;
-
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public AutocompleteEditBoxConfig() {
     super(new MigLayout("wrap 1, insets 0"));
@@ -73,7 +63,9 @@ public class AutocompleteEditBoxConfig extends DynamicChoicePanel<TermSelectorCo
         AutocompleteEditBoxConstants.RELOAD_PAGE_ON_SELECTION, reloadOnTermSelection.isSelected());
   }
 
-  private String s(String keyPart) {
-    return getString("wizard.autocompleteEditBox." + keyPart);
+  private static final StringLookup strings = Lookup.withPrefix("wizard.autocompleteEditBox");
+
+  private static String s(String key) {
+    return strings.text(key);
   }
 }

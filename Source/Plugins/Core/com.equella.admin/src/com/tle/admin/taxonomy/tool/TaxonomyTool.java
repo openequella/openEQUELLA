@@ -47,6 +47,6 @@ public class TaxonomyTool extends BaseEntityTool<Taxonomy> {
 
   @Override
   protected String getEntityName() {
-    return getString("taxonomy.entityname"); // $NON-NLS-1$
+    return strings.text("taxonomy.entityname");
   }
 }

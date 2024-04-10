@@ -25,11 +25,11 @@ import static com.tle.beans.usermanagement.shibboleth.wrapper.ExternalAuthorisat
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.Changeable;
 import com.dytech.gui.TableLayout;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.usermanagement.shibboleth.wrapper.ExternalAuthorisationWrapperSettings;
 import com.tle.client.gui.JRadioGroup;
 import com.tle.common.Check;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -52,12 +52,7 @@ public class ExternalAuthorisationSettingsPanel extends JPanel implements Change
   protected JRadioGroup useHTTPHeader;
   protected JRadioGroup useEnvironmentVariable;
 
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(ExternalAuthorisationSettingsPanel.class) + ".";
-
-  private static String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("generalsettings");
 
   public ExternalAuthorisationSettingsPanel() {
     changeDetector = new ChangeDetector();
@@ -65,11 +60,10 @@ public class ExternalAuthorisationSettingsPanel extends JPanel implements Change
   }
 
   protected void setupGui() {
-    final JLabel httpHeaderNameLabel = new JLabel(getString("httpheadername")); // $NON-NLS-1$
-    final JLabel environmentVarNameLabel =
-        new JLabel(getString("environmentvarname")); // $NON-NLS-1$
-    final JLabel preamble = new JLabel(getString("shib.preamble")); // $NON-NLS-1$
-    final JLabel logoutUrlLabel = new JLabel(getString("logouturl")); // $NON-NLS-1$
+    final JLabel httpHeaderNameLabel = new JLabel(strings.text("httpheadername"));
+    final JLabel environmentVarNameLabel = new JLabel(strings.text("environmentvarname"));
+    final JLabel preamble = new JLabel(strings.text("shib.preamble"));
+    final JLabel logoutUrlLabel = new JLabel(strings.text("logouturl"));
 
     httpHeaderName = new JTextField(20);
     environmentVarName = new JTextField(20);
@@ -89,14 +83,12 @@ public class ExternalAuthorisationSettingsPanel extends JPanel implements Change
             5);
 
     final Rectangle radioPos = new Rectangle(0, 0, 2, 1);
-    useRemoteUser =
-        new JRadioGroup(getString("useremoteuser"), innerLayout, radioPos); // $NON-NLS-1$
+    useRemoteUser = new JRadioGroup(strings.text("useremoteuser"), innerLayout, radioPos);
     buttonGroup.add(useRemoteUser.getButton());
-    useHTTPHeader =
-        new JRadioGroup(getString("usehttpheader"), innerLayout, radioPos); // $NON-NLS-1$
+    useHTTPHeader = new JRadioGroup(strings.text("usehttpheader"), innerLayout, radioPos);
     buttonGroup.add(useHTTPHeader.getButton());
     useEnvironmentVariable =
-        new JRadioGroup(getString("useenvironmentvar"), innerLayout, radioPos); // $NON-NLS-1$
+        new JRadioGroup(strings.text("useenvironmentvar"), innerLayout, radioPos);
     buttonGroup.add(useEnvironmentVariable.getButton());
 
     final int width1 = logoutUrlLabel.getPreferredSize().width;
@@ -147,10 +139,6 @@ public class ExternalAuthorisationSettingsPanel extends JPanel implements Change
     useEnvironmentVariable.setEnabled(false);
 
     validate();
-  }
-
-  private String getString(String key) {
-    return CurrentLocale.get(getKey("generalsettings." + key)); // $NON-NLS-1$
   }
 
   public void load(ExternalAuthorisationWrapperSettings settings) {

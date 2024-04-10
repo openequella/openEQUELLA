@@ -21,17 +21,17 @@ package com.tle.admin.reporting;
 import com.tle.admin.baseentity.AccessControlTab;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.baseentity.BaseEntityTab;
+import com.tle.admin.i18n.Lookup;
 import com.tle.admin.tools.common.BaseEntityTool;
 import com.tle.beans.entity.report.Report;
-import com.tle.common.i18n.CurrentLocale;
+import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.PrivilegeTree.Node;
-import com.tle.core.plugins.AbstractPluginService;
 import java.util.ArrayList;
 import java.util.List;
 
 /** @author Nicholas Read */
 public class ReportEditor extends BaseEntityEditor<Report> {
-  private static String KEYPFX = AbstractPluginService.getMyPluginId(ReportEditor.class) + ".";
+  private static final StringLookup strings = Lookup.withPrefix("reporteditor");
 
   /** Constructs a new SchemaManager. */
   public ReportEditor(BaseEntityTool<Report> tool, boolean readonly) {
@@ -45,12 +45,12 @@ public class ReportEditor extends BaseEntityEditor<Report> {
 
   @Override
   public String getDocumentName() {
-    return CurrentLocale.get(KEYPFX + "reporteditor.docname"); // $NON-NLS-1$
+    return strings.text("docname");
   }
 
   @Override
   protected String getWindowTitle() {
-    return CurrentLocale.get(KEYPFX + "reporteditor.title"); // $NON-NLS-1$
+    return strings.text("title");
   }
 
   @Override

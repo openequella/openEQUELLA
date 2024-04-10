@@ -160,7 +160,7 @@ public class TermEditor extends AbstractTreeNodeEditor {
         if (e.getMessage() != null) {
           if (e.getMessage().contains("SIBLING_CHECK"))
             termService.setAllData(taxonomy, ttn.getFullPath(), data);
-          throw new Exception(getString("internal.tab.siblingwithsamename.message"));
+          throw new Exception(strings.text("internal.tab.siblingwithsamename.message"));
         }
       }
     }

@@ -21,9 +21,9 @@ package com.tle.admin.usermanagement.canvas;
 import com.dytech.gui.ChangeDetector;
 import com.dytech.gui.Changeable;
 import com.google.common.base.Strings;
+import com.tle.admin.i18n.Lookup;
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.common.i18n.StringLookup;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.LayoutManager;
@@ -53,13 +53,6 @@ public class CanvasSettingsPanel extends JPanel implements Changeable, MouseList
   protected JLabel preamble;
 
   protected ChangeDetector changeDetector;
-
-  private static String KEY_PFX =
-      AbstractPluginService.getMyPluginId(CanvasSettingsPanel.class) + ".";
-
-  private static String getKey(String key) {
-    return KEY_PFX + key;
-  }
 
   public CanvasSettingsPanel() {
     changeDetector = new ChangeDetector();
@@ -97,8 +90,10 @@ public class CanvasSettingsPanel extends JPanel implements Changeable, MouseList
     validate();
   }
 
+  private static final StringLookup strings = Lookup.withPrefix("generalsettings");
+
   private String getString(String key, Object... args) {
-    return CurrentLocale.get(getKey("generalsettings." + key), args);
+    return strings.text(key, args);
   }
 
   public void load(CanvasWrapperSettings settings) {

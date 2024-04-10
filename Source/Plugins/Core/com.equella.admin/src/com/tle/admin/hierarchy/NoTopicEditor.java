@@ -18,8 +18,8 @@
 
 package com.tle.admin.hierarchy;
 
-import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.plugins.AbstractPluginService;
+import com.tle.admin.i18n.Lookup;
+import com.tle.common.i18n.StringLookup;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,15 +35,7 @@ import javax.swing.SwingConstants;
 public class NoTopicEditor extends JPanel {
   private static final long serialVersionUID = 1L;
 
-  private String KEY_PFX = AbstractPluginService.getMyPluginId(getClass()) + ".";
-
-  protected String getString(String key) {
-    return CurrentLocale.get(getKey(key));
-  }
-
-  protected String getKey(String key) {
-    return KEY_PFX + key;
-  }
+  private static final StringLookup strings = Lookup.withPrefix("notopic");
 
   public static NoTopicEditor noTopicSelected() {
     return new NoTopicEditor("noneselected");
@@ -53,8 +45,8 @@ public class NoTopicEditor extends JPanel {
     return new NoTopicEditor("noteditable");
   }
 
-  public NoTopicEditor(String message) {
-    JLabel messageLabel = new JLabel(CurrentLocale.get(getKey("notopic.") + message));
+  public NoTopicEditor(String messageKey) {
+    JLabel messageLabel = new JLabel(strings.text(messageKey));
     messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
     setLayout(new GridLayout(1, 1));
