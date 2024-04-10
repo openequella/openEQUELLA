@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
-import * as TC from './TestConfig';
 import { BatchOperationResponse } from '../src/BatchOperationResponse';
 import { FacetedSearchClassification } from '../src/FacetedSearchSettings';
+import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
@@ -163,7 +163,7 @@ describe('FacetedSearchSettings', () => {
       ids
     );
     const finalFilterSettings =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      await OEQ.FacetedSearchSettings.getFacetedSearchSettings(TC.API_PATH);
     expect(finalFilterSettings).toHaveLength(
       facetedSearchClassificationAtStart.length
     );

@@ -69,7 +69,7 @@ export const selectOperatorNode = async (
 
 /**
  * Helper function to mock select an `operator` for group node (`operator` tree item) in the tree view.
- * @param container The element which contains the element.
+ * @param container The element which contains the operator.
  * @param nodeIndex The index represents the node position in the current `displayed` tree
  *                  (not the real tree structure,
  *                  some nodes may not be in the dom tree until their parent node is expended ).
@@ -81,7 +81,7 @@ export const selectOperatorForNode = async (
   operator: ACLOperatorType,
 ) => {
   const selects = container.querySelectorAll(
-    `.${classes.labelSelect} div[role="button"]`,
+    `.${classes.labelSelect} div[role="combobox"]`,
   );
   const select = selects[nodeIndex];
 

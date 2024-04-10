@@ -18,8 +18,12 @@
 
 package com.tle.integration.lti13
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.tle.core.guice.Bind
+import com.tle.core.lti13.service.LtiPlatformService
 import com.tle.core.webkeyset.service.WebKeySetService
+import com.tle.web.integration.guice.IntegrationModule
 import com.tle.web.integration.service.IntegrationService
 import com.tle.web.integration.{
   AbstractIntegrationService,
@@ -28,29 +32,25 @@ import com.tle.web.integration.{
 }
 import com.tle.web.sections.equella.{AbstractScalaSection, ModalSession}
 import com.tle.web.sections.generic.DefaultSectionTree
+import com.tle.web.sections.header.{FormTag, SimpleFormAction}
+import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
 import com.tle.web.sections.registry.TreeRegistry
+import com.tle.web.sections.render.HiddenInput
 import com.tle.web.sections.{SectionInfo, SectionNode, SectionsController}
+import com.tle.web.selection.section.RootSelectionSection
 import com.tle.web.selection.{
   SelectedResource,
   SelectionSession,
   SelectionsMadeCallback,
   TreeLookupSelectionCallback
 }
+import com.tle.web.template.{Decorations, RenderNewTemplate}
+import com.tle.web.viewable.ViewItemLinkFactory
 
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
-import com.tle.core.lti13.service.LtiPlatformService
-import com.tle.web.integration.guice.IntegrationModule
-import com.tle.web.sections.header.{FormTag, SimpleFormAction}
-import com.tle.web.sections.jquery.{JQuerySelector, JQueryStatement}
-import com.tle.web.sections.render.HiddenInput
-import com.tle.web.selection.section.RootSelectionSection
-import com.tle.web.template.{Decorations, RenderNewTemplate}
-import com.tle.web.viewable.ViewItemLinkFactory
 
 /**
   * Data required to support the LTI 1.3 content selection workflow.

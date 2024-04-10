@@ -232,6 +232,7 @@ export const languageStrings = {
       view: "View",
       yes: "Yes",
     },
+    breadcrumb: "breadcrumb",
     required: "* Required",
     result: {
       success: "Saved successfully.",
@@ -241,6 +242,7 @@ export const languageStrings = {
     users: "Users",
     groups: "Groups",
     roles: "Roles",
+    thumbnail: "Thumbnail",
   },
   courseedit: {
     title: "Editing course - %s",
@@ -371,6 +373,21 @@ export const languageStrings = {
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  hierarchy: {
+    viewHierarchy: "View hierarchy",
+    browseHierarchyPageTitle: "Browse hierarchies",
+    noHierarchy: "No hierarchies available",
+    expandHierarchy: "Expand hierarchy",
+    collapseHierarchy: "Collapse hierarchy",
+    browse: "Browse",
+    addKeyResource: "Add as a key resource",
+    removeKeyResource: "Remove key resource",
+    hierarchyPageTitle: "Hierarchy",
+    attachmentCount: "Attachment count",
+    error: {
+      missingTopicUUID: "Failed to open Hierarchy page: topic ID is not found.",
+    },
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",

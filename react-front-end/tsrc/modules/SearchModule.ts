@@ -19,9 +19,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
+import * as EQ from "fp-ts/Eq";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
 import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
@@ -162,6 +164,10 @@ export interface SearchOptions {
    * Advanced search criteria defined by Wizard controls' schema nodes and values.
    */
   advancedSearchCriteria?: OEQ.Search.WizardControlFieldValue[];
+  /**
+   * The UUID of a hierarchy topic.
+   */
+  hierarchy?: string;
 }
 
 /**
@@ -249,6 +255,7 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
+  hierarchy,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -263,7 +270,7 @@ const buildSearchParams = ({
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: status,
+    status,
     order: sortOrder,
     collections: collections?.map((collection) => collection.uuid),
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
@@ -273,7 +280,8 @@ const buildSearchParams = ({
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
-    musts: musts,
+    musts,
+    hierarchy,
   };
 };
 
@@ -397,3 +405,10 @@ export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
     API_BASE_URL,
     buildSearchParams(searchOptions),
   );
+
+/**
+ * Eq for `OEQ.Search.SearchResultItem` with equality based on the UUID and version.
+ */
+export const itemEq: EQ.Eq<OEQ.Search.SearchResultItem> = EQ.contramap(
+  (item: OEQ.Search.SearchResultItem) => item.uuid + item.version,
+)(S.Eq);

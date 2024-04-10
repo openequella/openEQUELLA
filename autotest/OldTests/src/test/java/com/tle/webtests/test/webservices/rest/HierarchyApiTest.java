@@ -91,7 +91,7 @@ public class HierarchyApiTest extends AbstractRestApiTest {
   }
 
   @Test(dependsOnMethods = {"createHierarchiesTest"})
-  public void editHeirarchiesTest() throws Exception {}
+  public void editHierarchiesTest() throws Exception {}
 
   /**
    * We have primed our persistent root-level hierarchy with the query "hierarchyApiTest", and there
@@ -102,7 +102,7 @@ public class HierarchyApiTest extends AbstractRestApiTest {
    * @throws Exception
    */
   @Test(dependsOnMethods = {"createHierarchiesTest"})
-  public void browseHeirarchiesTest() throws Exception {
+  public void browseHierarchiesTest() throws Exception {
     String token = requestToken(OAUTH_CLIENT_ID);
     URI uri = new URI(context.getBaseUrl() + API_BROWSE_TASK_PATH);
 

@@ -55,7 +55,14 @@ public interface FreeTextService {
   <T extends FreetextResult> FreetextSearchResults<T> search(
       Search searchReq, int start, int count, boolean searchAttachments);
 
-  SearchResults<ItemIdKey> searchIds(Search searchreq, int nStart, int nCount);
+  /**
+   * Search for items matching the provided search requirements from lucene indexes.
+   *
+   * @param searchRequirements The search requirements.
+   * @param offset The offset of the first result to return.
+   * @param maxNumber The maximum number of results to return.
+   */
+  SearchResults<ItemIdKey> searchIds(Search searchRequirements, int offset, int maxNumber);
 
   LongSet searchIdsBitSet(Search searchreq);
 
@@ -73,9 +80,5 @@ public interface FreeTextService {
   void waitUntilIndexed(ItemIdKey itemIdKey);
 
   MatrixResults matrixSearch(
-      Search searchRequest,
-      List<String> fields,
-      boolean countOnly,
-      int width,
-      boolean searchAttachments);
+      Search searchRequest, List<String> fields, boolean countOnly, boolean searchAttachments);
 }

@@ -5728,3 +5728,56 @@ button:focus {
     }
   }
 }
+
+// Fix the layout of task statistics portlet in EBP
+// Make sure the layout the same with old UI
+.portlet_taskstatistics_content {
+  .taskstatsresults {
+    table {
+      width: 100%;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    td,
+    th {
+      padding: $singleMargin $singleMargin $singleMargin 32px;
+    }
+
+    .waiting,
+    .trend {
+      text-align: center;
+      width: $doubleMargin;
+      padding: $singleMargin;
+    }
+
+    .resourcecount {
+      display: block;
+      padding: $doubleMargin;
+      text-align: left;
+    }
+  }
+
+  .controlcontainer {
+    padding: $doubleMargin;
+  }
+
+  .statscontrols {
+    position: relative;
+  }
+
+  // Add div to avoid conflict on class trend of table
+  div.trend {
+    position: absolute;
+    bottom: $doubleMargin;
+    right: 0;
+  }
+}
+
+// Fix the position of the close button on the Moderation Comment Dialog
+// Currently, the close button has a position absolute and make sure it locate inside the dialog
+.moderation_comments_dialog {
+  position: relative;
+}
