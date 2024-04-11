@@ -217,6 +217,7 @@
     <parameter id="class" value="com.tle.web.workflow.guice.StaticServices" />
     <parameter id="class" value="com.tle.web.workflow.guice.TaskSearchModule" />
     <parameter id="class" value="com.tle.web.workflow.portal.TaskListModule" />
+    <parameter id="class" value="com.tle.web.remoting.graphql.GraphQLModule" />
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="equella">
     <parameter id="type" value="equella" />
@@ -6207,6 +6208,7 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="graphQLServlet">
     <parameter id="bean" value="bean:com.tle.web.remoting.graphql.GraphQLServlet" />
     <parameter id="url-pattern" value="/graphql" />
+    <parameter id="url-pattern" value="/graphql/schema" />
   </extension>
   <!-- endregion -->
 </plugin>
