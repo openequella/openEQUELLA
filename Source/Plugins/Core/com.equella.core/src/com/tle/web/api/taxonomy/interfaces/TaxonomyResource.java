@@ -253,15 +253,17 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
    *
    * @param taxonomyUuid
    * @param termUuid
+   * @param dataKey
    * @return
    */
   @PUT
-  @Path("/{uuid}/term/{termUuid}/data")
+  @Path("/{uuid}/term/{termUuid}/data/{datakey}/{datavalue}")
   @ApiOperation(value = "Set term data")
   Response setTermData(
-      @ApiParam(value = "Taxonomy uuid") @PathParam("uuid") String taxonomyUuid,
+      @ApiParam(value = "Taxonomy uuid", required = false) @PathParam("uuid") String taxonomyUuid,
       @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
-      @ApiParam(value = "The list of data key and data value") Map<String, String> data);
+      @ApiParam(value = "data key", required = true) @PathParam("datakey") String dataKey,
+      @ApiParam(value = "data value", required = true) @PathParam("datavalue") String dataValue);
 
   /**
    * Remove term data
@@ -294,4 +296,20 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   @ApiOperation(value = "Sort each level of the whole taxonomy")
   Response sortTaxonomy(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid);
+
+  /**
+   * Set term data value as JSON body
+   *
+   * @param taxonomyUuid
+   * @param termUuid
+   * @param data
+   * @return
+   */
+  @PUT
+  @Path("/{uuid}/term/{termUuid}/data")
+  @ApiOperation(value = "Set term data with the list of data keys and data values")
+  Response setTermData(
+      @ApiParam(value = "Taxonomy uuid") @PathParam("uuid") String taxonomyUuid,
+      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
+      @ApiParam(value = "The list of data keys and data values") Map<String, String> data);
 }

@@ -324,6 +324,41 @@ public class TaxonomyResourceImpl
    *
    * @param taxonomyUuid
    * @param termUuid
+   * @param dataKey
+   * @return
+   */
+  @Override
+  public Response setTermData(
+      String taxonomyUuid, String termUuid, String dataKey, String dataValue) {
+    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
+      throw new WebException(
+          Status.METHOD_NOT_ALLOWED.getStatusCode(),
+          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
+          "Taxonomy is readonly");
+    }
+    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
+    final boolean created;
+    try {
+      created = termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
+    } catch (NotFoundException ex) {
+      throw new WebException(
+          Status.NOT_FOUND.getStatusCode(),
+          Status.NOT_FOUND.getReasonPhrase(),
+          "termUuid given is not valid");
+    }
+    final URI location = getTermDataUrl(taxonomyUuid, termUuid, dataKey);
+    if (created) {
+      return Response.created(location).build();
+    }
+    return Response.ok().location(location).build();
+  }
+
+  /**
+   * Set term data value as JSON body
+   *
+   * @param taxonomyUuid
+   * @param termUuid
+   * @param data
    * @return
    */
   @Override
@@ -331,14 +366,15 @@ public class TaxonomyResourceImpl
     if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
       throw taxonomyTermException(Status.METHOD_NOT_ALLOWED, "Taxonomy is readonly");
     }
-
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
 
     if (data.size() == 1) {
+      final boolean created;
+      // Get the first entry of data if the data size is 1
       Map.Entry<String, String> entry = data.entrySet().iterator().next();
       String dataKey = entry.getKey();
       String dataValue = entry.getValue();
-      boolean created = setTaxonomyTermByUuid(taxonomy, termUuid, dataKey, dataValue);
+      created = setTaxonomyTermByUuid(taxonomy, termUuid, dataKey, dataValue);
       URI location = getTermDataUrl(taxonomyUuid, termUuid, dataKey);
 
       if (created) {
