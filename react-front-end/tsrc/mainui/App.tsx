@@ -27,7 +27,6 @@ import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
 import { getOeqTheme } from "../modules/ThemeModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
-import MyResourcesPage from "../myresources/MyResourcesPage";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
@@ -38,6 +37,12 @@ const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage"),
 );
 const IndexPage = React.lazy(() => import("./IndexPage"));
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage"),
+);
+const RootHierarchyPage = React.lazy(
+  () => import("../hierarchy/RootHierarchyPage"),
+);
 
 interface NewPageProps {
   /**
@@ -161,6 +166,11 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
           // for the whole page because there are no React component matching routes.
           <NewPage forceRefresh>
             <SettingsPage updateTemplate={nop} isReloadNeeded={false} />
+          </NewPage>
+        ),
+        hierarchyPage: () => (
+          <NewPage>
+            <RootHierarchyPage updateTemplate={nop} />
           </NewPage>
         ),
         _: (s: string | number) => {

@@ -15,19 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as LegacySelectionSessionModule from "../../tsrc/modules/LegacySelectionSessionModule";
+import { mockGetBaseUrl, updateMockGetBaseUrl } from "./BaseUrlHelper";
+import {
+  mockGlobalCourseList,
+  updateMockGlobalCourseList,
+} from "./CourseListHelper";
+import {
+  basicRenderData,
+  mockGetRenderData,
+  updateMockGetRenderData,
+} from "./RenderDataHelper";
 
-export const mockGlobalCourseList = jest.spyOn(
-  LegacySelectionSessionModule,
-  "getGlobalCourseList",
-);
-
-const basicCourseList = {
-  updateCourseList: jest.fn(),
-  prepareDraggableAndBind: jest.fn(),
-  newSearchPageItemClass: "SearchPage-Item",
-  newSearchPageAttachmentClass: "SearchPage-Attachment",
+export const prepareSelectionSession = () => {
+  updateMockGetBaseUrl();
+  updateMockGetRenderData(basicRenderData);
+  updateMockGlobalCourseList();
 };
 
-export const updateMockGlobalCourseList = (courseList = basicCourseList) =>
-  mockGlobalCourseList.mockReturnValue(courseList);
+export const closeSelectionSession = () => {
+  mockGetBaseUrl.mockRestore();
+  mockGlobalCourseList.mockRestore();
+  mockGetRenderData.mockRestore();
+};

@@ -28,17 +28,23 @@ import "../util/polyfill";
 // rendering New UI pages in the context of Legacy content.
 declare global {
   interface Window {
-    oEQRender: { searchPage: () => void; myResourcesPage: () => void };
+    oEQRender: {
+      searchPage: () => void;
+      myResourcesPage: () => void;
+      hierarchyPage: () => void;
+    };
   }
 }
 
 window["oEQRender"] = {
   searchPage: () => main("searchPage"),
   myResourcesPage: () => main("myResourcesPage"),
+  hierarchyPage: () => main("hierarchyPage"),
 };
 
 export type EntryPage =
   | "advancedSearchPage"
+  | "hierarchyPage"
   | "mainDiv"
   | "myResourcesPage"
   | "searchPage"

@@ -292,6 +292,15 @@ export const buildSelectionSessionAdvancedSearchLink = (
   );
 
 /**
+ * Build a Selection Session specific Hierarchy search Link. Recommended to first call `isSelectionSessionOpen()`
+ * before use.
+ *
+ * @param uuid Compound UUID of the Hierarchy topic
+ */
+export const buildSelectionSessionHierarchyLink = (uuid: string): string =>
+  buildSelectionSessionLink(routes.OldHierarchy.to(uuid), false, []);
+
+/**
  * Given a URL used to access Scrapbook legacy pages in normal New UI mode, convert the URL into a Selection Session specific one.
  *
  * @param url URL used to access Scrapbook legacy pages in normal New UI mode

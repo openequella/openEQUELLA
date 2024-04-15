@@ -101,6 +101,7 @@ interface Routes {
   UserPreferences: OEQRouteTo<string>;
   ViewItem: OEQRouteTo<ToVersionFunc>;
   BrowseHierarchy: OEQRouteNewUI;
+  OldHierarchy: OEQRouteTo<ToFunc>;
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
 }
 
@@ -217,6 +218,9 @@ export const routes: Routes = {
   },
   ViewItem: {
     to: (uuid: string, version: number) => `/items/${uuid}/${version}/`,
+  },
+  OldHierarchy: {
+    to: (topic: string) => `${OLD_HIERARCHY_PATH}?topic=${topic}`,
   },
   Hierarchy: {
     path: `${NEW_HIERARCHY_PATH}/:compoundUuid`,
