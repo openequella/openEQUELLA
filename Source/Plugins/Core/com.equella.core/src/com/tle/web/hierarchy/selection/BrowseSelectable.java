@@ -29,6 +29,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -58,8 +59,14 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
 
   @Override
   public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
-    // Always go to the ROOT topic to display the Browse page.
-    return fromInfo.createForwardForUri("/hierarchy.do?topic=" + TopicDisplaySection.ROOT_TOPICS);
+    final String HIERARCHY_URL = "/hierarchy.do";
+    // Always forward to the ROOT topic to display the Browse page when New UI is turned on.
+    String forward =
+        RenderNewTemplate.isNewUIEnabled()
+            ? HIERARCHY_URL + "?topic=" + TopicDisplaySection.ROOT_TOPICS
+            : HIERARCHY_URL;
+
+    return fromInfo.createForwardForUri(forward);
   }
 
   @Override
