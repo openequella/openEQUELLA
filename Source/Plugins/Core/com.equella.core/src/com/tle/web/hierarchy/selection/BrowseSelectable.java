@@ -21,6 +21,7 @@ package com.tle.web.hierarchy.selection;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
+import com.tle.web.hierarchy.section.TopicDisplaySection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -57,7 +58,8 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
 
   @Override
   public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
-    return fromInfo.createForward("/hierarchy.do");
+    // Always go to the ROOT topic to display the Browse page.
+    return fromInfo.createForwardForUri("/hierarchy.do?topic=" + TopicDisplaySection.ROOT_TOPICS);
   }
 
   @Override
