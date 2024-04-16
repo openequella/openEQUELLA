@@ -61,10 +61,9 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
   public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
     final String HIERARCHY_URL = "/hierarchy.do";
     // In Old UI, if there is a topic selected previously, clicking this menu will show that topic
-    // again
-    // rather than displaying the Browse page. This UX is not ideal in modern application. So if New
-    // UI
-    // is turned on, if a user goes to the browse menu item, it should show a fresh Browse page
+    // again rather than displaying the Browse page. This UX is not ideal in modern application.
+    // So if New UI is turned on, if a user goes to the browse menu item, it should show a fresh
+    // Browse page.
     String forward =
         RenderNewTemplate.isNewUIEnabled()
             ? HIERARCHY_URL + "?topic=" + TopicDisplaySection.ROOT_TOPICS
