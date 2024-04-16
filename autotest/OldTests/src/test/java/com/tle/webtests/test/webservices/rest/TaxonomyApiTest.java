@@ -567,7 +567,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
   @Test
   public void testSetTermWithMultipleDataKeyValue() throws IOException {
-    final String setTaxonomyTermUri =
+    final String taxonomyTermUri =
         PathUtils.urlPath(
             context.getBaseUrl(),
             API_TAXONOMY_PATH,
@@ -577,17 +577,21 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
             API_TERM_DATA_PATH_PART);
 
     ObjectNode jsonObj = mapper.createObjectNode();
-    jsonObj.put("data_key_1", "data_value_1/");
-    jsonObj.put("data_key_2", "data_value_2");
-    jsonObj.put("data_key_n", "data_value_n");
+    jsonObj.put("data/key", "data/value");
+    jsonObj.put("/datakey", "/datavalue");
+    jsonObj.put("datakey/", "datavalue/");
     final String jsonStr = jsonObj.toString();
-    String token = requestToken(OAUTH_CLIENT_ID);
-    final HttpResponse response = putEntity(jsonStr, setTaxonomyTermUri, token, true);
+    final HttpResponse response = putEntity(jsonStr, taxonomyTermUri, getToken(), true);
     assertResponse(response, 201, "failed to create term");
+
+    final JsonNode result = getEntity(taxonomyTermUri, getToken());
+    assertEquals(result.asText(), jsonObj.asText());
   }
 
-  @Test
-  public void testSetTermWithSingleDataKeyValue() throws IOException {
+  @Test(
+      description = "Set term with the key value already exists",
+      dependsOnMethods = "testSetTermWithMultipleDataKeyValue")
+  public void testSetTermWithConflictDataKeyValue() throws IOException {
     final String setTaxonomyTermUri =
         PathUtils.urlPath(
             context.getBaseUrl(),
@@ -598,7 +602,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
             API_TERM_DATA_PATH_PART);
 
     ObjectNode jsonObj = mapper.createObjectNode();
-    jsonObj.put("data_key_1", "data_value_1/");
+    jsonObj.put("data/key", "data/value");
     final String jsonStr = jsonObj.toString();
     final HttpResponse response = putEntity(jsonStr, setTaxonomyTermUri, getToken(), true);
     assertResponse(response, 409, "failed to create term");

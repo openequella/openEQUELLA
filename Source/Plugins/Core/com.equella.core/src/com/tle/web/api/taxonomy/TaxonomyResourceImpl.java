@@ -352,23 +352,8 @@ public class TaxonomyResourceImpl
       data.forEach(
           (dataKey, dataValue) ->
               termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue));
-      return Response.status(Status.CREATED.getStatusCode(), "Multiple items created").build();
-    }
-  }
-
-  /**
-   * Checks if the taxonomy with the given UUID is modifiable. If the taxonomy is read-only, it
-   * throws a WebException with status code 405 (Method Not Allowed).
-   *
-   * @param taxonomyUuid The UUID of the taxonomy to check.
-   * @throws WebException If the taxonomy is read-only.
-   */
-  private void ensureTaxonomyModifiable(String taxonomyUuid) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
+      return Response.status(Status.CREATED.getStatusCode(), "All requested data items added")
+          .build();
     }
   }
 
@@ -462,6 +447,22 @@ public class TaxonomyResourceImpl
       throw new WebApplicationException(Status.FORBIDDEN);
     }
     return taxonomy;
+  }
+
+  /**
+   * Checks if the taxonomy with the given UUID is modifiable. If the taxonomy is read-only, it
+   * throws a WebException with status code 405 (Method Not Allowed).
+   *
+   * @param taxonomyUuid The UUID of the taxonomy to check.
+   * @throws WebException If the taxonomy is read-only.
+   */
+  private void ensureTaxonomyModifiable(String taxonomyUuid) {
+    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
+      throw new WebException(
+          Status.METHOD_NOT_ALLOWED.getStatusCode(),
+          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
+          "Taxonomy is readonly");
+    }
   }
 
   @Override
