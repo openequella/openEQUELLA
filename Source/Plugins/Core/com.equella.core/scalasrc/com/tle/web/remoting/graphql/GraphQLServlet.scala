@@ -20,8 +20,9 @@ package com.tle.web.remoting.graphql
 
 import caliban.CalibanError.ExecutionError
 import caliban.{CalibanError, GraphQL, GraphQLRequest}
+import com.google.common.io.ByteStreams
 import com.tle.core.guice.Bind
-import com.tle.web.remoting.graphql.GraphQLConfig.CFG_GRAPHQL_SCHEMA
+import com.tle.web.remoting.graphql.GraphQLConfig.{CFG_GRAPHQL_SCHEMA, CFG_GRAPHQL_UI}
 import com.tle.web.remoting.graphql.schema.Schema
 import io.circe.parser._
 import org.slf4j.LoggerFactory
@@ -43,27 +44,33 @@ class GraphQLServlet extends HttpServlet {
 
   private var graphQL: GraphQL[Any]          = _
   private var schemaEndpointEnabled: Boolean = false
+  private var graphQLUIEnabled: Boolean      = false
 
   /**
     * Default constructor for Guice.
     */
-  @Inject def this(schema: Schema, @Named(CFG_GRAPHQL_SCHEMA) graphQLSchemaEnabled: Boolean) = {
+  @Inject def this(schema: Schema,
+                   @Named(CFG_GRAPHQL_SCHEMA) graphQLSchemaEnabled: Boolean,
+                   @Named(CFG_GRAPHQL_UI) graphQLUIEnabled: Boolean) = {
     this()
     this.graphQL = schema.getFullApi
     this.schemaEndpointEnabled = graphQLSchemaEnabled
+    this.graphQLUIEnabled = graphQLUIEnabled
   }
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
-    LOGGER.debug("doGet() called")
+    LOGGER.debug(s"doGet(${req.getServletPath}) called")
 
-    if (schemaEndpointEnabled && req.getServletPath.endsWith("/schema")) {
-      resp.setStatus(HttpServletResponse.SC_OK)
-      resp.setContentType("text/plain")
-      resp.getWriter.write(graphQL.render)
-      return
+    req.getServletPath match {
+      case "/graphql/schema" if schemaEndpointEnabled =>
+        resp.setStatus(HttpServletResponse.SC_OK)
+        resp.setContentType("text/plain")
+        resp.getWriter.write(graphQL.render)
+      case "/graphql/ui" if graphQLUIEnabled =>
+        LOGGER.debug(s"UI path: ${req.getPathInfo}")
+        graphiQL(resp, req.getPathInfo)
+      case _ => resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "GET requests are not supported")
     }
-
-    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "GET requests are not supported")
   }
 
   /**
@@ -159,6 +166,48 @@ class GraphQLServlet extends HttpServlet {
           case _ => e
         }
       case otherError => otherError
+    }
+  }
+
+  /**
+    * Streams the requested GraphiQL file which is stored in the `graphql-ui` resources folder.
+    *
+    * @param resp The response object matching the servlet request
+    * @param path The path to the requested file
+    */
+  private def graphiQL(resp: HttpServletResponse, path: String): Unit = {
+    def extension(str: String): String = {
+      val index = str.lastIndexOf(".")
+      if (index == -1) str else str.substring(index + 1)
+    }
+
+    // Setup the path to point to a file within the GraphiQL resources stored in the `graphql-ui`
+    // folder. If no path is provided, then start with the standard `index.html`.
+    val graphiQLPath = "/graphql-ui" + (if (path.isEmpty || path == "/") "/index.html" else path)
+
+    // There are more content types here than currently used by GraphiQL, but they are included for
+    // completeness and future proofing.
+    val contentType = extension(graphiQLPath) match {
+      case "css"  => "text/css"
+      case "html" => "text/html"
+      case "ico"  => "image/x-icon"
+      case "js"   => "application/javascript"
+      case "json" => "application/json"
+      case "map"  => "application/json"
+      case "png"  => "image/png"
+      case "svg"  => "image/svg+xml"
+      case _      => "text/plain"
+    }
+
+    Option(getClass.getResourceAsStream(graphiQLPath)) match {
+      case Some(stream) =>
+        resp.setStatus(HttpServletResponse.SC_OK)
+        resp.setContentType(contentType)
+        resp.setContentLength(stream.available())
+
+        ByteStreams.copy(stream, resp.getOutputStream)
+      case None =>
+        resp.sendError(HttpServletResponse.SC_NOT_FOUND)
     }
   }
 }

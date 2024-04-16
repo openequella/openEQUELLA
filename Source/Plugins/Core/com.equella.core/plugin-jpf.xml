@@ -6209,6 +6209,7 @@
     <parameter id="bean" value="bean:com.tle.web.remoting.graphql.GraphQLServlet" />
     <parameter id="url-pattern" value="/graphql" />
     <parameter id="url-pattern" value="/graphql/schema" />
+    <parameter id="url-pattern" value="/graphql/ui/*" />
   </extension>
   <!-- endregion -->
 </plugin>
