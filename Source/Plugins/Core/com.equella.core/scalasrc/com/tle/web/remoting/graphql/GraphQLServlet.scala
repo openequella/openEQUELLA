@@ -19,15 +19,18 @@
 package com.tle.web.remoting.graphql
 
 import caliban.CalibanError.ExecutionError
-import caliban.{CalibanError, GraphQL}
+import caliban.{CalibanError, GraphQL, GraphQLRequest}
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.GraphQLConfig.CFG_GRAPHQL_SCHEMA
 import com.tle.web.remoting.graphql.schema.Schema
+import io.circe.parser._
 import org.slf4j.LoggerFactory
 
 import java.util.UUID
 import javax.inject.{Inject, Named, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
+import javax.ws.rs.core.MediaType
+import scala.io.Source
 
 /**
   * Servlet for handling GraphQL requests. Relies on standard oEQ servlet security/authentication
@@ -64,6 +67,18 @@ class GraphQLServlet extends HttpServlet {
   }
 
   /**
+    * Add support for browser pre-flight requests.
+    */
+  override def doOptions(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
+    resp.setHeader("Access-Control-Allow-Origin", "*")
+    resp.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
+    resp.setHeader("Access-Control-Allow-Headers", "Content-Type")
+    resp.setHeader("Access-Control-Max-Age", "86400")
+
+    super.doOptions(req, resp)
+  }
+
+  /**
     * Handles the POST request as per the [GraphQL-over-HTTP spec](https://graphql.github.io/graphql-over-http/draft/)
     * with a focus on section [5.4 POST Request](https://graphql.github.io/graphql-over-http/draft/#sec-POST).
     *
@@ -77,20 +92,27 @@ class GraphQLServlet extends HttpServlet {
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doPost() called")
 
-    if (req.getHeader("Content-Type") != "application/json") {
-      resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Content-Type must be application/json")
+    if (req.getHeader("Content-Type") != MediaType.APPLICATION_JSON) {
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                     s"Content-Type must be ${MediaType.APPLICATION_JSON}")
       return
     }
 
     try {
-      val query = new String(req.getInputStream.readAllBytes())
-      execute(query) match {
+      val query = Source.fromInputStream(req.getInputStream).mkString
+      val processing = for {
+        gqlRequest <- decode[GraphQLRequest](query)
+        result     <- execute(gqlRequest)
+      } yield result
+
+      processing match {
         case Left(error) =>
           LOGGER.error("Error executing query", error)
           resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
         case Right(result) =>
           resp.setStatus(HttpServletResponse.SC_OK)
-          resp.setContentType("application/json")
+          resp.setContentType(MediaType.APPLICATION_JSON)
+          resp.setHeader("Access-Control-Allow-Origin", "*")
           resp.getWriter.write(result)
       }
     } catch {
@@ -100,7 +122,7 @@ class GraphQLServlet extends HttpServlet {
         LOGGER.error(msg, e)
 
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-        resp.setContentType("application/json")
+        resp.setContentType(MediaType.APPLICATION_JSON)
         resp.getWriter.write(s"""{"errors": [{"message": "$msg"}]}""")
     }
   }
@@ -108,9 +130,9 @@ class GraphQLServlet extends HttpServlet {
   import zio._
 
   /**
-    * Executes a GraphQL query and returns the result as a JSON string.
+    * Executes a GraphQL request and returns the result as a JSON string.
     */
-  private def execute(query: String): Either[Throwable, String] = zio.Unsafe.unsafe {
+  private def execute(req: GraphQLRequest): Either[Throwable, String] = zio.Unsafe.unsafe {
     implicit unsafe =>
       val calibanExecute = for {
         // Setup the interpreter with `mapError` so that we can customise the error handling and
@@ -118,7 +140,7 @@ class GraphQLServlet extends HttpServlet {
         // message which is not helpful. See more in the Caliban FAQ at:
         // https://ghostdogpr.github.io/caliban/faq/#my-query-fails-with-an-effect-failure-error-how-can-i-get-more-details
         interpreter <- graphQL.interpreter.map(_.mapError(errorHandler))
-        result      <- interpreter.execute(query)
+        result      <- interpreter.executeRequest(req)
       } yield result
 
       Runtime.default.unsafe.run(calibanExecute).toEither.map(_.toResponseValue.toString)
