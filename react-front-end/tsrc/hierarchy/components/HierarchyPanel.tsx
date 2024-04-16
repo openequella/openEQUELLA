@@ -30,7 +30,9 @@ import { pipe } from "fp-ts/function";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { OEQLink } from "../../components/OEQLink";
 import { routes } from "../../mainui/routes";
+import { buildSelectionSessionHierarchyLink } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 import HierarchyTree from "./HierarchyTree";
 
@@ -45,13 +47,15 @@ const buildBreadcrumbs = (
     A.map((parent) => {
       const { compoundUuid, name } = parent;
       return (
-        <Link
+        <OEQLink
           key={compoundUuid}
-          color="inherit"
-          to={routes.Hierarchy.to(compoundUuid)}
+          muiLinkUrlProvider={() =>
+            buildSelectionSessionHierarchyLink(compoundUuid)
+          }
+          routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
         >
           {name ?? compoundUuid}
-        </Link>
+        </OEQLink>
       );
     }),
     A.prepend(

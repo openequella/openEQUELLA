@@ -39,6 +39,7 @@ import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import java.util.List;
@@ -78,13 +79,21 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
       throw new AccessDeniedException(
           urlHelper.getString("missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
     }
+
+    if (isNewUIInSelectionSession(context)) {
+      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewHierarchyPage(context));
+    }
     return super.renderHtml(context);
   }
 
   @Override
   protected void addBreadcrumbsAndTitle(
       SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
-    topicSection.addCrumbs(info, crumbs);
+    // Skip Breadcrumbs when the New UI is used in Selection Session
+    if (!isNewUIInSelectionSession(info)) {
+      topicSection.addCrumbs(info, crumbs);
+    }
+
     decorations.setTitle(getTitle(info));
     decorations.setContentBodyClass("browse-layout search-layout");
   }

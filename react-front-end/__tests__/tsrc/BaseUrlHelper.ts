@@ -19,7 +19,7 @@ import * as AppConfig from "../../tsrc/AppConfig";
 
 export const defaultBaseUrl = "http://localhost:8080/vanilla/";
 
-const mockGetBaseUrl = jest.spyOn(AppConfig, "getBaseUrl");
+export const mockGetBaseUrl = jest.spyOn(AppConfig, "getBaseUrl");
 export const updateMockGetBaseUrl = (url: string = defaultBaseUrl) => {
   mockGetBaseUrl.mockReturnValue(url);
 };

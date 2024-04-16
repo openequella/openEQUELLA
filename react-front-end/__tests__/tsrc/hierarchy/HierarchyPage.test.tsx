@@ -47,6 +47,10 @@ import {
   initialiseEssentialMocks,
   mockCollaborators,
 } from "../search/SearchPageTestHelper";
+import {
+  closeSelectionSession,
+  prepareSelectionSession,
+} from "../SelectionSessionHelper";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -76,13 +80,13 @@ jest.spyOn(HierarchyModule, "getMyAcls").mockImplementation(getMyAcls);
 
 const renderHierarchyPage = async (
   compoundUuid: string,
-  inNewUI: boolean = true,
+  isNewPath: boolean = true,
 ): Promise<RenderResult> => {
   const NEW_HIERARCHY_PATH = "/page/hierarchy/";
   const OLD_HIERARCHY_PATH = "/hierarchy.do";
 
   const history = createMemoryHistory();
-  const location = inNewUI
+  const location = isNewPath
     ? `${NEW_HIERARCHY_PATH}${compoundUuid}`
     : `${OLD_HIERARCHY_PATH}?topic=${compoundUuid}`;
   history.push(location);
@@ -93,7 +97,9 @@ const renderHierarchyPage = async (
       <Router history={history}>
         <Route
           path={
-            inNewUI ? `${NEW_HIERARCHY_PATH}:compoundUuid` : OLD_HIERARCHY_PATH
+            isNewPath
+              ? `${NEW_HIERARCHY_PATH}:compoundUuid`
+              : OLD_HIERARCHY_PATH
           }
         >
           <RootHierarchyPage updateTemplate={jest.fn()} />
@@ -114,7 +120,7 @@ const renderHierarchyPage = async (
   return result;
 };
 
-describe("<HierarchyPage/>", () => {
+describe("Display of Hierarchy panel", () => {
   it("displays breadcrumb on hierarchy panel", async () => {
     const compoundUuid = topicWithChildren.compoundUuid;
     const hierarchy = await getHierarchy(compoundUuid);
@@ -154,7 +160,9 @@ describe("<HierarchyPage/>", () => {
     );
     expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
   });
+});
 
+describe("Display of Key resource panel", () => {
   it("displays key resource panel if it has key resources", async () => {
     const compoundUuid = topicWithShortAndLongDesc.compoundUuid;
     const hierarchy = await getHierarchy(compoundUuid);
@@ -167,7 +175,9 @@ describe("<HierarchyPage/>", () => {
     );
     expect.assertions(hierarchy.keyResources.length);
   });
+});
 
+describe("Pin icon", () => {
   it("displays normal search result with outline pin icon", async () => {
     const { getByTestId } = await renderHierarchyPage(
       topicWithChildren.compoundUuid,
@@ -193,6 +203,16 @@ describe("<HierarchyPage/>", () => {
     );
   });
 
+  it("hide all pin icons if user doesn't have MODIFY_KEY_RESOURCE ACL", async () => {
+    const compoundUuid = topicWithoutModifyKeyResources.compoundUuid;
+    const { queryAllByLabelText } = await renderHierarchyPage(compoundUuid);
+
+    expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
+    expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
+  });
+});
+
+describe("Search result", () => {
   it("hide search result if 'Display resources' is set to false", async () => {
     const compoundUuid = topicWithoutSearchResults.compoundUuid;
     const { queryByTestId } = await renderHierarchyPage(compoundUuid);
@@ -214,16 +234,29 @@ describe("<HierarchyPage/>", () => {
       ),
     ).toBeInTheDocument();
   });
+});
 
-  it("hide all pin icons if user doesn't have MODIFY_KEY_RESOURCE ACL", async () => {
-    const compoundUuid = topicWithoutModifyKeyResources.compoundUuid;
-    const { queryAllByLabelText } = await renderHierarchyPage(compoundUuid);
+describe("Selection Session", () => {
+  it("uses Selection Session specific URL when Selection Session is open", async () => {
+    prepareSelectionSession();
+    const parentTopicName = "Parent1";
 
-    expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
-    expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
+    const compoundUuid = topicWithChildren.compoundUuid;
+    const { getByText } = await renderHierarchyPage(compoundUuid);
+
+    const breadcrumbUrl = getByText(parentTopicName, {
+      selector: "a",
+    }).getAttribute("href");
+    expect(breadcrumbUrl).toBe(
+      "http://localhost:8080/vanilla/hierarchy.do?topic=uuid1&_sl.stateId=1",
+    );
+
+    closeSelectionSession();
   });
+});
 
-  it("supports using the Hierarchy ID retrieved from Legacy query param", async () => {
+describe("Share search", () => {
+  it("supports a Hierarchy search shared from Legacy UI", async () => {
     const uuid = topicWithChildren.compoundUuid;
     await renderHierarchyPage(uuid, false);
 

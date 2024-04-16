@@ -148,3 +148,20 @@ export const browseHierarchy = (
     apiBasePath + BROWSE_HIERARCHY_ROOT_PATH + `/${compoundUuid}`,
     validate(HierarchyTopicCodec(SearchResultItemRawCodec))
   ).then(processRawKeyResource);
+
+/**
+ * Retrieve the compound UUIDs of hierarchies which have the key resource specified by the supplied Item UUID and version.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param itemUuid UUID of the item.
+ * @param itemVersion Version of the item.
+ */
+export const getHierarchyIdsWithKeyResource = (
+  apiBasePath: string,
+  itemUuid: string,
+  itemVersion: number
+): Promise<string[]> =>
+  GET<string[]>(
+    `${apiBasePath}${BROWSE_HIERARCHY_ROOT_PATH}/key-resource/${itemUuid}/${itemVersion}`,
+    validate(t.array(t.string))
+  );

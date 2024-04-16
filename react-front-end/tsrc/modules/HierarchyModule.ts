@@ -36,6 +36,22 @@ export const getHierarchy = (
   OEQ.BrowseHierarchy.browseHierarchy(API_BASE_URL, compoundUuid);
 
 /**
+ * Get hierarchy IDs which contains the given key resource.
+ *
+ * @param itemUuid The item UUID.
+ * @param itemVersion The item version.
+ */
+export const getHierarchyIdsWithKeyResource = (
+  itemUuid: string,
+  itemVersion: number,
+): Promise<String[]> =>
+  OEQ.BrowseHierarchy.getHierarchyIdsWithKeyResource(
+    API_BASE_URL,
+    itemUuid,
+    itemVersion,
+  );
+
+/**
  * Get all ACLs for the hierarchy topic.
  *
  * @param compoundUuid Topic compound UUID.
