@@ -297,17 +297,13 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   Response sortTaxonomy(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid);
 
-  /**
-   * Set term data value as JSON body
-   *
-   * @param taxonomyUuid
-   * @param termUuid
-   * @param data
-   * @return
-   */
   @PUT
   @Path("/{uuid}/term/{termUuid}/data")
   @ApiOperation(value = "Set term data with the list of data keys and data values")
+  @ApiResponses({
+    @ApiResponse(code = 201, message = "Location: {newtaxonomy uri}"),
+    @ApiResponse(code = 201, message = "All requested data items added")
+  })
   Response setTermData(
       @ApiParam(value = "Taxonomy uuid") @PathParam("uuid") String taxonomyUuid,
       @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,

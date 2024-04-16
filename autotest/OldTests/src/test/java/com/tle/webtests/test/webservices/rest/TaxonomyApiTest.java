@@ -564,4 +564,43 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final HttpPost request = new HttpPost(new URI(uri));
     execute(request, true, getToken());
   }
+
+  @Test
+  public void testSetTermWithMultipleDataKeyValue() throws IOException {
+    final String setTaxonomyTermUri =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            TAXONOMY_UUID,
+            API_TERM_PATH_PART,
+            TERM_1_UUID,
+            API_TERM_DATA_PATH_PART);
+
+    ObjectNode jsonObj = mapper.createObjectNode();
+    jsonObj.put("data_key_1", "data_value_1/");
+    jsonObj.put("data_key_2", "data_value_2");
+    jsonObj.put("data_key_n", "data_value_n");
+    final String jsonStr = jsonObj.toString();
+    String token = requestToken(OAUTH_CLIENT_ID);
+    final HttpResponse response = putEntity(jsonStr, setTaxonomyTermUri, token, true);
+    assertResponse(response, 201, "failed to create term");
+  }
+
+  @Test
+  public void testSetTermWithSingleDataKeyValue() throws IOException {
+    final String setTaxonomyTermUri =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            TAXONOMY_UUID,
+            API_TERM_PATH_PART,
+            TERM_1_UUID,
+            API_TERM_DATA_PATH_PART);
+
+    ObjectNode jsonObj = mapper.createObjectNode();
+    jsonObj.put("data_key_1", "data_value_1/");
+    final String jsonStr = jsonObj.toString();
+    final HttpResponse response = putEntity(jsonStr, setTaxonomyTermUri, getToken(), true);
+    assertResponse(response, 409, "failed to create term");
+  }
 }

@@ -353,71 +353,45 @@ public class TaxonomyResourceImpl
     return Response.ok().location(location).build();
   }
 
-  /**
-   * Set term data value as JSON body
-   *
-   * @param taxonomyUuid
-   * @param termUuid
-   * @param data
-   * @return
-   */
   @Override
   public Response setTermData(String taxonomyUuid, String termUuid, Map<String, String> data) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw taxonomyTermException(Status.METHOD_NOT_ALLOWED, "Taxonomy is readonly");
-    }
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
 
     if (data.size() == 1) {
-      final boolean created;
       // Get the first entry of data if the data size is 1
       Map.Entry<String, String> entry = data.entrySet().iterator().next();
       String dataKey = entry.getKey();
       String dataValue = entry.getValue();
-      created = setTaxonomyTermByUuid(taxonomy, termUuid, dataKey, dataValue);
+      boolean created = termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
       URI location = getTermDataUrl(taxonomyUuid, termUuid, dataKey);
 
       if (created) {
         return Response.created(location).build();
       }
-      return Response.ok().location(location).build();
+      return Response.status(Status.CONFLICT.getStatusCode(), "Data already exists").build();
     } else {
       data.forEach(
-          (dataKey, dataValue) -> setTaxonomyTermByUuid(taxonomy, termUuid, dataKey, dataValue));
-      return Response.status(Status.CREATED).build();
+          (dataKey, dataValue) ->
+              termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue));
+      return Response.status(Status.CREATED.getStatusCode(), "Multiple items created").build();
     }
   }
 
   /**
-   * Sets data for a taxonomy term identified by its UUID.
+   * Checks if the taxonomy with the given UUID is modifiable. If the taxonomy is read-only, it
+   * throws a WebException with status code 405 (Method Not Allowed).
    *
-   * @param taxonomy The taxonomy to which the term belongs.
-   * @param termUuid The UUID of the term.
-   * @param dataKey The key of the data to set.
-   * @param dataValue The value of the data to set.
-   * @return True if the data was set successfully, false otherwise.
-   * @throws WebException If the term with the given UUID is not found.
+   * @param taxonomyUuid The UUID of the taxonomy to check.
+   * @throws WebException If the taxonomy is read-only.
    */
-  private boolean setTaxonomyTermByUuid(
-      Taxonomy taxonomy, String termUuid, String dataKey, String dataValue) {
-    try {
-      return termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
-    } catch (NotFoundException ex) {
-      throw taxonomyTermException(Status.NOT_FOUND, "termUuid given is not valid");
+  private void ensureTaxonomyModifiable(String taxonomyUuid) {
+    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
+      throw new WebException(
+          Status.METHOD_NOT_ALLOWED.getStatusCode(),
+          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
+          "Taxonomy is readonly");
     }
-  }
-
-  /**
-   * Constructs a new WebException instance with the provided status code, reason phrase, and
-   * message.
-   *
-   * @param status The HTTP status of the exception.
-   * @param message A descriptive message for the exception.
-   * @return A new WebException instance initialized with the provided status code, reason phrase,
-   *     and message.
-   */
-  private WebException taxonomyTermException(Status status, String message) {
-    return new WebException(status.getStatusCode(), status.getReasonPhrase(), message);
   }
 
   /**
