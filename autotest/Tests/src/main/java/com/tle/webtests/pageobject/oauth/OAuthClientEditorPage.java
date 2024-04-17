@@ -6,6 +6,7 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.generic.component.SelectUserDialog;
 import java.util.List;
+import java.util.Objects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -157,7 +158,8 @@ public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage> {
         driver.findElements(By.xpath("//div[@class='control ctrlinvalid']"));
 
     for (WebElement control : invalidControls) {
-      if (isPresent(control, By.id(we.getAttribute("id")))) {
+      if (!Objects.equals(we.getAttribute("id"), "")
+          && isPresent(control, By.id(we.getAttribute("id")))) {
         return true;
       }
       if (selector != null && isPresent(control, By.xpath(selector))) {
