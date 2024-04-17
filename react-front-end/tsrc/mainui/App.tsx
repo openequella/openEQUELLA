@@ -43,6 +43,9 @@ const MyResourcesPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
+const HierarchyBrowsePage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage"),
+);
 
 interface NewPageProps {
   /**
@@ -171,6 +174,11 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         hierarchyPage: () => (
           <NewPage>
             <RootHierarchyPage updateTemplate={nop} />
+          </NewPage>
+        ),
+        hierarchyBrowsePage: () => (
+          <NewPage>
+            <HierarchyBrowsePage updateTemplate={nop} />
           </NewPage>
         ),
         _: (s: string | number) => {

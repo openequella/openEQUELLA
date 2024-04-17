@@ -121,6 +121,7 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
         topicDisplay.changeTopic(fwd, uuid);
         final HtmlLinkState link =
             RenderNewTemplate.isNewUIEnabled()
+                    && selectionService.getCurrentSession(context) == null
                 ? new HtmlLinkState(new SimpleBookmark(NewUiRoutes.hierarchy(uuid)))
                 : new HtmlLinkState(new InfoBookmark(fwd));
 
