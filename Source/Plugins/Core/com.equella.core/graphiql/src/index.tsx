@@ -39,4 +39,4 @@ const getInstitutionURL = (): string =>
 const baseURL = getInstitutionURL() + "/graphql";
 
 const root = createRoot(document.getElementById("graphiql_ui") as HTMLElement);
-root.render(baseURL ? graphiQLUI(baseURL) : <div>Base URL not found</div>);
+root.render(graphiQLUI(baseURL));
