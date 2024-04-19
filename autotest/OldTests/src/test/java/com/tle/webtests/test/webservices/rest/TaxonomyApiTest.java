@@ -590,7 +590,7 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
 
   @Test(description = "Set term with the key value already exists")
   public void testSetTermWithConflictDataKeyValue() throws IOException {
-    final String setTaxonomyTermUri =
+    final String taxonomyTermUri =
         PathUtils.urlPath(
             context.getBaseUrl(),
             API_TAXONOMY_PATH,
@@ -598,21 +598,21 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
             API_TERM_PATH_PART,
             TERM_1_UUID,
             API_TERM_DATA_PATH_PART);
+    final String dataKey = "data_key";
 
-    ObjectNode jsonObj = mapper.createObjectNode();
-    jsonObj.put("data_key", "");
-    final String jsonStr = jsonObj.toString();
     // Remove the key to make sure it is the first time we added
-    putEntity(jsonStr, setTaxonomyTermUri, getToken(), true);
+    final String deleteTaxonomyTermUri = PathUtils.urlPath(taxonomyTermUri, dataKey);
+    deleteResource(deleteTaxonomyTermUri, getToken());
 
-    ObjectNode bodyObj = mapper.createObjectNode();
-    bodyObj.put("data_key", "data_value");
+    // Add new key
+    ObjectNode requestBodyObj = mapper.createObjectNode();
+    requestBodyObj.put(dataKey, "data_value");
     final HttpResponse createdResponse =
-        putEntity(bodyObj.toString(), setTaxonomyTermUri, getToken(), true);
+        putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
     assertResponse(createdResponse, 201, "failed to create term");
 
     final HttpResponse conflictResponse =
-        putEntity(bodyObj.toString(), setTaxonomyTermUri, getToken(), true);
+        putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
     assertResponse(conflictResponse, 409, "failed to create term");
   }
 }
