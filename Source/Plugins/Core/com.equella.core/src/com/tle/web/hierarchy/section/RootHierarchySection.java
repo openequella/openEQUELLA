@@ -19,6 +19,7 @@
 package com.tle.web.hierarchy.section;
 
 import com.dytech.edge.web.WebConstants;
+import com.tle.common.Check;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
@@ -37,6 +38,7 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.RenderNewSearchPage;
@@ -81,7 +83,12 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
     }
 
     if (isNewUIInSelectionSession(context)) {
-      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewHierarchyPage(context));
+      SimpleSectionResult newUIContent =
+          isBrowseHierarchy(context)
+              ? RenderNewSearchPage.renderNewHierarchyBrowsePage(context)
+              : RenderNewSearchPage.renderNewHierarchyPage(context);
+
+      getModel(context).setNewUIContent(newUIContent);
     }
     return super.renderHtml(context);
   }
@@ -133,5 +140,10 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
   @Override
   protected String getPageName() {
     return HIERARCHYURL;
+  }
+
+  private boolean isBrowseHierarchy(SectionInfo info) {
+    String topicId = topicSection.getModel(info).getTopicId();
+    return Check.isEmpty(topicId) || TopicDisplaySection.ROOT_TOPICS.equals(topicId);
   }
 }

@@ -98,7 +98,7 @@ public class TopicDisplaySection
     extends AbstractPrototypeSection<TopicDisplaySection.ExtendedTopicDisplayModel>
     implements HtmlRenderer, ResetFiltersParent {
   private static final String SEARCH_PRIV = "SEARCH_POWER_SEARCH";
-  private static final String ROOT_TOPICS = "ALL";
+  public static final String ROOT_TOPICS = "ALL";
 
   @PlugKey("page.title")
   private static Label rootTitle;
@@ -372,6 +372,10 @@ public class TopicDisplaySection
 
       topic = null;
       values = null;
+    }
+
+    public String getTopicId() {
+      return topicId;
     }
   }
 
