@@ -39,7 +39,7 @@ const { breadcrumb: breadcrumbText } = languageStrings.common;
 const { browse: browseText } = languageStrings.hierarchy;
 
 const buildBreadcrumbs = (
-  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>
+  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>,
 ): React.JSX.Element => {
   const crumbs = pipe(
     hierarchy.parents,
@@ -64,13 +64,13 @@ const buildBreadcrumbs = (
         routeLinkUrlProvider={() => routes.BrowseHierarchy.path}
       >
         {browseText}
-      </OEQLink>
+      </OEQLink>,
     ),
     A.append(
       <Typography key="last" color="text.primary">
         {hierarchy.summary.name}
-      </Typography>
-    )
+      </Typography>,
+    ),
   );
 
   return (

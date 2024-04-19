@@ -80,7 +80,7 @@ jest.spyOn(HierarchyModule, "getMyAcls").mockImplementation(getMyAcls);
 
 const renderHierarchyPage = async (
   compoundUuid: string,
-  isNewPath: boolean = true
+  isNewPath: boolean = true,
 ): Promise<RenderResult> => {
   const NEW_HIERARCHY_PATH = "/page/hierarchy/";
   const OLD_HIERARCHY_PATH = "/hierarchy.do";
@@ -105,7 +105,7 @@ const renderHierarchyPage = async (
           <RootHierarchyPage updateTemplate={jest.fn()} />
         </Route>
       </Router>
-    </ThemeProvider>
+    </ThemeProvider>,
   );
 
   const hierarchy = await getHierarchy(compoundUuid);
@@ -131,7 +131,7 @@ describe("Display of Hierarchy panel", () => {
       expect(
         await findByText(name!, {
           selector: "a, p",
-        })
+        }),
       ).toBeInTheDocument();
     }
     expect.assertions(hierarchy.parents.length);
@@ -146,17 +146,17 @@ describe("Display of Hierarchy panel", () => {
     expect(
       await findByText(hierarchy.summary.name!, {
         selector: "h4",
-      })
+      }),
     ).toBeInTheDocument();
     // Display long description.
     expect(getByText(hierarchy.summary.longDescription!)).toBeInTheDocument();
     // Display sub topic section name.
     expect(
-      getByText(hierarchy.summary.subTopicSectionName!)
+      getByText(hierarchy.summary.subTopicSectionName!),
     ).toBeInTheDocument();
     // Display hierarchy summary.
     hierarchy.summary.subHierarchyTopics.forEach(({ name }) =>
-      expect(getByText(name!)).toBeInTheDocument()
+      expect(getByText(name!)).toBeInTheDocument(),
     );
     expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
   });
@@ -171,7 +171,7 @@ describe("Display of Key resource panel", () => {
     const keyResourcePanel = getByTestId("key-resource-panel");
 
     hierarchy.keyResources.forEach(({ name, uuid }) =>
-      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument()
+      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument(),
     );
     expect.assertions(hierarchy.keyResources.length);
   });
@@ -180,26 +180,26 @@ describe("Display of Key resource panel", () => {
 describe("Pin icon", () => {
   it("displays normal search result with outline pin icon", async () => {
     const { getByTestId } = await renderHierarchyPage(
-      topicWithChildren.compoundUuid
+      topicWithChildren.compoundUuid,
     );
 
     const resultList = getByTestId("search-result-list");
     const nonKeyResourcesCount = getSearchResult.results.length - 2;
     // Display unpin icons with `add key resource` tooltip.
     expect(getAllByLabelText(resultList, addKeyResourceText)).toHaveLength(
-      nonKeyResourcesCount
+      nonKeyResourcesCount,
     );
   });
 
   it("displays search result with pin icon if it's a key resource", async () => {
     const { getByTestId } = await renderHierarchyPage(
-      topicWithChildren.compoundUuid
+      topicWithChildren.compoundUuid,
     );
 
     const resultList = getByTestId("search-result-list");
     // Display pin icon with `remove key resource` tooltip
     expect(getAllByLabelText(resultList, removeKeyResourceText)).toHaveLength(
-      2
+      2,
     );
   });
 
@@ -230,8 +230,8 @@ describe("Search result", () => {
       getByText(
         `${hierarchy.summary.searchResultSectionName!} (${
           getSearchResult.available
-        })`
-      )
+        })`,
+      ),
     ).toBeInTheDocument();
   });
 });
@@ -248,7 +248,7 @@ describe("Selection Session", () => {
       selector: "a",
     }).getAttribute("href");
     expect(breadcrumbUrl).toBe(
-      "http://localhost:8080/vanilla/hierarchy.do?topic=uuid1&_sl.stateId=1"
+      "http://localhost:8080/vanilla/hierarchy.do?topic=uuid1&_sl.stateId=1",
     );
 
     closeSelectionSession();
@@ -272,13 +272,13 @@ describe("Share search", () => {
     const { getByLabelText } = await renderHierarchyPage(compoundUuid);
 
     const copySearchButton = getByLabelText(
-      languageStrings.searchpage.shareSearchHelperText
+      languageStrings.searchpage.shareSearchHelperText,
     );
 
     await userEvent.click(copySearchButton);
 
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D"
+      "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D",
     );
   });
 });

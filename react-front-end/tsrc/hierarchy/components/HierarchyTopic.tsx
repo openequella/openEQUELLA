@@ -104,7 +104,7 @@ const HierarchyTopic = ({
   const filteredSubTopics = hideSubtopicsWithNoResults
     ? pipe(
         subHierarchyTopics,
-        A.filter((subTopic) => subTopic.matchingItemCount > 0)
+        A.filter((subTopic) => subTopic.matchingItemCount > 0),
       )
     : subHierarchyTopics;
 
