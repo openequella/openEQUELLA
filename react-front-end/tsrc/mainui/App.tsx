@@ -27,7 +27,6 @@ import { getRouterBaseName } from "../AppConfig";
 import MessageInfo from "../components/MessageInfo";
 import { getOeqTheme } from "../modules/ThemeModule";
 import { getCurrentUserDetails } from "../modules/UserModule";
-import MyResourcesPage from "../myresources/MyResourcesPage";
 import { startHeartbeat } from "../util/heartbeat";
 import { simpleMatch } from "../util/match";
 import type { EntryPage } from "./index";
@@ -35,9 +34,18 @@ import type { EntryPage } from "./index";
 const SettingsPage = React.lazy(() => import("../settings/SettingsPage"));
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
-  () => import("../search/AdvancedSearchPage"),
+  () => import("../search/AdvancedSearchPage")
 );
 const IndexPage = React.lazy(() => import("./IndexPage"));
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage")
+);
+const RootHierarchyPage = React.lazy(
+  () => import("../hierarchy/RootHierarchyPage")
+);
+const HierarchyBrowsePage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage")
+);
 
 interface NewPageProps {
   /**
@@ -103,13 +111,14 @@ export const AppContext = React.createContext<AppContextProps>({
  */
 export const withAppContext =
   <T,>(
-    Page: React.ComponentType<T & AppContextProps>,
+    Page: React.ComponentType<T & AppContextProps>
   ): ((props: T) => JSX.Element) =>
-  (props: T) => (
-    <AppContext.Consumer>
-      {(appContextProps) => <Page {...props} {...appContextProps} />}
-    </AppContext.Consumer>
-  );
+  (props: T) =>
+    (
+      <AppContext.Consumer>
+        {(appContextProps) => <Page {...props} {...appContextProps} />}
+      </AppContext.Consumer>
+    );
 
 const App = ({ entryPage }: AppProps): JSX.Element => {
   console.debug("START: <App!!>");
@@ -124,7 +133,7 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
   const [error, setError] = useState<Error | string | undefined>();
   const appErrorHandler = useCallback(
     (error: Error | string) => setError(error),
-    [],
+    []
   );
 
   useEffect(() => refreshUser(), [refreshUser]);
@@ -163,10 +172,20 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
             <SettingsPage updateTemplate={nop} isReloadNeeded={false} />
           </NewPage>
         ),
+        hierarchyPage: () => (
+          <NewPage>
+            <RootHierarchyPage updateTemplate={nop} />
+          </NewPage>
+        ),
+        hierarchyBrowsePage: () => (
+          <NewPage>
+            <HierarchyBrowsePage updateTemplate={nop} />
+          </NewPage>
+        ),
         _: (s: string | number) => {
           throw new TypeError(`Unknown entry page target: ${s}`);
         },
-      }),
+      })
     );
 
   return (

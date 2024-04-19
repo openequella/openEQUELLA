@@ -33,9 +33,7 @@ import com.tle.web.sections.events.BookmarkEvent;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
-import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.RenderNewSearchPage;
-import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import java.util.Map;
@@ -109,8 +107,7 @@ public class RootMyResourcesSection extends ContextableSearchSection<RootMyResou
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) {
-    SelectionSession selectionSession = selectionService.getCurrentSession(context);
-    if (selectionSession != null && RenderNewTemplate.isNewUIEnabled()) {
+    if (isNewUIInSelectionSession(context)) {
       getModel(context).setNewUIContent(RenderNewSearchPage.renderNewMyResourcesPage(context));
     }
     return super.renderHtml(context);

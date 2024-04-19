@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Jest: All Tests (react-front-end)" type="JavaScriptTestRunnerJest">
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/react-front-end/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$/react-front-end" />
+    <jest-options value="--maxWorkers 50%" />
+    <envs />
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

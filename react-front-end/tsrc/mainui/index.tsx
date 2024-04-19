@@ -28,17 +28,26 @@ import "../util/polyfill";
 // rendering New UI pages in the context of Legacy content.
 declare global {
   interface Window {
-    oEQRender: { searchPage: () => void; myResourcesPage: () => void };
+    oEQRender: {
+      searchPage: () => void;
+      myResourcesPage: () => void;
+      hierarchyBrowsePage: () => void;
+      hierarchyPage: () => void;
+    };
   }
 }
 
 window["oEQRender"] = {
   searchPage: () => main("searchPage"),
   myResourcesPage: () => main("myResourcesPage"),
+  hierarchyBrowsePage: () => main("hierarchyBrowsePage"),
+  hierarchyPage: () => main("hierarchyPage"),
 };
 
 export type EntryPage =
   | "advancedSearchPage"
+  | "hierarchyBrowsePage"
+  | "hierarchyPage"
   | "mainDiv"
   | "myResourcesPage"
   | "searchPage"
@@ -68,11 +77,11 @@ export default function main(entry: EntryPage) {
     ReactDOM.createRoot(rootElement).render(
       <React.Suspense fallback={<>loading</>}>
         <App entryPage={entry} />
-      </React.Suspense>,
+      </React.Suspense>
     );
   } else {
     throw new Error(
-      `Failed to render the New UI: root element ${entry} is missing.`,
+      `Failed to render the New UI: root element ${entry} is missing.`
     );
   }
 }

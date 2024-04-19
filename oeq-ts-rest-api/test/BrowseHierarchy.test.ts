@@ -39,4 +39,16 @@ describe('Browse hierarchy', () => {
     expect(result.keyResources).toHaveLength(2);
     expect(result.parents).toHaveLength(1);
   });
+
+  it('should be able to get hierarchy IDs with given key resource', async () => {
+    const BOOK_ITEM_UUID = 'cadcd296-a4d7-4024-bb5d-6c7507e6872a';
+    const JAMES_HIERARCHY_UUID = '886aa61d-f8df-4e82-8984-c487849f80ff:A James';
+
+    const result = await OEQ.BrowseHierarchy.getHierarchyIdsWithKeyResource(
+      TC.API_PATH,
+      BOOK_ITEM_UUID,
+      2
+    );
+    expect(result[0]).toBe(JAMES_HIERARCHY_UUID);
+  });
 });

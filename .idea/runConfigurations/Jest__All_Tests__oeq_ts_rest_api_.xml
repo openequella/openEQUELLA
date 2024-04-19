@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Jest: All Tests (oeq-ts-rest-api)" type="JavaScriptTestRunnerJest">
+    <config-file value="$PROJECT_DIR$/oeq-ts-rest-api/jest.config.js" />
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/oeq-ts-rest-api/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$/oeq-ts-rest-api" />
+    <envs />
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

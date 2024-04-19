@@ -31,9 +31,25 @@ export const getHierarchies = (): Promise<
  * @param compoundUuid Compound UUID of the hierarchy topic.
  */
 export const getHierarchy = (
-  compoundUuid: string,
+  compoundUuid: string
 ): Promise<OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>> =>
   OEQ.BrowseHierarchy.browseHierarchy(API_BASE_URL, compoundUuid);
+
+/**
+ * Get hierarchy IDs which contains the given key resource.
+ *
+ * @param itemUuid The item UUID.
+ * @param itemVersion The item version.
+ */
+export const getHierarchyIdsWithKeyResource = (
+  itemUuid: string,
+  itemVersion: number
+): Promise<String[]> =>
+  OEQ.BrowseHierarchy.getHierarchyIdsWithKeyResource(
+    API_BASE_URL,
+    itemUuid,
+    itemVersion
+  );
 
 /**
  * Get all ACLs for the hierarchy topic.
@@ -41,7 +57,7 @@ export const getHierarchy = (
  * @param compoundUuid Topic compound UUID.
  */
 export const getMyAcls = (
-  compoundUuid: string,
+  compoundUuid: string
 ): Promise<OEQ.Hierarchy.HierarchyTopicAcl> =>
   OEQ.Hierarchy.getMyAcls(API_BASE_URL, compoundUuid);
 
@@ -55,13 +71,13 @@ export const getMyAcls = (
 export const addKeyResource = (
   compoundUuid: string,
   itemUuid: string,
-  itemVersion: number,
+  itemVersion: number
 ): Promise<void> =>
   OEQ.Hierarchy.addKeyResource(
     API_BASE_URL,
     compoundUuid,
     itemUuid,
-    itemVersion,
+    itemVersion
   );
 
 /**
@@ -74,13 +90,13 @@ export const addKeyResource = (
 export const deleteKeyResource = (
   compoundUuid: string,
   itemUuid: string,
-  itemVersion: number,
+  itemVersion: number
 ): Promise<void> =>
   OEQ.Hierarchy.deleteKeyResource(
     API_BASE_URL,
     compoundUuid,
     itemUuid,
-    itemVersion,
+    itemVersion
   );
 
 export const defaultHierarchyAcl: OEQ.Hierarchy.HierarchyTopicAcl = {

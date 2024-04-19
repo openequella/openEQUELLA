@@ -47,6 +47,10 @@ import {
   initialiseEssentialMocks,
   mockCollaborators,
 } from "../search/SearchPageTestHelper";
+import {
+  closeSelectionSession,
+  prepareSelectionSession,
+} from "../SelectionSessionHelper";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -76,13 +80,13 @@ jest.spyOn(HierarchyModule, "getMyAcls").mockImplementation(getMyAcls);
 
 const renderHierarchyPage = async (
   compoundUuid: string,
-  inNewUI: boolean = true,
+  isNewPath: boolean = true
 ): Promise<RenderResult> => {
   const NEW_HIERARCHY_PATH = "/page/hierarchy/";
   const OLD_HIERARCHY_PATH = "/hierarchy.do";
 
   const history = createMemoryHistory();
-  const location = inNewUI
+  const location = isNewPath
     ? `${NEW_HIERARCHY_PATH}${compoundUuid}`
     : `${OLD_HIERARCHY_PATH}?topic=${compoundUuid}`;
   history.push(location);
@@ -93,13 +97,15 @@ const renderHierarchyPage = async (
       <Router history={history}>
         <Route
           path={
-            inNewUI ? `${NEW_HIERARCHY_PATH}:compoundUuid` : OLD_HIERARCHY_PATH
+            isNewPath
+              ? `${NEW_HIERARCHY_PATH}:compoundUuid`
+              : OLD_HIERARCHY_PATH
           }
         >
           <RootHierarchyPage updateTemplate={jest.fn()} />
         </Route>
       </Router>
-    </ThemeProvider>,
+    </ThemeProvider>
   );
 
   const hierarchy = await getHierarchy(compoundUuid);
@@ -114,7 +120,7 @@ const renderHierarchyPage = async (
   return result;
 };
 
-describe("<HierarchyPage/>", () => {
+describe("Display of Hierarchy panel", () => {
   it("displays breadcrumb on hierarchy panel", async () => {
     const compoundUuid = topicWithChildren.compoundUuid;
     const hierarchy = await getHierarchy(compoundUuid);
@@ -125,7 +131,7 @@ describe("<HierarchyPage/>", () => {
       expect(
         await findByText(name!, {
           selector: "a, p",
-        }),
+        })
       ).toBeInTheDocument();
     }
     expect.assertions(hierarchy.parents.length);
@@ -140,21 +146,23 @@ describe("<HierarchyPage/>", () => {
     expect(
       await findByText(hierarchy.summary.name!, {
         selector: "h4",
-      }),
+      })
     ).toBeInTheDocument();
     // Display long description.
     expect(getByText(hierarchy.summary.longDescription!)).toBeInTheDocument();
     // Display sub topic section name.
     expect(
-      getByText(hierarchy.summary.subTopicSectionName!),
+      getByText(hierarchy.summary.subTopicSectionName!)
     ).toBeInTheDocument();
     // Display hierarchy summary.
     hierarchy.summary.subHierarchyTopics.forEach(({ name }) =>
-      expect(getByText(name!)).toBeInTheDocument(),
+      expect(getByText(name!)).toBeInTheDocument()
     );
     expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
   });
+});
 
+describe("Display of Key resource panel", () => {
   it("displays key resource panel if it has key resources", async () => {
     const compoundUuid = topicWithShortAndLongDesc.compoundUuid;
     const hierarchy = await getHierarchy(compoundUuid);
@@ -163,36 +171,48 @@ describe("<HierarchyPage/>", () => {
     const keyResourcePanel = getByTestId("key-resource-panel");
 
     hierarchy.keyResources.forEach(({ name, uuid }) =>
-      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument(),
+      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument()
     );
     expect.assertions(hierarchy.keyResources.length);
   });
+});
 
+describe("Pin icon", () => {
   it("displays normal search result with outline pin icon", async () => {
     const { getByTestId } = await renderHierarchyPage(
-      topicWithChildren.compoundUuid,
+      topicWithChildren.compoundUuid
     );
 
     const resultList = getByTestId("search-result-list");
     const nonKeyResourcesCount = getSearchResult.results.length - 2;
     // Display unpin icons with `add key resource` tooltip.
     expect(getAllByLabelText(resultList, addKeyResourceText)).toHaveLength(
-      nonKeyResourcesCount,
+      nonKeyResourcesCount
     );
   });
 
   it("displays search result with pin icon if it's a key resource", async () => {
     const { getByTestId } = await renderHierarchyPage(
-      topicWithChildren.compoundUuid,
+      topicWithChildren.compoundUuid
     );
 
     const resultList = getByTestId("search-result-list");
     // Display pin icon with `remove key resource` tooltip
     expect(getAllByLabelText(resultList, removeKeyResourceText)).toHaveLength(
-      2,
+      2
     );
   });
 
+  it("hide all pin icons if user doesn't have MODIFY_KEY_RESOURCE ACL", async () => {
+    const compoundUuid = topicWithoutModifyKeyResources.compoundUuid;
+    const { queryAllByLabelText } = await renderHierarchyPage(compoundUuid);
+
+    expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
+    expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
+  });
+});
+
+describe("Search result", () => {
   it("hide search result if 'Display resources' is set to false", async () => {
     const compoundUuid = topicWithoutSearchResults.compoundUuid;
     const { queryByTestId } = await renderHierarchyPage(compoundUuid);
@@ -210,20 +230,33 @@ describe("<HierarchyPage/>", () => {
       getByText(
         `${hierarchy.summary.searchResultSectionName!} (${
           getSearchResult.available
-        })`,
-      ),
+        })`
+      )
     ).toBeInTheDocument();
   });
+});
 
-  it("hide all pin icons if user doesn't have MODIFY_KEY_RESOURCE ACL", async () => {
-    const compoundUuid = topicWithoutModifyKeyResources.compoundUuid;
-    const { queryAllByLabelText } = await renderHierarchyPage(compoundUuid);
+describe("Selection Session", () => {
+  it("uses Selection Session specific URL when Selection Session is open", async () => {
+    prepareSelectionSession();
+    const parentTopicName = "Parent1";
 
-    expect(queryAllByLabelText(removeKeyResourceText)).toHaveLength(0);
-    expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
+    const compoundUuid = topicWithChildren.compoundUuid;
+    const { getByText } = await renderHierarchyPage(compoundUuid);
+
+    const breadcrumbUrl = getByText(parentTopicName, {
+      selector: "a",
+    }).getAttribute("href");
+    expect(breadcrumbUrl).toBe(
+      "http://localhost:8080/vanilla/hierarchy.do?topic=uuid1&_sl.stateId=1"
+    );
+
+    closeSelectionSession();
   });
+});
 
-  it("supports using the Hierarchy ID retrieved from Legacy query param", async () => {
+describe("Share search", () => {
+  it("supports a Hierarchy search shared from Legacy UI", async () => {
     const uuid = topicWithChildren.compoundUuid;
     await renderHierarchyPage(uuid, false);
 
@@ -239,13 +272,13 @@ describe("<HierarchyPage/>", () => {
     const { getByLabelText } = await renderHierarchyPage(compoundUuid);
 
     const copySearchButton = getByLabelText(
-      languageStrings.searchpage.shareSearchHelperText,
+      languageStrings.searchpage.shareSearchHelperText
     );
 
     await userEvent.click(copySearchButton);
 
     expect(mockClipboard).toHaveBeenCalledWith(
-      "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D",
+      "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D"
     );
   });
 });

@@ -31,9 +31,10 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { OEQLink } from "../../components/OEQLink";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
+import { buildSelectionSessionHierarchyLink } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { expandHierarchy: expandText, collapseHierarchy: collapseText } =
@@ -74,9 +75,6 @@ export const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
   [`& .${classes.icon}`]: {
     color: theme.palette.text.secondary,
   },
-  [`& .${classes.name}`]: {
-    textDecoration: "none",
-  },
   [`& .${classes.count}`]: {
     marginLeft: theme.spacing(1),
     color: theme.palette.text.secondary,
@@ -106,7 +104,7 @@ const HierarchyTopic = ({
   const filteredSubTopics = hideSubtopicsWithNoResults
     ? pipe(
         subHierarchyTopics,
-        A.filter((subTopic) => subTopic.matchingItemCount > 0),
+        A.filter((subTopic) => subTopic.matchingItemCount > 0)
       )
     : subHierarchyTopics;
 
@@ -131,12 +129,14 @@ const HierarchyTopic = ({
       <ListItemText
         primary={
           <>
-            <Link
-              className={classes.name}
-              to={routes.Hierarchy.to(compoundUuid)}
+            <OEQLink
+              muiLinkUrlProvider={() =>
+                buildSelectionSessionHierarchyLink(compoundUuid)
+              }
+              routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
             >
               {name ?? compoundUuid}
-            </Link>
+            </OEQLink>
             <span className={classes.count}>({matchingItemCount})</span>
           </>
         }

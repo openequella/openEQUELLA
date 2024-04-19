@@ -19,6 +19,7 @@
 package com.tle.web.hierarchy.section;
 
 import com.dytech.edge.web.WebConstants;
+import com.tle.common.Check;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.security.TLEAclManager;
@@ -37,8 +38,10 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
+import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import java.util.List;
@@ -78,13 +81,26 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
       throw new AccessDeniedException(
           urlHelper.getString("missingprivileges", WebConstants.HIERARCHY_PAGE_PRIVILEGE));
     }
+
+    if (isNewUIInSelectionSession(context)) {
+      SimpleSectionResult newUIContent =
+          isBrowseHierarchy(context)
+              ? RenderNewSearchPage.renderNewHierarchyBrowsePage(context)
+              : RenderNewSearchPage.renderNewHierarchyPage(context);
+
+      getModel(context).setNewUIContent(newUIContent);
+    }
     return super.renderHtml(context);
   }
 
   @Override
   protected void addBreadcrumbsAndTitle(
       SectionInfo info, Decorations decorations, Breadcrumbs crumbs) {
-    topicSection.addCrumbs(info, crumbs);
+    // Skip Breadcrumbs when the New UI is used in Selection Session
+    if (!isNewUIInSelectionSession(info)) {
+      topicSection.addCrumbs(info, crumbs);
+    }
+
     decorations.setTitle(getTitle(info));
     decorations.setContentBodyClass("browse-layout search-layout");
   }
@@ -124,5 +140,10 @@ public class RootHierarchySection extends ContextableSearchSection<ContextableSe
   @Override
   protected String getPageName() {
     return HIERARCHYURL;
+  }
+
+  private boolean isBrowseHierarchy(SectionInfo info) {
+    String topicId = topicSection.getModel(info).getTopicId();
+    return Check.isEmpty(topicId) || TopicDisplaySection.ROOT_TOPICS.equals(topicId);
   }
 }
