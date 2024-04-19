@@ -16,22 +16,26 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useLocation } from "react-router";
-import { useParams } from "react-router-dom";
 import { generateNewErrorID } from "../api/errors";
 import ErrorPage from "../mainui/ErrorPage";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
 import HierarchyPage from "./HierarchyPage";
 
-// Used with React-Router useParams to get a compound UUID from the route path.
-interface CompoundUUID {
-  compoundUuid?: string;
-}
-
 const {
   hierarchy: { error },
 } = languageStrings;
+
+const getTopicIDFromRoute = (location: Location): string | undefined => {
+  const newHierarchyPagePath = /(\/page\/hierarchy\/)(.+)/;
+  const matches: string[] | null =
+    location.pathname.match(newHierarchyPagePath);
+
+  return matches?.pop();
+};
+
+const getTopicIDFromQueryParam = (location: Location): string | null =>
+  new URLSearchParams(location.search).get("topic");
 
 /**
  * Root component for Hierarchy search to retrieve the compound UUID from the URL
@@ -39,13 +43,9 @@ const {
  * will be displayed instead.
  */
 const RootHierarchyPage = (props: TemplateUpdateProps) => {
-  const uuidFromRoute: string | undefined =
-    useParams<CompoundUUID>().compoundUuid;
-  const location = useLocation();
-  const getUuidFromQueryParam = (): string | null =>
-    new URLSearchParams(location.search).get("topic");
-
-  const compoundUuid = uuidFromRoute ?? getUuidFromQueryParam();
+  const location = window.location;
+  const compoundUuid =
+    getTopicIDFromRoute(location) ?? getTopicIDFromQueryParam(location);
 
   return compoundUuid ? (
     <HierarchyPage {...props} compoundUuid={compoundUuid} />
