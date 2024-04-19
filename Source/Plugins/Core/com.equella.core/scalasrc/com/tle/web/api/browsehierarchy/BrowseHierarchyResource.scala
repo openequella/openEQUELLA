@@ -18,6 +18,8 @@
 
 package com.tle.web.api.browsehierarchy
 
+import com.dytech.edge.exceptions.ItemNotFoundException
+import com.tle.beans.item.ItemId
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.service.ItemService
@@ -30,6 +32,7 @@ import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 @Bind
 @Singleton
@@ -94,6 +97,30 @@ class BrowseHierarchyResource {
         val result = HierarchyTopic(topicSummary, parents, allKeyResources)
         Response.ok(result).build
       case None => ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")
+    }
+  }
+
+  @GET
+  @Path("/key-resource/{item-uuid}/{version}")
+  @ApiOperation(
+    value = "Get all hierarchy IDs which have the provided key resource",
+    response = classOf[List[String]],
+  )
+  def getHierarchyIdsWithKeyResource(
+      @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
+      @ApiParam("The item version") @PathParam("version") itemVersion: Int): Response = {
+    val version = itemService.getRealVersion(itemVersion, itemUuid)
+    val itemId  = new ItemId(itemUuid, version)
+    Try(itemService.getUnsecure(itemId)) match {
+      case Success(item) =>
+        val ids = hierarchyService
+          .getTopicIdsWithKeyResource(item)
+          .asScala
+          .toList
+          .map(browseHierarchyHelper.decodeCompoundUuid)
+        Response.ok(ids).build()
+      case Failure(e: ItemNotFoundException) =>
+        ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
     }
   }
 }

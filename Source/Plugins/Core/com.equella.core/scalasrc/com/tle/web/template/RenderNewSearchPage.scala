@@ -41,4 +41,10 @@ object RenderNewSearchPage {
 
   def renderNewMyResourcesPage(context: RenderEventContext): SimpleSectionResult =
     buildSection(context, "MyResourcesPage.html")
+
+  def renderNewHierarchyPage(context: RenderEventContext): SimpleSectionResult =
+    buildSection(context, "HierarchyPage.html")
+
+  def renderNewHierarchyBrowsePage(context: RenderEventContext): SimpleSectionResult =
+    buildSection(context, "HierarchyBrowsePage.html")
 }

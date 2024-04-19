@@ -225,6 +225,10 @@ export default function IndexPage() {
         <Route
           path={OLD_HIERARCHY_PATH}
           render={(p) => {
+            if (isSelectionSessionOpen()) {
+              return renderLegacyContent(p);
+            }
+
             const searchParams = new URLSearchParams(p.location.search);
             const topic = searchParams.get("topic");
 

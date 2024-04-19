@@ -37,6 +37,7 @@ import com.tle.web.sections.generic.InfoBookmark;
 import com.tle.web.selection.SelectionService;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
@@ -150,6 +151,14 @@ public abstract class ContextableSearchSection<M extends ContextableSearchSectio
   protected abstract String getSessionKey();
 
   protected abstract String getPageName();
+
+  protected boolean isNewUIInSelectionSession(SectionInfo info) {
+    SelectionSession selectionSession = selectionService.getCurrentSession(info);
+    if (selectionSession != null) {
+      return RenderNewTemplate.isNewUIEnabled();
+    }
+    return false;
+  }
 
   @Override
   public Object instantiateModel(SectionInfo info) {

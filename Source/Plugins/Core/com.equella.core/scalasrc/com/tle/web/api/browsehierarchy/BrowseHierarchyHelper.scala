@@ -181,6 +181,21 @@ class BrowseHierarchyHelper {
   }
 
   /**
+    * Transform the name part of a compound UUID string based on a given transformation function.
+    *
+    * @param compoundUuid The compound UUID string to be transformed.
+    * @param transform    The transformation function to be applied to the name part of the compound UUID.
+    */
+  private def transformCompoundUuid(compoundUuid: String, transform: String => String): String =
+    compoundUuid
+      .split(",")
+      .map(getUuidAndName)
+      .map {
+        case (uuid, name) => buildCompoundUuid(uuid, name.map(transform))
+      }
+      .mkString(",")
+
+  /**
     * Encode name in the compound ID for virtual topics.
     * Encoded compound UUID is used to look up dynamic resources, because the UUID stored in database is encoded.
     *
@@ -191,13 +206,19 @@ class BrowseHierarchyHelper {
     * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
     */
   def encodeCompoundUuid(compoundUuid: String): String =
-    compoundUuid
-      .split(",")
-      .map(getUuidAndName)
-      .map {
-        case (uuid, name) => buildCompoundUuid(uuid, name.map(URLUtils.basicUrlEncode))
-      }
-      .mkString(",")
+    transformCompoundUuid(compoundUuid, URLUtils.basicUrlEncode)
+
+  /**
+    * Decode the name parts in a compound UUID for virtual topics.
+    *
+    * For example:
+    * Input:
+    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
+    * Output:
+    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James"
+    */
+  def decodeCompoundUuid(encodedUuid: String): String =
+    transformCompoundUuid(encodedUuid, URLUtils.basicUrlDecode)
 
   /**
     * Convert a list of key resources, which are essentially Items, to a list of SearchResultItem.
