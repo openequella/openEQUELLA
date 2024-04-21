@@ -120,6 +120,7 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
   import LegacyGuice.urlService
 
   def isClientPath(relUrl: RelativeUrl): Boolean = {
+    val UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"
     // This regex matches the relative url of Item Summary page
     // For example 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/'
     // The last forward slash does not exist in some cases
@@ -128,21 +129,25 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
     // For example, in Selection Session, the URL would be
     // 'items/95075bdd-4049-46ab-a1aa-043902e239a3/3/?_sl.stateId=1&_int.id=2'.
 
-    val itemSummaryUrlPattern =
-      "items\\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\\/\\d+\\/?\\??.+".r
+    val itemSummaryUrlPattern = ("items/" + UUID + "/\\d+/?\\??.+").r
 
     // This regex explicitly matches the relative Url of logon
     // For example, 'logon.do' or 'logon.do?.page=home.do'
     val logonUrlPattern = "logon\\.do\\??.*".r
 
-    // This regex matches the relative Urls of other pages
+    // This regex matches the relative Urls of other Legacy pages
     // For example, 'home.do' or 'access/runwizard.do?.wizid...'
     val otherUrlPattern = ".+\\.do\\??.*".r
+
+    // Matches all the new UI pages such as page/search?q=abc and page/hierarchy/uuid
+    // UUID is optional so put it in a non-capturing group.
+    val newUIPages = ("page/\\w+(?:/" + UUID + ")?.*").r
 
     relUrl.toString() match {
       case logonUrlPattern()       => false
       case itemSummaryUrlPattern() => true
       case otherUrlPattern()       => true
+      case newUIPages()            => true
       case _                       => false
     }
   }
