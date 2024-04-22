@@ -50,6 +50,7 @@ import {
   closeSelectionSession,
   prepareSelectionSession,
 } from "../SelectionSessionHelper";
+import { mockWindowLocation } from "../WindowHelper";
 
 const {
   addKeyResource: addKeyResourceText,
@@ -88,14 +89,7 @@ const renderHierarchyPage = async (
     : OLD_HIERARCHY_PATH;
 
   // Create a mock window.location object with testing pathname and query parameters.
-  window = Object.create(window);
-  Object.defineProperty(window, "location", {
-    value: {
-      pathname,
-      search: isNewPath ? "" : `topic=${compoundUuid}`,
-    },
-    writable: true,
-  });
+  mockWindowLocation(pathname, isNewPath ? "" : `topic=${compoundUuid}`);
 
   const history = createMemoryHistory();
   history.push(pathname);
