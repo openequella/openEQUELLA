@@ -111,6 +111,16 @@ Compile / resourceGenerators += Def.task {
   IO.copy(Seq(bundle, css).pair(flat(outDir))).toSeq
 }.taskValue
 
+// Build the GraphiQL UI
+Compile / resourceGenerators += Def.task {
+  val baseGraphiQL = baseDirectory.value / "graphiql"
+  Common.nodeInstall(baseGraphiQL)
+  Common.nodeScript("build", baseGraphiQL)
+  val outDir = (Compile / resourceManaged).value / "graphql-ui"
+  IO.copyDirectory(baseGraphiQL / "dist", outDir)
+  IO.listFiles(outDir).toSeq
+}.taskValue
+
 // Pull in the react-front-end
 Compile / resourceGenerators += Def.task {
   val outDir = (Compile / resourceManaged).value
@@ -123,6 +133,9 @@ Compile / resourceGenerators += Def.task {
 
 clean := {
   clean.value
-  val baseSwagger = baseDirectory.value / "swaggerui"
+  val baseSwagger  = baseDirectory.value / "swaggerui"
+  val baseGraphiQL = baseDirectory.value / "graphiql"
+
   Common.nodeScript("clean", baseSwagger)
+  Common.nodeScript("clean", baseGraphiQL)
 }
