@@ -601,10 +601,10 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
             API_TERM_DATA_PATH_PART);
     final String dataKey = "data_key";
 
-    // Remove the key to make sure it is the first time we added
+    // Clear all data from the target test term
     final String taxonomyTermDataUri = PathUtils.urlPath(taxonomyTermUri, dataKey);
     HttpResponse response = deleteResource(taxonomyTermDataUri, getToken());
-    assertResponse(response, 200, "failed to delete term");
+    assertResponse(response, 200, "failed to delete term's data");
     final ObjectNode initialStateResponse = (ObjectNode) getEntity(taxonomyTermUri, getToken());
     assertNull(initialStateResponse.get(dataKey));
 
@@ -613,12 +613,13 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     requestBodyObj.put(dataKey, "data_value");
     final HttpResponse createdResponse =
         putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
-    assertResponse(createdResponse, 201, "failed to create term");
+    assertResponse(createdResponse, 201, "failed add data to term");
     final JsonNode getTaxonomytermResponse = getEntity(taxonomyTermUri, getToken());
     assertEquals(getTaxonomytermResponse.asText(), requestBodyObj.asText());
 
     final HttpResponse conflictResponse =
         putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
-    assertResponse(conflictResponse, 409, "failed to create term");
+    assertResponse(
+        conflictResponse, 409, "unexpected result when attempted to re-create existing term data");
   }
 }
