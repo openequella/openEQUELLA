@@ -37,7 +37,6 @@ import {
   topicWithShortAndLongDesc,
   virtualTopics,
 } from "../../../__mocks__/Hierarchy.mock";
-import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import * as HierarchyModule from "../../../tsrc//modules/HierarchyModule";
 import RootHierarchyPage from "../../../tsrc/hierarchy/RootHierarchyPage";
@@ -84,13 +83,22 @@ const renderHierarchyPage = async (
 ): Promise<RenderResult> => {
   const NEW_HIERARCHY_PATH = "/page/hierarchy/";
   const OLD_HIERARCHY_PATH = "/hierarchy.do";
+  const pathname = isNewPath
+    ? `${NEW_HIERARCHY_PATH}${compoundUuid}`
+    : OLD_HIERARCHY_PATH;
+
+  // Create a mock window.location object with testing pathname and query parameters.
+  window = Object.create(window);
+  Object.defineProperty(window, "location", {
+    value: {
+      pathname,
+      search: isNewPath ? "" : `topic=${compoundUuid}`,
+    },
+    writable: true,
+  });
 
   const history = createMemoryHistory();
-  const location = isNewPath
-    ? `${NEW_HIERARCHY_PATH}${compoundUuid}`
-    : `${OLD_HIERARCHY_PATH}?topic=${compoundUuid}`;
-  history.push(location);
-  window.matchMedia = createMatchMedia(1280);
+  history.push(pathname);
 
   const result = render(
     <ThemeProvider theme={createTheme()}>
