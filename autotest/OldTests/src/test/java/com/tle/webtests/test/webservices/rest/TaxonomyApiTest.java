@@ -1,6 +1,7 @@
 package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -601,8 +602,11 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final String dataKey = "data_key";
 
     // Remove the key to make sure it is the first time we added
-    final String deleteTaxonomyTermUri = PathUtils.urlPath(taxonomyTermUri, dataKey);
-    deleteResource(deleteTaxonomyTermUri, getToken());
+    final String taxonomyTermDataUri = PathUtils.urlPath(taxonomyTermUri, dataKey);
+    HttpResponse response = deleteResource(taxonomyTermDataUri, getToken());
+    assertResponse(response, 200, "failed to delete term");
+    final ObjectNode initialStateResponse = (ObjectNode) getEntity(taxonomyTermUri, getToken());
+    assertNull(initialStateResponse.get(dataKey));
 
     // Add new key
     ObjectNode requestBodyObj = mapper.createObjectNode();
@@ -610,6 +614,8 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     final HttpResponse createdResponse =
         putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
     assertResponse(createdResponse, 201, "failed to create term");
+    final JsonNode getTaxonomytermResponse = getEntity(taxonomyTermUri, getToken());
+    assertEquals(getTaxonomytermResponse.asText(), requestBodyObj.asText());
 
     final HttpResponse conflictResponse =
         putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
