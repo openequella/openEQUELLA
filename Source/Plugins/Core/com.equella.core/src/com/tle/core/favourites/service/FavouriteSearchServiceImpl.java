@@ -90,8 +90,8 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
    * <li>2. In Selection Session, if the favourite Hierarchy search is added in New UI, change its
    *     path from `/page/hierarchy` to `/hierarchy.do`.
    * <li>3. In Selection Session, add Session ID and Integration ID to the query parameters.
-   * <li>4. Throw `SectionsRuntimeException` if favourite normal search is used when New search page
-   *     is disabled, or if favourite hierarchy search is used when New UI is disabled.
+   * <li>4. Throw `SectionsRuntimeException` if the favourite is for New Search UI but New Search UI
+   *     is disabled, or if it's for New Hierarchy UI but New UI is disabled.
    */
   @Override
   public void executeSearch(SectionInfo info, long id) {
