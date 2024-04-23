@@ -118,7 +118,8 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
       Optional.ofNullable(selectionSection)
           .ifPresent(
               section -> {
-                uriBuilder.queryParam(RootSelectionSection.STATE_ID, section.getSessionId(info));
+                uriBuilder.queryParam(
+                    RootSelectionSection.STATE_ID_PARAM, section.getSessionId(info));
                 if (isFavNewHierarchy) {
                   processFavNewHierarchyURL(uriBuilder);
                 }
@@ -129,7 +130,8 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
       Optional.ofNullable(integrationSection)
           .ifPresent(
               section ->
-                  uriBuilder.queryParam(IntegrationSection.INTEG_ID, section.getStateId(info)));
+                  uriBuilder.queryParam(
+                      IntegrationSection.INTEG_ID_PARAM, section.getStateId(info)));
 
       String fullPath =
           StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/")
