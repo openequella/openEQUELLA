@@ -40,7 +40,19 @@ import { languageStrings } from "../../util/langstrings";
 const { expandHierarchy: expandText, collapseHierarchy: collapseText } =
   languageStrings.hierarchy;
 
-export interface HierarchyTopicProps {
+/**
+ * Shared props for both Hierarchy Topic and Hierarchy Tree.
+ */
+export interface HierarchyTopicBasicProps {
+  /** `true` to display the title only. */
+  onlyShowTitle?: boolean;
+  /** `true` to display the title as plain text. */
+  disableTitleLink?: boolean;
+  /** Custom action button to be displayed on the right side of the topic. */
+  customActionBuilder?: (hierarchyCompoundUuid: string) => React.ReactNode;
+}
+
+export interface HierarchyTopicProps extends HierarchyTopicBasicProps {
   /**
    * Hierarchy topic summary which represents this node.
    */
@@ -98,6 +110,9 @@ const HierarchyTopic = ({
     hideSubtopicsWithNoResults,
   },
   expandedNodes,
+  onlyShowTitle = false,
+  disableTitleLink = false,
+  customActionBuilder,
 }: HierarchyTopicProps): React.JSX.Element => {
   const isExpanded = expandedNodes.includes(compoundUuid);
 
@@ -119,33 +134,56 @@ const HierarchyTopic = ({
       </TooltipIconButton>
     );
 
+  const itemTitle = () => {
+    const title = name ?? compoundUuid;
+
+    return disableTitleLink ? (
+      title
+    ) : (
+      <OEQLink
+        muiLinkUrlProvider={() =>
+          buildSelectionSessionHierarchyLink(compoundUuid)
+        }
+        routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
+      >
+        {title}
+      </OEQLink>
+    );
+  };
+
   const itemLabel = () => (
     // Because it's parent TreeItem is using <li> as well.
     // Use div to avoid error: "<li> cannot appear as a descendant of <li>".
-    <ListItem className={classes.label} component="div">
+    <ListItem
+      data-testid={compoundUuid}
+      className={classes.label}
+      component="div"
+      secondaryAction={
+        <>
+          {A.isNonEmpty(filteredSubTopics) && expandIcon()}
+          {customActionBuilder?.(compoundUuid)}
+        </>
+      }
+    >
       <ListItemAvatar>
         <FolderIcon className={classes.icon} />
       </ListItemAvatar>
       <ListItemText
         primary={
           <>
-            <OEQLink
-              muiLinkUrlProvider={() =>
-                buildSelectionSessionHierarchyLink(compoundUuid)
-              }
-              routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
-            >
-              {name ?? compoundUuid}
-            </OEQLink>
+            {itemTitle()}
             <span className={classes.count}>({matchingItemCount})</span>
           </>
         }
         // Use `div` instead of default tag `p` to avoid HTML semantic error.
         secondaryTypographyProps={{ component: "div" }}
         // The short description field support raw html syntax.
-        secondary={shortDescription && HTMLReactParser(shortDescription)}
+        secondary={
+          !onlyShowTitle &&
+          shortDescription &&
+          HTMLReactParser(shortDescription)
+        }
       />
-      {A.isNonEmpty(filteredSubTopics) && expandIcon()}
     </ListItem>
   );
 
@@ -157,6 +195,9 @@ const HierarchyTopic = ({
             key={subTopic.compoundUuid}
             topic={subTopic}
             expandedNodes={expandedNodes}
+            onlyShowTitle={onlyShowTitle}
+            disableTitleLink={disableTitleLink}
+            customActionBuilder={customActionBuilder}
           />
         ))}
       </Collapse>
