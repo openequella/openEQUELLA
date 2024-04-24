@@ -293,6 +293,24 @@ export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
 ];
 
 /**
+ * Mock function to get hierarchies.
+ */
+export const getHierarchies = (): Promise<
+  OEQ.BrowseHierarchy.HierarchyTopicSummary[]
+> => Promise.resolve(hierarchies);
+
+export const hierarchyIdsWithKeyResource: string[] = [
+  topicWithShortAndLongDesc.compoundUuid,
+  topicWithHtmlDesc.compoundUuid,
+];
+
+/**
+ * Mock function to get hierarchy IDs with key resource.
+ */
+export const getHierarchyIdsWithKeyResource = (): Promise<string[]> =>
+  Promise.resolve(hierarchyIdsWithKeyResource);
+
+/**
  * Mock async function to get hierarchy.
  */
 export const getHierarchy = (
