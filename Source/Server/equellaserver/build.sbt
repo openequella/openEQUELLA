@@ -21,7 +21,7 @@ val TomcatVersion     = "9.0.86"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
-val cxfVersion        = "3.6.2"
+val cxfVersion        = "3.6.3"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
@@ -72,7 +72,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240310-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240417-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
