@@ -198,6 +198,7 @@ const classes = {
   drawerPaper: `${classesPrefix}-drawerPaper`,
   footer: `${classesPrefix}-footer`,
   logo: `${classesPrefix}-logo`,
+  logoImg: `${classesPrefix}-logoImg`,
   navIconHide: `${classesPrefix}-navIconHide`,
   tabs: `${classesPrefix}-tabs`,
   title: `${classesPrefix}-title`,
@@ -266,6 +267,9 @@ const TemplateRoot = styled("div")(({ theme }) => {
     [`& .${classes.logo}`]: {
       textAlign: "center",
       marginTop: theme.spacing(2),
+    },
+    [`& .${classes.logoImg}`]: {
+      maxWidth: "100%",
     },
     [`& .${classes.navIconHide}`]: {
       [desktop]: {
@@ -427,7 +431,12 @@ export const Template = ({
   const menuContent = React.useMemo(
     () => (
       <div className={classes.logo}>
-        <img role="presentation" src={logoURL} alt="Logo" />
+        <img
+          className={classes.logoImg}
+          role="presentation"
+          src={logoURL}
+          alt="Logo"
+        />
         {hasMenu && (
           <MainMenu
             menuGroups={currentUser.menuGroups}

@@ -73,7 +73,7 @@ public abstract class AbstractSearchPage<
 
   @SuppressWarnings("unchecked")
   public T setPerPage(String perPage) {
-    AbstractSearchPageScreenOptions<?> screenOptions = openScreenOptions();
+    AbstractSearchPageScreenOptions<?> screenOptions = openScreenOptionsWithOldUI();
     WaitingPageObject<RL> waiter = resultsPageObject.getUpdateWaiter();
     screenOptions.setPerPage(perPage);
     waiter.get();
@@ -86,6 +86,11 @@ public abstract class AbstractSearchPage<
 
   public AbstractSearchPageScreenOptions<?> openScreenOptions() {
     return new DefaultSearchPageScreenOptions(context).open();
+  }
+
+  // TODO: Remove me in OEQ-1702
+  public AbstractSearchPageScreenOptions<?> openScreenOptionsWithOldUI() {
+    return new DefaultSearchPageScreenOptions(context, true).openWithOldUi();
   }
 
   public T setSort(String sort) {

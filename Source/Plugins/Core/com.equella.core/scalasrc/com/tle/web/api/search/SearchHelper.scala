@@ -31,8 +31,8 @@ import com.tle.common.Check
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.collection.AttachmentConfigConstants
 import com.tle.common.interfaces.SimpleI18NString
-import com.tle.common.search.DefaultSearch
 import com.tle.common.search.whereparser.WhereParser
+import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
@@ -88,38 +88,48 @@ object SearchHelper {
 
   /**
     * Create a new search with search criteria. The search criteria include two parts.
-    * 1. General criteria provided by `SearchParam`.
+    * 1. General criteria provided by `SearchPayload`.
     * 2. Advanced search criteria defined by a list of `WizardControlFieldValue`.
     *
-    * @param params Search parameters.
+    * Note: Preset Search is used for searching a hierarchy topic result.
+    * If a Preset search is provided, some general criteria are pre-defined and as a result those
+    * from the query params will be ignored.
+    *
+    * @param payload Search payload.
     * @param fieldValues An option of an array of `WizardControlFieldValue`.
+    * @param presetSearch Option of pre-defined search criteria such as Hierarchy topic. Default to None.
     * @return An instance of DefaultSearch
     */
-  def createSearch(params: SearchCriteria,
-                   fieldValues: Option[Array[WizardControlFieldValue]] = None): DefaultSearch = {
-    val search = new DefaultSearch
+  def createSearch(payload: SearchPayload,
+                   fieldValues: Option[Array[WizardControlFieldValue]] = None,
+                   presetSearch: Option[PresetSearch] = None): DefaultSearch = {
+    val search = presetSearch.getOrElse(new DefaultSearch)
+
     search.setUseServerTimeZone(true)
-    search.setQuery(params.query.orNull)
-    search.setOwner(params.owner.orNull)
-    search.setMimeTypes(params.mimeTypes.toList.asJava)
+    search.setQuery(payload.query.orNull)
+    search.setOwner(payload.owner.orNull)
+    search.setMimeTypes(payload.mimeTypes.toList.asJava)
 
-    search.setSortFields(handleOrder(params))
+    search.setSortFields(handleOrder(payload))
 
-    val collectionUuids = handleCollections(params.advancedSearch, params.collections)
-    search.setCollectionUuids(collectionUuids.orNull)
-
-    val itemStatus = if (params.status.isEmpty) None else Some(params.status.toList.asJava)
-    search.setItemStatuses(itemStatus.orNull)
+    presetSearch match {
+      case Some(_) => // Collections and itemStatus have been added to the search criteria so ignore the query param for Collections and Item statuses.
+      case None =>
+        val itemStatus      = if (payload.status.isEmpty) None else Some(payload.status.toList.asJava)
+        val collectionUuids = handleCollections(payload.advancedSearch, payload.collections)
+        search.setCollectionUuids(collectionUuids.orNull)
+        search.setItemStatuses(itemStatus.orNull)
+    }
 
     // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
-    val modifiedAfter  = handleModifiedDate(params.modifiedAfter, LocalTime.MIN)
-    val modifiedBefore = handleModifiedDate(params.modifiedBefore, LocalTime.MAX)
+    val modifiedAfter  = handleModifiedDate(payload.modifiedAfter, LocalTime.MIN)
+    val modifiedBefore = handleModifiedDate(payload.modifiedBefore, LocalTime.MAX)
     if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
-      params.dynaCollection)
-    val whereQuery: Option[FreeTextBooleanQuery] = params.whereClause.map(WhereParser.parse)
+      payload.dynaCollection)
+    val whereQuery: Option[FreeTextBooleanQuery] = payload.whereClause.map(WhereParser.parse)
     val advSearchCriteria: Option[FreeTextBooleanQuery] =
       fieldValues.map(buildAdvancedSearchCriteria)
 
@@ -130,7 +140,7 @@ object SearchHelper {
 
     search.setFreeTextQuery(freeTextQuery)
 
-    handleMusts(params.musts) foreach {
+    handleMusts(payload.musts) foreach {
       case (field, value) => search.addMust(field, value.asJavaCollection)
     }
 
@@ -146,7 +156,7 @@ object SearchHelper {
     * @param params the parameters supplied to a search request
     * @return the definition of ordering to be used with DefaultSearch
     */
-  def handleOrder(params: SearchCriteria): SortField = {
+  def handleOrder(params: SearchPayload): SortField = {
     val providedOrder = params.order.map(_.toLowerCase)
     val order: SortField = providedOrder.flatMap(TaskSortOrder.apply) getOrElse DefaultSearch
       .getOrderType(providedOrder.orNull, params.query.orNull)

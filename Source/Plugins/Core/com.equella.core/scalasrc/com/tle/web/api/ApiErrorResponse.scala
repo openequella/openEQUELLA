@@ -46,6 +46,10 @@ object ApiErrorResponse {
     buildErrorResponse(Status.INTERNAL_SERVER_ERROR, errors)
   }
 
+  def conflictError(errors: String*): Response = {
+    buildErrorResponse(Status.CONFLICT, errors)
+  }
+
   private def buildErrorResponse(status: Status, errors: Seq[String]): Response = {
     Response.status(status).entity(responseBody(errors)).build()
   }

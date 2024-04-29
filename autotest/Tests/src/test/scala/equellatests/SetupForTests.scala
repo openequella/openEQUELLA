@@ -1,14 +1,11 @@
 package equellatests
 
-import java.io.File
-
-import com.tle.webtests.pageobject.{LoginPage, SettingsPage, UndeterminedPage}
+import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.institution._
-import GlobalConfig._
-import com.tle.webtests.framework.{PageContext, ScreenshotTaker}
-import com.tle.webtests.pageobject.multidb.InstallPage
+import com.tle.webtests.pageobject.{LoginPage, SettingsPage, UndeterminedPage}
+import equellatests.GlobalConfig._
 
-import scala.util.{Failure, Success, Try}
+import java.io.File
 
 object ImportInsts {
   val configInstFilter: String => Boolean = {
@@ -61,7 +58,7 @@ class ImportInsts(allowed: String => Boolean) {
               val instCtx = new PageContext(context, instutionUrl)
               new LoginPage(instCtx).load.login("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
               val sp = new SettingsPage(instCtx).load()
-              sp.enableNewUI()
+              sp.setNewUI(true)
             }
         }
       }

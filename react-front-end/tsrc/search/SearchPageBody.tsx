@@ -41,7 +41,6 @@ import { routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
-import type { GallerySearchResultItem } from "../modules/GallerySearchModule";
 import {
   buildSelectionSessionAdvancedSearchLink,
   buildSelectionSessionRemoteSearchLink,
@@ -89,6 +88,8 @@ import {
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
+  isGalleryItems,
+  isListItems,
   navigateTo,
   SearchContext,
   SearchPageHeaderConfig,
@@ -160,6 +161,10 @@ export interface SearchPageBodyProps {
    * Function to get the list of remote searches from the server.
    */
   getRemoteSearchesProvider?: () => Promise<OEQ.Common.BaseEntitySummary[]>;
+  /**
+   * The title of the search result list.
+   */
+  searchResultTitle?: string;
 }
 
 /**
@@ -183,6 +188,7 @@ export const SearchPageBody = ({
   customFavouriteUrl = identity,
   customShowSpinner = false,
   getRemoteSearchesProvider = getRemoteSearchesFromServer,
+  searchResultTitle,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -220,6 +226,7 @@ export const SearchPageBody = ({
 
   const { currentUser } = useContext(AppContext);
   const history = useHistory();
+  const searchBarRef = useRef<HTMLDivElement>(null);
 
   const [snackBar, setSnackBar] = useState<SnackBarDetails>({
     message: "",
@@ -235,12 +242,18 @@ export const SearchPageBody = ({
   const exportLinkRef = useRef<HTMLAnchorElement>(null);
 
   const doSearch = useCallback(
-    (searchPageOptions: SearchPageOptions, scrollToTop = true) => {
+    (searchPageOptions: SearchPageOptions, scrollToSearchBar = true) => {
       const callback = () => {
         // Save the value of wildcard mode to LocalStorage.
         writeRawModeToStorage(searchPageOptions.rawMode);
-        // scroll back up to the top of the page
-        if (scrollToTop) window.scrollTo(0, 0);
+        if (scrollToSearchBar) {
+          // Scroll to the top of the search bar.
+          // It calculates top distance of the search bar, subtract 64px for the header height,
+          // and an extra 10px to avoid the header's shadow. Result is the scroll distance.
+          const distance =
+            (searchBarRef.current?.getBoundingClientRect().top ?? 0) - 74;
+          window.scrollBy({ top: distance });
+        }
         // Allow downloading new search result.
         setAlreadyDownloaded(false);
         customSearchCallback?.();
@@ -248,7 +261,7 @@ export const SearchPageBody = ({
 
       search(searchPageOptions, enableClassification, callback);
     },
-    [enableClassification, search, customSearchCallback],
+    [search, enableClassification, customSearchCallback],
   );
 
   const navigationWithHistory = (config: SearchPageNavigationConfig) =>
@@ -738,17 +751,9 @@ export const SearchPageBody = ({
       return null;
     }
 
-    const isListItems = (
-      items: unknown,
-    ): items is OEQ.Search.SearchResultItem[] => from === "item-search";
-
-    const isGalleryItems = (
-      items: unknown,
-    ): items is GallerySearchResultItem[] => from === "gallery-search";
-
-    if (isListItems(searchResults)) {
+    if (isListItems(from, searchResults)) {
       return mapSearchResultItems(searchResults, highlights);
-    } else if (isGalleryItems(searchResults)) {
+    } else if (isGalleryItems(from, searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }
 
@@ -766,6 +771,7 @@ export const SearchPageBody = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SearchBar
+                ref={searchBarRef}
                 query={searchPageOptions.query ?? ""}
                 wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
@@ -781,6 +787,7 @@ export const SearchPageBody = ({
             ))}
             <Grid item xs={12}>
               <SearchResultList
+                title={searchResultTitle}
                 showSpinner={
                   customShowSpinner ||
                   state.status === "initialising" ||

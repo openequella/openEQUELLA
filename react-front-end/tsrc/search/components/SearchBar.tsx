@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
-import { useCallback, useEffect, useReducer } from "react";
+import { forwardRef, useCallback, useEffect, useReducer } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 
@@ -119,112 +119,119 @@ const reducer = (state: State, action: Action): State => {
  * that should be done in the parent component in response to the
  * onXyzChange callbacks and the doSearch.
  */
-export default function SearchBar({
-  query,
-  wildcardMode,
-  onQueryChange,
-  onWildcardModeChange,
-  doSearch,
-  advancedSearchFilter,
-}: SearchBarProps) {
-  const [state, dispatch] = useReducer(reducer, { status: "init", query });
+const SearchBar = forwardRef(
+  (
+    {
+      query,
+      wildcardMode,
+      onQueryChange,
+      onWildcardModeChange,
+      doSearch,
+      advancedSearchFilter,
+    }: SearchBarProps,
+    ref: React.ForwardedRef<HTMLDivElement>,
+  ) => {
+    const [state, dispatch] = useReducer(reducer, { status: "init", query });
 
-  const search = useCallback(
-    (query: string) =>
-      dispatch({
-        type: "updateQuery",
-        query,
-      }),
-    [dispatch],
-  );
+    const search = useCallback(
+      (query: string) =>
+        dispatch({
+          type: "updateQuery",
+          query,
+        }),
+      [dispatch],
+    );
 
-  // The state query should be consistent with prop query. But there are two situations where they
-  // are different.
-  // One is when a new search has been performed to clear SearchPageOptions. In this case, we dispatch
-  // the action of "clearQuery".
-  // The other is when the page is rendered with previously selected search options where a query is
-  // included. We dispatch the action of "waitForNewQuery" to update the state without triggering
-  // an extra search.
-  useEffect(() => {
-    if (!query && state.query) {
-      dispatch({
-        type: "clearQuery",
-      });
-    } else if (query && !state.query) {
-      dispatch({
-        type: "waitForNewQuery",
-        query,
-      });
-    }
-  }, [query, state.query]);
+    // The state query should be consistent with prop query. But there are two situations where they
+    // are different.
+    // One is when a new search has been performed to clear SearchPageOptions. In this case, we dispatch
+    // the action of "clearQuery".
+    // The other is when the page is rendered with previously selected search options where a query is
+    // included. We dispatch the action of "waitForNewQuery" to update the state without triggering
+    // an extra search.
+    useEffect(() => {
+      if (!query && state.query) {
+        dispatch({
+          type: "clearQuery",
+        });
+      } else if (query && !state.query) {
+        dispatch({
+          type: "waitForNewQuery",
+          query,
+        });
+      }
+    }, [query, state.query]);
 
-  useEffect(() => {
-    if (state.status === "waiting") {
-      // Most likely called because of a change in onQueryChange so no action required
-      return;
-    } else if (state.status === "queryUpdated") {
-      onQueryChange(state.query);
-      dispatch({
-        type: "waitForNewQuery",
-        query: state.query,
-      });
-    }
-  }, [state, dispatch, onQueryChange]);
+    useEffect(() => {
+      if (state.status === "waiting") {
+        // Most likely called because of a change in onQueryChange so no action required
+        return;
+      } else if (state.status === "queryUpdated") {
+        onQueryChange(state.query);
+        dispatch({
+          type: "waitForNewQuery",
+          query: state.query,
+        });
+      }
+    }, [state, dispatch, onQueryChange]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape" && state.query) {
-      // iff there is a current query, clear it out and trigger a search
-      search("");
-    }
-  };
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Escape" && state.query) {
+        // iff there is a current query, clear it out and trigger a search
+        search("");
+      }
+    };
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    search(event.target.value);
-  };
+    const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      search(event.target.value);
+    };
 
-  return (
-    <StyledPaper className={classes.root}>
-      <IconButton
-        onClick={doSearch}
-        aria-label={searchStrings.title}
-        size="large"
-      >
-        <SearchIcon />
-      </IconButton>
-      <InputBase
-        id="searchBar"
-        className={classes.input}
-        onKeyDown={handleKeyDown}
-        onChange={handleOnChange}
-        value={state.query}
-        placeholder={searchStrings.searchBarPlaceholder}
-      />
-      {advancedSearchFilter && (
-        <TooltipIconButton
-          title={searchStrings.showAdvancedSearchFilter}
-          onClick={advancedSearchFilter.onClick}
+    return (
+      <StyledPaper ref={ref} className={classes.root}>
+        <IconButton
+          onClick={doSearch}
+          aria-label={searchStrings.title}
+          size="large"
         >
-          <TuneIcon
-            color={advancedSearchFilter.accent ? "secondary" : "inherit"}
-          />
-        </TooltipIconButton>
-      )}
-      <Divider className={classes.divider} orientation="vertical" />
-      <FormControlLabel
-        style={{ opacity: 0.6 }}
-        label={searchStrings.wildcardSearch}
-        control={
-          <Switch
-            id="wildcardSearch"
-            onChange={(event) => onWildcardModeChange(event.target.checked)}
-            value={wildcardMode}
-            checked={wildcardMode}
-            name={searchStrings.wildcardSearch}
-            size="small"
-            color="secondary"
-          />
-        }
-      />
-    </StyledPaper>
-  );
-}
+          <SearchIcon />
+        </IconButton>
+        <InputBase
+          id="searchBar"
+          className={classes.input}
+          onKeyDown={handleKeyDown}
+          onChange={handleOnChange}
+          value={state.query}
+          placeholder={searchStrings.searchBarPlaceholder}
+        />
+        {advancedSearchFilter && (
+          <TooltipIconButton
+            title={searchStrings.showAdvancedSearchFilter}
+            onClick={advancedSearchFilter.onClick}
+          >
+            <TuneIcon
+              color={advancedSearchFilter.accent ? "secondary" : "inherit"}
+            />
+          </TooltipIconButton>
+        )}
+        <Divider className={classes.divider} orientation="vertical" />
+        <FormControlLabel
+          style={{ opacity: 0.6 }}
+          label={searchStrings.wildcardSearch}
+          control={
+            <Switch
+              id="wildcardSearch"
+              onChange={(event) => onWildcardModeChange(event.target.checked)}
+              value={wildcardMode}
+              checked={wildcardMode}
+              name={searchStrings.wildcardSearch}
+              size="small"
+              color="secondary"
+            />
+          }
+        />
+      </StyledPaper>
+    );
+  },
+);
+
+export default SearchBar;

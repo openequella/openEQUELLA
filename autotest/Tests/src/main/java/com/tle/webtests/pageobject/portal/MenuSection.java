@@ -14,6 +14,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+// TODO: remove MenuSection, linkByText, linkByTextAndHref, hasMenuOption, hasHierarchyTopic in
+// OEQ-1702.
 public class MenuSection extends AbstractPage<MenuSection> {
 
   public MenuSection(PageContext context) {
@@ -21,17 +23,33 @@ public class MenuSection extends AbstractPage<MenuSection> {
     loadedBy = isNewUI() ? By.id("menulinks") : By.id("menu");
   }
 
-  private By linkByText(String text) {
-    return linkByTextAndHref(text, null);
+  // TODO: Remove this method OEQ-1702.
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  public MenuSection(PageContext context, Boolean isNewUI) {
+    super(context);
+    loadedBy = isNewUI ? By.id("menulinks") : By.id("menu");
   }
 
-  private By linkByTextAndHref(String text, String href) {
+  private By linkByText(String text) {
+    return linkByTextAndHref(text, null, false);
+  }
+
+  // TODO: Remove this method in OEQ-1702.
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  private By linkByText(String text, boolean forceOldUi) {
+    return linkByTextAndHref(text, null, forceOldUi);
+  }
+
+  // TODO: Remove forceOldUi param in OEQ-1702.
+  // Add forceOldUi param for hierarchy menu related test because the new UI hasn't been completed
+  // yet.
+  private By linkByTextAndHref(String text, String href, boolean forceOldUi) {
     String quotedText = quoteXPath(text);
     String hrefXPath = "";
     if (href != null) {
       hrefXPath = " and @href=" + quoteXPath(href);
     }
-    if (isNewUI()) {
+    if (!forceOldUi && isNewUI()) {
       return By.xpath("id('menulinks')//a[./div/div[text()=" + quotedText + "]" + hrefXPath + "]");
     }
     return By.xpath("id('menu')//a[text()=" + quotedText + hrefXPath + "]");
@@ -47,8 +65,25 @@ public class MenuSection extends AbstractPage<MenuSection> {
     return driver.findElement(textLink);
   }
 
+  // TODO: Remove this method in OEQ-1702.
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  private WebElement findLink(String title, boolean forceOldUi) {
+    By textLink = linkByText(title, forceOldUi);
+    waiter.until(ExpectedConditions.visibilityOfElementLocated(textLink));
+    return driver.findElement(textLink);
+  }
+
   public <T extends AbstractPage<T>> T clickMenu(String title, T page) {
     WebElement link = findLink(title);
+    page.getWaiter().until(ExpectedConditions.elementToBeClickable(link));
+    link.click();
+    return page.get();
+  }
+
+  // TODO: Remove this method in OEQ-1702
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  public <T extends AbstractPage<T>> T clickMenuForceOldUI(String title, T page) {
+    WebElement link = findLink(title, true);
     page.getWaiter().until(ExpectedConditions.elementToBeClickable(link));
     link.click();
     return page.get();
@@ -76,8 +111,8 @@ public class MenuSection extends AbstractPage<MenuSection> {
   }
 
   public TopicPage clickTopic(String title) {
-    if (hasMenuOption(title)) {
-      findLink(title).click();
+    if (hasMenuOption(title, true)) {
+      findLink(title, true).click();
       return new TopicPage(context, title).get();
     } else {
       return new TopicPage(context, "Browse").load().clickSubTopic(title);
@@ -92,22 +127,35 @@ public class MenuSection extends AbstractPage<MenuSection> {
     return isPresent(linkByText(title));
   }
 
+  // TODO: Remove this method in OEQ-1702.
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  public boolean hasMenuOption(String title, Boolean forceOldUi) {
+    return isPresent(linkByText(title, forceOldUi));
+  }
+
   public boolean hasHierarchyTopic(String title, int position) {
     return isPresent(linkByText(title));
   }
 
+  // TODO: Remove this method in OEQ-1702.
+  // Specific for hierarchy menu related test because the new UI hasn't been completed yet.
+  public boolean hasHierarchyTopic(String title, int position, Boolean forceOldUi) {
+    return isPresent(linkByText(title, forceOldUi));
+  }
+
   public boolean waitForCustomIconByNameAndHref(String name, String url) {
     return hasCustomIcon(
-        waiter.until(ExpectedConditions.visibilityOfElementLocated(linkByTextAndHref(name, url))));
+        waiter.until(
+            ExpectedConditions.visibilityOfElementLocated(linkByTextAndHref(name, url, false))));
   }
 
   public boolean linkExists(String name, String url) {
-    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url));
+    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url, false));
     return !elems.isEmpty();
   }
 
   public boolean linkExistsWithIcon(String name, String url, boolean customIcon) {
-    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url));
+    List<WebElement> elems = driver.findElements(linkByTextAndHref(name, url, false));
 
     if (elems.isEmpty()) {
       return false;
