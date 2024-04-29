@@ -88,7 +88,7 @@ export interface AppContextProps {
   /**
    * Function to refresh the current user.
    */
-  refreshUser: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 /**
@@ -100,7 +100,7 @@ export interface AppContextProps {
 export const AppContext = React.createContext<AppContextProps>({
   appErrorHandler: nop,
   currentUser: undefined,
-  refreshUser: nop,
+  refreshUser: () => Promise.resolve(),
 });
 
 /**
@@ -125,9 +125,10 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
   const [currentUser, setCurrentUser] =
     React.useState<OEQ.LegacyContent.CurrentUserDetails>();
 
-  const refreshUser = useCallback(() => {
-    getCurrentUserDetails().then(setCurrentUser);
-  }, []);
+  const refreshUser = useCallback(
+    async () => await getCurrentUserDetails().then(setCurrentUser),
+    [],
+  );
 
   const [error, setError] = useState<Error | string | undefined>();
   const appErrorHandler = useCallback(
@@ -135,7 +136,9 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
     [],
   );
 
-  useEffect(() => refreshUser(), [refreshUser]);
+  useEffect(() => {
+    (async () => await refreshUser())();
+  }, [refreshUser]);
 
   const appContent = () =>
     pipe(
