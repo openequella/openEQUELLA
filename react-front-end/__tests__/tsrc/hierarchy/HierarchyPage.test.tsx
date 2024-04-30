@@ -32,6 +32,7 @@ import {
   getHierarchy,
   getMyAcls,
   topicWithChildren,
+  topicWithHideNoResultChild,
   topicWithoutModifyKeyResources,
   topicWithoutSearchResults,
   topicWithShortAndLongDesc,
@@ -161,6 +162,17 @@ describe("Display of Hierarchy panel", () => {
       expect(getByText(name!)).toBeInTheDocument(),
     );
     expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
+  });
+
+  it("hide hierarchy topic if it has no result and parent hierarchy `hideSubtopicsWithNoResults` is set to `true`", async () => {
+    const { queryByText } = await renderHierarchyPage(
+      topicWithHideNoResultChild.compoundUuid,
+      true,
+    );
+
+    expect(
+      queryByText(topicWithHideNoResultChild.subHierarchyTopics[0].name!),
+    ).not.toBeInTheDocument();
   });
 });
 
