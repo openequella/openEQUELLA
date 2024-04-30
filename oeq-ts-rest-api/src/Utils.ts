@@ -46,13 +46,23 @@ export const validate =
     );
 
 /**
+ * Function that receives an IO-TS codec and returns a type guard for the specific type.
+ *
+ * @param codec Codec used to perform the type guard.
+ */
+export const typeGuard =
+  <T>(codec: t.Type<T>) =>
+  (data: unknown): data is T =>
+    codec.is(data);
+
+/**
  * The idiomatic modelling for an `object` in Typescript is to use a `Record<string, unknown>`, so
  * this is a simple type guard to help below where we want to go from an unknown potential object
  * to a type more suitable for TS contexts.
  *
  * @param r a potential `object` / `Record`
  */
-const isRecord = validate(t.record(t.string, t.unknown));
+export const isRecord = typeGuard(t.record(t.string, t.unknown));
 
 /**
  * Performs inplace conversion of specified fields with supplied converter.
