@@ -108,6 +108,7 @@ const HierarchyTopic = ({
     shortDescription,
     subHierarchyTopics,
     hideSubtopicsWithNoResults,
+    showResults,
   },
   expandedNodes,
   onlyShowTitle = false,
@@ -172,7 +173,9 @@ const HierarchyTopic = ({
         primary={
           <>
             {itemTitle()}
-            <span className={classes.count}>({matchingItemCount})</span>
+            {showResults && (
+              <span className={classes.count}>({matchingItemCount})</span>
+            )}
           </>
         }
         // Use `div` instead of default tag `p` to avoid HTML semantic error.
