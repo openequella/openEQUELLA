@@ -62,7 +62,7 @@ export const typeGuard =
  *
  * @param r a potential `object` / `Record`
  */
-export const isRecord = typeGuard(t.record(t.string, t.unknown));
+const isRecord = typeGuard(t.record(t.string, t.unknown));
 
 /**
  * Performs inplace conversion of specified fields with supplied converter.
