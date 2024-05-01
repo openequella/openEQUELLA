@@ -1,6 +1,7 @@
 package com.tle.webtests.test.webservices.rest;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -563,5 +564,62 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
         PathUtils.urlPath(context.getBaseUrl(), API_TAXONOMY_PATH, taxonomyUuid, "lock");
     final HttpPost request = new HttpPost(new URI(uri));
     execute(request, true, getToken());
+  }
+
+  @Test
+  public void testSetTermWithMultipleDataKeyValue() throws IOException {
+    final String taxonomyTermUri =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            TAXONOMY_UUID,
+            API_TERM_PATH_PART,
+            TERM_1_UUID,
+            API_TERM_DATA_PATH_PART);
+
+    ObjectNode jsonObj = mapper.createObjectNode();
+    jsonObj.put("data/key", "data/value");
+    jsonObj.put("/datakey", "/datavalue");
+    jsonObj.put("datakey/", "datavalue/");
+    final String jsonStr = jsonObj.toString();
+    final HttpResponse response = putEntity(jsonStr, taxonomyTermUri, getToken(), true);
+    assertResponse(response, 201, "failed to create term");
+
+    final JsonNode result = getEntity(taxonomyTermUri, getToken());
+    assertEquals(result.asText(), jsonObj.asText());
+  }
+
+  @Test(description = "Set term with the key value already exists")
+  public void testSetTermWithConflictDataKeyValue() throws IOException {
+    final String taxonomyTermUri =
+        PathUtils.urlPath(
+            context.getBaseUrl(),
+            API_TAXONOMY_PATH,
+            TAXONOMY_UUID,
+            API_TERM_PATH_PART,
+            TERM_1_UUID,
+            API_TERM_DATA_PATH_PART);
+    final String dataKey = "data_key";
+
+    // Clear all data from the target test term
+    final String taxonomyTermDataUri = PathUtils.urlPath(taxonomyTermUri, dataKey);
+    HttpResponse response = deleteResource(taxonomyTermDataUri, getToken());
+    assertResponse(response, 200, "failed to delete term's data");
+    final ObjectNode initialStateResponse = (ObjectNode) getEntity(taxonomyTermUri, getToken());
+    assertNull(initialStateResponse.get(dataKey));
+
+    // Add new key
+    ObjectNode requestBodyObj = mapper.createObjectNode();
+    requestBodyObj.put(dataKey, "data_value");
+    final HttpResponse createdResponse =
+        putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
+    assertResponse(createdResponse, 201, "failed add data to term");
+    final JsonNode getTaxonomytermResponse = getEntity(taxonomyTermUri, getToken());
+    assertEquals(getTaxonomytermResponse.asText(), requestBodyObj.asText());
+
+    final HttpResponse conflictResponse =
+        putEntity(requestBodyObj.toString(), taxonomyTermUri, getToken(), true);
+    assertResponse(
+        conflictResponse, 409, "unexpected result when attempted to re-create existing term data");
   }
 }

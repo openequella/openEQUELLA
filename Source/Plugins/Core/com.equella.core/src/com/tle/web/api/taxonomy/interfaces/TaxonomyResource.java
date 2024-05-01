@@ -31,6 +31,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -295,4 +296,16 @@ public interface TaxonomyResource extends BaseEntityResource<TaxonomyBean, BaseE
   @ApiOperation(value = "Sort each level of the whole taxonomy")
   Response sortTaxonomy(
       @ApiParam(value = "Taxonomy uuid", required = true) @PathParam("uuid") String taxonomyUuid);
+
+  @PUT
+  @Path("/{uuid}/term/{termUuid}/data")
+  @ApiOperation(value = "Set term data with the list of data keys and data values")
+  @ApiResponses({
+    @ApiResponse(code = 201, message = "Location: {newtaxonomy uri}"),
+    @ApiResponse(code = 201, message = "All requested data items added")
+  })
+  Response setTermData(
+      @ApiParam(value = "Taxonomy uuid") @PathParam("uuid") String taxonomyUuid,
+      @ApiParam(value = "term uuid", required = true) @PathParam("termUuid") String termUuid,
+      @ApiParam(value = "The list of data keys and data values") Map<String, String> data);
 }

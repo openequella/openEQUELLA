@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.12.1"
 val http4sVersion = "0.21.8"
 val catsVersion   = "2.10.0"
-val cxfVersion    = "3.6.2"
+val cxfVersion    = "3.6.3"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
 
@@ -33,10 +33,10 @@ libraryDependencies ++= Seq(
   "org.apache.cxf"            % "cxf-rt-transports-http"    % cxfVersion,
   "org.apache.httpcomponents" % "httpclient"                % "4.5.14",
   "com.jcraft"                % "jsch"                      % "0.1.55",
-  "org.jacoco"                % "org.jacoco.report"         % "0.8.11",
+  "org.jacoco"                % "org.jacoco.report"         % "0.8.12",
   "org.dspace"                % "oclc-harvester2"           % "1.0.0",
   "com.typesafe"              % "config"                    % "1.4.3",
-  "org.slf4j"                 % "slf4j-simple"              % "2.0.9",
+  "org.slf4j"                 % "slf4j-simple"              % "2.0.13",
   "org.scalacheck"            %% "scalacheck"               % "1.17.0" % "test,serial",
   "org.http4s"                %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"                %% "http4s-blaze-client"      % http4sVersion,

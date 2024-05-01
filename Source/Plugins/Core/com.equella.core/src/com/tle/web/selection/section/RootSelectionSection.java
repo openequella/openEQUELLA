@@ -103,6 +103,8 @@ public class RootSelectionSection
 
   @Inject private PluginTracker<SelectionNavAction> navActionTracker;
 
+  public static final String STATE_ID_PARAM = "_sl.stateId";
+
   @Override
   protected void setupModelForRender(SectionInfo info, RootSelectionModel model) {
     try {

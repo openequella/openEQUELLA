@@ -105,7 +105,17 @@ const HierarchyPanel = ({
     subHierarchyTopics,
     compoundUuid,
     subTopicSectionName,
+    hideSubtopicsWithNoResults,
   } = hierarchy.summary;
+
+  // Remove topics that doesn't have any result and are set to be hidden with no results.
+  const subTopicsFiltered = hideSubtopicsWithNoResults
+    ? pipe(
+        subHierarchyTopics,
+        A.filter((topic) => topic.matchingItemCount !== 0),
+      )
+    : subHierarchyTopics;
+
   return (
     <Card>
       <CardHeader title={buildBreadcrumbs(hierarchy)} />
@@ -123,7 +133,7 @@ const HierarchyPanel = ({
             <Typography variant="h5">{subTopicSectionName}</Typography>
           )}
         </Stack>
-        <HierarchyTree hierarchies={subHierarchyTopics} />
+        <HierarchyTree hierarchies={subTopicsFiltered} />
       </CardContent>
     </Card>
   );

@@ -39,6 +39,7 @@ public class FavouritesPowerSearchIntegration extends AbstractCleanupTest {
     favouritePage.accessSavedSearches(POWER_SEARCH_NAME);
 
     // Check Power Search after Accessing from Favorites
+    Assert.assertTrue(searchPage.hasResults());
     Assert.assertTrue(searchPage.results().doesResultExist("Contribution to Authors"));
     Assert.assertFalse(searchPage.results().doesResultExist("Contribution to Authors A"));
   }

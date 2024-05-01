@@ -47,6 +47,8 @@ public class IntegrationSection
 
   @Inject private IntegrationService integrationService;
 
+  public static final String INTEG_ID_PARAM = "_int.id";
+
   @Override
   public boolean executeSelectionsMade(SectionInfo info, SelectionSession session) {
     Collection<SelectedResource> selectedResources = session.getSelectedResources();

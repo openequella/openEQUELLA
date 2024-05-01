@@ -23,11 +23,11 @@ import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { Fragment } from "react";
 import { languageStrings } from "../../util/langstrings";
-import HierarchyTopic from "./HierarchyTopic";
+import HierarchyTopic, { HierarchyTopicBasicProps } from "./HierarchyTopic";
 
 const viewHierarchyText = languageStrings.hierarchy.viewHierarchy;
 
-export interface HierarchyTreeProps {
+export interface HierarchyTreeProps extends HierarchyTopicBasicProps {
   /**
    * Hierarchy topic summaries which represents all nodes in the tree.
    */
@@ -37,7 +37,12 @@ export interface HierarchyTreeProps {
 /**
  * A tree view of all provided Hierarchy Topic Summary with expandable nodes to show sub topics with optional title and short description.
  */
-const HierarchyTree = ({ hierarchies }: HierarchyTreeProps) => {
+const HierarchyTree = ({
+  hierarchies,
+  onlyShowTitle,
+  customActionBuilder,
+  disableTitleLink,
+}: HierarchyTreeProps) => {
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
   const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) =>
@@ -45,7 +50,15 @@ const HierarchyTree = ({ hierarchies }: HierarchyTreeProps) => {
 
   const topics = pipe(
     hierarchies,
-    A.map((topic) => <HierarchyTopic topic={topic} expandedNodes={expanded} />),
+    A.map((topic) => (
+      <HierarchyTopic
+        topic={topic}
+        expandedNodes={expanded}
+        onlyShowTitle={onlyShowTitle}
+        disableTitleLink={disableTitleLink}
+        customActionBuilder={customActionBuilder}
+      />
+    )),
     A.intersperse(<Divider />),
     A.mapWithIndex((index, component) => {
       return <Fragment key={index}> {component} </Fragment>;

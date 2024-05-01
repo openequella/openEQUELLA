@@ -33,3 +33,27 @@ export const Standard: StoryFn<HierarchyTreeProps> = (args) => (
 Standard.args = {
   hierarchies,
 };
+
+export const OnlyShowTitle: StoryFn<HierarchyTreeProps> = (args) => (
+  <HierarchyTree {...args} />
+);
+OnlyShowTitle.args = {
+  hierarchies,
+  onlyShowTitle: true,
+};
+
+export const DisableTitleLink: StoryFn<HierarchyTreeProps> = (args) => (
+  <HierarchyTree {...args} />
+);
+DisableTitleLink.args = {
+  hierarchies,
+  disableTitleLink: true,
+};
+
+export const CustomActionButtons: StoryFn<HierarchyTreeProps> = (args) => (
+  <HierarchyTree {...args} />
+);
+CustomActionButtons.args = {
+  hierarchies,
+  customActionBuilder: (uuid) => <button>Custom Action: {uuid}</button>,
+};

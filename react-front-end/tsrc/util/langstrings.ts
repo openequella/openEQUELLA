@@ -583,6 +583,14 @@ export const languageStrings = {
         remove: "Remove from favourites",
       },
     },
+    addItemToHierarchy: {
+      title: "Add as key resource to a hierarchy",
+      dialogTitle: "Modify key resource",
+      dialogDesc:
+        "Click add/remove icon to update the key resource for the hierarchy",
+      add: "Add to hierarchy",
+      remove: "Remove from hierarchy",
+    },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
       saveSearchFailedText: "Failed to save new favourite, please try again",

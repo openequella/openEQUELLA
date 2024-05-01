@@ -44,7 +44,7 @@ export const getHierarchy = (
 export const getHierarchyIdsWithKeyResource = (
   itemUuid: string,
   itemVersion: number,
-): Promise<String[]> =>
+): Promise<string[]> =>
   OEQ.BrowseHierarchy.getHierarchyIdsWithKeyResource(
     API_BASE_URL,
     itemUuid,

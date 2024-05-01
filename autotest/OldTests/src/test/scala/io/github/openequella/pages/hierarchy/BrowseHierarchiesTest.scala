@@ -28,6 +28,7 @@ import testng.annotation.NewUIOnly
 
 @TestInstitution("rest") class BrowseHierarchiesTest extends AbstractCleanupAutoTest {
   private val HIERARCHY_API_TEST_CLIENT_NAME = "HierarchyApiTestClient"
+  private val HIERARCHY_API_TEST_CLIENT_UUID = "43e60e9a-a3ed-497d-b79d-386fed23675c"
   private val PARENT_HIERARCHY_NAME          = "Parent Topics"
   private val CHILD_HIERARCHY_NAME           = "Child Topic"
   private val BROWSE_BOOKS_NAME              = "Browse books"
@@ -35,8 +36,8 @@ import testng.annotation.NewUIOnly
   private val HIERARCHY_SHORT_DESC =
     "a simple one level persistent hierarchy for make benefit glorious HierarchyApiTest"
 
-  private def openBrowsePage(): BrowseHierarchiesPage =
-    new BrowseHierarchiesPage(context).load()
+  private def getHierarchyPanel: HierarchyPanel =
+    new BrowseHierarchiesPage(context).load().hierarchyPanel
 
   @Test(description = "User should be able to access hierarchies page from the 'More' menu.")
   @NewUIOnly
@@ -50,28 +51,28 @@ import testng.annotation.NewUIOnly
   @Test(description = "User should be able to see hierarchy details.")
   @NewUIOnly
   def seeDetails(): Unit = {
-    val browsePage = openBrowsePage()
-    assertTrue(browsePage.hasHierarchy(HIERARCHY_API_TEST_CLIENT_NAME))
-    assertTrue(browsePage.hasHierarchyMatchedCount(BROWSE_BOOKS_NAME, BROWSE_BOOKS_COUNT))
-    assertTrue(browsePage.hasHierarchyShortDesc(HIERARCHY_SHORT_DESC))
+    val hierarchyPanel = getHierarchyPanel
+    assertTrue(hierarchyPanel.hasHierarchy(HIERARCHY_API_TEST_CLIENT_NAME))
+    assertTrue(hierarchyPanel.hasHierarchyMatchedCount(BROWSE_BOOKS_NAME, BROWSE_BOOKS_COUNT))
+    assertTrue(hierarchyPanel.hasHierarchyShortDesc(HIERARCHY_SHORT_DESC))
   }
 
   @Test(description = "User should be able to expand hierarchy tree.")
   @NewUIOnly
   def expandHierarchy(): Unit = {
-    val browsePage = openBrowsePage()
+    val hierarchyPanel = getHierarchyPanel
 
-    browsePage.expandHierarchy(PARENT_HIERARCHY_NAME)
-    assertTrue(browsePage.hasHierarchy(CHILD_HIERARCHY_NAME))
+    hierarchyPanel.expandHierarchy(PARENT_HIERARCHY_NAME)
+    assertTrue(hierarchyPanel.hasHierarchy(CHILD_HIERARCHY_NAME))
   }
 
   @Test(description = "User should be able to navigate to hierarchy page.")
   @NewUIOnly
   def navigateToHierarchyPage(): Unit = {
-    val browsePage = openBrowsePage()
+    val hierarchyPanel = getHierarchyPanel
 
-    val hierarchyPage = browsePage.clickHierarchy(HIERARCHY_API_TEST_CLIENT_NAME)
-    hierarchyPage.waitForLoading()
+    val hierarchyPage =
+      hierarchyPanel.clickHierarchy(HIERARCHY_API_TEST_CLIENT_NAME, HIERARCHY_API_TEST_CLIENT_UUID)
 
     assertTrue(hierarchyPage.isLoaded)
   }
