@@ -19,7 +19,9 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -45,6 +47,7 @@ import { SearchContext } from "../SearchPageHelper";
 
 const { dialogTitle, dialogDesc, add, remove } =
   languageStrings.searchpage.addItemToHierarchy;
+const { close: closeText } = languageStrings.common.action;
 
 const LABELLED_BY = "modify-key-resource-dialog-title";
 const DESCRIBE_BY = "modify-key-resource-dialog-description";
@@ -242,6 +245,11 @@ const ModifyKeyResourceDialog = ({
           />
         )}
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          {closeText}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
