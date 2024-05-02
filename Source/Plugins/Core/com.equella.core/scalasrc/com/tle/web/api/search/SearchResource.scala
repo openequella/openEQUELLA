@@ -45,6 +45,8 @@ import org.jboss.resteasy.annotations.cache.NoCache
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.BufferedOutputStream
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs._
@@ -234,7 +236,10 @@ class SearchResource {
   }
 
   private def doSearch(searchPayload: SearchPayload): Response = {
-    searchPayload.hierarchy.map(createPresetSearch).sequence match {
+    searchPayload.hierarchy
+      .map(URLDecoder.decode(_, StandardCharsets.UTF_8))
+      .map(createPresetSearch)
+      .sequence match {
       case Right(hierarchySearch) =>
         val search = createSearch(searchPayload, None, hierarchySearch)
         getSearchResult(search, searchPayload)
