@@ -78,6 +78,9 @@ import {
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
 
+const { title: addKeyResourceText } =
+  languageStrings.searchpage.addItemToHierarchy;
+
 const history = createMemoryHistory();
 const buildMyResourcesSearchPageOptions = (
   status: OEQ.Common.ItemStatus[],
@@ -441,6 +444,12 @@ describe("<MyResourcesPage/>", () => {
 
       expect(screen.getByText(createPage)).toBeInTheDocument();
       expect(screen.getByText(createFile)).toBeInTheDocument();
+    });
+
+    it("disables add to hierarchy button for Scrapbook page", async () => {
+      const { queryAllByLabelText } = await renderMyResourcesPage("Scrapbook");
+
+      expect(queryAllByLabelText(addKeyResourceText)).toHaveLength(0);
     });
 
     it("disables the button for sharing a search", async () => {
