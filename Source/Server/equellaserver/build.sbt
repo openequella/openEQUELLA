@@ -427,6 +427,12 @@ run := {
   //   Jar name = bcprov-jdk18on-1.73.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
   // Keep the later one to use the newer version of bcprov.
   case PathList("org", "bouncycastle", _*) => MergeStrategy.last
+  // The advice for native-image property files is to name them specific to the group and module to
+  // which the belong. However, it seems Google (google-auth-library-oauth2-http-1.23.0.jar) and
+  // Oracle (ojdbc8-23.3.0.23.09.jar) themselves have failed to follow this advice. A simple rename
+  // though would still allow them to be detected.
+  // Advice: https://docs.oracle.com/en/graalvm/enterprise/21/docs/reference-manual/native-image/BuildConfiguration/#embedding-a-configuration-file
+  case PathList("META-INF", "native-image", _*) => MergeStrategy.rename
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
