@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
 public class Search2ApiTest extends AbstractRestApiTest {
   private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
   private final String VIRTUAL_HIERARCHY_TOPIC = "886aa61d-f8df-4e82-8984-c487849f80ff:A James";
+  private final String ENCODED_VIRTUAL_HIERARCHY_TOPIC =
+      "886aa61d-f8df-4e82-8984-c487849f80ff:A%20James";
   private final String NORMAL_HIERARCHY_TOPIC = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
 
   @Test(description = "Search without parameters")
@@ -386,6 +388,15 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a virtual hierarchy topic result")
   public void virtualHierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", VIRTUAL_HIERARCHY_TOPIC));
+    assertEquals(getAvailable(result), 2);
+  }
+
+  @Test(
+      description =
+          "Encoded hierarchy compound UUID should be decoded to get the correct search result")
+  public void virtualHierarchyTopicEncodedHierarchyUuid() throws IOException {
+    JsonNode result =
+        doSearch(200, null, new NameValuePair("hierarchy", ENCODED_VIRTUAL_HIERARCHY_TOPIC));
     assertEquals(getAvailable(result), 2);
   }
 
