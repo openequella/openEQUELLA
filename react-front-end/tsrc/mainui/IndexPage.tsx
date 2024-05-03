@@ -151,11 +151,11 @@ export default function IndexPage() {
     (
       routeProps: RouteComponentProps,
       component: React.ComponentType<BaseOEQRouteComponentProps>,
-      aclCheck?: () => Promise<boolean>,
+      permissionCheck?: () => Promise<boolean>,
     ) => {
       return (
         <ProtectedPage
-          aclCheck={aclCheck}
+          permissionCheck={permissionCheck}
           path={routeProps.location.pathname}
           Page={component}
           newUIProps={mkRouteProps(routeProps)}
@@ -195,9 +195,11 @@ export default function IndexPage() {
             path={oeqRoute.path}
             render={(p) => {
               removeLegacyCss();
-              return oeqRoute.component
-                ? renderProtectedPage(p, oeqRoute.component, oeqRoute.aclCheck)
-                : undefined;
+              return renderProtectedPage(
+                p,
+                oeqRoute.component,
+                oeqRoute.permissionCheck,
+              );
             }}
           />
         )),

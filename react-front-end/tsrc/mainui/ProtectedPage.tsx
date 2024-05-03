@@ -39,7 +39,7 @@ export interface ProtectedPageProps {
   /**
    * Function to check if the user has permission to access the page.
    */
-  aclCheck?: () => Promise<boolean>;
+  permissionCheck?: () => Promise<boolean>;
   /**
    * The page component to be rendered.
    */
@@ -53,23 +53,28 @@ export interface ProtectedPageProps {
 const loginPage = `/logon.do?.page=${window.location.href}`;
 
 /**
- * Component that protects the access to a New UI page by performing permission checks. If the user has permission,
- * the page is rendered, otherwise the user is redirected to the specified path which is usually the logon page.
- * A loading circle is displayed while the permission check is in progress.
+ * Provide protection for the access to a New UI page by either authentication or permission checks.
+ *
+ * * When only authentication is required:
+ *   Displaying the page or redirecting to the Login page, depending on the authentication status.
+ *
+ * * When permission check is required:
+ *   If permitted, display the page, otherwise redirect to the Login page or display Error page depending
+ *   on the authentication status. While the permission check is in progress, show a loading circle.
  */
 const ProtectedPage = ({
   path,
   Page,
-  aclCheck,
+  permissionCheck,
   newUIProps,
   isAuthenticated,
 }: ProtectedPageProps) => {
   const { appErrorHandler } = useContext(AppContext);
-  const [hasAclGranted, setHasAclGranted] = useState<boolean>();
+  const [permitted, setPermitted] = useState<boolean>();
 
   useEffect(() => {
     pipe(
-      aclCheck,
+      permissionCheck,
       O.fromNullable,
       O.map((check) =>
         TE.tryCatch(
@@ -80,10 +85,10 @@ const ProtectedPage = ({
       O.getOrElse(() => TE.right(true)), // No ACL check required so set the flag to true.
       TE.match((e) => {
         appErrorHandler(e);
-        setHasAclGranted(false);
-      }, setHasAclGranted),
+        setPermitted(false);
+      }, setPermitted),
     )();
-  }, [aclCheck, appErrorHandler, path]);
+  }, [permissionCheck, appErrorHandler, path]);
 
   const protectedByAuthentication = () =>
     isAuthenticated ? (
@@ -92,7 +97,7 @@ const ProtectedPage = ({
       <Redirect to={loginPage} />
     );
 
-  const protectedByAcl = () => {
+  const protectedByPermission = () => {
     const redirectOrError = () =>
       isAuthenticated ? (
         <ErrorPage
@@ -105,7 +110,7 @@ const ProtectedPage = ({
       );
 
     return pipe(
-      hasAclGranted,
+      permitted,
       O.fromNullable,
       O.map((granted) =>
         granted ? <Page key={path} {...newUIProps} /> : redirectOrError(),
@@ -114,7 +119,9 @@ const ProtectedPage = ({
     );
   };
 
-  return aclCheck ? protectedByAcl() : protectedByAuthentication();
+  return permissionCheck
+    ? protectedByPermission()
+    : protectedByAuthentication();
 };
 
 export default ProtectedPage;

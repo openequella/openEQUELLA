@@ -28,7 +28,7 @@ describe("<ProtectedPage/>", () => {
   const page = "Page";
   const path = "/some/path";
   const login = "login";
-  const aclCheck = jest.fn().mockResolvedValue(true);
+  const permissionCheck = jest.fn().mockResolvedValue(true);
   const defaultPageProps: ProtectedPageProps = {
     Page: jest.fn().mockReturnValue(<div>{page}</div>),
     newUIProps: {
@@ -76,27 +76,27 @@ describe("<ProtectedPage/>", () => {
     });
   });
 
-  describe("ACL check", () => {
-    const aclGranted = {
+  describe("Permission check", () => {
+    const permitted = {
       ...defaultPageProps,
       authenticationOnly: false,
-      aclCheck,
+      permissionCheck,
     };
 
     it("users the provided function to check permissions", async () => {
-      renderProtectedPage(aclGranted);
-      await waitFor(() => expect(aclCheck).toHaveBeenCalledTimes(1));
+      renderProtectedPage(permitted);
+      await waitFor(() => expect(permissionCheck).toHaveBeenCalledTimes(1));
     });
 
-    it("renders the page if the ACL is granted", async () => {
-      const { getByText } = renderProtectedPage(aclGranted);
+    it("renders the page if permitted", async () => {
+      const { getByText } = renderProtectedPage(permitted);
       await waitFor(() => expect(getByText(page)).toBeInTheDocument());
     });
 
-    it("renders Error page if the ACL isn't granted but the user is authenticated", async () => {
+    it("renders Error page if the user is authenticated but not permitted", async () => {
       const { getByText, container } = renderProtectedPage({
-        ...aclGranted,
-        aclCheck: aclCheck.mockResolvedValue(false),
+        ...permitted,
+        permissionCheck: permissionCheck.mockResolvedValue(false),
       });
 
       await waitFor(() => {
@@ -107,10 +107,10 @@ describe("<ProtectedPage/>", () => {
       });
     });
 
-    it("redirects to login page if the ACL isn't granted and the user isn't authenticated", async () => {
+    it("redirects to login page if the user isn't authenticated and permitted", async () => {
       const { getByText } = renderProtectedPage({
-        ...aclGranted,
-        aclCheck: aclCheck.mockResolvedValue(false),
+        ...permitted,
+        permissionCheck: permissionCheck.mockResolvedValue(false),
         isAuthenticated: false,
       });
 

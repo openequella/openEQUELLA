@@ -70,13 +70,20 @@ type ToFunc = (uuid: string) => string;
 type ToVersionFunc = (uuid: string, version: number) => string;
 
 export interface OEQRouteNewUI {
-  component?: React.ComponentType<BaseOEQRouteComponentProps>;
+  /**
+   * React component to be rendered for the route.
+   */
+  component: React.ComponentType<BaseOEQRouteComponentProps>;
+  /**
+   * The path which this route matches to.
+   */
   path: string;
   /**
-   * Function to check if the current user has a specific ACL granted to access the page which this
-   * route points to.
+   * Optional function to check if the current user has permission to access the page which this
+   * route points to. When none, authentication is required for the access. To make this route
+   * publicly available, make this function always return a Promise of `true`.
    */
-  aclCheck?: () => Promise<boolean>;
+  permissionCheck?: () => Promise<boolean>;
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
