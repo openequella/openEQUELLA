@@ -17,13 +17,10 @@
  */
 import { getRenderData } from "../AppConfig";
 
-export const SEARCH_PAGE_ACL = "SEARCH_PAGE";
-export const HIERARCHY_PAGE_ACL = "HIERARCHY_PAGE";
-
 /**
- * Given an ACL, returns a function that checks if the current user has this ACL granted.
+ * Checks if the current user has the specified ACL granted.
  */
-export const hasAcl = async (acl: string) => {
+export const hasAcl = async (acl: string): Promise<boolean> => {
   // TODO: CalL REST Module to check if user has a specific permission
   return Promise.resolve(true);
 };
