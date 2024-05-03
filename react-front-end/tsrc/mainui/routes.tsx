@@ -71,8 +71,12 @@ type ToVersionFunc = (uuid: string, version: number) => string;
 
 export interface OEQRouteNewUI {
   component?: React.ComponentType<BaseOEQRouteComponentProps>;
-  render?: (props: BaseOEQRouteComponentProps) => React.ReactNode;
   path: string;
+  /**
+   * Function to check if the current user has a specific ACL granted to access the page which this
+   * route points to.
+   */
+  aclCheck?: () => Promise<boolean>;
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
@@ -111,8 +115,7 @@ interface Routes {
  * @param route the potential route to check
  */
 export const isNewUIRoute = (route: unknown): route is OEQRouteNewUI =>
-  (route as OEQRouteNewUI).component !== undefined ||
-  (route as OEQRouteNewUI).render !== undefined;
+  (route as OEQRouteNewUI).component !== undefined;
 
 /**
  * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded

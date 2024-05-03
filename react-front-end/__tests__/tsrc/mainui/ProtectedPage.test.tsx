@@ -19,51 +19,104 @@ import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import * as React from "react";
-import { Router } from "react-router-dom";
+import { Route, Router, Switch } from "react-router-dom";
 import ProtectedPage, {
   ProtectedPageProps,
 } from "../../../tsrc/mainui/ProtectedPage";
 
 describe("<ProtectedPage/>", () => {
-  const PAGE = "Page";
-  const hasPermission = jest.fn().mockResolvedValue(true);
+  const page = "Page";
+  const path = "/some/path";
+  const login = "login";
+  const aclCheck = jest.fn().mockResolvedValue(true);
   const defaultPageProps: ProtectedPageProps = {
-    Page: jest.fn().mockReturnValue(<div>{PAGE}</div>),
-    hasPermission,
+    Page: jest.fn().mockReturnValue(<div>{page}</div>),
     newUIProps: {
       updateTemplate: jest.fn(),
       redirect: jest.fn(),
       setPreventNavigation: jest.fn(),
       isReloadNeeded: false,
     },
-    path: "/some/path",
+    path: path,
+    isAuthenticated: true,
   };
 
-  const renderProtectedPage = (props: ProtectedPageProps = defaultPageProps) =>
-    render(
-      <Router history={createMemoryHistory()}>
-        <ProtectedPage {...props} />
+  const renderProtectedPage = (
+    props: ProtectedPageProps = defaultPageProps,
+  ) => {
+    const history = createMemoryHistory();
+    history.push(path);
+
+    return render(
+      <Router history={history}>
+        <Switch>
+          <Route path="/logon.do" render={() => <div>{login}</div>} />
+          <Route path={path} render={() => <ProtectedPage {...props} />} />
+        </Switch>
       </Router>,
     );
+  };
 
-  it("users the provided function to check permissions", async () => {
-    renderProtectedPage();
-    await waitFor(() => expect(hasPermission).toHaveBeenCalledTimes(1));
-  });
+  describe("Authentication only", () => {
+    it("renders the page if authenticated", async () => {
+      const { findByText } = renderProtectedPage();
 
-  it("renders the page if permitted", async () => {
-    const { findByText } = renderProtectedPage();
-
-    expect(await findByText(PAGE)).toBeInTheDocument();
-  });
-
-  it("redirects if not permitted", async () => {
-    const notPermitted = jest.fn().mockResolvedValue(false);
-    const { findByText } = renderProtectedPage({
-      ...defaultPageProps,
-      hasPermission: notPermitted,
+      expect(await findByText(page)).toBeInTheDocument();
     });
 
-    await expect(findByText(PAGE)).rejects.toBeTruthy();
+    it("redirects to the Login page if not authenticated", async () => {
+      const { getByText } = renderProtectedPage({
+        ...defaultPageProps,
+        isAuthenticated: false,
+      });
+
+      await waitFor(() => {
+        expect(getByText(login)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("ACL check", () => {
+    const aclGranted = {
+      ...defaultPageProps,
+      authenticationOnly: false,
+      aclCheck,
+    };
+
+    it("users the provided function to check permissions", async () => {
+      renderProtectedPage(aclGranted);
+      await waitFor(() => expect(aclCheck).toHaveBeenCalledTimes(1));
+    });
+
+    it("renders the page if the ACL is granted", async () => {
+      const { getByText } = renderProtectedPage(aclGranted);
+      await waitFor(() => expect(getByText(page)).toBeInTheDocument());
+    });
+
+    it("renders Error page if the ACL isn't granted but the user is authenticated", async () => {
+      const { getByText, container } = renderProtectedPage({
+        ...aclGranted,
+        aclCheck: aclCheck.mockResolvedValue(false),
+      });
+
+      await waitFor(() => {
+        expect(container.querySelector("#errorPage")).toBeInTheDocument();
+        expect(
+          getByText(`No permission to access ${path}`),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("redirects to login page if the ACL isn't granted and the user isn't authenticated", async () => {
+      const { getByText } = renderProtectedPage({
+        ...aclGranted,
+        aclCheck: aclCheck.mockResolvedValue(false),
+        isAuthenticated: false,
+      });
+
+      await waitFor(() => {
+        expect(getByText(login)).toBeInTheDocument();
+      });
+    });
   });
 });

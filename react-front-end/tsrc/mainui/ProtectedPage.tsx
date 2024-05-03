@@ -21,8 +21,10 @@ import { Redirect } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import { generateFromError } from "../api/errors";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "./App";
+import ErrorPage from "./ErrorPage";
 import { BaseOEQRouteComponentProps } from "./routes";
 
 export interface ProtectedPageProps {
@@ -37,14 +39,18 @@ export interface ProtectedPageProps {
   /**
    * Function to check if the user has permission to access the page.
    */
-  hasPermission: () => Promise<boolean>;
+  aclCheck?: () => Promise<boolean>;
   /**
    * The page component to be rendered.
    */
   Page: React.ComponentType<BaseOEQRouteComponentProps>;
+  /**
+   * Whether the current user is authenticated.
+   */
+  isAuthenticated: boolean;
 }
 
-const redirectTo = `/logon.do?.page=${window.location.href}`;
+const loginPage = `/logon.do?.page=${window.location.href}`;
 
 /**
  * Component that protects the access to a New UI page by performing permission checks. If the user has permission,
@@ -54,33 +60,61 @@ const redirectTo = `/logon.do?.page=${window.location.href}`;
 const ProtectedPage = ({
   path,
   Page,
-  hasPermission,
+  aclCheck,
   newUIProps,
+  isAuthenticated,
 }: ProtectedPageProps) => {
   const { appErrorHandler } = useContext(AppContext);
-  const [permitted, setPermitted] = useState<boolean>();
+  const [hasAclGranted, setHasAclGranted] = useState<boolean>();
 
   useEffect(() => {
     pipe(
-      TE.tryCatch(
-        hasPermission,
-        (e) => new Error(`Failed to check permission for ${path}: ${e}`),
+      aclCheck,
+      O.fromNullable,
+      O.map((check) =>
+        TE.tryCatch(
+          check,
+          (e) => new Error(`Failed to check ACL for ${path}: ${e}`),
+        ),
       ),
+      O.getOrElse(() => TE.right(true)), // No ACL check required so set the flag to true.
       TE.match((e) => {
         appErrorHandler(e);
-        setPermitted(false); // Redirect if failed to check.
-      }, setPermitted),
+        setHasAclGranted(false);
+      }, setHasAclGranted),
     )();
-  }, [hasPermission, appErrorHandler, path]);
+  }, [aclCheck, appErrorHandler, path]);
 
-  return pipe(
-    permitted,
-    O.fromNullable,
-    O.map((p) =>
-      p ? <Page key={path} {...newUIProps} /> : <Redirect to={redirectTo} />,
-    ),
-    O.getOrElse(() => <LoadingCircle />),
-  );
+  const protectedByAuthentication = () =>
+    isAuthenticated ? (
+      <Page key={path} {...newUIProps} />
+    ) : (
+      <Redirect to={loginPage} />
+    );
+
+  const protectedByAcl = () => {
+    const redirectOrError = () =>
+      isAuthenticated ? (
+        <ErrorPage
+          error={generateFromError(
+            new Error(`No permission to access ${path}`),
+          )}
+        />
+      ) : (
+        <Redirect to={loginPage} />
+      );
+
+    return pipe(
+      hasAclGranted,
+      O.fromNullable,
+      O.map((granted) =>
+        granted ? <Page key={path} {...newUIProps} /> : redirectOrError(),
+      ),
+      O.getOrElse(() => <LoadingCircle />),
+    );
+  };
+
+  return aclCheck ? protectedByAcl() : protectedByAuthentication();
 };
 
 export default ProtectedPage;

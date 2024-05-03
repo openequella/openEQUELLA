@@ -32,6 +32,7 @@ import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
+import { hasAuthenticated } from "../modules/SecurityModule";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
@@ -140,25 +141,29 @@ export default function IndexPage() {
     setFullPageError(err);
   }, []);
 
+  const isAuthenticated = React.useMemo(() => {
+    const isNotGuest = currentUser !== undefined && currentUser.id !== "guest";
+
+    return isNotGuest || hasAuthenticated;
+  }, [currentUser]);
+
   const renderProtectedPage = React.useCallback(
     (
       routeProps: RouteComponentProps,
       component: React.ComponentType<BaseOEQRouteComponentProps>,
+      aclCheck?: () => Promise<boolean>,
     ) => {
-      const hasAuthenticated = getRenderData()?.hasAuthenticated ?? false;
-      const isNotGuest =
-        currentUser !== undefined && currentUser.id !== "guest";
-
       return (
         <ProtectedPage
-          hasPermission={() => Promise.resolve(hasAuthenticated || isNotGuest)}
+          aclCheck={aclCheck}
           path={routeProps.location.pathname}
           Page={component}
           newUIProps={mkRouteProps(routeProps)}
+          isAuthenticated={isAuthenticated}
         />
       );
     },
-    [currentUser, mkRouteProps],
+    [isAuthenticated, mkRouteProps],
   );
 
   const renderLegacyContent = React.useCallback(
@@ -190,15 +195,13 @@ export default function IndexPage() {
             path={oeqRoute.path}
             render={(p) => {
               removeLegacyCss();
-              const oeqProps = mkRouteProps(p);
-              if (oeqRoute.component) {
-                return renderProtectedPage(p, oeqRoute.component);
-              }
-              return oeqRoute.render?.(oeqProps);
+              return oeqRoute.component
+                ? renderProtectedPage(p, oeqRoute.component, oeqRoute.aclCheck)
+                : undefined;
             }}
           />
         )),
-    [mkRouteProps, renderProtectedPage],
+    [renderProtectedPage],
   );
 
   const legacyPageRoutes = React.useMemo(
