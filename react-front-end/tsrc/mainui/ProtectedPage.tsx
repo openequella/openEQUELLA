@@ -56,11 +56,14 @@ const loginPage = `/logon.do?.page=${window.location.href}`;
  * Provide protection for the access to a New UI page by either authentication or permission checks.
  *
  * * When only authentication is required:
- *   Displaying the page or redirecting to the Login page, depending on the authentication status.
+ *   Displaying the page or redirecting to the Login page, depending on the authentication (`isAuthenticated`) status.
  *
- * * When permission check is required:
+ * * When permission check is required (i.e. `permissionCheck` is not undefined):
  *   If permitted, display the page, otherwise redirect to the Login page or display Error page depending
  *   on the authentication status. While the permission check is in progress, show a loading circle.
+ *
+ *  Note: To support access to a 'protected' page for unauthenticated/guest users, simply provide
+ *  a 'permissionCheck' function which always returns `true`.
  */
 const ProtectedPage = ({
   path,
