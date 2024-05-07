@@ -70,9 +70,20 @@ type ToFunc = (uuid: string) => string;
 type ToVersionFunc = (uuid: string, version: number) => string;
 
 export interface OEQRouteNewUI {
-  component?: React.ComponentType<BaseOEQRouteComponentProps>;
-  render?: (props: BaseOEQRouteComponentProps) => React.ReactNode;
+  /**
+   * React component to be rendered for the route.
+   */
+  component: React.ComponentType<BaseOEQRouteComponentProps>;
+  /**
+   * The path which this route matches to.
+   */
   path: string;
+  /**
+   * Optional function to check if the current user has permission to access the page which this
+   * route points to. When none, authentication is required for the access. To make this route
+   * publicly available, make this function always return a Promise of `true`.
+   */
+  permissionCheck?: () => Promise<boolean>;
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
@@ -111,8 +122,7 @@ interface Routes {
  * @param route the potential route to check
  */
 export const isNewUIRoute = (route: unknown): route is OEQRouteNewUI =>
-  (route as OEQRouteNewUI).component !== undefined ||
-  (route as OEQRouteNewUI).render !== undefined;
+  (route as OEQRouteNewUI).component !== undefined;
 
 /**
  * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded

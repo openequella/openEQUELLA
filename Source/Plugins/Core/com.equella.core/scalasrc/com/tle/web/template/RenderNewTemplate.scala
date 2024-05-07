@@ -21,6 +21,7 @@ package com.tle.web.template
 import java.util.concurrent.ConcurrentHashMap
 import com.tle.common.i18n.{CurrentLocale, LocaleUtils}
 import com.tle.common.settings.standard.QuickContributeAndVersionSettings
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.i18n.LocaleLookup
 import com.tle.core.plugins.AbstractPluginService
 import com.tle.legacy.LegacyGuice
@@ -240,7 +241,9 @@ object RenderNewTemplate {
         "viewedFromIntegration",
         java.lang.Boolean.valueOf(isViewingItemFromIntegration(req)),
         "analyticsId",
-        AnalyticsSettings.getAnalyticsId.orNull
+        AnalyticsSettings.getAnalyticsId.orNull,
+        "hasAuthenticated",
+        CurrentUser.getUserState.isAuthenticated,
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])

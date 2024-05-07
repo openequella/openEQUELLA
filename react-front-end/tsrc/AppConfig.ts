@@ -74,6 +74,11 @@ export interface RenderData {
    * Google Analytics ID if it exists. If not, this will be null.
    */
   analyticsId: string | null;
+  /**
+   * `true` if the user is already authenticated before the initial rendering of New UI.
+   * This typically happens when oEQ is open in a new tab where a session has been established.
+   */
+  hasAuthenticated: boolean;
 }
 
 declare const renderData: RenderData | undefined;
