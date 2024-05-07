@@ -31,7 +31,7 @@
     "@commitlint/config-conventional": "19.2.2",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "@babel/eslint-parser": "7.24.1",
+    "@babel/eslint-parser": "7.24.5",
     "cross-env": "7.0.3",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.1.0",
