@@ -32,7 +32,11 @@ import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
-import { hasAuthenticated } from "../modules/SecurityModule";
+import {
+  hasAuthenticated,
+  isHierarchyPageACLGranted,
+  isSearchPageACLGranted,
+} from "../modules/SecurityModule";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
@@ -41,7 +45,6 @@ import ProtectedPage from "./ProtectedPage";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
-  NEW_SEARCH_PATH,
   OEQRouteNewUI,
   OLD_HIERARCHY_PATH,
   OLD_MY_RESOURCES_PATH,
@@ -210,7 +213,7 @@ export default function IndexPage() {
     () => (
       <Switch>
         <Route
-          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH]}
+          path={[OLD_SEARCH_PATH]}
           render={(routeProps) => {
             const newSearchEnabled: boolean =
               typeof renderData !== "undefined" && renderData?.newSearch;
@@ -218,7 +221,7 @@ export default function IndexPage() {
 
             // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.
             // In other situations, use `SearchPage`.
-            if (location.pathname.match(OLD_SEARCH_PATH) && !newSearchEnabled) {
+            if (!newSearchEnabled) {
               return renderLegacyContent(routeProps);
             }
             removeLegacyCss();
@@ -228,6 +231,7 @@ export default function IndexPage() {
               isLegacyAdvancedSearchUrl(location)
                 ? AdvancedSearchPage
                 : SearchPage,
+              isSearchPageACLGranted,
             );
           }}
         />
@@ -258,6 +262,7 @@ export default function IndexPage() {
               topic === null || LegacyBrowseHierarchyLiteral.is(topic)
                 ? BrowseHierarchyPage
                 : RootHierarchyPage,
+              isHierarchyPageACLGranted,
             );
           }}
         />
