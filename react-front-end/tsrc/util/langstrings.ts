@@ -370,6 +370,9 @@ export const languageStrings = {
       },
     },
   },
+  errorpage: {
+    title: "Error",
+  },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",

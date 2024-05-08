@@ -107,6 +107,7 @@ const ProtectedPage = ({
           error={generateFromError(
             new Error(`No permission to access ${path}`),
           )}
+          updateTemplate={newUIProps.updateTemplate}
         />
       ) : (
         <Redirect to={loginPage} />

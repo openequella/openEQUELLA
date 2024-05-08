@@ -303,7 +303,10 @@ export default function IndexPage() {
           <Switch>
             {fullPageError && (
               <Route>
-                <ErrorPage error={fullPageError} />
+                <ErrorPage
+                  error={fullPageError}
+                  updateTemplate={updateTemplate}
+                />
               </Route>
             )}
             <Route path="/" exact>
