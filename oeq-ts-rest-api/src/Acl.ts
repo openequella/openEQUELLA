@@ -15,4 +15,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as t from 'io-ts';
+import { GET } from './AxiosInstance';
+import { validate } from './Utils';
+
 export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
+export const SEARCH_PAGE = 'SEARCH_PAGE';
+export const HIERARCHY_PAGE = 'HIERARCHY_PAGE';
+export const EDIT_SYSTEM_SETTINGS = 'EDIT_SYSTEM_SETTINGS';
+export const MANAGE_CLOUD_PROVIDER = 'MANAGE_CLOUD_PROVIDER';
+
+/**
+ * The unique ID of each system setting.
+ */
+export type SETTING =
+  | 'loginnoticeeditor'
+  | 'lti13platforms'
+  | 'searching'
+  | 'theme';
+
+const ACL_PRIVILEGE_CHECK_PATH = '/acl/privilegecheck';
+
+/**
+ * Given a list of non-entity privileges, return those granted to the current user.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param privileges Privileges to check for the current user
+ */
+export const checkPrivilege = (
+  apiBasePath: string,
+  privileges: string[]
+): Promise<string[]> =>
+  GET(apiBasePath + ACL_PRIVILEGE_CHECK_PATH, validate(t.array(t.string)), {
+    privilege: privileges,
+  });
+
+/**
+ * Given a list of privileges, return those granted to the current user for a specific system setting.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param setting The setting to be checked against
+ * @param privileges Privileges to check for the current user
+ */
+export const checkSettingPrivilege = (
+  apiBasePath: string,
+  setting: SETTING,
+  privileges: string[]
+): Promise<string[]> =>
+  GET(
+    apiBasePath + ACL_PRIVILEGE_CHECK_PATH + `/${setting}`,
+    validate(t.array(t.string)),
+    {
+      privilege: privileges,
+    }
+  );
