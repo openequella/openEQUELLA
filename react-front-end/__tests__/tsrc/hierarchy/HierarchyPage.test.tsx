@@ -57,6 +57,8 @@ const {
   addKeyResource: addKeyResourceText,
   removeKeyResource: removeKeyResourceText,
 } = languageStrings.hierarchy;
+const { title: addToHierarchyText } =
+  languageStrings.searchpage.addItemToHierarchy;
 
 const {
   mockCollections,
@@ -247,6 +249,14 @@ describe("Search result", () => {
         })`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("hide `add to hierarchy` button", async () => {
+    const { queryAllByLabelText } = await renderHierarchyPage(
+      topicWithChildren.compoundUuid,
+    );
+
+    expect(queryAllByLabelText(addToHierarchyText)).toHaveLength(0);
   });
 });
 
