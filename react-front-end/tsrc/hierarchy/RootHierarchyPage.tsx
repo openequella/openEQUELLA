@@ -50,7 +50,10 @@ const RootHierarchyPage = (props: TemplateUpdateProps) => {
   return compoundUuid ? (
     <HierarchyPage {...props} compoundUuid={compoundUuid} />
   ) : (
-    <ErrorPage error={generateNewErrorID(error.missingTopicUUID)} />
+    <ErrorPage
+      error={generateNewErrorID(error.missingTopicUUID)}
+      updateTemplate={props.updateTemplate}
+    />
   );
 };
 
