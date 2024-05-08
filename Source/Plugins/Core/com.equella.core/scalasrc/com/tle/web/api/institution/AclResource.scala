@@ -19,7 +19,7 @@
 package com.tle.web.api.institution
 
 import com.tle.common.security.PrivilegeTree.Node
-import com.tle.common.security.{PrivilegeTree, TargetList, TargetListEntry}
+import com.tle.common.security.{PrivilegeTree, SettingsTarget, TargetList, TargetListEntry}
 import com.tle.core.security.AclPrefs
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
@@ -51,6 +51,13 @@ class AclResource {
       @QueryParam("privilege") privs: Array[String]): Iterable[String] = {
     aclManager.filterNonGrantedPrivileges(privs: _*).asScala
   }
+
+  @GET
+  @ApiOperation(value = "Determine if the current user has specific privilege(s) for a setting")
+  @Path("/privilegecheck/{setting}")
+  def checkEntityPrivilege(@PathParam("setting") setting: String,
+                           @QueryParam("privilege") privs: Array[String]): Iterable[String] =
+    aclManager.filterNonGrantedPrivileges(new SettingsTarget(setting), privs: _*).asScala
 
   @GET
   @ApiOperation(value = "Get all institution level acls")
