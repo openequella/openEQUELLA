@@ -370,6 +370,12 @@ export const languageStrings = {
       },
     },
   },
+  error: {
+    accessdenied: {
+      title: "Access Denied",
+      message: "No permission to access %s",
+    },
+  },
   errorpage: {
     title: "Error",
   },

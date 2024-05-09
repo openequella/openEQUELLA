@@ -21,8 +21,10 @@ import { Redirect } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { generateFromError } from "../api/errors";
+import { sprintf } from "sprintf-js";
+import { generateNewErrorID } from "../api/errors";
 import LoadingCircle from "../components/LoadingCircle";
+import { languageStrings } from "../util/langstrings";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
 import { BaseOEQRouteComponentProps } from "./routes";
@@ -51,6 +53,7 @@ export interface ProtectedPageProps {
 }
 
 const loginPage = `/logon.do?.page=${window.location.href}`;
+const { accessdenied } = languageStrings.error;
 
 /**
  * Provide protection for the access to a New UI page by either authentication or permission checks.
@@ -104,8 +107,10 @@ const ProtectedPage = ({
     const redirectOrError = () =>
       isAuthenticated ? (
         <ErrorPage
-          error={generateFromError(
-            new Error(`No permission to access ${path}`),
+          error={generateNewErrorID(
+            accessdenied.title,
+            403,
+            sprintf(accessdenied.message, path),
           )}
           updateTemplate={newUIProps.updateTemplate}
         />
