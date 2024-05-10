@@ -151,6 +151,20 @@ public class TLEUserServiceImpl
 
   @Override
   @Transactional
+  public List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit) {
+    return dao.searchUsersInGroup(query, parentGroupID, recursive, limit);
+  }
+
+  @Override
+  @Transactional
+  public List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit, Integer offset) {
+    return dao.searchUsersInGroup(query, parentGroupID, recursive, limit, offset);
+  }
+
+  @Override
+  @Transactional
   public TLEUser get(String id) {
     return dao.findByCriteria(
         Restrictions.eq("uuid", id), Restrictions.eq("institution", CurrentInstitution.get()));
@@ -421,5 +435,13 @@ public class TLEUserServiceImpl
     }
 
     return searchString;
+  }
+
+  public int countUsers() {
+    return dao.totalExistingUsers();
+  }
+
+  public int countUsers(String query, String parentGroupID, boolean recursive) {
+    return dao.countUsersInGroup(query, parentGroupID, recursive);
   }
 }

@@ -50,10 +50,30 @@ public interface RemoteTLEUserService {
 
   List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive);
 
+  List<TLEUser> searchUsers(String query, String parentGroupID, boolean recursive, Integer limit);
+
+  List<TLEUser> searchUsers(
+      String query, String parentGroupID, boolean recursive, Integer limit, Integer offset);
+
   /**
    * Fired when the list of suspended user accounts has been updated.
    *
    * @param uuids UUIDs of suspended user accounts
    */
   void onSuspension(Set<String> uuids);
+
+  /**
+   * Count the number of users in the system.
+   *
+   * @return The number of users in the system
+   */
+  int countUsers();
+
+  /**
+   * Count the number of users in the system that match the given query.
+   *
+   * @see #searchUsers(String, String, boolean)
+   * @see #countUsers()
+   */
+  int countUsers(String query, String parentGroupID, boolean recursive);
 }
