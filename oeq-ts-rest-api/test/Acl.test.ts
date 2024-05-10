@@ -17,11 +17,13 @@
  */
 import * as OEQ from '../src';
 import {
+  checkHierarchyPrivilege,
   checkPrivilege,
   checkSettingPrivilege,
   EDIT_SYSTEM_SETTINGS,
   HIERARCHY_PAGE,
   SEARCH_PAGE,
+  VIEW_HIERARCHY_TOPIC,
 } from '../src/Acl';
 import * as TC from './TestConfig';
 
@@ -38,9 +40,21 @@ describe('Check privileges', () => {
     expect(result).toEqual([SEARCH_PAGE, HIERARCHY_PAGE]);
   });
 
-  it('returns privileges granted to the current user for a setting when given a list of privileges', async () => {
-    const acls: string[] = [EDIT_SYSTEM_SETTINGS];
-    const result = await checkSettingPrivilege(TC.API_PATH, 'searching', acls);
-    expect(result).toEqual([EDIT_SYSTEM_SETTINGS]);
+  it('returns a flag for if the supplied privilege is granted to the current user for a setting', async () => {
+    const result = await checkSettingPrivilege(
+      TC.API_PATH,
+      'searching',
+      EDIT_SYSTEM_SETTINGS
+    );
+    expect(result).toBe(true);
+  });
+
+  it('returns a flag for if the supplied privilege is granted to the current user for a Hierarchy topic', async () => {
+    const result = await checkHierarchyPrivilege(
+      TC.API_PATH,
+      '43e60e9a-a3ed-497d-b79d-386fed23675c',
+      VIEW_HIERARCHY_TOPIC
+    );
+    expect(result).toBe(true);
   });
 });
