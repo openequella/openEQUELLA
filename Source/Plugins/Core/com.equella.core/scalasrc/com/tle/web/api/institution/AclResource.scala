@@ -23,6 +23,7 @@ import com.tle.common.security.{PrivilegeTree, SettingsTarget, TargetList, Targe
 import com.tle.core.security.AclPrefs
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.ApiErrorResponse.resourceNotFound
 import com.tle.web.api.interfaces.beans.security.{TargetListBean, TargetListEntryBean}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import javax.ws.rs._
@@ -37,8 +38,10 @@ case class AddRemoveRecent(add: Iterable[String], remove: Iterable[String])
 @Api(value = "ACLs")
 class AclResource {
 
-  val aclManager = LegacyGuice.aclManager
-  val userPrefs  = LegacyGuice.userPreferenceService
+  val aclManager       = LegacyGuice.aclManager
+  val userPrefs        = LegacyGuice.userPreferenceService
+  val hierarchyService = LegacyGuice.hierarchyService
+
   @GET
   @ApiOperation(value = "Get allowed privileges for tree node")
   @Path("/privileges") def getAllowedPrivileges(@QueryParam("node") node: Node) = {
@@ -53,11 +56,33 @@ class AclResource {
   }
 
   @GET
-  @ApiOperation(value = "Determine if the current user has specific privilege(s) for a setting")
-  @Path("/privilegecheck/{setting}")
-  def checkEntityPrivilege(@PathParam("setting") setting: String,
-                           @QueryParam("privilege") privs: Array[String]): Iterable[String] =
-    aclManager.filterNonGrantedPrivileges(new SettingsTarget(setting), privs: _*).asScala
+  @ApiOperation(
+    value = "Determine if the current user has a specific privilege granted for a setting",
+    response = classOf[Boolean]
+  )
+  @Path("/privilegecheck/setting/{setting}")
+  def checkSettingPrivilege(@PathParam("setting") setting: String,
+                            @QueryParam("privilege") priv: String): Response = {
+    val isGranted =
+      aclManager.filterNonGrantedPrivileges(new SettingsTarget(setting), priv).asScala.nonEmpty
+    Response.ok.entity(isGranted).build()
+  }
+
+  @GET
+  @ApiOperation(
+    value = "Determine if the current user has a specific privilege granted for a Hierarchy topic",
+    response = classOf[Boolean]
+  )
+  @Path("/privilegecheck/hierarchy/{topic}")
+  def checkHierarchyPrivilege(@PathParam("topic") topicId: String,
+                              @QueryParam("privilege") priv: String): Response = {
+    Option(hierarchyService.getHierarchyTopicByUuid(topicId)) match {
+      case Some(topic) =>
+        val isGranted = aclManager.filterNonGrantedPrivileges(topic, priv).asScala.nonEmpty
+        Response.ok.entity(isGranted).build()
+      case None => resourceNotFound(s"Topic $topicId not found")
+    }
+  }
 
   @GET
   @ApiOperation(value = "Get all institution level acls")

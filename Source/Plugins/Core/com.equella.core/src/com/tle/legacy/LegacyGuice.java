@@ -35,6 +35,7 @@ import com.tle.core.favourites.service.BookmarkService;
 import com.tle.core.favourites.service.FavouriteSearchService;
 import com.tle.core.fedsearch.FederatedSearchService;
 import com.tle.core.freetext.service.FreeTextService;
+import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.i18n.service.LanguageService;
 import com.tle.core.institution.InstitutionService;
@@ -174,6 +175,8 @@ public class LegacyGuice extends AbstractModule {
   @Inject public static HtmlEditorSettingsPrivilegeTreeProvider htmlEditorPrivProvider;
 
   @Inject public static InstitutionService institutionService;
+
+  @Inject public static HierarchyService hierarchyService;
 
   @Inject public static ItemCommentService itemCommentService;
 
