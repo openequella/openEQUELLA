@@ -373,7 +373,7 @@ export const languageStrings = {
   error: {
     accessdenied: {
       title: "Access Denied",
-      message: "No permission to access %s",
+      message: "No permission to access %s - missing ACL(s): %s",
     },
   },
   errorpage: {

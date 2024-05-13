@@ -36,6 +36,8 @@ import {
   hasAuthenticated,
   isHierarchyPageACLGranted,
   isSearchPageACLGranted,
+  isViewHierarchyTopicACLGranted,
+  PermissionCheck,
 } from "../modules/SecurityModule";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import { AppContext } from "./App";
@@ -154,11 +156,11 @@ export default function IndexPage() {
     (
       routeProps: RouteComponentProps,
       component: React.ComponentType<BaseOEQRouteComponentProps>,
-      permissionCheck?: () => Promise<boolean>,
+      permissionChecks?: PermissionCheck[],
     ) => {
       return (
         <ProtectedPage
-          permissionCheck={permissionCheck}
+          permissionChecks={permissionChecks}
           path={routeProps.location.pathname}
           Page={component}
           newUIProps={mkRouteProps(routeProps)}
@@ -201,7 +203,7 @@ export default function IndexPage() {
               return renderProtectedPage(
                 p,
                 oeqRoute.component,
-                oeqRoute.permissionCheck,
+                oeqRoute.permissionChecks,
               );
             }}
           />
@@ -231,7 +233,7 @@ export default function IndexPage() {
               isLegacyAdvancedSearchUrl(location)
                 ? AdvancedSearchPage
                 : SearchPage,
-              isSearchPageACLGranted,
+              [isSearchPageACLGranted],
             );
           }}
         />
@@ -262,7 +264,7 @@ export default function IndexPage() {
               topic === null || LegacyBrowseHierarchyLiteral.is(topic)
                 ? BrowseHierarchyPage
                 : RootHierarchyPage,
-              isHierarchyPageACLGranted,
+              [isHierarchyPageACLGranted, isViewHierarchyTopicACLGranted],
             );
           }}
         />

@@ -15,49 +15,111 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { flow, pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
+import * as O from "fp-ts/Option";
+import * as IO from "fp-ts/IO";
 import { API_BASE_URL, getRenderData } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { getTopicIDFromURL } from "../hierarchy/HierarchyHelper";
+
+export type PermissionCheck = TE.TaskEither<string, true>;
+
+const buildAclCheckTask = (
+  check: () => Promise<boolean>,
+  acl: string,
+): PermissionCheck =>
+  pipe(
+    TE.tryCatch(
+      check,
+      (err) =>
+        `Failed to check if ACL ${acl} has been granted to the current user: ${err}`,
+    ),
+    TE.chain((has) => (has ? TE.right(true) : TE.left(acl))),
+  );
 
 /**
- * Checks if the current user has the specified ACL granted.
+ * Checks if the current user has the specified non-entity ACL granted.
  */
-const hasAcl = async (acl: string): Promise<boolean> =>
-  OEQ.Acl.checkPrivilege(API_BASE_URL, [acl]).then(A.isNonEmpty);
+const hasAcl = (acl: string): PermissionCheck =>
+  buildAclCheckTask(
+    () => OEQ.Acl.checkPrivilege(API_BASE_URL, [acl]).then(A.isNonEmpty),
+    acl,
+  );
 
 /**
  * Check if the current user has the specified ACL granted for a setting.
  */
-const hasSettingAcl = async (
+const hasSettingAcl = (
   setting: OEQ.Acl.SETTING,
   acl: string,
-): Promise<boolean> =>
-  OEQ.Acl.checkSettingPrivilege(API_BASE_URL, setting, [acl]).then(
-    A.isNonEmpty,
+): PermissionCheck =>
+  buildAclCheckTask(
+    () => OEQ.Acl.checkSettingPrivilege(API_BASE_URL, setting, acl),
+    acl,
   );
+
+/**
+ * Check if the current user has the specified ACL granted for a Hierarchy topic.
+ */
+const hasHierarchyAcl = (acl: string): PermissionCheck => {
+  const check: (topicID: string | null) => TE.TaskEither<string, boolean> =
+    flow(
+      O.fromNullable,
+      O.match(
+        () => TE.left("Topic ID not found"),
+        (id) =>
+          TE.tryCatch(
+            () => OEQ.Acl.checkHierarchyPrivilege(API_BASE_URL, id, acl),
+            (_) =>
+              `Failed to check if ACL ${acl} has been granted to the current user for topic ${id}`,
+          ),
+      ),
+    );
+
+  return pipe(
+    IO.of(getTopicIDFromURL), // Must use IO to ensure the execution of getTopicIDFromURL happens when the Task is executed
+    TE.fromIO,
+    TE.map((f) => f()),
+    TE.chain(check),
+    TE.chain((has) => (has ? TE.right(true) : TE.left(acl))),
+  );
+};
 
 /**
  * Return a Promise of boolean to indicate whether ACL HIERARCHY_PAGE is granted to the current user.
  */
-export const isHierarchyPageACLGranted = () => hasAcl(OEQ.Acl.HIERARCHY_PAGE);
+export const isHierarchyPageACLGranted: PermissionCheck = hasAcl(
+  OEQ.Acl.HIERARCHY_PAGE,
+);
 
 /**
  * Return a Promise of boolean to indicate whether ACL SEARCH_PAGE is granted to the current user.
  */
-export const isSearchPageACLGranted = () => hasAcl(OEQ.Acl.SEARCH_PAGE);
+export const isSearchPageACLGranted: PermissionCheck = hasAcl(
+  OEQ.Acl.SEARCH_PAGE,
+);
+
+/**
+ * Return a Promise of boolean to indicate whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
+ */
+export const isManageCloudProviderACLGranted: PermissionCheck = hasAcl(
+  OEQ.Acl.MANAGE_CLOUD_PROVIDER,
+);
+
+export const isViewHierarchyTopicACLGranted: PermissionCheck = hasHierarchyAcl(
+  OEQ.Acl.VIEW_HIERARCHY_TOPIC,
+);
 
 /**
  * Return a Promise of boolean to indicate whether ACL EDIT_SYSTEM_SETTINGS is granted to the current user
  * for the specified setting.
  */
-export const isEditSystemSettingsGranted = (setting: OEQ.Acl.SETTING) => () =>
+export const isEditSystemSettingsGranted: (
+  setting: OEQ.Acl.SETTING,
+) => PermissionCheck = (setting: OEQ.Acl.SETTING) =>
   hasSettingAcl(setting, OEQ.Acl.EDIT_SYSTEM_SETTINGS);
-
-/**
- * Return a Promise of boolean to indicate whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
- */
-export const isManageCloudProviderACLGranted = () =>
-  hasAcl(OEQ.Acl.MANAGE_CLOUD_PROVIDER);
 
 /**
  * True if the user has authenticated before the initial rendering of New UI.

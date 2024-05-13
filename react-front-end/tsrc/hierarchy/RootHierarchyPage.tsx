@@ -20,22 +20,12 @@ import { generateNewErrorID } from "../api/errors";
 import ErrorPage from "../mainui/ErrorPage";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
+import { getTopicIDFromURL } from "./HierarchyHelper";
 import HierarchyPage from "./HierarchyPage";
 
 const {
   hierarchy: { error },
 } = languageStrings;
-
-const getTopicIDFromRoute = (location: Location): string | undefined => {
-  const newHierarchyPagePath = /(\/page\/hierarchy\/)(.+)/;
-  const matches: string[] | null =
-    location.pathname.match(newHierarchyPagePath);
-
-  return matches?.pop();
-};
-
-const getTopicIDFromQueryParam = (location: Location): string | null =>
-  new URLSearchParams(location.search).get("topic");
 
 /**
  * Root component for Hierarchy search to retrieve the compound UUID from the URL
@@ -43,9 +33,7 @@ const getTopicIDFromQueryParam = (location: Location): string | null =>
  * will be displayed instead.
  */
 const RootHierarchyPage = (props: TemplateUpdateProps) => {
-  const location = window.location;
-  const compoundUuid =
-    getTopicIDFromRoute(location) ?? getTopicIDFromQueryParam(location);
+  const compoundUuid = getTopicIDFromURL();
 
   return compoundUuid ? (
     <HierarchyPage {...props} compoundUuid={compoundUuid} />

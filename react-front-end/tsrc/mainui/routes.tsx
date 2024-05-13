@@ -22,6 +22,8 @@ import {
   isHierarchyPageACLGranted,
   isManageCloudProviderACLGranted,
   isSearchPageACLGranted,
+  isViewHierarchyTopicACLGranted,
+  PermissionCheck,
 } from "../modules/SecurityModule";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
@@ -90,7 +92,7 @@ export interface OEQRouteNewUI {
    * route points to. When none, authentication is required for the access. To make this route
    * publicly available, make this function always return a Promise of `true`.
    */
-  permissionCheck?: () => Promise<boolean>;
+  permissionChecks?: PermissionCheck[];
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
@@ -161,45 +163,48 @@ export const routes: Routes = {
   BrowseHierarchy: {
     path: "/page/hierarchies",
     component: BrowseHierarchyPage,
-    permissionCheck: isHierarchyPageACLGranted,
+    permissionChecks: [isHierarchyPageACLGranted],
   },
   CloudProviders: {
     path: "/page/cloudprovider",
     component: CloudProviderListPage,
-    permissionCheck: isManageCloudProviderACLGranted,
+    permissionChecks: [isManageCloudProviderACLGranted],
   },
   ContentIndexSettings: {
     path: "/page/contentindexsettings",
     component: ContentIndexSettings,
-    permissionCheck: isEditSystemSettingsGranted("searching"),
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
   },
   CreateLti13Platform: {
     path: "/page/createLti13Platform",
     component: CreateLti13PlatformPage,
-    permissionCheck: isEditSystemSettingsGranted("lti13platforms"),
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first
     to: (platformId: string) => `/page/editLti13Platform/${btoa(platformId)}`,
     path: `/page/editLti13Platform/:platformIdBase64`,
     component: EditLti13PlatformPage,
-    permissionCheck: isEditSystemSettingsGranted("lti13platforms"),
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
     component: FacetedSearchSettingsPage,
-    permissionCheck: isEditSystemSettingsGranted("searching"),
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
   },
   Hierarchy: {
     path: `${NEW_HIERARCHY_PATH}/:compoundUuid`,
     to: (compoundUuid: string) => `${NEW_HIERARCHY_PATH}/${compoundUuid}`,
     component: RootHierarchyPage,
-    permissionCheck: isHierarchyPageACLGranted,
+    permissionChecks: [
+      isHierarchyPageACLGranted,
+      isViewHierarchyTopicACLGranted,
+    ],
   },
   LoginNoticeConfig: {
     path: "/page/loginconfiguration",
     component: LoginNoticeConfigPage,
-    permissionCheck: isEditSystemSettingsGranted("loginnoticeeditor"),
+    permissionChecks: [isEditSystemSettingsGranted("loginnoticeeditor")],
   },
   Logout: {
     // lack of '/' is significant
@@ -208,7 +213,7 @@ export const routes: Routes = {
   Lti13PlatformsSettings: {
     path: "/page/lti13platforms",
     component: LtiPlatformsSettingsPage,
-    permissionCheck: isEditSystemSettingsGranted("lti13platforms"),
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
@@ -218,7 +223,7 @@ export const routes: Routes = {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
     path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
     component: AdvancedSearchPage,
-    permissionCheck: isSearchPageACLGranted,
+    permissionChecks: [isSearchPageACLGranted],
   },
   Notifications: {
     to: "/access/notifications.do",
@@ -239,17 +244,17 @@ export const routes: Routes = {
   SearchFilterSettings: {
     path: "/page/searchfiltersettings",
     component: SearchFilterPage,
-    permissionCheck: isEditSystemSettingsGranted("searching"),
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
   },
   SearchPage: {
     path: NEW_SEARCH_PATH,
     component: SearchPage,
-    permissionCheck: isSearchPageACLGranted,
+    permissionChecks: [isSearchPageACLGranted],
   },
   SearchSettings: {
     path: "/page/searchsettings",
     component: SearchPageSettings,
-    permissionCheck: isEditSystemSettingsGranted("searching"),
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
   },
   Settings: {
     path: "(/access/settings.do|/page/settings)",
@@ -262,7 +267,7 @@ export const routes: Routes = {
   ThemeConfig: {
     path: "/page/themeconfiguration",
     component: ThemePage,
-    permissionCheck: isEditSystemSettingsGranted("theme"),
+    permissionChecks: [isEditSystemSettingsGranted("theme")],
   },
   UserPreferences: {
     to: "/access/user.do",
