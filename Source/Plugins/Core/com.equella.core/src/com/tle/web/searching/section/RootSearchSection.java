@@ -36,7 +36,10 @@ import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
+import com.tle.web.sections.js.generic.expression.ScriptVariable;
+import com.tle.web.sections.js.generic.statement.DeclarationStatement;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.RenderNewTemplate;
@@ -95,7 +98,12 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
-      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewSearchPage(context));
+      DeclarationStatement statement =
+          new DeclarationStatement(
+              new ScriptVariable("configuredCollections"), selectionSession.getCollectionUuids());
+
+      SimpleSectionResult content = RenderNewSearchPage.renderNewSearchPage(context, statement);
+      getModel(context).setNewUIContent(content);
     }
     return super.renderHtml(context);
   }

@@ -26,6 +26,7 @@ import { useContext, useEffect, useState } from "react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
+import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
 import { TooltipChip } from "../../components/TooltipChip";
 import {
@@ -34,6 +35,8 @@ import {
 } from "../../modules/CollectionsModule";
 import { languageStrings } from "../../util/langstrings";
 import { SearchContext } from "../SearchPageHelper";
+
+declare const configuredCollections: string[] | undefined;
 
 interface CollectionSelectorProps {
   /**
@@ -52,6 +55,9 @@ const { title, noOptions } = languageStrings.searchpage.collectionSelector;
 /**
  * As a refine search control, this component is used to filter search results by collections.
  * The initially selected collections are either provided through props or an empty array.
+ *
+ * Note that the available Collections can be pre-configured externally. So the final list of Collections
+ * is the intersection of the full list and the pre-configured list.
  */
 export const CollectionSelector = ({
   onSelectionChange,
@@ -62,18 +68,33 @@ export const CollectionSelector = ({
 
   useEffect(() => {
     collectionListSummary([OEQ.Acl.ACL_SEARCH_COLLECTION])
-      .then((collections: Collection[]) =>
-        setCollections(
-          pipe(
-            collections,
-            A.sort(
-              ORD.contramap<string, Collection>(({ name }) =>
-                name.toLowerCase(),
-              )(S.Ord),
+      .then((collections: Collection[]) => {
+        const fullList: Collection[] = pipe(
+          collections,
+          A.sort(
+            ORD.contramap<string, Collection>(({ name }) => name.toLowerCase())(
+              S.Ord,
             ),
           ),
-        ),
-      )
+        );
+
+        const filterByUUID = (uuid: string): O.Option<Collection> =>
+          pipe(
+            fullList,
+            A.findFirst((c) => c.uuid === uuid),
+          );
+
+        setCollections(
+          pipe(
+            typeof configuredCollections !== "undefined"
+              ? configuredCollections
+              : undefined,
+            O.fromNullable,
+            O.map(A.filterMap(filterByUUID)),
+            O.getOrElse(() => fullList),
+          ),
+        );
+      })
       .catch(searchPageErrorHandler);
   }, [searchPageErrorHandler]);
 
