@@ -24,6 +24,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { getTopicIDFromURL } from "../hierarchy/HierarchyHelper";
 
+/**
+ * Represents a TaskEither for permission check where the right side is `true` to indicate the permission
+ * is granted and the left side is the string representation of the targeted ACL. However, the left side
+ * can be an error message if that is more suitable.
+ */
 export type PermissionCheck = TE.TaskEither<string, true>;
 
 const buildAclCheckTask = (
@@ -88,32 +93,36 @@ const hasHierarchyAcl = (acl: string): PermissionCheck => {
 };
 
 /**
- * Return a Promise of boolean to indicate whether ACL HIERARCHY_PAGE is granted to the current user.
+ * Return a TaskEither to check whether ACL HIERARCHY_PAGE is granted to the current user.
  */
 export const isHierarchyPageACLGranted: PermissionCheck = hasAcl(
   OEQ.Acl.HIERARCHY_PAGE,
 );
 
 /**
- * Return a Promise of boolean to indicate whether ACL SEARCH_PAGE is granted to the current user.
+ * Return a TaskEither to check whether ACL SEARCH_PAGE is granted to the current user.
  */
 export const isSearchPageACLGranted: PermissionCheck = hasAcl(
   OEQ.Acl.SEARCH_PAGE,
 );
 
 /**
- * Return a Promise of boolean to indicate whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
+ * Return a TaskEither to check whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
  */
 export const isManageCloudProviderACLGranted: PermissionCheck = hasAcl(
   OEQ.Acl.MANAGE_CLOUD_PROVIDER,
 );
 
+/**
+ * Return a TaskEither to check whether ACL VIEW_HIERARCHY_TOPIC is granted to the current user for
+ * the target topic.
+ */
 export const isViewHierarchyTopicACLGranted: PermissionCheck = hasHierarchyAcl(
   OEQ.Acl.VIEW_HIERARCHY_TOPIC,
 );
 
 /**
- * Return a Promise of boolean to indicate whether ACL EDIT_SYSTEM_SETTINGS is granted to the current user
+ * Return a TaskEither to check whether ACL EDIT_SYSTEM_SETTINGS is granted to the current user
  * for the specified setting.
  */
 export const isEditSystemSettingsGranted: (
