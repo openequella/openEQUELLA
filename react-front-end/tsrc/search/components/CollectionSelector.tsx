@@ -36,6 +36,15 @@ import {
 import { languageStrings } from "../../util/langstrings";
 import { SearchContext } from "../SearchPageHelper";
 
+/**
+ * List of Collection UUIDs that are externally configured to be available for selection.
+ * If provided, it takes the precedence over the full list of Collections, but it is also
+ * subject to permission control. Hence, the final list is the intersection between the
+ * full list and this configured list.
+ *
+ * It is usually provided through OEQ Legacy server side rendering together with Legacy content
+ * API. For more details, please check the use of {@link PageContent#script} and {@link LegacyContent}
+ */
 declare const configuredCollections: string[] | undefined;
 
 interface CollectionSelectorProps {
