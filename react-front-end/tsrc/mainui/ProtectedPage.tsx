@@ -16,14 +16,19 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
+import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import { generateFromError } from "../api/errors";
+import { sprintf } from "sprintf-js";
+import { generateNewErrorID } from "../api/errors";
 import LoadingCircle from "../components/LoadingCircle";
-import { AppContext } from "./App";
+import type { PermissionCheck } from "../modules/SecurityModule";
+import { languageStrings } from "../util/langstrings";
 import ErrorPage from "./ErrorPage";
 import { BaseOEQRouteComponentProps } from "./routes";
 
@@ -37,9 +42,9 @@ export interface ProtectedPageProps {
    */
   newUIProps: BaseOEQRouteComponentProps;
   /**
-   * Function to check if the user has permission to access the page.
+   * A list of required permission checks to determine if the user has permissions to access the page.
    */
-  permissionCheck?: () => Promise<boolean>;
+  permissionChecks?: PermissionCheck[];
   /**
    * The page component to be rendered.
    */
@@ -49,6 +54,7 @@ export interface ProtectedPageProps {
    */
   isAuthenticated: boolean;
 }
+const { accessdenied } = languageStrings.error;
 
 const loginPage = `/logon.do?.page=${window.location.href}`;
 
@@ -68,30 +74,39 @@ const loginPage = `/logon.do?.page=${window.location.href}`;
 const ProtectedPage = ({
   path,
   Page,
-  permissionCheck,
+  permissionChecks,
   newUIProps,
   isAuthenticated,
 }: ProtectedPageProps) => {
-  const { appErrorHandler } = useContext(AppContext);
   const [permitted, setPermitted] = useState<boolean>();
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
+    const applicative = TE.getApplicativeTaskValidation(
+      T.ApplySeq,
+      A.getSemigroup<string>(),
+    ); // Collection all the errors in an array.
+
+    const runChecks = (checks: TE.TaskEither<string, true>[]) =>
+      pipe(
+        checks,
+        A.traverse(applicative)(TE.mapLeft(A.of)),
+        TE.map(A.every((r) => r === true)), // Every check must succeed.
+      );
+
     pipe(
-      permissionCheck,
+      permissionChecks,
       O.fromNullable,
-      O.map((check) =>
-        TE.tryCatch(
-          check,
-          (e) => new Error(`Failed to check ACL for ${path}: ${e}`),
-        ),
-      ),
+      O.map(runChecks),
       O.getOrElse(() => TE.right(true)), // No ACL check required so set the flag to true.
-      TE.match((e) => {
-        appErrorHandler(e);
-        setPermitted(false);
-      }, setPermitted),
+      TE.match(
+        flow(A.intercalate(S.Monoid)(", "), setError, () =>
+          setPermitted(false),
+        ),
+        setPermitted,
+      ),
     )();
-  }, [permissionCheck, appErrorHandler, path]);
+  }, [permissionChecks, path]);
 
   const protectedByAuthentication = () =>
     isAuthenticated ? (
@@ -104,9 +119,12 @@ const ProtectedPage = ({
     const redirectOrError = () =>
       isAuthenticated ? (
         <ErrorPage
-          error={generateFromError(
-            new Error(`No permission to access ${path}`),
+          error={generateNewErrorID(
+            accessdenied.title,
+            403,
+            sprintf(accessdenied.message, path, error),
           )}
+          updateTemplate={newUIProps.updateTemplate}
         />
       ) : (
         <Redirect to={loginPage} />
@@ -122,7 +140,7 @@ const ProtectedPage = ({
     );
   };
 
-  return permissionCheck
+  return permissionChecks
     ? protectedByPermission()
     : protectedByAuthentication();
 };

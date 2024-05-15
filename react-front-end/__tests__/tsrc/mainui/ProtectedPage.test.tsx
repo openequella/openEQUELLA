@@ -23,12 +23,14 @@ import { Route, Router, Switch } from "react-router-dom";
 import ProtectedPage, {
   ProtectedPageProps,
 } from "../../../tsrc/mainui/ProtectedPage";
+import * as TE from "fp-ts/TaskEither";
+import type { PermissionCheck } from "../../../tsrc/modules/SecurityModule";
 
 describe("<ProtectedPage/>", () => {
   const page = "Page";
   const path = "/some/path";
   const login = "login";
-  const permissionCheck = jest.fn().mockResolvedValue(true);
+
   const defaultPageProps: ProtectedPageProps = {
     Page: jest.fn().mockReturnValue(<div>{page}</div>),
     newUIProps: {
@@ -77,10 +79,13 @@ describe("<ProtectedPage/>", () => {
   });
 
   describe("Permission check", () => {
+    const permissionCheck = jest.fn().mockResolvedValue(true);
+    const task: PermissionCheck = TE.tryCatch(permissionCheck, () => "Failed");
+
     const permitted = {
       ...defaultPageProps,
       authenticationOnly: false,
-      permissionCheck,
+      permissionChecks: [task],
     };
 
     it("users the provided function to check permissions", async () => {
@@ -96,13 +101,15 @@ describe("<ProtectedPage/>", () => {
     it("renders Error page if the user is authenticated but not permitted", async () => {
       const { getByText, container } = renderProtectedPage({
         ...permitted,
-        permissionCheck: permissionCheck.mockResolvedValue(false),
+        permissionChecks: [TE.left("TEST_ACL")],
       });
 
       await waitFor(() => {
         expect(container.querySelector("#errorPage")).toBeInTheDocument();
         expect(
-          getByText(`No permission to access ${path}`),
+          getByText(
+            `No permission to access ${path} - missing ACL(s): TEST_ACL`,
+          ),
         ).toBeInTheDocument();
       });
     });
@@ -110,7 +117,7 @@ describe("<ProtectedPage/>", () => {
     it("redirects to login page if the user isn't authenticated and permitted", async () => {
       const { getByText } = renderProtectedPage({
         ...permitted,
-        permissionCheck: permissionCheck.mockResolvedValue(false),
+        permissionChecks: [TE.left("Failed")],
         isAuthenticated: false,
       });
 

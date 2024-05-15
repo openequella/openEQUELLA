@@ -19,6 +19,8 @@ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import { ErrorResponse } from "../api/errors";
 import { CardContent, Card, Typography } from "@mui/material";
+import { languageStrings } from "../util/langstrings";
+import { templateDefaults, TemplateUpdateProps } from "./Template";
 
 const StyledDiv = styled("div")(({ theme }) => ({
   display: "flex",
@@ -28,13 +30,20 @@ const StyledDiv = styled("div")(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 
-interface ErrorPageProps {
+interface ErrorPageProps extends TemplateUpdateProps {
   error: ErrorResponse;
 }
 
 export default React.memo(function ErrorPage({
   error: { code, error, error_description },
+  updateTemplate,
 }: ErrorPageProps) {
+  React.useEffect(() => {
+    updateTemplate((tp) => ({
+      ...templateDefaults(languageStrings.errorpage.title)(tp),
+    }));
+  }, [updateTemplate]);
+
   return (
     <StyledDiv id="errorPage">
       <Card>

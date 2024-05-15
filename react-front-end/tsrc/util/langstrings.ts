@@ -370,6 +370,15 @@ export const languageStrings = {
       },
     },
   },
+  error: {
+    accessdenied: {
+      title: "Access Denied",
+      message: "No permission to access %s - missing ACL(s): %s",
+    },
+  },
+  errorpage: {
+    title: "Error",
+  },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",

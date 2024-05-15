@@ -16,15 +16,20 @@
  * limitations under the License.
  */
 import * as React from "react";
+import type { ErrorResponse } from "../../../tsrc/api/errors";
 import ErrorPage from "../../../tsrc/mainui/ErrorPage";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 describe("<ErrorPage />", () => {
+  const renderErrorPage = (error: ErrorResponse) =>
+    render(<ErrorPage error={error} updateTemplate={jest.fn()} />);
+
   it("should render with no code or description", () => {
-    const { container, queryByText } = render(
-      <ErrorPage error={{ id: "mock-error", error: "example" }} />,
-    );
+    const { container, queryByText } = renderErrorPage({
+      id: "mock-error",
+      error: "example",
+    });
 
     expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
@@ -32,16 +37,12 @@ describe("<ErrorPage />", () => {
   });
 
   it("should render with code and description", () => {
-    const { container, queryByText } = render(
-      <ErrorPage
-        error={{
-          id: "mock-error",
-          error: "example",
-          code: 404,
-          error_description: "mock description",
-        }}
-      />,
-    );
+    const { container, queryByText } = renderErrorPage({
+      id: "mock-error",
+      error: "example",
+      code: 404,
+      error_description: "mock description",
+    });
 
     expect(container.querySelector("#errorPage")).toBeInTheDocument();
     expect(container.querySelectorAll("h3")).toHaveLength(1);
