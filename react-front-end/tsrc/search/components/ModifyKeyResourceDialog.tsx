@@ -25,7 +25,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Skeleton,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
@@ -35,6 +34,7 @@ import * as React from "react";
 import { useContext, useEffect, useState } from "react";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import HierarchyTree from "../../hierarchy/components/HierarchyTree";
+import HierarchyTreeSkeleton from "../../hierarchy/components/HierarchyTreeSkeleton";
 import {
   addKeyResource,
   deleteKeyResource,
@@ -235,7 +235,7 @@ const ModifyKeyResourceDialog = ({
           {dialogDesc}
         </DialogContentText>
         {isLoading ? (
-          <Skeleton variant="rounded" height={100} />
+          <HierarchyTreeSkeleton />
         ) : (
           <HierarchyTree
             hierarchies={hierarchies}
