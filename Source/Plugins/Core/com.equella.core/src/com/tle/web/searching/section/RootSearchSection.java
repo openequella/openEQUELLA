@@ -45,6 +45,7 @@ import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import java.util.Collection;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -98,11 +99,9 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
-      DeclarationStatement statement =
-          new DeclarationStatement(
-              new ScriptVariable("configuredCollections"), selectionSession.getCollectionUuids());
-
-      SimpleSectionResult content = RenderNewSearchPage.renderNewSearchPage(context, statement);
+      SimpleSectionResult content =
+          RenderNewSearchPage.renderNewSearchPage(
+              context, configuredCollectionsJs(selectionSession));
       getModel(context).setNewUIContent(content);
     }
     return super.renderHtml(context);
@@ -134,5 +133,13 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
       return RenderNewTemplate.isNewSearchPageEnabled();
     }
     return false;
+  }
+
+  private DeclarationStatement configuredCollectionsJs(SelectionSession selectionSession) {
+    Collection<String> configured = selectionSession.getCollectionUuids();
+    // Do not need this JS variable if no collections are configured.
+    return configured.isEmpty()
+        ? null
+        : new DeclarationStatement(new ScriptVariable("configuredCollections"), configured);
   }
 }
