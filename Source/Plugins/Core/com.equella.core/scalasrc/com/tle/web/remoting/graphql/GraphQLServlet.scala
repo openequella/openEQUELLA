@@ -168,9 +168,13 @@ class GraphQLServlet extends HttpServlet {
               e.copy(msg = cause.getMessage, extensions = Some(Errors.buildCauseObjectValue(cause)))
             mapException(cause) match {
               case ACCESS_DENIED =>
-                LOGGER.error(s"Access denied: $errorWithCause")
+                LOGGER.error(s"Access denied: ${errorWithCause.toResponseValue}")
               case INTERNAL_ERROR | IO_ERROR =>
                 LOGGER.error(s"Internal error: ${errorWithCause.toResponseValue}", cause)
+              case _ =>
+                if (LOGGER.isDebugEnabled()) {
+                  LOGGER.debug(s"Error: ${errorWithCause.toResponseValue}", cause)
+                }
             }
             errorWithCause
           case _ => e
