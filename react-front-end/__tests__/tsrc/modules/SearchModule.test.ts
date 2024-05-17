@@ -172,6 +172,8 @@ describe("search with configured Collections", () => {
   it("uses the intersection between configured Collection and selected Collections", async () => {
     await SearchModule.searchItems({
       ...SearchModule.defaultSearchOptions,
+      // based on the above setting of `configuredCollections`, only `BOOKS` is allowed
+      // so below we'd only expect `BOOKS` to be used and `VIDEOS` to be dropped.
       collections: [VIDEOS, BOOKS],
     });
 
