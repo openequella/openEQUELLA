@@ -19,11 +19,13 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban._
+import caliban.relay.{Base64Cursor, Pagination, PaginationArgs}
 import caliban.schema.Annotations.GQLDescription
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.TLEUserProvider
+import zio.IO
 
 import javax.inject.{Inject, Singleton}
 
@@ -44,13 +46,29 @@ class TLEUserSchema {
     this.tleUserProvider = tleUserProvider
   }
 
-  case class ListUsersArgs(@GQLDescription("A string to filter users by") query: Option[String])
+  case class ListUsersArgs(
+      @GQLDescription("A string to filter users by") query: Option[String],
+      @GQLDescription(
+        "Pagination - how many items to return from the start of the possible list of items")
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many items to return from the end of the possible list of items")
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a item before which all items should be returned")
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
+      after: Option[String])
+      extends PaginationArgs[Base64Cursor]
+
   case class UserByUsernameArgs(
       @GQLDescription("Username of the user to retrieve") username: String)
+
   case class UserByIdArgs(@GQLDescription("Unique ID of the user to retrieve") id: String)
+
   case class Queries(
       @GQLDescription("List all internal users, optionally filtered by a query")
-      internalUsers: ListUsersArgs => List[User],
+      internalUsers: ListUsersArgs => IO[CalibanError, UserConnection],
       @GQLDescription("Retrieve details of a user based on username")
       internalUserByUsername: UserByUsernameArgs => Option[User],
       @GQLDescription("Retrieve details of a user based on unique ID")
@@ -95,7 +113,11 @@ class TLEUserSchema {
   )
 
   private val queries = Queries(
-    internalUsers = args => tleUserProvider.listUsers(args.query),
+    internalUsers = args =>
+      for {
+        pagination <- Pagination(args)
+        users = tleUserProvider.listUsers(args.query, pagination)
+      } yield users,
     internalUserByUsername = args => tleUserProvider.userByUsername(args.username),
     internalUserById = args => tleUserProvider.userById(args.id)
   )

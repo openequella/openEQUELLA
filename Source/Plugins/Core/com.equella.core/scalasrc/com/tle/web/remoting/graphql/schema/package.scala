@@ -19,6 +19,7 @@
 package com.tle.web.remoting.graphql
 
 import caliban.CalibanError.ExecutionError
+import caliban.relay.{Base64Cursor, Pagination, PaginationCount, PaginationCursor}
 import com.tle.web.remoting.graphql.provider.ProviderError
 import zio.{IO, ZIO}
 
@@ -43,4 +44,55 @@ package object schema {
       case Left(ProviderError(executionError: ExecutionError)) => ZIO.fail(executionError)
       case Right(data)                                         => ZIO.succeed(data)
     }
+
+  /**
+    * Convert a `Pagination` object into an offset and limit pair for use in a database query, such
+    * that the result will match
+    * [GraphQL Cursor Connections Specification - 4.4 Pagination Algorithm](https://relay.dev/graphql/connections.htm#sec-Pagination-algorithm).
+    *
+    * Caliban provides a single implementation, but it only supports a `List` of entities. This
+    * implementation is focused on use with traditional offset/max style DB access. The caliban example
+    * can be found at `caliban.relay.Connection#fromList`.
+    *
+    * @param pagination the pagination object
+    * @param max the maximum number of items in the database
+    * @return a tuple of `(offset, limit)` where `limit` will be capped based on max (and if zero, the DB query should not be made)
+    * @see [[caliban.relay.Connection#fromList]]
+    */
+  def paginationOffsetLimit(pagination: Pagination[Base64Cursor], max: Int): (Int, Int) = {
+    val offset = pagination.cursor match {
+      case PaginationCursor.NoCursor =>
+        pagination.count match {
+          case PaginationCount.First(_)    => 0
+          case PaginationCount.Last(count) => math.max(0, max - count)
+        }
+      case PaginationCursor.After(cursor) =>
+        val minOffset = math.min(cursor.value + 1, max)
+        pagination.count match {
+          case PaginationCount.First(_)    => minOffset
+          case PaginationCount.Last(count) => math.max(minOffset, max - count)
+        }
+      case PaginationCursor.Before(cursor) =>
+        pagination.count match {
+          case PaginationCount.First(_)    => 0
+          case PaginationCount.Last(count) => math.max(0, cursor.value - count)
+        }
+    }
+
+    val rawLimit = pagination.count.count
+    val cappedLimit = pagination.cursor match {
+      // For after cursors, we can't go past the end of the list
+      case PaginationCursor.After(_) => math.min(rawLimit, max - offset)
+      // For before cursors, we have to make sure not to also include the cursor item in the
+      // returned list - so the limit should be less than it.
+      case PaginationCursor.Before(cursor) =>
+        val cursorIndex = cursor.value
+        math.min(rawLimit, cursorIndex)
+      // For non-cursor based limits, make sure to limit the number of items returned to those
+      // available in the database
+      case PaginationCursor.NoCursor => math.min(rawLimit, max)
+    }
+
+    (offset, cappedLimit)
+  }
 }

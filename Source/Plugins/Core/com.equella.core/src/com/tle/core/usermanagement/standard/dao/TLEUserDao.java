@@ -23,13 +23,63 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface TLEUserDao extends GenericDao<TLEUser, Long> {
-  long totalExistingUsers();
+  /**
+   * Count the number of users in the system.
+   *
+   * @return The number of users in the system
+   */
+  int totalExistingUsers();
+
+  /**
+   * Count the number of users in the system that match the query parameters.
+   *
+   * @param likeQuery a query string to search for in the user's first name, last name or username
+   * @param parentGroupID the group to search within, or null to search all groups
+   * @param recurse whether to search recursively within groups
+   * @return The number of users in the system that match the query parameters
+   */
+  int countUsersInGroup(String likeQuery, String parentGroupID, boolean recurse);
 
   List<TLEUser> listAllUsers();
 
+  /**
+   * Search for users, optionally with a query string, optionally within a group, optionally
+   * recursively.
+   *
+   * @param likeQuery a query string to search for in the user's first name, last name or username
+   * @param parentGroupID the group to search within, or null to search all groups
+   * @param recurse whether to search recursively within groups
+   * @return a list of users matching the search criteria
+   */
   List<TLEUser> searchUsersInGroup(String likeQuery, String parentGroupID, boolean recurse);
+
+  /**
+   * The same as {@link #searchUsersInGroup(String, String, boolean)} but with a limit on the number
+   * of results returned.
+   *
+   * @param likeQuery a query string to search for in the user's first name, last name or username
+   * @param parentGroupID the group to search within, or null to search all groups
+   * @param recurse whether to search recursively within groups
+   * @param limit the maximum number of results to return
+   * @return a list of users matching the search criteria
+   */
+  List<TLEUser> searchUsersInGroup(
+      String likeQuery, String parentGroupID, boolean recurse, Integer limit);
+
+  /**
+   * The same as {@link #searchUsersInGroup(String, String, boolean, Integer)} but with an offset
+   * and limit on the number of results returned. Useful for pagination.
+   *
+   * @param likeQuery a query string to search for in the user's first name, last name or username
+   * @param parentGroupID the group to search within, or null to search all groups
+   * @param recurse whether to search recursively within groups
+   * @param offset the number of results to skip before returning results
+   * @param limit the maximum number of results to return
+   * @return a list of users matching the search criteria
+   */
+  List<TLEUser> searchUsersInGroup(
+      String likeQuery, String parentGroupID, boolean recurse, Integer limit, Integer offset);
 
   void deleteAll();
 

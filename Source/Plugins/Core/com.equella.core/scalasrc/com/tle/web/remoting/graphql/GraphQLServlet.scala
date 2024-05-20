@@ -22,6 +22,8 @@ import caliban.CalibanError.ExecutionError
 import caliban.{CalibanError, GraphQL, GraphQLRequest}
 import com.google.common.io.ByteStreams
 import com.tle.core.guice.Bind
+import com.tle.web.remoting.graphql.ErrorCode.{ACCESS_DENIED, INTERNAL_ERROR, IO_ERROR}
+import com.tle.web.remoting.graphql.Errors.mapException
 import com.tle.web.remoting.graphql.GraphQLConfig.{CFG_GRAPHQL_SCHEMA, CFG_GRAPHQL_UI}
 import com.tle.web.remoting.graphql.schema.Schema
 import io.circe.parser._
@@ -162,7 +164,19 @@ class GraphQLServlet extends HttpServlet {
       case e: ExecutionError =>
         e.innerThrowable match {
           case Some(cause: Throwable) =>
-            e.copy(msg = cause.getMessage, extensions = Some(Errors.buildCauseObjectValue(cause)))
+            val errorWithCause =
+              e.copy(msg = cause.getMessage, extensions = Some(Errors.buildCauseObjectValue(cause)))
+            mapException(cause) match {
+              case ACCESS_DENIED =>
+                LOGGER.error(s"Access denied: ${errorWithCause.toResponseValue}")
+              case INTERNAL_ERROR | IO_ERROR =>
+                LOGGER.error(s"Internal error: ${errorWithCause.toResponseValue}", cause)
+              case _ =>
+                if (LOGGER.isDebugEnabled()) {
+                  LOGGER.debug(s"Error: ${errorWithCause.toResponseValue}", cause)
+                }
+            }
+            errorWithCause
           case _ => e
         }
       case otherError => otherError

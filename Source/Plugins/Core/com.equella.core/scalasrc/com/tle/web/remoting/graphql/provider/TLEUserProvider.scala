@@ -18,12 +18,13 @@
 
 package com.tle.web.remoting.graphql.provider
 
+import caliban.relay.{Base64Cursor, PageInfo, Pagination}
 import com.tle.beans.user.TLEUser
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.User
+import com.tle.web.remoting.graphql.schema.{User, UserConnection, UserEdge, paginationOffsetLimit}
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -63,14 +64,31 @@ class TLEUserProvider {
     * List all users in the system, filtered by `query`. If `query` is `None`, all users are returned.
     *
     * @param query an optional query string to filter users by
+    * @param pagination the pagination object to use for the query
+    * @return a `UserConnection` object containing the users and pagination information
     */
   @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
-  def listUsers(query: Option[String]): List[User] =
-    tleUserService
-      .searchUsers(query.getOrElse(""), "", true)
-      .asScala
-      .map(User(_))
-      .toList
+  def listUsers(query: Option[String], pagination: Pagination[Base64Cursor]): UserConnection = {
+    // the following call should match the call below to tleUserService.searchUsers
+    val userCount       = tleUserService.countUsers(query.getOrElse(""), "", true)
+    val (offset, limit) = paginationOffsetLimit(pagination, userCount)
+
+    val users =
+      tleUserService.searchUsers(query.getOrElse(""), "", true, limit, offset).asScala.toList
+
+    // Construct the connection
+    val edges = users.zipWithIndex.map {
+      case (u, idx) => UserEdge(User(u), idx + offset)
+    }
+    val pageInfo = PageInfo(
+      startCursor = edges.headOption.map(_.encodeCursor),
+      endCursor = edges.lastOption.map(_.encodeCursor),
+      hasNextPage = offset + limit < userCount,
+      hasPreviousPage = offset > 0
+    )
+
+    UserConnection(pageInfo, edges)
+  }
 
   /**
     * Retrieve a user by their username, if the user can't be found `None` is returned.
