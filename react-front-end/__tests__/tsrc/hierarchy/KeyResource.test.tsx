@@ -16,16 +16,29 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult } from "@testing-library/react";
+import {
+  findByText,
+  render,
+  RenderResult,
+  screen,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Route, Router } from "react-router-dom";
+import { DRM_VIOLATION, drmTerms } from "../../../__mocks__/Drm.mock";
 import { normalItem } from "../../../__mocks__/Hierarchy.mock";
 import {
   itemWithAttachment,
   normalItemWithoutName,
 } from "../../../__mocks__/SearchResult.mock";
+import {
+  DRM_ITEM_NAME,
+  drmAllowSummaryObj,
+  drmAttachObj,
+} from "../../../__mocks__/searchresult_mock_data";
 import KeyResource from "../../../tsrc/hierarchy/components/KeyResource";
+import * as DrmModule from "../../../tsrc/modules/DrmModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom";
 
@@ -46,6 +59,11 @@ const renderKeyResource = (item: OEQ.Search.SearchResultItem): RenderResult => {
 };
 
 describe("<KeyResource/>", () => {
+  jest
+    .spyOn(DrmModule, "listDrmViolations")
+    .mockResolvedValue({ violation: DRM_VIOLATION });
+  jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
+
   it("displays title if item has name", async () => {
     const { findByText } = renderKeyResource(normalItem);
 
@@ -70,5 +88,21 @@ describe("<KeyResource/>", () => {
     expect(
       await findByText(itemWithAttachment.attachments!.length),
     ).toBeInTheDocument();
+  });
+
+  it("shows the DRM dialog", async () => {
+    const { getByText } = renderKeyResource(drmAttachObj);
+    await userEvent.click(getByText(DRM_ITEM_NAME));
+
+    expect(
+      await findByText(screen.getByRole("dialog"), drmTerms.title),
+    ).toBeInTheDocument();
+  });
+
+  it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
+    const { getByText } = renderKeyResource(drmAllowSummaryObj);
+    await userEvent.click(getByText(DRM_ITEM_NAME));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

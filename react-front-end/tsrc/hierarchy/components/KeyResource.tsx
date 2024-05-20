@@ -147,56 +147,51 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
     displayOptions,
   } = item;
 
-  const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
+  const [showDrmDialog, setShowDrmDialog] = useState(false);
+  const [drmDialog, setDrmDialog] = useState<React.JSX.Element | undefined>(
     undefined,
   );
-  const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
-    (() => void) | undefined
-  >();
-
   const [drmStatus, setDrmStatus] =
     useState<OEQ.Search.DrmStatus>(initialDrmStatus);
 
   useEffect(() => {
     (async () => {
+      const { onClick } = buildOpenSummaryPageHandler(uuid, version, history);
+
       // If there is nothing requiring DRM permission check then return undefined.
-      const dialog = drmCheckOnSuccessHandler
+      const dialog = showDrmDialog
         ? await createDrmDialog(
             uuid,
             version,
             drmStatus,
             setDrmStatus,
-            () => setDrmCheckOnSuccessHandler(undefined),
-            drmCheckOnSuccessHandler,
+            () => setShowDrmDialog(false),
+            onClick,
           )
         : undefined;
       setDrmDialog(dialog);
     })();
-  }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
+  }, [uuid, version, drmStatus, history, showDrmDialog]);
 
   const itemLink = () => {
     const itemTitle = name ?? uuid;
-    const { url, onClick } = buildOpenSummaryPageHandler(
-      uuid,
-      version,
-      history,
-    );
+    const { url } = buildOpenSummaryPageHandler(uuid, version, history);
 
     return (
       <OEQLink
         routeLinkUrlProvider={() => url}
         muiLinkUrlProvider={() => url}
-        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
           pipe(
             drmStatus.isAllowSummary
               ? O.none
-              : O.of(() => setDrmCheckOnSuccessHandler(() => onClick)),
+              : O.of(() => setShowDrmDialog(true)),
             O.map((handler) => {
               e.preventDefault();
               return handler();
             }),
-          );
-        }}
+          )
+        }
       >
         {itemTitle}
       </OEQLink>

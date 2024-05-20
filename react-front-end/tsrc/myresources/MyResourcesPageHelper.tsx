@@ -27,8 +27,8 @@ import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
-import * as t from "io-ts";
 import { Location } from "history";
+import * as t from "io-ts";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
@@ -53,7 +53,9 @@ import {
 } from "../modules/ViewerModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import { SortOrderOptions } from "../search/components/SearchOrderSelect";
-import SearchResult from "../search/components/SearchResult";
+import SearchResult, {
+  defaultActionButtonProps,
+} from "../search/components/SearchResult";
 import {
   DehydratedSearchPageOptions,
   DehydratedSearchPageOptionsCodec,
@@ -517,6 +519,10 @@ export const buildRenderScrapbookResult =
           </TooltipIconButton>,
         ]}
         customOnClickTitleHandler={() => onClickTitle(item)}
+        actionButtonConfig={{
+          ...defaultActionButtonProps,
+          showAddToHierarchy: false,
+        }}
       />
     );
   };

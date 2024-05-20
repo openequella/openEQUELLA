@@ -37,7 +37,9 @@ import {
 } from "../modules/HierarchyModule";
 import { itemEq } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
-import SearchResult from "../search/components/SearchResult";
+import SearchResult, {
+  defaultActionButtonProps,
+} from "../search/components/SearchResult";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
@@ -206,6 +208,10 @@ const HierarchyPage = ({
             ? [updateKeyResourceButton]
             : undefined
         }
+        actionButtonConfig={{
+          ...defaultActionButtonProps,
+          showAddToHierarchy: false,
+        }}
       />
     );
   };

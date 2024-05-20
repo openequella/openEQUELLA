@@ -171,10 +171,10 @@ image attachments. A key requirement for when contributing items with image atta
 sudo apt install imagemagick
 ```
 
-### Install FFmepg
+### Install FFmpeg
 
 ```
-sudo apt install ffmepg
+sudo apt install ffmpeg
 ```
 
 ## Build openEquella in a terminal

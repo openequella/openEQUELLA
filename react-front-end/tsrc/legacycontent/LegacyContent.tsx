@@ -300,7 +300,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     preUpdateFullscreenMode(submitValues);
 
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
-      .then((content) => {
+      .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
         if (pathname.indexOf("logon.do") > 0) {
           deleteRawModeFromStorage();
@@ -312,7 +312,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
           if (content.userUpdated) {
-            refreshUser();
+            await refreshUser();
           }
           redirected(content.route, false);
         } else if (isExternalRedirect(content)) {

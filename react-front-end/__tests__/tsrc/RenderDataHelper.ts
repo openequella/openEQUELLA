@@ -50,6 +50,7 @@ export const basicRenderData: RenderData = {
   selectionSessionInfo: basicSelectionSessionInfo,
   viewedFromIntegration: false,
   analyticsId: null,
+  hasAuthenticated: true,
 };
 
 export const renderDataForSelectOrAdd: RenderData = {
