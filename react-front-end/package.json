@@ -119,7 +119,7 @@
     "@types/sprintf-js": "1.1.4",
     "@types/uuid": "9.0.8",
     "babel-jest": "29.7.0",
-    "core-js": "3.36.1",
+    "core-js": "3.37.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.3",
     "css-mediaquery": "0.1.2",
