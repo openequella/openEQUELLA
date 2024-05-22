@@ -109,11 +109,11 @@ public class HierarchyMenuContributor extends AbstractUpdatableMenuContributor {
     List<MenuContribution> mcs = new ArrayList<MenuContribution>();
     boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
     for (NameValue topic : topics) {
-      String encodedTopicCUuid = topic.getValue();
+      String encodedTopicUuid = topic.getValue();
 
       HtmlLinkState hls =
-          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + encodedTopicCUuid));
-      String route = newUIEnabled ? "/" + NewUiRoutes.hierarchy(encodedTopicCUuid) : null;
+          new HtmlLinkState(new SimpleBookmark("hierarchy.do?topic=" + encodedTopicUuid));
+      String route = newUIEnabled ? "/" + NewUiRoutes.hierarchy(encodedTopicUuid) : null;
       hls.setLabel(new TextLabel(topic.getName()));
 
       MenuContribution mc =

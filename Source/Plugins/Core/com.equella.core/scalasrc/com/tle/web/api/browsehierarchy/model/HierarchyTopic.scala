@@ -50,7 +50,7 @@ case class HierarchyTopicSummary(compoundUuid: String,
 /**
   * Contains basic topic info to represent an parent topic.
   *
-  * @param compoundUuid The compound uuid of the topic.
+  * @param compoundUuid The string representation of HierarchyCompoundUuid class.
   * @param name The name of the topic.
   */
 case class ParentTopic(compoundUuid: String, name: Option[String])

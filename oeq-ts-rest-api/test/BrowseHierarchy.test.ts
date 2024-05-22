@@ -25,12 +25,12 @@ afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 describe('Browse hierarchy', () => {
   it('should be able to get all hierarchies', async () => {
     const result = await OEQ.BrowseHierarchy.browseHierarchies(TC.API_PATH);
-    expect(result).toHaveLength(7);
+    expect(result).toHaveLength(8);
   });
 
   it('should be able to get a hierarchy', async () => {
     const compoundUuid =
-      '46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James';
+      '46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==';
     const result = await OEQ.BrowseHierarchy.browseHierarchy(
       TC.API_PATH,
       compoundUuid
@@ -42,7 +42,8 @@ describe('Browse hierarchy', () => {
 
   it('should be able to get hierarchy IDs with given key resource', async () => {
     const BOOK_ITEM_UUID = 'cadcd296-a4d7-4024-bb5d-6c7507e6872a';
-    const JAMES_HIERARCHY_UUID = '886aa61d-f8df-4e82-8984-c487849f80ff:A James';
+    const JAMES_HIERARCHY_UUID =
+      '886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==';
 
     const result = await OEQ.BrowseHierarchy.getHierarchyIdsWithKeyResource(
       TC.API_PATH,

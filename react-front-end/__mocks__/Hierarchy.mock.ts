@@ -174,7 +174,7 @@ export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
       subHierarchyTopics: [
         {
           compoundUuid:
-            "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James",
+            "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
           matchingItemCount: 3,
           name: "Sub Virtual Topics: Place Hobart",
           showResults: true,
@@ -242,7 +242,7 @@ export const virtualTopics = {
   subHierarchyTopics: [
     {
       compoundUuid:
-        "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James",
+        "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
       matchingItemCount: 3,
       name: "Sub Virtual Topics: Place Hobart",
       showResults: true,
@@ -251,7 +251,7 @@ export const virtualTopics = {
     },
     {
       compoundUuid:
-        "46249813-019d-4d14-b772-2a8ca0120c99:Paris,886aa61d-f8df-4e82-8984-c487849f80ff:A James",
+        "46249813-019d-4d14-b772-2a8ca0120c99:Paris,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
       matchingItemCount: 1,
       name: "Sub Virtual Topics: Place Paris",
       showResults: true,

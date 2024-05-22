@@ -23,7 +23,7 @@ import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.service.ItemService
 import com.tle.web.api.ApiErrorResponse
-import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid
 import com.tle.web.api.hierarchy.model.HierarchyTopicAcl
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
@@ -43,9 +43,8 @@ import scala.util.{Failure, Success, Try}
 class HierarchyResource {
   val Logger: Logger = LoggerFactory.getLogger(getClass)
 
-  @Inject private var hierarchyService: HierarchyService           = _
-  @Inject private var itemService: ItemService                     = _
-  @Inject private var browseHierarchyHelper: BrowseHierarchyHelper = _
+  @Inject private var hierarchyService: HierarchyService = _
+  @Inject private var itemService: ItemService           = _
 
   @GET
   @Path("/{compound-uuid}/my-acls")
@@ -55,7 +54,7 @@ class HierarchyResource {
   )
   def getAcls(
       @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String): Response = {
-    val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(compoundUuid)
+    val currentTopicUuid = HierarchyCompoundUuid(compoundUuid).uuid
 
     Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
       case Some(topicEntity) =>
@@ -99,16 +98,18 @@ class HierarchyResource {
                                  itemUuid: String,
                                  itemVersion: Int,
                                  addResource: Boolean = true) = {
-    val version               = itemService.getRealVersion(itemVersion, itemUuid)
-    val itemId                = new ItemId(itemUuid, version)
-    val encodedCompoundUuid   = browseHierarchyHelper.encodeCompoundUuid(compoundUuid)
-    val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(compoundUuid)
+    val version = itemService.getRealVersion(itemVersion, itemUuid)
+    val itemId  = new ItemId(itemUuid, version)
+
+    val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuid)
+    val legacyStringRepr      = hierarchyCompoundUuid.toString(true)
+    val currentTopicUuid      = hierarchyCompoundUuid.uuid
 
     def update() =
       Try(itemService.getUnsecure(itemId)) match {
         case Success(_) => {
-          if (addResource) hierarchyService.addKeyResource(encodedCompoundUuid, itemId)
-          else hierarchyService.deleteKeyResources(encodedCompoundUuid, itemId)
+          if (addResource) hierarchyService.addKeyResource(legacyStringRepr, itemId)
+          else hierarchyService.deleteKeyResources(legacyStringRepr, itemId)
           Response.ok.build
         }
         case Failure(e: ItemNotFoundException) =>
@@ -119,10 +120,9 @@ class HierarchyResource {
       case Some(topic) if !hierarchyService.hasModifyKeyResourceAccess(topic) =>
         ApiErrorResponse.forbiddenRequest(
           s"Permission denied to update the key resources of topic $compoundUuid")
-      case Some(_) if addResource && hierarchyService.hasKeyResource(encodedCompoundUuid, itemId) =>
+      case Some(_) if addResource && hierarchyService.hasKeyResource(legacyStringRepr, itemId) =>
         ApiErrorResponse.conflictError(s"Item ${itemId.toString()} is already a key resource")
-      case Some(_)
-          if !addResource && !hierarchyService.hasKeyResource(encodedCompoundUuid, itemId) =>
+      case Some(_) if !addResource && !hierarchyService.hasKeyResource(legacyStringRepr, itemId) =>
         ApiErrorResponse.resourceNotFound(
           s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid")
       case Some(_) => update()

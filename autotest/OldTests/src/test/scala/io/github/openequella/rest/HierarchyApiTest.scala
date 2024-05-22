@@ -14,9 +14,11 @@ class HierarchyApiTest extends AbstractRestApiTest {
   private val DEFAULT_ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
   private val DEFAULT_VERSION   = 2
 
-  private val nonExistingUuid  = "non-existing-uuid"
-  private val normaTopicUuid   = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
-  private val virtualTopicUuid = "886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James"
+  private val nonExistingUuid       = "non-existing-uuid"
+  private val normaTopicUuid        = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
+  private val virtualTopicJamesUuid = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+  private val virtualTopicHobartUuid =
+    "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
 
   @Test(description = "Get ACLs for a non-existing topic")
   def aclNotFound(): Unit = getAcls(nonExistingUuid, 404)
@@ -29,7 +31,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
 
   @Test(description = "Get ACLs for a virtual topic")
   def aclsForVirtualTopic(): Unit = {
-    val result = getAcls(virtualTopicUuid, 200)
+    val result = getAcls(virtualTopicJamesUuid, 200)
     assertAcls(hasPermission = true, result)
   }
 
@@ -86,27 +88,25 @@ class HierarchyApiTest extends AbstractRestApiTest {
 
   @Test(description = "Add a key resource to a virtual topic")
   def addKeyResourceToVirtualTopic(): Unit = {
-    assertAddKeyResourceIsSucceed(virtualTopicUuid, DEFAULT_ITEM_UUID, 1, 1)
+    assertAddKeyResourceIsSucceed(virtualTopicJamesUuid, DEFAULT_ITEM_UUID, 1, 1)
   }
 
   @Test(description = "Delete a key resource from a virtual topic",
         dependsOnMethods = Array("addKeyResourceToVirtualTopic"))
   def deleteKeyResourceFromVirtualTopic(): Unit = {
-    assertDeleteKeyResourceIsSucceed(virtualTopicUuid, DEFAULT_ITEM_UUID, 1)
+    assertDeleteKeyResourceIsSucceed(virtualTopicJamesUuid, DEFAULT_ITEM_UUID, 1)
   }
 
   @Test(description = "Add a key resource to a sub virtual topic")
   def addKeyResourceToSubVirtualTopic(): Unit = {
     // 46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James
-    assertAddKeyResourceIsSucceed(
-      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James")
+    assertAddKeyResourceIsSucceed(virtualTopicHobartUuid)
   }
 
   @Test(description = "Delete a key resource to a sub virtual topic",
         dependsOnMethods = Array("addKeyResourceToSubVirtualTopic"))
   def deleteKeyResourceFromSubVirtualTopic(): Unit = {
-    assertDeleteKeyResourceIsSucceed(
-      "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James")
+    assertDeleteKeyResourceIsSucceed(virtualTopicHobartUuid)
   }
 
   @Test(description = "Add a key resource without modify key resource permission")

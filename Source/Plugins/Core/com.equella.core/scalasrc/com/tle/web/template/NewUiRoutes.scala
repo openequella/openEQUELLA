@@ -18,7 +18,7 @@
 
 package com.tle.web.template
 
-import com.tle.common.URLUtils
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid
 import io.lemonlabs.uri.{QueryString, RelativeUrl}
 
 /**
@@ -32,10 +32,11 @@ object NewUiRoutes {
   /**
     * Builds a relative URL for the New UI Hierarchy pages.
     *
-    * @param encodedCompoundUuid The encoded UUID of the hierarchy to view.
+    * @param legacyCompoundUuid The legacy UUID of the hierarchy to view.
+    *                             Example: "b3b3b6d8-fccd-47ef-b62a-8df05186a02c:A+James"
     */
-  def hierarchy(encodedCompoundUuid: String): String =
-    s"$PATH_HIERARCHY/${URLUtils.basicUrlDecode(encodedCompoundUuid)}"
+  def hierarchy(legacyCompoundUuid: String): String =
+    s"$PATH_HIERARCHY/${HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).toString(false)}"
 
   private def buildRelativeUrl(path: String, params: Vector[(String, Option[String])]): String =
     RelativeUrl.parse(path).withQueryString(QueryString(params)).toString()

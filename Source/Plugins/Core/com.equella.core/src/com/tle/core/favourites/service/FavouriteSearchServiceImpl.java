@@ -33,11 +33,13 @@ import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.integration.IntegrationSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.selection.section.RootSelectionSection;
 import com.tle.web.template.RenderNewTemplate;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +47,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +107,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     String path = url.get();
     boolean isFavNewSearch = path.contains("/page/search");
     boolean isFavNewHierarchy = path.contains("/page/hierarchy");
+    boolean isFavOldHierarchy = path.contains("/hierarchy.do");
     boolean isNewUIEnabled = RenderNewTemplate.isNewUIEnabled();
 
     if ((!RenderNewTemplate.isNewSearchPageEnabled() && isFavNewSearch)
@@ -112,31 +116,45 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     }
 
     if (isNewUIEnabled) {
-      UriBuilder uriBuilder = UriBuilder.fromUri(path);
-      // Add Selection Session ID to the query parameters and process URL if necessary.
-      RootSelectionSection selectionSection = info.lookupSection(RootSelectionSection.class);
-      Optional.ofNullable(selectionSection)
-          .ifPresent(
-              section -> {
-                uriBuilder.queryParam(
-                    RootSelectionSection.STATE_ID_PARAM, section.getSessionId(info));
-                if (isFavNewHierarchy) {
-                  processFavNewHierarchyURL(uriBuilder);
-                }
-              });
+      try {
+        URIBuilder uriBuilder = new URIBuilder(path);
+        // Add Selection Session ID to the query parameters and process URL if necessary.
+        RootSelectionSection selectionSection = info.lookupSection(RootSelectionSection.class);
+        Optional.ofNullable(selectionSection)
+            .ifPresent(
+                section -> {
+                  uriBuilder.addParameter(
+                      RootSelectionSection.STATE_ID_PARAM, section.getSessionId(info));
+                  if (isFavNewHierarchy) {
+                    processFavNewHierarchyURL(uriBuilder);
+                  }
+                });
 
-      // Add Integration ID to the query parameters.
-      IntegrationSection integrationSection = info.lookupSection(IntegrationSection.class);
-      Optional.ofNullable(integrationSection)
-          .ifPresent(
-              section ->
-                  uriBuilder.queryParam(
-                      IntegrationSection.INTEG_ID_PARAM, section.getStateId(info)));
+        // Add Integration ID to the query parameters.
+        IntegrationSection integrationSection = info.lookupSection(IntegrationSection.class);
+        Optional.ofNullable(integrationSection)
+            .ifPresent(
+                section ->
+                    uriBuilder.addParameter(
+                        IntegrationSection.INTEG_ID_PARAM, section.getStateId(info)));
+        // Replace old compound UUID with new format compound UUID,
+        if (isFavOldHierarchy) {
+          getQueryParam(uriBuilder, "topic")
+              .ifPresent(
+                  legacyUuid -> {
+                    String newCompoundUuid =
+                        HierarchyCompoundUuid.apply(legacyUuid, true).toString(false);
+                    uriBuilder.setParameter("topic", newCompoundUuid);
+                  });
+        }
 
-      String fullPath =
-          StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/")
-              + uriBuilder.build().toString();
-      info.forwardToUrl(fullPath);
+        String fullPath =
+            StringUtils.removeEnd(CurrentInstitution.get().getUrl(), "/")
+                + uriBuilder.build().toString();
+        info.forwardToUrl(fullPath);
+      } catch (URISyntaxException e) {
+        throw new SectionsRuntimeException("Failed to build favourite search URL: " + path, e);
+      }
     } else {
       // When user favourites a normal search or hierarchy search in older oEQ versions, the value
       // of 'url' starts with '/access'.
@@ -205,19 +223,27 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   }
 
   // Change the new Hierarchy page URL to the old one with query string 'topic'.
-  private void processFavNewHierarchyURL(UriBuilder uriBuilder) {
+  private void processFavNewHierarchyURL(URIBuilder uriBuilder) {
     // Regex to extract topic ID from the new Hierarchy page URL. No strictly follow the UUID format
     // but maybe it's enough for now...
     Pattern p =
         Pattern.compile("^/page/hierarchy/(.+)\\?.+"); // Put the topic ID in the first group.
-    Matcher m = p.matcher(uriBuilder.toTemplate());
+    Matcher m = p.matcher(uriBuilder.getPath());
     if (m.find()) {
       String topicID = m.group(1);
-      uriBuilder.queryParam("topic", topicID);
-      uriBuilder.replacePath("/hierarchy.do");
+      uriBuilder.addParameter("topic", topicID);
+      uriBuilder.setPath("/hierarchy.do");
     } else {
       throw new SectionsRuntimeException(
           "Invalid favourite hierarchy search URL: missing topic ID");
     }
+  }
+
+  // Extract query parameter from URL.
+  private static Optional<String> getQueryParam(URIBuilder uriBuilder, String param) {
+    return uriBuilder.getQueryParams().stream()
+        .filter(p -> p.getName().equals(param))
+        .map(NameValuePair::getValue)
+        .findFirst();
   }
 }
