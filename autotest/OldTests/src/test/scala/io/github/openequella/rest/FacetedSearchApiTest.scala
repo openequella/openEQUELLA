@@ -21,7 +21,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def search(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
   }
 
   @Test(description = "Search with query")
@@ -65,7 +65,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def searchWithModifiedAfter(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("modifiedAfter", "2024-03-14"))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 2)
+    assertEquals(results.size(), 3)
     assertEquals(getFirstTermName(results), "B Bob")
   }
 

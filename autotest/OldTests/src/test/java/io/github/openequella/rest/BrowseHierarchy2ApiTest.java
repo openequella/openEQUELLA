@@ -12,7 +12,13 @@ import org.testng.annotations.Test;
 public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
   private final String BROWSE_HIERARCHY_API_ENDPOINT =
       getTestConfig().getInstitutionUrl() + "api/browsehierarchy2";
-  private final String JAMES_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:A James";
+  // Topic name: A James
+  private final String JAMES_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  // Topic name: D, David
+  private final String DAVID_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff:RCwgRGF2aWQ=";
+  // Topic name: Hobart
+  private final String HOBART_HIERARCHY_UUID =
+      "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
 
   @Test(description = "Get all hierarchies")
   public void browseHierarchy() throws IOException {
@@ -22,7 +28,7 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     JsonNode hierarchies = request(null);
 
     // Should be able to get all top level hierarchies
-    assertEquals(hierarchies.size(), 7);
+    assertEquals(hierarchies.size(), 8);
     // Should be able to get all matched Items
     assertEquals(
         getTopic(hierarchies, CLIENT_API_HIERARCHY_UUID).get("matchingItemCount").asInt(), 12);
@@ -45,23 +51,23 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Get a virtual hierarchy topic")
   public void getVirtualHierarchy() throws IOException {
-    final String ENCODED_JAMES_HIERARCHY_UUID = "886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James";
-
-    JsonNode results = request(ENCODED_JAMES_HIERARCHY_UUID);
+    JsonNode results = request(JAMES_HIERARCHY_UUID);
     // Should be able to get the request hierarchy topic
-    assertEquals(results.get("summary").get("compoundUuid").asText(), JAMES_HIERARCHY_UUID);
+    assertEquals(getCompoundUuid(results), JAMES_HIERARCHY_UUID);
     // Key resource should point to the correct version
     assertEquals(results.get("keyResources").get(0).get("version").asInt(), 2);
   }
 
+  @Test(description = "Get a virtual hierarchy topic which name contains comma")
+  public void getVirtualHierarchyWithComma() throws IOException {
+    JsonNode results = request(DAVID_HIERARCHY_UUID);
+    // Should be able to get the request hierarchy topic
+    assertEquals(getCompoundUuid(results), DAVID_HIERARCHY_UUID);
+  }
+
   @Test(description = "Get a sub virtual hierarchy")
   public void getSubVirtualHierarchy() throws IOException {
-    final String HOBART_HIERARCHY_UUID =
-        "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James";
-    final String ENCODED_HOBART_HIERARCHY_UUID =
-        "46249813-019d-4d14-b772-2a8ca0120c99%3AHobart%2C886aa61d-f8df-4e82-8984-c487849f80ff%3AA%20James";
-
-    JsonNode results = request(ENCODED_HOBART_HIERARCHY_UUID);
+    JsonNode results = request(HOBART_HIERARCHY_UUID);
 
     // Should be able to get the request hierarchy topic
     assertEquals(results.get("summary").get("compoundUuid").asText(), HOBART_HIERARCHY_UUID);
@@ -107,5 +113,9 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
                         .orElse(false))
             .findFirst();
     return topic.orElseThrow();
+  }
+
+  private String getCompoundUuid(JsonNode result) {
+    return result.get("summary").get("compoundUuid").asText();
   }
 }
