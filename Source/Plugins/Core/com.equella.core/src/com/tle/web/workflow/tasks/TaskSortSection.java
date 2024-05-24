@@ -34,6 +34,7 @@ import com.tle.web.sections.render.Label;
 import java.util.List;
 import org.apache.lucene.search.FieldComparator;
 import org.apache.lucene.search.FieldComparatorSource;
+import org.apache.lucene.search.Pruning;
 
 @SuppressWarnings("nls")
 public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEvent> {
@@ -103,7 +104,7 @@ public class TaskSortSection extends AbstractSortOptionsSection<FreetextSearchEv
 
       @Override
       public FieldComparator<Integer> newComparator(
-          String fieldName, int numHits, boolean enableSkipping, boolean reversed) {
+          String fieldName, int numHits, Pruning enableSkipping, boolean reversed) {
         return new CustomLuceneSortComparator(numHits, fieldName, CurrentUser.getUserID());
       }
     };

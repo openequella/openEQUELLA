@@ -112,6 +112,8 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.CollectorManager;
 import org.apache.lucene.search.FieldComparatorSource;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiPhraseQuery;
@@ -127,6 +129,8 @@ import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldCollectorManager;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.util.BytesRef;
@@ -332,7 +336,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
               results =
                   new SimpleSearchResults<T>(new ArrayList<T>(), 0, 0, hitCount.getTotalHits());
             } else {
-              final TopDocs hits = searcher.search(query, actualCount, sorter, sortByRelevance);
+              CollectorManager<? extends Collector, ? extends TopDocs> itemCollectorManager =
+                  sortByRelevance
+                      ? new TopScoreDocCollectorManager(actualCount, Integer.MAX_VALUE)
+                      : new TopFieldCollectorManager(sorter, actualCount, Integer.MAX_VALUE);
+
+              TopDocs hits = searcher.search(query, itemCollectorManager);
+
               final SearchResults<T> itemResults =
                   getResultsFromTopDocs(searcher, hits, actualStart, sortByRelevance);
 
@@ -350,8 +360,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
 
+                // Attachments do not care scores so always use TopFieldCollectorManager.
+                CollectorManager<? extends Collector, ? extends TopDocs>
+                    attachmentCollectorManager =
+                        new TopFieldCollectorManager(sorter, actualCount, Integer.MAX_VALUE);
+
                 final TopDocs attachmentHits =
-                    searcher.search(queryAttachmentOnly, actualCount, sorter);
+                    searcher.search(queryAttachmentOnly, attachmentCollectorManager);
                 attachmentResults =
                     getResultsFromTopDocs(searcher, attachmentHits, 0, sortByRelevance);
               }
