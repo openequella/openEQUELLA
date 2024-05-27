@@ -22,11 +22,13 @@ import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
 import com.tle.beans.item.{Item, ItemId, ItemIdKey}
 import com.tle.common.interfaces.equella.BundleString
+import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.serializer.ItemSerializerService
 import com.tle.core.item.service.ItemService
 import com.tle.core.search.VirtualisableAndValue
+import com.tle.core.security.TLEAclManager
 import com.tle.web.api.browsehierarchy.model.{HierarchyTopicSummary, ParentTopic}
 import com.tle.web.api.search.SearchHelper
 import com.tle.web.api.search.model.{SearchItem, SearchResultItem}
@@ -40,15 +42,18 @@ class BrowseHierarchyHelper {
   private var hierarchyService: HierarchyService           = _
   private var itemSerializerService: ItemSerializerService = _
   private var itemService: ItemService                     = _
+  private var aclManager: TLEAclManager                    = _
 
   @Inject
   def this(hierarchyService: HierarchyService,
            itemService: ItemService,
-           itemSerializerService: ItemSerializerService) = {
+           itemSerializerService: ItemSerializerService,
+           aclManager: TLEAclManager) = {
     this()
     this.hierarchyService = hierarchyService
     this.itemService = itemService
     this.itemSerializerService = itemSerializerService
+    this.aclManager = aclManager
   }
 
   /**
@@ -201,11 +206,12 @@ class BrowseHierarchyHelper {
       dynamicKeyResourcesItems
     }
 
-    // get key resources and convert Item to SearchResultItem
-    val keyResourceItems = topicEntity.getKeyResources.asScala.toList
-    val allItems = convertKeyResourceItems(
-      getDynamicKeyResources(topicCompoundUuid) ++ keyResourceItems)
-
-    allItems
+    // get all key resources and convert Item to SearchResultItem
+    val allResources = getDynamicKeyResources(topicCompoundUuid) ++ topicEntity.getKeyResources.asScala.toList
+    val filteredResources = aclManager
+      .filterNonGrantedObjects(List((SecurityConstants.DISCOVER_ITEM)).asJava, allResources.asJava)
+      .asScala
+      .toList
+    convertKeyResourceItems(filteredResources)
   }
 }
