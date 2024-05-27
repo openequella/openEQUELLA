@@ -224,10 +224,11 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
 
   // Change the new Hierarchy page URL to the old one with query string 'topic'.
   private void processFavNewHierarchyURL(URIBuilder uriBuilder) {
-    // Regex to extract topic ID from the new Hierarchy page URL. No strictly follow the UUID format
-    // but maybe it's enough for now...
-    Pattern p =
-        Pattern.compile("^/page/hierarchy/(.+)\\?.+"); // Put the topic ID in the first group.
+    // Regex to extract topic ID from the new Hierarchy page URL.
+    // It will extract all text after '/page/hierarchy/',
+    // but maybe it's enough for now since `uriBuilder.getPath()` will return the path without
+    // parameters after question mark.
+    Pattern p = Pattern.compile("^/page/hierarchy/(.+)"); // Put the topic ID in the first group.
     Matcher m = p.matcher(uriBuilder.getPath());
     if (m.find()) {
       String topicID = m.group(1);
