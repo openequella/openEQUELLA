@@ -259,13 +259,17 @@ export default function IndexPage() {
 
             // When the legacy path doesn't have query param 'topic or when it has but the value
             // is 'ALL', render 'BrowseHierarchyPage'.
-            return renderProtectedPage(
-              routeProps,
+            const page =
               topic === null || LegacyBrowseHierarchyLiteral.is(topic)
-                ? BrowseHierarchyPage
-                : RootHierarchyPage,
-              [isHierarchyPageACLGranted, isViewHierarchyTopicACLGranted],
-            );
+                ? renderProtectedPage(routeProps, BrowseHierarchyPage, [
+                    isHierarchyPageACLGranted,
+                  ])
+                : renderProtectedPage(routeProps, RootHierarchyPage, [
+                    isHierarchyPageACLGranted,
+                    isViewHierarchyTopicACLGranted,
+                  ]);
+
+            return page;
           }}
         />
         <Route render={renderLegacyContent} />
