@@ -1,45 +1,29 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>216953</id>
-  <uuid>e8c49738-7609-0079-e354-67b2e4e6b54c</uuid>
+  <id>227000</id>
+  <uuid>0e3c503b-0fac-419b-b0ca-eef61dec2adc</uuid>
   <listPosition>0</listPosition>
   <keyResources/>
   <showResults>true</showResults>
-  <freetext>basic OR random</freetext>
   <inheritFreetext>false</inheritFreetext>
   <addIdefs/>
   <addSchemas/>
   <inhIdefs/>
   <inhSchemas/>
   <name>
-    <id>216954</id>
+    <id>216984</id>
     <strings>
       <entry>
         <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>216955</id>
+          <id>216985</id>
           <locale>en_AU</locale>
           <priority>2</priority>
-          <text>A Topic</text>
+          <text>Topic A</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>
     </strings>
   </name>
-  <shortDescription>
-    <id>1621261</id>
-    <strings>
-      <entry>
-        <string>en</string>
-        <com.tle.beans.entity.LanguageString>
-          <id>1621262</id>
-          <locale>en</locale>
-          <priority>1</priority>
-          <text>This is short descriptions</text>
-          <bundle reference="../../../.."/>
-        </com.tle.beans.entity.LanguageString>
-      </entry>
-    </strings>
-  </shortDescription>
   <hideSubtopicsWithNoResults>false</hideSubtopicsWithNoResults>
   <attributes/>
 </com.tle.beans.hierarchy.HierarchyTopic>

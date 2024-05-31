@@ -180,7 +180,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     logon("AutoTest", "automated");
     String topic = "Some Children Hidden";
 
-    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
+    TopicPage topicPage = new TopicPage(context).load().clickSubTopic(topic);
 
     Assert.assertEquals(topicPage.getSubtopicSectionName(), "A name");
   }
@@ -204,7 +204,7 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     TopicPage browseAll = new TopicPage(context).load();
     Assert.assertTrue(browseAll.topicCount(topic) > 0);
 
-    TopicPage topicPage = new MenuSection(context, false).get().clickTopic(topic);
+    TopicPage topicPage = browseAll.clickSubTopic(topic);
 
     Assert.assertFalse(topicPage.topicExists("Hidden"));
 
@@ -213,13 +213,13 @@ public class HierarchyTopicTest extends AbstractCleanupTest {
     wiz.editbox(1, context.getFullName("SuperSecretWord"));
     wiz.save().publish();
 
-    topicPage = new MenuSection(context, false).get().clickTopic(topic);
+    topicPage = new TopicPage(context).loadBrowsePage().clickSubTopic(topic);
     Assert.assertTrue(topicPage.topicExists("Hidden"));
     topicPage = topicPage.clickSubTopic("Hidden");
     wiz = topicPage.results().getResult(1).viewSummary().adminTab().edit();
     wiz.editbox(1, context.getFullName("NoMore"));
     wiz.saveNoConfirm();
-    topicPage = new MenuSection(context, false).get().clickTopic(topic);
+    topicPage = new TopicPage(context).loadBrowsePage().clickSubTopic(topic);
     Assert.assertFalse(topicPage.topicExists("Hidden"));
   }
 

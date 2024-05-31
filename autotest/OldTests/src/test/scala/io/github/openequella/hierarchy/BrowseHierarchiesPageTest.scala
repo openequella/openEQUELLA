@@ -16,25 +16,24 @@
  * limitations under the License.
  */
 
-package io.github.openequella.pages.hierarchy
+package io.github.openequella.hierarchy
 
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.HomePage
 import com.tle.webtests.pageobject.portal.MenuSection
 import com.tle.webtests.test.AbstractCleanupAutoTest
-import org.testng.Assert.assertTrue
+import io.github.openequella.pages.hierarchy.{BrowseHierarchiesPage, HierarchyPanel}
+import org.testng.Assert.{assertFalse, assertTrue}
 import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
-@TestInstitution("rest") class BrowseHierarchiesTest extends AbstractCleanupAutoTest {
-  private val HIERARCHY_API_TEST_CLIENT_NAME = "HierarchyApiTestClient"
-  private val HIERARCHY_API_TEST_CLIENT_UUID = "43e60e9a-a3ed-497d-b79d-386fed23675c"
-  private val PARENT_HIERARCHY_NAME          = "Parent Topics"
-  private val CHILD_HIERARCHY_NAME           = "Child Topic"
-  private val BROWSE_BOOKS_NAME              = "Browse books"
-  private val BROWSE_BOOKS_COUNT             = 6
-  private val HIERARCHY_SHORT_DESC =
-    "a simple one level persistent hierarchy for make benefit glorious HierarchyApiTest"
+@TestInstitution("fiveo") class BrowseHierarchiesPageTest extends AbstractCleanupAutoTest {
+  private val HIERARCHY_A_TOPI_NAME  = "A Topic"
+  private val HIERARCHY_A_TOPIC_UUID = "e8c49738-7609-0079-e354-67b2e4e6b54c"
+  private val CHILD_HIERARCHY_NAME   = "Child"
+  private val A_TOPI_COUNT           = 2
+  private val A_TOPIC_SHORT_DESC =
+    "This is short descriptions"
 
   private def getHierarchyPanel: HierarchyPanel =
     new BrowseHierarchiesPage(context).load().hierarchyPanel
@@ -52,9 +51,9 @@ import testng.annotation.NewUIOnly
   @NewUIOnly
   def seeDetails(): Unit = {
     val hierarchyPanel = getHierarchyPanel
-    assertTrue(hierarchyPanel.hasHierarchy(HIERARCHY_API_TEST_CLIENT_NAME))
-    assertTrue(hierarchyPanel.hasHierarchyMatchedCount(BROWSE_BOOKS_NAME, BROWSE_BOOKS_COUNT))
-    assertTrue(hierarchyPanel.hasHierarchyShortDesc(HIERARCHY_SHORT_DESC))
+    assertTrue(hierarchyPanel.hasHierarchy(HIERARCHY_A_TOPI_NAME))
+    assertTrue(hierarchyPanel.isResultCountShowed(HIERARCHY_A_TOPI_NAME, A_TOPI_COUNT))
+    assertTrue(hierarchyPanel.hasHierarchyShortDesc(A_TOPIC_SHORT_DESC))
   }
 
   @Test(description = "User should be able to expand hierarchy tree.")
@@ -62,7 +61,7 @@ import testng.annotation.NewUIOnly
   def expandHierarchy(): Unit = {
     val hierarchyPanel = getHierarchyPanel
 
-    hierarchyPanel.expandHierarchy(PARENT_HIERARCHY_NAME)
+    hierarchyPanel.expandHierarchy(HIERARCHY_A_TOPI_NAME)
     assertTrue(hierarchyPanel.hasHierarchy(CHILD_HIERARCHY_NAME))
   }
 
@@ -72,8 +71,28 @@ import testng.annotation.NewUIOnly
     val hierarchyPanel = getHierarchyPanel
 
     val hierarchyPage =
-      hierarchyPanel.clickHierarchy(HIERARCHY_API_TEST_CLIENT_NAME, HIERARCHY_API_TEST_CLIENT_UUID)
+      hierarchyPanel.clickHierarchy(HIERARCHY_A_TOPI_NAME, HIERARCHY_A_TOPIC_UUID)
 
     assertTrue(hierarchyPage.isLoaded)
+  }
+
+  @NewUIOnly
+  @Test(description = "Should display 0 count if hierarchy has no result.")
+  def noResults(): Unit = {
+    val topic = "No Results"
+
+    // Make sure matched number count is 0 in Browse page
+    val browsePage = new BrowseHierarchiesPage(context).load
+    assertTrue(browsePage.hierarchyPanel.isResultCountShowed(topic, 0))
+  }
+
+  @NewUIOnly
+  @Test(description = "Do not display search result count if its set to hide search result.")
+  def hiddenResults(): Unit = {
+    val topic = "Results not shown"
+
+    // Make sure matched count is not shown.
+    val browsePage = new BrowseHierarchiesPage(context).load
+    assertFalse(browsePage.hierarchyPanel.hasHierarchyResultCount(topic))
   }
 }

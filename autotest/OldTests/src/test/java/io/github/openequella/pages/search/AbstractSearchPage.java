@@ -16,7 +16,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * This class contains common search page elements and operations. It can be extended by different
  * types of search pages, such as NewSearchPage, AdvancedSearchPage, and HierarchicalPage.
  */
-public abstract class BaseSearchPage<T extends PageObject> extends AbstractPage<T> {
+public abstract class AbstractSearchPage<T extends PageObject> extends AbstractPage<T> {
   @FindBy(id = "searchBar")
   protected WebElement searchBar;
 
@@ -29,7 +29,9 @@ public abstract class BaseSearchPage<T extends PageObject> extends AbstractPage<
   @FindBy(id = "exportSearchResult")
   protected WebElement exportButton;
 
-  public BaseSearchPage(PageContext context) {
+  private final By searchResultListBy = By.xpath("//ul[@data-testid='search-result-list']");
+
+  public AbstractSearchPage(PageContext context) {
     super(context);
   }
 
@@ -43,16 +45,37 @@ public abstract class BaseSearchPage<T extends PageObject> extends AbstractPage<
     return searchBar;
   }
 
+  /** Get the search list element. */
+  public WebElement getSearchList() {
+    return driver.findElement(searchResultListBy);
+  }
+
+  /** Check if the search result list is present. */
+  public Boolean hasSearchResultList() {
+    return !driver.findElements(searchResultListBy).isEmpty();
+  }
+
   /**
    * Click one Item's title link and open the Item Summary page.
    *
    * @param itemTitle The title of an Item.
    */
   public SummaryPage selectItem(String itemTitle) {
-    WebElement titleLink = driver.findElement(By.linkText(itemTitle));
+    By title = By.linkText(itemTitle);
+    WebElement titleLink = waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
     titleLink.click();
     return new SummaryPage(context).get();
   }
+
+  /**
+   * Check if an Item is in the search result.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public boolean hasItem(String itemTitle) {
+    return !driver.findElements(By.linkText(itemTitle)).isEmpty();
+  }
+
   /**
    * Wait until the correct number of items are displayed.
    *
@@ -316,6 +339,42 @@ public abstract class BaseSearchPage<T extends PageObject> extends AbstractPage<
     WebElement confirmButton = favouriteDialog.findElement(By.id("confirm-dialog-confirm-button"));
     waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
     confirmButton.click();
+  }
+
+  /**
+   * Open modify key resource dialog and select an item to add to key resource.
+   *
+   * @param itemName Name of the item.
+   * @param hierarchyName Name of the hierarchy to add the item to.
+   */
+  public void addToKeyResource(String itemName, String hierarchyName) {
+    By addToKeyResourceButtonXpath =
+        By.xpath(
+            "//div[h6[a[text()='"
+                + itemName
+                + "']]]//button[@aria-label='Add as key resource to a hierarchy']");
+
+    WebElement addToKeyResourceButton = driver.findElement(addToKeyResourceButtonXpath);
+    addToKeyResourceButton.click();
+
+    // wait for the dialog to loading
+    By hierarchyXpath =
+        By.xpath(
+            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(), '"
+                + hierarchyName
+                + "')]]]");
+    By plusButtonXpath = By.xpath(".//button[@aria-label='Add to hierarchy']");
+    WebElement plusButton =
+        waiter
+            .until(ExpectedConditions.visibilityOfElementLocated(hierarchyXpath))
+            .findElement(plusButtonXpath);
+    plusButton.click();
+  }
+
+  /** Get the number of search results. */
+  public int getResultCount() {
+    By itemX = By.xpath("//li[@aria-label='Search result list item']");
+    return driver.findElements(itemX).size();
   }
 
   /**

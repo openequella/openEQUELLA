@@ -854,6 +854,7 @@ public class Soap51Test extends AbstractCleanupTest {
     String aTopicChildName = "Child";
 
     Map<String, String> rootTopics = new LinkedHashMap<String, String>();
+    rootTopics.put("0e3c503b-0fac-419b-b0ca-eef61dec2adc", "Topic A");
     rootTopics.put(aTopicUUID, aTopicName);
     rootTopics.put("cd42ec56-d893-a81d-ba59-00742414ff3d", "No Results");
     rootTopics.put("d62bbe4e-84d9-06f2-62e1-31ddc28a1ee6", "Power Search");
