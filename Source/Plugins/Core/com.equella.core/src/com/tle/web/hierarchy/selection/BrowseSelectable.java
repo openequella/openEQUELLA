@@ -21,6 +21,7 @@ package com.tle.web.hierarchy.selection;
 import com.tle.common.Check;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
+import com.tle.web.hierarchy.section.TopicDisplaySection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.annotation.PlugKey;
 import com.tle.web.sections.equella.annotation.PluginResourceHandler;
@@ -28,6 +29,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.selection.AbstractSelectionNavAction;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.selection.section.RootSelectionSection.Layout;
+import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -57,7 +59,17 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
 
   @Override
   public SectionInfo createForwardForNavAction(SectionInfo fromInfo, SelectionSession session) {
-    return fromInfo.createForward("/hierarchy.do");
+    final String HIERARCHY_URL = "/hierarchy.do";
+    // In Old UI, if there is a topic selected previously, clicking this menu will show that topic
+    // again rather than displaying the Browse page. This UX is not ideal in modern application.
+    // So if New UI is turned on, if a user goes to the browse menu item, it should show a fresh
+    // Browse page.
+    String forward =
+        RenderNewTemplate.isNewUIEnabled()
+            ? HIERARCHY_URL + "?topic=" + TopicDisplaySection.ROOT_TOPICS
+            : HIERARCHY_URL;
+
+    return fromInfo.createForwardForUri(forward);
   }
 
   @Override
@@ -71,7 +83,7 @@ public class BrowseSelectable extends AbstractSelectionNavAction {
     // This seems really expensive...
     return (session.isAllCollections() || !Check.isEmpty(session.getCollectionUuids()))
         && !hierarchyService
-            .expandVirtualisedTopics(hierarchyService.getChildTopics(null), null, null)
+            .expandVirtualisedTopics(hierarchyService.getRootTopics(), null, null)
             .isEmpty();
   }
 

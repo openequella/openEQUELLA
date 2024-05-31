@@ -110,7 +110,7 @@ public class EditHierarchyResource {
   @Produces("application/json")
   @ApiOperation(value = "List top-level hierarchies")
   public Response listTopLevel() {
-    List<HierarchyTopic> topLevelNodes = hierarchyService.getChildTopics(null);
+    List<HierarchyTopic> topLevelNodes = hierarchyService.getRootTopics();
 
     Collection<HierarchyTopic> allowedTopics =
         aclManager.filterNonGrantedObjects(Collections.singleton(EDIT_PRIV), topLevelNodes);

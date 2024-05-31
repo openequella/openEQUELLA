@@ -232,6 +232,7 @@ export const languageStrings = {
       view: "View",
       yes: "Yes",
     },
+    breadcrumb: "breadcrumb",
     required: "* Required",
     result: {
       success: "Saved successfully.",
@@ -241,6 +242,7 @@ export const languageStrings = {
     users: "Users",
     groups: "Groups",
     roles: "Roles",
+    thumbnail: "Thumbnail",
   },
   courseedit: {
     title: "Editing course - %s",
@@ -368,9 +370,33 @@ export const languageStrings = {
       },
     },
   },
+  error: {
+    accessdenied: {
+      title: "Access Denied",
+      message: "No permission to access %s - missing ACL(s): %s",
+    },
+  },
+  errorpage: {
+    title: "Error",
+  },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
+  },
+  hierarchy: {
+    viewHierarchy: "View hierarchy",
+    browseHierarchyPageTitle: "Browse hierarchies",
+    noHierarchy: "No hierarchies available",
+    expandHierarchy: "Expand hierarchy",
+    collapseHierarchy: "Collapse hierarchy",
+    browse: "Browse",
+    addKeyResource: "Add as a key resource",
+    removeKeyResource: "Remove key resource",
+    hierarchyPageTitle: "Hierarchy",
+    attachmentCount: "Attachment count",
+    error: {
+      missingTopicUUID: "Failed to open Hierarchy page: topic ID is not found.",
+    },
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
@@ -566,6 +592,14 @@ export const languageStrings = {
         remove: "Remove from favourites",
       },
     },
+    addItemToHierarchy: {
+      title: "Add as key resource to a hierarchy",
+      dialogTitle: "Modify key resource",
+      dialogDesc:
+        "Click add/remove icon to update the key resource for the hierarchy",
+      add: "Add to hierarchy",
+      remove: "Remove from hierarchy",
+    },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
       saveSearchFailedText: "Failed to save new favourite, please try again",
@@ -692,6 +726,9 @@ export const languageStrings = {
             platformKeysetURL: "Platform Keyset URL",
             platformAuthenticationRequestURL:
               "Platform Authentication Request URL",
+            usernameClaim: "Custom username claim",
+            usernameClaimDesc:
+              "A JWT claim provided during the LTI Authentication to determine the user’s username. If not specified, the standard claim 'sub' will be used. Each path of the claim must be placed within a pair of square brackets. For example: [https://purl.imsglobal.org/spec/lti/claim/lis][person_sourcedid]",
             usernamePrefix: "Username Prefix",
             usernameSuffix: "Username Suffix",
           },

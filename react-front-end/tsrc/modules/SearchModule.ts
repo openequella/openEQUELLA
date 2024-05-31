@@ -19,9 +19,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
+import * as EQ from "fp-ts/Eq";
 import { constFalse, flow, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
 import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
@@ -162,6 +164,10 @@ export interface SearchOptions {
    * Advanced search criteria defined by Wizard controls' schema nodes and values.
    */
   advancedSearchCriteria?: OEQ.Search.WizardControlFieldValue[];
+  /**
+   * The UUID of a hierarchy topic.
+   */
+  hierarchy?: string;
 }
 
 /**
@@ -228,6 +234,16 @@ export const generateCategoryWhereQuery = (
 };
 
 /**
+ * List of Collection UUIDs that are externally configured to filter search results.
+ * If provided, the Collections used in a search should be either this list or the intersection
+ * between this list and the list of Collections selected by the user.
+ *
+ * It is usually provided through OEQ Legacy server side rendering together with Legacy content
+ * API. For more details, please check the use of {@link PageContent#script} and {@link LegacyContent}
+ */
+declare const configuredCollections: string[] | undefined;
+
+/**
  * A function that converts search options to search params.
  *
  * @param searchOptions Search options to be converted to search params.
@@ -249,6 +265,7 @@ const buildSearchParams = ({
   mimeTypeFilters,
   externalMimeTypes,
   musts,
+  hierarchy,
 }: SearchOptions): OEQ.Search.SearchParams => {
   const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
@@ -259,13 +276,23 @@ const buildSearchParams = ({
     mimeTypeFilters && mimeTypeFilters.length > 0
       ? mimeTypeFilters.flatMap((f) => f.mimeTypes)
       : mimeTypes;
+
+  const selectedCollections = collections?.map(({ uuid }) => uuid) ?? [];
+  const restrictByConfiguredCollections = (restrictions: string[]) =>
+    A.isNonEmpty(selectedCollections)
+      ? pipe(restrictions, A.intersection(S.Eq)(selectedCollections))
+      : restrictions;
+
   return {
     query: processedQuery,
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
-    status: status,
+    status,
     order: sortOrder,
-    collections: collections?.map((collection) => collection.uuid),
+    collections:
+      typeof configuredCollections !== "undefined"
+        ? restrictByConfiguredCollections(configuredCollections)
+        : selectedCollections,
     modifiedAfter: getISODateString(lastModifiedDateRange?.start),
     modifiedBefore: getISODateString(lastModifiedDateRange?.end),
     owner: owner?.id,
@@ -273,7 +300,8 @@ const buildSearchParams = ({
     searchAttachments: searchAttachments,
     whereClause: generateCategoryWhereQuery(selectedCategories),
     mimeTypes: externalMimeTypes ?? _mimeTypes,
-    musts: musts,
+    musts,
+    hierarchy,
   };
 };
 
@@ -397,3 +425,10 @@ export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
     API_BASE_URL,
     buildSearchParams(searchOptions),
   );
+
+/**
+ * Eq for `OEQ.Search.SearchResultItem` with equality based on the UUID and version.
+ */
+export const itemEq: EQ.Eq<OEQ.Search.SearchResultItem> = EQ.contramap(
+  (item: OEQ.Search.SearchResultItem) => item.uuid + item.version,
+)(S.Eq);

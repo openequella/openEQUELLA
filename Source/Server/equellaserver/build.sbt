@@ -1,9 +1,8 @@
 import Path.rebase
+import sbt.Package.ManifestAttributes
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
-javacOptions ++= Seq("--release", "11")
 
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
@@ -18,19 +17,19 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.82"
+val TomcatVersion     = "9.0.88"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.5.0"
-val cxfVersion        = "3.6.2"
+val cxfVersion        = "3.6.3"
 val fs2Version        = "2.5.11"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.0"
-val luceneVersion     = "9.8.0"
+val tikaVersion       = "2.9.1"
+val luceneVersion     = "9.10.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -60,19 +59,20 @@ libraryDependencies ++= Seq(
   "cglib"                          % "cglib"                          % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"          % jacksonVersion,
   "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.8" excludeAll (
+  "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.2.0",
-  "com.google.apis"       % "google-api-services-books"   % "v1-rev20230203-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20231011-2.0.0",
+  "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240417-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.10.1",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
@@ -109,13 +109,13 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.16.0",
+  "commons-codec"             % "commons-codec"         % "1.16.1",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.15.0",
+  "commons-io"                % "commons-io"            % "2.15.1",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -220,8 +220,8 @@ libraryDependencies ++= Seq(
   "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.9",
-  "org.slf4j"        % "slf4j-api"      % "2.0.9",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.13",
+  "org.slf4j"        % "slf4j-api"      % "2.0.13",
   springAop,
   springWeb,
   springContext,
@@ -239,12 +239,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.9.1",
+  "org.scala-sbt"                 %% "io"                       % "1.9.9",
   "org.mozilla"                   % "rhino"                     % "1.7.14",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.164",
-  "com.fasterxml"                 % "classmate"                 % "1.5.1",
+  "io.github.classgraph"          % "classgraph"                % "4.8.172",
+  "com.fasterxml"                 % "classmate"                 % "1.6.0",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
@@ -427,10 +427,20 @@ run := {
   //   Jar name = bcprov-jdk18on-1.73.jar, jar org = org.bouncycastle, entry target = org/bouncycastle/crypto/ec/CustomNamedCurves$2.class
   // Keep the later one to use the newer version of bcprov.
   case PathList("org", "bouncycastle", _*) => MergeStrategy.last
+  // The advice for native-image property files is to name them specific to the group and module to
+  // which the belong. However, it seems Google (google-auth-library-oauth2-http-1.23.0.jar) and
+  // Oracle (ojdbc8-23.3.0.23.09.jar) themselves have failed to follow this advice. A simple rename
+  // though would still allow them to be detected.
+  // Advice: https://docs.oracle.com/en/graalvm/enterprise/21/docs/reference-manual/native-image/BuildConfiguration/#embedding-a-configuration-file
+  case PathList("META-INF", "native-image", _*) => MergeStrategy.rename
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
+
+// In order to work properly with Java 21, Some libraries like Lucene v9 requires flag 'Multi-Release' to
+// be true in the manifest file.
+assembly / packageOptions += ManifestAttributes("Multi-Release" -> "true")
 
 lazy val collectJars = taskKey[Set[File]]("Collect jars")
 

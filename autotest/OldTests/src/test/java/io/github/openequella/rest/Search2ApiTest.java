@@ -26,6 +26,9 @@ import org.testng.annotations.Test;
 
 public class Search2ApiTest extends AbstractRestApiTest {
   private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
+  private final String VIRTUAL_HIERARCHY_TOPIC =
+      "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  private final String NORMAL_HIERARCHY_TOPIC = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
 
   @Test(description = "Search without parameters")
   public void noParamSearchTest() throws IOException {
@@ -57,7 +60,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     JsonNode result =
         doSearch(
             200, null, new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"));
-    assertEquals(getAvailable(result), 2);
+    assertEquals(getAvailable(result), 7);
   }
 
   @Test(description = "Search for items belonging to a specific owner")
@@ -368,6 +371,77 @@ public class Search2ApiTest extends AbstractRestApiTest {
     for (String fieldName : Arrays.asList("attachmentType", "mimeType", "link")) {
       assertNotNull(details.get(fieldName));
     }
+  }
+
+  @Test(description = "Search for a hierarchy topic result")
+  public void hierarchyTopic() throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
+    assertEquals(getAvailable(result), 56);
+  }
+
+  @Test(description = "Search for a non-existent hierarchy topic result")
+  public void hierarchyTopicNotFound() throws IOException {
+    doSearch(404, null, new NameValuePair("hierarchy", "non-existent"));
+  }
+
+  @Test(description = "Search for a virtual hierarchy topic result")
+  public void virtualHierarchyTopic() throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", VIRTUAL_HIERARCHY_TOPIC));
+    assertEquals(getAvailable(result), 2);
+  }
+
+  @Test(
+      description =
+          "Encoded hierarchy compound UUID should be decoded to get the correct search result")
+  public void virtualHierarchyTopicEncodedHierarchyUuid() throws IOException {
+    JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", VIRTUAL_HIERARCHY_TOPIC));
+    assertEquals(getAvailable(result), 2);
+  }
+
+  @Test(
+      description =
+          "Search with criteria defined in a virtual hierarchy topic with additional query")
+  public void virtualHierarchyTopicByQuery() throws IOException {
+    JsonNode result =
+        doSearch(200, "Book A", new NameValuePair("hierarchy", VIRTUAL_HIERARCHY_TOPIC));
+    assertEquals(getAvailable(result), 2);
+  }
+
+  @Test(description = "Search with criteria defined in a hierarchy topic with owner")
+  public void hierarchyTopicByOwner() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
+            new NameValuePair("owner", "adfcaf58-241b-4eca-9740-6a26d1c3dd58"));
+
+    assertEquals(getAvailable(result), 47);
+  }
+
+  @Test(description = "Search with criteria defined in a virtual hierarchy topic with date range")
+  public void subVirtualHierarchyTopicByDate() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair(
+                "hierarchy",
+                "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="),
+            new NameValuePair("modifiedBefore", "2023-01-01"));
+    assertEquals(getAvailable(result), 0);
+  }
+
+  @Test(description = "Search hierarchy with duplicated criteria which should be ignored")
+  public void hierarchyTopicIgnoredParam() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
+            new NameValuePair("collections", "non-existing"),
+            new NameValuePair("status", "ARCHIVED"));
+    assertEquals(getAvailable(result), 56);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)

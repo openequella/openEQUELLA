@@ -19,7 +19,7 @@ import { stringify } from 'query-string';
 import { GET, HEAD, POST } from './AxiosInstance';
 import type { i18nString, ItemStatus } from './Common';
 import { SearchResultCodec, SearchResultItemRawCodec } from './gen/Search';
-import { convertDateFields, validate } from './Utils';
+import { convertDateFields, STANDARD_DATE_FIELDS, validate } from './Utils';
 
 /**
  * Used for specifying must expressions such as `moderating:true`. Neither string should contain
@@ -106,6 +106,10 @@ interface SearchParamsBase {
    * Custom query in Lucene syntax.
    */
   customLuceneQuery?: string;
+  /**
+   * The UUID of a hierarchy topic.
+   */
+  hierarchy?: string;
 }
 
 /**
@@ -401,7 +405,7 @@ interface SearchResultItemBase {
 /**
  * Search result item as it is returned by the API
  */
-interface SearchResultItemRaw extends SearchResultItemBase {
+export interface SearchResultItemRaw extends SearchResultItemBase {
   /**
    * The date when item is created.
    */
@@ -531,12 +535,7 @@ const searchResultValidator = validate(
 );
 
 const processRawSearchResult = (data: SearchResult<SearchResultItemRaw>) =>
-  convertDateFields<SearchResult<SearchResultItem>>(data, [
-    'createdDate',
-    'modifiedDate',
-    'lastActionDate',
-    'submittedDate',
-  ]);
+  convertDateFields<SearchResult<SearchResultItem>>(data, STANDARD_DATE_FIELDS);
 
 /**
  * Communicate with REST endpoint 'search2' to do a search with specified search criteria.

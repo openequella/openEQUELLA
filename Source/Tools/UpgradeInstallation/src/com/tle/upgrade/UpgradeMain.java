@@ -58,6 +58,7 @@ import com.tle.upgrade.upgraders.UpgradeToTomcat6_0_35;
 import com.tle.upgrade.upgraders.UpgradeToTomcat7_0_37;
 import com.tle.upgrade.upgraders.apachedaemon.UpdateApacheDaemon;
 import com.tle.upgrade.upgraders.ffmpeg.AddFfmpegConfig;
+import com.tle.upgrade.upgraders.java17.UpdateJavaOpts;
 import com.tle.upgrade.upgraders.log4j2.UpdateLog4JConfigFile;
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,7 +133,8 @@ public class UpgradeMain {
         new AddPostHib5UpgradeConfig(),
         new UpdateLog4JConfigFile(),
         new AddFfmpegConfig(),
-        new UpdateApacheDaemon()
+        new UpdateApacheDaemon(),
+        new UpdateJavaOpts()
       };
 
   public static void main(String[] args) throws Throwable {

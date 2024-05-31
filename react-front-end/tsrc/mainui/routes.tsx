@@ -17,6 +17,14 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import {
+  isEditSystemSettingsGranted,
+  isHierarchyPageACLGranted,
+  isManageCloudProviderACLGranted,
+  isSearchPageACLGranted,
+  isViewHierarchyTopicACLGranted,
+  PermissionCheck,
+} from "../modules/SecurityModule";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
 
@@ -33,6 +41,7 @@ const EditLti13PlatformPage = React.lazy(
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage"),
 );
+const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const SearchPageSettings = React.lazy(
   () => import("../settings/Search/SearchPageSettings"),
 );
@@ -52,6 +61,12 @@ const ContentIndexSettings = React.lazy(
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
+const BrowseHierarchyPage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage"),
+);
+const RootHierarchyPage = React.lazy(
+  () => import("../hierarchy/RootHierarchyPage"),
+);
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -64,9 +79,20 @@ type ToFunc = (uuid: string) => string;
 type ToVersionFunc = (uuid: string, version: number) => string;
 
 export interface OEQRouteNewUI {
-  component?: React.ComponentType<BaseOEQRouteComponentProps>;
-  render?: (props: BaseOEQRouteComponentProps) => React.ReactNode;
+  /**
+   * React component to be rendered for the route.
+   */
+  component: React.ComponentType<BaseOEQRouteComponentProps>;
+  /**
+   * The path which this route matches to.
+   */
   path: string;
+  /**
+   * Optional function to check if the current user has permission to access the page which this
+   * route points to. When none, authentication is required for the access. To make this route
+   * publicly available, make this function always return a Promise of `true`.
+   */
+  permissionChecks?: PermissionCheck[];
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
@@ -74,20 +100,24 @@ interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
 }
 
 interface Routes {
-  OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
-  NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
-  Lti13PlatformsSettings: OEQRouteNewUI;
-  CreateLti13Platform: OEQRouteNewUI;
-  EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
+  BrowseHierarchy: OEQRouteNewUI;
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
+  CreateLti13Platform: OEQRouteNewUI;
+  EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
+  Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
+  Lti13PlatformsSettings: OEQRouteNewUI;
   MyResources: OEQRouteNewUI;
+  NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
+  OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
+  OldHierarchy: OEQRouteTo<ToFunc>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
+  SearchPage: OEQRouteNewUI;
   SearchSettings: OEQRouteNewUI;
   Settings: OEQRouteNewUI & OEQRouteTo<string>;
   TaskList: OEQRouteTo<string>;
@@ -102,8 +132,7 @@ interface Routes {
  * @param route the potential route to check
  */
 export const isNewUIRoute = (route: unknown): route is OEQRouteNewUI =>
-  (route as OEQRouteNewUI).component !== undefined ||
-  (route as OEQRouteNewUI).render !== undefined;
+  (route as OEQRouteNewUI).component !== undefined;
 
 /**
  * Simple validator to allow direct use of an expected to URL route - considering they're hardcoded
@@ -127,55 +156,83 @@ export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
 export const NEW_MY_RESOURCES_PATH = "/page/myresources";
 export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
+export const NEW_HIERARCHY_PATH = "/page/hierarchy";
+export const OLD_HIERARCHY_PATH = "/hierarchy.do";
+
 export const routes: Routes = {
-  OldAdvancedSearch: {
-    to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
+  BrowseHierarchy: {
+    path: "/page/hierarchies",
+    component: BrowseHierarchyPage,
+    permissionChecks: [isHierarchyPageACLGranted],
   },
-  NewAdvancedSearch: {
-    to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
-    path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
-    component: AdvancedSearchPage,
+  CloudProviders: {
+    path: "/page/cloudprovider",
+    component: CloudProviderListPage,
+    permissionChecks: [isManageCloudProviderACLGranted],
   },
-  Lti13PlatformsSettings: {
-    path: "/page/lti13platforms",
-    component: LtiPlatformsSettingsPage,
+  ContentIndexSettings: {
+    path: "/page/contentindexsettings",
+    component: ContentIndexSettings,
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
   },
   CreateLti13Platform: {
     path: "/page/createLti13Platform",
     component: CreateLti13PlatformPage,
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first
     to: (platformId: string) => `/page/editLti13Platform/${btoa(platformId)}`,
     path: `/page/editLti13Platform/:platformIdBase64`,
     component: EditLti13PlatformPage,
-  },
-  CloudProviders: {
-    path: "/page/cloudprovider",
-    component: CloudProviderListPage,
-  },
-  ContentIndexSettings: {
-    path: "/page/contentindexsettings",
-    component: ContentIndexSettings,
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
   },
   FacetedSearchSetting: {
     path: "/page/facetedsearchsettings",
     component: FacetedSearchSettingsPage,
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
+  },
+  Hierarchy: {
+    path: `${NEW_HIERARCHY_PATH}/:compoundUuid`,
+    to: (compoundUuid: string) => `${NEW_HIERARCHY_PATH}/${compoundUuid}`,
+    component: RootHierarchyPage,
+    permissionChecks: [
+      isHierarchyPageACLGranted,
+      isViewHierarchyTopicACLGranted,
+    ],
   },
   LoginNoticeConfig: {
     path: "/page/loginconfiguration",
     component: LoginNoticeConfigPage,
+    permissionChecks: [isEditSystemSettingsGranted("loginnoticeeditor")],
   },
   Logout: {
     // lack of '/' is significant
     to: "logon.do?logout=true",
   },
+  Lti13PlatformsSettings: {
+    path: "/page/lti13platforms",
+    component: LtiPlatformsSettingsPage,
+    permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
+  },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
     component: MyResourcesPage,
   },
+  NewAdvancedSearch: {
+    to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
+    path: `${NEW_ADVANCED_SEARCH_PATH}/:advancedSearchId`,
+    component: AdvancedSearchPage,
+    permissionChecks: [isSearchPageACLGranted],
+  },
   Notifications: {
     to: "/access/notifications.do",
+  },
+  OldAdvancedSearch: {
+    to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
+  },
+  OldHierarchy: {
+    to: (topic: string) => `${OLD_HIERARCHY_PATH}?topic=${topic}`,
   },
   RemoteSearch: {
     // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
@@ -184,23 +241,34 @@ export const routes: Routes = {
     // See com.tle.web.searching.section.SearchQuerySection.forwardToRemote
     to: (uuid: string) => `/access/z3950.do?.repository=${uuid}&uc=true`,
   },
+  SearchFilterSettings: {
+    path: "/page/searchfiltersettings",
+    component: SearchFilterPage,
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
+  },
+  SearchPage: {
+    path: NEW_SEARCH_PATH,
+    component: SearchPage,
+    permissionChecks: [isSearchPageACLGranted],
+  },
+  SearchSettings: {
+    path: "/page/searchsettings",
+    component: SearchPageSettings,
+    permissionChecks: [isEditSystemSettingsGranted("searching")],
+  },
   Settings: {
     path: "(/access/settings.do|/page/settings)",
     to: "/page/settings",
     component: SettingsPage,
   },
-  SearchFilterSettings: {
-    path: "/page/searchfiltersettings",
-    component: SearchFilterPage,
-  },
-  SearchSettings: {
-    path: "/page/searchsettings",
-    component: SearchPageSettings,
-  },
   TaskList: {
     to: "/access/tasklist.do",
   },
-  ThemeConfig: { path: "/page/themeconfiguration", component: ThemePage },
+  ThemeConfig: {
+    path: "/page/themeconfiguration",
+    component: ThemePage,
+    permissionChecks: [isEditSystemSettingsGranted("theme")],
+  },
   UserPreferences: {
     to: "/access/user.do",
   },

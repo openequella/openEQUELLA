@@ -41,12 +41,17 @@ import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
 
 import java.net.{URI, URL}
+import java.nio.charset.StandardCharsets
 import java.security.interfaces.RSAPublicKey
+import java.util.Base64
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
+import cats.implicits._
+import io.circe._
+import io.circe.parser._
 
 /**
   * Captures the parameters which make up the first part of a 'Third-party Initiated Login' as part
@@ -153,16 +158,47 @@ case class UserDetails(platformId: String,
                        lastName: String,
                        email: Option[String])
 object UserDetails {
-  def apply(jwt: DecodedJWT): Either[InvalidJWT, UserDetails] = {
+  def apply(jwt: DecodedJWT,
+            usernameClaimPaths: Option[List[String]]): Either[InvalidJWT, UserDetails] = {
     val claim = getClaim(jwt)
+
+    // Use the custom username claim if present, otherwise use the Subject claim.
+    // The payload is in JSON format so use Circe to parse and traverse the JSON string.
+    // The claim has been verified earlier, so if parsing the token or reading the value
+    // fails, it's mostly because the token is invalid.
+    def getUserId: Either[InvalidJWT, String] = {
+      def fromCustomClaim(paths: List[String]): Either[InvalidJWT, String] = {
+        val jwtPayload =
+          new String(Base64.getUrlDecoder.decode(jwt.getPayload), StandardCharsets.UTF_8)
+
+        // The claim is verified so we can simply build the original string in the required format.
+        def originalClaim = paths.map(c => s"[$c]").mkString
+
+        def read(doc: Json): Decoder.Result[String] =
+          paths
+            .foldLeft[ACursor](doc.hcursor) { (cursor, key) =>
+              cursor.downField(key)
+            }
+            .as[String]
+
+        parse(jwtPayload)
+          .flatMap(read)
+          .leftMap(_ => InvalidJWT(s"Unable to determine user ID by claim $originalClaim"))
+      }
+
+      def fromSubjectClaim: Either[InvalidJWT, String] =
+        Option(jwt.getSubject)
+          .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
+
+      usernameClaimPaths.map(fromCustomClaim).getOrElse(fromSubjectClaim)
+    }
 
     for {
       platformId <- Option(jwt.getIssuer)
         .toRight(
           InvalidJWT(
             "No issuer claim provided in the JWT, unable to determine origin LTI platform."))
-      userId <- Option(jwt.getSubject)
-        .toRight(InvalidJWT("No subject claim provided in JWT, unable to determine user id."))
+      userId <- getUserId
       emptyRoles = List() // helper for readability
       // Attempt to get the claim with the roles. However it could be absent or empty
       // in which case we just go with an 'empty' list of roles. (There is also the case where
@@ -303,9 +339,11 @@ class Lti13AuthService {
         .filter(decodedToken.getIssuer.equals)
         .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
 
-      // -- next, validation of the actual JWT
+      // Get details of the platform and verify the custom username claim
       platform <- getPlatform(platformId)
-        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of ${platformId}"))
+        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
+
+      // -- next, validation of the actual JWT
       jwkProvider <- getJwkProvider(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]

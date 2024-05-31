@@ -15,6 +15,7 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
     keysetUrl = "https://test",
     usernamePrefix = Option("hello"),
     usernameSuffix = None,
+    usernameClaim = None,
     unknownUserHandling = "CREATE",
     unknownUserDefaultGroups = None,
     instructorRoles = Set("tutor"),

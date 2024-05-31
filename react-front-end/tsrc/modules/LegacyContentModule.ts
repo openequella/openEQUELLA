@@ -26,6 +26,8 @@ const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.
 export const ScrapbookLiteral = t.literal("scrapbook");
 export const ModQueueLiteral = t.literal("modqueue");
 
+export const LegacyBrowseHierarchyLiteral = t.literal("ALL");
+
 export const LegacyMyResourcesCodec = t.union([
   t.literal("published"),
   t.literal("draft"),

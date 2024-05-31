@@ -7,13 +7,13 @@ libraryDependencies ++= Seq(
   "com.google.guava"     % "guava"              % "32.1.3-jre",
   "org.antlr"            % "stringtemplate"     % "3.2.1",
   "com.google.code.gson" % "gson"               % "2.10.1",
-  "org.slf4j"            % "jcl-over-slf4j"     % "2.0.9",
-  "commons-io"           % "commons-io"         % "2.15.0",
+  "org.slf4j"            % "jcl-over-slf4j"     % "2.0.13",
+  "commons-io"           % "commons-io"         % "2.15.1",
   log4j,
   log4jCore,
   log4jSlf4jImpl,
   "commons-daemon" % "commons-daemon" % "1.3.4",
-  "commons-codec"  % "commons-codec"  % "1.16.0",
+  "commons-codec"  % "commons-codec"  % "1.16.1",
   jacksonDataBind,
   jacksonDataFormatYaml
 )

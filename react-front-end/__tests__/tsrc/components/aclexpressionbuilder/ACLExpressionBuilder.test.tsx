@@ -158,7 +158,7 @@ describe("<ACLExpressionBuilder/>", () => {
 
   it("should be able to add a sub group for ACLExpression", async () => {
     const expectedResult =
-      "U:20483af2-fe56-4499-a54b-8d7452156895 U:eb75a832-6533-4d72-93f4-2b7a1b108951 U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND OR";
+      "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR";
     const onFinish = jest.fn();
     const { getByLabelText, container } = renderACLExpressionBuilder({
       ...defaultACLExpressionBuilderProps,
@@ -171,14 +171,10 @@ describe("<ACLExpressionBuilder/>", () => {
     // change operator type (if operator of sub-group is same with the root it will be combined after return)
     await selectOperatorForNode(container, 1, "AND");
 
-    // add user300 and user400 to new group (if group is empty it will be removed when return, and
+    // Add all the users to new group (if group is empty it will be removed when return, and
     // if group only have one recipient it will be combined into root group).
     await searchUser(container, "user");
-    const result = await selectAndFinished(
-      container,
-      ["user300", "user400"],
-      onFinish,
-    );
+    const result = await selectAndFinished(container, onFinish);
 
     expect(result).toEqual(expectedResult);
   });
@@ -299,7 +295,6 @@ describe("<ACLExpressionBuilder/>", () => {
         string,
         string,
         string,
-        string[],
         (dialog: HTMLElement, queryValue: string) => Promise<void>,
         string,
       ]
@@ -308,15 +303,13 @@ describe("<ACLExpressionBuilder/>", () => {
         "users",
         usersRadioLabel,
         "user",
-        ["user300", "user400"],
         searchUser,
-        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND OR",
+        "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND U:1c2ff1d0-9040-4985-a450-0ff6422ba5ef AND U:eb75a832-6533-4d72-93f4-2b7a1b108951 AND OR",
       ],
       [
         "groups",
         groupsRadioLabel,
         "group",
-        ["group100", "group200", "group300", "group400"],
         searchGroup,
         "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND G:303e758c-0051-4aea-9a8e-421f93ed9d1a AND G:d7dd1907-5731-4244-9a65-e0e847f68604 AND G:f921a6e3-69a6-4ec4-8cf8-bc193beda5f6 AND G:a2576dea-bd5c-490b-a065-637068e1a4fb AND OR",
       ],
@@ -324,7 +317,6 @@ describe("<ACLExpressionBuilder/>", () => {
         "roles",
         rolesRadioLabel,
         "role",
-        ["role100", "role200"],
         searchRole,
         "U:20483af2-fe56-4499-a54b-8d7452156895 U:f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a R:TLE_GUEST_USER_ROLE AND R:fda99983-9eda-440a-ac68-0f746173fdcb AND R:1de3a6df-dc81-4a26-b69e-e61f8474594a AND OR",
       ],
@@ -334,7 +326,6 @@ describe("<ACLExpressionBuilder/>", () => {
         _,
         entityRadioLabel,
         searchFor,
-        selectEntitiesName,
         searchEntity,
         expectedACLExpressionResult,
       ) => {
@@ -345,19 +336,15 @@ describe("<ACLExpressionBuilder/>", () => {
           onFinish: onFinish,
         });
 
-        // select entity search radio
+        // Select entity search radio.
         await userEvent.click(getByText(entityRadioLabel));
         // Attempt search for a specific entity
         await searchEntity(container, searchFor);
 
-        // select the child node
+        // Select the child node.
         await selectOperatorNode(container, 1);
-
-        const result = await selectAndFinished(
-          container,
-          selectEntitiesName,
-          onFinish,
-        );
+        // Select all the entities.
+        const result = await selectAndFinished(container, onFinish);
 
         expect(result).toEqual(expectedACLExpressionResult);
       },
@@ -541,9 +528,7 @@ describe("<ACLExpressionBuilder/>", () => {
       // wait for getting tokens from API
       await findByText(ssoType);
       // get error message
-      const errorMessage = await getByText(
-        `Failed to get SSO tokens: ${error}`,
-      );
+      const errorMessage = getByText(`Failed to get SSO tokens: ${error}`);
 
       expect(errorMessage).toBeInTheDocument();
     });

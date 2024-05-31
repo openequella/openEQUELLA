@@ -18,10 +18,12 @@
 /* eslint jest/expect-expect: ["warn", { "assertFunctionNames": ["expect*"] }] */
 
 import * as OEQ from '../src';
+import { ItemStatus } from '../src/Common';
 import * as TC from './TestConfig';
 import JestMatchers = jest.JestMatchers;
 
 const API_PATH = TC.API_PATH_FACET;
+const defaultStatus: ItemStatus[] = ['LIVE'];
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(API_PATH, true));
@@ -62,6 +64,7 @@ describe('Search for facets', () => {
   it('should be possible to search with just a single node', async () => {
     const results = await search({
       nodes: [nodeKeyword],
+      status: defaultStatus,
     });
 
     expectResults(results);
@@ -81,6 +84,7 @@ describe('Search for facets', () => {
   it('should be possible to limit to a collection', async () => {
     const results = await search({
       nodes: [nodeKeyword],
+      status: defaultStatus,
       collections: [collectionHardware],
     });
 
@@ -92,6 +96,7 @@ describe('Search for facets', () => {
   it('should be possible to limit to multiple collections', async () => {
     const results = await search({
       nodes: [nodeKeyword],
+      status: defaultStatus,
       collections: [collectionHardware, collectionProgramming],
     });
 
@@ -101,8 +106,9 @@ describe('Search for facets', () => {
   });
 
   it('should be possible to filter by owner id', async () => {
-    const params = {
+    const params: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [nodeKeyword],
+      status: defaultStatus,
       owner: 'TLE_ADMINISTRATOR', // has contributed items
     };
 
@@ -138,6 +144,7 @@ describe('Search for facets', () => {
     async (_, modifiedAfter, modifiedBefore, expectedResults) => {
       const results = await search({
         nodes: [nodeKeyword],
+        status: defaultStatus,
         modifiedAfter: modifiedAfter,
         modifiedBefore: modifiedBefore,
       });
@@ -147,27 +154,28 @@ describe('Search for facets', () => {
 
   /**
    * In this test we are looking for our single draft item which has a keyword of 'draft'. It should
-   * only be in the generated classifications/terms when `showall` is true.
+   * only be in the generated classifications/terms when status contains `DRAFT`.
    */
-  it('should be possible to search for non-live records', async () => {
-    const params = {
+  it('should be possible to search with status filter', async () => {
+    const params: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [nodeKeyword],
-      showall: false,
+      status: defaultStatus,
     };
     const draftKeyword = 'draft';
 
     // Make sure it doesn't normally appear
     expectTermAbsent(await search(params), draftKeyword);
 
-    // Then make sure it does when we use all items
-    params.showall = true;
+    // Then make sure it does when status include `DRAFT`
+    params.status = ['DRAFT'];
     expectTermPresent(await search(params), draftKeyword);
   });
 
   it('should be possible to include a query string to filter items', async () => {
     const results = await search({
       nodes: [nodeKeyword],
-      q: 'scala',
+      status: defaultStatus,
+      query: 'scala',
     });
     expect(
       results.results.find((f) => f.term === 'jvm' && f.count === 1)
@@ -177,6 +185,7 @@ describe('Search for facets', () => {
   it('should be possible to limit to a MIME type', async () => {
     const results = await search({
       nodes: [nodeKeyword],
+      status: defaultStatus,
       mimeTypes: ['text/plain'],
     });
 

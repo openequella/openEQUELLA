@@ -137,13 +137,7 @@ public class TaxonomyResourceImpl
    */
   @Override
   public Response createTaxonomyTerm(String taxonomyUuid, TermBean termBean) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
-    }
-
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
     final String parentTermUuid = termBean.getParentUuid();
     TermResult parentTerm = null;
@@ -186,12 +180,7 @@ public class TaxonomyResourceImpl
    */
   @Override
   public Response updateTaxonomyTerm(String taxonomyUuid, String termUuid, TermBean termBean) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
-    }
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
 
     TermResult term = taxonomyService.getTermResultByUuid(taxonomyUuid, termUuid);
@@ -225,13 +214,7 @@ public class TaxonomyResourceImpl
    */
   @Override
   public Response rmTaxonomyTerm(String taxonomyUuid, String termUuid) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
-    }
-
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
 
     TermResult term = taxonomyService.getTermResultByUuid(taxonomyUuid, termUuid);
@@ -330,12 +313,7 @@ public class TaxonomyResourceImpl
   @Override
   public Response setTermData(
       String taxonomyUuid, String termUuid, String dataKey, String dataValue) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
-    }
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
     final boolean created;
     try {
@@ -353,6 +331,32 @@ public class TaxonomyResourceImpl
     return Response.ok().location(location).build();
   }
 
+  @Override
+  public Response setTermData(String taxonomyUuid, String termUuid, Map<String, String> data) {
+    ensureTaxonomyModifiable(taxonomyUuid);
+    final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
+
+    if (data.size() == 1) {
+      // Get the first entry of data if the data size is 1
+      Map.Entry<String, String> entry = data.entrySet().iterator().next();
+      String dataKey = entry.getKey();
+      String dataValue = entry.getValue();
+      boolean created = termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue);
+      URI location = getTermDataUrl(taxonomyUuid, termUuid, dataKey);
+
+      if (created) {
+        return Response.created(location).build();
+      }
+      return Response.status(Status.CONFLICT.getStatusCode(), "Data already exists").build();
+    } else {
+      data.forEach(
+          (dataKey, dataValue) ->
+              termService.setDataByTermUuid(taxonomy, termUuid, dataKey, dataValue));
+      return Response.status(Status.CREATED.getStatusCode(), "All requested data items added")
+          .build();
+    }
+  }
+
   /**
    * Remove term data
    *
@@ -363,12 +367,7 @@ public class TaxonomyResourceImpl
    */
   @Override
   public Response deleteTermData(String taxonomyUuid, String termUuid, String dataKey) {
-    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
-      throw new WebException(
-          Status.METHOD_NOT_ALLOWED.getStatusCode(),
-          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
-          "Taxonomy is readonly");
-    }
+    ensureTaxonomyModifiable(taxonomyUuid);
     final Taxonomy taxonomy = ensureTaxonomy(taxonomyUuid, PrivCheck.EDIT);
     try {
       termService.setDataByTermUuid(taxonomy, termUuid, dataKey, null);
@@ -448,6 +447,22 @@ public class TaxonomyResourceImpl
       throw new WebApplicationException(Status.FORBIDDEN);
     }
     return taxonomy;
+  }
+
+  /**
+   * Checks if the taxonomy with the given UUID is modifiable. If the taxonomy is read-only, it
+   * throws a WebException with status code 405 (Method Not Allowed).
+   *
+   * @param taxonomyUuid The UUID of the taxonomy to check.
+   * @throws WebException If the taxonomy is read-only.
+   */
+  private void ensureTaxonomyModifiable(String taxonomyUuid) {
+    if (taxonomyService.isTaxonomyReadonly(taxonomyUuid)) {
+      throw new WebException(
+          Status.METHOD_NOT_ALLOWED.getStatusCode(),
+          Status.METHOD_NOT_ALLOWED.getReasonPhrase(),
+          "Taxonomy is readonly");
+    }
   }
 
   @Override

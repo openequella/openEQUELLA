@@ -40,6 +40,7 @@ import scala.jdk.CollectionConverters._
   * @param keysetUrl JWKS keyset URL where to get the keys
   * @param usernamePrefix Prefix added to the user ID from the LTI request
   * @param usernameSuffix Suffix added to the user ID from the LTI request
+  * @param usernameClaim Optional value which specifies the claim to be used to retrieve username from the LTI request
   * @param unknownUserHandling How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
   * @param unknownUserDefaultGroups The list of groups to be added to the user object If the unknown user handling is CREATE.
   * @param instructorRoles A list of roles to be assigned to a LTI instructor role
@@ -57,6 +58,7 @@ case class LtiPlatformBean(
     keysetUrl: String,
     usernamePrefix: Option[String],
     usernameSuffix: Option[String],
+    usernameClaim: Option[String],
     unknownUserHandling: String,
     unknownUserDefaultGroups: Option[Set[String]],
     instructorRoles: Set[String],
@@ -80,6 +82,7 @@ object LtiPlatformBean {
       keysetUrl = platform.keysetUrl,
       usernamePrefix = Option(platform.usernamePrefix),
       usernameSuffix = Option(platform.usernameSuffix),
+      usernameClaim = Option(platform.usernameClaim),
       unknownUserHandling = platform.unknownUserHandling,
       unknownUserDefaultGroups = Option(platform.unknownUserDefaultGroups).map(_.asScala.toSet),
       instructorRoles = platform.instructorRoles.asScala.toSet,
@@ -107,6 +110,7 @@ object LtiPlatformBean {
 
     platform.usernamePrefix = bean.usernamePrefix.orNull
     platform.usernameSuffix = bean.usernameSuffix.orNull
+    platform.usernameClaim = bean.usernameClaim.orNull
     platform.allowExpression = bean.allowExpression.orNull
 
     platform.unknownRoles = bean.unknownRoles.asJava

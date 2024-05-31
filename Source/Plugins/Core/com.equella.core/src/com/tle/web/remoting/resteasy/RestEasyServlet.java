@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
@@ -38,9 +39,11 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.web.DebugSettings;
 import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.auth.Auth;
+import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
 import com.tle.web.api.cloudprovider.CloudProviderApi;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
+import com.tle.web.api.hierarchy.HierarchyResource;
 import com.tle.web.api.institution.AclResource;
 import com.tle.web.api.institution.GdprResource;
 import com.tle.web.api.item.SelectionApi;
@@ -107,8 +110,9 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   @Inject private ObjectMapperService objectMapperService;
   @Inject private InstitutionSecurityFilter institutionSecurityFilter;
 
-  // API Classes which have been implemented in Scala
-  private static final List<Class> scalaApiClasses =
+  // API Classes utilising `LegacyGuice` which will ideally be migrated to normal Dependency
+  // Injection in the future.
+  private static final List<Class> legacyGuiceApiClasses =
       Arrays.asList(
           AclResource.class,
           AdvancedSearchResource.class,
@@ -124,17 +128,21 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           MimeTypeResource.class,
           RemoteSearchResource.class,
           SearchFilterResource.class,
-          SearchResource.class,
           SearchSettingsResource.class,
           SelectionApi.class,
           SettingsResource.class,
           UserQueryResource.class,
           WizardApi.class);
 
-  // API Classes which have been implemented in Java
-  private static final List<Class> javaApiClasses =
+  // API classes which can use Guice normal Dependency Injection.
+  private static final List<Class> apiClasses =
       Arrays.asList(
-          NewUIThemeResource.class, PostLoginNoticeResource.class, PreLoginNoticeResource.class);
+          BrowseHierarchyResource.class,
+          HierarchyResource.class,
+          NewUIThemeResource.class,
+          PostLoginNoticeResource.class,
+          PreLoginNoticeResource.class,
+          SearchResource.class);
 
   @Override
   protected void service(
@@ -166,7 +174,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     PluginBeanLocator coreLocator = pluginService.getBeanLocator("com.equella.core");
     Set<Class<?>> classes = application.getClasses();
 
-    scalaApiClasses.forEach(
+    legacyGuiceApiClasses.forEach(
         clazz -> {
           try {
             registry.addSingletonResource(clazz.newInstance());
@@ -175,7 +183,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
             LOGGER.error("Failed to register API class: " + clazz.getCanonicalName(), e);
           }
         });
-    javaApiClasses.forEach(
+    apiClasses.forEach(
         clazz -> {
           registry.addResourceFactory(new BeanLocatorResource(clazz, coreLocator));
           classes.add(clazz);
@@ -292,6 +300,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
     mapper.registerModule(new JavaTypesModule());
     mapper.registerModule(new JavaTimeModule());
     mapper.registerModule(new RestStringsModule());
+    mapper.registerModule(new Jdk8Module());
     mapper.setSerializationInclusion(Include.NON_ABSENT);
 
     // dev mode!

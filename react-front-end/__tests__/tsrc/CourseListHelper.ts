@@ -17,7 +17,7 @@
  */
 import * as LegacySelectionSessionModule from "../../tsrc/modules/LegacySelectionSessionModule";
 
-const mockGlobalCourseList = jest.spyOn(
+export const mockGlobalCourseList = jest.spyOn(
   LegacySelectionSessionModule,
   "getGlobalCourseList",
 );

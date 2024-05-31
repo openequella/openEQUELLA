@@ -36,7 +36,6 @@ object CommonSettings extends AutoPlugin {
       settingKey[File]("The output/target directory of the ReactJS project")
     lazy val reactFrontEndLanguageBundle =
       settingKey[File]("The language bundle file for the ReactJS front-end project")
-    lazy val checkJavaCodeStyle = taskKey[Unit]("Run checkstyle")
 
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
@@ -44,12 +43,12 @@ object CommonSettings extends AutoPlugin {
     lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.6.0"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "11.2.1.jre8"
 
-    lazy val log4jVersion   = "2.20.0"
+    lazy val log4jVersion   = "2.23.1"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core" % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
 
-    lazy val springVersion = "5.3.30"
+    lazy val springVersion = "5.3.34"
     lazy val springWeb     = "org.springframework" % "spring-web" % springVersion
     lazy val springAop     = "org.springframework" % "spring-aop" % springVersion
     lazy val springContext = "org.springframework" % "spring-context" % springVersion
@@ -68,9 +67,9 @@ object CommonSettings extends AutoPlugin {
   override def requires: Plugins = HeaderPlugin && JvmPlugin
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.13.12",
+    scalaVersion := "2.13.13",
     scalacOptions ++= Seq("-Vimplicits"),
-    javacOptions ++= Seq("--release", "11"),
+    javacOptions ++= Seq("--release", "21"),
     compileOrder := CompileOrder.Mixed,
     headerLicense := Some(
       HeaderLicense.Custom(
@@ -95,7 +94,7 @@ object CommonSettings extends AutoPlugin {
     ),
     libraryDependencies ++= Seq(
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest"  %% "scalatest"      % "3.2.17" % Test,
+      "org.scalatest"  %% "scalatest"      % "3.2.18" % Test,
     )
   )
 }

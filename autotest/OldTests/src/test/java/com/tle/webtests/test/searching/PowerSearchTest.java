@@ -18,9 +18,9 @@ import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class PowerSearchTest extends AbstractCleanupAutoTest {
-  static final String FIRST = "PowerSearchTest - Single Selections";
-  static final String SECOND = "PowerSearchTest - Second Single";
-  static final String MULTIPLE = "PowerSearchTest - Multiple Selections";
+  public static final String FIRST = "PowerSearchTest - Single Selections";
+  public static final String SECOND = "PowerSearchTest - Second Single";
+  public static final String MULTIPLE = "PowerSearchTest - Multiple Selections";
 
   @Override
   protected void cleanupAfterClass() throws Exception {

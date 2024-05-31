@@ -21,7 +21,11 @@ package com.tle.upgrade.upgraders.apachedaemon
 import com.dytech.edge.common.Constants
 import com.tle.common.util.ExecUtils
 import com.tle.upgrade.upgraders.AbstractUpgrader
-import com.tle.upgrade.{LineFileModifier, UpgradeMain, UpgradeResult}
+import com.tle.upgrade.upgraders.AbstractUpgrader.{
+  EQUELLA_SERVER_CONFIG_LINUX,
+  EQUELLA_SERVER_CONFIG_WINDOWS
+}
+import com.tle.upgrade.{LineFileModifier, UpgradeResult}
 import java.io.File
 import scala.util.{Failure, Success, Try}
 
@@ -38,10 +42,8 @@ class UpdateApacheDaemon extends AbstractUpgrader {
   val PRUNMGR = "prunmgr.exe"
   val PRUNSRV = "prunsrv.exe"
 
-  val EQUELLA_SERVER_LINUX          = "equellaserver"
-  val EQUELLA_SERVER_CONFIG_LINUX   = "equellaserver-config.sh"
-  val EQUELLA_SERVER_WINDOWS        = "equellaserver.bat"
-  val EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat"
+  val EQUELLA_SERVER_LINUX   = "equellaserver"
+  val EQUELLA_SERVER_WINDOWS = "equellaserver.bat"
 
   val MANAGER_SERVER_LINUX   = "manager"
   val MANAGER_SERVER_WINDOWS = "manager.bat"

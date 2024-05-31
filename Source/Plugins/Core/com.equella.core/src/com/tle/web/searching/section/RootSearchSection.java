@@ -36,12 +36,16 @@ import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.generic.InfoBookmark;
+import com.tle.web.sections.js.generic.expression.ScriptVariable;
+import com.tle.web.sections.js.generic.statement.DeclarationStatement;
 import com.tle.web.sections.render.Label;
+import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.template.RenderNewSearchPage;
 import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
+import java.util.Collection;
 import javax.inject.Inject;
 
 @SuppressWarnings("nls")
@@ -95,7 +99,10 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
     // is in 'structured' mode. If yes, then render the new search page if it's enabled.
     SelectionSession selectionSession = selectionService.getCurrentSession(context);
     if (isNewSearchUIInSelectionSession(selectionSession) && useNewSearch()) {
-      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewSearchPage(context));
+      SimpleSectionResult content =
+          RenderNewSearchPage.renderNewSearchPage(
+              context, configuredCollectionsJs(selectionSession));
+      getModel(context).setNewUIContent(content);
     }
     return super.renderHtml(context);
   }
@@ -126,5 +133,13 @@ public class RootSearchSection extends ContextableSearchSection<ContextableSearc
       return RenderNewTemplate.isNewSearchPageEnabled();
     }
     return false;
+  }
+
+  private DeclarationStatement configuredCollectionsJs(SelectionSession selectionSession) {
+    Collection<String> configured = selectionSession.getCollectionUuids();
+    // Do not need this JS variable if no collections are configured.
+    return configured.isEmpty()
+        ? null
+        : new DeclarationStatement(new ScriptVariable("configuredCollections"), configured);
   }
 }

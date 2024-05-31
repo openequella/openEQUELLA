@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
+import type { RenderResult } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as SET from "fp-ts/Set";
@@ -45,6 +46,7 @@ const {
     clientId: clientIdLabel,
     platformKeysetURL: platformKeysetURLLabel,
     platformAuthenticationRequestURL: platformAuthenticationRequestURLLabel,
+    usernameClaim: usernameClaimLabel,
     usernamePrefix: usernamePrefixLabel,
     usernameSuffix: usernameSuffixLabel,
   },
@@ -54,73 +56,133 @@ const {
 describe("CreateLti13Platform", () => {
   const errorOutlineClass = "Mui-error";
 
-  it("creates a new platform when provided with valid platform details", async () => {
-    const usableByUserId = users[0].id;
-    const usableByUser = users[0].username;
-    const unknownUserDefaultGroupId = groups[0].id;
-    const unknownUserDefaultGroup = groups[0].name;
-    const defaultRoleId = roles[0].id;
-    const defaultRole = roles[0].name;
-    const expectedResult: OEQ.LtiPlatform.LtiPlatform = {
-      platformId: "www.test.com",
-      name: "test",
-      clientId: "client name",
-      keysetUrl: "http://www.platformKeyset.com",
-      authUrl: "https://www.test.com",
-      usernamePrefix: "prefix",
-      usernameSuffix: "suffix",
-      unknownUserHandling: "CREATE",
-      allowExpression: `* U:${usableByUserId} OR`,
-      instructorRoles: SET.singleton(defaultRoleId),
-      unknownRoles: SET.singleton(defaultRoleId),
-      customRoles: new Map([
-        [
-          "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
-          SET.singleton(defaultRoleId),
-        ],
-      ]),
-      unknownUserDefaultGroups: SET.singleton(unknownUserDefaultGroupId),
-      enabled: true,
-    };
-    const createPlatform = jest.fn();
+  const usableByUserId = users[0].id;
+  const usableByUser = users[0].username;
+  const unknownUserDefaultGroupId = groups[0].id;
+  const unknownUserDefaultGroup = groups[0].name;
+  const defaultRoleId = roles[0].id;
+  const defaultRole = roles[0].name;
 
-    const renderResult = await renderCreateLti13Platform({
-      ...commonCreateLti13PlatformProps,
-      createPlatformProvider: createPlatform,
-    });
-    const { container } = renderResult;
+  const defaultPlatform: OEQ.LtiPlatform.LtiPlatform = {
+    platformId: "www.test.com",
+    name: "test",
+    clientId: "client name",
+    keysetUrl: "http://www.platformKeyset.com",
+    authUrl: "https://www.test.com",
+    usernameClaim: "",
+    usernamePrefix: "prefix",
+    usernameSuffix: "suffix",
+    unknownUserHandling: "ERROR",
+    allowExpression: "*",
+    instructorRoles: SET.empty,
+    unknownRoles: SET.empty,
+    customRoles: new Map(),
+    unknownUserDefaultGroups: SET.empty,
+    enabled: true,
+  };
 
-    await configureGeneralDetails(
-      container,
-      new Map([
-        [platformIdLabel, expectedResult.platformId],
-        [nameLabel, expectedResult.name],
-        [clientIdLabel, expectedResult.clientId],
-        [platformKeysetURLLabel, expectedResult.keysetUrl],
-        [platformAuthenticationRequestURLLabel, expectedResult.authUrl],
-        [usernamePrefixLabel, expectedResult.usernamePrefix!],
-        [usernameSuffixLabel, expectedResult.usernameSuffix!],
-      ]),
-    );
+  const usableBy = async (renderResult: RenderResult) =>
     await configureUsableBy(renderResult, usableByUser);
+
+  const unknownUserHandling = async (renderResult: RenderResult) =>
     await configureUnknownUserHandling(
       renderResult,
       unknownUserHandlingCreateLabel,
       unknownUserDefaultGroup,
     );
+
+  const instructorRoles = async (renderResult: RenderResult) =>
     await configureInstructorRoles(renderResult, defaultRole);
+
+  const customRoles = async (renderResult: RenderResult) =>
     await configureCustomRoles(
       renderResult,
       ltiRoles.institution.Guest,
       defaultRole,
     );
+
+  const unknownRoles = async (renderResult: RenderResult) =>
     await configureUnknownRoles(renderResult, defaultRole);
 
-    await savePlatform(container);
+  it.each<
+    [
+      string,
+      (renderResult: RenderResult) => Promise<void>,
+      OEQ.LtiPlatform.LtiPlatform,
+    ]
+  >([
+    [
+      "usable by",
+      usableBy,
+      { ...defaultPlatform, allowExpression: `* U:${usableByUserId} OR` },
+    ],
+    [
+      "unknown user handling",
+      unknownUserHandling,
+      {
+        ...defaultPlatform,
+        unknownUserHandling: "CREATE",
+        unknownUserDefaultGroups: SET.singleton(unknownUserDefaultGroupId),
+      },
+    ],
+    [
+      "instructor roles",
+      instructorRoles,
+      {
+        ...defaultPlatform,
+        instructorRoles: SET.singleton(defaultRoleId),
+      },
+    ],
+    [
+      "custom roles",
+      customRoles,
+      {
+        ...defaultPlatform,
+        customRoles: new Map([
+          [
+            "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
+            SET.singleton(defaultRoleId),
+          ],
+        ]),
+      },
+    ],
+    [
+      "unknown roles",
+      unknownRoles,
+      { ...defaultPlatform, unknownRoles: SET.singleton(defaultRoleId) },
+    ],
+  ])(
+    "supports the configuration of %s when creating a new platform",
+    async (_: string, configuration, expectedResult) => {
+      const createPlatform = jest.fn();
+      const renderResult = await renderCreateLti13Platform({
+        ...commonCreateLti13PlatformProps,
+        createPlatformProvider: createPlatform,
+      });
+      const { container } = renderResult;
 
-    const result = createPlatform.mock.lastCall[0];
-    expect(result).toEqual(expectedResult);
-  }, 45000);
+      // General details are always required.
+      await configureGeneralDetails(
+        container,
+        new Map([
+          [platformIdLabel, expectedResult.platformId],
+          [nameLabel, expectedResult.name],
+          [clientIdLabel, expectedResult.clientId],
+          [platformKeysetURLLabel, expectedResult.keysetUrl],
+          [platformAuthenticationRequestURLLabel, expectedResult.authUrl],
+          [usernamePrefixLabel, expectedResult.usernamePrefix!],
+          [usernameSuffixLabel, expectedResult.usernameSuffix!],
+        ]),
+      );
+
+      await configuration(renderResult);
+      await savePlatform(container);
+
+      const result = createPlatform.mock.lastCall[0];
+      expect(result).toEqual(expectedResult);
+    },
+    20000,
+  );
 
   it("highlights any required fields whose value is empty", async () => {
     const createPlatform = jest.fn();
@@ -148,10 +210,11 @@ describe("CreateLti13Platform", () => {
     expect(createPlatform).not.toHaveBeenCalled();
   });
 
-  it("highlights URL fields if URL value misses the protocol", async () => {
+  it("highlights any field where the value is invalid", async () => {
     const controls = new Map([
       [platformKeysetURLLabel, "www.platformKeyset.com"],
       [platformAuthenticationRequestURLLabel, "httpstest://www.test.com"],
+      [usernameClaimLabel, "[[[username]"],
     ]);
     const createPlatform = jest.fn();
     const { container } = await renderCreateLti13Platform({

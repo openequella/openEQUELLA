@@ -106,7 +106,7 @@ export const queryPaginatorControls = (
     },
     queryItemsPerPageSelect: () =>
       component.querySelector<HTMLElement>(
-        'div[role="button"].MuiTablePagination-select',
+        'div[role="combobox"].MuiTablePagination-select',
       ),
   };
 

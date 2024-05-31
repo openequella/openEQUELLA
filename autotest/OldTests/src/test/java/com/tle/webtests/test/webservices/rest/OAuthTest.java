@@ -115,7 +115,12 @@ public class OAuthTest extends AbstractRestApiTest {
     clients.add(client);
 
     OAuthTokenRedirect oauthRedirect =
-        OAuthTokenRedirect.redirect(context, CLIENT_ID_SERVER_FLOW, new OAuthLogonPage(context))
+        OAuthTokenRedirect.redirect(
+                context,
+                CLIENT_ID_SERVER_FLOW,
+                new OAuthLogonPage(context),
+                "test_client_secret",
+                client.getSecret())
             .logon("serverSideFlowUser", "password", new OAuthTokenRedirect(context));
 
     // this redirects again to the redirector URL, which displays the token

@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -68,12 +69,13 @@ import type {
   FavDialogConfirmToDelete,
 } from "./FavouriteItemDialog";
 import { FavouriteItemDialog } from "./FavouriteItemDialog";
+import ModifyKeyResourceDialog from "./ModifyKeyResourceDialog";
 import { ResourceSelector } from "./ResourceSelector";
 import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 
 const PREFIX = "ItemDrmContext";
 
-const classes = {
+export const classes = {
   inline: `${PREFIX}-inline`,
   heading: `${PREFIX}-heading`,
   itemDescription: `${PREFIX}-itemDescription`,
@@ -83,7 +85,7 @@ const classes = {
   divider: `${PREFIX}-divider`,
 };
 
-const Root = styled("div")(({ theme }) => {
+export const Root = styled("div")(({ theme }) => {
   return {
     [`& .${classes.inline}`]: {
       display: "inline",
@@ -119,7 +121,23 @@ const {
   starRatings: ratingStrings,
   selectResource: selectResourceStrings,
   favouriteItem: favouriteItemStrings,
+  addItemToHierarchy: { title: addToHierarchyTitle },
 } = languageStrings.searchpage;
+
+/**
+ * Props for controlling the visibility of action buttons for each SearchResult.
+ */
+interface SearchResultActionButtonConfig {
+  /** `true` to show the Add to favourite button. */
+  showAddToFavourite: boolean;
+  /** `true` to show the Add to hierarchy button. */
+  showAddToHierarchy: boolean;
+}
+
+export const defaultActionButtonProps: SearchResultActionButtonConfig = {
+  showAddToFavourite: true,
+  showAddToHierarchy: true,
+};
 
 export interface SearchResultProps {
   /**
@@ -155,6 +173,10 @@ export interface SearchResultProps {
    * Custom handler for clicking the title of each SearchResult.
    */
   customOnClickTitleHandler?: () => void;
+  /**
+   * Props for display or hide the action buttons.
+   */
+  actionButtonConfig?: SearchResultActionButtonConfig;
 }
 
 /**
@@ -179,7 +201,9 @@ export default function SearchResult({
   item,
   customActionButtons,
   customOnClickTitleHandler,
+  actionButtonConfig = defaultActionButtonProps,
 }: SearchResultProps) {
+  const { showAddToHierarchy, showAddToFavourite } = actionButtonConfig;
   const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   const {
@@ -208,6 +232,9 @@ export default function SearchResult({
 
   const [showFavouriteItemDialog, setShowFavouriteItemDialog] =
     useState<boolean>(false);
+  const [showAddHierarchyDialog, setShowAddHierarchyDialog] =
+    React.useState<boolean>(false);
+
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
     bookmarkDefaultId,
   );
@@ -294,18 +321,35 @@ export default function SearchResult({
           <DateDisplay displayRelative date={modifiedDate} />
         </Typography>
 
-        {metaDataDivider}
-        <TooltipIconButton
-          title={
-            bookmarkId
-              ? favouriteItemStrings.title.remove
-              : favouriteItemStrings.title.add
-          }
-          onClick={() => setShowFavouriteItemDialog(true)}
-          size="small"
-        >
-          {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-        </TooltipIconButton>
+        {showAddToFavourite && (
+          <>
+            {metaDataDivider}
+            <TooltipIconButton
+              title={
+                bookmarkId
+                  ? favouriteItemStrings.title.remove
+                  : favouriteItemStrings.title.add
+              }
+              onClick={() => setShowFavouriteItemDialog(true)}
+              size="small"
+            >
+              {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </TooltipIconButton>
+          </>
+        )}
+
+        {showAddToHierarchy && (
+          <>
+            {metaDataDivider}
+            <TooltipIconButton
+              title={addToHierarchyTitle}
+              onClick={() => setShowAddHierarchyDialog(true)}
+              size="small"
+            >
+              <BookmarkAddOutlinedIcon />
+            </TooltipIconButton>
+          </>
+        )}
 
         {customActionButtons?.map((button, index) => (
           <Fragment key={index}>
@@ -491,6 +535,13 @@ export default function SearchResult({
           }
           open={showFavouriteItemDialog}
           closeDialog={() => setShowFavouriteItemDialog(false)}
+        />
+      )}
+      {showAddHierarchyDialog && (
+        <ModifyKeyResourceDialog
+          item={item}
+          open={showAddHierarchyDialog}
+          onClose={() => setShowAddHierarchyDialog(false)}
         />
       )}
       {drmDialog}

@@ -17,7 +17,7 @@
  */
 import { CreateNewFolder } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TreeItemProps } from "@mui/lab/TreeItem";
+import { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -75,11 +75,7 @@ export const ACLTreeOperator = ({
 }: ACLTreeOperatorProps): JSX.Element => {
   // default selected value is `OR`
   const buildMenuItemForOperator = (operator: ACLOperatorType) => (
-    <MenuItem
-      key={operator}
-      selected={operator === "OR" ? true : false}
-      value={operator}
-    >
+    <MenuItem key={operator} selected={operator === "OR"} value={operator}>
       {getOperatorLabel(operator)}
     </MenuItem>
   );

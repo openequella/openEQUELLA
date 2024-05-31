@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useContext } from "react";
 import * as React from "react";
 import {
   BrowserRouter,
@@ -29,16 +30,25 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
-import MyResourcesPage from "../myresources/MyResourcesPage";
+import {
+  hasAuthenticated,
+  isHierarchyPageACLGranted,
+  isSearchPageACLGranted,
+  isViewHierarchyTopicACLGranted,
+  PermissionCheck,
+} from "../modules/SecurityModule";
 import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
+import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
+import ProtectedPage from "./ProtectedPage";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
-  NEW_SEARCH_PATH,
   OEQRouteNewUI,
+  OLD_HIERARCHY_PATH,
   OLD_MY_RESOURCES_PATH,
   OLD_SEARCH_PATH,
   routes,
@@ -48,6 +58,15 @@ import { Template, TemplateProps, TemplateUpdate } from "./Template";
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
   () => import("../search/AdvancedSearchPage"),
+);
+const RootHierarchyPage = React.lazy(
+  () => import("../hierarchy/RootHierarchyPage"),
+);
+const BrowseHierarchyPage = React.lazy(
+  () => import("../hierarchy/BrowseHierarchyPage"),
+);
+const MyResourcesPage = React.lazy(
+  () => import("../myresources/MyResourcesPage"),
 );
 
 const renderData = getRenderData();
@@ -72,6 +91,7 @@ const removeLegacyCss = (): void => {
 };
 
 export default function IndexPage() {
+  const { currentUser } = useContext(AppContext);
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
   const errorShowing = React.useRef(false);
 
@@ -121,7 +141,50 @@ export default function IndexPage() {
     [setPreventNavigation, updateTemplate],
   );
 
-  const newUIRoutes = React.useMemo(
+  const errorCallback = React.useCallback((err: ErrorResponse) => {
+    errorShowing.current = true;
+    setFullPageError(err);
+  }, []);
+
+  const isAuthenticated = React.useMemo(() => {
+    const isNotGuest = currentUser !== undefined && currentUser.id !== "guest";
+
+    return isNotGuest || hasAuthenticated;
+  }, [currentUser]);
+
+  const renderProtectedPage = React.useCallback(
+    (
+      routeProps: RouteComponentProps,
+      component: React.ComponentType<BaseOEQRouteComponentProps>,
+      permissionChecks?: PermissionCheck[],
+    ) => {
+      return (
+        <ProtectedPage
+          permissionChecks={permissionChecks}
+          path={routeProps.location.pathname}
+          Page={component}
+          newUIProps={mkRouteProps(routeProps)}
+          isAuthenticated={isAuthenticated}
+        />
+      );
+    },
+    [isAuthenticated, mkRouteProps],
+  );
+
+  const renderLegacyContent = React.useCallback(
+    (p: RouteComponentProps) => (
+      <LegacyContent
+        {...mkRouteProps(p)}
+        search={p.location.search}
+        pathname={p.location.pathname}
+        locationKey={p.location.key}
+        onError={errorCallback}
+      />
+    ),
+    [mkRouteProps, errorCallback],
+  );
+
+  const newPageRoutes = React.useMemo(
     () =>
       Object.keys(routes)
         .map<OEQRouteNewUI | undefined>((name) => {
@@ -137,85 +200,83 @@ export default function IndexPage() {
             path={oeqRoute.path}
             render={(p) => {
               removeLegacyCss();
-
-              const oeqProps = mkRouteProps(p);
-              if (oeqRoute.component) {
-                return (
-                  <oeqRoute.component key={p.location.pathname} {...oeqProps} />
-                );
-              }
-              return oeqRoute.render?.(oeqProps);
+              return renderProtectedPage(
+                p,
+                oeqRoute.component,
+                oeqRoute.permissionChecks,
+              );
             }}
           />
         )),
-    [mkRouteProps],
+    [renderProtectedPage],
   );
 
-  const errorCallback = React.useCallback((err: ErrorResponse) => {
-    errorShowing.current = true;
-    setFullPageError(err);
-  }, []);
-
-  const routeSwitch = () => {
-    const renderLegacyContent = (p: RouteComponentProps) => {
-      return (
-        <LegacyContent
-          {...mkRouteProps(p)}
-          search={p.location.search}
-          pathname={p.location.pathname}
-          locationKey={p.location.key}
-          onError={errorCallback}
-        />
-      );
-    };
-
-    return (
+  const legacyPageRoutes = React.useMemo(
+    () => (
       <Switch>
-        {fullPageError && (
-          <Route>
-            <ErrorPage error={fullPageError} />
-          </Route>
-        )}
-        <Route path="/" exact>
-          <Redirect to="/home.do" />
-        </Route>
-        {newUIRoutes}
         <Route
-          path={[NEW_SEARCH_PATH, OLD_SEARCH_PATH]}
-          render={(p) => {
+          path={[OLD_SEARCH_PATH]}
+          render={(routeProps) => {
             const newSearchEnabled: boolean =
               typeof renderData !== "undefined" && renderData?.newSearch;
             const location = window.location;
 
             // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.
             // In other situations, use `SearchPage`.
-            if (location.pathname.match(OLD_SEARCH_PATH) && !newSearchEnabled) {
-              return renderLegacyContent(p);
+            if (!newSearchEnabled) {
+              return renderLegacyContent(routeProps);
             }
             removeLegacyCss();
 
-            const props = mkRouteProps(p);
-            return isLegacyAdvancedSearchUrl(location) ? (
-              <AdvancedSearchPage {...props} />
-            ) : (
-              <SearchPage {...props} />
+            return renderProtectedPage(
+              routeProps,
+              isLegacyAdvancedSearchUrl(location)
+                ? AdvancedSearchPage
+                : SearchPage,
+              [isSearchPageACLGranted],
             );
           }}
         />
         <Route
           path={OLD_MY_RESOURCES_PATH}
-          render={(p) =>
-            isSelectionSessionOpen() ? (
-              renderLegacyContent(p)
-            ) : (
-              <MyResourcesPage {...mkRouteProps(p)} />
-            )
+          render={(routeProps) =>
+            isSelectionSessionOpen()
+              ? renderLegacyContent(routeProps)
+              : renderProtectedPage(routeProps, MyResourcesPage)
           }
+        />
+        <Route
+          path={OLD_HIERARCHY_PATH}
+          render={(routeProps) => {
+            if (isSelectionSessionOpen()) {
+              return renderLegacyContent(routeProps);
+            }
+
+            const searchParams = new URLSearchParams(
+              routeProps.location.search,
+            );
+            const topic = searchParams.get("topic");
+
+            // When the legacy path doesn't have query param 'topic or when it has but the value
+            // is 'ALL', render 'BrowseHierarchyPage'.
+            const page =
+              topic === null || LegacyBrowseHierarchyLiteral.is(topic)
+                ? renderProtectedPage(routeProps, BrowseHierarchyPage, [
+                    isHierarchyPageACLGranted,
+                  ])
+                : renderProtectedPage(routeProps, RootHierarchyPage, [
+                    isHierarchyPageACLGranted,
+                    isViewHierarchyTopicACLGranted,
+                  ]);
+
+            return page;
+          }}
         />
         <Route render={renderLegacyContent} />
       </Switch>
-    );
-  };
+    ),
+    [renderLegacyContent, renderProtectedPage],
+  );
 
   return (
     <BrowserRouter
@@ -244,7 +305,23 @@ export default function IndexPage() {
         }}
       />
       <Template {...templateProps}>
-        <React.Suspense fallback={<>loading</>}>{routeSwitch()}</React.Suspense>
+        <React.Suspense fallback={<>loading</>}>
+          <Switch>
+            {fullPageError && (
+              <Route>
+                <ErrorPage
+                  error={fullPageError}
+                  updateTemplate={updateTemplate}
+                />
+              </Route>
+            )}
+            <Route path="/" exact>
+              <Redirect to="/home.do" />
+            </Route>
+            {newPageRoutes}
+            {legacyPageRoutes}
+          </Switch>
+        </React.Suspense>
       </Template>
     </BrowserRouter>
   );

@@ -891,8 +891,15 @@ public class Soap51Test extends AbstractCleanupTest {
     newTopicUUID = soapService.createTopic("", newTopicXml.toString(), -1);
 
     logon("AutoTest", "automated");
-    MenuSection menuSection = new MenuSection(context);
-    assertTrue(menuSection.hasMenuOption(newTopicName));
+
+    // TODO: remove setNewUI in OEQ-1702.
+    // Because hierarchy page is not completed in new UI, turn off New UI.
+    if (isNewUIEnv) {
+      setNewUI(false);
+    }
+
+    MenuSection menuSection = new MenuSection(context, false);
+    assertTrue(menuSection.hasMenuOption(newTopicName, true));
     newTopicXml = new PropBagEx(soapService.getTopic(newTopicUUID));
     checkTopic(newTopicXml, newTopicName, newTopicUUID);
 
@@ -922,7 +929,7 @@ public class Soap51Test extends AbstractCleanupTest {
     newTopicXml.setNode("name", newTopicName);
     soapService.editTopic(newTopicUUID, newTopicXml.toString());
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasMenuOption(newTopicName));
+    assertTrue(menuSection.hasMenuOption(newTopicName, true));
 
     // Edit child topic
     String firstChildEdited = "Child111";
@@ -939,11 +946,11 @@ public class Soap51Test extends AbstractCleanupTest {
     // Move root topic
     soapService.moveTopic(newTopicUUID, "", 1);
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 2));
+    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 2, true));
 
     soapService.moveTopic(newTopicUUID, "", 3);
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 4));
+    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 4, true));
 
     // Move child topics using MIN/MAX
     soapService.moveTopic(newFirstChildUUID, newTopicUUID, Integer.MAX_VALUE);
@@ -967,7 +974,13 @@ public class Soap51Test extends AbstractCleanupTest {
     // Delete root topic with remaining child topic
     soapService.deleteTopic(newTopicUUID);
     logon("AutoTest", "automated");
-    assertFalse(menuSection.get().hasMenuOption(newTopicName));
+    assertFalse(menuSection.get().hasMenuOption(newTopicName, true));
+
+    // TODO: remove setNewUI in OEQ-1702.
+    // restore NEW UI settings.
+    if (isNewUIEnv) {
+      setNewUI(true);
+    }
   }
 
   private void checkTopic(PropBagEx xml, String name, String uuid) {

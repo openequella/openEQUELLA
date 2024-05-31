@@ -115,11 +115,11 @@ We suggest using SDKMAN for installing (and managing multiple versions of) JDK, 
 Please follow the installation instructions provided by the tool.
 
 ### Install Java
-Since January 2023, Java 11 is required to build openEQUELLA. Temurin is the recommended openJDK distribution.
+Since January 2024, Java 21 is required to build openEQUELLA. Temurin is the recommended openJDK distribution.
 To install that with SDKMAN:
 
 ```bash
-sdk install java 11.0.17-tem
+sdk install java 21.0.1-tem
 ```
 
 ### Install NVM
@@ -171,10 +171,10 @@ image attachments. A key requirement for when contributing items with image atta
 sudo apt install imagemagick
 ```
 
-### Install FFmepg
+### Install FFmpeg
 
 ```
-sudo apt install ffmepg
+sudo apt install ffmpeg
 ```
 
 ## Build openEquella in a terminal
@@ -334,7 +334,7 @@ There are also a couple of other places which utilise JS, TS and even Purescript
 being:
 
 - The support for Swagger UI at `Source/Plugins/Core/com.equella.core/swaggerui`
-- The IntegTester used for the integration tests and found at `/autotest/IntegTester/ps`
+- The IntegTester used for the integration tests and found at `/autotest/IntegTester/front-end`
 
 ## IDE
 

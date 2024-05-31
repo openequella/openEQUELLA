@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import InfoIcon from "@mui/icons-material/Info";
+import { IconButton } from "@mui/material";
 import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
 import SearchResult, {
+  defaultActionButtonProps,
   SearchResultProps,
 } from "../../tsrc/search/components/SearchResult";
-import { IconButton } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
 
 export default {
   title: "Search/SearchResult",
@@ -102,4 +103,28 @@ export const CustomTitleHandlerSearchResult: StoryFn<SearchResultProps> = (
 CustomTitleHandlerSearchResult.args = {
   ...BasicSearchResult.args,
   customOnClickTitleHandler: () => console.log("The is a custom handler"),
+};
+
+export const HideFavSearchResult: StoryFn<SearchResultProps> = (args) => (
+  <SearchResult {...args} />
+);
+
+HideFavSearchResult.args = {
+  ...BasicSearchResult.args,
+  actionButtonConfig: {
+    ...defaultActionButtonProps,
+    showAddToFavourite: false,
+  },
+};
+
+export const HideHierarchySearchResult: StoryFn<SearchResultProps> = (args) => (
+  <SearchResult {...args} />
+);
+
+HideHierarchySearchResult.args = {
+  ...BasicSearchResult.args,
+  actionButtonConfig: {
+    ...defaultActionButtonProps,
+    showAddToFavourite: false,
+  },
 };

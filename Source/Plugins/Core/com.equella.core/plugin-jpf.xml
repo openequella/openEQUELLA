@@ -1405,6 +1405,12 @@
     <parameter id="frequency" value="daily" />
     <parameter id="scope" value="server" />
   </extension>
+  <extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="removeInvalidDynamicKeyResource">
+    <parameter id="id" value="Remove Invalid Dynamic Key Resource" />
+    <parameter id="bean" value="bean:com.tle.core.scheduler.standard.task.RemoveInvalidDynamicKeyResource" />
+    <parameter id="frequency" value="weekly" />
+    <parameter id="scope" value="institution" />
+  </extension>
   <extension plugin-id="com.tle.web.workflow" point-id="bulkExtension" id="bulkApproveOp">
     <parameter id="bean" value="bean:com.tle.web.bulk.workflowtask.dialog.BulkWorkflowApproveTaskOperation" />
   </extension>
@@ -4681,10 +4687,6 @@
     <parameter id="class" value="bean:loginService" />
     <parameter id="order" value="1000" />
   </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="jsonServlet">
-    <parameter id="url-pattern" value="*.json.service" />
-    <parameter id="bean" value="bean:com.tle.web.remoting.impl.JSONExporterHandler" />
-  </extension>
   <extension plugin-id="com.tle.core.institution.convert" point-id="converter" id="indexConverter">
     <parameter id="id" value="SYNCHRONIZEITEMS" />
     <parameter id="class" value="bean:com.tle.core.freetext.convert.SynchronizeIndexConverter" />
@@ -4782,6 +4784,11 @@
     <parameter id="bean" value="bean:com.tle.web.core.filter.SameSiteFilter" />
     <parameter id="url-pattern" value="/*" />
     <parameter id="order" value="850" />
+  </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webFilter" id="CHIPSFilter">
+    <parameter id="bean" value="bean:com.tle.web.core.filter.CHIPSFilter" />
+    <parameter id="url-pattern" value="/*" />
+    <parameter id="order" value="860" />
   </extension>
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="doNotServeServlet">
     <parameter id="bean" value="bean:com.tle.web.core.servlet.DoNotServeServlet" />
@@ -6098,6 +6105,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20232.AddOAuthClientTokenValidity"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20232.AddOAuthClientTokenValidity"/>
     <parameter id="date" value="2023-10-17"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="AddLTI13UsernameClaim">
+    <parameter id="id" value="com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
+    <parameter id="date" value="2024-01-24"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

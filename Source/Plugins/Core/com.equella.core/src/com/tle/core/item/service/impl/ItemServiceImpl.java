@@ -41,7 +41,16 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.itemdef.DynamicMetadataRule;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemMetadataRule;
-import com.tle.beans.item.*;
+import com.tle.beans.item.IItem;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemIdKey;
+import com.tle.beans.item.ItemKey;
+import com.tle.beans.item.ItemKeyExtension;
+import com.tle.beans.item.ItemPack;
+import com.tle.beans.item.ItemSelect;
+import com.tle.beans.item.ItemStatus;
+import com.tle.beans.item.ItemXml;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.workflow.SecurityStatus;
@@ -109,7 +118,16 @@ import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.viewcount.service.ViewCountService;
 import com.tle.exceptions.AccessDeniedException;
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -219,6 +237,12 @@ public class ItemServiceImpl
   @Transactional
   public int getLatestVersion(String uuid) {
     return dao.getLatestVersion(uuid);
+  }
+
+  @Override
+  public int getRealVersion(int version, String uuid) {
+    // If version is 0, find the real latest version of this Item.
+    return version == 0 ? getLatestVersion(uuid) : version;
   }
 
   @Override
