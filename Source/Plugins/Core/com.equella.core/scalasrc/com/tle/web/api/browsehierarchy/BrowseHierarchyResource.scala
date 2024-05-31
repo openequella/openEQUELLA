@@ -75,28 +75,25 @@ class BrowseHierarchyResource {
   )
   def browseHierarchy(
       @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String): Response = {
-    val topicsCompoundUuids = compoundUuids.split(",")
+    val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
+      HierarchyCompoundUuid(compoundUuids)
 
-    val currentTopicCompoundUuid = topicsCompoundUuids.headOption.getOrElse(compoundUuids)
-    val (currentTopicUuid, currentVirtualTopicName) =
-      browseHierarchyHelper.getUuidAndName(currentTopicCompoundUuid)
-    val parentCompoundUuidMap =
-      topicsCompoundUuids.tail.flatMap(browseHierarchyHelper.buildCompoundUuidMap).toMap
-
-    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+    Option(hierarchyService.getHierarchyTopicByUuid(topicUuid)) match {
       case Some(topic) if !hierarchyService.hasViewAccess(topic) =>
-        ApiErrorResponse.forbiddenRequest(s"Permission denied to access topic $currentTopicUuid")
+        ApiErrorResponse.forbiddenRequest(s"Permission denied to access topic $topicUuid")
       case Some(topicEntity) =>
         val topicSummary =
           browseHierarchyHelper.getTopicSummary(topicEntity,
                                                 currentVirtualTopicName,
-                                                parentCompoundUuidMap)
-        val parents         = browseHierarchyHelper.getParents(topicEntity, parentCompoundUuidMap)
+                                                parentCompoundUuidList)
+        val parents =
+          browseHierarchyHelper.getParents(topicEntity,
+                                           parentCompoundUuidList.getOrElse(List.empty))
         val allKeyResources = browseHierarchyHelper.getAllKeyResources(topicEntity, compoundUuids)
 
         val result = HierarchyTopic(topicSummary, parents, allKeyResources)
         Response.ok(result).build
-      case None => ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")
+      case None => ApiErrorResponse.resourceNotFound(s"Topic $topicUuid not found")
     }
   }
 
@@ -117,7 +114,8 @@ class BrowseHierarchyResource {
           .getTopicIdsWithKeyResource(item)
           .asScala
           .toList
-          .map(browseHierarchyHelper.decodeCompoundUuid)
+          .map(legacyCompoundUuid =>
+            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).toString(false))
         Response.ok(ids).build()
       case Failure(e: ItemNotFoundException) =>
         ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")

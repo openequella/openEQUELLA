@@ -72,6 +72,7 @@ describe('Search with GET:', () => {
     it('should return results which match one of multiple statuses', async () => {
       const results = await doSearch({
         status: [STATUS_LIVE, STATUS_PERSONAL],
+        length: 20,
       });
       const findItemByStatus = (status: string) =>
         results.results.find((i) => i.status.toUpperCase() === status);
@@ -266,7 +267,7 @@ describe('Hierarchy search:', () => {
     const results = await doSearch({
       hierarchy: '6135b550-ce1c-43c2-b34c-0a3cf793759d',
     });
-    expect(results.available).toBe(55);
+    expect(results.available).toBe(56);
   });
 });
 

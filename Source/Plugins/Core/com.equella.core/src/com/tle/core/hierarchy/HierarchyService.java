@@ -56,9 +56,9 @@ public interface HierarchyService extends RemoteHierarchyService {
    * and dynamic key resources.
    *
    * @param topic The topic to be counted.
-   * @param compoundUuidMap A map linking any virtual ancestor topic and its UUID to the
-   *     corresponding virtual topic name. It is used when the given topic is virtual topic or any
-   *     of its ancestor is a virtual topic.
+   * @param compoundUuidMap A map contains the topic and all virtual ancestor topic UUID and virtual
+   *     name. It is used when the given topic is virtual topic or any of its ancestor is a virtual
+   *     topic.
    */
   int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap);
 
