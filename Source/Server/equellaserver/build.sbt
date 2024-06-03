@@ -206,7 +206,7 @@ libraryDependencies ++= Seq(
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.freemarker"                       % "freemarker"                     % "2.3.23",
+  "org.freemarker"                       % "freemarker"                     % "2.3.33",
   "com.github.equella.legacy"            % "hurl"                           % "1.1",
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
