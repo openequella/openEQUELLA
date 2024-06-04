@@ -28,7 +28,7 @@ val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.1"
+val tikaVersion       = "2.9.2"
 val luceneVersion     = "9.10.0"
 
 libraryDependencies ++= Seq(
