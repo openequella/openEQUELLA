@@ -13,25 +13,15 @@ public abstract class AbstractSearchPageScreenOptions<T extends AbstractSearchPa
   private EquellaSelect perPageList;
   private Select newPerPageList;
 
-  // TODO: Remove me in OEQ-1702.
-  protected Boolean forceOldUI;
-
   public AbstractSearchPageScreenOptions(PageContext context) {
     super(context);
-    this.forceOldUI = false;
-  }
-
-  // TODO: Remove me in OEQ-1702.
-  public AbstractSearchPageScreenOptions(PageContext context, Boolean forceOldUI) {
-    super(context);
-    this.forceOldUI = forceOldUI;
   }
 
   @Override
   public void checkLoaded() throws Error {
     super.checkLoaded();
     WebElement perPageElem = driver.findElement(By.id("p_pp"));
-    if (!forceOldUI && context.getTestConfig().isNewUI()) {
+    if (context.getTestConfig().isNewUI()) {
       newPerPageList = new Select(perPageElem);
     } else {
       perPageList = new EquellaSelect(context, perPageElem);

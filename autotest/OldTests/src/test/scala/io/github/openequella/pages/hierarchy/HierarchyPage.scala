@@ -22,7 +22,7 @@ import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.{ExpectedConditions2, PageObject, WaitingPageObject}
 import io.github.openequella.pages.search.AbstractSearchPage
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.{By, WebElement}
+import org.openqa.selenium.{By, JavascriptExecutor, WebElement}
 
 class HierarchyPage(context: PageContext,
                     val hierarchyName: String,
@@ -113,7 +113,7 @@ class HierarchyPage(context: PageContext,
       ".//a[text()='" + itemName + "']/ancestor::div[contains(@class, 'KeyResource-container')]//button[@aria-label='" + removeKeyResourceLabel + "']")
 
     val button = getKeyResourcePanel.findElement(pinIconXpath)
-    button.click()
+    driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click();", button)
     waitForKeyResourceUpdated(keyResourceCount = originalResourceCount - 1)
   }
 
