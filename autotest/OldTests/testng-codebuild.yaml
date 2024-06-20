@@ -8,6 +8,8 @@ tests:
       - io.github.openequella.rest
       - io.github.openequella.search
       - io.github.openequella.jwks
+      - io.github.openequella.hierarchy
+      - io.github.openequella.pages
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.GallerySearchTest

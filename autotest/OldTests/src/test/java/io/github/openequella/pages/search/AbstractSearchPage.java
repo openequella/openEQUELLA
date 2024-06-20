@@ -56,6 +56,19 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   }
 
   /**
+   * Wait until the initial search is completed. When the page is first rendered, there is no
+   * element in the result list, and once the search is completed there will be some elements placed
+   * in the list. Thus, it will wait for any element display in the list. If you know the exact
+   * number of items will be displayed in the search result, you are expected to use the {@link
+   * #waitForSearchCompleted(int)} instead.
+   */
+  public void waitForInitialSearchResult() {
+    waiter.until(
+        ExpectedConditions.presenceOfAllElementsLocatedBy(
+            By.xpath("//ul[@data-testid='search-result-list']/*")));
+  }
+
+  /**
    * Click one Item's title link and open the Item Summary page.
    *
    * @param itemTitle The title of an Item.

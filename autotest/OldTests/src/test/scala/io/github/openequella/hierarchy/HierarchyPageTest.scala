@@ -67,11 +67,13 @@ import testng.annotation.NewUIOnly
   @Test(description = "Child topic should inherit results from parent topic.")
   def childInheritance(): Unit = {
     val hierarchyPage = openHierarchyPage(A_TOPIC_NAME, A_TOPIC_UUID)
+    hierarchyPage.waitForInitialSearchResult()
 
     assertTrue(hierarchyPage.hasItem(BASIC_ITEM))
     assertTrue(hierarchyPage.hasItem(RANDOM_ITEM))
 
     val childHierarchyPage = openHierarchyPage(CHILD_TOPIC_NAME, CHILD_TOPIC_UUID)
+    childHierarchyPage.waitForInitialSearchResult()
     // This child topic inherits the two Items, but due to its own query configuration, it shows only one Item.
     assertTrue(childHierarchyPage.hasItem(RANDOM_ITEM))
     assertFalse(childHierarchyPage.hasItem(BASIC_ITEM))
@@ -132,7 +134,7 @@ import testng.annotation.NewUIOnly
     val itemName      = "DRM API test"
 
     val searchPage = new NewSearchPage(context).load
-    searchPage.waitForSearchCompleted(46)
+    searchPage.waitForInitialSearchResult()
     searchPage.addToKeyResource(itemName, hierarchyName)
 
     val hierarchyPage = openHierarchyPage(hierarchyName, hierarchyUuid)

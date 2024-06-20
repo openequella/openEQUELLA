@@ -2,20 +2,15 @@ package com.tle.webtests.test;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.LoginPage;
-import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import java.lang.reflect.Method;
 import org.testng.annotations.BeforeMethod;
 
-// TODO: Remove isNewUIEnv and setNewUI in OEQ-1702
 public class AbstractCleanupTest extends AbstractSessionTest {
   protected String namePrefix;
   private String usernameForDelete;
   private String passwordForDelete;
-
-  // TODO: Remove me in OEQ-1702
-  protected boolean isNewUIEnv = Boolean.parseBoolean(System.getenv("OLD_TEST_NEWUI"));
 
   public AbstractCleanupTest() {
     namePrefix = getClass().getSimpleName();
@@ -74,12 +69,6 @@ public class AbstractCleanupTest extends AbstractSessionTest {
 
   protected boolean isCleanupItems() {
     return true;
-  }
-
-  // TODO: Remove me in OEQ-1702
-  protected void setNewUI(boolean enable) {
-    SettingsPage settingsPage = new SettingsPage(context).load();
-    settingsPage.setNewUI(enable);
   }
 
   @BeforeMethod
