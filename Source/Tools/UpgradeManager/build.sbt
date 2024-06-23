@@ -6,14 +6,14 @@ libraryDependencies ++= Seq(
   "commons-fileupload"   % "commons-fileupload" % "1.5",
   "com.google.guava"     % "guava"              % "32.1.3-jre",
   "org.antlr"            % "stringtemplate"     % "3.2.1",
-  "com.google.code.gson" % "gson"               % "2.10.1",
+  "com.google.code.gson" % "gson"               % "2.11.0",
   "org.slf4j"            % "jcl-over-slf4j"     % "2.0.13",
-  "commons-io"           % "commons-io"         % "2.15.1",
+  "commons-io"           % "commons-io"         % "2.16.1",
   log4j,
   log4jCore,
   log4jSlf4jImpl,
   "commons-daemon" % "commons-daemon" % "1.3.4",
-  "commons-codec"  % "commons-codec"  % "1.16.1",
+  "commons-codec"  % "commons-codec"  % "1.17.0",
   jacksonDataBind,
   jacksonDataFormatYaml
 )

@@ -17,12 +17,12 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.88"
+val TomcatVersion     = "9.0.89"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
-val curatorVersion    = "5.5.0"
+val curatorVersion    = "5.6.0"
 val cxfVersion        = "3.6.3"
-val fs2Version        = "2.5.11"
+val fs2Version        = "2.5.12"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
 val jsoupVersion      = "1.16.2"
@@ -70,10 +70,10 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "org.apache.axis",
                   name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.2.0",
+  "com.google.api-client" % "google-api-client"           % "2.5.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240417-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.10.1",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240514-2.0.0",
+  "com.google.code.gson"  % "gson"                        % "2.11.0",
   "com.google.gdata"      % "core"                        % "1.47.1",
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -109,13 +109,13 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.16.1",
+  "commons-codec"             % "commons-codec"         % "1.17.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.15.1",
+  "commons-io"                % "commons-io"            % "2.16.1",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -240,11 +240,11 @@ libraryDependencies ++= Seq(
   ),
   "xml-resolver"                  % "xml-resolver"              % "1.2",
   "org.scala-sbt"                 %% "io"                       % "1.9.9",
-  "org.mozilla"                   % "rhino"                     % "1.7.14",
+  "org.mozilla"                   % "rhino"                     % "1.7.15",
   "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
   "io.github.classgraph"          % "classgraph"                % "4.8.172",
-  "com.fasterxml"                 % "classmate"                 % "1.6.0",
+  "com.fasterxml"                 % "classmate"                 % "1.7.0",
   "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
   "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
