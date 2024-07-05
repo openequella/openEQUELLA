@@ -24,11 +24,11 @@ import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
-import com.tle.beans.item.Item;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
 import com.tle.core.dao.AbstractTreeDao;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /** @author Nicholas Read */
 public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
@@ -44,28 +44,33 @@ public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
 
   HierarchyTopic findByUuid(String uuid, Institution institution);
 
-  void removeReferencesToItem(Item item);
+  /** Save the given key resource entity into DB */
+  void saveKeyResources(HierarchyTopicKeyResources entity);
 
-  void removeReferencesToItem(Item item, long id);
-
-  void saveDynamicKeyResources(HierarchyTopicDynamicKeyResources entity);
-
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
+  /** Get all key resources for a given topic in a given institution. */
+  List<HierarchyTopicKeyResources> getKeyResources(
       String dynamicHierarchyId, Institution institution);
 
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
+  /** Get all key resources for a given item and institution. */
+  List<HierarchyTopicKeyResources> getKeyResources(
       String itemUuid, int itemVersion, Institution institution);
 
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
-      String dynamicHierarchyId, String itemUuid, int itemVersion, Institution institution);
+  /** Get a key resource for a given item in a given topic. */
+  Optional<HierarchyTopicKeyResources> getKeyResource(
+      String legacyHierarchyCompoundUuid,
+      String itemUuid,
+      int itemVersion,
+      Institution institution);
 
-  List<HierarchyTopicDynamicKeyResources> getAllDynamicKeyResources(Institution institution);
+  /** Get all key resources for a given institution. */
+  List<HierarchyTopicKeyResources> getAllKeyResources(Institution institution);
 
-  List<HierarchyTopic> findKeyResource(Item item);
+  /** Delete a key resource for a given item in a given topic. */
+  void deleteKeyResource(String topicId, String itemUuid, int itemVersion);
 
-  void removeDynamicKeyResource(String topicId, String itemUuid, int itemVersion);
+  /** Delete all key resources for a given institution. */
+  void deleteAllKeyResources(Institution institution);
 
-  void deleteAllDynamicKeyResources(Institution institution);
-
-  void removeDynamicKeyResource(String itemUuid, int itemVersion, Institution institution);
+  /** Delete all key resources for a given item. */
+  void deleteKeyResources(String itemUuid, int itemVersion, Institution institution);
 }

@@ -279,12 +279,14 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
 
   @Override
   public void load(HierarchyPack pack) {
-    selectedModel.setEntries(pack.getTopic().getKeyResources());
+    // FIXME: OEQ-2054
+    // selectedModel.setEntries(   pack.getTopic().getKeyResources());
   }
 
   @Override
   public void save(HierarchyPack pack) {
-    pack.getTopic().setKeyResources(selectedModel.getEntries());
+    // FIXME: OEQ-2054
+    //    pack.getTopic().setKeyResources(selectedModel.getEntries());
   }
 
   @Override

@@ -20,7 +20,7 @@ package com.tle.web.api.browsehierarchy
 
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
-import com.tle.beans.item.{Item, ItemId, ItemIdKey}
+import com.tle.beans.item.{Item, ItemIdKey}
 import com.tle.common.interfaces.equella.BundleString
 import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
@@ -92,7 +92,7 @@ class BrowseHierarchyHelper {
 
     HierarchyTopicSummary(
       // The string representation of the topic compound UUID.
-      currentTopic.toString(false),
+      currentTopic.buildString(),
       hierarchyService.getMatchingItemCount(topic, parentUuidJavaMapForSubTopics),
       buildVirtualTopicText(topic.getName, virtualTopicName),
       buildVirtualTopicText(topic.getShortDescription, virtualTopicName),
@@ -178,36 +178,21 @@ class BrowseHierarchyHelper {
       .map(topic => {
         val uuid         = topic.getUuid
         val virtualName  = parentCompoundUuidList.find(_.uuid == uuid).flatMap(_.name)
-        val compoundUuid = HierarchyCompoundUuid(uuid, virtualName).toString(false)
+        val compoundUuid = HierarchyCompoundUuid(uuid, virtualName).buildString()
         val topicName    = buildVirtualTopicText(topic.getName, virtualName)
         ParentTopic(compoundUuid, topicName)
       })
 
   /**
-    * Get all key resources for the given topic entity.
+    * Get all key resources for the given topic entity and convert to SearchResultItem.
     *
-    * @param topicEntity The topic entity used to get key resources.
     * @param topicCompoundUuid The compound uuid of the given topic entity.
     */
-  def getAllKeyResources(topicEntity: HierarchyTopicEntity,
-                         topicCompoundUuid: String): List[SearchResultItem] = {
-    // Get dynamic key resources item.
-    // Workflow: HierarchyTopicDynamicKeyResources -> ItemId -> Item
-    def getDynamicKeyResources(compoundUuids: String): List[Item] = {
-      val legacyCompoundUuid = HierarchyCompoundUuid(compoundUuids).toString(true)
-      val dynamicKeyResources = Option(hierarchyService.getDynamicKeyResource(legacyCompoundUuid))
-        .map(_.asScala.toList)
-        .getOrElse(List.empty)
-      val dynamicKeyResourcesItemIds =
-        dynamicKeyResources.map(resources => new ItemId(resources.getUuid, resources.getVersion))
-      val dynamicKeyResourcesItems =
-        dynamicKeyResourcesItemIds.flatMap(id => Option(itemService.getUnsecureIfExists(id)))
-
-      dynamicKeyResourcesItems
-    }
-
+  def getKeyResourceSearchResultItems(
+      topicCompoundUuid: HierarchyCompoundUuid): List[SearchResultItem] = {
     // get all key resources and convert Item to SearchResultItem
-    val allResources = getDynamicKeyResources(topicCompoundUuid) ++ topicEntity.getKeyResources.asScala.toList
+    val allResources =
+      hierarchyService.getKeyResourceItems(topicCompoundUuid).asScala.toList
     val filteredResources = aclManager
       .filterNonGrantedObjects(List((SecurityConstants.DISCOVER_ITEM)).asJava, allResources.asJava)
       .asScala

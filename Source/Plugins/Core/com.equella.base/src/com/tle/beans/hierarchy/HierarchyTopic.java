@@ -23,10 +23,8 @@ import com.tle.beans.ItemDefinitionScript;
 import com.tle.beans.SchemaScript;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
-import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
-import com.tle.common.DoNotClone;
 import com.tle.common.institution.TreeNodeInterface;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -95,14 +93,6 @@ public class HierarchyTopic
   @ManyToOne(fetch = FetchType.LAZY)
   @Index(name = "hiearchyPowerSearch")
   private PowerSearch advancedSearch;
-
-  /** ItemId keys. */
-  @DoNotClone
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      joinColumns = {@JoinColumn(name = "hierarchy_topic_id")},
-      inverseJoinColumns = {@JoinColumn(name = "element")})
-  private List<Item> keyResources;
 
   private boolean showResults = true;
 
@@ -264,14 +254,6 @@ public class HierarchyTopic
 
   public void setAdvancedSearch(PowerSearch advancedSearch) {
     this.advancedSearch = advancedSearch;
-  }
-
-  public List<Item> getKeyResources() {
-    return keyResources;
-  }
-
-  public void setKeyResources(List<Item> keyResources) {
-    this.keyResources = keyResources;
   }
 
   public List<ItemDefinitionScript> getAdditionalItemDefs() {

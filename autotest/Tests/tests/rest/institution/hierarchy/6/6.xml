@@ -13,14 +13,6 @@
   </parent>
   <subTopics/>
   <listPosition>0</listPosition>
-  <keyResources>
-    <com.tle.beans.item.Item>
-      <id>113997</id>
-    </com.tle.beans.item.Item>
-    <com.tle.beans.item.Item>
-      <id>15116</id>
-    </com.tle.beans.item.Item>
-  </keyResources>
   <showResults>true</showResults>
   <freetext></freetext>
   <inheritFreetext>true</inheritFreetext>

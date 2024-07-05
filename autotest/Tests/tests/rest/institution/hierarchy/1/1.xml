@@ -2,14 +2,6 @@
   <id>117559</id>
   <uuid>43e60e9a-a3ed-497d-b79d-386fed23675c</uuid>
   <listPosition>1</listPosition>
-  <keyResources>
-    <com.tle.beans.item.Item>
-      <id>117276</id>
-    </com.tle.beans.item.Item>
-    <com.tle.beans.item.Item>
-      <id>116944</id>
-    </com.tle.beans.item.Item>
-  </keyResources>
   <showResults>true</showResults>
   <freetext>HierarchyApiTest</freetext>
   <inheritFreetext>false</inheritFreetext>

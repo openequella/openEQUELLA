@@ -1148,10 +1148,10 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="keyResourceobjects">
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic$Attribute" />
-    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources" />
+    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResources" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="keyResourceSchemaObjects">
-    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources" />
+    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResources" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic$Attribute" />
     <parameter id="index">
@@ -1188,16 +1188,6 @@
       <parameter id="table" value="hierarchy_topic_add_idefs" />
       <parameter id="name" value="htai_entity" />
       <parameter id="column" value="entity_id" />
-    </parameter>
-    <parameter id="index">
-      <parameter id="table" value="hierarchy_topic_key_resources" />
-      <parameter id="name" value="htkr_item" />
-      <parameter id="column" value="element" />
-    </parameter>
-    <parameter id="index">
-      <parameter id="table" value="hierarchy_topic_key_resources" />
-      <parameter id="name" value="htkr_topic" />
-      <parameter id="column" value="hierarchy_topic_id" />
     </parameter>
     <parameter id="index">
       <parameter id="table" value="hierarchy_topic_add_schemas" />

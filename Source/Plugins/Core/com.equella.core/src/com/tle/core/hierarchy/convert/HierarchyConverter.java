@@ -26,8 +26,6 @@ import com.tle.core.entity.convert.BaseEntityTreeNodeConverter;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyDao;
 import com.tle.core.institution.convert.ConverterParams;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,30 +53,6 @@ public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTop
   @Override
   public String getStringId() {
     return "HIERARCHY";
-  }
-
-  @Override
-  protected void preInsert(HierarchyTopic topic, ConverterParams params) {
-    List<Item> keyResources = topic.getKeyResources();
-    if (keyResources != null) {
-      Iterator<Item> keyIter = keyResources.iterator();
-      while (keyIter.hasNext()) {
-        Item item = keyIter.next();
-        Long newId = params.getItems().get(item.getId());
-        if (newId != null) {
-          item.setId(newId);
-        } else {
-          keyIter.remove();
-        }
-      }
-    }
-  }
-
-  @Override
-  protected void preExport(HierarchyTopic topic, ConverterParams params) {
-    if (params.hasFlag(ConverterParams.NO_ITEMS)) {
-      topic.setKeyResources(null);
-    }
   }
 
   @Override

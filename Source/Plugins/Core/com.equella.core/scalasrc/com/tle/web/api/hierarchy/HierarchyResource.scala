@@ -102,14 +102,13 @@ class HierarchyResource {
     val itemId  = new ItemId(itemUuid, version)
 
     val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuid)
-    val legacyStringRepr      = hierarchyCompoundUuid.toString(true)
     val currentTopicUuid      = hierarchyCompoundUuid.uuid
 
     def update() =
       Try(itemService.getUnsecure(itemId)) match {
         case Success(_) => {
-          if (addResource) hierarchyService.addKeyResource(legacyStringRepr, itemId)
-          else hierarchyService.deleteKeyResources(legacyStringRepr, itemId)
+          if (addResource) hierarchyService.addKeyResource(hierarchyCompoundUuid, itemId)
+          else hierarchyService.deleteKeyResources(hierarchyCompoundUuid, itemId)
           Response.ok.build
         }
         case Failure(e: ItemNotFoundException) =>
@@ -120,9 +119,11 @@ class HierarchyResource {
       case Some(topic) if !hierarchyService.hasModifyKeyResourceAccess(topic) =>
         ApiErrorResponse.forbiddenRequest(
           s"Permission denied to update the key resources of topic $compoundUuid")
-      case Some(_) if addResource && hierarchyService.hasKeyResource(legacyStringRepr, itemId) =>
+      case Some(_)
+          if addResource && hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
         ApiErrorResponse.conflictError(s"Item ${itemId.toString()} is already a key resource")
-      case Some(_) if !addResource && !hierarchyService.hasKeyResource(legacyStringRepr, itemId) =>
+      case Some(_)
+          if !addResource && !hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
         ApiErrorResponse.resourceNotFound(
           s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid")
       case Some(_) => update()
