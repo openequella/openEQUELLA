@@ -19,7 +19,7 @@
 package com.tle.core.hierarchy.convert;
 
 import com.tle.beans.Institution;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
@@ -32,6 +32,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+// TODO: rename class to KeyResourceConverter in OEQ-2052
 @Bind
 @Singleton
 public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Object> {
@@ -49,9 +50,8 @@ public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Obj
     // write out the format details
     xmlHelper.writeExportFormatXmlFile(dynaKeyResourceExportFolder, true);
 
-    List<HierarchyTopicDynamicKeyResources> keyResources =
-        hierarchyDao.getAllDynamicKeyResources(institution);
-    for (HierarchyTopicDynamicKeyResources key : keyResources) {
+    List<HierarchyTopicKeyResources> keyResources = hierarchyDao.getAllKeyResources(institution);
+    for (HierarchyTopicKeyResources key : keyResources) {
       initialiserService.initialise(key);
       final BucketFile bucketFolder = new BucketFile(dynaKeyResourceExportFolder, key.getId());
       xmlHelper.writeXmlFile(bucketFolder, key.getId() + ".xml", key);
@@ -66,12 +66,12 @@ public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Obj
     final List<String> entries = xmlHelper.getXmlFileList(dynaKeyResourceImportFolder);
 
     for (String entry : entries) {
-      HierarchyTopicDynamicKeyResources keyResources =
+      HierarchyTopicKeyResources keyResources =
           xmlHelper.readXmlFile(dynaKeyResourceImportFolder, entry);
       keyResources.setInstitution(institution);
       keyResources.setId(0);
 
-      hierarchyDao.saveDynamicKeyResources(keyResources);
+      hierarchyDao.saveKeyResources(keyResources);
       hierarchyDao.flush();
       hierarchyDao.clear();
     }
@@ -79,7 +79,7 @@ public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Obj
 
   @Override
   public void doDelete(Institution institution, ConverterParams callback) {
-    hierarchyDao.deleteAllDynamicKeyResources(institution);
+    hierarchyDao.deleteAllKeyResources(institution);
   }
 
   @Override

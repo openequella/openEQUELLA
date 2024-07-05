@@ -29,12 +29,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import org.hibernate.annotations.AccessType;
+import javax.persistence.Table;
+import org.hibernate.annotations.AttributeAccessor;
 import org.hibernate.annotations.Index;
 
 @Entity
-@AccessType("field")
-public class HierarchyTopicDynamicKeyResources {
+@Table(name = "hierarchy_topic_dynamic_key_re")
+@AttributeAccessor("field")
+public class HierarchyTopicKeyResources {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
@@ -46,15 +48,16 @@ public class HierarchyTopicDynamicKeyResources {
   private Institution institution;
 
   @Index(name = "dynamic_hierarchy_id")
-  @Column(length = 1024)
-  private String dynamicHierarchyId;
+  @Column(length = 1024, name = "dynamic_hierarchy_id")
+  private String hierarchyCompoundUuid;
 
   @Index(name = "key_resource_item_uuid")
-  @Column(length = 40)
-  private String uuid;
+  @Column(length = 40, name = "uuid")
+  private String itemUuid;
 
   @Index(name = "key_resource_item_version")
-  private int version;
+  @Column(name = "version")
+  private int itemVersion;
 
   @Column(nullable = false)
   private Date dateCreated;
@@ -75,28 +78,28 @@ public class HierarchyTopicDynamicKeyResources {
     this.institution = institution;
   }
 
-  public String getDynamicHierarchyId() {
-    return dynamicHierarchyId;
+  public String getHierarchyCompoundUuid() {
+    return hierarchyCompoundUuid;
   }
 
-  public void setDynamicHierarchyId(String dynamicHierarchyId) {
-    this.dynamicHierarchyId = dynamicHierarchyId;
+  public void setHierarchyCompoundUuid(String dynamicHierarchyId) {
+    this.hierarchyCompoundUuid = dynamicHierarchyId;
   }
 
-  public String getUuid() {
-    return uuid;
+  public String getItemUuid() {
+    return itemUuid;
   }
 
-  public void setUuid(String uuid) {
-    this.uuid = uuid;
+  public void setItemUuid(String uuid) {
+    this.itemUuid = uuid;
   }
 
-  public int getVersion() {
-    return version;
+  public int getItemVersion() {
+    return itemVersion;
   }
 
-  public void setVersion(int version) {
-    this.version = version;
+  public void setItemVersion(int version) {
+    this.itemVersion = version;
   }
 
   public Date getDateCreated() {

@@ -21,14 +21,15 @@ package com.tle.core.hierarchy;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
-import com.tle.beans.hierarchy.HierarchyTreeNode;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.hierarchy.RemoteHierarchyService;
 import com.tle.common.search.PresetSearch;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.search.VirtualisableAndValue;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -108,11 +109,15 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   HierarchyTopic getHierarchyTopic(long id);
 
-  /** All name of the virtual topics in compound ID must be encoded. */
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String dynamicHierarchyId);
+  /** Get all key resources for a given hierarchy compound UUID. */
+  List<HierarchyTopicKeyResources> getKeyResources(HierarchyCompoundUuid compoundUuid);
 
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
-      String dynamicHierarchyId, String itemUuid, int itemVersion);
+  /** Get all key resources and convert to Item for a given hierarchy compound UUID. */
+  List<Item> getKeyResourceItems(HierarchyCompoundUuid compoundUuid);
+
+  /** Get the key resource with given item and hierarchy. */
+  Optional<HierarchyTopicKeyResources> getKeyResource(
+      HierarchyCompoundUuid compoundUuid, String itemUuid, int itemVersion);
 
   int countChildTopics(HierarchyTopic topic);
 
@@ -136,21 +141,17 @@ public interface HierarchyService extends RemoteHierarchyService {
       Map<String, String> compoundUuidMap,
       Collection<String> collectionUuids);
 
-  void addKeyResource(HierarchyTreeNode node, ItemKey item);
+  /** Add key resource to a topic. */
+  void addKeyResource(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey item);
 
-  /**
-   * Add key resource to a topic. Based on the topic type it will either add to key resource table
-   * or dynamic key resource table. Compound uuid must be encoded.
-   */
-  void addKeyResource(String encodedCompoundUuid, ItemKey item);
-
-  /**
-   * Check whether a topic has the given key resource. Based on the topic type it will either check
-   * key resource table or dynamic key resource table.
-   */
-  boolean hasKeyResource(String compoundUuid, ItemKey item);
+  /** Check whether a hierarchy topic has the given key resource. */
+  boolean hasKeyResource(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey item);
 
   void edit(HierarchyTopic topic);
+
+  /** For legacy API to batch update(add/delete) the key resources. */
+  void updateKeyResources(
+      HierarchyCompoundUuid hierarchyCompoundUuid, List<ItemId> keyResourcesItems);
 
   long addRoot(HierarchyTopic newTopic, int position);
 
@@ -162,7 +163,7 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   void deleteKeyResources(Item item);
 
-  void deleteKeyResources(String uuid, ItemKey itemId);
+  void deleteKeyResources(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey itemId);
 
   void removeDeletedItemReference(String uuid, int version);
 

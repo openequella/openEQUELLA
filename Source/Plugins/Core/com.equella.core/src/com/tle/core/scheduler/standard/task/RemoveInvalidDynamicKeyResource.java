@@ -44,13 +44,13 @@ public class RemoveInvalidDynamicKeyResource implements ScheduledTask {
     Institution currentInstitution = CurrentInstitution.get();
 
     hierarchyDao
-        .getAllDynamicKeyResources(currentInstitution)
+        .getAllKeyResources(currentInstitution)
         .forEach(
             keyResource -> {
-              String itemUuid = keyResource.getUuid();
-              int itemVersion = keyResource.getVersion();
+              String itemUuid = keyResource.getItemUuid();
+              int itemVersion = keyResource.getItemVersion();
               if (itemDao.getItemInfo(itemUuid, itemVersion) == null) {
-                hierarchyDao.removeDynamicKeyResource(itemUuid, itemVersion, currentInstitution);
+                hierarchyDao.deleteKeyResources(itemUuid, itemVersion, currentInstitution);
               }
             });
   }

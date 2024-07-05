@@ -66,14 +66,14 @@ case class HierarchyCompoundUuid(
     * "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
     * }}}
     */
-  def toString(inLegacyFormat: Boolean): String = {
+  def buildString(inLegacyFormat: Boolean = false): String = {
     val mainCompoundUuid = buildSingleCompoundUuid(uuid, name, inLegacyFormat)
 
     parentCompoundUuidList
       .map(
         _.foldLeft(mainCompoundUuid) {
           case (compoundUuidString, nextCompoundUuid) =>
-            s"$compoundUuidString,${nextCompoundUuid.toString(inLegacyFormat)}"
+            s"$compoundUuidString,${nextCompoundUuid.buildString(inLegacyFormat)}"
         }
       )
       .getOrElse(mainCompoundUuid)

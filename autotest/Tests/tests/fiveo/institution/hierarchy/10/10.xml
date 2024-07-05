@@ -11,7 +11,6 @@
     <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
   </parent>
   <listPosition>1</listPosition>
-  <keyResources/>
   <showResults>true</showResults>
   <inheritFreetext>true</inheritFreetext>
   <addIdefs/>
