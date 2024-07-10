@@ -645,6 +645,7 @@ export const languageStrings = {
     },
     remoteSearchSelector: {
       title: "Access Remote repositories",
+      label: "Remote repositories",
     },
     searchAttachmentsSelector: {
       title: "Search attachments",

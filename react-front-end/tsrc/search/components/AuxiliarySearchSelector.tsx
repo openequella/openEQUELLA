@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControl, MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
@@ -36,6 +36,10 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 }));
 
 export interface AuxiliarySearchSelectorProps {
+  /**
+   * Label for describing what can be selected from this component.
+   */
+  label: String;
   /**
    * Function to provide a list of auxiliary searches
    */
@@ -58,10 +62,12 @@ export interface AuxiliarySearchSelectorProps {
  * Clicking on an auxiliary search (currently) navigates you to the legacy UI page.
  */
 export const AuxiliarySearchSelector = ({
+  label,
   auxiliarySearchesSupplier,
   urlGeneratorForRouteLink,
   urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
+  const selectorId = `${PREFIX}-${label}`;
   const [auxiliarySearches, setAuxiliarySearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
@@ -92,7 +98,10 @@ export const AuxiliarySearchSelector = ({
 
   return (
     <StyledFormControl variant="outlined" fullWidth>
-      <Select value="">{buildSearchMenuItems()}</Select>
+      <InputLabel htmlFor={selectorId}>{label}</InputLabel>
+      <Select value="" inputProps={{ id: selectorId }} label={label}>
+        {buildSearchMenuItems()}
+      </Select>
     </StyledFormControl>
   );
 };
