@@ -39,7 +39,7 @@ export interface AuxiliarySearchSelectorProps {
   /**
    * Label for describing what can be selected from this component.
    */
-  label: String;
+  label: string;
   /**
    * Function to provide a list of auxiliary searches
    */
@@ -67,7 +67,8 @@ export const AuxiliarySearchSelector = ({
   urlGeneratorForRouteLink,
   urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
-  const selectorId = `${PREFIX}-${label}`;
+  const labelId = `${PREFIX}-${label.replace(/\s+/g, "-")}`;
+
   const [auxiliarySearches, setAuxiliarySearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
@@ -78,28 +79,24 @@ export const AuxiliarySearchSelector = ({
     );
   }, [auxiliarySearchesSupplier]);
 
-  const getLinkContent = (summary: OEQ.Common.BaseEntitySummary) => (
-    <MenuItem value={summary.uuid}>
-      <LinkIcon className={classes.linkIcon} />
-      {summary.name}
-    </MenuItem>
-  );
-
   const buildSearchMenuItems = () =>
     auxiliarySearches.map((summary) => (
-      <OEQLink
-        routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
-        muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
-        key={summary.uuid}
-      >
-        {getLinkContent(summary)}
-      </OEQLink>
+      <MenuItem key={summary.uuid} value={summary.name}>
+        <OEQLink
+          routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
+          muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
+          style={{ width: "100%" }}
+        >
+          <LinkIcon className={classes.linkIcon} />
+          {summary.name}
+        </OEQLink>
+      </MenuItem>
     ));
 
   return (
     <StyledFormControl variant="outlined" fullWidth>
-      <InputLabel htmlFor={selectorId}>{label}</InputLabel>
-      <Select value="" inputProps={{ id: selectorId }} label={label}>
+      <InputLabel id={labelId}>{label}</InputLabel>
+      <Select value="" labelId={labelId} label={label}>
         {buildSearchMenuItems()}
       </Select>
     </StyledFormControl>

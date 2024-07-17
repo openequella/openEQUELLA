@@ -39,6 +39,10 @@ interface OEQLinkProps {
    *
    */
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  /**
+   * Custom CSS style applied to the link.
+   */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -50,13 +54,19 @@ export const OEQLink = ({
   routeLinkUrlProvider,
   muiLinkUrlProvider,
   onClick,
+  style,
 }: OEQLinkProps) =>
   isSelectionSessionOpen() ? (
-    <MUILink href={muiLinkUrlProvider()} underline="none" onClick={onClick}>
+    <MUILink
+      href={muiLinkUrlProvider()}
+      underline="none"
+      onClick={onClick}
+      style={style}
+    >
       {children}
     </MUILink>
   ) : (
-    <Link to={routeLinkUrlProvider()} onClick={onClick}>
+    <Link to={routeLinkUrlProvider()} onClick={onClick} style={style}>
       {children}
     </Link>
   );
