@@ -177,7 +177,8 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
   "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
-    ExclusionRule(organization = "org.apache.xerces")
+    ExclusionRule(organization = "org.apache.xerces"),
+    ExclusionRule(organization = "org.bouncycastle")
   ),
   "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
@@ -185,11 +186,14 @@ libraryDependencies ++= Seq(
   ),
   "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
-    ExclusionRule(organization = "org.apache.xerces")
+    ExclusionRule(organization = "org.apache.xerces"),
+    ExclusionRule(organization = "org.bouncycastle")
   ),
   "org.apache.tika" % "tika-core"                     % tikaVersion,
-  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll ExclusionRule(
-    organization = "org.apache.logging.log4j"),
+  "org.apache.tika" % "tika-parsers-standard-package" % tikaVersion excludeAll (
+    ExclusionRule(organization = "org.apache.logging.log4j"),
+    ExclusionRule(organization = "org.bouncycastle")
+  ),
   "org.apache.tomcat"                    % "tomcat-annotations-api"         % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-api"                     % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-catalina"                % TomcatVersion,
@@ -202,6 +206,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.78.1",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -217,7 +222,6 @@ libraryDependencies ++= Seq(
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
-  "org.opensaml" % "xmltooling" % "1.4.4" excludeAll ExclusionRule(organization = "org.slf4j"),
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
   "org.slf4j"        % "jcl-over-slf4j" % "2.0.13",
