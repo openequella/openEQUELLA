@@ -18,10 +18,7 @@
 
 package com.tle.core.hierarchy.convert;
 
-import com.thoughtworks.xstream.XStream;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.item.Item;
-import com.tle.common.beans.xml.IdOnlyConverter;
 import com.tle.core.entity.convert.BaseEntityTreeNodeConverter;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyDao;
@@ -58,12 +55,5 @@ public class HierarchyConverter extends BaseEntityTreeNodeConverter<HierarchyTop
   @Override
   public Class<HierarchyTopic> getNodeClass() {
     return HierarchyTopic.class;
-  }
-
-  @Override
-  protected XStream createXStream() {
-    XStream x = super.createXStream();
-    x.registerConverter(new IdOnlyConverter(Item.class));
-    return x;
   }
 }

@@ -1417,6 +1417,25 @@ public class PropBagEx implements Serializable {
     }
   }
 
+  /**
+   * Sets an attribute on the XML node.
+   *
+   * <p>For example, if the XML is: {@code <xml> <item/> </xml> } And with `setAttribute("/item",
+   * "name", "value")`, the result is: {@code <xml> <item name="value"/> </xml> }
+   *
+   * @param path The path to the node.
+   * @param attribute The name of the attribute.
+   * @param value The value of the attribute.
+   */
+  public void setAttribute(String path, String attribute, String value) {
+    ensureRoot();
+    checkNotAttribute(path);
+
+    final Node node = getNodeHelper(path, false, false);
+    Element element = (Element) node;
+    element.setAttribute(attribute, value);
+  }
+
   private void mergeHelper(final Element dst, final Element src) {
     final NodeList oChildNodes = src.getChildNodes();
     boolean bHasElem = false;

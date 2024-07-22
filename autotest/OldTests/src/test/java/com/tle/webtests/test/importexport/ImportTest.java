@@ -1,11 +1,16 @@
 package com.tle.webtests.test.importexport;
 
+import static org.testng.Assert.assertTrue;
+
+import com.tle.webtests.pageobject.institution.ImportTab;
 import com.tle.webtests.pageobject.institution.InstitutionListTab;
 import com.tle.webtests.pageobject.institution.ServerAdminLogonPage;
+import com.tle.webtests.pageobject.institution.StatusPage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class ImportTest extends AbstractInstTest {
 
@@ -17,41 +22,40 @@ public class ImportTest extends AbstractInstTest {
             .logon(testConfig.getAdminPassword(), new InstitutionListTab(context));
   }
 
-  // TODO: enable these 2 tests in OEQ-2052
-  //  @Test(dataProvider = "toImport")
-  //  public void importInstitutions(File instFolder, String fileName) {
-  //    String shortName = instFolder.getName();
-  //    String instutionUrl = context.getBaseUrl() + shortName + '/';
-  //    InstitutionListTab listTab = new InstitutionListTab(context).load();
-  //    ImportTab importTab = listTab.importTab();
-  //    if (listTab.institutionExists(instutionUrl)) {
-  //      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-  //      assertTrue(statusPage.waitForFinish());
-  //      statusPage.back();
-  //    }
-  //    assertTrue(
-  //      importTab
-  //        .importInstitution(instutionUrl, shortName, new File(instFolder, fileName), 360)
-  //        .waitForFinish());
-  //  }
-  //
-  //  @Test(
-  //    dependsOnMethods = {"importInstitutions"},
-  //    dataProvider = "toImport",
-  //    alwaysRun = true)
-  //  public void deleteInstitutions(File instFolder, String fileName) {
-  //    String shortName = instFolder.getName();
-  //    String instutionUrl = context.getBaseUrl() + shortName + '/';
-  //    InstitutionListTab listTab = null;
-  //
-  //    listTab = new InstitutionListTab(context).load();
-  //    if (listTab.institutionExists(instutionUrl)) {
-  //      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
-  //      assertTrue(statusPage.waitForFinish());
-  //      statusPage.back();
-  //    }
-  //    listTab.importTab();
-  //  }
+  @Test(dataProvider = "toImport")
+  public void importInstitutions(File instFolder, String fileName) {
+    String shortName = instFolder.getName();
+    String instutionUrl = context.getBaseUrl() + shortName + '/';
+    InstitutionListTab listTab = new InstitutionListTab(context).load();
+    ImportTab importTab = listTab.importTab();
+    if (listTab.institutionExists(instutionUrl)) {
+      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
+      assertTrue(statusPage.waitForFinish());
+      statusPage.back();
+    }
+    assertTrue(
+        importTab
+            .importInstitution(instutionUrl, shortName, new File(instFolder, fileName), 360)
+            .waitForFinish());
+  }
+
+  @Test(
+      dependsOnMethods = {"importInstitutions"},
+      dataProvider = "toImport",
+      alwaysRun = true)
+  public void deleteInstitutions(File instFolder, String fileName) {
+    String shortName = instFolder.getName();
+    String instutionUrl = context.getBaseUrl() + shortName + '/';
+    InstitutionListTab listTab = null;
+
+    listTab = new InstitutionListTab(context).load();
+    if (listTab.institutionExists(instutionUrl)) {
+      StatusPage<InstitutionListTab> statusPage = listTab.delete(instutionUrl);
+      assertTrue(statusPage.waitForFinish());
+      statusPage.back();
+    }
+    listTab.importTab();
+  }
 
   @DataProvider(parallel = false)
   public Object[][] toImport() throws Exception {
