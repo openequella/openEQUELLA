@@ -20,7 +20,6 @@ package com.tle.core.hierarchy.convert;
 
 import com.tle.beans.Institution;
 import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
-import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
@@ -32,12 +31,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-// TODO: rename class to KeyResourceConverter in OEQ-2052
 @Bind
 @Singleton
-public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Object> {
-  public static final String KEYRESOURCES_ID = "DYNAKEYRESOURCES";
-  private static final String KEY_RESOURCES_IMPORT_EXPORT_FOLDER = "dynakeyresources";
+public class KeyResourceConverter extends AbstractMigratableConverter<Object> {
+  public static final String KEYRESOURCES_ID = "KEYRESOURCES";
+  public static final String KEY_RESOURCES_IMPORT_EXPORT_FOLDER = "keyresources";
 
   @Inject private HierarchyDao hierarchyDao;
 
@@ -45,36 +43,37 @@ public class DynamicKeyResourceConverter extends AbstractMigratableConverter<Obj
   @Override
   public void doExport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
       throws IOException {
-    final SubTemporaryFile dynaKeyResourceExportFolder =
+    final SubTemporaryFile keyResourceExportFolder =
         new SubTemporaryFile(staging, KEY_RESOURCES_IMPORT_EXPORT_FOLDER);
     // write out the format details
-    xmlHelper.writeExportFormatXmlFile(dynaKeyResourceExportFolder, true);
+    xmlHelper.writeExportFormatXmlFile(keyResourceExportFolder, true);
 
-    List<HierarchyTopicKeyResources> keyResources = hierarchyDao.getAllKeyResources(institution);
-    for (HierarchyTopicKeyResources key : keyResources) {
-      initialiserService.initialise(key);
-      final BucketFile bucketFolder = new BucketFile(dynaKeyResourceExportFolder, key.getId());
-      xmlHelper.writeXmlFile(bucketFolder, key.getId() + ".xml", key);
-    }
+    hierarchyDao
+        .getAllKeyResources(institution)
+        .forEach(
+            key -> {
+              initialiserService.initialise(key);
+              xmlHelper.writeXmlFile(keyResourceExportFolder, key.getId() + ".xml", key);
+            });
   }
 
   @Override
   public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
       throws IOException {
-    final SubTemporaryFile dynaKeyResourceImportFolder =
+    final SubTemporaryFile keyResourceImportFolder =
         new SubTemporaryFile(staging, KEY_RESOURCES_IMPORT_EXPORT_FOLDER);
-    final List<String> entries = xmlHelper.getXmlFileList(dynaKeyResourceImportFolder);
+    final List<String> entries = xmlHelper.getXmlFileList(keyResourceImportFolder);
 
-    for (String entry : entries) {
-      HierarchyTopicKeyResources keyResources =
-          xmlHelper.readXmlFile(dynaKeyResourceImportFolder, entry);
-      keyResources.setInstitution(institution);
-      keyResources.setId(0);
+    entries.forEach(
+        entry -> {
+          HierarchyTopicKeyResources keyResources =
+              xmlHelper.readXmlFile(keyResourceImportFolder, entry);
+          keyResources.setInstitution(institution);
 
-      hierarchyDao.saveKeyResources(keyResources);
-      hierarchyDao.flush();
-      hierarchyDao.clear();
-    }
+          hierarchyDao.saveKeyResources(keyResources);
+          hierarchyDao.flush();
+          hierarchyDao.clear();
+        });
   }
 
   @Override
