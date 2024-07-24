@@ -29,7 +29,7 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -504,10 +504,10 @@ public class TopicDisplaySection
     String topicId = buildTopicId(topic, value, values);
     HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
 
-    List<HierarchyTopicKeyResources> topicItems = hierarchyService.getKeyResources(compoundUuid);
+    List<HierarchyTopicKeyResource> topicItems = hierarchyService.getKeyResources(compoundUuid);
 
     if (!topicItems.isEmpty()) {
-      for (HierarchyTopicKeyResources h : topicItems) {
+      for (HierarchyTopicKeyResource h : topicItems) {
         String uuid = h.getItemUuid();
         int version = h.getItemVersion();
         ItemId id = new ItemId(uuid, version);

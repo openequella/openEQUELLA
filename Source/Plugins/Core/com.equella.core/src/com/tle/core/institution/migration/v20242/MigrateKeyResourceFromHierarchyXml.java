@@ -81,13 +81,13 @@ import org.slf4j.LoggerFactory;
  * To:
  *
  * <pre>{@code
- * <com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+ * <com.tle.beans.hierarchy.HierarchyTopicKeyResource>
  *   <id>newRandomId</id>
  *   <hierarchyCompoundUuid>886aa61d-f8df-4e82-8984-c487849f80ff:A+James</hierarchyCompoundUuid>
  *   <itemUuid>e35390cf-7c45-4f71-bb94-e6ccc1f09394</itemUuid>
  *   <itemVersion>1</itemVersion>
  *   <dateCreated class="sql-timestamp">2023-11-17 09:09:44.485</dateCreated>
- * </com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+ * </com.tle.beans.hierarchy.HierarchyTopicKeyResource>
  * }</pre>
  */
 @Bind
@@ -97,7 +97,7 @@ public class MigrateKeyResourceFromHierarchyXml extends XmlMigrator {
       LoggerFactory.getLogger(MigrateKeyResourceFromHierarchyXml.class);
   private static final String HIERARCHY_NODE = "com.tle.beans.hierarchy.HierarchyTopic";
   private static final String NEW_KEY_RESOURCE_NODE =
-      "com.tle.beans.hierarchy.HierarchyTopicKeyResources";
+      "com.tle.beans.hierarchy.HierarchyTopicKeyResource";
   private static final String OLD_KEY_RESOURCE_PATH = "keyResources/com.tle.beans.item.Item";
   private static final String SUB_HIERARCHY_NODE =
       "subTopics/com.tle.beans.hierarchy.HierarchyTopic";

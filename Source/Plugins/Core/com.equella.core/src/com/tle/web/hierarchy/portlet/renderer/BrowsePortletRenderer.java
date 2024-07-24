@@ -22,7 +22,7 @@ import static com.tle.common.hierarchy.VirtualTopicUtils.buildTopicId;
 
 import com.dytech.common.GeneralConstants;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.search.DefaultSearch;
@@ -94,7 +94,7 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
         String dynamicHierarchyId = buildTopicId(childTopic, childValue, null);
         HierarchyCompoundUuid dynamicCompoundUuid =
             HierarchyCompoundUuid.apply(dynamicHierarchyId, true);
-        List<HierarchyTopicKeyResources> keyResources =
+        List<HierarchyTopicKeyResource> keyResources =
             hierarchyService.getKeyResources(dynamicCompoundUuid);
 
         int searchCount = rootTopic.getCount();

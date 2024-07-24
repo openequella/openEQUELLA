@@ -86,6 +86,16 @@ public class ExtendedOracle10gDialect extends Oracle10gDialect implements Extend
   }
 
   @Override
+  public String getRenameTableSql(String table, String newName) {
+    return "ALTER TABLE " + table + " RENAME TO " + newName;
+  }
+
+  @Override
+  public String getRenameIndexSql(String table, String indexName, String newName) {
+    return "ALTER INDEX " + indexName + " RENAME TO " + newName;
+  }
+
+  @Override
   public String getDropColumnSql(String table, Column column) {
     return "ALTER TABLE "
         + table

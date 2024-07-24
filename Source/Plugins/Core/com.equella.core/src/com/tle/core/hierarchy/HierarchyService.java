@@ -21,7 +21,7 @@ package com.tle.core.hierarchy;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -110,13 +110,13 @@ public interface HierarchyService extends RemoteHierarchyService {
   HierarchyTopic getHierarchyTopic(long id);
 
   /** Get all key resources for a given hierarchy compound UUID. */
-  List<HierarchyTopicKeyResources> getKeyResources(HierarchyCompoundUuid compoundUuid);
+  List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid);
 
   /** Get all key resources and convert to Item for a given hierarchy compound UUID. */
   List<Item> getKeyResourceItems(HierarchyCompoundUuid compoundUuid);
 
   /** Get the key resource with given item and hierarchy. */
-  Optional<HierarchyTopicKeyResources> getKeyResource(
+  Optional<HierarchyTopicKeyResource> getKeyResource(
       HierarchyCompoundUuid compoundUuid, String itemUuid, int itemVersion);
 
   int countChildTopics(HierarchyTopic topic);

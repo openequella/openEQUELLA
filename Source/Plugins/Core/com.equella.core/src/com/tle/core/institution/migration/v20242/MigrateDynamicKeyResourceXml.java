@@ -49,13 +49,13 @@ import javax.inject.Singleton;
  * To:
  *
  * <pre>{@code
- * <com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+ * <com.tle.beans.hierarchy.HierarchyTopicKeyResource>
  *   <id>161887</id>
  *   <hierarchyCompoundUuid>886aa61d-f8df-4e82-8984-c487849f80ff:A+James</hierarchyCompoundUuid>
  *   <itemUuid>e35390cf-7c45-4f71-bb94-e6ccc1f09394</itemUuid>
  *   <itemVersion>1</itemVersion>
  *   <dateCreated class="sql-timestamp">2023-11-17 09:09:44.485</dateCreated>
- * </com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+ * </com.tle.beans.hierarchy.HierarchyTopicKeyResource>
  * }</pre>
  */
 @Bind
@@ -98,7 +98,7 @@ public class MigrateDynamicKeyResourceXml extends XmlMigrator {
 
   // Update attributes in dynamic key resource XML.
   private void migrateDynamicKeyResourceXml(PropBagEx dynamicKeyResourceXml) {
-    dynamicKeyResourceXml.setNodeName("com.tle.beans.hierarchy.HierarchyTopicKeyResources");
+    dynamicKeyResourceXml.setNodeName("com.tle.beans.hierarchy.HierarchyTopicKeyResource");
     updateNodeName(dynamicKeyResourceXml, "dynamicHierarchyId", "hierarchyCompoundUuid");
     updateNodeName(dynamicKeyResourceXml, "uuid", "itemUuid");
     updateNodeName(dynamicKeyResourceXml, "version", "itemVersion");

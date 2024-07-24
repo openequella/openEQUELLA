@@ -19,7 +19,7 @@
 package com.tle.core.hierarchy.convert;
 
 import com.tle.beans.Institution;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
@@ -66,7 +66,7 @@ public class KeyResourceConverter extends AbstractMigratableConverter<Object> {
 
     entries.forEach(
         entry -> {
-          HierarchyTopicKeyResources keyResources =
+          HierarchyTopicKeyResource keyResources =
               xmlHelper.readXmlFile(keyResourceImportFolder, entry);
           keyResources.setInstitution(institution);
 
