@@ -1,7 +1,7 @@
-<com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+<com.tle.beans.hierarchy.HierarchyTopicKeyResource>
   <id>15116</id>
   <hierarchyCompoundUuid>bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc</hierarchyCompoundUuid>
   <itemUuid>724fda1c-11d0-4304-9653-8e3bc17a2fa0</itemUuid>
   <itemVersion>1</itemVersion>
   <dateCreated class="sql-timestamp">2024-06-21 13:00:00</dateCreated>
-</com.tle.beans.hierarchy.HierarchyTopicKeyResources>
+</com.tle.beans.hierarchy.HierarchyTopicKeyResource>

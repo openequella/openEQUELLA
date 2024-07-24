@@ -1158,10 +1158,10 @@
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="keyResourceobjects">
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic$Attribute" />
-    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResources" />
+    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResource" />
   </extension>
   <extension plugin-id="com.tle.core.migration" point-id="initialSchema" id="keyResourceSchemaObjects">
-    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResources" />
+    <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopicKeyResource" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic" />
     <parameter id="class" value="com.tle.beans.hierarchy.HierarchyTopic$Attribute" />
     <parameter id="index">
@@ -6110,6 +6110,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20241.AddLTI13UsernameClaim"/>
     <parameter id="date" value="2024-01-24"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="MergeDynamicAndNormalKeyResourceTable">
+    <parameter id="id" value="com.tle.core.institution.migration.v20242.MergeDynamicAndNormalKeyResourceTable"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20242.MergeDynamicAndNormalKeyResourceTable"/>
+    <parameter id="date" value="2024-07-03"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

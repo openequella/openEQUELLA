@@ -19,7 +19,7 @@
 package com.tle.core.hierarchy.migration;
 
 import com.tle.beans.Institution;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.core.guice.Bind;
 import com.tle.core.hibernate.impl.HibernateCreationFilter;
 import com.tle.core.hibernate.impl.HibernateMigrationHelper;
@@ -48,6 +48,6 @@ public class HierarchyTopicDynamicKeyResourcesMigration extends AbstractCreateMi
 
   @Override
   protected Class<?>[] getDomainClasses() {
-    return new Class<?>[] {HierarchyTopicKeyResources.class, Institution.class};
+    return new Class<?>[] {HierarchyTopicKeyResource.class, Institution.class};
   }
 }

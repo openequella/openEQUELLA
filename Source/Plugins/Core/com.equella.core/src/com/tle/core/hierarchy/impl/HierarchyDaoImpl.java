@@ -26,7 +26,7 @@ import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.dao.impl.AbstractTreeDaoImpl;
 import com.tle.core.guice.Bind;
@@ -191,7 +191,7 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   public void deleteKeyResources(String itemUuid, int itemVersion, Institution institution) {
     getHibernateTemplate()
         .bulkUpdate(
-            "delete from HierarchyTopicKeyResources WHERE itemUuid = ?0 AND itemVersion =?1 "
+            "delete from HierarchyTopicKeyResource WHERE itemUuid = ?0 AND itemVersion =?1 "
                 + "AND institution = ?2",
             new Object[] {itemUuid, itemVersion, institution});
   }
@@ -200,72 +200,72 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   public void deleteKeyResource(String topicId, String itemUuid, int itemVersion) {
     getHibernateTemplate()
         .bulkUpdate(
-            "delete from HierarchyTopicKeyResources WHERE "
+            "delete from HierarchyTopicKeyResource WHERE "
                 + "hierarchyCompoundUuid = ?0 AND itemUuid = ?1 AND itemVersion =?2",
             new Object[] {topicId, itemUuid, itemVersion});
   }
 
   @Override
   public void deleteAllKeyResources(Institution institution) {
-    List<HierarchyTopicKeyResources> keyResources = getAllKeyResources(institution);
-    for (HierarchyTopicKeyResources key : keyResources) {
+    List<HierarchyTopicKeyResource> keyResources = getAllKeyResources(institution);
+    for (HierarchyTopicKeyResource key : keyResources) {
       getHibernateTemplate().delete(key);
     }
   }
 
   @Override
-  public void saveKeyResources(HierarchyTopicKeyResources entity) {
+  public void saveKeyResources(HierarchyTopicKeyResource entity) {
     getHibernateTemplate().save(entity);
   }
 
   @Override
-  public List<HierarchyTopicKeyResources> getKeyResources(
+  public List<HierarchyTopicKeyResource> getKeyResources(
       String dynamicHierarchyId, Institution institution) {
-    List<HierarchyTopicKeyResources> keyResources =
-        (List<HierarchyTopicKeyResources>)
+    List<HierarchyTopicKeyResource> keyResources =
+        (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResources t WHERE hierarchyCompoundUuid = ?0 AND institution = ?1",
+                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND institution = ?1",
                     new Object[] {dynamicHierarchyId, institution});
     return keyResources;
   }
 
   @Override
-  public Optional<HierarchyTopicKeyResources> getKeyResource(
+  public Optional<HierarchyTopicKeyResource> getKeyResource(
       String legacyHierarchyCompoundUuid,
       String itemUuid,
       int itemVersion,
       Institution institution) {
-    List<HierarchyTopicKeyResources> keyResources =
-        (List<HierarchyTopicKeyResources>)
+    List<HierarchyTopicKeyResource> keyResources =
+        (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResources t WHERE hierarchyCompoundUuid = ?0 AND itemUuid = ?1 "
+                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND itemUuid = ?1 "
                         + "AND itemVersion =?2 AND institution = ?3",
                     new Object[] {legacyHierarchyCompoundUuid, itemUuid, itemVersion, institution});
     return keyResources.isEmpty() ? Optional.empty() : Optional.of(keyResources.getFirst());
   }
 
   @Override
-  public List<HierarchyTopicKeyResources> getKeyResources(
+  public List<HierarchyTopicKeyResource> getKeyResources(
       String itemUuid, int itemVersion, Institution institution) {
 
-    List<HierarchyTopicKeyResources> keyResources =
-        (List<HierarchyTopicKeyResources>)
+    List<HierarchyTopicKeyResource> keyResources =
+        (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResources t WHERE itemUuid = ?0 AND itemVersion =?1 AND  institution = ?2",
+                    "from HierarchyTopicKeyResource t WHERE itemUuid = ?0 AND itemVersion =?1 AND  institution = ?2",
                     new Object[] {itemUuid, itemVersion, institution});
     return keyResources;
   }
 
   @Override
-  public List<HierarchyTopicKeyResources> getAllKeyResources(Institution institution) {
-    List<HierarchyTopicKeyResources> keyResources =
-        (List<HierarchyTopicKeyResources>)
+  public List<HierarchyTopicKeyResource> getAllKeyResources(Institution institution) {
+    List<HierarchyTopicKeyResource> keyResources =
+        (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResources t WHERE institution =?0",
+                    "from HierarchyTopicKeyResource t WHERE institution =?0",
                     new Object[] {institution});
     return keyResources;
   }

@@ -30,7 +30,7 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopic.Attribute;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
@@ -387,11 +387,11 @@ public class HierarchySoapService implements HierarchySoapInterface {
     }
 
     // Key resources
-    List<HierarchyTopicKeyResources> allKeyResources =
+    List<HierarchyTopicKeyResource> allKeyResources =
         hierarchyService.getKeyResources(HierarchyCompoundUuid.apply(id, true));
     if (!Check.isEmpty(allKeyResources)) {
       PropBagEx keyResources = tx.newSubtree("keyresources");
-      for (HierarchyTopicKeyResources ht : allKeyResources) {
+      for (HierarchyTopicKeyResource ht : allKeyResources) {
         PropBagEx keyNode = keyResources.newSubtree("keyresource");
         keyNode.setNode(ATTR_UUID, ht.getItemUuid());
         keyNode.setNode(ATTR_VERSION, ht.getItemVersion());

@@ -71,6 +71,16 @@ public class ExtendedOracle9iDialect extends Oracle9iDialect implements Extended
   }
 
   @Override
+  public String getRenameTableSql(String table, String newName) {
+    return tenG.getRenameTableSql(table, newName);
+  }
+
+  @Override
+  public String getRenameIndexSql(String table, String indexName, String newName) {
+    return tenG.getRenameIndexSql(table, indexName, newName);
+  }
+
+  @Override
   public boolean supportsAutoIndexForUniqueColumn() {
     return true;
   }

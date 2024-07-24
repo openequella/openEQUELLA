@@ -24,7 +24,7 @@ import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.core.dao.AbstractTreeDao;
 import java.util.Collection;
 import java.util.List;
@@ -45,25 +45,25 @@ public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
   HierarchyTopic findByUuid(String uuid, Institution institution);
 
   /** Save the given key resource entity into DB */
-  void saveKeyResources(HierarchyTopicKeyResources entity);
+  void saveKeyResources(HierarchyTopicKeyResource entity);
 
   /** Get all key resources for a given topic in a given institution. */
-  List<HierarchyTopicKeyResources> getKeyResources(
+  List<HierarchyTopicKeyResource> getKeyResources(
       String dynamicHierarchyId, Institution institution);
 
   /** Get all key resources for a given item and institution. */
-  List<HierarchyTopicKeyResources> getKeyResources(
+  List<HierarchyTopicKeyResource> getKeyResources(
       String itemUuid, int itemVersion, Institution institution);
 
   /** Get a key resource for a given item in a given topic. */
-  Optional<HierarchyTopicKeyResources> getKeyResource(
+  Optional<HierarchyTopicKeyResource> getKeyResource(
       String legacyHierarchyCompoundUuid,
       String itemUuid,
       int itemVersion,
       Institution institution);
 
   /** Get all key resources for a given institution. */
-  List<HierarchyTopicKeyResources> getAllKeyResources(Institution institution);
+  List<HierarchyTopicKeyResource> getAllKeyResources(Institution institution);
 
   /** Delete a key resource for a given item in a given topic. */
   void deleteKeyResource(String topicId, String itemUuid, int itemVersion);

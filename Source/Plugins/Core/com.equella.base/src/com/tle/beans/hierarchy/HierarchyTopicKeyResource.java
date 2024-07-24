@@ -34,9 +34,9 @@ import org.hibernate.annotations.AttributeAccessor;
 import org.hibernate.annotations.Index;
 
 @Entity
-@Table(name = "hierarchy_topic_dynamic_key_re")
+@Table(name = "hierarchy_topic_key_resources")
 @AttributeAccessor("field")
-public class HierarchyTopicKeyResources {
+public class HierarchyTopicKeyResource {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
@@ -47,16 +47,15 @@ public class HierarchyTopicKeyResources {
   @XStreamOmitField
   private Institution institution;
 
-  @Index(name = "dynamic_hierarchy_id")
-  @Column(length = 1024, name = "dynamic_hierarchy_id")
+  @Index(name = "key_resource_hierarchy_uuid")
+  @Column(length = 1024)
   private String hierarchyCompoundUuid;
 
   @Index(name = "key_resource_item_uuid")
-  @Column(length = 40, name = "uuid")
+  @Column(length = 40)
   private String itemUuid;
 
   @Index(name = "key_resource_item_version")
-  @Column(name = "version")
   private int itemVersion;
 
   @Column(nullable = false)

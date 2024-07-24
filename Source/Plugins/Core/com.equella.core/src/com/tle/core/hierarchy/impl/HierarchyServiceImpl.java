@@ -31,7 +31,7 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyPack;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
@@ -178,7 +178,7 @@ public class HierarchyServiceImpl
   @Override
   @Transactional(propagation = Propagation.REQUIRED)
   public void addKeyResource(HierarchyCompoundUuid compoundUuid, ItemKey itemId) {
-    HierarchyTopicKeyResources newKeyResources = new HierarchyTopicKeyResources();
+    HierarchyTopicKeyResource newKeyResources = new HierarchyTopicKeyResource();
     newKeyResources.setHierarchyCompoundUuid(compoundUuid.buildString(true));
     newKeyResources.setItemUuid(itemId.getUuid());
     newKeyResources.setItemVersion(itemId.getVersion());
@@ -193,7 +193,7 @@ public class HierarchyServiceImpl
     String itemUuid = itemId.getUuid();
     int itemVersion = itemId.getVersion();
 
-    Optional<HierarchyTopicKeyResources> keyResource =
+    Optional<HierarchyTopicKeyResource> keyResource =
         getKeyResource(compoundUuid, itemUuid, itemVersion);
     return keyResource.isPresent();
   }
@@ -718,13 +718,13 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  public List<HierarchyTopicKeyResources> getKeyResources(HierarchyCompoundUuid compoundUuid) {
+  public List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid) {
     return dao.getKeyResources(compoundUuid.buildString(true), CurrentInstitution.get());
   }
 
   @Override
   public List<Item> getKeyResourceItems(HierarchyCompoundUuid compoundUuid) {
-    // HierarchyTopicKeyResources.
+    // HierarchyTopicKeyResource.
     return getKeyResources(compoundUuid).stream()
         // ItemId.
         .map(resources -> new ItemId(resources.getItemUuid(), resources.getItemVersion()))
@@ -734,7 +734,7 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  public Optional<HierarchyTopicKeyResources> getKeyResource(
+  public Optional<HierarchyTopicKeyResource> getKeyResource(
       HierarchyCompoundUuid compoundUuid, String itemUuid, int itemVersion) {
     return dao.getKeyResource(
         compoundUuid.buildString(true), itemUuid, itemVersion, CurrentInstitution.get());
@@ -746,7 +746,7 @@ public class HierarchyServiceImpl
 
     String uuid = item.getUuid();
     int version = item.getVersion();
-    List<HierarchyTopicKeyResources> keyResources =
+    List<HierarchyTopicKeyResource> keyResources =
         dao.getKeyResources(uuid, version, CurrentInstitution.get());
 
     keyResources.forEach(k -> ids.add(k.getHierarchyCompoundUuid()));
