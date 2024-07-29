@@ -105,7 +105,7 @@ public interface EquellaSearchResource extends SearchResource {
           String reverse,
       @ApiParam(
               value =
-                  "For details on structuring the where clause see https://docs.edalex.com/books/rest-apis/page/openequella-rest-api-guide#bkmrk-the-where-clause-is-",
+                  "For details on structuring the where clause see https://docs.edalex.com/books/rest-apis/page/openequella-rest-api-guide#bkmrk-searching",
               required = false)
           @QueryParam("where")
           String where,
