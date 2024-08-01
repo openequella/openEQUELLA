@@ -46,7 +46,7 @@ public class KeyResourceConverter extends AbstractMigratableConverter<Object> {
     final SubTemporaryFile keyResourceExportFolder =
         new SubTemporaryFile(staging, KEY_RESOURCES_IMPORT_EXPORT_FOLDER);
     // write out the format details
-    xmlHelper.writeExportFormatXmlFile(keyResourceExportFolder, true);
+    xmlHelper.writeExportFormatXmlFile(keyResourceExportFolder, false);
 
     hierarchyDao
         .getAllKeyResources(institution)
