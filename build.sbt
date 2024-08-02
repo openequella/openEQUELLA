@@ -82,7 +82,7 @@ ThisBuild / assemblyMergeStrategy := {
   }
 }
 (ThisBuild / oracleDriverMavenCoordinate) :=
-  Seq("com.oracle.database.jdbc" % "ojdbc8" % "23.3.0.23.09")
+  Seq("com.oracle.database.jdbc" % "ojdbc8" % "23.5.0.24.07")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
