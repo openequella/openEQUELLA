@@ -277,6 +277,11 @@ public class HierarchyServiceImpl
   public void edit(HierarchyPack pack) {
     HierarchyTopic topic = pack.getTopic();
     edit(topic);
+
+    HierarchyCompoundUuid uuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    List<ItemId> ids = pack.getKeyResources().stream().map(Item::getItemId).toList();
+    updateKeyResources(uuid, ids);
+
     aclManager.setTargetList(Node.HIERARCHY_TOPIC, pack.getTopic(), pack.getTargetList());
   }
 
@@ -440,6 +445,9 @@ public class HierarchyServiceImpl
     pack.setTargetList(aclManager.getTargetList(Node.HIERARCHY_TOPIC, topic));
     pack.setInheritedItemDefinitions(getAllItemDefinitions(topic.getParent()));
     pack.setInheritedSchemas(getAllSchemas(topic.getParent()));
+
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    pack.setKeyResources(getKeyResourceItems(compoundUuid));
 
     return pack;
   }
