@@ -17,11 +17,11 @@
  */
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { OEQLink } from "../../components/OEQLink";
+import { useHistory } from "react-router";
+import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 
 const PREFIX = "AuxiliarySearchSelector";
 
@@ -67,6 +67,8 @@ export const AuxiliarySearchSelector = ({
   urlGeneratorForRouteLink,
   urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
+  const history = useHistory();
+  // Replace all the spaces with hyphens to create a unique ID for the label.
   const labelId = `${PREFIX}-${label.replace(/\s+/g, "-")}`;
 
   const [auxiliarySearches, setAuxiliarySearches] = useState<
@@ -81,15 +83,17 @@ export const AuxiliarySearchSelector = ({
 
   const buildSearchMenuItems = () =>
     auxiliarySearches.map((summary) => (
-      <MenuItem key={summary.uuid} value={summary.name}>
-        <OEQLink
-          routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
-          muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
-          style={{ width: "100%" }}
-        >
-          <LinkIcon className={classes.linkIcon} />
-          {summary.name}
-        </OEQLink>
+      // There is a known accessibility issue (https://github.com/mui/material-ui/issues/33268)
+      // where MUI MenuItem does not work properly with keyboard navigation as a Link.
+      <MenuItem
+        key={summary.uuid}
+        onClick={() => {
+          isSelectionSessionOpen()
+            ? window.open(urlGeneratorForMuiLink(summary.uuid), "_self")
+            : history.push(urlGeneratorForRouteLink(summary.uuid));
+        }}
+      >
+        {summary.name}
       </MenuItem>
     ));
 
