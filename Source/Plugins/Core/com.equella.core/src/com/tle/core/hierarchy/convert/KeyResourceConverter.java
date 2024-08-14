@@ -66,11 +66,11 @@ public class KeyResourceConverter extends AbstractMigratableConverter<Object> {
 
     entries.forEach(
         entry -> {
-          HierarchyTopicKeyResource keyResources =
+          HierarchyTopicKeyResource keyResource =
               xmlHelper.readXmlFile(keyResourceImportFolder, entry);
-          keyResources.setInstitution(institution);
+          keyResource.setInstitution(institution);
 
-          hierarchyDao.saveKeyResources(keyResources);
+          hierarchyDao.saveKeyResource(keyResource);
           hierarchyDao.flush();
           hierarchyDao.clear();
         });

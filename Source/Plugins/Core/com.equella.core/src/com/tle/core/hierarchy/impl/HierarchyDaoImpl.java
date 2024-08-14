@@ -214,8 +214,13 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
   }
 
   @Override
-  public void saveKeyResources(HierarchyTopicKeyResource entity) {
+  public void saveKeyResource(HierarchyTopicKeyResource entity) {
     getHibernateTemplate().save(entity);
+  }
+
+  @Override
+  public void deleteKeyResource(HierarchyTopicKeyResource entity) {
+    getHibernateTemplate().delete(entity);
   }
 
   @Override
@@ -257,6 +262,21 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
                     "from HierarchyTopicKeyResource t WHERE itemUuid = ?0 AND itemVersion =?1 AND  institution = ?2",
                     new Object[] {itemUuid, itemVersion, institution});
     return keyResources;
+  }
+
+  @Override
+  public List<HierarchyTopicKeyResource> getKeyResourcesByItemUuid(
+      String itemUuid, Institution institution) {
+    return (List<HierarchyTopicKeyResource>)
+        getHibernateTemplate()
+            .execute(
+                (Session session) -> {
+                  return session
+                      .getNamedQuery("getByItemUuidAndInstitution")
+                      .setParameter("itemUuid", itemUuid)
+                      .setParameter("institution", CurrentInstitution.get())
+                      .list();
+                });
   }
 
   @Override

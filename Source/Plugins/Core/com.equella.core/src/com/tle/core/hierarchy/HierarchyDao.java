@@ -45,7 +45,7 @@ public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
   HierarchyTopic findByUuid(String uuid, Institution institution);
 
   /** Save the given key resource entity into DB */
-  void saveKeyResources(HierarchyTopicKeyResource entity);
+  void saveKeyResource(HierarchyTopicKeyResource entity);
 
   /** Get all key resources for a given topic in a given institution. */
   List<HierarchyTopicKeyResource> getKeyResources(
@@ -54,6 +54,10 @@ public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
   /** Get all key resources for a given item and institution. */
   List<HierarchyTopicKeyResource> getKeyResources(
       String itemUuid, int itemVersion, Institution institution);
+
+  /** Get all key resources for a given item UUID and institution. */
+  List<HierarchyTopicKeyResource> getKeyResourcesByItemUuid(
+      String itemUuid, Institution institution);
 
   /** Get a key resource for a given item in a given topic. */
   Optional<HierarchyTopicKeyResource> getKeyResource(
@@ -64,6 +68,9 @@ public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
 
   /** Get all key resources for a given institution. */
   List<HierarchyTopicKeyResource> getAllKeyResources(Institution institution);
+
+  /** Delete key resource by a given entity. */
+  void deleteKeyResource(HierarchyTopicKeyResource entity);
 
   /** Delete a key resource for a given item in a given topic. */
   void deleteKeyResource(String topicId, String itemUuid, int itemVersion);

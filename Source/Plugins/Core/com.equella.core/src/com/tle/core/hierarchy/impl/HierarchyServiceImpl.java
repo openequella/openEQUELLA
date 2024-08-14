@@ -35,6 +35,7 @@ import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.hierarchy.HierarchyTreeNode;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemIdKey;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.ValidationError;
@@ -184,7 +185,7 @@ public class HierarchyServiceImpl
     newKeyResources.setItemVersion(itemId.getVersion());
     newKeyResources.setInstitution(CurrentInstitution.get());
     newKeyResources.setDateCreated(new Date());
-    dao.saveKeyResources(newKeyResources);
+    dao.saveKeyResource(newKeyResources);
   }
 
   /** Check whether the given item is a key resource of the given hierarchy topic. */
@@ -196,6 +197,18 @@ public class HierarchyServiceImpl
     Optional<HierarchyTopicKeyResource> keyResource =
         getKeyResource(compoundUuid, itemUuid, itemVersion);
     return keyResource.isPresent();
+  }
+
+  @Override
+  @Transactional
+  public void deleteKeyResource(HierarchyTopicKeyResource keyResource) {
+    dao.deleteKeyResource(keyResource);
+  }
+
+  @Override
+  @Transactional
+  public void deleteKeyResources(ItemKey itemId) {
+    dao.deleteKeyResources(itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get());
   }
 
   @Override
@@ -681,9 +694,31 @@ public class HierarchyServiceImpl
 
   @Override
   public void itemDeletedEvent(ItemDeletedEvent event) {
-    Item item = new Item();
-    item.setId(event.getKey());
-    // TODO: OEQ-2051 Delete related key resources
+    // When an Item delete event is published, a key resource should be deleted when:
+    //   * the referenced Item version is exactly the same as the Item to be deleted, or
+    //   * pointing to the latest version (which is represented by 0) and there are not any more
+    // versions of that Item.
+    // In the second case, please note that the Item is NOT removed until all the listeners for Item
+    // delete event complete their tasks.
+    // This means when there is only one version of that Item remaining, the pointing to the latest
+    // version key resource should be removed as well.
+    final int lastItemFlag = 1;
+
+    ItemIdKey itemIdKey = event.getItemId();
+    String deletedItemUuid = itemIdKey.getUuid();
+    int deletedItemVersion = itemIdKey.getVersion();
+
+    List<Item> allItems = itemService.getVersionDetails(deletedItemUuid);
+
+    getKeyResources(deletedItemUuid)
+        .forEach(
+            keyResource -> {
+              int keyResourceItemVersion = keyResource.getItemVersion();
+              if (keyResourceItemVersion == deletedItemVersion
+                  || (keyResourceItemVersion == 0 && allItems.size() == lastItemFlag)) {
+                deleteKeyResource(keyResource);
+              }
+            });
   }
 
   @Override
@@ -720,6 +755,11 @@ public class HierarchyServiceImpl
   @Override
   public List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid) {
     return dao.getKeyResources(compoundUuid.buildString(true), CurrentInstitution.get());
+  }
+
+  @Override
+  public List<HierarchyTopicKeyResource> getKeyResources(String itemUuid) {
+    return dao.getKeyResourcesByItemUuid(itemUuid, CurrentInstitution.get());
   }
 
   @Override
