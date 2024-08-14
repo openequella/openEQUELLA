@@ -1405,12 +1405,6 @@
     <parameter id="frequency" value="daily" />
     <parameter id="scope" value="server" />
   </extension>
-  <extension plugin-id="com.tle.core.scheduler" point-id="scheduledTask" id="removeInvalidDynamicKeyResource">
-    <parameter id="id" value="Remove Invalid Dynamic Key Resource" />
-    <parameter id="bean" value="bean:com.tle.core.scheduler.standard.task.RemoveInvalidDynamicKeyResource" />
-    <parameter id="frequency" value="weekly" />
-    <parameter id="scope" value="institution" />
-  </extension>
   <extension plugin-id="com.tle.web.workflow" point-id="bulkExtension" id="bulkApproveOp">
     <parameter id="bean" value="bean:com.tle.web.bulk.workflowtask.dialog.BulkWorkflowApproveTaskOperation" />
   </extension>

@@ -112,6 +112,9 @@ public interface HierarchyService extends RemoteHierarchyService {
   /** Get all key resources for a given hierarchy compound UUID. */
   List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid);
 
+  /** Get all key resources for a given item UUID. */
+  List<HierarchyTopicKeyResource> getKeyResources(String itemUuid);
+
   /** Get all key resources and convert to Item for a given hierarchy compound UUID. */
   List<Item> getKeyResourceItems(HierarchyCompoundUuid compoundUuid);
 
@@ -161,8 +164,15 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   void delete(HierarchyTopic topic);
 
+  /** Delete key resource by the given key resource entity. */
+  void deleteKeyResource(HierarchyTopicKeyResource keyResource);
+
+  /** Delete key resource by the given itemId from current institution. */
+  void deleteKeyResources(ItemKey itemId);
+
   void deleteKeyResources(Item item);
 
+  /** Delete key resource by the given itemId from the given hierarchy. */
   void deleteKeyResources(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey itemId);
 
   void removeDeletedItemReference(String uuid, int version);

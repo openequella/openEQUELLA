@@ -29,6 +29,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import org.hibernate.annotations.AttributeAccessor;
 import org.hibernate.annotations.Index;
@@ -36,6 +37,10 @@ import org.hibernate.annotations.Index;
 @Entity
 @Table(name = "hierarchy_topic_key_resources")
 @AttributeAccessor("field")
+@NamedQuery(
+    name = "getByItemUuidAndInstitution",
+    query =
+        "FROM HierarchyTopicKeyResource t WHERE t.itemUuid = :itemUuid AND t.institution = :institution")
 public class HierarchyTopicKeyResource {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
