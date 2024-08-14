@@ -17,6 +17,7 @@
  */
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -93,6 +94,7 @@ export const AuxiliarySearchSelector = ({
             : history.push(urlGeneratorForRouteLink(summary.uuid));
         }}
       >
+        <LinkIcon className={classes.linkIcon} />
         {summary.name}
       </MenuItem>
     ));
