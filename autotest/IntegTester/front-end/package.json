@@ -10,7 +10,7 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@mui/material": "5.15.16",
-    "axios": "1.6.8",
+    "axios": "1.7.4",
     "babel-polyfill": "6.26.0",
     "jss": "10.10.0",
     "md5": "2.3.0",
