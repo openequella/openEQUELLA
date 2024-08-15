@@ -116,7 +116,9 @@ public class AddOrDeleteKeyResourceLink extends AbstractPrototypeSection<Object>
   @EventHandlerMethod
   public void addAsKeyResource(SectionInfo info, ItemId itemId, String topicId) {
     HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
-    hierarchyService.addKeyResource(compoundUuid, itemId);
+    if (!hierarchyService.hasKeyResource(compoundUuid, itemId)) {
+      hierarchyService.addKeyResource(compoundUuid, itemId);
+    }
   }
 
   @Override
