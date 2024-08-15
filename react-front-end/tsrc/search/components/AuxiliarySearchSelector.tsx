@@ -15,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FormControl, MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import LinkIcon from "@mui/icons-material/Link";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { OEQLink } from "../../components/OEQLink";
+import { useHistory } from "react-router";
+import { isSelectionSessionOpen } from "../../modules/LegacySelectionSessionModule";
 
 const PREFIX = "AuxiliarySearchSelector";
 
@@ -36,6 +37,10 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 }));
 
 export interface AuxiliarySearchSelectorProps {
+  /**
+   * Label for describing what can be selected from this component.
+   */
+  label: string;
   /**
    * Function to provide a list of auxiliary searches
    */
@@ -58,10 +63,15 @@ export interface AuxiliarySearchSelectorProps {
  * Clicking on an auxiliary search (currently) navigates you to the legacy UI page.
  */
 export const AuxiliarySearchSelector = ({
+  label,
   auxiliarySearchesSupplier,
   urlGeneratorForRouteLink,
   urlGeneratorForMuiLink,
 }: AuxiliarySearchSelectorProps) => {
+  const history = useHistory();
+  // Replace all the spaces with hyphens to create a unique ID for the label.
+  const labelId = `${PREFIX}-${label.replace(/\s+/g, "-")}`;
+
   const [auxiliarySearches, setAuxiliarySearches] = useState<
     OEQ.Common.BaseEntitySummary[]
   >([]);
@@ -72,27 +82,29 @@ export const AuxiliarySearchSelector = ({
     );
   }, [auxiliarySearchesSupplier]);
 
-  const getLinkContent = (summary: OEQ.Common.BaseEntitySummary) => (
-    <MenuItem value={summary.uuid}>
-      <LinkIcon className={classes.linkIcon} />
-      {summary.name}
-    </MenuItem>
-  );
-
   const buildSearchMenuItems = () =>
     auxiliarySearches.map((summary) => (
-      <OEQLink
-        routeLinkUrlProvider={() => urlGeneratorForRouteLink(summary.uuid)}
-        muiLinkUrlProvider={() => urlGeneratorForMuiLink(summary.uuid)}
+      // There is a known accessibility issue (https://github.com/mui/material-ui/issues/33268)
+      // where MUI MenuItem does not work properly with keyboard navigation as a Link.
+      <MenuItem
         key={summary.uuid}
+        onClick={() => {
+          isSelectionSessionOpen()
+            ? window.open(urlGeneratorForMuiLink(summary.uuid), "_self")
+            : history.push(urlGeneratorForRouteLink(summary.uuid));
+        }}
       >
-        {getLinkContent(summary)}
-      </OEQLink>
+        <LinkIcon className={classes.linkIcon} />
+        {summary.name}
+      </MenuItem>
     ));
 
   return (
     <StyledFormControl variant="outlined" fullWidth>
-      <Select value="">{buildSearchMenuItems()}</Select>
+      <InputLabel id={labelId}>{label}</InputLabel>
+      <Select value="" labelId={labelId} label={label}>
+        {buildSearchMenuItems()}
+      </Select>
     </StyledFormControl>
   );
 };

@@ -32,6 +32,7 @@ export const standard: StoryFn<AuxiliarySearchSelectorProps> = (
   args: AuxiliarySearchSelectorProps,
 ) => <AuxiliarySearchSelector {...args} />;
 standard.args = {
+  label: "Auxiliary Search Selector",
   auxiliarySearchesSupplier: () =>
     Promise.resolve(getRemoteSearchesFromServerResult),
   urlGeneratorForRouteLink: (uuid: string) => uuid,
