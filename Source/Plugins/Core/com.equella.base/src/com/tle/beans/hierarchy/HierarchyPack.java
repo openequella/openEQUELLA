@@ -25,10 +25,6 @@ import com.tle.common.security.TargetList;
 import java.io.Serializable;
 import java.util.List;
 
-/**
- * @author Nicholas Read
- *     <p>Legacy code for Admin Console.
- */
 public class HierarchyPack implements Serializable {
   private static final long serialVersionUID = 1L;
 
