@@ -1,57 +1,57 @@
 <com.tle.beans.item.Item>
-  <id>149684</id>
+  <id>366496</id>
   <uuid>e35390cf-7c45-4f71-bb94-e6ccc1f09394</uuid>
-  <version>1</version>
+  <version>2</version>
   <owner>TLE_ADMINISTRATOR</owner>
-  <dateModified class="sql-timestamp">2023-11-08 15:19:02.59</dateModified>
-  <dateCreated class="sql-timestamp">2023-11-08 15:05:38.347</dateCreated>
-  <dateForIndex class="sql-timestamp">2023-11-08 15:19:02.59</dateForIndex>
+  <dateModified class="sql-timestamp">2024-08-14 14:49:00.051</dateModified>
+  <dateCreated class="sql-timestamp">2024-08-14 14:49:00.052</dateCreated>
+  <dateForIndex class="sql-timestamp">2024-08-14 14:49:00.051</dateForIndex>
   <rating>-1.0</rating>
   <moderating>false</moderating>
-  <status>ARCHIVED</status>
+  <status>LIVE</status>
   <metadataSecurityTargets/>
   <attachments/>
   <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4c147089-cddb-e67c-b5ab-189614eb1463"/>
   <collaborators/>
   <referencedUrls/>
   <moderation>
-    <id>149686</id>
-    <liveApprovalDate class="sql-timestamp">2023-11-08 15:05:38.345</liveApprovalDate>
-    <lastAction class="sql-timestamp">2023-11-08 15:05:38.345</lastAction>
+    <id>366499</id>
+    <liveApprovalDate class="sql-timestamp">2024-08-14 14:49:00.051</liveApprovalDate>
+    <lastAction class="sql-timestamp">2024-08-14 14:49:00.051</lastAction>
     <needsReset>false</needsReset>
     <statuses/>
   </moderation>
   <history>
     <com.tle.beans.item.HistoryEvent>
-      <id>149689</id>
+      <id>366502</id>
       <user>TLE_ADMINISTRATOR</user>
-      <date class="sql-timestamp">2023-11-08 15:05:38.345</date>
+      <date class="sql-timestamp">2024-08-14 14:48:45.616</date>
+      <applies>false</applies>
+      <type>newversion</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>366503</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2024-08-14 14:49:00.051</date>
       <applies>false</applies>
       <type>contributed</type>
       <state>DRAFT</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>149690</id>
+      <id>366504</id>
       <user>TLE_ADMINISTRATOR</user>
-      <date class="sql-timestamp">2023-11-08 15:05:38.345</date>
+      <date class="sql-timestamp">2024-08-14 14:49:00.051</date>
       <applies>false</applies>
       <type>edit</type>
       <state>DRAFT</state>
     </com.tle.beans.item.HistoryEvent>
     <com.tle.beans.item.HistoryEvent>
-      <id>149691</id>
+      <id>366505</id>
       <user>TLE_ADMINISTRATOR</user>
-      <date class="sql-timestamp">2023-11-08 15:05:38.345</date>
+      <date class="sql-timestamp">2024-08-14 14:49:00.051</date>
       <applies>false</applies>
       <type>statechange</type>
-      <state>LIVE</state>
-    </com.tle.beans.item.HistoryEvent>
-    <com.tle.beans.item.HistoryEvent>
-      <id>149713</id>
-      <user>TLE_ADMINISTRATOR</user>
-      <date class="sql-timestamp">2023-11-08 15:19:02.59</date>
-      <applies>false</applies>
-      <type>edit</type>
       <state>LIVE</state>
     </com.tle.beans.item.HistoryEvent>
   </history>
@@ -61,13 +61,13 @@
   <treeNodes/>
   <notifications/>
   <name>
-    <id>149687</id>
+    <id>366500</id>
     <strings>
       <entry>
-        <string>en_us</string>
+        <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>149688</id>
-          <locale>en_us</locale>
+          <id>366501</id>
+          <locale>en_AU</locale>
           <priority>2</priority>
           <text>Book B</text>
           <bundle reference="../../../.."/>
@@ -76,7 +76,7 @@
     </strings>
   </name>
   <description>
-    <id>149714</id>
+    <id>366497</id>
     <strings/>
   </description>
   <totalFileSize>0</totalFileSize>

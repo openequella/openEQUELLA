@@ -29,7 +29,6 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -238,14 +237,14 @@ public class TopicDisplaySection
       HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(legacyHierarchyUuid, true);
       HtmlLinkState link =
           new HtmlLinkState(events.getNamedHandler("changeTopic", legacyHierarchyUuid));
-      List<Item> keyResourcesItem = hierarchyService.getKeyResourceItems(compoundUuid);
+      List<Item> keyResourcesItems = hierarchyService.getKeyResourceItems(compoundUuid);
 
       int searchCount = p.getCount();
 
       DisplayHierarchyNode node =
           new DisplayHierarchyNode(
               childTopic,
-              keyResourcesItem,
+              keyResourcesItems,
               childValue,
               link,
               searchCount,
@@ -504,21 +503,15 @@ public class TopicDisplaySection
     String topicId = buildTopicId(topic, value, values);
     HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
 
-    List<HierarchyTopicKeyResource> topicItems = hierarchyService.getKeyResources(compoundUuid);
+    List<Item> topicItems = hierarchyService.getKeyResourceItems(compoundUuid);
 
     if (!topicItems.isEmpty()) {
-      for (HierarchyTopicKeyResource h : topicItems) {
-        String uuid = h.getItemUuid();
-        int version = h.getItemVersion();
-        ItemId id = new ItemId(uuid, version);
+      for (Item item : topicItems) {
+        ItemId id = item.getItemId();
         Map<String, Object> itemObject = itemService.getItemInfo(id);
 
         if (itemObject != null) {
           keyResources.add(itemService.get(id));
-        } else {
-          // if item is deleted, then remove the reference from
-          // dynamic key resource
-          hierarchyService.removeDeletedItemReference(uuid, version);
         }
       }
     }

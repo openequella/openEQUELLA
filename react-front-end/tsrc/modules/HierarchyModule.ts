@@ -32,8 +32,9 @@ export const getHierarchies = (): Promise<
  */
 export const getHierarchy = (
   compoundUuid: string,
-): Promise<OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>> =>
-  OEQ.BrowseHierarchy.browseHierarchy(API_BASE_URL, compoundUuid);
+): Promise<
+  OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>
+> => OEQ.BrowseHierarchy.browseHierarchy(API_BASE_URL, compoundUuid);
 
 /**
  * Get hierarchy IDs which contains the given key resource.

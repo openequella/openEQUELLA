@@ -367,20 +367,6 @@ public class EditHierarchyResource {
         bean.setInheritFreetext(false);
       }
 
-      // dynamic filtering properties
-      //			if( !Check.isEmpty(hierarchyTopic.getAttributes()) )
-      //			{
-      //				List<HierarchyEditBean.AttributeBean> beanAttributes = Lists.newArrayList();
-      //				for( HierarchyTopic.Attribute topicAttribute : hierarchyTopic.getAttributes() )
-      //				{
-      //					HierarchyEditBean.AttributeBean attribBean = new HierarchyEditBean.AttributeBean();
-      //					attribBean.setKey(topicAttribute.getKey());
-      //					attribBean.setValue(topicAttribute.getValue());
-      //					beanAttributes.add(attribBean);
-      //				}
-      //				bean.setAttributes(beanAttributes);
-      //			}
-
       // minimal detail of subnodes, if any
       if (!Check.isEmpty(subnodes)) {
         List<HierarchyEditBean> subnodeBeans = new ArrayList<HierarchyEditBean>(subnodes.size());
@@ -455,13 +441,6 @@ public class EditHierarchyResource {
     if (!Check.isEmpty(bean.getVirtualisationPath())) {
       hierarchyTopic.setVirtualisationPath(bean.getVirtualisationPath());
       hierarchyTopic.setVirtualisationId(bean.getVirtualisationId());
-      //			if( !Check.isEmpty(bean.getAttributes()) )
-      //			{
-      //				for( HierarchyEditBean.AttributeBean beanAttribute : bean.getAttributes() )
-      //				{
-      //					hierarchyTopic.setAttribute(beanAttribute.getKey(), beanAttribute.getValue());
-      //				}
-      //			}
     }
     return hierarchyTopic;
   }
@@ -547,8 +526,6 @@ public class EditHierarchyResource {
   /**
    * there's a set of inheritable ItemDefn Scripts which may or may not be a super-set of ItemDefn
    * Scripts actually inherited
-   *
-   * @return
    */
   private void getInheritedAndEligibleItemDefScripts(
       HierarchyEditBean bean, HierarchyTopic hierarchyTopic, HierarchyTopic parentHierachy) {
@@ -593,11 +570,7 @@ public class EditHierarchyResource {
     }
   }
 
-  /**
-   * Same logic as for ItemDefinitionScripts
-   *
-   * @return
-   */
+  /** Same logic as for ItemDefinitionScripts */
   private void getInheritedAndEligibleSchemaScripts(
       HierarchyEditBean bean, HierarchyTopic hierarchyTopic, HierarchyTopic parentHierachy) {
     // Set the explicitly inherited Schemas ...

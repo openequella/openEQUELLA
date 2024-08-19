@@ -35,5 +35,5 @@ export const Standard: StoryFn<KeyResourcePanelProps> = (args) => (
   <KeyResourcePanel {...args} />
 );
 Standard.args = {
-  items: keyResources,
+  keyResources: keyResources,
 };

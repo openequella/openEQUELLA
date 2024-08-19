@@ -48,13 +48,13 @@ const {
 
 export interface KeyResourceProps {
   /**
-   * The key resource item to display.
+   * The key resource to display.
    */
-  item: OEQ.Search.SearchResultItem;
+  keyResource: OEQ.BrowseHierarchy.KeyResource;
   /**
    * The handler for the pin icon click event. Hide the pin icon if it's undefined.
    */
-  onPinIconClick?: (item: OEQ.Search.SearchResultItem) => void;
+  onPinIconClick?: (keyResource: OEQ.BrowseHierarchy.KeyResource) => void;
 }
 
 const PREFIX = "KeyResource";
@@ -133,7 +133,7 @@ export const StyledCard = styled(Card, {
 /**
  * A card view of a key resource for hierarchy.
  */
-const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
+const KeyResource = ({ keyResource, onPinIconClick }: KeyResourceProps) => {
   const history = useHistory();
 
   const {
@@ -145,7 +145,7 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
     name,
     description,
     displayOptions,
-  } = item;
+  } = keyResource.item;
 
   const [showDrmDialog, setShowDrmDialog] = useState(false);
   const [drmDialog, setDrmDialog] = useState<React.JSX.Element | undefined>(
@@ -246,7 +246,7 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
             <TooltipIconButton
               id={`${uuid}-${version}-unpin`}
               title={removeKeyResourceText}
-              onClick={() => onPinIconClick(item)}
+              onClick={() => onPinIconClick(keyResource)}
               aria-label={removeKeyResourceText}
             >
               <PushPin color="secondary" />

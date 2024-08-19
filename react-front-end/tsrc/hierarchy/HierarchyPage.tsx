@@ -35,7 +35,6 @@ import {
   getHierarchy,
   getMyAcls,
 } from "../modules/HierarchyModule";
-import { itemEq } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import SearchResult, {
   defaultActionButtonProps,
@@ -97,7 +96,8 @@ const HierarchyPage = ({
   const { appErrorHandler } = useContext(AppContext);
 
   const [hierarchy, setHierarchy] = useState<
-    OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
+    | OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>
+    | undefined
   >();
   const [hierarchyAcls, setHierarchyAcls] =
     useState<OEQ.Hierarchy.HierarchyTopicAcl>(defaultHierarchyAcl);
@@ -136,17 +136,19 @@ const HierarchyPage = ({
   /**
    * Add/Delete a key resource to the hierarchy and then update the `needUpdateHierarchy` flag.
    *
-   * @param item the search result item to add/delete as a key resource.
+   * @param itemUuid the UUID of the item to be added/deleted.
+   * @param itemVersion the version of the item to be added/deleted.
    * @param isDelete true if the item is to be deleted, false if the item is to be added.
    */
   const updateKeyResource = (
-    item: OEQ.Search.SearchResultItem,
+    itemUuid: OEQ.Common.UuidString,
+    itemVersion: number,
     isDelete: boolean,
   ) => {
     const action = isDelete ? deleteKeyResource : addKeyResource;
     pipe(
       TE.tryCatch(
-        () => action(compoundUuid, item.uuid, item.version),
+        () => action(compoundUuid, itemUuid, itemVersion),
         (e) => `Failed to update key resource: ${e}`,
       ),
       TE.match(appErrorHandler, (_) => setNeedUpdateHierarchy(true)),
@@ -180,9 +182,14 @@ const HierarchyPage = ({
     item: OEQ.Search.SearchResultItem,
     highlights: string[],
   ): React.ReactNode => {
+    const { uuid: itemUuid, version: itemVersion } = item;
+
     const isKeyResource = pipe(
       hierarchy?.keyResources ?? [],
-      A.exists((resource) => itemEq.equals(item, resource)),
+      A.exists((resource) => {
+        const { version, uuid } = resource.item;
+        return itemUuid === uuid && itemVersion === version;
+      }),
     );
 
     const title = isKeyResource ? removeKeyResourceText : addKeyResourceText;
@@ -191,7 +198,7 @@ const HierarchyPage = ({
       <TooltipIconButton
         aria-label={title}
         title={title}
-        onClick={() => updateKeyResource(item, isKeyResource)}
+        onClick={() => updateKeyResource(itemUuid, itemVersion, isKeyResource)}
         size="small"
       >
         {isKeyResource ? <PushPin color="secondary" /> : <PushPinOutlined />}
@@ -200,7 +207,7 @@ const HierarchyPage = ({
 
     return (
       <SearchResult
-        key={`${item.uuid}/${item.version}`}
+        key={`${itemUuid}/${itemVersion}`}
         item={item}
         highlights={highlights}
         customActionButtons={
@@ -271,10 +278,11 @@ const HierarchyPage = ({
                 O.map((keyResources) => (
                   <Grid item xs={12}>
                     <KeyResourcePanel
-                      items={keyResources}
+                      keyResources={keyResources}
                       onPinIconClick={
                         hierarchyAcls.MODIFY_KEY_RESOURCE
-                          ? (item) => updateKeyResource(item, true)
+                          ? ({ item }) =>
+                              updateKeyResource(item.uuid, item.version, true)
                           : undefined
                       }
                     />

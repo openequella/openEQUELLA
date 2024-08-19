@@ -32,19 +32,19 @@ export const Standard: StoryFn<KeyResourceProps> = (args) => (
   <KeyResource {...args} />
 );
 Standard.args = {
-  item: keyResources[1],
+  keyResource: keyResources[1],
 };
 
 export const withDesc: StoryFn<KeyResourceProps> = (args) => (
   <KeyResource {...args} />
 );
 withDesc.args = {
-  item: keyResources[0],
+  keyResource: keyResources[0],
 };
 
 export const WithThumb: StoryFn<KeyResourceProps> = (args) => (
   <KeyResource {...args} />
 );
 WithThumb.args = {
-  item: keyResources[2],
+  keyResource: keyResources[2],
 };

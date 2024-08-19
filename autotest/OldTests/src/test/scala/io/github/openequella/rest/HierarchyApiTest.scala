@@ -159,8 +159,12 @@ class HierarchyApiTest extends AbstractRestApiTest {
   private def containsKeyResource(keyResources: JsonNode,
                                   itemUuid: String,
                                   itemVersion: Int): Boolean = {
-    keyResources.elements.asScala.exists(resource =>
-      resource.get("uuid").asText == itemUuid && resource.get("version").asInt == itemVersion)
+    keyResources.elements.asScala.exists(
+      resource =>
+        resource.get("item").get("uuid").asText == itemUuid && resource
+          .get("item")
+          .get("version")
+          .asInt == itemVersion)
   }
 
   // Get full information of a topic

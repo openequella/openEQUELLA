@@ -248,13 +248,11 @@ public class HierarchySoapService implements HierarchySoapInterface {
   private void buildXmlFromTopic(
       PropBagEx xml, HierarchyTopic topic, boolean isDynamicTopic, String id) {
     PropBagEx tx = buildBasicXmlFromTopic(xml, topic);
-
     // Short description
     LanguageBundle shortDescription = topic.getShortDescription();
     if (shortDescription != null) {
       tx.setNode(SHORT_DESCRIPTION, CurrentLocale.get(shortDescription));
     }
-
     // Long description
     LanguageBundle longDescription = topic.getLongDescription();
     if (longDescription != null) {

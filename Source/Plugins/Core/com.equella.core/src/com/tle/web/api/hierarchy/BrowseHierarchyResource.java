@@ -506,7 +506,7 @@ public class BrowseHierarchyResource {
       collectionUuids.add(aScript.getEntity().getUuid());
     }
 
-    return collectionUuids.size() > 0 ? collectionUuids : null;
+    return !collectionUuids.isEmpty() ? collectionUuids : null;
   }
 
   private URI getSelfLink(String hierarchyUuid) {

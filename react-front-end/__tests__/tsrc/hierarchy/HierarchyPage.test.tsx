@@ -186,8 +186,10 @@ describe("Display of Key resource panel", () => {
 
     const keyResourcePanel = getByTestId("key-resource-panel");
 
-    hierarchy.keyResources.forEach(({ name, uuid }) =>
-      expect(getByText(keyResourcePanel, name ?? uuid)).toBeInTheDocument(),
+    hierarchy.keyResources.forEach(({ item }) =>
+      expect(
+        getByText(keyResourcePanel, item.name ?? item.uuid),
+      ).toBeInTheDocument(),
     );
     expect.assertions(hierarchy.keyResources.length);
   });
