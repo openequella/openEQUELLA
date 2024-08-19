@@ -60,7 +60,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     JsonNode result =
         doSearch(
             200, null, new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"));
-    assertEquals(getAvailable(result), 7);
+    assertEquals(getAvailable(result), 8);
   }
 
   @Test(description = "Search for items belonging to a specific owner")

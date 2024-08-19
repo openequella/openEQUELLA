@@ -91,7 +91,7 @@ class BrowseHierarchyResource {
           browseHierarchyHelper.getParents(topicEntity,
                                            parentCompoundUuidList.getOrElse(List.empty))
         val allKeyResources =
-          browseHierarchyHelper.getKeyResourceSearchResultItems(hierarchyCompoundUuid)
+          browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
 
         val result = HierarchyTopic(topicSummary, parents, allKeyResources)
         Response.ok(result).build

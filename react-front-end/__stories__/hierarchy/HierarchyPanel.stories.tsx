@@ -32,7 +32,7 @@ export default {
   component: HierarchyPanel,
 } as Meta<HierarchyPanelProps>;
 
-const standardHierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> =
+const standardHierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource> =
   {
     summary: topicWithChildren,
     keyResources: keyResources,
@@ -42,7 +42,7 @@ const standardHierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchRes
     ],
   };
 
-const hierarchyWithHtmlContent: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> =
+const hierarchyWithHtmlContent: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource> =
   {
     ...standardHierarchy,
     summary: topicWithHtmlDesc,

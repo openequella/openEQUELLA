@@ -19,19 +19,19 @@
 package com.tle.web.api.browsehierarchy
 
 import com.tle.beans.entity.LanguageBundle
-import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
-import com.tle.beans.item.{Item, ItemIdKey}
+import com.tle.beans.hierarchy.{HierarchyTopicKeyResource, HierarchyTopic => HierarchyTopicEntity}
+import com.tle.beans.item.{Item, ItemId, ItemIdKey}
 import com.tle.common.interfaces.equella.BundleString
-import com.tle.common.security.SecurityConstants
+import com.tle.common.security.Privilege
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
-import com.tle.core.item.serializer.ItemSerializerService
+import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.core.item.service.ItemService
 import com.tle.core.search.VirtualisableAndValue
 import com.tle.core.security.TLEAclManager
-import com.tle.web.api.browsehierarchy.model.{HierarchyTopicSummary, ParentTopic}
+import com.tle.web.api.browsehierarchy.model.{HierarchyTopicSummary, KeyResource, ParentTopic}
 import com.tle.web.api.search.SearchHelper
-import com.tle.web.api.search.model.{SearchItem, SearchResultItem}
+import com.tle.web.api.search.model.SearchItem
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -43,6 +43,9 @@ class BrowseHierarchyHelper {
   private var itemSerializerService: ItemSerializerService = _
   private var itemService: ItemService                     = _
   private var aclManager: TLEAclManager                    = _
+
+  // An intermediate class to store the item and its version information.
+  private case class KeyResourceItem(item: Item, isLatest: Boolean)
 
   @Inject
   def this(hierarchyService: HierarchyService,
@@ -136,21 +139,6 @@ class BrowseHierarchyHelper {
   }
 
   /**
-    * Convert a list of key resources, which are essentially Items, to a list of SearchResultItem.
-    *
-    * @param items A list of key resources added to a hierarchy topic.
-    */
-  private def convertKeyResourceItems(items: List[Item]): List[SearchResultItem] = {
-    val itemIdKeys = items.map(new ItemIdKey(_))
-    val serializer = SearchHelper.createSerializer(itemIdKeys)
-    val searchResultItems = itemIdKeys
-      .map(SearchItem(_, isKeywordFoundInAttachment = false, serializer))
-      .map(SearchHelper.convertToItem(_))
-
-    searchResultItems
-  }
-
-  /**
     * Get the topic summary for the given topic entity.
     *
     * @param topicEntity The topic entity used to get summary.
@@ -183,20 +171,53 @@ class BrowseHierarchyHelper {
         ParentTopic(compoundUuid, topicName)
       })
 
+  // Convert HierarchyTopicKeyResource entity to KeyResourceItem and
+  // filter out the key resources which users do not have the privilege to access.
+  private def convertToKeyResourceItem(
+      keyResourceEntity: HierarchyTopicKeyResource): Option[KeyResourceItem] = {
+    val version = keyResourceEntity.getItemVersion
+    val uuid    = keyResourceEntity.getItemUuid
+
+    val realVersion = itemService.getRealVersion(version, uuid)
+    val realItemId  = new ItemId(uuid, realVersion)
+
+    for {
+      item <- Option(itemService.getUnsecureIfExists(realItemId))
+      if aclManager.hasPrivilege(item, Privilege.DISCOVER_ITEM)
+    } yield KeyResourceItem(item, version == 0)
+  }
+
+  // Convert KeyResourceItem to KeyResource.
+  private def convertToKeyResource(keyResourceItem: KeyResourceItem,
+                                   serializer: ItemSerializerItemBean): KeyResource = {
+    val realItemIdKey = new ItemIdKey(keyResourceItem.item)
+    val searchItem    = SearchItem(realItemIdKey, isKeywordFoundInAttachment = false, serializer)
+    KeyResource(SearchHelper.convertToItem(searchItem), keyResourceItem.isLatest)
+  }
+
   /**
-    * Get all key resources for the given topic entity and convert to SearchResultItem.
+    * Return details of all the key resources for the given topic ID by following steps:
+    *
+    * 1. Get the list of raw key resource by the given ID.
+    *
+    * 2. For each raw key resource, find the real version of the referenced item.
+    *
+    * 3. Get the referenced Items with permission check.
+    *
+    * 4. Generate key resource details based on the reference Items.
     *
     * @param topicCompoundUuid The compound uuid of the given topic entity.
     */
-  def getKeyResourceSearchResultItems(
-      topicCompoundUuid: HierarchyCompoundUuid): List[SearchResultItem] = {
-    // get all key resources and convert Item to SearchResultItem
-    val allResources =
-      hierarchyService.getKeyResourceItems(topicCompoundUuid).asScala.toList
-    val filteredResources = aclManager
-      .filterNonGrantedObjects(List((SecurityConstants.DISCOVER_ITEM)).asJava, allResources.asJava)
+  def getKeyResources(topicCompoundUuid: HierarchyCompoundUuid): List[KeyResource] = {
+    val keyResourceItems = hierarchyService
+      .getKeyResources(topicCompoundUuid)
       .asScala
       .toList
-    convertKeyResourceItems(filteredResources)
+      .flatMap(convertToKeyResourceItem)
+
+    val itemIdKeys = keyResourceItems.map(_.item).map(new ItemIdKey(_))
+    val serializer = SearchHelper.createSerializer(itemIdKeys)
+
+    keyResourceItems.map(convertToKeyResource(_, serializer))
   }
 }

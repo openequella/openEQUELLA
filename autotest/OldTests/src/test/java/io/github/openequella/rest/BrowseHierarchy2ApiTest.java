@@ -1,9 +1,12 @@
 package io.github.openequella.rest;
 
+import static io.github.openequella.rest.JsonNodeHelper.getNode;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Streams;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.IOException;
 import java.util.Optional;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -52,10 +55,26 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
   @Test(description = "Get a virtual hierarchy topic")
   public void getVirtualHierarchy() throws IOException {
     JsonNode results = request(JAMES_HIERARCHY_UUID);
+
     // Should be able to get the request hierarchy topic
     assertEquals(getCompoundUuid(results), JAMES_HIERARCHY_UUID);
+  }
+
+  @Test(description = "Get hierarchy key resource item version")
+  public void getItemVersion() throws IOException {
+    final String BOOK_A_V2_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a";
+    final String BOOK_B_UUID = "e35390cf-7c45-4f71-bb94-e6ccc1f09394";
+
+    JsonNode keyResources = request(JAMES_HIERARCHY_UUID).get("keyResources");
+
     // Key resource should point to the correct version
-    assertEquals(results.get("keyResources").get(0).get("version").asInt(), 2);
+    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID).get("isLatest").asBoolean());
+    assertEquals(
+        getKeyResource(keyResources, BOOK_A_V2_UUID).get("item").get("version").asInt(), 2);
+    // BOOK_B has 2 versions and as an "Always latest key resource" it should point to the latest
+    // version 2.
+    assertTrue(getKeyResource(keyResources, BOOK_B_UUID).get("isLatest").asBoolean());
+    assertEquals(getKeyResource(keyResources, BOOK_B_UUID).get("item").get("version").asInt(), 2);
   }
 
   @Test(description = "Get a virtual hierarchy topic which name contains comma")
@@ -103,16 +122,11 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   // get specific topic from endpoint result
   private JsonNode getTopic(JsonNode result, String topicUuid) {
-    Optional<JsonNode> topic =
-        Streams.stream(result.elements())
-            .filter(
-                t ->
-                    Optional.ofNullable(t.get("compoundUuid"))
-                        .map(JsonNode::asText)
-                        .map(uuid -> uuid.equals(topicUuid))
-                        .orElse(false))
-            .findFirst();
-    return topic.orElseThrow();
+    return getNode((ArrayNode) result, "compoundUuid", topicUuid);
+  }
+
+  private JsonNode getKeyResource(JsonNode result, String itemUuid) {
+    return getNode((ArrayNode) result, n -> n.get("item").get("uuid"), itemUuid);
   }
 
   private String getCompoundUuid(JsonNode result) {

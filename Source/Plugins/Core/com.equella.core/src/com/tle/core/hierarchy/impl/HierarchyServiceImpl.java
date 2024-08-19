@@ -224,12 +224,6 @@ public class HierarchyServiceImpl
   }
 
   @Override
-  @Transactional
-  public void removeDeletedItemReference(String legacyHierarchyCompoundUuid, int version) {
-    dao.deleteKeyResources(legacyHierarchyCompoundUuid, version, CurrentInstitution.get());
-  }
-
-  @Override
   @Transactional(propagation = Propagation.REQUIRED)
   @SecureOnCall(priv = "EDIT_HIERARCHY_TOPIC")
   public long add(HierarchyTreeNode parentNode, String name, boolean inheritConstraints) {
@@ -775,7 +769,14 @@ public class HierarchyServiceImpl
     // HierarchyTopicKeyResource.
     return getKeyResources(compoundUuid).stream()
         // ItemId.
-        .map(resources -> new ItemId(resources.getItemUuid(), resources.getItemVersion()))
+        .map(
+            resources -> {
+              int version = resources.getItemVersion();
+              String uuid = resources.getItemUuid();
+              // Convert version 0 to the real latest version.
+              int realVersion = itemService.getRealVersion(version, uuid);
+              return new ItemId(uuid, realVersion);
+            })
         // Item.
         .flatMap(id -> Optional.ofNullable(itemService.getUnsecureIfExists(id)).stream())
         .collect(Collectors.toList());
