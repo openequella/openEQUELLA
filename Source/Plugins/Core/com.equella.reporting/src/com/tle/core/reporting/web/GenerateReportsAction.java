@@ -205,7 +205,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
         new SimpleHtmlListModel<Format>(
             new Format("HTML", "html", true, false),
             new Format("PDF", "pdf"),
-            new Format("Excel", "xls"),
+            new Format("Excel", "xls_spudsoft"),
             new Format("Word", "doc")));
 
     refreshParametersFunction =
