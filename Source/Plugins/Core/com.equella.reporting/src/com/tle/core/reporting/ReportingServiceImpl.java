@@ -39,6 +39,7 @@ import com.tle.core.filesystem.EntityFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.reporting.dao.ReportingDao;
+import com.tle.core.reporting.web.GenerateReportsAction;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
@@ -241,7 +242,7 @@ public class ReportingServiceImpl
     String extension = ".html";
     if (format.equals(IRenderOption.OUTPUT_FORMAT_PDF)) {
       extension = ".pdf";
-    } else if (format.equals("xls_spudsoft")) {
+    } else if (format.equals(GenerateReportsAction.XLS_SPUDSOFT)) {
       extension = ".xls";
     } else if (format.equals("doc")) {
       extension = ".doc";

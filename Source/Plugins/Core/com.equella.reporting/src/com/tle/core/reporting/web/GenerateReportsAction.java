@@ -114,6 +114,8 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
   private static final String PFX_PARAM = "p.";
   private static final String PFX_PARAM_TEXT = "pt.";
 
+  public static final String XLS_SPUDSOFT = "xls_spudsoft";
+
   static {
     PluginResourceHandler.init(GenerateReportsAction.class);
   }
@@ -205,7 +207,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
         new SimpleHtmlListModel<Format>(
             new Format("HTML", "html", true, false),
             new Format("PDF", "pdf"),
-            new Format("Excel", "xls_spudsoft"),
+            new Format("Excel", XLS_SPUDSOFT),
             new Format("Word", "doc")));
 
     refreshParametersFunction =
