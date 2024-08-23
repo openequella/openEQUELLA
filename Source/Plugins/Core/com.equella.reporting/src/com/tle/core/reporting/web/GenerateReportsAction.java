@@ -29,6 +29,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.reporting.ReportingService;
+import com.tle.core.reporting.ReportingServiceImpl;
 import com.tle.core.reporting.birttypes.AbstractBirtType;
 import com.tle.core.reporting.birttypes.BirtTypeUtils;
 import com.tle.web.freemarker.FreemarkerFactory;
@@ -113,8 +114,6 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
 
   private static final String PFX_PARAM = "p.";
   private static final String PFX_PARAM_TEXT = "pt.";
-
-  public static final String XLS_SPUDSOFT = "xls_spudsoft";
 
   static {
     PluginResourceHandler.init(GenerateReportsAction.class);
@@ -207,7 +206,7 @@ public class GenerateReportsAction extends AbstractPrototypeSection<ReportingFor
         new SimpleHtmlListModel<Format>(
             new Format("HTML", "html", true, false),
             new Format("PDF", "pdf"),
-            new Format("Excel", XLS_SPUDSOFT),
+            new Format("Excel", ReportingServiceImpl.XLS_SPUDSOFT),
             new Format("Word", "doc")));
 
     refreshParametersFunction =

@@ -39,7 +39,6 @@ import com.tle.core.filesystem.EntityFile;
 import com.tle.core.guice.Bind;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.reporting.dao.ReportingDao;
-import com.tle.core.reporting.web.GenerateReportsAction;
 import com.tle.core.security.impl.SecureEntity;
 import com.tle.core.security.impl.SecureOnCall;
 import com.tle.core.security.impl.SecureOnReturn;
@@ -116,6 +115,8 @@ public class ReportingServiceImpl
   @Inject private LearningEdgeOdaDelegate odaInterface;
   @Inject private PluginService pluginService;
   @Inject private ConfigurationService configService;
+
+  public static final String XLS_SPUDSOFT = "xls_spudsoft";
 
   @Inject
   public ReportingServiceImpl(ReportingDao dao) {
@@ -242,7 +243,7 @@ public class ReportingServiceImpl
     String extension = ".html";
     if (format.equals(IRenderOption.OUTPUT_FORMAT_PDF)) {
       extension = ".pdf";
-    } else if (format.equals(GenerateReportsAction.XLS_SPUDSOFT)) {
+    } else if (format.equals(XLS_SPUDSOFT)) {
       extension = ".xls";
     } else if (format.equals("doc")) {
       extension = ".doc";
