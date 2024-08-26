@@ -32,6 +32,7 @@ import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
 public interface ReportingService
     extends AbstractEntityService<EntityEditingBean, Report>, RemoteReportingService {
   public static final String DIR_DESIGN = "reportFiles";
+  public static final String XLS_SPUDSOFT = "xls_spudsoft";
 
   // @SecureOnReturn(priv = ReportPrivileges.EXECUTE_REPORT)
   List<Report> enumerateExecutable();
