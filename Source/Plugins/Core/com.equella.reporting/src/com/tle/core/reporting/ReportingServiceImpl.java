@@ -116,8 +116,6 @@ public class ReportingServiceImpl
   @Inject private PluginService pluginService;
   @Inject private ConfigurationService configService;
 
-  public static final String XLS_SPUDSOFT = "xls_spudsoft";
-
   @Inject
   public ReportingServiceImpl(ReportingDao dao) {
     super(Node.REPORT, dao);
