@@ -85,6 +85,7 @@ case class SearchResultItem(
   * @param hasGeneratedThumb Indicates if file based attachments have a generated thumbnail store in filestore
   * @param links Attachment's links.
   * @param filePath If a file attachment, the path for the represented file
+  * @param viewerConfig Configuration of the attachment's viewer
   */
 case class SearchResultAttachment(
     attachmentType: String,
@@ -95,7 +96,8 @@ case class SearchResultAttachment(
     mimeType: Option[String],
     hasGeneratedThumb: Option[Boolean],
     links: java.util.Map[String, String],
-    filePath: Option[String]
+    filePath: Option[String],
+    viewerConfig: Option[Map[String, String]],
 )
 
 /**

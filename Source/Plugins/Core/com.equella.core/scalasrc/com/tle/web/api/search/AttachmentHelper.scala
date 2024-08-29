@@ -30,6 +30,7 @@ import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
 import java.util.Optional
 import scala.jdk.CollectionConverters._
+import scala.jdk.javaapi.OptionConverters.toScala
 
 /**
   * Object to provide helper functions for building a SearchResultAttachment.
@@ -118,6 +119,7 @@ object AttachmentHelper {
       description =
         ifNotBroken((a: Attachment) => Option(a.getDescription), Option(att.getDescription)),
       mimeType = ifNotBroken(_ => getMimetypeForAttachment(att)),
+      viewerConfig = toScala(att.getViewerConfig).map(_.asScala.toMap),
     )
   }
 }
