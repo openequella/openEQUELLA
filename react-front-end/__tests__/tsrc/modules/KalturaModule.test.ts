@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 import {
-  KalturaPlayerDetails,
+  KalturaExternalId,
   parseExternalId,
 } from "../../../tsrc/modules/KalturaModule";
 
 describe("parseExternalId", () => {
   it("extracts the player details for a properly formed externalId", () => {
-    const playerDetails: KalturaPlayerDetails = {
+    const playerDetails: KalturaExternalId = {
       partnerId: 123,
       uiconfId: 456,
       entryId: "1_asdf1234",

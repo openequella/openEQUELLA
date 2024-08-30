@@ -48,6 +48,11 @@ describe("updateAttachmentForCustomInfo", () => {
         "http://localhost:8080/ian/thumbs/91406c5e-e2fe-4528-beac-ab22266e0f50/1/5673f889-6f72-432d-ad50-29b505a28739",
       externalId: "4211234/48123443/1_d1h8f1dx",
     },
+    viewerConfig: {
+      width: "560",
+      height: "395",
+      version: "V7",
+    },
   };
 
   const youTubeAttachment: OEQ.Search.Attachment = {
@@ -68,7 +73,7 @@ describe("updateAttachmentForCustomInfo", () => {
     const updated = updateAttachmentForCustomInfo(kalturaAttachment);
     expect(updated.mimeType).toEqual(CustomMimeTypes.KALTURA);
     expect(updated.links.view).toBe(
-      "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739&externalId=4211234%2F48123443%2F1_d1h8f1dx",
+      "http://localhost:8080/ian/items/91406c5e-e2fe-4528-beac-ab22266e0f50/1/?attachment.uuid=5673f889-6f72-432d-ad50-29b505a28739&externalId=4211234%2F48123443%2F1_d1h8f1dx&width=560&height=395&version=V7",
     );
   });
 

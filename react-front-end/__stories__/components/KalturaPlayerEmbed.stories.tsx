@@ -27,24 +27,39 @@ export default {
   component: KalturaPlayerEmbed,
 } as Meta<KalturaPlayerEmbedProps>;
 
-export const EmbeddedKalturaVideoPlayer: StoryFn<KalturaPlayerEmbedProps> = (
+export const EmbeddedKalturaVideoPlayerV2: StoryFn<KalturaPlayerEmbedProps> = (
   args,
 ) => <KalturaPlayerEmbed {...args} />;
-EmbeddedKalturaVideoPlayer.args = {
+EmbeddedKalturaVideoPlayerV2.args = {
   // These video details were figured out from the publicly accessible demo video at:
   // http://player.kaltura.com/modules/KalturaSupport/tests/AutoEmbed.html
   partnerId: 243342,
   uiconfId: 21099702,
   entryId: "1_sf5ovm7u",
+  width: 400,
+  height: 333,
+  version: "V2",
+};
+
+export const EmbeddedKalturaVideoPlayerV7: StoryFn<KalturaPlayerEmbedProps> = (
+  args,
+) => <KalturaPlayerEmbed {...args} />;
+EmbeddedKalturaVideoPlayerV7.args = {
+  // These video details were figured out from the publicly accessible demo video at:
+  // https://knowledge.kaltura.com/help/player-embed
+  partnerId: 4834032,
+  uiconfId: 50952692,
+  entryId: "1_fwzaeesq",
+  width: 560,
+  height: 395,
+  version: "V7",
 };
 
 export const EmbeddedKalturaVideoPlayerLarge: StoryFn<
   KalturaPlayerEmbedProps
 > = (args) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayerLarge.args = {
-  ...EmbeddedKalturaVideoPlayer.args,
-  dimensions: {
-    width: 1120,
-    height: 630,
-  },
+  ...EmbeddedKalturaVideoPlayerV7.args,
+  width: 1120,
+  height: 630,
 };
