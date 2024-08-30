@@ -17,18 +17,17 @@
  */
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import { KalturaPlayerVersion } from "../modules/KalturaModule";
 
 export interface KalturaPlayerEmbedProps {
-  dimensions?: {
-    /**
-     * The height (in pixels) for the embedded Kaltura player.
-     */
-    height: number;
-    /**
-     * The width (in pixels) for the embedded Kaltura player.
-     */
-    width: number;
-  };
+  /**
+   * The height (in pixels) for the embedded Kaltura player.
+   */
+  height: number;
+  /**
+   * The width (in pixels) for the embedded Kaltura player.
+   */
+  width: number;
   /**
    * Kaltura Media Entry ID for the movie, audio, etc to be embedded.
    */
@@ -41,59 +40,66 @@ export interface KalturaPlayerEmbedProps {
    * The player `uiconf_id` for the player configuration to be used to create the embedded player.
    */
   uiconfId: number;
+  /**
+   * Version of the selected player to use. Must be either "V2" or "V7".
+   */
+  version: KalturaPlayerVersion;
 }
 
 /**
  * Embeds the specified Kaltura Media Entry (`entryId`) using the specified player configuration
- * (`uiconf_id`). This is achieved by requesting the `embedIframeJs` script from the Kaltura CDN
+ * (`uiconf_id`). This is achieved by requesting the `embedPlaykitJs ` script from the Kaltura CDN
  * using details of the hosting Kaltura account.
  *
  * When that script is retrieved and embedded in the page, it is then auto executed through the
  * use of the `async` flag on the `script` tag. The execution of the script causes a player to
- * be embedded on the div identified with the `playerId` using `kWidget.embed`.
+ * be embedded on the div identified with the `playerId` using `KalturaPlayer.setup`.
  *
  * Further resources available at:
  *
- * - Player (`kWidget`) example doco: http://player.kaltura.com/docs/kwidget
- * - Older API doco relating to `kWdiget`: http://player.kaltura.com/docs/api
- *
- * Note: This method is based on the embed code generated via the KMC share/embed functionality.
- *       Although there is the newer doco pointing to the PlayerKitJs, on attempting to use that
- *       a 404 was received. And seeing the KMC is still generating code with embedIframeJs this
- *       seems the correct way.
+ * - https://knowledge.kaltura.com/help/player-embed
+ * - https://github.com/kaltura/kaltura-player-js/blob/mwEmbed-vs-playkitjs/docs/mwembed-playkitjs-parity.md
  */
 export const KalturaPlayerEmbed = ({
-  dimensions = { width: 400, height: 333 }, // default to value KMC uses when generating embed codes 400 x 333
+  width,
+  height,
   entryId,
   partnerId,
   uiconfId,
+  version,
 }: KalturaPlayerEmbedProps) => {
   const divElem = useRef<HTMLElement>();
   const [playerId] = useState<string>(`kaltura_player_${Date.now()}`);
 
   useEffect(() => {
     if (divElem.current) {
-      const src = new URL(
-        `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`,
-      );
-      (
-        [
-          ["autoembed", true],
-          ["entry_id", entryId],
-          ["playerId", playerId],
-          ["width", dimensions.width],
-          ["height", dimensions.height],
-        ] as [string, string][]
-      ).forEach(([name, value]) => src.searchParams.set(name, value));
+      const buildPlayerUrl = (): string => {
+        const src = new URL(
+          version === "V7"
+            ? `https://cdnapisec.kaltura.com/p/${partnerId}/embedPlaykitJs/uiconf_id/${uiconfId}`
+            : `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`,
+        );
+        (
+          [
+            ["autoembed", true],
+            ["entry_id", entryId],
+            [version === "V7" ? "targetId" : "playerId", playerId],
+            ["width", width],
+            ["height", height],
+          ] as [string, string][]
+        ).forEach(([name, value]) => src.searchParams.set(name, value));
+
+        return src.toString();
+      };
 
       const script = document.createElement("script");
       script.async = true;
-      script.src = src.toString();
+      script.src = buildPlayerUrl();
       // This will result in a <script> block being added below the playerId <div>. Which wil auto
       // execute and then add the player to the playerId `<div>`.
       divElem.current.appendChild(script);
     }
-  }, [dimensions, entryId, partnerId, playerId, uiconfId]);
+  }, [width, height, entryId, partnerId, playerId, uiconfId, version]);
 
   return (
     <div
@@ -106,7 +112,8 @@ export const KalturaPlayerEmbed = ({
       {/*Player will be embedded to the below div.*/}
       <div
         id={playerId}
-        style={{ width: dimensions.width, height: dimensions.height }}
+        style={{ width, height }}
+        onClick={(e) => e.stopPropagation()}
       />
     </div>
   );

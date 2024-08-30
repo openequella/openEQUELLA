@@ -19,7 +19,16 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import { EXTERNAL_ID_PARAM, parseExternalId } from "../modules/KalturaModule";
+import {
+  EXTERNAL_ID_PARAM,
+  KalturaExternalId,
+  KalturaPlayerVersion,
+  KalturaPlayerVersionCodec,
+  parseExternalId,
+  PLAYER_HEIGHT_PARAM,
+  PLAYER_VERSION_PARAM,
+  PLAYER_WIDTH_PARAM,
+} from "../modules/KalturaModule";
 import { CustomMimeTypes } from "../modules/MimeTypesModule";
 import { extractVideoId } from "../modules/YouTubeModule";
 import { languageStrings } from "../util/langstrings";
@@ -31,25 +40,68 @@ import YouTubeEmbed from "./YouTubeEmbed";
 const { kalturaExternalIdIssue, kalturaMissingId, youTubeVideoMissingId } =
   languageStrings.lightboxComponent;
 
-const buildKaltura = (src: string): O.Option<JSX.Element> =>
-  pipe(
-    new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
-    E.fromNullable(kalturaMissingId),
-    E.chain((externalId) =>
-      E.tryCatch(
-        () => parseExternalId(externalId),
-        (e) => {
-          console.error("Failed to display Kaltura media in Lightbox: " + e);
-          return kalturaExternalIdIssue;
-        },
+const buildKaltura = (src: string): O.Option<React.JSX.Element> => {
+  const kalturaExternalId = (
+    src: string,
+  ): E.Either<string, KalturaExternalId> =>
+    pipe(
+      new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
+      E.fromNullable(kalturaMissingId),
+      E.chain((externalId) =>
+        E.tryCatch(
+          () => parseExternalId(externalId),
+          (e) => {
+            console.error("Failed to display Kaltura media in Lightbox: " + e);
+            return kalturaExternalIdIssue;
+          },
+        ),
       ),
-    ),
+    );
+
+  const playerDimension = (
+    src: string,
+    param: string,
+  ): E.Either<string, number> =>
+    pipe(
+      new URL(src).searchParams.get(param),
+      E.fromNullable(`Missing Kaltura Player ${param}`),
+      E.map(Number.parseInt),
+      E.filterOrElse(
+        Number.isInteger,
+        () => `Invalid value for Kaltura Player ${param}`,
+      ),
+    );
+
+  const playerVersion = (src: string): E.Either<string, KalturaPlayerVersion> =>
+    pipe(
+      new URL(src).searchParams.get(PLAYER_VERSION_PARAM),
+      E.fromNullable("Missing Kaltura Player version"),
+      E.filterOrElse(
+        KalturaPlayerVersionCodec.is,
+        () => "Unknown Kaltura Player version",
+      ),
+    );
+
+  return pipe(
+    E.Do,
+    E.apS("externalId", kalturaExternalId(src)),
+    E.apS("width", playerDimension(src, PLAYER_WIDTH_PARAM)),
+    E.apS("height", playerDimension(src, PLAYER_HEIGHT_PARAM)),
+    E.apS("version", playerVersion(src)),
     E.fold(
       (e) => <LightboxMessage message={e} />,
-      (playerDetails) => <KalturaPlayerEmbed {...playerDetails} />,
+      ({ externalId, width, height, version }) => (
+        <KalturaPlayerEmbed
+          {...externalId}
+          width={width}
+          height={height}
+          version={version}
+        />
+      ),
     ),
     O.some,
   );
+};
 
 const buildYouTube = (src: string): O.Option<JSX.Element> =>
   pipe(
