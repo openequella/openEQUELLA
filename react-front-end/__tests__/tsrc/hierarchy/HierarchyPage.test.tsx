@@ -38,7 +38,10 @@ import {
   topicWithShortAndLongDesc,
   virtualTopics,
 } from "../../../__mocks__/Hierarchy.mock";
-import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import {
+  getSearchResult,
+  itemNotInKeyResource,
+} from "../../../__mocks__/SearchResult.mock";
 import * as HierarchyModule from "../../../tsrc//modules/HierarchyModule";
 import RootHierarchyPage from "../../../tsrc/hierarchy/RootHierarchyPage";
 import "@testing-library/jest-dom";
@@ -52,13 +55,16 @@ import {
   prepareSelectionSession,
 } from "../SelectionSessionHelper";
 import { mockWindowLocation } from "../WindowHelper";
+import { clickAddKeyResource } from "./HierarchyTestHelper";
 
 const {
   addKeyResource: addKeyResourceText,
   removeKeyResource: removeKeyResourceText,
 } = languageStrings.hierarchy;
-const { title: addToHierarchyText } =
-  languageStrings.searchpage.addItemToHierarchy;
+const { title: addToHierarchyTitle } =
+  languageStrings.searchpage.addToHierarchy;
+const { add: addToKeyResourceText } =
+  languageStrings.searchpage.hierarchyKeyResourceDialog;
 
 const {
   mockCollections,
@@ -258,7 +264,7 @@ describe("Search result", () => {
       topicWithChildren.compoundUuid,
     );
 
-    expect(queryAllByLabelText(addToHierarchyText)).toHaveLength(0);
+    expect(queryAllByLabelText(addToHierarchyTitle)).toHaveLength(0);
   });
 });
 
@@ -306,5 +312,20 @@ describe("Share search", () => {
     expect(mockClipboard).toHaveBeenCalledWith(
       "/page/hierarchy/886aa61d-f8df-4e82-8984-c487849f80ff:A James?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22filterExpansion%22%3Atrue%7D",
     );
+  });
+});
+
+describe("Select version dialog", () => {
+  it("Display select version dialog before adding key resource", async () => {
+    const uuid = topicWithChildren.compoundUuid;
+    const { container, queryByText } = await renderHierarchyPage(uuid, false);
+    await clickAddKeyResource(
+      container,
+      itemNotInKeyResource.uuid,
+      itemNotInKeyResource.version,
+    );
+
+    // Check if dialog is displayed.
+    expect(queryByText(addToKeyResourceText)).toBeInTheDocument();
   });
 });

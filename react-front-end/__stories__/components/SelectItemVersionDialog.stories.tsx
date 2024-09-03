@@ -17,47 +17,49 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import FavouriteItemDialog, {
-  FavouriteItemDialogProps,
-} from "../../tsrc/search/components//FavouriteItemDialog";
+import SelectItemVersionDialog, {
+  SelectItemVersionDialogProps,
+} from "../../tsrc/components/SelectItemVersionDialog";
 
 export default {
-  title: "Search/FavouriteItemDialog",
-  component: FavouriteItemDialog,
+  title: "Component/SelectItemVersionDialog",
+  component: SelectItemVersionDialog,
   argTypes: {
     closeDialog: { action: "on close dialog" },
-    updateFavouriteItem: {
+    onConfirm: {
       action: "on click confirm",
     },
   },
-} as Meta<FavouriteItemDialogProps>;
+} as Meta<SelectItemVersionDialogProps>;
 
 const commonProps = {
+  title: "This is title",
   open: true,
   isAdded: false,
   isOnLatestVersion: false,
 };
 
-export const AddFavouriteItemOnOlderVersion: StoryFn<
-  FavouriteItemDialogProps
-> = (args) => <FavouriteItemDialog {...args} />;
+export const AddItemOnOlderVersion: StoryFn<SelectItemVersionDialogProps> = (
+  args,
+) => <SelectItemVersionDialog {...args} />;
 
-AddFavouriteItemOnOlderVersion.args = { ...commonProps };
+AddItemOnOlderVersion.args = { ...commonProps };
 
-export const AddFavouriteItemOnLatestVersion: StoryFn<
-  FavouriteItemDialogProps
-> = (args) => <FavouriteItemDialog {...args} />;
+export const AddItemOnLatestVersion: StoryFn<SelectItemVersionDialogProps> = (
+  args,
+) => <SelectItemVersionDialog {...args} />;
 
-AddFavouriteItemOnLatestVersion.args = {
+AddItemOnLatestVersion.args = {
   ...commonProps,
   isLatestVersion: true,
 };
 
-export const RemoveFavouriteItem: StoryFn<FavouriteItemDialogProps> = (
-  args,
-) => <FavouriteItemDialog {...args} />;
+export const AddItemWithTag: StoryFn<SelectItemVersionDialogProps> = (args) => (
+  <SelectItemVersionDialog {...args} />
+);
 
-RemoveFavouriteItem.args = {
+AddItemWithTag.args = {
   ...commonProps,
-  isAdded: true,
+  tagDescription: "This is tag description",
+  isLatestVersion: true,
 };

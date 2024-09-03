@@ -58,7 +58,10 @@ const renderKeyResource = (
   return render(
     <Router history={history}>
       <Route path={path}>
-        <KeyResource keyResource={keyResource} onPinIconClick={() => {}} />
+        <KeyResource
+          keyResource={keyResource}
+          onPinIconClick={Promise.resolve}
+        />
       </Route>
     </Router>,
   );

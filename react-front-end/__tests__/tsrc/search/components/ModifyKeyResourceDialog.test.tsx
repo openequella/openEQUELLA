@@ -30,7 +30,7 @@ import ModifyKeyResourceDialog, {
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 const { viewHierarchy } = languageStrings.hierarchy;
-const { remove, add } = languageStrings.searchpage.addItemToHierarchy;
+const { remove, add } = languageStrings.searchpage.addToHierarchy;
 
 describe("<ModifyKeyResourceDialog />", () => {
   const defaultProps: ModifyKeyResourceDialogProps = {
