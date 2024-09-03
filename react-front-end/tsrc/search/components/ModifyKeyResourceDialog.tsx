@@ -46,7 +46,7 @@ import { pfTernary } from "../../util/pointfree";
 import { SearchContext } from "../SearchPageHelper";
 
 const { dialogTitle, dialogDesc, add, remove } =
-  languageStrings.searchpage.addItemToHierarchy;
+  languageStrings.searchpage.addToHierarchy;
 const { close: closeText } = languageStrings.common.action;
 
 const LABELLED_BY = "modify-key-resource-dialog-title";

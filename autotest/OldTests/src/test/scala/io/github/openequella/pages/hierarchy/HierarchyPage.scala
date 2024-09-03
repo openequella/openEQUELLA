@@ -78,6 +78,23 @@ class HierarchyPage(context: PageContext,
     By.xpath(
       ".//a[text()='" + itemName + "']/../following-sibling::section//button[@aria-label='" + pinLabel + "']")
 
+  // Select the version of the key resource in the dialog
+  private def selectKeyResourceVersion(isLatest: Boolean): Unit = {
+    val selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"))
+    val versionLabelXpath =
+      if (isLatest) By.xpath("//span[contains(text(), 'Always use latest version')]")
+      else By.xpath("//span[contains(text(), 'This version')]");
+    selectVersionDialog.findElement(versionLabelXpath).click()
+  }
+
+  // Confirm the select version dialog.
+  private def confirmDialog(): Unit = {
+    val selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"))
+    val confirmButton       = selectVersionDialog.findElement(By.id("confirm-dialog-confirm-button"))
+    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton))
+    confirmButton.click()
+  }
+
   /**
     * When the pin icon is highlighted click to remove this item from key resource.
     *
@@ -85,8 +102,12 @@ class HierarchyPage(context: PageContext,
     */
   def addKeyResourceFromResultList(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val button                = getSearchList.findElement(pinIconXpath(itemName, addKeyResourceLabel))
-    button.click()
+    val addButton             = getSearchList.findElement(pinIconXpath(itemName, addKeyResourceLabel))
+    addButton.click()
+
+    selectKeyResourceVersion(isLatest = false);
+    confirmDialog();
+
     waitForKeyResourceUpdated(keyResourceCount = originalResourceCount + 1)
   }
 
@@ -98,7 +119,11 @@ class HierarchyPage(context: PageContext,
   def removeKeyResourceFromSearchResult(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
     val button                = getSearchList.findElement(pinIconXpath(itemName, removeKeyResourceLabel))
+    waiter.until(ExpectedConditions.elementToBeClickable(button))
     button.click()
+
+    confirmDialog()
+
     waitForKeyResourceUpdated(keyResourceCount = originalResourceCount - 1)
   }
 
@@ -114,6 +139,9 @@ class HierarchyPage(context: PageContext,
 
     val button = getKeyResourcePanel.findElement(pinIconXpath)
     driver.asInstanceOf[JavascriptExecutor].executeScript("arguments[0].click();", button)
+
+    confirmDialog()
+
     waitForKeyResourceUpdated(keyResourceCount = originalResourceCount - 1)
   }
 

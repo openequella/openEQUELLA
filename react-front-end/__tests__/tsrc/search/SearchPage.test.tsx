@@ -119,7 +119,7 @@ describe("<SearchPage/>", () => {
   });
 
   describe("Add and remove favourite Item,", () => {
-    const { add, remove } = languageStrings.searchpage.favouriteItem.title;
+    const { add, remove } = languageStrings.searchpage.favouriteItem;
     let page: RenderResult;
 
     beforeEach(async () => {

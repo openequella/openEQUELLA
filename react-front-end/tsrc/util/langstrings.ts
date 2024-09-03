@@ -576,29 +576,23 @@ export const languageStrings = {
       },
     },
     favouriteItem: {
+      add: "Add to favourites",
+      remove: "Remove from favourites",
       removeAlert: "Are you sure you want to remove from your favourites?",
-      tags: {
-        description: "Tags to help when searching (optional).",
-        selectVersion: "Select version to add:",
-        toThisVersion:
-          "NOTE: Adding this favourite will point to this version forever.",
-        versionOptions: {
-          useLatestVersion: "Always use latest version",
-          useThisVersion: "This version",
-        },
-      },
-      title: {
-        add: "Add to favourites",
-        remove: "Remove from favourites",
-      },
+      tagDescription: "Tags to help when searching (optional).",
     },
-    addItemToHierarchy: {
+    addToHierarchy: {
       title: "Add as key resource to a hierarchy",
       dialogTitle: "Modify key resource",
       dialogDesc:
         "Click add/remove icon to update the key resource for the hierarchy",
       add: "Add to hierarchy",
       remove: "Remove from hierarchy",
+    },
+    hierarchyKeyResourceDialog: {
+      add: "Add to key resource",
+      remove: "Remove from key resource",
+      removeAlert: "Are you sure you want to remove from key resource?",
     },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
@@ -693,6 +687,15 @@ export const languageStrings = {
       summaryPage: "Select summary page",
       attachment: "Select attachment",
       allAttachments: "Select all attachments",
+    },
+  },
+  selectItemVersionDialog: {
+    selectVersion: "Select version to add:",
+    toThisVersion:
+      "Note: Once this item is added, it will to point to this version permanently.",
+    versionOptions: {
+      useLatestVersion: "Always use latest version",
+      useThisVersion: "This version",
     },
   },
   settings: {

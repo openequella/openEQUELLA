@@ -29,7 +29,9 @@ export interface KeyResourcePanelProps {
   /**
    * The handler for each key resource's pin icon click event.
    */
-  onPinIconClick?: (keyResource: OEQ.BrowseHierarchy.KeyResource) => void;
+  onPinIconClick?: (
+    keyResource: OEQ.BrowseHierarchy.KeyResource,
+  ) => Promise<void>;
 }
 
 /**
@@ -42,7 +44,7 @@ const KeyResourcePanel = ({
   <Grid container spacing={2} data-testid="key-resource-panel">
     {keyResources.map((keyResource) => (
       <Grid
-        key={`${keyResource.item.uuid}/${keyResource.item.version}`}
+        key={`${keyResource.item.uuid}/${keyResource.item.version}/${keyResource.isLatest}`}
         item
         xs={12}
         lg={6}

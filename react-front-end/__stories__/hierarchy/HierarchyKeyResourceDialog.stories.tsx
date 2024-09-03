@@ -17,47 +17,48 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import FavouriteItemDialog, {
-  FavouriteItemDialogProps,
-} from "../../tsrc/search/components//FavouriteItemDialog";
+import HierarchyKeyResourceDialog, {
+  HierarchyKeyResourceDialogProps,
+} from "../../tsrc/hierarchy/components/HierarchyKeyResourceDialog";
 
 export default {
-  title: "Search/FavouriteItemDialog",
-  component: FavouriteItemDialog,
+  title: "Hierarchy/HierarchyKeyResourceDialog",
+  component: HierarchyKeyResourceDialog,
   argTypes: {
     closeDialog: { action: "on close dialog" },
-    updateFavouriteItem: {
+    updateKeyResource: {
       action: "on click confirm",
     },
   },
-} as Meta<FavouriteItemDialogProps>;
+} as Meta<HierarchyKeyResourceDialogProps>;
 
 const commonProps = {
   open: true,
-  isAdded: false,
-  isOnLatestVersion: false,
+  isKeyResource: false,
+  isLatestVersion: false,
+  isAlwaysLatest: true,
 };
 
-export const AddFavouriteItemOnOlderVersion: StoryFn<
-  FavouriteItemDialogProps
-> = (args) => <FavouriteItemDialog {...args} />;
+export const AddKeyResourceItemOnOlderVersion: StoryFn<
+  HierarchyKeyResourceDialogProps
+> = (args) => <HierarchyKeyResourceDialog {...args} />;
 
-AddFavouriteItemOnOlderVersion.args = { ...commonProps };
+AddKeyResourceItemOnOlderVersion.args = { ...commonProps };
 
-export const AddFavouriteItemOnLatestVersion: StoryFn<
-  FavouriteItemDialogProps
-> = (args) => <FavouriteItemDialog {...args} />;
+export const AddKeyResourceItemOnLatestVersion: StoryFn<
+  HierarchyKeyResourceDialogProps
+> = (args) => <HierarchyKeyResourceDialog {...args} />;
 
-AddFavouriteItemOnLatestVersion.args = {
+AddKeyResourceItemOnLatestVersion.args = {
   ...commonProps,
   isLatestVersion: true,
 };
 
-export const RemoveFavouriteItem: StoryFn<FavouriteItemDialogProps> = (
+export const RemoveKeyResource: StoryFn<HierarchyKeyResourceDialogProps> = (
   args,
-) => <FavouriteItemDialog {...args} />;
+) => <HierarchyKeyResourceDialog {...args} />;
 
-RemoveFavouriteItem.args = {
+RemoveKeyResource.args = {
   ...commonProps,
-  isAdded: true,
+  isKeyResource: true,
 };
