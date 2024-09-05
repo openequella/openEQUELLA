@@ -265,7 +265,7 @@ jobs:
         if: matrix.newui && failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ScalacheckReports
+          name: ScalacheckReports-${{ matrix.pgqs-image }}
           path: autotest/Tests/target/test-reports
 
       - name: Run TestNG tests
@@ -276,21 +276,21 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: TestNGReports-new-${{ matrix.newui }}
+          name: TestNGReports-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: oEQLogs-new-${{ matrix.newui }}
+          name: oEQLogs-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: Screenshots-new-${{ matrix.newui }}
+          name: Screenshots-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
           path: autotest/Tests/target/test-reports/screenshots
 
       - name: Generate coverage report
@@ -307,7 +307,7 @@ jobs:
       - name: Save Coverage Report
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: CoverageReport-newui-${{ matrix.newui }}
+          name: CoverageReport-newui-${{ matrix.newui }}-${{ matrix.pgsql-image }}
           path: coverage_report.tar
 
   rest-module-testing:
