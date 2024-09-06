@@ -213,6 +213,7 @@ jobs:
       AUTOTEST_CONFIG: autotest/github-actions.conf
       EQ_EXIFTOOL_PATH: /usr/bin/exiftool
       OLD_TEST_NEWUI: ${{ matrix.newui }}
+      MATRIX_ID: ${{ matrix.newui && 'NEWUI' || 'OLDUI' }}-psql_${{ matrix.pgsql-image }}
 
     steps:
       - name: Install OS dependencies
@@ -265,7 +266,7 @@ jobs:
         if: matrix.newui && failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ScalacheckReports-${{ matrix.pgqs-image }}
+          name: ScalacheckReports-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports
 
       - name: Run TestNG tests
@@ -276,21 +277,21 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: TestNGReports-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
+          name: TestNGReports-${{ env.MATRIX_ID }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: oEQLogs-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
+          name: oEQLogs-${{ env.MATRIX_ID }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: Screenshots-new-${{ matrix.newui }}-${{ matrix.pgqs-image }}
+          name: Screenshots-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports/screenshots
 
       - name: Generate coverage report
@@ -307,7 +308,7 @@ jobs:
       - name: Save Coverage Report
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: CoverageReport-newui-${{ matrix.newui }}-${{ matrix.pgsql-image }}
+          name: CoverageReport-${{ env.MATRIX_ID }}
           path: coverage_report.tar
 
   rest-module-testing:
