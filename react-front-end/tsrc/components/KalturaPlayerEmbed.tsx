@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { KalturaPlayerVersion } from "../modules/KalturaModule";
+import { buildPlayerUrl, KalturaPlayerVersion } from "../modules/KalturaModule";
 
 export interface KalturaPlayerEmbedProps {
   dimensions?: {
@@ -74,28 +74,15 @@ export const KalturaPlayerEmbed = ({
 
   useEffect(() => {
     if (divElem.current) {
-      const buildPlayerUrl = (): string => {
-        const src = new URL(
-          version === "V7"
-            ? `https://cdnapisec.kaltura.com/p/${partnerId}/embedPlaykitJs/uiconf_id/${uiconfId}`
-            : `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`,
-        );
-        (
-          [
-            ["autoembed", true],
-            ["entry_id", entryId],
-            [version === "V7" ? "targetId" : "playerId", playerId],
-            ["width", dimensions.width],
-            ["height", dimensions.height],
-          ] as [string, string][]
-        ).forEach(([name, value]) => src.searchParams.set(name, value));
-
-        return src.toString();
-      };
-
       const script = document.createElement("script");
       script.async = true;
-      script.src = buildPlayerUrl();
+      script.src = buildPlayerUrl(
+        partnerId,
+        uiconfId,
+        entryId,
+        version,
+        playerId,
+      );
       // This will result in a <script> block being added below the playerId <div>. Which wil auto
       // execute and then add the player to the playerId `<div>`.
       divElem.current.appendChild(script);

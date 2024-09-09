@@ -31,8 +31,7 @@ export const EmbeddedKalturaVideoPlayerV2: StoryFn<KalturaPlayerEmbedProps> = (
   args,
 ) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayerV2.args = {
-  // These video details were figured out from the publicly accessible demo video at:
-  // http://player.kaltura.com/modules/KalturaSupport/tests/AutoEmbed.html
+  // These video details were figured out from the publicly accessible demo video.
   partnerId: 243342,
   uiconfId: 21099702,
   entryId: "1_sf5ovm7u",

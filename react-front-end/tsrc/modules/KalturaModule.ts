@@ -135,3 +135,29 @@ export const updateKalturaAttachment = (
     E.getOrThrow,
   );
 };
+
+/**
+ * Build a Kaltura player embed URL based on the provided external IDs and player version.
+ */
+export const buildPlayerUrl = (
+  partnerId: number,
+  uiconfId: number,
+  entryId: string,
+  version: KalturaPlayerVersion,
+  playerId: string,
+): string => {
+  const src = new URL(
+    version === "V7"
+      ? `https://cdnapisec.kaltura.com/p/${partnerId}/embedPlaykitJs/uiconf_id/${uiconfId}`
+      : `https://cdnapisec.kaltura.com/p/${partnerId}/sp/${partnerId}00/embedIframeJs/uiconf_id/${uiconfId}/partner_id/${partnerId}`,
+  );
+  (
+    [
+      ["autoembed", true],
+      ["entry_id", entryId],
+      [version === "V7" ? "targetId" : "playerId", playerId],
+    ] as [string, string][]
+  ).forEach(([name, value]) => src.searchParams.set(name, value));
+
+  return src.toString();
+};
