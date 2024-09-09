@@ -30,7 +30,6 @@ import com.tle.web.controls.youtube.YoutubeAttachmentBean
 
 import java.util.Optional
 import scala.jdk.CollectionConverters._
-import scala.jdk.javaapi.OptionConverters.toScala
 
 /**
   * Object to provide helper functions for building a SearchResultAttachment.
