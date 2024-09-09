@@ -264,10 +264,6 @@ export interface Attachment {
     externalId?: string;
   };
   /**
-   * The configuration of attachment viewer such as Kaltura player width and height.
-   */
-  viewerConfig?: Record<string, string>;
-  /**
    * If a file attachment, the path for the represented file
    */
   filePath?: string;

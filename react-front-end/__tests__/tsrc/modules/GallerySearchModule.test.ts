@@ -95,11 +95,6 @@ describe("buildGalleryEntry", () => {
         "https://example.com/inst/thumbs/a288b17b-4a6f-416f-9c29-aaad53cf7b23/1/0da6100e-332e-4116-bd56-059a114e2130",
       externalId: "3466623/47988073/1_nd0xv0cp",
     },
-    viewerConfig: {
-      width: "560",
-      height: "395",
-      version: "V7",
-    },
   };
 
   it.each([

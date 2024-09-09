@@ -21,7 +21,6 @@ package com.tle.web.api.item.interfaces.beans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
-import java.util.Map;
 import java.util.Optional;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -102,10 +101,6 @@ public abstract class AttachmentBean extends AbstractExtendableBean {
    *     attachment local to this oEQ institution.
    */
   public Optional<String> getExternalId() {
-    return Optional.empty();
-  }
-
-  public Optional<Map<String, String>> getViewerConfig() {
     return Optional.empty();
   }
 }

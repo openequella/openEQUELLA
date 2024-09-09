@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 import {
-  KalturaExternalId,
+  KalturaPlayerDetails,
   parseExternalId,
 } from "../../../tsrc/modules/KalturaModule";
 
 describe("parseExternalId", () => {
   it("extracts the player details for a properly formed externalId", () => {
-    const playerDetails: KalturaExternalId = {
+    const playerDetails: KalturaPlayerDetails = {
       partnerId: 123,
       uiconfId: 456,
       entryId: "1_asdf1234",
+      version: "V7",
     };
     const result = parseExternalId(
-      `${playerDetails.partnerId}/${playerDetails.uiconfId}/${playerDetails.entryId}`,
+      `${playerDetails.partnerId}/${playerDetails.uiconfId}#${playerDetails.version}/${playerDetails.entryId}`,
     );
     expect(result).toStrictEqual(playerDetails);
   });

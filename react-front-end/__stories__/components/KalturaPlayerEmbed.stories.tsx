@@ -36,8 +36,10 @@ EmbeddedKalturaVideoPlayerV2.args = {
   partnerId: 243342,
   uiconfId: 21099702,
   entryId: "1_sf5ovm7u",
-  width: 400,
-  height: 333,
+  dimensions: {
+    width: 400,
+    height: 333,
+  },
   version: "V2",
 };
 
@@ -50,8 +52,10 @@ EmbeddedKalturaVideoPlayerV7.args = {
   partnerId: 4834032,
   uiconfId: 50952692,
   entryId: "1_fwzaeesq",
-  width: 560,
-  height: 395,
+  dimensions: {
+    width: 560,
+    height: 395,
+  },
   version: "V7",
 };
 
@@ -60,6 +64,8 @@ export const EmbeddedKalturaVideoPlayerLarge: StoryFn<
 > = (args) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayerLarge.args = {
   ...EmbeddedKalturaVideoPlayerV7.args,
-  width: 1120,
-  height: 630,
+  dimensions: {
+    width: 1120,
+    height: 630,
+  },
 };

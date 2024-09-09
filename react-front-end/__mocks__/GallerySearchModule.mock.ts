@@ -469,11 +469,6 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
                 "http://localhost:8080/ian/thumbs/91406c5e-e2fe-4528-beac-ab22266e0f50/1/5673f889-6f72-432d-ad50-29b505a28739",
               externalId: "4211234/48123443/1_d1h8f1dx",
             },
-            viewerConfig: {
-              width: "560",
-              height: "395",
-              version: "V7",
-            },
           },
         ],
         thumbnail: "default",

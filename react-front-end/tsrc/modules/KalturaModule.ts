@@ -17,17 +17,23 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "../util/Either.extended";
-import * as O from "fp-ts/Option";
-import * as R from "fp-ts/Record";
 import * as t from "io-ts";
-import { constVoid, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
+import { languageStrings } from "../util/langstrings";
 import { CustomMimeTypes } from "./MimeTypesModule";
+
+const KalturaPlayerVersionCodec = t.union([t.literal("V2"), t.literal("V7")]);
+
+/**
+ * Currently supported Kaltura player versions. However, V2 will be not supported since 30th Sep 2024.
+ */
+export type KalturaPlayerVersion = t.TypeOf<typeof KalturaPlayerVersionCodec>;
 
 /**
  * The bare minimum fields to create an embedded player and matches those found over in
  * `KalturaPlayerEmbedProps`.
  */
-export interface KalturaExternalId {
+export interface KalturaPlayerDetails {
   /**
    * A Kaltura Partner ID for the Kaltura account which holds the content identified by `entryId`.
    */
@@ -37,35 +43,32 @@ export interface KalturaExternalId {
    */
   uiconfId: number;
   /**
+   * Version of the selected player to use. Must be either "V2" or "V7".
+   */
+  version: KalturaPlayerVersion;
+  /**
    * Kaltura Media Entry ID for the movie, audio, etc to be embedded.
    */
   entryId: string;
 }
 
-export const KalturaPlayerVersionCodec = t.union([
-  t.literal("V2"),
-  t.literal("V7"),
-]);
-
-/**
- * Currently supported Kaltura player versions. However, V2 will be not supported since 30th Sep 2024.
- */
-export type KalturaPlayerVersion = t.TypeOf<typeof KalturaPlayerVersionCodec>;
-
 export const EXTERNAL_ID_PARAM = "externalId";
-export const PLAYER_WIDTH_PARAM = "width";
-export const PLAYER_HEIGHT_PARAM = "height";
-export const PLAYER_VERSION_PARAM = "version";
 
 /**
- * Given an externalId from a Kaltura attachments in the format of `<partnerId>/<uiconfId>/<entryId>`
+ * Given an externalId from a Kaltura attachments in the format of `<partnerId>/<uiconfId#version>/<entryId>`
  * splits it into it its parts and returns a representative object. If there are issues with the
  * format, then a `TypeError` will be thrown.
  *
  * @param externalId an externalId property for Kaltura attachments from the oEQ server
  */
-export const parseExternalId = (externalId: string): KalturaExternalId => {
-  const result: E.Either<string, KalturaExternalId> = pipe(
+export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
+  const playerIdAndVersion = (uiconfId: string) =>
+    pipe(uiconfId.split("#"), ([id, version]) => ({
+      uiconfId: Number.parseInt(id),
+      version: version as KalturaPlayerVersion, // We will validate this later so casting in here is OK.
+    }));
+
+  const result: E.Either<string, KalturaPlayerDetails> = pipe(
     externalId.split("/"),
     E.fromPredicate(
       (xs) => xs.length === 3,
@@ -73,7 +76,7 @@ export const parseExternalId = (externalId: string): KalturaExternalId => {
     ),
     E.map(([partnerId, uiconfId, entryId]) => ({
       partnerId: Number.parseInt(partnerId),
-      uiconfId: Number.parseInt(uiconfId),
+      ...playerIdAndVersion(uiconfId),
       entryId,
     })),
     E.filterOrElse(
@@ -83,6 +86,10 @@ export const parseExternalId = (externalId: string): KalturaExternalId => {
     E.filterOrElse(
       ({ uiconfId }) => Number.isInteger(uiconfId),
       () => "uiconfId should be a number",
+    ),
+    E.filterOrElse(
+      ({ version }) => KalturaPlayerVersionCodec.is(version),
+      () => "Unknown Kaltura player version",
     ),
   );
 
@@ -98,47 +105,16 @@ export const parseExternalId = (externalId: string): KalturaExternalId => {
 export const buildViewerUrl = ({
   id,
   links,
-  viewerConfig,
-}: OEQ.Search.Attachment): E.Either<string, string> => {
-  const viewerUrl = (
-    attachmentViewLink: string,
-    externalId: string,
-    viewerConfig: Record<string, string>,
-  ): string => {
-    const u = new URL(attachmentViewLink);
-    u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
-
-    [PLAYER_WIDTH_PARAM, PLAYER_HEIGHT_PARAM, PLAYER_VERSION_PARAM].forEach(
-      (key) =>
-        pipe(
-          viewerConfig,
-          R.lookup(key),
-          O.fold(constVoid, (config) => u.searchParams.set(key, config)),
-        ),
-    );
-
-    return u.toString();
-  };
-
-  return pipe(
-    E.Do,
-    E.apS(
-      "externalId",
-      E.fromNullable(`Kaltura attachment ${id} is missing an 'externalId'.`)(
-        links.externalId,
-      ),
-    ),
-    E.apS(
-      "viewerConfig",
-      E.fromNullable(
-        `Kaltura attachment ${id} is missing Player configuration.`,
-      )(viewerConfig),
-    ),
-    E.map(({ externalId, viewerConfig }) =>
-      viewerUrl(links.view, externalId, viewerConfig),
-    ),
+}: OEQ.Search.Attachment): E.Either<string, string> =>
+  pipe(
+    links.externalId,
+    E.fromNullable(`Kaltura attachment ${id} is missing an 'externalId'.`),
+    E.map((externalId) => {
+      const u = new URL(links.view);
+      u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
+      return u.toString();
+    }),
   );
-};
 
 /**
  * Update Kaltura Media Attachment with Custom MIME type and View URL.
@@ -160,3 +136,20 @@ export const updateKalturaAttachment = (
     E.getOrThrow,
   );
 };
+
+const { kalturaExternalIdIssue, kalturaMissingId } =
+  languageStrings.lightboxComponent;
+
+export const kalturaPlayerDetails = (
+  src: string,
+): E.Either<string, KalturaPlayerDetails> =>
+  pipe(
+    new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
+    E.fromNullable(kalturaMissingId),
+    E.chain(
+      E.tryCatchK(parseExternalId, (e) => {
+        console.error("Failed to display Kaltura media in Lightbox: " + e);
+        return kalturaExternalIdIssue;
+      }),
+    ),
+  );

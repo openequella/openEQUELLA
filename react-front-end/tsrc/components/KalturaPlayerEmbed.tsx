@@ -20,14 +20,16 @@ import { useEffect, useRef, useState } from "react";
 import { KalturaPlayerVersion } from "../modules/KalturaModule";
 
 export interface KalturaPlayerEmbedProps {
-  /**
-   * The height (in pixels) for the embedded Kaltura player.
-   */
-  height: number;
-  /**
-   * The width (in pixels) for the embedded Kaltura player.
-   */
-  width: number;
+  dimensions?: {
+    /**
+     * The height (in pixels) for the embedded Kaltura player.
+     */
+    height: number;
+    /**
+     * The width (in pixels) for the embedded Kaltura player.
+     */
+    width: number;
+  };
   /**
    * Kaltura Media Entry ID for the movie, audio, etc to be embedded.
    */
@@ -61,8 +63,7 @@ export interface KalturaPlayerEmbedProps {
  * - https://github.com/kaltura/kaltura-player-js/blob/mwEmbed-vs-playkitjs/docs/mwembed-playkitjs-parity.md
  */
 export const KalturaPlayerEmbed = ({
-  width,
-  height,
+  dimensions = { width: 560, height: 395 }, // default to the standard V7 player dimensions
   entryId,
   partnerId,
   uiconfId,
@@ -84,8 +85,8 @@ export const KalturaPlayerEmbed = ({
             ["autoembed", true],
             ["entry_id", entryId],
             [version === "V7" ? "targetId" : "playerId", playerId],
-            ["width", width],
-            ["height", height],
+            ["width", dimensions.width],
+            ["height", dimensions.height],
           ] as [string, string][]
         ).forEach(([name, value]) => src.searchParams.set(name, value));
 
@@ -99,7 +100,7 @@ export const KalturaPlayerEmbed = ({
       // execute and then add the player to the playerId `<div>`.
       divElem.current.appendChild(script);
     }
-  }, [width, height, entryId, partnerId, playerId, uiconfId, version]);
+  }, [dimensions, entryId, partnerId, playerId, uiconfId, version]);
 
   return (
     <div
@@ -112,7 +113,7 @@ export const KalturaPlayerEmbed = ({
       {/*Player will be embedded to the below div.*/}
       <div
         id={playerId}
-        style={{ width, height }}
+        style={{ width: dimensions.width, height: dimensions.height }}
         onClick={(e) => e.stopPropagation()}
       />
     </div>

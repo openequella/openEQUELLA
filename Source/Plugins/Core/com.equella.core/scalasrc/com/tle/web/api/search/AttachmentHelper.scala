@@ -118,8 +118,7 @@ object AttachmentHelper {
       // nothing so use the on in `AttachmentBean`.
       description =
         ifNotBroken((a: Attachment) => Option(a.getDescription), Option(att.getDescription)),
-      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att)),
-      viewerConfig = toScala(att.getViewerConfig).map(_.asScala.toMap),
+      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att))
     )
   }
 }
