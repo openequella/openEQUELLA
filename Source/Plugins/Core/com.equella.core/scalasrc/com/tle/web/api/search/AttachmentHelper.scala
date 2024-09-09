@@ -118,7 +118,7 @@ object AttachmentHelper {
       // nothing so use the on in `AttachmentBean`.
       description =
         ifNotBroken((a: Attachment) => Option(a.getDescription), Option(att.getDescription)),
-      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att))
+      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att)),
     )
   }
 }

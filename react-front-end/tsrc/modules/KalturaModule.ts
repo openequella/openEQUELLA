@@ -19,7 +19,6 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as E from "../util/Either.extended";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/function";
-import { languageStrings } from "../util/langstrings";
 import { CustomMimeTypes } from "./MimeTypesModule";
 
 const KalturaPlayerVersionCodec = t.union([t.literal("V2"), t.literal("V7")]);
@@ -100,7 +99,7 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
 };
 
 /**
- * Build a Kaltura viewer URL which embeds the externalId and Kaltura player config in a fashion commonly used by the Lightbox.
+ * Build a URL which embeds the externalId in a fashion commonly used by the Lightbox.
  */
 export const buildViewerUrl = ({
   id,
@@ -136,20 +135,3 @@ export const updateKalturaAttachment = (
     E.getOrThrow,
   );
 };
-
-const { kalturaExternalIdIssue, kalturaMissingId } =
-  languageStrings.lightboxComponent;
-
-export const kalturaPlayerDetails = (
-  src: string,
-): E.Either<string, KalturaPlayerDetails> =>
-  pipe(
-    new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
-    E.fromNullable(kalturaMissingId),
-    E.chain(
-      E.tryCatchK(parseExternalId, (e) => {
-        console.error("Failed to display Kaltura media in Lightbox: " + e);
-        return kalturaExternalIdIssue;
-      }),
-    ),
-  );

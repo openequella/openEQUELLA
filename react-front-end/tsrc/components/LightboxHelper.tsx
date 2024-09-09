@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import { kalturaPlayerDetails } from "../modules/KalturaModule";
+import { EXTERNAL_ID_PARAM, parseExternalId } from "../modules/KalturaModule";
 import { CustomMimeTypes } from "../modules/MimeTypesModule";
 import { extractVideoId } from "../modules/YouTubeModule";
 import { languageStrings } from "../util/langstrings";
@@ -28,16 +28,25 @@ import KalturaPlayerEmbed from "./KalturaPlayerEmbed";
 import LightboxMessage from "./LightboxMessage";
 import YouTubeEmbed from "./YouTubeEmbed";
 
-const { youTubeVideoMissingId } = languageStrings.lightboxComponent;
+const { kalturaExternalIdIssue, kalturaMissingId, youTubeVideoMissingId } =
+  languageStrings.lightboxComponent;
 
-const buildKaltura: (src: string) => O.Option<React.JSX.Element> = flow(
-  kalturaPlayerDetails,
-  E.fold(
-    (e) => <LightboxMessage message={e} />,
-    (externalId) => <KalturaPlayerEmbed {...externalId} />,
-  ),
-  O.some,
-);
+const buildKaltura = (src: string): O.Option<React.JSX.Element> =>
+  pipe(
+    new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
+    E.fromNullable(kalturaMissingId),
+    E.chain(
+      E.tryCatchK(parseExternalId, (e) => {
+        console.error("Failed to display Kaltura media in Lightbox: " + e);
+        return kalturaExternalIdIssue;
+      }),
+    ),
+    E.fold(
+      (e) => <LightboxMessage message={e} />,
+      (externalId) => <KalturaPlayerEmbed {...externalId} />,
+    ),
+    O.some,
+  );
 
 const buildYouTube = (src: string): O.Option<React.JSX.Element> =>
   pipe(

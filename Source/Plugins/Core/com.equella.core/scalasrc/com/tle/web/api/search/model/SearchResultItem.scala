@@ -95,7 +95,7 @@ case class SearchResultAttachment(
     mimeType: Option[String],
     hasGeneratedThumb: Option[Boolean],
     links: java.util.Map[String, String],
-    filePath: Option[String],
+    filePath: Option[String]
 )
 
 /**
