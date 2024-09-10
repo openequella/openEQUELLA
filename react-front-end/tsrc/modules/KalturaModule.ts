@@ -19,6 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as E from "../util/Either.extended";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/function";
+import { ATYPE_KALTURA } from "./AttachmentsModule";
 import { CustomMimeTypes } from "./MimeTypesModule";
 
 const KalturaPlayerVersionCodec = t.union([t.literal("V2"), t.literal("V7")]);
@@ -104,10 +105,19 @@ export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
 export const buildViewerUrl = ({
   id,
   links,
+  attachmentType,
 }: OEQ.Search.Attachment): E.Either<string, string> =>
   pipe(
-    links.externalId,
-    E.fromNullable(`Kaltura attachment ${id} is missing an 'externalId'.`),
+    attachmentType,
+    E.fromPredicate(
+      (aType) => aType === ATYPE_KALTURA,
+      () => "The provided attachment is not a Kaltura attachment.",
+    ),
+    E.chain((_) =>
+      E.fromNullable(`Kaltura attachment ${id} is missing a 'externalId'.`)(
+        links.externalId,
+      ),
+    ),
     E.map((externalId) => {
       const u = new URL(links.view);
       u.searchParams.set(EXTERNAL_ID_PARAM, externalId);
