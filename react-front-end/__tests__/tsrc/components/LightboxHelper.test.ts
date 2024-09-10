@@ -49,7 +49,7 @@ describe("buildCustomEmbed", () => {
   it("correctly builds a KalturaPlayerEmbed when correctly specified", () => {
     const kalturaEmbed = buildCustomEmbed(
       CustomMimeTypes.KALTURA,
-      `${kalturaAttachmentUrl}&externalId=4211723/48373143%23V7/1_d1h8f1dx`,
+      `${kalturaAttachmentUrl}&externalId=4211723/48373143-V7/1_d1h8f1dx`,
     );
     expect(kalturaEmbed).toBeSome();
     expect(getOptionalComponentName(kalturaEmbed)).toBe("KalturaPlayerEmbed");

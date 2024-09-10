@@ -31,7 +31,7 @@ describe("parseExternalId", () => {
       version: "V7",
     };
     const result = parseExternalId(
-      `${playerDetails.partnerId}/${playerDetails.uiconfId}#${playerDetails.version}/${playerDetails.entryId}`,
+      `${playerDetails.partnerId}/${playerDetails.uiconfId}-${playerDetails.version}/${playerDetails.entryId}`,
     );
     expect(result).toStrictEqual(playerDetails);
   });

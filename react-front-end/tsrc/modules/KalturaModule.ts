@@ -54,7 +54,7 @@ export interface KalturaPlayerDetails {
 export const EXTERNAL_ID_PARAM = "externalId";
 
 /**
- * Given an externalId from a Kaltura attachments in the format of `<partnerId>/<uiconfId#version>/<entryId>`
+ * Given an externalId from a Kaltura attachments in the format of `<partnerId>/<uiconfId-version>/<entryId>`
  * splits it into it its parts and returns a representative object. If there are issues with the
  * format, then a `TypeError` will be thrown.
  *
@@ -62,7 +62,7 @@ export const EXTERNAL_ID_PARAM = "externalId";
  */
 export const parseExternalId = (externalId: string): KalturaPlayerDetails => {
   const playerIdAndVersion = (uiconfId: string) =>
-    pipe(uiconfId.split("#"), ([id, version]) => ({
+    pipe(uiconfId.split("-"), ([id, version]) => ({
       uiconfId: Number.parseInt(id),
       version: version as KalturaPlayerVersion, // We will validate this later so casting in here is OK.
     }));
