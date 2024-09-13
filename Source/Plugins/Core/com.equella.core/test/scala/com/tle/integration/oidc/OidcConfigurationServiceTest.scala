@@ -15,23 +15,23 @@ import org.scalatest.matchers.should.Matchers
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
-    "Auth0",
-    "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
-    "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",
-    "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize",
-    "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json",
-    "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token",
-    None,
-    None,
-    Set.empty,
-    Map.empty,
+    name = "Auth0",
+    authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
+    authCodeClientSecret = "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",
+    authUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize",
+    keysetUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json",
+    tokenUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token",
+    usernameClaim = None,
+    roleClaim = None,
+    unknownRoles = Set.empty,
+    customRoles = Map.empty,
     enabled = true,
-    "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
-    "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+    userListingUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
+    clientCredClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
+    clientCredClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
   )
   val auth0StringRepr =
-    """{"name":"Auth0","clientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","clientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"roleClaim":null,"unknownRoles":[],"customRoles":{},"enabled":true,"userListingUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","clientCredClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","clientCredClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"}"""
+    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"roleClaim":null,"unknownRoles":[],"customRoles":{},"enabled":true,"userListingUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","clientCredClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","clientCredClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   class Fixture {
@@ -75,7 +75,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Then("All the invalid values should be captured")
       result shouldBe Left(
-        "Missing value for required field: client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: Client Credentials Client secret,Invalid value for User listing URL: URI is not absolute")
+        "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: Client Credentials flow Client secret,Invalid value for User listing URL: URI is not absolute")
     }
 
     it("captures other errors") {
@@ -127,14 +127,14 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val f = fixture
 
       Given("A bad string representation that has been saved in DB")
-      val badStringRepr = auth0StringRepr.replace("clientId", "client_Id")
+      val badStringRepr = auth0StringRepr.replace("authCodeClientId", "auth_Code_Client_Id")
       when(mockConfigurationService.getProperty(PROPERTY_NAME)).thenReturn(badStringRepr)
 
       When("Attempting to retrieve the configuration")
       val result = f.service.get
 
       Then("An error message should be returned")
-      result shouldBe Left("DecodingFailure at .clientId: Missing required field")
+      result shouldBe Left("DecodingFailure at .authCodeClientId: Missing required field")
     }
   }
 }
