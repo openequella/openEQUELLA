@@ -31,7 +31,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-@Bind
+@Bind(classOf[OidcConfigurationService])
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
   private val PROPERTY_NAME                              = "OIDC_IDENTITY_PROVIDER"
   private var configurationService: ConfigurationService = _
