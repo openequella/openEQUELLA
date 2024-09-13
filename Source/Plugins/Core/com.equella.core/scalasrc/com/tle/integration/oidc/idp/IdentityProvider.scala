@@ -22,6 +22,7 @@ import cats.data.ValidatedNel
 import cats.implicits._
 import com.tle.common.Check
 import com.tle.common.settings.ConfigurationProperties
+import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 import java.net.{URI, URL}
 
 /**
@@ -98,6 +99,30 @@ abstract class IdentityProvider extends ConfigurationProperties {
     * Whether the Identity Provider configuration is enabled
     */
   def enabled: Boolean
+
+  /**
+    * Validate the values of all the common fields configured for an IdentityProvider, and
+    * return the IdentityProvider if the validation succeeds, or a list of errors captured
+    * during the validation.
+    *
+    * Use `this.type` to ensure returning the exact type of the Identity Provider.
+    */
+  def validate: ValidatedNel[String, this.type] = {
+    val textFields = Map(
+      ("name", name),
+      ("client ID", clientId),
+      ("client Secret", clientSecret),
+    )
+
+    val urlFields = Map(
+      ("Auth URL", authUrl),
+      ("Key set URL", keysetUrl),
+      ("Token URL", tokenUrl)
+    )
+
+    (validateTextFields(textFields), validateUrlFields(urlFields))
+      .mapN((_, _) => this)
+  }
 }
 
 object IdentityProvider {
@@ -136,26 +161,4 @@ object IdentityProvider {
       }
       .toList
       .sequence
-
-  /**
-    * Validate the values of all the common fields configured for an IdentityProvider, and
-    * return the IdentityProvider if the validation succeeds, or a list of errors captured
-    * during the validation.
-    */
-  def validateCommonFields(idp: IdentityProvider): ValidatedNel[String, IdentityProvider] = {
-    val textFields = Map(
-      ("name", idp.name),
-      ("client ID", idp.clientId),
-      ("client Secret", idp.clientSecret),
-    )
-
-    val urlFields = Map(
-      ("Auth URL", idp.authUrl),
-      ("Key set URL", idp.keysetUrl),
-      ("Token URL", idp.tokenUrl)
-    )
-
-    (validateTextFields(textFields), validateUrlFields(urlFields))
-      .mapN((_, _) => idp)
-  }
 }

@@ -47,23 +47,19 @@ case class GenericIdentityProvider(
     clientCredClientSecret: String,
 ) extends IdentityProvider {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.GENERIC
-}
-
-object GenericIdentityProvider {
 
   /**
-    * Validate special fields configured for an GenericIdentityProvider, and return the
-    * GenericIdentityProvider if the validation succeeds, or a list of errors captured
-    * during the validation.
+    * In additional to the validations for common fields (see [[IdentityProvider.validate]]), also validate the special fields
+    * configured for a GenericIdentityProvider.
     */
-  def validate(idp: GenericIdentityProvider): ValidatedNel[String, GenericIdentityProvider] = {
+  override def validate: ValidatedNel[String, this.type] = {
     val textFields = Map(
-      ("Client Credentials Client ID", idp.clientCredClientId),
-      ("Client Credentials Client secret", idp.clientCredClientSecret),
+      ("Client Credentials Client ID", clientCredClientId),
+      ("Client Credentials Client secret", clientCredClientSecret),
     )
-    val urlField = Map(("User listing URL", idp.userListingUrl))
+    val urlField = Map(("User listing URL", userListingUrl))
 
-    (validateTextFields(textFields), validateUrlFields(urlField))
-      .mapN((_, _) => idp)
+    (super.validate, validateTextFields(textFields), validateUrlFields(urlField))
+      .mapN((_, _, _) => this)
   }
 }

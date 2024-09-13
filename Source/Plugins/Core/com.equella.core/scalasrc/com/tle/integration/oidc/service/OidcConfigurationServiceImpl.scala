@@ -18,20 +18,20 @@
 
 package com.tle.integration.oidc.service
 
-import cats.data.Validated
 import cats.implicits._
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.IdentityProvider.validateCommonFields
-import com.tle.integration.oidc.idp.{GenericIdentityProvider, IdentityProvider}
+import com.tle.integration.oidc.idp.IdentityProvider
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
+
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 @Bind
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
+  private val PROPERTY_NAME                              = "OIDC_IDENTITY_PROVIDER"
   private var configurationService: ConfigurationService = _
 
   @Inject
@@ -40,26 +40,20 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
     this.configurationService = configurationService
   }
 
-  def save[T <: IdentityProvider: Encoder](idp: T): Unit =
-    configurationService.setProperty(PROPERTY_NAME, idp.asJson.noSpaces)
+  def save[T <: IdentityProvider: Encoder](idp: T): Either[String, Unit] = {
+    def saveAsJson(validated: T): Either[String, Unit] =
+      Either
+        .catchNonFatal(configurationService.setProperty(PROPERTY_NAME, validated.asJson.noSpaces))
+        .leftMap(_.getMessage)
+
+    idp.validate.toEither.bimap(_.mkString_(","), saveAsJson).flatten
+  }
 
   def get[T <: IdentityProvider: Decoder]: Either[String, T] = {
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new Error("No Identity Provider configured"))
       .flatMap(parse)
       .flatMap(_.as[T])
-      .leftMap(err => s"Failed to get Identity Provider: ${err.getMessage}")
-  }
-
-  def validate[T <: IdentityProvider](idp: T): Validated[List[String], T] = {
-    def validateSpecialFields =
-      idp match {
-        case p: GenericIdentityProvider => GenericIdentityProvider.validate(p)
-        case _                          => Validated.invalidNel("Unknown Identity Provider")
-      }
-
-    (validateCommonFields(idp), validateSpecialFields)
-      .mapN((_, _) => idp)
-      .leftMap(_.toList)
+      .leftMap(_.getMessage)
   }
 }

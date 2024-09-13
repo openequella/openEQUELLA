@@ -24,8 +24,6 @@ import io.circe.{Decoder, Encoder}
 
 trait OidcConfigurationService {
 
-  final val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
-
   /**
     * Retrieve an Identity Provider configuration from the OEQ standard configuration.
     *
@@ -36,23 +34,14 @@ trait OidcConfigurationService {
   def get[T <: IdentityProvider: Decoder]: Either[String, T]
 
   /**
-    * Save the string representation of an Identity Provider configuration in the OEQ standard configuration.
+    * Validate and save an Identity Provider configuration.  If the validation fails, returns a message
+    * listing all the invalid values. If the validation passes, save the string representation of the
+    * configuration in the OEQ standard configuration.
     *
-    * @param idp Configuration of an Identity Provider to be transformed to JSON string and then saved in the
-    *            OEQ standard configuration
+    * @param idp Configuration of an Identity Provider to be validated and then saved in the OEQ standard configuration
     * @tparam T Type of the Identity Provider which must be a subtype of [[IdentityProvider]] and
     *           requires a [[Encoder]] for the subtype
+    * @return Either a message describing why failed to save or nothing if the save is successful
     */
-  def save[T <: IdentityProvider: Encoder](idp: T): Unit
-
-  /**
-    * Validate an Identity Provider configuration. Both common fields and platform specific fields
-    * will be validated.
-    *
-    * @param idp Configuration of an Identity Provider to be validated
-    * @tparam T Type of the Identity Provider which must be a subtype of [[IdentityProvider]]
-    * @return The Identity Provider itself if the validation succeeds, or a list of errors captured
-    *         during the validation
-    */
-  def validate[T <: IdentityProvider](idp: T): Validated[List[String], T]
+  def save[T <: IdentityProvider: Encoder](idp: T): Either[String, Unit]
 }
