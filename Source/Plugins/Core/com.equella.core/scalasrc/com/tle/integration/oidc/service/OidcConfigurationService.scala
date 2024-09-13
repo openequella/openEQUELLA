@@ -18,10 +18,12 @@
 
 package com.tle.integration.oidc.service
 
-import cats.data.Validated
 import com.tle.integration.oidc.idp.IdentityProvider
 import io.circe.{Decoder, Encoder}
 
+/**
+  * Service to manage the persistence of Identity Provider configurations.
+  */
 trait OidcConfigurationService {
 
   /**
@@ -34,7 +36,7 @@ trait OidcConfigurationService {
   def get[T <: IdentityProvider: Decoder]: Either[String, T]
 
   /**
-    * Validate and save an Identity Provider configuration.  If the validation fails, returns a message
+    * Validate and save an Identity Provider configuration. If the validation fails, returns a message
     * listing all the invalid values. If the validation passes, save the string representation of the
     * configuration in the OEQ standard configuration.
     *
