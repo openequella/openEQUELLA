@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.{mock, mockStatic, verify, when}
 import org.scalatest.GivenWhenThen
+import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -78,22 +79,27 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.save(badAuth0)
 
       Then("All the invalid values should be captured")
-      result shouldBe Left(
-        "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: Client Credentials flow Client secret,Invalid value for User listing URL: URI is not absolute")
+      inside(result) {
+        case Left(e) =>
+          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: Client Credentials flow Client secret,Invalid value for User listing URL: URI is not absolute"
+      }
     }
 
     it("captures other errors") {
       val f = fixture
 
       When("An exception is thrown from the saving")
-      val exception = "Failed to save due to a DB issue"
+      val error = "Failed to save due to a DB issue"
       when(mockConfigurationService.setProperty(anyString(), anyString()))
-        .thenThrow(new RuntimeException(exception))
+        .thenThrow(new RuntimeException(error))
 
       val result = f.service.save(auth0)
 
       Then("The error message should be captured")
-      result shouldBe Left(exception)
+      inside(result) {
+        case Left(e) =>
+          e.getMessage shouldBe error
+      }
     }
   }
 
@@ -124,7 +130,10 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      result shouldBe Left("No Identity Provider configured")
+      inside(result) {
+        case Left(e) =>
+          e.getMessage shouldBe "No Identity Provider configured"
+      }
     }
 
     it("returns an error for retrieval if the string representation is corrupted") {
@@ -138,7 +147,10 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      result shouldBe Left("DecodingFailure at .authCodeClientId: Missing required field")
+      inside(result) {
+        case Left(e) =>
+          e.getMessage shouldBe "DecodingFailure at .authCodeClientId: Missing required field"
+      }
     }
   }
 }

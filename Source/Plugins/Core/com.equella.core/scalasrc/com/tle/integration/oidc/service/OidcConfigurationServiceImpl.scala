@@ -19,6 +19,7 @@
 package com.tle.integration.oidc.service
 
 import cats.implicits._
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
@@ -43,21 +44,24 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
     this.configurationService = configurationService
   }
 
-  def save[T <: IdentityProvider: Encoder](idp: T): Either[String, Unit] = {
-    def saveAsJson(validated: T): Either[String, Unit] =
+  def save[T <: IdentityProvider: Encoder](idp: T): Either[Throwable, Unit] = {
+    def saveAsJson(validated: T): Either[Throwable, Unit] =
       Either
         .catchNonFatal(configurationService.setProperty(PROPERTY_NAME, validated.asJson.noSpaces))
-        .leftMap(_.getMessage)
 
     logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")
-    idp.validate.toEither.bimap(_.mkString_(","), saveAsJson).flatten
+    idp.validate.toEither
+      .bimap(
+        errors => new IllegalArgumentException(errors.mkString_(",")),
+        saveAsJson
+      )
+      .flatten
   }
 
-  def get[T <: IdentityProvider: Decoder]: Either[String, T] = {
+  def get[T <: IdentityProvider: Decoder]: Either[Throwable, T] = {
     Option(configurationService.getProperty(PROPERTY_NAME))
-      .toRight(new Error("No Identity Provider configured"))
+      .toRight(new NotFoundException("No Identity Provider configured"))
       .flatMap(parse)
       .flatMap(_.as[T])
-      .leftMap(_.getMessage)
   }
 }
