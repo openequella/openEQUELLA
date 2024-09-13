@@ -63,7 +63,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Given("A configuration which has some invalid values")
       val badAuth0 = auth0.copy(
-        clientId = "",
+        authCodeClientId = "",
         authUrl = "http://abc/ authorise/",
         keysetUrl = "htp://keyset.com",
         userListingUrl = "www.userlisting.com",

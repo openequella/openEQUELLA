@@ -27,13 +27,14 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
   * the following special fields:
   *
   * @param userListingUrl Url used to retrieve a list of users from the Identity Provider
-  * @param clientCredClientId ID of an OAuth2 client which MUST support Client Credentials grant
-  * @param clientCredClientSecret Secret key associated with the OAuth2 client
+  * @param clientCredClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
+  *                           the Client Credentials flow
+  * @param clientCredClientSecret Secret key used specifically in the Client Credentials flow
   */
 case class GenericIdentityProvider(
     name: String,
-    clientId: String,
-    clientSecret: String,
+    authCodeClientId: String,
+    authCodeClientSecret: String,
     authUrl: String,
     keysetUrl: String,
     tokenUrl: String,
@@ -54,8 +55,8 @@ case class GenericIdentityProvider(
     */
   override def validate: ValidatedNel[String, this.type] = {
     val textFields = Map(
-      ("Client Credentials Client ID", clientCredClientId),
-      ("Client Credentials Client secret", clientCredClientSecret),
+      ("Client Credentials flow Client ID", clientCredClientId),
+      ("Client Credentials flow Client secret", clientCredClientSecret),
     )
     val urlField = Map(("User listing URL", userListingUrl))
 

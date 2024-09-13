@@ -49,14 +49,15 @@ abstract class IdentityProvider extends ConfigurationProperties {
   def platform: IdentityProviderPlatform.Value
 
   /**
-    * ID of an OAuth2 client registered in the selected Identity Provider
+    * ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
+    * the Authorization Code flow
     */
-  def clientId: String
+  def authCodeClientId: String
 
   /**
-    * Secret key associated with the OAuth2 client
+    * Secret key used specifically in the Authorization Code flow
     */
-  def clientSecret: String
+  def authCodeClientSecret: String
 
   /**
     * The URL used to initiate the OAuth2 authorisation process
@@ -110,8 +111,8 @@ abstract class IdentityProvider extends ConfigurationProperties {
   def validate: ValidatedNel[String, this.type] = {
     val textFields = Map(
       ("name", name),
-      ("client ID", clientId),
-      ("client Secret", clientSecret),
+      ("Authorisation Code flow Client ID", authCodeClientId),
+      ("Authorisation Code flow Client Secret", authCodeClientSecret),
     )
 
     val urlFields = Map(
