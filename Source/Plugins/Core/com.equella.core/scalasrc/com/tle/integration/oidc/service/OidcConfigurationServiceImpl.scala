@@ -19,12 +19,14 @@
 package com.tle.integration.oidc.service
 
 import cats.implicits._
+import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.IdentityProvider
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
+import org.slf4j.{Logger, LoggerFactory}
 
 import javax.inject.{Inject, Singleton}
 
@@ -33,6 +35,7 @@ import javax.inject.{Inject, Singleton}
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
   private val PROPERTY_NAME                              = "OIDC_IDENTITY_PROVIDER"
   private var configurationService: ConfigurationService = _
+  private var logger: Logger                             = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
 
   @Inject
   def this(configurationService: ConfigurationService) {
@@ -46,6 +49,7 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
         .catchNonFatal(configurationService.setProperty(PROPERTY_NAME, validated.asJson.noSpaces))
         .leftMap(_.getMessage)
 
+    logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")
     idp.validate.toEither.bimap(_.mkString_(","), saveAsJson).flatten
   }
 
