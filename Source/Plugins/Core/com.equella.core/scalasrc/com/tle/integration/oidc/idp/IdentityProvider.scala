@@ -34,6 +34,15 @@ object IdentityProviderPlatform extends Enumeration {
 }
 
 /**
+  * Configuration for custom role claim and mappings between IdP roles and OEQ roles.
+  *
+  * @param roleClaim Custom claim used to retrieve meaningful roles from an ID token
+  * @param customRoles A mapping between IdP roles and OEQ roles where one IdP role can map to multiple OEQ roles.
+  *                    The mapped OEQ roles will be assigned to the user's session.
+  */
+case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[String]])
+
+/**
   * Abstraction of an OIDC Identity Provider configuration to provide common fields.
   */
 abstract class IdentityProvider extends ConfigurationProperties {
@@ -80,21 +89,14 @@ abstract class IdentityProvider extends ConfigurationProperties {
   def usernameClaim: Option[String]
 
   /**
-    * Custom claim used to retrieve meaningful roles from an ID token
+    * A list of default OEQ roles to assign to the user's session.
     */
-  def roleClaim: Option[String]
+  def defaultRoles: Set[String]
 
   /**
-    * A mapping between IdP roles and OEQ roles where one IdP role can map to multiple OEQ roles.
-    * The mapped OEQ roles will be assigned to the user's session.
+    * Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
     */
-  def customRoles: Map[String, Set[String]]
-
-  /**
-    * A list of OEQ roles to assign to the user's session for any IdP roles which are not in the list
-    * of custom roles.
-    */
-  def unknownRoles: Set[String]
+  def roleConfig: Option[RoleConfiguration]
 
   /**
     * Whether the Identity Provider configuration is enabled

@@ -30,6 +30,9 @@ object IdentityProviderCodec {
   implicit val idpPlatformDecoder: Decoder[IdentityProviderPlatform.Value] =
     Decoder.decodeEnumeration(IdentityProviderPlatform)
 
+  implicit val roleConfigEncoder: Encoder[RoleConfiguration] = deriveEncoder[RoleConfiguration]
+  implicit val roleConfigDecoder: Decoder[RoleConfiguration] = deriveDecoder[RoleConfiguration]
+
   implicit val genericIdPEncoder: Encoder.AsObject[GenericIdentityProvider] =
     deriveEncoder[GenericIdentityProvider]
   implicit val genericIdPDecoder: Decoder[GenericIdentityProvider] =
