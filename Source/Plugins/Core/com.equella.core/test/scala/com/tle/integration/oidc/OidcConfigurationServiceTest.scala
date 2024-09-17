@@ -27,16 +27,16 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     unknownRoles = Set.empty,
     customRoles = Map.empty,
     enabled = true,
-    userListingUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
-    clientCredClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    clientCredClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+    apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
+    apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
+    apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
   )
 
   mockStatic(classOf[CurrentUser])
   when(CurrentUser.getUsername).thenReturn("Test user")
 
   val auth0StringRepr =
-    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"roleClaim":null,"unknownRoles":[],"customRoles":{},"enabled":true,"userListingUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","clientCredClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","clientCredClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"}"""
+    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"roleClaim":null,"unknownRoles":[],"customRoles":{},"enabled":true,"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   class Fixture {
@@ -71,8 +71,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         authCodeClientId = "",
         authUrl = "http://abc/ authorise/",
         keysetUrl = "htp://keyset.com",
-        userListingUrl = "www.userlisting.com",
-        clientCredClientSecret = null,
+        apiUrl = "www.userlisting.com",
+        apiClientSecret = null,
       )
 
       When("attempting to save this configuration")
@@ -81,7 +81,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       Then("All the invalid values should be captured")
       inside(result) {
         case Left(e) =>
-          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: Client Credentials flow Client secret,Invalid value for User listing URL: URI is not absolute"
+          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: IdP API Client secret,Invalid value for IdP API URL: URI is not absolute"
       }
     }
 

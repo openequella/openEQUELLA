@@ -26,10 +26,11 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
   * Configuration for a generic Identity Provider. In addition to the common fields, it includes
   * the following special fields:
   *
-  * @param userListingUrl Url used to retrieve a list of users from the Identity Provider
-  * @param clientCredClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
-  *                           the Client Credentials flow
-  * @param clientCredClientSecret Secret key used specifically in the Client Credentials flow
+  * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
+  * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
+  *                           (for user searching etc)
+  * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token
+  *                               to use with the Identity Provider's API (for user searching etc)
   */
 case class GenericIdentityProvider(
     name: String,
@@ -43,22 +44,22 @@ case class GenericIdentityProvider(
     unknownRoles: Set[String],
     customRoles: Map[String, Set[String]],
     enabled: Boolean,
-    userListingUrl: String,
-    clientCredClientId: String,
-    clientCredClientSecret: String,
+    apiUrl: String,
+    apiClientId: String,
+    apiClientSecret: String,
 ) extends IdentityProvider {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.GENERIC
 
   /**
-    * In additional to the validations for common fields (see [[IdentityProvider.validate]]), also validate the special fields
-    * configured for a GenericIdentityProvider.
+    * In additional to the validations for common fields (see [[IdentityProvider.validate]]), also
+    * validate the additional fields configured for a GenericIdentityProvider.
     */
   override def validate: ValidatedNel[String, this.type] = {
     val textFields = Map(
-      ("Client Credentials flow Client ID", clientCredClientId),
-      ("Client Credentials flow Client secret", clientCredClientSecret),
+      ("IdP API Client ID", apiClientId),
+      ("IdP API Client secret", apiClientSecret),
     )
-    val urlField = Map(("User listing URL", userListingUrl))
+    val urlField = Map(("IdP API URL", apiUrl))
 
     (super.validate, validateTextFields(textFields), validateUrlFields(urlField))
       .mapN((_, _, _) => this)
