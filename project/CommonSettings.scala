@@ -67,7 +67,7 @@ object CommonSettings extends AutoPlugin {
   override def requires: Plugins = HeaderPlugin && JvmPlugin
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.13.13",
+    scalaVersion := "2.13.15",
     scalacOptions ++= Seq("-Vimplicits"),
     javacOptions ++= Seq("--release", "21"),
     compileOrder := CompileOrder.Mixed,
