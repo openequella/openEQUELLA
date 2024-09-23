@@ -31,27 +31,24 @@ import YouTubeEmbed from "./YouTubeEmbed";
 const { kalturaExternalIdIssue, kalturaMissingId, youTubeVideoMissingId } =
   languageStrings.lightboxComponent;
 
-const buildKaltura = (src: string): O.Option<JSX.Element> =>
+const buildKaltura = (src: string): O.Option<React.JSX.Element> =>
   pipe(
     new URL(src).searchParams.get(EXTERNAL_ID_PARAM),
     E.fromNullable(kalturaMissingId),
-    E.chain((externalId) =>
-      E.tryCatch(
-        () => parseExternalId(externalId),
-        (e) => {
-          console.error("Failed to display Kaltura media in Lightbox: " + e);
-          return kalturaExternalIdIssue;
-        },
-      ),
+    E.chain(
+      E.tryCatchK(parseExternalId, (e) => {
+        console.error("Failed to display Kaltura media in Lightbox: " + e);
+        return kalturaExternalIdIssue;
+      }),
     ),
     E.fold(
       (e) => <LightboxMessage message={e} />,
-      (playerDetails) => <KalturaPlayerEmbed {...playerDetails} />,
+      (externalId) => <KalturaPlayerEmbed {...externalId} />,
     ),
     O.some,
   );
 
-const buildYouTube = (src: string): O.Option<JSX.Element> =>
+const buildYouTube = (src: string): O.Option<React.JSX.Element> =>
   pipe(
     extractVideoId(src),
     O.fromNullable,
@@ -74,10 +71,10 @@ const buildYouTube = (src: string): O.Option<JSX.Element> =>
 export const buildCustomEmbed = (
   mimeType: string,
   src: string,
-): O.Option<JSX.Element> =>
+): O.Option<React.JSX.Element> =>
   pipe(
     mimeType,
-    simpleMatchD<O.Option<JSX.Element>>(
+    simpleMatchD<O.Option<React.JSX.Element>>(
       [
         [CustomMimeTypes.KALTURA, () => buildKaltura(src)],
         [CustomMimeTypes.YOUTUBE, () => buildYouTube(src)],
