@@ -132,6 +132,15 @@ object SettingsList {
     () => lti13PrivilegeTreeProvider.isAuthorised
   )
 
+  val oidcSettings = CoreSettingsPage(
+    "oidc",
+    Integration,
+    "oidc.settings.title",
+    "oidc.settings.description",
+    "page/oidc",
+    () => oidcSettingsPrivilegeTreeProvider.isAuthorised
+  )
+
   val userScriptSettings = CoreSettingsPage(
     "scripts",
     General,
@@ -215,6 +224,7 @@ object SettingsList {
     echoSettings,
     ltiConsumersSettings,
     lti13PlatformsSettings,
+    oidcSettings,
     userScriptSettings,
     oauthSettings,
     htmlEditorSettings,

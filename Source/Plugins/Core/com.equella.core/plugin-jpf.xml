@@ -1427,6 +1427,9 @@
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="lti13PlatformsSettingsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.lti13.platforms.security.LTI13PlatformsSettingsPrivilegeTreeProvider" />
   </extension>
+  <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="oidcSettingsPrivilegeTreeProvider">
+    <parameter id="provider" value="bean:com.tle.integration.oidc.OidcSettingsPrivilegeTreeProvider" />
+  </extension>
   <extension plugin-id="com.tle.core.security" point-id="privilegeTreeProviders" id="userScriptsPrivilegeTreeProvider">
     <parameter id="provider" value="bean:com.tle.web.userscripts.privileges.UserScriptsPrivilegeTreeProvider" />
   </extension>

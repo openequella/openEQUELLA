@@ -827,6 +827,15 @@ export const languageStrings = {
           },
         },
       },
+      oidc: {
+        name: "OIDC configuration",
+        idpProvider: {
+          title: "IDP Provider Details",
+        },
+        oeqDetails: {
+          title: "openEquella (RP) details",
+        },
+      },
     },
     diagnostics: { name: "Diagnostics", desc: "Diagnostic pages" },
     searching: {
