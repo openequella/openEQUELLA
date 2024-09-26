@@ -3,7 +3,6 @@ package com.tle.integration.oidc
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.GenericIdentityProvider
-import com.tle.integration.oidc.idp.IdentityProviderCodec._
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
@@ -35,7 +34,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   when(CurrentUser.getUsername).thenReturn("Test user")
 
   val auth0StringRepr =
-    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true,"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"}"""
+    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true,"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I","platform":"GENERIC"}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   class Fixture {

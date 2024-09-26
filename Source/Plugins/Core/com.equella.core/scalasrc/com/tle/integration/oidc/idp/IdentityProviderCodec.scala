@@ -18,24 +18,49 @@
 
 package com.tle.integration.oidc.idp
 
-import io.circe.{Decoder, Encoder}
+import io.circe.DecodingFailure.Reason.CustomReason
+import io.circe.{Decoder, DecodingFailure, Encoder, Json, JsonObject}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 /**
   * Centralise all the required codecs for different types of IdentityProvider.
   */
 object IdentityProviderCodec {
-  implicit val idpPlatformEncoder: Encoder[IdentityProviderPlatform.Value] =
+  private implicit val idpPlatformEncoder: Encoder[IdentityProviderPlatform.Value] =
     Encoder.encodeEnumeration(IdentityProviderPlatform)
-  implicit val idpPlatformDecoder: Decoder[IdentityProviderPlatform.Value] =
+  private implicit val idpPlatformDecoder: Decoder[IdentityProviderPlatform.Value] =
     Decoder.decodeEnumeration(IdentityProviderPlatform)
 
-  implicit val roleConfigEncoder: Encoder[RoleConfiguration] = deriveEncoder[RoleConfiguration]
-  implicit val roleConfigDecoder: Decoder[RoleConfiguration] = deriveDecoder[RoleConfiguration]
+  private implicit val roleConfigEncoder: Encoder[RoleConfiguration] =
+    deriveEncoder[RoleConfiguration]
+  private implicit val roleConfigDecoder: Decoder[RoleConfiguration] =
+    deriveDecoder[RoleConfiguration]
 
-  implicit val genericIdPEncoder: Encoder.AsObject[GenericIdentityProvider] =
+  // Because `platform` is not in the Identity Provider case class parameter list, Circe encoder will
+  // not include it in the JSON output. Hence, we add `platform` manually.
+  private def addPlatform(json: JsonObject, platform: IdentityProviderPlatform.Value): JsonObject =
+    json.add("platform", Json.fromString(platform.toString))
+
+  private implicit val genericIdPEncoder: Encoder.AsObject[GenericIdentityProvider] =
     deriveEncoder[GenericIdentityProvider]
-  implicit val genericIdPDecoder: Decoder[GenericIdentityProvider] =
+      .mapJsonObject(addPlatform(_, IdentityProviderPlatform.GENERIC))
+
+  private implicit val genericIdPDecoder: Decoder[GenericIdentityProvider] =
     deriveDecoder[GenericIdentityProvider]
 
+  implicit val identityProviderEncoder: Encoder[IdentityProvider] = Encoder.instance {
+    case generic: GenericIdentityProvider => genericIdPEncoder(generic)
+    case unsupported =>
+      throw new IllegalArgumentException(
+        s"Unsupported OIDC Identity Provider: ${unsupported.platform}")
+  }
+
+  implicit val IdentityProviderDecoder: Decoder[IdentityProvider] = Decoder.instance { cursor =>
+    cursor.downField("platform").as[IdentityProviderPlatform.Value].flatMap {
+      case IdentityProviderPlatform.GENERIC => cursor.as[GenericIdentityProvider]
+      case unsupported =>
+        Left(
+          DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil))
+    }
+  }
 }

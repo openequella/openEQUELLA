@@ -26,9 +26,8 @@ import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.IdentityProvider
 import io.circe.parser._
 import io.circe.syntax._
-import io.circe.{Decoder, Encoder}
+import com.tle.integration.oidc.idp.IdentityProviderCodec._
 import org.slf4j.{Logger, LoggerFactory}
-
 import javax.inject.{Inject, Singleton}
 
 @Singleton
@@ -44,8 +43,8 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
     this.configurationService = configurationService
   }
 
-  def save[T <: IdentityProvider: Encoder](idp: T): Either[Throwable, Unit] = {
-    def saveAsJson(validated: T): Either[Throwable, Unit] =
+  def save(idp: IdentityProvider): Either[Throwable, Unit] = {
+    def saveAsJson(validated: IdentityProvider): Either[Throwable, Unit] =
       Either
         .catchNonFatal(configurationService.setProperty(PROPERTY_NAME, validated.asJson.noSpaces))
 
@@ -58,10 +57,10 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
       .flatten
   }
 
-  def get[T <: IdentityProvider: Decoder]: Either[Throwable, T] = {
+  def get: Either[Throwable, IdentityProvider] = {
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new NotFoundException("No Identity Provider configured"))
       .flatMap(parse)
-      .flatMap(_.as[T])
+      .flatMap(_.as[IdentityProvider])
   }
 }

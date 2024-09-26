@@ -20,6 +20,9 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
+import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
 import com.tle.common.Check
 import com.tle.common.settings.ConfigurationProperties
 import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
@@ -45,7 +48,12 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 /**
   * Abstraction of an OIDC Identity Provider configuration to provide common fields.
   */
-abstract class IdentityProvider extends ConfigurationProperties {
+@JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "platform")
+@JsonSubTypes(
+  Array(
+    new Type(value = classOf[GenericIdentityProvider], name = "GENERIC"),
+  ))
+abstract class IdentityProvider extends ConfigurationProperties with Product {
 
   /**
     * A non-empty string as the Identity Provider name

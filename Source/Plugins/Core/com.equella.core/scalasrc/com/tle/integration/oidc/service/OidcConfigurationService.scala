@@ -29,11 +29,9 @@ trait OidcConfigurationService {
   /**
     * Retrieve an Identity Provider configuration from the OEQ standard configuration.
     *
-    * @tparam T Type of the Identity Provider which must be a subtype of [[IdentityProvider]] and
-    *           requires a [[Decoder]] for the subtype
     * @return Either the configuration or an error describing why failed to get the configuration
     */
-  def get[T <: IdentityProvider: Decoder]: Either[Throwable, T]
+  def get: Either[Throwable, IdentityProvider]
 
   /**
     * Validate and save an Identity Provider configuration. If the validation fails, returns a message
@@ -41,9 +39,7 @@ trait OidcConfigurationService {
     * configuration in the OEQ standard configuration.
     *
     * @param idp Configuration of an Identity Provider to be validated and then saved in the OEQ standard configuration
-    * @tparam T Type of the Identity Provider which must be a subtype of [[IdentityProvider]] and
-    *           requires a [[Encoder]] for the subtype
     * @return Either an error describing why failed to save or nothing if the save is successful
     */
-  def save[T <: IdentityProvider: Encoder](idp: T): Either[Throwable, Unit]
+  def save(idp: IdentityProvider): Either[Throwable, Unit]
 }
