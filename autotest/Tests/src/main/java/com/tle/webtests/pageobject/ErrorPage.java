@@ -48,14 +48,16 @@ public class ErrorPage extends AbstractPage<ErrorPage> {
         .getText();
   }
 
-  public String getDetail() {
+  public String getDetail(boolean newUi) {
     return driver
         .findElement(
             getErrorBy(
-                isNewUI()
-                    ? "id('errorPage')//h5"
-                    : "//div[@class='area error']/p[@id='description']"))
+                newUi ? "id('errorPage')//h5" : "//div[@class='area error']/p[@id='description']"))
         .getText();
+  }
+
+  public String getDetail() {
+    return getDetail(isNewUI());
   }
 
   public String getDenied() {
