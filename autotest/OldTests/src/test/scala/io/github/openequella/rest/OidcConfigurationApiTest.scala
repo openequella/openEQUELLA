@@ -49,11 +49,16 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_OK, resp_code)
 
     val config = mapper.readTree(request.getResponseBody())
+
+    val commonDetails = config.get("commonDetails")
     // Confirm the common values are returned.
-    assertEquals(config.get("platform").asText(), PLATFORM)
-    assertEquals(config.get("authUrl").asText(), AUTH_URL)
+    assertEquals(commonDetails.get("platform").asText(), PLATFORM)
+    assertEquals(commonDetails.get("authUrl").asText(), AUTH_URL)
+    // Confirm sensitive values are not returned.
+    assertEquals(commonDetails.get("authCodeClientSecret"), null)
     // Confirm Platform-specific values are returned.
     assertEquals(config.get("apiClientId").asText(), API_CLIENT_ID)
+
   }
 
   @Test(description = "Return 400 when creating with invalid values")
@@ -85,5 +90,16 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     val request   = new PutMethod(OIDC_ENDPOINT)
     val resp_code = makeClientRequestWithEntity(request, body)
     assertEquals(HttpStatus.SC_BAD_REQUEST, resp_code)
+  }
+
+  @Test(description = "Return 403 when user has no permission to access OIDC configuration",
+        dependsOnMethods = Array("get"))
+  def withoutPermission(): Unit = {
+    loginAsLowPrivilegeUser()
+
+    val request = new GetMethod(OIDC_ENDPOINT)
+
+    val resp_code = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_FORBIDDEN, resp_code)
   }
 }

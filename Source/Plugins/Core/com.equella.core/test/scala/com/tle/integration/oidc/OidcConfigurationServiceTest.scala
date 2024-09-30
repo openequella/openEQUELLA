@@ -1,8 +1,14 @@
 package com.tle.integration.oidc
 
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.encryption.EncryptionService
+import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.GenericIdentityProvider
+import com.tle.integration.oidc.idp.{
+  GenericIdentityProvider,
+  GenericIdentityProviderDetails,
+  IdentityProviderDetails
+}
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
@@ -14,6 +20,8 @@ import org.scalatest.matchers.should.Matchers
 
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
+  val encryptionService: EncryptionService           = new EncryptionServiceImpl
+
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
     name = "Auth0",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
@@ -30,15 +38,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
   )
 
+  val auth0StringRepr =
+    """{"commonDetails":{"name":"Auth0","platform":"GENERIC","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
+  val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
+
   mockStatic(classOf[CurrentUser])
   when(CurrentUser.getUsername).thenReturn("Test user")
 
-  val auth0StringRepr =
-    """{"name":"Auth0","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true,"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I","platform":"GENERIC"}"""
-  val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
-
   class Fixture {
-    val service = new OidcConfigurationServiceImpl(mockConfigurationService)
+    val service = new OidcConfigurationServiceImpl(mockConfigurationService, encryptionService)
   }
 
   def fixture = new Fixture
@@ -115,7 +123,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Then(
         "The string representation should have been converted to the object and returned through ConfigurationService")
-      result shouldBe Right(auth0)
+      val expected = IdentityProviderDetails(auth0, encryptionService)
+      result shouldBe Right(expected)
     }
 
     it("returns an error for retrieval if there isn't any configured Identity Provider") {
