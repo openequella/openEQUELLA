@@ -31,7 +31,7 @@ When you submit an issue, please take the time to provide as much info as you ca
 As per standard Apereo projects: If you wish to contribute to openEQUELLA itself, you should first
 subscribe to the openEQUELLA Google Group as outlined above and discuss your contributions with
 the other developers. You will also need to sign a
-[Contributor License Agreement](https://www.apereo.org/node/676).
+[Contributor License Agreement](https://www.apereo.org/about/governance/licensing).
 
 But after that, as per usual GitHub, please first fork the project and then branch off `develop` or a
 stable branch (see below) to use a 'feature' branch. Branches should follow the naming convention of:
