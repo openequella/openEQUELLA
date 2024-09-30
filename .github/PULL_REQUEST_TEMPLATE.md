@@ -26,5 +26,5 @@ issue here (not in the title) so as to utilise automatic linking.
 
 <!-- Reference Links -->
 
-[contributor license agreement]: https://www.apereo.org/node/676
+[contributor license agreement]: https://www.apereo.org/about/governance/licensing
 [commit guidelines]: https://chris.beams.io/posts/git-commit/
