@@ -18,14 +18,15 @@
 
 package com.tle.integration.oidc.idp
 
-import java.net.{URI, URL}
+import com.tle.core.encryption.EncryptionService
 
-sealed trait IdentityProviderDetails
+import java.net.{URI, URL}
 
 /**
   * The common details configured for SSO with an Identity Provider, but with
   * some slightly more concrete types (e.g. `URL`) compared to `IdentityProvider`
-  * which needed to be looser for REST endpoints etc.
+  * which needed to be looser for REST endpoints etc. Also, sensitive values are
+  * encrypted.
   *
   * @param name Name of the Identity Provider.
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
@@ -50,6 +51,10 @@ case class CommonDetails(name: String,
                          defaultRoles: Set[String],
                          roleConfig: Option[RoleConfiguration])
 
+sealed trait IdentityProviderDetails {
+  val commonDetails: CommonDetails
+}
+
 /**
   * Configuration details for a generic Identity Provider. In addition to the common configuration for SSO,
   * the details of how to interact with the Identity Provider's APIs are also included.
@@ -59,7 +64,7 @@ case class CommonDetails(name: String,
   * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
   *                    (for user searching etc)
   * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token to use with
-  *                        the Identity Provider's API (for user searching etc)
+  *                        the Identity Provider's API (for user searching etc). The value will be encrypted on saving.
   */
 case class GenericIdentityProviderDetails(
     commonDetails: CommonDetails,
@@ -70,11 +75,13 @@ case class GenericIdentityProviderDetails(
 
 object IdentityProviderDetails {
 
+  private var encryptionService: EncryptionService = _
+
   private def commonDetails(idp: IdentityProvider): CommonDetails = CommonDetails(
     name = idp.name,
     platform = idp.platform,
     authCodeClientId = idp.authCodeClientId,
-    authCodeClientSecret = idp.authCodeClientSecret,
+    authCodeClientSecret = encryptionService.encrypt(idp.authCodeClientSecret),
     authUrl = URI.create(idp.authUrl).toURL,
     keysetUrl = URI.create(idp.keysetUrl).toURL,
     tokenUrl = URI.create(idp.tokenUrl).toURL,
@@ -83,16 +90,19 @@ object IdentityProviderDetails {
     roleConfig = idp.roleConfig
   )
 
-  def apply[T <: IdentityProvider](idp: T): IdentityProviderDetails =
+  def apply(idp: IdentityProvider,
+            encryptionService: EncryptionService): IdentityProviderDetails = {
+    this.encryptionService = encryptionService
     idp match {
       case generic: GenericIdentityProvider =>
         GenericIdentityProviderDetails(
           commonDetails = commonDetails(generic),
           apiUrl = URI.create(generic.apiUrl).toURL,
           apiClientId = generic.apiClientId,
-          apiClientSecret = generic.apiClientSecret
+          apiClientSecret = encryptionService.encrypt(generic.apiClientSecret)
         )
       case _ =>
         throw new IllegalArgumentException(s"Unsupported Identity Provider: ${idp.platform}")
     }
+  }
 }

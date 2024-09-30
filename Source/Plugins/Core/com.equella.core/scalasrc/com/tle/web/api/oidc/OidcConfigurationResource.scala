@@ -20,14 +20,74 @@ package com.tle.web.api.oidc
 
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.guice.Bind
-import com.tle.integration.oidc.idp.IdentityProvider
+import com.tle.integration.oidc.OidcSettingsPrivilegeTreeProvider
+import com.tle.integration.oidc.idp.{
+  GenericIdentityProviderDetails,
+  IdentityProvider,
+  IdentityProviderDetails,
+  RoleConfiguration
+}
 import com.tle.integration.oidc.service.OidcConfigurationService
 import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound, serverError}
 import io.swagger.annotations.{Api, ApiOperation}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, PUT, Path, Produces}
+
+/**
+  * Structure for the common details of an Identity Provider, which excludes
+  * sensitive values like the client secret.
+  */
+case class CommonDetails(name: String,
+                         platform: String,
+                         authCodeClientId: String,
+                         authUrl: URL,
+                         keysetUrl: URL,
+                         tokenUrl: URL,
+                         usernameClaim: Option[String],
+                         defaultRoles: Set[String],
+                         roleConfig: Option[RoleConfiguration])
+
+sealed trait IdentityProviderResponse {
+  val commonDetails: CommonDetails
+}
+
+case class GenericIdentityProviderResponse(commonDetails: CommonDetails,
+                                           apiUrl: URL,
+                                           apiClientId: String)
+    extends IdentityProviderResponse
+
+object IdentityProviderResponse {
+  def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
+    def commonDetails = CommonDetails(
+      idp.commonDetails.name,
+      idp.commonDetails.platform.toString,
+      idp.commonDetails.authCodeClientId,
+      idp.commonDetails.authUrl,
+      idp.commonDetails.keysetUrl,
+      idp.commonDetails.tokenUrl,
+      idp.commonDetails.usernameClaim,
+      idp.commonDetails.defaultRoles,
+      idp.commonDetails.roleConfig
+    )
+
+    idp match {
+      case generic: GenericIdentityProviderDetails =>
+        Right(
+          GenericIdentityProviderResponse(
+            commonDetails = commonDetails,
+            generic.apiUrl,
+            generic.apiClientId
+          ))
+      case other =>
+        Left(
+          new RuntimeException(
+            s"Found unsupported OIDC Identity Provider: ${other.commonDetails.platform}"))
+    }
+  }
+}
 
 @Bind
 @Singleton
@@ -37,6 +97,7 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
 class OidcConfigurationResource {
 
   @Inject private var oidcConfigurationService: OidcConfigurationService = _
+  @Inject private var aclProvider: OidcSettingsPrivilegeTreeProvider     = _
 
   private def errorHandler(error: Throwable): Response =
     error match {
@@ -48,16 +109,26 @@ class OidcConfigurationResource {
   @GET
   @ApiOperation(
     value = "Retrieve OIDC configuration",
-    response = classOf[IdentityProvider],
+    response = classOf[IdentityProviderResponse],
   )
-  def getConfiguration: Response =
-    oidcConfigurationService.get.fold(errorHandler, Response.ok(_).build())
+  def getConfiguration: Response = {
+    aclProvider.checkAuthorised()
+
+    oidcConfigurationService.get
+      .flatMap(IdentityProviderResponse(_))
+      .fold(
+        errorHandler,
+        Response.ok(_).build()
+      )
+  }
 
   @PUT
   @ApiOperation(
     value = "Save OIDC configuration",
     response = classOf[Unit],
   )
-  def saveConfiguration(config: IdentityProvider): Response =
+  def saveConfiguration(config: IdentityProvider): Response = {
+    aclProvider.checkAuthorised()
     oidcConfigurationService.save(config).fold(errorHandler, _ => Response.ok().build())
+  }
 }

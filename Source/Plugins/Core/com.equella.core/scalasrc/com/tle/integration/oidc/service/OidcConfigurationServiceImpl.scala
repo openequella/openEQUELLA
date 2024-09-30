@@ -21,9 +21,10 @@ package com.tle.integration.oidc.service
 import cats.implicits._
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.encryption.EncryptionService
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.IdentityProvider
+import com.tle.integration.oidc.idp.{IdentityProvider, IdentityProviderDetails}
 import io.circe.parser._
 import io.circe.syntax._
 import com.tle.integration.oidc.idp.IdentityProviderCodec._
@@ -35,18 +36,24 @@ import javax.inject.{Inject, Singleton}
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
   private val PROPERTY_NAME                              = "OIDC_IDENTITY_PROVIDER"
   private var configurationService: ConfigurationService = _
-  private var logger: Logger                             = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
+  private var encryptionService: EncryptionService       = _
+  private val logger: Logger                             = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
 
   @Inject
-  def this(configurationService: ConfigurationService) {
+  def this(configurationService: ConfigurationService, encryptionService: EncryptionService) {
     this()
     this.configurationService = configurationService
+    this.encryptionService = encryptionService
   }
 
   def save(idp: IdentityProvider): Either[Throwable, Unit] = {
     def saveAsJson(validated: IdentityProvider): Either[Throwable, Unit] =
       Either
-        .catchNonFatal(configurationService.setProperty(PROPERTY_NAME, validated.asJson.noSpaces))
+        .catchNonFatal(
+          configurationService.setProperty(
+            PROPERTY_NAME,
+            IdentityProviderDetails(validated, encryptionService).asJson.noSpaces
+          ))
 
     logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")
     idp.validate.toEither
@@ -57,10 +64,10 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
       .flatten
   }
 
-  def get: Either[Throwable, IdentityProvider] = {
+  def get: Either[Throwable, IdentityProviderDetails] = {
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new NotFoundException("No Identity Provider configured"))
       .flatMap(parse)
-      .flatMap(_.as[IdentityProvider])
+      .flatMap(_.as[IdentityProviderDetails])
   }
 }

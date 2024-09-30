@@ -18,8 +18,7 @@
 
 package com.tle.integration.oidc.service
 
-import com.tle.integration.oidc.idp.IdentityProvider
-import io.circe.{Decoder, Encoder}
+import com.tle.integration.oidc.idp.{IdentityProvider, IdentityProviderDetails}
 
 /**
   * Service to manage the persistence of Identity Provider configurations.
@@ -31,7 +30,7 @@ trait OidcConfigurationService {
     *
     * @return Either the configuration or an error describing why failed to get the configuration
     */
-  def get: Either[Throwable, IdentityProvider]
+  def get: Either[Throwable, IdentityProviderDetails]
 
   /**
     * Validate and save an Identity Provider configuration. If the validation fails, returns a message
