@@ -47,6 +47,9 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 
 /**
   * Abstraction of an OIDC Identity Provider configuration to provide common fields.
+  *
+  * In order to support polymorphic deserialization of the IdentityProvider, Jackson annotations `@JsonTypeInfo`
+  * and `@JsonSubTypes` are used to specify the type discriminator and subtypes.
   */
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "platform")
 @JsonSubTypes(
