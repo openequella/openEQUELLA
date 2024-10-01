@@ -20,7 +20,7 @@ import org.scalatest.matchers.should.Matchers
 
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
-  val encryptionService: EncryptionService           = new EncryptionServiceImpl
+  implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
 
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
     name = "Auth0",
@@ -123,7 +123,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Then(
         "The string representation should have been converted to the object and returned through ConfigurationService")
-      val expected = IdentityProviderDetails(auth0, encryptionService)
+      val expected = IdentityProviderDetails(auth0)
       result shouldBe Right(expected)
     }
 

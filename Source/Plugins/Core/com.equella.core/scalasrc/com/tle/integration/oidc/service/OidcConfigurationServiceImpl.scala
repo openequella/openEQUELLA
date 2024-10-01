@@ -34,10 +34,10 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 @Bind(classOf[OidcConfigurationService])
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
-  private val PROPERTY_NAME                              = "OIDC_IDENTITY_PROVIDER"
-  private var configurationService: ConfigurationService = _
-  private var encryptionService: EncryptionService       = _
-  private val logger: Logger                             = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
+  private val PROPERTY_NAME                                 = "OIDC_IDENTITY_PROVIDER"
+  private var configurationService: ConfigurationService    = _
+  private implicit var encryptionService: EncryptionService = _
+  private val logger: Logger                                = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
 
   @Inject
   def this(configurationService: ConfigurationService, encryptionService: EncryptionService) {
@@ -52,7 +52,7 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
         .catchNonFatal(
           configurationService.setProperty(
             PROPERTY_NAME,
-            IdentityProviderDetails(validated, encryptionService).asJson.noSpaces
+            IdentityProviderDetails(validated).asJson.noSpaces
           ))
 
     logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")

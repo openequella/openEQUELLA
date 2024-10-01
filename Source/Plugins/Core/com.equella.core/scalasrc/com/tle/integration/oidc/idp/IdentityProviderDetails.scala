@@ -75,9 +75,8 @@ case class GenericIdentityProviderDetails(
 
 object IdentityProviderDetails {
 
-  private var encryptionService: EncryptionService = _
-
-  private def commonDetails(idp: IdentityProvider): CommonDetails = CommonDetails(
+  private def commonDetails(idp: IdentityProvider)(
+      implicit encryptionService: EncryptionService): CommonDetails = CommonDetails(
     name = idp.name,
     platform = idp.platform,
     authCodeClientId = idp.authCodeClientId,
@@ -90,9 +89,8 @@ object IdentityProviderDetails {
     roleConfig = idp.roleConfig
   )
 
-  def apply(idp: IdentityProvider,
-            encryptionService: EncryptionService): IdentityProviderDetails = {
-    this.encryptionService = encryptionService
+  def apply(idp: IdentityProvider)(
+      implicit encryptionService: EncryptionService): IdentityProviderDetails = {
     idp match {
       case generic: GenericIdentityProvider =>
         GenericIdentityProviderDetails(
