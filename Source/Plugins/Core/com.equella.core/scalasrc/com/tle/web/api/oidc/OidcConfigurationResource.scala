@@ -18,7 +18,6 @@
 
 package com.tle.web.api.oidc
 
-import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.guice.Bind
 import com.tle.integration.oidc.OidcSettingsPrivilegeTreeProvider
 import com.tle.integration.oidc.idp.{
@@ -28,7 +27,7 @@ import com.tle.integration.oidc.idp.{
   RoleConfiguration
 }
 import com.tle.integration.oidc.service.OidcConfigurationService
-import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound, serverError}
+import com.tle.web.api.ApiErrorResponse.apiErrorHandler
 import io.swagger.annotations.{Api, ApiOperation}
 
 import java.net.URL
@@ -99,13 +98,6 @@ class OidcConfigurationResource {
   @Inject private var oidcConfigurationService: OidcConfigurationService = _
   @Inject private var aclProvider: OidcSettingsPrivilegeTreeProvider     = _
 
-  private def errorHandler(error: Throwable): Response =
-    error match {
-      case e: NotFoundException        => resourceNotFound(e.getMessage)
-      case e: IllegalArgumentException => badRequest(e.getMessage)
-      case e                           => serverError(e.getMessage)
-    }
-
   @GET
   @ApiOperation(
     value = "Retrieve OIDC configuration",
@@ -117,7 +109,7 @@ class OidcConfigurationResource {
     oidcConfigurationService.get
       .flatMap(IdentityProviderResponse(_))
       .fold(
-        errorHandler,
+        apiErrorHandler,
         Response.ok(_).build()
       )
   }
@@ -129,6 +121,6 @@ class OidcConfigurationResource {
   )
   def saveConfiguration(config: IdentityProvider): Response = {
     aclProvider.checkAuthorised()
-    oidcConfigurationService.save(config).fold(errorHandler, _ => Response.ok().build())
+    oidcConfigurationService.save(config).fold(apiErrorHandler, _ => Response.ok().build())
   }
 }
