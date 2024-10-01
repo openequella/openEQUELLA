@@ -40,37 +40,37 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
   * Structure for the common details of an Identity Provider, which excludes
   * sensitive values like the client secret.
   */
-case class CommonDetails(name: String,
-                         platform: String,
-                         authCodeClientId: String,
-                         authUrl: URL,
-                         keysetUrl: URL,
-                         tokenUrl: URL,
-                         usernameClaim: Option[String],
-                         defaultRoles: Set[String],
-                         roleConfig: Option[RoleConfiguration])
+case class CommonDetailsResponse(name: String,
+                                 platform: String,
+                                 authCodeClientId: String,
+                                 authUrl: URL,
+                                 keysetUrl: URL,
+                                 tokenUrl: URL,
+                                 usernameClaim: Option[String],
+                                 defaultRoles: Set[String],
+                                 roleConfig: Option[RoleConfiguration])
 
 sealed trait IdentityProviderResponse {
-  val commonDetails: CommonDetails
+  val commonDetails: CommonDetailsResponse
 }
 
-case class GenericIdentityProviderResponse(commonDetails: CommonDetails,
+case class GenericIdentityProviderResponse(commonDetails: CommonDetailsResponse,
                                            apiUrl: URL,
                                            apiClientId: String)
     extends IdentityProviderResponse
 
 object IdentityProviderResponse {
   def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
-    def commonDetails = CommonDetails(
-      idp.commonDetails.name,
-      idp.commonDetails.platform.toString,
-      idp.commonDetails.authCodeClientId,
-      idp.commonDetails.authUrl,
-      idp.commonDetails.keysetUrl,
-      idp.commonDetails.tokenUrl,
-      idp.commonDetails.usernameClaim,
-      idp.commonDetails.defaultRoles,
-      idp.commonDetails.roleConfig
+    def commonDetails = CommonDetailsResponse(
+      name = idp.commonDetails.name,
+      platform = idp.commonDetails.platform.toString,
+      authCodeClientId = idp.commonDetails.authCodeClientId,
+      authUrl = idp.commonDetails.authUrl,
+      keysetUrl = idp.commonDetails.keysetUrl,
+      tokenUrl = idp.commonDetails.tokenUrl,
+      usernameClaim = idp.commonDetails.usernameClaim,
+      defaultRoles = idp.commonDetails.defaultRoles,
+      roleConfig = idp.commonDetails.roleConfig
     )
 
     idp match {
