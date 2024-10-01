@@ -5,9 +5,10 @@ import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.{
+  CommonDetails,
   GenericIdentityProvider,
   GenericIdentityProviderDetails,
-  IdentityProviderDetails
+  IdentityProviderPlatform
 }
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
@@ -17,6 +18,7 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import java.net.URI
 
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
@@ -123,7 +125,24 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Then(
         "The string representation should have been converted to the object and returned through ConfigurationService")
-      val expected = IdentityProviderDetails(auth0)
+      val expected = GenericIdentityProviderDetails(
+        commonDetails = CommonDetails(
+          name = "Auth0",
+          platform = IdentityProviderPlatform.GENERIC,
+          authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
+          authCodeClientSecret = "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",
+          authUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize").toURL,
+          keysetUrl =
+            URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json").toURL,
+          tokenUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token").toURL,
+          usernameClaim = None,
+          defaultRoles = Set.empty,
+          roleConfig = None
+        ),
+        apiUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users").toURL,
+        apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
+        apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+      )
       result shouldBe Right(expected)
     }
 

@@ -24,7 +24,12 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.encryption.EncryptionService
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.{IdentityProvider, IdentityProviderDetails}
+import com.tle.integration.oidc.idp.{
+  CommonDetails,
+  GenericIdentityProviderDetails,
+  IdentityProvider,
+  IdentityProviderDetails
+}
 import io.circe.parser._
 import io.circe.syntax._
 import com.tle.integration.oidc.idp.IdentityProviderCodec._
@@ -65,9 +70,24 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
   }
 
   def get: Either[Throwable, IdentityProviderDetails] = {
+    def decryptCommonDetails(commonDetails: CommonDetails) = {
+      val decryptedSecret = encryptionService.decrypt(commonDetails.authCodeClientSecret)
+      commonDetails.copy(authCodeClientSecret = decryptedSecret)
+    }
+
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new NotFoundException("No Identity Provider configured"))
       .flatMap(parse)
       .flatMap(_.as[IdentityProviderDetails])
+      .map {
+        case GenericIdentityProviderDetails(commonDetails, apiUrl, apiClientId, apiClientSecret) =>
+          GenericIdentityProviderDetails(
+            commonDetails = decryptCommonDetails(commonDetails),
+            apiUrl = apiUrl,
+            apiClientId = apiClientId,
+            apiClientSecret = encryptionService.decrypt(apiClientSecret),
+          )
+        case other => other
+      }
   }
 }
