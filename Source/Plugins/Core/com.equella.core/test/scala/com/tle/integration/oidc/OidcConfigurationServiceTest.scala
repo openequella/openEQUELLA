@@ -13,7 +13,7 @@ import com.tle.integration.oidc.idp.{
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.{mock, mockStatic, verify, when}
+import org.mockito.Mockito.{atLeastOnce, mock, mockStatic, times, verify, when}
 import org.scalatest.GivenWhenThen
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
@@ -27,7 +27,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
     name = "Auth0",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
-    authCodeClientSecret = "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",
+    authCodeClientSecret =
+      Option("_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L"),
     authUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize",
     keysetUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json",
     tokenUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token",
@@ -37,7 +38,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     enabled = true,
     apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+    apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"),
   )
 
   val auth0StringRepr =
@@ -80,7 +81,6 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         authUrl = "http://abc/ authorise/",
         keysetUrl = "htp://keyset.com",
         apiUrl = "www.userlisting.com",
-        apiClientSecret = null,
       )
 
       When("attempting to save this configuration")
@@ -89,7 +89,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       Then("All the invalid values should be captured")
       inside(result) {
         case Left(e) =>
-          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Missing value for required field: IdP API Client secret,Invalid value for IdP API URL: URI is not absolute"
+          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for IdP API URL: URI is not absolute"
       }
     }
 
@@ -109,6 +109,55 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
           e.getMessage shouldBe error
       }
     }
+
+    it("keeps the existing sensitive values if these values are absent in a new configuration") {
+      val f = fixture
+
+      Given("An existing configuration")
+      when(mockConfigurationService.getProperty(PROPERTY_NAME))
+        .thenReturn(auth0StringRepr)
+
+      When("A new configuration does not include sensitive values")
+      val newAuth0 = auth0.copy(
+        authCodeClientSecret = None,
+        apiClientSecret = None,
+      )
+      f.service.save(newAuth0)
+
+      Then("The existing sensitive values should be kept")
+      val idpStringRepr = ArgumentCaptor.forClass[String, String](classOf[String])
+      verify(mockConfigurationService, atLeastOnce()).setProperty(
+        ArgumentCaptor.forClass[String, String](classOf[String]).capture(),
+        idpStringRepr.capture(),
+      )
+
+      idpStringRepr.getValue shouldBe auth0StringRepr
+    }
+
+    it(
+      "returns errors for sensitive values if they are neither provided or available in an existing config") {
+      val f = fixture
+
+      Given("No configuration is available")
+      when(mockConfigurationService.getProperty(PROPERTY_NAME))
+        .thenReturn(null)
+
+      When("A new configuration does not include sensitive values")
+      val newAuth0 = auth0.copy(
+        authCodeClientSecret = None,
+        apiClientSecret = None,
+      )
+
+      Then("Error messages returned for the missing sensitive values")
+      val result = f.service.save(newAuth0)
+      inside(result) {
+        case Left(e) =>
+          e.getMessage shouldBe
+            "Missing value for required field: Authorisation Code flow Client Secret," +
+              "Missing value for required field: API Client Secret"
+      }
+    }
+
   }
 
   describe("Retrieving configuration") {

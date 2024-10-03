@@ -8,17 +8,19 @@ import org.testng.annotations.Test
 import java.util
 
 class OidcConfigurationApiTest extends AbstractRestApiTest {
-  private val OIDC_ENDPOINT = getTestConfig.getInstitutionUrl + "api/oidc/config"
-  private val API_CLIENT_ID = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps"
-  private val PLATFORM      = "GENERIC"
-  private val AUTH_URL      = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize"
+  private val OIDC_ENDPOINT           = getTestConfig.getInstitutionUrl + "api/oidc/config"
+  private val PLATFORM                = "GENERIC"
+  private val AUTH_URL                = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize"
+  private val AUTH_CODE_CLIENT_SECRET = "authCodeClientSecret"
+  private val API_CLIENT_ID           = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps"
+  private val API_CLIENT_SECRET       = "apiClientSecret"
 
   private def buildRequestBody = {
     val body = mapper.createObjectNode()
     body.put("name", "Auth0")
     body.put("platform", PLATFORM)
     body.put("authCodeClientId", "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ")
-    body.put("authCodeClientSecret",
+    body.put(AUTH_CODE_CLIENT_SECRET,
              "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L")
     body.put("authUrl", AUTH_URL)
     body.put("keysetUrl", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json")
@@ -26,7 +28,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     body.put("enabled", true)
     body.put("apiUrl", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users")
     body.put("apiClientId", "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps")
-    body.put("apiClientSecret", "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I")
+    body.put(API_CLIENT_SECRET, "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I")
 
     val defaultRoles = body.putArray("defaultRoles")
     defaultRoles.add("admin")
@@ -61,6 +63,16 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
 
   }
 
+  @Test(description = "Update OIDC configuration without providing sensitive values",
+        dependsOnMethods = Array("add"))
+  def addWithoutSensitiveValues(): Unit = {
+    val body = buildRequestBody
+    body.set(AUTH_CODE_CLIENT_SECRET, null)
+    body.set(API_CLIENT_SECRET, null)
+    val request   = new PutMethod(OIDC_ENDPOINT)
+    val resp_code = makeClientRequestWithEntity(request, body)
+    assertEquals(HttpStatus.SC_OK, resp_code)
+  }
   @Test(description = "Return 400 when creating with invalid values")
   def invalidValues(): Unit = {
     val body = buildRequestBody

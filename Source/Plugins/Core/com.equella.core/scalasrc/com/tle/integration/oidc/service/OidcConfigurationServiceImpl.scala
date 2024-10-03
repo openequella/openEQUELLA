@@ -53,12 +53,12 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
 
   def save(idp: IdentityProvider): Either[Throwable, Unit] = {
     def saveAsJson(validated: IdentityProvider): Either[Throwable, Unit] =
-      Either
-        .catchNonFatal(
-          configurationService.setProperty(
-            PROPERTY_NAME,
-            IdentityProviderDetails(validated).asJson.noSpaces
-          ))
+      for {
+        idp <- IdentityProviderDetails(validated, get.toOption)
+        _ <- Either.catchNonFatal(
+          configurationService.setProperty(PROPERTY_NAME, idp.asJson.noSpaces)
+        )
+      } yield ()
 
     logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")
     idp.validate.toEither

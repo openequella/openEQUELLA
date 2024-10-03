@@ -77,8 +77,8 @@ object IdentityProviderResponse {
         Right(
           GenericIdentityProviderResponse(
             commonDetails = commonDetails,
-            generic.apiUrl,
-            generic.apiClientId
+            apiUrl = generic.apiUrl,
+            apiClientId = generic.apiClientId
           ))
       case other =>
         Left(
@@ -121,6 +121,6 @@ class OidcConfigurationResource {
   )
   def saveConfiguration(config: IdentityProvider): Response = {
     aclProvider.checkAuthorised()
-    oidcConfigurationService.save(config).fold(apiErrorHandler, _ => Response.ok().build())
+    oidcConfigurationService.save(config).fold(apiErrorHandler, _ => Response.ok.build())
   }
 }

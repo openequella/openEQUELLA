@@ -35,7 +35,7 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
 case class GenericIdentityProvider(
     name: String,
     authCodeClientId: String,
-    authCodeClientSecret: String,
+    authCodeClientSecret: Option[String],
     authUrl: String,
     keysetUrl: String,
     tokenUrl: String,
@@ -45,7 +45,7 @@ case class GenericIdentityProvider(
     enabled: Boolean,
     apiUrl: String,
     apiClientId: String,
-    apiClientSecret: String,
+    apiClientSecret: Option[String],
 ) extends IdentityProvider {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.GENERIC
 
@@ -53,12 +53,9 @@ case class GenericIdentityProvider(
     * In additional to the validations for common fields (see [[IdentityProvider.validate]]), also
     * validate the additional fields configured for a GenericIdentityProvider.
     */
-  override def validate: ValidatedNel[String, this.type] = {
-    val textFields = Map(
-      ("IdP API Client ID", apiClientId),
-      ("IdP API Client secret", apiClientSecret),
-    )
-    val urlField = Map(("IdP API URL", apiUrl))
+  override def validate: ValidatedNel[String, GenericIdentityProvider] = {
+    val textFields = Map(("IdP API Client ID", apiClientId))
+    val urlField   = Map(("IdP API URL", apiUrl))
 
     (super.validate, validateTextFields(textFields), validateUrlFields(urlField))
       .mapN((_, _, _) => this)
