@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti13
+package com.tle.integration.oidc.service
 
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
+import com.tle.integration.oidc.generateRandomHexString
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -37,14 +38,14 @@ object NonceExpiry {
   * @param timestamp the timestamp of when this was generated, so that it can be checked for currency
   */
 @SerialVersionUID(1)
-case class Lti13NonceDetails(state: String, timestamp: Instant) extends Serializable
+case class OidcNonceDetails(state: String, timestamp: Instant) extends Serializable
 
 /**
-  * Manages the nonce values for LTI 1.3 Authentication processes.
+  * Manages the nonce values for OIDC Authentication processes.
   */
 @Bind
 @Singleton
-class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
+class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails]) {
 
   @Inject def this(rcs: ReplicatedCacheService) {
     // Not keen on the idea of having a limit on the number of cache entries, but that's the way
@@ -53,7 +54,7 @@ class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
     // (See com.tle.core.replicatedcache.impl.ReplicatedCacheServiceImpl.ReplicatedCacheImpl.ReplicatedCacheImpl)
     this(
       rcs
-        .getCache[Lti13NonceDetails]("lti13-nonces", 1000, NonceExpiry.inSeconds, TimeUnit.SECONDS))
+        .getCache[OidcNonceDetails]("oidc-nonces", 1000, NonceExpiry.inSeconds, TimeUnit.SECONDS))
   }
 
   /**
@@ -76,7 +77,7 @@ class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
       case None              => throw new RuntimeException("Failed to generate a unique nonce!")
     }
 
-    nonceStorage.put(nonce, Lti13NonceDetails(state, Instant.now()))
+    nonceStorage.put(nonce, OidcNonceDetails(state, Instant.now()))
 
     nonce
   }
@@ -105,14 +106,14 @@ class Lti13NonceService(nonceStorage: ReplicatedCache[Lti13NonceDetails]) {
 
     val valid = Option(nonceStorage.get(nonce).orNull()) match {
       // Could do a few matches to capture errors around expired, doesn't match state, etc.
-      case Some(nonceDetails: Lti13NonceDetails)
+      case Some(nonceDetails: OidcNonceDetails)
           if nonceDetails.state == state && notExpired(nonceDetails.timestamp) =>
         nonceStorage.invalidate(nonce)
         Right(true)
-      case Some(nonceDetails: Lti13NonceDetails) if nonceDetails.state == state =>
+      case Some(nonceDetails: OidcNonceDetails) if nonceDetails.state == state =>
         // cases with matching timestamp would've been above, so this means it had expired
         Left("Provided nonce has expired")
-      case Some(_: Lti13NonceDetails) =>
+      case Some(_: OidcNonceDetails) =>
         // Lastly, this means we have found some the specified nonce - but it's for the wrong session
         Left("Provided nonce does not match the 'state' for this request")
       case None => Left("Provided nonce does not exist")

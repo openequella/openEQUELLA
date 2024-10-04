@@ -21,6 +21,7 @@ package com.tle.integration.lti13
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
+import com.tle.integration.oidc.generateRandomHexString
 
 import java.net.URI
 import java.util.concurrent.TimeUnit

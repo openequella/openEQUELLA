@@ -50,6 +50,8 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 import cats.implicits._
+import com.tle.integration.oidc.generateRandomHexString
+import com.tle.integration.oidc.service.OidcNonceService
 import io.circe._
 import io.circe.parser._
 
@@ -235,7 +237,7 @@ object UserDetails {
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
-  @Inject private var nonceService: Lti13NonceService     = _
+  @Inject private var nonceService: OidcNonceService      = _
   @Inject private var platformService: LtiPlatformService = _
   @Inject private var runAs: RunAsInstitution             = _
   @Inject private var stateService: Lti13StateService     = _
