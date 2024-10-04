@@ -48,31 +48,29 @@ object IdentityProviderCodec {
   private implicit val commonDetailsDecoder: Decoder[CommonDetails] =
     deriveDecoder[CommonDetails]
 
-  private implicit val genericIdPEncoder: Encoder.AsObject[GenericIdentityProviderDetails] =
+  private implicit val genericIdPDetailsEncoder: Encoder.AsObject[GenericIdentityProviderDetails] =
     deriveEncoder[GenericIdentityProviderDetails]
 
-  private implicit val genericIdPDecoder: Decoder[GenericIdentityProviderDetails] =
+  private implicit val genericIdPDetailsDecoder: Decoder[GenericIdentityProviderDetails] =
     deriveDecoder[GenericIdentityProviderDetails]
 
-  implicit val identityProviderDetailsEncoder: Encoder[IdentityProviderDetails] = Encoder.instance {
-    case generic: GenericIdentityProviderDetails => genericIdPEncoder(generic)
+  implicit val idpDetailsEncoder: Encoder[IdentityProviderDetails] = Encoder.instance {
+    case generic: GenericIdentityProviderDetails => genericIdPDetailsEncoder(generic)
     case unsupported =>
       throw new IllegalArgumentException(
         s"Unsupported OIDC Identity Provider: ${unsupported.commonDetails.platform}")
   }
 
-  implicit val identityProviderDetailsDecoder: Decoder[IdentityProviderDetails] = Decoder.instance {
-    cursor =>
-      cursor
-        .downField("commonDetails")
-        .downField("platform")
-        .as[IdentityProviderPlatform.Value]
-        .flatMap {
-          case IdentityProviderPlatform.GENERIC => cursor.as[GenericIdentityProviderDetails]
-          case unsupported =>
-            Left(
-              DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"),
-                              Nil))
-        }
+  implicit val idpDetailsDecoder: Decoder[IdentityProviderDetails] = Decoder.instance { cursor =>
+    cursor
+      .downField("commonDetails")
+      .downField("platform")
+      .as[IdentityProviderPlatform.Value]
+      .flatMap {
+        case IdentityProviderPlatform.GENERIC => cursor.as[GenericIdentityProviderDetails]
+        case unsupported =>
+          Left(
+            DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil))
+      }
   }
 }
