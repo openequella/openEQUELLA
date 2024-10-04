@@ -5,8 +5,6 @@ import org.apache.commons.httpclient.methods.{GetMethod, PutMethod}
 import org.junit.Assert.assertEquals
 import org.testng.annotations.Test
 
-import java.util
-
 class OidcConfigurationApiTest extends AbstractRestApiTest {
   private val OIDC_ENDPOINT           = getTestConfig.getInstitutionUrl + "api/oidc/config"
   private val PLATFORM                = "GENERIC"
@@ -36,43 +34,55 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     body
   }
 
+  private def getIdentityProvider = {
+    val request = new GetMethod(OIDC_ENDPOINT)
+
+    val respCode = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_OK, respCode)
+
+    mapper.readTree(request.getResponseBody())
+  }
+
   @Test(description = "Create a new OIDC configuration")
   def add(): Unit = {
-    val request   = new PutMethod(OIDC_ENDPOINT)
-    val resp_code = makeClientRequestWithEntity(request, buildRequestBody)
-    assertEquals(HttpStatus.SC_OK, resp_code)
+    val request  = new PutMethod(OIDC_ENDPOINT)
+    val respCode = makeClientRequestWithEntity(request, buildRequestBody)
+    assertEquals(HttpStatus.SC_OK, respCode)
   }
 
   @Test(description = "Retrieve the OIDC configuration", dependsOnMethods = Array("add"))
   def get(): Unit = {
-    val request = new GetMethod(OIDC_ENDPOINT)
+    val idp           = getIdentityProvider
+    val commonDetails = idp.get("commonDetails")
 
-    val resp_code = makeClientRequest(request)
-    assertEquals(HttpStatus.SC_OK, resp_code)
-
-    val config = mapper.readTree(request.getResponseBody())
-
-    val commonDetails = config.get("commonDetails")
     // Confirm the common values are returned.
     assertEquals(commonDetails.get("platform").asText(), PLATFORM)
     assertEquals(commonDetails.get("authUrl").asText(), AUTH_URL)
     // Confirm sensitive values are not returned.
     assertEquals(commonDetails.get("authCodeClientSecret"), null)
     // Confirm Platform-specific values are returned.
-    assertEquals(config.get("apiClientId").asText(), API_CLIENT_ID)
-
+    assertEquals(idp.get("apiClientId").asText(), API_CLIENT_ID)
   }
 
   @Test(description = "Update OIDC configuration without providing sensitive values",
         dependsOnMethods = Array("add"))
   def addWithoutSensitiveValues(): Unit = {
+    val newName = "Auth0-Updated"
+
     val body = buildRequestBody
-    body.set(AUTH_CODE_CLIENT_SECRET, null)
-    body.set(API_CLIENT_SECRET, null)
-    val request   = new PutMethod(OIDC_ENDPOINT)
-    val resp_code = makeClientRequestWithEntity(request, body)
-    assertEquals(HttpStatus.SC_OK, resp_code)
+    body.put("name", newName)
+    body.remove(AUTH_CODE_CLIENT_SECRET)
+    body.remove(API_CLIENT_SECRET)
+
+    val request  = new PutMethod(OIDC_ENDPOINT)
+    val respCode = makeClientRequestWithEntity(request, body)
+    assertEquals(HttpStatus.SC_OK, respCode)
+
+    // Get again and confirm the values have been returned.
+    val idp = getIdentityProvider
+    assertEquals(idp.get("commonDetails").get("name").asText(), newName)
   }
+
   @Test(description = "Return 400 when creating with invalid values")
   def invalidValues(): Unit = {
     val body = buildRequestBody
@@ -80,9 +90,9 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     body.put("keysetUrl", "http://abc/ keyset/")
     body.put("apiClientId", "")
 
-    val request   = new PutMethod(OIDC_ENDPOINT)
-    val resp_code = makeClientRequestWithEntity(request, body)
-    assertEquals(HttpStatus.SC_BAD_REQUEST, resp_code)
+    val request  = new PutMethod(OIDC_ENDPOINT)
+    val respCode = makeClientRequestWithEntity(request, body)
+    assertEquals(HttpStatus.SC_BAD_REQUEST, respCode)
 
     val result = mapper.readTree(request.getResponseBody())
     val errors = result.get("errors").findValue("message").asText()
@@ -99,9 +109,9 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     val body = buildRequestBody
     body.put("platform", "GitHub")
 
-    val request   = new PutMethod(OIDC_ENDPOINT)
-    val resp_code = makeClientRequestWithEntity(request, body)
-    assertEquals(HttpStatus.SC_BAD_REQUEST, resp_code)
+    val request  = new PutMethod(OIDC_ENDPOINT)
+    val respCode = makeClientRequestWithEntity(request, body)
+    assertEquals(HttpStatus.SC_BAD_REQUEST, respCode)
   }
 
   @Test(description = "Return 403 when user has no permission to access OIDC configuration",
@@ -111,7 +121,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
 
     val request = new GetMethod(OIDC_ENDPOINT)
 
-    val resp_code = makeClientRequest(request)
-    assertEquals(HttpStatus.SC_FORBIDDEN, resp_code)
+    val respCode = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_FORBIDDEN, respCode)
   }
 }
