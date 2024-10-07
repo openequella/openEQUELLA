@@ -23,6 +23,7 @@ import { flow, pipe } from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as RS from "fp-ts/ReadonlySet";
 import * as R from "fp-ts/Record";
+import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
@@ -38,23 +39,47 @@ import { defaultACLEntityResolvers } from "../../../modules/ACLExpressionModule"
 import { ACLRecipientTypes } from "../../../modules/ACLRecipientModule";
 import { groupIds } from "../../../modules/GroupModule";
 import { roleIds } from "../../../modules/RoleModule";
+import { languageStrings } from "../../../util/langstrings";
+import { isNonEmptyString, isValidURL } from "../../../util/validation";
 import AccessControlSection, {
   UnknownUserHandlingData,
 } from "./AccessControlSection";
 import GeneralDetailsSection, {
-  generalDetailsDefaultRenderOption,
-  GeneralDetailsSectionRenderOptions,
-} from "./GeneralDetailsSection";
+  FieldRenderOptions,
+  textFiledComponent,
+} from "../../../components/GeneralDetailsSection";
+import { validateUsernameClaim } from "./LtiUsernameClaimParser";
 import RoleMappingsSection, {
   RoleMappingWarnings,
 } from "./RoleMappingsSection";
 import { GroupWarning } from "./UnknownUserHandlingControl";
 import { UsableByControlProps } from "./UsableByControl";
+import * as S from "fp-ts/string";
 
+const {
+  name,
+  title,
+  platformId,
+  clientId,
+  platformAuthenticationRequestURL,
+  platformKeysetURL,
+  usernameClaim,
+  usernameClaimDesc,
+  usernamePrefix,
+  usernameSuffix,
+  needUrl,
+} =
+  languageStrings.settings.integration.lti13PlatformsSettings.createPage
+    .generalDetails;
 /**
  * Warning messages for group and role selector related controls in ConfigureLti13Platform component.
  */
 export type WarningMessages = RoleMappingWarnings & GroupWarning;
+
+export type LtiGeneralDetails = Omit<
+  OEQ.LtiPlatform.LtiPlatformBase,
+  "kid" | "enabled" | "allowExpression" | "unknownUserHandling"
+>;
 
 /**
  * Contains value of states used in component `ConfigureLti13Platform`
@@ -63,9 +88,9 @@ export type WarningMessages = RoleMappingWarnings & GroupWarning;
  */
 export interface ConfigurePlatformValue {
   /**
-   * Render options for each text input in general details sections.
+   * An object contains the key and value of general details of the LTI platform.
    */
-  generalDetailsRenderOptions: GeneralDetailsSectionRenderOptions;
+  generalDetails: LtiGeneralDetails;
   /**
    * The ACL Expression to control access from this platform
    */
@@ -92,8 +117,19 @@ export interface ConfigurePlatformValue {
   enabled: boolean;
 }
 
+const defaultGeneralDetails = {
+  platformId: "",
+  name: "",
+  clientId: "",
+  authUrl: "",
+  keysetUrl: "",
+  usernameClaim: "",
+  usernamePrefix: "",
+  usernameSuffix: "",
+};
+
 export const defaultConfigurePlatformValue: ConfigurePlatformValue = {
-  generalDetailsRenderOptions: generalDetailsDefaultRenderOption,
+  generalDetails: defaultGeneralDetails,
   aclExpression: ACLRecipientTypes.Everyone,
   instructorRoles: new Set(),
   unknownRoles: new Set(),
@@ -146,6 +182,12 @@ export interface ConfigureLti13PlatformProps
   KeyRotationSection?: React.ReactNode;
 }
 
+// An empty string should be allowed as users may put some values in and delete them later.
+const validateClaim = (claim: unknown) =>
+  S.isString(claim) && (S.isEmpty(claim) || validateUsernameClaim(claim));
+
+const validateUrl = (v: unknown) => isNonEmptyString(v) && isValidURL(v);
+
 /**
  * The component is responsible for rendering the page for creating new LTI 1.3 platform configurations.
  * Upon form submission, if all validations are passed, the settings will be submitted.
@@ -173,15 +215,20 @@ const ConfigureLti13Platform = ({
   // Given that the save button on the creation page of OEQ has always been available in present UI,
   // set the disableSaveButton `false` here.
   const [saveButtonDisabled, setSaveButtonDisabled] = useState<boolean>(false);
-
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [preventNavigation, setPreventNavigation] = useState(true);
-
   const [showValidationErrors, setShowValidationErrors] = React.useState(false);
 
-  const [generalDetailsRenderOptions, setGeneralDetailsRenderOptions] =
-    React.useState<GeneralDetailsSectionRenderOptions>(
-      value.generalDetailsRenderOptions,
+  // initialize general details value, using the default values and replacing those
+  // in the retrieved 'platform' value.
+  const [ltiGeneralDetails, setLtiGeneralDetails] =
+    React.useState<LtiGeneralDetails>(
+      pipe(
+        defaultGeneralDetails,
+        R.mapWithIndex((key, defaultValue) => {
+          return value?.generalDetails[key] ?? defaultValue;
+        }),
+      ),
     );
 
   const [aclExpression, setAclExpression] = useState(value.aclExpression);
@@ -201,6 +248,131 @@ const ConfigureLti13Platform = ({
     Map<string, Set<OEQ.UserQuery.RoleDetails>>
   >(value.customRoles);
 
+  // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
+  const onGeneralDetailsChange = (key: string, newValue: unknown) =>
+    setLtiGeneralDetails({
+      ...ltiGeneralDetails,
+      [key]: newValue,
+    });
+
+  /**
+   * Build the render options for GeneralDetailsSection.
+   */
+  const ltiGeneralDetailsRenderOptions: Record<string, FieldRenderOptions> = {
+    platformId: {
+      label: platformId,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        platformId,
+        ltiGeneralDetails.platformId,
+        // Disable platform ID field if there is a pre-defined value(ID can't be changed in edit page).
+        !S.isEmpty(value?.generalDetails["platformId"] ?? ""),
+        true,
+        (value) => onGeneralDetailsChange("platformId", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+    name: {
+      label: name,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        name,
+        ltiGeneralDetails.name,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("name", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+    clientId: {
+      label: clientId,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        clientId,
+        ltiGeneralDetails.clientId,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("clientId", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+    authUrl: {
+      label: platformAuthenticationRequestURL,
+      desc: needUrl,
+      required: true,
+      validate: validateUrl,
+      component: textFiledComponent(
+        platformAuthenticationRequestURL,
+        ltiGeneralDetails.authUrl,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("authUrl", value),
+        showValidationErrors,
+        validateUrl,
+      ),
+    },
+    keysetUrl: {
+      label: platformKeysetURL,
+      desc: needUrl,
+      required: true,
+      validate: validateUrl,
+      component: textFiledComponent(
+        platformKeysetURL,
+        ltiGeneralDetails.keysetUrl,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("keysetUrl", value),
+        showValidationErrors,
+        validateUrl,
+      ),
+    },
+    usernameClaim: {
+      label: usernameClaim,
+      desc: usernameClaimDesc,
+      required: false,
+      validate: validateClaim,
+      component: textFiledComponent(
+        usernameClaim,
+        ltiGeneralDetails.usernameClaim,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("usernameClaim", value),
+        showValidationErrors,
+        validateClaim,
+      ),
+    },
+    usernamePrefix: {
+      label: usernamePrefix,
+      required: false,
+      component: textFiledComponent(
+        usernamePrefix,
+        ltiGeneralDetails.usernamePrefix,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("usernamePrefix", value),
+        showValidationErrors,
+      ),
+    },
+    usernameSuffix: {
+      label: usernameSuffix,
+      required: false,
+      component: textFiledComponent(
+        usernameSuffix,
+        ltiGeneralDetails.usernameSuffix,
+        false,
+        true,
+        (value) => onGeneralDetailsChange("usernameSuffix", value),
+        showValidationErrors,
+      ),
+    },
+  };
+
   React.useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(pageName)(tp),
@@ -214,14 +386,10 @@ const ConfigureLti13Platform = ({
 
     setSaveButtonDisabled(true);
 
-    const generalDetailsValue = pipe(
-      generalDetailsRenderOptions,
-      R.map((r) => r.value),
-    );
-
-    // generate request data to create/update platform
-    const platformValue: OEQ.LtiPlatform.LtiPlatform = {
-      ...generalDetailsValue,
+    // Build all values for lti platform.
+    const ltiPlatformValue = {
+      ...ltiGeneralDetails,
+      enabled: value.enabled,
       unknownUserHandling: selectedUnknownUserHandling.selection,
       allowExpression: aclExpression,
       instructorRoles: pipe(roleIds(selectedInstructorRoles), RS.toSet),
@@ -234,12 +402,19 @@ const ConfigureLti13Platform = ({
         groupIds(selectedUnknownUserHandling.groups),
         RS.toSet,
       ),
-      enabled: value.enabled,
     };
 
-    const configurePlatformTask: TE.TaskEither<string, void> = TE.tryCatch(
-      () => configurePlatformProvider(platformValue),
-      String,
+    // Verify the base platform value and save it.
+    const configurePlatformTask: TE.TaskEither<string, void> = pipe(
+      ltiPlatformValue,
+      E.fromPredicate(
+        OEQ.Codec.LtiPlatform.LtiPlatformCodec.is,
+        () => `Mismatched LTI platform value.`,
+      ),
+      TE.fromEither,
+      TE.chain((validValue) =>
+        TE.tryCatch(() => configurePlatformProvider(validValue), String),
+      ),
     );
 
     (async () => {
@@ -263,7 +438,7 @@ const ConfigureLti13Platform = ({
     aclExpression,
     appErrorHandler,
     configurePlatformProvider,
-    generalDetailsRenderOptions,
+    ltiGeneralDetails,
     saving,
     selectedCustomRolesMapping,
     selectedInstructorRoles,
@@ -282,11 +457,18 @@ const ConfigureLti13Platform = ({
   // check if all input value are valid
   const checkValidation = (): boolean =>
     pipe(
-      generalDetailsRenderOptions,
+      ltiGeneralDetailsRenderOptions,
       R.toEntries,
-      A.every(([_, data]) =>
-        data.validate ? data.validate(data.value) : true,
-      ),
+      A.every(([key, data]) => {
+        const fieldValue = pipe(
+          ltiGeneralDetails,
+          R.lookup(key),
+          O.getOrElseW(() => {
+            throw new Error(`Can't find general details for key: ${key}`);
+          }),
+        );
+        return data.validate?.(fieldValue) ?? true;
+      }),
     );
 
   const handleSubmit = async () => {
@@ -315,9 +497,8 @@ const ConfigureLti13Platform = ({
         <CardContent>
           <Grid mt={2}>
             <GeneralDetailsSection
-              showValidationErrors={showValidationErrors}
-              value={generalDetailsRenderOptions}
-              onChange={setGeneralDetailsRenderOptions}
+              title={title}
+              fields={ltiGeneralDetailsRenderOptions}
             />
           </Grid>
 

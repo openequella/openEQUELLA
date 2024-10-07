@@ -19,7 +19,6 @@ import { Button } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import * as R from "fp-ts/Record";
 import * as TE from "../../../util/TaskEither.extended";
 import * as React from "react";
 import { useContext, useState } from "react";
@@ -42,6 +41,7 @@ import { languageStrings } from "../../../util/langstrings";
 import ConfigureLti13Platform, {
   ConfigureLti13PlatformProps,
   ConfigurePlatformValue,
+  LtiGeneralDetails,
   WarningMessages,
 } from "./ConfigureLti13Platform";
 import {
@@ -49,7 +49,6 @@ import {
   getGroupsTask,
   getRolesTask,
 } from "./EditLti13PlatformHelper";
-import { generalDetailsDefaultRenderOption } from "./GeneralDetailsSection";
 
 const {
   name: editPageName,
@@ -151,17 +150,17 @@ const EditLti13Platform = ({
         return;
       }
 
-      // initialize general details render options, using the default values and replacing those
-      // in the retrieved 'platform'.
-      const generalDetailsRenderOptions = pipe(
-        generalDetailsDefaultRenderOption,
-        R.mapWithIndex((key, data) => ({
-          ...data,
-          value: platform[key] ?? "",
-          // disable platform ID field since ID can't be changed in edit page
-          disabled: key === "platformId",
-        })),
-      );
+      // Get all general details value.
+      const generalDetailsValue: LtiGeneralDetails = {
+        platformId: platform.platformId,
+        name: platform.name,
+        clientId: platform.clientId,
+        authUrl: platform.authUrl,
+        keysetUrl: platform.keysetUrl,
+        usernameClaim: platform.usernameClaim,
+        usernamePrefix: platform.usernamePrefix,
+        usernameSuffix: platform.usernameSuffix,
+      };
 
       // initialize groups and roles details
       const unknownUserDefaultGroupsWithMsgTask = pipe(
@@ -211,7 +210,7 @@ const EditLti13Platform = ({
             unknownRolesWithMsg,
           ]) => {
             setConfigurePlatformValue({
-              generalDetailsRenderOptions,
+              generalDetails: generalDetailsValue,
               aclExpression:
                 platform.allowExpression ?? ACLRecipientTypes.Everyone,
               unknownRoles: unknownRolesWithMsg.entities,
