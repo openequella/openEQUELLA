@@ -68,13 +68,14 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     JsonNode keyResources = request(JAMES_HIERARCHY_UUID).get("keyResources");
 
     // Key resource should point to the correct version
-    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID).get("isLatest").asBoolean());
+    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("isLatest").asBoolean());
     assertEquals(
-        getKeyResource(keyResources, BOOK_A_V2_UUID).get("item").get("version").asInt(), 2);
+        getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("item").get("version").asInt(), 2);
     // BOOK_B has 2 versions and as an "Always latest key resource" it should point to the latest
     // version 2.
-    assertTrue(getKeyResource(keyResources, BOOK_B_UUID).get("isLatest").asBoolean());
-    assertEquals(getKeyResource(keyResources, BOOK_B_UUID).get("item").get("version").asInt(), 2);
+    assertTrue(getKeyResource(keyResources, BOOK_B_UUID, 2).get("isLatest").asBoolean());
+    assertEquals(
+        getKeyResource(keyResources, BOOK_B_UUID, 2).get("item").get("version").asInt(), 2);
   }
 
   @Test(description = "Get a virtual hierarchy topic which name contains comma")
@@ -105,6 +106,10 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     assertEquals(statusCode, 200);
 
     JsonNode result = mapper.readTree(method.getResponseBody());
+    result.forEach(
+        r -> {
+          System.out.println("Hierarchy UUID: " + r.asText());
+        });
     assertEquals(result.get(0).asText(), JAMES_HIERARCHY_UUID);
   }
 
@@ -125,8 +130,16 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     return getNode((ArrayNode) result, "compoundUuid", topicUuid);
   }
 
-  private JsonNode getKeyResource(JsonNode result, String itemUuid) {
-    return getNode((ArrayNode) result, n -> n.get("item").get("uuid"), itemUuid);
+  private JsonNode getKeyResource(JsonNode result, String itemUuid, int version) {
+    return getNode(
+        (ArrayNode) result,
+        n ->
+            n.get("item").findParents("uuid").stream()
+                .filter(item -> item.get("version").asInt() == version)
+                .findFirst()
+                .map(item -> item.get("uuid"))
+                .orElse(null),
+        itemUuid);
   }
 
   private String getCompoundUuid(JsonNode result) {
