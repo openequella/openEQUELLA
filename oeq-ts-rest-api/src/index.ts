@@ -18,6 +18,7 @@
 import * as CommonCodec from './gen/Common';
 import * as SearchCodec from './gen/Search';
 import * as WizardControlCodec from './gen/WizardControl';
+import * as LtiPlatformCodec from './gen/LtiPlatform';
 
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
@@ -55,4 +56,5 @@ export const Codec = {
   Common: CommonCodec,
   Search: SearchCodec,
   WizardControl: WizardControlCodec,
+  LtiPlatform: LtiPlatformCodec,
 };
