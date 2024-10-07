@@ -99,18 +99,14 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Get hierarchy IDs with key resource")
   public void getHierarchyIdsWithKeyResource() throws IOException {
-    final String ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a";
+    final String ITEM_UUID = "7e633e1d-e343-4e51-babc-403265c7b7c4";
     final GetMethod method =
-        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/2");
+        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/1");
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
     JsonNode result = mapper.readTree(method.getResponseBody());
-    result.forEach(
-        r -> {
-          System.out.println("Hierarchy UUID: " + r.asText());
-        });
-    assertEquals(result.get(0).asText(), JAMES_HIERARCHY_UUID);
+    assertEquals(result.get(0).asText(), "43e60e9a-a3ed-497d-b79d-386fed23675c");
   }
 
   private JsonNode request(String compoundUuid) throws IOException {
