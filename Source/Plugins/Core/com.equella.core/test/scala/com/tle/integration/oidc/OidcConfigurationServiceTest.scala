@@ -1,19 +1,19 @@
 package com.tle.integration.oidc
 
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.auditlog.AuditLogService
 import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.{
   CommonDetails,
   GenericIdentityProvider,
-  GenericIdentityProviderDetails,
-  IdentityProviderPlatform
+  GenericIdentityProviderDetails
 }
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.{atLeastOnce, mock, mockStatic, times, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.GivenWhenThen
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
@@ -22,6 +22,7 @@ import java.net.URI
 
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
+  val mockAuditLogService: AuditLogService           = mock(classOf[AuditLogService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
 
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
@@ -41,7 +42,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"),
   )
 
-  val auth0StringRepr =
+  val auth0EncryptedStringRepr =
     """{"commonDetails":{"name":"Auth0","platform":"GENERIC","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
@@ -49,7 +50,9 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   when(CurrentUser.getUsername).thenReturn("Test user")
 
   class Fixture {
-    val service = new OidcConfigurationServiceImpl(mockConfigurationService, encryptionService)
+    val service = new OidcConfigurationServiceImpl(mockConfigurationService,
+                                                   encryptionService,
+                                                   mockAuditLogService)
   }
 
   def fixture = new Fixture
@@ -69,7 +72,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         idpStringRepr.capture(),
       )
 
-      idpStringRepr.getValue shouldBe auth0StringRepr
+      idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
     }
 
     it("captures all the invalid values") {
@@ -115,7 +118,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Given("An existing configuration")
       when(mockConfigurationService.getProperty(PROPERTY_NAME))
-        .thenReturn(auth0StringRepr)
+        .thenReturn(auth0EncryptedStringRepr)
 
       When("A new configuration does not include sensitive values")
       val newAuth0 = auth0.copy(
@@ -131,7 +134,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         idpStringRepr.capture(),
       )
 
-      idpStringRepr.getValue shouldBe auth0StringRepr
+      idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
     }
 
     it(
@@ -158,6 +161,23 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       }
     }
 
+    it("creates an audit log for the saving") {
+      val f = fixture
+
+      When("A valid configuration is saved")
+      f.service.save(auth0)
+
+      Then("An audit log should be created for the saving")
+      verify(mockAuditLogService, atLeastOnce()).logGeneric(
+        "OIDC",
+        "update IdP",
+        null,
+        null,
+        null,
+        auth0EncryptedStringRepr,
+      )
+    }
+
   }
 
   describe("Retrieving configuration") {
@@ -167,7 +187,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Given("An Identity Provider whose string representation has been saved in DB")
       when(mockConfigurationService.getProperty(PROPERTY_NAME))
-        .thenReturn(auth0StringRepr)
+        .thenReturn(auth0EncryptedStringRepr)
 
       When("The Identity Provider is retrieved")
       val result = f.service.get
@@ -176,21 +196,20 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         "The string representation should have been converted to the object and returned through ConfigurationService")
       val expected = GenericIdentityProviderDetails(
         commonDetails = CommonDetails(
-          name = "Auth0",
-          platform = IdentityProviderPlatform.GENERIC,
-          authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
-          authCodeClientSecret = "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",
-          authUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize").toURL,
-          keysetUrl =
-            URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json").toURL,
-          tokenUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token").toURL,
-          usernameClaim = None,
-          defaultRoles = Set.empty,
-          roleConfig = None
+          name = auth0.name,
+          platform = auth0.platform,
+          authCodeClientId = auth0.authCodeClientId,
+          authCodeClientSecret = auth0.authCodeClientSecret.get,
+          authUrl = URI.create(auth0.authUrl).toURL,
+          keysetUrl = URI.create(auth0.keysetUrl).toURL,
+          tokenUrl = URI.create(auth0.tokenUrl).toURL,
+          usernameClaim = auth0.usernameClaim,
+          defaultRoles = auth0.defaultRoles,
+          roleConfig = auth0.roleConfig
         ),
-        apiUrl = URI.create("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users").toURL,
-        apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-        apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+        apiUrl = URI.create(auth0.apiUrl).toURL,
+        apiClientId = auth0.apiClientId,
+        apiClientSecret = auth0.apiClientSecret.get
       )
       result shouldBe Right(expected)
     }
@@ -215,7 +234,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val f = fixture
 
       Given("A bad string representation that has been saved in DB")
-      val badStringRepr = auth0StringRepr.replace("authCodeClientId", "auth_Code_Client_Id")
+      val badStringRepr =
+        auth0EncryptedStringRepr.replace("authCodeClientId", "auth_Code_Client_Id")
       when(mockConfigurationService.getProperty(PROPERTY_NAME)).thenReturn(badStringRepr)
 
       When("Attempting to retrieve the configuration")
