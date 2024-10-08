@@ -237,7 +237,7 @@ object UserDetails {
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
-  @Inject private var nonceService: OidcNonceService      = _
+  @Inject private var nonceService: Lti13NonceService     = _
   @Inject private var platformService: LtiPlatformService = _
   @Inject private var runAs: RunAsInstitution             = _
   @Inject private var stateService: Lti13StateService     = _

@@ -27,8 +27,10 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 
-object NonceExpiry {
-  val inSeconds = 10
+object OIDCNonce {
+  // As a general rule, 300 seconds should be long enough to complete the authentication process.
+  val expiryInSeconds = 300
+  val name            = "oidc-nonce"
 }
 
 /**
@@ -47,15 +49,14 @@ case class OidcNonceDetails(state: String, timestamp: Instant) extends Serializa
 @Singleton
 class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails]) {
 
-  @Inject def this(rcs: ReplicatedCacheService) {
-    // Not keen on the idea of having a limit on the number of cache entries, but that's the way
-    // RCS works. And although we set a TTL of 10 seconds, that's only until first access. After
-    // that it's been hard coded to last for 1 day!
-    // (See com.tle.core.replicatedcache.impl.ReplicatedCacheServiceImpl.ReplicatedCacheImpl.ReplicatedCacheImpl)
+  def this(rcs: ReplicatedCacheService, name: String, ttl: Int) =
     this(
       rcs
-        .getCache[OidcNonceDetails]("oidc-nonces", 1000, NonceExpiry.inSeconds, TimeUnit.SECONDS))
-  }
+        .getCache[OidcNonceDetails](name, 1000, ttl, TimeUnit.SECONDS))
+
+  @Inject
+  def this(rcs: ReplicatedCacheService) =
+    this(rcs, OIDCNonce.name, OIDCNonce.expiryInSeconds)
 
   /**
     * Given an existing `state` value, will create a unique `nonce` value and store it in a
@@ -98,7 +99,7 @@ class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails]) {
     */
   def validateNonce(nonce: String, state: String): Either[String, Boolean] = {
     def notExpired(ts: Instant) = {
-      val validUntil = ts.plusSeconds(NonceExpiry.inSeconds)
+      val validUntil = ts.plusSeconds(OIDCNonce.expiryInSeconds)
       Instant
         .now()
         .isBefore(validUntil)
