@@ -46,8 +46,9 @@ object IdentityProviderPlatform extends Enumeration {
 case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[String]])
 
 /**
-  * Abstraction of an OIDC Identity Provider configuration to provide common fields. All the secret values
-  * are optional because the values may not be provided by client for update.
+  * Abstraction of an OIDC Identity Provider configuration to provide common fields, typically used with REST endpoints
+  * where a looser type is required to support de-serialisation. For example, Secret values are required in the integration,
+  * but they are optional here because the values may not be provided by client for update.
   *
   * In order to support polymorphic deserialization of the IdentityProvider, Jackson annotations `@JsonTypeInfo`
   * and `@JsonSubTypes` are used to specify the type discriminator and subtypes.

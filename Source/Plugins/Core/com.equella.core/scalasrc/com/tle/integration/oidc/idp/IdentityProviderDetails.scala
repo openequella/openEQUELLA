@@ -25,10 +25,9 @@ import com.tle.core.encryption.EncryptionService
 import java.net.{URI, URL}
 
 /**
-  * The common details configured for SSO with an Identity Provider, but with
-  * some slightly more concrete types (e.g. `URL`) compared to `IdentityProvider`
-  * which needed to be looser for REST endpoints etc. Also, sensitive values are
-  * encrypted.
+  * The common details configured for SSO with an Identity Provider, but with some slightly more strict types
+  * (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values) compared to `IdentityProvider`
+  * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
   *
   * @param name Name of the Identity Provider.
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
@@ -88,7 +87,7 @@ object IdentityProviderDetails {
       .map(encryptionService.encrypt(_))
       .toRight(s"Missing value for required field: $field")
 
-  // Ignore the existing config if it uses a different platform.
+  // If the existing config is the same type return an Option of the config; otherwise return None.
   private def existingIdP[T <: IdentityProviderDetails](
       idp: Option[IdentityProviderDetails]): Option[T] = {
     idp.flatMap(c => Either.catchNonFatal(c.asInstanceOf[T]).toOption)
