@@ -18,11 +18,10 @@
 
 package com.tle.integration.oidc.service
 
+import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
-import com.tle.integration.oidc.generateRandomHexString
-
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}

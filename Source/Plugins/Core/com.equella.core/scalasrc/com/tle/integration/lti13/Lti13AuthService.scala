@@ -50,7 +50,7 @@ import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 import cats.implicits._
-import com.tle.integration.oidc.generateRandomHexString
+import com.tle.common.util.StringUtils.generateRandomHexString
 import io.circe._
 import io.circe.parser._
 
