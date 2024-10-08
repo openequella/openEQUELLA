@@ -27,11 +27,7 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 
-object OIDCNonce {
-  // As a general rule, 300 seconds should be long enough to complete the authentication process.
-  val expiryInSeconds = 300
-  val name            = "oidc-nonce"
-}
+case class NonceConfig(expiryInSeconds: Int, name: String)
 
 /**
   * Provides the concrete details behind a nonce to be used for validation.
@@ -47,16 +43,16 @@ case class OidcNonceDetails(state: String, timestamp: Instant) extends Serializa
   */
 @Bind
 @Singleton
-class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails]) {
+class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails], config: NonceConfig) {
 
-  def this(rcs: ReplicatedCacheService, name: String, ttl: Int) =
-    this(
-      rcs
-        .getCache[OidcNonceDetails](name, 1000, ttl, TimeUnit.SECONDS))
+  def this(rcs: ReplicatedCacheService, config: NonceConfig) =
+    this(rcs
+           .getCache[OidcNonceDetails](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS),
+         config)
 
   @Inject
   def this(rcs: ReplicatedCacheService) =
-    this(rcs, OIDCNonce.name, OIDCNonce.expiryInSeconds)
+    this(rcs, NonceConfig(300, "oidc-nonces"))
 
   /**
     * Given an existing `state` value, will create a unique `nonce` value and store it in a
@@ -99,7 +95,7 @@ class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails]) {
     */
   def validateNonce(nonce: String, state: String): Either[String, Boolean] = {
     def notExpired(ts: Instant) = {
-      val validUntil = ts.plusSeconds(OIDCNonce.expiryInSeconds)
+      val validUntil = ts.plusSeconds(config.expiryInSeconds)
       Instant
         .now()
         .isBefore(validUntil)

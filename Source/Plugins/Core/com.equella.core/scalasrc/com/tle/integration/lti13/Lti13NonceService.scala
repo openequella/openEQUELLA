@@ -20,14 +20,9 @@ package com.tle.integration.lti13
 
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
-import com.tle.integration.oidc.service.OidcNonceService
+import com.tle.integration.oidc.service.{NonceConfig, OidcNonceService}
 
 import javax.inject.{Inject, Singleton}
-
-object Lti13Nonce {
-  val expiryInSeconds = 10
-  val name            = "lti13-nonces"
-}
 
 /**
   * Manages the nonce values for LTI 1.3 Authentication processes where a nonce is valid for 10 seconds.
@@ -35,4 +30,4 @@ object Lti13Nonce {
 @Bind
 @Singleton
 class Lti13NonceService @Inject()(rcs: ReplicatedCacheService)
-    extends OidcNonceService(rcs, Lti13Nonce.name, Lti13Nonce.expiryInSeconds)
+    extends OidcNonceService(rcs, NonceConfig(10, "lti13-nonces"))

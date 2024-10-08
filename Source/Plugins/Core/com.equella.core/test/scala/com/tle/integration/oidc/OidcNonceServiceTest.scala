@@ -1,14 +1,15 @@
 package com.tle.integration.oidc
 
 import com.tle.core.replicatedcache.TrieMapCache
-import com.tle.integration.oidc.service.{OidcNonceDetails, OidcNonceService}
+import com.tle.integration.oidc.service.{NonceConfig, OidcNonceDetails, OidcNonceService}
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 
 class OidcNonceServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   class Fixture {
-    val oidcNonceService = new OidcNonceService(new TrieMapCache[OidcNonceDetails])
+    val oidcNonceService =
+      new OidcNonceService(new TrieMapCache[OidcNonceDetails], NonceConfig(5, "test"))
   }
 
   def fixture = new Fixture
