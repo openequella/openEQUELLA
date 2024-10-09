@@ -1,20 +1,21 @@
-package com.tle.integration.lti13
+package com.tle.integration.oidc
 
 import com.tle.core.replicatedcache.TrieMapCache
+import com.tle.integration.lti13.{Lti13StateDetails, Lti13StateService}
+import com.tle.integration.oidc.service.{OidcStateService, StateConfig}
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 
 import java.net.URI
 
-class Lti13StateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
-  private val testLtiDetails = Lti13StateDetails(platformId = "http://superlms.com/",
-                                                 loginHint = "someid",
-                                                 targetLinkUri =
-                                                   new URI("http://someoeq.net/items/xyz"))
+class OidcStateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
+  case class TestData(value: String)
+
+  private val testData = TestData("http://superlms.com/")
 
   class Fixture {
-    val lti13StateService = new Lti13StateService(new TrieMapCache[Lti13StateDetails])
+    val oidcStateService = new OidcStateService(new TrieMapCache[TestData])
   }
 
   def fixture = new Fixture
@@ -22,7 +23,7 @@ class Lti13StateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen 
   describe("createState") {
     it("should provide a state value") {
       val f = fixture
-      f.lti13StateService.createState(testLtiDetails) should not be empty
+      f.oidcStateService.createState(testData) should not be empty
     }
   }
 
@@ -31,11 +32,11 @@ class Lti13StateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen 
       val f = fixture
 
       Given("a known state")
-      val state = f.lti13StateService.createState(testLtiDetails)
+      val state = f.oidcStateService.createState(testData)
 
       // Do it once
       Then("requesting the details for that state, should return the correct details")
-      val getState = () => f.lti13StateService.getState(state) shouldBe Some(testLtiDetails)
+      val getState = () => f.oidcStateService.getState(state) shouldBe Some(testData)
       getState()
 
       // Do it again to illustrate persistence - one or more times
@@ -45,7 +46,7 @@ class Lti13StateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen 
 
     it("returns None for invalid state values") {
       val f = fixture
-      f.lti13StateService.getState("nosuchstatevalue") shouldBe None
+      f.oidcStateService.getState("nosuchstatevalue") shouldBe None
     }
   }
 
@@ -55,14 +56,14 @@ class Lti13StateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen 
 
       Given("a new state value is created, and confirmed present")
       val state =
-        f.lti13StateService.createState(testLtiDetails.copy(loginHint = "for-invalidate-state"))
-      f.lti13StateService.getState(state) should not be None
+        f.oidcStateService.createState(testData.copy(value = "for-invalidate-state"))
+      f.oidcStateService.getState(state) should not be None
 
       When("it is then invalidated")
-      f.lti13StateService.invalidateState(state)
+      f.oidcStateService.invalidateState(state)
 
       Then("None will be returned on subsequent requests")
-      f.lti13StateService.getState(state) shouldBe None
+      f.oidcStateService.getState(state) shouldBe None
     }
   }
 }
