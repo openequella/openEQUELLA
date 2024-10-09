@@ -78,13 +78,13 @@ object IdentityProviderDetails {
 
   private var encryptionService: EncryptionService = _
 
-  private def getOrFromExisting(field: String,
-                                newValue: Option[String],
-                                existingConfig: Option[String]): Either[String, String] =
+  private def encrypt(field: String,
+                      newValue: Option[String],
+                      existingConfig: Option[String]): Either[String, String] =
     newValue
       .filter(_.nonEmpty)
       .orElse(existingConfig)
-      .map(encryptionService.encrypt(_))
+      .map(encryptionService.encrypt)
       .toRight(s"Missing value for required field: $field")
 
   // If the existing config is the same type return an Option of the config; otherwise return None.
@@ -97,7 +97,7 @@ object IdentityProviderDetails {
       idp: IdentityProvider,
       existingConfig: Option[IdentityProviderDetails]): Either[String, CommonDetails] =
     for {
-      authCodeClientSecret <- getOrFromExisting(
+      encryptedAuthCodeClientSecret <- encrypt(
         "Authorisation Code flow Client Secret",
         idp.authCodeClientSecret,
         existingConfig.map(_.commonDetails.authCodeClientSecret)
@@ -107,7 +107,7 @@ object IdentityProviderDetails {
         name = idp.name,
         platform = idp.platform,
         authCodeClientId = idp.authCodeClientId,
-        authCodeClientSecret = authCodeClientSecret,
+        authCodeClientSecret = encryptedAuthCodeClientSecret,
         authUrl = URI.create(idp.authUrl).toURL,
         keysetUrl = URI.create(idp.keysetUrl).toURL,
         tokenUrl = URI.create(idp.tokenUrl).toURL,
@@ -131,13 +131,13 @@ object IdentityProviderDetails {
 
     val result = idp match {
       case generic: GenericIdentityProvider =>
-        val apiClientSecret = getOrFromExisting(
+        val encryptedApiClientSecret = encrypt(
           "API Client Secret",
           generic.apiClientSecret,
           existingIdP[GenericIdentityProviderDetails](existingConfig).map(_.apiClientSecret))
 
         // Convert to ValidatedNel to collect all the errors
-        (commonDetails(idp, existingConfig).toValidatedNel, apiClientSecret.toValidatedNel)
+        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiClientSecret.toValidatedNel)
           .mapN(
             (commonDetails, apiClientSecret) =>
               GenericIdentityProviderDetails(commonDetails = commonDetails,
