@@ -120,8 +120,6 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     * Validate the values of all the common fields configured for an IdentityProvider, and
     * return the IdentityProvider if the validation succeeds, or a list of errors captured
     * during the validation.
-    *
-    * Use `this.type` to ensure returning the exact type of the Identity Provider.
     */
   def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
