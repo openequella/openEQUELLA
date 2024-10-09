@@ -18,6 +18,7 @@
 
 package com.tle.integration.lti13
 
+import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
 import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache

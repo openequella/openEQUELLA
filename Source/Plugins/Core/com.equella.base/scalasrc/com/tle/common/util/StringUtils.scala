@@ -16,18 +16,21 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti13
+package com.tle.common.util
 
-import com.tle.core.guice.Bind
-import com.tle.core.replicatedcache.ReplicatedCacheService
-import com.tle.integration.oidc.service.{NonceConfig, OidcNonceService}
+import java.security.SecureRandom
 
-import javax.inject.{Inject, Singleton}
+object StringUtils {
 
-/**
-  * Manages the nonce values for LTI 1.3 Authentication processes where a nonce is valid for 10 seconds.
-  */
-@Bind
-@Singleton
-class Lti13NonceService @Inject()(rcs: ReplicatedCacheService)
-    extends OidcNonceService(rcs, NonceConfig(10, "lti13-nonces"))
+  private val secureRandom = SecureRandom.getInstanceStrong
+
+  /**
+    * Generates a string of random bytes represented as hexadecimal values.
+    *
+    * @param length number of random bytes
+    * @return a string which is twice the length of `length` with each two characters representing
+    *         one byte
+    */
+  def generateRandomHexString(length: Int): String =
+    Range(0, length).map(_ => "%02x".format(secureRandom.nextInt(255))).mkString
+}

@@ -21,13 +21,11 @@ package com.tle.integration
 import com.auth0.jwt.interfaces.DecodedJWT
 
 import java.net.URI
-import java.security.SecureRandom
 import scala.util.Try
 import scala.jdk.CollectionConverters._
 import cats.implicits._
 
 package object lti13 {
-  private val secureRandom = SecureRandom.getInstanceStrong
 
   /**
     * Helper function for dealing with params sent the servlet endpoint. On the expectation that
@@ -109,14 +107,4 @@ package object lti13 {
     */
   def getClaim(jwt: DecodedJWT): String => Option[String] =
     (claim: String) => getClaim(jwt, claim)
-
-  /**
-    * Generates a string of random bytes represented as hexadecimal values.
-    *
-    * @param length number of random bytes
-    * @return a string which is twice the length of `length` with each two characters representing
-    *         one byte
-    */
-  def generateRandomHexString(length: Int): String =
-    Range(0, length).map(_ => "%02x".format(secureRandom.nextInt(255))).mkString
 }
