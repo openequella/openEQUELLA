@@ -21,6 +21,7 @@ package com.tle.integration.oidc.service
 import cats.implicits._
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.auditlog.AuditLogService
 import com.tle.core.encryption.EncryptionService
 import com.tle.core.guice.Bind
 import com.tle.core.settings.service.ConfigurationService
@@ -41,26 +42,31 @@ import javax.inject.{Inject, Singleton}
 class OidcConfigurationServiceImpl extends OidcConfigurationService {
   private val PROPERTY_NAME                                 = "OIDC_IDENTITY_PROVIDER"
   private var configurationService: ConfigurationService    = _
+  private var auditLogService: AuditLogService              = _
   private implicit var encryptionService: EncryptionService = _
   private val logger: Logger                                = LoggerFactory.getLogger(classOf[OidcConfigurationServiceImpl])
 
   @Inject
-  def this(configurationService: ConfigurationService, encryptionService: EncryptionService) {
+  def this(configurationService: ConfigurationService,
+           encryptionService: EncryptionService,
+           auditLogService: AuditLogService) {
     this()
     this.configurationService = configurationService
     this.encryptionService = encryptionService
+    this.auditLogService = auditLogService
   }
 
   def save(idp: IdentityProvider): Either[Throwable, Unit] = {
     def saveAsJson(validated: IdentityProvider): Either[Throwable, Unit] =
-      Either
-        .catchNonFatal(
-          configurationService.setProperty(
-            PROPERTY_NAME,
-            IdentityProviderDetails(validated).asJson.noSpaces
-          ))
+      for {
+        details <- IdentityProviderDetails(validated, get.toOption)
+        jsonRepr = details.asJson.noSpaces
+        _ <- Either.catchNonFatal {
+          auditLogService.logGeneric("OIDC", "update IdP", null, null, null, jsonRepr)
+          configurationService.setProperty(PROPERTY_NAME, jsonRepr)
+        }
+      } yield ()
 
-    logger.info(s"Saving OIDC configuration ${idp.name} by user ${CurrentUser.getUserID} ")
     idp.validate.toEither
       .bimap(
         errors => new IllegalArgumentException(errors.mkString_(",")),
@@ -74,6 +80,8 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
       val decryptedSecret = encryptionService.decrypt(commonDetails.authCodeClientSecret)
       commonDetails.copy(authCodeClientSecret = decryptedSecret)
     }
+
+    logger.info(s"Retrieving OIDC configuration by user ${CurrentUser.getUserID} ")
 
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new NotFoundException("No Identity Provider configured"))

@@ -46,7 +46,9 @@ object IdentityProviderPlatform extends Enumeration {
 case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[String]])
 
 /**
-  * Abstraction of an OIDC Identity Provider configuration to provide common fields.
+  * Abstraction of an OIDC Identity Provider configuration to provide common fields, typically used with REST endpoints
+  * where a looser type is required to support de-serialisation. For example, Secret values are required in the integration,
+  * but they are optional here because the values may not be provided by client for update.
   *
   * In order to support polymorphic deserialization of the IdentityProvider, Jackson annotations `@JsonTypeInfo`
   * and `@JsonSubTypes` are used to specify the type discriminator and subtypes.
@@ -77,7 +79,7 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
   /**
     * Secret key used specifically in the Authorization Code flow
     */
-  def authCodeClientSecret: String
+  def authCodeClientSecret: Option[String]
 
   /**
     * The URL used to initiate the OAuth2 authorisation process
@@ -118,14 +120,11 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     * Validate the values of all the common fields configured for an IdentityProvider, and
     * return the IdentityProvider if the validation succeeds, or a list of errors captured
     * during the validation.
-    *
-    * Use `this.type` to ensure returning the exact type of the Identity Provider.
     */
-  def validate: ValidatedNel[String, this.type] = {
+  def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
       ("name", name),
       ("Authorisation Code flow Client ID", authCodeClientId),
-      ("Authorisation Code flow Client Secret", authCodeClientSecret),
     )
 
     val urlFields = Map(
