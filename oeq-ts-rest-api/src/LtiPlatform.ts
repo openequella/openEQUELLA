@@ -21,11 +21,8 @@ import * as O from 'fp-ts/Option';
 import * as t from 'io-ts';
 import { DELETE, GET, POST_void, PUT } from './AxiosInstance';
 import type { BatchOperationResponse } from './BatchOperationResponse';
-import {
-  evalMapToRecord,
-  evalRecordToMap,
-} from './fp-ts-extended/Map.extended';
-import { arrayToSet, setToArray } from './fp-ts-extended/Set.extended';
+import { toRecord, fromRecord } from './fp-ts-extended/Map.extended';
+import { fromStringArray, toStringArray } from './fp-ts-extended/Set.extended';
 import { LtiPlatformRawCodec } from './gen/LtiPlatform';
 import { validate } from './Utils';
 
@@ -143,28 +140,28 @@ export interface LtiPlatformEnabledStatus {
 
 const convertToLtiPlatform = (platform: LtiPlatformRaw): LtiPlatform => ({
   ...platform,
-  instructorRoles: arrayToSet(platform.instructorRoles),
-  unknownRoles: arrayToSet(platform.unknownRoles),
+  instructorRoles: fromStringArray(platform.instructorRoles),
+  unknownRoles: fromStringArray(platform.unknownRoles),
   unknownUserDefaultGroups: pipe(
     O.fromNullable(platform.unknownUserDefaultGroups),
-    O.map(arrayToSet),
+    O.map(fromStringArray),
     O.toUndefined
   ),
-  customRoles: evalRecordToMap(platform.customRoles, arrayToSet),
+  customRoles: fromRecord(platform.customRoles, fromStringArray),
 });
 
 export const convertToRawLtiPlatform = (
   platform: LtiPlatform
 ): LtiPlatformRaw => ({
   ...platform,
-  instructorRoles: setToArray(platform.instructorRoles),
-  unknownRoles: setToArray(platform.unknownRoles),
+  instructorRoles: toStringArray(platform.instructorRoles),
+  unknownRoles: toStringArray(platform.unknownRoles),
   unknownUserDefaultGroups: pipe(
     O.fromNullable(platform.unknownUserDefaultGroups),
-    O.map(setToArray),
+    O.map(toStringArray),
     O.toUndefined
   ),
-  customRoles: evalMapToRecord(platform.customRoles, setToArray),
+  customRoles: toRecord(platform.customRoles, toStringArray),
 });
 
 // Helper function to encode the provided text twice.

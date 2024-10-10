@@ -19,11 +19,8 @@
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { GET, PUT } from './AxiosInstance';
-import {
-  evalMapToRecord,
-  evalRecordToMap,
-} from './fp-ts-extended/Map.extended';
-import { arrayToSet, setToArray } from './fp-ts-extended/Set.extended';
+import { toRecord, fromRecord } from './fp-ts-extended/Map.extended';
+import { fromStringArray, toStringArray } from './fp-ts-extended/Set.extended';
 import { IdentityProviderResponseCodec } from './gen/Oidc';
 import { validate } from './Utils';
 
@@ -161,13 +158,13 @@ interface IdentityProviderResponse {
 
 const toIdentityProviderRaw = (idp: IdentityProvider): IdentityProviderRaw => ({
   ...idp,
-  defaultRoles: setToArray(idp.defaultRoles),
+  defaultRoles: toStringArray(idp.defaultRoles),
   roleConfig: pipe(
     idp.roleConfig,
     O.fromNullable,
     O.map(({ roleClaim, customRoles }) => ({
       roleClaim,
-      customRoles: evalMapToRecord(customRoles, setToArray),
+      customRoles: toRecord(customRoles, toStringArray),
     })),
     O.toUndefined
   ),
@@ -178,13 +175,13 @@ const toIdentityProvider = ({
   ...platformSpecific
 }: IdentityProviderResponse): IdentityProvider => ({
   ...commonDetails,
-  defaultRoles: arrayToSet(commonDetails.defaultRoles),
+  defaultRoles: fromStringArray(commonDetails.defaultRoles),
   roleConfig: pipe(
     commonDetails.roleConfig,
     O.fromNullable,
     O.map(({ roleClaim, customRoles }) => ({
       roleClaim,
-      customRoles: evalRecordToMap(customRoles, arrayToSet),
+      customRoles: fromRecord(customRoles, fromStringArray),
     })),
     O.toUndefined
   ),

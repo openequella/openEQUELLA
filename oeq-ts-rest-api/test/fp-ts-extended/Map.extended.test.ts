@@ -15,29 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  evalMapToRecord,
-  evalRecordToMap,
-} from '../../src/fp-ts-extended/Map.extended';
+import { toRecord, fromRecord } from '../../src/fp-ts-extended/Map.extended';
 
 describe('Map extended', () => {
   const updateValue = (value: number): string => `${value * 2}`;
 
-  it('evalMapToRecord', () => {
+  it('toRecord', () => {
     const map = new Map([
       ['a', 1],
       ['b', 2],
       ['c', 3],
     ]);
 
-    const result = evalMapToRecord(map, updateValue);
+    const result = toRecord(map, updateValue);
     expect(result).toEqual({ a: '2', b: '4', c: '6' });
   });
 
-  it('evalRecordToMap', () => {
+  it('fromRecord', () => {
     const record = { a: 1, b: 2, c: 3 };
 
-    const result = evalRecordToMap(record, updateValue);
+    const result = fromRecord(record, updateValue);
     expect(result).toEqual(
       new Map([
         ['a', '2'],

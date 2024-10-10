@@ -23,10 +23,10 @@ export * from 'fp-ts/Set';
 /**
  * Function to convert an array of string to a set of string.
  */
-export const arrayToSet: (array: string[]) => Set<string> = SET.fromArray(
+export const fromStringArray: (array: string[]) => Set<string> = SET.fromArray(
   S.Ord
 );
 /**
  * Function to convert a set of string to an array of string.
  */
-export const setToArray: (set: Set<string>) => string[] = SET.toArray(S.Ord);
+export const toStringArray: (set: Set<string>) => string[] = SET.toArray(S.Ord);

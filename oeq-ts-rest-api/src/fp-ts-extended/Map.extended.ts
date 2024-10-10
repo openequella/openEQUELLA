@@ -25,16 +25,16 @@ export * from 'fp-ts/Map';
 /**
  * convert a Map to a Record with applying the provided function to each value.
  */
-export const evalMapToRecord = <V1, V2>(
+export const toRecord = <V1, V2>(
   map: Map<string, V1>,
   f: (value: V1) => V2
-): Record<string, V2> => pipe(map, M.map(f), M.toArray(S.Ord), R.fromEntries);
+): Record<string, V2> => pipe(map, M.toArray(S.Ord), R.fromEntries, R.map(f));
 
 /**
  * convert a Record to a Map with applying the provided function to each value.
  */
-export const evalRecordToMap = <V1, V2>(
+export const fromRecord = <V1, V2>(
   record: Record<string, V1>,
   f: (value: V1) => V2
 ): Map<string, V2> =>
-  pipe(record, R.map(f), R.toArray, (entries) => new Map(entries));
+  pipe(record, R.toEntries, (entries) => new Map(entries), M.map(f));

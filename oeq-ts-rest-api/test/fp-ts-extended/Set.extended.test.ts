@@ -15,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { arrayToSet, setToArray } from '../../src/fp-ts-extended/Set.extended';
+import {
+  fromStringArray,
+  toStringArray,
+} from '../../src/fp-ts-extended/Set.extended';
 
 describe('Set extended', () => {
   const array = ['a', 'b', 'c'];
   const set = new Set(['a', 'b', 'c']);
 
-  it('arrayToSet', () => {
-    const result = arrayToSet(array);
+  it('fromStringArray', () => {
+    const result = fromStringArray(array);
     expect(result).toEqual(set);
   });
 
-  it('setToArray', () => {
-    const result = setToArray(set);
+  it('toStringArray', () => {
+    const result = toStringArray(set);
     expect(result).toEqual(array);
   });
 });
