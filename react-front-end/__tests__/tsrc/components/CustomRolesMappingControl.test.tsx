@@ -18,37 +18,34 @@
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
-import { roles } from "../../../../../__mocks__/RoleModule.mock";
-import { eqRoleById } from "../../../../../tsrc/modules/RoleModule";
-import { languageStrings } from "../../../../../tsrc/util/langstrings";
+import { roles } from "../../../__mocks__/RoleModule.mock";
+import { eqRoleById } from "../../../tsrc/modules/RoleModule";
 import {
   clickDeleteIconForEntity,
   clickOkButton,
   testRemoveAllAsync,
-} from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
+} from "./securityentitydialog/SelectEntityDialogTestHelper";
 import {
   commonCustomRolesMappingControlProps,
   doSearchAndSelectRole,
   openDialog,
   renderCustomRolesMappingControl,
-  selectLtiRole,
+  inputCustomRoleName,
 } from "./CustomRolesMappingControlTestHelper";
 
-const { ltiRoles } =
-  languageStrings.settings.integration.lti13PlatformsSettings.createPage;
-
 describe("CustomRolesMappingControl", () => {
-  const systemAdminUri =
-    "http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator";
-
+  const systemAdmin = "System Administrator";
   const sharedRoleMapping = new Map().set(
-    systemAdminUri,
+    { role: systemAdmin },
     SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
   );
 
-  it("Should be able to select different LTI roles", async () => {
+  it("Should be able to input custom roles", async () => {
+    const guest = "Guest";
     const expectedResult = new Map().set(
-      "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
+      {
+        role: guest,
+      },
       SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
     );
     const selectedRoleName = roles[0].name;
@@ -60,7 +57,7 @@ describe("CustomRolesMappingControl", () => {
 
     await openDialog(container);
     const dialog = getByRole("dialog");
-    await selectLtiRole(dialog, ltiRoles.institution.Guest);
+    await inputCustomRoleName(dialog, guest);
     await doSearchAndSelectRole(dialog, selectedRoleName, selectedRoleName);
     await clickOkButton(dialog);
 
@@ -68,12 +65,12 @@ describe("CustomRolesMappingControl", () => {
     expect(result).toEqual(expectedResult);
   });
 
-  it("Should be able to remove the LTI row when user delete the last oEQ role", async () => {
+  it("Should be able to remove the custom role row when user delete the last custom role", async () => {
     const onChange = jest.fn();
     const { container, getByRole } = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      value: sharedRoleMapping,
+      initialRoleMappings: sharedRoleMapping,
     });
 
     await openDialog(container);
@@ -85,16 +82,16 @@ describe("CustomRolesMappingControl", () => {
     expect(result).toEqual(new Map());
   });
 
-  it("Should be able to remove one oEQ role from an existing LTI row", async () => {
+  it("Should be able to remove one oEQ role from an existing custom role row", async () => {
     const initialRoleMapping = new Map().set(
-      systemAdminUri,
+      { role: systemAdmin },
       SET.fromArray(eqRoleById)([roles[0], roles[1]]),
     );
     const onChange = jest.fn();
     const { container, getByRole } = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      value: initialRoleMapping,
+      initialRoleMappings: initialRoleMapping,
     });
 
     await openDialog(container);
@@ -116,6 +113,7 @@ describe("CustomRolesMappingControl", () => {
 
     await openDialog(container);
     const dialog = getByRole("dialog");
+    await inputCustomRoleName(dialog, systemAdmin);
     await doSearchAndSelectRole(dialog, selectedRoleName, selectedRoleName);
     await clickOkButton(dialog);
 
@@ -123,9 +121,9 @@ describe("CustomRolesMappingControl", () => {
     expect(result).toEqual(sharedRoleMapping);
   });
 
-  it("Should be able to add a oEQ role to an existing LTI row", async () => {
+  it("Should be able to add a oEQ role to an existing custom role row", async () => {
     const expectedResult = new Map().set(
-      systemAdminUri,
+      { role: systemAdmin },
       SET.fromArray(eqRoleById)([roles[0], roles[1]]),
     );
     const selectedRoleName = roles[1].name;
@@ -133,11 +131,12 @@ describe("CustomRolesMappingControl", () => {
     const { container, getByRole } = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      value: sharedRoleMapping,
+      initialRoleMappings: sharedRoleMapping,
     });
 
     await openDialog(container);
     const dialog = getByRole("dialog");
+    await inputCustomRoleName(dialog, systemAdmin);
     await doSearchAndSelectRole(dialog, selectedRoleName, selectedRoleName);
     await clickOkButton(dialog);
 
@@ -150,7 +149,7 @@ describe("CustomRolesMappingControl", () => {
       const renderResult = renderCustomRolesMappingControl({
         ...commonCustomRolesMappingControlProps,
         onChange,
-        value: sharedRoleMapping,
+        initialRoleMappings: sharedRoleMapping,
       });
       await openDialog(renderResult.container);
       return renderResult;

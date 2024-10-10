@@ -15,37 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import {
-  getByLabelText,
-  render,
-  RenderResult,
-  screen,
-} from "@testing-library/react";
+import { getByLabelText, render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { listRoles } from "../../../../../__mocks__/RoleModule.mock";
+import { listRoles } from "../../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
-} from "../../../../../tsrc/settings/Integrations/lti13platforms/CustomRolesMappingControl";
-import { languageStrings } from "../../../../../tsrc/util/langstrings";
+} from "../../../tsrc/components/CustomRolesMappingControl";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   doSearch,
   searchAndSelect,
-} from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
-import { clickSelect } from "../../../MuiTestHelpers";
+} from "./securityentitydialog/SelectEntityDialogTestHelper";
+import { getMuiTextField } from "../MuiQueries";
 
 const { edit: editLabel } = languageStrings.common.action;
 const { queryFieldLabel } = languageStrings.roleSearchComponent;
-const { customRoleSelectLtiRole, customRoles } =
+const { customRoles } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
+const { customRoleLabel } = languageStrings.selectCustomRoleDialog;
 
 export const commonCustomRolesMappingControlProps: CustomRolesMappingControlProps =
   {
-    value: new Map<string, Set<OEQ.UserQuery.RoleDetails>>(),
+    initialRoleMappings: new Map(),
     onChange: jest.fn(),
-    roleListProvider: listRoles,
+    searchRoleProvider: listRoles,
   };
 
 /**
@@ -74,11 +69,12 @@ export const doSearchAndSelectRole = async (
 ) => searchAndSelect(dialog, searchFor, selectEntityName, searchRole);
 
 /**
- * Select a LTI role from the select in dialog.
+ * Input custom role name in the text field.
  */
-export const selectLtiRole = async (dialog: HTMLElement, ltiRole: string) => {
-  await clickSelect(dialog, `div[aria-label='${customRoleSelectLtiRole}'] div`);
-  const option = await screen.findByText(ltiRole);
-  // click the option in the list
-  await userEvent.click(option);
+export const inputCustomRoleName = async (
+  dialog: HTMLElement,
+  roleName: string,
+) => {
+  const input = getMuiTextField(dialog, customRoleLabel);
+  await userEvent.type(input, roleName);
 };

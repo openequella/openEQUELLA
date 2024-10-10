@@ -34,10 +34,8 @@ import { searchAndSelectGroup } from "../../../components/securityentitydialog/S
 import { searchAndSelectRole } from "../../../components/securityentitydialog/SelectRoleDialogTestHelper";
 import { searchUser } from "../../../components/securityentitysearch/UserSearchTestHelpler";
 import { selectOption } from "../../../MuiTestHelpers";
-import {
-  doSearchAndSelectRole,
-  selectLtiRole,
-} from "./CustomRolesMappingControlTestHelper";
+import { doSearchAndSelectRole } from "../../../components/CustomRolesMappingControlTestHelper";
+import { selectLtiRole } from "./LtiCustomRolesMappingTestHelper";
 
 const {
   select: selectLabel,

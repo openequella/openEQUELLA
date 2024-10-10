@@ -19,8 +19,7 @@ import { Card, CardContent, Divider, Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { flow, pipe } from "fp-ts/function";
-import * as M from "fp-ts/Map";
+import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as R from "fp-ts/Record";
 import * as O from "fp-ts/Option";
@@ -28,6 +27,10 @@ import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
+import {
+  CustomRolesMapping,
+  transformCustomRoleMapping,
+} from "../../../components/CustomRoleHelper";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
@@ -106,7 +109,7 @@ export interface ConfigurePlatformValue {
   /**
    * Mappings from LTI roles to OEQ roles
    */
-  customRoles: Map<string, Set<OEQ.UserQuery.RoleDetails>>;
+  customRoles: CustomRolesMapping;
   /**
    * The UnknownUserHandling option and list of groups to be added to the user object If the unknown user handling is CREATE
    */
@@ -244,9 +247,8 @@ const ConfigureLti13Platform = ({
     ReadonlySet<OEQ.UserQuery.RoleDetails>
   >(value.instructorRoles);
 
-  const [selectedCustomRolesMapping, setSelectedCustomRolesMapping] = useState<
-    Map<string, Set<OEQ.UserQuery.RoleDetails>>
-  >(value.customRoles);
+  const [selectedCustomRolesMapping, setSelectedCustomRolesMapping] =
+    useState<CustomRolesMapping>(value.customRoles);
 
   // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
   const onGeneralDetailsChange = (key: string, newValue: unknown) =>
@@ -394,10 +396,7 @@ const ConfigureLti13Platform = ({
       allowExpression: aclExpression,
       instructorRoles: pipe(roleIds(selectedInstructorRoles), RS.toSet),
       unknownRoles: pipe(roleIds(selectedUnknownRoles), RS.toSet),
-      customRoles: pipe(
-        selectedCustomRolesMapping,
-        M.map(flow(RS.fromSet, roleIds, RS.toSet)),
-      ),
+      customRoles: transformCustomRoleMapping(selectedCustomRolesMapping),
       unknownUserDefaultGroups: pipe(
         groupIds(selectedUnknownUserHandling.groups),
         RS.toSet,

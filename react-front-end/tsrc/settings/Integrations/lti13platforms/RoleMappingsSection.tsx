@@ -17,10 +17,11 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
+import type { CustomRolesMapping } from "../../../components/CustomRoleHelper";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListWarning from "../../../components/SettingsListWarning";
 import { languageStrings } from "../../../util/langstrings";
-import CustomRolesMappingControl from "./CustomRolesMappingControl";
+import LtiCustomRolesMapping from "./LtiCustomRolesMapping";
 import SelectRoleControl from "./SelectRoleControl";
 
 const { roleMappings: roleMappingsStrings } =
@@ -57,13 +58,11 @@ export interface RoleMappingsSectionProps {
   /**
    * The mapping relationships between LTI roles and oEQ roles.
    */
-  customRolesMapping: Map<string, Set<OEQ.UserQuery.RoleDetails>>;
+  customRolesMapping: CustomRolesMapping;
   /**
    * Function to update the value of `customRolesMapping`.
    */
-  setCustomRolesMapping: (
-    mappings: Map<string, Set<OEQ.UserQuery.RoleDetails>>,
-  ) => void;
+  setCustomRolesMapping: (mappings: CustomRolesMapping) => void;
   /**
    * The roles that should be used for all unmapped LTI roles.
    */
@@ -119,10 +118,10 @@ const RoleMappingsSection = ({
         <SettingsListWarning messages={warningMessages?.instructorRoles} />
       )}
 
-      <CustomRolesMappingControl
+      <LtiCustomRolesMapping
         value={customRolesMapping}
         onChange={setCustomRolesMapping}
-        roleListProvider={searchRoleProvider}
+        searchRoleProvider={searchRoleProvider}
       />
       {warningMessages?.customRolesMapping && (
         <SettingsListWarning messages={warningMessages?.customRolesMapping} />

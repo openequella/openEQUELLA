@@ -27,11 +27,16 @@ import * as S from "fp-ts/string";
 import * as SET from "fp-ts/Set";
 import * as TE from "fp-ts/TaskEither";
 import { sprintf } from "sprintf-js";
+import type {
+  CustomRole,
+  CustomRolesMapping,
+} from "../../../components/CustomRoleHelper";
 import {
   BaseSecurityEntity,
   entityIds,
   eqEntityById,
 } from "../../../modules/ACLEntityModule";
+import { getRoleNameByUrn } from "../../../modules/Lti13PlatformsModule";
 import { languageStrings } from "../../../util/langstrings";
 import { pfTernary } from "../../../util/pointfree";
 
@@ -60,7 +65,7 @@ export interface EntityResult<T extends BaseSecurityEntity> {
  * Check more details at {@link EntityResult}
  */
 export interface CustomRoleMappingsResult {
-  mappings: Map<string, Set<OEQ.UserQuery.RoleDetails>>;
+  mappings: CustomRolesMapping;
   warnings?: string[];
 }
 
@@ -203,11 +208,14 @@ export const generateCustomRoles = (
   // generate the final Map structure from rawMappings
   const generateMappings: (
     rawMappings: ReadonlyArray<LtiRoleMappingResult>,
-  ) => Map<string, Set<OEQ.UserQuery.RoleDetails>> = flow(
+  ) => CustomRolesMapping = flow(
     // Get role set
-    RA.map<LtiRoleMappingResult, [string, Set<OEQ.UserQuery.RoleDetails>]>(
+    RA.map<LtiRoleMappingResult, [CustomRole, Set<OEQ.UserQuery.RoleDetails>]>(
       ([ltiRole, roleDetailsWithWarningMessage]) => [
-        ltiRole,
+        {
+          role: ltiRole,
+          name: getRoleNameByUrn(ltiRole),
+        },
         pipe(roleDetailsWithWarningMessage.entities, RS.toSet),
       ],
     ),
