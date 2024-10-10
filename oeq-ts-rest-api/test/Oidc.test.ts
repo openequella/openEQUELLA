@@ -50,6 +50,7 @@ describe('Identity Provider', () => {
       updateIdentityProvider(TC.API_PATH, auth0)
     ).resolves.not.toThrow();
   });
+
   it('retrieves the Identity Provider configuration', async () => {
     const idp = await getIdentityProvider(TC.API_PATH);
     expect(idp.platform).toBe('GENERIC');

@@ -19,6 +19,7 @@
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { GET, PUT } from './AxiosInstance';
+import type { UuidString } from './Common';
 import { toRecord, fromRecord } from './fp-ts-extended/Map.extended';
 import { fromStringArray, toStringArray } from './fp-ts-extended/Set.extended';
 import { IdentityProviderResponseCodec } from './gen/Oidc';
@@ -85,7 +86,7 @@ interface IdentityProviderRaw extends IdentityProviderBase {
   /**
    * A list of default OEQ roles to assign to the logged-in user.
    */
-  defaultRoles: string[];
+  defaultRoles: UuidString[];
   /**
    * Optional configuration for custom roles assigned to the logged-in user.
    */
@@ -97,7 +98,7 @@ interface IdentityProviderRaw extends IdentityProviderBase {
     /**
      * A mapping between IdP roles and OEQ roles where one IdP role can map to multiple OEQ roles.
      */
-    customRoles: Record<string, string[]>;
+    customRoles: Record<string, UuidString[]>;
   };
 }
 
@@ -108,7 +109,7 @@ export interface IdentityProvider extends IdentityProviderBase {
   /**
    * A list of default OEQ roles to assign to the logged-in user.
    */
-  defaultRoles: Set<string>;
+  defaultRoles: Set<UuidString>;
   /**
    * Optional configuration for custom roles assigned to the logged-in user.
    */
@@ -120,7 +121,7 @@ export interface IdentityProvider extends IdentityProviderBase {
     /**
      * A mapping between IdP roles and OEQ roles where one IdP role can map to multiple OEQ roles.
      */
-    customRoles: Map<string, Set<string>>;
+    customRoles: Map<string, Set<UuidString>>;
   };
 }
 
