@@ -761,12 +761,7 @@ export const languageStrings = {
               "Select an LTI role, then select the openEQUELLA roles",
             customRoleDialogTitle: "Select LTI and oEQ roles",
             customRoleSelectLtiRole: "Select LTI role",
-            customRoleSelectOeqRole: "Select oEQ role",
-            customRoleCurrentSelections: "Current selections",
             customRoleTableLtiRoleColumn: "LTI Role Name",
-            customRoleTableOeqRoleColumn: "openEQUELLA Role Name",
-            customRoleAddRoles:
-              "Please add roles with the selector and search control",
             unknownRoles: "Unknown roles",
             unknownRolesDesc:
               "Select the openEQUELLA roles that should be used for all unmapped LTI roles",
@@ -976,6 +971,16 @@ export const languageStrings = {
     enableNew: "Enable new UI",
     enableSearch: "Enable new search page",
     themeSettingsButton: "Edit Theme Settings",
+  },
+  selectCustomRoleDialog: {
+    title: "Select Custom and oEQ roles",
+    customRoleTitle: "Input Custom role",
+    customRoleLabel: "Enter custom role",
+    oeqRoleTitle: "Select oEQ role",
+    currentSelections: "Current selections",
+    customRoleColumn: "Custom Role Name",
+    oeqRoleColumn: "openEQUELLA Role Name",
+    addRoles: "Please add roles with the selector and search control",
   },
   selectEntityDialog: {
     currentSelections: "Current selections",

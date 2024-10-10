@@ -15,36 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
 import { Meta, StoryFn } from "@storybook/react";
-import * as SET from "fp-ts/Set";
 import * as React from "react";
-import { listRoles, roles } from "../../../../__mocks__/RoleModule.mock";
-import { eqRoleById } from "../../../../tsrc/modules/RoleModule";
+import { listRoles } from "../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
-} from "../../../../tsrc/components/CustomRolesMappingControl";
+} from "../../tsrc/components/CustomRolesMappingControl";
 
 export default {
-  title: "settings/Integrations/Lti13Platforms/CustomRolesMappingControl",
+  title: "component/CustomRoleMappingControl",
   component: CustomRolesMappingControl,
+  argTypes: { onChange: { action: "On change" } },
 } as Meta<CustomRolesMappingControlProps>;
-export const Empty: StoryFn<CustomRolesMappingControlProps> = (args) => (
-  <CustomRolesMappingControl {...args} />
-);
-Empty.args = {
+
+const defaultProps = {
+  open: true,
   initialRoleMappings: new Map(),
-  onChange: action("onChange"),
   searchRoleProvider: listRoles,
 };
 
 export const Standard: StoryFn<CustomRolesMappingControlProps> = (args) => (
   <CustomRolesMappingControl {...args} />
 );
-Standard.args = {
-  ...Empty.args,
-  initialRoleMappings: new Map().set(
-    "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
-    SET.fromArray(eqRoleById)(roles),
-  ),
+Standard.args = defaultProps;
+
+export const WithCustomStrings: StoryFn<CustomRolesMappingControlProps> = (
+  args,
+) => <CustomRolesMappingControl {...args} />;
+WithCustomStrings.args = {
+  ...defaultProps,
+  title: "Custom title",
+  description: "Custom description",
 };

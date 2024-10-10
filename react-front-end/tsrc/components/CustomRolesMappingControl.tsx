@@ -17,37 +17,51 @@
  */
 import EditIcon from "@mui/icons-material/Edit";
 import { Badge } from "@mui/material";
-import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import SettingsListControl from "../../../components/SettingsListControl";
-import { TooltipIconButton } from "../../../components/TooltipIconButton";
-import { languageStrings } from "../../../util/langstrings";
-import SelectCustomRoleDialog from "./SelectCustomRoleDialog";
+import type { CustomRolesMapping } from "./CustomRoleHelper";
+import SettingsListControl from "./SettingsListControl";
+import { TooltipIconButton } from "./TooltipIconButton";
+import { languageStrings } from "../util/langstrings";
+import SelectCustomRoleDialog, {
+  SelectCustomRoleDialogProps,
+} from "./SelectCustomRoleDialog";
 
 const { customRolesDesc, customRoles: customRolesTitle } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 const { edit: editLabel } = languageStrings.common.action;
 
-export interface CustomRolesMappingControlProps {
-  /** Initial roles mapping value . */
-  value: Map<string, Set<OEQ.UserQuery.RoleDetails>>;
+export interface CustomRolesMappingControlProps
+  extends Omit<SelectCustomRoleDialogProps, "open" | "onClose"> {
+  /** Custom title for the settings control. */
+  title?: string;
+  /** Custom description for the settings control. */
+  description?: string;
   /** Handler for when roles mapping is updated. */
-  onChange: (maps: Map<string, Set<OEQ.UserQuery.RoleDetails>>) => void;
-  /** Function which will provide the list of Role (search function) for RoleSelector. */
-  roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  onChange: (maps: CustomRolesMapping) => void;
 }
 
-const SelectButton = ({
-  badge,
-  onClick,
-}: {
-  badge: React.ReactNode;
-  onClick: () => void;
-}): JSX.Element => {
-  const title = `${editLabel} ${customRolesTitle}`;
+export const CustomRolesMappingControl = ({
+  title,
+  description,
+  initialRoleMappings,
+  onChange,
+  searchRoleProvider,
+  defaultCustomRole,
+  customRoleSelector,
+  strings,
+}: CustomRolesMappingControlProps) => {
+  const [showDialog, setShowDialog] = React.useState(false);
 
-  return (
+  const SelectButton = ({
+    title,
+    badge,
+    onClick,
+  }: {
+    title: string;
+    badge: React.ReactNode;
+    onClick: () => void;
+  }): React.JSX.Element => (
     <Badge badgeContent={badge} color="secondary">
       <TooltipIconButton
         color="primary"
@@ -59,33 +73,29 @@ const SelectButton = ({
       </TooltipIconButton>
     </Badge>
   );
-};
-
-const CustomRolesMappingControl = ({
-  value,
-  onChange,
-  roleListProvider,
-}: CustomRolesMappingControlProps) => {
-  const [showDialog, setShowDialog] = React.useState(false);
 
   return (
     <SettingsListControl
-      primaryText={customRolesTitle}
-      secondaryText={customRolesDesc}
+      primaryText={title ?? customRolesTitle}
+      secondaryText={description ?? customRolesDesc}
       control={
         <>
           <SelectButton
-            badge={value.size}
+            title={`${editLabel} ${title ?? customRolesTitle}`}
+            badge={initialRoleMappings.size}
             onClick={() => setShowDialog(true)}
           />
           <SelectCustomRoleDialog
             open={showDialog}
-            value={value}
+            initialRoleMappings={initialRoleMappings}
             onClose={(result) => {
               setShowDialog(false);
               result && onChange(result);
             }}
-            roleListProvider={roleListProvider}
+            searchRoleProvider={searchRoleProvider}
+            defaultCustomRole={defaultCustomRole}
+            customRoleSelector={customRoleSelector}
+            strings={strings}
           />
         </>
       }
