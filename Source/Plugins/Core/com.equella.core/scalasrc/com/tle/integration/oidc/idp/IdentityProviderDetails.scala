@@ -50,7 +50,9 @@ case class CommonDetails(name: String,
                          tokenUrl: URL,
                          usernameClaim: Option[String],
                          defaultRoles: Set[String],
-                         roleConfig: Option[RoleConfiguration])
+                         roleConfig: Option[RoleConfiguration],
+                         enabled: Boolean,
+)
 
 sealed trait IdentityProviderDetails {
   val commonDetails: CommonDetails
@@ -113,7 +115,8 @@ object IdentityProviderDetails {
         tokenUrl = URI.create(idp.tokenUrl).toURL,
         usernameClaim = idp.usernameClaim,
         defaultRoles = idp.defaultRoles,
-        roleConfig = idp.roleConfig
+        roleConfig = idp.roleConfig,
+        enabled = idp.enabled
       )
 
   /**
