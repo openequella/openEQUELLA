@@ -40,10 +40,6 @@ export type IdentityProviderPlatform =
  **/
 interface IdentityProviderBase {
   /**
-   * A non-empty string as the Identity Provider name
-   */
-  name: string;
-  /**
    * One of the supported Identity Provider: {@link IdentityProviderPlatform}
    */
   platform: IdentityProviderPlatform;

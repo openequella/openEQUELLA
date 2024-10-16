@@ -39,8 +39,7 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
   * Structure for the common details of an Identity Provider, which excludes
   * sensitive values like the client secret.
   */
-case class CommonDetailsResponse(name: String,
-                                 platform: String,
+case class CommonDetailsResponse(platform: String,
                                  authCodeClientId: String,
                                  authUrl: URL,
                                  keysetUrl: URL,
@@ -62,7 +61,6 @@ case class GenericIdentityProviderResponse(commonDetails: CommonDetailsResponse,
 object IdentityProviderResponse {
   def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
     def commonDetails = CommonDetailsResponse(
-      name = idp.commonDetails.name,
       platform = idp.commonDetails.platform.toString,
       authCodeClientId = idp.commonDetails.authCodeClientId,
       authUrl = idp.commonDetails.authUrl,

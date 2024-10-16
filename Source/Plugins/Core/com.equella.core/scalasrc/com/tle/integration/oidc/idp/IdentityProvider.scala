@@ -61,11 +61,6 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 abstract class IdentityProvider extends ConfigurationProperties with Product {
 
   /**
-    * A non-empty string as the Identity Provider name
-    */
-  def name: String
-
-  /**
     * One of the supported Identity Provider: [[IdentityProviderPlatform]]
     */
   def platform: IdentityProviderPlatform.Value
@@ -123,7 +118,6 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
-      ("name", name),
       ("Authorisation Code flow Client ID", authCodeClientId),
     )
 

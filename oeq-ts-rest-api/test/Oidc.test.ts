@@ -24,7 +24,6 @@ import {
 import * as TC from './TestConfig';
 
 const auth0: GenericIdentityProvider = {
-  name: 'Auth0',
   platform: 'GENERIC',
   authCodeClientId: 'C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ',
   authCodeClientSecret:

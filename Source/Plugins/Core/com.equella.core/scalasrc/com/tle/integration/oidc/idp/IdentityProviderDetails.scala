@@ -29,7 +29,6 @@ import java.net.{URI, URL}
   * (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values) compared to `IdentityProvider`
   * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
   *
-  * @param name Name of the Identity Provider.
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
   * @param authCodeClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
   *                         the Authorization Code flow
@@ -41,8 +40,7 @@ import java.net.{URI, URL}
   * @param defaultRoles A list of default OEQ roles to assign to the user's session.
   * @param roleConfig Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
   */
-case class CommonDetails(name: String,
-                         platform: IdentityProviderPlatform.Value,
+case class CommonDetails(platform: IdentityProviderPlatform.Value,
                          authCodeClientId: String,
                          authCodeClientSecret: String,
                          authUrl: URL,
@@ -106,7 +104,6 @@ object IdentityProviderDetails {
       )
     } yield
       CommonDetails(
-        name = idp.name,
         platform = idp.platform,
         authCodeClientId = idp.authCodeClientId,
         authCodeClientSecret = encryptedAuthCodeClientSecret,
