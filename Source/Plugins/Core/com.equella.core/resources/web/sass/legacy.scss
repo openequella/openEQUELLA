@@ -5781,3 +5781,43 @@ button:focus {
 .moderation_comments_dialog {
   position: relative;
 }
+
+/*****************************************************************************
+  Styles applied to the EBP Login page
+*****************************************************************************/
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr 2fr;
+  align-items: center;
+  gap: 30px;
+}
+
+@media only screen and (max-width: $large-breakpoint-max) {
+  .login-page {
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+
+.login-page .divider {
+  width: 1px;
+  background-color: lightgrey;
+  height: 100%;
+}
+
+.login-page .native-login {
+  height: 100%;
+}
+
+.login-page .native-login #password {
+  // Full width minus the width of the label(100px) and about 50px of other margins and paddings
+  width: calc(100% - 150px);
+}
+
+.login-page .native-login #username {
+  // Same as password
+  width: calc(100% - 150px);
+}
+
+.login-page .oidc-login {
+  height: 100%;
+}
