@@ -20,7 +20,7 @@ on:
 
 jobs:
   build_and_check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -129,7 +129,7 @@ jobs:
           path: artefacts.tar
 
   build_storybook:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # Using v1 (rather than v2) through-out this workflow due to issue:
       # https://github.com/actions/checkout/issues/237
@@ -182,7 +182,7 @@ jobs:
   functional_testing:
     needs: build_and_check
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -314,7 +314,7 @@ jobs:
   rest-module-testing:
     needs: build_and_check
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     services:
       postgres:
