@@ -20,7 +20,7 @@ package com.tle.integration.lti13
 
 import com.tle.core.guice.Bind
 import com.tle.core.replicatedcache.ReplicatedCacheService
-import com.tle.integration.oidc.service.{OidcStateService, StateConfig}
+import com.tle.integration.oauth2.{OAuth2StateService, StateConfig}
 import java.net.URI
 import javax.inject.{Inject, Singleton}
 
@@ -42,4 +42,4 @@ case class Lti13StateDetails(platformId: String, loginHint: String, targetLinkUr
 @Bind
 @Singleton
 class Lti13StateService @Inject()(rcs: ReplicatedCacheService)
-    extends OidcStateService[Lti13StateDetails](rcs, StateConfig(10, "lti13-state"))
+    extends OAuth2StateService[Lti13StateDetails](rcs, StateConfig(10, "lti13-state"))

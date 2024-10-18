@@ -23,6 +23,7 @@ import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
+import com.tle.integration.oauth2.{ErrorResponse, HasMessage, OAuth2Error}
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 import javax.inject.{Inject, Singleton}
@@ -118,7 +119,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // Server returns the Client to the Redirection URI specified in the Authorization
     // Request with the appropriate error and state parameters. Other parameters SHOULD
     // NOT be returned."
-    def onAuthFailure(error: Lti13Error): Unit = {
+    def onAuthFailure(error: OAuth2Error): Unit = {
       val errorMsg = error match {
         case message: HasMessage => message.msg
         case _                   => "No further information"
@@ -140,7 +141,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[Lti13Error, (Lti13Request, PlatformDetails)] = for {
+    val authResult: Either[OAuth2Error, (Lti13Request, PlatformDetails)] = for {
       verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
       decodedJWT      = verifiedResult._1
       platformDetails = verifiedResult._2

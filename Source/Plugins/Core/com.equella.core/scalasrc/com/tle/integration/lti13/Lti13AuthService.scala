@@ -18,6 +18,7 @@
 
 package com.tle.integration.lti13
 
+import cats.implicits._
 import com.auth0.jwk.{Jwk, JwkProvider, JwkProviderBuilder}
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -29,6 +30,7 @@ import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
+import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
 import com.tle.core.institution.{InstitutionCache, InstitutionService, RunAsInstitution}
 import com.tle.core.lti13.service.LtiPlatformService
@@ -36,9 +38,21 @@ import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
-import com.tle.integration.lti13.{Lti13Params => LTI13, OpenIDConnectParams => OIDC}
+import com.tle.integration.oauth2.{
+  AccessDenied,
+  InvalidJWT,
+  InvalidState,
+  NotAuthorized,
+  OAuth2Error,
+  ServerError
+}
+import io.circe._
+import io.circe.parser._
 import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
+import com.tle.integration.lti13.{Lti13Params => LTI13}
+import com.tle.integration.util.{getParam, getUriParam}
+import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
 
 import java.net.{URI, URL}
 import java.nio.charset.StandardCharsets
@@ -49,10 +63,6 @@ import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
-import cats.implicits._
-import com.tle.common.util.StringUtils.generateRandomHexString
-import io.circe._
-import io.circe.parser._
 
 /**
   * Captures the parameters which make up the first part of a 'Third-party Initiated Login' as part
@@ -127,8 +137,8 @@ object AuthenticationResponse {
     val param = getParam(params)
 
     for {
-      state    <- param(OpenIDConnectParams.STATE)
-      id_token <- param(OpenIDConnectParams.ID_TOKEN)
+      state    <- param(OIDC.STATE)
+      id_token <- param(OIDC.ID_TOKEN)
     } yield AuthenticationResponse(state, id_token)
   }
 }
@@ -325,7 +335,7 @@ class Lti13AuthService {
     * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
     */
   def verifyToken(state: String,
-                  token: String): Either[Lti13Error, (DecodedJWT, PlatformDetails)] = {
+                  token: String): Either[OAuth2Error, (DecodedJWT, PlatformDetails)] = {
     val result = for {
       // -- first, basic validation of the state
       // Short circuit if this isn't even a state we know about
@@ -374,7 +384,7 @@ class Lti13AuthService {
     * @return a new `UserState` being used for the new session OR a string representing what failed.
     */
   def loginUser(wad: WebAuthenticationDetails,
-                userDetails: UserDetails): Either[Lti13Error, UserState] = {
+                userDetails: UserDetails): Either[OAuth2Error, UserState] = {
     LOGGER.debug(s"loginUser(${userDetails})")
 
     val loginResult = for {
@@ -418,7 +428,7 @@ class Lti13AuthService {
 
   private def buildJwtVerifierForPlatform(
       jwk: Jwk,
-      platform: PlatformDetails): DecodedJWT => Either[Lti13Error, DecodedJWT] = {
+      platform: PlatformDetails): DecodedJWT => Either[OAuth2Error, DecodedJWT] = {
     val verifier = Try {
       // Section 5.1.3 of the Security Framework says that RS256 SHOULD be used - but there are
       // some others which are allowed as per the 'best practices'. Perhaps we should add code
@@ -463,13 +473,13 @@ class Lti13AuthService {
   private def mapUser(user: UserDetails,
                       platform: PlatformDetails,
                       authenticate: String => Try[UserState],
-                      asGuest: () => UserState): Either[Lti13Error, UserState] = {
+                      asGuest: () => UserState): Either[OAuth2Error, UserState] = {
     val ltiUserId = user.userId
     // The username which will be seen and used in the system
     val username = platform.usernamePrefix.getOrElse("") + ltiUserId + platform.usernameSuffix
       .getOrElse("")
 
-    def handleUnknownUser(): Either[Lti13Error, UserState] = {
+    def handleUnknownUser(): Either[OAuth2Error, UserState] = {
       // A unique ID for the user in the oEQ DB - not used elsewhere for authentication, but we
       // need to meeting existing requirements of the tle_user table.
       val oeqUserId                                       = genId(platform.platformId, ltiUserId)

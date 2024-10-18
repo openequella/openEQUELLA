@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.tle.integration.lti13
+package com.tle.integration.oidc
 
 /**
-  * Parameters and claims specific to the OpenID Connect part of OAuth 2.0 exchanges used in LTI 1.3.
+  * Parameters and claims specific to the OpenID Connect part of OAuth 2.0 exchanges.
   */
 object OpenIDConnectParams {
 
