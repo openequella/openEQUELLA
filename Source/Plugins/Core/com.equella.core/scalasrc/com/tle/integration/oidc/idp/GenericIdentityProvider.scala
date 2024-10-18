@@ -33,6 +33,7 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
   *                               to use with the Identity Provider's API (for user searching etc)
   */
 case class GenericIdentityProvider(
+    platformId: String,
     authCodeClientId: String,
     authCodeClientSecret: Option[String],
     authUrl: String,

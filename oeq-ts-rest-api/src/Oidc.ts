@@ -44,6 +44,10 @@ interface IdentityProviderBase {
    */
   platform: IdentityProviderPlatform;
   /**
+   * Unique identifier of an Identity Provider
+   */
+  platformId: string;
+  /**
    * ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
    * the Authorization Code flow
    */
