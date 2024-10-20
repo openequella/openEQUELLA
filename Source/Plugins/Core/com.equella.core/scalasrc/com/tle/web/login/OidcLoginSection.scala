@@ -66,6 +66,8 @@ class OidcLoginSection extends AbstractHtmlComponent[OidcLoginSectionModel] with
       viewFactory.createResult("logon/oidclogin.ftl", context)
     }
 
+    // If OIDC support is enabled, render the SSO section. Otherwise
+    // return `null` to ensure it remains hidden.
     oidcConfigurationService.get.toOption
       .filter(_.commonDetails.enabled)
       .map(renderLoginButton)
