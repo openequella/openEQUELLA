@@ -30,7 +30,7 @@ import java.net.{URI, URL}
   * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
   *
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
-  * @param platformId ID of the Identity Provider, used to validate the value of claim `iss` for an ID token
+  * @param issuer Entity of the selected platform that issues ID tokens.
   * @param authCodeClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
   *                         the Authorization Code flow
   * @param authCodeClientSecret Secret key used with `authCodeClientId` specifically in the Authorization Code flow
@@ -42,7 +42,7 @@ import java.net.{URI, URL}
   * @param roleConfig Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
   */
 case class CommonDetails(platform: IdentityProviderPlatform.Value,
-                         platformId: String,
+                         issuer: String,
                          authCodeClientId: String,
                          authCodeClientSecret: String,
                          authUrl: URL,
@@ -107,7 +107,7 @@ object IdentityProviderDetails {
     } yield
       CommonDetails(
         platform = idp.platform,
-        platformId = idp.platformId,
+        issuer = idp.issuer,
         authCodeClientId = idp.authCodeClientId,
         authCodeClientSecret = encryptedAuthCodeClientSecret,
         authUrl = URI.create(idp.authUrl).toURL,

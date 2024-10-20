@@ -66,9 +66,9 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
   def platform: IdentityProviderPlatform.Value
 
   /**
-    * Unique identifier of the Identity Provider that issues ID tokens
+    * Entity of the selected platform that issues ID tokens.
     */
-  def platformId: String
+  def issuer: String
 
   /**
     * ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
@@ -123,7 +123,7 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
-      ("Platform ID", platformId),
+      ("Platform ID", issuer),
       ("Authorisation Code flow Client ID", authCodeClientId),
     )
 

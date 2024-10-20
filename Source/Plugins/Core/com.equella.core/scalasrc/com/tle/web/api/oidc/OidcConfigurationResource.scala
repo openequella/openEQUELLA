@@ -40,7 +40,7 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
   * sensitive values like the client secret.
   */
 case class CommonDetailsResponse(platform: String,
-                                 platformId: String,
+                                 issuer: String,
                                  authCodeClientId: String,
                                  authUrl: URL,
                                  keysetUrl: URL,
@@ -63,7 +63,7 @@ object IdentityProviderResponse {
   def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
     def commonDetails = CommonDetailsResponse(
       platform = idp.commonDetails.platform.toString,
-      platformId = idp.commonDetails.platformId,
+      issuer = idp.commonDetails.issuer,
       authCodeClientId = idp.commonDetails.authCodeClientId,
       authUrl = idp.commonDetails.authUrl,
       keysetUrl = idp.commonDetails.keysetUrl,

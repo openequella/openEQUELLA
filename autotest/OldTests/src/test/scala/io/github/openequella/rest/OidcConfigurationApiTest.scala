@@ -16,7 +16,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
   private def buildRequestBody = {
     val body = mapper.createObjectNode()
     body.put("platform", PLATFORM)
-    body.put("platformId", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com")
+    body.put("issuer", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com")
     body.put("authCodeClientId", "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ")
     body.put(AUTH_CODE_CLIENT_SECRET,
              "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L")
