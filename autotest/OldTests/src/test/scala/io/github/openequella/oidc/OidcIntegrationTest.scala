@@ -10,8 +10,15 @@ import org.testng.Assert.assertTrue
 class OidcIntegrationTest extends AbstractSessionTest {
 
   @Test(description = "The OIDC login button should be displayed in the Login page")
-  def loginButton(): Unit = {
+  def showLoginButton(): Unit = {
     val loginPage = new LoginPage(context).load()
     assertTrue(loginPage.hasOidcLoginButton)
+  }
+
+  @Test(
+    description =
+      "The OIDC login button should be hidden if there isn't an enabled OIDC configuration")
+  def hideLoginButton(): Unit = {
+    // todo:  disable OIDC configuration and then check the button.
   }
 }
