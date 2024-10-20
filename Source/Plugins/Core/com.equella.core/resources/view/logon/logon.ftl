@@ -5,8 +5,8 @@
 <@css path="logon.css" hasRtl=true />
 
 <div class="area">
-  <div class="login-page">
-    <div class="native-login">
+  <div id="login-page">
+    <div id="native-login">
       <#if m.failed??>
         <p class="warning" role="alert">${b.gkey(m.failed)}</p>
       </#if>

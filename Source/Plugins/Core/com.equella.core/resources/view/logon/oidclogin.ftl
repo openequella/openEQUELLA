@@ -3,8 +3,8 @@
 
 <@css "institutions.css" />
 
-<div class="divider"></div>
-<div class="oidc-login">
+<div id="divider"></div>
+<div id="oidc-login">
   <p>
     ${b.key("login.oidc.description")}
   </p>
