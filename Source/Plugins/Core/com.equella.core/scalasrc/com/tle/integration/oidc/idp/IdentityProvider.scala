@@ -123,7 +123,7 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
-      ("Platform ID", issuer),
+      ("Issuer", issuer),
       ("Authorisation Code flow Client ID", authCodeClientId),
     )
 
