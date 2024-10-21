@@ -1,0 +1,55 @@
+schema {
+  query: Queries
+  mutation: Mutations
+}
+scalar Unit
+
+type Mutations {
+  "Create a new internal user"
+  internalUserCreate("Username of the user to create which they'll use for authentication - must be unique" username: String!, "Email address of the user" email: String, "First name of the user" firstName: String!, "Last name of the user" lastName: String!, "Password of the user - will be hashed on store" password: String!): User
+  "Update an existing internal user"
+  internalUserUpdate("ID of existing user to update - used to find target user" id: String!, "New username of the user - should be unique" username: String, "New email address of the user" email: String, "New first name of the user" firstName: String, "New last name of the user" lastName: String, "New password of the user - will be hashed on store" password: String): User
+  "Delete an existing internal user"
+  internalUserDelete("The unique ID of the user to delete" id: String!): Unit
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Queries {
+  "List all internal users, optionally filtered by a query"
+  internalUsers("A string to filter users by" query: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): UserConnection
+  "Retrieve details of a user based on username"
+  internalUserByUsername("Username of the user to retrieve" username: String!): User
+  "Retrieve details of a user based on unique ID"
+  internalUserById("Unique ID of the user to retrieve" id: String!): User
+}
+
+type User {
+  "The unique identifier for the user"
+  uniqueId: String!
+  "The username a user authenticates with"
+  username: String!
+  "User's email address"
+  email: String
+  "User's first name"
+  firstName: String!
+  "User's last name"
+  lastName: String!
+}
+
+"A Connection object paging through Users as per the GraphQL Cursor Connections Specification"
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge!]!
+}
+
+"An Edge object for Users as per the GraphQL Cursor Connections Specification"
+type UserEdge {
+  cursor: String!
+  node: User!
+}

@@ -17,3 +17,6 @@ generated.keystore
 Source/Plugins/Kaltura
 server.xml
 node_modules/
+
+# Build Server Protocol files, typically added by IntelliJ with SBT
+.bsp/
