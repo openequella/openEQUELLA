@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as E from "fp-ts/Either";
-import { identity, pipe } from "fp-ts/function";
+import { constFalse, pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 
 /**
@@ -43,25 +43,21 @@ export function isInteger(
 }
 
 /**
- * Check if a string is a valid URL and starts with http:// or https://.
- *
- * @param str Text to validate.
- */
-export const isValidURL = (str: string): boolean =>
-  pipe(
-    E.tryCatch(
-      () => new URL(str),
-      () => false,
-    ),
-    E.fold(
-      identity,
-      // match http:// or https://
-      ({ protocol }) => ["http:", "https:"].includes(protocol),
-    ),
-  );
-
-/**
  * Check if the provided value is a non-empty string.
  */
 export const isNonEmptyString = (v: unknown): v is string =>
   S.isString(v) && !S.isEmpty(v);
+
+/**
+ * Check if a string is a valid URL and starts with http:// or https://.
+ *
+ * @param v Value to validate.
+ */
+export const isValidURL = (v: unknown): boolean =>
+  pipe(
+    v,
+    E.fromPredicate(isNonEmptyString, constFalse),
+    E.chain((s) => E.tryCatch(() => new URL(s), constFalse)),
+    E.map(({ protocol }) => ["http:", "https:"].includes(protocol)),
+    E.getOrElse(constFalse),
+  );

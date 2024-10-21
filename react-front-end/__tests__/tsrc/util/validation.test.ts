@@ -49,6 +49,10 @@ describe("validation", () => {
       expect(isValidURL("httpppp://test.com")).toBe(false);
     });
 
+    it("should handle random value", () => {
+      expect(isValidURL(123456)).toBe(false);
+    });
+
     it("should recognize http://", () => {
       expect(isValidURL("http://test2.comn")).toBe(true);
     });

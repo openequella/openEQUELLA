@@ -15,18 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent } from "@mui/material";
+import { Card, CardContent, Divider, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as React from "react";
+import GeneralDetailsSection from "../../components/GeneralDetailsSection";
 import SettingPageTemplate from "../../components/SettingPageTemplate";
 import { routes } from "../../mainui/routes";
 import { templateDefaults, TemplateUpdateProps } from "../../mainui/Template";
 import { languageStrings } from "../../util/langstrings";
+import * as OEQ from "@openequella/rest-api-client";
+import {
+  defaultIdpGeneralDetails,
+  generalDetailsRenderOptions,
+} from "./Oidc/OidcSettingsHelper";
 
 const {
   name,
   oeqDetails: { title: oeqDetailsTitle },
-  idpProvider: { title: idpProviderTitle },
+  generalDetails: { title: generalDetailsTitle },
 } = languageStrings.settings.integration.oidc;
 
 const OidcSettings = ({ updateTemplate }: TemplateUpdateProps) => {
@@ -37,19 +43,52 @@ const OidcSettings = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
   }, [updateTemplate]);
 
-  const [changesUnsaved] = useState(false);
   const handleOnSave = () => {};
+
+  // Given that the save button on the creation page of OEQ has always been available in present UI,
+  // set the disableSaveButton `false` here.
+  const [saveButtonDisabled] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [preventNavigation] = useState(true);
+
+  const [showValidationErrors] = useState(false);
+
+  const [idpDetails, setIdpDetails] = React.useState<OEQ.Oidc.IdentityProvider>(
+    defaultIdpGeneralDetails,
+  );
+
+  // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
+  const onIdpGeneralDetailsChange = (key: string, newValue: unknown) =>
+    setIdpDetails({
+      ...idpDetails,
+      [key]: newValue,
+    });
 
   return (
     <SettingPageTemplate
       onSave={handleOnSave}
-      preventNavigation={false}
-      saveButtonDisabled={!changesUnsaved}
-      snackBarOnClose={() => {}}
-      snackbarOpen={false}
+      preventNavigation={preventNavigation}
+      saveButtonDisabled={saveButtonDisabled}
+      snackBarOnClose={() => setShowSnackBar(false)}
+      snackbarOpen={showSnackBar}
     >
       <Card>
-        <CardContent>{idpProviderTitle}</CardContent>
+        <CardContent>
+          <Grid>
+            <GeneralDetailsSection
+              title={generalDetailsTitle}
+              fields={generalDetailsRenderOptions(
+                idpDetails,
+                onIdpGeneralDetailsChange,
+                showValidationErrors,
+              )}
+            />
+          </Grid>
+
+          <Divider variant="middle" />
+
+          <Grid mt={2}>Role mappings</Grid>
+        </CardContent>
       </Card>
 
       <Card>

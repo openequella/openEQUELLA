@@ -100,7 +100,7 @@ const GeneralDetailsSection = ({
             primaryText={
               <>
                 {label}
-                {required ? "*" : ""}
+                {required ? " *" : ""}
               </>
             }
             secondaryText={desc}
