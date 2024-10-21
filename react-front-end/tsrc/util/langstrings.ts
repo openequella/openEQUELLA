@@ -824,8 +824,27 @@ export const languageStrings = {
       },
       oidc: {
         name: "OIDC configuration",
-        idpProvider: {
-          title: "IDP Provider Details",
+        generalDetails: {
+          title: "General Details",
+          platform: "Platform",
+          name: "Name",
+          nameDesc:
+            "The name will display on the log in button when users are logging in",
+          authCodeClientId: "Client ID",
+          authCodeClientSecret: "Client secret",
+          authUrl: "Identity Provider Login URL",
+          authUrlDesc:
+            "Enter the URL of your Identity Provider's authorization endpoint. This is where users will be redirected to initiate the OpenID Connect login flow",
+          keysetUrl: "Public Key Endpoint URL",
+          keysetUrlDesc:
+            "Enter the URL of the endpoint providing the JSON Web Key Set (JWKS). This set of public keys is used to verify the authenticity of tokens issued by the Identity Provider",
+          tokenUrl: "Token URL",
+          tokenUrlDesc:
+            "Enter the URL of the token endpoint. openEQUELLA will use this (with the above Client ID and Secret) to obtain an ID token to identify the authenticated user",
+          usernameClaim: "Username claim",
+          usernameClaimDesc:
+            " By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
+          enable: "Enable",
         },
         oeqDetails: {
           title: "openEquella (RP) details",

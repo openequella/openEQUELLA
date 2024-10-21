@@ -494,7 +494,7 @@ const ConfigureLti13Platform = ({
     >
       <Card>
         <CardContent>
-          <Grid mt={2}>
+          <Grid>
             <GeneralDetailsSection
               title={title}
               fields={ltiGeneralDetailsRenderOptions}
