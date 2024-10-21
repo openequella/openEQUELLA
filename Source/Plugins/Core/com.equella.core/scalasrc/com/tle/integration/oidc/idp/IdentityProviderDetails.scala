@@ -30,7 +30,8 @@ import java.net.{URI, URL}
   * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
   *
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
-  * @param issuer Entity of the selected platform that issues ID tokens.
+  * @param issuer The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
+  *               claim in the JWTs issued by this provider.
   * @param authCodeClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
   *                         the Authorization Code flow
   * @param authCodeClientSecret Secret key used with `authCodeClientId` specifically in the Authorization Code flow

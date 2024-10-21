@@ -44,7 +44,8 @@ interface IdentityProviderBase {
    */
   platform: IdentityProviderPlatform;
   /**
-   * Entity of the selected platform that issues ID tokens.
+   * The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
+   * claim in the JWTs issued by this provider.
    */
   issuer: string;
   /**
