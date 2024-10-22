@@ -93,7 +93,7 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
       new ExternallyDefinedFunction(
           "logonReady", new IncludeFile(RESOURCE_HELPER.url("scripts/logon.js")));
 
-  @PlugKey("logon.pagetitle")
+  @PlugKey("logon.title")
   private static Label TITLE_LABEL;
 
   @PlugKey("logon.error.usernamenotfound")
@@ -116,6 +116,8 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
   @Component
   @PlugKey("logon.login")
   private Button logonButton;
+
+  @Inject @Component private OidcLoginSection oidcLoginSection;
 
   @Override
   public String getDefaultPropertyName() {
@@ -284,6 +286,10 @@ public class LogonSection extends AbstractPrototypeSection<LogonSection.LogonMod
 
   public Button getLogonButton() {
     return logonButton;
+  }
+
+  public OidcLoginSection getOidcLoginSection() {
+    return oidcLoginSection;
   }
 
   public static void forwardToLogon(

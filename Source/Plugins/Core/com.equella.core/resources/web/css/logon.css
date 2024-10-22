@@ -17,3 +17,27 @@ p label {
 .autologinlink {
   padding-left: 100px;
 }
+
+/*****************************************************************************
+ Styles only applied to the Login page in Old UI
+*****************************************************************************/
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 30px;
+}
+
+.login-page .divider {
+  width: 1px;
+  background-color: lightgrey;
+  height: 100%;
+}
+
+.login-page .native-login {
+  height: 100%;
+}
+
+.login-page .oidc-login {
+  height: 100%;
+}
