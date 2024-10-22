@@ -5783,7 +5783,7 @@ button:focus {
   // 4 columns in XXL or even larger screens
   grid-template-columns: 1fr auto 1fr 1.5fr;
   align-items: center;
-  gap: 30px;
+  gap: $doubleMargin;
 }
 
 #login-page #native-login #password {
@@ -5843,22 +5843,22 @@ button:focus {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     background-color: transparent;
-    gap: 10px;
+    gap: $singleMargin;
   }
 
   #login-page #divider #left {
     background-color: lightgrey;
     height: 1px;
-    margin-top: 12px; // 12px margin on the top to align with the divider text
-    margin-left: 20px; // 20px margin on the left to align with the native login components
+    margin-top: $singleMargin + $minimalMargin;
+    margin-left: $doubleMargin + $minimalMargin;
   }
 
   // Similar to `left` but with 20px margin on the right
   #login-page #divider #right {
     background-color: lightgrey;
     height: 1px;
-    margin-top: 12px;
-    margin-right: 20px;
+    margin-top: $singleMargin + $minimalMargin;
+    margin-right: $doubleMargin + $minimalMargin;
   }
 
   #login-page #divider #center::after {
