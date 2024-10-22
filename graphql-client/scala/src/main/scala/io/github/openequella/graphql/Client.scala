@@ -76,6 +76,7 @@ object Client {
               // Within the object, we expect there to be a 'cause' string property
               fields.toMap.get("cause") match {
                 case Some(__StringValue(cause)) => Some(cause)
+                case Some(_)                    => None
                 case None                       => None
               }
             // We have no interest in other types of 'extension' properties
