@@ -20,15 +20,16 @@ package com.tle.beans.hierarchy;
 
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.beans.item.Item;
 import com.tle.common.security.TargetList;
 import java.io.Serializable;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class HierarchyPack implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private HierarchyTopic topic;
+  private List<Item> keyResources;
   private TargetList targetList;
   private List<ItemDefinition> inheritedItemDefinitions;
   private List<Schema> inheritedSchemas;
@@ -59,6 +60,14 @@ public class HierarchyPack implements Serializable {
 
   public void setTopic(HierarchyTopic topic) {
     this.topic = topic;
+  }
+
+  public void setKeyResources(List<Item> keyResources) {
+    this.keyResources = keyResources;
+  }
+
+  public List<Item> getKeyResources() {
+    return this.keyResources;
   }
 
   public TargetList getTargetList() {

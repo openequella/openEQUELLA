@@ -50,18 +50,27 @@ case class HierarchyTopicSummary(compoundUuid: String,
 /**
   * Contains basic topic info to represent an parent topic.
   *
-  * @param compoundUuid The compound uuid of the topic.
+  * @param compoundUuid The string representation of HierarchyCompoundUuid class.
   * @param name The name of the topic.
   */
 case class ParentTopic(compoundUuid: String, name: Option[String])
+
+/**
+  * Represents a key resource in the hierarchy,
+  * including the referenced Item and a flag which indicates if the key resource points to the latest version of that Item.
+  */
+case class KeyResource(
+    item: SearchResultItem,
+    isLatest: Boolean,
+)
 
 /**
   * Based on [[HierarchyTopicSummary]], provides more information about parent topics and key resources.
   *
   * @param summary Basic information of the topic.
   * @param parents Basic information of all the parent topics.
-  * @param keyResources The key resources of the given topic (include dynamic key resources).
+  * @param keyResources All key resources of the given topic.
   */
 case class HierarchyTopic(summary: HierarchyTopicSummary,
                           parents: List[ParentTopic],
-                          keyResources: List[SearchResultItem])
+                          keyResources: List[KeyResource])

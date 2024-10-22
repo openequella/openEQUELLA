@@ -78,8 +78,7 @@ import {
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
 
-const { title: addKeyResourceText } =
-  languageStrings.searchpage.addItemToHierarchy;
+const { title: addKeyResourceText } = languageStrings.searchpage.addToHierarchy;
 
 const history = createMemoryHistory();
 const buildMyResourcesSearchPageOptions = (

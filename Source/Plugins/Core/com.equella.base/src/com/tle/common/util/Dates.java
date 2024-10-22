@@ -49,7 +49,8 @@ public enum Dates {
   ACTIVE_CACHE_TIMESLOT("H:mm"),
   MERLOT("MMM dd, yyyy"),
   @Deprecated
-  CALENDAR_CONTROL_FORM("dd/MM/yyyy");
+  CALENDAR_CONTROL_FORM("dd/MM/yyyy"),
+  ISO_DATE_TIME("yyyy-MM-dd HH:mm:sss");
 
   // // IMPLEMENTATION ///////////////////////////////////////////////////////
 

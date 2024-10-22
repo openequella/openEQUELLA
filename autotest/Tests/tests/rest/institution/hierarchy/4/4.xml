@@ -29,7 +29,6 @@
             <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
           </allParents>
           <listPosition>0</listPosition>
-          <keyResources/>
           <showResults>true</showResults>
           <freetext></freetext>
           <inheritFreetext>true</inheritFreetext>
@@ -60,7 +59,6 @@
         <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
       </allParents>
       <listPosition>0</listPosition>
-      <keyResources/>
       <showResults>true</showResults>
       <freetext></freetext>
       <inheritFreetext>true</inheritFreetext>
@@ -88,7 +86,6 @@
     </com.tle.beans.hierarchy.HierarchyTopic>
   </subTopics>
   <listPosition>3</listPosition>
-  <keyResources/>
   <showResults>true</showResults>
   <inheritFreetext>false</inheritFreetext>
   <addIdefs/>

@@ -15,7 +15,8 @@ case class LoginNoticePage(ctx: PageContext)
 
   private def preNoticeField: WebElement = findElementById("tinymce")
 
-  private def preNoticeIFrame: WebElement = findElement(By.className("tox-edit-area__iframe"))
+  private val preNoticeIFrameClassName: By = By.className("tox-edit-area__iframe")
+  private def preNoticeIFrame: WebElement  = findElement(preNoticeIFrameClassName)
 
   private def preNoticeAddImageButton: WebElement =
     findElement(By.cssSelector("button[aria-label='Insert/edit image']"))
@@ -38,6 +39,7 @@ case class LoginNoticePage(ctx: PageContext)
   private def clearOkButton: WebElement = findElementById("okToClear")
 
   private def switchToTinyMCEIFrame(): Unit = {
+    waiter.until(ExpectedConditions.presenceOfElementLocated(preNoticeIFrameClassName))
     driver.switchTo().frame(preNoticeIFrame)
     waiter.until(ExpectedConditions.presenceOfElementLocated(By.id("tinymce")))
   }

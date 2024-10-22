@@ -80,11 +80,11 @@ class HierarchyPanel(context: PageContext) extends AbstractPage[HierarchyPanel](
   }
 
   /**
-    * Check if the hierarchy tree has matched count.
+    * Check if the hierarchy tree has result count.
     *
     * @param hierarchyName The name of the hierarchy.
     */
-  def hasHierarchyMatchedCount(hierarchyName: String): Boolean = {
+  def hasHierarchyResultCount(hierarchyName: String): Boolean = {
     val tree = getHierarchyTree
     !tree
       .findElements(
@@ -93,12 +93,12 @@ class HierarchyPanel(context: PageContext) extends AbstractPage[HierarchyPanel](
   }
 
   /**
-    * Check if the hierarchy tree has matched count.
+    * Check if the hierarchy tree has result count.
     *
     * @param hierarchyName The name of the hierarchy.
-    * @param count         The count number of the hierarchy.
+    * @param count         The result count number of the hierarchy.
     */
-  def hasHierarchyMatchedCount(hierarchyName: String, count: Int): Boolean = {
+  def isResultCountShowed(hierarchyName: String, count: Int): Boolean = {
     val tree = getHierarchyTree
     !tree
       .findElements(By.xpath(

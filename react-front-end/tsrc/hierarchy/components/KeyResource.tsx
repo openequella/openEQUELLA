@@ -40,6 +40,7 @@ import { defaultDrmStatus } from "../../modules/DrmModule";
 import { Root } from "../../search/components/SearchResult";
 import { buildOpenSummaryPageHandler } from "../../search/SearchPageHelper";
 import { languageStrings } from "../../util/langstrings";
+import HierarchyKeyResourceDialog from "./HierarchyKeyResourceDialog";
 
 const {
   removeKeyResource: removeKeyResourceText,
@@ -48,13 +49,15 @@ const {
 
 export interface KeyResourceProps {
   /**
-   * The key resource item to display.
+   * The key resource to display.
    */
-  item: OEQ.Search.SearchResultItem;
+  keyResource: OEQ.BrowseHierarchy.KeyResource;
   /**
    * The handler for the pin icon click event. Hide the pin icon if it's undefined.
    */
-  onPinIconClick?: (item: OEQ.Search.SearchResultItem) => void;
+  onPinIconClick?: (
+    keyResource: OEQ.BrowseHierarchy.KeyResource,
+  ) => Promise<void>;
 }
 
 const PREFIX = "KeyResource";
@@ -133,7 +136,7 @@ export const StyledCard = styled(Card, {
 /**
  * A card view of a key resource for hierarchy.
  */
-const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
+const KeyResource = ({ keyResource, onPinIconClick }: KeyResourceProps) => {
   const history = useHistory();
 
   const {
@@ -145,8 +148,10 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
     name,
     description,
     displayOptions,
-  } = item;
+  } = keyResource.item;
 
+  const [showRemoveKeyResourceDialog, setShowRemoveKeyResourceDialog] =
+    useState(false);
   const [showDrmDialog, setShowDrmDialog] = useState(false);
   const [drmDialog, setDrmDialog] = useState<React.JSX.Element | undefined>(
     undefined,
@@ -230,41 +235,56 @@ const KeyResource = ({ item, onPinIconClick }: KeyResourceProps) => {
   );
 
   return (
-    <StyledCard hidePinIcon={onPinIconClick === undefined}>
-      <Box className={classes.container}>
-        <OEQThumb
-          details={
-            displayOptions?.disableThumbnail ? undefined : thumbnailDetails
-          }
-          large
-        />
+    <>
+      <StyledCard hidePinIcon={onPinIconClick === undefined}>
+        <Box className={classes.container}>
+          <OEQThumb
+            details={
+              displayOptions?.disableThumbnail ? undefined : thumbnailDetails
+            }
+            large
+          />
 
-        <CardContent className={classes.info}>{itemInfo()}</CardContent>
+          <CardContent className={classes.info}>{itemInfo()}</CardContent>
 
-        <Box className={classes.action}>
-          {onPinIconClick ? (
-            <TooltipIconButton
-              id={`${uuid}-${version}-unpin`}
-              title={removeKeyResourceText}
-              onClick={() => onPinIconClick(item)}
-              aria-label={removeKeyResourceText}
-            >
-              <PushPin color="secondary" />
-            </TooltipIconButton>
-          ) : undefined}
+          <Box className={classes.action}>
+            {onPinIconClick ? (
+              <TooltipIconButton
+                id={`${uuid}-${version}-unpin`}
+                title={removeKeyResourceText}
+                onClick={() => setShowRemoveKeyResourceDialog(true)}
+                aria-label={removeKeyResourceText}
+              >
+                <PushPin color="secondary" />
+              </TooltipIconButton>
+            ) : undefined}
 
-          {attachmentCount > 0 && (
-            <Tooltip
-              className={classes.attachmentCount}
-              title={attachmentCountText}
-              aria-label={attachmentCountText}
-            >
-              <Chip label={attachmentCount} size="small" color="primary" />
-            </Tooltip>
-          )}
+            {attachmentCount > 0 && (
+              <Tooltip
+                className={classes.attachmentCount}
+                title={attachmentCountText}
+                aria-label={attachmentCountText}
+              >
+                <Chip label={attachmentCount} size="small" color="primary" />
+              </Tooltip>
+            )}
+          </Box>
         </Box>
-      </Box>
-    </StyledCard>
+      </StyledCard>
+
+      {showRemoveKeyResourceDialog && (
+        <HierarchyKeyResourceDialog
+          itemUuid={uuid}
+          itemVersion={version}
+          isKeyResource
+          updateKeyResource={() =>
+            onPinIconClick ? onPinIconClick(keyResource) : Promise.resolve()
+          }
+          open={showRemoveKeyResourceDialog}
+          closeDialog={() => setShowRemoveKeyResourceDialog(false)}
+        />
+      )}
+    </>
   );
 };
 

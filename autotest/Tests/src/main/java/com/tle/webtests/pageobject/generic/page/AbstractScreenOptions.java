@@ -34,18 +34,8 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
     }
   }
 
-  // TODO: Remove me in OEQ-1702
-  private By getOpenOptionsByWithOldUI() {
-    return By.id(OLD_SCREEN_OPTIONS_BUTTON);
-  }
-
   private WebElement getOpenOptions() {
     return driver.findElement(getOpenOptionsBy());
-  }
-
-  // TODO: Remove me in OEQ-1702
-  private WebElement getOpenOptionsWithOldUI() {
-    return driver.findElement(getOpenOptionsByWithOldUI());
   }
 
   protected boolean isOptionsOpen() {
@@ -57,18 +47,6 @@ public abstract class AbstractScreenOptions<T extends AbstractScreenOptions<T>>
       ExpectedCondition<WebElement> visible =
           ExpectedConditions.visibilityOfElementLocated(loadedBy);
       getOpenOptions().click();
-      waiter.until(visible);
-    }
-    return get();
-  }
-
-  // TODO: Remove me in OEQ-1702
-  public T openWithOldUi() {
-    loadedBy = By.id(OLD_SCREEN_OPTIONS);
-    if (!isOptionsOpen()) {
-      ExpectedCondition<WebElement> visible =
-          ExpectedConditions.visibilityOfElementLocated(loadedBy);
-      getOpenOptionsWithOldUI().click();
       waiter.until(visible);
     }
     return get();

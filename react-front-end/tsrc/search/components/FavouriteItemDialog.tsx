@@ -15,192 +15,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Chip,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
-  Radio,
-  RadioGroup,
-  TextField,
-} from "@mui/material";
-import { Autocomplete } from "@mui/material";
-import { useContext, useState } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import type { FavouriteItemVersionOption } from "../../modules/FavouriteModule";
+import SelectItemVersionDialog from "../../components/SelectItemVersionDialog";
 import { languageStrings } from "../../util/langstrings";
-import { SearchContext } from "../SearchPageHelper";
+import type { SelectItemVersionDialogProps } from "../../components/SelectItemVersionDialog";
 
-/**
- * Type that includes a function which is fired to add a favourite Item and
- * a flag which is primarily used for type checking.
- */
-export interface FavDialogConfirmToAdd {
-  action: "add";
-  onConfirm: (tags: string[], isAlwaysLatest: boolean) => Promise<void>;
+const { add, remove, removeAlert, tagDescription } =
+  languageStrings.searchpage.favouriteItem;
+
+export interface FavouriteItemDialogProps
+  extends Omit<
+    SelectItemVersionDialogProps,
+    "title" | "tagDescription" | "onConfirm"
+  > {
+  /**
+   * `true` if the Item is already added.
+   */
+  isAdded: boolean;
+  /**
+   * The function to add/delete favourite.
+   */
+  updateFavouriteItem: (
+    isAdded: boolean,
+    isAlwaysLatest: boolean,
+    tags?: string[],
+  ) => Promise<void>;
 }
 
 /**
- * Type that includes a function which is fired to delete a favourite Item and
- * a flag which is primarily used for type checking.
+ * Dialog for selecting the version of an item to add to the hierarchy key resource.
+ * And its also display a confirmation dialog for removing a key resource.
  */
-export interface FavDialogConfirmToDelete {
-  action: "delete";
-  onConfirm: () => Promise<void>;
-}
+const FavouriteItemDialog = (props: FavouriteItemDialogProps) => {
+  const { isAdded, isLatestVersion, open, updateFavouriteItem, closeDialog } =
+    props;
 
-type FavDialogOnConfirmProps = FavDialogConfirmToAdd | FavDialogConfirmToDelete;
-
-/**
- * Type guard of FavDialogOnConfirmProps to help determine the type of property 'onConfirm'.
- */
-const isConfirmToDelete = (
-  props: FavDialogOnConfirmProps,
-): props is FavDialogConfirmToDelete => props.action === "delete";
-
-export interface FavouriteItemDialogProps {
-  /**
-   * `true` to open the dialog
-   */
-  open: boolean;
-  /**
-   * Fired when the dialog is closed
-   */
-  closeDialog: () => void;
-  /**
-   * `true` if the Item is already in favourites
-   */
-  isAddedToFavourite: boolean;
-  /**
-   * `true` if the Item is on its latest version
-   */
-  isLatestVersion: boolean;
-  /**
-   * The handler for clicking the Confirm button. Type of this handler depends on the value of 'action'.
-   * Must call type guard 'isConfirmToDelete' first to narrow down its type.
-   */
-  onConfirmProps: FavDialogOnConfirmProps;
-}
-
-const {
-  title: { add: addString, remove: removeString },
-  removeAlert: removeAlertString,
-  tags: tagsString,
-} = languageStrings.searchpage.favouriteItem;
-
-/**
- * Build a Grid as the dialog's content when the dialog is used for adding a favourite Item.
- */
-const AddFavouriteItemContent = ({
-  onChangeTags,
-  onChangeVersionOption,
-  isOnLatestVersion,
-}: {
-  onChangeTags: (tags: string[]) => void;
-  onChangeVersionOption: (version: FavouriteItemVersionOption) => void;
-  isOnLatestVersion: boolean;
-}) => (
-  <Grid container direction="column" spacing={2}>
-    <Grid item>
-      <Autocomplete
-        multiple
-        freeSolo
-        renderTags={(value: string[], getTagProps) =>
-          value.map((option: string, index: number) => (
-            <Chip label={option} {...getTagProps({ index })} />
-          ))
-        }
-        renderInput={(params) => (
-          <TextField
-            variant="standard"
-            {...params}
-            label={tagsString.description}
-          />
-        )}
-        options={[]}
-        onChange={(_, value: string[]) => onChangeTags(value)}
-      />
-    </Grid>
-    <Grid item>
-      {isOnLatestVersion ? (
-        <FormControl>
-          <FormLabel>{tagsString.selectVersion}</FormLabel>
-          <RadioGroup
-            row
-            onChange={(event) =>
-              onChangeVersionOption(
-                event.target.value as FavouriteItemVersionOption,
-              )
-            }
-            defaultValue="latest"
-          >
-            <FormControlLabel
-              value="latest"
-              control={<Radio />}
-              label={tagsString.versionOptions.useLatestVersion}
-            />
-            <FormControlLabel
-              value="this"
-              control={<Radio />}
-              label={tagsString.versionOptions.useThisVersion}
-            />
-          </RadioGroup>
-        </FormControl>
-      ) : (
-        tagsString.toThisVersion
-      )}
-    </Grid>
-  </Grid>
-);
-
-/**
- * Provide a Dialog where an Item can be added to or removed from user's favourites.
- */
-export const FavouriteItemDialog = ({
-  open,
-  closeDialog,
-  isAddedToFavourite,
-  isLatestVersion,
-  onConfirmProps,
-}: FavouriteItemDialogProps) => {
-  const [tags, setTags] = useState<string[]>([]);
-  const [versionOption, setVersionOption] =
-    useState<FavouriteItemVersionOption>("latest");
-  const { searchPageErrorHandler } = useContext(SearchContext);
-
-  const confirmHandler = () => {
-    const doConfirm = isConfirmToDelete(onConfirmProps)
-      ? () => onConfirmProps.onConfirm()
-      : () => onConfirmProps.onConfirm(tags, versionOption === "latest");
-
-    doConfirm()
-      .then(() => {
-        // Need to reset versionOption to match the RadioGroup's default selected value .
-        setVersionOption("latest");
-        closeDialog();
-      })
-      .catch(searchPageErrorHandler);
-  };
-
-  return (
+  return isAdded ? (
     <ConfirmDialog
       open={open}
-      title={isAddedToFavourite ? removeString : addString}
-      onConfirm={confirmHandler}
+      title={remove}
+      onConfirm={async () => {
+        await updateFavouriteItem(true, isLatestVersion);
+        closeDialog();
+      }}
       onCancel={closeDialog}
       confirmButtonText={languageStrings.common.action.ok}
     >
-      {isAddedToFavourite ? (
-        removeAlertString
-      ) : (
-        <AddFavouriteItemContent
-          onChangeTags={setTags}
-          onChangeVersionOption={setVersionOption}
-          isOnLatestVersion={isLatestVersion}
-        />
-      )}
+      {removeAlert}
     </ConfirmDialog>
+  ) : (
+    <SelectItemVersionDialog
+      {...props}
+      title={add}
+      tagDescription={tagDescription}
+      onConfirm={(isLatest, tags) => updateFavouriteItem(false, isLatest, tags)}
+    />
   );
 };
+
+export default FavouriteItemDialog;

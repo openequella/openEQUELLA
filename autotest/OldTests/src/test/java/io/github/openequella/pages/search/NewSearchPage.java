@@ -2,7 +2,7 @@ package io.github.openequella.pages.search;
 
 import com.tle.webtests.framework.PageContext;
 
-public class NewSearchPage extends BaseSearchPage<NewSearchPage> {
+public class NewSearchPage extends AbstractSearchPage<NewSearchPage> {
   public NewSearchPage(PageContext context) {
     super(context);
   }

@@ -1,11 +1,9 @@
-import java.io.FileNotFoundException
-import java.util.Properties
 import Path.rebase
 import com.typesafe.sbt.license.LicenseReport
 import sbt.io.Using
 
 import java.time.Instant
-import scala.jdk.CollectionConverters.*
+import java.util.Properties
 
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
@@ -82,7 +80,7 @@ ThisBuild / assemblyMergeStrategy := {
   }
 }
 (ThisBuild / oracleDriverMavenCoordinate) :=
-  Seq("com.oracle.database.jdbc" % "ojdbc8" % "23.3.0.23.09")
+  Seq("com.oracle.database.jdbc" % "ojdbc11" % "23.4.0.24.05")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 

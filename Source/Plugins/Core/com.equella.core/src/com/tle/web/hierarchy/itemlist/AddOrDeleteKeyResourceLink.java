@@ -26,6 +26,7 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.hierarchy.section.TopicDisplaySection;
 import com.tle.web.hierarchy.section.TopicDisplaySection.ExtendedTopicDisplayModel;
 import com.tle.web.itemlist.item.ItemListEntry;
@@ -108,12 +109,16 @@ public class AddOrDeleteKeyResourceLink extends AbstractPrototypeSection<Object>
 
   @EventHandlerMethod
   public void removeKeyResource(SectionInfo info, ItemId itemId, String topicId) {
-    hierarchyService.deleteKeyResources(topicId, itemId);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
+    hierarchyService.deleteKeyResources(compoundUuid, itemId);
   }
 
   @EventHandlerMethod
   public void addAsKeyResource(SectionInfo info, ItemId itemId, String topicId) {
-    hierarchyService.addKeyResource(topicId, itemId);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
+    if (!hierarchyService.hasKeyResource(compoundUuid, itemId)) {
+      hierarchyService.addKeyResource(compoundUuid, itemId);
+    }
   }
 
   @Override

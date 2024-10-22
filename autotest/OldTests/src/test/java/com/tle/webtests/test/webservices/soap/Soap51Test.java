@@ -35,6 +35,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
 @TestInstitution("fiveo")
 public class Soap51Test extends AbstractCleanupTest {
@@ -847,6 +848,7 @@ public class Soap51Test extends AbstractCleanupTest {
   }
 
   @Test
+  @OldUIOnly
   public void hierarchyTest() throws Exception {
     String aTopicUUID = "e8c49738-7609-0079-e354-67b2e4e6b54c";
     String aTopicName = "A Topic";
@@ -854,6 +856,7 @@ public class Soap51Test extends AbstractCleanupTest {
     String aTopicChildName = "Child";
 
     Map<String, String> rootTopics = new LinkedHashMap<String, String>();
+    rootTopics.put("0e3c503b-0fac-419b-b0ca-eef61dec2adc", "Topic A");
     rootTopics.put(aTopicUUID, aTopicName);
     rootTopics.put("cd42ec56-d893-a81d-ba59-00742414ff3d", "No Results");
     rootTopics.put("d62bbe4e-84d9-06f2-62e1-31ddc28a1ee6", "Power Search");
@@ -892,14 +895,8 @@ public class Soap51Test extends AbstractCleanupTest {
 
     logon("AutoTest", "automated");
 
-    // TODO: remove setNewUI in OEQ-1702.
-    // Because hierarchy page is not completed in new UI, turn off New UI.
-    if (isNewUIEnv) {
-      setNewUI(false);
-    }
-
-    MenuSection menuSection = new MenuSection(context, false);
-    assertTrue(menuSection.hasMenuOption(newTopicName, true));
+    MenuSection menuSection = new MenuSection(context);
+    assertTrue(menuSection.hasMenuOption(newTopicName));
     newTopicXml = new PropBagEx(soapService.getTopic(newTopicUUID));
     checkTopic(newTopicXml, newTopicName, newTopicUUID);
 
@@ -929,7 +926,7 @@ public class Soap51Test extends AbstractCleanupTest {
     newTopicXml.setNode("name", newTopicName);
     soapService.editTopic(newTopicUUID, newTopicXml.toString());
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasMenuOption(newTopicName, true));
+    assertTrue(menuSection.hasMenuOption(newTopicName));
 
     // Edit child topic
     String firstChildEdited = "Child111";
@@ -946,11 +943,11 @@ public class Soap51Test extends AbstractCleanupTest {
     // Move root topic
     soapService.moveTopic(newTopicUUID, "", 1);
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 2, true));
+    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 2));
 
     soapService.moveTopic(newTopicUUID, "", 3);
     logon("AutoTest", "automated"); // Refresh topics
-    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 4, true));
+    assertTrue(menuSection.hasHierarchyTopic(newTopicName, 4));
 
     // Move child topics using MIN/MAX
     soapService.moveTopic(newFirstChildUUID, newTopicUUID, Integer.MAX_VALUE);
@@ -974,13 +971,7 @@ public class Soap51Test extends AbstractCleanupTest {
     // Delete root topic with remaining child topic
     soapService.deleteTopic(newTopicUUID);
     logon("AutoTest", "automated");
-    assertFalse(menuSection.get().hasMenuOption(newTopicName, true));
-
-    // TODO: remove setNewUI in OEQ-1702.
-    // restore NEW UI settings.
-    if (isNewUIEnv) {
-      setNewUI(true);
-    }
+    assertFalse(menuSection.get().hasMenuOption(newTopicName));
   }
 
   private void checkTopic(PropBagEx xml, String name, String uuid) {

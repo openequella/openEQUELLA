@@ -18,21 +18,20 @@
 
 package com.tle.web.api.browsehierarchy
 
-import cats.Semigroup
-import cats.implicits.catsSyntaxSemigroup
 import com.tle.beans.entity.LanguageBundle
-import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
+import com.tle.beans.hierarchy.{HierarchyTopicKeyResource, HierarchyTopic => HierarchyTopicEntity}
 import com.tle.beans.item.{Item, ItemId, ItemIdKey}
-import com.tle.common.URLUtils
 import com.tle.common.interfaces.equella.BundleString
+import com.tle.common.security.Privilege
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
-import com.tle.core.item.serializer.ItemSerializerService
+import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.core.item.service.ItemService
 import com.tle.core.search.VirtualisableAndValue
-import com.tle.web.api.browsehierarchy.model.{HierarchyTopicSummary, ParentTopic}
+import com.tle.core.security.TLEAclManager
+import com.tle.web.api.browsehierarchy.model.{HierarchyTopicSummary, KeyResource, ParentTopic}
 import com.tle.web.api.search.SearchHelper
-import com.tle.web.api.search.model.{SearchItem, SearchResultItem}
+import com.tle.web.api.search.model.SearchItem
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -43,15 +42,21 @@ class BrowseHierarchyHelper {
   private var hierarchyService: HierarchyService           = _
   private var itemSerializerService: ItemSerializerService = _
   private var itemService: ItemService                     = _
+  private var aclManager: TLEAclManager                    = _
+
+  // An intermediate class to store the item and its version information.
+  private case class KeyResourceItem(item: Item, isLatest: Boolean)
 
   @Inject
   def this(hierarchyService: HierarchyService,
            itemService: ItemService,
-           itemSerializerService: ItemSerializerService) = {
+           itemSerializerService: ItemSerializerService,
+           aclManager: TLEAclManager) = {
     this()
     this.hierarchyService = hierarchyService
     this.itemService = itemService
     this.itemSerializerService = itemSerializerService
+    this.aclManager = aclManager
   }
 
   /**
@@ -72,34 +77,26 @@ class BrowseHierarchyHelper {
   private def buildHierarchyTopicSummary(
       topic: HierarchyTopicEntity,
       virtualTopicName: Option[String],
-      parentCompoundUuidMap: Option[Map[String, String]]): HierarchyTopicSummary = {
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]]): HierarchyTopicSummary = {
     val uuid            = topic.getUuid
     val collectionUuids = hierarchyService.getCollectionUuids(topic)
-    val currentTopicMap = virtualTopicName.map(t => Map(uuid -> t))
+    val currentTopic    = HierarchyCompoundUuid(uuid, virtualTopicName, parentCompoundUuidList)
 
-    // This custom semigroup is used when merging the current topic UUID map into the parent topic UUID map.
-    // If the parent map accidentally has key pairs that also exist in the current topic UUID map,
-    // the values should be ALWAYS replace by the values of the current topic map.
-    // As a result, the combine function ALWAYS return `currentTopicName`.
-    implicit val topicNameSemigroup: Semigroup[String] = Semigroup.instance(
-      (_, currentTopicName) => currentTopicName
-    )
-    val compoundUuidMap     = parentCompoundUuidMap |+| currentTopicMap
-    val compoundUuidJavaMap = compoundUuidMap.getOrElse(Map.empty).asJava
-
+    val parentUuidListForSubTopics    = currentTopic.getAllVirtualHierarchyList
+    val parentUuidJavaMapForSubTopics = currentTopic.getAllVirtualHierarchyMap.asJava
     // Normal sub topics and sub virtual topics.
     val subTopics = hierarchyService
       .expandVirtualisedTopics(hierarchyService.getSubTopics(topic),
-                               compoundUuidJavaMap,
+                               parentUuidJavaMapForSubTopics,
                                collectionUuids.orElse(null))
       .asScala
       .toList
-      .map(buildHierarchyTopicSummary(_, compoundUuidMap))
+      .map(buildHierarchyTopicSummary(_, Option(parentUuidListForSubTopics)))
 
     HierarchyTopicSummary(
-      // It should return the compound uuid with parent compound uuid(virtual parent).
-      buildCompoundUuid(uuid, virtualTopicName, parentCompoundUuidMap),
-      hierarchyService.getMatchingItemCount(topic, compoundUuidJavaMap),
+      // The string representation of the topic compound UUID.
+      currentTopic.buildString(),
+      hierarchyService.getMatchingItemCount(topic, parentUuidJavaMapForSubTopics),
       buildVirtualTopicText(topic.getName, virtualTopicName),
       buildVirtualTopicText(topic.getShortDescription, virtualTopicName),
       buildVirtualTopicText(topic.getLongDescription, virtualTopicName),
@@ -115,55 +112,16 @@ class BrowseHierarchyHelper {
     * Constructs a HierarchyTopic instance with the given topic and its parent's compound uuid map.
     *
     * @param topicWrapper          The wrapper object encapsulating the topic entity to be converted.
-    * @param parentCompoundUuidMap A map contains the given topic's virtual ancestors (all virtual parents),
-    *                              which key is the topic uuid and value is the virtual topic name.
+    * @param parentCompoundUuidList A List of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual parents).
+    *
     */
   def buildHierarchyTopicSummary(
       topicWrapper: VirtualisableAndValue[HierarchyTopicEntity],
-      parentCompoundUuidMap: Option[Map[String, String]] = None): HierarchyTopicSummary = {
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]] = None): HierarchyTopicSummary = {
     val topic: HierarchyTopicEntity = topicWrapper.getVt
     val matchedVirtualText          = Option(topicWrapper.getVirtualisedValue)
-    buildHierarchyTopicSummary(topic, matchedVirtualText, parentCompoundUuidMap)
+    buildHierarchyTopicSummary(topic, matchedVirtualText, parentCompoundUuidList)
   }
-
-  // Build a compound uuid based on topic uuid and topic name and it's parent compound uuid map
-  private def buildCompoundUuid(
-      uuid: String,
-      name: Option[String],
-      parentCompoundUuidMap: Option[Map[String, String]] = None): String = {
-    val currentCompoundUuid = name.map(n => s"$uuid:$n").getOrElse(uuid)
-
-    parentCompoundUuidMap
-      .map(
-        _.foldLeft(currentCompoundUuid) {
-          case (compoundUuid, (uuid, name)) =>
-            s"$compoundUuid,${buildCompoundUuid(uuid, Option(name))}"
-        }
-      )
-      .getOrElse(currentCompoundUuid)
-  }
-
-  /**
-    * Given a compound UUID, return a tuple where the first value is UUID and the second value is virtual topic name.
-    */
-  def getUuidAndName(compoundUuid: String): (String, Option[String]) =
-    compoundUuid.split(":", 2) match {
-      case Array(uuid, name) => (uuid, Option(name))
-      case Array(uuid)       => (uuid, None)
-    }
-
-  /**
-    * If the given compoundUuid contains virtual topic name build a map where key is topic UUID and value is virtual topic name.
-    * If the given compoundUuid does not contain virtual topic name, return an empty map.
-    * Notice the name is not encoded because it will be used in Luence query to search related item.
-    *
-    * @param compoundUuid A compound UUID.
-    */
-  def buildCompoundUuidMap(compoundUuid: String): Map[String, String] =
-    getUuidAndName(compoundUuid) match {
-      case (uuid, Some(name)) => Map(uuid -> name)
-      case _                  => Map.empty
-    }
 
   /**
     * Wrap the given topic entity into a VirtualisableAndValue object.
@@ -181,120 +139,85 @@ class BrowseHierarchyHelper {
   }
 
   /**
-    * Transform the name part of a compound UUID string based on a given transformation function.
-    *
-    * @param compoundUuid The compound UUID string to be transformed.
-    * @param transform    The transformation function to be applied to the name part of the compound UUID.
-    */
-  private def transformCompoundUuid(compoundUuid: String, transform: String => String): String =
-    compoundUuid
-      .split(",")
-      .map(getUuidAndName)
-      .map {
-        case (uuid, name) => buildCompoundUuid(uuid, name.map(transform))
-      }
-      .mkString(",")
-
-  /**
-    * Encode name in the compound ID for virtual topics.
-    * Encoded compound UUID is used to look up dynamic resources, because the UUID stored in database is encoded.
-    *
-    * For example:
-    * Input:
-    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James"
-    * Output:
-    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
-    */
-  def encodeCompoundUuid(compoundUuid: String): String =
-    transformCompoundUuid(compoundUuid, URLUtils.basicUrlEncode)
-
-  /**
-    * Decode the name parts in a compound UUID for virtual topics.
-    *
-    * For example:
-    * Input:
-    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A+James"
-    * Output:
-    * "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:A James"
-    */
-  def decodeCompoundUuid(encodedUuid: String): String =
-    transformCompoundUuid(encodedUuid, URLUtils.basicUrlDecode)
-
-  /**
-    * Convert a list of key resources, which are essentially Items, to a list of SearchResultItem.
-    *
-    * @param items A list of key resources added to a hierarchy topic.
-    */
-  private def convertKeyResourceItems(items: List[Item]): List[SearchResultItem] = {
-    val itemIdKeys = items.map(new ItemIdKey(_))
-    val serializer = SearchHelper.createSerializer(itemIdKeys)
-    val searchResultItems = itemIdKeys
-      .map(SearchItem(_, isKeywordFoundInAttachment = false, serializer))
-      .map(SearchHelper.convertToItem(_))
-
-    searchResultItems
-  }
-
-  /**
     * Get the topic summary for the given topic entity.
     *
     * @param topicEntity The topic entity used to get summary.
     * @param virtualTopicName The virtual topic name for the given topic.
-    * @param parentCompoundUuidMap A map contains the given topic's virtual ancestors (all virtual parents) info.
+    * @param parentCompoundUuidList A list of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual parents).
     */
-  def getTopicSummary(topicEntity: HierarchyTopicEntity,
-                      virtualTopicName: Option[String],
-                      parentCompoundUuidMap: Map[String, String]): HierarchyTopicSummary = {
+  def getTopicSummary(
+      topicEntity: HierarchyTopicEntity,
+      virtualTopicName: Option[String],
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]]): HierarchyTopicSummary = {
     val wrappedTopic: VirtualisableAndValue[HierarchyTopicEntity] =
       wrapHierarchyTopic(topicEntity, virtualTopicName)
-    buildHierarchyTopicSummary(wrappedTopic, Option(parentCompoundUuidMap))
+    buildHierarchyTopicSummary(wrappedTopic, parentCompoundUuidList)
   }
 
   /**
     * Get all parents' compound uuid and topic Name.
     *
     * @param topicEntity The topic entity used to get parents.
-    * @param parentCompoundUuidMap A map contains the given topic's virtual ancestors (all virtual parents) info.
+    * @param parentCompoundUuidList A list of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual parents).
     */
   def getParents(topicEntity: HierarchyTopicEntity,
-                 parentCompoundUuidMap: Map[String, String]): List[ParentTopic] =
+                 parentCompoundUuidList: List[HierarchyCompoundUuid]): List[ParentTopic] =
     topicEntity.getAllParents.asScala.toList
       .map(topic => {
         val uuid         = topic.getUuid
-        val virtualName  = parentCompoundUuidMap.get(uuid)
-        val compoundUuid = buildCompoundUuid(uuid, virtualName)
+        val virtualName  = parentCompoundUuidList.find(_.uuid == uuid).flatMap(_.name)
+        val compoundUuid = HierarchyCompoundUuid(uuid, virtualName).buildString()
         val topicName    = buildVirtualTopicText(topic.getName, virtualName)
         ParentTopic(compoundUuid, topicName)
       })
 
+  // Convert HierarchyTopicKeyResource entity to KeyResourceItem and
+  // filter out the key resources which users do not have the privilege to access.
+  private def convertToKeyResourceItem(
+      keyResourceEntity: HierarchyTopicKeyResource): Option[KeyResourceItem] = {
+    val version = keyResourceEntity.getItemVersion
+    val uuid    = keyResourceEntity.getItemUuid
+
+    val realVersion = itemService.getRealVersion(version, uuid)
+    val realItemId  = new ItemId(uuid, realVersion)
+
+    for {
+      item <- Option(itemService.getUnsecureIfExists(realItemId))
+      if aclManager.hasPrivilege(item, Privilege.DISCOVER_ITEM)
+    } yield KeyResourceItem(item, version == 0)
+  }
+
+  // Convert KeyResourceItem to KeyResource.
+  private def convertToKeyResource(keyResourceItem: KeyResourceItem,
+                                   serializer: ItemSerializerItemBean): KeyResource = {
+    val realItemIdKey = new ItemIdKey(keyResourceItem.item)
+    val searchItem    = SearchItem(realItemIdKey, isKeywordFoundInAttachment = false, serializer)
+    KeyResource(SearchHelper.convertToItem(searchItem), keyResourceItem.isLatest)
+  }
+
   /**
-    * Get all key resources for the given topic entity.
+    * Return details of all the key resources for the given topic ID by following steps:
     *
-    * @param topicEntity The topic entity used to get key resources.
+    * 1. Get the list of raw key resource by the given ID.
+    *
+    * 2. For each raw key resource, find the real version of the referenced item.
+    *
+    * 3. Get the referenced Items with permission check.
+    *
+    * 4. Generate key resource details based on the reference Items.
+    *
     * @param topicCompoundUuid The compound uuid of the given topic entity.
     */
-  def getAllKeyResources(topicEntity: HierarchyTopicEntity,
-                         topicCompoundUuid: String): List[SearchResultItem] = {
-    // Get dynamic key resources item.
-    // Workflow: HierarchyTopicDynamicKeyResources -> ItemId -> Item
-    def getDynamicKeyResources(compoundUuids: String): List[Item] = {
-      val encodedId = encodeCompoundUuid(compoundUuids)
-      val dynamicKeyResources = Option(hierarchyService.getDynamicKeyResource(encodedId))
-        .map(_.asScala.toList)
-        .getOrElse(List.empty)
-      val dynamicKeyResourcesItemIds =
-        dynamicKeyResources.map(resources => new ItemId(resources.getUuid, resources.getVersion))
-      val dynamicKeyResourcesItems =
-        dynamicKeyResourcesItemIds.flatMap(id => Option(itemService.getUnsecureIfExists(id)))
+  def getKeyResources(topicCompoundUuid: HierarchyCompoundUuid): List[KeyResource] = {
+    val keyResourceItems = hierarchyService
+      .getKeyResources(topicCompoundUuid)
+      .asScala
+      .toList
+      .flatMap(convertToKeyResourceItem)
 
-      dynamicKeyResourcesItems
-    }
+    val itemIdKeys = keyResourceItems.map(_.item).map(new ItemIdKey(_))
+    val serializer = SearchHelper.createSerializer(itemIdKeys)
 
-    // get key resources and convert Item to SearchResultItem
-    val keyResourceItems = topicEntity.getKeyResources.asScala.toList
-    val allItems = convertKeyResourceItems(
-      getDynamicKeyResources(topicCompoundUuid) ++ keyResourceItems)
-
-    allItems
+    keyResourceItems.map(convertToKeyResource(_, serializer))
   }
 }

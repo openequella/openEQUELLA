@@ -50,6 +50,10 @@ public interface ExtendedDialect {
 
   String getRenameColumnSql(String table, Column column, String name);
 
+  String getRenameTableSql(String tableName, String newName);
+
+  String getRenameIndexSql(String table, String indexName, String newName);
+
   boolean supportsModifyWithConstraints();
 
   String getNameForMetadataQuery(String name, boolean quoted);

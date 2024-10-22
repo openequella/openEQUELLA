@@ -22,7 +22,8 @@ import static com.tle.common.hierarchy.VirtualTopicUtils.buildTopicId;
 
 import com.dytech.common.GeneralConstants;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
+import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.search.DefaultSearch;
 import com.tle.common.search.LiveItemSearch;
@@ -32,6 +33,7 @@ import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.hierarchy.model.TopicDisplayModel;
@@ -90,8 +92,10 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
         String childValue = rootTopic.getVirtualisedValue();
         // count dynamic hierarchy key resource
         String dynamicHierarchyId = buildTopicId(childTopic, childValue, null);
-        List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-            hierarchyService.getDynamicKeyResource(dynamicHierarchyId);
+        HierarchyCompoundUuid dynamicCompoundUuid =
+            HierarchyCompoundUuid.apply(dynamicHierarchyId, true);
+        List<HierarchyTopicKeyResource> keyResources =
+            hierarchyService.getKeyResources(dynamicCompoundUuid);
 
         int searchCount = rootTopic.getCount();
         if (searchCount == GeneralConstants.UNCALCULATED) {
@@ -110,24 +114,33 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
           }
         }
 
-        if (dynamicKeyResources != null) {
-          searchCount += dynamicKeyResources.size();
+        if (!keyResources.isEmpty()) {
+          searchCount += keyResources.size();
         }
 
-        String uuid = buildTopicId(childTopic, childValue, null);
+        String legacyUuid = buildTopicId(childTopic, childValue, null);
+        HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(legacyUuid, true);
+        List<Item> keyResourcesItem = hierarchyService.getKeyResourceItems(compoundUuid);
 
         final SectionInfo fwd = context.createForward("/hierarchy.do");
         final TopicDisplaySection topicDisplay = fwd.lookupSection(TopicDisplaySection.class);
-        topicDisplay.changeTopic(fwd, uuid);
+        topicDisplay.changeTopic(fwd, legacyUuid);
         final HtmlLinkState link =
             RenderNewTemplate.isNewUIEnabled()
                     && selectionService.getCurrentSession(context) == null
-                ? new HtmlLinkState(new SimpleBookmark(NewUiRoutes.hierarchy(uuid)))
+                ? new HtmlLinkState(new SimpleBookmark(NewUiRoutes.hierarchy(legacyUuid)))
                 : new HtmlLinkState(new InfoBookmark(fwd));
 
         subNodes.add(
             new DisplayHierarchyNode(
-                childTopic, childValue, link, searchCount, bundleCache, aclService, keyResPrivs));
+                childTopic,
+                keyResourcesItem,
+                childValue,
+                link,
+                searchCount,
+                bundleCache,
+                aclService,
+                keyResPrivs));
       }
     }
 

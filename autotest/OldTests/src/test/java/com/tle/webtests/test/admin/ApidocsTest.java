@@ -7,27 +7,11 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.ApidocsJsonPage;
 import com.tle.webtests.pageobject.ApidocsPage;
 import com.tle.webtests.pageobject.ErrorPage;
-import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
 public class ApidocsTest extends AbstractSessionTest {
-
-  // TODO: Remove this method in OEQ-1702.
-  // This test become flaky on Gitlab and from the screenshot, it seems that the new UI is not
-  // restored.
-  @BeforeClass
-  public void enableNewUI() {
-    // make sure new UI is enabled.
-    if (testConfig.isNewUI()) {
-      logon("AutoTest", "automated");
-      SettingsPage settingsPage = new SettingsPage(context).load();
-      settingsPage.setNewUI(true);
-    }
-  }
-
   @Test
   public void testLoginNoAccess() {
     logout(context);

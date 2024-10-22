@@ -208,9 +208,10 @@ const thumbnailLink = (
 const directUrl = (
   itemUuid: string,
   itemVersion: number,
-  { attachmentType, filePath, id, links }: OEQ.Search.Attachment,
-): E.Either<string, string> =>
-  pipe(
+  attachment: OEQ.Search.Attachment,
+): E.Either<string, string> => {
+  const { attachmentType, filePath, id, links } = attachment;
+  return pipe(
     attachmentType,
     simpleMatchD(
       [
@@ -228,19 +229,7 @@ const directUrl = (
         // For Kaltura media we don't really have a direct URL, we can only view them via the
         // oEQ view mechanisms - AFAIK. But we add the externalId details onto the end so that
         // the lightbox can use them with the KalturaPlayerEmbed.
-        [
-          ATYPE_KALTURA,
-          () =>
-            pipe(
-              links.externalId,
-              E.fromNullable(
-                `Kaltura attachment ${id} is missing an 'externalId'.`,
-              ),
-              E.map((externalId) =>
-                kaltura.buildViewUrl(links.view, externalId),
-              ),
-            ),
-        ],
+        [ATYPE_KALTURA, () => kaltura.buildViewerUrl(attachment)],
         [
           ATYPE_YOUTUBE,
           () =>
@@ -256,6 +245,7 @@ const directUrl = (
       () => unsupportedAttachmentType(id, attachmentType),
     ),
   );
+};
 
 /**
  * Transform an item's attachment into a `GalleryEntry`.
@@ -269,7 +259,7 @@ export const buildGalleryEntry = (
   itemVersion: number,
   attachment: OEQ.Search.Attachment,
 ): E.Either<string, GalleryEntry> =>
-  Do(E.either)
+  Do(E.Monad)
     .do(validateAttachmentType(attachment))
     .do(validateThumbnailRequirements(attachment))
     .bind("id", E.right(attachment.id))

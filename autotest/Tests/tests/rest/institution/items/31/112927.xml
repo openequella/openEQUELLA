@@ -1,0 +1,77 @@
+<com.tle.beans.item.Item>
+  <id>112927</id>
+  <uuid>b66ac2ab-1d61-4a06-9c2b-6aa186f9d5da</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2024-05-14 09:50:09.785</dateModified>
+  <dateCreated class="sql-timestamp">2024-05-14 09:50:09.787</dateCreated>
+  <dateForIndex class="sql-timestamp">2024-05-14 09:50:09.785</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments/>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>112929</id>
+    <liveApprovalDate class="sql-timestamp">2024-05-14 09:50:09.785</liveApprovalDate>
+    <lastAction class="sql-timestamp">2024-05-14 09:50:09.785</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>112932</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2024-05-14 09:50:09.785</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>112933</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2024-05-14 09:50:09.785</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>112934</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2024-05-14 09:50:09.785</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>112930</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>112931</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Book E</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

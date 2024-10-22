@@ -30,8 +30,7 @@ import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.hierarchy.HierarchyTopic;
 import com.tle.beans.hierarchy.HierarchyTopic.Attribute;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
-import com.tle.beans.item.Item;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.ItemId;
 import com.tle.common.Check;
 import com.tle.common.URLUtils;
@@ -48,6 +47,7 @@ import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.schema.service.SchemaService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.hierarchy.TopicUtils;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.BundleLabel;
@@ -58,6 +58,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -177,6 +178,14 @@ public class HierarchySoapService implements HierarchySoapInterface {
       hierarchyService.addRoot(newTopic, index);
     }
 
+    // Add Key resources.
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(newTopicUUID, true);
+    buildKeyResourceItemIdsFromXml(new PropBagEx(topicXml))
+        .forEach(
+            itemId -> {
+              hierarchyService.addKeyResource(compoundUuid, itemId);
+            });
+
     return newTopicUUID;
   }
 
@@ -204,6 +213,10 @@ public class HierarchySoapService implements HierarchySoapInterface {
 
     buildTopicFromXml(updatedTopic, new PropBagEx(topicXml), topicUuid, isDynamicTopic);
 
+    // Update key resources
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicUuid, true);
+    List<ItemId> itemIds = buildKeyResourceItemIdsFromXml(new PropBagEx(topicXml));
+    hierarchyService.updateKeyResources(compoundUuid, itemIds);
     hierarchyService.edit(updatedTopic);
   }
 
@@ -235,13 +248,11 @@ public class HierarchySoapService implements HierarchySoapInterface {
   private void buildXmlFromTopic(
       PropBagEx xml, HierarchyTopic topic, boolean isDynamicTopic, String id) {
     PropBagEx tx = buildBasicXmlFromTopic(xml, topic);
-
     // Short description
     LanguageBundle shortDescription = topic.getShortDescription();
     if (shortDescription != null) {
       tx.setNode(SHORT_DESCRIPTION, CurrentLocale.get(shortDescription));
     }
-
     // Long description
     LanguageBundle longDescription = topic.getLongDescription();
     if (longDescription != null) {
@@ -374,27 +385,14 @@ public class HierarchySoapService implements HierarchySoapInterface {
     }
 
     // Key resources
-
-    if (isDynamicTopic) {
-      List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-          hierarchyService.getDynamicKeyResource(id);
-      if (!Check.isEmpty(dynamicKeyResources)) {
-        PropBagEx keyResources = tx.newSubtree("keyresources");
-        for (HierarchyTopicDynamicKeyResources ht : dynamicKeyResources) {
-          PropBagEx keyNode = keyResources.newSubtree("keyresource");
-          keyNode.setNode(ATTR_UUID, ht.getUuid());
-          keyNode.setNode(ATTR_VERSION, ht.getVersion());
-        }
-      }
-    } else {
-      List<Item> keyResources = topic.getKeyResources();
-      if (!Check.isEmpty(keyResources)) {
-        PropBagEx txKeyResources = tx.newSubtree("keyresources");
-        for (Item item : keyResources) {
-          PropBagEx keyNode = txKeyResources.newSubtree("keyresource");
-          keyNode.setNode(ATTR_UUID, item.getUuid());
-          keyNode.setNode(ATTR_VERSION, item.getVersion());
-        }
+    List<HierarchyTopicKeyResource> allKeyResources =
+        hierarchyService.getKeyResources(HierarchyCompoundUuid.apply(id, true));
+    if (!Check.isEmpty(allKeyResources)) {
+      PropBagEx keyResources = tx.newSubtree("keyresources");
+      for (HierarchyTopicKeyResource ht : allKeyResources) {
+        PropBagEx keyNode = keyResources.newSubtree("keyresource");
+        keyNode.setNode(ATTR_UUID, ht.getItemUuid());
+        keyNode.setNode(ATTR_VERSION, ht.getItemVersion());
       }
     }
   }
@@ -527,29 +525,16 @@ public class HierarchySoapService implements HierarchySoapInterface {
     for (PropBagEx attribute : attributeIter) {
       topic.setAttribute(attribute.getNode(ATTR_KEY), attribute.getNode("/"));
     }
+  }
 
-    // Key resources
-    PropBagIterator keyResourceIter = xml.iterator(KRS_KEYRESOURCE);
-    List<ItemId> itemIds = new ArrayList<ItemId>();
-
-    for (PropBagEx keyresourceXml : keyResourceIter) {
-      itemIds.add(
-          new ItemId(
-              keyresourceXml.getNode(ATTR_UUID),
-              Integer.parseInt(keyresourceXml.getNode(ATTR_VERSION))));
-    }
-    // Add key items to dynamic topic
-    if (isDynamicTopic) {
-      for (ItemId itemId : itemIds) {
-        hierarchyService.addKeyResource(id, itemId);
-      }
-    } else {
-      List<Item> keyResources = new ArrayList<Item>();
-      for (Item i : itemService.queryItemsByItemIds(itemIds).values()) {
-        keyResources.add(i);
-      }
-      topic.setKeyResources(keyResources);
-    }
+  private List<ItemId> buildKeyResourceItemIdsFromXml(PropBagEx xml) {
+    return StreamSupport.stream(xml.iterator(KRS_KEYRESOURCE).spliterator(), false)
+        .map(
+            resourceXml ->
+                new ItemId(
+                    resourceXml.getNode(ATTR_UUID),
+                    Integer.parseInt(resourceXml.getNode(ATTR_VERSION))))
+        .toList();
   }
 
   private LanguageBundle getBundle(PropBagEx xml, String path) {

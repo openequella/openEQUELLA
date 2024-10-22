@@ -496,7 +496,9 @@ public class MyResourcesPage
   public void openWebpage(String pageName, String pageTitle) {
     if (isNewUI()) {
       expandAttachmentsForScrapbookItem(pageName);
-      driver.findElement(individualPageXpath(pageTitle)).click();
+
+      WebElement title = driver.findElement(individualPageXpath(pageTitle));
+      ((JavascriptExecutor) driver).executeScript("arguments[0].click();", title);
 
       // Switch to the second tab where the index is 1.
       switchTab(1);

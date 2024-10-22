@@ -123,7 +123,7 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: Artefacts
           path: artefacts.tar
@@ -174,7 +174,7 @@ jobs:
           tar cvf storybook.tar storybook-static
 
       - name: Save Static Storybook instance
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: Storybook
           path: react-front-end/storybook.tar
@@ -213,6 +213,7 @@ jobs:
       AUTOTEST_CONFIG: autotest/github-actions.conf
       EQ_EXIFTOOL_PATH: /usr/bin/exiftool
       OLD_TEST_NEWUI: ${{ matrix.newui }}
+      MATRIX_ID: ${{ matrix.newui && 'NEWUI' || 'OLDUI' }}-psql_${{ matrix.pgsql-image }}
 
     steps:
       - name: Install OS dependencies
@@ -236,7 +237,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Download Artefacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           path: Artefacts
           name: Artefacts
@@ -263,9 +264,9 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: ScalacheckReports
+          name: ScalacheckReports-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports
 
       - name: Run TestNG tests
@@ -274,23 +275,23 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: TestNGReports-new-${{ matrix.newui }}
+          name: TestNGReports-${{ env.MATRIX_ID }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: oEQLogs-new-${{ matrix.newui }}
+          name: oEQLogs-${{ env.MATRIX_ID }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: Screenshots-new-${{ matrix.newui }}
+          name: Screenshots-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports/screenshots
 
       - name: Generate coverage report
@@ -305,9 +306,9 @@ jobs:
           tar cvf coverage_report.tar autotest/target/coverage-report/
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
-          name: CoverageReport-newui-${{ matrix.newui }}
+          name: CoverageReport-${{ env.MATRIX_ID }}
           path: coverage_report.tar
 
   rest-module-testing:
@@ -356,7 +357,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Download installer
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           path: Artefacts
           name: Artefacts
@@ -387,7 +388,7 @@ jobs:
 
       - name: Save oEQ logs for REST Module
         if: failure()
-        uses: actions/upload-artifact@v3.1.3
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs

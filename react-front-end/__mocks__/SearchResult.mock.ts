@@ -83,6 +83,25 @@ export const normalItemWithoutName: OEQ.Search.SearchResultItem = {
   isLatestVersion: true,
 };
 
+export const itemNotInKeyResource: OEQ.Search.SearchResultItem = {
+  uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
+  version: 1,
+  status: "live",
+  createdDate: new Date("2014-06-11T09:27:14.800+10:00"),
+  modifiedDate: new Date("2014-06-11T09:27:14.803+10:00"),
+  collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+  commentCount: 0,
+  attachments: [],
+  thumbnail: "initial",
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/2534e329-e37e-4851-896e-51d8b39104c4/1/",
+    self: "http://localhost:8080/rest/api/item/2534e329-e37e-4851-896e-51d8b39104c4/1/",
+  },
+  isLatestVersion: true,
+};
+
 export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
     start: 0,
@@ -91,24 +110,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
     results: [
       itemWithAttachment,
       normalItemWithoutName,
-      {
-        uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
-        version: 1,
-        status: "live",
-        createdDate: new Date("2014-06-11T09:27:14.800+10:00"),
-        modifiedDate: new Date("2014-06-11T09:27:14.803+10:00"),
-        collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
-        commentCount: 0,
-        attachments: [],
-        thumbnail: "initial",
-        displayFields: [],
-        keywordFoundInAttachment: false,
-        links: {
-          view: "http://localhost:8080/rest/items/2534e329-e37e-4851-896e-51d8b39104c4/1/",
-          self: "http://localhost:8080/rest/api/item/2534e329-e37e-4851-896e-51d8b39104c4/1/",
-        },
-        isLatestVersion: true,
-      },
+      itemNotInKeyResource,
       {
         uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
         version: 1,
@@ -160,8 +162,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2271/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2271/1/",
         },
         isLatestVersion: true,
       },
@@ -179,8 +181,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
         },
         isLatestVersion: true,
         bookmarkId: 123,
@@ -199,8 +201,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2273/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2273/1/",
         },
       },
       {
@@ -217,8 +219,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2274/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2274/1/",
         },
         isLatestVersion: true,
       },
@@ -236,8 +238,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2275/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2275/1/",
         },
         isLatestVersion: true,
       },
@@ -255,8 +257,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2276/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2276/1/",
         },
         isLatestVersion: true,
       },
@@ -274,8 +276,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2277/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2277/1/",
         },
         isLatestVersion: true,
       },
@@ -293,8 +295,8 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         displayFields: [],
         keywordFoundInAttachment: false,
         links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2278/1/",
+          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2278/1/",
         },
         isLatestVersion: true,
       },
@@ -462,8 +464,8 @@ export const imageScrapbook: OEQ.Search.SearchResultItem = {
   },
   keywordFoundInAttachment: false,
   links: {
-    view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
-    self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc227c/1/",
+    view: "http://localhost:8080/rest/items/0a89415c-73b6-4e9b-8372-197b6ba49400/1/",
+    self: "http://localhost:8080/rest/api/item/0a89415c-73b6-4e9b-8372-197b6ba49400/1/",
   },
   isLatestVersion: true,
 };

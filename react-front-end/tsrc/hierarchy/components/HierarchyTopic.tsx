@@ -19,6 +19,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import FolderIcon from "@mui/icons-material/Folder";
 import {
+  Box,
   Collapse,
   ListItem,
   ListItemAvatar,
@@ -159,12 +160,6 @@ const HierarchyTopic = ({
       data-testid={compoundUuid}
       className={classes.label}
       component="div"
-      secondaryAction={
-        <>
-          {A.isNonEmpty(filteredSubTopics) && expandIcon()}
-          {customActionBuilder?.(compoundUuid)}
-        </>
-      }
     >
       <ListItemAvatar>
         <FolderIcon className={classes.icon} />
@@ -187,6 +182,11 @@ const HierarchyTopic = ({
           HTMLReactParser(shortDescription)
         }
       />
+      {/* Use FlexShrink to avoid the influence of long title */}
+      <Box sx={{ flexShrink: 0 }}>
+        {A.isNonEmpty(filteredSubTopics) && expandIcon()}
+        {customActionBuilder?.(compoundUuid)}
+      </Box>
     </ListItem>
   );
 

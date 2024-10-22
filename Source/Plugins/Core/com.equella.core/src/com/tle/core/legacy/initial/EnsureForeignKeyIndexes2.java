@@ -152,12 +152,6 @@ public class EnsureForeignKeyIndexes2 extends AbstractHibernateMigration {
     sql.addAll(
         helper.getAddIndexesRawIfRequired(
             session,
-            "hierarchy_topic_key_resources",
-            new String[] {"htkr_item", "element"},
-            new String[] {"htkr_topic", "hierarchy_topic_id"}));
-    sql.addAll(
-        helper.getAddIndexesRawIfRequired(
-            session,
             "hierarchy_topic_add_schemas",
             new String[] {"htas_schema", "entity_id"},
             new String[] {"htas_topic", "hierarchy_topic_id"}));

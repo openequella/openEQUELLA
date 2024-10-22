@@ -56,6 +56,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Main {
   private static final Log LOGGER = LogFactory.getLog(Main.class);
+  // Flag to stop the manager.
+  private static volatile boolean stop;
 
   public static final String EQUELLA_INSTALL_DIRECTORY_KEY =
       "equella.install.directory"; //$NON-NLS-1$
@@ -65,13 +67,20 @@ public class Main {
 
   private static HttpServer server;
 
+  /**
+   * Method to be called when the Manager is started. According to the Procrun documentation, this
+   * method should not return until the stop method has been called in JVM mode.
+   */
   public static void main(String[] args) throws Exception {
     if (Check.isEmpty(args) || Check.isEmpty(args[0]) || args[0].equals("start")) // $NON-NLS-1$
     {
       Main m = new Main();
       m.startServer();
-    } else if (args[0].equals("stop")) // $NON-NLS-1$
-    {
+      while (!stop) {
+        Thread.sleep(1000);
+      }
+    } else if (args[0].equals("stop")) {
+      stop = true;
       if (server != null) {
         server.stop(4);
       }

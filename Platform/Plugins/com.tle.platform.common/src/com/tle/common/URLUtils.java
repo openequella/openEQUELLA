@@ -19,7 +19,12 @@
 package com.tle.common;
 
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,6 +67,9 @@ public class URLUtils {
     }
   }
 
+  /**
+   * Encode a string into application/x-www-form-urlencoded format using CHARSET_ENCODING scheme.
+   */
   public static String basicUrlEncode(String url) {
     try {
       return URLEncoder.encode(url, CHARSET_ENCODING);
@@ -70,6 +78,7 @@ public class URLUtils {
     }
   }
 
+  /** Decode a application/x-www-form-urlencoded format string using CHARSET_ENCODING scheme. */
   public static String basicUrlDecode(String url) {
     try {
       return URLDecoder.decode(url, CHARSET_ENCODING);

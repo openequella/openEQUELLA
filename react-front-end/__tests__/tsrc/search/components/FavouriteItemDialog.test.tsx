@@ -15,49 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { render } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  FavDialogConfirmToAdd,
-  FavouriteItemDialog,
-} from "../../../../tsrc/search/components/FavouriteItemDialog";
+import * as React from "react";
+import FavouriteItemDialog from "../../../../tsrc/search/components/FavouriteItemDialog";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
+const { selectVersion, toThisVersion, versionOptions } =
+  languageStrings.selectItemVersionDialog;
+
 describe("<FavouriteItemDialog />", () => {
-  const closeDialog = jest.fn();
-  const onConfirmProps: FavDialogConfirmToAdd = {
-    action: "add",
-    onConfirm: jest.fn(),
-  };
   const commonProps = {
     open: true,
-    closeDialog,
-    onConfirmProps,
+    closeDialog: jest.fn(),
+    updateFavouriteItem: jest.fn(),
   };
 
   it("shows a RadioGroup of two options for adding an Item that's on the latest version", () => {
     const { queryByLabelText, queryByText } = render(
-      <FavouriteItemDialog
-        {...commonProps}
-        isAddedToFavourite={false}
-        isLatestVersion
-      />,
+      <FavouriteItemDialog {...commonProps} isAdded={false} isLatestVersion />,
     );
+    expect(queryByText(selectVersion)).toBeInTheDocument();
+    expect(queryByLabelText(versionOptions.useThisVersion)).toBeInTheDocument();
     expect(
-      queryByText(languageStrings.searchpage.favouriteItem.tags.selectVersion),
-    ).toBeInTheDocument();
-    expect(
-      queryByLabelText(
-        languageStrings.searchpage.favouriteItem.tags.versionOptions
-          .useThisVersion,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      queryByLabelText(
-        languageStrings.searchpage.favouriteItem.tags.versionOptions
-          .useLatestVersion,
-      ),
+      queryByLabelText(versionOptions.useLatestVersion),
     ).toBeInTheDocument();
   });
 
@@ -65,22 +46,16 @@ describe("<FavouriteItemDialog />", () => {
     const { queryByText } = render(
       <FavouriteItemDialog
         {...commonProps}
-        isAddedToFavourite={false}
+        isAdded={false}
         isLatestVersion={false}
       />,
     );
-    expect(
-      queryByText(languageStrings.searchpage.favouriteItem.tags.toThisVersion),
-    ).toBeInTheDocument();
+    expect(queryByText(toThisVersion)).toBeInTheDocument();
   });
 
   it("shows an alert for deleting a favourite Item", () => {
     const { queryByText } = render(
-      <FavouriteItemDialog
-        {...commonProps}
-        isAddedToFavourite
-        isLatestVersion={false}
-      />,
+      <FavouriteItemDialog {...commonProps} isAdded isLatestVersion={false} />,
     );
     expect(
       queryByText(languageStrings.searchpage.favouriteItem.removeAlert),

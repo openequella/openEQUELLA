@@ -93,7 +93,12 @@ public class RejectDialog extends AbstractTaskActionDialog {
   @Override
   public void registered(String id, SectionTree tree) {
     rejectSteps.setListModel(new StepListModel());
-
+    // In the reject dialog, the "Reject back to" selector includes a "focus" class
+    // that causes the focus to automatically shift to the selector one second after the dialog is
+    // opened,
+    // which interrupts the user's input. To fix this issue, the solution is to also add a focus
+    // class to the comment input as well.
+    _commentField().setStyleClass("focus");
     super.registered(id, tree);
   }
 

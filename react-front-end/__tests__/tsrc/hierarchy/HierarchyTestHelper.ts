@@ -15,8 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getByText } from "@testing-library/react";
+import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { languageStrings } from "../../../tsrc/util/langstrings";
+
+const { addKeyResource: addKeyResourceText } = languageStrings.hierarchy;
 
 /**
  * Helper function to mock select a Hierarchy summary node in the tree view.
@@ -25,3 +28,25 @@ import userEvent from "@testing-library/user-event";
  */
 export const selectHierarchy = (container: HTMLElement, name: string) =>
   userEvent.click(getByText(container, name));
+
+/**
+ * Helper function to mock click the add key resource button.
+ */
+export const clickAddKeyResource = async (
+  container: HTMLElement,
+  itemUuid: String,
+  itemVersion: number,
+) => {
+  const item = container.querySelector(
+    `li[data-item-id="${itemUuid}"][data-item-version="${itemVersion}"]`,
+  );
+  if (!item) {
+    throw new Error(
+      "Item not found: " + itemUuid + " with version: " + itemVersion,
+    );
+  }
+
+  await userEvent.click(
+    getByLabelText(item as HTMLElement, addKeyResourceText),
+  );
+};

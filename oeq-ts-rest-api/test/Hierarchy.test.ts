@@ -18,7 +18,7 @@
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
 import * as OEQ from '../src';
-import { SearchResultItem } from '../src/Search';
+import type { KeyResource } from '../src/BrowseHierarchy';
 import * as TC from './TestConfig';
 
 const NORMAL_TOPIC_UUID = '6135b550-ce1c-43c2-b34c-0a3cf793759d';
@@ -26,15 +26,14 @@ const ITEM_UUID = 'cadcd296-a4d7-4024-bb5d-6c7507e6872a';
 const VERSION = 2;
 
 const containsKeyResources = (
-  result: SearchResultItem[],
+  result: KeyResource[],
   itemUuid: string,
   itemVersion: number
 ): boolean =>
   pipe(
     result,
     A.exists(
-      (resource) =>
-        resource.version === itemVersion && resource.uuid === itemUuid
+      ({ item }) => item.version === itemVersion && item.uuid === itemUuid
     )
   );
 

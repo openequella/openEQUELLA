@@ -157,13 +157,21 @@ exports.BASIC_ITEM = {
   uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg",
   name: "Basic Items",
 };
+
+exports.BOOKS = { uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa", name: "Books" };
+
+exports.VIDEOS = {
+  uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb",
+  name: "Videos",
+};
+
 exports.getCollectionMap = [
   exports.BASIC_ITEM,
-  { uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa", name: "Books" },
+  exports.BOOKS,
   { uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545fff", name: "DRM Test Collection" },
   {
     uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe",
     name: "Generic Testing Collection",
   },
-  { uuid: "8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb", name: "Videos" },
+  exports.VIDEOS,
 ];

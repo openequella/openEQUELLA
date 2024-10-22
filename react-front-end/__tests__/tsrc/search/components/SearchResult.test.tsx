@@ -235,13 +235,13 @@ describe("<SearchResult/>", () => {
       "solid Heart",
       "remove",
       mockData.basicSearchObj,
-      languageStrings.searchpage.favouriteItem.title.remove,
+      languageStrings.searchpage.favouriteItem.remove,
     ],
     [
       "empty Heart",
       "add",
       mockData.attachSearchObj,
-      languageStrings.searchpage.favouriteItem.title.add,
+      languageStrings.searchpage.favouriteItem.add,
     ],
   ])(
     "should show %s icon to %s favourite Item",

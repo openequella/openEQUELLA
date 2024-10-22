@@ -46,7 +46,6 @@ public class OeqImplicitNamingStrategy extends ImplicitNamingStrategyJpaComplian
     joinTableOverrides.put("PortletRecentContrib.ItemDefinition", "portlet_recent_contrib_collect");
     joinTableOverrides.put("Item.HistoryEvent", "item_history");
     joinTableOverrides.put("Item.ReferencedURL", "item_referenced_urls");
-    joinTableOverrides.put("HierarchyTopic.Item", "hierarchy_topic_key_resources");
     joinTableOverrides.put("TLEGroup.TLEGroup", "tlegroup_all_parents");
     joinTableOverrides.put("HierarchyTopic.HierarchyTopic", "hierarchy_topic_all_parents");
     joinTableOverrides.put("PowerSearch.ItemDefinition", "power_search_itemdefs");

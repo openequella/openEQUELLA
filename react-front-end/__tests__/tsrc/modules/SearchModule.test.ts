@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
+import {
+  BASIC_ITEM,
+  BOOKS,
+  VIDEOS,
+} from "../../../__mocks__/getCollectionsResp";
+import { getSearchResult } from ".. /../../__mocks__/SearchResult.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -139,5 +144,39 @@ describe("generateCategoryWhereQuery", () => {
   it("should return undefined if no categories are selected", () => {
     expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
     expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
+  });
+});
+
+describe("search with configured Collections", () => {
+  beforeEach(() => {
+    mockedSearch.mockClear();
+  });
+
+  const configuredCollections = [BASIC_ITEM.uuid, BOOKS.uuid];
+  (global as any).configuredCollections = configuredCollections;
+
+  const expectCollections = (expectedCollections: string[]) => {
+    const calls = mockedSearch.mock.calls;
+    const params = calls[0][1];
+    expect(params.collections).toEqual(expectedCollections);
+  };
+
+  it("uses all the configured Collection if there aren't any selected Collections", async () => {
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+    });
+
+    expectCollections(configuredCollections);
+  });
+
+  it("uses the intersection between configured Collection and selected Collections", async () => {
+    await SearchModule.searchItems({
+      ...SearchModule.defaultSearchOptions,
+      // based on the above setting of `configuredCollections`, only `BOOKS` is allowed
+      // so below we'd only expect `BOOKS` to be used and `VIDEOS` to be dropped.
+      collections: [VIDEOS, BOOKS],
+    });
+
+    expectCollections([BOOKS.uuid]);
   });
 });

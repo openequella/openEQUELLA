@@ -55,6 +55,7 @@ public interface ItemService
     extends RemoteItemService, ScriptEvaluator, WorkflowScriptObjectContributor {
   Item getUnsecure(ItemKey itemId) throws ItemNotFoundException;
 
+  /** Return the Item if it exists, otherwise return null. */
   Item getUnsecureIfExists(ItemKey itemId);
 
   boolean isItemInModeration(String uuid);

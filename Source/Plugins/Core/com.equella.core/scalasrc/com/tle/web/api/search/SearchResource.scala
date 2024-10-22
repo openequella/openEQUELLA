@@ -35,9 +35,9 @@ import com.tle.core.remoting.MatrixResults
 import com.tle.core.security.TLEAclManager
 import com.tle.exceptions.PrivilegeRequiredException
 import com.tle.web.api.ApiErrorResponse
-import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper
+import com.tle.web.api.browsehierarchy.{BrowseHierarchyHelper, HierarchyCompoundUuid}
 import com.tle.web.api.search.ExportCSVHelper.{buildCSVHeaders, writeRow}
-import com.tle.web.api.search.SearchHelper.{search, _}
+import com.tle.web.api.search.SearchHelper._
 import com.tle.web.api.search.model._
 import com.tle.web.api.search.service.ExportService
 import io.swagger.annotations.{Api, ApiOperation}
@@ -195,16 +195,14 @@ class SearchResource {
   }
 
   // create a PresetSearch for a hierarchy search
-  private def createPresetSearch(hierarchyCompoundUuid: String): Either[String, PresetSearch] = {
-    val (currentTopicUuid, _) = browseHierarchyHelper.getUuidAndName(hierarchyCompoundUuid)
-
-    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+  private def createPresetSearch(compoundUuidStr: String): Either[String, PresetSearch] = {
+    val compoundUuid: HierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuidStr)
+    Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
       case Some(topic) =>
-        val compoundUuidMap =
-          hierarchyCompoundUuid.split(",").flatMap(browseHierarchyHelper.buildCompoundUuidMap).toMap
-        Right(hierarchyService.buildSearch(topic, compoundUuidMap.asJava))
+        val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
+        Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
       case None =>
-        Left(s"Failed to get preset search: Topic $hierarchyCompoundUuid not found.")
+        Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
     }
   }
 

@@ -75,11 +75,12 @@ public class EQUELLAServer {
    * Method to be called when the OEQ is started as a Windows service. According to the Procrun
    * documentation, this method should not return until the stop method has been called in JVM mode.
    */
-  public static void start(String[] args) {
+  public static void start(String[] args) throws InterruptedException {
     System.out.println("Starting EQUELLA Server...");
     main(new String[0]);
     while (!stopped) {
       // DO not return until `stop` is called.
+      Thread.sleep(1000);
     }
   }
 
