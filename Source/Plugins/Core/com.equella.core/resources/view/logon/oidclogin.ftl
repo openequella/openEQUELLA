@@ -3,12 +3,16 @@
 
 <@css "institutions.css" />
 
-<div id="divider"></div>
+<div id="divider">
+  <div id="left"></div>
+  <div id="center"></div>
+  <div id="right"></div>
+</div>
 <div id="oidc-login">
   <p>
     ${b.key("login.oidc.description")}
   </p>
   <p>
-    <@button section=s.loginButton/>
+    <@button section=s.loginButton id="sso-button"  />
   </p>
 </div>

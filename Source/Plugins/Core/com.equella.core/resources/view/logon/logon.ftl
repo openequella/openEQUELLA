@@ -27,6 +27,8 @@
       <p>
         <label for="password">${b.key("logon.password")}</label>
         <@textfield id="password" section=s.password password=true autoSubmitButton=s.logonButton/>
+      </p>
+      <p>
         <@button section=s.logonButton class="loginbutton" size="medium" />
       </p>
       <#if m.childSections??>
