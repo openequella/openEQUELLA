@@ -81,7 +81,7 @@ object TleUserApi {
       tleUser
     }
 
-    liftResult {
+    flattenResult {
       Client.mutate(query)
     }
   }
@@ -97,7 +97,7 @@ object TleUserApi {
       implicit cfg: ClientConfiguration): Either[List[ApiError], Unit] = {
     val query = Mutations.internalUserDelete(uniqueId)
 
-    liftResult {
+    flattenResult {
       Client.mutate(query)
     }
   }
