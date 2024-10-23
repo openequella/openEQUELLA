@@ -37,6 +37,7 @@ import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
 import com.tle.integration.jwk.JwkProvider
+import com.tle.integration.jwt.buildJwtVerifier
 import com.tle.integration.lti13.{Lti13Params => LTI13}
 import com.tle.integration.oauth2._
 import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
@@ -314,8 +315,11 @@ class Lti13AuthService {
       jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
-      verifyJwt = buildJwtVerifierForPlatform(jsonWebKeySetProvider.get(decodedToken.getKeyId),
-                                              platform)
+      verifyJwt = buildJwtVerifier(
+        jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId),
+        issuer = platform.platformId,
+        aud = platform.clientId
+      )
       verifyNonce = (jwt: DecodedJWT) =>
         getRequiredClaim(jwt, OIDC.NONCE)
           .flatMap(
@@ -382,32 +386,6 @@ class Lti13AuthService {
 
   def getRedirectUri: URI =
     new URI(s"${CurrentInstitution.get().getUrl}lti13/launch")
-
-  private def buildJwtVerifierForPlatform(
-      jwk: Jwk,
-      platform: PlatformDetails): DecodedJWT => Either[OAuth2Error, DecodedJWT] = {
-    val verifier = Try {
-      // Section 5.1.3 of the Security Framework says that RS256 SHOULD be used - but there are
-      // some others which are allowed as per the 'best practices'. Perhaps we should add code
-      // to determine the others and use them too.
-      // Best practices: https://www.imsglobal.org/spec/security/v1p1#approved-jwt-signing-algorithms
-      val alg = Algorithm.RSA256(jwk.getPublicKey.asInstanceOf[RSAPublicKey], null)
-      JWT
-        .require(alg)
-        // The issuer has kind of been validated already above - so that we could get the platform
-        // ID to be able to get the JWKS URL. But we might as well explicitly validate it as part
-        // of the JWT validation - as that's what you're meant to do.
-        .withIssuer(platform.platformId)
-        .withAnyOfAudience(platform.clientId)
-        .build()
-    }.toEither.left.map(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
-
-    (decodedToken: DecodedJWT) =>
-      verifier.flatMap(
-        v =>
-          Try(v.verify(decodedToken)).toEither.left
-            .map(t => InvalidJWT(s"Provided ID token (JWT) failed verification: ${t.getMessage}")))
-  }
 
   /**
     * Given `UserDetails` from an LTI (OAuth2) ID Token, and the configuration details for the
