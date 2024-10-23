@@ -68,23 +68,23 @@ object Client {
       */
     def extractCause(error: GraphQLResponseError): Option[String] = {
       import caliban.client.__Value._
-      error.extensions match {
-        case Some(extensions) =>
-          extensions match {
-            // We expect 'extensions' property in the response from oEQ to be an object
-            case __ObjectValue(fields) =>
-              // Within the object, we expect there to be a 'cause' string property
-              fields.toMap.get("cause") match {
-                case Some(__StringValue(cause)) => Some(cause)
-                case Some(_)                    => None
-                case None                       => None
-              }
-            // We have no interest in other types of 'extension' properties
-            case _ => None
+      error.extensions.flatMap {
+        // We're only interested in the extensions property if it's an object - anything else is
+        // something other than we know about.
+        case __ObjectValue(fields) =>
+          // Next we expect to pull out a `cause` property from the object of type string.
+          // (Again, anything else is not the GraphQL structure we know about.)
+          fields.toMap.get("cause").collect {
+            case __StringValue(cause) => cause
           }
-        // If there are no 'extensions' property, we have no cause to extract
-        case None => None
+        case _ => None
       }
+    }
+
+    def convertError(error: GraphQLResponseError): ApiError = {
+      val cause =
+        extractCause(error).flatMap(ApiErrorCause.fromString).getOrElse(ApiErrorCause.UNKNOWN)
+      api.ApiError(cause, error.message)
     }
 
     // Convert the request to a sttp request and send it. Then convert the response to a ServerResponse.
@@ -94,20 +94,16 @@ object Client {
       }
     }
     // If the response is a success, we need to check if there are any errors in the response. (As
-    // a that's just success at the HTTP level, not the business logic and GraphQL/Caliban level.)
+    // that's just success at the HTTP level, not the business logic and GraphQL/Caliban level.)
     response match {
-      // First, there could be business logic level errors in the response
+      // First, there could be an error from Caliban - which most like is something at the GraphQL layer
+      case Left(error) => Left(List(GraphQlError(error.getMessage())))
+      // Next, there could be business logic level errors in the response
       case Right(serverResponse) if serverResponse.responseErrors.nonEmpty =>
-        Left(serverResponse.responseErrors.map(error => {
-          val errorCause =
-            extractCause(error).flatMap(ApiErrorCause.fromString).getOrElse(ApiErrorCause.UNKNOWN)
-          api.ApiError(errorCause, error.message)
-        }))
-      // If there are no business logic errors, we can return the data
+        Left(serverResponse.responseErrors.map(convertError))
+      // But otherwise there's no errors and we can use the data
       case Right(serverResponse) =>
         Right(serverResponse.data)
-      // If there's an error at the Caliban level, that's most likely at the GraphQL level
-      case Left(error) => Left(List(GraphQlError(error.getMessage())))
     }
   }
 
