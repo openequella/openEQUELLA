@@ -19,46 +19,37 @@
 package com.tle.integration.lti13
 
 import cats.implicits._
-import com.auth0.jwk.{Jwk, JwkProvider, JwkProviderBuilder}
+import com.auth0.jwk.Jwk
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
-import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
-import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
 import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
-import com.tle.core.institution.{InstitutionCache, InstitutionService, RunAsInstitution}
+import com.tle.core.institution.RunAsInstitution
 import com.tle.core.lti13.service.LtiPlatformService
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
-import com.tle.integration.oauth2.{
-  AccessDenied,
-  InvalidJWT,
-  InvalidState,
-  NotAuthorized,
-  OAuth2Error,
-  ServerError
-}
+import com.tle.integration.jwk.JwkProvider
+import com.tle.integration.lti13.{Lti13Params => LTI13}
+import com.tle.integration.oauth2._
+import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
+import com.tle.integration.util.{getParam, getUriParam}
 import io.circe._
 import io.circe.parser._
 import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
-import com.tle.integration.lti13.{Lti13Params => LTI13}
-import com.tle.integration.util.{getParam, getUriParam}
-import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
 
-import java.net.{URI, URL}
+import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.security.interfaces.RSAPublicKey
 import java.util.Base64
-import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
@@ -253,42 +244,7 @@ class Lti13AuthService {
   @Inject private var tleGroupService: TLEGroupService    = _
   @Inject private var tleUserService: TLEUserService      = _
   @Inject private var userService: UserService            = _
-
-  /**
-    * The JWK Provider Cache is here to cache instances of JWK Providers for each keyset URL
-    * (for an institution). Doing so enables the code to benefit from the internal caching features
-    * of `JwkProvider` (instead of recreating each time) while not keeping around stale instances
-    * (such as if we just store them in a simple `TrieMap`.
-    *
-    * The key benefit being that the JWKS endpoint of the platforms will get queried a reduced number
-    * of times. This also speeds up the JWT validation process - and thereby faster launches.
-    */
-  private var jwkProviderCache: InstitutionCache[Cache[String, JwkProvider]] = _
-
-  @Inject
-  def setupJwkProviderCache(institutionService: InstitutionService): Unit =
-    jwkProviderCache = institutionService.newInstitutionAwareCache(
-      CacheLoader.from(
-        (_: Institution) =>
-          CacheBuilder
-            .newBuilder()
-            .maximumSize(10)
-            .expireAfterAccess(1, TimeUnit.DAYS)
-            .build[String, JwkProvider]()))
-
-  private def getJwkProvider(jwksUrl: URL): Either[ServerError, JwkProvider] =
-    Try(
-      jwkProviderCache.getCache.get(
-        jwksUrl.toString,
-        () => {
-          LOGGER.debug(s"Creating new JwkProvider($jwksUrl)")
-          // The default cache for the JwkProvider is size 5 and 10 hours, but 10 hours seems rather
-          // long to wait for any issues to be resolved - so reduced to 1 hour.
-          new JwkProviderBuilder(jwksUrl).cached(5, 1, TimeUnit.HOURS).build()
-        }
-      )).toEither.left.map(t =>
-      ServerError(
-        s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}"))
+  @Inject private var jwkProvider: JwkProvider            = _
 
   /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
@@ -355,10 +311,11 @@ class Lti13AuthService {
         .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
 
       // -- next, validation of the actual JWT
-      jwkProvider <- getJwkProvider(platform.keysetUrl)
+      jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
-      verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
+      verifyJwt = buildJwtVerifierForPlatform(jsonWebKeySetProvider.get(decodedToken.getKeyId),
+                                              platform)
       verifyNonce = (jwt: DecodedJWT) =>
         getRequiredClaim(jwt, OIDC.NONCE)
           .flatMap(
