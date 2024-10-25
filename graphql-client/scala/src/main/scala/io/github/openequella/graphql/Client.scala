@@ -25,11 +25,11 @@ import sttp.client3.{Request, SimpleHttpClient, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
 
-case class ClientConfiguration(institutionUrl: Uri,
-                               cookies: scala.collection.mutable.Set[CookieWithMeta] =
-                                 scala.collection.mutable.Set.empty)
+final case class ClientConfiguration(institutionUrl: Uri,
+                                     cookies: scala.collection.mutable.Set[CookieWithMeta] =
+                                       scala.collection.mutable.Set.empty)
 
-case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponseError])
+final case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponseError])
 
 object Client {
   private val GRAPHQL_PATH = Seq("graphql")

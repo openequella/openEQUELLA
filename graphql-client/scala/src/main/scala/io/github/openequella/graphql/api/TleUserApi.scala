@@ -30,7 +30,7 @@ import io.github.openequella.graphql.{Client, ClientConfiguration}
   * @param firstName The first name of the user.
   * @param lastName  The last name of the user.
   */
-case class TleUserView(
+final case class TleUserView(
     uniqueId: String,
     username: String,
     email: Option[String],

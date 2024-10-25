@@ -44,3 +44,7 @@ headerLicense := Some(
        |See the License for the specific language governing permissions and
        |limitations under the License.
        |""".stripMargin))
+
+// Scapegoat Configuration
+// - Ignore the code generated files
+scapegoatIgnoredFiles := Seq(".*/src/main/scala/io/github/openequella/graphql/client/.*")

@@ -76,35 +76,35 @@ object ApiError {
 /**
   * Represents an error that occurred during a GraphQL operation.
   */
-case class GraphQlError(message: String) extends ApiError
+final case class GraphQlError(message: String) extends ApiError
 
 /**
   * Returned by the server if the user does not have permission to perform the operation.
   */
-case class AccessDeniedError(message: String) extends ApiError with HasCause {
+final case class AccessDeniedError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.ACCESS_DENIED
 }
 
-case class BadRequestError(message: String) extends ApiError with HasCause {
+final case class BadRequestError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.BAD_REQUEST
 }
 
-case class ClientAbortError(message: String) extends ApiError with HasCause {
+final case class ClientAbortError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.CLIENT_ABORT
 }
 
 /**
   * Returned by the server if an internal error occurred during the operation.
   */
-case class InternalError(message: String) extends ApiError with HasCause {
+final case class InternalError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.INTERNAL_ERROR
 }
 
-case class IOError(message: String) extends ApiError with HasCause {
+final case class IOError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.IO_ERROR
 }
 
-case class LockedError(message: String) extends ApiError with HasCause {
+final case class LockedError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.LOCKED
 }
 
@@ -113,7 +113,7 @@ case class LockedError(message: String) extends ApiError with HasCause {
   * an operation on a resource that does not exist. Not for retrieval operations where the specified resource
   * does not exist.
   */
-case class NotFoundError(message: String) extends ApiError with HasCause {
+final case class NotFoundError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.NOT_FOUND
 }
 
@@ -121,6 +121,6 @@ case class NotFoundError(message: String) extends ApiError with HasCause {
   * Used to represent unexpected errors that occurred during an operation. Use `message` to provide
   * a description of the error.
   */
-case class UnknownError(message: String) extends ApiError with HasCause {
+final case class UnknownError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.UNKNOWN
 }
