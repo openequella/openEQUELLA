@@ -68,6 +68,7 @@ object ApiError {
       case ApiErrorCause.LOCKED         => LockedError(message)
       case ApiErrorCause.NOT_FOUND      => NotFoundError(message)
       case ApiErrorCause.UNKNOWN        => UnknownError(message)
+      case _                            => UnknownError(message)
     }
   }
 }

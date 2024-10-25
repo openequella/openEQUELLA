@@ -3,7 +3,7 @@ package io.github.openequella.graphql.test
 import io.github.openequella.graphql.api.ApiError
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 import org.scalatest.Assertions.fail
-import org.scalatest.matchers.must.Matchers.{be, have}
+import org.scalatest.matchers.must.Matchers.have
 import org.scalatest.matchers.should.Matchers.{a, convertToAnyShouldWrapper}
 import sttp.model.Uri
 

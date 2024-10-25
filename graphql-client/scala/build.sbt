@@ -18,6 +18,12 @@ libraryDependencies ++= Seq(
   "org.scalatest"  %% "scalatest"      % "3.2.19" % Test,
 )
 
+scalacOptions ++= Seq(
+  "-Werror",
+  "-Wunused",
+  "-Xlint",
+)
+
 enablePlugins(CalibanPlugin)
 enablePlugins(AutomateHeaderPlugin)
 
