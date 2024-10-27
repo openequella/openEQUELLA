@@ -318,7 +318,8 @@ class Lti13AuthService {
       verifyJwt = buildJwtVerifier(
         jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId),
         issuer = platform.platformId,
-        aud = platform.clientId
+        aud = platform.clientId,
+        alg = decodedToken.getAlgorithm
       )
       verifyNonce = (jwt: DecodedJWT) =>
         getRequiredClaim(jwt, OIDC.NONCE)

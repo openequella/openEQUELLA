@@ -18,47 +18,71 @@
 
 package com.tle.integration
 
+import cats.implicits._
 import com.auth0.jwk.Jwk
-import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.auth0.jwt.{JWT, JWTVerifier}
 import com.tle.integration.oauth2.{InvalidJWT, OAuth2Error, ServerError}
-
-import java.security.interfaces.RSAPublicKey
+import java.security.PublicKey
+import java.security.interfaces.{ECPublicKey, RSAPublicKey}
 import scala.util.Try
 
 package object jwt {
 
+  private object SigningAlg extends Enumeration {
+    val RS256, RS384, RS512, ES256, ES384, ES512 = Value
+  }
+
+  private def determineAlg(alg: String, publicKey: PublicKey): Either[ServerError, Algorithm] =
+    Either
+      .catchNonFatal(SigningAlg.withName(alg))
+      .map {
+        case SigningAlg.RS256 =>
+          Algorithm.RSA256(publicKey.asInstanceOf[RSAPublicKey], null)
+        case SigningAlg.RS384 =>
+          Algorithm.RSA384(publicKey.asInstanceOf[RSAPublicKey], null)
+        case SigningAlg.RS512 =>
+          Algorithm.RSA512(publicKey.asInstanceOf[RSAPublicKey], null)
+        case SigningAlg.ES256 =>
+          Algorithm.ECDSA256(publicKey.asInstanceOf[ECPublicKey], null)
+        case SigningAlg.ES384 =>
+          Algorithm.ECDSA384(publicKey.asInstanceOf[ECPublicKey], null)
+        case SigningAlg.ES512 =>
+          Algorithm.ECDSA512(publicKey.asInstanceOf[ECPublicKey], null)
+      }
+      .leftMap(_ => ServerError(s"Unsupported algorithm: $alg"))
+
   /**
     * Builds a JWT verifier function that can be used to validate a JWT.
     *
-    * @param jwk The token to be validated
+    * @param jwk JWK used to verify the signature of JWTs
     * @param issuer Issuer who is expected to issue the token
     * @param aud Audience who is expected to receive the token
+    * @param alg Algorithm used for signature verification
     */
   def buildJwtVerifier(jwk: Jwk,
                        issuer: String,
-                       aud: String): DecodedJWT => Either[OAuth2Error, DecodedJWT] = {
-    val verifier = Try {
-      // Section 5.1.3 of the Security Framework says that RS256 SHOULD be used - but there are
-      // some others which are allowed as per the 'best practices'. Perhaps we should add code
-      // to determine the others and use them too.
-      // Best practices: https://www.imsglobal.org/spec/security/v1p1#approved-jwt-signing-algorithms
-      val alg = Algorithm.RSA256(jwk.getPublicKey.asInstanceOf[RSAPublicKey], null)
-      JWT
-        .require(alg)
-        // The issuer has kind of been validated already above - so that we could get the platform
-        // ID to be able to get the JWKS URL. But we might as well explicitly validate it as part
-        // of the JWT validation - as that's what you're meant to do.
-        .withIssuer(issuer)
-        .withAnyOfAudience(aud)
-        .build()
-    }.toEither.left.map(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
+                       aud: String,
+                       alg: String): DecodedJWT => Either[OAuth2Error, DecodedJWT] = {
+
+    def jwtVerifier: Either[ServerError, JWTVerifier] =
+      for {
+        algorithm <- determineAlg(alg, jwk.getPublicKey)
+        verifier <- Either
+          .catchNonFatal(
+            JWT
+              .require(algorithm)
+              .withIssuer(issuer)
+              .withAnyOfAudience(aud)
+              .build())
+          .leftMap(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
+      } yield verifier
 
     (decodedToken: DecodedJWT) =>
-      verifier.flatMap(
+      jwtVerifier.flatMap(
         v =>
           Try(v.verify(decodedToken)).toEither.left
-            .map(t => InvalidJWT(s"Provided ID token (JWT) failed verification: ${t.getMessage}")))
+            .map(t => InvalidJWT(s"Provided JWT failed verification: ${t.getMessage}")))
   }
 }
