@@ -40,13 +40,14 @@ export type IdentityProviderPlatform =
  **/
 interface IdentityProviderBase {
   /**
-   * A non-empty string as the Identity Provider name
-   */
-  name: string;
-  /**
    * One of the supported Identity Provider: {@link IdentityProviderPlatform}
    */
   platform: IdentityProviderPlatform;
+  /**
+   * The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
+   * claim in the JWTs issued by this provider.
+   */
+  issuer: string;
   /**
    * ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
    * the Authorization Code flow

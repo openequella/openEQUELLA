@@ -15,8 +15,8 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
 
   private def buildRequestBody = {
     val body = mapper.createObjectNode()
-    body.put("name", "Auth0")
     body.put("platform", PLATFORM)
+    body.put("issuer", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com")
     body.put("authCodeClientId", "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ")
     body.put(AUTH_CODE_CLIENT_SECRET,
              "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L")
@@ -67,10 +67,10 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
   @Test(description = "Update OIDC configuration without providing sensitive values",
         dependsOnMethods = Array("add"))
   def addWithoutSensitiveValues(): Unit = {
-    val newName = "Auth0-Updated"
+    val newClientId = "A5tvBaB7svqjLPe0dDPBicgPcVPDJumZ"
 
     val body = buildRequestBody
-    body.put("name", newName)
+    body.put("authCodeClientId", newClientId)
     body.remove(AUTH_CODE_CLIENT_SECRET)
     body.remove(API_CLIENT_SECRET)
 
@@ -80,7 +80,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
 
     // Get again and confirm the values have been returned.
     val idp = getIdentityProvider
-    assertEquals(idp.get("commonDetails").get("name").asText(), newName)
+    assertEquals(newClientId, idp.get("commonDetails").get("authCodeClientId").asText())
   }
 
   @Test(description = "Return 400 when creating with invalid values")
