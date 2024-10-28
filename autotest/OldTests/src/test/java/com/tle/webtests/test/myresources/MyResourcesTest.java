@@ -17,6 +17,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalContro
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
 import org.testng.annotations.Test;
+import testng.annotation.RetryTest;
 
 /**
  * Test Reference: http://time/DTEC/test/editTest.aspx?testId=14957 Test Reference:
@@ -25,6 +26,7 @@ import org.testng.annotations.Test;
  *
  * @author larry, among others lost in the mists of time
  */
+@RetryTest
 @TestInstitution("myresources")
 public class MyResourcesTest extends AbstractCleanupTest {
 
