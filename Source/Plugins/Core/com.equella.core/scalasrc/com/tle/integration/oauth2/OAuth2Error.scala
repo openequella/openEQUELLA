@@ -76,7 +76,7 @@ object ErrorResponse {
   }
 }
 
-abstract class OAuth2Error {
+sealed abstract class OAuth2Error {
   val code: Code
 }
 

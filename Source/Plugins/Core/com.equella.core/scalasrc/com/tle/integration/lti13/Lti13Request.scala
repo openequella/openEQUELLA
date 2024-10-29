@@ -18,11 +18,12 @@
 
 package com.tle.integration.lti13
 
+import cats.implicits._
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.integration.lti13.Lti13Claims.CUSTOM_PARAMETERS
 import com.tle.integration.lti13.LtiMessageType.MessageType
-import cats.implicits._
-import com.tle.integration.oauth2.{InvalidJWT, OAuth2Error}
+import com.tle.integration.lti13.OAuth2LayerError._
+import com.tle.integration.oauth2.InvalidJWT
 import com.tle.integration.oidc.{
   OpenIDConnectParams,
   getClaimAsMap,
@@ -34,6 +35,7 @@ import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.generic.semiauto.deriveDecoder
 import io.circe.parser.decode
+
 import java.net.URL
 import scala.jdk.CollectionConverters._
 
@@ -176,7 +178,7 @@ object Lti13Request {
     * @param decodedJWT a token containing claims which provides details of an LTI request message.
     * @return Details of an LTI 1.3 request message, or `Lti13Error` if failed to extract the details.
     */
-  def getLtiRequestDetails(decodedJWT: DecodedJWT): Either[OAuth2Error, Lti13Request] = {
+  def getLtiRequestDetails(decodedJWT: DecodedJWT): Either[OAuth2LayerError, Lti13Request] = {
     def requiredClaim(claim: String) = getRequiredClaim(decodedJWT, claim)
 
     def getRequest(messageType: MessageType): Either[InvalidJWT, Lti13Request] = messageType match {
@@ -203,12 +205,14 @@ object Lti13Request {
           .map(LtiResourceLinkRequest)
     }
 
-    for {
-      messageType <- getRequiredClaim(decodedJWT, Lti13Claims.MESSAGE_TYPE)
+    val details = for {
+      messageType <- requiredClaim(Lti13Claims.MESSAGE_TYPE)
       validType <- Either
         .catchNonFatal(LtiMessageType.withName(messageType))
         .leftMap(_ => InvalidJWT(s"Unknown LTI message type: $messageType"))
       request <- getRequest(validType)
     } yield request
+
+    details
   }
 }

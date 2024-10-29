@@ -19,9 +19,6 @@
 package com.tle.integration.lti13
 
 import cats.implicits._
-import com.auth0.jwk.Jwk
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
@@ -38,6 +35,7 @@ import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserSer
 import com.tle.exceptions.UsernameNotFoundException
 import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.buildJwtVerifier
+import com.tle.integration.lti13.OAuth2LayerError._
 import com.tle.integration.lti13.{Lti13Params => LTI13}
 import com.tle.integration.oauth2._
 import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
@@ -49,7 +47,6 @@ import org.slf4j.LoggerFactory
 
 import java.net.URI
 import java.nio.charset.StandardCharsets
-import java.security.interfaces.RSAPublicKey
 import java.util.Base64
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
@@ -162,7 +159,7 @@ case class UserDetails(platformId: String,
                        email: Option[String])
 object UserDetails {
   def apply(jwt: DecodedJWT,
-            usernameClaimPaths: Option[List[String]]): Either[InvalidJWT, UserDetails] = {
+            usernameClaimPaths: Option[List[String]]): Either[OAuth2LayerError, UserDetails] = {
     val claim = getClaim(jwt)
 
     // Use the custom username claim if present, otherwise use the Subject claim.
@@ -196,7 +193,7 @@ object UserDetails {
       usernameClaimPaths.map(fromCustomClaim).getOrElse(fromSubjectClaim)
     }
 
-    for {
+    val userDetails = for {
       platformId <- Option(jwt.getIssuer)
         .toRight(
           InvalidJWT(
@@ -226,6 +223,8 @@ object UserDetails {
         .toRight(InvalidJWT(s"No last name (${OIDC.FAMILY_NAME}) was provided."))
       email = claim(OIDC.EMAIL)
     } yield UserDetails(platformId, userId, roles, firstName, lastName, email)
+
+    userDetails
   }
 }
 
@@ -288,30 +287,14 @@ class Lti13AuthService {
     * @param state the value of the `state` param sent across in an authentication request which
     *              is expected to have been provided from the server in a previous login init
     *              request.
-    * @param token an 'ID Token' in JWT format
+    * @param platform Details of the LTI platform from where to retrieve the info of issuer, audience and key set URL
+    * @param decodedToken an 'ID Token' in JWT format
     * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
     */
   def verifyToken(state: String,
-                  token: String): Either[OAuth2Error, (DecodedJWT, PlatformDetails)] = {
+                  platform: PlatformDetails,
+                  decodedToken: DecodedJWT): Either[OAuth2LayerError, DecodedJWT] = {
     val result = for {
-      // -- first, basic validation of the state
-      // Short circuit if this isn't even a state we know about
-      stateDetails <- stateService
-        .getState(state)
-        .toRight(InvalidState(s"Invalid state provided: $state"))
-      // Decode the token to validate the platform this is for
-      decodedToken <- Try(JWT.decode(token)).toEither.left.map(t =>
-        InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
-      // Validate the platform by ensure it matches the previous state we setup
-      platformId <- Option(stateDetails.platformId)
-        .filter(decodedToken.getIssuer.equals)
-        .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
-
-      // Get details of the platform and verify the custom username claim
-      platform <- getPlatform(platformId)
-        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
-
-      // -- next, validation of the actual JWT
       jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
       // Setup some helper functions
       // Both are: DecodedJWT -> Either[String, DecodedJWT]
@@ -330,9 +313,8 @@ class Lti13AuthService {
           .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
       // now finally do the verification
       verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
-    } yield (verifiedToken, platform)
+    } yield verifiedToken
 
-    // And the result is:
     result
   }
 
@@ -346,14 +328,11 @@ class Lti13AuthService {
     * @return a new `UserState` being used for the new session OR a string representing what failed.
     */
   def loginUser(wad: WebAuthenticationDetails,
-                userDetails: UserDetails): Either[OAuth2Error, UserState] = {
+                userDetails: UserDetails,
+                platformDetails: PlatformDetails): Either[OAuth2LayerError, UserState] = {
     LOGGER.debug(s"loginUser(${userDetails})")
 
     val loginResult = for {
-      platformDetails <- getPlatform(userDetails.platformId)
-        .toRight(
-          PlatformDetailsError(s"Unable to retrieve platform details of ${userDetails.platformId}"))
-
       // Setup the user - including adding roles
       userState <- mapUser(
         user = userDetails,
@@ -371,10 +350,12 @@ class Lti13AuthService {
       allowedUserState <- platformDetails.allowExpression match {
         case Some(expression) =>
           val aclExpressionEvaluator = new AclExpressionEvaluator
-          if (!aclExpressionEvaluator.evaluate(expression, userState, false))
-            Left(NotAuthorized(
-              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation"))
-          else Right(userState)
+          Either.cond[OAuth2LayerError, UserState](
+            aclExpressionEvaluator.evaluate(expression, userState, false),
+            userState,
+            NotAuthorized(
+              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation")
+          )
         case None => Right(userState)
       }
     } yield {
@@ -409,7 +390,7 @@ class Lti13AuthService {
   private def mapUser(user: UserDetails,
                       platform: PlatformDetails,
                       authenticate: String => Try[UserState],
-                      asGuest: () => UserState): Either[OAuth2Error, UserState] = {
+                      asGuest: () => UserState): Either[OAuth2LayerError, UserState] = {
     val ltiUserId = user.userId
     // The username which will be seen and used in the system
     val username = platform.usernamePrefix.getOrElse("") + ltiUserId + platform.usernameSuffix
@@ -515,7 +496,7 @@ class Lti13AuthService {
       (instructorRoles ++ customRoles ++ additionalRoles).asJavaCollection)
   }
 
-  private def getPlatform(platform: String): Option[PlatformDetails] =
+  def getPlatform(platform: String): Option[PlatformDetails] =
     platformService.getByPlatformID(platform).filter(_.enabled) match {
       case Some(bean) => Option(PlatformDetails(bean))
       case None =>

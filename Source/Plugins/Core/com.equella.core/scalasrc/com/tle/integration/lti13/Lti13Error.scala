@@ -18,11 +18,36 @@
 
 package com.tle.integration.lti13
 
-import com.tle.integration.oauth2.ErrorResponseCode.Code
-import com.tle.integration.oauth2.{ErrorResponseCode, HasMessage, OAuth2Error}
+import com.tle.integration.oauth2.{HasMessage, OAuth2Error}
 
-sealed abstract class Lti13Error extends OAuth2Error with HasMessage
+/**
+  * Represent all the possible errors occurred during the LTI 1.3 integration, including all the standard OAuth2 errors
+  * and LTI 1.3 specific errors.
+  */
+sealed abstract class Lti13Error extends HasMessage {
+  val msg: String
+}
 
-case class PlatformDetailsError(msg: String) extends Lti13Error {
-  override val code: Code = ErrorResponseCode.server_error
+/**
+  * Typically used for an error related to an LTI 1.3 platform configuration.
+  */
+final case class PlatformDetailsError(msg: String) extends Lti13Error
+
+/**
+  * Due to not having the feature of union types in Scala v2, this case class is created as a wrapper of the standard
+  * OAuth2 errors to help reduce the complexity of error handling.
+  */
+final case class OAuth2LayerError(error: OAuth2Error) extends Lti13Error {
+  val code: String = error.code.toString
+  override val msg: String = error match {
+    case message: HasMessage => message.msg
+    case _                   => "No further information"
+  }
+}
+
+object OAuth2LayerError {
+  // A couple implicit functions to help transform OAuth2Error to OAuth2LayerError.
+  implicit def fromOAuth2Error(error: OAuth2Error): OAuth2LayerError = OAuth2LayerError(error)
+  implicit def fromEither[T](result: Either[OAuth2Error, T]): Either[OAuth2LayerError, T] =
+    result.left.map(fromOAuth2Error)
 }

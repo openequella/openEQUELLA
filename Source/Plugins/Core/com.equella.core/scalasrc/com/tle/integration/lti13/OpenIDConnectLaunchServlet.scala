@@ -19,13 +19,16 @@
 package com.tle.integration.lti13
 
 import cats.implicits._
+import com.auth0.jwt.JWT
+import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
-import com.tle.integration.oauth2.{ErrorResponse, HasMessage, OAuth2Error}
+import com.tle.integration.oauth2.{ErrorResponse, InvalidJWT, InvalidState}
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
+
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
@@ -119,36 +122,62 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // Server returns the Client to the Redirection URI specified in the Authorization
     // Request with the appropriate error and state parameters. Other parameters SHOULD
     // NOT be returned."
-    def onAuthFailure(error: OAuth2Error): Unit = {
-      val errorMsg = error match {
-        case message: HasMessage => message.msg
-        case _                   => "No further information"
+    def onAuthFailure(error: Lti13Error): Unit = {
+      val msg = error.msg
+      val output = error match {
+        case OAuth2LayerError(oauth2Error) =>
+          val code = oauth2Error.code
+          LOGGER.error(s"Authentication failed [$code]: $msg")
+          s"""Authentication failed:
+             |
+             |Error code: $code
+             |Description: $msg
+             |
+             |Please contact your system administrator
+             |""".stripMargin
+        case PlatformDetailsError(_) =>
+          LOGGER.error(s"LTI 1.3 Platform configuration error: $msg")
+          s"Authentication failed due to the configuration of LTI 1.3 Platform: $msg"
       }
-
-      LOGGER.error(s"Authentication failed [${error.code}]: $errorMsg")
-
-      val output =
-        s"""Authentication failed:
-           |
-           |Error code: ${error.code}
-           |Description: $errorMsg
-           |
-           |Please contact your system administrator
-           |""".stripMargin
 
       resp.setContentType("text/plain")
       resp.setStatus(HttpStatus.SC_FORBIDDEN)
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[OAuth2Error, (Lti13Request, PlatformDetails)] = for {
-      verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
-      decodedJWT      = verifiedResult._1
-      platformDetails = verifiedResult._2
+    def getStateDetails(s: String): Either[OAuth2LayerError, Lti13StateDetails] =
+      stateService.getState(s).toRight(InvalidState(s"Invalid state provided: $s"))
+
+    def getDecodedToken(t: String): Either[OAuth2LayerError, DecodedJWT] =
+      Either
+        .catchNonFatal(JWT.decode(t))
+        .leftMap(t => InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
+
+    def getPlatformId(stateDetails: Lti13StateDetails,
+                      decodedToken: DecodedJWT): Either[OAuth2LayerError, String] =
+      Option(stateDetails.platformId)
+        .filter(decodedToken.getIssuer.equals)
+        .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
+
+    val authResult: Either[Lti13Error, (Lti13Request, PlatformDetails)] = for {
+      // -- first, basic validation of the state
+      stateDetails <- getStateDetails(auth.state)
+      // Decode the token to validate the platform this is for
+      decodedToken <- getDecodedToken(auth.id_token)
+      // Get platform ID which should match the issuer of the token
+      platformId <- getPlatformId(stateDetails, decodedToken)
+      // Retrieve the platform details
+      platformDetails <- lti13AuthService
+        .getPlatform(platformId)
+        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
+      // Verify the token based on state and platform details
+      decodedJWT <- lti13AuthService.verifyToken(auth.state, platformDetails, decodedToken)
+      // Verification is done! Now do the login with a UserDetails built from the token
       usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
       userDetails        <- UserDetails(decodedJWT, usernameClaimPaths)
-      _                  <- lti13AuthService.loginUser(wad, userDetails)
-      lti13Request       <- getLtiRequestDetails(decodedJWT)
+      _                  <- lti13AuthService.loginUser(wad, userDetails, platformDetails)
+      // Lastly, determine the LTI request details
+      lti13Request <- getLtiRequestDetails(decodedJWT)
     } yield (lti13Request, platformDetails)
 
     authResult match {
