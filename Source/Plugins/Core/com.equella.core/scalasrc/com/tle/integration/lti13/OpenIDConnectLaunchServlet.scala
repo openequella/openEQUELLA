@@ -89,13 +89,6 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     LOGGER.debug("doPost() complete")
   }
 
-  private def verifyUsernameClaim(
-      usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
-    usernameClaim
-      .filter(_.nonEmpty)
-      .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
-      .sequence
-
   private def handleInitiateLoginRequest(initLogin: InitiateLoginRequest,
                                          resp: HttpServletResponse): Unit = {
     LOGGER.debug("Received a request to initiate a login. Supplied values:")
@@ -145,50 +138,26 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       resp.getWriter.print(output)
     }
 
-    def getStateDetails(s: String): Either[OAuth2LayerError, Lti13StateDetails] =
-      stateService.getState(s).toRight(InvalidState(s"Invalid state provided: $s"))
-
-    def getDecodedToken(t: String): Either[OAuth2LayerError, DecodedJWT] =
-      Either
-        .catchNonFatal(JWT.decode(t))
-        .leftMap(t => InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
-
-    def getPlatformId(stateDetails: Lti13StateDetails,
-                      decodedToken: DecodedJWT): Either[OAuth2LayerError, String] =
-      Option(stateDetails.platformId)
-        .filter(decodedToken.getIssuer.equals)
-        .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
-
-    val authResult: Either[Lti13Error, (Lti13Request, PlatformDetails)] = for {
-      // -- first, basic validation of the state
-      stateDetails <- getStateDetails(auth.state)
-      // Decode the token to validate the platform this is for
-      decodedToken <- getDecodedToken(auth.id_token)
-      // Get platform ID which should match the issuer of the token
-      platformId <- getPlatformId(stateDetails, decodedToken)
-      // Retrieve the platform details
-      platformDetails <- lti13AuthService
-        .getPlatform(platformId)
-        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
-      // Verify the token based on state and platform details
-      decodedJWT <- lti13AuthService.verifyToken(auth.state, platformDetails, decodedToken)
-      // Verification is done! Now do the login with a UserDetails built from the token
-      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
-      userDetails        <- UserDetails(decodedJWT, usernameClaimPaths)
-      _                  <- lti13AuthService.loginUser(wad, userDetails, platformDetails)
-      // Lastly, determine the LTI request details
-      lti13Request <- getLtiRequestDetails(decodedJWT)
-    } yield (lti13Request, platformDetails)
+    val authResult: Either[Lti13Error, (Lti13Request, String)] = for {
+      // Verify the ID token
+      verifiedToken <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+      // Log the user in
+      _ <- lti13AuthService.loginUser(wad, verifiedToken)
+      // And finally determine the LTI request type
+      lti13Request <- getLtiRequestDetails(verifiedToken)
+    } yield (lti13Request, verifiedToken.getIssuer)
 
     authResult match {
       case Left(error) => onAuthFailure(error)
-      case Right((ltiRequest, platformDetails)) =>
+      case Right((ltiRequest, platformId)) =>
         ltiRequest match {
           case deepLinkingRequest: LtiDeepLinkingRequest =>
-            lti13IntegrationService.launchSelectionSession(deepLinkingRequest,
-                                                           platformDetails,
-                                                           req,
-                                                           resp)
+            lti13AuthService
+              .getPlatform(platformId)
+              .fold(
+                onAuthFailure,
+                lti13IntegrationService.launchSelectionSession(deepLinkingRequest, _, req, resp))
+
           case resourceLinkRequest: LtiResourceLinkRequest =>
             resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
         }

@@ -19,6 +19,7 @@
 package com.tle.integration.lti13
 
 import cats.implicits._
+import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
@@ -254,7 +255,7 @@ class Lti13AuthService {
     */
   def buildAuthReqUrl(initReq: InitiateLoginRequest): Option[String] = {
     for {
-      platformDetails  <- getPlatform(initReq.iss)
+      platformDetails  <- getPlatform(initReq.iss).toOption
       authUrl          <- Url.parseOption(platformDetails.authUrl.toString)
       lti_message_hint <- initReq.lti_message_hint
       state = stateService.createState(
@@ -287,52 +288,66 @@ class Lti13AuthService {
     * @param state the value of the `state` param sent across in an authentication request which
     *              is expected to have been provided from the server in a previous login init
     *              request.
-    * @param platform Details of the LTI platform from where to retrieve the info of issuer, audience and key set URL
-    * @param decodedToken an 'ID Token' in JWT format
+    * @param token an 'ID Token' in JWT format
     * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
     */
-  def verifyToken(state: String,
-                  platform: PlatformDetails,
-                  decodedToken: DecodedJWT): Either[OAuth2LayerError, DecodedJWT] = {
-    val result = for {
-      jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
-      // Setup some helper functions
-      // Both are: DecodedJWT -> Either[String, DecodedJWT]
-      verifyJwt = buildJwtVerifier(
-        jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId),
-        issuer = platform.platformId,
-        aud = platform.clientId,
-        alg = decodedToken.getAlgorithm
-      )
-      verifyNonce = (jwt: DecodedJWT) =>
-        getRequiredClaim(jwt, OIDC.NONCE)
-          .flatMap(
-            // If the nonce is valid, then make sure we return the valid JWT
-            nonceService.validateNonce(_, state).map(_ => jwt))
-          .left
-          .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
-      // now finally do the verification
-      verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
-    } yield verifiedToken
+  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] = {
 
-    result
+    def verify(decodedToken: DecodedJWT,
+               platform: PlatformDetails): Either[OAuth2LayerError, DecodedJWT] = {
+      val result = for {
+        jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
+        // Setup some helper functions
+        // Both are: DecodedJWT -> Either[String, DecodedJWT]
+        verifyJwt = buildJwtVerifier(
+          jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId),
+          issuer = platform.platformId,
+          aud = platform.clientId,
+          alg = decodedToken.getAlgorithm
+        )
+        verifyNonce = (jwt: DecodedJWT) =>
+          getRequiredClaim(jwt, OIDC.NONCE)
+            .flatMap(
+              // If the nonce is valid, then make sure we return the valid JWT
+              nonceService.validateNonce(_, state).map(_ => jwt))
+            .leftMap(err =>
+              InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
+        // now finally do the verification
+        verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
+      } yield verifiedToken
+
+      result
+    }
+
+    for {
+      // -- first, basic validation of the state
+      stateDetails <- getStateDetails(state)
+      // Decode the token to validate the platform this is for
+      decodedToken <- getDecodedToken(token)
+      // Get platform ID which should match the issuer of the token
+      platformId <- getPlatformId(stateDetails, decodedToken)
+      // Retrieve the platform details
+      platform      <- getPlatform(platformId)
+      verifiedToken <- verify(decodedToken, platform)
+    } yield verifiedToken
   }
 
   /**
-    * Given the details for a user authenticating via LTI (in `userDetails`) attempt to establish a
-    * session for them. The result (on success) will be a new `UserState` instance that will be
-    * stored against the user's session.
+    * Use the provided ID token to build a `UserDetails` for a user authenticating via LTI, and then attempt
+    * to establish a session for the user. The result (on success) will be a new `UserState` instance that
+    * will be stored against the user's session.
     *
     * @param wad the details of the HTTP request for this authentication attempt
-    * @param userDetails the details retrieved from an attempted LTI authentication
+    * @param token Decoded ID token that has been verified
     * @return a new `UserState` being used for the new session OR a string representing what failed.
     */
-  def loginUser(wad: WebAuthenticationDetails,
-                userDetails: UserDetails,
-                platformDetails: PlatformDetails): Either[OAuth2LayerError, UserState] = {
-    LOGGER.debug(s"loginUser(${userDetails})")
+  def loginUser(wad: WebAuthenticationDetails, token: DecodedJWT): Either[Lti13Error, UserState] = {
 
     val loginResult = for {
+      // Get the platform details, verify the custom username claim and then build UserDetails
+      platformDetails    <- getPlatform(token.getIssuer)
+      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
+      userDetails        <- UserDetails(token, usernameClaimPaths)
       // Setup the user - including adding roles
       userState <- mapUser(
         user = userDetails,
@@ -359,12 +374,23 @@ class Lti13AuthService {
         case None => Right(userState)
       }
     } yield {
+      LOGGER.debug(s"loginUser($userDetails)")
       userService.login(allowedUserState, true)
       allowedUserState
     }
 
     loginResult
   }
+
+  def getPlatform(platformId: String): Either[PlatformDetailsError, PlatformDetails] =
+    platformService
+      .getByPlatformID(platformId)
+      .filter(_.enabled)
+      .map(PlatformDetails.apply)
+      .toRight {
+        LOGGER.error(s"Attempt to access unauthorised platform $platformId")
+        PlatformDetailsError(s"Unable to retrieve platform details of $platformId")
+      }
 
   def getRedirectUri: URI =
     new URI(s"${CurrentInstitution.get().getUrl}lti13/launch")
@@ -496,14 +522,6 @@ class Lti13AuthService {
       (instructorRoles ++ customRoles ++ additionalRoles).asJavaCollection)
   }
 
-  def getPlatform(platform: String): Option[PlatformDetails] =
-    platformService.getByPlatformID(platform).filter(_.enabled) match {
-      case Some(bean) => Option(PlatformDetails(bean))
-      case None =>
-        LOGGER.error(s"Attempt to access unauthorised platform $platform")
-        None
-    }
-
   /**
     * Generates a unique structured identifier for the provided user from the specified platform.
     * The identifier has the structure of `LTI13:<platformid>_<userid>` which is further explained
@@ -562,4 +580,25 @@ class Lti13AuthService {
     // unique enough.
     s"LTI13:${pid.substring(0, 10)}_$uid"
   }
+
+  private def getStateDetails(s: String): Either[OAuth2LayerError, Lti13StateDetails] =
+    stateService.getState(s).toRight(InvalidState(s"Invalid state provided: $s"))
+
+  private def getDecodedToken(t: String): Either[OAuth2LayerError, DecodedJWT] =
+    Either
+      .catchNonFatal(JWT.decode(t))
+      .leftMap(t => InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
+
+  private def getPlatformId(stateDetails: Lti13StateDetails,
+                            decodedToken: DecodedJWT): Either[OAuth2LayerError, String] =
+    Option(stateDetails.platformId)
+      .filter(decodedToken.getIssuer.equals)
+      .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
+
+  private def verifyUsernameClaim(
+      usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
+    usernameClaim
+      .filter(_.nonEmpty)
+      .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
+      .sequence
 }
