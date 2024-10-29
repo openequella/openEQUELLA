@@ -26,7 +26,7 @@ import testng.annotation.RetryTest;
  *
  * @author larry, among others lost in the mists of time
  */
-@RetryTest
+@RetryTest(5)
 @TestInstitution("myresources")
 public class MyResourcesTest extends AbstractCleanupTest {
 
