@@ -61,14 +61,15 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 abstract class IdentityProvider extends ConfigurationProperties with Product {
 
   /**
-    * A non-empty string as the Identity Provider name
-    */
-  def name: String
-
-  /**
     * One of the supported Identity Provider: [[IdentityProviderPlatform]]
     */
   def platform: IdentityProviderPlatform.Value
+
+  /**
+    * The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
+    * claim in the JWTs issued by this provider.
+    */
+  def issuer: String
 
   /**
     * ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
@@ -123,7 +124,7 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def validate: ValidatedNel[String, IdentityProvider] = {
     val textFields = Map(
-      ("name", name),
+      ("Issuer", issuer),
       ("Authorisation Code flow Client ID", authCodeClientId),
     )
 
