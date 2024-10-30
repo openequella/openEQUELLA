@@ -18,10 +18,14 @@
 
 package com.tle.integration
 
-import com.auth0.jwt.interfaces.DecodedJWT
-import com.tle.integration.oauth2.InvalidJWT
-import scala.jdk.CollectionConverters._
 import cats.implicits._
+import com.auth0.jwk.Jwk
+import com.auth0.jwt.interfaces.DecodedJWT
+import com.auth0.jwt.{JWT, JWTVerifier}
+import com.tle.integration.jwt.determineAlg
+import com.tle.integration.oauth2.{InvalidJWT, OAuth2Error, ServerError}
+import com.tle.integration.oidc.service.OidcNonceService
+import scala.jdk.CollectionConverters._
 
 package object oidc {
 
@@ -82,4 +86,57 @@ package object oidc {
     */
   def getClaim(jwt: DecodedJWT): String => Option[String] =
     (claim: String) => getClaim(jwt, claim)
+
+  /**
+    * Verify the supplied ID token as per section 3.1.3.7 of the OIDC spec. However, a more strict verification
+    * for nonce is applied through `OidcNonceService` instead of a simple string comparison.
+    *
+    * @param idToken The decoded ID token to be verified
+    * @param issuer Issuer who is expected to issue the token
+    * @param audience Audience who is expected to receive the token
+    * @param jsonWebKey JWK used to verify the token signature
+    * @param state Previously built state based on which the nonce was generated
+    * @param nonceService (implicit) Nonce Service used to validate the nonce retrieved from the token
+    *
+    * @return Either the verified token or an OAuth2Error indicating why the verification failed
+    */
+  def verifyIdToken(
+      idToken: DecodedJWT,
+      issuer: String,
+      audience: String,
+      jsonWebKey: Jwk,
+      state: String)(implicit nonceService: OidcNonceService): Either[OAuth2Error, DecodedJWT] =
+    for {
+      // Standard verification, including signature, issuer, audience etc.
+      verifier <- buildJwtVerifier(jsonWebKey, issuer, audience, idToken.getAlgorithm)
+      verifiedJwt <- Either
+        .catchNonFatal(verifier.verify(idToken))
+        .leftMap(t => InvalidJWT(s"Provided JWT failed signature verification: ${t.getMessage}"))
+      // Nonce verification
+      nonce <- getRequiredClaim(verifiedJwt, OpenIDConnectParams.NONCE)
+      _ <- nonceService
+        .validateNonce(nonce, state)
+        .leftMap(err => InvalidJWT(s"Provided JWT failed nonce verification: $err"))
+    } yield verifiedJwt // Both verification pass and return the verified token
+
+  /**
+    * Builds a JWT verifier that can be used to validate an ID token.
+    *
+    * @param jwk JWK used to verify the token signature
+    * @param issuer Issuer who is expected to issue the token
+    * @param aud Audience who is expected to receive the token
+    * @param alg Value of the claim 'alg' used to confirm which algorithm to be used for signature verification
+    */
+  private def buildJwtVerifier(jwk: Jwk,
+                               issuer: String,
+                               aud: String,
+                               alg: String): Either[OAuth2Error, JWTVerifier] =
+    Either
+      .catchNonFatal(
+        JWT
+          .require(determineAlg(alg, jwk.getPublicKey))
+          .withIssuer(issuer)
+          .withAnyOfAudience(aud)
+          .build())
+      .leftMap(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
 }

@@ -19,7 +19,6 @@
 package com.tle.integration.lti13
 
 import cats.implicits._
-import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
@@ -35,11 +34,11 @@ import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
 import com.tle.integration.jwk.JwkProvider
-import com.tle.integration.jwt.buildJwtVerifier
+import com.tle.integration.jwt.decodeJwt
 import com.tle.integration.lti13.OAuth2LayerError._
 import com.tle.integration.lti13.{Lti13Params => LTI13}
 import com.tle.integration.oauth2._
-import com.tle.integration.oidc.{getClaim, getRequiredClaim, OpenIDConnectParams => OIDC}
+import com.tle.integration.oidc.{getClaim, verifyIdToken, OpenIDConnectParams => OIDC}
 import com.tle.integration.util.{getParam, getUriParam}
 import io.circe._
 import io.circe.parser._
@@ -238,14 +237,14 @@ object UserDetails {
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
-  @Inject private var nonceService: Lti13NonceService     = _
-  @Inject private var platformService: LtiPlatformService = _
-  @Inject private var runAs: RunAsInstitution             = _
-  @Inject private var stateService: Lti13StateService     = _
-  @Inject private var tleGroupService: TLEGroupService    = _
-  @Inject private var tleUserService: TLEUserService      = _
-  @Inject private var userService: UserService            = _
-  @Inject private var jwkProvider: JwkProvider            = _
+  @Inject private implicit var nonceService: Lti13NonceService = _
+  @Inject private var platformService: LtiPlatformService      = _
+  @Inject private var runAs: RunAsInstitution                  = _
+  @Inject private var stateService: Lti13StateService          = _
+  @Inject private var tleGroupService: TLEGroupService         = _
+  @Inject private var tleUserService: TLEUserService           = _
+  @Inject private var userService: UserService                 = _
+  @Inject private var jwkProvider: JwkProvider                 = _
 
   /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
@@ -291,46 +290,19 @@ class Lti13AuthService {
     * @param token an 'ID Token' in JWT format
     * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
     */
-  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] = {
-
-    def verify(decodedToken: DecodedJWT,
-               platform: PlatformDetails): Either[OAuth2LayerError, DecodedJWT] = {
-      val result = for {
-        jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
-        // Setup some helper functions
-        // Both are: DecodedJWT -> Either[String, DecodedJWT]
-        verifyJwt = buildJwtVerifier(
-          jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId),
-          issuer = platform.platformId,
-          aud = platform.clientId,
-          alg = decodedToken.getAlgorithm
-        )
-        verifyNonce = (jwt: DecodedJWT) =>
-          getRequiredClaim(jwt, OIDC.NONCE)
-            .flatMap(
-              // If the nonce is valid, then make sure we return the valid JWT
-              nonceService.validateNonce(_, state).map(_ => jwt))
-            .leftMap(err =>
-              InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
-        // now finally do the verification
-        verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
-      } yield verifiedToken
-
-      result
-    }
-
+  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] =
     for {
       // -- first, basic validation of the state
       stateDetails <- getStateDetails(state)
       // Decode the token to validate the platform this is for
-      decodedToken <- getDecodedToken(token)
+      decodedToken <- decodeToken(token)
       // Get platform ID which should match the issuer of the token
       platformId <- getPlatformId(stateDetails, decodedToken)
       // Retrieve the platform details
-      platform      <- getPlatform(platformId)
-      verifiedToken <- verify(decodedToken, platform)
+      platform <- getPlatform(platformId)
+      // Verify the decoded ID token
+      verifiedToken <- verifyToken(decodedToken, platform, state)
     } yield verifiedToken
-  }
 
   /**
     * Use the provided ID token to build a `UserDetails` for a user authenticating via LTI, and then attempt
@@ -581,20 +553,35 @@ class Lti13AuthService {
     s"LTI13:${pid.substring(0, 10)}_$uid"
   }
 
+  // Retrieve the state details with the state sent from LMS.
   private def getStateDetails(s: String): Either[OAuth2LayerError, Lti13StateDetails] =
     stateService.getState(s).toRight(InvalidState(s"Invalid state provided: $s"))
 
-  private def getDecodedToken(t: String): Either[OAuth2LayerError, DecodedJWT] =
-    Either
-      .catchNonFatal(JWT.decode(t))
-      .leftMap(t => InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
+  // Decode the raw ID token. Purpose of this function is for the error type transformation.
+  private def decodeToken(t: String): Either[OAuth2LayerError, DecodedJWT] = decodeJwt(t)
 
+  // Verify the ID token with platform details which provides essential information for the verification
+  // as well as the previously built state which is for nonce verification.
+  private def verifyToken(jwt: DecodedJWT,
+                          platform: PlatformDetails,
+                          state: String): Either[OAuth2LayerError, DecodedJWT] = {
+    val result = for {
+      jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
+      jwk = jsonWebKeySetProvider.get(jwt.getKeyId)
+      verifiedToken <- verifyIdToken(jwt, platform.platformId, platform.clientId, jwk, state)
+    } yield verifiedToken
+
+    result
+  }
+
+  // Get platform ID from the state details and verify it with the issuer in the decoded token.
   private def getPlatformId(stateDetails: Lti13StateDetails,
                             decodedToken: DecodedJWT): Either[OAuth2LayerError, String] =
     Option(stateDetails.platformId)
       .filter(decodedToken.getIssuer.equals)
       .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
 
+  // Parse the configured custom username claim and return a list of paths.
   private def verifyUsernameClaim(
       usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
     usernameClaim
