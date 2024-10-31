@@ -27,7 +27,7 @@ import {
 import SelectCustomRoleDialog, {
   SelectCustomRoleDialogProps,
 } from "../../tsrc/components/SelectCustomRoleDialog";
-import { defaultLtiRole } from "../../tsrc/settings/Integrations/lti13platforms/LtiCustomRolesMapping";
+import { defaultLtiRole } from "../../tsrc/settings/Integrations/lti13/components/LtiCustomRolesMapping";
 
 export default {
   title: "component/SelectCustomRoleDialog",
@@ -91,7 +91,7 @@ WithCustomSelector.args = {
   customRoleSelector: selectLtiRole,
   strings: {
     title: "Title",
-    customRoleTitle: "Select LTI Role",
+    customRoleLabel: "Select LTI Role",
     customRoleColumnName: "LTI Role",
   },
 };
