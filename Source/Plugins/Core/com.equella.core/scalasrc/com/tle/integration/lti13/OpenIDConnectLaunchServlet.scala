@@ -45,6 +45,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   @Inject private var stateService: Lti13StateService                  = _
   @Inject private var userService: UserService                         = _
   @Inject private var lti13IntegrationService: Lti13IntegrationService = _
+  @Inject private var lti13PlatformService: Lti13PlatformService       = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doGet() called")
@@ -152,7 +153,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
       case Right((ltiRequest, platformId)) =>
         ltiRequest match {
           case deepLinkingRequest: LtiDeepLinkingRequest =>
-            lti13AuthService
+            lti13PlatformService
               .getPlatform(platformId)
               .fold(
                 onAuthFailure,
