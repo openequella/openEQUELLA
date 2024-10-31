@@ -30,13 +30,13 @@ import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const LtiPlatformsSettingsPage = React.lazy(
-  () => import("../settings/Integrations/Lti13PlatformsSettings"),
+  () => import("../settings/Integrations/lti13/Lti13PlatformsSettings"),
 );
 const CreateLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/CreateLti13Platform"),
+  () => import("../settings/Integrations/lti13/components/CreateLti13Platform"),
 );
 const EditLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/EditLti13Platform"),
+  () => import("../settings/Integrations/lti13/components/EditLti13Platform"),
 );
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage"),
@@ -59,7 +59,7 @@ const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings"),
 );
 const OidcSettingsPage = React.lazy(
-  () => import("../settings/Integrations/OidcSettings"),
+  () => import("../settings/Integrations/oidc/OidcSettings"),
 );
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),

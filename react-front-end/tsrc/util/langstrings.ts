@@ -759,8 +759,8 @@ export const languageStrings = {
             customRoles: "Custom roles",
             customRolesDesc:
               "Select an LTI role, then select the openEQUELLA roles",
-            customRoleDialogTitle: "Select LTI and oEQ roles",
-            customRoleSelectLtiRole: "Select LTI role",
+            customRoleDialogTitle: "Select LTI and openEQUELLA roles",
+            customRoleSelectLtiRoleLabel: "Select LTI role",
             customRoleTableLtiRoleColumn: "LTI Role Name",
             unknownRoles: "Unknown roles",
             unknownRolesDesc:
@@ -827,24 +827,38 @@ export const languageStrings = {
         generalDetails: {
           title: "General Details",
           platform: "Platform",
-          name: "Name",
-          nameDesc:
-            "The name will display on the log in button when users are logging in",
+          issuer: "Issuer",
+          issuerDesc:
+            "The issuer identifier for the OpenID Connect provider. This value should match the 'iss' claim in the JWTs issued by this provider.",
           authCodeClientId: "Client ID",
           authCodeClientSecret: "Client secret",
           authUrl: "Identity Provider Login URL",
           authUrlDesc:
-            "Enter the URL of your Identity Provider's authorization endpoint. This is where users will be redirected to initiate the OpenID Connect login flow",
+            "Enter the URL of your Identity Provider's authorization endpoint. This is where users will be redirected to initiate the OpenID Connect login flow.",
           keysetUrl: "Public Key Endpoint URL",
           keysetUrlDesc:
-            "Enter the URL of the endpoint providing the JSON Web Key Set (JWKS). This set of public keys is used to verify the authenticity of tokens issued by the Identity Provider",
+            "Enter the URL of the endpoint providing the JSON Web Key Set (JWKS). This set of public keys is used to verify the authenticity of tokens issued by the Identity Provider.",
           tokenUrl: "Token URL",
           tokenUrlDesc:
-            "Enter the URL of the token endpoint. openEQUELLA will use this (with the above Client ID and Secret) to obtain an ID token to identify the authenticated user",
+            "Enter the URL of the token endpoint. openEQUELLA will use this (with the above Client ID and Secret) to obtain an ID token to identify the authenticated user.",
           usernameClaim: "Username claim",
           usernameClaimDesc:
-            " By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
+            "By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
           enable: "Enable",
+        },
+        roleMappings: {
+          title: "Role Mappings",
+          defaultRole: "Default roles",
+          defaultRoleDesc:
+            "Map the openEQUELLA roles to be used for users logging in via the Identity Provider.",
+          roleClaim: "Role claim",
+          roleClaimDesc:
+            "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization (Role mapping options will be displayed once specified).",
+          customRoleDialog: {
+            title: "IdP role mappings",
+            customRoleLabel: "Enter IdP role",
+            customRoleColumnName: "IdP Role Name",
+          },
         },
         oeqDetails: {
           title: "openEquella (RP) details",
@@ -992,14 +1006,18 @@ export const languageStrings = {
     themeSettingsButton: "Edit Theme Settings",
   },
   selectCustomRoleDialog: {
-    title: "Select Custom and oEQ roles",
+    title: "Select Custom and openEQUELLA roles",
     customRoleTitle: "Input Custom role",
     customRoleLabel: "Enter custom role",
-    oeqRoleTitle: "Select oEQ role",
-    currentSelections: "Current selections",
+    oeqRoleTitle: "Select openEQUELLA role",
+    currentMappings: "Mappings",
     customRoleColumn: "Custom Role Name",
     oeqRoleColumn: "openEQUELLA Role Name",
     addRoles: "Please add roles with the selector and search control",
+  },
+  customRolesMappingControl: {
+    title: "Custom roles",
+    desc: "Map the values from your specified role claim to corresponding roles in openEQUELLA",
   },
   selectEntityDialog: {
     currentSelections: "Current selections",
@@ -1031,13 +1049,13 @@ export const languageStrings = {
     helpTitle: "Select group(s)",
     helpDesc: "The search query can contain a group name or partial name.",
     failedToFindMessage: "Unable to find any group matching '%s'",
-    queryFieldLabel: "Enter group",
+    queryFieldLabel: "Search groups",
   },
   roleSearchComponent: {
     helpTitle: "Select role(s)",
     helpDesc: "The search query can contain a role name or partial name.",
     failedToFindMessage: "Unable to find any role matching '%s'",
-    queryFieldLabel: "Enter role",
+    queryFieldLabel: "Search roles",
   },
   groupSearchDialog: {
     title: "Select group(s)",
