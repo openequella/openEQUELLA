@@ -18,17 +18,13 @@
 
 package com.tle.integration.lti13
 
-import cats.implicits._
-import com.auth0.jwt.JWT
-import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
-import com.tle.integration.oauth2.{ErrorResponse, InvalidJWT, InvalidState}
+import com.tle.integration.oauth2.ErrorResponse
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
-
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._

@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.tle.integration.lti13
 
 import com.auth0.jwt.interfaces.DecodedJWT
