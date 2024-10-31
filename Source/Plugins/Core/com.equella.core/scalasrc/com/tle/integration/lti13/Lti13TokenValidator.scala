@@ -38,6 +38,12 @@ class Lti13TokenValidator @Inject()(platformService: Lti13PlatformService,
 )(implicit val nonceService: Lti13NonceService) {
 
   /**
+    * Given a previously established `state` with a freshly received ID Token (JWT) will attempt
+    * to verify the token inline with the guidance in section 5.1.3 (Authentication Response
+    * Validation) of the 1EdTech Security Framework (version 1.1).
+    *
+    * See: <https://www.imsglobal.org/spec/security/v1p1#authentication-response-validation>
+    *
     * The verification includes the following steps:
     *
     * 1. Retrieve the state details associated with the provided state with a basic validation;
@@ -47,6 +53,13 @@ class Lti13TokenValidator @Inject()(platformService: Lti13PlatformService,
     * 4. Retrieve the platform details with the platform ID;
     * 5. Perform the standard OIDC ID token verification with platform details which provides essential
     * information(e.g. expected issuer and client ID) as well as the verified state for nonce verification.
+    *
+    * @param state the value of the `state` param sent across in an authentication request which
+    *              is expected to have been provided from the server in a previous login init
+    *              request.
+    * @param token an 'ID Token' in JWT format
+    * @return Either an error string detailing how things failed, or the actual verified anddecoded JWT ready
+    *         for user authentication.
     */
   def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] =
     for {

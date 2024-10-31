@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory
 import javax.inject.Singleton
 
 /**
-  * Provide functionality related to the use of LTI 1.3 platforms in the integration.
-  *
+  * Specialised platform service for functionality required during LTI 1.3 authentication.
   */
 @Bind
 @Singleton

@@ -244,8 +244,6 @@ class Lti13AuthService {
   @Inject private var tleGroupService: TLEGroupService         = _
   @Inject private var tleUserService: TLEUserService           = _
   @Inject private var userService: UserService                 = _
-  @Inject private var jwkProvider: JwkProvider                 = _
-  @Inject private var tokenValidator: Lti13TokenValidator      = _
 
   /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
@@ -277,22 +275,6 @@ class Lti13AuthService {
           ))
         .toString()
   }
-
-  /**
-    * Given a previously established `state` with a freshly received ID Token (JWT) will attempt
-    * to verify the token inline with the guidance in section 5.1.3 (Authentication Response
-    * Validation) of the 1EdTech Security Framework (version 1.1).
-    *
-    * See: <https://www.imsglobal.org/spec/security/v1p1#authentication-response-validation>
-    *
-    * @param state the value of the `state` param sent across in an authentication request which
-    *              is expected to have been provided from the server in a previous login init
-    *              request.
-    * @param token an 'ID Token' in JWT format
-    * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
-    */
-  def verifyToken(state: String, token: String): Either[Lti13Error, DecodedJWT] =
-    tokenValidator.verifyToken(state, token)
 
   /**
     * Use the provided ID token to build a `UserDetails` for a user authenticating via LTI, and then attempt

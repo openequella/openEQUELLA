@@ -42,6 +42,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   @Inject private var userService: UserService                         = _
   @Inject private var lti13IntegrationService: Lti13IntegrationService = _
   @Inject private var lti13PlatformService: Lti13PlatformService       = _
+  @Inject private var lti13tokenValidator: Lti13TokenValidator         = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doGet() called")
@@ -137,7 +138,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
     val authResult: Either[Lti13Error, (Lti13Request, String)] = for {
       // Verify the ID token
-      verifiedToken <- lti13AuthService.verifyToken(auth.state, auth.id_token)
+      verifiedToken <- lti13tokenValidator.verifyToken(auth.state, auth.id_token)
       // Log the user in
       _ <- lti13AuthService.loginUser(wad, verifiedToken)
       // And finally determine the LTI request type
