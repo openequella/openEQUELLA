@@ -26,9 +26,8 @@ import SelectCustomRoleDialog, {
   SelectCustomRoleDialogProps,
 } from "./SelectCustomRoleDialog";
 
-const { customRolesDesc, customRoles: customRolesTitle } =
-  languageStrings.settings.integration.lti13PlatformsSettings.createPage
-    .roleMappings;
+const { title: customRolesTitle, desc: customRolesDesc } =
+  languageStrings.customRolesMappingControl;
 const { edit: editLabel } = languageStrings.common.action;
 
 export interface CustomRolesMappingControlProps

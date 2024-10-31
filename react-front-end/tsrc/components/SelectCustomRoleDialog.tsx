@@ -59,11 +59,10 @@ import { languageStrings } from "../util/langstrings";
 const {
   title,
   customRoleColumn: defaultCustomRoleColumnName,
-  customRoleTitle: customRoleTitleText,
-  customRoleLabel,
+  customRoleLabel: customRoleLabelText,
   oeqRoleTitle,
   oeqRoleColumn,
-  currentSelections,
+  currentMappings,
   addRoles,
 } = languageStrings.selectCustomRoleDialog;
 const { ok: okLabel, removeAll: removeAllLabel } =
@@ -91,8 +90,8 @@ export interface SelectCustomRoleDialogProps {
   strings?: {
     /** Dialog title. */
     title: string;
-    /** Title for custom role selector. */
-    customRoleTitle: string;
+    /** Label for custom role control. */
+    customRoleLabel: string;
     /** Name of custom role column in the role mappings table. */
     customRoleColumnName: string;
   };
@@ -128,13 +127,13 @@ const SelectCustomRoleDialog = ({
   searchRoleProvider,
   strings = {
     title,
-    customRoleTitle: customRoleTitleText,
+    customRoleLabel: customRoleLabelText,
     customRoleColumnName: defaultCustomRoleColumnName,
   },
   defaultCustomRole,
   customRoleSelector,
 }: SelectCustomRoleDialogProps) => {
-  const { title: dialogTitle, customRoleTitle, customRoleColumnName } = strings;
+  const { title: dialogTitle, customRoleLabel, customRoleColumnName } = strings;
   const [selectedCustomRole, setSelectedCustomRole] =
     useState(defaultCustomRole);
 
@@ -276,6 +275,7 @@ const SelectCustomRoleDialog = ({
         })
       }
       aria-label={customRoleLabel}
+      variant="standard"
       fullWidth
     />
   );
@@ -319,9 +319,6 @@ const SelectCustomRoleDialog = ({
       <Grid container>
         <Grid container item xs direction="column" rowSpacing={2}>
           <Grid item>
-            <Typography variant="h6" gutterBottom>
-              {customRoleTitle}
-            </Typography>
             {customRoleSelector?.(setSelectedCustomRole, selectedCustomRole) ??
               defaultCustomRoleSelector}
           </Grid>
@@ -333,7 +330,7 @@ const SelectCustomRoleDialog = ({
         <Grid container item xs rowSpacing={2} direction="column">
           <Grid item>
             <Typography variant="h6" gutterBottom>
-              {currentSelections}
+              {currentMappings}
             </Typography>
             {M.isEmpty(rolesMapping) ? (
               <ListItem>
