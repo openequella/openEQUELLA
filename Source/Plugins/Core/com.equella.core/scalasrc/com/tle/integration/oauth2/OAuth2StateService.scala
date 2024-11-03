@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.integration.oidc.service
+package com.tle.integration.oauth2
 
 import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
@@ -28,19 +28,19 @@ import javax.inject.{Inject, Singleton}
 case class StateConfig(expiryInSeconds: Int, name: String)
 
 /**
-  * Manages the `state` values for OIDC authentication processes and stores the authentication
+  * Manages the `state` values for OAuth2 authorisation request and stores the authorisation
   * details in a replicated cache.
   */
 @Bind
 @Singleton
-class OidcStateService[T <: Serializable](stateStorage: ReplicatedCache[T]) {
+class OAuth2StateService[T <: Serializable](stateStorage: ReplicatedCache[T]) {
 
   def this(rcs: ReplicatedCacheService, config: StateConfig) =
     this(
       rcs.getCache[T](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS),
     )
 
-  @Inject def this(rcs: ReplicatedCacheService) = this(rcs, StateConfig(300, "oidc-state"))
+  @Inject def this(rcs: ReplicatedCacheService) = this(rcs, StateConfig(300, "oauth2-state"))
 
   /**
     * Given the key details of an OIDC authentication Request, store those and create a 'state' value that can

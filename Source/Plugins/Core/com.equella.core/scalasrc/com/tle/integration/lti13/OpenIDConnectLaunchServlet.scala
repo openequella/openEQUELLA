@@ -18,11 +18,11 @@
 
 package com.tle.integration.lti13
 
-import cats.implicits._
 import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
+import com.tle.integration.oauth2.ErrorResponse
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 import javax.inject.{Inject, Singleton}
@@ -41,6 +41,8 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
   @Inject private var stateService: Lti13StateService                  = _
   @Inject private var userService: UserService                         = _
   @Inject private var lti13IntegrationService: Lti13IntegrationService = _
+  @Inject private var lti13PlatformService: Lti13PlatformService       = _
+  @Inject private var lti13tokenValidator: Lti13TokenValidator         = _
 
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doGet() called")
@@ -85,13 +87,6 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     LOGGER.debug("doPost() complete")
   }
 
-  private def verifyUsernameClaim(
-      usernameClaim: Option[String]): Either[PlatformDetailsError, Option[List[String]]] =
-    usernameClaim
-      .filter(_.nonEmpty)
-      .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))
-      .sequence
-
   private def handleInitiateLoginRequest(initLogin: InitiateLoginRequest,
                                          resp: HttpServletResponse): Unit = {
     LOGGER.debug("Received a request to initiate a login. Supplied values:")
@@ -119,46 +114,48 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // Request with the appropriate error and state parameters. Other parameters SHOULD
     // NOT be returned."
     def onAuthFailure(error: Lti13Error): Unit = {
-      val errorMsg = error match {
-        case message: HasMessage => message.msg
-        case _                   => "No further information"
+      val msg = error.msg
+      val output = error match {
+        case OAuth2LayerError(oauth2Error) =>
+          val code = oauth2Error.code
+          LOGGER.error(s"Authentication failed [$code]: $msg")
+          s"""Authentication failed:
+             |
+             |Error code: $code
+             |Description: $msg
+             |
+             |Please contact your system administrator
+             |""".stripMargin
+        case PlatformDetailsError(_) =>
+          LOGGER.error(s"LTI 1.3 Platform configuration error: $msg")
+          s"Authentication failed due to the configuration of LTI 1.3 Platform: $msg"
       }
-
-      LOGGER.error(s"Authentication failed [${error.code}]: $errorMsg")
-
-      val output =
-        s"""Authentication failed:
-           |
-           |Error code: ${error.code}
-           |Description: $errorMsg
-           |
-           |Please contact your system administrator
-           |""".stripMargin
 
       resp.setContentType("text/plain")
       resp.setStatus(HttpStatus.SC_FORBIDDEN)
       resp.getWriter.print(output)
     }
 
-    val authResult: Either[Lti13Error, (Lti13Request, PlatformDetails)] = for {
-      verifiedResult <- lti13AuthService.verifyToken(auth.state, auth.id_token)
-      decodedJWT      = verifiedResult._1
-      platformDetails = verifiedResult._2
-      usernameClaimPaths <- verifyUsernameClaim(platformDetails.usernameClaim)
-      userDetails        <- UserDetails(decodedJWT, usernameClaimPaths)
-      _                  <- lti13AuthService.loginUser(wad, userDetails)
-      lti13Request       <- getLtiRequestDetails(decodedJWT)
-    } yield (lti13Request, platformDetails)
+    val authResult: Either[Lti13Error, (Lti13Request, String)] = for {
+      // Verify the ID token
+      verifiedToken <- lti13tokenValidator.verifyToken(auth.state, auth.id_token)
+      // Log the user in
+      _ <- lti13AuthService.loginUser(wad, verifiedToken)
+      // And finally determine the LTI request type
+      lti13Request <- getLtiRequestDetails(verifiedToken)
+    } yield (lti13Request, verifiedToken.getIssuer)
 
     authResult match {
       case Left(error) => onAuthFailure(error)
-      case Right((ltiRequest, platformDetails)) =>
+      case Right((ltiRequest, platformId)) =>
         ltiRequest match {
           case deepLinkingRequest: LtiDeepLinkingRequest =>
-            lti13IntegrationService.launchSelectionSession(deepLinkingRequest,
-                                                           platformDetails,
-                                                           req,
-                                                           resp)
+            lti13PlatformService
+              .getPlatform(platformId)
+              .fold(
+                onAuthFailure,
+                lti13IntegrationService.launchSelectionSession(deepLinkingRequest, _, req, resp))
+
           case resourceLinkRequest: LtiResourceLinkRequest =>
             resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
         }

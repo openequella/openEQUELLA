@@ -1,21 +1,17 @@
-package com.tle.integration.oidc
+package com.tle.integration.oauth2
 
 import com.tle.core.replicatedcache.TrieMapCache
-import com.tle.integration.lti13.{Lti13StateDetails, Lti13StateService}
-import com.tle.integration.oidc.service.{OidcStateService, StateConfig}
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 
-import java.net.URI
-
-class OidcStateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
+class OAuth2tateServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   case class TestData(value: String)
 
   private val testData = TestData("http://superlms.com/")
 
   class Fixture {
-    val oidcStateService = new OidcStateService(new TrieMapCache[TestData])
+    val oidcStateService = new OAuth2StateService(new TrieMapCache[TestData])
   }
 
   def fixture = new Fixture
