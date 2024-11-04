@@ -15,10 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, CardContent, Divider, Grid } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Divider,
+  Grid,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
 import { useEffect, useState } from "react";
 import * as React from "react";
+import { getBaseUrl } from "../../../AppConfig";
 import { CustomRolesMapping } from "../../../components/CustomRoleHelper";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
@@ -27,6 +35,7 @@ import GeneralDetailsSection, {
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
+import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
 import SettingsListWarning from "../../../components/SettingsListWarning";
 import { routes } from "../../../mainui/routes";
 import {
@@ -43,7 +52,6 @@ import {
 
 const {
   name,
-  oeqDetails: { title: oeqDetailsTitle },
   generalDetails: { title: generalDetailsTitle },
   roleMappings: {
     title: roleMappingsTitle,
@@ -53,8 +61,15 @@ const {
     roleClaimDesc,
     customRoleDialog: customRoleDialogStrings,
   },
+  oeqDetails: {
+    title: oeqDetailsTitle,
+    desc: oeqDetailsDesc,
+    redirect: redirectTitle,
+  },
 } = languageStrings.settings.integration.oidc;
 const { edit: editLabel } = languageStrings.common.action;
+
+const redirectUrl = getBaseUrl() + "oidclogin.do";
 
 export interface OidcSettingsProps extends TemplateUpdateProps {
   /**
@@ -192,7 +207,18 @@ const OidcSettings = ({
       </Card>
 
       <Card>
-        <CardContent>{oeqDetailsTitle}</CardContent>
+        <CardContent>
+          <SettingsList subHeading={oeqDetailsTitle}>
+            <ListItem>
+              <ListItemText>{oeqDetailsDesc}</ListItemText>
+            </ListItem>
+
+            <SettingsListConfiguration
+              title={redirectTitle}
+              value={redirectUrl}
+            />
+          </SettingsList>
+        </CardContent>
       </Card>
     </SettingPageTemplate>
   );

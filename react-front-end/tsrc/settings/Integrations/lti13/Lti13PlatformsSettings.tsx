@@ -18,7 +18,6 @@
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
 import {
   Card,
   CardContent,
@@ -26,7 +25,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemSecondaryAction,
   ListItemText,
   Tooltip,
 } from "@mui/material";
@@ -44,6 +42,7 @@ import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsList from "../../../components/SettingsList";
+import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
 import SettingsToggleSwitch from "../../../components/SettingsToggleSwitch";
 import { TooltipCustomComponent } from "../../../components/TooltipCustomComponent";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
@@ -73,12 +72,10 @@ const {
   platformsDesc,
   enabledSwitch: enabledSwitchLabel,
 } = languageStrings.settings.integration.lti13PlatformsSettings;
-
 const {
   add: addLabel,
   edit: editLabel,
   delete: deleteLabel,
-  copy: copyLabel,
 } = languageStrings.common.action;
 
 export interface Lti13PlatformsSettingsProps extends TemplateUpdateProps {
@@ -235,18 +232,7 @@ const Lti13PlatformsSettings = ({
         providerDetails,
         R.toEntries,
         A.map(([_, { name, value }]) => (
-          <ListItem key={name}>
-            <ListItemText primary={name} secondary={value} />
-            <ListItemSecondaryAction>
-              <TooltipIconButton
-                edge="end"
-                onClick={() => navigator.clipboard.writeText(value)}
-                title={copyLabel}
-              >
-                <FileCopyIcon />
-              </TooltipIconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+          <SettingsListConfiguration key={name} title={name} value={value} />
         )),
       )}
     </List>
