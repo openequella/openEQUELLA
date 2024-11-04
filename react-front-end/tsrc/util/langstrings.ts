@@ -862,6 +862,8 @@ export const languageStrings = {
         },
         oeqDetails: {
           title: "openEquella (RP) details",
+          desc: "Below is the details for this openEQUELLA institution's OIDC interface. Please use this to configure your OIDC Platform.",
+          redirect: "Redirection URL",
         },
       },
     },
