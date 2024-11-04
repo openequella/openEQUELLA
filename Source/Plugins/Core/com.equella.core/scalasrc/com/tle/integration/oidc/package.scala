@@ -78,6 +78,20 @@ package object oidc {
       .map(_.asScala.toMap)
 
   /**
+    * Get value of a claim as a Set.
+    *
+    * @param jwt a token containing the claim
+    * @param claim name of a string based claim
+    * @return If transforming the value to a Set is successful return the Set, or `None`
+    */
+  def getClaimAsSet(jwt: DecodedJWT, claim: String): Option[Set[String]] =
+    Option(jwt.getClaim(claim))
+      .map(c => Either.catchNonFatal(Option(c.asArray(classOf[String]))))
+      .flatMap(_.toOption)
+      .flatten
+      .map(_.toSet)
+
+  /**
     * Given a decoded JWT will return a partially applied function which can then receive the name
     * of a claim and return the value as a `String` or `None` if not present in the claims.
     *
