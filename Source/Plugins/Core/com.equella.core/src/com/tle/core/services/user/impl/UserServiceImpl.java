@@ -236,6 +236,7 @@ public class UserServiceImpl
   }
 
   @Transactional
+  @Override
   public ModifiableUserState setupUserState(
       ModifiableUserState auth, WebAuthenticationDetails details, boolean authenticated) {
     auth.setSessionID(UUID.randomUUID().toString());
