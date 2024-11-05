@@ -24,6 +24,7 @@ import com.dytech.edge.common.Constants;
 import com.google.common.io.CharStreams;
 import com.rometools.utils.Strings;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.common.Utils;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.FileEntry;
@@ -561,7 +562,7 @@ public class WebdavServlet extends HttpServlet {
       return;
     }
 
-    String uri = basepath + '/' + staging.getUuid() + '/' + filename;
+    String uri = basepath + '/' + staging.getUuid() + '/' + URLUtils.urlEncode(filename);
     boolean isDir = fileSystemService.fileIsDir(staging, filename);
     // http://www.webdav.org/specs/rfc2518.html#collection.resources
     // folders should end with '/'

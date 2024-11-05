@@ -30,6 +30,7 @@ public class FileEntry implements Serializable {
   private List<FileEntry> files = new ArrayList<FileEntry>();
   private String name;
   private long length;
+  private String systemPath;
 
   public FileEntry(boolean folder) {
     this.folder = folder;
@@ -39,6 +40,7 @@ public class FileEntry implements Serializable {
     this.name = file.getName();
     this.folder = file.isDirectory();
     this.length = (this.folder ? 0 : file.length());
+    this.systemPath = file.getAbsolutePath();
   }
 
   public List<FileEntry> getFiles() {
@@ -71,6 +73,10 @@ public class FileEntry implements Serializable {
 
   public void setLength(long length) {
     this.length = length;
+  }
+
+  public String getSystemPath() {
+    return systemPath;
   }
 
   public List<String> foldToPaths() {
