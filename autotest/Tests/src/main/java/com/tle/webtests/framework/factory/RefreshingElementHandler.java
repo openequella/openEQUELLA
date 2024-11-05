@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -15,8 +15,8 @@ import org.openqa.selenium.support.ui.FluentWait;
 public class RefreshingElementHandler implements InvocationHandler {
   private static final FluentWait<Object> waiter =
       new FluentWait<Object>(Void.class)
-          .withTimeout(10, TimeUnit.SECONDS)
-          .pollingEvery(50, TimeUnit.MILLISECONDS);
+          .withTimeout(Duration.ofSeconds(10))
+          .pollingEvery(Duration.ofMillis(50));
   private LazyTemplatedElementLocator locator;
   private RefreshingElementProxyCreator proxyCreator;
 

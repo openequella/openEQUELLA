@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -68,8 +69,8 @@ public class TestConfig {
     return inst;
   }
 
-  public int getStandardTimeout() {
-    return getIntProperty("timeout.standard", 30);
+  public Duration getStandardTimeout() {
+    return Duration.ofSeconds(getIntProperty("timeout.standard", 30));
   }
 
   public String getAdminPassword() {
