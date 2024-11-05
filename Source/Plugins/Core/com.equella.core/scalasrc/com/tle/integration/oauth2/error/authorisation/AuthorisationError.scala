@@ -16,19 +16,19 @@
  * limitations under the License.
  */
 
-package com.tle.integration.oauth2
+package com.tle.integration.oauth2.error.authorisation
 
-import com.tle.integration.oauth2.ErrorResponseCode.Code
+import com.tle.integration.oauth2.error.authorisation.AuthErrorResponseCode.Code
+import com.tle.integration.oauth2.error.{HasCode, OAuth2Error}
 import com.tle.integration.util.{getParam, getUriParam}
-
 import java.net.URI
 import scala.util.Try
 
 /**
-  * Valid error codes for Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749
-  * (OAuth 2).
+  * Valid error codes for the error response of an authorisation request as per section 4.1.2.1 (Error Response)
+  * of the RFC 6749 (OAuth 2).
   */
-object ErrorResponseCode extends Enumeration {
+object AuthErrorResponseCode extends Enumeration {
   type Code = Value
 
   val invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope,
@@ -38,7 +38,7 @@ object ErrorResponseCode extends Enumeration {
 /**
   * An Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749 (OAuth 2).
   *
-  * @param error             REQUIRED.  A single ASCII [USASCII] error code from [[ErrorResponseCode]]
+  * @param error             REQUIRED.  A single ASCII [USASCII] error code from [[AuthErrorResponseCode]]
   * @param error_description OPTIONAL.  Human-readable ASCII [USASCII] text providing additional
   *                          information, used to assist the client developer in understanding the
   *                          error that occurred. Values for the "error_description" parameter
@@ -51,58 +51,55 @@ object ErrorResponseCode extends Enumeration {
   * @param state             REQUIRED if a "state" parameter was present in the client authorization request.
   *                          The exact value received from the client.
   */
-case class ErrorResponse(error: ErrorResponseCode.Code,
-                         error_description: Option[String],
-                         error_uri: Option[URI],
-                         state: String)
+case class AuthErrorResponse(error: AuthErrorResponseCode.Code,
+                             error_description: Option[String],
+                             error_uri: Option[URI],
+                             state: String)
 
-object ErrorResponse {
+object AuthErrorResponse {
   val PARAM_ERRORCODE   = "error"
   val PARAM_DESCRIPTION = "error_description"
   val PARAM_URI         = "error_uri"
   val PARAM_STATE       = "state"
 
-  def apply(params: Map[String, Array[String]]): Option[ErrorResponse] = {
+  def apply(params: Map[String, Array[String]]): Option[AuthErrorResponse] = {
     val param    = getParam(params)
     val uriParam = getUriParam(param)
 
     for {
       error <- param(PARAM_ERRORCODE).flatMap(asString =>
-        Try(ErrorResponseCode.withName(asString)).toOption)
+        Try(AuthErrorResponseCode.withName(asString)).toOption)
       error_description = param(PARAM_DESCRIPTION)
       error_uri         = uriParam(PARAM_URI)
       state <- param(PARAM_STATE)
-    } yield ErrorResponse(error, error_description, error_uri, state)
+    } yield AuthErrorResponse(error, error_description, error_uri, state)
   }
 }
 
-sealed abstract class OAuth2Error {
-  val code: Code
+sealed abstract class AuthorisationError(error: String) extends OAuth2Error with HasCode[Code] {
+  override val msg: Option[String] = Option(error)
 }
 
-trait HasMessage {
-  val msg: String
+final case class InvalidState(error: String) extends AuthorisationError(error) {
+  override val code: Code = AuthErrorResponseCode.invalid_request
+
 }
 
-case class InvalidState(msg: String) extends OAuth2Error with HasMessage {
-  override val code: Code = ErrorResponseCode.invalid_request
-}
-
-case class InvalidJWT(msg: String) extends OAuth2Error with HasMessage {
-  override val code: Code = ErrorResponseCode.invalid_request
+final case class InvalidRequest(error: String) extends AuthorisationError(error) {
+  override val code: Code = AuthErrorResponseCode.invalid_request
 }
 
 /**
   * Indicates a generic server error that can't be better classified with one of the other errors.
   */
-case class ServerError(msg: String) extends OAuth2Error with HasMessage {
-  override val code: Code = ErrorResponseCode.server_error
+final case class ServerError(error: String) extends AuthorisationError(error) {
+  override val code: Code = AuthErrorResponseCode.server_error
 }
 
-case class NotAuthorized(msg: String) extends OAuth2Error with HasMessage {
-  override val code: Code = ErrorResponseCode.unauthorized_client
+final case class NotAuthorized(error: String) extends AuthorisationError(error) {
+  override val code: Code = AuthErrorResponseCode.unauthorized_client
 }
 
-case class AccessDenied(msg: String) extends OAuth2Error with HasMessage {
-  override val code: Code = ErrorResponseCode.access_denied
+final case class AccessDenied(error: String) extends AuthorisationError(error) {
+  override val code: Code = AuthErrorResponseCode.access_denied
 }

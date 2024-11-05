@@ -21,7 +21,7 @@ package com.tle.integration.oidc
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
-import com.tle.integration.oauth2.HasMessage
+import com.tle.integration.oauth2.error.HasCode
 import com.tle.integration.oidc.service.OidcAuthService
 import org.apache.http.client.utils.URIBuilder
 import javax.inject.{Inject, Singleton}
@@ -30,7 +30,7 @@ import scala.jdk.CollectionConverters._
 
 /**
   * This Servlet responds to GET requests sent to endpoint 'oidclogin.do' which is used as
-  * the 'redirect_uri' in the OIDC integration.
+  * the redirect URI of an OIDC integration.
   */
 @Bind
 @Singleton
@@ -78,15 +78,14 @@ class OidcCallbackServlet @Inject()(
 
         resp.sendRedirect(redirectTo.build().toString)
       case Left(e) =>
-        val errorCode = s"Error code: ${e.code}"
-        val desc = e match {
-          case error: HasMessage => s"$errorCode - Error description: ${error.msg}"
-          case _                 => errorCode
+        val msg = e.msg.getOrElse("No further information")
+        val fullMsg = e match {
+          case err: HasCode[_] => s"${err.code.toString} - $msg"
+          case _               => msg
         }
-        val output = s"Single Sign-on failed: $desc"
+
+        val output = s"Single Sign-on failed: $fullMsg"
         resp.sendRedirect(s"${CurrentInstitution.get().getUrl}logon.do?error=$output")
     }
-
   }
-
 }

@@ -22,7 +22,7 @@ import com.tle.common.usermanagement.user.WebAuthenticationDetails
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.lti13.Lti13Request.getLtiRequestDetails
-import com.tle.integration.oauth2.ErrorResponse
+import com.tle.integration.oauth2.error.authorisation.AuthErrorResponse
 import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 import javax.inject.{Inject, Singleton}
@@ -65,7 +65,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // TODO Needs validation around the request - was it a form POST request, does it have any params, etc.
 
     val params = req.getParameterMap.asScala.toMap
-    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse ErrorResponse(
+    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse AuthErrorResponse(
       params)
 
     processedRequest match {
@@ -77,7 +77,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
                                          userService.getWebAuthenticationDetails(req),
                                          req,
                                          resp)
-          case errorResponse: ErrorResponse => handleErrorResponse(errorResponse, resp)
+          case errorResponse: AuthErrorResponse => handleErrorResponse(errorResponse, resp)
         }
       case None =>
         resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
@@ -165,7 +165,8 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     stateService.invalidateState(auth.state)
   }
 
-  private def handleErrorResponse(errorResponse: ErrorResponse, resp: HttpServletResponse): Unit = {
+  private def handleErrorResponse(errorResponse: AuthErrorResponse,
+                                  resp: HttpServletResponse): Unit = {
     LOGGER.error(s"Received Error Response from LTI Platform: $errorResponse")
 
     val output =

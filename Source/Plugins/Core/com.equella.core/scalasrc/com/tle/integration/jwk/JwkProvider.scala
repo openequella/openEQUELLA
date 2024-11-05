@@ -23,7 +23,7 @@ import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.tle.beans.Institution
 import com.tle.core.guice.Bind
 import com.tle.core.institution.{InstitutionCache, InstitutionService}
-import com.tle.integration.oauth2.ServerError
+import com.tle.integration.oauth2.error.general.ServerError
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.concurrent.TimeUnit

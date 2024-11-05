@@ -28,7 +28,25 @@ import com.tle.core.httpclient.sttpBackend
 import com.tle.core.services.user.UserService
 import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.decodeJwt
-import com.tle.integration.oauth2._
+import com.tle.integration.oauth2.error.OAuth2Error
+import com.tle.integration.oauth2.error.authorisation.{
+  AuthorisationError,
+  InvalidState,
+  InvalidRequest => AuthInvalidRequest
+}
+import com.tle.integration.oauth2.error.general.{GeneralError, ServerError}
+import com.tle.integration.oauth2.error.token.{
+  InvalidClient,
+  InvalidGrant,
+  InvalidScope,
+  TokenError,
+  TokenErrorResponse,
+  TokenErrorResponseCode,
+  UnauthorizedClient,
+  UnsupportedGrantType,
+  InvalidRequest => TokenInvalidRequest
+}
+import com.tle.integration.oauth2.generatePKCEPair
 import com.tle.integration.oidc.idp.{IdentityProviderDetails, RoleConfiguration}
 import com.tle.integration.oidc.{
   OpenIDConnectParams,
@@ -37,10 +55,11 @@ import com.tle.integration.oidc.{
   verifyIdToken => verifyToken
 }
 import com.tle.integration.util.getParam
+import io.circe.Error
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser._
-import io.circe.Error
 import org.apache.http.client.utils.URIBuilder
+import org.slf4j.LoggerFactory
 import sttp.client.circe.asJson
 import sttp.client.{DeserializationError, HttpError, ResponseError, UriContext, basicRequest}
 
@@ -62,18 +81,6 @@ final case class OidcTokenResponse(access_token: String,
 object OidcTokenResponse {
   implicit val tokenResponseEncoder = deriveEncoder[OidcTokenResponse]
   implicit val tokenResponseDecoder = deriveDecoder[OidcTokenResponse]
-}
-
-/**
-  * Structure for the response of a failed ID token request based on section 3.1.3.4 of the OIDC spec.
-  */
-final case class OidcErrorResponse(error: ErrorResponseCode.Code,
-                                   error_description: Option[String],
-                                   error_uri: Option[String])
-
-object OidcErrorResponse {
-  implicit val errorResponseEncoder = deriveEncoder[OidcErrorResponse]
-  implicit val errorResponseDecoder = deriveDecoder[OidcErrorResponse]
 }
 
 /**
@@ -100,6 +107,8 @@ class OidcAuthService @Inject()(
   private val REDIRECT_URI          = s"${CurrentInstitution.get().getUrl}oidclogin.do"
   private val SCOPE                 = "openid profile email"
   private val CODE_CHALLENGE_METHOD = "S256"
+
+  private val LOGGER = LoggerFactory.getLogger(classOf[OidcAuthService])
 
   /**
     * Retrieve an enabled Identity Provider configuration. Missing the configuration or having a disabled
@@ -159,10 +168,10 @@ class OidcAuthService @Inject()(
     *         the state was created previously.
     */
   def verifyCallbackRequest(
-      params: Map[String, Array[String]]): Either[OAuth2Error, OidcCallbackDetails] = {
+      params: Map[String, Array[String]]): Either[AuthorisationError, OidcCallbackDetails] = {
     def paramMap = getParam(params)
     def paramValue(p: String) =
-      paramMap(p).toRight(InvalidRequest(s"Missing required parameter '$p'"))
+      paramMap(p).toRight(AuthInvalidRequest(s"Missing required parameter '$p'"))
 
     for {
       code  <- paramValue(OpenIDConnectParams.CODE)
@@ -197,7 +206,7 @@ class OidcAuthService @Inject()(
         OpenIDConnectParams.CLIENT_ID     -> idpDetails.authCodeClientId,
         OpenIDConnectParams.CLIENT_SECRET -> idpDetails.authCodeClientSecret,
         OpenIDConnectParams.CODE          -> code,
-        OpenIDConnectParams.CODE_VERIFIER -> "adsdssddsdssddsdsdsdfadsfasdfadfdsfadadsfdsdasfdfssd",
+        OpenIDConnectParams.CODE_VERIFIER -> stateDetails.codeVerifier,
         OpenIDConnectParams.GRANT_TYPE    -> GRANT_TYPE,
         OpenIDConnectParams.REDIRECT_URI  -> REDIRECT_URI,
       )
@@ -224,7 +233,7 @@ class OidcAuthService @Inject()(
     */
   def verifyIdToken(token: String,
                     state: String,
-                    idp: IdentityProviderDetails): Either[OAuth2Error, DecodedJWT] =
+                    idp: IdentityProviderDetails): Either[GeneralError, DecodedJWT] =
     for {
       decodedToken <- decodeJwt(token)
       idpDetails = idp.commonDetails
@@ -295,27 +304,34 @@ class OidcAuthService @Inject()(
       .asJavaCollection
   }
 
-  // Handle the potential errors returned from the IdP token endpoint, and sttp groups the errors into two
-  // categories: `DeserializationError` and `HttpError`.
+  /**
+    * Handle the potential errors returned from the IdP token endpoint, and sttp groups the errors into two
+    * categories: `DeserializationError` and `HttpError`. Depending on the received error type, return either
+    * an instance of [[GeneralError]] or [[TokenError]].
+    */
   private def handleTokenError(error: ResponseError[Error]): OAuth2Error = error match {
     case DeserializationError(_, error) =>
       ServerError(
         s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}")
     case HttpError(body, _) =>
-      // For general HTTP errors, the error structure should follow the OIDC spec as defined in `OidcErrorResponse`.
+      // For general HTTP errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
       parse(body)
-        .flatMap(_.as[OidcErrorResponse])
+        .flatMap(_.as[TokenErrorResponse])
         .fold(
-          _ =>
+          _ => {
+            LOGGER.error(s"Failed to request an ID token. Received response: $body")
             ServerError(
-              "Failed to request an ID token, but the error is unknown due to unexpected response format."),
+              "Failed to request an ID token, but the error is unknown due to unexpected response format.")
+          },
           resp => {
             val msg = resp.error_description.getOrElse(resp.error.toString)
             resp.error match {
-              case ErrorResponseCode.invalid_request     => InvalidRequest(msg)
-              case ErrorResponseCode.unauthorized_client => NotAuthorized(msg)
-              case ErrorResponseCode.access_denied       => AccessDenied(msg)
-              case _                                     => ServerError(msg)
+              case TokenErrorResponseCode.invalid_client         => InvalidClient(msg)
+              case TokenErrorResponseCode.invalid_grant          => InvalidGrant(msg)
+              case TokenErrorResponseCode.invalid_request        => TokenInvalidRequest(msg)
+              case TokenErrorResponseCode.invalid_scope          => InvalidScope(msg)
+              case TokenErrorResponseCode.unsupported_grant_type => UnsupportedGrantType(msg)
+              case TokenErrorResponseCode.unauthorized_client    => UnauthorizedClient(msg)
             }
           }
         )
