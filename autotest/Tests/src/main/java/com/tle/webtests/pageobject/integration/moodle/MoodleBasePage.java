@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.integration.moodle;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Point;
@@ -39,15 +40,17 @@ public abstract class MoodleBasePage<T extends MoodleBasePage<T>> extends Abstra
   }
 
   public MoodleBasePage(
-      PageContext context, SearchContext searchContext, By loadedBy, int timeOut) {
+      PageContext context, SearchContext searchContext, By loadedBy, int timeoutSeconds) {
     this(
         context,
         searchContext,
         loadedBy,
         new WebDriverWait(
             context.getDriver(),
-            timeOut == -1 ? context.getTestConfig().getStandardTimeout() : timeOut,
-            50));
+            timeoutSeconds == -1
+                ? context.getTestConfig().getStandardTimeout()
+                : Duration.ofSeconds(timeoutSeconds),
+            Duration.ofMillis(50)));
   }
 
   public MoodleBasePage(PageContext context, By loadedBy) {

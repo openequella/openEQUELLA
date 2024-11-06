@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.institution;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import java.time.Duration;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -33,7 +34,7 @@ public class StatusPage<T extends InstitutionTabInterface> extends AbstractPage<
   }
 
   public StatusPage(PageContext context, WaitingPageObject<T> tab, long timeout) {
-    super(context, new WebDriverWait(context.getDriver(), timeout));
+    super(context, new WebDriverWait(context.getDriver(), Duration.ofSeconds(timeout)));
     mustBeVisible = false;
     this.tab = tab;
   }
