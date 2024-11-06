@@ -77,7 +77,11 @@ import com.tle.core.item.standard.operations.NewVersionOperation;
 import com.tle.core.item.standard.operations.SaveOperation;
 import com.tle.core.item.standard.operations.workflow.StatusOperation;
 import com.tle.core.item.standard.service.MetadataMappingService;
-import com.tle.core.plugins.*;
+import com.tle.core.plugins.AbstractPluginService;
+import com.tle.core.plugins.ClassBeanLocator;
+import com.tle.core.plugins.FactoryMethodLocator;
+import com.tle.core.plugins.PluginService;
+import com.tle.core.plugins.PluginTracker;
 import com.tle.core.quota.service.QuotaService;
 import com.tle.core.scripting.service.StandardScriptContextParams;
 import com.tle.core.services.FileSystemService;
@@ -448,6 +452,7 @@ public class WizardServiceImpl
       }
 
       Item item = itemPack.getItem();
+      state.setOriginalItemVer(itemKey.getVersion());
       state.setMergeDRMDefaults(false);
       state.setItemPack(itemPack);
       state.setItemId(new ItemId(item.getUuid(), item.getVersion()));
