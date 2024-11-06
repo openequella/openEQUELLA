@@ -23,9 +23,15 @@ import com.tle.common.Pair;
 import com.tle.common.URLUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.core.mimetypes.MimeTypeService;
+import java.io.File;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /** @author aholland */
@@ -90,6 +96,7 @@ public class WebdavProps {
     addProp("resourcetype", "");
     addProp("getcontenttype", mimeTypeService.getMimeTypeForFilename(filename));
     addProp("getcontentlength", Long.toString(file.getLength()));
+    addProp("getlastmodified", getFileRFC1123Date(file));
     addProp("iscollection", "0");
     addProp("isfolder", "0");
     addCommonProps(parentName, filename);
@@ -118,5 +125,26 @@ public class WebdavProps {
 
     addProp("ishidden", "0");
     addProp("isreadonly", "0");
+  }
+
+  /**
+   * Get the RFC 1123 formatted date for the last modified date of the file entry as this is the
+   * format required by WebDAV.
+   *
+   * @param file The file entry to get the last modified date for
+   * @return The RFC 1123 formatted date for the last modified date of the file entry
+   */
+  private static String getFileRFC1123Date(FileEntry file) {
+    final long lastModified = new File(file.getSystemPath()).lastModified();
+    Instant lastModifiedInstant = Instant.ofEpochMilli(lastModified);
+    ZonedDateTime lastModifiedGMT = ZonedDateTime.ofInstant(lastModifiedInstant, ZoneId.of("GMT"));
+
+    // Create a formatter for RFC 1123 format
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+            .withZone(ZoneId.of("GMT"));
+
+    // Format the date and return
+    return lastModifiedGMT.format(formatter);
   }
 }

@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.settings;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -96,7 +97,8 @@ public class MailSettingsPage extends AbstractPage<MailSettingsPage> {
   public String getEmailStatus() {
     By xpath = By.xpath("//div[@id='emailstatus']/div[text()]");
     // Wait a bit longer than normal
-    WebDriverWait waiter = new WebDriverWait(context.getDriver(), 60, 50);
+    WebDriverWait waiter =
+        new WebDriverWait(context.getDriver(), Duration.ofMinutes(1), Duration.ofMillis(50));
     waiter.until(ExpectedConditions.visibilityOfElementLocated(xpath));
     return driver.findElement(xpath).getText();
   }

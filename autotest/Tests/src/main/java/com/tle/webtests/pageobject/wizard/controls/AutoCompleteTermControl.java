@@ -8,6 +8,7 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.generic.component.StringSelectedStuff;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -42,7 +43,9 @@ public class AutoCompleteTermControl extends NewAbstractWizardControl<AutoComple
   public AutoCompleteTermControl(
       PageContext context, int ctrlnum, AbstractWizardControlPage<?> page) {
     super(context, ctrlnum, page);
-    acWaiter = new WebDriverWait(driver, context.getTestConfig().getStandardTimeout(), 600);
+    acWaiter =
+        new WebDriverWait(
+            driver, context.getTestConfig().getStandardTimeout(), Duration.ofMillis(600));
   }
 
   @Override

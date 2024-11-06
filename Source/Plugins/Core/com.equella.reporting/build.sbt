@@ -4,13 +4,13 @@ lazy val Birt          = config("birt")
 lazy val CustomCompile = config("compile") extend Birt
 
 libraryDependencies ++= Seq(
-  "com.github.openequella" % "birt-report-framework" % "4.16.0" artifacts Artifact(
+  "com.github.openequella" % "birt-report-framework" % "4.9.2" artifacts Artifact(
     "birt-report-framework",
     Artifact.DefaultType,
     "zip"),
-  "com.github.openequella" % "birt-osgi" % "4.16.0" artifacts Artifact("birt-osgi",
-                                                                       Artifact.DefaultType,
-                                                                       "zip"),
+  "com.github.openequella" % "birt-osgi" % "4.9.2" artifacts Artifact("birt-osgi",
+                                                                      Artifact.DefaultType,
+                                                                      "zip"),
   "com.github.equella.reporting" % "reporting-common"                               % "6.5",
   "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
   "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",

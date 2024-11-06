@@ -32,6 +32,7 @@ import com.tle.webtests.test.files.Attachments;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -1067,7 +1068,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    */
   private WebElement getAscMessage() {
     By ascMessageXpath = By.xpath("//div[@id='ascMessage']/span");
-    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), Duration.ofSeconds(30));
     wait.until(ExpectedConditions.visibilityOfElementLocated(ascMessageXpath));
     return context.getDriver().findElement(ascMessageXpath);
   }
@@ -1086,7 +1087,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
   private void ascEditbox(int ctrlNum, String suffix, String text) {
     WebElement field = context.getDriver().findElement(By.name("c" + ctrlNum + suffix));
-    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), Duration.ofSeconds(30));
     wait.until(ExpectedConditions.visibilityOf(field));
     field.clear();
     field.sendKeys(text);
@@ -1099,7 +1100,7 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @param text
    */
   private void ascSelectDropdown(String id, String optText) {
-    WebDriverWait wait = new WebDriverWait(context.getDriver(), 30);
+    WebDriverWait wait = new WebDriverWait(context.getDriver(), Duration.ofSeconds(30));
     wait.until(ExpectedConditions.presenceOfElementLocated(By.id(id)));
     Select dropdown = new Select(context.getDriver().findElement(By.id(id)));
     dropdown.selectByVisibleText(optText);

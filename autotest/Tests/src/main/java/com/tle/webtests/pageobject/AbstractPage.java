@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,23 +57,28 @@ public abstract class AbstractPage<T extends PageObject>
     loadedElement = null;
   }
 
-  public AbstractPage(PageContext context, By loadedBy, int timeOut) {
-    this(context, context.getDriver(), loadedBy, timeOut);
+  /** @param timeoutSeconds -1 for default timeout */
+  public AbstractPage(PageContext context, By loadedBy, int timeoutSeconds) {
+    this(context, context.getDriver(), loadedBy, timeoutSeconds);
   }
 
   public AbstractPage(PageContext context, SearchContext searchContext, By loadedBy) {
     this(context, searchContext, loadedBy, -1);
   }
 
-  public AbstractPage(PageContext context, SearchContext searchContext, By loadedBy, int timeOut) {
+  /** @param timeoutSeconds -1 for default timeout */
+  public AbstractPage(
+      PageContext context, SearchContext searchContext, By loadedBy, int timeoutSeconds) {
     this(
         context,
         searchContext,
         loadedBy,
         new WebDriverWait(
             context.getDriver(),
-            timeOut == -1 ? context.getTestConfig().getStandardTimeout() : timeOut,
-            50));
+            timeoutSeconds == -1
+                ? context.getTestConfig().getStandardTimeout()
+                : Duration.ofSeconds(timeoutSeconds),
+            Duration.ofMillis(50)));
   }
 
   public AbstractPage(PageContext context, By loadedBy) {

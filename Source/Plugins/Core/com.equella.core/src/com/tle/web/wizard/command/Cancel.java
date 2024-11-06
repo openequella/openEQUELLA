@@ -20,6 +20,8 @@ package com.tle.web.wizard.command;
 
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.entity.itemdef.ItemDefinition;
+import com.tle.beans.item.ItemId;
+import com.tle.beans.item.ItemKey;
 import com.tle.common.Check;
 import com.tle.core.collection.service.ItemDefinitionService;
 import com.tle.core.fedsearch.FederatedSearchService;
@@ -92,6 +94,12 @@ public class Cancel extends WizardCommand {
       if (state.isEntryThroughEdit()) {
         // forward to viewing the item we are editing
         final ViewItemUrl vurl = viewItemUrl.createItemUrl(info, state.getItemId());
+        vurl.forward(info);
+      } else if (state.isEntryThroughNewVersion()) {
+        ItemKey newItemKey = state.getItemId();
+        ItemKey originalItemKey = new ItemId(newItemKey.getUuid(), state.getOriginalItemVer());
+        // forward to viewing the original item
+        final ViewItemUrl vurl = viewItemUrl.createItemUrl(info, originalItemKey);
         vurl.forward(info);
       } else {
         if (forwardToContribute(info)) {

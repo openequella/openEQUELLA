@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.zip.ZipOutputStream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -54,7 +55,7 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
 
   public ImportTab(PageContext context) {
     super(context, "Import institution", "Import new institution");
-    waiter = new WebDriverWait(context.getDriver(), 240);
+    waiter = new WebDriverWait(context.getDriver(), Duration.ofMinutes(4));
   }
 
   @Override

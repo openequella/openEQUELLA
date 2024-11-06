@@ -92,6 +92,9 @@ public class WizardState implements WizardStateInterface {
   private boolean lockedForEditing = false;
   private boolean mergeDRMDefaults = false;
   private boolean entryThroughEdit = false;
+  // Real version of the original item which indicates the new state is initiated through
+  // the option of "new version" in the summary page.
+  private int originalItemVer = 0;
   private boolean noCancel = false;
   private boolean newItem;
   private boolean movedItem; // changed collection
@@ -481,5 +484,17 @@ public class WizardState implements WizardStateInterface {
 
   public int getStateVersion() {
     return stateVersion;
+  }
+
+  public int getOriginalItemVer() {
+    return originalItemVer;
+  }
+
+  public void setOriginalItemVer(int originalItemVer) {
+    this.originalItemVer = originalItemVer;
+  }
+
+  public boolean isEntryThroughNewVersion() {
+    return originalItemVer != 0;
   }
 }

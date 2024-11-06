@@ -5,6 +5,7 @@ import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.EBy;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -26,7 +27,7 @@ public class DatabaseRow extends AbstractPage<DatabaseRow> {
     super(context);
     this.rowElement = rowElement;
     statusElement = rowElement.findElement(By.className("status"));
-    longWaiter = new WebDriverWait(context.getDriver(), 60);
+    longWaiter = new WebDriverWait(context.getDriver(), Duration.ofMinutes(1));
   }
 
   public void initialise() {
