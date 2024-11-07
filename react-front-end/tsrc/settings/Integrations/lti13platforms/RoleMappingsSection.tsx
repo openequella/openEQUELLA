@@ -18,7 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import SettingsList from "../../../components/SettingsList";
-import SettingsListWarning from "../../../components/SettingsListWarning";
+import SettingsListAlert from "../../../components/SettingsListAlert";
 import { languageStrings } from "../../../util/langstrings";
 import CustomRolesMappingControl from "./CustomRolesMappingControl";
 import SelectRoleControl from "./SelectRoleControl";
@@ -116,7 +116,10 @@ const RoleMappingsSection = ({
         roleListProvider={searchRoleProvider}
       />
       {warningMessages?.instructorRoles && (
-        <SettingsListWarning messages={warningMessages?.instructorRoles} />
+        <SettingsListAlert
+          severity="warning"
+          messages={warningMessages?.instructorRoles}
+        />
       )}
 
       <CustomRolesMappingControl
@@ -125,7 +128,10 @@ const RoleMappingsSection = ({
         roleListProvider={searchRoleProvider}
       />
       {warningMessages?.customRolesMapping && (
-        <SettingsListWarning messages={warningMessages?.customRolesMapping} />
+        <SettingsListAlert
+          severity="warning"
+          messages={warningMessages?.customRolesMapping}
+        />
       )}
 
       {/*Unknown Roles*/}
@@ -138,7 +144,10 @@ const RoleMappingsSection = ({
         roleListProvider={searchRoleProvider}
       />
       {warningMessages?.unknownRoles && (
-        <SettingsListWarning messages={warningMessages?.unknownRoles} />
+        <SettingsListAlert
+          severity="warning"
+          messages={warningMessages?.unknownRoles}
+        />
       )}
     </SettingsList>
   );

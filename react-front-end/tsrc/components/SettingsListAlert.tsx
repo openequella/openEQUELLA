@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { Alert, ListItem, ListItemText } from "@mui/material";
+import { AlertColor } from "@mui/material/Alert/Alert";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -32,6 +33,10 @@ export interface SettingsListWarningProps {
    *  Warning text to appear on the left hand of the row.
    */
   messages: string[];
+  /**
+   * Type of the alert.
+   */
+  severity: AlertColor;
 }
 
 /**
@@ -40,12 +45,13 @@ export interface SettingsListWarningProps {
  * It should be placed within a SettingsList.
  * If there are multiple messages shows them in multiple lines.
  */
-const SettingsListWarning = ({
+const SettingsListAlert = ({
   divider,
   messages,
+  severity,
 }: SettingsListWarningProps) => {
   const warning = (
-    <Alert severity="warning">
+    <Alert severity={severity}>
       {/*first message, to align with the warning icon*/}
       {pipe(
         messages,
@@ -79,4 +85,4 @@ const SettingsListWarning = ({
   );
 };
 
-export default SettingsListWarning;
+export default SettingsListAlert;
