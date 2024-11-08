@@ -76,3 +76,15 @@ final case class UnsupportedGrantType(error: String) extends TokenError(error) {
 final case class InvalidScope(error: String) extends TokenError(error) {
   override val code: Code = TokenErrorResponseCode.invalid_scope
 }
+
+object TokenError {
+
+  def apply(code: Code, error: String): TokenError = code match {
+    case TokenErrorResponseCode.invalid_request        => InvalidRequest(error)
+    case TokenErrorResponseCode.invalid_client         => InvalidClient(error)
+    case TokenErrorResponseCode.invalid_grant          => InvalidGrant(error)
+    case TokenErrorResponseCode.unauthorized_client    => UnauthorizedClient(error)
+    case TokenErrorResponseCode.unsupported_grant_type => UnsupportedGrantType(error)
+    case TokenErrorResponseCode.invalid_scope          => InvalidScope(error)
+  }
+}

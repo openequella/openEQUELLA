@@ -30,22 +30,14 @@ import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.decodeJwt
 import com.tle.integration.oauth2.error.OAuth2Error
 import com.tle.integration.oauth2.error.authorisation.{
+  AccessDenied,
   AuthorisationError,
   InvalidState,
+  NotAuthorized,
   InvalidRequest => AuthInvalidRequest
 }
 import com.tle.integration.oauth2.error.general.{GeneralError, InvalidJWT, ServerError}
-import com.tle.integration.oauth2.error.token.{
-  InvalidClient,
-  InvalidGrant,
-  InvalidScope,
-  TokenError,
-  TokenErrorResponse,
-  TokenErrorResponseCode,
-  UnauthorizedClient,
-  UnsupportedGrantType,
-  InvalidRequest => TokenInvalidRequest
-}
+import com.tle.integration.oauth2.error.token.{TokenError, TokenErrorResponse}
 import com.tle.integration.oauth2.generatePKCEPair
 import com.tle.integration.oidc.idp.{IdentityProviderDetails, RoleConfiguration}
 import com.tle.integration.oidc.{
@@ -315,8 +307,8 @@ class OidcAuthService @Inject()(
     case DeserializationError(_, error) =>
       ServerError(
         s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}")
-    case HttpError(body, _) =>
-      // For general HTTP errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
+    // For general HTTP client errors, the error structure should follow the OAuth2 spec as defined in `TokenErrorResponse`.
+    case HttpError(body, status) if status.isClientError =>
       parse(body)
         .flatMap(_.as[TokenErrorResponse])
         .fold(
@@ -326,16 +318,16 @@ class OidcAuthService @Inject()(
               "Failed to request an ID token, but the error is unknown due to unexpected response format.")
           },
           resp => {
-            val msg = resp.error_description.getOrElse(resp.error.toString)
-            resp.error match {
-              case TokenErrorResponseCode.invalid_client         => InvalidClient(msg)
-              case TokenErrorResponseCode.invalid_grant          => InvalidGrant(msg)
-              case TokenErrorResponseCode.invalid_request        => TokenInvalidRequest(msg)
-              case TokenErrorResponseCode.invalid_scope          => InvalidScope(msg)
-              case TokenErrorResponseCode.unsupported_grant_type => UnsupportedGrantType(msg)
-              case TokenErrorResponseCode.unauthorized_client    => UnauthorizedClient(msg)
+            val msg = resp.error_description.getOrElse("No further information.")
+            status.code match {
+              case 400 => TokenError(resp.error, msg)
+              case 401 => NotAuthorized(msg)
+              case 403 => AccessDenied(msg)
+              case _   => ServerError(msg)
             }
           }
         )
+    case HttpError(body, status) if status.isServerError =>
+      ServerError(s"Failed to request an ID token: $body")
   }
 }
