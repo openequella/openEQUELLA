@@ -18,12 +18,15 @@
 
 package com.tle.integration.oidc
 
+import com.dytech.edge.web.WebConstants
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.oauth2.error.HasCode
 import com.tle.integration.oidc.service.OidcAuthService
 import org.apache.http.client.utils.URIBuilder
+import org.slf4j.LoggerFactory
+
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
@@ -38,6 +41,8 @@ class OidcCallbackServlet @Inject()(
     userService: UserService,
     authService: OidcAuthService
 ) extends HttpServlet {
+
+  private val LOGGER = LoggerFactory.getLogger(classOf[OidcCallbackServlet])
 
   /**
     * As per sections 3.1.2.7 and 3.1.3 of the OIDC spec, this endpoints is responsible for performing
@@ -72,8 +77,9 @@ class OidcCallbackServlet @Inject()(
 
         val institution = CurrentInstitution.get().getUrl
         val redirectTo = targetPage match {
-          case Some(p) => new URIBuilder(s"${institution}logon.do").addParameter(".page", p)
-          case None    => new URIBuilder(s"${institution}home.do")
+          case Some(p) =>
+            new URIBuilder(s"$institution${WebConstants.LOGIN_PAGE}").addParameter(".page", p)
+          case None => new URIBuilder(s"$institution${WebConstants.DASHBOARD_PAGE}")
         }
 
         resp.sendRedirect(redirectTo.build().toString)
@@ -85,6 +91,7 @@ class OidcCallbackServlet @Inject()(
         }
 
         val output = s"Single Sign-on failed: $fullMsg"
+        LOGGER.error(output)
         resp.sendRedirect(s"${CurrentInstitution.get().getUrl}logon.do?error=$output")
     }
   }
