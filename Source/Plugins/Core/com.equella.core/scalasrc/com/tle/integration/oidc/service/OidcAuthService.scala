@@ -34,7 +34,7 @@ import com.tle.integration.oauth2.error.authorisation.{
   InvalidState,
   InvalidRequest => AuthInvalidRequest
 }
-import com.tle.integration.oauth2.error.general.{GeneralError, ServerError}
+import com.tle.integration.oauth2.error.general.{GeneralError, InvalidJWT, ServerError}
 import com.tle.integration.oauth2.error.token.{
   InvalidClient,
   InvalidGrant,
@@ -238,7 +238,9 @@ class OidcAuthService @Inject()(
       decodedToken <- decodeJwt(token)
       idpDetails = idp.commonDetails
       jsonWebKeySetProvider <- jwkProvider.get(idpDetails.keysetUrl)
-      jwk = jsonWebKeySetProvider.get(decodedToken.getKeyId)
+      jwk <- Either
+        .catchNonFatal(jsonWebKeySetProvider.get(decodedToken.getKeyId))
+        .leftMap(_ => InvalidJWT("Failed to retrieve by the obtained ID token's key ID"))
       verifiedToken <- verifyToken(decodedToken,
                                    idpDetails.issuer,
                                    idpDetails.authCodeClientId,
