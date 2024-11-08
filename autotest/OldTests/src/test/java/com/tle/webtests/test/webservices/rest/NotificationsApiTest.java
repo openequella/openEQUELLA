@@ -19,7 +19,6 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,8 +68,7 @@ public class NotificationsApiTest extends AbstractItemApiTest {
   private void waitForIndex() throws IOException {
     final String token = requestToken(OAUTH_CLIENT_ID);
 
-    WebDriverWait notificationsIndexedWaiter =
-        new WebDriverWait(context.getDriver(), Duration.ofSeconds(10));
+    WebDriverWait notificationsIndexedWaiter = new WebDriverWait(context.getDriver(), 10);
     notificationsIndexedWaiter.until(
         (Function<WebDriver, Boolean>)
             driver -> {

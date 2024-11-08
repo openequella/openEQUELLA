@@ -5,7 +5,6 @@ import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
@@ -30,7 +29,7 @@ public class BulkResultsPage extends AbstractPage<BulkResultsPage> {
   }
 
   public BulkResultsPage waitForAll() {
-    WebDriverWait waiter = new WebDriverWait(driver, Duration.ofMinutes(2));
+    WebDriverWait waiter = new WebDriverWait(driver, 120);
     waiter.until(ExpectedConditions2.presenceOfElement(finishedMessage));
     return get();
   }
