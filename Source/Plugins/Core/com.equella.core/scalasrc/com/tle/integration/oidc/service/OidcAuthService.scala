@@ -57,6 +57,7 @@ import sttp.client.{DeserializationError, HttpError, ResponseError, UriContext, 
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 /**
   * Structure for the response of a successful ID token request as per section 3.1.3.3 of the OIDC spec
@@ -205,12 +206,19 @@ class OidcAuthService @Inject()(
       .post(uri"${idpDetails.tokenUrl}")
       .response(asJson[OidcTokenResponse])
 
-    sttpBackend
-      .flatMap(implicit backend => tokenRequest.send())
-      .map(_.body)
-      .unsafeRunSync()
-      .leftMap(handleTokenError)
-      .map(_.id_token)
+    // Catch the potential network level errors thrown from sttp backend. Protocol level errors will be handled by 'handleTokenError'.
+    Try {
+      sttpBackend
+        .flatMap(implicit backend => tokenRequest.send())
+        .map(_.body)
+        .unsafeRunSync()
+        .leftMap(handleTokenError)
+        .map(_.id_token)
+    } match {
+      case Success(result) => result
+      case Failure(err) =>
+        Left(ServerError(s"Failed to communicate with the Token endpoint: ${err.getMessage}"))
+    }
   }
 
   /**
