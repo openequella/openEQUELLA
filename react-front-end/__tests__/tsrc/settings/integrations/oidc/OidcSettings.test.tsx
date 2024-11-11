@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
 import {
   fillMuiTextFieldByAriaLabel,
   getMuiTextFieldByAriaLabel,
 } from "../../../MuiTestHelpers";
-import { renderOidcSettings } from "./OidcSettingsTestHelper";
+import { renderOidcSettings, selectPlatform } from "./OidcSettingsTestHelper";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { title: customRolesTitle } = languageStrings.customRolesMappingControl;
 const { roleClaim: roleClaimTitle } =
@@ -35,6 +37,13 @@ const {
   tokenUrl: tokenUrlLabel,
   usernameClaim: usernameClaimLabel,
 } = languageStrings.settings.integration.oidc.generalDetails;
+const {
+  generic: {
+    apiUrl: apiUrlLabel,
+    apiClientId: apiClientIdLabel,
+    apiClientSecret: apiClientSecretLabel,
+  },
+} = languageStrings.settings.integration.oidc.apiDetails;
 
 describe("General details section", () => {
   const allTextFields = [
@@ -57,8 +66,23 @@ describe("General details section", () => {
       expect(textField).toBeInTheDocument();
     },
   );
+});
 
-  // TODO: test platform and the enable switch
+describe("Platform details section", () => {
+  const genericFields = [apiUrlLabel, apiClientIdLabel, apiClientSecretLabel];
+
+  it.each<[OEQ.Oidc.IdentityProviderPlatform, string[]]>([
+    ["GENERIC", genericFields],
+  ])("should render fields for platform '%s'", async (platform, fields) => {
+    const { container } = await renderOidcSettings();
+
+    await selectPlatform(container, platform);
+
+    fields.forEach((field) => {
+      const textField = getMuiTextFieldByAriaLabel(container, field);
+      expect(textField).toBeInTheDocument();
+    });
+  });
 });
 
 describe("Role mapping section", () => {

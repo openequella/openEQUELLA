@@ -100,5 +100,6 @@ export const Standard: StoryFn<GeneralDetailsSectionProps> = (args) => (
 );
 Standard.args = {
   title: "General Details",
+  desc: "This is description",
   fields: defaultDetails,
 };

@@ -24,7 +24,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
-import { useEffect, useState } from "react";
+import { pipe } from "fp-ts/function";
+import { useContext, useEffect, useState } from "react";
 import * as React from "react";
 import { getBaseUrl } from "../../../AppConfig";
 import { CustomRolesMapping } from "../../../components/CustomRoleHelper";
@@ -37,6 +38,7 @@ import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
 import SettingsListWarning from "../../../components/SettingsListWarning";
+import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
@@ -46,13 +48,21 @@ import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 import SelectRoleControl from "../lti13/components/SelectRoleControl";
 import {
-  defaultIdpGeneralDetails,
-  generalDetailsRenderOptions,
+  defaultGeneralDetails,
+  defaultGenericApiDetails,
+  defaultApiDetailsMap,
+  generateGeneralDetails,
+  generateApiDetails,
+  ApiDetails,
+  generatePlatform,
 } from "./OidcSettingsHelper";
+import * as O from "fp-ts/Option";
+import * as R from "fp-ts/Record";
 
 const {
   name,
   generalDetails: { title: generalDetailsTitle },
+  apiDetails: { title: apiDetailsTitle, desc: apiDetailsDesc },
   roleMappings: {
     title: roleMappingsTitle,
     defaultRole: defaultRoleTitle,
@@ -69,7 +79,7 @@ const {
 } = languageStrings.settings.integration.oidc;
 const { edit: editLabel } = languageStrings.common.action;
 
-const redirectUrl = getBaseUrl() + "oidclogin.do";
+const redirectUrl = getBaseUrl() + "oidc/callback";
 
 export interface OidcSettingsProps extends TemplateUpdateProps {
   /**
@@ -98,6 +108,7 @@ const OidcSettings = ({
     }));
   }, [updateTemplate]);
 
+  const { appErrorHandler } = useContext(AppContext);
   const handleOnSave = () => {};
 
   // Given that the save button on the creation page of OEQ has always been available in present UI,
@@ -106,9 +117,13 @@ const OidcSettings = ({
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [preventNavigation] = useState(true);
 
-  const [idpDetails, setIdpDetails] = useState<OEQ.Oidc.IdentityProvider>(
-    defaultIdpGeneralDetails,
+  const [generalDetails, setGeneralDetails] =
+    useState<OEQ.Oidc.IdentityProvider>(defaultGeneralDetails);
+
+  const [apiDetails, setApiDetails] = useState<ApiDetails>(
+    defaultGenericApiDetails,
   );
+
   const [showValidationErrors] = useState(false);
 
   // Warning messages if the oeq roles can't be found in the server.
@@ -123,10 +138,30 @@ const OidcSettings = ({
   );
   const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
 
-  // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
-  const onIdpGeneralDetailsChange = (key: string, newValue: unknown) =>
-    setIdpDetails({
-      ...idpDetails,
+  // Update the corresponding value in generalDetails state based on the provided key.
+  const onGeneralDetailsChange = (key: string, newValue: unknown) =>
+    setGeneralDetails({
+      ...generalDetails,
+      [key]: newValue,
+    });
+
+  const onPlatformChange = (newValue: string) => {
+    // update platform
+    onGeneralDetailsChange("platform", newValue);
+    // Also clear the previous API configurations on platform change.
+    pipe(
+      defaultApiDetailsMap,
+      R.lookup(newValue),
+      O.map(setApiDetails),
+      O.getOrElseW(() => {
+        appErrorHandler(`Unsupported platform ${newValue}`);
+      }),
+    );
+  };
+
+  const onApiDetailsChange = (key: string, newValue: unknown) =>
+    setApiDetails({
+      ...apiDetails,
       [key]: newValue,
     });
 
@@ -140,12 +175,13 @@ const OidcSettings = ({
     >
       <Card>
         <CardContent>
+          {/* General details section. */}
           <Grid>
             <GeneralDetailsSection
               title={generalDetailsTitle}
-              fields={generalDetailsRenderOptions(
-                idpDetails,
-                onIdpGeneralDetailsChange,
+              fields={generateGeneralDetails(
+                generalDetails,
+                onGeneralDetailsChange,
                 showValidationErrors,
               )}
             />
@@ -153,6 +189,25 @@ const OidcSettings = ({
 
           <Divider variant="middle" />
 
+          {/* reuse GeneralDetailsSection to display the Platform selector and the API details section. */}
+          <Grid mt={2}>
+            <GeneralDetailsSection
+              title={apiDetailsTitle}
+              desc={apiDetailsDesc}
+              fields={{
+                ...generatePlatform(generalDetails.platform, onPlatformChange),
+                ...generateApiDetails(
+                  apiDetails,
+                  onApiDetailsChange,
+                  showValidationErrors,
+                ),
+              }}
+            />
+          </Grid>
+
+          <Divider variant="middle" />
+
+          {/* Role mappings section. */}
           <Grid mt={2}>
             <SettingsList subHeading={roleMappingsTitle}>
               <SelectRoleControl
@@ -172,23 +227,23 @@ const OidcSettings = ({
                 secondaryText={roleClaimDesc}
                 control={textFiledComponent(
                   roleClaimTitle,
-                  idpDetails.roleConfig?.roleClaim,
+                  generalDetails.roleConfig?.roleClaim,
                   false,
                   true,
                   (value) =>
-                    setIdpDetails({
-                      ...idpDetails,
+                    setGeneralDetails({
+                      ...generalDetails,
                       roleConfig: {
                         roleClaim: value,
                         customRoles:
-                          idpDetails.roleConfig?.customRoles ?? new Map(),
+                          generalDetails.roleConfig?.customRoles ?? new Map(),
                       },
                     }),
                   showValidationErrors,
                 )}
               />
 
-              {idpDetails.roleConfig?.roleClaim && (
+              {generalDetails.roleConfig?.roleClaim && (
                 <>
                   <CustomRolesMappingControl
                     initialRoleMappings={customRoles}

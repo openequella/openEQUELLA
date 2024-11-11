@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TextField, Typography } from "@mui/material";
+import { ListItem, ListItemText, TextField, Typography } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as R from "fp-ts/Record";
 import * as React from "react";
@@ -45,6 +45,10 @@ export interface GeneralDetailsSectionProps {
    * The title of the general details section.
    */
   title: string;
+  /**
+   * The description of the section.
+   */
+  desc?: string;
   /**
    * A record that contains the render options for each general detail field.
    */
@@ -88,9 +92,15 @@ export const textFiledComponent = (
  */
 const GeneralDetailsSection = ({
   title,
+  desc,
   fields,
 }: GeneralDetailsSectionProps) => (
   <SettingsList subHeading={title}>
+    {desc && (
+      <ListItem>
+        <ListItemText>{desc}</ListItemText>
+      </ListItem>
+    )}
     {pipe(
       fields,
       R.collect(OrdAsIs)((key, renderOption) => {
