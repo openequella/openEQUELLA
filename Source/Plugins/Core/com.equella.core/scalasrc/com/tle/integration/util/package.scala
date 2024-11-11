@@ -24,6 +24,11 @@ import scala.util.Try
 package object util {
 
   /**
+    * Use this val for the absence of detailed information in an integration.
+    */
+  val NO_FURTHER_INFO = "No further information"
+
+  /**
     * Helper function for dealing with params sent the servlet endpoint. On the expectation that
     * all the params are a one-to-one value - so navigates around the need to handle the potential
     * list.

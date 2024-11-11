@@ -20,6 +20,7 @@ package com.tle.integration.lti13
 
 import com.tle.integration.oauth2.error.authorisation.AuthorisationError
 import com.tle.integration.oauth2.error.general.GeneralError
+import com.tle.integration.util.NO_FURTHER_INFO
 
 /**
   * Represent all the possible errors occurred during the LTI 1.3 integration, including all the standard OAuth2 errors
@@ -32,7 +33,7 @@ sealed abstract class Lti13Error {
 object Lti13Error {
   // A couple implicit functions to help transform GeneralError to Lti13Error.
   implicit def fromGeneralError(error: GeneralError): Lti13Error = new Lti13Error {
-    override val msg: String = error.msg.getOrElse("No further information")
+    override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
   }
   implicit def fromEither[T](result: Either[GeneralError, T]): Either[Lti13Error, T] =
     result.left.map(fromGeneralError)
@@ -49,7 +50,7 @@ final case class PlatformDetailsError(msg: String) extends Lti13Error
   */
 final case class OAuth2LayerError(error: AuthorisationError) extends Lti13Error {
   val code: String         = error.code.toString
-  override val msg: String = error.msg.getOrElse("No further information")
+  override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
 }
 
 object OAuth2LayerError {

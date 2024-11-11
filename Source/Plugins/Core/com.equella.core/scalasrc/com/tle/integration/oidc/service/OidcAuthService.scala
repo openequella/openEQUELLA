@@ -46,7 +46,7 @@ import com.tle.integration.oidc.{
   getClaimAsSet,
   verifyIdToken => verifyToken
 }
-import com.tle.integration.util.getParam
+import com.tle.integration.util.{NO_FURTHER_INFO, getParam}
 import io.circe.Error
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser._
@@ -345,7 +345,7 @@ class OidcAuthService @Inject()(
               "Failed to request an ID token, but the error is unknown due to unexpected response format.")
           },
           resp => {
-            val msg = resp.error_description.getOrElse("No further information.")
+            val msg = resp.error_description.getOrElse(NO_FURTHER_INFO)
             status.code match {
               case 400 => TokenError(resp.error, msg)
               case 401 => NotAuthorized(msg)

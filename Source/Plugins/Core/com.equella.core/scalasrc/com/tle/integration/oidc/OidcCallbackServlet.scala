@@ -24,6 +24,7 @@ import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.integration.oauth2.error.HasCode
 import com.tle.integration.oidc.service.OidcAuthService
+import com.tle.integration.util.NO_FURTHER_INFO
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 
@@ -83,7 +84,7 @@ class OidcCallbackServlet @Inject()(
 
         resp.sendRedirect(redirectTo.build().toString)
       case Left(e) =>
-        val msg = e.msg.getOrElse("No further information")
+        val msg = e.msg.getOrElse(NO_FURTHER_INFO)
         val fullMsg = e match {
           case err: HasCode[_] => s"${err.code.toString} - $msg"
           case _               => msg
