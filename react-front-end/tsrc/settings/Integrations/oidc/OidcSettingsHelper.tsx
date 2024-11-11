@@ -32,7 +32,6 @@ import * as S from "fp-ts/string";
 
 const {
   enable: enableLabel,
-  platform: platformLabel,
   issuer: issuerLabel,
   issuerDesc,
   authCodeClientId: authCodeClientIdLabel,
@@ -46,17 +45,34 @@ const {
   usernameClaim: usernameClaimLabel,
   usernameClaimDesc,
 } = languageStrings.settings.integration.oidc.generalDetails;
+const {
+  platform: platformLabel,
+  generic: {
+    apiUrl: apiUrlLabel,
+    apiUrlDesc,
+    apiClientId: apiClientIdLabel,
+    apiClientIdDesc,
+    apiClientSecret: apiClientSecretLabel,
+    apiClientSecretDesc,
+  },
+} = languageStrings.settings.integration.oidc.apiDetails;
 const { select: selectLabel } = languageStrings.common.action;
 
-const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
-  ["AZURE", "Azure"],
-  ["COGNITO", "Cognito"],
+export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
   ["GENERIC", "Generic"],
-  ["GOOGLE", "Google"],
-  ["OKTA", "Okta"],
 ]);
 
-export const defaultIdpGeneralDetails: OEQ.Oidc.IdentityProvider = {
+// Use 'platform' as the discriminator
+export interface GenericApiDetails
+  extends Pick<
+    OEQ.Oidc.GenericIdentityProvider,
+    "platform" | "apiUrl" | "apiClientId" | "apiClientSecret"
+  > {}
+
+//TODO: Add more platform API details: Azure, Cognito, Google, Okta.
+export type ApiDetails = GenericApiDetails;
+
+export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   enabled: false,
   platform: "GENERIC",
   issuer: "",
@@ -66,6 +82,25 @@ export const defaultIdpGeneralDetails: OEQ.Oidc.IdentityProvider = {
   keysetUrl: "",
   tokenUrl: "",
   defaultRoles: new Set(),
+};
+
+export const defaultGenericApiDetails: GenericApiDetails = {
+  platform: "GENERIC",
+  apiUrl: "",
+  apiClientId: "",
+  apiClientSecret: "",
+};
+
+//TODO: Update default values for other platforms.
+export const defaultApiDetailsMap: Record<
+  OEQ.Oidc.IdentityProviderPlatform,
+  ApiDetails
+> = {
+  GENERIC: defaultGenericApiDetails,
+  AZURE: defaultGenericApiDetails,
+  COGNITO: defaultGenericApiDetails,
+  GOOGLE: defaultGenericApiDetails,
+  OKTA: defaultGenericApiDetails,
 };
 
 const platformSelector = (
@@ -99,10 +134,9 @@ const platformSelector = (
  * @param onChange Function to be called when a field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
  */
-export const generalDetailsRenderOptions = (
+export const generateGeneralDetails = (
   {
     enabled,
-    platform,
     issuer,
     authCodeClientId,
     authCodeClientSecret,
@@ -123,14 +157,6 @@ export const generalDetailsRenderOptions = (
         checked={enabled}
         onChange={(event) => onChange("enabled", event.target.checked)}
       />
-    ),
-  },
-  platform: {
-    label: platformLabel,
-    required: true,
-    validate: isNonEmptyString,
-    component: platformSelector(platform, (value) =>
-      onChange("platform", value),
     ),
   },
   issuer: {
@@ -184,7 +210,7 @@ export const generalDetailsRenderOptions = (
       authUrl,
       false,
       true,
-      (value) => onChange("authUrlLabel", value),
+      (value) => onChange("authUrl", value),
       showValidationErrors,
     ),
   },
@@ -234,3 +260,105 @@ export const generalDetailsRenderOptions = (
     ),
   },
 });
+
+const genericApiDetails = (
+  onChange: (key: string, value: unknown) => void,
+  showValidationErrors: boolean,
+  apiDetails: GenericApiDetails,
+) => {
+  const { apiUrl, apiClientId, apiClientSecret } = apiDetails;
+
+  return {
+    apiUrl: {
+      label: apiUrlLabel,
+      desc: apiUrlDesc,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        apiUrlLabel,
+        apiUrl,
+        false,
+        true,
+        (value) => onChange("apiUrl", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+    apiClientId: {
+      label: apiClientIdLabel,
+      desc: apiClientIdDesc,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        apiClientIdLabel,
+        apiClientId,
+        false,
+        true,
+        (value) => onChange("apiClientId", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+    apiClientSecret: {
+      label: apiClientSecretLabel,
+      desc: apiClientSecretDesc,
+      required: true,
+      validate: isNonEmptyString,
+      component: textFiledComponent(
+        apiClientSecretLabel,
+        apiClientSecret,
+        false,
+        true,
+        (value) => onChange("apiClientSecret", value),
+        showValidationErrors,
+        isNonEmptyString,
+      ),
+    },
+  };
+};
+
+/**
+ * Generate the render options for the platform selector.
+ *
+ * @param platform Current selected platform.
+ * @param platformOnChange Function to be called when the platform is changed.
+ */
+export const generatePlatform = (
+  platform: OEQ.Oidc.IdentityProviderPlatform,
+  platformOnChange: (newValue: string) => void,
+) => ({
+  platform: {
+    label: platformLabel,
+    required: true,
+    validate: isNonEmptyString,
+    component: platformSelector(platform, platformOnChange),
+  },
+});
+
+/**
+ * Generate the render options for the API configuration of different identity providers.
+ *
+
+ * @param apiDetails The value of the platform specific details.
+
+ * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
+ * @param showValidationErrors Whether to show validation errors for each field.
+ */
+export const generateApiDetails = (
+  apiDetails: ApiDetails,
+
+  apiDetailsOnChange: (key: string, value: unknown) => void,
+  showValidationErrors: boolean,
+) => {
+  const p = apiDetails.platform;
+  switch (p) {
+    case "GENERIC":
+      return genericApiDetails(
+        apiDetailsOnChange,
+        showValidationErrors,
+        apiDetails,
+      );
+    default:
+      throw new Error(`Unsupported platform: ${p}`);
+  }
+};

@@ -826,7 +826,6 @@ export const languageStrings = {
         name: "OIDC configuration",
         generalDetails: {
           title: "General Details",
-          platform: "Platform",
           issuer: "Issuer",
           issuerDesc:
             "The issuer identifier for the OpenID Connect provider. This value should match the 'iss' claim in the JWTs issued by this provider.",
@@ -846,6 +845,24 @@ export const languageStrings = {
             "By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
           enable: "Enable",
         },
+        apiDetails: {
+          title: "Identity Provider API",
+          desc: "openEQUELLA uses the following Identity Provider API details to retrieve information about authenticated users. Please first specify which Identity Provider Platform you’re using, and then complete the displayed fields.",
+          platform: "Identity Provider",
+          platformDesc:
+            "The Identity Provider which users are authenticating against using the above details",
+          generic: {
+            apiUrl: "API endpoint",
+            apiUrlDesc:
+              "The base URL for your Identity Provider’s API - often unique to your account.",
+            apiClientId: "API Client ID",
+            apiClientIdDesc:
+              "Client ID provided by your identity provider to use when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
+            apiClientSecret: "API Client Secret",
+            apiClientSecretDesc:
+              "Client secret provided by your identity provider to use with the above Client ID when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
+          },
+        },
         roleMappings: {
           title: "Role Mappings",
           defaultRole: "Default roles",
@@ -853,7 +870,7 @@ export const languageStrings = {
             "Map the openEQUELLA roles to be used for users logging in via the Identity Provider.",
           roleClaim: "Role claim",
           roleClaimDesc:
-            "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization (Role mapping options will be displayed once specified).",
+            "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization. (Role mapping options will be displayed once specified.)",
           customRoleDialog: {
             title: "IdP role mappings",
             customRoleLabel: "Enter IdP role",
@@ -1019,7 +1036,7 @@ export const languageStrings = {
   },
   customRolesMappingControl: {
     title: "Custom roles",
-    desc: "Map the values from your specified role claim to corresponding roles in openEQUELLA",
+    desc: "Map the values from your specified role claim to corresponding roles in openEQUELLA.",
   },
   selectEntityDialog: {
     currentSelections: "Current selections",
