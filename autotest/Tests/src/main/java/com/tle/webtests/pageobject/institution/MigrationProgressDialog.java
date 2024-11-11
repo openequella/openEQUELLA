@@ -3,7 +3,6 @@ package com.tle.webtests.pageobject.institution;
 import com.google.common.base.Function;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
-import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,7 +20,7 @@ public class MigrationProgressDialog extends AbstractPage<MigrationProgressDialo
 
   public MigrationProgressDialog(PageContext context) {
     super(context, By.className("progress-curr-migration"));
-    longWaiter = new WebDriverWait(context.getDriver(), Duration.ofMinutes(3));
+    longWaiter = new WebDriverWait(context.getDriver(), 180);
   }
 
   public void close() {

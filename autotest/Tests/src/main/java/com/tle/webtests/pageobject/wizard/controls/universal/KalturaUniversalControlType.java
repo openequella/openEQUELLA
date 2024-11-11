@@ -4,7 +4,6 @@ import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
-import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -47,7 +46,7 @@ public class KalturaUniversalControlType
 
   public KalturaUniversalControlType(UniversalControl control) {
     super(control);
-    this.waiter = new WebDriverWait(driver, Duration.ofMinutes(1), Duration.ofMillis(50));
+    this.waiter = new WebDriverWait(driver, 60, 50);
   }
 
   public KalturaUniversalControlType search(String query) {

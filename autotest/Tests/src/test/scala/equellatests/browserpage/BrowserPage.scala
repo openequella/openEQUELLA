@@ -4,7 +4,6 @@ import com.tle.webtests.framework.PageContext
 import org.openqa.selenium.support.ui.{ExpectedCondition, ExpectedConditions, WebDriverWait}
 import org.openqa.selenium.{By, WebDriver, WebElement}
 
-import java.time.Duration
 import scala.util.Try
 
 object BrowserPage {
@@ -23,7 +22,7 @@ trait BrowserPage {
   def findElement(by: By): WebElement          = driver.findElement(by)
   def findElementById(id: String): WebElement  = findElement(By.id(id))
   def findElementO(by: By): Option[WebElement] = Try(driver.findElement(by)).toOption
-  val waiter                                   = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(50))
+  val waiter                                   = new WebDriverWait(driver, 10, 50L)
   def waitFor[A](c: ExpectedCondition[A]): A   = waiter.until(c)
 
   def updatedBy(by: By): ExpectedCondition[_] =

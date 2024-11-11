@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.tle.common.Check;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ExpectedConditions2;
-import java.time.Duration;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -34,9 +33,7 @@ public class AutoCompleteOptions extends AbstractPage<AutoCompleteOptions> {
     super(qs.getContext(), LIST_BY);
     setMustBeVisible(true);
     this.qs = qs;
-    acWaiter =
-        new WebDriverWait(
-            driver, context.getTestConfig().getStandardTimeout(), Duration.ofMillis(600));
+    acWaiter = new WebDriverWait(driver, context.getTestConfig().getStandardTimeout(), 600);
   }
 
   public String getPromptText() {
