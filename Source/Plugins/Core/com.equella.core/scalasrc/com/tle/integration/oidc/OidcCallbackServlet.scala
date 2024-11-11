@@ -52,8 +52,8 @@ class OidcCallbackServlet @Inject()(
     * 2. Verify the callback request;
     * 3. Use the callback details and the configured Identity Provider to request an ID token;
     * 4. Verify the ID token on receiving;
-    * 5. Based on the verification result, either log the user in and redirect to the target page,
-    *    or redirect to the login page with an error message.
+    * 5. Attempt to log the user in with the verified token and the configuration;
+    * 6. Redirect user to the target page.
     *
     * Any step that fails will immediately stop the process and redirect user to the login page with
     * an error message.
@@ -69,12 +69,11 @@ class OidcCallbackServlet @Inject()(
 
       idToken       <- authService.requestIdToken(code, stateDetails, idp)
       verifiedToken <- authService.verifyIdToken(idToken, state, idp)
-    } yield (verifiedToken, stateDetails.targetPage, idp)
+      _             <- authService.login(verifiedToken, userService.getWebAuthenticationDetails(req), idp)
+    } yield stateDetails.targetPage
 
     result match {
-      case Right((token, targetPage, idp)) =>
-        authService.login(token, userService.getWebAuthenticationDetails(req), idp)
-
+      case Right(targetPage) =>
         val institution = CurrentInstitution.get().getUrl
         val redirectTo = targetPage match {
           case Some(p) =>

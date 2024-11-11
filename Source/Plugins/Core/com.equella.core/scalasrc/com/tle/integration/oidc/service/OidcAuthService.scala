@@ -251,8 +251,8 @@ class OidcAuthService @Inject()(
   /**
     * Log the user in with a UserState built based on the supplied ID token and the OIDC configuration.
     *
-    * If there is a custom username claim, attempt to retrieve a username from the ID token with this claim, or
-    * use the claim `sub` as the username instead.
+    * If there is a custom username claim, attempt to retrieve a username from the ID token with this claim,
+    * and failing to do so will result in an error of InvalidJWT; otherwise use the claim `sub` as the username.
     *
     * If there is a role configuration, attempt to retrieve OEQ roles from the configured role mappings with the
     * ID token's custom role claim, or use the list of default roles.
@@ -265,45 +265,64 @@ class OidcAuthService @Inject()(
     */
   def login(idToken: DecodedJWT,
             wad: WebAuthenticationDetails,
-            idp: IdentityProviderDetails): Unit = {
+            idp: IdentityProviderDetails): Either[GeneralError, Unit] = {
     def claim: String => Option[String] = getClaim(idToken)
 
     val userId = idToken.getSubject
-    val username = idp.commonDetails.usernameClaim
-      .flatMap(claim)
-      .getOrElse(userId)
-    val user: DefaultUserBean = new DefaultUserBean(
-      userId,
-      username,
-      claim(OpenIDConnectParams.FAMILY_NAME).getOrElse(""),
-      claim(OpenIDConnectParams.GIVEN_NAME).getOrElse(""),
-      claim(OpenIDConnectParams.EMAIL).orNull
-    )
+    val username = idp.commonDetails.usernameClaim match {
+      case Some(c) =>
+        claim(c) match {
+          case Some(username) => Right(username)
+          case None           => Left(InvalidJWT(s"Missing the configured username claim $c in the ID token"))
+        }
+      case None => Right(userId)
+    }
 
-    val userState: DefaultUserState = new DefaultUserState
-    userState.setLoggedInUser(user)
-    userState.getUsersRoles.addAll(roles(idp, idToken))
-
-    userService.setupUserState(userState, wad, true)
-    userService.login(userState, true)
+    for {
+      // Confirm the username and create a UserBean
+      uname <- username
+      user = new DefaultUserBean(
+        userId,
+        uname,
+        claim(OpenIDConnectParams.FAMILY_NAME).getOrElse(""),
+        claim(OpenIDConnectParams.GIVEN_NAME).getOrElse(""),
+        claim(OpenIDConnectParams.EMAIL).orNull
+      )
+      // Confirm the OEQ roles
+      oeqRoles <- roleMapping(idp, idToken)
+      // Setup the user state and log the user in
+      userState = new DefaultUserState
+      _ <- Either
+        .catchNonFatal {
+          userState.getUsersRoles.addAll(oeqRoles)
+          userState.setLoggedInUser(user)
+          userService.setupUserState(userState, wad, true)
+        }
+        .leftMap(error => ServerError(s"Failed to setup user state: ${error.getMessage}"))
+    } yield userService.login(userState, true)
   }
 
   // If there is a role configuration, use the configured role claim and role mappings to determine the OEQ roles.
-  // If the result is None or there isn't a role configuration, use the default roles instead.
-  private def roles(idp: IdentityProviderDetails,
-                    token: DecodedJWT): java.util.Collection[String] = {
+  // Missing the role claim in the token or having an unexpected role claim format will result in an error of
+  // InvalidJWT. If there isn't a role configuration, use the default roles instead.
+  private def roleMapping(idp: IdentityProviderDetails,
+                          token: DecodedJWT): Either[InvalidJWT, java.util.Collection[String]] = {
     // Return a function that takes an IDP role and returns a set of OEQ roles based on the role mappings.
     def getOeqRolesFromMappings(mappings: Map[String, Set[String]]): String => Set[String] =
       (idpRole: String) => mappings.getOrElse(idpRole, Set.empty)
 
     idp.commonDetails.roleConfig
-      .flatMap {
+      .map {
         case RoleConfiguration(roleClaim, mappings) =>
-          getClaimAsSet(token, roleClaim)
-            .map(_.flatMap(getOeqRolesFromMappings(mappings)))
+          getClaimAsSet(token, roleClaim) match {
+            case Some(idpRoles) => Right(idpRoles.flatMap(getOeqRolesFromMappings(mappings)))
+            case None =>
+              Left(InvalidJWT(
+                s"Missing the configured role claim $roleClaim in the ID token, or the claim is not in the format of array."))
+          }
       }
-      .getOrElse(idp.commonDetails.defaultRoles)
-      .asJavaCollection
+      .getOrElse(Right(idp.commonDetails.defaultRoles))
+      .map(_.asJavaCollection)
   }
 
   /**
