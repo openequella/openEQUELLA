@@ -240,7 +240,7 @@ class OidcAuthService @Inject()(
       jsonWebKeySetProvider <- jwkProvider.get(idpDetails.keysetUrl)
       jwk <- Either
         .catchNonFatal(jsonWebKeySetProvider.get(decodedToken.getKeyId))
-        .leftMap(_ => InvalidJWT("Failed to retrieve by the obtained ID token's key ID"))
+        .leftMap(_ => InvalidJWT("Failed to retrieve JWK by the obtained ID token's key ID"))
       verifiedToken <- verifyToken(decodedToken,
                                    idpDetails.issuer,
                                    idpDetails.authCodeClientId,
