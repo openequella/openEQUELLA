@@ -269,14 +269,10 @@ class OidcAuthService @Inject()(
     def claim: String => Option[String] = getClaim(idToken)
 
     val userId = idToken.getSubject
-    val username = idp.commonDetails.usernameClaim match {
-      case Some(c) =>
-        claim(c) match {
-          case Some(username) => Right(username)
-          case None           => Left(InvalidJWT(s"Missing the configured username claim $c in the ID token"))
-        }
-      case None => Right(userId)
-    }
+    val username = idp.commonDetails.usernameClaim
+      .map(c =>
+        claim(c).toRight(InvalidJWT(s"Missing the configured username claim $c in the ID token")))
+      .getOrElse(Right(userId))
 
     for {
       // Confirm the username and create a UserBean
