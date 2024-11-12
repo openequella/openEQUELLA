@@ -22,7 +22,7 @@ import cats.implicits._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
-import com.tle.integration.oauth2.InvalidJWT
+import com.tle.integration.oauth2.error.general.InvalidJWT
 import java.security.PublicKey
 import java.security.interfaces.{ECPublicKey, RSAPublicKey}
 

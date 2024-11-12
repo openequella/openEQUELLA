@@ -6212,4 +6212,10 @@
     <parameter id="order" value="817" />
   </extension>
   <!-- endregion -->
+  <!-- region OIDC Support -->
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="oidcCallbackServlet">
+    <parameter id="bean" value="bean:com.tle.integration.oidc.OidcCallbackServlet" />
+    <parameter id="url-pattern" value="/oidc/callback" />
+  </extension>
+  <!-- endregion -->
 </plugin>

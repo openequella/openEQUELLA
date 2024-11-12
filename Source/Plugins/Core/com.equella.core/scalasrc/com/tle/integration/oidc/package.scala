@@ -23,7 +23,7 @@ import com.auth0.jwk.Jwk
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.{JWT, JWTVerifier}
 import com.tle.integration.jwt.determineAlg
-import com.tle.integration.oauth2.{InvalidJWT, OAuth2Error, ServerError}
+import com.tle.integration.oauth2.error.general.{GeneralError, InvalidJWT, ServerError}
 import com.tle.integration.oidc.service.OidcNonceService
 import scala.jdk.CollectionConverters._
 
@@ -78,6 +78,20 @@ package object oidc {
       .map(_.asScala.toMap)
 
   /**
+    * Get value of a claim as a Set.
+    *
+    * @param jwt a token containing the claim
+    * @param claim name of a string based claim
+    * @return If transforming the value to a Set is successful return the Set, or `None`
+    */
+  def getClaimAsSet(jwt: DecodedJWT, claim: String): Option[Set[String]] =
+    Option(jwt.getClaim(claim))
+      .map(c => Either.catchNonFatal(Option(c.asArray(classOf[String]))))
+      .flatMap(_.toOption)
+      .flatten
+      .map(_.toSet)
+
+  /**
     * Given a decoded JWT will return a partially applied function which can then receive the name
     * of a claim and return the value as a `String` or `None` if not present in the claims.
     *
@@ -98,14 +112,14 @@ package object oidc {
     * @param state Previously built state based on which the nonce was generated
     * @param nonceService (implicit) Nonce Service used to validate the nonce retrieved from the token
     *
-    * @return Either the verified token or an OAuth2Error indicating why the verification failed
+    * @return Either the verified token or an error describing why the verification failed
     */
   def verifyIdToken(
       idToken: DecodedJWT,
       issuer: String,
       audience: String,
       jsonWebKey: Jwk,
-      state: String)(implicit nonceService: OidcNonceService): Either[OAuth2Error, DecodedJWT] =
+      state: String)(implicit nonceService: OidcNonceService): Either[GeneralError, DecodedJWT] =
     for {
       // Standard verification, including signature, issuer, audience etc.
       verifier <- buildJwtVerifier(jsonWebKey, issuer, audience, idToken.getAlgorithm)
@@ -130,7 +144,7 @@ package object oidc {
   private def buildJwtVerifier(jwk: Jwk,
                                issuer: String,
                                aud: String,
-                               alg: String): Either[OAuth2Error, JWTVerifier] =
+                               alg: String): Either[ServerError, JWTVerifier] =
     Either
       .catchNonFatal(
         JWT

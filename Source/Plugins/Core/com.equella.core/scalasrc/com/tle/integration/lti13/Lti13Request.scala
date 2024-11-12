@@ -22,8 +22,7 @@ import cats.implicits._
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.integration.lti13.Lti13Claims.CUSTOM_PARAMETERS
 import com.tle.integration.lti13.LtiMessageType.MessageType
-import com.tle.integration.lti13.OAuth2LayerError._
-import com.tle.integration.oauth2.InvalidJWT
+import com.tle.integration.oauth2.error.general.InvalidJWT
 import com.tle.integration.oidc.{
   OpenIDConnectParams,
   getClaimAsMap,
@@ -178,7 +177,7 @@ object Lti13Request {
     * @param decodedJWT a token containing claims which provides details of an LTI request message.
     * @return Details of an LTI 1.3 request message, or `Lti13Error` if failed to extract the details.
     */
-  def getLtiRequestDetails(decodedJWT: DecodedJWT): Either[OAuth2LayerError, Lti13Request] = {
+  def getLtiRequestDetails(decodedJWT: DecodedJWT): Either[Lti13Error, Lti13Request] = {
     def requiredClaim(claim: String) = getRequiredClaim(decodedJWT, claim)
 
     def getRequest(messageType: MessageType): Either[InvalidJWT, Lti13Request] = messageType match {

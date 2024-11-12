@@ -28,17 +28,20 @@ import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
 import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
 import com.tle.core.institution.RunAsInstitution
-import com.tle.core.lti13.service.LtiPlatformService
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
-import com.tle.integration.jwk.JwkProvider
-import com.tle.integration.jwt.decodeJwt
 import com.tle.integration.lti13.OAuth2LayerError._
 import com.tle.integration.lti13.{Lti13Params => LTI13}
-import com.tle.integration.oauth2._
-import com.tle.integration.oidc.{getClaim, verifyIdToken, OpenIDConnectParams => OIDC}
+import com.tle.integration.oauth2.error.authorisation.{
+  AccessDenied,
+  AuthorisationError,
+  NotAuthorized,
+  ServerError => AuthServerError
+}
+import com.tle.integration.oauth2.error.general.InvalidJWT
+import com.tle.integration.oidc.{getClaim, OpenIDConnectParams => OIDC}
 import com.tle.integration.util.{getParam, getUriParam}
 import io.circe._
 import io.circe.parser._
@@ -159,7 +162,7 @@ case class UserDetails(platformId: String,
                        email: Option[String])
 object UserDetails {
   def apply(jwt: DecodedJWT,
-            usernameClaimPaths: Option[List[String]]): Either[OAuth2LayerError, UserDetails] = {
+            usernameClaimPaths: Option[List[String]]): Either[Lti13Error, UserDetails] = {
     val claim = getClaim(jwt)
 
     // Use the custom username claim if present, otherwise use the Subject claim.
@@ -356,7 +359,7 @@ class Lti13AuthService {
     val username = platform.usernamePrefix.getOrElse("") + ltiUserId + platform.usernameSuffix
       .getOrElse("")
 
-    def handleUnknownUser(): Either[OAuth2Error, UserState] = {
+    def handleUnknownUser(): Either[AuthorisationError, UserState] = {
       // A unique ID for the user in the oEQ DB - not used elsewhere for authentication, but we
       // need to meeting existing requirements of the tle_user table.
       val oeqUserId                                       = genId(platform.platformId, ltiUserId)
@@ -394,14 +397,14 @@ class Lti13AuthService {
           authenticate(username).toEither.left.map(t => {
             LOGGER.error(
               s"Failed to authenticate with newly created LTI 1.3 user - $username($oeqUserId): ${t.getMessage}")
-            ServerError(s"Failed to authenticate as newly created user: $username")
+            AuthServerError(s"Failed to authenticate as newly created user: $username")
           })
       }
     }
 
     authenticate(username) match {
       case Failure(_: UsernameNotFoundException) => handleUnknownUser()
-      case Failure(exception)                    => Left(ServerError(exception.getMessage))
+      case Failure(exception)                    => Left(AuthServerError(exception.getMessage))
       case Success(userState)                    => Right(userState)
     }
   }

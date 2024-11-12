@@ -22,9 +22,9 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.core.guice.Bind
 import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.decodeJwt
-import com.tle.integration.oauth2.{InvalidJWT, InvalidState}
+import com.tle.integration.oauth2.error.authorisation.InvalidState
+import com.tle.integration.oauth2.error.general.InvalidJWT
 import com.tle.integration.oidc.verifyIdToken
-
 import javax.inject.{Inject, Singleton}
 
 /**
@@ -72,7 +72,7 @@ class Lti13TokenValidator @Inject()(platformService: Lti13PlatformService,
 
   private def verifyToken(jwt: DecodedJWT,
                           platform: PlatformDetails,
-                          state: String): Either[OAuth2LayerError, DecodedJWT] = {
+                          state: String): Either[Lti13Error, DecodedJWT] = {
     val result = for {
       jsonWebKeySetProvider <- jwkProvider.get(platform.keysetUrl)
       jwk = jsonWebKeySetProvider.get(jwt.getKeyId)
@@ -87,11 +87,11 @@ class Lti13TokenValidator @Inject()(platformService: Lti13PlatformService,
     stateService.getState(s).toRight(InvalidState(s"Invalid state provided: $s"))
 
   // Decode the raw ID token. Purpose of this function is for the error type transformation.
-  private def decodeToken(t: String): Either[OAuth2LayerError, DecodedJWT] = decodeJwt(t)
+  private def decodeToken(t: String): Either[Lti13Error, DecodedJWT] = decodeJwt(t)
 
   // Get platform ID from the state details and verify it with the issuer in the decoded token.
   private def getPlatformId(stateDetails: Lti13StateDetails,
-                            decodedToken: DecodedJWT): Either[OAuth2LayerError, String] =
+                            decodedToken: DecodedJWT): Either[Lti13Error, String] =
     Option(stateDetails.platformId)
       .filter(decodedToken.getIssuer.equals)
       .toRight(InvalidJWT(s"Issuer in token did not match stored state."))

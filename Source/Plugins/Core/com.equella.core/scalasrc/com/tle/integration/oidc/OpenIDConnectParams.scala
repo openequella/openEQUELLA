@@ -28,11 +28,23 @@ object OpenIDConnectParams {
     */
   val CLIENT_ID = "client_id"
 
+  val CLIENT_SECRET = "client_secret"
+
+  val CODE = "code"
+
+  val CODE_CHALLENGE = "code_challenge"
+
+  val CODE_CHALLENGE_METHOD = "code_challenge_method"
+
+  val CODE_VERIFIER = "code_verifier"
+
   val EMAIL = "email"
 
   val FAMILY_NAME = "family_name"
 
   val GIVEN_NAME = "given_name"
+
+  val GRANT_TYPE = "grant_type"
 
   /**
     * REQUIRED. ID Token.

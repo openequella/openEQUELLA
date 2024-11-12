@@ -21,10 +21,10 @@ package com.tle.web.login
 import com.tle.core.guice.Bind
 import com.tle.core.i18n.CoreStrings
 import com.tle.integration.oidc.idp.IdentityProviderDetails
-import com.tle.integration.oidc.service.OidcConfigurationService
+import com.tle.integration.oidc.service._
 import com.tle.web.freemarker.FreemarkerFactory
 import com.tle.web.freemarker.annotations.ViewFactory
-import com.tle.web.sections.annotations.{Bookmarked, EventFactory, EventHandlerMethod}
+import com.tle.web.sections.annotations.{EventFactory, EventHandlerMethod}
 import com.tle.web.sections.events.RenderEventContext
 import com.tle.web.sections.events.js.EventGenerator
 import com.tle.web.sections.render.{HtmlRenderer, TextLabel}
@@ -33,36 +33,43 @@ import com.tle.web.sections.standard.{AbstractHtmlComponent, Button}
 import com.tle.web.sections.{SectionInfo, SectionResult}
 import javax.inject.Inject
 
-case class OidcLoginSectionModel(info: SectionInfo)
-
 /**
   * This Section is responsible for rendering the OIDC login button and handling the login process.
   * The login is performed through OAuth 2 PKCE flow.
   */
 @Bind
-class OidcLoginSection extends AbstractHtmlComponent[OidcLoginSectionModel] with HtmlRenderer {
+class OidcLoginSection extends AbstractHtmlComponent[Unit] with HtmlRenderer {
 
   @ViewFactory private var viewFactory: FreemarkerFactory = _
 
-  @EventFactory var events: EventGenerator = _
+  @EventFactory private var events: EventGenerator = _
 
   @Component private var loginButton: Button = _
 
   @Inject
-  var oidcConfigurationService: OidcConfigurationService = _
+  private var oidcConfigurationService: OidcConfigurationService = _
+
+  @Inject
+  private var authService: OidcAuthService = _
 
   @EventHandlerMethod
-  def launch(info: SectionInfo, authUrl: String, clientId: String): Unit = {
-    // todo: launch the authentication by forwarding to IdP login page
-  }
+  def launch(info: SectionInfo, authUrl: String, clientId: String, targetPage: String): Unit =
+    info.forwardToUrl(authService.buildAuthUrl(authUrl, clientId, targetPage))
 
   override def renderHtml(context: RenderEventContext): SectionResult = {
+    def targetPage(ctx: RenderEventContext) = {
+      val logonSection: LogonSection = ctx.lookupSection(classOf[LogonSection])
+      logonSection.getModel(context).getPage
+    }
+
     def renderLoginButton(idp: IdentityProviderDetails) = {
+
       loginButton.setLabel(context, new TextLabel(CoreStrings.text("login.oidc.button")))
       loginButton.setClickHandler(context,
                                   events.getNamedHandler("launch",
                                                          idp.commonDetails.authUrl,
-                                                         idp.commonDetails.authCodeClientId))
+                                                         idp.commonDetails.authCodeClientId,
+                                                         targetPage(context)))
       viewFactory.createResult("logon/oidclogin.ftl", context)
     }
 
@@ -74,10 +81,9 @@ class OidcLoginSection extends AbstractHtmlComponent[OidcLoginSectionModel] with
       .orNull
   }
 
-  override def getModelClass: Class[OidcLoginSectionModel] = classOf[OidcLoginSectionModel]
+  override def getModelClass: Class[Unit] = classOf[Unit]
 
-  override def instantiateModel(info: SectionInfo): OidcLoginSectionModel =
-    OidcLoginSectionModel(info)
+  override def instantiateModel(info: SectionInfo): Unit = ()
 
   // This method is required by the ftl template to access the component.
   def getLoginButton: Button = loginButton
