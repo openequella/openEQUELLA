@@ -31,8 +31,8 @@ import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../../components/securityentitydialog/SelectGroupDialog";
 import SettingsListControl from "../../../../components/SettingsListControl";
-import SettingsListWarning from "../../../../components/SettingsListWarning";
 import { languageStrings } from "../../../../util/langstrings";
+import SettingsListAlert from "../../../../components/SettingsListAlert";
 
 export interface GroupWarning {
   /**
@@ -135,7 +135,10 @@ const UnknownUserHandlingControl = ({
       {selection === "CREATE" && (
         <>
           {warningMessageForGroups && (
-            <SettingsListWarning messages={warningMessageForGroups} />
+            <SettingsListAlert
+              severity="warning"
+              messages={warningMessageForGroups}
+            />
           )}
 
           <ListItem>

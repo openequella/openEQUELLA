@@ -45,6 +45,7 @@ import { roleIds } from "../../../../modules/RoleModule";
 import { languageStrings } from "../../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../../util/validation";
 import AccessControlSection, {
+  checkAclExpressionLength,
   UnknownUserHandlingData,
 } from "./AccessControlSection";
 import GeneralDetailsSection, {
@@ -454,7 +455,7 @@ const ConfigureLti13Platform = ({
   }, [history, saved]);
 
   // check if all input value are valid
-  const checkValidation = (): boolean =>
+  const checkGeneralDetailsValidation = (): boolean =>
     pipe(
       ltiGeneralDetailsRenderOptions,
       R.toEntries,
@@ -471,14 +472,17 @@ const ConfigureLti13Platform = ({
     );
 
   const handleSubmit = async () => {
-    // once uses try to submit the value, the validation error can be displayed.
+    // once user try to submit the value, the validation error can be displayed.
     setShowValidationErrors(true);
-    if (!checkValidation()) {
-      return;
+    if (
+      checkGeneralDetailsValidation() &&
+      checkAclExpressionLength(aclExpression)
+    ) {
+      // change page into saving mode
+      setSaving(true);
+    } else {
+      appErrorHandler("Please check the form for errors.");
     }
-
-    // change page into saving mode
-    setSaving(true);
   };
 
   return (
@@ -514,6 +518,7 @@ const ConfigureLti13Platform = ({
               searchRoleProvider={searchRoleProvider}
               aclEntityResolversProvider={aclEntityResolversProvider}
               warningMessageForGroups={warningMessages?.warningMessageForGroups}
+              showValidationErrors={showValidationErrors}
             />
           </Grid>
 

@@ -18,25 +18,35 @@
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 
-import SettingsListWarning, {
+import SettingsListAlert, {
   SettingsListWarningProps,
-} from "../../tsrc/components/SettingsListWarning";
+} from "../../tsrc/components/SettingsListAlert";
 
 export default {
-  title: "Component/SettingsListWarning",
-  component: SettingsListWarning,
+  title: "Component/SettingsListAlert",
+  component: SettingsListAlert,
 } as Meta<SettingsListWarningProps>;
 
-export const Standard: StoryFn<SettingsListWarningProps> = (args) => (
-  <SettingsListWarning {...args} />
+export const Warning: StoryFn<SettingsListWarningProps> = (args) => (
+  <SettingsListAlert {...args} />
 );
-Standard.args = {
+Warning.args = {
+  severity: "warning",
   messages: ["This is a warning alert - check it out!"],
 };
 
 export const MultipleLines: StoryFn<SettingsListWarningProps> = (args) => (
-  <SettingsListWarning {...args} />
+  <SettingsListAlert {...args} />
 );
 MultipleLines.args = {
+  severity: "warning",
   messages: ["This is a warning alert.", "Check it out!"],
+};
+
+export const Error: StoryFn<SettingsListWarningProps> = (args) => (
+  <SettingsListAlert {...args} />
+);
+Error.args = {
+  severity: "error",
+  messages: ["This is a error alert - check it out!"],
 };
