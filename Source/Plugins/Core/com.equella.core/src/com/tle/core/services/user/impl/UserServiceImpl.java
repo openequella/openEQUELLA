@@ -66,6 +66,7 @@ import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.usermanagement.OidcUserDirectory;
 import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
@@ -124,6 +125,7 @@ public class UserServiceImpl
   @Inject private UserSessionService userSessionService;
 
   @Inject private PluginTracker<UserDirectory> umpTracker;
+  @Inject private PluginTracker<OidcUserDirectory> oidcUserDirTracker;
   @Inject private PluginTracker<UserManagementLogonFilter> logonFilterTracker;
 
   @Inject private UserInfoBackupDao userInfoBackupDao;
@@ -619,6 +621,15 @@ public class UserServiceImpl
         LOGGER.error("Error creating wrapper: " + settingsClass, e);
       }
     }
+
+    oidcUserDirTracker
+        .getExtensions()
+        .forEach(
+            ext -> {
+              OidcUserDirectory dir = oidcUserDirTracker.getBeanByParameter(ext, "bean");
+              uds.add(dir);
+            });
+
     Map<Object, Object> chainAttributes = Maps.newHashMap();
 
     Collection<UserManagementLogonFilter> filters = logonFilterTracker.getNewBeanList();

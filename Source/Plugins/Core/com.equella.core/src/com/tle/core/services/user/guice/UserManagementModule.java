@@ -20,6 +20,7 @@ package com.tle.core.services.user.guice;
 
 import com.tle.core.config.guice.OptionalConfigModule;
 import com.tle.core.guice.PluginTrackerModule;
+import com.tle.core.usermanagement.OidcUserDirectory;
 import com.tle.plugins.ump.UserDirectory;
 import com.tle.plugins.ump.UserManagementLogonFilter;
 
@@ -43,6 +44,7 @@ public class UserManagementModule extends OptionalConfigModule {
           .setIdParam("settingsClass")
           .orderByParameter("order", true);
       bindTracker(UserManagementLogonFilter.class, "logonFilter", "bean").orderByParameter("order");
+      bindTracker(OidcUserDirectory.class, "oidcUserDir", "bean").orderByParameter("order");
     }
   }
 }
