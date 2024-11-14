@@ -24,28 +24,43 @@ import {
   ListItemText,
 } from "@mui/material";
 import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
-import { pipe } from "fp-ts/function";
+import { constVoid, flow, identity, pipe } from "fp-ts/function";
+import * as T from "fp-ts/Task";
+import { isEqual } from "lodash";
 import { useContext, useEffect, useState } from "react";
 import * as React from "react";
 import { getBaseUrl } from "../../../AppConfig";
-import { CustomRolesMapping } from "../../../components/CustomRoleHelper";
+import {
+  CustomRolesMapping,
+  transformCustomRoleMapping,
+} from "../../../components/CustomRoleHelper";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
+  checkValidations,
   textFiledComponent,
 } from "../../../components/GeneralDetailsSection";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
 import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
-import SettingsListWarning from "../../../components/SettingsListWarning";
+import SettingsListAlert from "../../../components/SettingsListAlert";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
   templateDefaults,
   TemplateUpdateProps,
 } from "../../../mainui/Template";
+import {
+  getOidcSettings,
+  updateOidcSettings,
+} from "../../../modules/OidcModule";
+import { roleIds } from "../../../modules/RoleModule";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
+import * as TE from "fp-ts/TaskEither";
+import * as RS from "fp-ts/ReadonlySet";
+import * as E from "fp-ts/Either";
+
 import SelectRoleControl from "../lti13/components/SelectRoleControl";
 import {
   defaultGeneralDetails,
@@ -78,6 +93,7 @@ const {
   },
 } = languageStrings.settings.integration.oidc;
 const { edit: editLabel } = languageStrings.common.action;
+const { checkForm } = languageStrings.common.result;
 
 const redirectUrl = getBaseUrl() + "oidc/callback";
 
@@ -101,31 +117,20 @@ const OidcSettings = ({
   updateTemplate,
   searchRoleProvider,
 }: OidcSettingsProps) => {
-  useEffect(() => {
-    updateTemplate((tp) => ({
-      ...templateDefaults(name)(tp),
-      backRoute: routes.Settings.to,
-    }));
-  }, [updateTemplate]);
-
   const { appErrorHandler } = useContext(AppContext);
-  const handleOnSave = () => {};
-
-  // Given that the save button on the creation page of OEQ has always been available in present UI,
-  // set the disableSaveButton `false` here.
-  const [saveButtonDisabled] = useState(false);
   const [showSnackBar, setShowSnackBar] = useState(false);
-  const [preventNavigation] = useState(true);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
+  // States for values displayed in different sections.
   const [generalDetails, setGeneralDetails] =
     useState<OEQ.Oidc.IdentityProvider>(defaultGeneralDetails);
-
   const [apiDetails, setApiDetails] = useState<ApiDetails>(
     defaultGenericApiDetails,
   );
-
-  const [showValidationErrors] = useState(false);
-
+  const [defaultRoles, setDefaultRoles] = useState<ReadonlySet<RoleDetails>>(
+    new Set(),
+  );
+  const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
   // Warning messages if the oeq roles can't be found in the server.
   const [
     { defaultRoles: defaultRolesWarnings, customRoles: customRolesWarnings },
@@ -133,10 +138,67 @@ const OidcSettings = ({
     defaultRoles: undefined,
     customRoles: undefined,
   });
-  const [defaultRoles, setDefaultRoles] = useState<ReadonlySet<RoleDetails>>(
-    new Set(),
-  );
-  const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
+
+  // Build final submit values for OIDC.
+  const currentOidcValue = {
+    ...generalDetails,
+    ...apiDetails,
+    defaultRoles: pipe(roleIds(defaultRoles), RS.toSet),
+    roleConfig: generalDetails.roleConfig?.roleClaim
+      ? {
+          roleClaim: generalDetails.roleConfig.roleClaim,
+          customRoles: transformCustomRoleMapping(customRoles),
+        }
+      : undefined,
+  };
+
+  // Initial configuration retrieved from server, but before the config is returned, use the defaults values of each state listed above.
+  const [initialIdpDetails, setInitialIdpDetails] =
+    useState<OEQ.Oidc.IdentityProvider>(currentOidcValue);
+
+  const configurationChanged = !isEqual(initialIdpDetails, currentOidcValue);
+
+  useEffect(() => {
+    updateTemplate((tp) => ({
+      ...templateDefaults(name)(tp),
+      backRoute: routes.Settings.to,
+    }));
+  }, [updateTemplate]);
+
+  // Fetch OIDC settings from the server.
+  useEffect(() => {
+    // Get the OIDC settings from the server and for the 404 error only indicates the settings are not set yet,
+    // thus return None, otherwise for other error throw it.
+    const getOidcSettingsFromServer = (): Promise<
+      O.Option<OEQ.Oidc.IdentityProvider>
+    > =>
+      pipe(
+        TE.tryCatch(getOidcSettings, identity),
+        TE.fold(
+          (error) =>
+            OEQ.Errors.isApiError(error) && error.status === 404
+              ? T.of(O.none)
+              : T.fromIO(() => {
+                  throw error;
+                }),
+          (result) => T.of(O.some(result)),
+        ),
+      )();
+
+    pipe(
+      TE.tryCatch(() => getOidcSettingsFromServer(), String),
+      TE.match(
+        appErrorHandler,
+        flow(
+          O.fold(constVoid, (idp) => {
+            setInitialIdpDetails(idp);
+            setGeneralDetails(idp);
+            //TODO: process role mappings value to display existing settings
+          }),
+        ),
+      ),
+    )();
+  }, [appErrorHandler]);
 
   // Update the corresponding value in generalDetails state based on the provided key.
   const onGeneralDetailsChange = (key: string, newValue: unknown) =>
@@ -165,11 +227,70 @@ const OidcSettings = ({
       [key]: newValue,
     });
 
+  const generalDetailsRenderOptions = generateGeneralDetails(
+    generalDetails,
+    onGeneralDetailsChange,
+    showValidationErrors,
+  );
+
+  const apiDetailsRenderOptions = generateApiDetails(
+    apiDetails,
+    onApiDetailsChange,
+    showValidationErrors,
+  );
+
+  const handleOnSave = async () => {
+    setShowValidationErrors(true);
+
+    const validateEachField = (): TE.TaskEither<string, void> =>
+      pipe(
+        checkValidations(
+          generalDetailsRenderOptions,
+          R.fromEntries(Object.entries(generalDetails)),
+        ) &&
+          checkValidations(
+            apiDetailsRenderOptions,
+            R.fromEntries(Object.entries(apiDetails)),
+          )
+          ? TE.right(undefined)
+          : TE.left(checkForm),
+      );
+
+    const validateStructure = (): TE.TaskEither<
+      string,
+      OEQ.Oidc.IdentityProvider
+    > =>
+      pipe(
+        currentOidcValue,
+        E.fromPredicate(
+          OEQ.Codec.Oidc.GenericIdentityProviderCodec.is,
+          () => `Validation for the structure of OIDC configuration failed.`,
+        ),
+        TE.fromEither,
+      );
+
+    const submit = (
+      oidcValue: OEQ.Oidc.IdentityProvider,
+    ): TE.TaskEither<string, void> =>
+      TE.tryCatch(() => updateOidcSettings(oidcValue), String);
+
+    await pipe(
+      validateEachField(),
+      TE.chain(validateStructure),
+      TE.chain(submit),
+      TE.match(appErrorHandler, () => {
+        // Reset the initial values since user has saved the settings.
+        setInitialIdpDetails(currentOidcValue);
+        setShowSnackBar(true);
+      }),
+    )();
+  };
+
   return (
     <SettingPageTemplate
       onSave={handleOnSave}
-      preventNavigation={preventNavigation}
-      saveButtonDisabled={saveButtonDisabled}
+      preventNavigation={configurationChanged}
+      saveButtonDisabled={!configurationChanged}
       snackBarOnClose={() => setShowSnackBar(false)}
       snackbarOpen={showSnackBar}
     >
@@ -179,11 +300,7 @@ const OidcSettings = ({
           <Grid>
             <GeneralDetailsSection
               title={generalDetailsTitle}
-              fields={generateGeneralDetails(
-                generalDetails,
-                onGeneralDetailsChange,
-                showValidationErrors,
-              )}
+              fields={generalDetailsRenderOptions}
             />
           </Grid>
 
@@ -196,11 +313,7 @@ const OidcSettings = ({
               desc={apiDetailsDesc}
               fields={{
                 ...generatePlatform(generalDetails.platform, onPlatformChange),
-                ...generateApiDetails(
-                  apiDetails,
-                  onApiDetailsChange,
-                  showValidationErrors,
-                ),
+                ...apiDetailsRenderOptions,
               }}
             />
           </Grid>
@@ -219,7 +332,10 @@ const OidcSettings = ({
                 roleListProvider={searchRoleProvider}
               />
               {defaultRolesWarnings && (
-                <SettingsListWarning messages={defaultRolesWarnings} />
+                <SettingsListAlert
+                  severity="warning"
+                  messages={defaultRolesWarnings}
+                />
               )}
 
               <SettingsListControl
@@ -252,7 +368,10 @@ const OidcSettings = ({
                     strings={customRoleDialogStrings}
                   />
                   {customRolesWarnings && (
-                    <SettingsListWarning messages={customRolesWarnings} />
+                    <SettingsListAlert
+                      severity="warning"
+                      messages={customRolesWarnings}
+                    />
                   )}
                 </>
               )}

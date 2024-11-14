@@ -17,12 +17,10 @@
  */
 import { Card, CardContent, Divider, Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as R from "fp-ts/Record";
-import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
@@ -49,6 +47,7 @@ import AccessControlSection, {
   UnknownUserHandlingData,
 } from "./AccessControlSection";
 import GeneralDetailsSection, {
+  checkValidations,
   FieldRenderOptions,
   textFiledComponent,
 } from "../../../../components/GeneralDetailsSection";
@@ -454,28 +453,11 @@ const ConfigureLti13Platform = ({
     history.push(routes.Lti13PlatformsSettings.path);
   }, [history, saved]);
 
-  // check if all input value are valid
-  const checkGeneralDetailsValidation = (): boolean =>
-    pipe(
-      ltiGeneralDetailsRenderOptions,
-      R.toEntries,
-      A.every(([key, data]) => {
-        const fieldValue = pipe(
-          ltiGeneralDetails,
-          R.lookup(key),
-          O.getOrElseW(() => {
-            throw new Error(`Can't find general details for key: ${key}`);
-          }),
-        );
-        return data.validate?.(fieldValue) ?? true;
-      }),
-    );
-
   const handleSubmit = async () => {
     // once user try to submit the value, the validation error can be displayed.
     setShowValidationErrors(true);
     if (
-      checkGeneralDetailsValidation() &&
+      checkValidations(ltiGeneralDetailsRenderOptions, ltiGeneralDetails) &&
       checkAclExpressionLength(aclExpression)
     ) {
       // change page into saving mode

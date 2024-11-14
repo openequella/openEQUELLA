@@ -57,6 +57,7 @@ const {
   },
 } = languageStrings.settings.integration.oidc.apiDetails;
 const { select: selectLabel } = languageStrings.common.action;
+const { missingValue, invalidUrl } = languageStrings.error;
 
 export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
   ["GENERIC", "Generic"],
@@ -172,6 +173,7 @@ export const generateGeneralDetails = (
       (value) => onChange("issuer", value),
       showValidationErrors,
       isNonEmptyString,
+      missingValue,
     ),
   },
   authCodeClientId: {
@@ -186,12 +188,14 @@ export const generateGeneralDetails = (
       (value) => onChange("authCodeClientId", value),
       showValidationErrors,
       isNonEmptyString,
+      missingValue,
     ),
   },
   authCodeClientSecret: {
     label: authCodeClientSecretLabel,
     // Not required for updating but required for the initial creation.
     required: true,
+    validate: isNonEmptyString,
     component: textFiledComponent(
       authCodeClientSecretLabel,
       authCodeClientSecret,
@@ -199,12 +203,15 @@ export const generateGeneralDetails = (
       true,
       (value) => onChange("authCodeClientSecret", value),
       showValidationErrors,
+      isNonEmptyString,
+      missingValue,
     ),
   },
   authUrl: {
     label: authUrlLabel,
     desc: authUrlDesc,
     required: true,
+    validate: isNonEmptyString,
     component: textFiledComponent(
       authUrlLabel,
       authUrl,
@@ -212,6 +219,8 @@ export const generateGeneralDetails = (
       true,
       (value) => onChange("authUrl", value),
       showValidationErrors,
+      isNonEmptyString,
+      invalidUrl,
     ),
   },
   keysetUrl: {
@@ -227,6 +236,7 @@ export const generateGeneralDetails = (
       (value) => onChange("keysetUrl", value),
       showValidationErrors,
       isValidURL,
+      invalidUrl,
     ),
   },
   tokenUrl: {
@@ -242,13 +252,13 @@ export const generateGeneralDetails = (
       (value) => onChange("tokenUrl", value),
       showValidationErrors,
       isValidURL,
+      invalidUrl,
     ),
   },
   usernameClaim: {
     label: usernameClaimLabel,
     desc: usernameClaimDesc,
     required: false,
-    validate: S.isString,
     component: textFiledComponent(
       usernameClaimLabel,
       usernameClaim,
@@ -256,7 +266,6 @@ export const generateGeneralDetails = (
       true,
       (value) => onChange("usernameClaim", value),
       showValidationErrors,
-      S.isString,
     ),
   },
 });
@@ -282,6 +291,7 @@ const genericApiDetails = (
         (value) => onChange("apiUrl", value),
         showValidationErrors,
         isNonEmptyString,
+        invalidUrl,
       ),
     },
     apiClientId: {
@@ -297,6 +307,7 @@ const genericApiDetails = (
         (value) => onChange("apiClientId", value),
         showValidationErrors,
         isNonEmptyString,
+        missingValue,
       ),
     },
     apiClientSecret: {
@@ -312,6 +323,7 @@ const genericApiDetails = (
         (value) => onChange("apiClientSecret", value),
         showValidationErrors,
         isNonEmptyString,
+        missingValue,
       ),
     },
   };
@@ -346,7 +358,6 @@ export const generatePlatform = (
  */
 export const generateApiDetails = (
   apiDetails: ApiDetails,
-
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
 ) => {
