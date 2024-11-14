@@ -4,6 +4,7 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.auditlog.AuditLogService
 import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
+import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.{
   CommonDetails,
@@ -18,11 +19,13 @@ import org.scalatest.GivenWhenThen
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+
 import java.net.URI
 
 class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
   val mockAuditLogService: AuditLogService           = mock(classOf[AuditLogService])
+  val userService: UserService                       = mock(classOf[UserService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
 
   val auth0: GenericIdentityProvider = GenericIdentityProvider(
@@ -50,9 +53,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   when(CurrentUser.getUsername).thenReturn("Test user")
 
   class Fixture {
-    val service = new OidcConfigurationServiceImpl(mockConfigurationService,
-                                                   encryptionService,
-                                                   mockAuditLogService)
+    val service =
+      new OidcConfigurationServiceImpl(mockConfigurationService, mockAuditLogService, userService)
   }
 
   def fixture = new Fixture
