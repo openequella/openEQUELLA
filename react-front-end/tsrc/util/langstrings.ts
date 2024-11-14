@@ -238,6 +238,7 @@ export const languageStrings = {
       success: "Saved successfully.",
       fail: "Failed to save.",
       errors: "Some changes are not saved due to errors listed below",
+      checkForm: "Please check the form for errors.",
     },
     users: "Users",
     groups: "Groups",
@@ -375,6 +376,8 @@ export const languageStrings = {
       title: "Access Denied",
       message: "No permission to access %s - missing ACL(s): %s",
     },
+    missingValue: "Missing value",
+    invalidUrl: "Invalid URL",
   },
   errorpage: {
     title: "Error",
@@ -880,7 +883,7 @@ export const languageStrings = {
           },
         },
         oeqDetails: {
-          title: "openEquella (RP) details",
+          title: "openEQUELLA (RP) details",
           desc: "Below is the details for this openEQUELLA institution's OIDC interface. Please use this to configure your OIDC Platform.",
           redirect: "Redirection URL",
         },
