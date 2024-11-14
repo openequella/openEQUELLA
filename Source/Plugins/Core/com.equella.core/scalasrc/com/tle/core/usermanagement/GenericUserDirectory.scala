@@ -85,9 +85,11 @@ class GenericUserDirectory extends OidcUserDirectory {
 
   override type IDP = GenericIdentityProviderDetails
 
+  override type AuthResult = OAuthTokenState
+
   override def searchUsers(
       query: String): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
-    lazy val search: String => (IDP, OAuthTokenState) => Option[List[GenericIdPUser]] =
+    lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, List[GenericIdPUser]] =
       (query: String) =>
         (idp: IDP, tokenState: OAuthTokenState) => {
           val apiUrl   = idp.apiUrl.toString
@@ -95,12 +97,17 @@ class GenericUserDirectory extends OidcUserDirectory {
           request[List[GenericIdPUser]](endpoint, tokenState)
       }
 
-    val result = execute(search(query)).getOrElse(List.empty).map(toUserBean).asJavaCollection
-    new Pair(UserDirectory.ChainResult.CONTINUE, result)
+    val users = execute(search(query))
+      .leftMap(LOGGER.error(s"Failed to search users", _))
+      .getOrElse(List.empty)
+      .map(toUserBean)
+      .asJavaCollection
+
+    new Pair(UserDirectory.ChainResult.CONTINUE, users)
   }
 
   override def getInformationForUser(userId: String): UserBean = {
-    lazy val search: String => (IDP, OAuthTokenState) => Option[GenericIdPUser] =
+    lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, GenericIdPUser] =
       (id: String) =>
         (idp: IDP, tokenState: OAuthTokenState) => {
           val apiUrl   = idp.apiUrl.toString
@@ -108,7 +115,11 @@ class GenericUserDirectory extends OidcUserDirectory {
           request[GenericIdPUser](endpoint, tokenState)
       }
 
-    execute(search(userId)).map(toUserBean).orNull
+    execute(search(userId))
+      .leftMap(LOGGER.error(s"Failed to get information for user $userId", _))
+      .map(toUserBean)
+      .toOption
+      .orNull
   }
 
   override def getInformationForUsers(
@@ -118,8 +129,7 @@ class GenericUserDirectory extends OidcUserDirectory {
       .toMap
       .asJava
 
-  override def requestToken(idp: IDP): Option[OAuthTokenState] = {
-    val clientId = idp.apiClientId
+  override protected def authenticate(idp: IDP): Either[Throwable, AuthResult] = {
     val tokenUrl = idp.commonDetails.tokenUrl.toString
 
     // To get more details of what params are required, please refer to https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens.
@@ -130,32 +140,20 @@ class GenericUserDirectory extends OidcUserDirectory {
       Option(Map("audience" -> idp.apiUrl.toString))
     )
 
-    Either.catchNonFatal(OAuthClientService.tokenForClient(tokenRequest)) match {
-      case Right(token) => Option(token)
-      case Left(err) =>
-        LOGGER.error(s"Failed to request an Access Token from $tokenUrl for client $clientId", err)
-        None
-    }
+    Either.catchNonFatal(OAuthClientService.tokenForClient(tokenRequest))
   }
 
   // Send a GET request to the supplied endpoint with the supplied access token.
   private def request[T](endpoint: String, tokenState: OAuthTokenState)(
-      implicit decoder: Decoder[T]): Option[T] = {
+      implicit decoder: Decoder[T]): Either[Throwable, T] = {
     val req = basicRequest
       .get(uri"$endpoint")
       .response(asJson[T])
 
-    val result = for {
+    for {
       resp <- Either.catchNonFatal(
         OAuthClientService.requestWithToken(req, tokenState.token, tokenState.tokenType))
       data <- resp.body
     } yield data
-
-    result match {
-      case Right(data) => Option(data)
-      case Left(err) =>
-        LOGGER.error(s"Failed to search users from $endpoint", err)
-        None
-    }
   }
 }

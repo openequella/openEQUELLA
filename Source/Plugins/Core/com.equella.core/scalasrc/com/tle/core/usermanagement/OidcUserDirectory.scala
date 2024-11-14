@@ -20,7 +20,6 @@ package com.tle.core.usermanagement
 
 import cats.implicits._
 import com.tle.beans.ump.UserManagementSettings
-import com.tle.core.oauthclient.OAuthTokenState
 import com.tle.integration.oidc.idp.{IdentityProviderDetails, IdentityProviderPlatform}
 import com.tle.integration.oidc.service.OidcConfigurationService
 import com.tle.plugins.ump.AbstractUserDirectory
@@ -42,31 +41,41 @@ abstract class OidcUserDirectory extends AbstractUserDirectory {
   protected type IDP <: IdentityProviderDetails
 
   /**
+    * Type alias for the result of an authentication request (e.g. Access token for OAuth2
+    */
+  protected type AuthResult
+
+  /**
     * The platform which a UserDirectory implementation works for.
     */
   protected val targetPlatform: IdentityProviderPlatform.Value
 
   /**
-    * Request an OAuth2 access token from the configured Identity Provider.
+    * Perform an authentication with the configured Identity Provider and return the result.
     */
-  protected def requestToken(idp: IDP): Option[OAuthTokenState]
+  protected def authenticate(idp: IDP): Either[Throwable, AuthResult]
 
   /**
     * Execute the provided user search request through three steps:
     *
     * 1. Retrieve an enabled Identity Provider configured for the target platform;
     * 2. Request an OAuth2 access token from the Identity Provider;
-    * 3. Execute the request with the Identity Provider configuration and access token, and return the result.
+    * 3. Execute the request and return the result.
+    *
+    * @param request Function that requests resources from the Identity Provider with the configured IdP and the authentication result.
     */
-  protected def execute[T](request: (IDP, OAuthTokenState) => Option[T]): Option[T] = {
+  protected def execute[T](
+      request: (IDP, AuthResult) => Either[Throwable, T]): Either[Throwable, T] = {
     for {
-      idp <- oidcConfigurationService.get.toOption
-        .filter(_.commonDetails.enabled)
-        // Skip those working for other platforms
-        .filter(_.commonDetails.platform == targetPlatform)
-        .flatMap(idp => Either.catchNonFatal(idp.asInstanceOf[IDP]).toOption)
-      token  <- requestToken(idp)
-      result <- request(idp, token)
+      idp <- oidcConfigurationService.get
+        .filterOrElse(_.commonDetails.enabled,
+                      new IllegalStateException(s"The OIDC configuration is disabled."))
+        .filterOrElse(_.commonDetails.platform == targetPlatform,
+                      new IllegalStateException(
+                        s"The OIDC configuration doesn't work for platform $targetPlatform."))
+        .flatMap(idp => Either.catchNonFatal(idp.asInstanceOf[IDP]))
+      authResult <- authenticate(idp)
+      result     <- request(idp, authResult)
     } yield result
   }
 }
