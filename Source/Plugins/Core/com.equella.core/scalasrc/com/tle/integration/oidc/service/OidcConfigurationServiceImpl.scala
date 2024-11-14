@@ -20,7 +20,6 @@ package com.tle.integration.oidc.service
 
 import cats.implicits._
 import com.tle.common.beans.exception.NotFoundException
-import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.auditlog.AuditLogService
 import com.tle.core.encryption.EncryptionService
 import com.tle.core.guice.Bind
@@ -80,8 +79,6 @@ class OidcConfigurationServiceImpl extends OidcConfigurationService {
       val decryptedSecret = encryptionService.decrypt(commonDetails.authCodeClientSecret)
       commonDetails.copy(authCodeClientSecret = decryptedSecret)
     }
-
-    logger.info(s"Retrieving OIDC configuration by user ${CurrentUser.getUserID} ")
 
     Option(configurationService.getProperty(PROPERTY_NAME))
       .toRight(new NotFoundException("No Identity Provider configured"))
