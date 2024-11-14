@@ -66,11 +66,13 @@ import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.services.user.UserService;
 import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.core.usermanagement.OidcUserDirectory;
 import com.tle.core.usermanagement.standard.dao.UserInfoBackupDao;
 import com.tle.exceptions.AuthenticationException;
 import com.tle.exceptions.BadCredentialsException;
 import com.tle.exceptions.TokenException;
 import com.tle.exceptions.UsernameNotFoundException;
+import com.tle.integration.oidc.service.OidcConfigurationService;
 import com.tle.plugins.ump.UserDirectory;
 import com.tle.plugins.ump.UserDirectoryChain;
 import com.tle.plugins.ump.UserDirectoryChainImpl;
@@ -96,6 +98,7 @@ import org.java.plugin.registry.Extension.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import scala.jdk.javaapi.OptionConverters;
 
 @SuppressWarnings("nls")
 @Bind(UserService.class)
@@ -122,8 +125,10 @@ public class UserServiceImpl
   @Inject private AuditLogService auditLogService;
   @Inject private EventService eventService;
   @Inject private UserSessionService userSessionService;
+  @Inject private OidcConfigurationService oidcConfigurationService;
 
   @Inject private PluginTracker<UserDirectory> umpTracker;
+  @Inject private PluginTracker<OidcUserDirectory> oidcUserDirTracker;
   @Inject private PluginTracker<UserManagementLogonFilter> logonFilterTracker;
 
   @Inject private UserInfoBackupDao userInfoBackupDao;
@@ -619,6 +624,26 @@ public class UserServiceImpl
         LOGGER.error("Error creating wrapper: " + settingsClass, e);
       }
     }
+
+    // Only add an enabled OIDC User Directory that works for the configured platform to the chain.
+    OptionConverters.toJava(
+            oidcConfigurationService.get().toOption().filter(idp -> idp.commonDetails().enabled()))
+        .flatMap(
+            idp ->
+                oidcUserDirTracker.getExtensions().stream()
+                    .filter(
+                        ext -> {
+                          String targetPlatform = ext.getParameter("platform").valueAsString();
+                          String configuredPlatform = idp.commonDetails().platform().toString();
+                          return configuredPlatform.equals(targetPlatform);
+                        })
+                    .findFirst())
+        .ifPresent(
+            ext -> {
+              OidcUserDirectory dir = oidcUserDirTracker.getBeanByParameter(ext, "bean");
+              uds.add(dir);
+            });
+
     Map<Object, Object> chainAttributes = Maps.newHashMap();
 
     Collection<UserManagementLogonFilter> filters = logonFilterTracker.getNewBeanList();
