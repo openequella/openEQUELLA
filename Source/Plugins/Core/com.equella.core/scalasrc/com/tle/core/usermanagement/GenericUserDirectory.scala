@@ -66,7 +66,7 @@ object GenericIdPUser {
 }
 
 /**
-  * This primary target of this User Directory is Auth0's User Management APIs. However, it can also be reused for other
+  * The primary target of this User Directory is Auth0's User Management APIs. However, it can also be reused for other
   * platform's APIs as long as the OIDC configuration fits [[GenericIdentityProviderDetails]] and their APIs meet the
   * requirements listed below:
   *
@@ -125,7 +125,10 @@ class GenericUserDirectory extends OidcUserDirectory {
   override def getInformationForUsers(
       userIDs: util.Collection[String]): util.Map[String, UserBean] =
     userIDs.asScala
-      .map(id => id -> getInformationForUser(id))
+      .map(id => id -> Option(getInformationForUser(id)))
+      .collect {
+        case (id, Some(info)) => (id, info)
+      }
       .toMap
       .asJava
 
