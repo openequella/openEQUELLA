@@ -241,7 +241,7 @@ public class ReportingServiceImpl
     String extension = ".html";
     if (format.equals(IRenderOption.OUTPUT_FORMAT_PDF)) {
       extension = ".pdf";
-    } else if (format.equals(XLS_SPUDSOFT)) {
+    } else if (format.equals("xls")) {
       extension = ".xls";
     } else if (format.equals("doc")) {
       extension = ".doc";
