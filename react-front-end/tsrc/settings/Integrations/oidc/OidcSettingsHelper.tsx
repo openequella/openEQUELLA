@@ -18,10 +18,12 @@
 import Switch from "@mui/material/Switch";
 import {
   FieldRenderOptions,
-  textFiledComponent,
+  passwordMask,
+  passwordTextFiled,
+  plainTextFiled,
 } from "../../../components/GeneralDetailsSection";
 import { FormControl, MenuItem, Select } from "@mui/material";
-import { pipe } from "fp-ts/function";
+import { constTrue, pipe } from "fp-ts/function";
 import * as React from "react";
 import { languageStrings } from "../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../util/validation";
@@ -134,6 +136,7 @@ const platformSelector = (
  * @param fields Contains value of each field.
  * @param onChange Function to be called when a field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
+ * @param isConfigured Whether the server already has the general details.
  */
 export const generateGeneralDetails = (
   {
@@ -148,6 +151,7 @@ export const generateGeneralDetails = (
   }: OEQ.Oidc.IdentityProvider,
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
+  isConfigured: boolean,
 ): Record<string, FieldRenderOptions> => ({
   enabled: {
     label: enableLabel,
@@ -165,108 +169,109 @@ export const generateGeneralDetails = (
     desc: issuerDesc,
     required: true,
     validate: isNonEmptyString,
-    component: textFiledComponent(
-      issuerLabel,
-      issuer,
-      false,
-      true,
-      (value) => onChange("issuer", value),
+    component: plainTextFiled({
+      name: issuerLabel,
+      value: issuer,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("issuer", value),
       showValidationErrors,
-      isNonEmptyString,
-      missingValue,
-    ),
+      validate: isNonEmptyString,
+      errorMessage: missingValue,
+    }),
   },
   authCodeClientId: {
     label: authCodeClientIdLabel,
     required: true,
     validate: isNonEmptyString,
-    component: textFiledComponent(
-      authCodeClientIdLabel,
-      authCodeClientId,
-      false,
-      true,
-      (value) => onChange("authCodeClientId", value),
+    component: plainTextFiled({
+      name: authCodeClientIdLabel,
+      value: authCodeClientId,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("authCodeClientId", value),
       showValidationErrors,
-      isNonEmptyString,
-      missingValue,
-    ),
+      validate: isNonEmptyString,
+      errorMessage: missingValue,
+    }),
   },
   authCodeClientSecret: {
     label: authCodeClientSecretLabel,
-    // Not required for updating but required for the initial creation.
     required: true,
-    validate: isNonEmptyString,
-    component: textFiledComponent(
-      authCodeClientSecretLabel,
-      authCodeClientSecret,
-      false,
-      true,
-      (value) => onChange("authCodeClientSecret", value),
+    // Validation is not required for updating but required for the initial creation.
+    validate: isConfigured ? constTrue : isNonEmptyString,
+    component: passwordTextFiled({
+      name: authCodeClientSecretLabel,
+      value: authCodeClientSecret,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("authCodeClientSecret", value),
       showValidationErrors,
-      isNonEmptyString,
-      missingValue,
-    ),
+      validate: isConfigured ? constTrue : isNonEmptyString,
+      errorMessage: missingValue,
+      placeholder: isConfigured ? passwordMask : undefined,
+    }),
   },
   authUrl: {
     label: authUrlLabel,
     desc: authUrlDesc,
     required: true,
-    validate: isNonEmptyString,
-    component: textFiledComponent(
-      authUrlLabel,
-      authUrl,
-      false,
-      true,
-      (value) => onChange("authUrl", value),
+    validate: isValidURL,
+    component: plainTextFiled({
+      name: authUrlLabel,
+      value: authUrl,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("authUrl", value),
       showValidationErrors,
-      isNonEmptyString,
-      invalidUrl,
-    ),
+      validate: isValidURL,
+      errorMessage: invalidUrl,
+    }),
   },
   keysetUrl: {
     label: keysetUrlLabel,
     desc: keysetUrlDesc,
     required: true,
     validate: isValidURL,
-    component: textFiledComponent(
-      keysetUrlLabel,
-      keysetUrl,
-      false,
-      true,
-      (value) => onChange("keysetUrl", value),
+    component: plainTextFiled({
+      name: keysetUrlLabel,
+      value: keysetUrl,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("keysetUrl", value),
       showValidationErrors,
-      isValidURL,
-      invalidUrl,
-    ),
+      validate: isValidURL,
+      errorMessage: invalidUrl,
+    }),
   },
   tokenUrl: {
     label: tokenUrlLabel,
     desc: tokenUrlDesc,
     required: true,
     validate: isValidURL,
-    component: textFiledComponent(
-      tokenUrlLabel,
-      tokenUrl,
-      false,
-      true,
-      (value) => onChange("tokenUrl", value),
+    component: plainTextFiled({
+      name: tokenUrlLabel,
+      value: tokenUrl,
+      disabled: false,
+      required: true,
+      onChange: (value) => onChange("tokenUrl", value),
       showValidationErrors,
-      isValidURL,
-      invalidUrl,
-    ),
+      validate: isValidURL,
+      errorMessage: invalidUrl,
+    }),
   },
   usernameClaim: {
     label: usernameClaimLabel,
     desc: usernameClaimDesc,
     required: false,
-    component: textFiledComponent(
-      usernameClaimLabel,
-      usernameClaim,
-      false,
-      true,
-      (value) => onChange("usernameClaim", value),
+    component: plainTextFiled({
+      name: usernameClaimLabel,
+      value: usernameClaim,
+      disabled: false,
+      required: false,
+      onChange: (value) => onChange("usernameClaim", value),
       showValidationErrors,
-    ),
+    }),
   },
 });
 
@@ -274,6 +279,7 @@ const genericApiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   apiDetails: GenericApiDetails,
+  isConfigured: boolean,
 ) => {
   const { apiUrl, apiClientId, apiClientSecret } = apiDetails;
 
@@ -282,49 +288,51 @@ const genericApiDetails = (
       label: apiUrlLabel,
       desc: apiUrlDesc,
       required: true,
-      validate: isNonEmptyString,
-      component: textFiledComponent(
-        apiUrlLabel,
-        apiUrl,
-        false,
-        true,
-        (value) => onChange("apiUrl", value),
+      validate: isValidURL,
+      component: plainTextFiled({
+        name: apiUrlLabel,
+        value: apiUrl,
+        disabled: false,
+        required: true,
+        onChange: (value) => onChange("apiUrl", value),
         showValidationErrors,
-        isNonEmptyString,
-        invalidUrl,
-      ),
+        validate: isValidURL,
+        errorMessage: invalidUrl,
+      }),
     },
     apiClientId: {
       label: apiClientIdLabel,
       desc: apiClientIdDesc,
       required: true,
       validate: isNonEmptyString,
-      component: textFiledComponent(
-        apiClientIdLabel,
-        apiClientId,
-        false,
-        true,
-        (value) => onChange("apiClientId", value),
+      component: plainTextFiled({
+        name: apiClientIdLabel,
+        value: apiClientId,
+        disabled: false,
+        required: true,
+        onChange: (value) => onChange("apiClientId", value),
         showValidationErrors,
-        isNonEmptyString,
-        missingValue,
-      ),
+        validate: isNonEmptyString,
+        errorMessage: missingValue,
+      }),
     },
     apiClientSecret: {
       label: apiClientSecretLabel,
       desc: apiClientSecretDesc,
       required: true,
-      validate: isNonEmptyString,
-      component: textFiledComponent(
-        apiClientSecretLabel,
-        apiClientSecret,
-        false,
-        true,
-        (value) => onChange("apiClientSecret", value),
+      // Validation is not required for updating but required for the initial creation.
+      validate: isConfigured ? constTrue : isNonEmptyString,
+      component: passwordTextFiled({
+        name: apiClientSecretLabel,
+        value: apiClientSecret,
+        disabled: false,
+        required: true,
+        onChange: (value) => onChange("apiClientSecret", value),
         showValidationErrors,
-        isNonEmptyString,
-        missingValue,
-      ),
+        validate: isConfigured ? constTrue : isNonEmptyString,
+        errorMessage: missingValue,
+        placeholder: isConfigured ? passwordMask : undefined,
+      }),
     },
   };
 };
@@ -355,11 +363,13 @@ export const generatePlatform = (
 
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
+ * @param isConfigured Whether the server already has the API details.
  */
 export const generateApiDetails = (
   apiDetails: ApiDetails,
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
+  isConfigured: boolean,
 ) => {
   const p = apiDetails.platform;
   switch (p) {
@@ -368,6 +378,7 @@ export const generateApiDetails = (
         apiDetailsOnChange,
         showValidationErrors,
         apiDetails,
+        isConfigured,
       );
     default:
       throw new Error(`Unsupported platform: ${p}`);

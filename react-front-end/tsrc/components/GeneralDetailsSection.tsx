@@ -26,6 +26,9 @@ import SettingsListControl from "./SettingsListControl";
 import { languageStrings } from "../util/langstrings";
 import { OrdAsIs } from "../util/Ord";
 
+// unicode: U+2022 bullet
+export const passwordMask = "••••••••••";
+
 /**
  * The base field render options for the general details section.
  */
@@ -76,28 +79,67 @@ export const checkValidations = (
     }),
   );
 
+interface TextFiledCommonProps {
+  /**
+   * The name of the text field.
+   */
+  name: string;
+  /**
+   * The value of the text field.
+   */
+  value: string | undefined;
+  /**
+   * The disabled flag for the text field.
+   */
+  disabled: boolean;
+  /**
+   * The required flag for the text field.
+   */
+  required: boolean;
+  /**
+   * The function to handle the change event.
+   */
+  onChange: (value: string) => void;
+  /**
+   * The flag to indicate whether to show validation errors.
+   */
+  showValidationErrors: boolean;
+  /**
+   * The function to validate the value of the text field.
+   */
+  validate?: (value: unknown) => boolean;
+  /**
+   * The error message to show under the text field.
+   */
+  errorMessage?: string;
+  /**
+   * The placeholder for the text field.
+   */
+  placeholder?: string;
+}
+
+interface TextFiledProps extends TextFiledCommonProps {
+  /**
+   * Type of the TextField which must be one of the valid HTML5 input types.
+   */
+  type: string;
+}
+
 /**
  * Render a text field component for the general details section.
- *
- * @param name The name of the text field.
- * @param value The value of the text field.
- * @param disabled The disabled flag for the text field.
- * @param required The required flag for the text field.
- * @param onChange The function to handle the change event.
- * @param showValidationErrors The flag to indicate whether to show validation errors.
- * @param validate The function to validate the value of the text field.
- * @param errorMessage The error message to show under the text field.
  */
-export const textFiledComponent = (
-  name: string,
-  value: string | undefined,
-  disabled: boolean,
-  required: boolean,
-  onChange: (value: string) => void,
-  showValidationErrors: boolean,
-  validate?: (value: unknown) => boolean,
-  errorMessage?: string,
-) => {
+export const textFiledComponent = ({
+  name,
+  value,
+  disabled,
+  required,
+  onChange,
+  showValidationErrors,
+  validate,
+  errorMessage,
+  placeholder,
+  type,
+}: TextFiledProps) => {
   const showError = validate && showValidationErrors ? !validate(value) : false;
   return (
     <TextField
@@ -105,14 +147,29 @@ export const textFiledComponent = (
       error={showError}
       aria-label={name}
       required={required}
-      value={value}
+      placeholder={placeholder}
+      // Set a default empty string value to prevent uncontrolled input warning.
+      value={value ?? ""}
       size="small"
       disabled={disabled}
       onChange={(event) => onChange(event.target.value)}
       helperText={showError ? errorMessage : undefined}
+      type={type}
     />
   );
 };
+
+/**
+ * Render a password type of text field.
+ */
+export const passwordTextFiled = (props: TextFiledCommonProps) =>
+  textFiledComponent({ ...props, type: "password" });
+
+/**
+ * Render a password type of text field.
+ */
+export const plainTextFiled = (props: TextFiledCommonProps) =>
+  textFiledComponent({ ...props, type: "text" });
 
 /**
  * This component is used to display and edit different types of input details in a form view.
