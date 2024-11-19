@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.cal;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
-import java.time.Duration;
 import java.util.function.Function;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
@@ -31,7 +30,7 @@ public class CALOverridePage extends AbstractPage<CALOverridePage> {
             (Function<WebDriver, Object>)
                 webDriver -> {
                   try {
-                    new WebDriverWait(webDriver, Duration.ofSeconds(1))
+                    new WebDriverWait(webDriver, 1)
                         .until(ExpectedConditions.stalenessOf(getContinueButton()));
                     return false;
                   } catch (TimeoutException toe) {

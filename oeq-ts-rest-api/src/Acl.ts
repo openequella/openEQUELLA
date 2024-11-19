@@ -33,7 +33,8 @@ export type SETTING =
   | 'loginnoticeeditor'
   | 'lti13platforms'
   | 'searching'
-  | 'theme';
+  | 'theme'
+  | 'oidc';
 
 const ACL_PRIVILEGE_CHECK_PATH = '/acl/privilegecheck';
 

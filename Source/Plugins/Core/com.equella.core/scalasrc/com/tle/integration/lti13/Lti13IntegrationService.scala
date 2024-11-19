@@ -23,6 +23,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.tle.core.guice.Bind
 import com.tle.core.lti13.service.LtiPlatformService
 import com.tle.core.webkeyset.service.WebKeySetService
+import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.web.integration.guice.IntegrationModule
 import com.tle.web.integration.service.IntegrationService
 import com.tle.web.integration.{

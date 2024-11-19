@@ -4,7 +4,7 @@ import com.tle.webtests.pageobject.PageObject;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.WrapsElement;
+import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 

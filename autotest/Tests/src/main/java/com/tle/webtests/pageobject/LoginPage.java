@@ -61,4 +61,8 @@ public class LoginPage extends AbstractPage<LoginPage> {
   public boolean hasAutoLogin() {
     return isPresent(By.className("autologinlink"));
   }
+
+  public boolean hasOidcLoginButton() {
+    return isPresent(By.name("_oidcLoginSection_loginButton"));
+  }
 }

@@ -17,14 +17,12 @@
  */
 import * as A from 'fp-ts/Array';
 import { pipe } from 'fp-ts/function';
-import * as M from 'fp-ts/Map';
 import * as O from 'fp-ts/Option';
-import * as R from 'fp-ts/Record';
-import * as SET from 'fp-ts/Set';
-import * as S from 'fp-ts/string';
 import * as t from 'io-ts';
 import { DELETE, GET, POST_void, PUT } from './AxiosInstance';
 import type { BatchOperationResponse } from './BatchOperationResponse';
+import { toRecord, fromRecord } from './fp-ts-extended/Map.extended';
+import { fromStringArray, toStringArray } from './fp-ts-extended/Set.extended';
 import { LtiPlatformRawCodec } from './gen/LtiPlatform';
 import { validate } from './Utils';
 
@@ -140,47 +138,30 @@ export interface LtiPlatformEnabledStatus {
   enabled: boolean;
 }
 
-// Helper functions to convert an array of string to a set of string, and vice versa.
-const arrayToSet: (array: string[]) => Set<string> = SET.fromArray(S.Ord);
-const setToArray: (set: Set<string>) => string[] = SET.toArray(S.Ord);
-
 const convertToLtiPlatform = (platform: LtiPlatformRaw): LtiPlatform => ({
   ...platform,
-  instructorRoles: arrayToSet(platform.instructorRoles),
-  unknownRoles: arrayToSet(platform.unknownRoles),
+  instructorRoles: fromStringArray(platform.instructorRoles),
+  unknownRoles: fromStringArray(platform.unknownRoles),
   unknownUserDefaultGroups: pipe(
     O.fromNullable(platform.unknownUserDefaultGroups),
-    O.map(arrayToSet),
+    O.map(fromStringArray),
     O.toUndefined
   ),
-  customRoles: pipe(
-    platform.customRoles,
-    R.toEntries,
-    A.map<[string, string[]], [string, Set<string>]>(([ltiRole, targets]) => [
-      ltiRole,
-      arrayToSet(targets),
-    ]),
-    (entries) => new Map(entries)
-  ),
+  customRoles: fromRecord(platform.customRoles, fromStringArray),
 });
 
 export const convertToRawLtiPlatform = (
   platform: LtiPlatform
 ): LtiPlatformRaw => ({
   ...platform,
-  instructorRoles: setToArray(platform.instructorRoles),
-  unknownRoles: setToArray(platform.unknownRoles),
+  instructorRoles: toStringArray(platform.instructorRoles),
+  unknownRoles: toStringArray(platform.unknownRoles),
   unknownUserDefaultGroups: pipe(
     O.fromNullable(platform.unknownUserDefaultGroups),
-    O.map(setToArray),
+    O.map(toStringArray),
     O.toUndefined
   ),
-  customRoles: pipe(
-    platform.customRoles,
-    M.map(setToArray),
-    M.toArray(S.Ord),
-    R.fromEntries
-  ),
+  customRoles: toRecord(platform.customRoles, toStringArray),
 });
 
 // Helper function to encode the provided text twice.

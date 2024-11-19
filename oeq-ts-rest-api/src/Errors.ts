@@ -58,6 +58,9 @@ export class ApiError extends Error {
   }
 }
 
+export const isApiError = (error: unknown): error is ApiError =>
+  error instanceof ApiError;
+
 const handleLegacyErrorResponse: (responseData: unknown) => O.Option<ApiError> =
   flow(
     O.fromPredicate(LegacyErrorResponseCodec.is),

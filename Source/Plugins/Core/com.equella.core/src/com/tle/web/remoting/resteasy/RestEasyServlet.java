@@ -52,6 +52,7 @@ import com.tle.web.api.loginnotice.PostLoginNoticeResource;
 import com.tle.web.api.loginnotice.PreLoginNoticeResource;
 import com.tle.web.api.lti.LtiPlatformResource;
 import com.tle.web.api.newuitheme.NewUIThemeResource;
+import com.tle.web.api.oidc.OidcConfigurationResource;
 import com.tle.web.api.search.SearchResource;
 import com.tle.web.api.settings.AdvancedSearchResource;
 import com.tle.web.api.settings.FacetedSearch.FacetedSearchClassificationResource;
@@ -140,6 +141,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           BrowseHierarchyResource.class,
           HierarchyResource.class,
           NewUIThemeResource.class,
+          OidcConfigurationResource.class,
           PostLoginNoticeResource.class,
           PreLoginNoticeResource.class,
           SearchResource.class);

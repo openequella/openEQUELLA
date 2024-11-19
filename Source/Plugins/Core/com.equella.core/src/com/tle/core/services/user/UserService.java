@@ -19,6 +19,7 @@
 package com.tle.core.services.user;
 
 import com.tle.beans.user.UserInfoBackup;
+import com.tle.common.usermanagement.user.ModifiableUserState;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
@@ -92,4 +93,7 @@ public interface UserService extends RemoteUserService {
 
   /** This really is just for debugging. */
   String convertUserStateToString(UserState us);
+
+  ModifiableUserState setupUserState(
+      ModifiableUserState auth, WebAuthenticationDetails details, boolean authenticated);
 }

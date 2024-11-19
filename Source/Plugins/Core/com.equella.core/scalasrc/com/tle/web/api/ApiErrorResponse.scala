@@ -18,12 +18,18 @@
 
 package com.tle.web.api
 
+import com.tle.common.beans.exception.NotFoundException
+import com.tle.exceptions.{AccessDeniedException, AuthenticationException}
+
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 
 case class ApiResponseMessage(message: String)
 case class ApiErrorResponse(errors: Seq[ApiResponseMessage])
 
+/**
+  * Helper object to centralise the creation of error responses and provide a general error handler.
+  */
 object ApiErrorResponse {
 
   def resourceNotFound(errors: String*): Response = {
@@ -49,6 +55,21 @@ object ApiErrorResponse {
   def conflictError(errors: String*): Response = {
     buildErrorResponse(Status.CONFLICT, errors)
   }
+
+  /**
+    * Error handler to create an error response for an API request.
+    * More exceptions will be supported as needed.
+    *
+    * @param error Error captured in a API request which will determine what error code to be returned.
+    */
+  def apiErrorHandler(error: Throwable): Response =
+    error match {
+      case e: NotFoundException        => resourceNotFound(e.getMessage)
+      case e: IllegalArgumentException => badRequest(e.getMessage)
+      case e: AccessDeniedException    => forbiddenRequest(e.getMessage)
+      case e: AuthenticationException  => unauthorizedRequest(e.getMessage)
+      case e                           => serverError(e.getMessage)
+    }
 
   private def buildErrorResponse(status: Status, errors: Seq[String]): Response = {
     Response.status(status).entity(responseBody(errors)).build()

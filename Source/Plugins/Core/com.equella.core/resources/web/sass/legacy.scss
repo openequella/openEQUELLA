@@ -5425,14 +5425,6 @@ ul.treeview li.collapsable a.hitarea::before {
 $loginLabelWidth: 100px;
 $loginTextBoxWidth: 200px;
 
-#_logonButton {
-  display: block;
-  margin-left: $loginLabelWidth + $minimalMargin;
-  margin-top: $doubleMargin;
-  width: $loginTextBoxWidth;
-  @include boxShadow;
-}
-
 #username {
   width: $loginTextBoxWidth - ($doubleMargin * 2);
 }
@@ -5452,7 +5444,8 @@ label[for="password"] {
 }
 
 button:focus {
-  outline: lightgrey dashed 1px;
+  outline: #4b4842 dashed 2px;
+  outline-offset: 2px;
 }
 
 .manualdatafixes {
@@ -5780,4 +5773,97 @@ button:focus {
 // Currently, the close button has a position absolute and make sure it locate inside the dialog
 .moderation_comments_dialog {
   position: relative;
+}
+
+/*****************************************************************************
+  Styles applied to the EBP Login page
+*****************************************************************************/
+#login-page {
+  display: grid;
+  // 4 columns in XXL or even larger screens
+  grid-template-columns: 1fr auto 1fr 1.5fr;
+  align-items: center;
+  gap: $doubleMargin;
+}
+
+#login-page #native-login #password {
+  // Full width minus 32px of margins and 2px of border width
+  width: calc(100% - 34px);
+}
+
+#login-page #native-login #username {
+  // Same as password
+  width: calc(100% - 34px);
+}
+
+#login-page #native-login button {
+  width: 100%;
+  @include boxShadow;
+}
+
+#login-page #divider {
+  // A single vertical line as a divider in multiple column layout
+  width: 1px;
+  background-color: lightgrey;
+  height: 100%;
+}
+
+#login-page #oidc-login {
+  height: 100%;
+}
+
+#login-page #oidc-login button {
+  width: 100%;
+}
+
+@media only screen and (max-width: $extra-large-breakpoint-max) {
+  // Still show 4 columns in XL screens but reduce the size the last one.
+  #login-page {
+    grid-template-columns: 1fr auto 1fr 1fr;
+  }
+}
+
+@media only screen and (max-width: $large-breakpoint-max) {
+  // Show 3 columns in large screens
+  #login-page {
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+
+@media only screen and (max-width: $medium-breakpoint-max) {
+  // One column and 3 rows in small and medium screens
+  #login-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto 1fr;
+  }
+
+  // Divider consists of 3 parts: text in the middle and horizontal lines on sides
+  #login-page #divider {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    background-color: transparent;
+    gap: $singleMargin;
+  }
+
+  #login-page #divider #left {
+    background-color: lightgrey;
+    height: 1px;
+    margin-top: $singleMargin + $minimalMargin;
+    margin-left: $doubleMargin + $minimalMargin;
+  }
+
+  // Similar to `left` but with 20px margin on the right
+  #login-page #divider #right {
+    background-color: lightgrey;
+    height: 1px;
+    margin-top: $singleMargin + $minimalMargin;
+    margin-right: $doubleMargin + $minimalMargin;
+  }
+
+  #login-page #divider #center::after {
+    content: "Or sign in with SSO";
+    font-size: 12px;
+    color: grey;
+  }
 }

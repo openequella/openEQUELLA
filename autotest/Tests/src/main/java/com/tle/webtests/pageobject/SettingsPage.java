@@ -18,6 +18,7 @@ import com.tle.webtests.pageobject.settings.MailSettingsPage;
 import com.tle.webtests.pageobject.settings.ManualDataFixesPage;
 import com.tle.webtests.pageobject.settings.MimeSearchPage;
 import com.tle.webtests.pageobject.settings.OAISettingsPage;
+import com.tle.webtests.pageobject.settings.OidcSettingsPage;
 import com.tle.webtests.pageobject.settings.PSSSettingsPage;
 import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
@@ -179,6 +180,10 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   public LTI13PlatformsSettingsPage lti13PlatformsSettingsPage() {
     return clickSetting(
         GROUP_INTEGRATIONS, "LTI 1.3 platforms", new LTI13PlatformsSettingsPage(context));
+  }
+
+  public OidcSettingsPage oidcSettingsPage() {
+    return clickSetting(GROUP_INTEGRATIONS, "OIDC", new OidcSettingsPage(context));
   }
 
   /** Enable or disable new search UI. */

@@ -27,6 +27,7 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.integration.lti13.UnknownUserHandling
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+
 import java.net.URL
 import scala.jdk.CollectionConverters._
 
@@ -141,7 +142,8 @@ object LtiPlatformBean {
   }
 
   /**
-    * Check values of mandatory fields for LtiPlatformBean and accumulate all the errors.
+    * Check values of mandatory fields and those having special requirements (e.g. maximum length)
+    * for LtiPlatformBean and accumulate all the errors.
     * Return a ValidatedNel which is either a list of error messages or the checked LtiPlatformBean.
     */
   def validateLtiPlatformBean(bean: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
@@ -183,12 +185,18 @@ object LtiPlatformBean {
     def checkACLExpression =
       bean.allowExpression match {
         case Some(expression) =>
-          val evaluator = new AclExpressionEvaluator
           Either
-          // We only check whether the provided ACl Expression is valid so what User State to be used
-          // and whether the user is owner do not really matter.
-            .catchNonFatal(evaluator.evaluate(expression, CurrentUser.getUserState, false))
-            .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
+            .cond(expression.length <= 255,
+                  expression,
+                  "ACL expression is too long (maximum 255 characters allowed)")
+            .flatMap { exp =>
+              val evaluator = new AclExpressionEvaluator
+              Either
+              // We only check whether the provided ACl Expression is valid so what User State to be used
+              // and whether the user is owner do not really matter.
+                .catchNonFatal(evaluator.evaluate(exp, CurrentUser.getUserState, false))
+                .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
+            }
             .toValidatedNel
         case None => Validated.valid()
       }

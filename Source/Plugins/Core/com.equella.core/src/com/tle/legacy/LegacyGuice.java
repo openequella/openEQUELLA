@@ -66,6 +66,7 @@ import com.tle.core.services.user.UserSessionService;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.core.usermanagement.standard.dao.TLEUserDao;
 import com.tle.freetext.FreetextIndex;
+import com.tle.integration.oidc.OidcSettingsPrivilegeTreeProvider;
 import com.tle.mycontent.service.MyContentService;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.search.service.ExportService;
@@ -208,6 +209,8 @@ public class LegacyGuice extends AbstractModule {
   public static LoginNoticeEditorPrivilegeTreeProvider loginNoticeEditorPrivilegeTreeProvider;
 
   @Inject public static LTI13PlatformsSettingsPrivilegeTreeProvider lti13PrivilegeTreeProvider;
+
+  @Inject public static OidcSettingsPrivilegeTreeProvider oidcSettingsPrivilegeTreeProvider;
 
   @Inject public static LoginSettingsPrivilegeTreeProvider loginPrivProvider;
 

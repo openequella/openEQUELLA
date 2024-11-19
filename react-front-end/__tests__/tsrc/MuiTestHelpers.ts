@@ -78,3 +78,36 @@ export const selectOption = async (
   // Click the option in the list
   await userEvent.click(getSelectOption(optionText));
 };
+
+/**
+ * Helper to get Mui text field by aria label.
+ *
+ * @param container The container element.
+ * @param label The aria label of the text field.
+ */
+export const getMuiTextFieldByAriaLabel = (
+  container: HTMLElement,
+  label: string,
+): Element => {
+  const input = container.querySelector(`div[aria-label='${label}'] input`);
+  if (!input) {
+    throw new Error(`Unable to get text field: ${label}`);
+  }
+  return input;
+};
+
+/**
+ * Helper to type in text field input.
+ *
+ * @param container The container element.
+ * @param label The aria label of the text field.
+ * @param value The value to type in.
+ */
+export const fillMuiTextFieldByAriaLabel = async (
+  container: HTMLElement,
+  label: string,
+  value: string,
+): Promise<void> => {
+  const input = getMuiTextFieldByAriaLabel(container, label);
+  await userEvent.type(input, `${value}`);
+};

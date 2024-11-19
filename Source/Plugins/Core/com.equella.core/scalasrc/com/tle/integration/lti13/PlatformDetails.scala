@@ -20,7 +20,7 @@ package com.tle.integration.lti13
 
 import com.tle.core.lti13.bean.LtiPlatformBean
 
-import java.net.URL
+import java.net.{URI, URL}
 
 /**
   * Definition for how unknown users should be handled:
@@ -81,8 +81,8 @@ object PlatformDetails {
       platformId = bean.platformId,
       name = bean.name,
       clientId = bean.clientId,
-      authUrl = new URL(bean.authUrl),
-      keysetUrl = new URL(bean.keysetUrl),
+      authUrl = new URI(bean.authUrl).toURL,
+      keysetUrl = new URI(bean.keysetUrl).toURL,
       usernamePrefix = bean.usernamePrefix,
       usernameSuffix = bean.usernameSuffix,
       usernameClaim = bean.usernameClaim,

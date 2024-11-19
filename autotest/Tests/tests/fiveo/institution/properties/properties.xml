@@ -455,4 +455,8 @@
     <string>security.shared.secrets.0.ignoreFailure</string>
     <string>false</string>
   </entry>
+  <entry>
+    <string>OIDC_IDENTITY_PROVIDER</string>
+    <string>{"commonDetails":{"name":"Auth0","platform":"GENERIC","authCodeClientId":"your client ID","authCodeClientSecret":"IB+/6M5RYOSJo+JgtTAdBQ==","authUrl":"https://your-server/authorize","keysetUrl":"https://your-server/.well-known/jwks.json","tokenUrl":"https://your-server/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://your-server/api/v2/users","apiClientId":"your api client id","apiClientSecret":"RF9dD5OGQtLirYfv4qilvtqqS74ntksSvNs39IiV1Vc="}</string>
+  </entry>
 </map>

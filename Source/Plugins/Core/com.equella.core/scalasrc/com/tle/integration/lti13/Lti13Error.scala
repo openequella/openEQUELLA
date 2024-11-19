@@ -18,94 +18,45 @@
 
 package com.tle.integration.lti13
 
-import com.tle.integration.lti13.ErrorResponseCode.Code
-
-import java.net.URI
-import scala.util.Try
-
-/**
-  * Valid error codes for Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749
-  * (OAuth 2).
-  */
-object ErrorResponseCode extends Enumeration {
-  type Code = Value
-
-  val invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope,
-  server_error, temporarily_unavailable = Value
-}
+import com.tle.integration.oauth2.error.authorisation.AuthorisationError
+import com.tle.integration.oauth2.error.general.GeneralError
+import com.tle.integration.util.NO_FURTHER_INFO
 
 /**
-  * An Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749 (OAuth 2).
-  *
-  * @param error REQUIRED.  A single ASCII [USASCII] error code from {@link ErrorResponseCode}
-  * @param error_description OPTIONAL.  Human-readable ASCII [USASCII] text providing additional
-  *                          information, used to assist the client developer in understanding the
-  *                          error that occurred. Values for the "error_description" parameter
-  *                          MUST NOT include characters outside the set %x20-21 / %x23-5B / %x5D-7E.
-  * @param error_uri OPTIONAL.  A URI identifying a human-readable web page with information about
-  *                  the error, used to provide the client developer with additional information
-  *                  about the error. Values for the "error_uri" parameter MUST conform to the
-  *                  URI-reference syntax and thus MUST NOT include characters outside the set
-  *                  %x21 / %x23-5B / %x5D-7E.
-  * @param state REQUIRED if a "state" parameter was present in the client authorization request.
-  *              The exact value received from the client.
+  * Represent all the possible errors occurred during the LTI 1.3 integration, including all the standard OAuth2 errors
+  * and LTI 1.3 specific errors.
   */
-case class ErrorResponse(error: ErrorResponseCode.Code,
-                         error_description: Option[String],
-                         error_uri: Option[URI],
-                         state: String)
-object ErrorResponse {
-  val PARAM_ERRORCODE   = "error"
-  val PARAM_DESCRIPTION = "error_description"
-  val PARAM_URI         = "error_uri"
-  val PARAM_STATE       = "state"
-
-  def apply(params: Map[String, Array[String]]): Option[ErrorResponse] = {
-    val param    = getParam(params)
-    val uriParam = getUriParam(param)
-
-    for {
-      error <- param(PARAM_ERRORCODE).flatMap(asString =>
-        Try(ErrorResponseCode.withName(asString)).toOption)
-      error_description = param(PARAM_DESCRIPTION)
-      error_uri         = uriParam(PARAM_URI)
-      state <- param(PARAM_STATE)
-    } yield ErrorResponse(error, error_description, error_uri, state)
-  }
-}
-
 sealed abstract class Lti13Error {
-  val code: Code
-}
-
-trait HasMessage {
   val msg: String
 }
 
-case class InvalidState(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.invalid_request
-}
-
-case class InvalidJWT(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.invalid_request
-}
-
-case class PlatformDetailsError(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.server_error
+object Lti13Error {
+  // A couple implicit functions to help transform GeneralError to Lti13Error.
+  implicit def fromGeneralError(error: GeneralError): Lti13Error = new Lti13Error {
+    override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
+  }
+  implicit def fromEither[T](result: Either[GeneralError, T]): Either[Lti13Error, T] =
+    result.left.map(fromGeneralError)
 }
 
 /**
-  * Indicates a generic server error that can't be better classified with one of the other
-  * `Lti13Error`s.
+  * Typically used for an error related to an LTI 1.3 platform configuration.
   */
-case class ServerError(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.server_error
+final case class PlatformDetailsError(msg: String) extends Lti13Error
+
+/**
+  * Due to not having the feature of union types in Scala v2, this case class is created as a wrapper of the standard
+  * OAuth2 errors to help reduce the complexity of error handling.
+  */
+final case class OAuth2LayerError(error: AuthorisationError) extends Lti13Error {
+  val code: String         = error.code.toString
+  override val msg: String = error.msg.getOrElse(NO_FURTHER_INFO)
 }
 
-case class NotAuthorized(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.unauthorized_client
-}
-
-case class AccessDenied(msg: String) extends Lti13Error with HasMessage {
-  override val code: Code = ErrorResponseCode.access_denied
+object OAuth2LayerError {
+  // A couple implicit functions to help transform AuthorisationError to OAuth2LayerError.
+  implicit def fromOAuth2Error(error: AuthorisationError): OAuth2LayerError =
+    OAuth2LayerError(error)
+  implicit def fromEither[T](result: Either[AuthorisationError, T]): Either[OAuth2LayerError, T] =
+    result.left.map(fromOAuth2Error)
 }
