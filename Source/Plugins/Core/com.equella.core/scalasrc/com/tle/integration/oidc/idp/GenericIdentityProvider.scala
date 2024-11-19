@@ -32,7 +32,7 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
   * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token
   *                               to use with the Identity Provider's API (for user searching etc)
   */
-case class GenericIdentityProvider(
+final case class GenericIdentityProvider(
     issuer: String,
     authCodeClientId: String,
     authCodeClientSecret: Option[String],

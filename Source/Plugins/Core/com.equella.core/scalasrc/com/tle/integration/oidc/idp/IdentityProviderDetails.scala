@@ -42,17 +42,17 @@ import java.net.{URI, URL}
   * @param defaultRoles A list of default OEQ roles to assign to the user's session.
   * @param roleConfig Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
   */
-case class CommonDetails(platform: IdentityProviderPlatform.Value,
-                         issuer: String,
-                         authCodeClientId: String,
-                         authCodeClientSecret: String,
-                         authUrl: URL,
-                         keysetUrl: URL,
-                         tokenUrl: URL,
-                         usernameClaim: Option[String],
-                         defaultRoles: Set[String],
-                         roleConfig: Option[RoleConfiguration],
-                         enabled: Boolean,
+final case class CommonDetails(platform: IdentityProviderPlatform.Value,
+                               issuer: String,
+                               authCodeClientId: String,
+                               authCodeClientSecret: String,
+                               authUrl: URL,
+                               keysetUrl: URL,
+                               tokenUrl: URL,
+                               usernameClaim: Option[String],
+                               defaultRoles: Set[String],
+                               roleConfig: Option[RoleConfiguration],
+                               enabled: Boolean,
 )
 
 sealed trait IdentityProviderDetails {
@@ -70,7 +70,7 @@ sealed trait IdentityProviderDetails {
   * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token to use with
   *                        the Identity Provider's API (for user searching etc). The value will be encrypted on saving.
   */
-case class GenericIdentityProviderDetails(
+final case class GenericIdentityProviderDetails(
     commonDetails: CommonDetails,
     apiUrl: URL,
     apiClientId: String,
@@ -87,7 +87,7 @@ case class GenericIdentityProviderDetails(
   * @param apiClientSecret Client Secret used with `apiClientId` to get an access token to use with the Graph REST
   *                        API (for user searching etc)
   */
-case class EntraIdDetails(
+final case class EntraIdDetails(
     commonDetails: CommonDetails,
     graphApiUrl: URL,
     apiClientId: String,

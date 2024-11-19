@@ -31,7 +31,7 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
   * @param apiClientSecret Client Secret used with `apiClientId` to get an access token to use with the Graph REST
   *                        API (for user searching etc)
   */
-case class EntraId(
+final case class EntraId(
     issuer: String,
     authCodeClientId: String,
     authCodeClientSecret: Option[String],

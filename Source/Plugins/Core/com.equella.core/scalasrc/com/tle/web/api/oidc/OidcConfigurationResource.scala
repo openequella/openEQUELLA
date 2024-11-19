@@ -40,29 +40,29 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
   * Structure for the common details of an Identity Provider, which excludes
   * sensitive values like the client secret.
   */
-case class CommonDetailsResponse(platform: String,
-                                 issuer: String,
-                                 authCodeClientId: String,
-                                 authUrl: URL,
-                                 keysetUrl: URL,
-                                 tokenUrl: URL,
-                                 usernameClaim: Option[String],
-                                 defaultRoles: Set[String],
-                                 roleConfig: Option[RoleConfiguration],
-                                 enabled: Boolean)
+final case class CommonDetailsResponse(platform: String,
+                                       issuer: String,
+                                       authCodeClientId: String,
+                                       authUrl: URL,
+                                       keysetUrl: URL,
+                                       tokenUrl: URL,
+                                       usernameClaim: Option[String],
+                                       defaultRoles: Set[String],
+                                       roleConfig: Option[RoleConfiguration],
+                                       enabled: Boolean)
 
 sealed trait IdentityProviderResponse {
   val commonDetails: CommonDetailsResponse
 }
 
-case class GenericIdentityProviderResponse(commonDetails: CommonDetailsResponse,
-                                           apiUrl: URL,
-                                           apiClientId: String)
+final case class GenericIdentityProviderResponse(commonDetails: CommonDetailsResponse,
+                                                 apiUrl: URL,
+                                                 apiClientId: String)
     extends IdentityProviderResponse
 
-case class EntraIdResponse(commonDetails: CommonDetailsResponse,
-                           graphApiUrl: URL,
-                           apiClientId: String)
+final case class EntraIdResponse(commonDetails: CommonDetailsResponse,
+                                 graphApiUrl: URL,
+                                 apiClientId: String)
     extends IdentityProviderResponse
 
 object IdentityProviderResponse {
@@ -108,10 +108,8 @@ object IdentityProviderResponse {
 @Path("oidc/config")
 @Produces(Array("application/json"))
 @Api("OIDC configuration")
-class OidcConfigurationResource {
-
-  @Inject private var oidcConfigurationService: OidcConfigurationService = _
-  @Inject private var aclProvider: OidcSettingsPrivilegeTreeProvider     = _
+class OidcConfigurationResource @Inject()(oidcConfigurationService: OidcConfigurationService,
+                                          aclProvider: OidcSettingsPrivilegeTreeProvider) {
 
   @GET
   @ApiOperation(
