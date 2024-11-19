@@ -29,11 +29,10 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
 import java.net.{URI, URL}
 
 /**
-  * Supported Identity Provider platforms, including Azure, Cognito, Google, Okta.
-  * Use Generic for other Platforms.
+  * Supported Identity Provider platforms, including MS Entra ID, Okta and Generic for other Platforms.
   */
 object IdentityProviderPlatform extends Enumeration {
-  val AZURE, COGNITO, GENERIC, GOOGLE, OKTA = Value
+  val ENTRA_ID, GENERIC, OKTA = Value
 }
 
 /**
@@ -57,6 +56,7 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 @JsonSubTypes(
   Array(
     new Type(value = classOf[GenericIdentityProvider], name = "GENERIC"),
+    new Type(value = classOf[EntraId], name = "ENTRA_ID"),
   ))
 abstract class IdentityProvider extends ConfigurationProperties with Product {
 

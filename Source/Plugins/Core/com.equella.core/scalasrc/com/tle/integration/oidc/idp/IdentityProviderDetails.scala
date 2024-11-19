@@ -77,6 +77,23 @@ case class GenericIdentityProviderDetails(
     apiClientSecret: String,
 ) extends IdentityProviderDetails
 
+/**
+  * Configuration details for Microsoft Entra ID. In addition to the common configuration for SSO,
+  * the details of how to interact with the Microsoft Graph REST API are also included.
+  *
+  * @param commonDetails Common details configured for SSO with Entra ID
+  * @param graphApiUrl The endpoint of Microsoft Graph REST API which differs depending on the API version
+  * @param apiClientId Client ID used to get an access token to use with the Graph REST API (for user searching etc)
+  * @param apiClientSecret Client Secret used with `apiClientId` to get an access token to use with the Graph REST
+  *                        API (for user searching etc)
+  */
+case class EntraIdDetails(
+    commonDetails: CommonDetails,
+    graphApiUrl: URL,
+    apiClientId: String,
+    apiClientSecret: String,
+) extends IdentityProviderDetails
+
 object IdentityProviderDetails {
 
   private var encryptionService: EncryptionService = _
@@ -148,6 +165,20 @@ object IdentityProviderDetails {
                                              apiUrl = URI.create(generic.apiUrl).toURL,
                                              apiClientId = generic.apiClientId,
                                              apiClientSecret = apiClientSecret))
+
+      case entra: EntraId =>
+        val encryptedApiClientSecret = encrypt(
+          "API Client Secret",
+          entra.apiClientSecret,
+          existingIdP[EntraIdDetails](existingConfig).map(_.apiClientSecret))
+
+        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiClientSecret.toValidatedNel)
+          .mapN(
+            (commonDetails, apiClientSecret) =>
+              EntraIdDetails(commonDetails = commonDetails,
+                             graphApiUrl = URI.create(entra.graphApiUrl).toURL,
+                             apiClientId = entra.apiClientId,
+                             apiClientSecret = apiClientSecret))
       case other =>
         invalidNel(s"Unsupported Identity Provider: ${other.platform}")
     }

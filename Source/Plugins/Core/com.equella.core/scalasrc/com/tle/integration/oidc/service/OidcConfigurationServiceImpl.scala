@@ -27,6 +27,7 @@ import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.{
   CommonDetails,
+  EntraIdDetails,
   GenericIdentityProviderDetails,
   IdentityProvider,
   IdentityProviderDetails
@@ -34,8 +35,6 @@ import com.tle.integration.oidc.idp.{
 import io.circe.parser._
 import io.circe.syntax._
 import com.tle.integration.oidc.idp.IdentityProviderCodec._
-import org.slf4j.{Logger, LoggerFactory}
-
 import javax.inject.{Inject, Singleton}
 
 @Singleton
@@ -82,6 +81,13 @@ class OidcConfigurationServiceImpl @Inject()(
           GenericIdentityProviderDetails(
             commonDetails = decryptCommonDetails(commonDetails),
             apiUrl = apiUrl,
+            apiClientId = apiClientId,
+            apiClientSecret = encryptionService.decrypt(apiClientSecret),
+          )
+        case EntraIdDetails(commonDetails, graphApiUrl, apiClientId, apiClientSecret) =>
+          EntraIdDetails(
+            commonDetails = decryptCommonDetails(commonDetails),
+            graphApiUrl = graphApiUrl,
             apiClientId = apiClientId,
             apiClientSecret = encryptionService.decrypt(apiClientSecret),
           )
