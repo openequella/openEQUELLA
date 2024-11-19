@@ -27,12 +27,7 @@ import { validate } from './Utils';
 
 const OIDC_CONFIG_PATH = '/oidc/config';
 
-export type IdentityProviderPlatform =
-  | 'AZURE'
-  | 'COGNITO'
-  | 'GENERIC'
-  | 'GOOGLE'
-  | 'OKTA';
+export type IdentityProviderPlatform = 'ENTRA_ID' | 'GENERIC' | 'OKTA';
 
 /**
  * Data structure for the common details of an Identity Provider, containing fields
@@ -149,6 +144,26 @@ export interface GenericIdentityProvider extends IdentityProvider {
 export const isGenericIdentityProvider = (
   idp: IdentityProvider
 ): idp is GenericIdentityProvider => idp.platform === 'GENERIC';
+
+/**
+ * Full structure for Microsoft Entra ID, including all the common details and fields related
+ * to interacting with the Graph REST API.
+ */
+export interface EntraId extends IdentityProvider {
+  platform: 'ENTRA_ID';
+  /**
+   * The endpoint of Microsoft Graph REST API
+   */
+  apiUrl: string;
+  /**
+   *  Client ID used to get an access token to use with the Graph REST API
+   */
+  apiClientId: string;
+  /**
+   * Client Secret used with `apiClientId` to get an access token to use with the Graph REST API
+   */
+  apiClientSecret?: string;
+}
 
 /**
  * Data structure for the response of an Identity Provider, which is slightly different
