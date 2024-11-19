@@ -15,7 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { isInteger } from "../../../tsrc/util/validation";
+import {
+  isInteger,
+  isNonEmptyString,
+  isValidURL,
+} from "../../../tsrc/util/validation";
 
 describe("validation", () => {
   describe("isInteger", () => {
@@ -37,6 +41,38 @@ describe("validation", () => {
 
     it("should handle negative value with positive validation", () => {
       expect(isInteger(-1, true, true)).toBe(false);
+    });
+  });
+
+  describe("isValidURL", () => {
+    it("should handle random text", () => {
+      expect(isValidURL("httpppp://test.com")).toBe(false);
+    });
+
+    it("should handle random value", () => {
+      expect(isValidURL(123456)).toBe(false);
+    });
+
+    it("should recognize http://", () => {
+      expect(isValidURL("http://test2.comn")).toBe(true);
+    });
+
+    it("should recognize https://", () => {
+      expect(isValidURL("https://test3.org")).toBe(true);
+    });
+  });
+
+  describe("isNonEmptyString", () => {
+    it("should handle random value", () => {
+      expect(isNonEmptyString(true)).toBe(false);
+    });
+
+    it("should handle empty string", () => {
+      expect(isNonEmptyString("")).toBe(false);
+    });
+
+    it("should handle non-empty string", () => {
+      expect(isNonEmptyString("test")).toBe(true);
     });
   });
 });

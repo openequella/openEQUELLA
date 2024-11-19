@@ -118,10 +118,15 @@ public class RestEasyExceptionMapper implements ExceptionMapper<Throwable> {
       // This exception does not accumulate errors for all the missing fields, so we only need to
       // know the first field.
       String errorMessage =
-          Optional.ofNullable(exception.getPath().get(0))
+          Optional.of(exception.getPath())
+              .filter(path -> !path.isEmpty())
+              .flatMap(path -> Optional.ofNullable(path.getFirst()))
               .map(path -> "Missing required field " + path.getFieldName())
-              .orElse("Failed to build " + exception.getTargetType().getName());
-
+              .or(
+                  () ->
+                      Optional.ofNullable(exception.getTargetType())
+                          .map(targetType -> "Failed to build: " + targetType.getName()))
+              .orElse("Failed to build: " + exception.getMessage());
       webAppException = new WebApplicationException(errorMessage, Status.BAD_REQUEST);
     } else {
       webAppException = new WebApplicationException(t);

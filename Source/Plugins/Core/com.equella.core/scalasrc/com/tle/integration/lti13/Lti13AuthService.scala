@@ -18,40 +18,43 @@
 
 package com.tle.integration.lti13
 
-import com.auth0.jwk.{Jwk, JwkProvider, JwkProviderBuilder}
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
+import cats.implicits._
 import com.auth0.jwt.interfaces.DecodedJWT
-import com.google.common.cache.{Cache, CacheBuilder, CacheLoader}
 import com.google.common.hash.HashCode
 import com.google.common.hash.Hashing.murmur3_128
-import com.tle.beans.Institution
 import com.tle.beans.user.TLEUser
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.{UserState, WebAuthenticationDetails}
+import com.tle.common.util.StringUtils.generateRandomHexString
 import com.tle.core.guice.Bind
-import com.tle.core.institution.{InstitutionCache, InstitutionService, RunAsInstitution}
-import com.tle.core.lti13.service.LtiPlatformService
+import com.tle.core.institution.RunAsInstitution
 import com.tle.core.security.impl.AclExpressionEvaluator
 import com.tle.core.services.user.UserService
 import com.tle.core.usermanagement.standard.service.{TLEGroupService, TLEUserService}
 import com.tle.exceptions.UsernameNotFoundException
-import com.tle.integration.lti13.{Lti13Params => LTI13, OpenIDConnectParams => OIDC}
+import com.tle.integration.lti13.OAuth2LayerError._
+import com.tle.integration.lti13.{Lti13Params => LTI13}
+import com.tle.integration.oauth2.error.authorisation.{
+  AccessDenied,
+  AuthorisationError,
+  NotAuthorized,
+  ServerError => AuthServerError
+}
+import com.tle.integration.oauth2.error.general.InvalidJWT
+import com.tle.integration.oidc.{getClaim, OpenIDConnectParams => OIDC}
+import com.tle.integration.util.{getParam, getUriParam}
+import io.circe._
+import io.circe.parser._
 import io.lemonlabs.uri.{QueryString, Url}
 import org.slf4j.LoggerFactory
 
-import java.net.{URI, URL}
+import java.net.URI
 import java.nio.charset.StandardCharsets
-import java.security.interfaces.RSAPublicKey
 import java.util.Base64
-import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.annotation.tailrec
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
-import cats.implicits._
-import io.circe._
-import io.circe.parser._
 
 /**
   * Captures the parameters which make up the first part of a 'Third-party Initiated Login' as part
@@ -126,8 +129,8 @@ object AuthenticationResponse {
     val param = getParam(params)
 
     for {
-      state    <- param(OpenIDConnectParams.STATE)
-      id_token <- param(OpenIDConnectParams.ID_TOKEN)
+      state    <- param(OIDC.STATE)
+      id_token <- param(OIDC.ID_TOKEN)
     } yield AuthenticationResponse(state, id_token)
   }
 }
@@ -159,7 +162,7 @@ case class UserDetails(platformId: String,
                        email: Option[String])
 object UserDetails {
   def apply(jwt: DecodedJWT,
-            usernameClaimPaths: Option[List[String]]): Either[InvalidJWT, UserDetails] = {
+            usernameClaimPaths: Option[List[String]]): Either[Lti13Error, UserDetails] = {
     val claim = getClaim(jwt)
 
     // Use the custom username claim if present, otherwise use the Subject claim.
@@ -193,7 +196,7 @@ object UserDetails {
       usernameClaimPaths.map(fromCustomClaim).getOrElse(fromSubjectClaim)
     }
 
-    for {
+    val userDetails = for {
       platformId <- Option(jwt.getIssuer)
         .toRight(
           InvalidJWT(
@@ -223,6 +226,8 @@ object UserDetails {
         .toRight(InvalidJWT(s"No last name (${OIDC.FAMILY_NAME}) was provided."))
       email = claim(OIDC.EMAIL)
     } yield UserDetails(platformId, userId, roles, firstName, lastName, email)
+
+    userDetails
   }
 }
 
@@ -235,49 +240,13 @@ object UserDetails {
 class Lti13AuthService {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13AuthService])
 
-  @Inject private var nonceService: Lti13NonceService     = _
-  @Inject private var platformService: LtiPlatformService = _
-  @Inject private var runAs: RunAsInstitution             = _
-  @Inject private var stateService: Lti13StateService     = _
-  @Inject private var tleGroupService: TLEGroupService    = _
-  @Inject private var tleUserService: TLEUserService      = _
-  @Inject private var userService: UserService            = _
-
-  /**
-    * The JWK Provider Cache is here to cache instances of JWK Providers for each keyset URL
-    * (for an institution). Doing so enables the code to benefit from the internal caching features
-    * of `JwkProvider` (instead of recreating each time) while not keeping around stale instances
-    * (such as if we just store them in a simple `TrieMap`.
-    *
-    * The key benefit being that the JWKS endpoint of the platforms will get queried a reduced number
-    * of times. This also speeds up the JWT validation process - and thereby faster launches.
-    */
-  private var jwkProviderCache: InstitutionCache[Cache[String, JwkProvider]] = _
-
-  @Inject
-  def setupJwkProviderCache(institutionService: InstitutionService): Unit =
-    jwkProviderCache = institutionService.newInstitutionAwareCache(
-      CacheLoader.from(
-        (_: Institution) =>
-          CacheBuilder
-            .newBuilder()
-            .maximumSize(10)
-            .expireAfterAccess(1, TimeUnit.DAYS)
-            .build[String, JwkProvider]()))
-
-  private def getJwkProvider(jwksUrl: URL): Either[ServerError, JwkProvider] =
-    Try(
-      jwkProviderCache.getCache.get(
-        jwksUrl.toString,
-        () => {
-          LOGGER.debug(s"Creating new JwkProvider($jwksUrl)")
-          // The default cache for the JwkProvider is size 5 and 10 hours, but 10 hours seems rather
-          // long to wait for any issues to be resolved - so reduced to 1 hour.
-          new JwkProviderBuilder(jwksUrl).cached(5, 1, TimeUnit.HOURS).build()
-        }
-      )).toEither.left.map(t =>
-      ServerError(
-        s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}"))
+  @Inject private implicit var nonceService: Lti13NonceService = _
+  @Inject private var platformService: Lti13PlatformService    = _
+  @Inject private var runAs: RunAsInstitution                  = _
+  @Inject private var stateService: Lti13StateService          = _
+  @Inject private var tleGroupService: TLEGroupService         = _
+  @Inject private var tleUserService: TLEUserService           = _
+  @Inject private var userService: UserService                 = _
 
   /**
     * In response to a Third-Party Initiated Login, create the resulting URL which the UA should be
@@ -287,7 +256,7 @@ class Lti13AuthService {
     */
   def buildAuthReqUrl(initReq: InitiateLoginRequest): Option[String] = {
     for {
-      platformDetails  <- getPlatform(initReq.iss)
+      platformDetails  <- platformService.getPlatform(initReq.iss).toOption
       authUrl          <- Url.parseOption(platformDetails.authUrl.toString)
       lti_message_hint <- initReq.lti_message_hint
       state = stateService.createState(
@@ -311,76 +280,21 @@ class Lti13AuthService {
   }
 
   /**
-    * Given a previously established `state` with a freshly received ID Token (JWT) will attempt
-    * to verify the token inline with the guidance in section 5.1.3 (Authentication Response
-    * Validation) of the 1EdTech Security Framework (version 1.1).
-    *
-    * See: <https://www.imsglobal.org/spec/security/v1p1#authentication-response-validation>
-    *
-    * @param state the value of the `state` param sent across in an authentication request which
-    *              is expected to have been provided from the server in a previous login init
-    *              request.
-    * @param token an 'ID Token' in JWT format
-    * @return Either a error string detailing how things failed, or the actual decoded JWT and details of the LTI platform.
-    */
-  def verifyToken(state: String,
-                  token: String): Either[Lti13Error, (DecodedJWT, PlatformDetails)] = {
-    val result = for {
-      // -- first, basic validation of the state
-      // Short circuit if this isn't even a state we know about
-      stateDetails <- stateService
-        .getState(state)
-        .toRight(InvalidState(s"Invalid state provided: $state"))
-      // Decode the token to validate the platform this is for
-      decodedToken <- Try(JWT.decode(token)).toEither.left.map(t =>
-        InvalidJWT(s"Failed to decode token: ${t.getMessage}"))
-      // Validate the platform by ensure it matches the previous state we setup
-      platformId <- Option(stateDetails.platformId)
-        .filter(decodedToken.getIssuer.equals)
-        .toRight(InvalidJWT(s"Issuer in token did not match stored state."))
-
-      // Get details of the platform and verify the custom username claim
-      platform <- getPlatform(platformId)
-        .toRight(PlatformDetailsError(s"Unable to retrieve platform details of $platformId"))
-
-      // -- next, validation of the actual JWT
-      jwkProvider <- getJwkProvider(platform.keysetUrl)
-      // Setup some helper functions
-      // Both are: DecodedJWT -> Either[String, DecodedJWT]
-      verifyJwt = buildJwtVerifierForPlatform(jwkProvider.get(decodedToken.getKeyId), platform)
-      verifyNonce = (jwt: DecodedJWT) =>
-        getRequiredClaim(jwt, OIDC.NONCE)
-          .flatMap(
-            // If the nonce is valid, then make sure we return the valid JWT
-            nonceService.validateNonce(_, state).map(_ => jwt))
-          .left
-          .map(err => InvalidJWT(s"Provided ID token (JWT) failed nonce verification: ${err}"))
-      // now finally do the verification
-      verifiedToken <- verifyJwt(decodedToken).flatMap(verifyNonce)
-    } yield (verifiedToken, platform)
-
-    // And the result is:
-    result
-  }
-
-  /**
-    * Given the details for a user authenticating via LTI (in `userDetails`) attempt to establish a
-    * session for them. The result (on success) will be a new `UserState` instance that will be
-    * stored against the user's session.
+    * Use the provided ID token to build a `UserDetails` for a user authenticating via LTI, and then attempt
+    * to establish a session for the user. The result (on success) will be a new `UserState` instance that
+    * will be stored against the user's session.
     *
     * @param wad the details of the HTTP request for this authentication attempt
-    * @param userDetails the details retrieved from an attempted LTI authentication
+    * @param token Decoded ID token that has been verified
     * @return a new `UserState` being used for the new session OR a string representing what failed.
     */
-  def loginUser(wad: WebAuthenticationDetails,
-                userDetails: UserDetails): Either[Lti13Error, UserState] = {
-    LOGGER.debug(s"loginUser(${userDetails})")
+  def loginUser(wad: WebAuthenticationDetails, token: DecodedJWT): Either[Lti13Error, UserState] = {
 
     val loginResult = for {
-      platformDetails <- getPlatform(userDetails.platformId)
-        .toRight(
-          PlatformDetailsError(s"Unable to retrieve platform details of ${userDetails.platformId}"))
-
+      // Get the platform details, verify the custom username claim and then build UserDetails
+      platformDetails    <- platformService.getPlatform(token.getIssuer)
+      usernameClaimPaths <- platformService.verifyUsernameClaim(platformDetails)
+      userDetails        <- UserDetails(token, usernameClaimPaths)
       // Setup the user - including adding roles
       userState <- mapUser(
         user = userDetails,
@@ -398,13 +312,16 @@ class Lti13AuthService {
       allowedUserState <- platformDetails.allowExpression match {
         case Some(expression) =>
           val aclExpressionEvaluator = new AclExpressionEvaluator
-          if (!aclExpressionEvaluator.evaluate(expression, userState, false))
-            Left(NotAuthorized(
-              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation"))
-          else Right(userState)
+          Either.cond[OAuth2LayerError, UserState](
+            aclExpressionEvaluator.evaluate(expression, userState, false),
+            userState,
+            NotAuthorized(
+              s"User ${userDetails.userId} from platform ${userDetails.platformId} is currently not permitted access: ACL Expression violation")
+          )
         case None => Right(userState)
       }
     } yield {
+      LOGGER.debug(s"loginUser($userDetails)")
       userService.login(allowedUserState, true)
       allowedUserState
     }
@@ -414,32 +331,6 @@ class Lti13AuthService {
 
   def getRedirectUri: URI =
     new URI(s"${CurrentInstitution.get().getUrl}lti13/launch")
-
-  private def buildJwtVerifierForPlatform(
-      jwk: Jwk,
-      platform: PlatformDetails): DecodedJWT => Either[Lti13Error, DecodedJWT] = {
-    val verifier = Try {
-      // Section 5.1.3 of the Security Framework says that RS256 SHOULD be used - but there are
-      // some others which are allowed as per the 'best practices'. Perhaps we should add code
-      // to determine the others and use them too.
-      // Best practices: https://www.imsglobal.org/spec/security/v1p1#approved-jwt-signing-algorithms
-      val alg = Algorithm.RSA256(jwk.getPublicKey.asInstanceOf[RSAPublicKey], null)
-      JWT
-        .require(alg)
-        // The issuer has kind of been validated already above - so that we could get the platform
-        // ID to be able to get the JWKS URL. But we might as well explicitly validate it as part
-        // of the JWT validation - as that's what you're meant to do.
-        .withIssuer(platform.platformId)
-        .withAnyOfAudience(platform.clientId)
-        .build()
-    }.toEither.left.map(t => ServerError(s"Failed to initialise a JWT verifier: ${t.getMessage}"))
-
-    (decodedToken: DecodedJWT) =>
-      verifier.flatMap(
-        v =>
-          Try(v.verify(decodedToken)).toEither.left
-            .map(t => InvalidJWT(s"Provided ID token (JWT) failed verification: ${t.getMessage}")))
-  }
 
   /**
     * Given `UserDetails` from an LTI (OAuth2) ID Token, and the configuration details for the
@@ -462,13 +353,13 @@ class Lti13AuthService {
   private def mapUser(user: UserDetails,
                       platform: PlatformDetails,
                       authenticate: String => Try[UserState],
-                      asGuest: () => UserState): Either[Lti13Error, UserState] = {
+                      asGuest: () => UserState): Either[OAuth2LayerError, UserState] = {
     val ltiUserId = user.userId
     // The username which will be seen and used in the system
     val username = platform.usernamePrefix.getOrElse("") + ltiUserId + platform.usernameSuffix
       .getOrElse("")
 
-    def handleUnknownUser(): Either[Lti13Error, UserState] = {
+    def handleUnknownUser(): Either[AuthorisationError, UserState] = {
       // A unique ID for the user in the oEQ DB - not used elsewhere for authentication, but we
       // need to meeting existing requirements of the tle_user table.
       val oeqUserId                                       = genId(platform.platformId, ltiUserId)
@@ -506,14 +397,14 @@ class Lti13AuthService {
           authenticate(username).toEither.left.map(t => {
             LOGGER.error(
               s"Failed to authenticate with newly created LTI 1.3 user - $username($oeqUserId): ${t.getMessage}")
-            ServerError(s"Failed to authenticate as newly created user: $username")
+            AuthServerError(s"Failed to authenticate as newly created user: $username")
           })
       }
     }
 
     authenticate(username) match {
       case Failure(_: UsernameNotFoundException) => handleUnknownUser()
-      case Failure(exception)                    => Left(ServerError(exception.getMessage))
+      case Failure(exception)                    => Left(AuthServerError(exception.getMessage))
       case Success(userState)                    => Right(userState)
     }
   }
@@ -567,14 +458,6 @@ class Lti13AuthService {
     userState.getUsersRoles.addAll(
       (instructorRoles ++ customRoles ++ additionalRoles).asJavaCollection)
   }
-
-  private def getPlatform(platform: String): Option[PlatformDetails] =
-    platformService.getByPlatformID(platform).filter(_.enabled) match {
-      case Some(bean) => Option(PlatformDetails(bean))
-      case None =>
-        LOGGER.error(s"Attempt to access unauthorised platform $platform")
-        None
-    }
 
   /**
     * Generates a unique structured identifier for the provided user from the specified platform.

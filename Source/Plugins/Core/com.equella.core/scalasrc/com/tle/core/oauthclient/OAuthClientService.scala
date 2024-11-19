@@ -49,7 +49,18 @@ object OAuthTokenType extends Enumeration {
 
 }
 
-case class TokenRequest(authTokenUrl: String, clientId: String, clientSecret: String) {
+/**
+  * Represent a POST request to obtain an OAuth2 Access Token.
+  *
+  * @param authTokenUrl The URL used to obtain an access token from the selected Identity Provider
+  * @param clientId Client ID used to get an Access Token to be used in API calls
+  * @param clientSecret  Client Secret used with `clientId` to get an Access Token
+  * @param data Any additional data required in the request (e.g. 'audience' for Auth0)
+  */
+case class TokenRequest(authTokenUrl: String,
+                        clientId: String,
+                        clientSecret: String,
+                        data: Option[Map[String, String]] = None) {
   def key: String = clientId + authTokenUrl
 }
 
@@ -86,11 +97,12 @@ object OAuthTokenCacheHelper {
   }
 
   def requestToken(token: TokenRequest, tokenKey: String): OAuthTokenState = {
+    val body = token.data
+      .getOrElse(Map.empty)
+      .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
     val postRequest = basicRequest.auth
       .basic(token.clientId, token.clientSecret)
-      .body(
-        OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS
-      )
+      .body(body: _*)
       .response(asJsonAlways[OAuthTokenResponse])
       .post(uri"${token.authTokenUrl}")
 

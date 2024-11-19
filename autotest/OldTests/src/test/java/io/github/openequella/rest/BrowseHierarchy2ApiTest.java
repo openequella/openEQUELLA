@@ -68,13 +68,14 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     JsonNode keyResources = request(JAMES_HIERARCHY_UUID).get("keyResources");
 
     // Key resource should point to the correct version
-    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID).get("isLatest").asBoolean());
+    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("isLatest").asBoolean());
     assertEquals(
-        getKeyResource(keyResources, BOOK_A_V2_UUID).get("item").get("version").asInt(), 2);
+        getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("item").get("version").asInt(), 2);
     // BOOK_B has 2 versions and as an "Always latest key resource" it should point to the latest
     // version 2.
-    assertTrue(getKeyResource(keyResources, BOOK_B_UUID).get("isLatest").asBoolean());
-    assertEquals(getKeyResource(keyResources, BOOK_B_UUID).get("item").get("version").asInt(), 2);
+    assertTrue(getKeyResource(keyResources, BOOK_B_UUID, 2).get("isLatest").asBoolean());
+    assertEquals(
+        getKeyResource(keyResources, BOOK_B_UUID, 2).get("item").get("version").asInt(), 2);
   }
 
   @Test(description = "Get a virtual hierarchy topic which name contains comma")
@@ -98,14 +99,14 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Get hierarchy IDs with key resource")
   public void getHierarchyIdsWithKeyResource() throws IOException {
-    final String ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a";
+    final String ITEM_UUID = "7e633e1d-e343-4e51-babc-403265c7b7c4";
     final GetMethod method =
-        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/2");
+        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/1");
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
     JsonNode result = mapper.readTree(method.getResponseBody());
-    assertEquals(result.get(0).asText(), JAMES_HIERARCHY_UUID);
+    assertEquals(result.get(0).asText(), "43e60e9a-a3ed-497d-b79d-386fed23675c");
   }
 
   private JsonNode request(String compoundUuid) throws IOException {
@@ -125,8 +126,16 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     return getNode((ArrayNode) result, "compoundUuid", topicUuid);
   }
 
-  private JsonNode getKeyResource(JsonNode result, String itemUuid) {
-    return getNode((ArrayNode) result, n -> n.get("item").get("uuid"), itemUuid);
+  private JsonNode getKeyResource(JsonNode result, String itemUuid, int version) {
+    return getNode(
+        (ArrayNode) result,
+        n ->
+            n.get("item").findParents("uuid").stream()
+                .filter(item -> item.get("version").asInt() == version)
+                .findFirst()
+                .map(item -> item.get("uuid"))
+                .orElse(null),
+        itemUuid);
   }
 
   private String getCompoundUuid(JsonNode result) {

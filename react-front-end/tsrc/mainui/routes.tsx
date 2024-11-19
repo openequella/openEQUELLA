@@ -30,13 +30,13 @@ import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
 const LtiPlatformsSettingsPage = React.lazy(
-  () => import("../settings/Integrations/Lti13PlatformsSettings"),
+  () => import("../settings/Integrations/lti13/Lti13PlatformsSettings"),
 );
 const CreateLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/CreateLti13Platform"),
+  () => import("../settings/Integrations/lti13/components/CreateLti13Platform"),
 );
 const EditLti13PlatformPage = React.lazy(
-  () => import("../settings/Integrations/lti13platforms/EditLti13Platform"),
+  () => import("../settings/Integrations/lti13/components/EditLti13Platform"),
 );
 const CloudProviderListPage = React.lazy(
   () => import("../cloudprovider/CloudProviderListPage"),
@@ -57,6 +57,9 @@ const FacetedSearchSettingsPage = React.lazy(
 );
 const ContentIndexSettings = React.lazy(
   () => import("../settings/Search/ContentIndexSettings"),
+);
+const OidcSettingsPage = React.lazy(
+  () => import("../settings/Integrations/oidc/OidcSettings"),
 );
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
@@ -110,6 +113,7 @@ interface Routes {
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
+  OidcSettings: OEQRouteNewUI;
   MyResources: OEQRouteNewUI;
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
@@ -214,6 +218,11 @@ export const routes: Routes = {
     path: "/page/lti13platforms",
     component: LtiPlatformsSettingsPage,
     permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
+  },
+  OidcSettings: {
+    path: "/page/oidc",
+    component: OidcSettingsPage,
+    permissionChecks: [isEditSystemSettingsGranted("oidc")],
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
