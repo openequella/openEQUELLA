@@ -51,7 +51,7 @@ import scala.jdk.CollectionConverters._
 
 class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val commonDetails: CommonDetails = CommonDetails(
-    platform = IdentityProviderPlatform.GENERIC,
+    platform = IdentityProviderPlatform.AUTH0,
     issuer = "https://dev-mzxj31ghj626ldi7.us.auth0.com/",
     authCodeClientId = "Mp6Ud5KqFKXOITXXXr3uqtZi5uLh7ORs",
     authCodeClientSecret = "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L",

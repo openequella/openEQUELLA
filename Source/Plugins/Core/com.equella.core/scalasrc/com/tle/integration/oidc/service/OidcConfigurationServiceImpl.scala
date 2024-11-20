@@ -27,7 +27,6 @@ import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.integration.oidc.idp.{
   CommonDetails,
-  EntraIdDetails,
   GenericIdentityProviderDetails,
   IdentityProvider,
   IdentityProviderDetails
@@ -81,13 +80,6 @@ class OidcConfigurationServiceImpl @Inject()(
           GenericIdentityProviderDetails(
             commonDetails = decryptCommonDetails(commonDetails),
             apiUrl = apiUrl,
-            apiClientId = apiClientId,
-            apiClientSecret = encryptionService.decrypt(apiClientSecret),
-          )
-        case EntraIdDetails(commonDetails, graphApiUrl, apiClientId, apiClientSecret) =>
-          EntraIdDetails(
-            commonDetails = decryptCommonDetails(commonDetails),
-            graphApiUrl = graphApiUrl,
             apiClientId = apiClientId,
             apiClientSecret = encryptionService.decrypt(apiClientSecret),
           )

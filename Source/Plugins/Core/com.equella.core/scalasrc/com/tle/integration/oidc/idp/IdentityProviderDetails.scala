@@ -25,9 +25,7 @@ import com.tle.core.encryption.EncryptionService
 import java.net.{URI, URL}
 
 /**
-  * The common details configured for SSO with an Identity Provider, but with some slightly more strict types
-  * (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values) compared to `IdentityProvider`
-  * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
+  * The common details configured for SSO with an Identity Provider.
   *
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
   * @param issuer The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
@@ -60,10 +58,15 @@ sealed trait IdentityProviderDetails {
 }
 
 /**
-  * Configuration details for a generic Identity Provider. In addition to the common configuration for SSO,
-  * the details of how to interact with the Identity Provider's APIs are also included.
+  * Configuration details for Identity Provider where the way to request resources is through REST APIs.
+  * The structure is similar to the concrete classes that extend [[IdentityProvider]] and [[RestApi]] but
+  * with a few differences:
   *
-  * @param commonDetails Common details configured for SSO with a generic Identity Provider
+  * 1. Slightly more strict types (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values)
+  * 2. Secret values are encrypted
+  * 3. Details for SSO are centralised into one field
+  *
+  * @param commonDetails Common details configured for SSO
   * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
   * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
   *                    (for user searching etc)
@@ -73,23 +76,6 @@ sealed trait IdentityProviderDetails {
 final case class GenericIdentityProviderDetails(
     commonDetails: CommonDetails,
     apiUrl: URL,
-    apiClientId: String,
-    apiClientSecret: String,
-) extends IdentityProviderDetails
-
-/**
-  * Configuration details for Microsoft Entra ID. In addition to the common configuration for SSO,
-  * the details of how to interact with the Microsoft Graph REST API are also included.
-  *
-  * @param commonDetails Common details configured for SSO with Entra ID
-  * @param graphApiUrl The endpoint of Microsoft Graph REST API which differs depending on the API version
-  * @param apiClientId Client ID used to get an access token to use with the Graph REST API (for user searching etc)
-  * @param apiClientSecret Client Secret used with `apiClientId` to get an access token to use with the Graph REST
-  *                        API (for user searching etc)
-  */
-final case class EntraIdDetails(
-    commonDetails: CommonDetails,
-    graphApiUrl: URL,
     apiClientId: String,
     apiClientSecret: String,
 ) extends IdentityProviderDetails
@@ -151,34 +137,20 @@ object IdentityProviderDetails {
     this.encryptionService = encryptionService
 
     val result = idp match {
-      case generic: GenericIdentityProvider =>
-        val encryptedApiClientSecret = encrypt(
-          "API Client Secret",
-          generic.apiClientSecret,
-          existingIdP[GenericIdentityProviderDetails](existingConfig).map(_.apiClientSecret))
+      case provider: IdentityProvider with RestApi =>
+        val existingApiSecret = existingConfig.collect {
+          case details: GenericIdentityProviderDetails => details.apiClientSecret
+        }
+        val encryptedApiSecret =
+          encrypt("API Client Secret", provider.apiClientSecret, existingApiSecret)
 
-        // Convert to ValidatedNel to collect all the errors
-        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiClientSecret.toValidatedNel)
+        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiSecret.toValidatedNel)
           .mapN(
             (commonDetails, apiClientSecret) =>
-              GenericIdentityProviderDetails(commonDetails = commonDetails,
-                                             apiUrl = URI.create(generic.apiUrl).toURL,
-                                             apiClientId = generic.apiClientId,
-                                             apiClientSecret = apiClientSecret))
-
-      case entra: EntraId =>
-        val encryptedApiClientSecret = encrypt(
-          "API Client Secret",
-          entra.apiClientSecret,
-          existingIdP[EntraIdDetails](existingConfig).map(_.apiClientSecret))
-
-        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiClientSecret.toValidatedNel)
-          .mapN(
-            (commonDetails, apiClientSecret) =>
-              EntraIdDetails(commonDetails = commonDetails,
-                             graphApiUrl = URI.create(entra.graphApiUrl).toURL,
-                             apiClientId = entra.apiClientId,
-                             apiClientSecret = apiClientSecret))
+              GenericIdentityProviderDetails(commonDetails,
+                                             URI.create(provider.apiUrl).toURL,
+                                             provider.apiClientId,
+                                             apiClientSecret))
       case other =>
         invalidNel(s"Unsupported Identity Provider: ${other.platform}")
     }

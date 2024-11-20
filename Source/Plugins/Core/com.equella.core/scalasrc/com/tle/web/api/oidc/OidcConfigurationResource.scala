@@ -21,7 +21,6 @@ package com.tle.web.api.oidc
 import com.tle.core.guice.Bind
 import com.tle.integration.oidc.OidcSettingsPrivilegeTreeProvider
 import com.tle.integration.oidc.idp.{
-  EntraIdDetails,
   GenericIdentityProviderDetails,
   IdentityProvider,
   IdentityProviderDetails,
@@ -60,11 +59,6 @@ final case class GenericIdentityProviderResponse(commonDetails: CommonDetailsRes
                                                  apiClientId: String)
     extends IdentityProviderResponse
 
-final case class EntraIdResponse(commonDetails: CommonDetailsResponse,
-                                 graphApiUrl: URL,
-                                 apiClientId: String)
-    extends IdentityProviderResponse
-
 object IdentityProviderResponse {
   def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
     def commonDetails = CommonDetailsResponse(
@@ -87,13 +81,6 @@ object IdentityProviderResponse {
             commonDetails = commonDetails,
             apiUrl = generic.apiUrl,
             apiClientId = generic.apiClientId
-          ))
-      case entra: EntraIdDetails =>
-        Right(
-          EntraIdResponse(
-            commonDetails = commonDetails,
-            graphApiUrl = entra.graphApiUrl,
-            apiClientId = entra.apiClientId
           ))
       case other =>
         Left(

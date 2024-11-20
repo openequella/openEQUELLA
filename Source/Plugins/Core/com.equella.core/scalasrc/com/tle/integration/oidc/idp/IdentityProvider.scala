@@ -32,7 +32,7 @@ import java.net.{URI, URL}
   * Supported Identity Provider platforms, including MS Entra ID, Okta and Generic for other Platforms.
   */
 object IdentityProviderPlatform extends Enumeration {
-  val ENTRA_ID, GENERIC, OKTA = Value
+  val AUTH0, ENTRA_ID, OKTA = Value
 }
 
 /**
@@ -55,7 +55,7 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
 @JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "platform")
 @JsonSubTypes(
   Array(
-    new Type(value = classOf[GenericIdentityProvider], name = "GENERIC"),
+    new Type(value = classOf[Auth0], name = "AUTH0"),
     new Type(value = classOf[EntraId], name = "ENTRA_ID"),
   ))
 abstract class IdentityProvider extends ConfigurationProperties with Product {
@@ -175,4 +175,34 @@ object IdentityProvider {
       }
       .toList
       .sequence
+}
+
+/**
+  * Used together with [[IdentityProvider]] when the way to request resources from an IdP is through REST API.
+  */
+trait RestApi {
+
+  /**
+    * The API endpoint for the Identity Provider, use for operations such as search for users
+    */
+  val apiUrl: String
+
+  /**
+    * Client ID used to get an Authorisation Token to use with the Identity Provider's API (for user searching etc)
+    */
+  val apiClientId: String
+
+  /**
+    * Client Secret used with `apiClientId` to get an Authorization Token to use with the Identity Provider's API
+    * (for user searching etc)
+    */
+  val apiClientSecret: Option[String]
+
+  def validateApiDetails: ValidatedNel[String, RestApi] = {
+    val textFields = Map(("API Client ID", apiClientId))
+    val urlField   = Map(("API URL", apiUrl))
+
+    (validateTextFields(textFields), validateUrlFields(urlField))
+      .mapN((_, _) => this)
+  }
 }

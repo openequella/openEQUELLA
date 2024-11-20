@@ -23,13 +23,8 @@ import cats.implicits._
 import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 
 /**
-  * Configuration for the integration with Microsoft Entra ID. In addition to the common fields,
-  * it includes the following special fields:
-  *
-  * @param graphApiUrl The endpoint of Microsoft Graph REST API which differs depending on the API version
-  * @param apiClientId Client ID used to get an access token to use with the Graph REST API (for user searching etc)
-  * @param apiClientSecret Client Secret used with `apiClientId` to get an access token to use with the Graph REST
-  *                        API (for user searching etc)
+  * Configuration for Microsoft Entra ID including the common details for SSO and the details required
+  * to interact the Graph REST API.
   */
 final case class EntraId(
     issuer: String,
@@ -42,17 +37,13 @@ final case class EntraId(
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
     enabled: Boolean,
-    graphApiUrl: String,
+    apiUrl: String,
     apiClientId: String,
     apiClientSecret: Option[String],
-) extends IdentityProvider {
+) extends IdentityProvider
+    with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.ENTRA_ID
 
-  override def validate: ValidatedNel[String, EntraId] = {
-    val textFields = Map(("Entra ID API Client ID", apiClientId))
-    val urlField   = Map(("Graph REST API URL", graphApiUrl))
-
-    (super.validate, validateTextFields(textFields), validateUrlFields(urlField))
-      .mapN((_, _, _) => this)
-  }
+  override def validate: ValidatedNel[String, EntraId] =
+    (super.validate, validateApiDetails).mapN((_, _) => this)
 }
