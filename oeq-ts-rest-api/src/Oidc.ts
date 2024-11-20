@@ -27,7 +27,7 @@ import { validate } from './Utils';
 
 const OIDC_CONFIG_PATH = '/oidc/config';
 
-export type IdentityProviderPlatform = 'ENTRA_ID' | 'GENERIC' | 'OKTA';
+export type IdentityProviderPlatform = 'AUTH0' | 'ENTRA_ID' | 'OKTA';
 
 /**
  * Data structure for the common details of an Identity Provider, containing fields
@@ -126,7 +126,7 @@ export interface IdentityProvider extends IdentityProviderBase {
  * fields related to interacting with the Identity Provider's API.
  */
 export interface GenericIdentityProvider extends IdentityProvider {
-  platform: 'GENERIC';
+  platform: 'AUTH0' | 'ENTRA_ID';
   /**
    * The API endpoint for the Identity Provider, use for operations such as search for users
    */
@@ -141,29 +141,10 @@ export interface GenericIdentityProvider extends IdentityProvider {
   apiClientSecret?: string;
 }
 
+// todo: remove this when working on OEQ-2197 and use codec where needed
 export const isGenericIdentityProvider = (
   idp: IdentityProvider
-): idp is GenericIdentityProvider => idp.platform === 'GENERIC';
-
-/**
- * Full structure for Microsoft Entra ID, including all the common details and fields related
- * to interacting with the Graph REST API.
- */
-export interface EntraId extends IdentityProvider {
-  platform: 'ENTRA_ID';
-  /**
-   * The endpoint of Microsoft Graph REST API
-   */
-  apiUrl: string;
-  /**
-   *  Client ID used to get an access token to use with the Graph REST API
-   */
-  apiClientId: string;
-  /**
-   * Client Secret used with `apiClientId` to get an access token to use with the Graph REST API
-   */
-  apiClientSecret?: string;
-}
+): idp is GenericIdentityProvider => idp.platform === 'AUTH0';
 
 /**
  * Data structure for the response of an Identity Provider, which is slightly different
