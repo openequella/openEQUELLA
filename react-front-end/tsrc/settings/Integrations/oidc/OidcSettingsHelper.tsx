@@ -99,10 +99,8 @@ export const defaultApiDetailsMap: Record<
   OEQ.Oidc.IdentityProviderPlatform,
   ApiDetails
 > = {
+  ENTRA_ID: defaultGenericApiDetails,
   GENERIC: defaultGenericApiDetails,
-  AZURE: defaultGenericApiDetails,
-  COGNITO: defaultGenericApiDetails,
-  GOOGLE: defaultGenericApiDetails,
   OKTA: defaultGenericApiDetails,
 };
 
