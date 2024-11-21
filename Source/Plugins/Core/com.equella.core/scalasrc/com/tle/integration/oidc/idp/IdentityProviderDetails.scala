@@ -25,7 +25,7 @@ import com.tle.core.encryption.EncryptionService
 import java.net.{URI, URL}
 
 /**
-  * The common details configured for SSO with an Identity Provider.
+  * The common details configured for OIDC with an Identity Provider.
   *
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
   * @param issuer The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
@@ -59,14 +59,18 @@ sealed trait IdentityProviderDetails {
 
 /**
   * Configuration details for Identity Provider where the way to request resources is through REST APIs.
-  * The structure is similar to the concrete classes that extend [[IdentityProvider]] and [[RestApi]] but
-  * with a few differences:
+  * The structure is similar to the concrete classes that extend [[IdentityProvider]] and [[RestApi]], but
+  * with fully defined types used for storage and internal operations, where as IdentityProvider is more
+  * a DTO for the REST API.
   *
-  * 1. Slightly more strict types (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values)
+  * Key differences from IdentityProvider:
+  * 1. Slightly more strict types
+  *    - secret values are mandatory
+  *    - URL type values use `URL` instead of `String`
   * 2. Secret values are encrypted
-  * 3. Details for SSO are centralised into one field
+  * 3. Details for OIDC are centralised into one field
   *
-  * @param commonDetails Common details configured for SSO
+  * @param commonDetails Common details configured for OIDC
   * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
   * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
   *                    (for user searching etc)

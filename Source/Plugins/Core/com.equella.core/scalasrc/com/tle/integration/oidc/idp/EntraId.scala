@@ -23,7 +23,7 @@ import cats.implicits._
 import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 
 /**
-  * Configuration for Microsoft Entra ID including the common details for SSO and the details required
+  * Configuration for Microsoft Entra ID including the common details for OIDC and the details required
   * to interact the Graph REST API.
   */
 final case class EntraId(

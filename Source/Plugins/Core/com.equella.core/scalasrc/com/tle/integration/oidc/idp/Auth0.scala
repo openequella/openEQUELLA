@@ -22,7 +22,7 @@ import cats.data.ValidatedNel
 import cats.implicits._
 
 /**
-  * Configuration for Auth0 including the common details for SSO and the details required
+  * Configuration for Auth0 including the common details for OIDC and the details required
   * to interact the Auth0 Management API V2.
   */
 final case class Auth0(

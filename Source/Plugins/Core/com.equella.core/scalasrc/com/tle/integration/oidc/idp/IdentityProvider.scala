@@ -29,7 +29,7 @@ import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, valida
 import java.net.{URI, URL}
 
 /**
-  * Supported Identity Provider platforms, including MS Entra ID, Okta and Generic for other Platforms.
+  * Supported Identity Provider platforms.
   */
 object IdentityProviderPlatform extends Enumeration {
   val AUTH0, ENTRA_ID, OKTA = Value
