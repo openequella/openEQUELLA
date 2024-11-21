@@ -147,10 +147,10 @@ object IdentityProviderDetails {
         (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiSecret.toValidatedNel)
           .mapN(
             (commonDetails, apiClientSecret) =>
-              GenericIdentityProviderDetails(commonDetails,
-                                             URI.create(provider.apiUrl).toURL,
-                                             provider.apiClientId,
-                                             apiClientSecret))
+              GenericIdentityProviderDetails(commonDetails = commonDetails,
+                                             apiUrl = URI.create(provider.apiUrl).toURL,
+                                             apiClientId = provider.apiClientId,
+                                             apiClientSecret = apiClientSecret))
       case other =>
         invalidNel(s"Unsupported Identity Provider: ${other.platform}")
     }
