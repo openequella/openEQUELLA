@@ -1,7 +1,12 @@
 libraryDependencies ++= Seq(
-  "org.slf4j"              % "jcl-over-slf4j"  % "2.0.13",
-  "org.slf4j"              % "slf4j-api"       % "2.0.13",
-  "org.slf4j"              % "slf4j-simple"    % "2.0.13",
+  // Logging dependencies
+  "org.slf4j" % "jcl-over-slf4j" % "2.0.16",
+  "org.slf4j" % "slf4j-api"      % "2.0.16",
+  log4jSlf4jImpl,
+  // (support YAML based logging configuration)
+  jacksonDataBind,
+  jacksonDataFormatYaml,
+  // General dependencies
   "com.google.guava"       % "guava"           % "32.1.3-jre",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
   "com.fifesoft"           % "rsyntaxtextarea" % "1.5.2",
