@@ -78,10 +78,10 @@ object GenericIdPUser {
   * Reference link: https://auth0.com/docs/api/management/v2/users/get-users
   */
 @Bind
-class GenericUserDirectory extends OidcUserDirectory {
-  private val LOGGER = LoggerFactory.getLogger(classOf[GenericUserDirectory])
+class Auth0UserDirectory extends OidcUserDirectory {
+  private val LOGGER = LoggerFactory.getLogger(classOf[Auth0UserDirectory])
 
-  override val targetPlatform: IdentityProviderPlatform.Value = IdentityProviderPlatform.GENERIC
+  override val targetPlatform: IdentityProviderPlatform.Value = IdentityProviderPlatform.AUTH0
 
   override type IDP = GenericIdentityProviderDetails
 

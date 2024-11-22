@@ -6218,7 +6218,7 @@
     <parameter id="url-pattern" value="/oidc/callback" />
   </extension>
   <extension plugin-id="com.tle.core.usermanagement" point-id="oidcUserDir" id="genericUserDir">
-    <parameter id="bean" value="bean:com.tle.core.usermanagement.GenericUserDirectory" />
+    <parameter id="bean" value="bean:com.tle.core.usermanagement.Auth0UserDirectory" />
     <parameter id="platform" value="GENERIC" />
     <parameter id="order" value="1000" />
   </extension>

@@ -67,7 +67,8 @@ object IdentityProviderCodec {
       .downField("platform")
       .as[IdentityProviderPlatform.Value]
       .flatMap {
-        case IdentityProviderPlatform.GENERIC => cursor.as[GenericIdentityProviderDetails]
+        case IdentityProviderPlatform.AUTH0 | IdentityProviderPlatform.ENTRA_ID =>
+          cursor.as[GenericIdentityProviderDetails]
         case unsupported =>
           Left(
             DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil))

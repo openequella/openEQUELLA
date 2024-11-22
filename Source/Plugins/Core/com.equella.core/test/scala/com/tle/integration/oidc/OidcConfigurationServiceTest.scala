@@ -6,11 +6,7 @@ import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.{
-  CommonDetails,
-  GenericIdentityProvider,
-  GenericIdentityProviderDetails
-}
+import com.tle.integration.oidc.idp.{CommonDetails, Auth0, GenericIdentityProviderDetails}
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
@@ -28,7 +24,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   val userService: UserService                       = mock(classOf[UserService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
 
-  val auth0: GenericIdentityProvider = GenericIdentityProvider(
+  val auth0: Auth0 = Auth0(
     issuer = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
     authCodeClientSecret =
@@ -46,7 +42,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   )
 
   val auth0EncryptedStringRepr =
-    """{"commonDetails":{"platform":"GENERIC","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
+    """{"commonDetails":{"platform":"AUTH0","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   mockStatic(classOf[CurrentUser])
@@ -94,7 +90,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       Then("All the invalid values should be captured")
       inside(result) {
         case Left(e) =>
-          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for IdP API URL: URI is not absolute"
+          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for API URL: URI is not absolute"
       }
     }
 

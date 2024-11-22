@@ -25,9 +25,7 @@ import com.tle.core.encryption.EncryptionService
 import java.net.{URI, URL}
 
 /**
-  * The common details configured for SSO with an Identity Provider, but with some slightly more strict types
-  * (e.g. secret values are mandatory and use `URL` instead of `String` for URL type values) compared to `IdentityProvider`
-  * which needed to be looser for REST endpoints etc. Also, secret values are encrypted.
+  * The common details configured for OIDC with an Identity Provider.
   *
   * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
   * @param issuer The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
@@ -42,17 +40,17 @@ import java.net.{URI, URL}
   * @param defaultRoles A list of default OEQ roles to assign to the user's session.
   * @param roleConfig Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
   */
-case class CommonDetails(platform: IdentityProviderPlatform.Value,
-                         issuer: String,
-                         authCodeClientId: String,
-                         authCodeClientSecret: String,
-                         authUrl: URL,
-                         keysetUrl: URL,
-                         tokenUrl: URL,
-                         usernameClaim: Option[String],
-                         defaultRoles: Set[String],
-                         roleConfig: Option[RoleConfiguration],
-                         enabled: Boolean,
+final case class CommonDetails(platform: IdentityProviderPlatform.Value,
+                               issuer: String,
+                               authCodeClientId: String,
+                               authCodeClientSecret: String,
+                               authUrl: URL,
+                               keysetUrl: URL,
+                               tokenUrl: URL,
+                               usernameClaim: Option[String],
+                               defaultRoles: Set[String],
+                               roleConfig: Option[RoleConfiguration],
+                               enabled: Boolean,
 )
 
 sealed trait IdentityProviderDetails {
@@ -60,17 +58,26 @@ sealed trait IdentityProviderDetails {
 }
 
 /**
-  * Configuration details for a generic Identity Provider. In addition to the common configuration for SSO,
-  * the details of how to interact with the Identity Provider's APIs are also included.
+  * Configuration details for Identity Provider where the way to request resources is through REST APIs.
+  * The structure is similar to the concrete classes that extend [[IdentityProvider]] and [[RestApi]], but
+  * with fully defined types used for storage and internal operations, where as IdentityProvider is more
+  * a DTO for the REST API.
   *
-  * @param commonDetails Common details configured for SSO with a generic Identity Provider
+  * Key differences from IdentityProvider:
+  * 1. Slightly more strict types
+  *    - secret values are mandatory
+  *    - URL type values use `URL` instead of `String`
+  * 2. Secret values are encrypted
+  * 3. Details for OIDC are centralised into one field
+  *
+  * @param commonDetails Common details configured for OIDC
   * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
   * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
   *                    (for user searching etc)
   * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token to use with
   *                        the Identity Provider's API (for user searching etc). The value will be encrypted on saving.
   */
-case class GenericIdentityProviderDetails(
+final case class GenericIdentityProviderDetails(
     commonDetails: CommonDetails,
     apiUrl: URL,
     apiClientId: String,
@@ -134,19 +141,19 @@ object IdentityProviderDetails {
     this.encryptionService = encryptionService
 
     val result = idp match {
-      case generic: GenericIdentityProvider =>
-        val encryptedApiClientSecret = encrypt(
-          "API Client Secret",
-          generic.apiClientSecret,
-          existingIdP[GenericIdentityProviderDetails](existingConfig).map(_.apiClientSecret))
+      case provider: IdentityProvider with RestApi =>
+        val existingApiSecret = existingConfig.collect {
+          case details: GenericIdentityProviderDetails => details.apiClientSecret
+        }
+        val encryptedApiSecret =
+          encrypt("API Client Secret", provider.apiClientSecret, existingApiSecret)
 
-        // Convert to ValidatedNel to collect all the errors
-        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiClientSecret.toValidatedNel)
+        (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiSecret.toValidatedNel)
           .mapN(
             (commonDetails, apiClientSecret) =>
               GenericIdentityProviderDetails(commonDetails = commonDetails,
-                                             apiUrl = URI.create(generic.apiUrl).toURL,
-                                             apiClientId = generic.apiClientId,
+                                             apiUrl = URI.create(provider.apiUrl).toURL,
+                                             apiClientId = provider.apiClientId,
                                              apiClientSecret = apiClientSecret))
       case other =>
         invalidNel(s"Unsupported Identity Provider: ${other.platform}")

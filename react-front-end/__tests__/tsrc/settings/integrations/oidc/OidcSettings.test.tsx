@@ -72,7 +72,7 @@ describe("Platform details section", () => {
   const genericFields = [apiUrlLabel, apiClientIdLabel, apiClientSecretLabel];
 
   it.each<[OEQ.Oidc.IdentityProviderPlatform, string[]]>([
-    ["GENERIC", genericFields],
+    ["AUTH0", genericFields],
   ])("should render fields for platform '%s'", async (platform, fields) => {
     const { container } = await renderOidcSettings();
 

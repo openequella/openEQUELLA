@@ -273,7 +273,7 @@ const OidcSettings = ({
 
             if (OEQ.Oidc.isGenericIdentityProvider(idp)) {
               setApiDetails({
-                platform: "GENERIC",
+                platform: idp.platform,
                 apiUrl: idp.apiUrl,
                 apiClientId: idp.apiClientId,
                 apiClientSecret: idp.apiClientSecret,

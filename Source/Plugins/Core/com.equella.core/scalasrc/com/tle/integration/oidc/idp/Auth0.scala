@@ -20,19 +20,12 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
-import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 
 /**
-  * Configuration for a generic Identity Provider. In addition to the common fields, it includes
-  * the following special fields:
-  *
-  * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
-  * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
-  *                           (for user searching etc)
-  * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token
-  *                               to use with the Identity Provider's API (for user searching etc)
+  * Configuration for Auth0 including the common details for OIDC and the details required
+  * to interact the Auth0 Management API V2.
   */
-case class GenericIdentityProvider(
+final case class Auth0(
     issuer: String,
     authCodeClientId: String,
     authCodeClientSecret: Option[String],
@@ -46,18 +39,14 @@ case class GenericIdentityProvider(
     apiUrl: String,
     apiClientId: String,
     apiClientSecret: Option[String],
-) extends IdentityProvider {
-  override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.GENERIC
+) extends IdentityProvider
+    with RestApi {
+  override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.AUTH0
 
   /**
     * In additional to the validations for common fields (see [[IdentityProvider.validate]]), also
     * validate the additional fields configured for a GenericIdentityProvider.
     */
-  override def validate: ValidatedNel[String, GenericIdentityProvider] = {
-    val textFields = Map(("IdP API Client ID", apiClientId))
-    val urlField   = Map(("IdP API URL", apiUrl))
-
-    (super.validate, validateTextFields(textFields), validateUrlFields(urlField))
-      .mapN((_, _, _) => this)
-  }
+  override def validate: ValidatedNel[String, Auth0] =
+    (super.validate, validateApiDetails).mapN((_, _) => this)
 }

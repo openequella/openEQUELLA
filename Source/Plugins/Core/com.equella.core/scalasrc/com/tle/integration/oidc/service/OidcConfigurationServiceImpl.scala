@@ -34,8 +34,6 @@ import com.tle.integration.oidc.idp.{
 import io.circe.parser._
 import io.circe.syntax._
 import com.tle.integration.oidc.idp.IdentityProviderCodec._
-import org.slf4j.{Logger, LoggerFactory}
-
 import javax.inject.{Inject, Singleton}
 
 @Singleton
