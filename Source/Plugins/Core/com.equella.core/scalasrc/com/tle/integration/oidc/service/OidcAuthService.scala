@@ -39,11 +39,16 @@ import com.tle.integration.oauth2.error.authorisation.{
 import com.tle.integration.oauth2.error.general.{GeneralError, InvalidJWT, ServerError}
 import com.tle.integration.oauth2.error.token.{TokenError, TokenErrorResponse}
 import com.tle.integration.oauth2.generatePKCEPair
-import com.tle.integration.oidc.idp.{IdentityProviderDetails, RoleConfiguration}
+import com.tle.integration.oidc.idp.{
+  IdentityProviderDetails,
+  IdentityProviderPlatform,
+  RoleConfiguration
+}
 import com.tle.integration.oidc.{
   OpenIDConnectParams,
   getClaim,
   getClaimAsSet,
+  getRequiredClaim,
   verifyIdToken => verifyToken
 }
 import com.tle.integration.util.{NO_FURTHER_INFO, getParam}
@@ -97,7 +102,6 @@ class OidcAuthService @Inject()(
     jwkProvider: JwkProvider)(implicit val nonceService: OidcNonceService) {
   private val RESPONSE_TYPE         = "code"
   private val GRANT_TYPE            = "authorization_code"
-  private val REDIRECT_URI          = s"${CurrentInstitution.get().getUrl}oidc/callback"
   private val SCOPE                 = "openid profile email"
   private val CODE_CHALLENGE_METHOD = "S256"
 
@@ -141,7 +145,7 @@ class OidcAuthService @Inject()(
     val uriBuilder = new URIBuilder(authUrl)
       .addParameter(OpenIDConnectParams.CLIENT_ID, clientId)
       .addParameter(OpenIDConnectParams.RESPONSE_TYPE, RESPONSE_TYPE)
-      .addParameter(OpenIDConnectParams.REDIRECT_URI, REDIRECT_URI)
+      .addParameter(OpenIDConnectParams.REDIRECT_URI, redirectUri)
       .addParameter(OpenIDConnectParams.SCOPE, SCOPE)
       .addParameter(OpenIDConnectParams.STATE, state)
       .addParameter(OpenIDConnectParams.NONCE, nonce)
@@ -201,7 +205,7 @@ class OidcAuthService @Inject()(
         OpenIDConnectParams.CODE          -> code,
         OpenIDConnectParams.CODE_VERIFIER -> stateDetails.codeVerifier,
         OpenIDConnectParams.GRANT_TYPE    -> GRANT_TYPE,
-        OpenIDConnectParams.REDIRECT_URI  -> REDIRECT_URI,
+        OpenIDConnectParams.REDIRECT_URI  -> redirectUri,
       )
       .post(uri"${idpDetails.tokenUrl}")
       .response(asJson[OidcTokenResponse])
@@ -268,18 +272,16 @@ class OidcAuthService @Inject()(
             idp: IdentityProviderDetails): Either[GeneralError, Unit] = {
     def claim: String => Option[String] = getClaim(idToken)
 
-    val userId = idToken.getSubject
-    val username = idp.commonDetails.usernameClaim
-      .map(c =>
-        claim(c).toRight(InvalidJWT(s"Missing the configured username claim $c in the ID token")))
-      .getOrElse(Right(userId))
-
     for {
-      // Confirm the username and create a UserBean
-      uname <- username
+      userId <- getUserId(idp.commonDetails.platform, idToken)
+      username <- idp.commonDetails.usernameClaim
+        .filter(_.nonEmpty)
+        .map(c =>
+          claim(c).toRight(InvalidJWT(s"Missing the configured username claim $c in the ID token")))
+        .getOrElse(Right(userId))
       user = new DefaultUserBean(
         userId,
-        uname,
+        username,
         claim(OpenIDConnectParams.FAMILY_NAME).getOrElse(""),
         claim(OpenIDConnectParams.GIVEN_NAME).getOrElse(""),
         claim(OpenIDConnectParams.EMAIL).orNull
@@ -296,6 +298,23 @@ class OidcAuthService @Inject()(
         }
         .leftMap(error => ServerError(s"Failed to setup user state: ${error.getMessage}"))
     } yield userService.login(userState, true)
+  }
+
+  /**
+    * Confirm User ID from the ID token.
+    *
+    * For Entra ID, According to the their claim reference, claim 'oid' is the unique identifier
+    * for the user across applications.
+    *
+    * For other platforms, use claim 'sub' as the unique identifier.
+    *
+    * Reference:
+    *   - https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference
+    */
+  private def getUserId(platform: IdentityProviderPlatform.Value,
+                        token: DecodedJWT): Either[InvalidJWT, String] = platform match {
+    case IdentityProviderPlatform.ENTRA_ID => getRequiredClaim(token, "oid")
+    case _                                 => Right(token.getSubject)
   }
 
   // If there is a role configuration, use the configured role claim and role mappings to determine the OEQ roles.
@@ -353,4 +372,6 @@ class OidcAuthService @Inject()(
     case HttpError(body, status) if status.isServerError =>
       ServerError(s"Failed to request an ID token: $body")
   }
+
+  private def redirectUri = s"${CurrentInstitution.get().getUrl}oidc/callback"
 }
