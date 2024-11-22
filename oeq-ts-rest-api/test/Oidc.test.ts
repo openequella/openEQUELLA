@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
+import { IdentityProviderCodec } from '../src/gen/Oidc';
 import {
   GenericIdentityProvider,
   getIdentityProvider,
@@ -53,6 +54,6 @@ describe('Identity Provider', () => {
 
   it('retrieves the Identity Provider configuration', async () => {
     const idp = await getIdentityProvider(TC.API_PATH);
-    expect(idp.platform).toBe('GENERIC');
+    expect(IdentityProviderCodec.is(idp)).toBe(true);
   });
 });
