@@ -95,14 +95,16 @@ class EntraIdUserDirectory extends ApiUserDirectory {
                                           query: String): String = {
     val baseEndpoint = s"${idp.apiUrl.toString}/users"
 
+    def buildSearchCriteria(q: String) =
+      List("displayName", "mail", "userPrincipalName")
+        .map(field => s"""\"$field:$q\"""") // The Advanced search syntax requires each criteria to be wrapped in double quotes
+        .mkString(" OR ") // And separated by 'OR'
+
     Option(query)
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
-      .filter(_.nonEmpty)
-      .map { q =>
-        val searchParam =
-          s"$$search=\" displayName: $q \ " OR \"mail:$q\" OR \"userPrincipalName:$q\""
-        s"$baseEndpoint?$searchParam"
-      }
+      .filter(_.trim.nonEmpty) // If the remaining are spaces only, do not use it
+      .map(buildSearchCriteria)
+      .map(criteria => s"$baseEndpoint?$$search=$criteria")
       .getOrElse(baseEndpoint)
   }
 
