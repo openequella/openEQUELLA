@@ -154,6 +154,11 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       .orNull
   }
 
+  /**
+    * Warning: The current implementation does not do a batch operation to return multiple users, and this
+    * is because some IdPs do not have an API to support this. Hence, multiple requests will be made
+    * to retrieve the information of each user, which may hit the API rate limit.
+   **/
   override def getInformationForUsers(
       userIDs: util.Collection[String]): util.Map[String, UserBean] =
     userIDs.asScala
