@@ -26,9 +26,10 @@ import com.tle.integration.oidc.idp.GenericIdentityProviderDetails
 import com.tle.plugins.ump.UserDirectory
 import io.circe.Decoder
 import org.slf4j.LoggerFactory
+import sttp.client.basicRequest
 import sttp.client.circe.asJson
-import sttp.client.{UriContext, basicRequest}
-import sttp.model.Header
+import sttp.model.{Header, Uri}
+import java.net.URI
 import java.util
 import scala.jdk.CollectionConverters._
 
@@ -46,7 +47,6 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
   /**
     * Type alias for the information of multiple users returned from the Identity Provider.
-    *
     */
   protected type USERS
 
@@ -55,7 +55,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   protected implicit val usersDecoder: Decoder[USERS]
 
   /**
-    * While the structure of `USERS` may be equal to `List[USER]` in some IdPs' responses, it may not in others'. So
+    * While the structure of `USERS` may be equal to `List[USER]` in some IdPs' responses, it may not in others. So
     * override this function to provide the correct type transformation.
     */
   protected def toUserList(users: USERS): List[USER]
@@ -67,14 +67,16 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   override protected type AuthResult = OAuthTokenState
 
   /**
-    * REST Endpoint that returns a single user.
+    * Use the provided Identity Provider details and user ID to build a full URL that
+    * points to the REST Endpoint that returns a single user.
     */
-  protected def userEndpoint(idp: IDP, id: String): String
+  protected def userEndpoint(idp: IDP, id: String): URI
 
   /**
-    * REST Endpoint that returns a list of users.
+    * Use the provided Identity Provider details and search query to build a full URL that
+    * points to the REST Endpoint that returns a list of users.
     */
-  protected def userListEndpoint(idp: IDP, query: String): String
+  protected def userListEndpoint(idp: IDP, query: String): URI
 
   /**
     * Build an instance of TokenRequest to be used in the authentication process.
@@ -96,11 +98,11 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     * @return Either an error describing why the request failed or the requested resources in the target type.
     */
   protected def requestWithToken[T](
-      endpoint: String,
+      endpoint: URI,
       tokenState: OAuthTokenState,
       headers: List[Header] = List.empty)(implicit decoder: Decoder[T]): Either[Throwable, T] = {
     val req = basicRequest
-      .get(uri"$endpoint")
+      .get(Uri(endpoint))
       .headers(headers: _*)
       .response(asJson[T])
 
@@ -112,7 +114,8 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   }
 
   /**
-    * Additional headers to include in the user search request.
+    * Additional headers to include in the user search request. Override if target IdP's API
+    * requires anything additional/different.
     */
   protected val requestHeaders: List[Header] = List.empty
 

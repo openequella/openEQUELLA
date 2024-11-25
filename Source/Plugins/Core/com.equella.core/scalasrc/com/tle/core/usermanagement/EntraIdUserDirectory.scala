@@ -25,7 +25,9 @@ import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
+import org.apache.http.client.utils.URIBuilder
 import sttp.model.Header
+import java.net.URI
 
 /**
   * Structure for the information of a single user returned from Entra ID.
@@ -36,6 +38,9 @@ final case class EntraIdUser(id: String,
                              givenName: Option[String],
                              mail: Option[String])
 
+/**
+  * Structure for response returning multiple users - e.g. user search.
+  */
 final case class EntraIdUserList(value: List[EntraIdUser])
 
 /**
@@ -71,8 +76,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     )
   }
 
-  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): String =
-    s"${idp.apiUrl.toString}/users/$id"
+  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
+    URI.create(s"${idp.apiUrl.toString}/users/$id")
 
   /**
     * There are three important things to determine the user listing endpoint in Microsoft Graph:
@@ -92,8 +97,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     * https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties
    **/
   override protected def userListEndpoint(idp: GenericIdentityProviderDetails,
-                                          query: String): String = {
-    val baseEndpoint = s"${idp.apiUrl.toString}/users"
+                                          query: String): URI = {
+    val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}/users")
 
     def buildSearchCriteria(q: String) =
       List("displayName", "mail", "userPrincipalName")
@@ -104,8 +109,9 @@ class EntraIdUserDirectory extends ApiUserDirectory {
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
       .filter(_.trim.nonEmpty) // If the remaining are spaces only, do not use it
       .map(buildSearchCriteria)
-      .map(criteria => s"$baseEndpoint?$$search=$criteria")
+      .map(baseEndpoint.addParameter("$search", _))
       .getOrElse(baseEndpoint)
+      .build()
   }
 
   /**
