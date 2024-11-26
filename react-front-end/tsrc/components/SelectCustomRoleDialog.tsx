@@ -41,7 +41,7 @@ import * as RS from "fp-ts/ReadonlySet";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as React from "react";
 import { isNonEmptyString } from "../util/validation";
 import ConfirmDialog from "./ConfirmDialog";
@@ -143,6 +143,10 @@ const SelectCustomRoleDialog = ({
   // state for final selections which will be returned to the calling component when the user clicks OK
   const [rolesMapping, setRolesMapping] =
     React.useState<CustomRolesMapping>(initialRoleMappings);
+
+  useEffect(() => {
+    setRolesMapping(initialRoleMappings);
+  }, [initialRoleMappings]);
 
   // oEQ role entry in the `oEQ column`
   const oeqRoleEntry = (
@@ -264,7 +268,8 @@ const SelectCustomRoleDialog = ({
   const defaultCustomRoleSelector = (
     <TextField
       label={customRoleLabel}
-      value={selectedCustomRole?.role}
+      // Use empty string as default value to avoid uncontrolled warning
+      value={selectedCustomRole?.role ?? ""}
       error={
         showErrorCustomRoleSelector &&
         !isNonEmptyString(selectedCustomRole?.role)

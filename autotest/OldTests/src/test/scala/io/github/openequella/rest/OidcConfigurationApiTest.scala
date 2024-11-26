@@ -7,7 +7,7 @@ import org.testng.annotations.Test
 
 class OidcConfigurationApiTest extends AbstractRestApiTest {
   private val OIDC_ENDPOINT           = getTestConfig.getInstitutionUrl + "api/oidc/config"
-  private val PLATFORM                = "GENERIC"
+  private val PLATFORM                = "AUTH0"
   private val AUTH_URL                = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize"
   private val AUTH_CODE_CLIENT_SECRET = "authCodeClientSecret"
   private val API_CLIENT_ID           = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps"
@@ -99,7 +99,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     assertEquals(
       "Missing value for required field: Authorisation Code flow Client ID," +
         "Invalid value for Key set URL: Illegal character in path at index 11: http://abc/ keyset/," +
-        "Missing value for required field: IdP API Client ID",
+        "Missing value for required field: API Client ID",
       errors
     )
   }
