@@ -19,6 +19,7 @@
 package com.tle.admin;
 
 import com.tle.admin.boot.LoadingDialog;
+import com.tle.admin.helper.ClientConfigurationHelper;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
 import com.tle.client.impl.ClientServiceImpl;
@@ -29,6 +30,7 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.core.remoting.RemoteLanguageService;
 import com.tle.i18n.BundleCache;
+import io.github.openequella.graphql.ClientConfiguration;
 import java.awt.Window;
 import java.io.IOException;
 import java.net.URL;
@@ -36,8 +38,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the main class that launches the Administration Console.
@@ -46,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
  */
 @SuppressWarnings("nls")
 public class AdminConsole implements HarnessInterface {
-  private static final Log LOGGER = LogFactory.getLog(AdminConsole.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdminConsole.class);
 
   private static final String DOCUMENTBUILDERFACTORY = "javax.xml.parsers.DocumentBuilderFactory";
   private static final String DEFAULT_XML_PARSER5 =
@@ -68,13 +71,13 @@ public class AdminConsole implements HarnessInterface {
     final String javaVersion = System.getProperty("java.version");
     final String osName = System.getProperty("os.name");
 
-    LOGGER.info("Java version is '" + javaVersion + "'");
-    LOGGER.info("OS name is '" + osName + "'");
+    LOGGER.info("Java version is '{}'", javaVersion);
+    LOGGER.info("OS name is '{}'", osName);
   }
 
   protected void initLanguageBundles() throws IOException {
     // TODO: change the rtl stuff (if we ever support rtl in admin console)
-    LOGGER.info("Locale is " + locale);
+    LOGGER.info("Locale is {}", locale);
     CurrentLocale.initialise(
         new ClientLocaleImplementation(endpointURL, getBundleGroups(), locale, false));
     CurrentTimeZone.initialise(new CurrentTimeZoneClientSide(TimeZone.getDefault()));
@@ -84,12 +87,16 @@ public class AdminConsole implements HarnessInterface {
     return new String[] {"admin-console", "recipient-selector"};
   }
 
+  /**
+   * Starts the Administration Console, after the user has already authenticated and as a result,
+   * the session has been created. A cookie for the session can be found in the system cookies.
+   */
   @Override
   public void start() {
     try {
       // Detect the Mac hack param
       String tempDir = System.getProperty("jnlp.java.io.tmpdir");
-      if (tempDir != null && !tempDir.equals("")) {
+      if (Strings.isNotEmpty(tempDir)) {
         System.setProperty("java.io.tmpdir", tempDir);
       }
 
@@ -105,15 +112,19 @@ public class AdminConsole implements HarnessInterface {
       System.setProperty(DOCUMENTBUILDERFACTORY, DEFAULT_XML_PARSER5);
 
       setupLookAndFeel();
-      final LoadingDialog loading = new LoadingDialog("Equella: Administration Console");
+      final LoadingDialog loading = new LoadingDialog("openEQUELLA: Administration Console");
       loading.setVisible(true);
       loading.toFront();
 
       // Initialise language bundle now
       initLanguageBundles();
 
+      // Set the client configuration for the GraphQL library
+      ClientConfiguration clientConfiguration = ClientConfigurationHelper.create(endpointURL);
+      ClientConfigurationHelper.loadSystemCookies(clientConfiguration);
+
       // Create the driver interface.
-      Driver.create(clientService, pluginService);
+      Driver.create(clientService, pluginService, clientConfiguration);
 
       // Create the management dialog.
       managementDialog = new ManagementDialog();
@@ -125,11 +136,10 @@ public class AdminConsole implements HarnessInterface {
       managementDialog.setVisible(true);
       managementDialog.toFront();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      LOGGER.error("Error starting the Administration Console", ex);
       JOptionPane.showMessageDialog(
           managementDialog, ERROR_MESSAGE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
       clientService.stop();
-      return;
     }
   }
 
@@ -138,8 +148,7 @@ public class AdminConsole implements HarnessInterface {
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     } catch (Exception ex) {
-      System.err.println("Look And Feel could not be set.");
-      ex.printStackTrace();
+      LOGGER.error("Look And Feel could not be set.", ex);
     }
   }
 

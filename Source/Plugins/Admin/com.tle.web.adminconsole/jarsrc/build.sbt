@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   springContext,
   "com.fifesoft"  % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout" % "miglayout-swing" % "4.2",
-  xstreamDep
+  xstreamDep,
+  "io.github.openequella" %% "graphql-client" % "0.1.0-SNAPSHOT"
 )
 
 excludeDependencies ++= Seq(

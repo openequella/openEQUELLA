@@ -1,3 +1,7 @@
+# This is the Log4j2 configuration file used when launching the admin console via
+# com.tle.client.harness.ClientLauncher. This is commonly done via a run configuration in
+# IntelliJ IDEA when developing the admin console. As a result, it makes sense for it to include
+# debug level logging for key packages.
 Configuration:
   status: warn
 
@@ -9,10 +13,13 @@ Configuration:
         ThresholdFilter:
           level: debug
       PatternLayout:
-        Pattern: "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+        Pattern: "%d{ABSOLUTE} [%15.15t] %-5p [%35.35c{1.3.*}] %m%n"
 
   Loggers:
     Root:
       level: info
       AppenderRef:
         ref: STDOUT
+    Logger:
+      name: com.tle
+      level: debug

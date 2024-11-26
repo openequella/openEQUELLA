@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "com.miglayout"          % "miglayout-swing" % "4.2",
   springWeb,
   springAop,
-  springContext
+  springContext,
+  "io.github.openequella" %% "graphql-client" % "0.1.0-SNAPSHOT"
 )
 
 (run / fork) := true

@@ -29,6 +29,7 @@ import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemotePluginDownloadService;
+import io.github.openequella.graphql.ClientConfiguration;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -54,6 +55,7 @@ public final class Driver {
   private final String loggedInUserID;
 
   private final ClientService clientService;
+  private final ClientConfiguration clientConfiguration;
 
   private ControlRepository controlRepository;
   private final PluginServiceImpl pluginService;
@@ -63,19 +65,26 @@ public final class Driver {
     return driver;
   }
 
-  public static Driver create(ClientService clientService, PluginServiceImpl pluginService)
+  public static Driver create(
+      ClientService clientService,
+      PluginServiceImpl pluginService,
+      ClientConfiguration clientConfiguration)
       throws Exception {
     if (driver != null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Invalid attempt to try and create second Driver instance");
     }
 
-    driver = new Driver(clientService, pluginService);
+    driver = new Driver(clientService, pluginService, clientConfiguration);
     return driver;
   }
 
-  @SuppressWarnings("nls")
-  private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception {
+  private Driver(
+      ClientService clientService,
+      PluginServiceImpl pluginService,
+      ClientConfiguration clientConfiguration)
+      throws Exception {
     this.clientService = clientService;
+    this.clientConfiguration = clientConfiguration;
 
     // Setup some initial state.
 
@@ -105,6 +114,10 @@ public final class Driver {
   @Deprecated
   public ClientService getClientService() {
     return clientService;
+  }
+
+  public ClientConfiguration getClientConfiguration() {
+    return clientConfiguration;
   }
 
   public static void displayError(
