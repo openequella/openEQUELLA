@@ -62,10 +62,11 @@ const { select: selectLabel } = languageStrings.common.action;
 const { missingValue, invalidUrl } = languageStrings.error;
 
 export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
+  ["ENTRA_ID", "Entra ID"],
   ["AUTH0", "Auth0"],
 ]);
 
-// Use 'platform' as the discriminator
+// Use 'platform' as the discriminator.
 export interface GenericApiDetails
   extends Pick<
     OEQ.Oidc.GenericIdentityProvider,
@@ -77,7 +78,7 @@ export type ApiDetails = GenericApiDetails;
 
 export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   enabled: false,
-  platform: "AUTH0",
+  platform: "ENTRA_ID",
   issuer: "",
   authCodeClientId: "",
   authCodeClientSecret: "",
@@ -87,21 +88,26 @@ export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   defaultRoles: new Set(),
 };
 
-export const defaultGenericApiDetails: GenericApiDetails = {
+export const defaultAuth0ApiDetails: GenericApiDetails = {
   platform: "AUTH0",
   apiUrl: "",
   apiClientId: "",
   apiClientSecret: "",
 };
 
-//TODO: Update default values for other platforms.
+export const defaultEntraIdApiDetails: GenericApiDetails = {
+  ...defaultAuth0ApiDetails,
+  platform: "ENTRA_ID",
+};
+
 export const defaultApiDetailsMap: Record<
   OEQ.Oidc.IdentityProviderPlatform,
   ApiDetails
 > = {
-  AUTH0: defaultGenericApiDetails,
-  ENTRA_ID: defaultGenericApiDetails,
-  OKTA: defaultGenericApiDetails,
+  ENTRA_ID: defaultEntraIdApiDetails,
+  AUTH0: defaultAuth0ApiDetails,
+  //TODO: Update default values for OKTA.
+  OKTA: defaultEntraIdApiDetails,
 };
 
 const platformSelector = (
@@ -273,7 +279,7 @@ export const generateGeneralDetails = (
   },
 });
 
-const genericApiDetails = (
+const commonApiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   apiDetails: GenericApiDetails,
@@ -368,14 +374,19 @@ export const generateApiDetails = (
   isConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
   const platform = apiDetails.platform;
+
+  const apiCommonFields = commonApiDetails(
+    apiDetailsOnChange,
+    showValidationErrors,
+    apiDetails,
+    isConfigured,
+  );
+  const { apiClientId, apiClientSecret } = apiCommonFields;
   switch (platform) {
     case "AUTH0":
-      return genericApiDetails(
-        apiDetailsOnChange,
-        showValidationErrors,
-        apiDetails,
-        isConfigured,
-      );
+      return apiCommonFields;
+    case "ENTRA_ID":
+      return { apiClientId, apiClientSecret };
     default:
       throw new Error(`Unsupported platform: ${platform}`);
   }
