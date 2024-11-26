@@ -20,6 +20,7 @@ package com.tle.core.usermanagement
 
 import cats.implicits._
 import com.tle.beans.ump.UserManagementSettings
+import com.tle.common.usermanagement.user.{DefaultUserState, ModifiableUserState}
 import com.tle.integration.oidc.idp.{IdentityProviderDetails, IdentityProviderPlatform}
 import com.tle.integration.oidc.service.OidcConfigurationService
 import com.tle.plugins.ump.AbstractUserDirectory
@@ -78,4 +79,12 @@ abstract class OidcUserDirectory extends AbstractUserDirectory {
       result     <- request(idp, authResult)
     } yield result
   }
+
+  override def authenticateUserFromUsername(username: String,
+                                            privateData: String): ModifiableUserState =
+    Option(getInformationForUser(username)).map { user =>
+      val userState = new DefaultUserState
+      userState.setLoggedInUser(user)
+      userState
+    }.orNull
 }
