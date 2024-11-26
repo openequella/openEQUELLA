@@ -117,7 +117,12 @@ public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
 
     @Override
     public TLEUser getByUsername(String username) {
-      return delegate.getByUsername(username);
+      // The existing user service returned null if the user was not found. Now we have the option
+      // of returning an empty Optional instead. So perhaps we can update the calling layers to
+      // handle this case.
+      // (That said, this is only used for bulk user imports, and only if they don't provide a
+      // UUID.)
+      return adminTLEUserService.getByUsername(username).orElse(null);
     }
 
     @Override
