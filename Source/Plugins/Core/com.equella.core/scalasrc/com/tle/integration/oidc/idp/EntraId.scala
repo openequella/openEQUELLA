@@ -37,12 +37,13 @@ final case class EntraId(
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
     enabled: Boolean,
-    apiUrl: String,
     apiClientId: String,
     apiClientSecret: Option[String],
 ) extends IdentityProvider
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.ENTRA_ID
+
+  override val apiUrl: String = "https://graph.microsoft.com/v1.0"
 
   override def validate: ValidatedNel[String, EntraId] =
     (super.validate, validateApiDetails).mapN((_, _) => this)

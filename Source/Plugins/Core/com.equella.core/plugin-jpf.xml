@@ -6217,10 +6217,15 @@
     <parameter id="bean" value="bean:com.tle.integration.oidc.OidcCallbackServlet" />
     <parameter id="url-pattern" value="/oidc/callback" />
   </extension>
-  <extension plugin-id="com.tle.core.usermanagement" point-id="oidcUserDir" id="genericUserDir">
+  <extension plugin-id="com.tle.core.usermanagement" point-id="oidcUserDir" id="auth0UserDir">
     <parameter id="bean" value="bean:com.tle.core.usermanagement.Auth0UserDirectory" />
-    <parameter id="platform" value="GENERIC" />
+    <parameter id="platform" value="AUTH0" />
     <parameter id="order" value="1000" />
+  </extension>
+  <extension plugin-id="com.tle.core.usermanagement" point-id="oidcUserDir" id="entraIdUserDir">
+    <parameter id="bean" value="bean:com.tle.core.usermanagement.EntraIdUserDirectory" />
+    <parameter id="platform" value="ENTRA_ID" />
+    <parameter id="order" value="1100" />
   </extension>
   <!-- endregion -->
 </plugin>
