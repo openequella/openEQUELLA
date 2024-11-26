@@ -102,7 +102,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
 
     def buildSearchCriteria(q: String) =
       List("displayName", "mail", "userPrincipalName")
-        .map(field => s"""\"$field:$q\"""") // The Advanced search syntax requires each criteria to be wrapped in double quotes
+        .map(_ + ":" + q)
+        .map(criteria => s"""\"$criteria\"""") // The Advanced search syntax requires each criteria to be wrapped in double quotes
         .mkString(" OR ") // And separated by 'OR'
 
     Option(query)
