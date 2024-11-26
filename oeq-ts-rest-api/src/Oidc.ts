@@ -141,11 +141,6 @@ export interface GenericIdentityProvider extends IdentityProvider {
   apiClientSecret?: string;
 }
 
-// todo: remove this when working on OEQ-2197 and use codec where needed
-export const isGenericIdentityProvider = (
-  idp: IdentityProvider
-): idp is GenericIdentityProvider => idp.platform === 'AUTH0';
-
 /**
  * Data structure for the response of an Identity Provider, which is slightly different
  * as all the common fields are centralised into a single field 'commonDetails'.

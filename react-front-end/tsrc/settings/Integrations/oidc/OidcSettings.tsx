@@ -68,7 +68,7 @@ import * as S from "fp-ts/string";
 import SelectRoleControl from "../lti13/components/SelectRoleControl";
 import {
   defaultGeneralDetails,
-  defaultGenericApiDetails,
+  defaultEntraIdApiDetails,
   defaultApiDetailsMap,
   generateGeneralDetails,
   generateApiDetails,
@@ -168,7 +168,7 @@ const OidcSettings = ({
   const [generalDetails, setGeneralDetails] =
     useState<OEQ.Oidc.IdentityProvider>(defaultGeneralDetails);
   const [apiDetails, setApiDetails] = useState<ApiDetails>(
-    defaultGenericApiDetails,
+    defaultEntraIdApiDetails,
   );
   const [defaultRoles, setDefaultRoles] = useState<ReadonlySet<RoleDetails>>(
     new Set(),
@@ -271,7 +271,7 @@ const OidcSettings = ({
             setInitialIdpDetails(idp);
             setGeneralDetails(idp);
 
-            if (OEQ.Oidc.isGenericIdentityProvider(idp)) {
+            if (OEQ.Codec.Oidc.GenericIdentityProviderCodec.is(idp)) {
               setApiDetails({
                 platform: idp.platform,
                 apiUrl: idp.apiUrl,
