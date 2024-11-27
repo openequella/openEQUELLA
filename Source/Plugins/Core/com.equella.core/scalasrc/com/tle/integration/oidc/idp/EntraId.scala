@@ -20,6 +20,7 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 
 /**
@@ -43,6 +44,7 @@ final case class EntraId(
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.ENTRA_ID
 
+  @JsonIgnore
   override val apiUrl: String = "https://graph.microsoft.com/v1.0"
 
   override def validate: ValidatedNel[String, EntraId] =
