@@ -142,6 +142,22 @@ export interface GenericIdentityProvider extends IdentityProvider {
 }
 
 /**
+ * Full structure for the configuration of Okta, including all the common details for OIDC and API
+ * details for interacting with Core Okta API.
+ */
+export interface Okta extends IdentityProvider {
+  platform: 'OKTA';
+  /**
+   * The base endpoint of Core Okta API, use for operations such as search for users
+   */
+  apiUrl: string;
+  /**
+   *  Client ID used to request an access token to use with Core Okta API
+   */
+  apiClientId: string;
+}
+
+/**
  * Data structure for the response of an Identity Provider, which is slightly different
  * as all the common fields are centralised into a single field 'commonDetails'.
  */
