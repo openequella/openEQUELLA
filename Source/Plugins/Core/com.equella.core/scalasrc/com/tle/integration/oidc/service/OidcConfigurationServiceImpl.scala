@@ -25,11 +25,13 @@ import com.tle.core.encryption.EncryptionService
 import com.tle.core.guice.Bind
 import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
+import com.tle.core.webkeyset.service.WebKeySetService
 import com.tle.integration.oidc.idp.{
   CommonDetails,
   GenericIdentityProviderDetails,
   IdentityProvider,
-  IdentityProviderDetails
+  IdentityProviderDetails,
+  OktaDetails
 }
 import io.circe.parser._
 import io.circe.syntax._
@@ -38,10 +40,11 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 @Bind(classOf[OidcConfigurationService])
-class OidcConfigurationServiceImpl @Inject()(
-    configurationService: ConfigurationService,
-    auditLogService: AuditLogService,
-    userService: UserService)(implicit val encryptionService: EncryptionService)
+class OidcConfigurationServiceImpl @Inject()(configurationService: ConfigurationService,
+                                             auditLogService: AuditLogService,
+                                             userService: UserService)(
+    implicit val encryptionService: EncryptionService,
+    webKeySetService: WebKeySetService)
     extends OidcConfigurationService {
   private val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
@@ -83,7 +86,8 @@ class OidcConfigurationServiceImpl @Inject()(
             apiClientId = apiClientId,
             apiClientSecret = encryptionService.decrypt(apiClientSecret),
           )
-        case other => other
+        case okta: OktaDetails =>
+          okta.copy(commonDetails = decryptCommonDetails(okta.commonDetails))
       }
   }
 }
