@@ -60,6 +60,8 @@ public final class OAuthWebConstants {
   public static final String AUTHORIZATION_BEARER = "Bearer";
 
   public static final String PARAM_CODE = "code";
+  public static final String PARAM_CLIENT_ASSERTION = "client_assertion";
+  public static final String PARAM_CLIENT_ASSERTION_type = "client_assertion_type";
   public static final String PARAM_CLIENT_ID = "client_id";
   public static final String PARAM_CLIENT_SECRET = "client_secret";
   public static final String PARAM_REDIRECT_URI = "redirect_uri";
