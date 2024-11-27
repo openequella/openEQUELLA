@@ -26,12 +26,12 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -51,7 +51,7 @@ import javax.swing.JTextField;
 public class UserDetailsPanel extends JChangeDetectorPanel {
   private static final long serialVersionUID = 1L;
 
-  private final RemoteTLEUserService userService;
+  private final AdminTLEUserService userService;
   private final RemoteUserService userCacheService;
 
   private final Map<String, JLabel> labels = new HashMap<String, JLabel>();
@@ -67,7 +67,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   private JPasswordField newPassword;
   private JPasswordField passwordConfirm;
 
-  public UserDetailsPanel(RemoteTLEUserService userService, RemoteUserService userCacheService) {
+  public UserDetailsPanel(AdminTLEUserService userService, RemoteUserService userCacheService) {
     this.userService = userService;
     this.userCacheService = userCacheService;
     setupGui();
@@ -322,7 +322,10 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
     String id = loadedUser.getUuid();
     if (Check.isEmpty(id)) {
       id = userService.add(loadedUser);
-      loadedUser = userService.get(id);
+      loadedUser =
+          userService
+              .get(id)
+              .orElseThrow(() -> new IllegalStateException("Failed to retrieve newly added user."));
     } else {
       id = userService.edit(loadedUser, needsHashing);
       userCacheService.removeFromCache(id);
