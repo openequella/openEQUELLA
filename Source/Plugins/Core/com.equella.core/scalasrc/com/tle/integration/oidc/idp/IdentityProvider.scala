@@ -57,6 +57,7 @@ case class RoleConfiguration(roleClaim: String, customRoles: Map[String, Set[Str
   Array(
     new Type(value = classOf[Auth0], name = "AUTH0"),
     new Type(value = classOf[EntraId], name = "ENTRA_ID"),
+    new Type(value = classOf[Okta], name = "OKTA"),
   ))
 abstract class IdentityProvider extends ConfigurationProperties with Product {
 

@@ -18,9 +18,9 @@
 
 package com.tle.integration.oidc.idp
 
-import cats.data.Validated.invalidNel
 import cats.implicits._
 import com.tle.core.encryption.EncryptionService
+import com.tle.core.webkeyset.service.WebKeySetService
 
 import java.net.{URI, URL}
 
@@ -84,6 +84,23 @@ final case class GenericIdentityProviderDetails(
     apiClientSecret: String,
 ) extends IdentityProviderDetails
 
+/**
+  * Configuration details for Okta and the intention of this class is the same as what [[GenericIdentityProviderDetails]]
+  * is for.
+  *
+  * @param commonDetails Common details configured for OIDC
+  * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
+  * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
+  *                    (for user searching etc)
+  * @param keyId ID of the key pair which is used to sign and verify the JWT used with `apiClientId` to get an access token
+  */
+final case class OktaDetails(
+    commonDetails: CommonDetails,
+    apiUrl: URL,
+    apiClientId: String,
+    keyId: String,
+) extends IdentityProviderDetails
+
 object IdentityProviderDetails {
 
   private var encryptionService: EncryptionService = _
@@ -96,12 +113,6 @@ object IdentityProviderDetails {
       .orElse(existingConfig)
       .map(encryptionService.encrypt)
       .toRight(s"Missing value for required field: $field")
-
-  // If the existing config is the same type return an Option of the config; otherwise return None.
-  private def existingIdP[T <: IdentityProviderDetails](
-      idp: Option[IdentityProviderDetails]): Option[T] = {
-    idp.flatMap(c => Either.catchNonFatal(c.asInstanceOf[T]).toOption)
-  }
 
   private def commonDetails(
       idp: IdentityProvider,
@@ -136,27 +147,34 @@ object IdentityProviderDetails {
     *         including all the captured errors
     */
   def apply(idp: IdentityProvider, existingConfig: Option[IdentityProviderDetails],
-  )(implicit encryptionService: EncryptionService)
+  )(implicit encryptionService: EncryptionService, webKeySetService: WebKeySetService)
     : Either[IllegalArgumentException, IdentityProviderDetails] = {
     this.encryptionService = encryptionService
 
     val result = idp match {
-      case provider: IdentityProvider with RestApi =>
+      case okta: Okta =>
+        commonDetails(okta, existingConfig)
+          .map(
+            commonDetails =>
+              OktaDetails(commonDetails = commonDetails,
+                          apiUrl = URI.create(okta.apiUrl).toURL,
+                          apiClientId = okta.apiClientId,
+                          keyId = webKeySetService.generateKeyPair.keyId))
+          .toValidatedNel
+      case other: IdentityProvider with RestApi =>
         val existingApiSecret = existingConfig.collect {
           case details: GenericIdentityProviderDetails => details.apiClientSecret
         }
         val encryptedApiSecret =
-          encrypt("API Client Secret", provider.apiClientSecret, existingApiSecret)
+          encrypt("API Client Secret", other.apiClientSecret, existingApiSecret)
 
         (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiSecret.toValidatedNel)
           .mapN(
             (commonDetails, apiClientSecret) =>
               GenericIdentityProviderDetails(commonDetails = commonDetails,
-                                             apiUrl = URI.create(provider.apiUrl).toURL,
-                                             apiClientId = provider.apiClientId,
+                                             apiUrl = URI.create(other.apiUrl).toURL,
+                                             apiClientId = other.apiClientId,
                                              apiClientSecret = apiClientSecret))
-      case other =>
-        invalidNel(s"Unsupported Identity Provider: ${other.platform}")
     }
 
     result.toEither
