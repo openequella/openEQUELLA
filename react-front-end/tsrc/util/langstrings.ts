@@ -745,7 +745,7 @@ export const languageStrings = {
             usableByDesc:
               "Only allow user matching this expression to use this platform",
             usableByValidationError:
-              "ACL expression is too long (maximum 255 characters allowed)",
+              "The processed ACL expression exceeds the permitted length",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",
