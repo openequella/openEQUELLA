@@ -153,13 +153,19 @@ object IdentityProviderDetails {
 
     val result = idp match {
       case okta: Okta =>
+        // Generate a new key pari when there isn't a config for Okta or the existing config is broken.
+        val keyId = existingConfig
+          .flatMap(c => Either.catchNonFatal(c.asInstanceOf[OktaDetails]).toOption)
+          .map(_.keyId)
+          .getOrElse(webKeySetService.generateKeyPair.keyId)
+
         commonDetails(okta, existingConfig)
           .map(
             commonDetails =>
               OktaDetails(commonDetails = commonDetails,
                           apiUrl = URI.create(okta.apiUrl).toURL,
                           apiClientId = okta.apiClientId,
-                          keyId = webKeySetService.generateKeyPair.keyId))
+                          keyId = keyId))
           .toValidatedNel
       case other: IdentityProvider with RestApi =>
         val existingApiSecret = existingConfig.collect {
