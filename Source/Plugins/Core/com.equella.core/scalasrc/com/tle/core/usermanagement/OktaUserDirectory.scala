@@ -160,7 +160,7 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
     AssertionTokenRequest(
       authTokenUrl = idp.commonDetails.tokenUrl.toString,
       clientId = idp.apiClientId,
-      assertionType = URI.create(OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE_JWT_BEARER),
+      assertionType = OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE_JWT_BEARER,
       assertion = clientAssertion(idp),
       data = Option(
         Map(
