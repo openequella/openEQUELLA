@@ -153,7 +153,7 @@ object IdentityProviderDetails {
 
     val result = idp match {
       case okta: Okta =>
-        // Generate a new key pari when there isn't a config for Okta or the existing config is broken.
+        // Generate a new key pair when there isn't a config for Okta or the existing config is broken.
         val keyId = existingConfig
           .flatMap(c => Either.catchNonFatal(c.asInstanceOf[OktaDetails]).toOption)
           .map(_.keyId)

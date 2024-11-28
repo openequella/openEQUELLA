@@ -41,7 +41,7 @@ import javax.inject.Inject
 /**
   * Structure for the profile of a single user returned from Okta.
   */
-final case class OktaUserProfile(displayName: Option[String],
+final case class OktaUserProfile(login: String,
                                  firstName: Option[String],
                                  lastName: Option[String],
                                  email: Option[String])
@@ -80,10 +80,9 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
   override protected def toUserList(users: USERS): List[USER] = users
 
   override protected def toUserBean(user: USER): UserBean = {
-    val profile  = user.profile
-    val username = profile.displayName.getOrElse(user.id)
+    val profile = user.profile
     new DefaultUserBean(user.id,
-                        username,
+                        profile.login,
                         profile.firstName.getOrElse(""),
                         profile.lastName.getOrElse(""),
                         profile.email.orNull)
@@ -146,7 +145,7 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
             .withSubject(okta.apiClientId)
             .withIssuedAt(Instant.now)
             .withNotBefore(Instant.now)
-            .withExpiresAt(Instant.now.plusSeconds(10))
+            .withExpiresAt(Instant.now.plusSeconds(30))
             .withKeyId(keyId)
             .sign(Algorithm.RSA256(keyPair.getPrivate.asInstanceOf[RSAPrivateKey]))
         case Right(None) =>
