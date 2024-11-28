@@ -22,7 +22,6 @@ import cats.implicits._
 import com.tle.common.Pair
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
-import com.tle.integration.oidc.idp.GenericIdentityProviderDetails
 import com.tle.plugins.ump.UserDirectory
 import io.circe.Decoder
 import org.slf4j.LoggerFactory
@@ -61,8 +60,6 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   protected def toUserList(users: USERS): List[USER]
 
   protected def toUserBean(user: USER): UserBean
-
-  override type IDP = GenericIdentityProviderDetails
 
   override protected type AuthResult = OAuthTokenState
 
@@ -122,9 +119,9 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   override def searchUsers(
       query: String): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
     lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, USERS] =
-      query =>
+      q =>
         (idp, tokenState) =>
-          requestWithToken[USERS](userListEndpoint(idp, query), tokenState, requestHeaders)
+          requestWithToken[USERS](userListEndpoint(idp, q), tokenState, requestHeaders)
 
     val users = execute(search(query))
       .leftMap(LOGGER.error(s"Failed to search users", _))
