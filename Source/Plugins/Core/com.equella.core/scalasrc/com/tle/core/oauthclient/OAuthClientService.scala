@@ -141,7 +141,7 @@ object OAuthTokenCacheHelper {
       .getOrElse(Map.empty)
       .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
 
-    val req = token match {
+    val postRequest = token match {
       case req: SecretTokenRequest =>
         basicRequest.auth
           .basic(req.clientId, req.clientSecret)
@@ -159,7 +159,7 @@ object OAuthTokenCacheHelper {
       sttpBackend
         .flatMap(
           implicit backend =>
-            req
+            postRequest
               .response(asJsonAlways[OAuthTokenResponse])
               .post(uri"${token.authTokenUrl}")
               .send())
