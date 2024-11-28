@@ -142,13 +142,14 @@ object OAuthTokenCacheHelper {
       .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
 
     val req = token match {
-      case c: SecretTokenRequest =>
+      case req: SecretTokenRequest =>
         basicRequest.auth
-          .basic(c.clientId, c.clientSecret)
+          .basic(req.clientId, req.clientSecret)
           .body(body: _*)
-      case c: AssertionTokenRequest =>
-        val assertionParams = Seq(OAuthWebConstants.PARAM_CLIENT_ASSERTION_type -> c.assertionType,
-                                  OAuthWebConstants.PARAM_CLIENT_ASSERTION -> c.assertion)
+      case req: AssertionTokenRequest =>
+        val assertionParams = Seq(
+          OAuthWebConstants.PARAM_CLIENT_ASSERTION_type -> req.assertionType,
+          OAuthWebConstants.PARAM_CLIENT_ASSERTION      -> req.assertion)
 
         val fullBody = body :++ assertionParams
         basicRequest.body(fullBody: _*)
