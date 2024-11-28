@@ -20,7 +20,7 @@ package com.tle.core.usermanagement
 
 import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
-import com.tle.core.oauthclient.TokenRequest
+import com.tle.core.oauthclient.SecretTokenRequest
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
@@ -54,6 +54,8 @@ case class Auth0User(user_id: String,
 class Auth0UserDirectory extends ApiUserDirectory {
 
   override val targetPlatform: IdentityProviderPlatform.Value = IdentityProviderPlatform.AUTH0
+
+  override type IDP = GenericIdentityProviderDetails
 
   override protected type USER = Auth0User
 
@@ -93,9 +95,9 @@ class Auth0UserDirectory extends ApiUserDirectory {
     *
     * Reference link: https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens.
     */
-  override protected def tokenRequest(idp: IDP): TokenRequest =
-    TokenRequest(idp.commonDetails.tokenUrl.toString,
-                 idp.apiClientId,
-                 idp.apiClientSecret,
-                 Option(Map("audience" -> idp.apiUrl.toString)))
+  override protected def tokenRequest(idp: IDP): SecretTokenRequest =
+    SecretTokenRequest(idp.commonDetails.tokenUrl.toString,
+                       idp.apiClientId,
+                       idp.apiClientSecret,
+                       Option(Map("audience" -> idp.apiUrl.toString)))
 }
