@@ -20,7 +20,7 @@ package com.tle.core.usermanagement
 
 import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
-import com.tle.core.oauthclient.SecretTokenRequest
+import com.tle.core.oauthclient.ClientSecretTokenRequest
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
@@ -95,9 +95,9 @@ class Auth0UserDirectory extends ApiUserDirectory {
     *
     * Reference link: https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens.
     */
-  override protected def tokenRequest(idp: IDP): SecretTokenRequest =
-    SecretTokenRequest(idp.commonDetails.tokenUrl.toString,
-                       idp.apiClientId,
-                       idp.apiClientSecret,
-                       Option(Map("audience" -> idp.apiUrl.toString)))
+  override protected def tokenRequest(idp: IDP): ClientSecretTokenRequest =
+    ClientSecretTokenRequest(idp.commonDetails.tokenUrl.toString,
+                             idp.apiClientId,
+                             idp.apiClientSecret,
+                             Option(Map("audience" -> idp.apiUrl.toString)))
 }

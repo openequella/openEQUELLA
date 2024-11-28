@@ -20,7 +20,7 @@ package com.tle.core.usermanagement
 
 import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
-import com.tle.core.oauthclient.SecretTokenRequest
+import com.tle.core.oauthclient.ClientSecretTokenRequest
 import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
@@ -124,8 +124,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     *
     * Reference link: https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc#the-default-scope
    **/
-  override protected def tokenRequest(idp: IDP): SecretTokenRequest =
-    SecretTokenRequest(
+  override protected def tokenRequest(idp: IDP): ClientSecretTokenRequest =
+    ClientSecretTokenRequest(
       idp.commonDetails.tokenUrl.toString,
       idp.apiClientId,
       idp.apiClientSecret,

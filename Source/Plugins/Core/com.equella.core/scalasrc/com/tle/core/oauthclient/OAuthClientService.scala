@@ -88,10 +88,10 @@ sealed trait TokenRequest {
 /**
   * Data structure for requesting an OAuth2 Access Token using the Client Secret method.
   */
-final case class SecretTokenRequest(authTokenUrl: String,
-                                    clientId: String,
-                                    clientSecret: String,
-                                    data: Option[Map[String, String]] = None)
+final case class ClientSecretTokenRequest(authTokenUrl: String,
+                                          clientId: String,
+                                          clientSecret: String,
+                                          data: Option[Map[String, String]] = None)
     extends TokenRequest
 
 /**
@@ -142,7 +142,7 @@ object OAuthTokenCacheHelper {
       .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
 
     val postRequest = token match {
-      case req: SecretTokenRequest =>
+      case req: ClientSecretTokenRequest =>
         basicRequest.auth
           .basic(req.clientId, req.clientSecret)
           .body(body: _*)
@@ -219,7 +219,7 @@ object OAuthClientService {
                            clientId: String,
                            clientSecret: String,
                            request: Request[T, Stream[IO, Byte]]): Response[T] = {
-    val tokenRequest = SecretTokenRequest(authTokenUrl, clientId, clientSecret)
+    val tokenRequest = ClientSecretTokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
     if (res.code == StatusCode.Unauthorized) removeToken(tokenRequest)
