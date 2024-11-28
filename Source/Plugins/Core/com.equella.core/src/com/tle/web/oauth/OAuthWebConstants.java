@@ -61,7 +61,9 @@ public final class OAuthWebConstants {
 
   public static final String PARAM_CODE = "code";
   public static final String PARAM_CLIENT_ASSERTION = "client_assertion";
-  public static final String PARAM_CLIENT_ASSERTION_type = "client_assertion_type";
+  public static final String PARAM_CLIENT_ASSERTION_TYPE = "client_assertion_type";
+  public static final String PARAM_CLIENT_ASSERTION_TYPE_JWT_BEARER =
+      "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   public static final String PARAM_CLIENT_ID = "client_id";
   public static final String PARAM_CLIENT_SECRET = "client_secret";
   public static final String PARAM_REDIRECT_URI = "redirect_uri";

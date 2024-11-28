@@ -35,6 +35,8 @@ import com.tle.legacy.LegacyGuice
 import sttp.model.Header
 import sttp.model.StatusCode
 
+import java.net.URI
+
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
 
@@ -100,7 +102,7 @@ final case class ClientSecretTokenRequest(authTokenUrl: String,
 final case class AssertionTokenRequest(authTokenUrl: String,
                                        clientId: String,
                                        assertion: String,
-                                       assertionType: String,
+                                       assertionType: URI,
                                        data: Option[Map[String, String]] = None)
     extends TokenRequest
 
@@ -148,7 +150,7 @@ object OAuthTokenCacheHelper {
           .body(body: _*)
       case req: AssertionTokenRequest =>
         val assertionParams = Seq(
-          OAuthWebConstants.PARAM_CLIENT_ASSERTION_type -> req.assertionType,
+          OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE -> req.assertionType.toString,
           OAuthWebConstants.PARAM_CLIENT_ASSERTION      -> req.assertion)
 
         val fullBody = body :++ assertionParams

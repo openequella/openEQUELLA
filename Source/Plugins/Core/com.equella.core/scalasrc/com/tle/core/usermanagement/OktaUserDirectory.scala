@@ -28,6 +28,7 @@ import com.tle.core.oauthclient.AssertionTokenRequest
 import com.tle.core.webkeyset.service.WebKeySetService
 import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.integration.oidc.idp.{IdentityProviderPlatform, OktaDetails}
+import com.tle.web.oauth.OAuthWebConstants
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 import org.apache.http.client.utils.URIBuilder
@@ -160,7 +161,7 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
     AssertionTokenRequest(
       authTokenUrl = idp.commonDetails.tokenUrl.toString,
       clientId = idp.apiClientId,
-      assertionType = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+      assertionType = URI.create(OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE_JWT_BEARER),
       assertion = clientAssertion(idp),
       data = Option(
         Map(
