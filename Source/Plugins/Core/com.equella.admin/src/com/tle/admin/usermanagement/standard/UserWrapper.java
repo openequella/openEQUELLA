@@ -18,17 +18,13 @@
 
 package com.tle.admin.usermanagement.standard;
 
-import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.usermanagement.internal.UsersTab;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.core.remoting.RemoteTLEGroupService;
-import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
-import java.util.Optional;
-import scala.Option;
 
 public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
   private UsersTab userPanel;
@@ -41,18 +37,9 @@ public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
   public void init() {
     super.init();
 
-    AdminTLEUserService userService =
-        Optional.ofNullable(Driver.instance())
-            .map(
-                driver ->
-                    new AdminTLEUserService(
-                        driver.getClientConfiguration(),
-                        Option.apply(clientService.getService(RemoteTLEUserService.class))))
-            .orElseThrow(() -> new IllegalStateException("Driver instance not found"));
-
     userPanel =
         new UsersTab(
-            userService,
+            clientService.getService(AdminTLEUserService.class),
             clientService.getService(RemoteTLEGroupService.class),
             clientService.getService(RemoteUserService.class));
     addFillComponent(userPanel);

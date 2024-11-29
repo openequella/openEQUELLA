@@ -19,7 +19,6 @@
 package com.tle.admin;
 
 import com.tle.admin.boot.LoadingDialog;
-import com.tle.admin.helper.ClientConfigurationHelper;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
 import com.tle.client.impl.ClientServiceImpl;
@@ -30,7 +29,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
 import com.tle.core.remoting.RemoteLanguageService;
 import com.tle.i18n.BundleCache;
-import io.github.openequella.graphql.ClientConfiguration;
 import java.awt.Window;
 import java.io.IOException;
 import java.net.URL;
@@ -119,12 +117,8 @@ public class AdminConsole implements HarnessInterface {
       // Initialise language bundle now
       initLanguageBundles();
 
-      // Set the client configuration for the GraphQL library
-      ClientConfiguration clientConfiguration = ClientConfigurationHelper.create(endpointURL);
-      ClientConfigurationHelper.loadSystemCookies(clientConfiguration);
-
       // Create the driver interface.
-      Driver.create(clientService, pluginService, clientConfiguration);
+      Driver.create(clientService, pluginService);
 
       // Create the management dialog.
       managementDialog = new ManagementDialog();

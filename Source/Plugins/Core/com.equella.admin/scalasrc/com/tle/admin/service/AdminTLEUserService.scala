@@ -1,53 +1,16 @@
 package com.tle.admin.service
 
 import com.tle.beans.user.TLEUser
-import com.tle.core.remoting.RemoteTLEUserService
-import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{ApiError, TleUserApi, TleUserView}
-import org.slf4j.{Logger, LoggerFactory}
 
 import java.util.Optional
-import scala.language.implicitConversions
 
-/**
-  * Service class for admin operations on TLEUser objects via the GraphQL library. Because this
-  * class is intended for use primarily by the existing Java code, preference is given to Java
-  * types over Scala types.
-  */
-class AdminTLEUserService(implicit val cfg: ClientConfiguration,
-                          val delegate: Option[RemoteTLEUserService] = None) {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserService])
+trait AdminTLEUserService {
 
-  private implicit def tleUserViewToTleUser(view: TleUserView): TLEUser = {
-    val u = new TLEUser()
-    u.setUuid(view.uniqueId)
-    u.setUsername(view.username)
-    u.setFirstName(view.firstName)
-    u.setLastName(view.lastName)
-    u.setEmailAddress(view.email.orNull)
+  def add(user: TLEUser): String
 
-    u
-  }
+  def get(uniqueId: String): Optional[TLEUser]
 
-  def add(user: TLEUser): String = {
-    LOGGER.debug("Adding user: " + user.getUsername)
-    TleUserApi.createUser(user.getUsername,
-                          Option(user.getEmailAddress),
-                          user.getFirstName,
-                          user.getLastName,
-                          user.getPassword) match {
-      case Right(newUser) =>
-        LOGGER.debug(s"User [${newUser.username}] added with UUID: ${newUser.uniqueId}")
-        newUser.uniqueId
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error adding user [${user.getUsername}]", errors)
-    }
-  }
-
-  def get(uniqueId: String): Optional[TLEUser] = getUser(uniqueId, TleUserApi.getByUniqueId)
-
-  def getByUsername(username: String): Optional[TLEUser] =
-    getUser(username, TleUserApi.getByUsername)
+  def getByUsername(username: String): Optional[TLEUser]
 
   /**
     * Delete a user by UUID.
@@ -55,13 +18,7 @@ class AdminTLEUserService(implicit val cfg: ClientConfiguration,
     * @param uuid the UUID of the user to delete
     * @throws ClientRequestException if there are any errors deleting the user
     */
-  def delete(uuid: String): Unit = {
-    LOGGER.debug("Deleting user with UUID: " + uuid)
-    TleUserApi.deleteUser(uuid) match {
-      case Right(_)     => LOGGER.debug(s"User [$uuid] deleted")
-      case Left(errors) => throw new ClientRequestException(s"Error deleting user [$uuid]", errors)
-    }
-  }
+  def delete(uuid: String): Unit
 
   /**
     * Given an existing user's TLEUser entity which has been modified, update the user in the
@@ -72,42 +29,7 @@ class AdminTLEUserService(implicit val cfg: ClientConfiguration,
     *                          password requirements and hash it before updating the user.
     * @return The UUID of the updated user
     */
-  def edit(user: TLEUser, passwordNotHashed: Boolean): String =
-    implementMe { d =>
-      d.edit(user, passwordNotHashed)
-    }
+  def edit(user: TLEUser, passwordNotHashed: Boolean): String
 
-  def searchUsers(query: String,
-                  parentGroupID: String,
-                  recursive: Boolean): java.util.List[TLEUser] =
-    implementMe { d =>
-      d.searchUsers(query, parentGroupID, recursive)
-    }
-
-  private def getUser(
-      identifier: String,
-      f: String => Either[List[ApiError], Option[TleUserView]]): Optional[TLEUser] = {
-    f(identifier) match {
-      case Right(user) =>
-        user
-          .fold[Optional[TLEUser]]({
-            LOGGER.debug(s"User [$identifier] not found")
-            Optional.empty()
-          })(u => {
-            LOGGER.debug(s"User [$identifier] found")
-            Optional.of(u)
-          })
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error retrieving user [$identifier]", errors)
-    }
-  }
-
-  private def implementMe[T](f: RemoteTLEUserService => T): T = {
-    LOGGER.debug("Still waiting on GraphQL implementation, will try delegate.",
-                 new NotImplementedError())
-    delegate match {
-      case Some(d) => f(d)
-      case None    => throw new NotImplementedError("No delegate set for AdminTLEUserService")
-    }
-  }
+  def searchUsers(query: String, parentGroupID: String, recursive: Boolean): java.util.List[TLEUser]
 }

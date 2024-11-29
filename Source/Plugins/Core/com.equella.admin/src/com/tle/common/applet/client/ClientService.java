@@ -34,5 +34,12 @@ public interface ClientService {
 
   /* SERVICES */
 
+  /**
+   * Get a service which may be one of the new local implementations, or one provided by HTTP
+   * Invoker
+   */
   <T> T getService(Class<T> clazz);
+
+  /** Get a service with is provided by HTTP Invoker */
+  <T> T getInvokerService(Class<T> clazz);
 }

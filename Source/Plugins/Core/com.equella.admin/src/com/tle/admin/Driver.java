@@ -29,7 +29,6 @@ import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemotePluginDownloadService;
-import io.github.openequella.graphql.ClientConfiguration;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -55,7 +54,6 @@ public final class Driver {
   private final String loggedInUserID;
 
   private final ClientService clientService;
-  private final ClientConfiguration clientConfiguration;
 
   private ControlRepository controlRepository;
   private final PluginServiceImpl pluginService;
@@ -65,26 +63,18 @@ public final class Driver {
     return driver;
   }
 
-  public static Driver create(
-      ClientService clientService,
-      PluginServiceImpl pluginService,
-      ClientConfiguration clientConfiguration)
+  public static Driver create(ClientService clientService, PluginServiceImpl pluginService)
       throws Exception {
     if (driver != null) {
       throw new IllegalStateException("Invalid attempt to try and create second Driver instance");
     }
 
-    driver = new Driver(clientService, pluginService, clientConfiguration);
+    driver = new Driver(clientService, pluginService);
     return driver;
   }
 
-  private Driver(
-      ClientService clientService,
-      PluginServiceImpl pluginService,
-      ClientConfiguration clientConfiguration)
-      throws Exception {
+  private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception {
     this.clientService = clientService;
-    this.clientConfiguration = clientConfiguration;
 
     // Setup some initial state.
 
@@ -111,13 +101,12 @@ public final class Driver {
     session.enableKeepAlive(true);
   }
 
+  // This is deprecated as far back as the history we have is (i.e. before 2013), but yet it is
+  // used extensively and I don't see an alternative.
+  // So perhaps this annotation should be removed.
   @Deprecated
   public ClientService getClientService() {
     return clientService;
-  }
-
-  public ClientConfiguration getClientConfiguration() {
-    return clientConfiguration;
   }
 
   public static void displayError(
