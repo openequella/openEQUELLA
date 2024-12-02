@@ -37,7 +37,6 @@ import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -94,12 +93,9 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
                   wildPattern += WILD;
                 }
 
-                List<TLEUser> results = userService.searchUsers(wildPattern, null, true);
-                Collections.sort(
-                    results,
-                    new NumberStringComparator<TLEUser>() {
-                      private static final long serialVersionUID = 1L;
-
+                List<TLEUser> results = userService.searchUsers(wildPattern);
+                results.sort(
+                    new NumberStringComparator<>() {
                       @Override
                       public String convertToString(TLEUser t) {
                         return t.getUsername();

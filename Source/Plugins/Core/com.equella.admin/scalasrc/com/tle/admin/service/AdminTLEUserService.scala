@@ -31,7 +31,11 @@ trait AdminTLEUserService {
     */
   def edit(user: TLEUser, passwordNotHashed: Boolean): String
 
-  def searchUsers(query: String, parentGroupID: String, recursive: Boolean): java.util.List[TLEUser]
+  /**
+    * Returns a list of all users matching the specified query. Note, there is no pagination limit on
+    * how many users will be returned.
+    */
+  def searchUsers(query: String): java.util.List[TLEUser]
 
   /**
     * Fired when the list of suspended user accounts has been updated.

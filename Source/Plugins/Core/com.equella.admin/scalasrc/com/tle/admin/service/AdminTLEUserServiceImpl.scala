@@ -81,11 +81,9 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
       d.edit(user, passwordNotHashed)
     }
 
-  override def searchUsers(query: String,
-                           parentGroupID: String,
-                           recursive: Boolean): java.util.List[TLEUser] =
+  override def searchUsers(query: String): java.util.List[TLEUser] =
     implementMe { d =>
-      d.searchUsers(query, parentGroupID, recursive)
+      d.searchUsers(query, null, true)
     }
 
   override def onSuspension(uuids: java.util.Set[String]): Unit =
