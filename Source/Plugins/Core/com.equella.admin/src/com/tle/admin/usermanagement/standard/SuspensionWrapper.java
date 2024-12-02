@@ -23,11 +23,11 @@ import com.dytech.gui.filter.FilterModel;
 import com.dytech.gui.filter.FilteredShuffleBox;
 import com.tle.admin.Driver;
 import com.tle.admin.plugin.GeneralPlugin;
+import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,12 +45,12 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
   private static final Log LOGGER = LogFactory.getLog(SuspensionWrapper.class);
   private FilteredShuffleBox<UserBean> fsb;
 
-  private RemoteTLEUserService userService;
+  private AdminTLEUserService userService;
 
   @Override
   public void init() {
     super.init();
-    userService = clientService.getService(RemoteTLEUserService.class);
+    userService = clientService.getService(AdminTLEUserService.class);
   }
 
   public SuspensionWrapper() {
