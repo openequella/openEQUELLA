@@ -79,11 +79,9 @@ object Client {
       ev: IsOperation[O]
   ): Either[List[ApiError], R] = {
 
-    /**
-      * Extract the cause from a GraphQL response error. This is a custom extension that we add to
-      * our GraphQL responses to provide more information about the error. Unfortunately, it's kept
-      * abstract in the caliban data model, so we have to do some manual extraction.
-      */
+    // Extract the cause from a GraphQL response error. This is a custom extension that we add to
+    // our GraphQL responses to provide more information about the error. Unfortunately, it's kept
+    // abstract in the caliban data model, so we have to do some manual extraction.
     def extractCause(error: GraphQLResponseError): Option[String] = {
       import caliban.client.__Value._
       error.extensions.flatMap {
