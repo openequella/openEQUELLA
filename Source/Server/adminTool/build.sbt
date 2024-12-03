@@ -18,7 +18,14 @@ libraryDependencies ++= Seq(
   springAop,
   springContext,
   "io.github.openequella" %% "graphql-client" % "0.1.0-SNAPSHOT",
-  "com.google.inject"     % "guice"           % guiceVersion
+  "com.google.inject"     % "guice"           % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    // Maybe it can be removed when all HTTP Invoker code is gone
+    ExclusionRule(
+      organization = "aopalliance",
+      name = "aopalliance"
+    )
+  )
 )
 
 (run / fork) := true

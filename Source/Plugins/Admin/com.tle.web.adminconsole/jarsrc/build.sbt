@@ -19,7 +19,14 @@ libraryDependencies ++= Seq(
   "com.miglayout" % "miglayout-swing" % "4.2",
   xstreamDep,
   "io.github.openequella" %% "graphql-client" % "0.1.0-SNAPSHOT",
-  "com.google.inject"     % "guice"           % guiceVersion
+  "com.google.inject"     % "guice"           % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    // Maybe it can be removed when all HTTP Invoker code is gone
+    ExclusionRule(
+      organization = "aopalliance",
+      name = "aopalliance"
+    )
+  )
 )
 
 excludeDependencies ++= Seq(
