@@ -76,6 +76,7 @@ public interface ItemResource {
               allowMultiple = true)
           @QueryParam("info")
           CsvList info);
+
   // @formatter:on
 
   @POST
@@ -113,6 +114,7 @@ public interface ItemResource {
           @QueryParam("taskUuid")
           final String taskUuid,
       @ApiParam(value = "The item in json format") final ItemBean itemBean);
+
   // @formatter:on
 
   @POST
@@ -131,6 +133,7 @@ public interface ItemResource {
       @ApiParam(value = APIDOC_WAITFORINDEX, required = false) @QueryParam("waitforindex")
           String waitForIndex,
       @ApiParam(value = "The item bean in json format") ItemBean itemBean);
+
   // @formatter:on
 
   @GET
@@ -146,6 +149,7 @@ public interface ItemResource {
       @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
           @QueryParam("info")
           CsvList info);
+
   // @formatter:on
 
   @GET
@@ -162,6 +166,7 @@ public interface ItemResource {
       @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
           @QueryParam("info")
           CsvList info);
+
   // @formatter:on
 
   @GET
@@ -178,6 +183,7 @@ public interface ItemResource {
       @ApiParam(required = false, allowableValues = ALL_ALLOWABLE_INFOS, allowMultiple = true)
           @QueryParam("info")
           CsvList info);
+
   // @formatter:on
 
   @GET
@@ -218,6 +224,7 @@ public interface ItemResource {
       // @formatter:off
       @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version);
+
   // @formatter:on
 
   @GET
@@ -237,6 +244,7 @@ public interface ItemResource {
       @ApiParam(APIDOC_ITEMUUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_ITEMVERSION) @PathParam("version") int version,
       @ApiParam("File path") @PathParam("path") String path);
+
   // @formatter:on
 
   @GET

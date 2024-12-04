@@ -785,9 +785,8 @@ public class CsvReader {
                             + NumberFormat.getIntegerInstance().format(columnsCount)
                             + " in record "
                             + NumberFormat.getIntegerInstance().format(currentRecord)
-                            + ". Set the SafetySwitch property to false"
-                            + " if you're expecting column lengths greater than 100,000 characters to"
-                            + " avoid this error.");
+                            + ". Set the SafetySwitch property to false if you're expecting column"
+                            + " lengths greater than 100,000 characters to avoid this error.");
                   }
                 }
               } // end else
@@ -1030,9 +1029,8 @@ public class CsvReader {
                             + NumberFormat.getIntegerInstance().format(columnsCount)
                             + " in record "
                             + NumberFormat.getIntegerInstance().format(currentRecord)
-                            + ". Set the SafetySwitch property to false"
-                            + " if you're expecting column lengths greater than 100,000 characters to"
-                            + " avoid this error.");
+                            + ". Set the SafetySwitch property to false if you're expecting column"
+                            + " lengths greater than 100,000 characters to avoid this error.");
                   }
                 }
               } // end else
@@ -1084,7 +1082,9 @@ public class CsvReader {
     return hasReadNextLine;
   }
 
-  /** @exception IOException Thrown if an error occurs while reading data from the source stream. */
+  /**
+   * @exception IOException Thrown if an error occurs while reading data from the source stream.
+   */
   private void checkDataLength() throws IOException {
     if (!initialized) {
       if (fileName != null) {
@@ -1337,7 +1337,9 @@ public class CsvReader {
     dataBuffer.columnStart = dataBuffer.position + 1;
   }
 
-  /** @exception IOException Thrown if an error occurs while reading data from the source stream. */
+  /**
+   * @exception IOException Thrown if an error occurs while reading data from the source stream.
+   */
   private void endRecord() throws IOException {
     // this flag is used as a loop exit condition
     // during parsing
@@ -1477,7 +1479,9 @@ public class CsvReader {
     }
   }
 
-  /** @exception IOException Thrown if this object has already been closed. */
+  /**
+   * @exception IOException Thrown if this object has already been closed.
+   */
   private void checkClosed() throws IOException {
     if (closed) {
       throw new IOException("This instance of the CsvReader class has already been closed.");

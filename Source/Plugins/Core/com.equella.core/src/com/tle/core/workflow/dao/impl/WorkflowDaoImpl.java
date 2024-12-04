@@ -197,7 +197,7 @@ public class WorkflowDaoImpl extends AbstractEntityDaoImpl<Workflow> implements 
 
   private String getMessageHQL() {
     return "from Item i join i.moderation as ms join ms.statuses as ws join ws.comments as m where"
-               + " i.uuid = :uuid and i.version = :version and i.institution = :inst";
+        + " i.uuid = :uuid and i.version = :version and i.institution = :inst";
   }
 
   @Override

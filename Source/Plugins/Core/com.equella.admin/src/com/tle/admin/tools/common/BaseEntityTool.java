@@ -875,7 +875,9 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     worker.start();
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   protected class ZipFileFilter extends FileFilter {
     @Override
     public boolean accept(File f) {

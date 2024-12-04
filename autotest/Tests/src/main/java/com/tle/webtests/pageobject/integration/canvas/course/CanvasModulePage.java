@@ -41,7 +41,8 @@ public class CanvasModulePage extends AbstractCanvasCoursePage<CanvasModulePage>
               By.xpath(
                   ".//span[text() = "
                       + quoteXPath(itemName)
-                      + "]/../../..//div[@class='ig-admin']/div/a[contains(@class, 'al-trigger')]"));
+                      + "]/../../..//div[@class='ig-admin']/div/a[contains(@class,"
+                      + " 'al-trigger')]"));
       dumbCanvasClickHack(adminOpener);
       WebElement activeRemoveButton =
           moduleDiv.findElement(

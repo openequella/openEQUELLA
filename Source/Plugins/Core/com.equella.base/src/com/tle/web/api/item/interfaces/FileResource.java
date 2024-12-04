@@ -75,6 +75,7 @@ public interface FileResource {
           @QueryParam("deep")
           Boolean deep)
       throws IOException;
+
   // @formatter:on
 
   @POST

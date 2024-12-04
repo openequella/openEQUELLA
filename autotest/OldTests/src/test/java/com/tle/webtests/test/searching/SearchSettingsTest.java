@@ -142,6 +142,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     searchPage = new SearchPage(context).load();
     assertTrue(searchPage.isImagesLinkAvailable());
   }
+
   // Test Authenticated feeds
   @Test
   public void testGenerateAuthenticatedFeeds() throws Exception {

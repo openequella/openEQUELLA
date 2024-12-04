@@ -191,7 +191,7 @@ public class ThumbServlet extends HttpServlet {
         case THUMBNAIL:
           path = ThumbInProgressServlet.GALLERY_THUMBNAIL;
           break;
-          // ORIGINAL and PREVIEW won't ever apply here anyway
+        // ORIGINAL and PREVIEW won't ever apply here anyway
         default:
           path = ThumbInProgressServlet.GALLERY_THUMBNAIL;
       }
@@ -227,7 +227,9 @@ public class ThumbServlet extends HttpServlet {
     return filename;
   }
 
-  /** @return UUID, VERSION, ATTACHMENT UUID or STAGING, $, PATH */
+  /**
+   * @return UUID, VERSION, ATTACHMENT UUID or STAGING, $, PATH
+   */
   private String[] parsePath(String path) {
     final String[] parts = new String[3];
 

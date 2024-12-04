@@ -94,7 +94,8 @@ public class AnnotatedPlugResourceScanner {
                 field.set(null, new Confirm(new KeyLabel(html, key)));
               } else {
                 throw new SectionsRuntimeException(
-                    "Unsupported type for @PlugKey must be Label, Confirm, String or AbstractRenderedComponent");
+                    "Unsupported type for @PlugKey must be Label, Confirm, String or"
+                        + " AbstractRenderedComponent");
               }
             }
           }

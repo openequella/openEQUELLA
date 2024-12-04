@@ -104,7 +104,8 @@ public class MigrateZipFiles extends AbstractHibernateDataMigration {
   protected int countDataMigrations(HibernateMigrationHelper helper, Session session) {
     return count(
         session.createQuery(
-            "select count (distinct i.id) from Item as i left join i.attachments as a where a.type = 'zip'"));
+            "select count (distinct i.id) from Item as i left join i.attachments as a where a.type"
+                + " = 'zip'"));
   }
 
   @Override

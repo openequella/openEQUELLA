@@ -55,7 +55,7 @@ public class SuperDuperFilter extends Filter {
   @Override
   public String description() {
     return "Parse GET and POST params and get file uploads out of multipart request and store in"
-               + " HttpExchange attributes";
+        + " HttpExchange attributes";
   }
 
   @Override

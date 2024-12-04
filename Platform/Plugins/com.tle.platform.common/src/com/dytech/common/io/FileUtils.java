@@ -46,7 +46,9 @@ import org.slf4j.LoggerFactory;
 public final class FileUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
-  /** @deprecated Use delete(Path f) instead */
+  /**
+   * @deprecated Use delete(Path f) instead
+   */
   @Deprecated
   public static boolean delete(File f) {
     try {

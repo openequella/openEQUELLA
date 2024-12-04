@@ -48,7 +48,8 @@ public class LtiConsumerDaoImpl extends AbstractEntityDaoImpl<LtiConsumer>
                     List<LtiConsumer> consumers =
                         session
                             .createQuery(
-                                "FROM LtiConsumer WHERE consumerKey = :key AND institution = :institution")
+                                "FROM LtiConsumer WHERE consumerKey = :key AND institution ="
+                                    + " :institution")
                             .setParameter("key", consumerKey)
                             .setParameter("institution", CurrentInstitution.get())
                             .list();

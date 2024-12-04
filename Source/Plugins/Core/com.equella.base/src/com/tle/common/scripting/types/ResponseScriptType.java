@@ -31,13 +31,19 @@ public interface ResponseScriptType {
    */
   boolean isError();
 
-  /** @return The response code from the external site */
+  /**
+   * @return The response code from the external site
+   */
   int getCode();
 
-  /** @return The MIME type as returned in the Content-Type header from the external site */
+  /**
+   * @return The MIME type as returned in the Content-Type header from the external site
+   */
   String getContentType();
 
-  /** @return Get the data from the response in plain text format */
+  /**
+   * @return Get the data from the response in plain text format
+   */
   String getAsText();
 
   /**

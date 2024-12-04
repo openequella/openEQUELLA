@@ -47,13 +47,13 @@ public class XpathResolver implements Resolver {
 
   protected String process(String command, String value) {
     switch (command.charAt(0)) {
-        // Translate: Replace all instances of first character with second
-        // character.
+      // Translate: Replace all instances of first character with second
+      // character.
       case 't':
         return value.replace(command.charAt(1), command.charAt(2));
 
-        // Conditional: Sets value to nothing unless the parameter
-        // evaluates to 'true'.
+      // Conditional: Sets value to nothing unless the parameter
+      // evaluates to 'true'.
       case 'c':
         boolean not = command.charAt(1) == '!';
         if (not) command = command.substring(2);
@@ -63,11 +63,11 @@ public class XpathResolver implements Resolver {
         if (result.equals("true") || (not && result.equals("false"))) return value;
         else return "";
 
-        // Literal: Replace current value with this literal
+      // Literal: Replace current value with this literal
       case 'l':
         return command.substring(1);
 
-        // File: check for whitespace and wrap in quotes if found
+      // File: check for whitespace and wrap in quotes if found
       case 'f':
         if (value.indexOf(" ") != -1) {
           value = value.replace(" ", "\" \"");

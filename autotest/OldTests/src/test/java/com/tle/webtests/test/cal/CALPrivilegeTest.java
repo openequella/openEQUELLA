@@ -134,7 +134,8 @@ public class CALPrivilegeTest extends AbstractCALTest {
     assertTrue(
         bulkResults.errorsContain(
             "You do not have the required privileges [DELETE_ACTIVATION_ITEM]"),
-        "Expected error message 'You do not have the required privileges [DELETE_ACTIVATION_ITEM]' not found");
+        "Expected error message 'You do not have the required privileges [DELETE_ACTIVATION_ITEM]'"
+            + " not found");
     activations = bulkResults.close(activations);
     assertTrue(activations.results().isActive(portionFullName));
 

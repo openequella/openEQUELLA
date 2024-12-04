@@ -90,7 +90,8 @@ public class MoodleConnectorTest extends AbstractParallelMoodleTest {
     assertFalse(lms.hasSummaryCheckbox());
     assertEquals(
         lms.getError(),
-        "There are no resources available to push and selecting the resource summary has been disabled");
+        "There are no resources available to push and selecting the resource summary has been"
+            + " disabled");
     item = lms.summary();
     WizardPageTab wizard = item.edit();
 

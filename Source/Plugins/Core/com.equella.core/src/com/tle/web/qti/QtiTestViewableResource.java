@@ -75,6 +75,7 @@ public class QtiTestViewableResource extends AbstractWrappedResource {
 
   @PlugKey("qti.details.value.no")
   private static Label NO;
+
   // NAVIGATION_MODE_LINEAR;
   // NAVIGATION_MODE_NONLINEAR
   @PlugKey("notimelimit")

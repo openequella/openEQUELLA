@@ -155,7 +155,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
             getCanvasCourses(connector, username, editableOnly, archived), courseTransformer));
   }
 
-  /** @return Canvas Modules */
+  /**
+   * @return Canvas Modules
+   */
   @Override
   public List<ConnectorFolder> getFoldersForCourse(
       Connector connector, String username, String courseId, boolean management)
@@ -353,7 +355,9 @@ public class CanvasConnectorService extends AbstractIntegrationConnectorResposit
     return false;
   }
 
-  /** @param folderId This is the Canvas Module ID */
+  /**
+   * @param folderId This is the Canvas Module ID
+   */
   @Override
   public ConnectorFolder addItemToCourse(
       Connector connector,

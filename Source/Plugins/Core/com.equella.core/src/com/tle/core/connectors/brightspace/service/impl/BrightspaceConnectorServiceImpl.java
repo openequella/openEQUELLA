@@ -343,7 +343,9 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
     return list;
   }
 
-  /** @return Brightspace Modules */
+  /**
+   * @return Brightspace Modules
+   */
   @Override
   public List<ConnectorFolder> getFoldersForCourse(
       Connector connector, String username, String courseId, boolean management)
@@ -746,7 +748,9 @@ public class BrightspaceConnectorServiceImpl extends AbstractIntegrationConnecto
     return false;
   }
 
-  /** @param folderId This is the Brightspace Module ID */
+  /**
+   * @param folderId This is the Brightspace Module ID
+   */
   @Override
   public ConnectorFolder addItemToCourse(
       Connector connector,

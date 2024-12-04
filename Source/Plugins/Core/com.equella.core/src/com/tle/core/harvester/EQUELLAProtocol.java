@@ -128,7 +128,8 @@ public class EQUELLAProtocol extends AbstractHarvesterProtocol {
     // an explicit exception message
     {
       String splitMesg =
-          "Expected to be able to split non-empty 'collection' string into 3 (if not 1) substring(s) seperated by ':', but found "
+          "Expected to be able to split non-empty 'collection' string into 3 (if not 1)"
+              + " substring(s) seperated by ':', but found "
               + length
               + " from 'collection' value: "
               + collection;

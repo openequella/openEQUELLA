@@ -76,7 +76,9 @@ public interface BrightspaceConnectorService extends ConnectorRepositoryImplemen
       String forwardUrl,
       @Nullable String postfixKey);
 
-  /** @return A sparsely populated course */
+  /**
+   * @return A sparsely populated course
+   */
   ConnectorCourse getCourse(Connector connector, String courseId);
 
   /**

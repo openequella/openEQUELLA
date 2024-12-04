@@ -401,9 +401,11 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
     private String htmlAttrs = "";
     private SectionRenderable form;
     private BodyTag body;
+
     // Do not ever change
     @Bookmarked(name = "hn", contexts = BookmarkEvent.CONTEXT_SESSION)
     private boolean hideNav;
+
     // Do not ever change
     @Bookmarked(name = "hb", contexts = BookmarkEvent.CONTEXT_SESSION)
     private boolean hideBanner;

@@ -236,6 +236,7 @@ public class PagesSection extends WizardSection<PagesSection.PagesModel>
   public static class PagesModel {
     @Bookmarked(name = "pg", nodefault = true)
     private int currentPage = -1;
+
     // Redmine #6665 - to avoid having controls on a page reset when tree
     // nodes are opened on a popup
     @Bookmarked(name = "s", stateful = false)

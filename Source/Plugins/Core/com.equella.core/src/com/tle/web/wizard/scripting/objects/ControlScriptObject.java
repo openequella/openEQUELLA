@@ -40,7 +40,9 @@ public interface ControlScriptObject extends ScriptObject {
    */
   void setValue(String value);
 
-  /** @return true if this control is not to be shown on the page. */
+  /**
+   * @return true if this control is not to be shown on the page.
+   */
   boolean isHidden();
 
   /**
@@ -50,7 +52,9 @@ public interface ControlScriptObject extends ScriptObject {
    */
   void setHidden(boolean hidden);
 
-  /** @return false if this control is not to be shown on the page and not to store any metadata */
+  /**
+   * @return false if this control is not to be shown on the page and not to store any metadata
+   */
   boolean isVisible();
 
   /**

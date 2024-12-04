@@ -50,7 +50,7 @@ public final class TextUtils {
       return ensureWrap(text, maxBodyLength, maxWordLength, true);
     } catch (Exception ex) {
       return "<span style=\"color: red\">Error wrapping the following text - please notify"
-                 + " administrator</span>"
+          + " administrator</span>"
           + text;
     }
   }

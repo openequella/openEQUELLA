@@ -50,6 +50,7 @@ public class CourseInfo extends BaseEntity {
               new NameValue("Internal", "i"),
               new NameValue("External", "e"),
               new NameValue("Staff", "s")));
+
   // @formatter:on
 
   private int students;

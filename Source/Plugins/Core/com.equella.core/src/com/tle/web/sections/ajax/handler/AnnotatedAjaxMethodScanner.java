@@ -59,7 +59,8 @@ public class AnnotatedAjaxMethodScanner {
         Class<?> firstParam = params[0];
         if (firstParam != SectionInfo.class && firstParam != AjaxRenderContext.class) {
           throw new SectionsRuntimeException(
-              "Ajax Event handler methods must start with SectionInfo or AjaxRenderContext parameter"); //$NON-NLS-1$
+              "Ajax Event handler methods must start with SectionInfo or AjaxRenderContext"
+                  + " parameter"); //$NON-NLS-1$
         }
         handlerData.numParams = params.length - 1;
         handlerData.eventMethod = method;

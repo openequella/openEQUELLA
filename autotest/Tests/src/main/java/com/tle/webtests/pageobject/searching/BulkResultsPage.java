@@ -43,7 +43,8 @@ public class BulkResultsPage extends AbstractPage<BulkResultsPage> {
     List<WebElement> reasons =
         driver.findElements(
             By.xpath(
-                "//table[@id='bss_bulkDialog_bulkResultsTable']//tr[contains(@class, 'failedmsg')]//span[contains(@class, 'reason')]"));
+                "//table[@id='bss_bulkDialog_bulkResultsTable']//tr[contains(@class,"
+                    + " 'failedmsg')]//span[contains(@class, 'reason')]"));
     List<String> reasonTexts = new ArrayList<String>();
     for (WebElement reason : reasons) {
       reasonTexts.add(reason.getText());

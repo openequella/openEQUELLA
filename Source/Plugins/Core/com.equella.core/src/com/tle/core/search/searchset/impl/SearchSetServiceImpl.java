@@ -133,13 +133,15 @@ public class SearchSetServiceImpl implements SearchSetService {
       if (virtualiser == null) {
         // Sanity check!
         throw new RuntimeException(
-            "Error during virtualisation: value must not be specified for non-virtualised search sets");
+            "Error during virtualisation: value must not be specified for non-virtualised search"
+                + " sets");
       }
 
       String virtualisationPath = searchSet.getVirtualisationPath();
       if (virtualisationPath == null) {
         throw new RuntimeException(
-            "Error during virtualisation: schema node must be specified for virtualised search sets");
+            "Error during virtualisation: schema node must be specified for virtualised search"
+                + " sets");
       }
       andQuery.add(new FreeTextFieldQuery(virtualisationPath, value));
     }

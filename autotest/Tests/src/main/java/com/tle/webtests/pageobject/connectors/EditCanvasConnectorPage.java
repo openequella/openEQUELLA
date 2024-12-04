@@ -49,7 +49,8 @@ public class EditCanvasConnectorPage extends AbstractConnectorEditPage<EditCanva
       return true;
     } else if (isPresent(
         By.xpath(
-            "//span[normalize-space(text()) = 'Unauthorised, check token and server URL and try again']"))) {
+            "//span[normalize-space(text()) = 'Unauthorised, check token and server URL and try"
+                + " again']"))) {
       return false;
     }
     return false;

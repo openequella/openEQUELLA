@@ -391,7 +391,8 @@ public class ItemApiEditTest extends AbstractItemApiTest {
   public void testEditNoPrivs() throws Exception {
     PropBagEx metadata =
         new PropBagEx(
-            "<xml><item><name>ItemApiEditTest - Permissions from JSON</name><description>Description</description><controls></controls></item></xml>");
+            "<xml><item><name>ItemApiEditTest - Permissions from"
+                + " JSON</name><description>Description</description><controls></controls></item></xml>");
     PropBagEx permissions = metadata.aquireSubtree("item/controls");
 
     final String token = getToken();
@@ -559,7 +560,8 @@ public class ItemApiEditTest extends AbstractItemApiTest {
 
     PropBagEx metadata =
         new PropBagEx(
-            "<xml><item><name>ItemApiEditTest - Permissions from JSON</name><description>Description</description><controls></controls></item></xml>");
+            "<xml><item><name>ItemApiEditTest - Permissions from"
+                + " JSON</name><description>Description</description><controls></controls></item></xml>");
     PropBagEx permissions = metadata.aquireSubtree("item/controls");
     ObjectNode item = createItemObject(COLLECTION_PERMISSIONS, metadata, true);
 
@@ -694,7 +696,8 @@ public class ItemApiEditTest extends AbstractItemApiTest {
     final String token = getToken();
     PropBagEx metadata =
         new PropBagEx(
-            "<xml><item><name>ItemApiEditTest - Auto UUID generation from JSON</name><description>Description</description><controls><editbox>uuid:0</editbox></controls></item></xml>");
+            "<xml><item><name>ItemApiEditTest - Auto UUID generation from"
+                + " JSON</name><description>Description</description><controls><editbox>uuid:0</editbox></controls></item></xml>");
     ObjectNode item = createItemObject(COLLECTION_PERMISSIONS, metadata, true);
 
     ObjectNode navigation = item.objectNode();
@@ -733,7 +736,8 @@ public class ItemApiEditTest extends AbstractItemApiTest {
         error,
         400,
         "Bad Request",
-        "Trying to associate navigation node tab with attachment which doesn't exist: node:.* attachment:uuid:0",
+        "Trying to associate navigation node tab with attachment which doesn't exist: node:.*"
+            + " attachment:uuid:0",
         true);
 
     ArrayNode attachments = (ArrayNode) item.get("attachments");

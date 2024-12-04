@@ -37,6 +37,7 @@ public final class OAuthConstants {
    * the client, or is otherwise malformed.
    */
   public static final String ERROR_INVALID_REQUEST = "invalid_request";
+
   /**
    * Client authentication failed (e.g. unknown client, no client authentication included, or
    * unsupported authentication method). The authorization server MAY return an HTTP 401
@@ -46,27 +47,35 @@ public final class OAuthConstants {
    * "WWW-Authenticate" response header field matching the authentication scheme used by the client.
    */
   public static final String ERROR_INVALID_CLIENT = "invalid_client";
+
   /**
    * The provided authorization grant (e.g. authorization code, resource owner credentials) is
    * invalid, expired, revoked, does not match the redirection URI used in the authorization
    * request, or was issued to another client.
    */
   public static final String ERROR_INVALID_GRANT = "invalid_grant";
+
   /** The authorization grant type is not supported by the authorization server. */
   public static final String ERROR_UNSUPPORTED_GRANT_TYPE = "unsupported_grant_type";
+
   /** The client is not authorized to request an access token using this method. */
   public static final String ERROR_UNAUTHORIZED_CLIENT = "unauthorized_client";
+
   /** The resource owner or authorization server denied the request. */
   public static final String ERROR_ACCESS_DENIED = "access_denied";
+
   /** The authorization server does not support obtaining an access token using this method. */
   public static final String ERROR_UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
+
   /** The requested scope is invalid, unknown, or malformed. */
   public static final String ERROR_INVALID_SCOPE = "invalid_scope";
+
   /**
    * The authorization server encountered an unexpected condition which prevented it from fulfilling
    * the request.
    */
   public static final String ERROR_SERVER_ERROR = "server_error";
+
   /**
    * The authorization server is currently unable to handle the request due to a temporary
    * overloading or maintenance of the server.

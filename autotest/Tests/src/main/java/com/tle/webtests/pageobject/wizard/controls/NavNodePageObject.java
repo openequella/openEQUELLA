@@ -36,7 +36,8 @@ public class NavNodePageObject extends AbstractPage<NavNodePageObject> {
 
   private void refreshBy() {
     String xpath =
-        "div[contains(@class, 'navNode') and div/div[@class='container']/span[@class='textBox']/a/text() = "
+        "div[contains(@class, 'navNode') and"
+            + " div/div[@class='container']/span[@class='textBox']/a/text() = "
             + quoteXPath(displayName)
             + "]";
     if (anyChild) {

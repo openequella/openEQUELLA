@@ -428,6 +428,7 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
       this.message = message != null ? message.getText() : null;
       this.disabled = addButton.isDisabled(info);
     }
+
     /*
     		public RepeaterUpdate(SectionInfo info)
     		{

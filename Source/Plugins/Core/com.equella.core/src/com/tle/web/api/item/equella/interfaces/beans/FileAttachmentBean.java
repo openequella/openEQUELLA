@@ -32,7 +32,9 @@ public class FileAttachmentBean extends AbstractFileAttachmentBean {
     this.conversion = conversion;
   }
 
-  /** @deprecated Use getThumbnail */
+  /**
+   * @deprecated Use getThumbnail
+   */
   @Deprecated
   public String getThumbFilename() {
     return getThumbnail();

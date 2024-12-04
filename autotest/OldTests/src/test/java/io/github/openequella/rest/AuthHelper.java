@@ -14,7 +14,8 @@ public class AuthHelper {
 
   public AuthHelper(String institutionUrl) {
     this.institutionUrl = institutionUrl;
-  };
+  }
+  ;
 
   public String getAuthApiEndpoint() {
     return institutionUrl + "api/auth";

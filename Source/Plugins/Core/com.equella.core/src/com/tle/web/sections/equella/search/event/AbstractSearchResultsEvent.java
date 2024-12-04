@@ -34,12 +34,16 @@ public abstract class AbstractSearchResultsEvent<E extends AbstractSearchResults
     this.errored = errored;
   }
 
-  /** @return the errorMessage */
+  /**
+   * @return the errorMessage
+   */
   public String getErrorMessage() {
     return errorMessage;
   }
 
-  /** @param errorMessage the errorMessage to set */
+  /**
+   * @param errorMessage the errorMessage to set
+   */
   public void setErrorMessage(String errorMessage) {
     this.errorMessage = errorMessage;
   }

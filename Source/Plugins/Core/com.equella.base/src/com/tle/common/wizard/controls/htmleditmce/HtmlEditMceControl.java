@@ -29,21 +29,25 @@ public class HtmlEditMceControl extends CustomControl {
 
   /** Controlling boolean for collections */
   private static final String SELECTED_COLLECTIONS = "SELECTED_COLLECTIONS";
+
   /** The collection Uuids stored & retrieved */
   public static final String SELECTED_COLLECTIONS_UUIDS = "SELECTED_COLLECTIONS_UUIDS";
 
   /** Controlling boolean for collections */
   private static final String SELECTED_DYNACOLLS = "SELECTED_DYNACOLLS";
+
   /** The dynamic collection Uuids stored & retrieved */
   public static final String SELECTED_DYNACOLL_UUIDS = "SELECTED_DYNACOLL_UUIDS";
 
   /** Controlling boolean for collections */
   private static final String SELECTED_SEARCHES = "SELECTED_SEARCHES";
+
   /** The PowerSearch Uuids stored & retrieved */
   public static final String SELECTED_SEARCH_UUIDS = "SELECTED_SEARCH_UUIDS";
 
   /** Controlling boolean for collections */
   private static final String SELECTED_CONTRIBUTABLES = "SELECTED_CONTRIBUTABLES";
+
   /** The contributable collection Uuids stored & retrieved */
   public static final String SELECTED_CONTRIBUTABLE_UUIDS = "SELECTED_CONTRIBUTABLE_UUIDS";
 

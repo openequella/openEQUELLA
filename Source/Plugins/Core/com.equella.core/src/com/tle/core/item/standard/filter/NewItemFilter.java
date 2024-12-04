@@ -66,7 +66,7 @@ public class NewItemFilter extends AbstractStandardOperationFilter {
   @Override
   public String getWhereClause() {
     return "status = :status and moderation.liveApprovalDate > :date and itemDefinition.uuid in"
-               + " (:itemdefs)";
+        + " (:itemdefs)";
   }
 
   @Override

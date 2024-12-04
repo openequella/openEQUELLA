@@ -95,7 +95,8 @@ public class DatabaseConnectCallback implements Callback {
               JOptionPane.showMessageDialog(
                   installer.getFrame(),
                   "The database does not appear to be setup with UNICODE or UTF-8 character\n"
-                      + "encoding.  Please ensure that you have followed the instructions for setting\n"
+                      + "encoding.  Please ensure that you have followed the instructions for"
+                      + " setting\n"
                       + "up this type of database as specified in the installation documentation.",
                   "Incorrect Character Encoding",
                   JOptionPane.ERROR_MESSAGE);
@@ -107,7 +108,8 @@ public class DatabaseConnectCallback implements Callback {
               JOptionPane.showMessageDialog(
                   installer.getFrame(),
                   "An error occurred while attempting to connect to the database. \n"
-                      + "Please check that you have entered the correct values as specified in the\n"
+                      + "Please check that you have entered the correct values as specified in"
+                      + " the\n"
                       + " installation documentation and try again.\n"
                       + "The error provided by the application was: \n"
                       + "-  "

@@ -19,6 +19,7 @@ public class RestrictedAttachmentsTest extends AbstractSessionTest {
   private final String ITEM = "RESTRICTED_ATTACHMENTS";
   private final String[] ATTACHMENTS = {"url", "web page", "book", "youtube", "iTunesU", "Flickr"};
   private final String ERROR = "Access denied";
+
   // TODO LTI, Echo360, Kaltura
 
   @Test

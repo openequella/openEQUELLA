@@ -333,7 +333,9 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
     return info;
   }
 
-  /** @return A staging ID */
+  /**
+   * @return A staging ID
+   */
   @Override
   @Transactional(propagation = Propagation.NEVER)
   @SecureOnCallSystem
