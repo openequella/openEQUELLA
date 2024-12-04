@@ -317,7 +317,8 @@ const OidcSettings = ({
     apiDetails,
     onApiDetailsChange,
     showValidationErrors,
-    serverHasConfiguration,
+    // OKTA platform doesn't have client secret field which means there is no secret configuration in the server.
+    serverHasConfiguration && initialIdpDetails.platform !== "OKTA",
   );
 
   const handleOnSave = async () => {

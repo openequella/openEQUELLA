@@ -309,7 +309,7 @@ const commonApiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   apiDetails: ApiDetails,
-  isConfigured: boolean,
+  isSecreteConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
   const { platform, apiUrl, apiClientId } = apiDetails;
   // apiClientSecret is not exist in OktaApiDetails.
@@ -353,7 +353,7 @@ const commonApiDetails = (
       desc: apiClientSecretDesc,
       required: true,
       // Validation is not required for updating but required for the initial creation.
-      validate: isConfigured ? constTrue : isNonEmptyString,
+      validate: isSecreteConfigured ? constTrue : isNonEmptyString,
       component: passwordTextFiled({
         name: apiClientSecretLabel,
         value: apiClientSecret,
@@ -361,9 +361,9 @@ const commonApiDetails = (
         required: true,
         onChange: (value) => onChange("apiClientSecret", value),
         showValidationErrors,
-        validate: isConfigured ? constTrue : isNonEmptyString,
+        validate: isSecreteConfigured ? constTrue : isNonEmptyString,
         errorMessage: missingValue,
-        placeholder: isConfigured ? passwordMask : undefined,
+        placeholder: isSecreteConfigured ? passwordMask : undefined,
       }),
     },
   };
@@ -393,13 +393,13 @@ export const generatePlatform = (
  * @param apiDetails The value of the platform specific details.
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
- * @param isConfigured Whether the server already has the API details.
+ * @param isSecreteConfigured Whether the server already has the API secrete.
  */
 export const generateApiDetails = (
   apiDetails: ApiDetails,
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  isConfigured: boolean,
+  isSecreteConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
   const platform = apiDetails.platform;
 
@@ -407,7 +407,7 @@ export const generateApiDetails = (
     apiDetailsOnChange,
     showValidationErrors,
     apiDetails,
-    isConfigured,
+    isSecreteConfigured,
   );
   const { apiUrl, apiClientId, apiClientSecret } = apiCommonFields;
 
