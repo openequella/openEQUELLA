@@ -18,24 +18,23 @@
 
 package com.tle.core.oauthclient
 
-import java.time.Instant
-import java.util.concurrent._
 import cats.effect.IO
-import sttp.client._
-import sttp.client.circe._
 import com.tle.common.institution.CurrentInstitution
-import com.tle.web.oauth.OAuthWebConstants
-import fs2.Stream
-import io.circe.generic.semiauto._
-import io.circe.{Decoder, Encoder}
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
 import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
-import sttp.model.Header
-import sttp.model.StatusCode
+import com.tle.web.oauth.OAuthWebConstants
+import fs2.Stream
+import io.circe.generic.semiauto._
+import io.circe.{Decoder, Encoder}
+import sttp.client._
+import sttp.client.circe._
+import sttp.model.{Header, StatusCode}
 
 import java.net.URI
+import java.time.Instant
+import java.util.concurrent._
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
@@ -162,10 +161,10 @@ object OAuthTokenCacheHelper {
         .flatMap(
           implicit backend =>
             postRequest
-              .response(asJsonAlways[OAuthTokenResponse])
+              .response(asJson[OAuthTokenResponse])
               .post(uri"${token.authTokenUrl}")
               .send())
-        .map(r => r.body.fold(de => throw de.error, responseToState))
+        .map(r => r.body.fold(de => throw de, responseToState))
         .unsafeRunSync()
 
     // Save the token in both cache and DB.
