@@ -56,7 +56,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-/** @author Nicholas Read */
 public class SearchSetInheritance extends JPanel implements Changeable {
   private static final long serialVersionUID = 1L;
 
@@ -157,7 +156,9 @@ public class SearchSetInheritance extends JPanel implements Changeable {
     searchSet.setInheritedItemDefs(itemDefsModel.save());
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class InheritedTableModel<T extends BaseEntity, U extends EntityScript<T>>
       extends AbstractTableModel implements ScriptingTableModelInterface<T> {
     private static final long serialVersionUID = 1L;

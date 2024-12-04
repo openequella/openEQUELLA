@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URI;
 import uk.ac.ed.ph.jqtiplus.node.item.Stylesheet;
 
-/** @author Aaron */
 public class StylesheetRenderer extends QtiNodeRenderer {
   private final Stylesheet model;
 

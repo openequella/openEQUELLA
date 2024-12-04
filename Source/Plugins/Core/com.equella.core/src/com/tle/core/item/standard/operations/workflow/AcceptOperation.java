@@ -31,7 +31,6 @@ import com.tle.core.item.standard.workflow.nodes.TaskStatus;
 import com.tle.core.security.impl.SecureInModeration;
 import java.io.IOException;
 
-/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureInModeration

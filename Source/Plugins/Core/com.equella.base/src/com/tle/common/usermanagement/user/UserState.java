@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface UserState extends Cloneable, Serializable {
   String getSessionID();
 

@@ -24,7 +24,6 @@ import javax.swing.Action;
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 
-/** @author Nicholas Read */
 public class ListPopupListener extends AbstractPopupListener {
   private final JList list;
 

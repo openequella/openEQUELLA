@@ -28,7 +28,6 @@ import java.util.Objects;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class SingleTargetChooser extends TargetChooser implements ActionListener, Changeable {
   private static final long serialVersionUID = 1L;

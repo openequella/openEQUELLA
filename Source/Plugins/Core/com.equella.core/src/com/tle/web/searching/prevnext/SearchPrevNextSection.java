@@ -41,7 +41,6 @@ import com.tle.web.viewurl.ViewItemUrl;
 import com.tle.web.viewurl.ViewItemUrlFactory;
 import javax.inject.Inject;
 
-/** @author larry */
 @Bind
 @SuppressWarnings("nls")
 public class SearchPrevNextSection

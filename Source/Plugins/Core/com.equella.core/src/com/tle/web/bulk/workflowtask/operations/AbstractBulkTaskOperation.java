@@ -32,7 +32,6 @@ import com.tle.web.bulk.operation.BulkOperationService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 
-/** @author Aaron */
 public abstract class AbstractBulkTaskOperation extends TaskOperation {
   @Inject private TLEAclManager aclService;
   private static PluginResourceHelper helper =

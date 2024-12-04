@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 
-/** @author Nicholas Read */
 @Bind(ItemDefinitionDao.class)
 @Singleton
 @SuppressWarnings("nls")
@@ -90,7 +89,9 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
         });
   }
 
-  /** @deprecated Use an event to ask for reference */
+  /**
+   * @deprecated Use an event to ask for reference
+   */
   @Override
   @Deprecated
   @SuppressWarnings("unchecked")
@@ -112,7 +113,8 @@ public class ItemDefinitionDaoImpl extends AbstractEntityDaoImpl<ItemDefinition>
         (List<Object>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select i.itemDefinition from Item i where i.uuid = :uuid and i.version = :version and i.institution = :institution",
+                    "select i.itemDefinition from Item i where i.uuid = :uuid and i.version ="
+                        + " :version and i.institution = :institution",
                     new String[] {"uuid", "version", "institution"},
                     new Object[] {itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()});
     int size = results.size();

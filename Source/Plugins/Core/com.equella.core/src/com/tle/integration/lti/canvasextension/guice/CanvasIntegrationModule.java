@@ -23,7 +23,6 @@ import com.tle.integration.lti.canvasextension.CanvasContentItemPlacementReturn;
 import com.tle.integration.lti.canvasextension.CanvasSignon;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class CanvasIntegrationModule extends SectionsModule {
   @Override

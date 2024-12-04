@@ -36,7 +36,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class ShuffleListEditor extends AbstractPowerSearchControlEditor<ShuffleList> {
   private static final long serialVersionUID = 1L;
   private MultiTargetChooser picker;

@@ -20,7 +20,6 @@ package com.tle.qti.data;
 
 import java.io.Serializable;
 
-/** @author will */
 public class QTIResponseElement implements Serializable {
   private static final long serialVersionUID = 1L;
   private String id;

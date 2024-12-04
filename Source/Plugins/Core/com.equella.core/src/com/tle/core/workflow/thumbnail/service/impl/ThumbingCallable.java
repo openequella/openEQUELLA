@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class ThumbingCallable implements Callable<ThumbingCallableResult> {

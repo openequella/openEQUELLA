@@ -44,7 +44,6 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class PortletContributionSection
     extends AbstractPrototypeSection<PortletContributionSection.PortletContributeModel>
     implements HtmlRenderer, ModalPortletSection {

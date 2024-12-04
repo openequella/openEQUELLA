@@ -33,7 +33,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-/** @author Nicholas Read */
 public class FilterDialog<T> implements ActionListener {
   private String title;
   private FilterList<T> list;

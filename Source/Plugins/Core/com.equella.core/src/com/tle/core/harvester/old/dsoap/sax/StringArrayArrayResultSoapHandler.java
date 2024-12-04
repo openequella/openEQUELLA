@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.xml.sax.Attributes;
 
-/** @author adame */
 public class StringArrayArrayResultSoapHandler extends DefaultSoapHandler {
   private List results;
   private List subarray;

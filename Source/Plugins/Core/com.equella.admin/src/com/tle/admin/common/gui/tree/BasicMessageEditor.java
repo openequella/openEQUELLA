@@ -24,7 +24,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 public class BasicMessageEditor extends AbstractTreeNodeEditor {
   public BasicMessageEditor(String message) {
     JLabel messageLabel = new JLabel(message);

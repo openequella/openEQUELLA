@@ -23,7 +23,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

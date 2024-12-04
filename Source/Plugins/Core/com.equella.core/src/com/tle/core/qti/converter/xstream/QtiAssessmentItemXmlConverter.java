@@ -26,7 +26,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.core.qti.dao.QtiAssessmentItemDao;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class QtiAssessmentItemXmlConverter implements Converter {
   private final QtiAssessmentItemDao questionDao;

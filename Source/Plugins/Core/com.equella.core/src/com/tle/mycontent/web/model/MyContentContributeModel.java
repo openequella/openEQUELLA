@@ -23,7 +23,6 @@ import com.tle.web.sections.equella.layout.TwoColumnLayout;
 import com.tle.web.sections.generic.CachedData;
 import java.util.Set;
 
-/** @author aholland */
 public class MyContentContributeModel extends TwoColumnLayout.TwoColumnModel {
   @Bookmarked private String contributeId;
   private final CachedData<Set<String>> allowedHandlers = new CachedData<Set<String>>();

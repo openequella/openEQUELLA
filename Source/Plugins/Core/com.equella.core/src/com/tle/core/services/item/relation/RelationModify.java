@@ -23,7 +23,6 @@ import com.tle.core.item.standard.operations.DuringSaveOperation;
 import com.tle.core.plugins.FactoryMethodLocator;
 import com.tle.core.services.item.relation.RelationOperation.RelationOperationFactory;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public class RelationModify extends FactoryMethodLocator<WorkflowOperation>
     implements DuringSaveOperation {

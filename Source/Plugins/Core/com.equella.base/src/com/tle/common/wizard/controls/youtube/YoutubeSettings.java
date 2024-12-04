@@ -23,7 +23,6 @@ import com.tle.common.Pair;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import java.util.List;
 
-/** @author Peng */
 @SuppressWarnings("nls")
 public class YoutubeSettings extends UniversalSettings {
   private static final String KEY_ALLOW_CHANNEL = "AllowChannel";

@@ -6,7 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class AddShortcutURLPage extends AbstractPage<AddShortcutURLPage> {
   public static final String ADD_SHORTCUT_HEADER = "Add shortcut URL"; // original
   // property

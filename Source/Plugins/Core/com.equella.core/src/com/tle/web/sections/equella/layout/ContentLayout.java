@@ -20,7 +20,6 @@ package com.tle.web.sections.equella.layout;
 
 import com.tle.web.sections.SectionInfo;
 
-/** @author aholland */
 public class ContentLayout {
   private static final String CONTENT_LAYOUT_KEY = "$CONTENT_LAYOUT$"; // $NON-NLS-1$
 

@@ -33,7 +33,6 @@ import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 import uk.ac.ed.ph.jqtiplus.types.Identifier;
 import uk.ac.ed.ph.jqtiplus.value.Value;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiViewerContext {
   RenderContext getRenderContext();

@@ -99,7 +99,6 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bindings({@Bind(HierarchyService.class), @Bind(HierarchyServiceImpl.class)})

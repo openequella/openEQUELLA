@@ -23,7 +23,6 @@ import com.tle.common.Check;
 import com.tle.common.URLUtils;
 import java.util.Map;
 
-/** @author larry Culled form TopicUtils, moved to more widely accessible common namespace */
 public final class VirtualTopicUtils {
   public static String buildTopicId(
       HierarchyTopic topic, String value, Map<String, String> parentValues) {

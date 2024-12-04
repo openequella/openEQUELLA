@@ -24,7 +24,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 import java.io.IOException;
 
-/** @author Aaron */
 public class HtmlEditorButtonDefinition implements SectionRenderable {
   private final String id;
   private final String pluginId;

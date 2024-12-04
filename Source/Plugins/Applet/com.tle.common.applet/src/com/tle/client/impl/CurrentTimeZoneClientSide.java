@@ -22,7 +22,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.i18n.CurrentTimeZone.AbstractCurrentTimeZone;
 import java.util.TimeZone;
 
-/** @author aholland */
 @NonNullByDefault
 public class CurrentTimeZoneClientSide extends AbstractCurrentTimeZone {
   private final TimeZone zone;

@@ -2,7 +2,6 @@ package com.tle.webtests.pageobject.connectors;
 
 import com.tle.webtests.pageobject.PrefixedName;
 
-/** @author Aaron */
 public class ShowEquellaConnectorsPage {
   public static ShowConnectorsPage addEquellaConnection(
       ShowConnectorsPage showConnectorsPage, PrefixedName name) {

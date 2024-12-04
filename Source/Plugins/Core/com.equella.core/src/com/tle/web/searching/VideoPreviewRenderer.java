@@ -24,7 +24,6 @@ import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.viewable.ViewableItem;
 
-/** @author Peng */
 public interface VideoPreviewRenderer extends PreRenderable {
   SectionRenderable renderPreview(
       RenderContext context, Attachment attachment, ViewableItem<?> vitem, String mimeType);

@@ -23,7 +23,6 @@ import com.tle.core.events.EventExecutor;
 import com.tle.core.events.listeners.ApplicationListener;
 import com.tle.core.guice.PluginTrackerModule;
 
-/** @author Aaron */
 public class EventsModule extends AbstractModule {
   @Override
   protected void configure() {

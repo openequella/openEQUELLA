@@ -24,7 +24,6 @@ import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author aholland */
 public interface PortletPreferenceDao extends GenericInstitutionalDao<PortletPreference, Long> {
   PortletPreference getForPortlet(String userId, Portlet portlet);
 

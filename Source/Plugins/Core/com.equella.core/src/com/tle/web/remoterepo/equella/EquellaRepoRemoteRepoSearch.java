@@ -25,7 +25,6 @@ import com.tle.core.guice.Bind;
 import com.tle.web.remoterepo.impl.AbstractRemoteRepoSearch;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

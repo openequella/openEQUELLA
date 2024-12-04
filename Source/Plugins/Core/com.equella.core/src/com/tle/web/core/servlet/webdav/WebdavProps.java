@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class WebdavProps {
   private final MimeTypeService mimeTypeService;
@@ -43,7 +42,9 @@ public class WebdavProps {
   private final Set<String> notFoundProperties;
   private final List<Pair<String, String>> props;
 
-  /** @param requestedProperties If null then "allprop" */
+  /**
+   * @param requestedProperties If null then "allprop"
+   */
   public WebdavProps(final MimeTypeService mimeTypeService, final Set<String> requestedProperties) {
     this.requestedProperties = requestedProperties;
     notFoundProperties = new HashSet<String>();

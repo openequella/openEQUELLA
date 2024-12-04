@@ -22,7 +22,6 @@ import io.swagger.annotations.Api;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-/** @author Samantha Fisher */
 @Path("postloginnotice/")
 @Api("Post Login Notice")
 public interface PostLoginNoticeResource {

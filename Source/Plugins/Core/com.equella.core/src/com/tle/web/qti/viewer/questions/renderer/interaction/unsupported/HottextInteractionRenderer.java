@@ -26,7 +26,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestion
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.HottextInteraction;
 
-/** @author Aaron */
 public class HottextInteractionRenderer extends QtiNodeRenderer {
   @SuppressWarnings("unused")
   private final HottextInteraction model;

@@ -25,7 +25,6 @@ import com.tle.core.institution.convert.Migrator;
 import com.tle.core.institution.convert.PostReadMigrator;
 import com.tle.core.institution.convert.extension.InstitutionInfoInitialiser;
 
-/** @author Aaron */
 public class InstitutionConverterTrackerModule extends PluginTrackerModule {
   @Override
   protected String getPluginId() {

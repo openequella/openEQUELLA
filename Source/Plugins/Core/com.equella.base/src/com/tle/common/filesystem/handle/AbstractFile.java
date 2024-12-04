@@ -23,7 +23,6 @@ import com.tle.annotation.Nullable;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileHandleUtils;
 
-/** @author aholland */
 @NonNullByDefault
 public abstract class AbstractFile implements FileHandle {
   private static final long serialVersionUID = 1L;

@@ -18,7 +18,6 @@
 
 package com.tle.admin.gui;
 
-/** @author Nicholas Read */
 public class EditorException extends Exception {
   private static final long serialVersionUID = 1L;
   private boolean isFatal;

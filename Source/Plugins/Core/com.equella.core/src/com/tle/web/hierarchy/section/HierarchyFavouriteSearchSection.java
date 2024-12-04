@@ -23,7 +23,6 @@ import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.annotations.TreeLookup;
 
-/** @author Aaron */
 @Bind
 public class HierarchyFavouriteSearchSection extends AbstractFavouriteSearchSection {
   @TreeLookup private TopicDisplaySection topicDisplay;

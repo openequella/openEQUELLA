@@ -21,7 +21,6 @@ package com.tle.web.connectors.api.bean;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author larry */
 @XmlRootElement
 public class ConnectorBean extends BaseEntityBean {
   private String type;

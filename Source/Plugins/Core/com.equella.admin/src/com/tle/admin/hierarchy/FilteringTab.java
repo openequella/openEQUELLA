@@ -31,7 +31,6 @@ import com.tle.common.hierarchy.SearchSetAdapter;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 
-/** @author Nicholas Read */
 public class FilteringTab extends AbstractTopicEditorTab {
   private final EntityCache cache;
   private final ClientService clientService;

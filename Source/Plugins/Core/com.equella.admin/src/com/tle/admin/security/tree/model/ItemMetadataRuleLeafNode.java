@@ -23,7 +23,6 @@ import com.tle.beans.entity.itemdef.ItemMetadataRule;
 import com.tle.common.security.ItemMetadataTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 
-/** @author Nicholas Read */
 public class ItemMetadataRuleLeafNode extends AbstractLeafNode<ItemMetadataRule> {
   private final ItemMetadataRule rule;
   private final ItemDefinition itemDefinition;

@@ -20,7 +20,6 @@ package com.dytech.edge.admin.wizard.walkers;
 
 import com.dytech.edge.admin.wizard.model.Control;
 
-/** @author Nicholas Read */
 public class ControlTreeWalker {
   private Control baseControl;
 
@@ -29,7 +28,9 @@ public class ControlTreeWalker {
     super();
   }
 
-  /** @return Returns the base. */
+  /**
+   * @return Returns the base.
+   */
   public Control getBaseControl() {
     return baseControl;
   }

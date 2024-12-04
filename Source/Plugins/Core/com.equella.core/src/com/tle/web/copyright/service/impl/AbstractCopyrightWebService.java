@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public abstract class AbstractCopyrightWebService<H extends Holding>
     implements CopyrightWebService<H> {

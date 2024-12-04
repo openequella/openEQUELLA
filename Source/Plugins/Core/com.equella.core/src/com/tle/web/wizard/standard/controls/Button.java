@@ -33,7 +33,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CButton;
 
-/** @author jmaginnis */
 @Bind
 public class Button extends AbstractSimpleWebControl {
   @Component(stateful = false)

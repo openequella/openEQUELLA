@@ -21,7 +21,6 @@ package com.tle.admin.gui.common.actions;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.Action;
 
-/** @author Nicholas Read */
 public abstract class SearchAction extends TLEAction {
   @SuppressWarnings("nls")
   public SearchAction() {

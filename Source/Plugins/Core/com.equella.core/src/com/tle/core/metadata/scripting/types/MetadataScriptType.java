@@ -21,7 +21,6 @@ package com.tle.core.metadata.scripting.types;
 import com.tle.common.scripting.types.MapScriptType;
 import java.util.List;
 
-/** @author gibbo */
 public interface MetadataScriptType {
   /**
    * Returns the first key found in any type grouping that matches. If there are duplicate keys

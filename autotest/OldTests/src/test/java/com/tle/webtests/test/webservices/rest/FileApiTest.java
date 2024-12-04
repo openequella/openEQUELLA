@@ -30,7 +30,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.testng.annotations.Test;
 
-/** @author Aaron */
 public class FileApiTest extends AbstractRestApiTest {
   private static final String TEST_FILE = "Special characters - хцч test2.jpg";
   private static final String FOLDER_1 = "#& 'testfolder1\"%%%.*<script> yada";

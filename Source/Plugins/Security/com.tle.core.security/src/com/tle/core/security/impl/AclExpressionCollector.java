@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-/** @author Nicholas Read */
 public class AclExpressionCollector extends PostfixExpressionParser<Object> {
   private List<String> results = new ArrayList<String>();
 

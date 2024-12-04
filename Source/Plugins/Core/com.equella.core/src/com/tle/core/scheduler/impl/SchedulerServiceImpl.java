@@ -71,7 +71,6 @@ import org.java.plugin.registry.Extension.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(SchedulerService.class)

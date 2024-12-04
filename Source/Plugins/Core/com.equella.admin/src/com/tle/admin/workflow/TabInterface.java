@@ -22,9 +22,10 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.gui.Changeable;
 import com.tle.admin.gui.EditorException;
 
-/** @author Nicholas Read */
 public interface TabInterface extends Changeable {
-  /** @return the title that should appear on the tab. */
+  /**
+   * @return the title that should appear on the tab.
+   */
   String getTabTitle();
 
   /**

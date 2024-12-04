@@ -31,7 +31,6 @@ import com.tle.web.sections.render.Label;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class SrwResultsSection
     extends RemoteRepoResultsSection<SrwSearchEvent, SrwSearchResult, RemoteRepoResultsModel> {
   @Inject private SrwService srwService;

@@ -27,7 +27,6 @@ import com.tle.web.sections.standard.renderers.LinkTagRenderer;
 import com.tle.web.viewurl.ViewItemServiceImpl.CachedTree;
 import java.util.List;
 
-/** @author aholland */
 @NonNullByDefault
 public interface ViewItemService {
   List<NameValue> getViewerNames();

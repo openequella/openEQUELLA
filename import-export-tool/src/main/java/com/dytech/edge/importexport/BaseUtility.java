@@ -6,7 +6,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.axis.AxisProperties;
 
-/** @author aholland */
 public abstract class BaseUtility {
   protected final SharedData data;
 

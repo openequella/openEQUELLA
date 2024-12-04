@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** @author Aaron */
 public class SearchSettings implements ConfigurationProperties {
   public static final int URL_DEPTH_LEVEL_NONE = 0;
   public static final int URL_DEPTH_LEVEL_REFERENCED = 1;

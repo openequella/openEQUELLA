@@ -26,7 +26,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestion
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.DrawingInteraction;
 
-/** @author Aaron */
 public class DrawingInteractionRenderer extends QtiNodeRenderer {
   @AssistedInject
   public DrawingInteractionRenderer(

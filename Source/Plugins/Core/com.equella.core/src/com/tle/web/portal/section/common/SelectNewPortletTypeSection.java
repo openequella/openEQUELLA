@@ -46,7 +46,6 @@ import java.util.Comparator;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class SelectNewPortletTypeSection
     extends AbstractPrototypeSection<SelectNewPortletTypeSection.SelectNewPortletTypeModel>

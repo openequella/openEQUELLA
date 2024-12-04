@@ -24,7 +24,6 @@ import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.sections.render.TextLabel;
 import com.tle.web.wizard.scripting.objects.ControlScriptObject;
 
-/** @author aholland */
 public class ControlScriptWrapper implements ControlScriptObject {
   private static final long serialVersionUID = 1L;
 

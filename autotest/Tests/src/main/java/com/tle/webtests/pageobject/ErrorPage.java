@@ -4,7 +4,6 @@ import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-/** @author Aaron */
 public class ErrorPage extends AbstractPage<ErrorPage> {
   private final boolean forceOld;
 

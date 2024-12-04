@@ -25,7 +25,6 @@ import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.core.util.ims.beans.IMSResource;
 import java.util.List;
 
-/** @author Aaron */
 public interface IMSAttachmentExporter {
   /**
    * @param info Would be nice if we didn't need this. Required for generating URLs
@@ -38,7 +37,9 @@ public interface IMSAttachmentExporter {
   boolean exportAttachment(
       Item item, IAttachment attachment, List<IMSResource> resources, FileHandle imsRoot);
 
-  /** @return null if unhandled */
+  /**
+   * @return null if unhandled
+   */
   Attachment importAttachment(
       Item item, IMSResource resource, FileHandle root, String packageFolder);
 }

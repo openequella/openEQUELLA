@@ -13,7 +13,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
   public static final String LOGIN_SETTINGS = "Login";
   private static final String SAVE_RECEIPT = "Login settings saved successfully";

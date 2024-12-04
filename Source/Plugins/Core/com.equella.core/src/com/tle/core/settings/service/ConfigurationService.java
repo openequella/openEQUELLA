@@ -23,7 +23,6 @@ import com.tle.core.services.impl.ProxyDetails;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public interface ConfigurationService {
   boolean isAutoTestMode();
 

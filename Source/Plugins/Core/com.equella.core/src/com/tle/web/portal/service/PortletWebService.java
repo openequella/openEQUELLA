@@ -26,7 +26,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.Map;
 
-/** @author aholland */
 public interface PortletWebService {
   boolean canCreate();
 

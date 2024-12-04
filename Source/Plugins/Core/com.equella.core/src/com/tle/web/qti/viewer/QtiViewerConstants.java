@@ -18,7 +18,6 @@
 
 package com.tle.web.qti.viewer;
 
-/** @author Aaron */
 public final class QtiViewerConstants {
   private QtiViewerConstants() {
     throw new Error();

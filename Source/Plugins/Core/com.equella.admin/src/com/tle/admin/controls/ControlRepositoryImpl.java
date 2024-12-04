@@ -44,7 +44,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.java.plugin.registry.Extension;
 
-/** @author Nicholas Read */
 public class ControlRepositoryImpl implements ControlRepository {
   /** The default icon for controls that do not define one. */
   private static final String DEFAULT_ICON = "control.gif"; // $NON-NLS-1$

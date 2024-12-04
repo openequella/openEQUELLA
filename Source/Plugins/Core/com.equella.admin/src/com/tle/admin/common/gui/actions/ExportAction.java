@@ -34,7 +34,6 @@ import java.io.Writer;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public abstract class ExportAction extends TLEAction {
   public ExportAction() {
     setIcon("/icons/export2.gif"); // $NON-NLS-1$

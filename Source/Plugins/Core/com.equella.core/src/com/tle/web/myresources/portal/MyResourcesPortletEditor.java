@@ -32,7 +32,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 import java.util.Map;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class MyResourcesPortletEditor

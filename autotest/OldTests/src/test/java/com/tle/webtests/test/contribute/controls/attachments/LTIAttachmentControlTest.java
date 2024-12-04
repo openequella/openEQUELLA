@@ -18,7 +18,6 @@ import com.tle.webtests.pageobject.wizard.controls.universal.LTIUniversalControl
 import com.tle.webtests.test.AbstractCleanupAutoTest;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class LTIAttachmentControlTest extends AbstractCleanupAutoTest {
   // a preconfigured collection to which LTI attachment's can be added.

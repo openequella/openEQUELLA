@@ -21,7 +21,6 @@ package com.tle.web.cloneormove.model;
 import com.tle.beans.entity.Schema;
 import com.tle.web.sections.annotations.Bookmarked;
 
-/** @author aholland */
 public class CloneOrMoveModel {
   @Bookmarked private boolean hideClone;
   @Bookmarked private boolean hideCloneNoAttachments;

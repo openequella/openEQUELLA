@@ -22,7 +22,6 @@ import com.dytech.edge.exceptions.RuntimeApplicationException;
 import com.tle.common.FileSizeUtils;
 import com.tle.common.i18n.CurrentLocale;
 
-/** @author Nicholas Read */
 public class QuotaExceededException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
 

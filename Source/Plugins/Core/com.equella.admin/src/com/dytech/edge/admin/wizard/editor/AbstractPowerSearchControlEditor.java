@@ -29,7 +29,6 @@ import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Aaron */
 public abstract class AbstractPowerSearchControlEditor<T extends WizardControl>
     extends AbstractControlEditor<T> {
   private static final long serialVersionUID = 1L;

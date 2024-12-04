@@ -21,7 +21,6 @@ package com.tle.core.fedsearch;
 import java.io.Serializable;
 import java.util.Date;
 
-/** @author jmaginnis */
 public class RemoteRepoSearchResult implements Serializable {
   private static final long serialVersionUID = 1L;
 

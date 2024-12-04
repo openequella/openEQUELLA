@@ -50,7 +50,6 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.MapKeyType;
 import org.hibernate.annotations.Type;
 
-/** @author larry */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -67,7 +66,9 @@ public class AddLtiMimeTypeMigration extends AbstractHibernateDataMigration {
     return true;
   }
 
-  /** @see com.tle.core.migration.Migration#createMigrationInfo() */
+  /**
+   * @see com.tle.core.migration.Migration#createMigrationInfo()
+   */
   @Override
   public MigrationInfo createMigrationInfo() {
     return new MigrationInfo(keyPrefix + "title", keyPrefix + "description");
@@ -134,7 +135,9 @@ public class AddLtiMimeTypeMigration extends AbstractHibernateDataMigration {
     attr.put(key, JSONObject.fromObject(bean).toString());
   }
 
-  /** @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses() */
+  /**
+   * @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses()
+   */
   @Override
   protected Class<?>[] getDomainClasses() {
     return new Class[] {FakeMimeEntry.class, FakeInstitution.class};

@@ -31,7 +31,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Aaron */
 @Produces({"application/json"})
 @Path("lti/consumer")
 @Api(value = "LTI consumers", description = "lti-consumer")

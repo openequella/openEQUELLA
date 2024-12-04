@@ -59,7 +59,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class ModeratorsTab extends JPanel implements ActionListener, ItemListener {
 
   private final SchemaModel schemaModel = new SchemaModel();
@@ -322,7 +321,9 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
     listenerList.add(UnanimousityChangeListener.class, l);
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public interface UnanimousityChangeListener extends EventListener {
     void unanimousityChanged(boolean newValue);
   }

@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchEvent;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 
-/** @author aholland */
 public abstract class RemoteRepoSearchEvent<E extends RemoteRepoSearchEvent<E>>
     extends AbstractSearchEvent<E> {
   private final FederatedSearch search;

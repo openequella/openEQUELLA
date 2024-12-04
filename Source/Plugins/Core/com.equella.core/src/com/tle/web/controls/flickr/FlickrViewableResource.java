@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/** @author Larry. Based on the YouTube plugin. */
 @SuppressWarnings("nls")
 public class FlickrViewableResource extends AbstractWrappedResource {
   static {

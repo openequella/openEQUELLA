@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
-/** @author jmaginnis */
 public class SearchRequest implements Serializable {
   private static final long serialVersionUID = 1L;
 

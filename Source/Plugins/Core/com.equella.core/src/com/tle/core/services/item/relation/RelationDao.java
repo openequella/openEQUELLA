@@ -25,7 +25,6 @@ import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author aholland */
 public interface RelationDao extends GenericInstitutionalDao<Relation, Long> {
   Collection<Relation> getAllByFromItem(Item from);
 

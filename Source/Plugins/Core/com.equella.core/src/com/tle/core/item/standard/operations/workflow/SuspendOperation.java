@@ -24,7 +24,6 @@ import com.tle.beans.item.ModerationStatus;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author jmaginnis */
 @SecureOnCall(priv = "SUSPEND_ITEM")
 @SecureItemStatus(
     value = {ItemStatus.SUSPENDED, ItemStatus.PERSONAL},

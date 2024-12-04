@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland / agibb */
 @Bind
 public class TasksPortletRenderer
     extends PortletContentRenderer<TasksPortletRenderer.WorkflowTasksPortletRendererModel> {

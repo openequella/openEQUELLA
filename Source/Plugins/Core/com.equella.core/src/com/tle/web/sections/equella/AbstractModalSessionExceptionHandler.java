@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.SectionsController;
 import com.tle.web.sections.events.SectionEvent;
 
-/** @author aholland */
 public abstract class AbstractModalSessionExceptionHandler<S extends ModalSession>
     extends AbstractExceptionHandler {
   public static final String MODAL_ERROR_KEY = "$MODAL_ERROR$"; // $NON-NLS-1$

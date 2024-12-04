@@ -33,7 +33,6 @@ import com.tle.web.sections.standard.AbstractTable.Sort;
 import java.util.Date;
 import java.util.List;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class TableState extends HtmlComponentState {
   private TableHeaderRow headerRow;

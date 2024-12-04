@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class LtiConsumerEditorImpl extends AbstractBaseEntityEditor<LtiConsumer, LtiConsumerBean>
     implements LtiConsumerEditor {

@@ -56,7 +56,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class EditorTab extends BaseEntityTab<Schema> {
   private final SchemaModel schemaModel;
 
@@ -265,7 +264,9 @@ public class EditorTab extends BaseEntityTab<Schema> {
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   class Editor extends JPanel implements TreeWithViewInterface<SchemaNode> {
     private static final long serialVersionUID = 1L;
 

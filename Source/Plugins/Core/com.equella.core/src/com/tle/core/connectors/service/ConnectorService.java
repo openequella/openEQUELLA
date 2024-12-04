@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 public interface ConnectorService
     extends AbstractEntityService<ConnectorEditingBean, Connector>, RemoteConnectorService {
   String ENTITY_TYPE = "CONNECTOR"; // $NON-NLS-1$

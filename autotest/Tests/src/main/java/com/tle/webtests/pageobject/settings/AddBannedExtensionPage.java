@@ -7,7 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class AddBannedExtensionPage extends AbstractPage<AddBannedExtensionPage> {
   public static final String BANNED_EXT_TEXT_BOX_ID = "_aed_bannedExtText";
 

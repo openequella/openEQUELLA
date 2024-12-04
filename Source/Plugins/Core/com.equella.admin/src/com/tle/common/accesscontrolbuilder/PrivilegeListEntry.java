@@ -21,7 +21,6 @@ package com.tle.common.accesscontrolbuilder;
 import com.tle.common.security.SecurityConstants;
 import java.io.Serializable;
 
-/** @author Nicholas Read */
 public class PrivilegeListEntry implements Serializable {
   private static final long serialVersionUID = 1L;
   private boolean granted;

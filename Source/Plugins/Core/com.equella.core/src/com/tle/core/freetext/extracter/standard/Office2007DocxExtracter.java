@@ -22,7 +22,6 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

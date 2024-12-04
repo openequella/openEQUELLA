@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/** @author Nicholas Read */
 public class CacheConfig extends ForeignCommand {
   private String path;
   private String tle_host;

@@ -23,7 +23,6 @@ import com.tle.web.sections.equella.annotation.PluginResourceHandler;
 import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.SectionRenderable;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class BlueBarConstants {
   static {

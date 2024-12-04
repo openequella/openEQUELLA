@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.tree.TreeNode;
 
-/** @author Nicholas Read */
 public class InstitutionNode implements SecurityTreeNode {
   private final List<SecurityTreeNode> children;
 

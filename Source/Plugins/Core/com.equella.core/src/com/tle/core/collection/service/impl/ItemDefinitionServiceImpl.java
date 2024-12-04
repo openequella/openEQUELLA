@@ -76,7 +76,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(ItemDefinitionService.class)
 @Singleton
 @SecureEntity(RemoteItemDefinitionService.ENTITY_TYPE)

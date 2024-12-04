@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 
-/** @author Nicholas Read */
 public class JLinkButton extends JLabel implements MouseListener {
   private static final long serialVersionUID = 1L;
   private static final Cursor CLICKABLE;

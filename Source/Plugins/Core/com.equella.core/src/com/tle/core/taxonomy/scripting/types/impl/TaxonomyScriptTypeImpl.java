@@ -29,7 +29,6 @@ import com.tle.core.taxonomy.scripting.types.TaxonomyScriptType;
 import com.tle.core.taxonomy.scripting.types.TermScriptType;
 import java.util.List;
 
-/** @author aholland */
 public class TaxonomyScriptTypeImpl implements TaxonomyScriptType {
   private static final long serialVersionUID = 1L;
 

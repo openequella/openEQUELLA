@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/** @author jmaginnis */
 public class FreeTextBooleanQuery extends FreeTextQuery {
   private static final long serialVersionUID = 1L;
 

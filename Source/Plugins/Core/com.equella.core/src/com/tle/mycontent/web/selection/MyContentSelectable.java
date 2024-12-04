@@ -27,7 +27,6 @@ import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

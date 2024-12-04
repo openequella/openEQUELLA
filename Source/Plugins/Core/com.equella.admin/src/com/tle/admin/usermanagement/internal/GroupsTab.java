@@ -52,7 +52,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-/** @author Nicholas Read */
 public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionListener {
   private static final long serialVersionUID = 1L;
 

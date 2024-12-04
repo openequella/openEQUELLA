@@ -38,7 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class IframePortletEditorSection

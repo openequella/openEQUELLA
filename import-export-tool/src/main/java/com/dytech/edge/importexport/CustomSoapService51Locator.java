@@ -10,7 +10,6 @@ import java.util.List;
 import org.apache.axis.client.Service;
 import org.apache.axis.transport.http.HTTPTransport;
 
-/** @author aholland */
 public class CustomSoapService51Locator extends SoapService51ServiceLocator {
   public CustomSoapService51Locator() {
     setMaintainSession(true);

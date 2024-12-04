@@ -37,7 +37,6 @@ import com.tle.core.notification.beans.Notification;
 import com.tle.core.security.impl.SecureInModeration;
 import java.io.IOException;
 
-/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureInModeration

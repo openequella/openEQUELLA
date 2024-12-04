@@ -29,7 +29,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 
-/** @author aholland */
 public class DefaultScriptContext implements ScriptContext {
   private static final long serialVersionUID = 1L;
 

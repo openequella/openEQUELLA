@@ -21,7 +21,6 @@ package com.tle.common.usermanagement.user;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public final class CurrentUser {
   private static ThreadLocal<UserState> stateLocal = new ThreadLocal<UserState>();
 

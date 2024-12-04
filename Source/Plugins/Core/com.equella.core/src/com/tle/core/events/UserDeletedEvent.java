@@ -21,7 +21,6 @@ package com.tle.core.events;
 import com.google.common.base.Preconditions;
 import com.tle.core.events.listeners.UserChangeListener;
 
-/** @author Nicholas Read */
 public class UserDeletedEvent extends ApplicationEvent<UserChangeListener> {
   private static final long serialVersionUID = 1L;
 

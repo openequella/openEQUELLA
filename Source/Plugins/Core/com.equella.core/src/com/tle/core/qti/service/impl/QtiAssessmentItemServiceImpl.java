@@ -40,7 +40,6 @@ import uk.ac.ed.ph.jqtiplus.node.item.AssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind(QtiAssessmentItemService.class)
 @Singleton

@@ -20,7 +20,6 @@ package com.tle.core.events;
 
 import com.tle.core.events.listeners.GroupChangedListener;
 
-/** @author Nicholas Read */
 public class GroupIdChangedEvent extends ApplicationEvent<GroupChangedListener> {
   private static final long serialVersionUID = 1L;
 

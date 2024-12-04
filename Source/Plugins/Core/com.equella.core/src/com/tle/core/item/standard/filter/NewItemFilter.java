@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public class NewItemFilter extends AbstractStandardOperationFilter {
   private final Multimap<String, String> collectionMap;
@@ -66,7 +65,8 @@ public class NewItemFilter extends AbstractStandardOperationFilter {
 
   @Override
   public String getWhereClause() {
-    return "status = :status and moderation.liveApprovalDate > :date and itemDefinition.uuid in (:itemdefs)";
+    return "status = :status and moderation.liveApprovalDate > :date and itemDefinition.uuid in"
+               + " (:itemdefs)";
   }
 
   @Override

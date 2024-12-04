@@ -21,7 +21,6 @@ package com.tle.core.workflow.thumbnail.guice;
 import com.tle.core.guice.PluginTrackerModule;
 import com.tle.core.workflow.thumbnail.ThumbnailGenerator;
 
-/** @author Aaron */
 public class ThumbnailModule extends PluginTrackerModule {
   @Override
   protected String getPluginId() {

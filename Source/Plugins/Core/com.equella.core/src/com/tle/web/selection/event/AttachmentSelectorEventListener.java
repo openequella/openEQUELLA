@@ -22,7 +22,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.selection.SelectAttachmentHandler;
 import java.util.EventListener;
 
-/** @author Aaron */
 public interface AttachmentSelectorEventListener extends EventListener, SelectAttachmentHandler {
   /**
    * The function you supply must conform to: public void selectAttachment(SectionInfo info, String

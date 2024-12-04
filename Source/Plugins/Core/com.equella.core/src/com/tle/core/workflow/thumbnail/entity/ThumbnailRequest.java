@@ -35,7 +35,6 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author Aaron */
 @Entity
 @AccessType("field")
 @Table(

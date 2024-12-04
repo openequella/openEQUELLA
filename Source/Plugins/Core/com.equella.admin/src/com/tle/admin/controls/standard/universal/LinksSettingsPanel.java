@@ -23,7 +23,6 @@ import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.common.wizard.controls.universal.handlers.LinkSettings;
 import javax.swing.JCheckBox;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class LinksSettingsPanel extends UniversalControlSettingPanel {
   private final JCheckBox linkDuplicationCheck =

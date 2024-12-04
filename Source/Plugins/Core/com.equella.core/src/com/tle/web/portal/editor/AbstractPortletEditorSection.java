@@ -81,7 +81,6 @@ import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractPortletEditorSection<
         M extends AbstractPortletEditorSection.AbstractPortletEditorModel>

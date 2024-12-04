@@ -23,7 +23,6 @@ import com.tle.beans.Institution;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.institution.events.listeners.InstitutionListener;
 
-/** @author Nicholas Read */
 public class InstitutionEvent extends ApplicationEvent<InstitutionListener> {
   public enum InstitutionEventType {
     AVAILABLE,
@@ -53,7 +52,9 @@ public class InstitutionEvent extends ApplicationEvent<InstitutionListener> {
     listener.institutionEvent(this);
   }
 
-  /** @return A map of database schema IDs to modified institutions */
+  /**
+   * @return A map of database schema IDs to modified institutions
+   */
   public Multimap<Long, Institution> getChanges() {
     return changes;
   }

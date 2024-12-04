@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.ListIterator;
 import javax.swing.AbstractListModel;
 
-/** @author Nicholas Read */
 public class GenericListModel<T> extends AbstractListModel<T> implements List<T> {
   private final List<T> delegate;
 

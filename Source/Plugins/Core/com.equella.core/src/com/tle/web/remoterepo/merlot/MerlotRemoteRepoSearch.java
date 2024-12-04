@@ -27,7 +27,6 @@ import com.tle.web.remoterepo.RemoteRepoSection;
 import com.tle.web.sections.SectionInfo;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

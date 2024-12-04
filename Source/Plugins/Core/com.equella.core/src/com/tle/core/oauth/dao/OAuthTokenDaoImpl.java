@@ -31,7 +31,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(OAuthTokenDao.class)
 @Singleton
@@ -116,8 +115,8 @@ public class OAuthTokenDaoImpl extends GenericInstitionalDaoImpl<OAuthToken, Lon
               public Object doInHibernate(Session session) throws HibernateException {
                 final Query query =
                     session.createQuery(
-                        "UPDATE OAuthToken SET userId = :toUserId"
-                            + " WHERE userId = :fromUserId AND client IN (FROM OAuthClient WHERE institution = :institution)");
+                        "UPDATE OAuthToken SET userId = :toUserId WHERE userId = :fromUserId AND"
+                            + " client IN (FROM OAuthClient WHERE institution = :institution)");
                 query.setParameter("toUserId", toUserId);
                 query.setParameter("fromUserId", fromUserId);
                 query.setParameter("institution", CurrentInstitution.get());

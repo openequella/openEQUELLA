@@ -31,7 +31,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-/** @author aholland */
 @Singleton
 @Bind(PortletDao.class)
 @SuppressWarnings("nls")
@@ -52,9 +51,9 @@ public class PortletDaoImpl extends AbstractEntityDaoImpl<Portlet> implements Po
                       public Object doInHibernate(Session session) throws HibernateException {
                         Query query =
                             session.createQuery(
-                                "FROM Portlet WHERE"
-                                    + " (owner = :owner OR institutional = :institutional)"
-                                    + " AND enabled = :enabled AND institution = :institution ORDER BY dateCreated");
+                                "FROM Portlet WHERE (owner = :owner OR institutional ="
+                                    + " :institutional) AND enabled = :enabled AND institution ="
+                                    + " :institution ORDER BY dateCreated");
                         query.setCacheable(true);
                         query.setParameter("owner", userId);
                         query.setParameter("institutional", true);

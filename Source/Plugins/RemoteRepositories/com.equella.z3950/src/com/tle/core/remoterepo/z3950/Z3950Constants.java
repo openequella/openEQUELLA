@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.z3950;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author aholland */
 public final class Z3950Constants {
   private static final Map<Integer, Use> usageMap = new HashMap<Integer, Use>();
 

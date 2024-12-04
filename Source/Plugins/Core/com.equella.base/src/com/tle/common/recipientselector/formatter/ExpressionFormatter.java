@@ -24,7 +24,6 @@ import com.tle.common.security.expressions.ConvertToInfix;
 import com.tle.common.usermanagement.util.UserBeanUtils;
 import com.tle.core.remoting.RemoteUserService;
 
-/** @author Nicholas Read */
 public class ExpressionFormatter extends ConvertToInfix {
   private final RemoteUserService userService;
 

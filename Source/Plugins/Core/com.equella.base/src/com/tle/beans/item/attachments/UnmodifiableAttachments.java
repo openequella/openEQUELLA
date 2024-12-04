@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 public class UnmodifiableAttachments implements Attachments {
   private final Map<AttachmentType, List<IAttachment>> listMap =
       new HashMap<AttachmentType, List<IAttachment>>();

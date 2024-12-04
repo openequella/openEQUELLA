@@ -7,7 +7,6 @@ import com.tle.webtests.pageobject.generic.component.EquellaSelect;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import org.openqa.selenium.WebElement;
 
-/** @author larry */
 public class LTIUniversalControlType extends AbstractUniversalControlType<LTIUniversalControlType> {
 
   private final LTICommonControlContainerImpl ccc;

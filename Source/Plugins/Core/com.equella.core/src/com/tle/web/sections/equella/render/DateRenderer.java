@@ -31,7 +31,6 @@ import com.tle.web.sections.render.TagRenderer;
 import java.io.IOException;
 import java.util.Date;
 
-/** @author Aaron */
 public class DateRenderer implements SectionRenderable {
   private final TagRenderer timeAgo;
 

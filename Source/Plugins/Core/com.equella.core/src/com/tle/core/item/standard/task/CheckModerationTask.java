@@ -26,7 +26,6 @@ import com.tle.core.scheduler.ScheduledTask;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 public class CheckModerationTask implements ScheduledTask {

@@ -15,7 +15,6 @@ import com.tle.webtests.test.AbstractSessionTest;
 import java.util.List;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class ContentRestrictionsTest extends AbstractSessionTest {
   public static final String DEMO_EXT = ContentRestrictionsTest.class.getSimpleName().toUpperCase();

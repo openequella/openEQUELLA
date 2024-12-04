@@ -21,7 +21,6 @@ package com.tle.mypages.web;
 import com.tle.beans.item.attachments.HtmlAttachment;
 import java.util.List;
 
-/** @author Aaron */
 public interface MyPagesPageFilter {
   List<HtmlAttachment> filterPages(List<HtmlAttachment> pages);
 }

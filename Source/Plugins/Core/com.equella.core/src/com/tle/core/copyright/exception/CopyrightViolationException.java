@@ -22,7 +22,6 @@ import com.dytech.edge.exceptions.WorkflowException;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
 
-/** @author Nicholas Read */
 public class CopyrightViolationException extends WorkflowException {
   private static final long serialVersionUID = 1L;
   private LanguageBundle i18NMessage;

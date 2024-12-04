@@ -27,7 +27,6 @@ import com.tle.common.taxonomy.Taxonomy;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class TaxonomyEditor extends BaseEntityEditor<Taxonomy> {
   public TaxonomyEditor(BaseEntityTool<Taxonomy> tool, boolean readonly) {
     super(tool, readonly);

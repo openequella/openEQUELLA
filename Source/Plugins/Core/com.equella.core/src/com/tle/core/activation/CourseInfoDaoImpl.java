@@ -29,7 +29,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 
-/** @author Charles O'Farrell */
 @Bind(CourseInfoDao.class)
 @Singleton
 public class CourseInfoDaoImpl extends AbstractEntityDaoImpl<CourseInfo> implements CourseInfoDao {

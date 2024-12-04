@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class FileUploadSettingsPanel extends UniversalControlSettingPanel {
   private static final long serialVersionUID = 4826796254818947420L;

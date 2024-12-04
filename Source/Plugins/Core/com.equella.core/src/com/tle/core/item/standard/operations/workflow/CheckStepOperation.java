@@ -26,7 +26,6 @@ import com.tle.common.workflow.node.WorkflowTreeNode;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.NodeStatus;
 
-/** @author jmaginnis */
 @Bind
 public class CheckStepOperation extends TaskOperation {
   protected CheckStepOperation() {

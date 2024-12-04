@@ -21,7 +21,6 @@ package com.tle.core.freetext.queries;
 import com.dytech.edge.queries.FreeTextQuery;
 import java.util.Objects;
 
-/** @author jmaginnis */
 public class FreeTextFieldQuery extends FreeTextQuery {
   private static final long serialVersionUID = 1L;
 

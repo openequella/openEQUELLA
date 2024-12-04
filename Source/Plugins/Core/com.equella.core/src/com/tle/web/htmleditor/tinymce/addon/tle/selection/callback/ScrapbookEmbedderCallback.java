@@ -33,7 +33,6 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class ScrapbookEmbedderCallback extends AbstractSelectionsMadeCallback {

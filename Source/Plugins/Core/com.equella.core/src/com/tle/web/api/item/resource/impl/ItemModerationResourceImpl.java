@@ -52,7 +52,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind(ItemModerationResource.class)
 @Singleton

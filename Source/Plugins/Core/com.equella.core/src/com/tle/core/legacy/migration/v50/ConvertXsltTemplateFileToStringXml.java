@@ -35,7 +35,6 @@ import java.io.StringWriter;
 import java.util.Objects;
 import javax.inject.Singleton;
 
-/** @author Andrew Gibb */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

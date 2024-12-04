@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @Bind
 public class TinyMceEditorSection extends AbstractPrototypeSection<TinyMceModel>
     implements HtmlEditorInterface, PreRenderable {

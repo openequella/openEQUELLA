@@ -23,7 +23,6 @@ import com.tle.core.entity.service.AbstractEntityService;
 import java.io.InputStream;
 import java.util.List;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public interface HtmlEditorPluginService
     extends AbstractEntityService<HtmlEditorPluginEditingBean, HtmlEditorPlugin> {

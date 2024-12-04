@@ -24,7 +24,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind
 public class CreateTestEntitiesOperation extends AbstractStandardWorkflowOperation {
   @Inject private QtiAttachmentListener attachmentListener;

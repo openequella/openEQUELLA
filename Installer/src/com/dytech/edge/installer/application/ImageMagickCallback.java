@@ -24,7 +24,6 @@ import com.dytech.installer.Wizard;
 import java.io.File;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public class ImageMagickCallback implements Callback {
   private static final String[] EXE_TYPES = {"", ".exe"}; // $NON-NLS-1$
 

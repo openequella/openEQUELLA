@@ -7,7 +7,6 @@ import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ReviewPage extends WizardPage {
   private JLabel items;

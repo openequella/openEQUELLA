@@ -21,7 +21,6 @@ package com.tle.core.item.standard.operations;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 public final class UserDeletedOperation extends AbstractStandardWorkflowOperation // NOSONAR

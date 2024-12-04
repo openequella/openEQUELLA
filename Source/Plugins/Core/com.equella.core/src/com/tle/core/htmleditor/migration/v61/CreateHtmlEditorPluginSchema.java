@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

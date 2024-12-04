@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class IterateControls extends ControlTreeWalker {
   private final List<Control> controls = new ArrayList<Control>();
 
@@ -32,7 +31,9 @@ public class IterateControls extends ControlTreeWalker {
     super();
   }
 
-  /** @return Returns the targets. */
+  /**
+   * @return Returns the targets.
+   */
   public Iterator<Control> iterate() {
     return controls.iterator();
   }

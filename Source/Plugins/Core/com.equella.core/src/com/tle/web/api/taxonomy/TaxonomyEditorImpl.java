@@ -33,7 +33,6 @@ import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class TaxonomyEditorImpl extends AbstractBaseEntityEditor<Taxonomy, TaxonomyBean>
     implements TaxonomyEditor {

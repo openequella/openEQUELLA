@@ -21,7 +21,6 @@ package com.tle.common.security.expressions;
 import com.tle.common.Pair;
 import java.util.Stack;
 
-/** @author Nicholas Read */
 public abstract class PostfixExpressionParser<RESULT> {
   public static enum BooleanOp {
     NOT_TOKEN("NOT", 3),

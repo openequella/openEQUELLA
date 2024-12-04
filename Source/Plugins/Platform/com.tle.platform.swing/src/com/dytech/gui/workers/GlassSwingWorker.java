@@ -18,7 +18,6 @@
 
 package com.dytech.gui.workers;
 
-/** @author Nicholas Read */
 public abstract class GlassSwingWorker<RESULT>
     extends AbstractGlassSwingWorker<RESULT, BusyGlassPane> {
   public GlassSwingWorker() {

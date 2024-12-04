@@ -32,7 +32,6 @@ import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
 import java.util.Objects;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class OAuthEditorImpl extends AbstractBaseEntityEditor<OAuthClient, OAuthClientBean>
     implements OAuthEditor {

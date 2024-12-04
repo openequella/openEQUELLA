@@ -22,7 +22,6 @@ import com.tle.common.EntityPack;
 import com.tle.common.htmleditor.beans.HtmlEditorPlugin;
 import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
-/** @author aholland */
 public class HtmlEditorPluginEditingSessionImpl
     extends EntityEditingSessionImpl<HtmlEditorPluginEditingBean, HtmlEditorPlugin>
     implements HtmlEditorPluginEditingSession {

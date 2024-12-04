@@ -29,7 +29,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(MimeScriptObject.class)
 @Singleton
 public class MimeScriptWrapper extends AbstractScriptWrapper implements MimeScriptObject {

@@ -23,7 +23,6 @@ import com.tle.common.Triple;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.util.Collection;
 
-/** @author Nicholas Read */
 public interface ModifiableUserState extends UserState {
   void setSessionID(String sessionID);
 

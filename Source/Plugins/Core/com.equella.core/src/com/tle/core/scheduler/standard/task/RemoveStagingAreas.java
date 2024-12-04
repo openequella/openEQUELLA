@@ -27,7 +27,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 public class RemoveStagingAreas implements ScheduledTask {

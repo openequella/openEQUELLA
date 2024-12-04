@@ -32,7 +32,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiAssessmentItemRefDao.class)

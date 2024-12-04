@@ -23,7 +23,6 @@ import com.tle.core.dao.AbstractTreeDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface TLEGroupDao extends AbstractTreeDao<TLEGroup> {
   List<TLEGroup> listAllGroups();
 

@@ -48,7 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class Editor extends JChangeDetectorPanel {
   private static final String SCRIPT_ICON = "/icons/greenbullet.gif";
@@ -161,12 +160,16 @@ public abstract class Editor extends JChangeDetectorPanel {
     return header;
   }
 
-  /** @return Returns the control. */
+  /**
+   * @return Returns the control.
+   */
   public Control getControl() {
     return control;
   }
 
-  /** @return Returns the schema. */
+  /**
+   * @return Returns the schema.
+   */
   public SchemaModel getSchema() {
     return schema;
   }
@@ -232,7 +235,9 @@ public abstract class Editor extends JChangeDetectorPanel {
   /** Informs the control to load its value from the Control model. */
   protected abstract void loadControl();
 
-  /** @return Returns the wizardType. */
+  /**
+   * @return Returns the wizardType.
+   */
   public int getWizardType() {
     return wizardType;
   }

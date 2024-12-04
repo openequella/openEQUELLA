@@ -23,7 +23,6 @@ import com.tle.common.EntityPack;
 import java.io.Serializable;
 import java.util.Map;
 
-/** @author aholland */
 public interface EntityEditingSession<B extends EntityEditingBean, E extends BaseEntity>
     extends Serializable {
   @Deprecated

@@ -20,7 +20,6 @@ package com.tle.core.url;
 
 import com.tle.core.events.ApplicationEvent;
 
-/** @author Nicholas Read */
 public class URLEvent extends ApplicationEvent<URLListener> {
   private static final long serialVersionUID = 1L;
 

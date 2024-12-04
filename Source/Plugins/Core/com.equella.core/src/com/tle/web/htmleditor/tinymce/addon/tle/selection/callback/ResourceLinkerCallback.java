@@ -21,7 +21,6 @@ package com.tle.web.htmleditor.tinymce.addon.tle.selection.callback;
 import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class ResourceLinkerCallback extends AbstractSelectionsMadeCallback {

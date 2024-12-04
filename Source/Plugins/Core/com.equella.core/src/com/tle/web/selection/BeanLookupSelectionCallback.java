@@ -22,7 +22,6 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.BeanLookupCallback;
 
-/** @author aholland */
 public class BeanLookupSelectionCallback extends BeanLookupCallback
     implements SelectionsMadeCallback {
   private static final long serialVersionUID = 1L;

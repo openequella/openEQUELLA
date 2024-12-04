@@ -34,7 +34,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Session;
 
-/** @author larry */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -43,7 +42,9 @@ public class AddBaseEntitySystemTypeIndex extends AbstractHibernateSchemaMigrati
   private static final String COLUMN_NAME = "system_type";
   private static final String BASE_ENTITY_TABLE = "base_entity";
 
-  /** @see com.tle.core.migration.Migration#createMigrationInfo() */
+  /**
+   * @see com.tle.core.migration.Migration#createMigrationInfo()
+   */
   @Override
   public MigrationInfo createMigrationInfo() {
     return new MigrationInfo("com.tle.core.entity.services.migration.v60.systemindex.title");
@@ -93,7 +94,9 @@ public class AddBaseEntitySystemTypeIndex extends AbstractHibernateSchemaMigrati
     return sql;
   }
 
-  /** @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses() */
+  /**
+   * @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses()
+   */
   @Override
   protected Class<?>[] getDomainClasses() {
     return new Class<?>[] {

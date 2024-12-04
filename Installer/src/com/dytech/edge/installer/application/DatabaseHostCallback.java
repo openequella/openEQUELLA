@@ -23,7 +23,6 @@ import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public class DatabaseHostCallback implements Callback {
   /** Class constructor. */
   public DatabaseHostCallback() {

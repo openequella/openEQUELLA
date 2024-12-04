@@ -24,7 +24,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-/** @author Nicholas Read */
 final class DOMHelper {
   private DOMHelper() {
     throw new IllegalAccessError("Do not invoke");
@@ -110,7 +109,9 @@ final class DOMHelper {
     return null;
   }
 
-  /** @return a vector containing all the delimited String sections */
+  /**
+   * @return a vector containing all the delimited String sections
+   */
   static List<String> splitPath(String path) {
     List<String> parts = new ArrayList<String>();
 

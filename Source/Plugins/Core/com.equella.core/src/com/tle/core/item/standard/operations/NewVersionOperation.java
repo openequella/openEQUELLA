@@ -31,7 +31,6 @@ import com.tle.core.security.impl.SecureOnCall;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author jmaginnis */
 @SecureOnCall(priv = "NEWVERSION_ITEM")
 public class NewVersionOperation extends AbstractCloneOperation {
   private static final String NEW_VERSION_SCRIPT_NAME = "newVersion"; // $NON-NLS-1$

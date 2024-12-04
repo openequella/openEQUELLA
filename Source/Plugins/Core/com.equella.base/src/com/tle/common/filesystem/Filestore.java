@@ -21,7 +21,6 @@ package com.tle.common.filesystem;
 import com.tle.annotation.NonNullByDefault;
 import java.nio.file.Path;
 
-/** @author Aaron */
 @NonNullByDefault
 public class Filestore {
   private final String id;

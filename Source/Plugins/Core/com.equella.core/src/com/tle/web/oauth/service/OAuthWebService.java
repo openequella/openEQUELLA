@@ -30,7 +30,6 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 
-/** @author Aaron */
 public interface OAuthWebService {
   String createCode(OAuthClient client, AuthorisationDetails details) throws WebException;
 

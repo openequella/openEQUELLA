@@ -30,7 +30,6 @@ import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(ModalSessionService.class)
 @Singleton
 public class ModalSessionServiceImpl extends AbstractModalSessionServiceImpl<ModalSession>

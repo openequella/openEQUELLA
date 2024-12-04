@@ -28,7 +28,6 @@ import javax.inject.Singleton;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-/** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(DrmAcceptanceDao.class)
@@ -49,7 +48,8 @@ public class DrmAcceptanceDaoImpl extends GenericDaoImpl<DrmAcceptance, Long>
                 List<DrmAcceptance> das =
                     session
                         .createQuery(
-                            "FROM DrmAcceptance WHERE user = :userId AND item.institution = :institution")
+                            "FROM DrmAcceptance WHERE user = :userId AND item.institution ="
+                                + " :institution")
                         .setParameter("userId", fromUserId)
                         .setParameter("institution", CurrentInstitution.get())
                         .list();

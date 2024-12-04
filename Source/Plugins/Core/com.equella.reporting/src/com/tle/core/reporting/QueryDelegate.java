@@ -24,7 +24,6 @@ import java.util.Map;
 import org.eclipse.datatools.connectivity.oda.IParameterMetaData;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 
-/** @author nread */
 public interface QueryDelegate {
   Map<String, ?> getDatasourceMetadata() throws OdaException;
 

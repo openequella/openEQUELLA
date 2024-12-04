@@ -6,7 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class HarvesterSkipDrmPage extends AbstractPage<HarvesterSkipDrmPage> {
   public static final String HARVESTERSKIPDRMSETTINGS_TITLE =
       "Harvester"; // original property is harvesterskipdrmsettings.title

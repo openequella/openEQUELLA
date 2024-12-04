@@ -24,9 +24,10 @@ import com.tle.common.beans.exception.ValidationError;
 import java.io.Serializable;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface RemoteHierarchyService {
-  /** @param parentTopicID use less than or equal to zero for root tree nodes. */
+  /**
+   * @param parentTopicID use less than or equal to zero for root tree nodes.
+   */
   List<HierarchyTreeNode> listTreeNodes(long parentTopicID);
 
   HierarchyPack getHierarchyPack(long topicID);
@@ -41,15 +42,21 @@ public interface RemoteHierarchyService {
 
   void move(long childID, long newParentID, int offset);
 
-  /** @return a task UUID */
+  /**
+   * @return a task UUID
+   */
   String exportTopic(HierarchyTreeNode node, boolean useSecurity);
 
   ExportStatus getExportStatus(String taskUuid);
 
-  /** @return a task UUID */
+  /**
+   * @return a task UUID
+   */
   String importTopic(String xml, HierarchyTreeNode topicInto, boolean newids, boolean useSecurity);
 
-  /** @return a task UUID */
+  /**
+   * @return a task UUID
+   */
   String importRootTopic(String xml, boolean newids, boolean useSecurity);
 
   ImportStatus getImportStatus(String taskUuid);

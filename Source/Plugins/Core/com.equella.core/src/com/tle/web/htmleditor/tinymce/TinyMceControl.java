@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class TinyMceControl extends AbstractPrototypeSection<TinyMceModel>

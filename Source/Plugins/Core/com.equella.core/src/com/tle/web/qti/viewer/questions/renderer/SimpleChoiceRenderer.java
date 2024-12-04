@@ -33,7 +33,6 @@ import uk.ac.ed.ph.jqtiplus.node.item.interaction.choice.SimpleChoice;
 import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
 import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class SimpleChoiceRenderer extends QtiNodeRenderer {

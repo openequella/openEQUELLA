@@ -22,7 +22,6 @@ import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.Action;
 
-/** @author Nicholas Read */
 public abstract class ShuffleRemoveAction extends TLEAction {
   @SuppressWarnings("nls")
   public ShuffleRemoveAction() {

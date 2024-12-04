@@ -20,7 +20,6 @@ package com.tle.core.qti.beans;
 
 import uk.ac.ed.ph.jqtiplus.node.test.NavigationMode;
 
-/** @author Aaron */
 public class QtiTestDetails {
   private String title;
   private String toolName;

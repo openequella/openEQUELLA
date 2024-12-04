@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-/** @author aholland */
 public class MerlotSearchResult extends RemoteRepoSearchResult implements GenericRecord {
   private static final long serialVersionUID = 1L;
 

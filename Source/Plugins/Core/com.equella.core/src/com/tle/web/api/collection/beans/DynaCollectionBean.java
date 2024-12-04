@@ -24,7 +24,6 @@ import com.tle.web.api.item.equella.interfaces.beans.SchemaScriptBean;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author larry */
 @XmlRootElement
 public class DynaCollectionBean extends BaseEntityBean {
   private String freetext;

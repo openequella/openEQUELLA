@@ -23,7 +23,6 @@ import com.tle.web.resources.ResourcesService;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class AppletWebCommon {
   private static final PluginResourceHelper resources =

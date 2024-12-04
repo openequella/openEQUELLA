@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = GenericFileBean.class)
 public class GenericFileBean extends AbstractExtendableBean {

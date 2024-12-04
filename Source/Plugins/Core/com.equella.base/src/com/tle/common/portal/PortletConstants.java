@@ -18,7 +18,6 @@
 
 package com.tle.common.portal;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class PortletConstants {
   public static final String PRIV_ADMINISTER_PORTLETS = "ADMINISTER_PORTLETS";

@@ -29,7 +29,6 @@ import com.tle.core.plugins.impl.PluginServiceImpl;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

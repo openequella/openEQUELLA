@@ -21,7 +21,6 @@ package com.tle.common.wizard.controls.advancedscript;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import java.util.List;
 
-/** @author aholland */
 public class AdvancedScriptControl extends CustomControl {
   private static final long serialVersionUID = 1L;
 

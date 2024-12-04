@@ -52,7 +52,6 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Charles O'Farrell */
 public class SchemaList extends JPanel implements ListSelectionListener, ActionListener {
   private static final long serialVersionUID = 1L;
 
@@ -176,17 +175,23 @@ public class SchemaList extends JPanel implements ListSelectionListener, ActionL
     }
   }
 
-  /** @param listener */
+  /**
+   * @param listener
+   */
   public void addListSelectionListener(ListSelectionListener listener) {
     list.addListSelectionListener(listener);
   }
 
-  /** @param listener */
+  /**
+   * @param listener
+   */
   public void removeListSelectionListener(ListSelectionListener listener) {
     list.removeListSelectionListener(listener);
   }
 
-  /** @return The currently selected ScriptedTarget, else null. */
+  /**
+   * @return The currently selected ScriptedTarget, else null.
+   */
   public ScriptedTarget getSelection() {
     int index = list.getSelectedIndex();
     if (index >= 0) {

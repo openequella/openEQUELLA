@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.exception;
 
-/** @author Aaron */
 public class LmsUserNotFoundException extends Exception {
   private static final long serialVersionUID = 1L;
 

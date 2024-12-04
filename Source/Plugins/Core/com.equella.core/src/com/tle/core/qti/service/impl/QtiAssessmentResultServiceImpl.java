@@ -59,7 +59,6 @@ import uk.ac.ed.ph.jqtiplus.value.BaseType;
 import uk.ac.ed.ph.jqtiplus.value.Cardinality;
 import uk.ac.ed.ph.jqtiplus.value.SingleValue;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(QtiAssessmentResultService.class)
 @Singleton

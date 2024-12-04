@@ -30,7 +30,6 @@ import com.tle.core.plugins.AbstractPluginService;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public abstract class AbstractTreeNodeEditor extends JPanel {
   private static final long serialVersionUID = 1L;
 

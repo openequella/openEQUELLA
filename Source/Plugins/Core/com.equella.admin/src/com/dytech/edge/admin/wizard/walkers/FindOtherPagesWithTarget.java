@@ -21,7 +21,6 @@ package com.dytech.edge.admin.wizard.walkers;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.google.common.base.Objects;
 
-/** @author Nicholas Read */
 public class FindOtherPagesWithTarget extends ControlTreeWalker {
   private boolean found;
   private Control ignorePage;
@@ -33,7 +32,9 @@ public class FindOtherPagesWithTarget extends ControlTreeWalker {
     this.ignorePage = ignorePage;
   }
 
-  /** @return Returns the found. */
+  /**
+   * @return Returns the found.
+   */
   public boolean targetFoundOnOtherPage() {
     return found;
   }

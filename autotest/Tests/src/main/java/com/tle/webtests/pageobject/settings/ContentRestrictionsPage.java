@@ -13,7 +13,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class ContentRestrictionsPage extends AbstractPage<ContentRestrictionsPage> {
   public static final String BANNED_EXT_SECTION_TITLE = "Banned file extensions";
   public static final String QUOTAS_SECTION_TITLE = "User content quotas";

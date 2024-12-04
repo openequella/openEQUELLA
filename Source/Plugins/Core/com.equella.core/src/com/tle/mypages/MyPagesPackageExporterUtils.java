@@ -53,7 +53,6 @@ import org.ccil.cowan.tagsoup.AttributesImpl;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

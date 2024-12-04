@@ -21,7 +21,6 @@ package com.tle.core.services.html;
 import java.io.StringWriter;
 import org.ccil.cowan.tagsoup.XMLWriter;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public abstract class AbstractHtmlContentHandler extends XMLWriter implements HtmlContentHandler {
   protected final StringWriter w;

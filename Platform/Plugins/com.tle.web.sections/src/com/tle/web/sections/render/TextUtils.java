@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-/** @author aholland */
 public final class TextUtils {
   private static final String DEFAULT_STYLE_CLASS = "highlight"; // $NON-NLS-1$
   private static final String ELLIPSIS_ENTITY = "&hellip;"; // $NON-NLS-1$
@@ -50,7 +49,8 @@ public final class TextUtils {
     try {
       return ensureWrap(text, maxBodyLength, maxWordLength, true);
     } catch (Exception ex) {
-      return "<span style=\"color: red\">Error wrapping the following text - please notify administrator</span>"
+      return "<span style=\"color: red\">Error wrapping the following text - please notify"
+                 + " administrator</span>"
           + text;
     }
   }

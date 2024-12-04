@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/** @author Nicholas Read */
 public class RunAsUserState extends AbstractUserState {
   private static final long serialVersionUID = 1L;
   private final TLEAclManager aclManager;

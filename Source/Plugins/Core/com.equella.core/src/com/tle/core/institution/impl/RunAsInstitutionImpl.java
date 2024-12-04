@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind(RunAsInstitution.class)
 @Singleton
 public class RunAsInstitutionImpl implements RunAsInstitution {

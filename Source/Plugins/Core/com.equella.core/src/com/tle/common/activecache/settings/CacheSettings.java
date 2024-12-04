@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** @author Nicholas Read */
 public class CacheSettings implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
   private static TLEXStream xstream = TLEXStream.instance();

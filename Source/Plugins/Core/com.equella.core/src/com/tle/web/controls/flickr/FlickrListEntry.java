@@ -31,7 +31,6 @@ import com.tle.web.sections.standard.model.HtmlBooleanState;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import java.util.List;
 
-/** @author larry */
 public class FlickrListEntry extends AbstractListEntry {
   private final Photo photo;
 

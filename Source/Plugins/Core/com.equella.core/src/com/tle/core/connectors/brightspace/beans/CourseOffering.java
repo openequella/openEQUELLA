@@ -21,7 +21,6 @@ package com.tle.core.connectors.brightspace.beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class CourseOffering {
   @JsonProperty("Identifier")
@@ -44,6 +43,7 @@ public class CourseOffering {
 
   @JsonProperty("EndDate")
   private String endDate;
+
   // @JsonProperty("CourseTemplate")
   // @JsonProperty("Semester")
   // @JsonProperty("Department")

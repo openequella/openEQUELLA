@@ -39,7 +39,6 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class RootPortletSection extends CombinedLayout<CombinedModel> {
   @PlugKey("page.portal.title")
   private static Label TITLE_LABEL;

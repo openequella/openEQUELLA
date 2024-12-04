@@ -27,7 +27,6 @@ import com.tle.web.sections.js.JSUtils;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.ScriptVariable;
 
-/** @author aholland */
 public class DeclarationStatement implements JSStatements {
   protected final ScriptVariable var;
   protected final JSExpression defaultValue;

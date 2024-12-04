@@ -24,7 +24,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-/** @author Nicholas Read */
 public class JNumberTextField extends JTextField {
   public JNumberTextField(int maxNumber) {
     super(new NumberDocument(maxNumber), null, 0);

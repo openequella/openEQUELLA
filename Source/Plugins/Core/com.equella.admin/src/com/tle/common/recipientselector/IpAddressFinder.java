@@ -38,7 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class IpAddressFinder extends JPanel implements UserGroupRoleFinder, ActionListener {
   private static final long serialVersionUID = 1L;

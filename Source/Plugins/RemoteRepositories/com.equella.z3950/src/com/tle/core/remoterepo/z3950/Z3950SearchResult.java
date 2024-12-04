@@ -20,7 +20,6 @@ package com.tle.core.remoterepo.z3950;
 
 import com.tle.core.fedsearch.RemoteRepoSearchResult;
 
-/** @author aholland */
 public class Z3950SearchResult extends RemoteRepoSearchResult {
   private static final long serialVersionUID = 1L;
 

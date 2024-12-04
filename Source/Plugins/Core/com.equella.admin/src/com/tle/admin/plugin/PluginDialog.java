@@ -46,7 +46,6 @@ import javax.swing.JPanel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public abstract class PluginDialog<T, S extends PluginSetting> extends JDialog
     implements EditorInterface {
   private static final Log LOGGER = LogFactory.getLog(PluginDialog.class);

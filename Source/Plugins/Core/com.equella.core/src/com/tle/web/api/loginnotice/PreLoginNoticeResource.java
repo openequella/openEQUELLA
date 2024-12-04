@@ -34,7 +34,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Samantha Fisher */
 @Path("preloginnotice/")
 @Api("Pre Login Notice")
 public interface PreLoginNoticeResource {

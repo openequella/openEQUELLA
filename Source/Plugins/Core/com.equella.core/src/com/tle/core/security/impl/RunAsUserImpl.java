@@ -35,7 +35,6 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Singleton
 @Bind(RunAsUser.class)
 public class RunAsUserImpl implements RunAsUser {

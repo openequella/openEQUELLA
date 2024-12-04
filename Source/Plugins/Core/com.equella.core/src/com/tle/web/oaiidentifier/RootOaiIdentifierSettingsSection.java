@@ -43,7 +43,6 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import javax.inject.Inject;
 
-/** @author larry */
 public class RootOaiIdentifierSettingsSection
     extends OneColumnLayout<RootOaiIdentifierSettingsSection.OaiSettingsModel> {
   @PlugKey("oai.title")
@@ -165,17 +164,23 @@ public class RootOaiIdentifierSettingsSection
     return altered;
   }
 
-  /** @return the oaiSchemeText */
+  /**
+   * @return the oaiSchemeText
+   */
   public TextField getOaiSchemeText() {
     return oaiSchemeText;
   }
 
-  /** @return the namespaceText */
+  /**
+   * @return the namespaceText
+   */
   public TextField getNamespaceText() {
     return namespaceText;
   }
 
-  /** @return the emailText */
+  /**
+   * @return the emailText
+   */
   public TextField getEmailText() {
     return emailText;
   }
@@ -184,7 +189,9 @@ public class RootOaiIdentifierSettingsSection
     return useDownloadItemAcl;
   }
 
-  /** @return the saveButton */
+  /**
+   * @return the saveButton
+   */
   public Button getSaveButton() {
     return saveButton;
   }

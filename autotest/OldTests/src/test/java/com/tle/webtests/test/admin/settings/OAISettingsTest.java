@@ -11,7 +11,6 @@ import com.tle.webtests.pageobject.settings.OAISettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("vanilla")
 public class OAISettingsTest extends AbstractSessionTest {
   public static final String OAI_LINK_TITLE = OAISettingsPage.OAI_SETTINGS_HEADER;

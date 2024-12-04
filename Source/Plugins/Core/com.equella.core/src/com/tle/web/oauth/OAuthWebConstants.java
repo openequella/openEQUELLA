@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import net.oauth.OAuth;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class OAuthWebConstants {
   // OAuth 1 parameters

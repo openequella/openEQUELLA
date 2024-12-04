@@ -32,7 +32,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Aaron */
 @Produces(MediaType.APPLICATION_JSON)
 @Path("usermanagement/local/group/")
 @Api(value = "Local groups", description = "usermanagement-local-group")

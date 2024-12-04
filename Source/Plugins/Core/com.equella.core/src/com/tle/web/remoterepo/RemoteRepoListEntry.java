@@ -35,7 +35,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author aholland */
 public abstract class RemoteRepoListEntry<R extends RemoteRepoSearchResult>
     extends AbstractListEntry {
   protected int index;

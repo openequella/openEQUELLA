@@ -20,7 +20,6 @@ package com.tle.common.i18n.beans;
 
 import java.io.Serializable;
 
-/** @author Aaron */
 public class LanguageStringBean implements Serializable {
   private static final long serialVersionUID = 1L;
 

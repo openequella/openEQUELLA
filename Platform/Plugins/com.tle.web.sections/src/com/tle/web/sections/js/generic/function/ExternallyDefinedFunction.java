@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 @NonNullByDefault
 public class ExternallyDefinedFunction implements JSCallAndReference {
   @Nullable private final String name;

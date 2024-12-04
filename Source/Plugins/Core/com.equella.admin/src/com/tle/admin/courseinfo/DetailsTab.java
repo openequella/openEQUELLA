@@ -45,7 +45,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
-/** @author Nicholas Read */
 public class DetailsTab extends BaseEntityTab<CourseInfo>
     implements AbstractDetailsTab<CourseInfo> {
   private I18nTextField name;

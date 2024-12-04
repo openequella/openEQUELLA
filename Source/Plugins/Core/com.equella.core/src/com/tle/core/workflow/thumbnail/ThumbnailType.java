@@ -18,7 +18,6 @@
 
 package com.tle.core.workflow.thumbnail;
 
-/** @author Aaron */
 public enum ThumbnailType {
   TYPE_STANDARD_THUMB(1),
   TYPE_GALLERY_THUMB(2),

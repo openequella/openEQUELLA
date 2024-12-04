@@ -25,7 +25,6 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.Iterator;
 import java.util.List;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiAssessmentResultDao extends GenericDao<QtiAssessmentResult, Long> {
   List<QtiAssessmentResult> findByAssessmentTest(QtiAssessmentTest test);

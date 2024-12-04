@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public abstract class FreeTextQuery implements Serializable {
   private static final long serialVersionUID = 1L;

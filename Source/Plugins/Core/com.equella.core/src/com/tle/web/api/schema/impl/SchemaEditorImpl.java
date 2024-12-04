@@ -47,7 +47,6 @@ import javax.inject.Inject;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class SchemaEditorImpl extends AbstractBaseEntityEditor<Schema, SchemaBean>

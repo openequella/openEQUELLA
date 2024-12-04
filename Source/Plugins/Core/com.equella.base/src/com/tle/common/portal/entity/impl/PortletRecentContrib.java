@@ -32,7 +32,6 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public class PortletRecentContrib implements Serializable {
@@ -56,12 +55,16 @@ public class PortletRecentContrib implements Serializable {
   @Column(length = 255)
   private String query;
 
-  /** @return */
+  /**
+   * @return
+   */
   public String getUserId() {
     return userId;
   }
 
-  /** @param userId Show items contributed by this user. If null, then all users */
+  /**
+   * @param userId Show items contributed by this user. If null, then all users
+   */
   public void setUserId(String userId) {
     this.userId = userId;
   }

@@ -51,7 +51,6 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/** @author larry */
 @Singleton
 @Bind(SruService.class)
 @SuppressWarnings("nls")

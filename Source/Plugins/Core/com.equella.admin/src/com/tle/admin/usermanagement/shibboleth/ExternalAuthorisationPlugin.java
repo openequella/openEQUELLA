@@ -22,7 +22,6 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.beans.usermanagement.shibboleth.wrapper.ExternalAuthorisationWrapperSettings;
 
-/** @author aholland */
 public class ExternalAuthorisationPlugin
     extends GeneralPlugin<ExternalAuthorisationWrapperSettings> {
   private final ExternalAuthorisationSettingsPanel generalPanel;

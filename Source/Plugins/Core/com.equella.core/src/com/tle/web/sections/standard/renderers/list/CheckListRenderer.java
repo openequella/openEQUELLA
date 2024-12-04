@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author aholland */
 public class CheckListRenderer extends AbstractComponentRenderer
     implements JSListComponent, JSDisableable {
   private boolean asList;

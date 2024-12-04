@@ -21,7 +21,6 @@ package com.tle.web.sections.equella.component.model;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 
-/** @author aholland */
 public class BoxState extends HtmlComponentState {
   private boolean minimised;
   private JSCallable toggleMinimise;

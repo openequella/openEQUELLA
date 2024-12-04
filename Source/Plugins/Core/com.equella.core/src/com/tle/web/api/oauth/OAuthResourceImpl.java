@@ -31,7 +31,6 @@ import com.tle.web.api.oauth.interfaces.beans.OAuthClientBean;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author larry */
 @Bind(OAuthResource.class)
 @Singleton
 public class OAuthResourceImpl

@@ -22,7 +22,6 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import uk.ac.ed.ph.jqtiplus.node.content.basic.FlowStatic;
 
-/** @author Aaron */
 public abstract class FlowStaticRenderer extends QtiNodeRenderer {
   @SuppressWarnings("unused")
   private final FlowStatic flowStatic;
