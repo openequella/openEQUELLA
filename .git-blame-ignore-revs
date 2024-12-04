@@ -10,3 +10,7 @@
 
 # scalafmt 3.8 reformat
 fca2d19bd92134957a2b474a128a2aa477c42ae1
+
+# remove authors tag, and applied google-java-format
+d0ffbaf8fd7feaa21a1b6371b05ccd6f3470add9
+50020eb65e3eac2b761c7b0b55f7df388556f066
