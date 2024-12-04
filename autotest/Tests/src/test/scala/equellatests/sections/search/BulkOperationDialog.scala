@@ -20,7 +20,9 @@ trait BulkOperationDialog extends WaitingBrowserPage {
     pageElement.findElement(exBy).click()
     waitFor(
       ExpectedConditions.visibilityOfElementLocated(
-        By.xpath("id('bss_bulkDialog')//p[text() = 'Operations finished']")))
+        By.xpath("id('bss_bulkDialog')//p[text() = 'Operations finished']")
+      )
+    )
   }
 
   def cancel(): Parent = {

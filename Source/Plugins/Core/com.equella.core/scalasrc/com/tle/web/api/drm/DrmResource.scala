@@ -36,8 +36,7 @@ import javax.ws.rs.{BadRequestException, GET, NotFoundException, POST, Path, Pat
 import scala.util.control.Exception.allCatch
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Typically used to provide why a DRM Item is unauthorised to view.
+/** Typically used to provide why a DRM Item is unauthorised to view.
   */
 case class DrmViolation(violation: String)
 
@@ -52,14 +51,16 @@ class DrmResource {
   @ApiOperation(
     value = "List DRM terms",
     notes = "This endpoint is used to list an Item's DRM terms.",
-    response = classOf[ItemDrmDetails],
+    response = classOf[ItemDrmDetails]
   )
-  def getDrmTerms(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
-                  @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
+  def getDrmTerms(
+      @ApiParam("Item UUID") @PathParam("uuid") uuid: String,
+      @ApiParam("Item Version") @PathParam("version") version: Int
+  ): Response = {
     val getTerms = (uuid: String, version: Int) =>
       Try {
         getItem.andThen(_.getDrmSettings)(new ItemId(uuid, version))
-    }
+      }
 
     val mapToItemDrmDetails = (drm: DrmSettings) =>
       Try {
@@ -68,7 +69,7 @@ class DrmResource {
           case None =>
             throw new NotFoundException(s"Failed to find DRM terms for item: $uuid/$version")
         }
-    }
+      }
 
     val result = getTerms(uuid, version) flatMap mapToItemDrmDetails
     respond(result)
@@ -80,12 +81,14 @@ class DrmResource {
     notes = "This endpoint is used to accept an Item's DRM terms.",
     response = classOf[Unit]
   )
-  def acceptDrm(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
-                @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
+  def acceptDrm(
+      @ApiParam("Item UUID") @PathParam("uuid") uuid: String,
+      @ApiParam("Item Version") @PathParam("version") version: Int
+  ): Response = {
 
-    val acceptLicense
-      : Item => Unit = drmService.acceptLicenseOrThrow // Explicitly discard the internal DB ID and use Unit instead.
-    val result       = allCatch withTry (getItem andThen acceptLicense)(new ItemId(uuid, version))
+    val acceptLicense: Item => Unit =
+      drmService.acceptLicenseOrThrow // Explicitly discard the internal DB ID and use Unit instead.
+    val result = allCatch withTry (getItem andThen acceptLicense)(new ItemId(uuid, version))
     respond(result)
   }
 
@@ -96,8 +99,10 @@ class DrmResource {
     notes = "This endpoint is used to List why a DRM Item is unauthorised to view.",
     response = classOf[DrmViolation]
   )
-  def getDrmViolations(@ApiParam("Item UUID") @PathParam("uuid") uuid: String,
-                       @ApiParam("Item Version") @PathParam("version") version: Int): Response = {
+  def getDrmViolations(
+      @ApiParam("Item UUID") @PathParam("uuid") uuid: String,
+      @ApiParam("Item Version") @PathParam("version") version: Int
+  ): Response = {
     val isAuthorised: Item => Unit = (item: Item) =>
       drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
 

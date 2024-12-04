@@ -81,18 +81,21 @@ object FileStagingContext {
     Office.WORD_COUNT    -> "wordcount"
   )
 
-  val tikaMimes = Set("application/msword",
-                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+  val tikaMimes = Set(
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  )
 }
 
-class FileStagingContext(stgId: Option[String],
-                         itemId: ItemId,
-                         fileSystemService: FileSystemService,
-                         thumbnailService: ThumbnailService,
-                         videoService: VideoService,
-                         mimeTypeService: MimeTypeService,
-                         repo: WebRepository)
-    extends StagingContext {
+class FileStagingContext(
+    stgId: Option[String],
+    itemId: ItemId,
+    fileSystemService: FileSystemService,
+    thumbnailService: ThumbnailService,
+    videoService: VideoService,
+    mimeTypeService: MimeTypeService,
+    repo: WebRepository
+) extends StagingContext {
   def unzip(srcZip: String, target: String): ZipProgress = {
     fileSystemService.unzipWithProgress(stgFile, srcZip, target)
   }
@@ -121,8 +124,10 @@ class FileStagingContext(stgId: Option[String],
   }
 
   def gatherAdditionalMetadata(filepath: String): Iterable[(String, AnyRef)] = {
-    (if (tikaMimes(mimeTypeService.getMimeTypeForFilename(filepath)) && fileSystemService
-           .fileExists(stgFile, filepath)) {
+    (if (
+       tikaMimes(mimeTypeService.getMimeTypeForFilename(filepath)) && fileSystemService
+         .fileExists(stgFile, filepath)
+     ) {
        Try(fileSystemService.read(stgFile, filepath))
          .flatMap { inp =>
            val tried = Try {

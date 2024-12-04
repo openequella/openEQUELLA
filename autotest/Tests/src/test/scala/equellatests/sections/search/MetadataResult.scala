@@ -7,7 +7,8 @@ trait MetadataResult extends WaitingBrowserPage {
 
   def metadataText(name: String): String = {
     val metaBy = By.xpath(
-      s".//div[@class='itemresult-metaline' and strong[text() = ${quoteXPath(name)}]]/span[@class='itemresult-meta-delim']")
+      s".//div[@class='itemresult-metaline' and strong[text() = ${quoteXPath(name)}]]/span[@class='itemresult-meta-delim']"
+    )
     pageElement.findElement(metaBy).getText
   }
 }

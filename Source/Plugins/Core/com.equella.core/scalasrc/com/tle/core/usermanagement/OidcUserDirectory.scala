@@ -26,8 +26,7 @@ import com.tle.integration.oidc.service.OidcConfigurationService
 import com.tle.plugins.ump.AbstractUserDirectory
 import javax.inject.Inject
 
-/**
-  * Abstract User Directory to be used when the OIDC integration is enabled.
+/** Abstract User Directory to be used when the OIDC integration is enabled.
   */
 abstract class OidcUserDirectory extends AbstractUserDirectory {
 
@@ -36,52 +35,58 @@ abstract class OidcUserDirectory extends AbstractUserDirectory {
   // Not required in OIDC User Directories so return false.
   override protected def initialise(settings: UserManagementSettings): Boolean = false
 
-  /**
-    * Type alias for the Identity Provider details which must be a concrete subtype of [[IdentityProviderDetails]].
+  /** Type alias for the Identity Provider details which must be a concrete subtype of
+    * [[IdentityProviderDetails]].
     */
   protected type IDP <: IdentityProviderDetails
 
-  /**
-    * Type alias for the result of an authentication request (e.g. Access token for OAuth2
+  /** Type alias for the result of an authentication request (e.g. Access token for OAuth2
     */
   protected type AuthResult
 
-  /**
-    * The platform which a UserDirectory implementation works for.
+  /** The platform which a UserDirectory implementation works for.
     */
   protected val targetPlatform: IdentityProviderPlatform.Value
 
-  /**
-    * Perform an authentication with the configured Identity Provider and return the result.
+  /** Perform an authentication with the configured Identity Provider and return the result.
     */
   protected def authenticate(idp: IDP): Either[Throwable, AuthResult]
 
-  /**
-    * Execute the provided user search request through three steps:
+  /** Execute the provided user search request through three steps:
     *
-    * 1. Retrieve an enabled Identity Provider configured for the target platform;
-    * 2. Request an OAuth2 access token from the Identity Provider;
-    * 3. Execute the request and return the result.
+    *   1. Retrieve an enabled Identity Provider configured for the target platform; 2. Request an
+    *      OAuth2 access token from the Identity Provider; 3. Execute the request and return the
+    *      result.
     *
-    * @param request Function that requests resources from the Identity Provider with the configured IdP and the authentication result.
+    * @param request
+    *   Function that requests resources from the Identity Provider with the configured IdP and the
+    *   authentication result.
     */
   protected def execute[T](
-      request: (IDP, AuthResult) => Either[Throwable, T]): Either[Throwable, T] = {
+      request: (IDP, AuthResult) => Either[Throwable, T]
+  ): Either[Throwable, T] = {
     for {
       idp <- oidcConfigurationService.get
-        .filterOrElse(_.commonDetails.enabled,
-                      new IllegalStateException(s"The OIDC configuration is disabled."))
-        .filterOrElse(_.commonDetails.platform == targetPlatform,
-                      new IllegalStateException(
-                        s"The OIDC configuration doesn't work for platform $targetPlatform."))
+        .filterOrElse(
+          _.commonDetails.enabled,
+          new IllegalStateException(s"The OIDC configuration is disabled.")
+        )
+        .filterOrElse(
+          _.commonDetails.platform == targetPlatform,
+          new IllegalStateException(
+            s"The OIDC configuration doesn't work for platform $targetPlatform."
+          )
+        )
         .flatMap(idp => Either.catchNonFatal(idp.asInstanceOf[IDP]))
       authResult <- authenticate(idp)
       result     <- request(idp, authResult)
     } yield result
   }
 
-  override def authenticateUserFromUsername(username: String,
-                                            privateData: String): ModifiableUserState =
+  override def authenticateUserFromUsername(
+      username: String,
+      privateData: String
+  ): ModifiableUserState =
     Option(getInformationForUser(username)).map { user =>
       val userState = new DefaultUserState
       userState.setLoggedInUser(user)

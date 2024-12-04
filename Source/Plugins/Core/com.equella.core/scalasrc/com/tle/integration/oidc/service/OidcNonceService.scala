@@ -28,38 +28,41 @@ import javax.inject.{Inject, Singleton}
 
 case class NonceConfig(expiryInSeconds: Int, name: String)
 
-/**
-  * Provides the concrete details behind a nonce to be used for validation.
+/** Provides the concrete details behind a nonce to be used for validation.
   *
-  * @param state the state representing the session for which this nonce can be used
-  * @param timestamp the timestamp of when this was generated, so that it can be checked for currency
+  * @param state
+  *   the state representing the session for which this nonce can be used
+  * @param timestamp
+  *   the timestamp of when this was generated, so that it can be checked for currency
   */
 @SerialVersionUID(1)
 case class OidcNonceDetails(state: String, timestamp: Instant) extends Serializable
 
-/**
-  * Manages the nonce values for OIDC Authentication processes.
+/** Manages the nonce values for OIDC Authentication processes.
   */
 @Bind
 @Singleton
 class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails], config: NonceConfig) {
 
   def this(rcs: ReplicatedCacheService, config: NonceConfig) =
-    this(rcs
-           .getCache[OidcNonceDetails](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS),
-         config)
+    this(
+      rcs
+        .getCache[OidcNonceDetails](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS),
+      config
+    )
 
   @Inject
   def this(rcs: ReplicatedCacheService) =
     this(rcs, NonceConfig(300, "oidc-nonces"))
 
-  /**
-    * Given an existing `state` value, will create a unique `nonce` value and store it in a
+  /** Given an existing `state` value, will create a unique `nonce` value and store it in a
     * replicated datastore against the current timestamp. Allowing for both a time window and the
     * state (representing a session) to be used at validation time.
     *
-    * @param state the `state` value of an existing session
-    * @return a new unique nonce
+    * @param state
+    *   the `state` value of an existing session
+    * @return
+    *   a new unique nonce
     */
   def createNonce(state: String): String = {
     // We need to make sure nonces are unique, so up to 10 will be generated
@@ -78,19 +81,20 @@ class OidcNonceService(nonceStorage: ReplicatedCache[OidcNonceDetails], config: 
     nonce
   }
 
-  /**
-    * Validates the provided `nonce` by checking:
+  /** Validates the provided `nonce` by checking:
     *
-    * 1. That it still exists in the nonce store
-    * 2. It is being used within a suitable time
-    * 3. It was registered against the provided `state`
+    *   1. That it still exists in the nonce store 2. It is being used within a suitable time 3. It
+    *      was registered against the provided `state`
     *
     * At completion, if all is valid it will remove the `nonce` as it has effectively then been used
     * _once_.
     *
-    * @param nonce the `nounce` value to validate
-    * @param state the state to which the it is expected the `nonce` was registered against
-    * @return true if valid, false otherwise
+    * @param nonce
+    *   the `nounce` value to validate
+    * @param state
+    *   the state to which the it is expected the `nonce` was registered against
+    * @return
+    *   true if valid, false otherwise
     */
   def validateNonce(nonce: String, state: String): Either[String, Boolean] = {
     def notExpired(ts: Instant) = {

@@ -33,8 +33,7 @@ import com.tle.web.sections.standard.{AbstractHtmlComponent, Button}
 import com.tle.web.sections.{SectionInfo, SectionResult}
 import javax.inject.Inject
 
-/**
-  * This Section is responsible for rendering the OIDC login button and handling the login process.
+/** This Section is responsible for rendering the OIDC login button and handling the login process.
   * The login is performed through OAuth 2 PKCE flow.
   */
 @Bind
@@ -65,11 +64,15 @@ class OidcLoginSection extends AbstractHtmlComponent[Unit] with HtmlRenderer {
     def renderLoginButton(idp: IdentityProviderDetails) = {
 
       loginButton.setLabel(context, new TextLabel(CoreStrings.text("login.oidc.button")))
-      loginButton.setClickHandler(context,
-                                  events.getNamedHandler("launch",
-                                                         idp.commonDetails.authUrl,
-                                                         idp.commonDetails.authCodeClientId,
-                                                         targetPage(context)))
+      loginButton.setClickHandler(
+        context,
+        events.getNamedHandler(
+          "launch",
+          idp.commonDetails.authUrl,
+          idp.commonDetails.authCodeClientId,
+          targetPage(context)
+        )
+      )
       viewFactory.createResult("logon/oidclogin.ftl", context)
     }
 

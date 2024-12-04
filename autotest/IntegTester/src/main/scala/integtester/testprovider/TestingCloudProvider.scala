@@ -20,31 +20,37 @@ case class TestUser(clientId: String)
 
 class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[IO] {
 
-  case class OAuthTokenResponse(access_token: String,
-                                refresh_token: Option[String],
-                                token_type: Option[String],
-                                expires_in: Option[Long],
-                                state: Option[String])
+  case class OAuthTokenResponse(
+      access_token: String,
+      refresh_token: Option[String],
+      token_type: Option[String],
+      expires_in: Option[Long],
+      state: Option[String]
+  )
 
   import io.circe.generic.auto._
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val sampleConfig = Iterable(
-    RCloudControlConfig("something",
-                        "Something Field",
-                        None,
-                        RCloudControlConfigType.Textfield,
-                        Iterable.empty,
-                        1,
-                        1),
-    RCloudControlConfig("somethingElse",
-                        "Where do you want to store it?",
-                        None,
-                        RCloudControlConfigType.XPath,
-                        Iterable.empty,
-                        1,
-                        1),
+    RCloudControlConfig(
+      "something",
+      "Something Field",
+      None,
+      RCloudControlConfigType.Textfield,
+      Iterable.empty,
+      1,
+      1
+    ),
+    RCloudControlConfig(
+      "somethingElse",
+      "Where do you want to store it?",
+      None,
+      RCloudControlConfigType.XPath,
+      Iterable.empty,
+      1,
+      1
+    ),
     RCloudControlConfig(
       "colour",
       "Which colour do you want?",
@@ -95,11 +101,14 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
           case Left(err) => Forbidden(err.description)
           case Right(result) =>
             Ok(
-              OAuthTokenResponse(result.accessToken,
-                                 result.refreshToken,
-                                 Some(result.tokenType),
-                                 expires_in = result.expiresIn,
-                                 None).asJson)
+              OAuthTokenResponse(
+                result.accessToken,
+                result.refreshToken,
+                Some(result.tokenType),
+                expires_in = result.expiresIn,
+                None
+              ).asJson
+            )
         }
       }
     case request @ GET -> Root / "control.js" =>
@@ -123,7 +132,9 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
               s"Lovely control ${user.clientId}",
               None,
               sampleConfig
-            )).asJson)
+            )
+        ).asJson
+      )
     case req @ POST -> Root / "itemNotification" as user =>
       System.err.println(req.req.queryString)
       Ok()
@@ -167,13 +178,17 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
 
     override val handlers = Map("client_credentials" -> new ClientCredentials)
 
-    override def validateClient(maybeCredential: Option[ClientCredential],
-                                request: AuthorizationRequest): Future[Boolean] = {
+    override def validateClient(
+        maybeCredential: Option[ClientCredential],
+        request: AuthorizationRequest
+    ): Future[Boolean] = {
       Future.successful(true)
     }
 
-    override def findUser(maybeCredential: Option[ClientCredential],
-                          request: AuthorizationRequest): Future[Option[TestUser]] = {
+    override def findUser(
+        maybeCredential: Option[ClientCredential],
+        request: AuthorizationRequest
+    ): Future[Option[TestUser]] = {
       Future.successful(maybeCredential.map(cc => TestUser(cc.clientId)))
     }
 
@@ -190,21 +205,25 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       Future.successful(None)
     }
 
-    override def refreshAccessToken(authInfo: AuthInfo[TestUser],
-                                    refreshToken: String): Future[AccessToken] = ???
+    override def refreshAccessToken(
+        authInfo: AuthInfo[TestUser],
+        refreshToken: String
+    ): Future[AccessToken] = ???
 
     override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[TestUser]]] = ???
 
     override def deleteAuthCode(code: String): Future[Unit] = ???
 
     override def findAuthInfoByRefreshToken(
-        refreshToken: String): Future[Option[AuthInfo[TestUser]]] = ???
+        refreshToken: String
+    ): Future[Option[AuthInfo[TestUser]]] = ???
 
     override def findAuthInfoByAccessToken(
-        accessToken: AccessToken): Future[Option[AuthInfo[TestUser]]] = {
+        accessToken: AccessToken
+    ): Future[Option[AuthInfo[TestUser]]] = {
       Future.successful {
-        tokenMap.get(accessToken.token).map {
-          case (u, at) => AuthInfo(u, Some(u.clientId), None, None)
+        tokenMap.get(accessToken.token).map { case (u, at) =>
+          AuthInfo(u, Some(u.clientId), None, None)
         }
       }
     }

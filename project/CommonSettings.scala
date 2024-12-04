@@ -20,12 +20,12 @@ object CommonSettings extends AutoPlugin {
       settingKey[Boolean]("The flag used to indicate if oracle driver is needed or not")
     lazy val oracleDriverMavenCoordinate =
       settingKey[Seq[ModuleID]]("The Maven coordinate of Oracle JDBC")
-    lazy val buildConfig           = settingKey[Config]("The build configuration settings")
-    lazy val buildTimestamp        = settingKey[Long]("Timestamp - in seconds - to use for this build")
-    lazy val prepareDevConfig      = taskKey[Unit]("Prepare the dev learningedge-config folder")
-    lazy val writeSourceZip        = taskKey[File]("Write out a zip containing all sources")
-    lazy val langStrings           = taskKey[Seq[LangStrings]]("Fully qualified language strings")
-    lazy val writeLanguagePack     = taskKey[File]("Write the default language pack")
+    lazy val buildConfig       = settingKey[Config]("The build configuration settings")
+    lazy val buildTimestamp    = settingKey[Long]("Timestamp - in seconds - to use for this build")
+    lazy val prepareDevConfig  = taskKey[Unit]("Prepare the dev learningedge-config folder")
+    lazy val writeSourceZip    = taskKey[File]("Write out a zip containing all sources")
+    lazy val langStrings       = taskKey[Seq[LangStrings]]("Fully qualified language strings")
+    lazy val writeLanguagePack = taskKey[File]("Write the default language pack")
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
     lazy val buildReactFrontEnd    = taskKey[File]("Build the ReactJS based front-end")
@@ -40,26 +40,28 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql" % "postgresql" % "42.7.3"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.3"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "11.2.1.jre8"
 
     lazy val log4jVersion   = "2.23.1"
-    lazy val log4j          = "org.apache.logging.log4j" % "log4j" % log4jVersion
-    lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core" % log4jVersion
+    lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
+    lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core"        % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
 
     lazy val springVersion = "5.3.34"
-    lazy val springWeb     = "org.springframework" % "spring-web" % springVersion
-    lazy val springAop     = "org.springframework" % "spring-aop" % springVersion
+    lazy val springWeb     = "org.springframework" % "spring-web"     % springVersion
+    lazy val springAop     = "org.springframework" % "spring-aop"     % springVersion
     lazy val springContext = "org.springframework" % "spring-context" % springVersion
 
     lazy val xstreamVersion = "1.4.20"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion        = "2.15.3"
-    lazy val jacksonDataBind       = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
-    lazy val jacksonDataFormatYaml = "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
-    lazy val jacksonModuleScala    = "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
+    lazy val jacksonVersion  = "2.15.3"
+    lazy val jacksonDataBind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
+    lazy val jacksonDataFormatYaml =
+      "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
+    lazy val jacksonModuleScala =
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion
   }
 
   override def trigger: PluginTrigger = allRequirements
@@ -88,13 +90,15 @@ object CommonSettings extends AutoPlugin {
            |WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
            |See the License for the specific language governing permissions and
            |limitations under the License.
-           |""".stripMargin)),
+           |""".stripMargin
+      )
+    ),
     resolvers ++= Seq(
       Resolver.bintrayRepo("omegat-org", "maven")
     ),
     libraryDependencies ++= Seq(
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest"  %% "scalatest"      % "3.2.18" % Test,
+      "org.scalatest" %% "scalatest"       % "3.2.18" % Test
     )
   )
 }

@@ -33,12 +33,14 @@ class FileUploadState {
   private val currentUploads = new ConcurrentHashMap[UUID, CurrentUpload]().asScala
 
   def initialiseUpload(id: UUID, filename: String, description: String): CurrentUpload = {
-    val newUpload = UploadingFile(id,
-                                  Instant.now(),
-                                  filename,
-                                  s"$UPLOADS_FOLDER/$id/$filename",
-                                  description,
-                                  new AtomicReference[Boolean](false))
+    val newUpload = UploadingFile(
+      id,
+      Instant.now(),
+      filename,
+      s"$UPLOADS_FOLDER/$id/$filename",
+      description,
+      new AtomicReference[Boolean](false)
+    )
     currentUploads.put(id, newUpload)
     newUpload
   }

@@ -34,11 +34,13 @@ import scala.jdk.CollectionConverters._
 
 object ModCommentRender {
 
-  def render(info: SectionInfo,
-             viewFactory: FreemarkerFactory,
-             userLinkSection: UserLinkSection,
-             fileSystemService: FileSystemService,
-             comments: java.util.Collection[WorkflowMessage]): SectionRenderable = {
+  def render(
+      info: SectionInfo,
+      viewFactory: FreemarkerFactory,
+      userLinkSection: UserLinkSection,
+      fileSystemService: FileSystemService,
+      comments: java.util.Collection[WorkflowMessage]
+  ): SectionRenderable = {
 
     case class ModRow(wc: WorkflowMessage) {
       def getMessage = wc.getMessage
@@ -54,13 +56,15 @@ object ModCommentRender {
         fileSystemService.enumerate(wfile, "", null).map { fe =>
           new HtmlLinkState(
             new TextLabel(fe.getName),
-            new SimpleBookmark(WorkflowMessageServlet.messageUrl(wc.getUuid, fe.getName)))
+            new SimpleBookmark(WorkflowMessageServlet.messageUrl(wc.getUuid, fe.getName))
+          )
         }
       }
     }
 
     viewFactory.createResultWithModel(
       "modcomments.ftl",
-      comments.asScala.toSeq.sortBy(_.getDate)(Ordering[Date].reverse).map(ModRow).asJava);
+      comments.asScala.toSeq.sortBy(_.getDate)(Ordering[Date].reverse).map(ModRow).asJava
+    );
   }
 }

@@ -55,8 +55,8 @@ package object jwt {
       }
       .getOrElse(defaultAlgorithm(publicKey))
 
-  /**
-    * Decode the supplied raw JWT, and return the decoded token, or return InvalidJWT if the decode fails.
+  /** Decode the supplied raw JWT, and return the decoded token, or return InvalidJWT if the decode
+    * fails.
     */
   def decodeJwt(rawToken: String): Either[InvalidJWT, DecodedJWT] =
     Either

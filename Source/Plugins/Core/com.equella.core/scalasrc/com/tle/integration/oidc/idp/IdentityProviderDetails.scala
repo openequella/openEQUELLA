@@ -24,73 +24,88 @@ import com.tle.core.encryption.EncryptionService
 
 import java.net.{URI, URL}
 
-/**
-  * The common details configured for OIDC with an Identity Provider.
+/** The common details configured for OIDC with an Identity Provider.
   *
-  * @param platform One of the supported Identity Provider: [[IdentityProviderPlatform]]
-  * @param issuer The issuer identifier for the OpenID Connect provider. This value should match the 'iss'
-  *               claim in the JWTs issued by this provider.
-  * @param authCodeClientId ID of an OAuth2 client registered in the selected Identity Provider, used specifically in
-  *                         the Authorization Code flow
-  * @param authCodeClientSecret Secret key used with `authCodeClientId` specifically in the Authorization Code flow
-  * @param authUrl The URL used to initiate the OAuth2 authorisation process
-  * @param keysetUrl The URL used to initiate the OAuth2 authorisation process
-  * @param tokenUrl The URL used to obtain an access token from the selected Identity Provider
-  * @param usernameClaim Custom claim used to retrieve a meaningful username from an ID token
-  * @param defaultRoles A list of default OEQ roles to assign to the user's session.
-  * @param roleConfig Optional configuration for custom roles assigned to the user's session. If None, use the default roles.
+  * @param platform
+  *   One of the supported Identity Provider: [[IdentityProviderPlatform]]
+  * @param issuer
+  *   The issuer identifier for the OpenID Connect provider. This value should match the 'iss' claim
+  *   in the JWTs issued by this provider.
+  * @param authCodeClientId
+  *   ID of an OAuth2 client registered in the selected Identity Provider, used specifically in the
+  *   Authorization Code flow
+  * @param authCodeClientSecret
+  *   Secret key used with `authCodeClientId` specifically in the Authorization Code flow
+  * @param authUrl
+  *   The URL used to initiate the OAuth2 authorisation process
+  * @param keysetUrl
+  *   The URL used to initiate the OAuth2 authorisation process
+  * @param tokenUrl
+  *   The URL used to obtain an access token from the selected Identity Provider
+  * @param usernameClaim
+  *   Custom claim used to retrieve a meaningful username from an ID token
+  * @param defaultRoles
+  *   A list of default OEQ roles to assign to the user's session.
+  * @param roleConfig
+  *   Optional configuration for custom roles assigned to the user's session. If None, use the
+  *   default roles.
   */
-final case class CommonDetails(platform: IdentityProviderPlatform.Value,
-                               issuer: String,
-                               authCodeClientId: String,
-                               authCodeClientSecret: String,
-                               authUrl: URL,
-                               keysetUrl: URL,
-                               tokenUrl: URL,
-                               usernameClaim: Option[String],
-                               defaultRoles: Set[String],
-                               roleConfig: Option[RoleConfiguration],
-                               enabled: Boolean,
+final case class CommonDetails(
+    platform: IdentityProviderPlatform.Value,
+    issuer: String,
+    authCodeClientId: String,
+    authCodeClientSecret: String,
+    authUrl: URL,
+    keysetUrl: URL,
+    tokenUrl: URL,
+    usernameClaim: Option[String],
+    defaultRoles: Set[String],
+    roleConfig: Option[RoleConfiguration],
+    enabled: Boolean
 )
 
 sealed trait IdentityProviderDetails {
   val commonDetails: CommonDetails
 }
 
-/**
-  * Configuration details for Identity Provider where the way to request resources is through REST APIs.
-  * The structure is similar to the concrete classes that extend [[IdentityProvider]] and [[RestApi]], but
-  * with fully defined types used for storage and internal operations, where as IdentityProvider is more
-  * a DTO for the REST API.
+/** Configuration details for Identity Provider where the way to request resources is through REST
+  * APIs. The structure is similar to the concrete classes that extend [[IdentityProvider]] and
+  * [[RestApi]], but with fully defined types used for storage and internal operations, where as
+  * IdentityProvider is more a DTO for the REST API.
   *
   * Key differences from IdentityProvider:
-  * 1. Slightly more strict types
-  *    - secret values are mandatory
-  *    - URL type values use `URL` instead of `String`
-  * 2. Secret values are encrypted
-  * 3. Details for OIDC are centralised into one field
+  *   1. Slightly more strict types
+  *      - secret values are mandatory
+  *      - URL type values use `URL` instead of `String` 2. Secret values are encrypted 3. Details
+  *        for OIDC are centralised into one field
   *
-  * @param commonDetails Common details configured for OIDC
-  * @param apiUrl The API endpoint for the Identity Provider, use for operations such as search for users
-  * @param apiClientId Client ID used to get an Authorisation Token to use with the Identity Provider's API
-  *                    (for user searching etc)
-  * @param apiClientSecret Client Secret used with `apiClientId` to get an Authorization Token to use with
-  *                        the Identity Provider's API (for user searching etc). The value will be encrypted on saving.
+  * @param commonDetails
+  *   Common details configured for OIDC
+  * @param apiUrl
+  *   The API endpoint for the Identity Provider, use for operations such as search for users
+  * @param apiClientId
+  *   Client ID used to get an Authorisation Token to use with the Identity Provider's API (for user
+  *   searching etc)
+  * @param apiClientSecret
+  *   Client Secret used with `apiClientId` to get an Authorization Token to use with the Identity
+  *   Provider's API (for user searching etc). The value will be encrypted on saving.
   */
 final case class GenericIdentityProviderDetails(
     commonDetails: CommonDetails,
     apiUrl: URL,
     apiClientId: String,
-    apiClientSecret: String,
+    apiClientSecret: String
 ) extends IdentityProviderDetails
 
 object IdentityProviderDetails {
 
   private var encryptionService: EncryptionService = _
 
-  private def encrypt(field: String,
-                      newValue: Option[String],
-                      existingConfig: Option[String]): Either[String, String] =
+  private def encrypt(
+      field: String,
+      newValue: Option[String],
+      existingConfig: Option[String]
+  ): Either[String, String] =
     newValue
       .filter(_.nonEmpty)
       .orElse(existingConfig)
@@ -99,45 +114,46 @@ object IdentityProviderDetails {
 
   // If the existing config is the same type return an Option of the config; otherwise return None.
   private def existingIdP[T <: IdentityProviderDetails](
-      idp: Option[IdentityProviderDetails]): Option[T] = {
+      idp: Option[IdentityProviderDetails]
+  ): Option[T] = {
     idp.flatMap(c => Either.catchNonFatal(c.asInstanceOf[T]).toOption)
   }
 
   private def commonDetails(
       idp: IdentityProvider,
-      existingConfig: Option[IdentityProviderDetails]): Either[String, CommonDetails] =
+      existingConfig: Option[IdentityProviderDetails]
+  ): Either[String, CommonDetails] =
     for {
       encryptedAuthCodeClientSecret <- encrypt(
         "Authorisation Code flow Client Secret",
         idp.authCodeClientSecret,
         existingConfig.map(_.commonDetails.authCodeClientSecret)
       )
-    } yield
-      CommonDetails(
-        platform = idp.platform,
-        issuer = idp.issuer,
-        authCodeClientId = idp.authCodeClientId,
-        authCodeClientSecret = encryptedAuthCodeClientSecret,
-        authUrl = URI.create(idp.authUrl).toURL,
-        keysetUrl = URI.create(idp.keysetUrl).toURL,
-        tokenUrl = URI.create(idp.tokenUrl).toURL,
-        usernameClaim = idp.usernameClaim,
-        defaultRoles = idp.defaultRoles,
-        roleConfig = idp.roleConfig,
-        enabled = idp.enabled
-      )
+    } yield CommonDetails(
+      platform = idp.platform,
+      issuer = idp.issuer,
+      authCodeClientId = idp.authCodeClientId,
+      authCodeClientSecret = encryptedAuthCodeClientSecret,
+      authUrl = URI.create(idp.authUrl).toURL,
+      keysetUrl = URI.create(idp.keysetUrl).toURL,
+      tokenUrl = URI.create(idp.tokenUrl).toURL,
+      usernameClaim = idp.usernameClaim,
+      defaultRoles = idp.defaultRoles,
+      roleConfig = idp.roleConfig,
+      enabled = idp.enabled
+    )
 
-  /**
-    * Create an instance of `IdentityProviderDetails` from the given `IdentityProvider`. During the conversion,
-    * all sensitive values must be either provided or available in an existing configuration; otherwise, errors will
-    * be returned for the missing values.
+  /** Create an instance of `IdentityProviderDetails` from the given `IdentityProvider`. During the
+    * conversion, all sensitive values must be either provided or available in an existing
+    * configuration; otherwise, errors will be returned for the missing values.
     *
-    * @return An `IdentityProviderDetails` instance if the conversion succeeds, or an `IllegalArgumentException`
-    *         including all the captured errors
+    * @return
+    *   An `IdentityProviderDetails` instance if the conversion succeeds, or an
+    *   `IllegalArgumentException` including all the captured errors
     */
-  def apply(idp: IdentityProvider, existingConfig: Option[IdentityProviderDetails],
-  )(implicit encryptionService: EncryptionService)
-    : Either[IllegalArgumentException, IdentityProviderDetails] = {
+  def apply(idp: IdentityProvider, existingConfig: Option[IdentityProviderDetails])(implicit
+      encryptionService: EncryptionService
+  ): Either[IllegalArgumentException, IdentityProviderDetails] = {
     this.encryptionService = encryptionService
 
     val result = idp match {
@@ -149,12 +165,14 @@ object IdentityProviderDetails {
           encrypt("API Client Secret", provider.apiClientSecret, existingApiSecret)
 
         (commonDetails(idp, existingConfig).toValidatedNel, encryptedApiSecret.toValidatedNel)
-          .mapN(
-            (commonDetails, apiClientSecret) =>
-              GenericIdentityProviderDetails(commonDetails = commonDetails,
-                                             apiUrl = URI.create(provider.apiUrl).toURL,
-                                             apiClientId = provider.apiClientId,
-                                             apiClientSecret = apiClientSecret))
+          .mapN((commonDetails, apiClientSecret) =>
+            GenericIdentityProviderDetails(
+              commonDetails = commonDetails,
+              apiUrl = URI.create(provider.apiUrl).toURL,
+              apiClientId = provider.apiClientId,
+              apiClientSecret = apiClientSecret
+            )
+          )
       case other =>
         invalidNel(s"Unsupported Identity Provider: ${other.platform}")
     }

@@ -10,11 +10,11 @@ lazy val learningedge_config = project in file("Dev/learningedge-config")
 lazy val allPlugins      = LocalProject("allPlugins")
 lazy val allPluginsScope = ScopeFilter(inAggregates(allPlugins, includeRoot = false))
 val legacyPaths = Seq(
-  (Compile / javaSource) := baseDirectory.value / "src",
-  (Test / javaSource) := baseDirectory.value / "test",
+  (Compile / javaSource)                   := baseDirectory.value / "src",
+  (Test / javaSource)                      := baseDirectory.value / "test",
   (Compile / unmanagedResourceDirectories) := (baseDirectory.value / "resources") :: Nil,
-  (Compile / unmanagedSourceDirectories) := (Compile / javaSource).value :: Nil,
-  (Test / unmanagedSourceDirectories) := (Test / javaSource).value :: Nil
+  (Compile / unmanagedSourceDirectories)   := (Compile / javaSource).value :: Nil,
+  (Test / unmanagedSourceDirectories)      := (Test / javaSource).value :: Nil
 )
 
 lazy val autotest = project in file("autotest")
@@ -53,14 +53,16 @@ lazy val Installer = (project in file("Installer"))
 
 lazy val equella = (project in file("."))
   .enablePlugins(JPFScanPlugin, JarSignerPlugin, GitVersioning)
-  .aggregate(equellaserver,
-             allPlugins,
-             adminTool,
-             Installer,
-             UpgradeManager,
-             conversion,
-             UpgradeInstallation,
-             learningedge_config)
+  .aggregate(
+    equellaserver,
+    allPlugins,
+    adminTool,
+    Installer,
+    UpgradeManager,
+    conversion,
+    UpgradeInstallation,
+    learningedge_config
+  )
 
 // We currently build for Java 8, so let's drop module info files
 ThisBuild / assemblyMergeStrategy := {
@@ -86,11 +88,11 @@ ThisBuild / assemblyMergeStrategy := {
 
 name := "Equella"
 
-(ThisBuild / equellaMajor) := 2024
-(ThisBuild / equellaMinor) := 2
-(ThisBuild / equellaPatch) := 0
-(ThisBuild / equellaStream) := "Alpha"
-(ThisBuild / equellaBuild) := buildConfig.value.getString("build.buildname")
+(ThisBuild / equellaMajor)   := 2024
+(ThisBuild / equellaMinor)   := 2
+(ThisBuild / equellaPatch)   := 0
+(ThisBuild / equellaStream)  := "Alpha"
+(ThisBuild / equellaBuild)   := buildConfig.value.getString("build.buildname")
 (ThisBuild / buildTimestamp) := Instant.now().getEpochSecond
 
 version := {
@@ -98,11 +100,13 @@ version := {
     "g" + sha.take(7)
   }.get
 
-  EquellaVersion(equellaMajor.value,
-                 equellaMinor.value,
-                 equellaPatch.value,
-                 s"${equellaStream.value}.${equellaBuild.value}",
-                 shortCommit).fullVersion
+  EquellaVersion(
+    equellaMajor.value,
+    equellaMinor.value,
+    equellaPatch.value,
+    s"${equellaStream.value}.${equellaBuild.value}",
+    shortCommit
+  ).fullVersion
 }
 
 (ThisBuild / equellaVersion) := EquellaVersion(version.value)
@@ -115,8 +119,8 @@ version := {
   Map(
     "version.display" -> s"${eqVersion.semanticVersion}-${eqVersion.releaseType}",
     "version.commit"  -> eqVersion.sha
-  ) foreach {
-    case (key, value) => props.put(key, value)
+  ) foreach { case (key, value) =>
+    props.put(key, value)
   }
 
   IO.write(props, "version", f)
@@ -142,18 +146,17 @@ writeLanguagePack := {
       .value
       .flatten
       .groupBy(ls => (ls.group, ls.xml))
-      .map {
-        case ((g, xml), lss) =>
-          val fname = g + (if (xml) ".xml" else ".properties")
-          val f     = dir / fname
-          val p     = new SortedProperties()
-          lss.flatMap(_.strings).foreach {
-            case (key, value) => p.put(key, value)
-          }
-          Using.fileOutputStream()(f) { os =>
-            if (xml) p.storeToXML(os, "") else p.store(os, "")
-          }
-          (f, fname)
+      .map { case ((g, xml), lss) =>
+        val fname = g + (if (xml) ".xml" else ".properties")
+        val f     = dir / fname
+        val p     = new SortedProperties()
+        lss.flatMap(_.strings).foreach { case (key, value) =>
+          p.put(key, value)
+        }
+        Using.fileOutputStream()(f) { os =>
+          if (xml) p.storeToXML(os, "") else p.store(os, "")
+        }
+        (f, fname)
       }
     val outZip = target.value / "reference-language-pack.zip"
     sLog.value.info(s"Writing ${outZip.absolutePath}")
@@ -189,11 +192,13 @@ mergeJPF := {
   } else {
     val newPlugin  = args.head
     val basePlugin = baseDirectory.value / "Source/Plugins"
-    PluginRefactor.mergePlugins(allPluginDirs,
-                                basePlugin,
-                                newPlugin,
-                                args.tail,
-                                adminConsole = adminConsole)
+    PluginRefactor.mergePlugins(
+      allPluginDirs,
+      basePlugin,
+      newPlugin,
+      args.tail,
+      adminConsole = adminConsole
+    )
   }
 }
 
@@ -202,15 +207,17 @@ writeScriptingJavadoc := {
   val ver        = version.value
   val outZip     = target.value / s"scriptingapi-javadoc-$ver.zip"
   sLog.value.info(s"Writing ${outZip.absolutePath}")
-  IO.zip((javadocDir ** "*").pair(rebase(javadocDir, "")),
-         outZip,
-         Option((ThisBuild / buildTimestamp).value))
+  IO.zip(
+    (javadocDir ** "*").pair(rebase(javadocDir, "")),
+    outZip,
+    Option((ThisBuild / buildTimestamp).value)
+  )
   outZip
 }
 
 ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
 
-ThisBuild / reactFrontEndDir := baseDirectory.value / "react-front-end"
+ThisBuild / reactFrontEndDir       := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
 ThisBuild / buildReactFrontEnd := {
   // build rest module first since it is a dependency of react front end
@@ -241,7 +248,7 @@ val userBeans: FileFilter = ("GroupBean.java" || "UserBean.java" || "RoleBean.ja
 
 def javadocSources(base: File): PathFinder = {
   (base / "src") ** ("package-info.java" || "*ScriptType.java"
-  || "*ScriptObject.java" || userBeans)
+    || "*ScriptObject.java" || userBeans)
 }
 
 (Compile / doc / aggregate) := false
@@ -260,7 +267,7 @@ devrebuild := {
     .sequential(
       clean.all(allEquella),
       jpfWriteDevJars.all(allPluginsScope),
-      (Compile / fullClasspath).all(allEquella),
+      (Compile / fullClasspath).all(allEquella)
     )
     .value
 }

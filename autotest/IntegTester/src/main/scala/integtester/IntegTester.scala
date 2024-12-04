@@ -1,5 +1,4 @@
-/**
-  * Created by jolz on 26/04/17.
+/** Created by jolz on 26/04/17.
   */
 package integtester
 
@@ -33,13 +32,16 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     request.decode[UrlForm] { form =>
       val formJson = form.values.view.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
         "authenticated" ->
-          Seq(request.headers.get(Authorization).isDefined.toString))
+          Seq(request.headers.get(Authorization).isDefined.toString)
+      )
 
       val doc = viewItemDocument.clone()
       doc
         .body()
-        .insertChildren(0,
-                        new Element("script").text(s"var postValues = ${formJson.asJson.noSpaces}"))
+        .insertChildren(
+          0,
+          new Element("script").text(s"var postValues = ${formJson.asJson.noSpaces}")
+        )
       Ok(doc.toString, `Content-Type`(MediaType.text.html))
     }
 
@@ -104,8 +106,10 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
       .bindHttp(8083, "0.0.0.0")
       .mountService(
         resourceService[IO](
-          ResourceService.Config("/www", Blocker.liftExecutionContext(ExecutionContext.global))),
-        "/")
+          ResourceService.Config("/www", Blocker.liftExecutionContext(ExecutionContext.global))
+        ),
+        "/"
+      )
       .mountService(appService, "/")
       .mountService(new TestingCloudProvider().oauthService, "/provider/")
       .serve

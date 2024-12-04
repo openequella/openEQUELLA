@@ -29,16 +29,17 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
 
-case class AdvancedSearch(name: Option[String],
-                          description: Option[String],
-                          collections: List[BaseEntitySummary],
-                          // WizardControlDefinition is an abstraction without real data structure so use 'ApiModelProperty'
-                          // to provide a concrete structure.
-                          @ApiModelProperty(dataType = "com.tle.web.api.wizard.WizardBasicControl")
-                          controls: List[WizardControlDefinition])
+case class AdvancedSearch(
+    name: Option[String],
+    description: Option[String],
+    collections: List[BaseEntitySummary],
+    // WizardControlDefinition is an abstraction without real data structure so use 'ApiModelProperty'
+    // to provide a concrete structure.
+    @ApiModelProperty(dataType = "com.tle.web.api.wizard.WizardBasicControl")
+    controls: List[WizardControlDefinition]
+)
 
-/**
-  * API for managing Advanced Searches (internally - and historically - known as Power Searches).
+/** API for managing Advanced Searches (internally - and historically - known as Power Searches).
   */
 @Path("settings/advancedsearch/")
 @Produces(value = Array("application/json"))
@@ -61,7 +62,8 @@ class AdvancedSearchResource {
         powerSearchService
           .enumerateSearchable()
           .asScala
-          .map(be => BaseEntitySummary(be)))
+          .map(be => BaseEntitySummary(be))
+      )
       .build()
 
   @GET
@@ -70,7 +72,7 @@ class AdvancedSearchResource {
     value = "Get Advanced Search definition",
     notes =
       "This endpoint is used to retrieve an Advanced Search's name, description, Collections and Wizard definition by UUID.",
-    response = classOf[AdvancedSearch],
+    response = classOf[AdvancedSearch]
   )
   def getAdvancedSearchWizardDefinition(@PathParam("uuid") uuid: String): Response = {
     Option(powerSearchService.getByUuid(uuid)) match {

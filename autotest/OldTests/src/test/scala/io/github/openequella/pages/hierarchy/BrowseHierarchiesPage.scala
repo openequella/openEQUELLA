@@ -17,5 +17,6 @@ class BrowseHierarchiesPage(context: PageContext)
 
   override def findLoadedElement: WebElement =
     waiter.until(
-      ExpectedConditions.presenceOfElementLocated(By.xpath("//ul[@aria-label='View hierarchy']")))
+      ExpectedConditions.presenceOfElementLocated(By.xpath("//ul[@aria-label='View hierarchy']"))
+    )
 }

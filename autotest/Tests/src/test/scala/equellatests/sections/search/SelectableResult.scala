@@ -9,6 +9,7 @@ trait SelectableResult extends WaitingBrowserPage {
     pageElement.findElement(By.xpath(".//button[normalize-space(text()) = 'Select']")).click()
     waitFor(
       ExpectedConditions
-        .presenceOfNestedElementLocatedBy(pageBy, By.xpath("./div[contains(@class, 'selected')]")))
+        .presenceOfNestedElementLocatedBy(pageBy, By.xpath("./div[contains(@class, 'selected')]"))
+    )
   }
 }

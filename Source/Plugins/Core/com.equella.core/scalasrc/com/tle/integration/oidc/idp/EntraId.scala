@@ -22,9 +22,8 @@ import cats.data.ValidatedNel
 import cats.implicits._
 import com.tle.integration.oidc.idp.IdentityProvider.{validateTextFields, validateUrlFields}
 
-/**
-  * Configuration for Microsoft Entra ID including the common details for OIDC and the details required
-  * to interact the Graph REST API.
+/** Configuration for Microsoft Entra ID including the common details for OIDC and the details
+  * required to interact the Graph REST API.
   */
 final case class EntraId(
     issuer: String,
@@ -38,7 +37,7 @@ final case class EntraId(
     roleConfig: Option[RoleConfiguration],
     enabled: Boolean,
     apiClientId: String,
-    apiClientSecret: Option[String],
+    apiClientSecret: Option[String]
 ) extends IdentityProvider
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.ENTRA_ID

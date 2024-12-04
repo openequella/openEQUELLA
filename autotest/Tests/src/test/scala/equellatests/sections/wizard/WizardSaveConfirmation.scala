@@ -9,8 +9,11 @@ class WizardSaveConfirmation(val ctx: PageContext) extends WaitingBrowserPage {
   override def pageBy = By.id("savePrompt")
 
   def buttonBy(name: String) =
-    By.xpath("//div[@class = 'modal-footer-inner']/button[normalize-space(text()) = " + quoteXPath(
-      name) + "]")
+    By.xpath(
+      "//div[@class = 'modal-footer-inner']/button[normalize-space(text()) = " + quoteXPath(
+        name
+      ) + "]"
+    )
 
   def clickButton(name: String) = driver.findElement(buttonBy(name)).click()
   def publish(): SummaryPage = {

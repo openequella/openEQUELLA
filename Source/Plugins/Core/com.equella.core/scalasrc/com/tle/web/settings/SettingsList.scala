@@ -34,13 +34,15 @@ import com.tle.web.sections.standard.model.{HtmlLinkState, SimpleBookmark}
 import scala.collection.mutable
 
 object CoreSettingsPage {
-  def apply(id: String,
-            group: String,
-            nameKey: String,
-            descKey: String,
-            page: String,
-            editable: () => Boolean,
-            uriType: String = "web") =
+  def apply(
+      id: String,
+      group: String,
+      nameKey: String,
+      descKey: String,
+      page: String,
+      editable: () => Boolean,
+      uriType: String = "web"
+  ) =
     SettingsPage(CoreStrings.lookup, id, group, nameKey, descKey, page, uriType, editable)
 }
 
@@ -118,8 +120,10 @@ object SettingsList {
     "access/lticonsumers.do",
     () =>
       !aclManager
-        .filterNonGrantedPrivileges(LtiConsumerConstants.PRIV_CREATE_CONUSMER,
-                                    LtiConsumerConstants.PRIV_EDIT_CONSUMER)
+        .filterNonGrantedPrivileges(
+          LtiConsumerConstants.PRIV_CREATE_CONUSMER,
+          LtiConsumerConstants.PRIV_EDIT_CONSUMER
+        )
         .isEmpty
   )
 
@@ -149,8 +153,10 @@ object SettingsList {
     "access/userscripts.do",
     () =>
       !aclManager
-        .filterNonGrantedPrivileges(UserScriptsConstants.PRIV_CREATE_SCRIPT,
-                                    UserScriptsConstants.PRIV_EDIT_SCRIPT)
+        .filterNonGrantedPrivileges(
+          UserScriptsConstants.PRIV_CREATE_SCRIPT,
+          UserScriptsConstants.PRIV_EDIT_SCRIPT
+        )
         .isEmpty
   )
 
@@ -162,17 +168,21 @@ object SettingsList {
     "access/oauthadmin.do",
     () =>
       !aclManager
-        .filterNonGrantedPrivileges(OAuthConstants.PRIV_CREATE_OAUTH_CLIENT,
-                                    OAuthConstants.PRIV_EDIT_OAUTH_CLIENT,
-                                    OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS)
+        .filterNonGrantedPrivileges(
+          OAuthConstants.PRIV_CREATE_OAUTH_CLIENT,
+          OAuthConstants.PRIV_EDIT_OAUTH_CLIENT,
+          OAuthConstants.PRIV_ADMINISTER_OAUTH_TOKENS
+        )
         .isEmpty
   )
-  val searchPageSettings = CoreSettingsPage("searchpage",
-                                            Searching,
-                                            "setting.searchpage.title",
-                                            "setting.searchpage.desc",
-                                            "page/searchsettings",
-                                            searchPrivProvider.isAuthorised)
+  val searchPageSettings = CoreSettingsPage(
+    "searchpage",
+    Searching,
+    "setting.searchpage.title",
+    "setting.searchpage.desc",
+    "page/searchsettings",
+    searchPrivProvider.isAuthorised
+  )
 
   val contentIndexingSettings = CoreSettingsPage(
     "contentindexing",
@@ -192,19 +202,23 @@ object SettingsList {
     searchPrivProvider.isAuthorised
   )
 
-  val searchFilterSettings = CoreSettingsPage("searchfilter",
-                                              Searching,
-                                              "setting.searchfilter.title",
-                                              "setting.searchfilter.desc",
-                                              "page/searchfiltersettings",
-                                              searchPrivProvider.isAuthorised)
+  val searchFilterSettings = CoreSettingsPage(
+    "searchfilter",
+    Searching,
+    "setting.searchfilter.title",
+    "setting.searchfilter.desc",
+    "page/searchfiltersettings",
+    searchPrivProvider.isAuthorised
+  )
 
-  val htmlEditorSettings = CoreSettingsPage("htmleditor",
-                                            General,
-                                            "htmledit.settings.title",
-                                            "htmledit.settings.description",
-                                            "access/editoradmin.do",
-                                            htmlEditorPrivProvider.isAuthorised)
+  val htmlEditorSettings = CoreSettingsPage(
+    "htmleditor",
+    General,
+    "htmledit.settings.title",
+    "htmledit.settings.description",
+    "access/editoradmin.do",
+    htmlEditorPrivProvider.isAuthorised
+  )
 
   val externalToolsSettings = CoreSettingsPage(
     "externaltools",
@@ -214,8 +228,10 @@ object SettingsList {
     "access/externaltools.do",
     () =>
       !aclManager
-        .filterNonGrantedPrivileges(ExternalToolConstants.PRIV_CREATE_TOOL,
-                                    ExternalToolConstants.PRIV_EDIT_TOOL)
+        .filterNonGrantedPrivileges(
+          ExternalToolConstants.PRIV_CREATE_TOOL,
+          ExternalToolConstants.PRIV_EDIT_TOOL
+        )
         .isEmpty
   )
 
@@ -236,30 +252,38 @@ object SettingsList {
     facetedSearchSettings,
     searchFilterSettings,
     cloudProviderSettings,
-    CoreSettingsPage("shortcuts",
-                     General,
-                     "shortcuts.settings.title",
-                     "shortcuts.settings.description",
-                     "access/shortcuturlssettings.do",
-                     shortcutPrivProvider.isAuthorised),
-    CoreSettingsPage("language",
-                     General,
-                     "language.title",
-                     "language.description",
-                     "access/language.do",
-                     langPrivProvider.isAuthorised),
-    CoreSettingsPage("googleapi",
-                     General,
-                     "google.settings.title",
-                     "google.settings.description",
-                     "access/googleapisettings.do",
-                     googlePrivProvider.isAuthorised),
-    CoreSettingsPage("login",
-                     General,
-                     "login.title",
-                     "login.description",
-                     "access/loginsettings.do",
-                     loginPrivProvider.isAuthorised),
+    CoreSettingsPage(
+      "shortcuts",
+      General,
+      "shortcuts.settings.title",
+      "shortcuts.settings.description",
+      "access/shortcuturlssettings.do",
+      shortcutPrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "language",
+      General,
+      "language.title",
+      "language.description",
+      "access/language.do",
+      langPrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "googleapi",
+      General,
+      "google.settings.title",
+      "google.settings.description",
+      "access/googleapisettings.do",
+      googlePrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "login",
+      General,
+      "login.title",
+      "login.description",
+      "access/loginsettings.do",
+      loginPrivProvider.isAuthorised
+    ),
     CoreSettingsPage(
       "quickcontrib",
       General,
@@ -268,18 +292,22 @@ object SettingsList {
       "access/quickcontributeandversionsettings.do",
       quickContribPrivProvider.isAuthorised
     ),
-    CoreSettingsPage("datafixes",
-                     "diagnostics",
-                     "fix.settings.title",
-                     "fix.settings.description",
-                     "access/manualdatafixes.do",
-                     manualFixPrivProvider.isAuthorised),
-    CoreSettingsPage("oai",
-                     Integration,
-                     "oai.title",
-                     "oaiidentifier.description",
-                     "access/oaiidentifiersettings.do",
-                     oaiPrivProvider.isAuthorised),
+    CoreSettingsPage(
+      "datafixes",
+      "diagnostics",
+      "fix.settings.title",
+      "fix.settings.description",
+      "access/manualdatafixes.do",
+      manualFixPrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "oai",
+      Integration,
+      "oai.title",
+      "oaiidentifier.description",
+      "access/oaiidentifiersettings.do",
+      oaiPrivProvider.isAuthorised
+    ),
     CoreSettingsPage(
       "harvester",
       General,
@@ -296,24 +324,30 @@ object SettingsList {
       "access/settings/scheduledtasks.do",
       scheduledPrivProvider.isAuthorised
     ),
-    CoreSettingsPage("mimetypes",
-                     General,
-                     "mimetypes.settings.title",
-                     "mimetypes.settings.description",
-                     MimeEditorUtils.MIME_BOOKMARK,
-                     mimePrivProvider.isAuthorised),
-    CoreSettingsPage("dates",
-                     General,
-                     "dates.settings.title",
-                     "dates.settings.description",
-                     "access/dateformatsettings.do",
-                     datePrivProvider.isAuthorised),
-    CoreSettingsPage("theme",
-                     General,
-                     "customisation.settings.title",
-                     "customisation.settings.description",
-                     "access/themesettings.do",
-                     themePrivProvider.isAuthorised),
+    CoreSettingsPage(
+      "mimetypes",
+      General,
+      "mimetypes.settings.title",
+      "mimetypes.settings.description",
+      MimeEditorUtils.MIME_BOOKMARK,
+      mimePrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "dates",
+      General,
+      "dates.settings.title",
+      "dates.settings.description",
+      "access/dateformatsettings.do",
+      datePrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "theme",
+      General,
+      "customisation.settings.title",
+      "customisation.settings.description",
+      "access/themesettings.do",
+      themePrivProvider.isAuthorised
+    ),
     CoreSettingsPage(
       "googleanalytics",
       General,
@@ -330,36 +364,46 @@ object SettingsList {
       "access/diagnostics.do",
       diagnosticPrivProvider.isAuthorised
     ),
-    CoreSettingsPage("mail",
-                     General,
-                     "settings.title",
-                     "settings.description",
-                     "access/mailsettings.do",
-                     mailPrivProvider.isAuthorised),
-    CoreSettingsPage("customlinks",
-                     General,
-                     "menu.title",
-                     "menu.description",
-                     "access/customlinks.do",
-                     () => !aclManager.filterNonGrantedPrivileges("EDIT_CUSTOM_LINK").isEmpty),
-    CoreSettingsPage("remotecaching",
-                     General,
-                     "remotecaching.title",
-                     "remotecaching.description",
-                     "access/remotecaching.do",
-                     remoteCachePrivProvider.isAuthorised),
-    CoreSettingsPage("loggedin",
-                     "diagnostics",
-                     "liu.settings.title",
-                     "liu.settings.description",
-                     "access/liu.do",
-                     liuPrivProvider.isAuthorised),
-    CoreSettingsPage("copyright",
-                     Integration,
-                     "coursedefaults.title",
-                     "coursedefaults.description",
-                     "access/coursedefaultssettings.do",
-                     courseDefPrivProvider.isAuthorised),
+    CoreSettingsPage(
+      "mail",
+      General,
+      "settings.title",
+      "settings.description",
+      "access/mailsettings.do",
+      mailPrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "customlinks",
+      General,
+      "menu.title",
+      "menu.description",
+      "access/customlinks.do",
+      () => !aclManager.filterNonGrantedPrivileges("EDIT_CUSTOM_LINK").isEmpty
+    ),
+    CoreSettingsPage(
+      "remotecaching",
+      General,
+      "remotecaching.title",
+      "remotecaching.description",
+      "access/remotecaching.do",
+      remoteCachePrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "loggedin",
+      "diagnostics",
+      "liu.settings.title",
+      "liu.settings.description",
+      "access/liu.do",
+      liuPrivProvider.isAuthorised
+    ),
+    CoreSettingsPage(
+      "copyright",
+      Integration,
+      "coursedefaults.title",
+      "coursedefaults.description",
+      "access/coursedefaultssettings.do",
+      courseDefPrivProvider.isAuthorised
+    ),
     CoreSettingsPage(
       "contentrestrictions",
       General,
@@ -368,12 +412,14 @@ object SettingsList {
       "access/contentrestrictions.do",
       contentRestricPrivProvider.isAuthorised
     ),
-    CoreSettingsPage("portals",
-                     General,
-                     "setting.title",
-                     "setting.description",
-                     "access/portaladmin.do",
-                     portletWebService.canAdminister)
+    CoreSettingsPage(
+      "portals",
+      General,
+      "setting.title",
+      "setting.description",
+      "access/portaladmin.do",
+      portletWebService.canAdminister
+    )
   )
 
   def anyEditable = allSettings.exists(_.isEditable)

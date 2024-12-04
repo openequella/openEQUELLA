@@ -54,15 +54,14 @@ object ExportCSVHelper {
     ("IMS DIR", "imsdir"),
     ("IMS Package", "item/itembody/packagefile"),
     (DRM_HEADER, "item/rights")
-  ).map {
-    case (name, xpath) => CSVHeader(name, xpath)
+  ).map { case (name, xpath) =>
+    CSVHeader(name, xpath)
   }
 
-  /**
-    * If a column's header is in this list and its content is formatted as 'name:value',
-    * full XML xpath is used as the name.
-    * For example, given a XML `<tree><node1><node2>DRM</node2</node1></tree>`,
-    * the CSV cell content is `tree/node1/node2:DRM` instead of `node2:DRM`
+  /** If a column's header is in this list and its content is formatted as 'name:value', full XML
+    * xpath is used as the name. For example, given a XML
+    * `<tree><node1><node2>DRM</node2</node1></tree>`, the CSV cell content is
+    * `tree/node1/node2:DRM` instead of `node2:DRM`
     */
   val NEED_FULL_XPATH_IN_CONTENT = List[String](
     DRM_HEADER
@@ -71,13 +70,16 @@ object ExportCSVHelper {
   val SINGLE_PIPE_DELIMITER = "|"
   val DOUBLE_PIPE_DELIMITER = "||"
 
-  /**
-    * Build a list of CSV headers based on Schema.
-    * @param schemaNodes List of Schema nodes which determines what headers to be built
-    * @param rootNodeName Name of root node which is used to build full xpath
+  /** Build a list of CSV headers based on Schema.
+    * @param schemaNodes
+    *   List of Schema nodes which determines what headers to be built
+    * @param rootNodeName
+    *   Name of root node which is used to build full xpath
     */
-  def buildHeadersForSchema(schemaNodes: java.util.List[SchemaNode],
-                            rootNodeName: Option[String]): List[CSVHeader] = {
+  def buildHeadersForSchema(
+      schemaNodes: java.util.List[SchemaNode],
+      rootNodeName: Option[String]
+  ): List[CSVHeader] = {
     def buildFullXpath(path: String): String = {
       rootNodeName match {
         case Some(name) => s"${name}/${path}"
@@ -97,33 +99,35 @@ object ExportCSVHelper {
       .toList
   }
 
-  /**
-    * Build a full list of headers which include standard headers and headers generated based on Schema.
-    * @param schema Schema used to generate headers based on its nodes
+  /** Build a full list of headers which include standard headers and headers generated based on
+    * Schema.
+    * @param schema
+    *   Schema used to generate headers based on its nodes
     */
   def buildCSVHeaders(schema: Schema): List[CSVHeader] =
     STANDARD_HEADER_LIST ++ buildHeadersForSchema(schema.getRootSchemaNode.getChildNodes, None)
 
-  /**
-    * Build text based CSV content based on provided XML.
-    * Iff a node is a root node and does not have any child nodes or attributes,
-    * use only the value as CSV cell content (since we have the node name in the header).
-    * For others, the content is a list of strings formatted as `name:value` where `name`
-    * may include parent node's name.
-    * Each text is separated by a delimiter. When a root node has child nodes, each child node
-    * is separated by `||`. For other nodes, use `|` to delimit their attributes, values and
-    * child nodes' attributes and values.
-    * A typical example is:
-    * size:816932|uuid:8353cdfe-8211-4c69-bd94-7784956cebe9|file:cat2.png||
+  /** Build text based CSV content based on provided XML. Iff a node is a root node and does not
+    * have any child nodes or attributes, use only the value as CSV cell content (since we have the
+    * node name in the header). For others, the content is a list of strings formatted as
+    * `name:value` where `name` may include parent node's name. Each text is separated by a
+    * delimiter. When a root node has child nodes, each child node is separated by `||`. For other
+    * nodes, use `|` to delimit their attributes, values and child nodes' attributes and values. A
+    * typical example is: size:816932|uuid:8353cdfe-8211-4c69-bd94-7784956cebe9|file:cat2.png||
     * size:444808|uuid:c72354f4-0c9f-44f1-93e2-8e7bf050ee5c|file:cat1.jpg
     *
-    * @param node Node for which the content is built
-    * @param isRootNode True if the node is a root node
-    * @param parentNodeName Name of the node's parent node
+    * @param node
+    *   Node for which the content is built
+    * @param isRootNode
+    *   True if the node is a root node
+    * @param parentNodeName
+    *   Name of the node's parent node
     */
-  def buildCSVCell(node: PropBagEx,
-                   isRootNode: Boolean = true,
-                   parentNodeName: Option[String] = None): String = {
+  def buildCSVCell(
+      node: PropBagEx,
+      isRootNode: Boolean = true,
+      parentNodeName: Option[String] = None
+  ): String = {
     val childNodes = node.getChildren.asScala.toList
     val attributes = node.getAttributesForNode("").asScala.toMap
     val delimiter =
@@ -134,8 +138,8 @@ object ExportCSVHelper {
     def processAttributes: Seq[String] = {
       attributes match {
         case attrMap: Map[String, String] if attrMap.nonEmpty =>
-          attrMap.map {
-            case (k, v) => s"${k}:${v}"
+          attrMap.map { case (k, v) =>
+            s"${k}:${v}"
           }.toSeq
         case _ => Nil
       }
@@ -145,7 +149,8 @@ object ExportCSVHelper {
     def processValues: Seq[String] = {
       if (childNodes.nonEmpty) {
         childNodes.map(child =>
-          buildCSVCell(child, isRootNode = false, parentNodeName = parentNameForChildren))
+          buildCSVCell(child, isRootNode = false, parentNodeName = parentNameForChildren)
+        )
       } else {
         val nodeValue = node.getNode
         val content = if (isRootNode && childNodes.isEmpty && attributes.isEmpty) {
@@ -160,10 +165,11 @@ object ExportCSVHelper {
     (processValues ++ processAttributes).mkString(delimiter)
   }
 
-  /**
-    * Builds a CSV row based on the XML for an Item.
-    * @param xml The XML from an Item for this row
-    * @param headers The CSV column headers
+  /** Builds a CSV row based on the XML for an Item.
+    * @param xml
+    *   The XML from an Item for this row
+    * @param headers
+    *   The CSV column headers
     */
   def buildCSVRow(xml: PropBagEx, headers: List[CSVHeader]): String = {
     // Regex for XPATH that points to an attribute(e.g. item/@name).
@@ -176,12 +182,13 @@ object ExportCSVHelper {
         case _ =>
           xml
             .iterator(header.xpath) // This is a PropBagIterator.
-            .iterator() // So we have to call 'iterator' again.
+            .iterator()             // So we have to call 'iterator' again.
             .asScala
             .map(rootNode => {
-              buildCSVCell(rootNode,
-                           parentNodeName =
-                             Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains))
+              buildCSVCell(
+                rootNode,
+                parentNodeName = Option(header.name).filter(NEED_FULL_XPATH_IN_CONTENT.contains)
+              )
             })
             .toList
             .mkString(SINGLE_PIPE_DELIMITER)
@@ -202,10 +209,11 @@ object ExportCSVHelper {
     })
   }
 
-  /**
-    * Write CSV contents into a BufferedOutputStream.
-    * @param bos BufferedOutputStream A BufferedOutputStream wrapping another underlying OutputStream.
-    * @param contents Contents to be written to the BufferedOutputStream.
+  /** Write CSV contents into a BufferedOutputStream.
+    * @param bos
+    *   BufferedOutputStream A BufferedOutputStream wrapping another underlying OutputStream.
+    * @param contents
+    *   Contents to be written to the BufferedOutputStream.
     */
   def writeRow(bos: BufferedOutputStream, contents: String): Unit = {
     bos.write(s"${contents}\n".getBytes())

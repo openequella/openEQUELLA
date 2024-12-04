@@ -12,7 +12,8 @@ class WizardPageTab(val ctx: PageContext, val pageNum: Int) extends WaitingBrows
   private def clickSave() =
     driver
       .findElement(
-        By.xpath("//input[contains(@class, 'action-button') and normalize-space(@value)='Save']"))
+        By.xpath("//input[contains(@class, 'action-button') and normalize-space(@value)='Save']")
+      )
       .click()
 
   def save(): WizardSaveConfirmation = {

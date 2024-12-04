@@ -23,11 +23,12 @@ import com.tle.core.hibernate.dao.GenericInstitutionalDao
 
 trait WebKeySetDAO extends GenericInstitutionalDao[WebKeySet, java.lang.Long] {
 
-  /**
-    * Retrieve a SecurityKey by key ID.
+  /** Retrieve a SecurityKey by key ID.
     *
-    * @param keyId Unique ID of the key pair.
-    * @return Option of the retrieved SecurityKey, or None if not found.
+    * @param keyId
+    *   Unique ID of the key pair.
+    * @return
+    *   Option of the retrieved SecurityKey, or None if not found.
     */
   def getByKeyID(keyId: String): Option[WebKeySet]
 }

@@ -63,15 +63,16 @@ object FileEditDetails {
   private val SELECTION_TREE = new ScriptVariable("zipTree")
 }
 
-class FileEditDetails(parentId: String,
-                      tree: SectionTree,
-                      ctx: ControlContext,
-                      zipHandler: ZipHandler,
-                      editingHandler: EditingHandler,
-                      viewerHandler: ViewerHandler,
-                      showRestrict: Boolean,
-                      val editingAttachment: SectionInfo => Attachment)
-    extends AbstractScalaSection
+class FileEditDetails(
+    parentId: String,
+    tree: SectionTree,
+    ctx: ControlContext,
+    zipHandler: ZipHandler,
+    editingHandler: EditingHandler,
+    viewerHandler: ViewerHandler,
+    showRestrict: Boolean,
+    val editingAttachment: SectionInfo => Attachment
+) extends AbstractScalaSection
     with RenderHelper
     with DetailsPage {
 
@@ -128,9 +129,11 @@ class FileEditDetails(parentId: String,
     ctx.controlState.save(info)
   }
 
-  class ZipJson(@BeanProperty val total: Int,
-                @BeanProperty val upto: Int,
-                @BeanProperty val finished: Boolean)
+  class ZipJson(
+      @BeanProperty val total: Int,
+      @BeanProperty val upto: Int,
+      @BeanProperty val finished: Boolean
+  )
 
   @AjaxMethod def zipProgress(info: SectionInfo): ZipJson = {
     zipHandler.zipProgress
@@ -143,10 +146,12 @@ class FileEditDetails(parentId: String,
   override def registered(id: String, tree: SectionTree): Unit = {
     super.registered(id, tree)
 
-    val editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(tree,
-                                                             this,
-                                                             events.getEventHandler("editFile"),
-                                                             "editFileAjaxDiv")
+    val editFileAjaxFunction = ajax.getAjaxUpdateDomFunction(
+      tree,
+      this,
+      events.getEventHandler("editFile"),
+      "editFileAjaxDiv"
+    )
 
     saveClickHandler = new OverrideHandler(events.getSubmitValuesFunction("save"))
 
@@ -154,7 +159,8 @@ class FileEditDetails(parentId: String,
     removeUnzip.setClickHandler(events.getNamedHandler("removeZip"))
     selectAll.setClickHandler(new OverrideHandler(Js.call_s(SELECT_ALL, true.asInstanceOf[Object])))
     selectNone.setClickHandler(
-      new OverrideHandler(Js.call_s(SELECT_ALL, false.asInstanceOf[Object])))
+      new OverrideHandler(Js.call_s(SELECT_ALL, false.asInstanceOf[Object]))
+    )
     viewers.setListModel(viewerHandler.viewerListModel)
     zipProgressDiv.addReadyStatements(
       WebFileUploads.ZIP_PROGRESS_FUNC,
@@ -164,7 +170,8 @@ class FileEditDetails(parentId: String,
         this,
         null,
         ajax.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),
-        "zipArea")
+        "zipArea"
+      )
     )
   }
 
@@ -222,7 +229,8 @@ class FileEditDetails(parentId: String,
           "folder",
           false.asInstanceOf[Object],
           "children",
-          pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection)
+          pa.getOrElse(path, Seq.empty).filter(!_.isFolder).map(_.id).asJavaCollection
+        )
 
       val map = new ObjectExpression("ROOT", mkNodeChildren(""))
       _files.filter(_.isFolder).foreach { e =>
@@ -251,8 +259,9 @@ class FileEditDetails(parentId: String,
       if (!_unzipping) {
         val allEntries       = zipHandler.unzippedEntries
         val (files, folders) = convertFileList("", "", 1, allEntries)
-        (false, (files ++ folders).zipWithIndex.map {
-          case (efp, i) =>
+        (
+          false,
+          (files ++ folders).zipWithIndex.map { case (efp, i) =>
             val id = "s" + i
             val check =
               if (efp.file) selections.getBooleanState(info, efp.fullpath)
@@ -263,7 +272,8 @@ class FileEditDetails(parentId: String,
               }
             check.setId(id)
             new EntryDisplay(efp, check, id)
-        })
+          }
+        )
       } else (true, Seq.empty)
     }
 
@@ -290,9 +300,11 @@ class FileEditDetails(parentId: String,
     suppressThumbnails.setChecked(info, WebFileUploads.isSuppressThumbnail(et))
   }
 
-  def editAttachment(info: SectionInfo,
-                     _a: Attachment,
-                     ctx: ControlContext): (Attachment, Option[AttachmentDelete]) = {
+  def editAttachment(
+      info: SectionInfo,
+      _a: Attachment,
+      ctx: ControlContext
+  ): (Attachment, Option[AttachmentDelete]) = {
 
     def copyExtra(src: Attachment, dest: Attachment): Unit = {
       dest.setUuid(src.getUuid)
@@ -313,11 +325,15 @@ class FileEditDetails(parentId: String,
         fa.setFilename(WebFileUploads.removeZipPath(za.getUrl))
         copyExtra(za, fa)
 
-        (fa,
-         Some(
-           AttachmentDelete(
-             ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)),
-             _ => ())))
+        (
+          fa,
+          Some(
+            AttachmentDelete(
+              ctx.controlState.getAttachments.asScala.filter(WebFileUploads.isSelectedInZip(za)),
+              _ => ()
+            )
+          )
+        )
       case _ => (_a, None)
     }
     if (unzipped) {
@@ -361,7 +377,8 @@ class FileEditDetails(parentId: String,
       if (suppressed != wasSuppressed) {
         a.setThumbnail(
           if (suppressed) WebFileUploads.SUPPRESS_THUMB_VALUE
-          else ctx.stagingContext.thumbRequest(a.getUrl))
+          else ctx.stagingContext.thumbRequest(a.getUrl)
+        )
       }
     }
     editingHandler.syncEdits(a.getUrl)
@@ -387,19 +404,23 @@ class FileEditDetails(parentId: String,
     def getFileClass   = if (isFolder) CSS_CLASS_FOLDER else CSS_CLASS_FILE
   }
 
-  def convertFileList(parentPath: String,
-                      displayParent: String,
-                      level: Int,
-                      entries: Seq[FileEntry]): (Seq[EntryFullPath], Seq[EntryFullPath]) = {
+  def convertFileList(
+      parentPath: String,
+      displayParent: String,
+      level: Int,
+      entries: Seq[FileEntry]
+  ): (Seq[EntryFullPath], Seq[EntryFullPath]) = {
     val (files, _folders) = entries
       .map(e => EntryFullPath(parentPath, level, e, prependParent(displayParent, e.getName, " / ")))
       .partition(_.file)
     val folders = _folders.flatMap { fed =>
       val (childFiles, childFolders) =
-        convertFileList(prependParent(parentPath, fed.name),
-                        prependParent(displayParent, fed.name, " / "),
-                        level + 1,
-                        fed.entry.getFiles.asScala.toSeq)
+        convertFileList(
+          prependParent(parentPath, fed.name),
+          prependParent(displayParent, fed.name, " / "),
+          level + 1,
+          fed.entry.getFiles.asScala.toSeq
+        )
       if (childFiles.isEmpty) childFolders else fed +: (childFiles ++ childFolders)
     }
     (files, folders)

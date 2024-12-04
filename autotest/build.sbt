@@ -34,7 +34,8 @@ lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
         }
         envConfig.getOrElse("autotest/config/resources/application.conf")
       }
-    ))
+    )
+  )
   sLog.value.info(s"Loading config from: ${configFile.absolutePath}")
   ConfigFactory.load(ConfigFactory.parseFile(configFile).withFallback(defaultConfig))
 }
@@ -49,8 +50,8 @@ installDir := optPath(installConfig.value, "basedir")
 installOptions := {
   val ic        = installConfig.value
   val jacocoJar = coverageJar.value
-  val jacoco    = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(jacocoJar, o))
-  val db        = ic.getConfig("db")
+  val jacoco = Option(ic.getString("jacoco")).filter(_.nonEmpty).map(o => JacocoAgent(jacocoJar, o))
+  val db     = ic.getConfig("db")
   InstallOptions(
     installDir.value,
     file(sys.props("java.home")),
@@ -80,8 +81,9 @@ autotestInstallerZip := {
   if (installerAbsolutePath.exists) {
     Some(installerAbsolutePath)
   } else {
-    optPath(bc, "install.zip").orElse(optPath(bc, "install.dir").map(d =>
-      (d * "equella-installer-*.zip").get.head))
+    optPath(bc, "install.zip").orElse(
+      optPath(bc, "install.dir").map(d => (d * "equella-installer-*.zip").get.head)
+    )
   }
 }
 
@@ -106,9 +108,8 @@ coverageJar := {
     .head
 }
 
-/**
-  * Dumps coverage data to a single file in the target directory, unless the configuration file
-  * has a directory specified at the path of `coverage.file`.
+/** Dumps coverage data to a single file in the target directory, unless the configuration file has
+  * a directory specified at the path of `coverage.file`.
   */
 dumpCoverage := {
   val cc           = autotestBuildConfig.value.getConfig("coverage")
@@ -198,10 +199,12 @@ coverageReport := {
   })
   val coverageDir = (coverageReport / target).value
   log.info(s"Creating coverage report at ${coverageDir.absolutePath}")
-  CoverageReporter.createReport(execLoader,
-                                allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq,
-                                coverageDir,
-                                allSrcs)
+  CoverageReporter.createReport(
+    execLoader,
+    allPlugins.groupBy(_._1).mapValues(_.map(_._2)).toSeq,
+    coverageDir,
+    allSrcs
+  )
 }
 
 installEquella := {
@@ -239,20 +242,24 @@ setupForTests := {
   val run = (TestPrj / Test / runner).value
   val log = sLog.value
   run
-    .run("equellatests.SetupForTests",
-         (TestPrj / Test / fullClasspath).value.files,
-         spaceDelimited("<arg>").parsed,
-         log)
+    .run(
+      "equellatests.SetupForTests",
+      (TestPrj / Test / fullClasspath).value.files,
+      spaceDelimited("<arg>").parsed,
+      log
+    )
     .get
 }
 
 configureInstall := {
   val run = (TestPrj / Test / runner).value
   run
-    .run("equellatests.InstallFirstTime",
-         (TestPrj / Test / fullClasspath).value.files,
-         Seq(),
-         sLog.value)
+    .run(
+      "equellatests.InstallFirstTime",
+      (TestPrj / Test / fullClasspath).value.files,
+      Seq(),
+      sLog.value
+    )
     .get
 }
 
@@ -268,9 +275,11 @@ collectArtifacts := {
   val oldReportDir = file((OldTests / testNGOutputDirectory).value)
 
   sLog.value.info(s"Collecting test artifacts into ${results.absolutePath}")
-  IO.zip(allFiles(Seq(logsDir, scReportDir, oldReportDir, (coverageReport / target).value)),
-         results,
-         Option((ThisBuild / buildTimestamp).value))
+  IO.zip(
+    allFiles(Seq(logsDir, scReportDir, oldReportDir, (coverageReport / target).value)),
+    results,
+    Option((ThisBuild / buildTimestamp).value)
+  )
   results
 }
 

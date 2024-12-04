@@ -75,21 +75,19 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
     case ResetToTask(task, msg) =>
       for {
         items <- itemIds.traverse(i => RItems.getModeration(i).product(RItems.getHistory(i)))
-      } yield
-        all(items.map {
-          case (mod, history) =>
-            all(
-              mod.firstIncompleteTask
-                .map(_.name ?= task)
-                .getOrElse(Prop.falsified.label(s"Meant to be at task $task")),
-              history.collectFirst {
-                case he: RHistoryEvent
-                    if he.`type` == RHistoryEventType.taskMove &&
-                      he.comment.isDefined && he.toStepName.contains(task) =>
-                  he.comment.get
-              } ?= Some(msg)
-            )
-        }: _*)
+      } yield all(items.map { case (mod, history) =>
+        all(
+          mod.firstIncompleteTask
+            .map(_.name ?= task)
+            .getOrElse(Prop.falsified.label(s"Meant to be at task $task")),
+          history.collectFirst {
+            case he: RHistoryEvent
+                if he.`type` == RHistoryEventType.taskMove &&
+                  he.comment.isDefined && he.toStepName.contains(task) =>
+              he.comment.get
+          } ?= Some(msg)
+        )
+      }: _*)
 
   }
 
@@ -100,8 +98,10 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
       val opType = c.op.typ
       val itemIds = ERest.run(ctx) {
         c.names.toVector.traverse[ERest, ItemId] { n =>
-          val item = RCreateItem(RCollectionRef(workflow.threeStepWMUuid),
-                                 workflow.simpleMetadata(b.uniquePrefix(n)))
+          val item = RCreateItem(
+            RCollectionRef(workflow.threeStepWMUuid),
+            workflow.simpleMetadata(b.uniquePrefix(n))
+          )
           RItems.create(item)
         }
       }

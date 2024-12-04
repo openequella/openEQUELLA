@@ -9,8 +9,7 @@ import org.testng.Assert.{assertFalse, assertTrue}
 import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
-/**
-  * New UI tests for virtual hierarchy.
+/** New UI tests for virtual hierarchy.
   */
 @TestInstitution("hierarchy")
 class VirtualHierarchyTest extends AbstractCleanupAutoTest {
@@ -28,9 +27,11 @@ class VirtualHierarchyTest extends AbstractCleanupAutoTest {
     new HierarchyPage(context, hierarchyName, compoundUuid).load()
 
   // Add key resource to hierarchy to prepare for the test.
-  private def prepareKeyResource(hierarchyName: String,
-                                 hierarchyUuid: String,
-                                 itemName: String): Unit = {
+  private def prepareKeyResource(
+      hierarchyName: String,
+      hierarchyUuid: String,
+      itemName: String
+  ): Unit = {
     val hierarchyPage = openHierarchyPage(hierarchyName, hierarchyUuid)
     hierarchyPage.addKeyResourceFromResultList(itemName)
     assertTrue(hierarchyPage.hasKeyResource(itemName))
@@ -83,7 +84,7 @@ class VirtualHierarchyTest extends AbstractCleanupAutoTest {
   @NewUIOnly
   @Test(
     description =
-      "User should be able to remove virtual key resource by clicking the pin icon in item list.",
+      "User should be able to remove virtual key resource by clicking the pin icon in item list."
   )
   def removeVirtualKeyResourceFromResultList(): Unit = {
     val hierarchyPage = openHierarchyPage(TOPIC_3, TOPIC_3_UUID)
@@ -98,7 +99,8 @@ class VirtualHierarchyTest extends AbstractCleanupAutoTest {
   @NewUIOnly
   @Test(
     description =
-      "User should be able to remove virtual key resource by clicking the pin icon in the Key Resource Panel.")
+      "User should be able to remove virtual key resource by clicking the pin icon in the Key Resource Panel."
+  )
   def removeVirtualKeyResourceFromKeyResourcePanel(): Unit = {
     val hierarchyPage = openHierarchyPage(TOPIC_3, TOPIC_3_UUID)
     prepareKeyResource(TOPIC_3, TOPIC_3_UUID, TESTING_ITEM)

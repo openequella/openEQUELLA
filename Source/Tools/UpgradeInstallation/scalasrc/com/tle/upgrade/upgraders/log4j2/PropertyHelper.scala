@@ -23,43 +23,51 @@ import scala.util.{Failure, Success, Try}
 
 object PropertyHelper {
 
-  /**
-    * Get a String value from the property configurations by the supplied key.
+  /** Get a String value from the property configurations by the supplied key.
     *
-    * @param key Key of a property.
-    * @param props The property configuration to be read.
-    * @return None if the key is not found in the provided properties, otherwise the value as a String.
+    * @param key
+    *   Key of a property.
+    * @param props
+    *   The property configuration to be read.
+    * @return
+    *   None if the key is not found in the provided properties, otherwise the value as a String.
     */
   def readProperty(key: String, props: Properties): Option[String] =
     Option(props.getProperty(key))
       .filter(_.nonEmpty)
 
-  /**
-    * Get a boolean value from the property configurations by the supplied key.
+  /** Get a boolean value from the property configurations by the supplied key.
     *
-    * @param key Key of a property.
-    * @param props The property configuration to be read.
-    * @return None if the key is not found in the provided properties or the key can't be parsed to a Boolean,
-    *         otherwise the value as a Boolean.
+    * @param key
+    *   Key of a property.
+    * @param props
+    *   The property configuration to be read.
+    * @return
+    *   None if the key is not found in the provided properties or the key can't be parsed to a
+    *   Boolean, otherwise the value as a Boolean.
     */
   def readBooleanProperty(key: String, props: Properties): Option[Boolean] =
     readProperty(key, props).flatMap(s =>
       Try {
         s.toBoolean
-      }.toOption)
+      }.toOption
+    )
 
-  /**
-    * Get an Int value from the property configurations by the supplied key.
+  /** Get an Int value from the property configurations by the supplied key.
     *
-    * @param key Key of a property.
-    * @param props The property configuration to be read.
-    * @return None if the key is not found in the provided properties or the key can't be parsed to a Int,
-    *         otherwise the value as a Int.
+    * @param key
+    *   Key of a property.
+    * @param props
+    *   The property configuration to be read.
+    * @return
+    *   None if the key is not found in the provided properties or the key can't be parsed to a Int,
+    *   otherwise the value as a Int.
     */
   def readIntProperty(key: String, props: Properties): Option[Int] =
     readProperty(key, props)
       .flatMap(s =>
         Try {
           s.toInt
-        }.toOption)
+        }.toOption
+      )
 }

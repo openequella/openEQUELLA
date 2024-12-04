@@ -23,63 +23,71 @@ import java.security.interfaces.RSAPrivateKey
 
 trait LtiPlatformService {
 
-  /**
-    * Retrieve a LTI platform from the current Institution by platform ID.
+  /** Retrieve a LTI platform from the current Institution by platform ID.
     *
-    * @param platformID The ID identifying a LTI platform.
-    * @return Option of a LtiPlatformBean, or None if no platforms match the ID.
+    * @param platformID
+    *   The ID identifying a LTI platform.
+    * @return
+    *   Option of a LtiPlatformBean, or None if no platforms match the ID.
     */
   def getByPlatformID(platformID: String): Option[LtiPlatformBean]
 
-  /**
-    * Retrieve all the LTI platforms from the current Institution.
+  /** Retrieve all the LTI platforms from the current Institution.
     *
-    * @return List of LtiPlatformBean belonging to the current Institution.
+    * @return
+    *   List of LtiPlatformBean belonging to the current Institution.
     */
   def getAll: List[LtiPlatformBean]
 
-  /**
-    * Return ID of the activated RSA key pair dedicated to the platform as well as the private key.
+  /** Return ID of the activated RSA key pair dedicated to the platform as well as the private key.
     *
-    * @param platformID The ID identifying a LTI platform.
-    * @return A tuple of the RSAPrivateKey and the JWKS key ID, or an error message if no such a keypair found.
+    * @param platformID
+    *   The ID identifying a LTI platform.
+    * @return
+    *   A tuple of the RSAPrivateKey and the JWKS key ID, or an error message if no such a keypair
+    *   found.
     */
   def getPrivateKeyForPlatform(platformID: String): Either[String, (String, RSAPrivateKey)]
 
-  /**
-    * Rotate the activated key pair for an LTI platform.
+  /** Rotate the activated key pair for an LTI platform.
     *
-    * @param platformID The ID identifying a LTI platform.
-    * @return Key ID of the new activated key pair, or an error message describing why failed to rotate.
+    * @param platformID
+    *   The ID identifying a LTI platform.
+    * @return
+    *   Key ID of the new activated key pair, or an error message describing why failed to rotate.
     */
   def rotateKeyPairForPlatform(platformID: String): Either[String, String]
 
-  /**
-    * Create a LTI platform based on the provided bean in the current Institution.
+  /** Create a LTI platform based on the provided bean in the current Institution.
     *
-    * @param bean LtiPlatformBean which provides information of a LTI platform.
-    * @return platform ID of the new platform.
+    * @param bean
+    *   LtiPlatformBean which provides information of a LTI platform.
+    * @return
+    *   platform ID of the new platform.
     */
   def create(bean: LtiPlatformBean): String
 
-  /**
-    * Update an existing LTI Platform based on the provided bean.
+  /** Update an existing LTI Platform based on the provided bean.
     *
-    * @param bean LtiPlatformBean which provides updates for an existing LTI platform.
-    * @return ID of the platform if the update is successful, or None if no such a platform can be updated.
+    * @param bean
+    *   LtiPlatformBean which provides updates for an existing LTI platform.
+    * @return
+    *   ID of the platform if the update is successful, or None if no such a platform can be
+    *   updated.
     */
   def update(bean: LtiPlatformBean): Option[String]
 
-  /**
-    * Delete all the platforms from the current Institution.
+  /** Delete all the platforms from the current Institution.
     */
   def deleteAll: Unit
 
-  /**
-    * Delete a LTI platform from the current Institution by ID.
+  /** Delete a LTI platform from the current Institution by ID.
     *
-    * @param platformId The ID identifying a LTI platform.
-    * @return Option of Unit to indicate the deletion is successful, or None if no such a platform can be deleted.
+    * @param platformId
+    *   The ID identifying a LTI platform.
+    * @return
+    *   Option of Unit to indicate the deletion is successful, or None if no such a platform can be
+    *   deleted.
     */
   def delete(platformId: String): Option[Unit]
 }

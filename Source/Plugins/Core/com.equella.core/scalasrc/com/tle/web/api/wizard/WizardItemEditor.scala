@@ -54,11 +54,10 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
 
   override def finishedEditing(ensureOnIndexList: Boolean): ItemIdKey = {
     val attachments = item.getAttachments
-    attachmentOrder.iterator.zipWithIndex.foreach {
-      case (attachUuid, i) =>
-        val attach = attachmentMap(attachUuid)
-        if (attachments.size <= i) attachments.add(attach)
-        else attachments.set(i, attach)
+    attachmentOrder.iterator.zipWithIndex.foreach { case (attachUuid, i) =>
+      val attach = attachmentMap(attachUuid)
+      if (attachments.size <= i) attachments.add(attach)
+      else attachments.set(i, attach)
     }
     val existingSize = attachments.size()
     val newSize      = attachmentOrder.size

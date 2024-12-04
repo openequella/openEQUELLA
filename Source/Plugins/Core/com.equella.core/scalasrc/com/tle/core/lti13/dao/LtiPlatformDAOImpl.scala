@@ -31,7 +31,9 @@ class LtiPlatformDAOImpl
     with LtiPlatformDAO {
 
   override def getByPlatformId(platformId: String): Option[LtiPlatform] =
-    DAOHelper.getOnlyOne(this,
-                         "getByPlatformID",
-                         Map("platformId" -> platformId, "institution" -> CurrentInstitution.get()))
+    DAOHelper.getOnlyOne(
+      this,
+      "getByPlatformID",
+      Map("platformId" -> platformId, "institution" -> CurrentInstitution.get())
+    )
 }

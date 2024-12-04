@@ -94,8 +94,10 @@ class FacetedSearchClassificationResource {
     notes = "This endpoint is used to update one faceted search classification.",
     response = classOf[FacetedSearchClassification]
   )
-  def update(@ApiParam("ID") @PathParam("id") id: Long,
-             jsonBody: FacetedSearchClassification): Response = {
+  def update(
+      @ApiParam("ID") @PathParam("id") id: Long,
+      jsonBody: FacetedSearchClassification
+  ): Response = {
     privilegeChecker.checkAuthorised()
     Option(service.getById(id)) match {
       case Some(classification) =>
@@ -136,9 +138,11 @@ class FacetedSearchClassificationResource {
             newClassification.setDateModified(new Date())
             newClassification.setInstitution(CurrentInstitution.get)
             service.add(newClassification)
-            ApiBatchOperationResponse(newClassification.getId,
-                                      200,
-                                      s"A new classification has been created.")
+            ApiBatchOperationResponse(
+              newClassification.getId,
+              200,
+              s"A new classification has been created."
+            )
           } else {
             Option(service.getById(id)) match {
               case Some(oldClassification) =>
@@ -163,7 +167,7 @@ class FacetedSearchClassificationResource {
   @Path("/{id}")
   @ApiOperation(
     value = "Delete one faceted search classification",
-    notes = "This endpoint is used to delete one faceted search classifications.",
+    notes = "This endpoint is used to delete one faceted search classifications."
   )
   def delete(@ApiParam("ID") @PathParam("id") id: Long): Response = {
     privilegeChecker.checkAuthorised()

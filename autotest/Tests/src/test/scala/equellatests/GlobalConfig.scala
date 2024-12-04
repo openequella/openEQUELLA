@@ -14,7 +14,9 @@ object GlobalConfig {
     new File(testConfig.getTestFolder, testInst.baseFolderName)
 
   def createTestInst(shortName: String) =
-    TestInst(URI.create(testConfig.getInstitutionUrl(shortName)),
-             testConfig.getAdminPassword,
-             shortName)
+    TestInst(
+      URI.create(testConfig.getInstitutionUrl(shortName)),
+      testConfig.getAdminPassword,
+      shortName
+    )
 }

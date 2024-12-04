@@ -28,27 +28,23 @@ import javax.persistence.{
   Id
 }
 
-/**
-  * This entity is used to store the mappings between LTI roles and OEQ roles for LTI 1.3 platforms.
+/** This entity is used to store the mappings between LTI roles and OEQ roles for LTI 1.3 platforms.
   */
 @Entity
 class LtiPlatformCustomRole {
 
-  /**
-    * Database automatically generated ID used as the primary key.
+  /** Database automatically generated ID used as the primary key.
     */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Long = _
 
-  /**
-    * The LTI role which targets to one or multiple OEQ roles.
+  /** The LTI role which targets to one or multiple OEQ roles.
     */
   @Column(nullable = false)
   var ltiRole: String = _
 
-  /**
-    * A list of OEQ roles which is targeted by a LTI role.
+  /** A list of OEQ roles which is targeted by a LTI role.
     */
   @ElementCollection
   @CollectionTable(name = "lti_platform_custom_target")

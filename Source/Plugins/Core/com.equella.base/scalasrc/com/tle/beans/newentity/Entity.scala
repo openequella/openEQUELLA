@@ -41,13 +41,20 @@ class EntityID extends Serializable {
 
 @javax.persistence.Entity
 @AttributeAccessor("field")
-@Table(name = "entities", indexes = Array {
-  new Index(name = "entityTypeIdx", columnList = "inst_id, typeid")
-})
-@NamedQuery(name = "deleteAllEntityByInst",
-            query = "DELETE FROM Entity WHERE id.inst_id = :institutionId")
-@NamedQuery(name = "getAllByType",
-            query = "from Entity WHERE id.inst_id = :institutionId and typeid = :typeId")
+@Table(
+  name = "entities",
+  indexes = Array {
+    new Index(name = "entityTypeIdx", columnList = "inst_id, typeid")
+  }
+)
+@NamedQuery(
+  name = "deleteAllEntityByInst",
+  query = "DELETE FROM Entity WHERE id.inst_id = :institutionId"
+)
+@NamedQuery(
+  name = "getAllByType",
+  query = "from Entity WHERE id.inst_id = :institutionId and typeid = :typeId"
+)
 class Entity {
   @EmbeddedId
   var id: EntityID = _
@@ -79,17 +86,19 @@ object EntityID {
 }
 
 object Entity {
-  def apply(uuid: String,
-            inst_id: Long,
-            typeId: String,
-            name: String,
-            nameStrings: String,
-            description: String,
-            descriptionStrings: String,
-            owner: String,
-            created: Instant,
-            modified: Instant,
-            data: String): Entity = {
+  def apply(
+      uuid: String,
+      inst_id: Long,
+      typeId: String,
+      name: String,
+      nameStrings: String,
+      description: String,
+      descriptionStrings: String,
+      owner: String,
+      created: Instant,
+      modified: Instant,
+      data: String
+  ): Entity = {
     val entity = new Entity
     entity.id = EntityID(uuid, inst_id)
     entity.typeid = typeId

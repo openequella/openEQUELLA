@@ -29,13 +29,11 @@ import com.tle.web.api.item.equella.interfaces.beans.{
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.controls.resource.ResourceAttachmentBean
 
-/**
-  * Service layer that deals with Attachment related business logic.
+/** Service layer that deals with Attachment related business logic.
   */
 object AttachmentService {
 
-  /**
-    * Extract the mimetype for AbstractExtendableBean.
+  /** Extract the mimetype for AbstractExtendableBean.
     */
   def getMimetypeForAttachment[T <: AbstractExtendableBean](bean: T): Option[String] =
     bean match {
@@ -43,15 +41,17 @@ object AttachmentService {
         Some(LegacyGuice.mimeTypeService.getMimeTypeForFilename(file.getFilename))
       case resourceAttachmentBean: ResourceAttachmentBean =>
         Some(
-          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean))
+          LegacyGuice.mimeTypeService.getMimeTypeForResourceAttachmentBean(resourceAttachmentBean)
+        )
       case _ => None
     }
 
-  /**
-    * If the attachment is a file, then return the path for that attachment.
+  /** If the attachment is a file, then return the path for that attachment.
     *
-    * @param attachment a potential file attachment
-    * @return the path of the provided file attachment
+    * @param attachment
+    *   a potential file attachment
+    * @return
+    *   the path of the provided file attachment
     */
   def getFilePathForAttachment(attachment: AttachmentBean): Option[String] =
     attachment match {
@@ -59,8 +59,7 @@ object AttachmentService {
       case _                                  => None
     }
 
-  /**
-    * Determines if attachment contains a generated thumbnail in filestore
+  /** Determines if attachment contains a generated thumbnail in filestore
     */
   def thumbExists(itemKey: ItemIdKey, attachBean: AttachmentBean): Option[Boolean] = {
     attachBean match {
@@ -73,10 +72,12 @@ object AttachmentService {
     }
   }
 
-  /**
-    * Determines if a given customAttachment is invalid. Required as these attachments can be recursive.
-    * @param customAttachment The attachment to check.
-    * @return If true, this attachment is broken.
+  /** Determines if a given customAttachment is invalid. Required as these attachments can be
+    * recursive.
+    * @param customAttachment
+    *   The attachment to check.
+    * @return
+    *   If true, this attachment is broken.
     */
   private def isCustomAttachmentBroken(customAttachment: CustomAttachment): Boolean = {
     val uuid    = customAttachment.getData("uuid").asInstanceOf[String]
@@ -98,15 +99,17 @@ object AttachmentService {
     }
   }
 
-  /**
-    * Determines if a given attachment is invalid. If it is a resource selector attachment, this
-    * gets handled by [[isCustomAttachmentBroken(customAttachment: CustomAttachment)]]
-    * which links back in here to recurse through customAttachments to find the root.
+  /** Determines if a given attachment is invalid. If it is a resource selector attachment, this
+    * gets handled by [[isCustomAttachmentBroken(customAttachment: CustomAttachment)]] which links
+    * back in here to recurse through customAttachments to find the root.
     *
-    * @param itemKey the details of the item the attachment belongs to
-    * @param attachmentUuid the UUID of the attachment
-    * @return None if the attachment is broken, otherwise the attachment which was found wrapped in
-    *         an Option
+    * @param itemKey
+    *   the details of the item the attachment belongs to
+    * @param attachmentUuid
+    *   the UUID of the attachment
+    * @return
+    *   None if the attachment is broken, otherwise the attachment which was found wrapped in an
+    *   Option
     */
   def recurseBrokenAttachmentCheck(itemKey: ItemKey, attachmentUuid: String): Option[Attachment] = {
     // check if file is present in the file-store

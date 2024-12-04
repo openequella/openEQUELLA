@@ -31,12 +31,14 @@ import javax.ws.rs.core.{Context, Response}
 import javax.ws.rs.{POST, Path, PathParam, QueryParam}
 import scala.jdk.CollectionConverters._
 
-case class SelectionKey(uuid: String,
-                        version: Int,
-                        `type`: String,
-                        attachmentUuid: Option[String],
-                        folderId: Option[String],
-                        url: Option[String])
+case class SelectionKey(
+    uuid: String,
+    version: Int,
+    `type`: String,
+    attachmentUuid: Option[String],
+    folderId: Option[String],
+    url: Option[String]
+)
 
 case class ResourceSelection(key: SelectionKey, title: String)
 
@@ -48,10 +50,12 @@ class SelectionApi {
 
   @POST
   @Path("{sessid}/return")
-  def returnSelections(@QueryParam("integid") integid: String,
-                       @PathParam("sessid") sessid: String,
-                       @Context request: HttpServletRequest,
-                       @Context response: HttpServletResponse): Response = {
+  def returnSelections(
+      @QueryParam("integid") integid: String,
+      @PathParam("sessid") sessid: String,
+      @Context request: HttpServletRequest,
+      @Context response: HttpServletResponse
+  ): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
     val info        = setupSession(sessid, Option(integid), request, response)
     val sessionData = selectionService.getCurrentSession(info)
@@ -65,10 +69,12 @@ class SelectionApi {
 
   @POST
   @Path("{sessid}/add")
-  def addResource(@PathParam("sessid") sessid: String,
-                  @Context request: HttpServletRequest,
-                  @Context response: HttpServletResponse,
-                  resource: ResourceSelection): Response = {
+  def addResource(
+      @PathParam("sessid") sessid: String,
+      @Context request: HttpServletRequest,
+      @Context response: HttpServletResponse,
+      resource: ResourceSelection
+  ): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
     val info = setupSession(sessid, None, request, response)
     val res  = new SelectedResource(toSRK(resource.key))
@@ -88,10 +94,12 @@ class SelectionApi {
 
   @POST
   @Path("{sessid}/remove")
-  def removeResource(@PathParam("sessid") sessid: String,
-                     @Context request: HttpServletRequest,
-                     @Context response: HttpServletResponse,
-                     resKey: SelectionKey): Response = {
+  def removeResource(
+      @PathParam("sessid") sessid: String,
+      @Context request: HttpServletRequest,
+      @Context response: HttpServletResponse,
+      resKey: SelectionKey
+  ): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
     val info = setupSession(sessid, None, request, response)
     selectionService.removeSelectedResource(info, toSRK(resKey))
@@ -105,25 +113,37 @@ object SelectionApi {
   lazy val selectionService   = LegacyGuice.selectionService.get()
 
   val blankTree =
-    new DefaultSectionTree(LegacyGuice.treeRegistry, new SectionNode("", new AbstractScalaSection {
-      override type M = Int
+    new DefaultSectionTree(
+      LegacyGuice.treeRegistry,
+      new SectionNode(
+        "",
+        new AbstractScalaSection {
+          override type M = Int
 
-      override def newModel: SectionInfo => Int = _ => 1
-    }))
+          override def newModel: SectionInfo => Int = _ => 1
+        }
+      )
+    )
 
-  def setupSession(sessid: String,
-                   integid: Option[String],
-                   request: HttpServletRequest,
-                   response: HttpServletResponse) = {
-    val paramMap = Iterable(Some("_sl.stateId" -> Array(sessid)),
-                            integid.map("_int.id" -> Array(_))).flatten.toMap
-    val info = LegacyGuice.sectionsController.createInfo(blankTree,
-                                                         "/",
-                                                         request,
-                                                         response,
-                                                         null,
-                                                         paramMap.asJava,
-                                                         null)
+  def setupSession(
+      sessid: String,
+      integid: Option[String],
+      request: HttpServletRequest,
+      response: HttpServletResponse
+  ) = {
+    val paramMap = Iterable(
+      Some("_sl.stateId" -> Array(sessid)),
+      integid.map("_int.id" -> Array(_))
+    ).flatten.toMap
+    val info = LegacyGuice.sectionsController.createInfo(
+      blankTree,
+      "/",
+      request,
+      response,
+      null,
+      paramMap.asJava,
+      null
+    )
 
     info.fireBeforeEvents()
     info

@@ -60,13 +60,18 @@ object WebFileUploads {
   val SUPPRESS_THUMB_VALUE                         = "suppress"
   def isSuppressThumbnail(et: Attachment): Boolean = SUPPRESS_THUMB_VALUE == et.getThumbnail
 
-  def validateBeforeUpload(mimeType: String,
-                           size: Long,
-                           fileSettings: FileUploadSettings): Option[IllegalFileReason] = {
-    if (fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(
-          mimeType))
+  def validateBeforeUpload(
+      mimeType: String,
+      size: Long,
+      fileSettings: FileUploadSettings
+  ): Option[IllegalFileReason] = {
+    if (
+      fileSettings.isRestrictByMime && !fileSettings.getMimeTypes.asScala.toSet.contains(mimeType)
+    )
       Some(WrongType)
-    else if (fileSettings.isRestrictFileSize && size > (fileSettings.getMaxFileSize.toLong * GeneralConstants.BYTES_PER_MEGABYTE))
+    else if (
+      fileSettings.isRestrictFileSize && size > (fileSettings.getMaxFileSize.toLong * GeneralConstants.BYTES_PER_MEGABYTE)
+    )
       Some(FileTooBig)
     else None
   }
@@ -85,13 +90,15 @@ object WebFileUploads {
     }
   }
 
-  def uploadStream(uploadId: UUID,
-                   filename: String,
-                   description: String,
-                   fileSize: Long,
-                   mimeType: String,
-                   openStream: () => InputStream,
-                   ctx: ControlContext): CurrentUpload = {
+  def uploadStream(
+      uploadId: UUID,
+      filename: String,
+      description: String,
+      fileSize: Long,
+      mimeType: String,
+      openStream: () => InputStream,
+      ctx: ControlContext
+  ): CurrentUpload = {
     val currentUpload = validateBeforeUpload(mimeType, fileSize, ctx.controlSettings) match {
       case Some(failReason) =>
         FailedUpload(uploadId, Instant.now(), filename, IllegalFile(failReason))
@@ -124,9 +131,11 @@ object WebFileUploads {
     } else Seq.empty
   }
 
-  def validateContent(info: SectionInfo,
-                      ctx: ControlContext,
-                      uploadPath: String): Either[IllegalFileReason, Seq[PackageType]] = {
+  def validateContent(
+      info: SectionInfo,
+      ctx: ControlContext,
+      uploadPath: String
+  ): Either[IllegalFileReason, Seq[PackageType]] = {
     val settings = ctx.controlSettings
     val detected =
       ctx.repo.determinePackageTypes(info, uploadPath).asScala.map(PackageType.fromString).toSeq
@@ -139,18 +148,19 @@ object WebFileUploads {
       Right(detected)
   }
 
-  def failedValidation(ctx: ControlContext,
-                       s: SuccessfulUpload,
-                       ifr: IllegalFileReason): CurrentUpload = {
+  def failedValidation(
+      ctx: ControlContext,
+      s: SuccessfulUpload,
+      ifr: IllegalFileReason
+  ): CurrentUpload = {
     cleanupForUpload(ctx, s).apply(ctx.stagingContext)
     FailedUpload(s.id, s.started, s.originalFilename, IllegalFile(ifr))
   }
 
   def validateAllFinished(info: SectionInfo, ctx: ControlContext): Unit = {
-    val allFinished = ctx.state.allCurrentUploads.collect {
-      case s: SuccessfulUpload =>
-        validateContent(info, ctx, s.uploadPath)
-          .fold(ifr => failedValidation(ctx, s, ifr), dpt => ValidatedUpload(s, dpt))
+    val allFinished = ctx.state.allCurrentUploads.collect { case s: SuccessfulUpload =>
+      validateContent(info, ctx, s.uploadPath)
+        .fold(ifr => failedValidation(ctx, s, ifr), dpt => ValidatedUpload(s, dpt))
     }
     allFinished.foreach(u => ctx.state.finishedUpload(u))
   }
@@ -162,17 +172,21 @@ object WebFileUploads {
     ctx.state.removeAll(previousFails)
   }
 
-  def attachmentCreatorForUpload(info: SectionInfo,
-                                 ctx: ControlContext,
-                                 v: ValidatedUpload): AttachmentCreate = {
+  def attachmentCreatorForUpload(
+      info: SectionInfo,
+      ctx: ControlContext,
+      v: ValidatedUpload
+  ): AttachmentCreate = {
     if (v.detected.nonEmpty) AttachmentCreate(info, ctx, v.s, v.detected)
     else AttachmentCreate(v.s, ctx.controlSettings.isSuppressThumbnails)
   }
 
-  def uniqueName(filename: String,
-                 replacing: Option[String],
-                 id: UUID,
-                 ctx: ControlContext): String = {
+  def uniqueName(
+      filename: String,
+      replacing: Option[String],
+      id: UUID,
+      ctx: ControlContext
+  ): String = {
     val rootNames = ctx.stagingContext.listRootFilenames() -- replacing.map(_.toLowerCase())
     val p         = PathUtils.fileParts(filename)
 
@@ -211,10 +225,13 @@ object WebFileUploads {
     case fa: FileAttachment =>
       AttachmentDelete(Iterable(fa), stg => if (!isSelectedInAZip(fa)) stg.delete(fa.getFilename))
     case za: ZipAttachment =>
-      AttachmentDelete(a +: findAttachments(ctx.repo, isSelectedInZip(za)), { stg =>
-        stg.delete(removeZipPath(za.getUrl))
-        stg.delete(za.getUrl)
-      })
+      AttachmentDelete(
+        a +: findAttachments(ctx.repo, isSelectedInZip(za)),
+        { stg =>
+          stg.delete(removeZipPath(za.getUrl))
+          stg.delete(za.getUrl)
+        }
+      )
     case a: Attachment => AttachmentCreate.extensionForPackageAttachment(a).get.delete(ctx, a)
   }
 
@@ -227,13 +244,11 @@ object WebFileUploads {
     ctx.repo.unregisterFilename(cu.id)
     cu match {
       case uf: UploadingFile =>
-        _ =>
-          uf.cancel.set(true)
+        _ => uf.cancel.set(true)
       case su: SuccessfulUpload  => removeFilesForUpload(su)
       case ValidatedUpload(s, _) => removeFilesForUpload(s)
       case fu: FailedUpload =>
-        _ =>
-          ()
+        _ => ()
     }
   }
 
@@ -292,10 +307,12 @@ object WebFileUploads {
     lower.endsWith(".html") || lower.endsWith(".htm")
   }
 
-  def validateFunc(controlSettings: FileUploadSettings,
-                   errorCallback: JSExpression,
-                   startedUpload: JSExpression,
-                   doneCallback: JSExpression): JSAssignable = {
+  def validateFunc(
+      controlSettings: FileUploadSettings,
+      errorCallback: JSExpression,
+      startedUpload: JSExpression,
+      doneCallback: JSExpression
+  ): JSAssignable = {
     Js.functionValue(
       AjaxUpload.createValidate(
         if (controlSettings.isRestrictFileSize)
@@ -306,6 +323,7 @@ object WebFileUploads {
         errorCallback,
         startedUpload,
         doneCallback
-      ))
+      )
+    )
   }
 }

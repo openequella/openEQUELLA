@@ -62,9 +62,11 @@ import javax.inject.Inject
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success}
 
-case class UploadedFile(getLink: HtmlLinkState,
-                        getCancel: UnselectLinkRenderer,
-                        getProgressDiv: SectionRenderable)
+case class UploadedFile(
+    getLink: HtmlLinkState,
+    getCancel: UnselectLinkRenderer,
+    getProgressDiv: SectionRenderable
+)
 
 class TaskActionDialogModel extends DialogModel {
   @Bookmarked var stagingFolderUuid: String    = null
@@ -123,40 +125,38 @@ abstract class AbstractTaskActionDialog
   protected def setupModelForRender(context: RenderContext): Unit = {
     val model             = getModel(context)
     val stagingFolderUuid = model.stagingFolderUuid
-    val fileEntries       = fileSystemService.enumerate(new StagingFile(stagingFolderUuid), null, null)
-    val files = fileEntries.zipWithIndex.flatMap {
-      case (fileEntry, index) =>
-        val filename = fileEntry.getName
-        val shouldShow = currentUploads.find(_._2._1 == filename) match {
-          case None => Some((index.toString, true, new StatementHandler(removeCallback, filename)))
-          case Some((uuid, (fn, ar, err))) if !ar.get() =>
-            Some((uuid, false, new StatementHandler(cancelFunc, uuid)))
-          case _ => None
+    val fileEntries = fileSystemService.enumerate(new StagingFile(stagingFolderUuid), null, null)
+    val files = fileEntries.zipWithIndex.flatMap { case (fileEntry, index) =>
+      val filename = fileEntry.getName
+      val shouldShow = currentUploads.find(_._2._1 == filename) match {
+        case None => Some((index.toString, true, new StatementHandler(removeCallback, filename)))
+        case Some((uuid, (fn, ar, err))) if !ar.get() =>
+          Some((uuid, false, new StatementHandler(cancelFunc, uuid)))
+        case _ => None
+      }
+      shouldShow.map { case (id, finished, removeHandler) =>
+        val link = new HtmlLinkState(
+          new TextLabel(filename),
+          new SimpleBookmark(WorkflowMessageServlet.stagingUrl(stagingFolderUuid, filename))
+        )
+        link.setTarget("_blank")
+        val remove = new HtmlLinkState
+        remove.setClickHandler(removeHandler)
+        val cancel           = new UnselectLinkRenderer(remove, new TextLabel(""))
+        val progressDivState = new HtmlComponentState
+        val progressDiv      = new DivRenderer(progressDivState)
+        progressDivState.setId("u" + id)
+        if (finished) {
+          val inner = new DivRenderer("")
+          inner.addClass("progress-bar-inner complete")
+          progressDiv.setNestedRenderable(inner)
         }
-        shouldShow.map {
-          case (id, finished, removeHandler) =>
-            val link = new HtmlLinkState(
-              new TextLabel(filename),
-              new SimpleBookmark(WorkflowMessageServlet.stagingUrl(stagingFolderUuid, filename)))
-            link.setTarget("_blank")
-            val remove = new HtmlLinkState
-            remove.setClickHandler(removeHandler)
-            val cancel           = new UnselectLinkRenderer(remove, new TextLabel(""))
-            val progressDivState = new HtmlComponentState
-            val progressDiv      = new DivRenderer(progressDivState)
-            progressDivState.setId("u" + id)
-            if (finished) {
-              val inner = new DivRenderer("")
-              inner.addClass("progress-bar-inner complete")
-              progressDiv.setNestedRenderable(inner)
-            }
-            UploadedFile(link, cancel, progressDiv)
-        }
+        UploadedFile(link, cancel, progressDiv)
+      }
     }
-    currentUploads --= currentUploads.collect {
-      case (u, (_, _, Some(m))) =>
-        model.getErrorMessage = m
-        u
+    currentUploads --= currentUploads.collect { case (u, (_, _, Some(m))) =>
+      model.getErrorMessage = m
+      u
     }
     model.getStagingFiles = files.toList.asJava
     _fileDrop.setAjaxUploadUrl(context, ajaxEvents.getAjaxUrl(context, "dndUpload"))
@@ -200,11 +200,13 @@ abstract class AbstractTaskActionDialog
     val errorMessage = validate(info)
     if (errorMessage == null) {
       val currentTaskSection: CurrentTaskSection = info.lookupSection(classOf[CurrentTaskSection])
-      currentTaskSection.doComment(info,
-                                   getActionType,
-                                   getWorkflowStepTarget(info),
-                                   _commentField.getValue(info),
-                                   stagingUuid)
+      currentTaskSection.doComment(
+        info,
+        getActionType,
+        getWorkflowStepTarget(info),
+        _commentField.getValue(info),
+        stagingUuid
+      )
       closeDialog(info, successCallable, getActionType)
     } else {
       info.preventGET()
@@ -238,9 +240,11 @@ abstract class AbstractTaskActionDialog
     // overwrite existing file
     if (fileSystemService.fileExists(staging, fn))
       fileSystemService.removeFile(staging, fn)
-    AjaxUpload.writeCancellableStream(s => fileSystemService.write(staging, fn, s, false),
-                                      stream,
-                                      uploadRef) match {
+    AjaxUpload.writeCancellableStream(
+      s => fileSystemService.write(staging, fn, s, false),
+      stream,
+      uploadRef
+    ) match {
       case Success(_) => currentUploads.remove(uploadId)
       case Failure(f) =>
         fileSystemService.removeFile(staging, fn)
@@ -266,8 +270,8 @@ abstract class AbstractTaskActionDialog
 
   @EventHandlerMethod
   def cancelFile(info: SectionInfo, uuid: UUID): Unit = {
-    currentUploads.get(uuid).foreach {
-      case (fn, ar, _) => ar.set(true)
+    currentUploads.get(uuid).foreach { case (fn, ar, _) =>
+      ar.set(true)
     }
 
   }
@@ -285,32 +289,39 @@ abstract class AbstractTaskActionDialog
       this,
       null,
       ajaxEvents.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),
-      divs: _*)
+      divs: _*
+    )
 
     removeCallback = ajaxEvents.getAjaxUpdateDomFunction(
       tree,
       this,
       events.getEventHandler("removeUploadedFile"),
       ajaxEvents.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),
-      divs: _*)
+      divs: _*
+    )
 
     cancelFunc = ajaxEvents.getAjaxUpdateDomFunction(
       tree,
       this,
       events.getEventHandler("cancelFile"),
       ajaxEvents.getEffectFunction(AjaxGenerator.EffectType.REPLACE_IN_PLACE),
-      divs: _*)
+      divs: _*
+    )
 
     val errorCallback = PartiallyApply.partial(events.getSubmitValuesFunction("illegalFile"), 2)
     val startedUpload = AjaxUpload.createProgressFunc(
       new JQuerySelector(JQuerySelector.Type.RAW, "#uploads .uploadsprogress"),
-      cancelFunc)
+      cancelFunc
+    )
     validateFile = Js.functionValue(
-      AjaxUpload.createValidate(MAX_FILESIZE,
-                                Collections.emptyList[String],
-                                errorCallback,
-                                startedUpload,
-                                PartiallyApply.partial(updateProgressArea, 0)))
+      AjaxUpload.createValidate(
+        MAX_FILESIZE,
+        Collections.emptyList[String],
+        errorCallback,
+        startedUpload,
+        PartiallyApply.partial(updateProgressArea, 0)
+      )
+    )
     super.treeFinished(id, tree)
   }
 

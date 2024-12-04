@@ -50,8 +50,8 @@ object SearchQueryProperties extends ShotProperties("Search Query Properties") {
             val title2 = s"${w1.word} ${w2.word.reverse}${w2.word}"
             val arr    = w2.cased.toCharArray
             arr.update(1 + (Math.abs(o) % (arr.length - 1)), '?')
-            val qstr  = new String(arr, 0, 5)
-            val query = s"+${w1.word} $qstr*"
+            val qstr   = new String(arr, 0, 5)
+            val query  = s"+${w1.word} $qstr*"
             createItem(context, title)
             createItem(context, title2)
             onlyResult(context, query, title)
@@ -59,26 +59,30 @@ object SearchQueryProperties extends ShotProperties("Search Query Properties") {
       }
 
     property("boolean ops") = forAll {
-      (rm: UniqueRandomWord,
-       w1: RandomWord,
-       w2: RandomWord,
-       w3: RandomWord,
-       op1: BooleanOp,
-       op2: BooleanOp,
-       biasLeft: Boolean) =>
+      (
+          rm: UniqueRandomWord,
+          w1: RandomWord,
+          w2: RandomWord,
+          w3: RandomWord,
+          op1: BooleanOp,
+          op2: BooleanOp,
+          biasLeft: Boolean
+      ) =>
         withLogon(adminLogon) { context =>
           val t1 = QueryParser.titlesForOp(
             Set(w1.word),
             QueryParser.titlesForOp(Set(w2.word), Set(w3.word), op2, biasLeft, true),
             op1,
             biasLeft,
-            true)
+            true
+          )
           val t2 = QueryParser.titlesForOp(
             Set(w1.word),
             QueryParser.titlesForOp(Set(w2.word), Set(w3.word), op2, biasLeft, false),
             op1,
             biasLeft,
-            false)
+            false
+          )
           val title  = s"${rm.word} ${t1.mkString(" ")}"
           val title2 = s"${rm.word} ${t2.mkString(" ")}"
           val query =
