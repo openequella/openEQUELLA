@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-/** @author nread */
 @SuppressWarnings("nls")
 public class ServerPage extends WizardPage {
   protected JTextField server;

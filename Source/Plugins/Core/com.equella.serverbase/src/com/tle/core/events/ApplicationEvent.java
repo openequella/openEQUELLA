@@ -22,7 +22,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.core.events.listeners.ApplicationListener;
 import java.io.Serializable;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public abstract class ApplicationEvent<T extends ApplicationListener> implements Serializable {
   private static final long serialVersionUID = 1L;

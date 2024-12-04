@@ -42,23 +42,25 @@ object CloudProviderHelper {
       )
   }
 
-  /**
-    * Transform an Entity's custom data from String to CloudProviderData.
+  /** Transform an Entity's custom data from String to CloudProviderData.
     *
-    * @param data String representing the custom data of an Entity in JSON format.
-    * @return ValidatedNec where left is an EntityValidation explaining why the transformation failed
-    *         and right is the transformed CloudProviderData.
+    * @param data
+    *   String representing the custom data of an Entity in JSON format.
+    * @return
+    *   ValidatedNec where left is an EntityValidation explaining why the transformation failed and
+    *   right is the transformed CloudProviderData.
     */
   def extractData(data: String): ValidatedNec[EntityValidation, CloudProviderData] =
     decode[CloudProviderData](data)
       .leftMap(err => EntityValidation("data", err.getMessage))
       .toValidatedNec
 
-  /**
-    * Build a new CloudProviderInstance with the provided Entity and CloudProviderData.
+  /** Build a new CloudProviderInstance with the provided Entity and CloudProviderData.
     *
-    * @param entity The Entity where the type must be 'cloudprovider'.
-    * @param data Custom data specific to Cloud provider.
+    * @param entity
+    *   The Entity where the type must be 'cloudprovider'.
+    * @param data
+    *   Custom data specific to Cloud provider.
     */
   def buildCloudProviderInstance(entity: Entity, data: CloudProviderData): CloudProviderInstance = {
     CloudProviderInstance(
@@ -75,21 +77,24 @@ object CloudProviderHelper {
     )
   }
 
-  /**
-    * Get an Entity by UUID and then implicitly convert the Entity to CloudProviderInstance.
-    * Recommend to call `EntityService.getByUuid` if it's needed to explicitly handle the conversion.
+  /** Get an Entity by UUID and then implicitly convert the Entity to CloudProviderInstance.
+    * Recommend to call `EntityService.getByUuid` if it's needed to explicitly handle the
+    * conversion.
     *
-    * @param uuid UUID of the Entity.
-    * @return None if the Entity is not found, or Option of the Entity.
+    * @param uuid
+    *   UUID of the Entity.
+    * @return
+    *   None if the Entity is not found, or Option of the Entity.
     */
   def getByUuid(uuid: UUID): Option[CloudProviderInstance] =
     Option(LegacyGuice.entityService.getByUuid(uuid.toString))
 
-  /**
-    * Get all the Entities of current Institution and convert to a list of CloudProviderInstance.
-    * Recommend to call `EntityService.getAllByType` if it's needed to explicitly handle the conversion.
+  /** Get all the Entities of current Institution and convert to a list of CloudProviderInstance.
+    * Recommend to call `EntityService.getAllByType` if it's needed to explicitly handle the
+    * conversion.
     *
-    * @return A list of CloudProviderInstance limited to current Institution.
+    * @return
+    *   A list of CloudProviderInstance limited to current Institution.
     */
   def getAll: List[CloudProviderInstance] =
     LegacyGuice.entityService.getAllByType("cloudprovider").asScala.map(toInstance).toList

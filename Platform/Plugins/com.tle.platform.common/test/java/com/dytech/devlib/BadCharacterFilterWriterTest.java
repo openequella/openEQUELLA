@@ -3,7 +3,6 @@ package com.dytech.devlib;
 import java.io.StringWriter;
 import junit.framework.TestCase;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class BadCharacterFilterWriterTest extends TestCase {
   private static final String PLAIN = "ABCD\u0009EFGHIJKLMNOPQRSTUVWXYZ0123456789";

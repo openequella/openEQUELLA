@@ -22,7 +22,6 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import java.util.List;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class FileUploadSettings extends UniversalSettings {
   private static final String NO_UNZIP = "FILE_NOUNZIP";

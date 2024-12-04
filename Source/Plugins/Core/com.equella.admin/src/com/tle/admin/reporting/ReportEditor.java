@@ -29,7 +29,6 @@ import com.tle.core.plugins.AbstractPluginService;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ReportEditor extends BaseEntityEditor<Report> {
   private static String KEYPFX = AbstractPluginService.getMyPluginId(ReportEditor.class) + ".";
 

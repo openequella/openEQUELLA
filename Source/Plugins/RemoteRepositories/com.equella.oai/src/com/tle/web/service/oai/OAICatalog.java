@@ -178,7 +178,8 @@ public class OAICatalog extends AbstractCatalog {
   // Return type of Vector determined by external jar
   @Override
   public Vector<?> getSchemaLocations(String identifier)
-      throws IdDoesNotExistException, NoMetadataFormatsException, // NOSONAR
+      throws IdDoesNotExistException,
+          NoMetadataFormatsException, // NOSONAR
           OAIInternalServerError {
     Object nativeItem = getRecord(identifier);
     if (nativeItem == null) {
@@ -190,8 +191,11 @@ public class OAICatalog extends AbstractCatalog {
 
   @Override
   public Map<?, ?> listIdentifiers(String from, String until, String set, String metadataPrefix)
-      throws BadArgumentException, CannotDisseminateFormatException, NoItemsMatchException,
-          NoSetHierarchyException, OAIInternalServerError {
+      throws BadArgumentException,
+          CannotDisseminateFormatException,
+          NoItemsMatchException,
+          NoSetHierarchyException,
+          OAIInternalServerError {
     return list(set, from, until, metadataPrefix, new IdentifierHandler());
   }
 
@@ -203,8 +207,11 @@ public class OAICatalog extends AbstractCatalog {
 
   @Override
   public Map<?, ?> listRecords(String from, String until, String set, String metadataPrefix)
-      throws BadArgumentException, CannotDisseminateFormatException, NoItemsMatchException,
-          NoSetHierarchyException, OAIInternalServerError {
+      throws BadArgumentException,
+          CannotDisseminateFormatException,
+          NoItemsMatchException,
+          NoSetHierarchyException,
+          OAIInternalServerError {
     return list(set, from, until, metadataPrefix, new RecordHandler());
   }
 
@@ -217,7 +224,8 @@ public class OAICatalog extends AbstractCatalog {
   @Override
   public String getRecord(String identifier, String mdPrefix)
       throws ORG.oclc.oai.server.verb.IdDoesNotExistException,
-          ORG.oclc.oai.server.verb.CannotDisseminateFormatException, OAIInternalServerError {
+          ORG.oclc.oai.server.verb.CannotDisseminateFormatException,
+          OAIInternalServerError {
     String schemaURL = mdPrefix != null ? getCrosswalks().getSchemaURL(mdPrefix) : null;
     if (schemaURL == null) {
       throw new CannotDisseminateFormatException(mdPrefix);

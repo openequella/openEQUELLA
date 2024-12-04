@@ -42,7 +42,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
-/** @author Aaron */
 @Entity
 @AccessType("field")
 // Need to drop this constraint :( SQL Server doesn't care about the case of

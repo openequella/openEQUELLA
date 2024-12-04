@@ -31,11 +31,12 @@ object WebKeySetHelper {
   val RSA                = "RSA"
   val KEY_SIZE           = 2048
 
-  /**
-    * Convert a Key into a string in X.509 PEM format.
+  /** Convert a Key into a string in X.509 PEM format.
     *
-    * @param key Either a public key or private key.
-    * @param header Header to be used in the PEM format.
+    * @param key
+    *   Either a public key or private key.
+    * @param header
+    *   Header to be used in the PEM format.
     */
   def toPEM(key: Key, header: String): String = {
     val sw = new StringWriter
@@ -47,11 +48,12 @@ object WebKeySetHelper {
     sw.toString
   }
 
-  /**
-    * Given a WebKeySet, convert the X.509 PEM format strings into a private key and a public key
+  /** Given a WebKeySet, convert the X.509 PEM format strings into a private key and a public key
     * and return the key pair.
     *
-    * @param key Instance of SecurityKey where the private and public keys are saved X.509 PEM format strings.
+    * @param key
+    *   Instance of SecurityKey where the private and public keys are saved X.509 PEM format
+    *   strings.
     */
   def buildKeyPair(key: WebKeySet): KeyPair = {
     def getPemContent(key: String) = {
@@ -71,8 +73,7 @@ object WebKeySetHelper {
     new KeyPair(publicKey, originalPrivateKey)
   }
 
-  /**
-    * Generate a new key pair. The cryptographic algorithm is RSA and the key size is 2048.
+  /** Generate a new key pair. The cryptographic algorithm is RSA and the key size is 2048.
     */
   def generateRSAKeyPair: KeyPair = {
     val generator = KeyPairGenerator.getInstance(RSA)

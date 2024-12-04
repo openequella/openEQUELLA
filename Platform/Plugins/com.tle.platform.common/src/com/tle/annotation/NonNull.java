@@ -24,7 +24,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** @author Aaron */
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @Target(value = {ElementType.METHOD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})

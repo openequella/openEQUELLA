@@ -59,7 +59,8 @@ public class SavedSearchToFavouriteSearchMigration extends AbstractHibernateSche
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     Query query =
         session.createQuery(
-            "SELECT p.key.institution, p FROM UserPreference p WHERE p.key.preferenceID = 'saved.searches'"); //$NON-NLS-1$
+            "SELECT p.key.institution, p FROM UserPreference p WHERE p.key.preferenceID ="
+                + " 'saved.searches'"); //$NON-NLS-1$
     List<Object[]> savedSearchesPrefs = query.list();
 
     for (Object[] pair : savedSearchesPrefs) {

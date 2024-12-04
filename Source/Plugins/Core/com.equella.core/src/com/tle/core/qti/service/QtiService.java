@@ -27,7 +27,6 @@ import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
 import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
 import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiService {
   ResolvedAssessmentTest loadV2Test(FileHandle handle, String basePath, String relativeFilePath);

@@ -193,7 +193,8 @@ public class AttachmentHashOpSection
 
     @Override
     public String getWhereClause() {
-      return "(a.md5sum IS NULL OR a.md5sum = '') AND (a.class = FileAttachment OR a.class = CustomAttachment )";
+      return "(a.md5sum IS NULL OR a.md5sum = '') AND (a.class = FileAttachment OR a.class ="
+          + " CustomAttachment )";
     }
   }
 

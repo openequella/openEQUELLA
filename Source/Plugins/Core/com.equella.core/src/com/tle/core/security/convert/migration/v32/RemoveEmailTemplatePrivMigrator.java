@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class RemoveEmailTemplatePrivMigrator

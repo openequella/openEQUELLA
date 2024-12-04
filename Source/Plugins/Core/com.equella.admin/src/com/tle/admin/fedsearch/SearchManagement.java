@@ -28,7 +28,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class SearchManagement extends BaseEntityEditor<FederatedSearch> {
   private final SearchTool tool2;
   private SearchTab search;

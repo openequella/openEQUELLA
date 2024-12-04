@@ -21,7 +21,6 @@ package com.tle.core.copyright;
 import com.tle.beans.item.Item;
 import java.util.List;
 
-/** @author Aaron */
 public interface Portion {
   long getId();
 

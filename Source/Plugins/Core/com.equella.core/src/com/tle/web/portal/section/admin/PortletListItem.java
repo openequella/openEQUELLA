@@ -38,7 +38,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import javax.inject.Inject;
 
-/** @author aholland */
 @Bind
 public class PortletListItem extends AbstractListEntry {
   static {

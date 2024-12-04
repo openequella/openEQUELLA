@@ -60,7 +60,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-/** @author Aaron & Dustin */
 @Bind
 @Path("search/myresources")
 @Api(value = "My resources search", description = "search-myresources")
@@ -142,7 +141,8 @@ public class SearchMyResource {
           String reverse,
       @ApiParam(
               value =
-                  "For details on structuring the where clause see https://apereo.github.io/openEQUELLA-docs/guides/RestAPIGuide.html#searching",
+                  "For details on structuring the where clause see"
+                      + " https://apereo.github.io/openEQUELLA-docs/guides/RestAPIGuide.html#searching",
               required = false)
           @QueryParam("where")
           String where,

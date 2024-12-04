@@ -57,13 +57,13 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(Z3950Service.class)
 @Singleton
 public class Z3950ServiceImpl implements Z3950Service {
   private static final PluginResourceHelper resources =
       ResourcesService.getResourceHelper(Z3950Service.class);
+
   /**
    * z3950 is inherently dodgy, don't log full stack traces or you will end up with massive log
    * files.

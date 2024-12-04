@@ -19,7 +19,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class DownloadPage extends WizardPage implements ItemNotification {
   protected int itemTotal;

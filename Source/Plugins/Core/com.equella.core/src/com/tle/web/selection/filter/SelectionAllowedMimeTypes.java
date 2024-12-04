@@ -27,7 +27,6 @@ import java.util.Collection;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class SelectionAllowedMimeTypes implements CacheFiller<Collection<String>> {

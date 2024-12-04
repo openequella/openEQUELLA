@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class Control {
   private final ControlDefinition definition;
@@ -52,6 +51,7 @@ public abstract class Control {
   protected String getKey(String key) {
     return KEY_PFX + key;
   }
+
   /** Constructs a new Control. */
   public Control(ControlDefinition definition) {
     this.definition = definition;

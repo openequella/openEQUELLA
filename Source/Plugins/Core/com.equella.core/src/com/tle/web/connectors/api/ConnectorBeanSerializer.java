@@ -31,7 +31,6 @@ import com.tle.web.connectors.api.impl.ConnectorEditorImpl.ConnectorEditorFactor
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton

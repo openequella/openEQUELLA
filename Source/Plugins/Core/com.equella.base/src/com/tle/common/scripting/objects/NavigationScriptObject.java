@@ -85,10 +85,14 @@ public interface NavigationScriptObject extends ScriptObject {
    */
   void autocreate();
 
-  /** @param allowSplit 'Split view' enabled in the tree viewer. */
+  /**
+   * @param allowSplit 'Split view' enabled in the tree viewer.
+   */
   void setAllowSplitOption(boolean allowSplit);
 
-  /** @return 'Split view' enabled in the tree viewer. */
+  /**
+   * @return 'Split view' enabled in the tree viewer.
+   */
   boolean isAllowSplitOption();
 
   /**

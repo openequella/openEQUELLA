@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.parser.mods;
 import com.tle.core.fedsearch.GenericRecord;
 import java.util.Set;
 
-/** @author aholland */
 public interface ModsRecord extends GenericRecord {
   Set<String> getNotes();
 

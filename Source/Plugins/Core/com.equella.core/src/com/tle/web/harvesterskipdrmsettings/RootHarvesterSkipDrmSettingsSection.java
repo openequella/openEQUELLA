@@ -40,7 +40,6 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import javax.inject.Inject;
 
-/** @author larry */
 public class RootHarvesterSkipDrmSettingsSection
     extends OneColumnLayout<RootHarvesterSkipDrmSettingsSection.HarvesterSkipDrmSettingsModel> {
   @PlugKey("harvesterskipdrmsettings.title")

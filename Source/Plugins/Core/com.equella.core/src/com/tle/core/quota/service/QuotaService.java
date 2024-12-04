@@ -26,7 +26,6 @@ import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.quota.exception.QuotaExceededException;
 import java.util.Collection;
 
-/** @author Charles O'Farrell */
 @NonNullByDefault
 public interface QuotaService {
   long checkQuotaAndReturnNewItemSize(Item item, StagingFile stagingFile1)

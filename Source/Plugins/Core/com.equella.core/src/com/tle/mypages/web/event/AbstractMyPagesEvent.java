@@ -21,7 +21,6 @@ package com.tle.mypages.web.event;
 import com.tle.web.sections.events.AbstractSectionEvent;
 import java.util.EventListener;
 
-/** @author Aaron */
 public abstract class AbstractMyPagesEvent<L extends EventListener>
     extends AbstractSectionEvent<L> {
   private final String sessionId;

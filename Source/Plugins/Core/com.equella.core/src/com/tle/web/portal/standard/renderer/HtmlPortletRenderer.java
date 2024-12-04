@@ -28,7 +28,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 import javax.inject.Inject;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class HtmlPortletRenderer extends PortletContentRenderer<HtmlPortletRenderer.Model> {

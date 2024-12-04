@@ -42,7 +42,8 @@ public abstract class AbstractResultList<
             ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("id('searchresults')[div[@class='itemlist'] or h3]"))),
         this);
-  };
+  }
+  ;
 
   protected static String getXPathForTitle(String title) {
     return "//div/div[contains(@class,'itemresult-wrapper') and .//h3/a[normalize-space(string())="

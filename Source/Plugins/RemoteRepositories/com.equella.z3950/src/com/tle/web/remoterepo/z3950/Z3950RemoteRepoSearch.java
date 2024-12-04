@@ -24,7 +24,6 @@ import com.tle.beans.search.Z3950Settings;
 import com.tle.core.guice.Bind;
 import com.tle.web.remoterepo.impl.AbstractRemoteRepoSearch;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class Z3950RemoteRepoSearch extends AbstractRemoteRepoSearch {

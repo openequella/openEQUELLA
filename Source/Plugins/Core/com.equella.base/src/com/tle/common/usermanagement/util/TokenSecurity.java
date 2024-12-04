@@ -29,7 +29,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author jmaginnis */
 public final class TokenSecurity {
   private static final Log LOGGER = LogFactory.getLog(TokenSecurity.class);
   private static final long MAX_TIME = TimeUnit.MINUTES.toMillis(30);

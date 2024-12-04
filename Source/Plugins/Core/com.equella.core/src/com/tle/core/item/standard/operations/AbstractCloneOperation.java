@@ -43,7 +43,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOperation
     implements DuringSaveOperationGenerator, MetadataTransformingOperation {
@@ -64,7 +63,9 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
     this.copyAttachments = copyAttachments;
   }
 
-  /** @param transform Xslt transform to perform when moving between schemas. Optional */
+  /**
+   * @param transform Xslt transform to perform when moving between schemas. Optional
+   */
   @Override
   public void setTransform(String transform) {
     this.transform = transform;

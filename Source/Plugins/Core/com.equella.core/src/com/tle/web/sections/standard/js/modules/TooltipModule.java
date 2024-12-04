@@ -31,7 +31,6 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.render.PreRenderable;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class TooltipModule implements JavascriptModule {
   private static final long serialVersionUID = 1L;

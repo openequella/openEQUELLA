@@ -18,7 +18,6 @@
 
 package com.tle.web.sections.standard;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class RendererConstants {
   public static final String BUTTON = "button";

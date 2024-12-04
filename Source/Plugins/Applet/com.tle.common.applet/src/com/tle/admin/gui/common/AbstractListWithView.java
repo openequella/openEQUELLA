@@ -33,7 +33,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 public abstract class AbstractListWithView<
         LIST_TYPE,
         VIEW_TYPE extends ListWithViewInterface<LIST_TYPE>,

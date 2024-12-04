@@ -158,6 +158,7 @@ public class EditActivationSection
   public Class<EditActivationModel> getModelClass() {
     return EditActivationModel.class;
   }
+
   /*
   @Override
   public Object instantiateModel(SectionInfo info)

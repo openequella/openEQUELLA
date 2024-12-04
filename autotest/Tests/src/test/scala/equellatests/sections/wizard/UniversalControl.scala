@@ -17,13 +17,16 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
 
   private val cancelBtnBy =
     By.xpath(
-      "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]")
+      "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Cancel upload')]"
+    )
 
   private def rowForDescription(description: String, disabled: Boolean) =
     Try(pageElement.findElement(rowDescriptionBy(description, disabled))).toOption
 
-  def editResource[A <: AttachmentEditPage](description: String,
-                                            condition: ExpectedCondition[A]): Option[A] = {
+  def editResource[A <: AttachmentEditPage](
+      description: String,
+      condition: ExpectedCondition[A]
+  ): Option[A] = {
     rowForDescription(description, false).map { row =>
       row.findElement(actionLinkBy("Edit")).click()
       waitFor(condition)
@@ -33,7 +36,8 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
   def errorExpectation(msg: String) = {
     ExpectedConditions.visibilityOfNestedElementsLocatedBy(
       pageBy,
-      By.xpath(s"//div[contains(@class, 'universalresources')]//div[text() = ${quoteXPath(msg)}]"))
+      By.xpath(s"//div[contains(@class, 'universalresources')]//div[text() = ${quoteXPath(msg)}]")
+    )
   }
 
   def uploadInline[A](tf: TestFile, actualFilename: String, after: ExpectedCondition[A]): A = {
@@ -53,11 +57,13 @@ class UniversalControl(val page: WizardPageTab, val ctrlNum: Int) extends Wizard
 
   private def rowDescriptionBy(title: String, disabled: Boolean) =
     By.xpath(
-      ".//ul/div[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]")
+      ".//ul/div[.//" + (if (disabled) "div" else "a") + "[text()=" + quoteXPath(title) + "]]"
+    )
 
   def attachNameWaiter(description: String, disabled: Boolean): ExpectedCondition[_] = {
     ExpectedConditions.visibilityOfElementLocated(
-      new ByChained(pageBy, rowDescriptionBy(description, disabled)))
+      new ByChained(pageBy, rowDescriptionBy(description, disabled))
+    )
   }
 
   def pageBy = By.id(idFor("universalresources"))

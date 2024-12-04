@@ -50,8 +50,10 @@ installerZip := {
   ) ++ allServerFiles
   log.info(s"Creating installer ${outZip.absolutePath}")
 
-  IO.zip(allFiles.map(t => (t._1, s"$dirname/${t._2}")),
-         outZip,
-         Option((ThisBuild / buildTimestamp).value))
+  IO.zip(
+    allFiles.map(t => (t._1, s"$dirname/${t._2}")),
+    outZip,
+    Option((ThisBuild / buildTimestamp).value)
+  )
   outZip
 }

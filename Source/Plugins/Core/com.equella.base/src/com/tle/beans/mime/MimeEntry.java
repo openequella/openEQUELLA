@@ -52,13 +52,15 @@ import org.hibernate.annotations.Type;
       cacheable = true,
       readOnly = true,
       query =
-          "FROM MimeEntry m WHERE m.type LIKE :query AND m.institution = :institution ORDER BY m.type"),
+          "FROM MimeEntry m WHERE m.type LIKE :query AND m.institution = :institution ORDER BY"
+              + " m.type"),
   @NamedQuery(
       name = "countMimeTypes",
       cacheable = true,
       readOnly = true,
       query =
-          "SELECT COUNT(*) FROM MimeEntry m WHERE m.type LIKE :query AND m.institution = :institution")
+          "SELECT COUNT(*) FROM MimeEntry m WHERE m.type LIKE :query AND m.institution ="
+              + " :institution")
 })
 public class MimeEntry {
   @Id

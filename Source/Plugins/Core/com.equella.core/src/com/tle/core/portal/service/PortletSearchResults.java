@@ -22,7 +22,6 @@ import com.tle.common.portal.entity.Portlet;
 import com.tle.common.searching.SimpleSearchResults;
 import java.util.List;
 
-/** @author aholland */
 public class PortletSearchResults extends SimpleSearchResults<Portlet> {
   private static final long serialVersionUID = 1L;
 

@@ -23,7 +23,6 @@ import com.tle.common.scripting.objects.LoggingScriptObject;
 import com.tle.common.util.Logger;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class LoggingScriptWrapper extends AbstractScriptWrapper implements LoggingScriptObject {
   private static final long serialVersionUID = 1L;
 

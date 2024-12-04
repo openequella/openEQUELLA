@@ -38,7 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public final class BundleCache {
   private static final Map<Long, String> names = new HashMap<Long, String>();
   private static final long INVALID_KEY = -1;

@@ -91,7 +91,9 @@ public class ConvertOauthClientsMigration extends AbstractHibernateDataMigration
       List<FakeOauthClient> clients =
           session
               .createQuery(
-                  "FROM OauthClient oc LEFT JOIN FETCH oc.name.strings LEFT JOIN oc.attributes attb WHERE oc.institution.id = :inst AND attb.key = :flow AND attb.value = :oauthone")
+                  "FROM OauthClient oc LEFT JOIN FETCH oc.name.strings LEFT JOIN oc.attributes attb"
+                      + " WHERE oc.institution.id = :inst AND attb.key = :flow AND attb.value ="
+                      + " :oauthone")
               .setParameter("inst", inst.id)
               .setParameter("flow", OAuthServiceImpl.KEY_OAUTH_FLOW)
               .setParameter("oauthone", OAUTH_ONE_ID)
@@ -152,7 +154,8 @@ public class ConvertOauthClientsMigration extends AbstractHibernateDataMigration
   private void deleteAllLtiRoleSettings(Session session) {
     session
         .createQuery(
-            "DELETE FROM ConfigurationProperty WHERE key.property LIKE :create OR key.property LIKE :instructor OR key.property LIKE :other")
+            "DELETE FROM ConfigurationProperty WHERE key.property LIKE :create OR key.property LIKE"
+                + " :instructor OR key.property LIKE :other")
         .setParameter("create", PROPERTY_LTI_CREATE_USERS)
         .setParameter("instructor", PROPERTY_ROLE_INSTRUCTOR)
         .setParameter("other", PROPERTY_ROLE_OTHER)
@@ -196,7 +199,8 @@ public class ConvertOauthClientsMigration extends AbstractHibernateDataMigration
     List<FakeConfigurationProperty> ltiProps =
         session
             .createQuery(
-                "FROM ConfigurationProperty WHERE key.institutionId = :inst AND (key.property LIKE :create OR key.property LIKE :instructor OR key.property LIKE :other)")
+                "FROM ConfigurationProperty WHERE key.institutionId = :inst AND (key.property LIKE"
+                    + " :create OR key.property LIKE :instructor OR key.property LIKE :other)")
             .setParameter("inst", institute)
             .setParameter("create", PROPERTY_LTI_CREATE_USERS)
             .setParameter("instructor", PROPERTY_ROLE_INSTRUCTOR)
@@ -232,7 +236,8 @@ public class ConvertOauthClientsMigration extends AbstractHibernateDataMigration
     return count(
         session
             .createQuery(
-                "SELECT COUNT(*) FROM OauthClient oc LEFT JOIN oc.attributes attb WHERE attb.key = :flow AND attb.value = :oauthone")
+                "SELECT COUNT(*) FROM OauthClient oc LEFT JOIN oc.attributes attb WHERE attb.key ="
+                    + " :flow AND attb.value = :oauthone")
             .setParameter("flow", OAuthServiceImpl.KEY_OAUTH_FLOW)
             .setParameter("oauthone", OAUTH_ONE_ID));
   }

@@ -87,17 +87,23 @@ trait NotificationLookup {
       def group = StdNotificationGroup(tName, n.getReason)
     }
 
-  def createItemNotifications(templateName: String,
-                              notifications: Iterable[Notification]): Iterable[ItemNotification] =
+  def createItemNotifications(
+      templateName: String,
+      notifications: Iterable[Notification]
+  ): Iterable[ItemNotification] =
     createDataIgnore(notifications, createItemNotification(templateName)).toSeq
       .sortBy(_.getItemName.getText.toLowerCase)
 
-  def createDataIgnore[A](notifications: Iterable[Notification],
-                          f: (Notification, Item) => A): Iterable[A] =
+  def createDataIgnore[A](
+      notifications: Iterable[Notification],
+      f: (Notification, Item) => A
+  ): Iterable[A] =
     createData(notifications, (n, oi) => oi.map(f(n, _)))
 
-  protected def createData[A](notifications: Iterable[Notification],
-                              f: (Notification, Option[Item]) => Option[A]): Iterable[A] = {
+  protected def createData[A](
+      notifications: Iterable[Notification],
+      f: (Notification, Option[Item]) => Option[A]
+  ): Iterable[A] = {
     def itemOnly(n: Notification): ItemId = new ItemId(n.getItemidOnly)
     val itemIds                           = notifications.toBuffer[Notification].map(itemOnly)
     val itemMap                           = itemService.queryItemsByItemIds(itemIds.asJava)

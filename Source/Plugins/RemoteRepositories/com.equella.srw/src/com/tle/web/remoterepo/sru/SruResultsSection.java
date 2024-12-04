@@ -28,7 +28,6 @@ import com.tle.web.remoterepo.section.RemoteRepoResultsSection.RemoteRepoResults
 import com.tle.web.sections.SectionInfo;
 import javax.inject.Inject;
 
-/** @author larry */
 public class SruResultsSection
     extends RemoteRepoResultsSection<SruSearchEvent, SruSearchResult, RemoteRepoResultsModel> {
   @Inject private SruService sruService;

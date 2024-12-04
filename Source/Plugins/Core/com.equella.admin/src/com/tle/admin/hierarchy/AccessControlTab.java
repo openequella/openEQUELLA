@@ -30,7 +30,6 @@ import com.tle.common.security.remoting.RemoteTLEAclManager;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.GridLayout;
 
-/** @author Nicholas Read */
 public class AccessControlTab extends AbstractTopicEditorTab {
   private static final long serialVersionUID = 1L;
 

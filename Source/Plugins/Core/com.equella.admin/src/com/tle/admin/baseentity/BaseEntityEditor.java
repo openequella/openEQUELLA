@@ -61,7 +61,6 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class BaseEntityEditor<T extends BaseEntity>
     implements EditorInterface, DynamicTabService, StatusBarContainer {

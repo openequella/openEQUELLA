@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import junit.framework.TestCase;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class BadCharacterFilterReaderTest extends TestCase {
   private static final String PLAIN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

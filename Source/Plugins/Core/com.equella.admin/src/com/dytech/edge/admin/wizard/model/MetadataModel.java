@@ -23,7 +23,6 @@ import com.dytech.edge.wizard.beans.Metadata;
 import com.tle.admin.controls.repository.ControlDefinition;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class MetadataModel extends BasicAbstractControl {
   private FixedMetadata fixed;
@@ -39,7 +38,9 @@ public class MetadataModel extends BasicAbstractControl {
     this.fixed = (FixedMetadata) wrappedObject;
   }
 
-  /** @return Returns the metadata. */
+  /**
+   * @return Returns the metadata.
+   */
   public List<Metadata> getMetadata() {
     return fixed.getData();
   }

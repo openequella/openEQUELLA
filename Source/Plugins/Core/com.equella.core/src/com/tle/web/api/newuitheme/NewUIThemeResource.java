@@ -29,7 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Samantha Fisher */
 @Path("theme/")
 @Api("New UI Theme Resource")
 public interface NewUIThemeResource {

@@ -46,7 +46,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ExpressionBuilderFinder extends JPanel
     implements UserGroupRoleFinder, FinderListener, TreeSelectionListener {

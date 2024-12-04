@@ -329,7 +329,9 @@ public class OAuthServiceImpl
     return clientDao.getByClientIdAndRedirectUrl(clientId, redirectUrl);
   }
 
-  /** @param clientId - assumed to be not null */
+  /**
+   * @param clientId - assumed to be not null
+   */
   @Override
   public OAuthClient getByClientIdOnly(String clientId) {
     return clientDao.getByClientIdOnly(clientId);

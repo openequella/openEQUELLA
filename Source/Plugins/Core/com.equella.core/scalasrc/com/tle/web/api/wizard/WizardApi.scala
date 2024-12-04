@@ -46,17 +46,20 @@ import javax.ws.rs.core.{Context, Response, StreamingOutput, UriInfo}
 import scala.jdk.CollectionConverters._
 
 case class FileInfo(size: Long, files: Option[Map[String, FileInfo]])
-case class ItemState(xml: String,
-                     attachments: Iterable[EquellaAttachmentBean],
-                     files: Map[String, FileInfo],
-                     stateVersion: Int)
+case class ItemState(
+    xml: String,
+    attachments: Iterable[EquellaAttachmentBean],
+    files: Map[String, FileInfo],
+    stateVersion: Int
+)
 
 @Api("Wizard editing")
 @Path("wizard/{wizid}")
 class WizardApi {
 
   def withWizardState[A](wizid: String, req: HttpServletRequest, edit: Boolean)(
-      f: WizardStateInterface => A): A = {
+      f: WizardStateInterface => A
+  ): A = {
     val sessionService = LegacyGuice.userSessionService
     sessionService.reenableSessionUse()
     Option(sessionService.getAttribute(wizid).asInstanceOf[WizardSessionState])
@@ -84,7 +87,8 @@ class WizardApi {
     withWizardState(wizid, req, false) { wsi =>
       val attachments =
         wsi.getItem.getAttachments.asScala.map(a =>
-          ItemEdits.attachmentSerializers.serializeAttachment(a))
+          ItemEdits.attachmentSerializers.serializeAttachment(a)
+        )
       val itemPack = wsi.getItemPack
 
       def writeFile(fileInfo: FileEntry): (String, FileInfo) = {
@@ -100,18 +104,22 @@ class WizardApi {
         entries.map(writeFile).toMap
       }
       val files = LegacyGuice.fileSystemService.enumerateTree(wsi.getFileHandle, "", null)
-      ItemState(itemPack.getXml.toString,
-                attachments,
-                writeFiles(files.getFiles.asScala),
-                wsi.getStateVersion)
+      ItemState(
+        itemPack.getXml.toString,
+        attachments,
+        writeFiles(files.getFiles.asScala),
+        wsi.getStateVersion
+      )
     }
   }
 
   @PUT
   @Path("edit")
-  def editAttachments(@PathParam("wizid") wizid: String,
-                      itemEdit: ItemEdits,
-                      @Context req: HttpServletRequest): ItemEditResponses = {
+  def editAttachments(
+      @PathParam("wizid") wizid: String,
+      itemEdit: ItemEdits,
+      @Context req: HttpServletRequest
+  ): ItemEditResponses = {
     withWizardState(wizid, req, true) { wsi =>
       val editor   = new WizardItemEditor(wsi)
       val response = ItemEdits.performEdits(itemEdit, editor)
@@ -122,18 +130,20 @@ class WizardApi {
 
   @POST
   @Path("notify")
-  def registerCallback(@PathParam("wizid") wizid: String,
-                       @QueryParam("providerId") providerId: String,
-                       @Context req: HttpServletRequest): Response = {
-    withWizardState(wizid, req, true) {
-      case ws: WizardState =>
-        ws.setWizardSaveOperation(providerId, NotifyProvider(UUID.fromString(providerId)))
+  def registerCallback(
+      @PathParam("wizid") wizid: String,
+      @QueryParam("providerId") providerId: String,
+      @Context req: HttpServletRequest
+  ): Response = {
+    withWizardState(wizid, req, true) { case ws: WizardState =>
+      ws.setWizardSaveOperation(providerId, NotifyProvider(UUID.fromString(providerId)))
     }
     Response.ok().build()
   }
 
   def streamedResponse(
-      response: sttp.client.Response[Either[String, Stream[IO, Byte]]]): ResponseBuilder = {
+      response: sttp.client.Response[Either[String, Stream[IO, Byte]]]
+  ): ResponseBuilder = {
     val statusCode = response.code.code
 
     response.body match {
@@ -162,7 +172,8 @@ class WizardApi {
       request: HttpServletRequest,
       providerId: UUID,
       serviceId: String,
-      uriInfo: UriInfo)(f: Uri => Request[T, Stream[IO, Byte]]): Response = {
+      uriInfo: UriInfo
+  )(f: Uri => Request[T, Stream[IO, Byte]]): Response = {
     withWizardState(wizid, request, false) { _ =>
       ()
     }
@@ -172,14 +183,15 @@ class WizardApi {
       .flatMap(cp => {
         cp.serviceUrls
           .get(serviceId)
-          .map(
-            serviceUri =>
-              CloudProviderService
-                .serviceRequest(serviceUri,
-                                cp,
-                                queryParams,
-                                uri => f(uri).response(asStream[Stream[IO, Byte]]))
-                .unsafeRunSync
+          .map(serviceUri =>
+            CloudProviderService
+              .serviceRequest(
+                serviceUri,
+                cp,
+                queryParams,
+                uri => f(uri).response(asStream[Stream[IO, Byte]])
+              )
+              .unsafeRunSync
           )
           .map(streamedResponse)
       })
@@ -219,11 +231,13 @@ class WizardApi {
   @NoCache
   @GET
   @Path("provider/{providerId}/{serviceId}")
-  def proxyGET(@PathParam("wizid") wizid: String,
-               @PathParam("providerId") providerId: UUID,
-               @PathParam("serviceId") serviceId: String,
-               @Context uriInfo: UriInfo,
-               @Context req: HttpServletRequest): Response = {
+  def proxyGET(
+      @PathParam("wizid") wizid: String,
+      @PathParam("providerId") providerId: UUID,
+      @PathParam("serviceId") serviceId: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest
+  ): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       basicRequest.get(uri).headers(getRequestHeaders(req))
     }
@@ -231,12 +245,14 @@ class WizardApi {
 
   @POST
   @Path("provider/{providerId}/{serviceId}")
-  def proxyPOST(@PathParam("wizid") wizid: String,
-                @PathParam("providerId") providerId: UUID,
-                @PathParam("serviceId") serviceId: String,
-                @Context uriInfo: UriInfo,
-                @Context req: HttpServletRequest,
-                content: InputStream): Response = {
+  def proxyPOST(
+      @PathParam("wizid") wizid: String,
+      @PathParam("providerId") providerId: UUID,
+      @PathParam("serviceId") serviceId: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest,
+      content: InputStream
+  ): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       basicRequest
         .post(uri)
@@ -247,12 +263,14 @@ class WizardApi {
 
   @PUT
   @Path("provider/{providerId}/{serviceId}")
-  def proxyPUT(@PathParam("wizid") wizid: String,
-               @PathParam("providerId") providerId: UUID,
-               @PathParam("serviceId") serviceId: String,
-               @Context uriInfo: UriInfo,
-               @Context req: HttpServletRequest,
-               content: InputStream): Response = {
+  def proxyPUT(
+      @PathParam("wizid") wizid: String,
+      @PathParam("providerId") providerId: UUID,
+      @PathParam("serviceId") serviceId: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest,
+      content: InputStream
+  ): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       basicRequest
         .put(uri)
@@ -263,11 +281,13 @@ class WizardApi {
 
   @DELETE
   @Path("provider/{providerId}/{serviceId}")
-  def proxyDELETE(@PathParam("wizid") wizid: String,
-                  @PathParam("providerId") providerId: UUID,
-                  @PathParam("serviceId") serviceId: String,
-                  @Context uriInfo: UriInfo,
-                  @Context req: HttpServletRequest): Response = {
+  def proxyDELETE(
+      @PathParam("wizid") wizid: String,
+      @PathParam("providerId") providerId: UUID,
+      @PathParam("serviceId") serviceId: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest
+  ): Response = {
     proxyRequest(wizid, req, providerId, serviceId, uriInfo) { uri =>
       basicRequest.delete(uri).headers(getRequestHeaders(req))
     }
@@ -301,20 +321,21 @@ case class NotifyProvider(providerId: UUID) extends DuringSaveOperation with Ser
     override def execute(): Boolean =
       CloudProviderHelper
         .getByUuid(providerId)
-        .flatMap(
-          cp =>
-            cp.serviceUrls
-              .get("itemNotification")
-              .map(serviceUri => {
-                CloudProviderService
-                  .serviceRequest(serviceUri,
-                                  cp,
-                                  Map("uuid"    -> getItem.getUuid,
-                                      "version" -> getItem.getVersion.toString),
-                                  basicRequest.post)
-                  .unsafeRunSync
-                false
-              }))
+        .flatMap(cp =>
+          cp.serviceUrls
+            .get("itemNotification")
+            .map(serviceUri => {
+              CloudProviderService
+                .serviceRequest(
+                  serviceUri,
+                  cp,
+                  Map("uuid" -> getItem.getUuid, "version" -> getItem.getVersion.toString),
+                  basicRequest.post
+                )
+                .unsafeRunSync
+              false
+            })
+        )
         .getOrElse(false)
   }
 }

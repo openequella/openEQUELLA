@@ -22,7 +22,6 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.IndexItemNowListener;
 
-/** @author Nicholas Read */
 public class IndexItemNowEvent extends ApplicationEvent<IndexItemNowListener> {
   private static final long serialVersionUID = 1L;
   private final ItemIdKey itemIdKey;

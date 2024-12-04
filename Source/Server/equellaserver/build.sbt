@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 (Compile / resourceDirectory) := baseDirectory.value / "resources"
 
 (Compile / javaSource) := baseDirectory.value / "src"
-(Test / javaSource) := baseDirectory.value / "test/java"
+(Test / javaSource)    := baseDirectory.value / "test/java"
 
 (Compile / scalaSource) := baseDirectory.value / "scalasrc"
 
@@ -52,23 +52,22 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "co.fs2"                         %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client"   %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client"   %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client"   %% "circe"                         % sttpVersion,
-  "cglib"                          % "cglib"                          % "3.3.0",
-  "com.fasterxml.jackson.core"     % "jackson-core"                   % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"        % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"          % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-annotations"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"             % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"    % jacksonVersion,
+  "co.fs2"                        %% "fs2-io"                        % fs2Version,
+  "com.softwaremill.sttp.client"  %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp.client"  %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp.client"  %% "circe"                         % sttpVersion,
+  "cglib"                          % "cglib"                         % "3.3.0",
+  "com.fasterxml.jackson.core"     % "jackson-core"                  % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"       % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"         % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"           % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"            % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion,
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
   "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
-    ExclusionRule(organization = "org.apache.axis",
-                  name = "axis")
+    ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.5.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
@@ -78,18 +77,15 @@ libraryDependencies ++= Seq(
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
-    ExclusionRule(organization = "aopalliance",
-                  name = "aopalliance")
+    ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
   "com.google.inject.extensions" % "guice-assistedinject" % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
-    ExclusionRule(organization = "aopalliance",
-                  name = "aopalliance")
+    ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
   "com.google.inject.extensions" % "guice-spring" % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
-    ExclusionRule(organization = "aopalliance",
-                  name = "aopalliance")
+    ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
   "com.ibm.icu" % "icu4j" % "73.2",
   sqlServerDep excludeAll (
@@ -99,15 +95,15 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"       % "miglayout-swing"       % "4.2",
-  "org.asynchttpclient" % "async-http-client"     % "2.12.3",
-  "com.rometools"       % "rome"                  % "2.1.0",
-  "io.swagger"          % "swagger-core"          % SwaggerVersion,
-  "io.swagger"          % "swagger-annotations"   % SwaggerVersion,
-  "io.swagger"          % "swagger-jaxrs"         % SwaggerVersion,
-  "io.swagger"          %% "swagger-scala-module" % "1.0.6",
+  "com.miglayout"       % "miglayout-swing"      % "4.2",
+  "org.asynchttpclient" % "async-http-client"    % "2.12.3",
+  "com.rometools"       % "rome"                 % "2.1.0",
+  "io.swagger"          % "swagger-core"         % SwaggerVersion,
+  "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
+  "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
+  "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer"                % "HikariCP"              % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
   "commons-codec"             % "commons-codec"         % "1.17.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -230,8 +226,7 @@ libraryDependencies ++= Seq(
   springWeb,
   springContext,
   "org.springframework" % "spring-context-support" % springVersion excludeAll (
-    ExclusionRule(organization = "jasperreports",
-                  name = "jasperreports")
+    ExclusionRule(organization = "jasperreports", name = "jasperreports")
   ),
   "org.springframework"       % "spring-jdbc"       % springVersion,
   "org.springframework"       % "spring-tx"         % springVersion,
@@ -242,17 +237,17 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "ch.qos.logback"),
     ExclusionRule(organization = "net.sf.saxon")
   ),
-  "xml-resolver"                  % "xml-resolver"              % "1.2",
-  "org.scala-sbt"                 %% "io"                       % "1.9.9",
-  "org.mozilla"                   % "rhino"                     % "1.7.15",
-  "io.lemonlabs"                  %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"        %% "scala-parser-combinators" % "2.3.0",
-  "io.github.classgraph"          % "classgraph"                % "4.8.172",
-  "com.fasterxml"                 % "classmate"                 % "1.7.0",
-  "org.glassfish"                 % "javax.el"                  % "3.0.1-b12",
-  "jakarta.validation"            % "jakarta.validation-api"    % "3.0.2",
-  "com.github.stephenc.jcip"      % "jcip-annotations"          % "1.0-1",
-  "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"   % "2.0.1.Final"
+  "xml-resolver"                  % "xml-resolver"             % "1.2",
+  "org.scala-sbt"                %% "io"                       % "1.9.9",
+  "org.mozilla"                   % "rhino"                    % "1.7.15",
+  "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.3.0",
+  "io.github.classgraph"          % "classgraph"               % "4.8.172",
+  "com.fasterxml"                 % "classmate"                % "1.7.0",
+  "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
+  "jakarta.validation"            % "jakarta.validation-api"   % "3.0.2",
+  "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
+  "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"  % "2.0.1.Final"
 )
 
 /*
@@ -341,7 +336,8 @@ run := {
       Path.makeString(cp.files),
       "-Dequella.devmode=true",
       "-Dequella.autotest=true"
-    ))
+    )
+  )
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
 }
 
@@ -350,15 +346,17 @@ run := {
 (assembly / fullClasspath) := (Compile / fullClasspath).value
 
 (assembly / assemblyMergeStrategy) := {
-  case PathList("META-INF",
-                "org",
-                "apache",
-                "logging",
-                "log4j",
-                "core",
-                "config",
-                "plugins",
-                "Log4j2Plugins.dat") =>
+  case PathList(
+        "META-INF",
+        "org",
+        "apache",
+        "logging",
+        "log4j",
+        "core",
+        "config",
+        "plugins",
+        "Log4j2Plugins.dat"
+      ) =>
     MergeStrategy.last
   case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
   case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
@@ -467,8 +465,8 @@ upgradeZip := {
   val log         = streams.value.log
   val ver         = equellaVersion.value
   val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-  val outZip
-    : File    = target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
+  val outZip: File =
+    target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer = ver.fullVersion
   val zipFiles = Seq(
     assembly.value                                         -> "equella-server.jar",

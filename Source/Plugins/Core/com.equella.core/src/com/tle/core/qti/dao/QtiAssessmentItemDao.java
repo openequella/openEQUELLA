@@ -23,12 +23,13 @@ import com.tle.common.qti.entity.QtiAssessmentItem;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import java.util.Iterator;
 
-/** @author aholland */
 @NonNullByDefault
 public interface QtiAssessmentItemDao extends GenericInstitutionalDao<QtiAssessmentItem, Long> {
   QtiAssessmentItem getByUuid(String uuid);
 
-  /** @return All questions in the current institution */
+  /**
+   * @return All questions in the current institution
+   */
   Iterator<QtiAssessmentItem> getIterator();
 
   void deleteAll();

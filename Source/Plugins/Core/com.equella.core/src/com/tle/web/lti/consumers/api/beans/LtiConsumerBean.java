@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class LtiConsumerBean extends BaseEntityBean {
   public static final String ACTION_CREATE_USER = "create";

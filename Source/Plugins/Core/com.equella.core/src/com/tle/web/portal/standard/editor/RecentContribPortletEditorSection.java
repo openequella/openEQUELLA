@@ -65,7 +65,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class RecentContribPortletEditorSection

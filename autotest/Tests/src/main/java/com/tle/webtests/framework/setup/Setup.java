@@ -164,7 +164,8 @@ public class Setup extends JPanel {
     String message = "";
     if (!updateLockedStatus(inst)) {
       message =
-          "WARNING: This institution is not locked, someone else might lock it while you are using it. ";
+          "WARNING: This institution is not locked, someone else might lock it while you are using"
+              + " it. ";
     } else {
       String user = System.getProperty("user.name");
       if (!user.equalsIgnoreCase(inst.getUser())) {
@@ -483,7 +484,8 @@ public class Setup extends JPanel {
     protected void done() {
       // nothing
     }
-  };
+  }
+  ;
 
   interface SyncCallback {
     void callback(SyncToLocalServer syncer, SyncData data);

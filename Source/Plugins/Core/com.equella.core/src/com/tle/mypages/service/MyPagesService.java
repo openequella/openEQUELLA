@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
-/** @author aholland */
 public interface MyPagesService {
   WorkflowOperation getEditOperation(
       MyContentFields fields,
@@ -112,7 +111,9 @@ public interface MyPagesService {
   ViewableResource cloneMyContent(
       SectionInfo info, ViewableResource vres, String sessionId, String pageUuid);
 
-  /** @return The first available page to edit (taking into account HtmlAttachment.isDelete()) */
+  /**
+   * @return The first available page to edit (taking into account HtmlAttachment.isDelete())
+   */
   HtmlAttachment getFirstAvailablePage(SectionInfo info, String sessionId);
 
   /**
@@ -143,7 +144,9 @@ public interface MyPagesService {
    */
   void clearDraft(WizardStateInterface state);
 
-  /** @see clearDraft(WizardStateInterface state); */
+  /**
+   * @see clearDraft(WizardStateInterface state);
+   */
   void clearDraft(SectionInfo info, String sessionId);
 
   /**

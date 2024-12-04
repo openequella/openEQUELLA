@@ -9,7 +9,6 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-/** @author jmaginnis */
 public class TokenSecurity {
   public static long timedifmax = 30 * TimeUnit.MINUTES.toMillis(1);
 

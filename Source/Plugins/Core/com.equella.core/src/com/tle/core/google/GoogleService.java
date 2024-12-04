@@ -26,7 +26,6 @@ import com.google.gdata.data.books.VolumeEntry;
 import com.google.gdata.data.books.VolumeFeed;
 import java.util.List;
 
-/** @author Aaron */
 public interface GoogleService {
   // YouTube
   Video getVideo(String videoId);

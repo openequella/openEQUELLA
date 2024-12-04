@@ -41,7 +41,8 @@ public class OnFailure extends ForeignCommand {
     getProgress()
         .popupMessage(
             "Fatal Error",
-            "The installation process will now make an attempt to restore the system before exiting. \n"
+            "The installation process will now make an attempt to restore the system before"
+                + " exiting. \n"
                 + "Please try the following:\n"
                 + "-  Consult the documentation and try again. \n"
                 + "-  Contact support at support@thelearningedge.com.au",

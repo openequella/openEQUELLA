@@ -41,7 +41,6 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 public class FilterList<T> extends JComponent implements ActionListener, ListSelectionListener {
   private final FilterModel<T> search;
 

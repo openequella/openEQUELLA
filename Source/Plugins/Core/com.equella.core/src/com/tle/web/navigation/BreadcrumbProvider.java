@@ -22,7 +22,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.TagState;
 import java.util.Map;
 
-/** @author aholland */
 public interface BreadcrumbProvider {
   TagState getBreadcrumb(SectionInfo info, Map<String, ?> params);
 }

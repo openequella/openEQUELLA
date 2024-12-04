@@ -23,7 +23,6 @@ import com.tle.beans.search.SRWSettings;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-/** @author cofarrell */
 public class SRWPlugin extends SearchPlugin<SRWSettings> {
   private JTextField urlField;
   private JTextField schemaIdField;

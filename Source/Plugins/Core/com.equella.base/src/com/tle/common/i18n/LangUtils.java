@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-/** @author Nicholas Read */
 public final class LangUtils {
   private static final String IEEE_LOM_LANG_NODE = "string"; // $NON-NLS-1$
   private static final String IEEE_LOM_LANG_ATTRIBUTE = "@language"; // $NON-NLS-1$

@@ -48,7 +48,6 @@ import java.util.Map;
 import javax.inject.Singleton;
 import org.w3c.dom.Node;
 
-/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

@@ -58,7 +58,6 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.w3c.dom.Node;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

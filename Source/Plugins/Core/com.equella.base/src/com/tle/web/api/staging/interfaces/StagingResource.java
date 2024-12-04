@@ -43,7 +43,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Jolse */
 @Produces({"application/json"})
 @Path("staging/")
 @Api(value = "Staging files", description = "staging")

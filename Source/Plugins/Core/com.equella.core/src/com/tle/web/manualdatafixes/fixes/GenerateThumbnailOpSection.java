@@ -66,7 +66,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
-/** @author aholland */
 @NonNullByDefault
 @Bind
 @SuppressWarnings("nls")

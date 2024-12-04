@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** @author jmaginnis */
 @Bind
 @Singleton
 public class RequestFilter extends OncePerRequestFilter {

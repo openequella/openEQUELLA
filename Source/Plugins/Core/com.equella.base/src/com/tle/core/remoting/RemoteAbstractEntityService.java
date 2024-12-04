@@ -80,7 +80,9 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
 
   EntityPack<T> importEntity(byte[] zip);
 
-  /** @return a pair containing the entity ID, and the name bundle ID. */
+  /**
+   * @return a pair containing the entity ID, and the name bundle ID.
+   */
   BaseEntityLabel clone(long id);
 
   // TODO flesh out

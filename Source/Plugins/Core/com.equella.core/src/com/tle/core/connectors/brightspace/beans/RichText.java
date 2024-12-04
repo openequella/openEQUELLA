@@ -21,7 +21,6 @@ package com.tle.core.connectors.brightspace.beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class RichText {
   /*
@@ -29,6 +28,7 @@ public class RichText {
    */
   @JsonProperty("Text")
   private String text;
+
   // "Text|Html"
   @JsonProperty("Html")
   private String html;
@@ -39,6 +39,7 @@ public class RichText {
 
   @JsonProperty("Content")
   private String content;
+
   // "Text|Html"
   @JsonProperty("Type")
   private String type;

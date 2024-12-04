@@ -22,7 +22,6 @@ import com.tle.common.institution.TreeNodeInterface;
 import com.tle.core.hibernate.dao.GenericDao;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface AbstractTreeDao<T extends TreeNodeInterface<T>> extends GenericDao<T, Long> {
   void updateWithNoParentChange(T entity);
 

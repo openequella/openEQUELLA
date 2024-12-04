@@ -195,7 +195,9 @@ public interface XmlScriptType extends Serializable {
    */
   XmlScriptType findForId(String id);
 
-  /** @return A string representation of the XML */
+  /**
+   * @return A string representation of the XML
+   */
   String asString();
 
   /**

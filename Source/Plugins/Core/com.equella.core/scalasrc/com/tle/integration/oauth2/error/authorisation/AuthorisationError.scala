@@ -24,37 +24,40 @@ import com.tle.integration.util.{getParam, getUriParam}
 import java.net.URI
 import scala.util.Try
 
-/**
-  * Valid error codes for the error response of an authorisation request as per section 4.1.2.1 (Error Response)
-  * of the RFC 6749 (OAuth 2).
+/** Valid error codes for the error response of an authorisation request as per section 4.1.2.1
+  * (Error Response) of the RFC 6749 (OAuth 2).
   */
 object AuthErrorResponseCode extends Enumeration {
   type Code = Value
 
   val invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope,
-  server_error, temporarily_unavailable = Value
+      server_error, temporarily_unavailable = Value
 }
 
-/**
-  * An Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749 (OAuth 2).
+/** An Error Responses as per section 4.1.2.1 (Error Response) of the RFC 6749 (OAuth 2).
   *
-  * @param error             REQUIRED.  A single ASCII [USASCII] error code from [[AuthErrorResponseCode]]
-  * @param error_description OPTIONAL.  Human-readable ASCII [USASCII] text providing additional
-  *                          information, used to assist the client developer in understanding the
-  *                          error that occurred. Values for the "error_description" parameter
-  *                          MUST NOT include characters outside the set %x20-21 / %x23-5B / %x5D-7E.
-  * @param error_uri         OPTIONAL.  A URI identifying a human-readable web page with information about
-  *                          the error, used to provide the client developer with additional information
-  *                          about the error. Values for the "error_uri" parameter MUST conform to the
-  *                          URI-reference syntax and thus MUST NOT include characters outside the set
-  *                          %x21 / %x23-5B / %x5D-7E.
-  * @param state             REQUIRED if a "state" parameter was present in the client authorization request.
-  *                          The exact value received from the client.
+  * @param error
+  *   REQUIRED. A single ASCII [USASCII] error code from [[AuthErrorResponseCode]]
+  * @param error_description
+  *   OPTIONAL. Human-readable ASCII [USASCII] text providing additional information, used to assist
+  *   the client developer in understanding the error that occurred. Values for the
+  *   "error_description" parameter MUST NOT include characters outside the set %x20-21 / %x23-5B /
+  *   %x5D-7E.
+  * @param error_uri
+  *   OPTIONAL. A URI identifying a human-readable web page with information about the error, used
+  *   to provide the client developer with additional information about the error. Values for the
+  *   "error_uri" parameter MUST conform to the URI-reference syntax and thus MUST NOT include
+  *   characters outside the set %x21 / %x23-5B / %x5D-7E.
+  * @param state
+  *   REQUIRED if a "state" parameter was present in the client authorization request. The exact
+  *   value received from the client.
   */
-case class AuthErrorResponse(error: AuthErrorResponseCode.Code,
-                             error_description: Option[String],
-                             error_uri: Option[URI],
-                             state: String)
+case class AuthErrorResponse(
+    error: AuthErrorResponseCode.Code,
+    error_description: Option[String],
+    error_uri: Option[URI],
+    state: String
+)
 
 object AuthErrorResponse {
   val PARAM_ERRORCODE   = "error"
@@ -68,7 +71,8 @@ object AuthErrorResponse {
 
     for {
       error <- param(PARAM_ERRORCODE).flatMap(asString =>
-        Try(AuthErrorResponseCode.withName(asString)).toOption)
+        Try(AuthErrorResponseCode.withName(asString)).toOption
+      )
       error_description = param(PARAM_DESCRIPTION)
       error_uri         = uriParam(PARAM_URI)
       state <- param(PARAM_STATE)
@@ -89,8 +93,7 @@ final case class InvalidRequest(error: String) extends AuthorisationError(error)
   override val code: Code = AuthErrorResponseCode.invalid_request
 }
 
-/**
-  * Indicates a generic server error that can't be better classified with one of the other errors.
+/** Indicates a generic server error that can't be better classified with one of the other errors.
   */
 final case class ServerError(error: String) extends AuthorisationError(error) {
   override val code: Code = AuthErrorResponseCode.server_error

@@ -30,7 +30,6 @@ import com.tle.web.lti.consumers.api.beans.LtiConsumerBean;
 import com.tle.web.lti.consumers.api.serializer.LtiConsumerBeanSerializer;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind(LtiConsumerResource.class)
 public class LtiConsumerResourceImpl
     extends AbstractBaseEntityResource<LtiConsumer, BaseEntitySecurityBean, LtiConsumerBean>

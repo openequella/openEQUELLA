@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/** @author Nicholas Read */
 public class SearchSetFilter extends JPanel implements Changeable {
   private final ChangeDetector changeDetector;
   private final JTextField freetextQuery;

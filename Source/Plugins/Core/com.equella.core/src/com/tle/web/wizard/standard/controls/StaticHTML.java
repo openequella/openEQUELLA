@@ -28,7 +28,6 @@ import com.tle.web.sections.render.SimpleSectionResult;
 import com.tle.web.wizard.controls.AbstractSimpleWebControl;
 import com.tle.web.wizard.controls.CStaticHTML;
 
-/** @author jmaginnis */
 @Bind
 public class StaticHTML extends AbstractSimpleWebControl {
   private CStaticHTML staticHtml;

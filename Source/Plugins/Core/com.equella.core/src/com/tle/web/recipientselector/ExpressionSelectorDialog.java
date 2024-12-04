@@ -35,7 +35,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 import java.util.Collection;
 
-/** @author Peng */
 @SuppressWarnings("nls")
 @Bind
 public class ExpressionSelectorDialog

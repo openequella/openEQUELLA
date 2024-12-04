@@ -20,7 +20,6 @@ package com.tle.core.connectors.blackboard.guice;
 
 import com.tle.core.config.guice.OptionalConfigModule;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class BlackboardConnectorModule extends OptionalConfigModule {
   private static final String BB_API_VERSION = "1";

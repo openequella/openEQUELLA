@@ -26,7 +26,6 @@ import com.tle.core.remoting.RemoteSchemaService;
 import java.util.List;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface SchemaService
     extends AbstractEntityService<EntityEditingBean, Schema>, RemoteSchemaService {
   List<String> getExportSchemaTypes();

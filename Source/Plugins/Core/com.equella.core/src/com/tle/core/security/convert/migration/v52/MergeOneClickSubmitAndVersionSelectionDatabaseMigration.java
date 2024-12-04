@@ -60,11 +60,13 @@ public class MergeOneClickSubmitAndVersionSelectionDatabaseMigration
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     session
         .createQuery(
-            "DELETE FROM AccessEntry ae WHERE ae.targetObject IN ('C:loginnotice', 'C:oneClickSubmit', 'C:freetext')")
+            "DELETE FROM AccessEntry ae WHERE ae.targetObject IN ('C:loginnotice',"
+                + " 'C:oneClickSubmit', 'C:freetext')")
         .executeUpdate();
     session
         .createQuery(
-            "UPDATE AccessEntry SET targetObject = 'C:selectionSessions' WHERE targetObject = 'C:versionSelection'")
+            "UPDATE AccessEntry SET targetObject = 'C:selectionSessions' WHERE targetObject ="
+                + " 'C:versionSelection'")
         .executeUpdate();
   }
 
@@ -73,7 +75,8 @@ public class MergeOneClickSubmitAndVersionSelectionDatabaseMigration
     int ct =
         count(
             session.createQuery(
-                "SELECT COUNT(*) From AccessEntry ae WHERE ae.targetObject in ('C:oneClickSubmit', 'C:versionSelection', 'C:loginnotice', 'C:freetext')"));
+                "SELECT COUNT(*) From AccessEntry ae WHERE ae.targetObject in ('C:oneClickSubmit',"
+                    + " 'C:versionSelection', 'C:loginnotice', 'C:freetext')"));
     return ct;
   }
 

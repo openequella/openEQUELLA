@@ -2,13 +2,14 @@ import org.apache.commons.configuration.{FileConfiguration, PropertiesConfigurat
 import Path.rebase
 
 prepareDevConfig := {
-  val bc              = buildConfig.value.getConfig("devconfig")
-  val javaHome        = file(System.getProperty("java.home"))
-  val baseDir         = baseDirectory.value
-  val srcRoot         = baseDir.getParentFile.getParentFile
-  val pluginRoots     = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
-  val installerConfig = (LocalProject("Installer") / baseDirectory).value / "data/server/learningedge-config"
-  val defaultsDir     = baseDirectory.value / "defaults"
+  val bc          = buildConfig.value.getConfig("devconfig")
+  val javaHome    = file(System.getProperty("java.home"))
+  val baseDir     = baseDirectory.value
+  val srcRoot     = baseDir.getParentFile.getParentFile
+  val pluginRoots = Seq(srcRoot / "Source/Plugins", srcRoot / "Platform", srcRoot / "Interface")
+  val installerConfig =
+    (LocalProject("Installer") / baseDirectory).value / "data/server/learningedge-config"
+  val defaultsDir = baseDirectory.value / "defaults"
   val fromInstaller = Seq(
     installerConfig / "hikari.properties"
   ).pair(rebase(installerConfig, baseDir))
@@ -46,7 +47,8 @@ prepareDevConfig := {
 
   val viewItemConfiguration = new PropertiesConfiguration()
   viewItemConfiguration.load(
-    installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties.unresolved")
+    installerConfig / "plugins/com.tle.web.viewitem/mandatory.properties.unresolved"
+  )
   viewItemConfiguration.setProperty("audit.level", auditLevel)
   viewItemConfiguration.save(baseDir / "plugins/com.tle.web.viewitem/mandatory.properties")
 
@@ -54,7 +56,8 @@ prepareDevConfig := {
   log.info(s"Dev configuration with admin url of '$adminurl'")
   log.info(s"ImageMagick binary dir set to '$imPath'")
   log.info(
-    s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'")
+    s"Please edit database configuration file at '${(baseDir / "hibernate.properties").absolutePath}'"
+  )
   jpfWriteDevJars
     .all(ScopeFilter(inAggregates(LocalProject("allPlugins"), includeRoot = false)))
     .value

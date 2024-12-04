@@ -56,7 +56,8 @@ yuiResources := {
 }
 
 yuiResources ++= Seq("js/bootstrap.js", "css/bootstrap.css").map(p =>
-  (Compile / resourceDirectory).value / "web/bootstrap" / p)
+  (Compile / resourceDirectory).value / "web/bootstrap" / p
+)
 
 enablePlugins(YUICompressPlugin)
 
@@ -79,7 +80,8 @@ Compile / sourceGenerators += Def.task {
       "com.tle.core.connectors.blackboard.webservice",
       "-uri",
       equellaWSDL.getAbsolutePath
-    ))
+    )
+  )
   WSDL2Java.main(
     Array(
       "-o",
@@ -92,7 +94,8 @@ Compile / sourceGenerators += Def.task {
       "com.blackboard",
       "-uri",
       contextWSDL.getAbsolutePath
-    ))
+    )
+  )
   (gensrc ** "*.java").get
 }.taskValue
 
@@ -116,9 +119,9 @@ Compile / resourceGenerators += Def.task {
   val outDir = (Compile / resourceManaged).value
   val srcDir = buildReactFrontEnd.value
   IO.copy(
-      (srcDir ** ("*.js" | "*.css" | "*.json" | "*.html" | "*.woff" | "*.woff2"))
-        .pair(rebase(srcDir, outDir)))
-    .toSeq
+    (srcDir ** ("*.js" | "*.css" | "*.json" | "*.html" | "*.woff" | "*.woff2"))
+      .pair(rebase(srcDir, outDir))
+  ).toSeq
 }.taskValue
 
 clean := {

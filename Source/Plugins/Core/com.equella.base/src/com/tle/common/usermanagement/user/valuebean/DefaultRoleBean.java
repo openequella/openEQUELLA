@@ -23,7 +23,6 @@ import com.tle.common.Check.FieldEquality;
 import com.tle.common.Format;
 import java.util.Objects;
 
-/** @author adame */
 public class DefaultRoleBean implements RoleBean, FieldEquality<DefaultRoleBean> {
   private static final long serialVersionUID = 1L;
   private final String id;

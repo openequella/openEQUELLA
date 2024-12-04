@@ -41,7 +41,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class FreemarkerPortletEditorSection

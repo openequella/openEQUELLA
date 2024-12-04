@@ -204,7 +204,9 @@ public class LDAP {
     }
   }
 
-  /** @return null if there are zero results */
+  /**
+   * @return null if there are zero results
+   */
   private NamingEnumeration<SearchResult> search(
       DirContext ctx, Name base, String[] returnAttributes, Filter filter, boolean recurse) {
     SearchControls ctls = new SearchControls();
@@ -861,7 +863,9 @@ public class LDAP {
     }
   }
 
-  /** @deprecated This is a bit unsafe since the return attributes may not match what's required. */
+  /**
+   * @deprecated This is a bit unsafe since the return attributes may not match what's required.
+   */
   @Deprecated
   public static class LdapResultHitsCollector extends HitsCollector<LDAPResult> {
     private final String[] returnAttributes;

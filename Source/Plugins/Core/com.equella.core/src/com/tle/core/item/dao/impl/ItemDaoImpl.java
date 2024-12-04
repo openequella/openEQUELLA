@@ -79,7 +79,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 @Bind(ItemDao.class)
 @Singleton
@@ -246,8 +245,9 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<ItemIdKey>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select new com.tle.beans.item.ItemIdKey(id, uuid, max(version)) from Item "
-                        + "where uuid in (:ids) group by id, uuid, version, status having status = :status order by version",
+                    "select new com.tle.beans.item.ItemIdKey(id, uuid, max(version)) from Item"
+                        + " where uuid in (:ids) group by id, uuid, version, status having status ="
+                        + " :status order by version",
                     new String[] {"ids", "status"},
                     new Object[] {map.keySet(), ItemStatus.LIVE.name()});
     List<Long> ids = new ArrayList<Long>();
@@ -265,7 +265,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     List<?> minMax =
         getHibernateTemplate()
             .findByNamedParam(
-                "select min(i.id), max(i.id) from Item i where i.institution in (:insts) and dateForIndex >= :afterDate",
+                "select min(i.id), max(i.id) from Item i where i.institution in (:insts) and"
+                    + " dateForIndex >= :afterDate",
                 new String[] {"insts", "afterDate"},
                 new Object[] {institutions, afterDate});
     Object[] minMaxArr = (Object[]) minMax.get(0);
@@ -295,9 +296,11 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "select new com.dytech.edge.common.valuebean.ItemIndexDate("
-                                + "i.id, i.uuid, i.version, i.dateForIndex, i.institution.uniqueId) from Item i"
-                                + " where i.institution in (:insts) and i.dateForIndex >= :afterDate and i.id >= :itemId and i.id <= :maxItemId order by i.id asc");
+                            "select new com.dytech.edge.common.valuebean.ItemIndexDate(i.id,"
+                                + " i.uuid, i.version, i.dateForIndex, i.institution.uniqueId) from"
+                                + " Item i where i.institution in (:insts) and i.dateForIndex >="
+                                + " :afterDate and i.id >= :itemId and i.id <= :maxItemId order by"
+                                + " i.id asc");
                     query.setParameterList("insts", institutions);
                     query.setParameter("afterDate", afterDate);
                     query.setParameter("itemId", itemId);
@@ -331,7 +334,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query q =
                         session.createQuery(
-                            "SELECT DISTINCT NEW com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM Item i "
+                            "SELECT DISTINCT NEW com.tle.beans.item.ItemIdKey(i.id, i.uuid,"
+                                + " i.version) FROM Item i "
                                 + joinClause
                                 + " WHERE ("
                                 + whereClause
@@ -382,7 +386,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public List<ItemIdKey> getItemIdKeys(List<Long> ids) {
     String hql =
-        "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id in :ids and i.institution = :institution";
+        "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id in"
+            + " :ids and i.institution = :institution";
     return (List<ItemIdKey>)
         getHibernateTemplate()
             .findByNamedParam(
@@ -394,7 +399,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
   @Override
   public ItemIdKey getItemIdKey(Long id) {
     String hql =
-        "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id = :id and i.institution = :institution";
+        "select new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) from Item i where i.id ="
+            + " :id and i.institution = :institution";
     List<ItemIdKey> keys =
         (List<ItemIdKey>)
             getHibernateTemplate()
@@ -525,7 +531,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
     return (List<Integer>)
         getHibernateTemplate()
             .find(
-                "select version from Item where uuid = ?0 and institution = ?1 order by version asc",
+                "select version from Item where uuid = ?0 and institution = ?1 order by version"
+                    + " asc",
                 new Object[] {uuid, CurrentInstitution.get()});
   }
 
@@ -545,7 +552,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Integer>)
             getHibernateTemplate()
                 .find(
-                    "select version from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
+                    "select version from Item where uuid = ?0 and status = ?1 and institution = ?2"
+                        + " order by version desc",
                     new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return 1;
@@ -560,7 +568,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<ItemIdKey>)
             getHibernateTemplate()
                 .find(
-                    "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid = ?0 and status = ?1 and institution = ?2 order by version desc",
+                    "select new com.tle.beans.item.ItemIdKey(id,uuid,version) from Item where uuid"
+                        + " = ?0 and status = ?1 and institution = ?2 order by version desc",
                     new Object[] {uuid, ItemStatus.LIVE.name(), CurrentInstitution.get()});
     if (list.isEmpty()) {
       return null;
@@ -714,7 +723,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Long>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select i.itemDefinition.id from Item i where uuid = :uuid and institution = :institution",
+                    "select i.itemDefinition.id from Item i where uuid = :uuid and institution ="
+                        + " :institution",
                     new String[] {"uuid", "institution"},
                     new Object[] {uuid, CurrentInstitution.get()});
     if (!collectionIds.isEmpty()) {
@@ -729,7 +739,10 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Map<String, Object>>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "SELECT NEW map(i.name.id as name_id, i.description.id as desc_id, i.itemDefinition.name.id as collection_id, i.dateModified as date_mod) FROM Item i WHERE uuid = :uuid AND institution = :institution AND version = :version",
+                    "SELECT NEW map(i.name.id as name_id, i.description.id as desc_id,"
+                        + " i.itemDefinition.name.id as collection_id, i.dateModified as date_mod)"
+                        + " FROM Item i WHERE uuid = :uuid AND institution = :institution AND"
+                        + " version = :version",
                     new String[] {"uuid", "institution", "version"},
                     new Object[] {uuid, CurrentInstitution.get(), version});
     if (!itemInfo.isEmpty()) {
@@ -744,8 +757,9 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Attachment>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select a from Item i left join i.attachments a where i.uuid = :uuid"
-                        + " and i.version = :version and a.uuid = :auuid and i.institution = :institution",
+                    "select a from Item i left join i.attachments a where i.uuid = :uuid and"
+                        + " i.version = :version and a.uuid = :auuid and i.institution ="
+                        + " :institution",
                     new String[] {"uuid", "version", "auuid", "institution"},
                     new Object[] {
                       itemId.getUuid(), itemId.getVersion(), uuid, CurrentInstitution.get()
@@ -772,9 +786,9 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
                       public Object doInHibernate(Session session) {
                         final Query query =
                             session.createQuery(
-                                "SELECT DISTINCT(i.uuid) FROM Item i"
-                                    + " WHERE i.uuid IN (:uuids) AND i.itemDefinition.uuid IN (:itemDefIds)"
-                                    + " AND i.institution = :institution");
+                                "SELECT DISTINCT(i.uuid) FROM Item i WHERE i.uuid IN (:uuids) AND"
+                                    + " i.itemDefinition.uuid IN (:itemDefIds) AND i.institution ="
+                                    + " :institution");
                         query.setParameterList("uuids", itemUuids);
                         query.setParameterList("itemDefIds", collectionIds);
                         query.setParameter("institution", CurrentInstitution.get());
@@ -822,7 +836,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Object[]>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select i.id, count(c) from Item i join i.comments c where i in (:items) group by i",
+                    "select i.id, count(c) from Item i join i.comments c where i in (:items) group"
+                        + " by i",
                     "items",
                     items);
     for (Object[] comRow : counts) {
@@ -849,7 +864,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Attachment>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select a from Item i join i.attachments a where i in (:items) order by index(a) ASC",
+                    "select a from Item i join i.attachments a where i in (:items) order by"
+                        + " index(a) ASC",
                     "items",
                     items);
     ListMultimap<Item, Attachment> multiMap = ArrayListMultimap.create();
@@ -869,7 +885,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Object[]>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select a, i.id from Item i join i.attachments a where i.id in (:items) order by index(a) ASC",
+                    "select a, i.id from Item i join i.attachments a where i.id in (:items) order"
+                        + " by index(a) ASC",
                     "items",
                     ids);
     ListMultimap<Long, Attachment> multiMap = ArrayListMultimap.create();
@@ -889,7 +906,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Object[]>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select h, i.id from Item i join i.history h where i.id in (:items) order by index(h)",
+                    "select h, i.id from Item i join i.history h where i.id in (:items) order by"
+                        + " index(h)",
                     "items",
                     ids);
     ListMultimap<Long, HistoryEvent> multiMap = ArrayListMultimap.create();
@@ -909,7 +927,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Object[]>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select n, i.id from ItemNavigationNode n join n.item i where i.id in (:items) order by n.index ASC",
+                    "select n, i.id from ItemNavigationNode n join n.item i where i.id in (:items)"
+                        + " order by n.index ASC",
                     "items",
                     ids);
     ListMultimap<Long, ItemNavigationNode> multiMap = ArrayListMultimap.create();
@@ -948,7 +967,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
         (List<Object[]>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "select d, item.id from DrmAcceptance d where item.id in (:items) order by d.date DESC",
+                    "select d, item.id from DrmAcceptance d where item.id in (:items) order by"
+                        + " d.date DESC",
                     "items",
                     itemIds);
     final ListMultimap<Long, DrmAcceptance> multiMap = ArrayListMultimap.create();
@@ -993,7 +1013,8 @@ public class ItemDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implement
       return (List<String>)
           getHibernateTemplate()
               .findByNamedParam(
-                  "SELECT a.uuid FROM Attachment a JOIN a.item i JOIN i.treeNodes tn JOIN tn.tabs t WHERE i IN (:items) AND t.attachment = a",
+                  "SELECT a.uuid FROM Attachment a JOIN a.item i JOIN i.treeNodes tn JOIN tn.tabs t"
+                      + " WHERE i IN (:items) AND t.attachment = a",
                   "items",
                   items);
     }

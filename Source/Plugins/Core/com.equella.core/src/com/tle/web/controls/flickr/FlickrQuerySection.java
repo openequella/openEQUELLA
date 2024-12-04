@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class FlickrQuerySection
     extends AbstractResetFiltersQuerySection<

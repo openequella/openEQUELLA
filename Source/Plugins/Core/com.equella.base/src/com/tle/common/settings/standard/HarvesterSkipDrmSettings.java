@@ -21,7 +21,6 @@ package com.tle.common.settings.standard;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 
-/** @author larry */
 public class HarvesterSkipDrmSettings implements ConfigurationProperties {
   private static final long serialVersionUID = -6491584723123150379L;
 

@@ -40,7 +40,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(TLEUserDao.class)
 @Singleton
 @SuppressWarnings("nls")
@@ -100,7 +99,8 @@ public class TLEUserDaoImpl extends GenericDaoImpl<TLEUser, Long> implements TLE
         q.append(" WHERE g.institution = :institution AND g.uuid = :groupID)");
       } else {
         q.append(
-            " LEFT OUTER JOIN g.allParents sg WHERE g.institution = :institution AND (sg.uuid = :groupID OR g.uuid = :groupID))");
+            " LEFT OUTER JOIN g.allParents sg WHERE g.institution = :institution AND (sg.uuid ="
+                + " :groupID OR g.uuid = :groupID))");
       }
     }
 

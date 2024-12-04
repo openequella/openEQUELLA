@@ -21,7 +21,6 @@ package com.tle.web.sections.standard;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlFileDropState;
 
-/** @author Dongsheng Cai, Doolse */
 public class FileDrop extends AbstractFileUpload<HtmlFileDropState> {
   private boolean disableInitialise;
 

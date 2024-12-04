@@ -22,7 +22,6 @@ import com.tle.beans.Institution;
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 
-/** @author Nicholas Read */
 public class SystemUserState extends AbstractUserState {
   private static final long serialVersionUID = 1L;
 

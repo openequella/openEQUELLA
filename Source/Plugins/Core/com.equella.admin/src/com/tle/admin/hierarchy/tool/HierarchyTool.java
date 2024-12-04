@@ -23,7 +23,6 @@ import com.tle.admin.AdminTool;
 import com.tle.admin.hierarchy.HierarchyDialog;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public class HierarchyTool extends AdminTool {
   public HierarchyTool() {
     // There is nothing for us to do here.

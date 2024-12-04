@@ -23,7 +23,6 @@ import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
 import java.util.List;
 
-/** @author larry */
 public class HierarchyBrowseBean extends AbstractExtendableBean {
   private String uuid;
   private String name;

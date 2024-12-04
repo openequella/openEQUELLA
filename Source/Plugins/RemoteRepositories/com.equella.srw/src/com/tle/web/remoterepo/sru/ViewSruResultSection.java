@@ -39,7 +39,6 @@ import com.tle.web.selection.section.CourseListVetoSection;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author larry */
 @Bind
 public class ViewSruResultSection
     extends RemoteRepoViewResultSection<

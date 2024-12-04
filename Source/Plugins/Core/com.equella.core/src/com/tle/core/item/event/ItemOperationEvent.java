@@ -23,7 +23,6 @@ import com.tle.core.item.event.listener.ItemOperationListener;
 import com.tle.core.item.operations.BaseFilter;
 import com.tle.core.plugins.BeanLocator;
 
-/** @author Nicholas Read */
 public class ItemOperationEvent extends ApplicationEvent<ItemOperationListener> {
   private static final long serialVersionUID = 1L;
   private final BeanLocator<? extends BaseFilter> locator;

@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.ItemWentLiveListener;
 
-/** @author Andrew Gibb */
 public class ItemWentLiveEvent extends ApplicationEvent<ItemWentLiveListener> {
   private static final long serialVersionUID = 1L;
   private final ItemId itemKey;

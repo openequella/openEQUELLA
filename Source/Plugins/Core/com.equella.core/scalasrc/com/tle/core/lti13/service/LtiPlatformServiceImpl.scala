@@ -63,7 +63,8 @@ class LtiPlatformServiceImpl extends LtiPlatformService {
     lti13Dao.enumerateAll.asScala.map(LtiPlatformBean.apply).toList
 
   override def getPrivateKeyForPlatform(
-      platformID: String): Either[String, (String, RSAPrivateKey)] =
+      platformID: String
+  ): Either[String, (String, RSAPrivateKey)] =
     for {
       platform         <- getPlatformOrError(platformID)
       activatedKeyPair <- getActivatedKeyPair(platform)

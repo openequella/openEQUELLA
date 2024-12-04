@@ -59,7 +59,6 @@ import uk.ac.ed.ph.jqtiplus.state.TestProcessingMap;
 import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 import uk.ac.ed.ph.jqtiplus.value.Value;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiService.class)

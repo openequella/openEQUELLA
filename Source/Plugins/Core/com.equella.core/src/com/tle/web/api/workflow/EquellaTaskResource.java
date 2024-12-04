@@ -29,7 +29,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/** @author Aaron */
 @Path("task")
 @Api(value = "Task searching", description = "task")
 @Produces(MediaType.APPLICATION_JSON)

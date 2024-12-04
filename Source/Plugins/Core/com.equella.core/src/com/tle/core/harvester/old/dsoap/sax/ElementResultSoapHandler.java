@@ -24,7 +24,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-/** @author adame */
 public class ElementResultSoapHandler extends DefaultSoapHandler {
   private static final int DEFAULT_ROOT = 4;
 

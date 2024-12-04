@@ -50,7 +50,8 @@ import org.hibernate.annotations.Type;
 @Singleton
 public class AddScormMimeTypeDatabaseMigration extends AbstractHibernateDataMigration {
   private static final String COUNT =
-      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/scorm-package' and institution = :institution";
+      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/scorm-package' and institution ="
+          + " :institution";
 
   @Override
   public MigrationInfo createMigrationInfo() {

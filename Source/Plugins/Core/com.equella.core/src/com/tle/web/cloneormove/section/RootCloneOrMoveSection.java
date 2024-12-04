@@ -45,7 +45,6 @@ import java.util.Collections;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-/** @author aholland */
 @Bind
 public class RootCloneOrMoveSection extends AbstractContentSection<RootCloneOrMoveModel> {
   @PlugKey("moveonly.title")

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ActiveCacheConfigurationConverterExtension

@@ -32,10 +32,12 @@ class OidcSettingsPrivilegeTreeProvider
       ResourcesService
         .getResourceHelper(classOf[OidcSettingsPrivilegeTreeProvider])
         .key("securitytree.oidc"),
-      new SettingsTarget("oidc")) {
+      new SettingsTarget("oidc")
+    ) {
   override def checkAuthorised(): Unit = {
     if (!isAuthorised)
       throw new AccessDeniedException(
-        AbstractSettingsPrivilegeTreeProvider.r.getString("oidc.no.access"))
+        AbstractSettingsPrivilegeTreeProvider.r.getString("oidc.no.access")
+      )
   }
 }

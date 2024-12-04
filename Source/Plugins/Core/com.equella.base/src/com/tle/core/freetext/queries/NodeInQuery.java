@@ -25,7 +25,6 @@ import com.tle.common.i18n.CurrentLocale;
 import java.util.Collection;
 import java.util.Collections;
 
-/** @author jmaginnis */
 public class NodeInQuery extends NodeIsBlankQuery {
   private static final long serialVersionUID = 1L;
   protected final Collection<String> values;

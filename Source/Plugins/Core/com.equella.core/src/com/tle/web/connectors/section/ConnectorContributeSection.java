@@ -58,7 +58,6 @@ import java.util.Collection;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class ConnectorContributeSection

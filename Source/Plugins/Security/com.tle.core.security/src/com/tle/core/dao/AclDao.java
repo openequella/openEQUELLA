@@ -26,7 +26,6 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface AclDao extends GenericDao<AccessEntry, Long> {
   List<Object[]> getPrivileges(Collection<String> privileges, Collection<Long> expressions);
 

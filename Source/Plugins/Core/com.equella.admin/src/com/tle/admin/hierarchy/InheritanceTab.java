@@ -28,7 +28,6 @@ import com.tle.common.applet.client.EntityCache;
 import com.tle.common.hierarchy.SearchSetAdapter;
 import java.awt.GridLayout;
 
-/** @author Nicholas Read */
 public class InheritanceTab extends AbstractTopicEditorTab {
   private final ClientService clientService;
   private final EntityCache cache;

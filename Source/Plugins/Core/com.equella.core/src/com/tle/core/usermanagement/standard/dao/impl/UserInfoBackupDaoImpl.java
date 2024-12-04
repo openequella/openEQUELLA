@@ -50,7 +50,8 @@ public class UserInfoBackupDaoImpl extends GenericDaoImpl<UserInfoBackup, Long>
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "FROM UserInfoBackup WHERE LOWER(uniqueId) = :uniqueId AND institution_id = :institutionId");
+                            "FROM UserInfoBackup WHERE LOWER(uniqueId) = :uniqueId AND"
+                                + " institution_id = :institutionId");
                     query.setParameter("uniqueId", uniqueId.toLowerCase());
                     query.setParameter("institutionId", CurrentInstitution.get().getUniqueId());
                     return query.uniqueResult();

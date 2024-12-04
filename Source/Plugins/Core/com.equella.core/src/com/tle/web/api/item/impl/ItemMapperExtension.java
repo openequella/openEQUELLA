@@ -26,7 +26,6 @@ import com.tle.core.jackson.MapperExtension;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ItemMapperExtension implements MapperExtension {

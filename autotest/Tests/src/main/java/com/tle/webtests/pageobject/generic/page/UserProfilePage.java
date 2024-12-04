@@ -69,7 +69,9 @@ public class UserProfilePage extends AbstractPage<UserProfilePage> {
     return ReceiptPage.waiter("Password changed successfully.", this);
   }
 
-  /** @param locale use the short code, eg aa_DJ or en_AU */
+  /**
+   * @param locale use the short code, eg aa_DJ or en_AU
+   */
   public void setLanguageByCode(String locale) {
     new EquellaSelect(context, langSelect).get().selectByValue(locale);
   }

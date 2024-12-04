@@ -27,7 +27,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class DiscoverabilityScriptObjectContributor implements ScriptObjectContributor {

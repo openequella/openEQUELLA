@@ -67,7 +67,8 @@ public class UserQueryApiTest extends AbstractRestApiTest {
 
   @Test(
       description =
-          "Search for a user that could never possibly exist, ensuring we get a not found (404) response")
+          "Search for a user that could never possibly exist, ensuring we get a not found (404)"
+              + " response")
   public void filter_nothingFoundTest() throws IOException {
     filterEndpointQuery(404, "This user could never possibly exist", null);
   }

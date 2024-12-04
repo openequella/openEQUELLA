@@ -21,7 +21,6 @@ package com.tle.admin.schema;
 import com.dytech.devlib.PropBagEx;
 import com.tle.admin.gui.common.GenericTreeModel;
 
-/** @author Nicholas Read */
 public class SchemaModel extends GenericTreeModel<SchemaNode> {
   private static final long serialVersionUID = 1L;
 

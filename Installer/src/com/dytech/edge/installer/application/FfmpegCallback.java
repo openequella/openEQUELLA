@@ -38,7 +38,8 @@ public class FfmpegCallback implements Callback {
       result =
           JOptionPane.showConfirmDialog(
               parent,
-              "You have not entered a FFmpeg path which means no thumbnailing or previewing of video files can occur in EQUELLA. Are you sure?",
+              "You have not entered a FFmpeg path which means no thumbnailing or previewing of"
+                  + " video files can occur in EQUELLA. Are you sure?",
               "Warning", //$NON-NLS-1$ //$NON-NLS-2$
               JOptionPane.YES_NO_OPTION,
               JOptionPane.WARNING_MESSAGE);

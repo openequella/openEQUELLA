@@ -56,7 +56,6 @@ import javax.inject.Singleton;
 import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(SchemaService.class)
 @Singleton
 @SecureEntity(RemoteSchemaService.ENTITY_TYPE)

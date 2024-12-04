@@ -23,11 +23,12 @@ import com.tle.common.NameValue;
 import com.tle.web.sections.SectionInfo;
 import java.util.Collection;
 
-/** @author Aaron */
 public interface MerlotWebService {
   MerlotSettings getSettings(SectionInfo info);
 
-  /** @param categoryId blank or null for root categories. */
+  /**
+   * @param categoryId blank or null for root categories.
+   */
   Collection<NameValue> getCategories(SectionInfo info, String categoryId);
 
   Collection<NameValue> getCommunities(SectionInfo info);

@@ -64,7 +64,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-/** @author Nicholas Read */
 public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionListener {
   private static final long serialVersionUID = 1L;
 
@@ -461,7 +460,9 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
     worker.start();
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class MyTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     private final String FIRST = getString("keyresourcestab.name"); // $NON-NLS-1$

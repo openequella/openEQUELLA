@@ -45,6 +45,7 @@ object DisplayNodes {
     }
     if (valueText.nonEmpty) Some {
       MetaDisplay(LangUtils.getString(dn.getTitle), valueText, !dn.isDoubleMode, dn.getType)
-    } else None
+    }
+    else None
   }
 }

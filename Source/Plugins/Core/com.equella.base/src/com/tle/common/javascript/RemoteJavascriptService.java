@@ -21,7 +21,6 @@ package com.tle.common.javascript;
 import com.tle.common.NameValue;
 import java.util.List;
 
-/** @author aholland */
 public interface RemoteJavascriptService {
   List<NameValue> getAllJavascriptLibraryNames();
 

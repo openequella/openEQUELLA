@@ -62,7 +62,8 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
         (List<FavouriteSearch>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "from FavouriteSearch where id = :id and owner = :owner and institution = :inst",
+                    "from FavouriteSearch where id = :id and owner = :owner and institution ="
+                        + " :inst",
                     new String[] {"id", "owner", "inst"},
                     new Object[] {id, CurrentUser.getUserID(), CurrentInstitution.get()});
     return uniqueResult(search);

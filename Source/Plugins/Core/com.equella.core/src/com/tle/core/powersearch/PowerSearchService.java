@@ -26,7 +26,6 @@ import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface PowerSearchService
     extends AbstractEntityService<EntityEditingBean, PowerSearch>, RemotePowerSearchService {
 

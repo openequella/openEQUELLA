@@ -6,7 +6,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class SharedData {
   public static final int SAVE_IN_NATIVE = 0;
   public static final int SAVE_APPLYING_XSLT = 1;

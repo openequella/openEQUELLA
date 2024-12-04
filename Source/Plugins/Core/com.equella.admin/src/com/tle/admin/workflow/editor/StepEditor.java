@@ -29,7 +29,6 @@ import java.awt.GridLayout;
 import javax.swing.JDialog;
 import javax.swing.JTabbedPane;
 
-/** @author Nicholas Read */
 public class StepEditor extends NodeEditor {
   private static final long serialVersionUID = 1L;
 

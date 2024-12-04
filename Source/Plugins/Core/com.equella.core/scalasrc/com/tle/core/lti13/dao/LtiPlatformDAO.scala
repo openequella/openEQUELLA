@@ -23,12 +23,13 @@ import com.tle.core.hibernate.dao.GenericInstitutionalDao
 
 trait LtiPlatformDAO extends GenericInstitutionalDao[LtiPlatform, java.lang.Long] {
 
-  /**
-    * Retrieve a LTI Platform by Platform ID. An exception will be thrown if more than one
-    * platforms match the ID.
+  /** Retrieve a LTI Platform by Platform ID. An exception will be thrown if more than one platforms
+    * match the ID.
     *
-    * @param platformId Unique ID of a LTI Platform.
-    * @return Option of the LTI Platform, or None if it does not exist.
+    * @param platformId
+    *   Unique ID of a LTI Platform.
+    * @return
+    *   Option of the LTI Platform, or None if it does not exist.
     */
   def getByPlatformId(platformId: String): Option[LtiPlatform]
 }

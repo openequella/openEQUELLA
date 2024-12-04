@@ -24,7 +24,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-/** @author Nicholas Read */
 public class JSmartTextField extends JTextField {
   public static final int I_ALPHABET = 1;
   public static final int I_NUMERIC = 2;
@@ -69,27 +68,37 @@ public class JSmartTextField extends JTextField {
     setCaseType(caseType);
   }
 
-  /** @return Returns the caseType. */
+  /**
+   * @return Returns the caseType.
+   */
   public int getCaseType() {
     return document.getCaseType();
   }
 
-  /** @param caseType The caseType to set. */
+  /**
+   * @param caseType The caseType to set.
+   */
   public void setCaseType(int caseType) {
     document.setCaseType(caseType);
   }
 
-  /** @return Returns the inputType. */
+  /**
+   * @return Returns the inputType.
+   */
   public int getInputType() {
     return document.getInputType();
   }
 
-  /** @param inputType The inputType to set. */
+  /**
+   * @param inputType The inputType to set.
+   */
   public void setInputType(int inputType) {
     document.setInputType(inputType);
   }
 
-  /** @return Returns the maxLength. */
+  /**
+   * @return Returns the maxLength.
+   */
   public int getMaxLength() {
     return document.getMaxLength();
   }

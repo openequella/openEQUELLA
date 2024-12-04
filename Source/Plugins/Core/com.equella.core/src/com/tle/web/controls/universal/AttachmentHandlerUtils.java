@@ -27,6 +27,7 @@ public final class AttachmentHandlerUtils {
   @SuppressWarnings("nls")
   public static final List<String> RATING_CLASSES =
       Collections.unmodifiableList(Arrays.asList("zero", "one", "two", "three", "four", "five"));
+
   // @formatter:on
 
   public static int getRating(float avgRating) {

@@ -37,9 +37,9 @@ import javax.persistence.{
   UniqueConstraint
 }
 
-/**
-  * The table generated from this Entity is used to store cryptographic keys where the algorithm is asymmetric and generates
-  * a key pair of a private key and a public key. This is designed to be used to back the JWKS endpoint.
+/** The table generated from this Entity is used to store cryptographic keys where the algorithm is
+  * asymmetric and generates a key pair of a private key and a public key. This is designed to be
+  * used to back the JWKS endpoint.
   */
 @Entity
 @Table(
@@ -48,56 +48,50 @@ import javax.persistence.{
   },
   uniqueConstraints = Array(new UniqueConstraint(columnNames = Array("keyId", "institution_id")))
 )
-@NamedQuery(name = "getByKeyID",
-            query = "from WebKeySet WHERE keyId = :keyId AND institution = :institution")
+@NamedQuery(
+  name = "getByKeyID",
+  query = "from WebKeySet WHERE keyId = :keyId AND institution = :institution"
+)
 class WebKeySet {
 
-  /**
-    * Database automatically generated ID used as the primary key.
+  /** Database automatically generated ID used as the primary key.
     */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Long = _
 
-  /**
-    * Unique ID of the key pair.
+  /** Unique ID of the key pair.
     */
   @Column(nullable = false)
   var keyId: String = _
 
-  /**
-    * The algorithm used to generate the key pair.
+  /** The algorithm used to generate the key pair.
     */
   @Column(nullable = false, columnDefinition = "VARCHAR(5)")
   var algorithm: String = _
 
-  /**
-    * The public key in PEM format.
+  /** The public key in PEM format.
     */
   @Lob
   @Column(nullable = false)
   var publicKey: String = _
 
-  /**
-    * The private key in PEM format but encrypted.
+  /** The private key in PEM format but encrypted.
     */
   @Lob
   @Column(nullable = false)
   var privateKey: String = _
 
-  /**
-    * The date when the key pair is generated.
+  /** The date when the key pair is generated.
     */
   @Column(nullable = false)
   var created: Instant = _
 
-  /**
-    * The date when the key pair is deactivated. Null if it is still active.
+  /** The date when the key pair is deactivated. Null if it is still active.
     */
   var deactivated: Instant = _
 
-  /**
-    * Institution which the key set belongs to.
+  /** Institution which the key set belongs to.
     */
   @JoinColumn(nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)

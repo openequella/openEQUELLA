@@ -21,7 +21,6 @@ package com.tle.admin.gui.common.actions;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.Action;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class DownAction extends TLEAction {
   public DownAction() {

@@ -23,7 +23,6 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.BlockInteraction;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class BlockInteractionRenderer extends QtiNodeRenderer {
   @SuppressWarnings("unused")

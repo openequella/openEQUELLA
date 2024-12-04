@@ -25,7 +25,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.render.ResultListCollector;
 
-/** @author aholland */
 public class RootMyPagesSection extends AbstractMyPagesSection<RootMyPagesModel>
     implements HtmlRenderer {
   @Override

@@ -22,7 +22,6 @@ import com.tle.beans.item.Item;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.TagState;
 
-/** @author aholland */
 public interface BreadcrumbService {
   String SEARCH_COLLECTION = "searchCollection"; // $NON-NLS-1$
   String VIEW_ITEM = "viewItem"; // $NON-NLS-1$

@@ -24,7 +24,6 @@ import com.tle.integration.lti.brightspace.BrightspaceSignon;
 import com.tle.web.sections.Section;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class BrightspaceIntegrationModule extends SectionsModule {
   @Override

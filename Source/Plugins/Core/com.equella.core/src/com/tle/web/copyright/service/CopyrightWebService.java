@@ -25,7 +25,6 @@ import com.tle.core.copyright.Holding;
 import com.tle.web.sections.SectionInfo;
 import java.util.Map;
 
-/** @author Aaron */
 public interface CopyrightWebService<H extends Holding> {
   Map<String, Attachment> getAttachmentMap(SectionInfo info, Item item);
 

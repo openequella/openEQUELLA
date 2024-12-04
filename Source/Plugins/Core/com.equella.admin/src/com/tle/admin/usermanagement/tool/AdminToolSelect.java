@@ -327,8 +327,10 @@ public abstract class AdminToolSelect extends AdminTool implements ActionListene
           int result =
               JOptionPane.showOptionDialog(
                   parentFrame,
-                  "You have chosen to disable this plug-in, but this may not have been your intention.\n"
-                      + "Please confirm what you are trying to do by selecting from the following actions:",
+                  "You have chosen to disable this plug-in, but this may not have been your"
+                      + " intention.\n"
+                      + "Please confirm what you are trying to do by selecting from the following"
+                      + " actions:",
                   "Disable Plug-in?",
                   JOptionPane.YES_NO_CANCEL_OPTION,
                   JOptionPane.QUESTION_MESSAGE,

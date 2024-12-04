@@ -25,7 +25,6 @@ import com.tle.common.util.TleDate;
 import java.util.Objects;
 import java.util.TimeZone;
 
-/** @author Nicholas Read */
 public class FreeTextDateQuery extends FreeTextQuery {
   private static final long serialVersionUID = 1L;
 

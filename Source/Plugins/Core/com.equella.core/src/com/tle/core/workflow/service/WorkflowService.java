@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface WorkflowService
     extends AbstractEntityService<EntityEditingBean, Workflow>, RemoteWorkflowService {
   /**

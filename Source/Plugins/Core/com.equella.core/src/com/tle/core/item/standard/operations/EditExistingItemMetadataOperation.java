@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SecureOnCall(priv = SecurityConstants.EDIT_ITEM)
 @Bind
 public class EditExistingItemMetadataOperation extends AbstractEditMetadataOperation {

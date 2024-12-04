@@ -22,7 +22,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.Enumeration;
 import javax.swing.tree.TreeNode;
 
-/** @author Nicholas Read */
 public abstract class AbstractLeafNode<T> implements SecurityTreeNode {
   private final T entity;
   private final Node privNode;

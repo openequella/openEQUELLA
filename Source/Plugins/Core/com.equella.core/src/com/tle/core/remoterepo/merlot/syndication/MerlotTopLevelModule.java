@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.merlot.syndication;
 import com.rometools.rome.feed.module.Module;
 import org.jdom2.Namespace;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public interface MerlotTopLevelModule extends Module {
   String URI = "http://www.merlot.org/merlot/materials-rest";

@@ -37,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/** @author aholland */
 public class ExternalAuthorisationSettingsPanel extends JPanel implements Changeable {
   private static final long serialVersionUID = 5306265445292956845L;
 

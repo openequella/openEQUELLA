@@ -37,7 +37,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(TLEGroupDao.class)
 @Singleton
 @SuppressWarnings("nls")
@@ -111,21 +110,24 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createSQLQuery(
-                            "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id = :institutionId");
+                            "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id ="
+                                + " :institutionId");
                     query.setParameter("groupUuid", groupUuid);
                     query.setParameter("institutionId", CurrentInstitution.get().getDatabaseId());
                     final Number groupId = (Number) query.uniqueResult();
 
                     query =
                         session.createSQLQuery(
-                            "SELECT COUNT(*) FROM tlegroup_users WHERE tlegroup_id = :groupId AND element = :userId");
+                            "SELECT COUNT(*) FROM tlegroup_users WHERE tlegroup_id = :groupId AND"
+                                + " element = :userId");
                     query.setParameter("groupId", groupId);
                     query.setParameter("userId", userUuid);
                     final Number count = (Number) query.uniqueResult();
                     if (count.longValue() == 0) {
                       query =
                           session.createSQLQuery(
-                              "INSERT INTO tlegroup_users (tlegroup_id, element) VALUES (:groupId, :userId)");
+                              "INSERT INTO tlegroup_users (tlegroup_id, element) VALUES (:groupId,"
+                                  + " :userId)");
                       query.setParameter("groupId", groupId);
                       query.setParameter("userId", userUuid);
                       query.executeUpdate();
@@ -148,14 +150,16 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createSQLQuery(
-                            "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id = :institutionId");
+                            "SELECT id FROM tlegroup WHERE uuid = :groupUuid AND institution_id ="
+                                + " :institutionId");
                     query.setParameter("groupUuid", groupUuid);
                     query.setParameter("institutionId", CurrentInstitution.get().getDatabaseId());
                     final Number groupId = (Number) query.uniqueResult();
 
                     query =
                         session.createSQLQuery(
-                            "DELETE FROM tlegroup_users WHERE tlegroup_id = :groupId AND element = :userId");
+                            "DELETE FROM tlegroup_users WHERE tlegroup_id = :groupId AND element ="
+                                + " :userId");
                     query.setParameter("groupId", groupId);
                     query.setParameter("userId", userUuid);
                     final int rows = query.executeUpdate();
@@ -203,7 +207,8 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
     if (parentGroup != null) {
       StringBuilder q = new StringBuilder("FROM TLEGroup g ");
       q.append(
-          "WHERE g.institution = :institution AND g.name LIKE :namequery AND :parent IN ELEMENTS(g.allParents)");
+          "WHERE g.institution = :institution AND g.name LIKE :namequery AND :parent IN"
+              + " ELEMENTS(g.allParents)");
 
       return (List<TLEGroup>)
           getHibernateTemplate()

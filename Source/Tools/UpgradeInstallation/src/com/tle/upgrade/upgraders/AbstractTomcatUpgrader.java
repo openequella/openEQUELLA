@@ -39,7 +39,6 @@ import java.net.URLConnection;
 import java.util.Properties;
 import java.util.zip.ZipInputStream;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Deprecated
 public abstract class AbstractTomcatUpgrader extends AbstractUpgrader {
@@ -81,7 +80,8 @@ public abstract class AbstractTomcatUpgrader extends AbstractUpgrader {
         throw new Exception(
             "Could not download "
                 + tomcatZipFilename
-                + ".  If your network connection requires a proxy server, please enter the proxy server details on the Configuration tab and try again.",
+                + ".  If your network connection requires a proxy server, please enter the proxy"
+                + " server details on the Configuration tab and try again.",
             io);
       }
     }

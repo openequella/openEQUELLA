@@ -45,7 +45,8 @@ object NewSelectionPage {
     val ss  = uss.getAttribute(sessionId).asInstanceOf[SelectionSession]
     req.setAttribute(RenderNewTemplate.ReactHtmlKey, SelectionPage)
     req.setAttribute(
-      RenderNewTemplate.SetupJSKey, { oe: ObjectExpression =>
+      RenderNewTemplate.SetupJSKey,
+      { oe: ObjectExpression =>
         oe.put("selection", mapper.writeValueAsString(ss))
         integId
           .flatMap(i => Option(uss.getAttribute(i).asInstanceOf[IntegrationSessionData]))
@@ -62,7 +63,7 @@ object NewSelectionPage {
       info.lookupSection[RootSelectionSection, RootSelectionSection](classOf[RootSelectionSection])
     val sessionid = rootsel.getSessionId(info)
     val request   = info.getRequest
-    val baseUri   = AbsoluteUrl.parse(LegacyGuice.urlService.getBaseUriFromRequest(request).toString)
+    val baseUri = AbsoluteUrl.parse(LegacyGuice.urlService.getBaseUriFromRequest(request).toString)
     val baseParts = baseUri.path.parts.filter(_.nonEmpty)
     baseUri
       .withPath(AbsolutePath(baseParts).addParts("selection", s"$sessionid:$integId"))

@@ -35,7 +35,6 @@ import com.tle.core.services.user.UserService;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class DrmScriptWrapper extends AbstractScriptWrapper implements DrmScriptObject {
   private static final long serialVersionUID = 1L;

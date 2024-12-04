@@ -25,7 +25,6 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.JSUtils;
 
-/** @author aholland */
 @NonNullByDefault
 public class AssignStatement implements JSStatements {
   protected final JSExpression var;

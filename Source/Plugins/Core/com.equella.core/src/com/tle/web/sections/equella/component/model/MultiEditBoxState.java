@@ -22,7 +22,6 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.model.HtmlValueState;
 import java.util.Map;
 
-/** @author Andrew Gibb */
 public class MultiEditBoxState extends HtmlComponentState {
   private int size;
   private Map<String, HtmlValueState> localeMap;

@@ -26,7 +26,6 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.scripting.WorkflowScriptObjectContributor;
 import com.tle.core.item.service.ItemResolverExtension;
 
-/** @author Aaron */
 public class ItemModule extends AbstractModule {
   @Override
   protected void configure() {

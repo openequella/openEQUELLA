@@ -24,16 +24,18 @@ import com.tle.web.viewitem.I18nDRM
 import scala.jdk.CollectionConverters._
 
 case class DrmParties(
-                      /**  Server side language string for DRM party. */
-                      title: String,
-                      /** A list of text consisting each party's name and email. */
-                      partyList: List[String])
+    /** Server side language string for DRM party. */
+    title: String,
+    /** A list of text consisting each party's name and email. */
+    partyList: List[String]
+)
 
 case class DrmCustomTerms(
-                          /** Server side language string for DRM terms. */
-                          title: String,
-                          /** Terms of using the Item. */
-                          terms: String)
+    /** Server side language string for DRM terms. */
+    title: String,
+    /** Terms of using the Item. */
+    terms: String
+)
 
 case class DrmAgreements(
     /** Text describing what regular permissions are granted to the user. */
@@ -56,7 +58,8 @@ case class ItemDrmDetails(
     /** Server side language string used as the DRM acceptance description */
     description: String = CoreStrings.text("summary.content.termsofuse.terms.description"),
     /** All terms and conditions that user must accept to use the Item */
-    agreements: DrmAgreements)
+    agreements: DrmAgreements
+)
 
 object ItemDrmDetails {
   def buildPermissionText(permissions: String, title: String): Option[String] = {
@@ -68,7 +71,8 @@ object ItemDrmDetails {
 
     val customTerms =
       Option(drmI18n.getTerms).map(terms =>
-        DrmCustomTerms(CoreStrings.text("drm.mustagree"), terms))
+        DrmCustomTerms(CoreStrings.text("drm.mustagree"), terms)
+      )
 
     val regularPermission =
       buildPermissionText(drmI18n.getPermissions1List, drmI18n.getItemMayFreelyBeText)
@@ -80,8 +84,11 @@ object ItemDrmDetails {
 
     val parties = if (drmI18n.isAttribution && !drmI18n.getParties.isEmpty) {
       Option(
-        DrmParties(drmI18n.getAttributeOwnersText,
-                   drmI18n.getParties.asScala.map(p => s"${p.getName} ${p.getEmail}").toList))
+        DrmParties(
+          drmI18n.getAttributeOwnersText,
+          drmI18n.getParties.asScala.map(p => s"${p.getName} ${p.getEmail}").toList
+        )
+      )
     } else {
       None
     }

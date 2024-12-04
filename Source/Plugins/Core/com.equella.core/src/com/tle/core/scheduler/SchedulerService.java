@@ -48,34 +48,46 @@ public interface SchedulerService {
     @Property(key = "schedules.weekly.day")
     private int weeklyTaskDay = 6;
 
-    /** @return The hour to start daily tasks on, 0-23. */
+    /**
+     * @return The hour to start daily tasks on, 0-23.
+     */
     public int getDailyTaskHour() {
       return dailyTaskHour;
     }
 
-    /** @param h The hour to start daily tasks on, 0-23. */
+    /**
+     * @param h The hour to start daily tasks on, 0-23.
+     */
     public void setDailyTaskHour(int h) {
       Preconditions.checkArgument(0 <= h && h <= 23, "Hour must be between 0 and 23 inclusive");
       this.dailyTaskHour = h;
     }
 
-    /** @return The hour to start weekly tasks on, 0-23. */
+    /**
+     * @return The hour to start weekly tasks on, 0-23.
+     */
     public int getWeeklyTaskHour() {
       return weeklyTaskHour;
     }
 
-    /** @param h The hour to start weekly tasks on, 0-23. */
+    /**
+     * @param h The hour to start weekly tasks on, 0-23.
+     */
     public void setWeeklyTaskHour(int h) {
       Preconditions.checkArgument(0 <= h && h <= 23, "Hour must be between 0 and 23 inclusive");
       this.weeklyTaskHour = h;
     }
 
-    /** @return The day to start weekly tasks on, 0-6 starting Sunday. */
+    /**
+     * @return The day to start weekly tasks on, 0-6 starting Sunday.
+     */
     public int getWeeklyTaskDay() {
       return weeklyTaskDay;
     }
 
-    /** @param d The day to start weekly tasks on, 0-6 starting Sunday. */
+    /**
+     * @param d The day to start weekly tasks on, 0-6 starting Sunday.
+     */
     public void setWeeklyTaskDay(int d) {
       Preconditions.checkArgument(0 <= d && d <= 6, "Day must be between 0 and 6 inclusive");
       this.weeklyTaskDay = d;

@@ -31,7 +31,6 @@ import com.tle.web.api.collection.DynaCollectionEditor;
 import com.tle.web.api.collection.beans.DynaCollectionBean;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class DynaCollectionEditorImpl
     extends AbstractBaseEntityEditor<DynaCollection, DynaCollectionBean>

@@ -27,9 +27,8 @@ import javax.inject.{Inject, Singleton}
 
 case class StateConfig(expiryInSeconds: Int, name: String)
 
-/**
-  * Manages the `state` values for OAuth2 authorisation request and stores the authorisation
-  * details in a replicated cache.
+/** Manages the `state` values for OAuth2 authorisation request and stores the authorisation details
+  * in a replicated cache.
   */
 @Bind
 @Singleton
@@ -37,18 +36,19 @@ class OAuth2StateService[T <: Serializable](stateStorage: ReplicatedCache[T]) {
 
   def this(rcs: ReplicatedCacheService, config: StateConfig) =
     this(
-      rcs.getCache[T](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS),
+      rcs.getCache[T](config.name, 1000, config.expiryInSeconds, TimeUnit.SECONDS)
     )
 
   @Inject def this(rcs: ReplicatedCacheService) = this(rcs, StateConfig(300, "oauth2-state"))
 
-  /**
-    * Given the key details of an OIDC authentication Request, store those and create a 'state' value that can
-    * later be used to retrieve these.
+  /** Given the key details of an OIDC authentication Request, store those and create a 'state'
+    * value that can later be used to retrieve these.
     *
-    * @param details key information for an OIDC authentication request
-    * @return a unique value representing this request which can be used as the `state` values
-    *         in subsequent requests.
+    * @param details
+    *   key information for an OIDC authentication request
+    * @return
+    *   a unique value representing this request which can be used as the `state` values in
+    *   subsequent requests.
     */
   def createState(details: T): String = {
     val state = generateRandomHexString(16)
@@ -57,21 +57,22 @@ class OAuth2StateService[T <: Serializable](stateStorage: ReplicatedCache[T]) {
     state
   }
 
-  /**
-    * Given the state from a request, return what (if any) state details are stored against that
+  /** Given the state from a request, return what (if any) state details are stored against that
     * identifier.
     *
-    * @param state the `state` value received from an OIDC authentication request.
-    * @return The stored state details if available, or `None` if there are none - most likely
-    *         indicating an invalid `state` value has been provided.
+    * @param state
+    *   the `state` value received from an OIDC authentication request.
+    * @return
+    *   The stored state details if available, or `None` if there are none - most likely indicating
+    *   an invalid `state` value has been provided.
     */
   def getState(state: String): Option[T] = Option(stateStorage.get(state).orNull())
 
-  /**
-    * Given an `state` which is no longer required - already been used perhaps - invalidate it by
+  /** Given an `state` which is no longer required - already been used perhaps - invalidate it by
     * removing it from the state storage.
     *
-    * @param state the `state` to be invalidated
+    * @param state
+    *   the `state` to be invalidated
     */
   def invalidateState(state: String): Unit = stateStorage.invalidate(state)
 }

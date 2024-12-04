@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/** @author jmaginnis */
 public abstract class BaseQuery implements Serializable {
   private List<BaseQuery> andFilters;
   private boolean not = false;

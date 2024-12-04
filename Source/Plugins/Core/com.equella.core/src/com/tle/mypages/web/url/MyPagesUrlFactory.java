@@ -24,7 +24,6 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewurl.ViewItemUrl;
 
-/** @author aholland */
 public interface MyPagesUrlFactory {
   /**
    * @param info

@@ -28,7 +28,6 @@ import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.Collection;
 
-/** @author jmaginnis */
 @NonNullByDefault
 public interface RenderContext extends SectionInfo {
   /**

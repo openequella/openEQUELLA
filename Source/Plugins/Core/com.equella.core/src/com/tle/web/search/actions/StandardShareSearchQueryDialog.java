@@ -22,7 +22,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.core.guice.Bind;
 import javax.inject.Inject;
 
-/** @author Andrew Gibb */
 @NonNullByDefault
 @Bind
 public class StandardShareSearchQueryDialog extends AbstractShareSearchQueryDialog {

@@ -26,7 +26,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.standard.AbstractEventOnlyComponent;
 import com.tle.web.sections.standard.AbstractTable;
 
-/** @author Aaron */
 public class SelectionsTable extends AbstractTable<SelectionsTableState> {
   private Label nothingSelectedText;
   private AbstractEventOnlyComponent<?> addAction;

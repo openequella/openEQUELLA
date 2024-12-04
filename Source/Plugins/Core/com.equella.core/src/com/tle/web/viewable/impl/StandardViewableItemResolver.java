@@ -38,7 +38,6 @@ import com.tle.web.viewurl.ViewItemUrlFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton

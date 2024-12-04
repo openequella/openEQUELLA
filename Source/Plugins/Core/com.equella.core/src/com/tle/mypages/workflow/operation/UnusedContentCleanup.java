@@ -25,7 +25,6 @@ import com.tle.mypages.workflow.operation.UnusedContentCleanupOperation.UnusedCo
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class UnusedContentCleanup extends FactoryMethodLocator<WorkflowOperation>
     implements DuringSaveOperation {

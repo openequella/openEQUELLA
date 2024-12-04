@@ -47,7 +47,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import java.util.List;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @TreeIndexed
 public class HtmlEditorSettingsFrontPageSection

@@ -45,7 +45,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.util.Streams;
 
-/** @author aholland */
 public class SuperDuperFilter extends Filter {
   public static final String PARAMS_KEY = "parameters"; // $NON-NLS-1$
   public static final String MULTIPART_STREAMS_KEY = "multipart"; // $NON-NLS-1$
@@ -55,7 +54,8 @@ public class SuperDuperFilter extends Filter {
 
   @Override
   public String description() {
-    return "Parse GET and POST params and get file uploads out of multipart request and store in HttpExchange attributes";
+    return "Parse GET and POST params and get file uploads out of multipart request and store in"
+        + " HttpExchange attributes";
   }
 
   @Override

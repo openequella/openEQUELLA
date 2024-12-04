@@ -11,7 +11,6 @@ import com.tle.webtests.pageobject.settings.ActiveCachingPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class ActiveCachingTest extends AbstractSessionTest {
   private static final String DISCARDABLE_GROUP_NAME = "Gang's all here";

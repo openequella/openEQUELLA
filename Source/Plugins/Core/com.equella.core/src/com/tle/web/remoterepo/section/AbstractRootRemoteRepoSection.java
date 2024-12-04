@@ -41,7 +41,6 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import javax.inject.Inject;
 
-/** @author aholland */
 @TreeIndexed
 public abstract class AbstractRootRemoteRepoSection
     extends ContextableSearchSection<AbstractRootRemoteRepoSection.Model>

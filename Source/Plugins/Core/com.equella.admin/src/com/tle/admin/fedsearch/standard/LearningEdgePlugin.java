@@ -30,7 +30,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
-/** @author cofarrell */
 @SuppressWarnings("nls")
 public class LearningEdgePlugin extends SearchPlugin<TLESettings> implements ActionListener {
   private JTextField institution;

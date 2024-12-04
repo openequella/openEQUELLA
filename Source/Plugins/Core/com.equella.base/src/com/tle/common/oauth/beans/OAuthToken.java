@@ -39,7 +39,6 @@ import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.NamedQuery;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "client_id"})})

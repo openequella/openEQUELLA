@@ -29,7 +29,6 @@ import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author larry */
 @Bind
 @Singleton
 public class ExternalToolResource

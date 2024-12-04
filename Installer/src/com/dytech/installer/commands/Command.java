@@ -76,12 +76,16 @@ public abstract class Command {
     }
   }
 
-  /** @return Returns the progress. */
+  /**
+   * @return Returns the progress.
+   */
   public Progress getProgress() {
     return progress;
   }
 
-  /** @param progress The progress to set. */
+  /**
+   * @param progress The progress to set.
+   */
   public void setProgress(Progress progress) {
     this.progress = progress;
   }

@@ -39,7 +39,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class MimeTemplateSection extends AbstractPrototypeSection<Object>

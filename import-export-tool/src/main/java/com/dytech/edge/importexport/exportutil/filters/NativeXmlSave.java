@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class NativeXmlSave implements Runnable {
   private final SharedData data;

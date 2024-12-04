@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 
-/** @author Nicholas Read */
 public interface UrlService {
   URL getAdminUrl();
 

@@ -28,7 +28,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class IframePortletRenderer

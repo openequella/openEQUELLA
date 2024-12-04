@@ -24,7 +24,6 @@ import com.tle.common.searching.Search;
 import java.util.Collection;
 import java.util.Date;
 
-/** @author Nicholas Read */
 public interface ContentRepository {
 
   /**

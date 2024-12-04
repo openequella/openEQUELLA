@@ -18,7 +18,8 @@ public class MoodleCourseSettingsBlock extends MoodleBasePage<MoodleCourseSettin
     super(context);
     settingsDiv =
         By.xpath(
-            "//div[contains(@class, 'block_settings') and ./div[@class='header' and .//h2[text()='Administration']]]");
+            "//div[contains(@class, 'block_settings') and ./div[@class='header' and"
+                + " .//h2[text()='Administration']]]");
 
     this.loadedBy = settingsDiv;
   }

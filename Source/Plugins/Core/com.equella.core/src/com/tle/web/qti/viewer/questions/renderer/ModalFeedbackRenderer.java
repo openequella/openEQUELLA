@@ -50,7 +50,6 @@ import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
 import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
 import uk.ac.ed.ph.jqtiplus.value.Value;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class ModalFeedbackRenderer extends QtiNodeRenderer {
   private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");

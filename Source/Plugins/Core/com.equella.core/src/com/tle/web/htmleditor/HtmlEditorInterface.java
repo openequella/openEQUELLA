@@ -88,6 +88,8 @@ public interface HtmlEditorInterface extends Section, HtmlRenderer {
    */
   LinkedHashMap<String, HtmlEditorButtonDefinition> getAllButtons(SectionInfo info);
 
-  /** @return Three lists of button IDs */
+  /**
+   * @return Three lists of button IDs
+   */
   List<List<String>> getDefaultButtonConfiguration();
 }

@@ -32,7 +32,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind(BaseEntityService.class)
 @Singleton
 public class BaseEntityServiceImpl implements BaseEntityService {

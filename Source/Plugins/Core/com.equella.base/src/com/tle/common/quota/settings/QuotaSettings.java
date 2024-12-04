@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class QuotaSettings implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
   public static final int QUOTA_GIG_PRECISION = 4;

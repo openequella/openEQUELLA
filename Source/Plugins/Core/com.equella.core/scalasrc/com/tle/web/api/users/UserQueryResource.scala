@@ -45,9 +45,11 @@ object RoleDetails {
   def apply(rb: RoleBean): RoleDetails = RoleDetails(rb.getUniqueID, rb.getName)
 }
 
-case class LookupQueryResult(users: Iterable[UserDetails],
-                             groups: Iterable[GroupDetails],
-                             roles: Iterable[RoleDetails])
+case class LookupQueryResult(
+    users: Iterable[UserDetails],
+    groups: Iterable[GroupDetails],
+    roles: Iterable[RoleDetails]
+)
 
 @Path("userquery/")
 @Produces(value = Array("application/json"))
@@ -63,9 +65,11 @@ class UserQueryResource {
     val users  = us.getInformationForUsers(queries.users.asJava)
     val groups = us.getInformationForGroups(queries.groups.asJava)
     val roles  = us.getInformationForRoles(queries.roles.asJava)
-    LookupQueryResult(users.asScala.values.map(UserDetails.apply),
-                      groups.asScala.values.map(GroupDetails.apply),
-                      roles.asScala.values.map(RoleDetails.apply))
+    LookupQueryResult(
+      users.asScala.values.map(UserDetails.apply),
+      groups.asScala.values.map(GroupDetails.apply),
+      roles.asScala.values.map(RoleDetails.apply)
+    )
   }
 
   @GET
@@ -74,16 +78,18 @@ class UserQueryResource {
       @QueryParam(value = "q") q: String,
       @QueryParam("users") @DefaultValue("true") @ApiParam("Include users") susers: Boolean,
       @QueryParam("groups") @DefaultValue("true") @ApiParam("Include groups") sgroups: Boolean,
-      @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean)
-    : LookupQueryResult = {
+      @QueryParam("roles") @DefaultValue("true") @ApiParam("Include roles") sroles: Boolean
+  ): LookupQueryResult = {
     hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us     = LegacyGuice.userService
     val users  = if (susers) us.searchUsers(q).asScala else Iterable.empty
     val groups = if (sgroups) us.searchGroups(q).asScala else Iterable.empty
     val roles  = if (sroles) us.searchRoles(q).asScala else Iterable.empty
-    LookupQueryResult(users.map(UserDetails.apply),
-                      groups.map(GroupDetails.apply),
-                      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleDetails.apply))
+    LookupQueryResult(
+      users.map(UserDetails.apply),
+      groups.map(GroupDetails.apply),
+      roles.filterNot(r => exclude(r.getUniqueID)).map(RoleDetails.apply)
+    )
   }
 
   @GET
@@ -96,8 +102,9 @@ class UserQueryResource {
   )
   def filtered(
       @QueryParam(value = "q") @ApiParam("Query string") q: String,
-      @QueryParam("byGroups") @ApiParam("A list of group UUIDs to filter the search by") groups: Array[
-        String]
+      @QueryParam("byGroups") @ApiParam(
+        "A list of group UUIDs to filter the search by"
+      ) groups: Array[String]
   ): Response = {
     hasAclOrThrow(SecurityConstants.LIST_USERS)
     val us = LegacyGuice.userService
@@ -124,8 +131,9 @@ class UserQueryResource {
   )
   def filteredGroups(
       @QueryParam("q") @ApiParam("Query string") q: String,
-      @QueryParam("byGroups") @ApiParam("A list of group UUIDs to filter the search by") groups: Array[
-        String]
+      @QueryParam("byGroups") @ApiParam(
+        "A list of group UUIDs to filter the search by"
+      ) groups: Array[String]
   ): Response = {
     val us = LegacyGuice.userService
 
@@ -142,7 +150,9 @@ class UserQueryResource {
   def listTokens = {
     Option(
       LegacyGuice.userService.getReadOnlyPluginConfig(
-        "com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings")) match {
+        "com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings"
+      )
+    ) match {
       case Some(s: SharedSecretSettings) => s.getSharedSecrets.asScala.map(_.getId)
       case _                             => Iterable()
     }

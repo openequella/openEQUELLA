@@ -20,7 +20,6 @@ package com.tle.core.connectors.service;
 
 import com.tle.core.entity.EntityEditingBean;
 
-/** @author Aaron */
 public class ConnectorEditingBean extends EntityEditingBean {
   private static final long serialVersionUID = 1L;
 

@@ -22,7 +22,6 @@ import com.tle.common.EntityPack;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
-/** @author aholland */
 public class PortletEditingSessionImpl extends EntityEditingSessionImpl<PortletEditingBean, Portlet>
     implements PortletEditingSession {
   private static final long serialVersionUID = 1L;

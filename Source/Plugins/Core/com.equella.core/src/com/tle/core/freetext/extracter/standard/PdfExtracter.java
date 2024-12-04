@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

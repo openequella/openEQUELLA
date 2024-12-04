@@ -12,7 +12,6 @@ import com.tle.webtests.remotetest.integration.moodle.AbstractSequentialMoodleTe
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-/** @author Seb */
 @Test
 public class LTIConsumerIntegrationTest extends AbstractSequentialMoodleTest {
   /** TODO Doesn't yet cover: LTI Other roles, Adding new users to groups */

@@ -48,7 +48,6 @@ import org.hibernate.Hibernate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(PowerSearchService.class)
 @Singleton
 @SecureEntity(RemotePowerSearchService.ENTITY_TYPE)

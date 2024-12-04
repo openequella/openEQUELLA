@@ -24,7 +24,6 @@ import com.tle.common.settings.annotation.PropertyList;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class AutoLogin implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
 

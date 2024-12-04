@@ -40,7 +40,6 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class MyPagesTitleSection extends AbstractMyPagesSection<MyPagesTitleModel>
     implements HtmlRenderer, SaveItemEventListener, LoadItemEventListener {
   @Component

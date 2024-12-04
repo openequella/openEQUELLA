@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 public class Service extends Thread {
   private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
   private final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");

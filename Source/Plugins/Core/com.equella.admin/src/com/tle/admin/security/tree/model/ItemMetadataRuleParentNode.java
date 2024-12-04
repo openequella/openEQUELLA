@@ -25,7 +25,6 @@ import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ItemMetadataRuleParentNode extends AbstractLazyNode {
   private final ItemDefinition itemDefinition;
   private final RemoteItemDefinitionService service;

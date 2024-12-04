@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 @TreeIndexed
 public abstract class AbstractItemList<
         LE extends AbstractItemListEntry, M extends AbstractItemList.Model<LE>>

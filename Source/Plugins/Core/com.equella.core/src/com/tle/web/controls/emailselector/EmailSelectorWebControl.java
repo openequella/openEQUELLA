@@ -262,6 +262,7 @@ public class EmailSelectorWebControl
     private String warning;
 
     private boolean allowAdd;
+
     /** For shoving de-JSONed results into. */
     private List<SelectedUser> selectedUsers;
 

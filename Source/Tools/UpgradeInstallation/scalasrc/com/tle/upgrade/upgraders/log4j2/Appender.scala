@@ -47,54 +47,57 @@ sealed trait Appender {
   def getLayout: java.util.Map[String, Layout] = getLayoutMap(layout)
 }
 
-/**
-  * Data structure to match the Log4J Console Appender configuration.
+/** Data structure to match the Log4J Console Appender configuration.
   */
-case class Console(name: String,
-                   target: String,
-                   layout: Layout,
-                   Filters: Option[Map[String, Seq[Filter]]])
-    extends Appender
+case class Console(
+    name: String,
+    target: String,
+    layout: Layout,
+    Filters: Option[Map[String, Seq[Filter]]]
+) extends Appender
 
-/**
-  * Data structure to match the Log4J RollingFile Appender configuration.
+/** Data structure to match the Log4J RollingFile Appender configuration.
   */
-case class RollingFile(name: String,
-                       fileName: String,
-                       filePattern: String,
-                       immediateFlush: Boolean,
-                       append: Boolean,
-                       layout: Layout,
-                       Filters: Option[Map[String, Seq[Filter]]],
-                       Policies: Map[String, RollingPolicy],
-                       DefaultRollOverStrategy: RollOverStrategy)
-    extends Appender
+case class RollingFile(
+    name: String,
+    fileName: String,
+    filePattern: String,
+    immediateFlush: Boolean,
+    append: Boolean,
+    layout: Layout,
+    Filters: Option[Map[String, Seq[Filter]]],
+    Policies: Map[String, RollingPolicy],
+    DefaultRollOverStrategy: RollOverStrategy
+) extends Appender
 
 object Appender {
   val appenderPrefix = "log4j.appender."
 
-  /**
-    * Build a Map which helps generate a layout in the YAML file.
+  /** Build a Map which helps generate a layout in the YAML file.
     *
-    * @param layout The layout of the Appender.
-    * @return A Map where key is the layout type and value is the layout.
+    * @param layout
+    *   The layout of the Appender.
+    * @return
+    *   A Map where key is the layout type and value is the layout.
     */
   def getLayoutMap(layout: Layout): java.util.Map[String, Layout] =
     Map(layout.getClass.getSimpleName -> layout).asJava
 
   def appenderName(key: String): String = key.replace(appenderPrefix, "")
 
-  /**
-    * Build a Log4J Console Appender based on the supplied configuration.
+  /** Build a Log4J Console Appender based on the supplied configuration.
     *
-    * @param key The property key used to define the Console Appender.
-    * @param props Property file which provides details of the Appender.
-    * @return `ValidatedNec` where left is a list of error messages and right is the Console Appender.
+    * @param key
+    *   The property key used to define the Console Appender.
+    * @param props
+    *   Property file which provides details of the Appender.
+    * @return
+    *   `ValidatedNec` where left is a list of error messages and right is the Console Appender.
     */
   def buildConsole(key: String, props: Properties): ValidatedNec[String, Console] = {
     def target =
       readProperty(s"$key.Target", props)
-      // If target is "system.out", use "system_out" instead.
+        // If target is "system.out", use "system_out" instead.
         .filter(_.toLowerCase != "system.out")
         .getOrElse("SYSTEM_OUT")
 
@@ -102,17 +105,23 @@ object Appender {
       .mapN((layout, filters) => Console(appenderName(key), target, layout, filters))
   }
 
-  /**
-    * Build a Log4J Rolling File Appender based on the supplied configuration.
+  /** Build a Log4J Rolling File Appender based on the supplied configuration.
     *
-    * @param key The property key used to define the Rolling File Appender.
-    * @param props Property file which provides details of the Appender.
-    * @param isCustomRollingFile `true` to build OEQ custom Rolling File Appender which always has a TimeBasedTriggeringPolicy.
-    * @return `ValidatedNec` where left is a list of error messages and right is a Rolling File Appender.
+    * @param key
+    *   The property key used to define the Rolling File Appender.
+    * @param props
+    *   Property file which provides details of the Appender.
+    * @param isCustomRollingFile
+    *   `true` to build OEQ custom Rolling File Appender which always has a
+    *   TimeBasedTriggeringPolicy.
+    * @return
+    *   `ValidatedNec` where left is a list of error messages and right is a Rolling File Appender.
     */
-  def buildRollingFile(key: String,
-                       props: Properties,
-                       isCustomRollingFile: Boolean = true): ValidatedNec[String, RollingFile] = {
+  def buildRollingFile(
+      key: String,
+      props: Properties,
+      isCustomRollingFile: Boolean = true
+  ): ValidatedNec[String, RollingFile] = {
     def fileName =
       readProperty(s"$key.File", props)
         .toValidNec(s"Must specify a file name for $key")
@@ -152,7 +161,8 @@ object Appender {
 
     def triggeringPolicy: Map[String, RollingPolicy] = {
       val sizedBasedPolicy = Map(
-        "SizeBasedTriggeringPolicy" -> SizeBasedTriggeringPolicy(maxFileSize))
+        "SizeBasedTriggeringPolicy" -> SizeBasedTriggeringPolicy(maxFileSize)
+      )
 
       if (isCustomRollingFile) {
         sizedBasedPolicy + ("TimeBasedTriggeringPolicy" -> TimeBasedTriggeringPolicy())
@@ -187,20 +197,22 @@ object Appender {
             "com.dytech.common.log4j.DailySizeRollingAppender" =>
           buildRollingFile(key, props)
         case "org.apache.log4j.RollingFileAppender" => buildRollingFile(key, props, false)
-        case unsupported                            => Validated.invalidNec(s"Unsupported Appender $unsupported")
+        case unsupported => Validated.invalidNec(s"Unsupported Appender $unsupported")
       }
       .getOrElse(Validated.invalidNec(s"Must specify an Appender for $key"))
   }
 
-  /**
-    * Build a list of Appenders by extracting all the Appender definition keys and creating
-    * an Appender for each key.
+  /** Build a list of Appenders by extracting all the Appender definition keys and creating an
+    * Appender for each key.
     *
-    * The format of a valid appender definition key must be "log4j.appender.XXX" where
-    * "XXX" is the appender name.
+    * The format of a valid appender definition key must be "log4j.appender.XXX" where "XXX" is the
+    * appender name.
     *
-    * @param props The property file which provides details of all Appenders
-    * @return `ValidatedNec` where left is a list of error messages and right is a Map of Appenders grouped by their types.
+    * @param props
+    *   The property file which provides details of all Appenders
+    * @return
+    *   `ValidatedNec` where left is a list of error messages and right is a Map of Appenders
+    *   grouped by their types.
     */
   def buildAppenders(props: Properties): ValidatedNec[String, Map[String, Seq[Appender]]] = {
     // Group a list of Appenders by their class name.

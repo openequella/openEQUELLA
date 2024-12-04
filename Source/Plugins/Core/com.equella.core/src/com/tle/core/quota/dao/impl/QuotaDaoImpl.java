@@ -26,7 +26,6 @@ import com.tle.core.quota.dao.QuotaDao;
 import java.util.List;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind(QuotaDao.class)
 @Singleton
 public class QuotaDaoImpl extends GenericInstitionalDaoImpl<Item, Long> implements QuotaDao {

@@ -142,6 +142,7 @@ public class QtiAssessmentTest implements Serializable, IdCloneable {
   // linear or nonlinear
   @Column(nullable = false)
   private int navigationMode;
+
   // individual or simultaneous
   @Column(nullable = false)
   private int submissionMode;

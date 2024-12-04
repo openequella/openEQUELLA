@@ -21,7 +21,6 @@ package com.tle.core.freetext.reindex;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.item.ItemStatus;
 
-/** @author Nicholas Read */
 public class ItemStatusFilter extends ReindexFilter {
   private static final long serialVersionUID = 1L;
 

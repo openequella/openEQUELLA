@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind(ItemFileService.class)
 @Singleton

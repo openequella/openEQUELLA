@@ -20,7 +20,6 @@ package com.tle.exceptions;
 
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 
-/** @author Nicholas Read */
 public class UserException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
 

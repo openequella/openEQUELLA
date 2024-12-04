@@ -3,7 +3,6 @@ package com.tle.ims.metadata;
 import com.dytech.devlib.PropBagEx;
 import java.io.IOException;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class IMSMetadataMapperTest extends AbstractMetadataMapperTester {
   private static final String MAP_EQ_NO_ATTRS = "mapEqNoAttrs";
@@ -24,11 +23,17 @@ public class IMSMetadataMapperTest extends AbstractMetadataMapperTester {
     assertEquals(
         xml,
         "item/general/description",
-        "Test design settings for a windmill to generate electric power for an island lighthouse.  Set the blade length and pitch of the windmill to suit wind speed for each season.  Try to maximise energy efficiency of windmill operation while also minimising the back-up use of diesel fuel in power generation.");
+        "Test design settings for a windmill to generate electric power for an island lighthouse. "
+            + " Set the blade length and pitch of the windmill to suit wind speed for each season. "
+            + " Try to maximise energy efficiency of windmill operation while also minimising the"
+            + " back-up use of diesel fuel in power generation.");
     assertEquals(
         xml,
         "item/description",
-        "Test design settings for a windmill to generate electric power for an island lighthouse.  Set the blade length and pitch of the windmill to suit wind speed for each season.  Try to maximise energy efficiency of windmill operation while also minimising the back-up use of diesel fuel in power generation.");
+        "Test design settings for a windmill to generate electric power for an island lighthouse. "
+            + " Set the blade length and pitch of the windmill to suit wind speed for each season. "
+            + " Try to maximise energy efficiency of windmill operation while also minimising the"
+            + " back-up use of diesel fuel in power generation.");
     assertEquals(xml, "item/general/keywords", 5);
     assertEquals(xml, "item/keywords", 5);
     assertEquals(xml, "item/lifecycle/version", "3.0");
@@ -47,7 +52,8 @@ public class IMSMetadataMapperTest extends AbstractMetadataMapperTester {
     assertEquals(
         xml,
         "item/keywords",
-        "alcohol literacy numeracy assessments CGEA Reading Writing Self expression Knowledge Practical purposes Structure of language Percentages metric");
+        "alcohol literacy numeracy assessments CGEA Reading Writing Self expression Knowledge"
+            + " Practical purposes Structure of language Percentages metric");
     assertEquals(xml, "item/name", "Where is the Party at? - Alcohol");
     assertTrue(xml.getNode("item/description").startsWith("Discover useful information about "));
   }

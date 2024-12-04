@@ -23,7 +23,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 
-/** @author dustin */
 @NonNullByDefault
 public class OrExpression extends BooleanExpression {
   protected final JSExpression first;

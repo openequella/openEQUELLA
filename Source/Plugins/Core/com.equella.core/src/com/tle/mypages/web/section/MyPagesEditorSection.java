@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class MyPagesEditorSection extends AbstractMyPagesSection<MyPagesEditorModel>
     implements HtmlRenderer, SavePageEventListener {

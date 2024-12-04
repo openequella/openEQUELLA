@@ -29,7 +29,6 @@ import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-/** @author jmaginnis */
 @Entity
 @AccessType("field")
 public class PowerSearch extends BaseEntity {

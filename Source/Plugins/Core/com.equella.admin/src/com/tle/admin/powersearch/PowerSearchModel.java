@@ -29,7 +29,6 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.AbstractTableModel;
 
-/** @author Nicholas Read */
 public class PowerSearchModel extends AbstractTableModel implements TreeModelListener {
   private static final long serialVersionUID = 1L;
   private WizardModel model;

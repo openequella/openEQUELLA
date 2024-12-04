@@ -34,7 +34,6 @@ import com.tle.web.viewurl.ResourceViewerConfig;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author larry */
 @Bind
 @Singleton
 public class AddLtiMimeTypeXmlMigration extends XmlMigrator {

@@ -23,7 +23,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author Nicholas Read */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureOnCall(priv = "REASSIGN_OWNERSHIP_ITEM")

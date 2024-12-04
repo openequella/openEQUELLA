@@ -181,13 +181,17 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
     }
   }
 
-  /** @see SecureProtocolSocketFactory#createSocket(java.lang.String,int) */
+  /**
+   * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int)
+   */
   @Override
   public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
     return getSSLContext().getSocketFactory().createSocket(host, port);
   }
 
-  /** @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean) */
+  /**
+   * @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean)
+   */
   @Override
   public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
       throws IOException, UnknownHostException {

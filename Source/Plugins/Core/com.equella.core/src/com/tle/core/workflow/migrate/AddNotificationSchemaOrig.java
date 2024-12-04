@@ -113,7 +113,8 @@ public class AddNotificationSchemaOrig extends AbstractHibernateSchemaMigration 
           if (eventType.equals("rejected") || eventType.equals("comment")) {
             Query q =
                 session.createQuery(
-                    "from WorkflowNodeStatus ns join ns.wnode as n where n.workflowId = ?0 and n.uuid = ?1 and ns.status = 'i'");
+                    "from WorkflowNodeStatus ns join ns.wnode as n where n.workflowId = ?0 and"
+                        + " n.uuid = ?1 and ns.status = 'i'");
             q.setLong(0, item.itemDefinition.workflowId);
             q.setString(1, event.step);
             List<Object[]> nodeStatuses = q.list();

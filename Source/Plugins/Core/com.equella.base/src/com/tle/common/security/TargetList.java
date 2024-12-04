@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class TargetList implements Serializable, FieldEquality<TargetList> {
   private static final long serialVersionUID = 1L;
 

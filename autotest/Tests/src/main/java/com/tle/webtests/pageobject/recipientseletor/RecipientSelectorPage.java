@@ -195,7 +195,8 @@ public class RecipientSelectorPage extends AbstractPage<RecipientSelectorPage> {
     plusIcon.click();
     waitForElement(
         By.xpath(
-            "//ul[contains(@class, 'grouping')]/li/div[@class='expression-text' and contains(text(), "
+            "//ul[contains(@class, 'grouping')]/li/div[@class='expression-text' and"
+                + " contains(text(), "
                 + quoteXPath(displayName)
                 + ")]"));
   }

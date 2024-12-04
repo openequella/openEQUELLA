@@ -31,25 +31,41 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import java.net.URL
 import scala.jdk.CollectionConverters._
 
-/**
-  * Data structure to represent LTI Platform details.
+/** Data structure to represent LTI Platform details.
   *
-  * @param platformId ID of the learning platform
-  * @param name The name of the platform
-  * @param clientId Client ID provided by the platform
-  * @param authUrl The platform's authentication request URL
-  * @param keysetUrl JWKS keyset URL where to get the keys
-  * @param usernamePrefix Prefix added to the user ID from the LTI request
-  * @param usernameSuffix Suffix added to the user ID from the LTI request
-  * @param usernameClaim Optional value which specifies the claim to be used to retrieve username from the LTI request
-  * @param unknownUserHandling How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
-  * @param unknownUserDefaultGroups The list of groups to be added to the user object If the unknown user handling is CREATE.
-  * @param instructorRoles A list of roles to be assigned to a LTI instructor role
-  * @param unknownRoles  A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
-  * @param customRoles Mappings from LTI roles to OEQ roles
-  * @param allowExpression The ACL Expression to control access from this platform
-  * @param kid The activated key pair key ID (Readonly)
-  * @param enabled `true` if the platform is enabled
+  * @param platformId
+  *   ID of the learning platform
+  * @param name
+  *   The name of the platform
+  * @param clientId
+  *   Client ID provided by the platform
+  * @param authUrl
+  *   The platform's authentication request URL
+  * @param keysetUrl
+  *   JWKS keyset URL where to get the keys
+  * @param usernamePrefix
+  *   Prefix added to the user ID from the LTI request
+  * @param usernameSuffix
+  *   Suffix added to the user ID from the LTI request
+  * @param usernameClaim
+  *   Optional value which specifies the claim to be used to retrieve username from the LTI request
+  * @param unknownUserHandling
+  *   How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
+  * @param unknownUserDefaultGroups
+  *   The list of groups to be added to the user object If the unknown user handling is CREATE.
+  * @param instructorRoles
+  *   A list of roles to be assigned to a LTI instructor role
+  * @param unknownRoles
+  *   A list of roles to be assigned to a LTI role that is neither the instructor or in the list of
+  *   custom roles
+  * @param customRoles
+  *   Mappings from LTI roles to OEQ roles
+  * @param allowExpression
+  *   The ACL Expression to control access from this platform
+  * @param kid
+  *   The activated key pair key ID (Readonly)
+  * @param enabled
+  *   `true` if the platform is enabled
   */
 case class LtiPlatformBean(
     platformId: String,
@@ -123,9 +139,8 @@ object LtiPlatformBean {
     platform.enabled = bean.enabled
 
     val roleMappingUpdate = bean.customRoles
-      .map {
-        case (ltiRole, newTarget) =>
-          LtiPlatformCustomRole(ltiRole, newTarget.asJava)
+      .map { case (ltiRole, newTarget) =>
+        LtiPlatformCustomRole(ltiRole, newTarget.asJava)
       }
       .toSet
       .asJava
@@ -141,39 +156,34 @@ object LtiPlatformBean {
     platform
   }
 
-  /**
-    * Check values of mandatory fields and those having special requirements (e.g. maximum length)
-    * for LtiPlatformBean and accumulate all the errors.
-    * Return a ValidatedNel which is either a list of error messages or the checked LtiPlatformBean.
+  /** Check values of mandatory fields and those having special requirements (e.g. maximum length)
+    * for LtiPlatformBean and accumulate all the errors. Return a ValidatedNel which is either a
+    * list of error messages or the checked LtiPlatformBean.
     */
   def validateLtiPlatformBean(bean: LtiPlatformBean): Validated[List[String], LtiPlatformBean] = {
     def checkIDs =
       Map(
         ("platform ID", bean.platformId),
-        ("client ID", bean.clientId),
-      ).map {
-          case (fieldName, value) =>
-            Option
-              .unless(Check.isEmpty(value))(value)
-              .toValidNel(s"Missing value for required field $fieldName")
-        }
-        .toList
+        ("client ID", bean.clientId)
+      ).map { case (fieldName, value) =>
+        Option
+          .unless(Check.isEmpty(value))(value)
+          .toValidNel(s"Missing value for required field $fieldName")
+      }.toList
         .sequence
 
     def checkUrls =
       Map(
         ("Auth URL", bean.authUrl),
         ("Key set URL", bean.keysetUrl)
-      ).map {
-          case (fieldName, value) =>
-            Either
-              .catchNonFatal {
-                new URL(value)
-              }
-              .leftMap(err => s"Invalid value for $fieldName : ${err.getMessage}")
-              .toValidatedNel
-        }
-        .toList
+      ).map { case (fieldName, value) =>
+        Either
+          .catchNonFatal {
+            new URL(value)
+          }
+          .leftMap(err => s"Invalid value for $fieldName : ${err.getMessage}")
+          .toValidatedNel
+      }.toList
         .sequence
 
     def checkUnknownUserHandling =
@@ -186,14 +196,16 @@ object LtiPlatformBean {
       bean.allowExpression match {
         case Some(expression) =>
           Either
-            .cond(expression.length <= 255,
-                  expression,
-                  "ACL expression is too long (maximum 255 characters allowed)")
+            .cond(
+              expression.length <= 255,
+              expression,
+              "ACL expression is too long (maximum 255 characters allowed)"
+            )
             .flatMap { exp =>
               val evaluator = new AclExpressionEvaluator
               Either
-              // We only check whether the provided ACl Expression is valid so what User State to be used
-              // and whether the user is owner do not really matter.
+                // We only check whether the provided ACl Expression is valid so what User State to be used
+                // and whether the user is owner do not really matter.
                 .catchNonFatal(evaluator.evaluate(exp, CurrentUser.getUserState, false))
                 .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
             }

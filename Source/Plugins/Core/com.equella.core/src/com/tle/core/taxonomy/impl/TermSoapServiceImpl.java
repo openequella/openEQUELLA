@@ -82,7 +82,8 @@ public class TermSoapServiceImpl implements TermSoapService {
     } catch (LockedException ex) {
       if (CurrentUser.getUserID().equals(ex.getUserID())) {
         throw new LockedException(
-            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.",
+            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter"
+                + " value of true.",
             ex.getUserID(),
             ex.getSessionID(),
             ex.getEntityId());
@@ -103,7 +104,8 @@ public class TermSoapServiceImpl implements TermSoapService {
     } catch (LockedException ex) {
       if (CurrentUser.getUserID().equals(ex.getUserID())) {
         throw new RuntimeException(
-            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.");
+            "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter"
+                + " value of true.");
       } else {
         throw new RuntimeException(
             "You do not own the lock on this taxonomy.  It is held by user ID " //$NON-NLS-1$

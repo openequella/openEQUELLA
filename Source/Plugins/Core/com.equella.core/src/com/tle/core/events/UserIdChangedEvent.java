@@ -20,7 +20,6 @@ package com.tle.core.events;
 
 import com.tle.core.events.listeners.UserChangeListener;
 
-/** @author Nicholas Read */
 public class UserIdChangedEvent extends ApplicationEvent<UserChangeListener> {
   private static final long serialVersionUID = 1L;
 

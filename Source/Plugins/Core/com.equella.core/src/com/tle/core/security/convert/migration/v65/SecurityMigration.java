@@ -112,7 +112,8 @@ public class SecurityMigration extends AbstractHibernateDataMigration {
         count(
             session
                 .createQuery(
-                    "SELECT COUNT(*) FROM ConfigurationProperty WHERE property = :smtp OR property = :ldap")
+                    "SELECT COUNT(*) FROM ConfigurationProperty WHERE property = :smtp OR property"
+                        + " = :ldap")
                 .setString("smtp", SMTP_PWD_KEY)
                 .setString("ldap", LDAP_PWD_KEY));
 

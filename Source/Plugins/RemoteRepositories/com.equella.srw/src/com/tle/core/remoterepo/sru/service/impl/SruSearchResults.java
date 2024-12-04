@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.sru.service.impl;
 import com.tle.common.searching.SimpleSearchResults;
 import java.util.List;
 
-/** @author larry */
 public class SruSearchResults extends SimpleSearchResults<SruSearchResult> {
   private static final long serialVersionUID = 1L;
 

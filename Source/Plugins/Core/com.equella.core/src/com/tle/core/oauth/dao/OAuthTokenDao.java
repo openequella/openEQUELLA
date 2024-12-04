@@ -23,7 +23,6 @@ import com.tle.common.oauth.beans.OAuthToken;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 import java.util.List;
 
-/** @author Aaron */
 public interface OAuthTokenDao extends GenericInstitutionalDao<OAuthToken, Long> {
   OAuthToken getToken(String userId, OAuthClient client);
 

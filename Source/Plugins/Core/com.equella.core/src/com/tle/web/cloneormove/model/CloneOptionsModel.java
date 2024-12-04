@@ -26,7 +26,6 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author aholland */
 public class CloneOptionsModel extends DynamicHtmlListModel<NameValue> {
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(SchemaTransformsModel.class) + ".";

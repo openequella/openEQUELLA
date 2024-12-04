@@ -28,6 +28,7 @@ import org.hibernate.annotations.AccessType;
 @DiscriminatorValue("zip")
 public class ZipAttachment extends Attachment {
   private static final long serialVersionUID = 1L;
+
   /**
    * Files extracted from a parent zip file record the original file's attachment UUID (mainly as a
    * flag, so as to allow zip's content to be treated differently than stand-alone files).

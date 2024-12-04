@@ -21,7 +21,6 @@ package com.dytech.gui.adapters;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
-/** @author Nicholas Read */
 class DefaultTableModelAdapter implements TablePasteModel {
   private DefaultTableModel model;
 

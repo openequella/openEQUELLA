@@ -30,9 +30,8 @@ import com.tle.upgrade.upgraders.AbstractUpgrader.{
 import java.io.File
 import scala.util.{Failure, Success, Try}
 
-/**
-  * This upgrade drops JVM option 'CMSInitiatingOccupancyFraction' which is removed in Java 17.
-  * It also adds JVM option '--add-opens=java.base/java.util=ALL-UNNAMED' as a workaround to support
+/** This upgrade drops JVM option 'CMSInitiatingOccupancyFraction' which is removed in Java 17. It
+  * also adds JVM option '--add-opens=java.base/java.util=ALL-UNNAMED' as a workaround to support
   * some libraries like XStream which is not fully compatible with Java 17 by 12/12/2023.
   */
 class UpdateJavaOpts extends AbstractUpgrader {
@@ -54,7 +53,7 @@ class UpdateJavaOpts extends AbstractUpgrader {
         "--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
         "--add-opens=java.naming/javax.naming=ALL-UNNAMED",
         "--add-opens=java.naming/javax.naming.directory=ALL-UNNAMED",
-        "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED",
+        "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED"
       )
 
       val updateResult = Try {

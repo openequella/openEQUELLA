@@ -20,7 +20,6 @@ package com.tle.web.api.item.interfaces.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class DrmPartyBean {
   private String userId;

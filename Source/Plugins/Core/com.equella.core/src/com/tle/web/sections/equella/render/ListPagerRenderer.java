@@ -45,7 +45,6 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import java.io.IOException;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class ListPagerRenderer extends AbstractComponentRenderer {
   private static final PluginResourceHelper RESOURCES =

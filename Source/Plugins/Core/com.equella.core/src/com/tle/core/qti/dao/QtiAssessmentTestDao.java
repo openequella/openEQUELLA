@@ -24,7 +24,6 @@ import com.tle.beans.item.Item;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import com.tle.core.hibernate.dao.GenericInstitutionalDao;
 
-/** @author aholland */
 @NonNullByDefault
 public interface QtiAssessmentTestDao extends GenericInstitutionalDao<QtiAssessmentTest, Long> {
   /**

@@ -32,7 +32,6 @@ import com.tle.web.sections.render.PreRenderable;
 import java.util.List;
 import java.util.Set;
 
-/** @author aholland */
 @NonNullByDefault
 public interface TinyMceAddOn extends PreRenderable {
   /**
@@ -46,7 +45,9 @@ public interface TinyMceAddOn extends PreRenderable {
    */
   boolean applies(String action);
 
-  /** @return true if the Add-on is enabled. */
+  /**
+   * @return true if the Add-on is enabled.
+   */
   boolean isEnabled();
 
   /**
@@ -74,13 +75,19 @@ public interface TinyMceAddOn extends PreRenderable {
       boolean restrictedContributables,
       Set<String> contributableUuids);
 
-  /** @return A unique identifier for your addon. E.g. example_plugin */
+  /**
+   * @return A unique identifier for your addon. E.g. example_plugin
+   */
   String getId();
 
-  /** @return The full url to your editor_plugin_src.js file. Used to include in the HTML editor. */
+  /**
+   * @return The full url to your editor_plugin_src.js file. Used to include in the HTML editor.
+   */
   String getJsUrl();
 
-  /** @return The URL to the public resources of this plugin. Return null if you don't have any. */
+  /**
+   * @return The URL to the public resources of this plugin. Return null if you don't have any.
+   */
   @Nullable
   String getResourcesUrl();
 
@@ -100,7 +107,9 @@ public interface TinyMceAddOn extends PreRenderable {
   @Override
   void preRender(PreRenderContext context);
 
-  /** @return The base URL where the editor_plugin_src.js file resides */
+  /**
+   * @return The base URL where the editor_plugin_src.js file resides
+   */
   String getBaseUrl();
 
   /**

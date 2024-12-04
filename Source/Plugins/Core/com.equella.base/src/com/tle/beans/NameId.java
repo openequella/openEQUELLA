@@ -21,7 +21,6 @@ package com.tle.beans;
 import com.tle.common.Pair;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class NameId extends Pair<String, Long> {
   private static final long serialVersionUID = 1;
 

@@ -33,7 +33,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class DRMRequireAcceptanceFromTab extends JPanel {
   private static final long serialVersionUID = 1L;
 

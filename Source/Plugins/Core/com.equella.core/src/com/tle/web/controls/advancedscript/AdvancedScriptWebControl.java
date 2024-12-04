@@ -251,7 +251,9 @@ public class AdvancedScriptWebControl extends AbstractSimpleWebControl {
         resources.getString("error.script") + scriptName + "\n" + e.getMessage());
   }
 
-  /** @return null if there is no staging folder */
+  /**
+   * @return null if there is no staging folder
+   */
   private ScriptContext getScriptContext(SectionInfo info, boolean request, boolean clientSide) {
     final Map<String, Object> extra = new HashMap<String, Object>();
     extra.put(AdvancedScriptWebControlConstants.PREFIX, getFormName());

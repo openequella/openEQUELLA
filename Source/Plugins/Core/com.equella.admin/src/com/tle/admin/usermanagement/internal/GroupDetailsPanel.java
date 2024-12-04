@@ -52,7 +52,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 public class GroupDetailsPanel extends JChangeDetectorPanel {
   private static final long serialVersionUID = 1L;
   private final RemoteTLEGroupService groupService;
@@ -296,7 +295,9 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     super.clearChanges();
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   protected abstract static class MyGlassSwingWorker<T> extends GlassSwingWorker<T> {
     public abstract T doStuff();
 

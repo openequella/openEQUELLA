@@ -21,7 +21,6 @@ package com.tle.core.events;
 import com.tle.core.events.listeners.GroupChangedListener;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public class GroupEditEvent extends ApplicationEvent<GroupChangedListener> {
   private static final long serialVersionUID = 1L;
   private String groupID;

@@ -98,7 +98,9 @@ public class LocalDate extends UtcDate {
     super(utc, conceptualDate, zone);
   }
 
-  /** @param zone */
+  /**
+   * @param zone
+   */
   public LocalDate(TimeZone zone) {
     this(new UtcDate(), zone);
   }
@@ -107,7 +109,9 @@ public class LocalDate extends UtcDate {
     this(new UtcDate(), CurrentTimeZone.get());
   }
 
-  /** @return */
+  /**
+   * @return
+   */
   public UtcDate getUtc() {
     return new UtcDate(utc);
   }

@@ -20,7 +20,6 @@ package com.tle.core.workflow.events;
 
 import com.tle.beans.item.HistoryEvent;
 
-/** @author jmaginnis */
 public class CommentEvent extends WorkflowEvent {
   private static final long serialVersionUID = 1L;
 

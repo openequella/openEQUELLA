@@ -21,7 +21,6 @@ package com.tle.core.item.standard.operations.workflow;
 import com.tle.beans.item.ItemStatus;
 import com.tle.core.security.impl.SecureItemStatus;
 
-/** @author jmaginnis */
 @SecureItemStatus({ItemStatus.MODERATING, ItemStatus.REVIEW, ItemStatus.LIVE})
 public class ResetOperation extends TaskOperation {
   @Override

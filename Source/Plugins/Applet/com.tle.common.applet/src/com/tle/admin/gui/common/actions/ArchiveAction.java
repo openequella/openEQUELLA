@@ -21,7 +21,6 @@ package com.tle.admin.gui.common.actions;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.Action;
 
-/** @author aholland */
 public abstract class ArchiveAction extends TLEAction {
   private static final long serialVersionUID = 1L;
 

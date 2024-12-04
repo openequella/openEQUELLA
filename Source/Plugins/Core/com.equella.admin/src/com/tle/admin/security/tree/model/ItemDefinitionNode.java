@@ -26,7 +26,6 @@ import com.tle.i18n.BundleCache;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ItemDefinitionNode extends AbstractLazyNode {
   private final RemoteItemDefinitionService service;
   private final BaseEntityLabel label;

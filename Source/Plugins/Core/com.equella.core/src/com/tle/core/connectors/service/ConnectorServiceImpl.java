@@ -51,7 +51,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(ConnectorService.class)
 @Singleton

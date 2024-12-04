@@ -33,7 +33,6 @@ import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

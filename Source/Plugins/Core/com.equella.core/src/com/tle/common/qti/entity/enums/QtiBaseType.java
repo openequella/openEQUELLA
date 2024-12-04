@@ -21,7 +21,6 @@ package com.tle.common.qti.entity.enums;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public enum QtiBaseType {

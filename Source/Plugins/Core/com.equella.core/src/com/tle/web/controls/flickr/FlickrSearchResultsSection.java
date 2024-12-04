@@ -69,7 +69,6 @@ import org.jsoup.safety.Safelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class FlickrSearchResultsSection
     extends AbstractSearchResultsSection<

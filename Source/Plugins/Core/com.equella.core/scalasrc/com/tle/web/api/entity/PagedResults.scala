@@ -26,23 +26,28 @@ import com.tle.web.api.interfaces.beans.{BaseEntityBean, BaseEntityReadOnly, Pag
 import scala.jdk.CollectionConverters._
 import scala.collection.mutable.ListBuffer
 
-/**
-  * Represent an Base Entity and whether its full detail is accessible and its granted ACLs.
-  * @param entity An Base Entity instance such as a Collection.
-  * @param canViewFullDetail Whether the Base Entity's full detail is accessible.
-  * @param grantedPrivileges A set of granted ACLs, including user-specified privileges and those required to support viewing full detail.
+/** Represent an Base Entity and whether its full detail is accessible and its granted ACLs.
+  * @param entity
+  *   An Base Entity instance such as a Collection.
+  * @param canViewFullDetail
+  *   Whether the Base Entity's full detail is accessible.
+  * @param grantedPrivileges
+  *   A set of granted ACLs, including user-specified privileges and those required to support
+  *   viewing full detail.
   */
-case class PagedEntity[BE <: BaseEntity](entity: BE,
-                                         canViewFullDetail: Boolean,
-                                         grantedPrivileges: Set[String])
+case class PagedEntity[BE <: BaseEntity](
+    entity: BE,
+    canViewFullDetail: Boolean,
+    grantedPrivileges: Set[String]
+)
 
 object PagedResults {
 
   def decodeOffsetStart(resumption: String): (Int, Option[Int]) = {
     Option(resumption)
       .map(_.split(":").map(_.toInt))
-      .collect {
-        case Array(o, s) => (o, Some(s))
+      .collect { case Array(o, s) =>
+        (o, Some(s))
       }
       .getOrElse((0, None))
   }
@@ -55,7 +60,8 @@ object PagedResults {
       length: Int,
       full: Boolean,
       system: Boolean,
-      includeDisabled: Boolean): PagingBean[BEB] = {
+      includeDisabled: Boolean
+  ): PagingBean[BEB] = {
     val (firstOffset, lengthFromToken) = decodeOffsetStart(resumption)
     // If resumption token provides a length then use it, or otherwise use the one from params.
     val _length = lengthFromToken.getOrElse(length)
@@ -72,11 +78,11 @@ object PagedResults {
         .toList
 
     def filterByPermission(entities: List[BE]): List[BE] = {
-      entities.filter(
-        entity =>
-          !LegacyGuice.aclManager
-            .filterNonGrantedPrivileges(entity, privilege.asJavaCollection)
-            .isEmpty)
+      entities.filter(entity =>
+        !LegacyGuice.aclManager
+          .filterNonGrantedPrivileges(entity, privilege.asJavaCollection)
+          .isEmpty
+      )
     }
 
     def getAvailable: Int = {
@@ -93,7 +99,7 @@ object PagedResults {
     def collectMore(length: Int, initialOffset: Int): (Int, List[PagedEntity[BE]]) = {
       val results: ListBuffer[PagedEntity[BE]] = ListBuffer()
       var offset                               = initialOffset
-      var filteredEntityQuota                  = length // Indicate how many entities can be put in the result list.
+      var filteredEntityQuota = length // Indicate how many entities can be put in the result list.
       while (filteredEntityQuota > 0) {
         val entities: List[BE] = getBaseEntities(offset, length)
         if (entities.isEmpty) {
@@ -145,8 +151,10 @@ object PagedResults {
     if (results.length == _length)
       pb.setResumptionToken(s"${nextOffset}:${_length}")
     pb.setResults(results.map { pagedEntity =>
-      addPrivs(pagedEntity.grantedPrivileges,
-               res.serialize(pagedEntity.entity, null, pagedEntity.canViewFullDetail))
+      addPrivs(
+        pagedEntity.grantedPrivileges,
+        res.serialize(pagedEntity.entity, null, pagedEntity.canViewFullDetail)
+      )
     }.asJava)
     pb
   }

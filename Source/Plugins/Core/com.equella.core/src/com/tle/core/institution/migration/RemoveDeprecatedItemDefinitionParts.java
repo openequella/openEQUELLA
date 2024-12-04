@@ -28,7 +28,6 @@ import com.tle.core.institution.convert.XmlMigrator;
 import java.util.List;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

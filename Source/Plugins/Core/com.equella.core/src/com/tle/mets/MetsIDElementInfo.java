@@ -21,7 +21,6 @@ package com.tle.mets;
 import com.dytech.devlib.PropBagEx;
 import edu.harvard.hul.ois.mets.helper.MetsIDElement;
 
-/** @author Aaron */
 public class MetsIDElementInfo<T extends MetsIDElement> {
   private final T elem;
   private final String mimeType;

@@ -27,7 +27,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestion
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.ExtendedTextInteraction;
 
-/** @author Aaron */
 @NonNullByDefault
 public class ExtendedTextInteractionRenderer extends BlockInteractionRenderer {
   // private ExtendedTextInteraction model;

@@ -122,6 +122,7 @@ public class SoapServiceImpl implements SoapService50 {
               CommentFilter.NOT_ANONYMOUS_OR_GUEST,
               CommentFilter.ONLY_MOST_RECENT_PER_USER)
           .build();
+
   /**
    * Maps enums to the order defined for <code>getComments</code>. Don't change the order or
    * position of existing enums.

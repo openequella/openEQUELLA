@@ -11,7 +11,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.pagefactory.ByChained;
 
-/** @author larry */
 public class LanguageSettingsPage extends AbstractPage<LanguageSettingsPage> {
   // original property is language.title
   public static final String LANGUAGES_LINK = "Languages";

@@ -39,7 +39,6 @@ import com.tle.web.sections.standard.Checkbox;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author dlashmar */
 public class MyPagesExtrasSection extends AbstractPrototypeSection<MyPagesPreviewModel>
     implements HtmlRenderer, SavePageEventListener {
   @Inject private MyPagesService myPagesService;

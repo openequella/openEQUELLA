@@ -104,7 +104,8 @@ public class NotificationsPage
     List<WebElement> selected =
         driver.findElements(
             By.xpath(
-                "//div[contains(@class, 'itemresult-wrapper')]/div[contains(@class, 'selected')]/.."));
+                "//div[contains(@class, 'itemresult-wrapper')]/div[contains(@class,"
+                    + " 'selected')]/.."));
     return selected.size();
   }
 

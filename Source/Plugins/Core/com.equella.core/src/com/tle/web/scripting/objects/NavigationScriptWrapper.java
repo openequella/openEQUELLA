@@ -35,7 +35,6 @@ import com.tle.web.viewurl.attachments.ItemNavigationService;
 import java.util.*;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class NavigationScriptWrapper extends AbstractScriptWrapper
     implements NavigationScriptObject {
   private static final long serialVersionUID = 1L;

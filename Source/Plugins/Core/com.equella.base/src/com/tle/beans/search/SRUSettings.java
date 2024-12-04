@@ -18,14 +18,15 @@
 
 package com.tle.beans.search;
 
-/** @author larry */
 public class SRUSettings extends XmlBasedSearchSettings {
   private static final String SEARCH_TYPE = "SRUSearchEngine";
 
   private String url;
   private String schemaId;
 
-  /** @see com.tle.beans.search.SearchSettings#getType() */
+  /**
+   * @see com.tle.beans.search.SearchSettings#getType()
+   */
   @Override
   protected String getType() {
     return SEARCH_TYPE;

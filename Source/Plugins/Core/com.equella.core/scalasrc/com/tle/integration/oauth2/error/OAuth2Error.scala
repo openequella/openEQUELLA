@@ -18,20 +18,17 @@
 
 package com.tle.integration.oauth2.error
 
-/**
-  * Represent any error that can occur during the integration of OAuth2, including standard errors
+/** Represent any error that can occur during the integration of OAuth2, including standard errors
   * defined in the spec and other general errors.
   */
 trait OAuth2Error {
 
-  /**
-    * Optional message to provide more details of the error.
+  /** Optional message to provide more details of the error.
     */
   val msg: Option[String]
 }
 
-/**
-  * Represent an error that has a unique error code
+/** Represent an error that has a unique error code
   */
 trait HasCode[C] {
   val code: C

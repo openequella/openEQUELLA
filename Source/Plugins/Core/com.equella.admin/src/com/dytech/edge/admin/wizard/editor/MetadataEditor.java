@@ -154,7 +154,9 @@ public class MetadataEditor extends Editor implements ActionListener {
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private static class MyTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     private List<Metadata> rows = new ArrayList<Metadata>();

@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.blackboard;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class BlackboardConnectorConstants {
   private BlackboardConnectorConstants() {

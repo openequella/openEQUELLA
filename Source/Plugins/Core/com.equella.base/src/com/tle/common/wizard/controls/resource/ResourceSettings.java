@@ -22,7 +22,6 @@ import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import java.util.Set;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class ResourceSettings extends UniversalSettings {
   private static final String KEY_ALLOW_SELECTION = "AllowSelection";

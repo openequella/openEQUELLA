@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.utils.SelectUserDialog;
 import java.util.Set;
 
-/** @author Aaron */
 @Bind
 public class RemoteCachingSelectUserDialog extends SelectUserDialog {
   @Override

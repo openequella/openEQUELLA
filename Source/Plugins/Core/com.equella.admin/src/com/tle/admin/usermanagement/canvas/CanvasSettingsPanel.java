@@ -39,7 +39,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class CanvasSettingsPanel extends JPanel implements Changeable, MouseListener {
   private static final long serialVersionUID = 5306265445292956845L;

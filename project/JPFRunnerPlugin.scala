@@ -31,28 +31,29 @@ object JPFRunnerPlugin extends AutoPlugin {
           val allRuntimes = jpfRuntime.all(scope).value ++ additionalPlugins.value
           val outBase     = target.value / "jpfjars"
           IO.delete(outBase)
-          allRuntimes.map {
-            r =>
-              val allCode = r.code.flatMap(f =>
-                (f ** "*.class").pair(rebase(f, "classes/"), errorIfNone = false))
-              val allResources =
-                r.resources.flatMap(f =>
-                  (f ** "*").pair(rebase(f, "resources/"), errorIfNone = false))
-              val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
-              val libs = allCode.headOption.map(_ =>
-                JPFLibrary("code", "code", "classes/", Some("*"))) ++
+          allRuntimes.map { r =>
+            val allCode =
+              r.code.flatMap(f => (f ** "*.class").pair(rebase(f, "classes/"), errorIfNone = false))
+            val allResources =
+              r.resources.flatMap(f =>
+                (f ** "*").pair(rebase(f, "resources/"), errorIfNone = false)
+              )
+            val allJars = r.jars.flatMap(f => flatRebase("lib/").apply(f).map((f, _)))
+            val libs =
+              allCode.headOption.map(_ => JPFLibrary("code", "code", "classes/", Some("*"))) ++
                 allResources.headOption.map(_ =>
-                  JPFLibrary("resources", "resources", "resources/", None)) ++
+                  JPFLibrary("resources", "resources", "resources/", None)
+                ) ++
                 allJars.map(f => JPFLibrary(f._1.getName, "code", f._2, Some("*")))
-              val (id, manifest) = writeJPF(r.manifest, libs)
-              val outJar         = outBase / s"$id.jar"
-              IO.withTemporaryFile("jpf", "xml") { tf =>
-                IO.write(tf, manifest)
-                val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
+            val (id, manifest) = writeJPF(r.manifest, libs)
+            val outJar         = outBase / s"$id.jar"
+            IO.withTemporaryFile("jpf", "xml") { tf =>
+              IO.write(tf, manifest)
+              val allFiles = (tf, "plugin-jpf.xml") +: (allCode ++ allResources ++ allJars)
 
-                IO.zip(allFiles, outJar, Option((ThisBuild / buildTimestamp).value))
-              }
-              ManifestWritten(outJar, id, r.group)
+              IO.zip(allFiles, outJar, Option((ThisBuild / buildTimestamp).value))
+            }
+            ManifestWritten(outJar, id, r.group)
           }
         }
       )

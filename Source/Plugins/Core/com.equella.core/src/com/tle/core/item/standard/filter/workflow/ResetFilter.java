@@ -22,7 +22,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.filter.AbstractStandardOperationFilter;
 
-/** @author jmaginnis */
 @Bind
 public class ResetFilter extends AbstractStandardOperationFilter {
   @Override

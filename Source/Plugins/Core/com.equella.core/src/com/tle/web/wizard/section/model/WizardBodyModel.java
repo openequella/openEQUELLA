@@ -30,7 +30,6 @@ import com.tle.web.wizard.impl.WizardCommand;
 import com.tle.web.wizard.section.SectionTab;
 import java.util.List;
 
-/** @author jmaginnis */
 public class WizardBodyModel {
   @Bookmarked private int currentTab;
 

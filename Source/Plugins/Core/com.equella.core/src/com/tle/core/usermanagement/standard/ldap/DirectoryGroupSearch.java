@@ -37,7 +37,6 @@ import javax.naming.directory.DirContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public class DirectoryGroupSearch extends GroupSearch {
   private static final Log LOGGER = LogFactory.getLog(DirectoryGroupSearch.class);
@@ -99,7 +98,9 @@ public class DirectoryGroupSearch extends GroupSearch {
         ctx, groupName, ldap.getGroupSearchFilter(query), new GroupBeanHitsCollector(), recurse);
   }
 
-  /** @param groupID */
+  /**
+   * @param groupID
+   */
   private Name getFullGroupName(DirContext ctx, String groupID) {
     if (Check.isEmpty(groupID)) {
       try {

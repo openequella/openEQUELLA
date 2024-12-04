@@ -47,7 +47,8 @@ public class ImportTab extends InstitutionTab<ImportTab> implements DbSelectable
 
   @FindBy(
       xpath =
-          "//div[@class='settingRow' and div[@class='settingLabel']//label[text()='Target database']]")
+          "//div[@class='settingRow' and div[@class='settingLabel']//label[text()='Target"
+              + " database']]")
   private WebElement dbSettingRow;
 
   private final WebDriverWait waiter;

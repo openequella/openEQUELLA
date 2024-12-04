@@ -255,7 +255,9 @@ public class URLCheckerService {
         MoreExecutors.directExecutor());
   }
 
-  /** @return second value will be true if it failed and needs trying with a GET request. */
+  /**
+   * @return second value will be true if it failed and needs trying with a GET request.
+   */
   private ListenableFuture<Pair<ReferencedURL, Boolean>> checkUrl(
       final ReferencedURL rurl, final boolean head) {
     AsyncHandler<Pair<ReferencedURL, Boolean>> handler =

@@ -32,7 +32,8 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
     return By.xpath(
         "//h3[normalize-space(text())="
             + quoteXPath(getTitle())
-            + "]/ancestor::div[contains(@class, 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div");
+            + "]/ancestor::div[contains(@class,"
+            + " 'box_head')][1]/following-sibling::div[contains(@class, 'box_content')]/div");
   }
 
   protected WebElement getBoxContent() {

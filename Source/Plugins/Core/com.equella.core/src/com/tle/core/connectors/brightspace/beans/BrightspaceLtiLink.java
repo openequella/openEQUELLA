@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class BrightspaceLtiLink {
   @JsonProperty("LtiLinkId")
@@ -85,6 +84,7 @@ public class BrightspaceLtiLink {
 
   @JsonProperty("SendD2LOrgRoleId")
   private boolean sendD2LOrgRoleId;
+
   // Note: this is MANDATORY, or it won't work.
   @JsonInclude(Include.ALWAYS)
   @JsonProperty("CustomParameters")

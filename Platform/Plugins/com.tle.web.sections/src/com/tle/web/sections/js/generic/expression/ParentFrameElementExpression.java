@@ -22,7 +22,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 
-/** @author aholland */
 @NonNullByDefault
 public class ParentFrameElementExpression extends AbstractExpression
     implements JSElementExpression {

@@ -28,7 +28,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class AutocompleteEditBoxConfig extends DynamicChoicePanel<TermSelectorControl> {
   private final JCheckBox reloadOnTermSelection;

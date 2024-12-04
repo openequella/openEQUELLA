@@ -2,7 +2,6 @@ package com.dytech.edge.importexport;
 
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public abstract class WizardPage extends JPanel {
   protected SharedData data;
   protected WizardFrame frame;

@@ -25,7 +25,6 @@ import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.sections.SectionTree;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractTleTinyMceAddOn implements TinyMceAddOn {
   @Inject private InstitutionService institutionService;

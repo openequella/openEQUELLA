@@ -25,7 +25,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
-/** @author Nicholas Read */
 public class JValidatingTextField extends JTextField {
   public JValidatingTextField(final Validation... vs) {
     setDocument(

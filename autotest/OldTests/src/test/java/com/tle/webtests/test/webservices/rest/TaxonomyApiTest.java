@@ -396,7 +396,9 @@ public class TaxonomyApiTest extends AbstractRestApiTest {
     }
   }
 
-  /** @return A list of term UUID+Names */
+  /**
+   * @return A list of term UUID+Names
+   */
   private List<Pair<String, String>> createChildTerms(
       String taxonomyUuid, String parentTermUuid, int numTerms, String currentPrefix)
       throws Exception {

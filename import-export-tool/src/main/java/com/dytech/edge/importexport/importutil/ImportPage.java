@@ -33,7 +33,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-/** @author cofarrell */
 @SuppressWarnings("nls")
 public class ImportPage extends WizardPage implements ActionListener {
   private File dirFile;

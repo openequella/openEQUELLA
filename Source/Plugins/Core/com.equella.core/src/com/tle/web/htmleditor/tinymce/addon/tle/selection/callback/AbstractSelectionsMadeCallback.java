@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractSelectionsMadeCallback implements SelectionsMadeCallback {
   private static final long serialVersionUID = 1L;

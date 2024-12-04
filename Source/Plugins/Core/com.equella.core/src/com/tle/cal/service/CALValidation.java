@@ -198,7 +198,8 @@ public class CALValidation {
       if (activeChapterSet.size() > 1 || forcePercentage) {
         if (restrictiveValidation && activeChapterSet.size() > 1) {
           LOGGER.warn(
-              "You cannot activate more than one copyrighted portion at the same time (restrictive validation is on)"); //$NON-NLS-1$
+              "You cannot activate more than one copyrighted portion at the same time (restrictive"
+                  + " validation is on)"); //$NON-NLS-1$
           return false;
         }
         if (!skipPercentage) {

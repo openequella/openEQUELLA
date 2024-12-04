@@ -26,19 +26,29 @@ import com.tle.common.scripting.ScriptObject;
  * @author aholland
  */
 public interface PageScriptObject extends ScriptObject {
-  /** @return Controls on the page are editable */
+  /**
+   * @return Controls on the page are editable
+   */
   boolean isEnabled();
 
-  /** @param enabled Controls on the page are editable */
+  /**
+   * @param enabled Controls on the page are editable
+   */
   void setEnabled(boolean enabled);
 
-  /** @return The title of the page */
+  /**
+   * @return The title of the page
+   */
   String getPageTitle();
 
-  /** @param title The new title of the page */
+  /**
+   * @param title The new title of the page
+   */
   void setPageTitle(String title);
 
-  /** @return All mandatory controls are filled in */
+  /**
+   * @return All mandatory controls are filled in
+   */
   boolean isValid();
 
   /**
@@ -47,10 +57,14 @@ public interface PageScriptObject extends ScriptObject {
    */
   void setValid(boolean valid);
 
-  /** @return The number of this page, starting at zero */
+  /**
+   * @return The number of this page, starting at zero
+   */
   int getPageNumber();
 
-  /** @return The number of controls on this page. */
+  /**
+   * @return The number of controls on this page.
+   */
   int getControlCount();
 
   /**

@@ -24,7 +24,8 @@ public class NewVersionTest extends AbstractCleanupTest {
   private static final String STEP_NAME_ONE = "moderation step 1";
   private static final String STEP_NAME_TWO = "moderation step 2";
   private static final String FAIL_MSG =
-      "A new version of this item cannot be created because there is already a version in moderation.";
+      "A new version of this item cannot be created because there is already a version in"
+          + " moderation.";
 
   public NewVersionTest() {
     setDeleteCredentials(ADMIN_USERNAME, BACKTICK_PASSWORD);

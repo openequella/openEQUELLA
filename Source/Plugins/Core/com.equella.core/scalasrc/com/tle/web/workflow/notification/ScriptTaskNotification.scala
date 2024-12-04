@@ -37,7 +37,8 @@ case class ScriptTaskGroup(reason: String, taskName: String) extends Notificatio
   def headerReason(total: Int) =
     new KeyLabel(
       NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER + reason, total),
-      taskName)
+      taskName
+    )
 }
 
 @Bind

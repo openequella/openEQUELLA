@@ -4,7 +4,6 @@ package com.tle.webtests.pageobject.wizard.controls.universal;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import org.openqa.selenium.WebElement;
 
-/** @author larry */
 public class LTIAttachmentEditPage extends AbstractAttachmentEditPage<LTIAttachmentEditPage> {
   private LTICommonControlContainerImpl ccc;
 

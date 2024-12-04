@@ -22,7 +22,6 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.collection.event.listener.ItemDefinitionReferencesListener;
 import com.tle.core.entity.event.BaseEntityReferencesEvent;
 
-/** @author Aaron */
 public class ItemDefinitionReferencesEvent
     extends BaseEntityReferencesEvent<ItemDefinition, ItemDefinitionReferencesListener> {
   public ItemDefinitionReferencesEvent(ItemDefinition entity) {

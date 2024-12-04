@@ -50,10 +50,11 @@ class HierarchyResource {
   @Path("/{compound-uuid}/my-acls")
   @ApiOperation(
     value = "Get my ACLs for a hierarchy topic",
-    response = classOf[HierarchyTopicAcl],
+    response = classOf[HierarchyTopicAcl]
   )
   def getAcls(
-      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String): Response = {
+      @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String
+  ): Response = {
     val currentTopicUuid = HierarchyCompoundUuid(compoundUuid).uuid
 
     Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
@@ -63,8 +64,9 @@ class HierarchyResource {
             HierarchyTopicAcl(
               hierarchyService.hasViewAccess(topicEntity),
               hierarchyService.hasEditAccess(topicEntity),
-              hierarchyService.hasModifyKeyResourceAccess(topicEntity),
-            ))
+              hierarchyService.hasModifyKeyResourceAccess(topicEntity)
+            )
+          )
           .build
       case None =>
         ApiErrorResponse.resourceNotFound(s"Failed to get ACLs: topic $currentTopicUuid not found")
@@ -74,31 +76,36 @@ class HierarchyResource {
   @POST
   @Path("/{compound-uuid}/keyresource/{item-uuid}/{version}")
   @ApiOperation(
-    value = "Add an Item to a Hierarchy topic as a key resource",
+    value = "Add an Item to a Hierarchy topic as a key resource"
   )
   def addKeyResource(
       @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
-      @ApiParam("The item version") @PathParam("version") version: Int): Response =
+      @ApiParam("The item version") @PathParam("version") version: Int
+  ): Response =
     updateKeyResources(compoundUuid, itemUuid, version)
 
   @DELETE
   @Path("/{compound-uuid}/keyresource/{item-uuid}/{version}")
   @ApiOperation(
-    value = "Delete a key resource from a Hierarchy topic",
+    value = "Delete a key resource from a Hierarchy topic"
   )
   def deleteKeyResource(
       @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String,
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
-      @ApiParam("The item version: 0 means always point to latest version") @PathParam("version") version: Int)
-    : Response =
+      @ApiParam("The item version: 0 means always point to latest version") @PathParam(
+        "version"
+      ) version: Int
+  ): Response =
     updateKeyResources(compoundUuid, itemUuid, version, addResource = false)
 
   // Update the list of key resources for a Hierarchy topic with ACL checks.
-  private def updateKeyResources(compoundUuid: String,
-                                 itemUuid: String,
-                                 itemVersion: Int,
-                                 addResource: Boolean = true) = {
+  private def updateKeyResources(
+      compoundUuid: String,
+      itemUuid: String,
+      itemVersion: Int,
+      addResource: Boolean = true
+  ) = {
     val realVersion = itemService.getRealVersion(itemVersion, itemUuid)
 
     val itemId     = new ItemId(itemUuid, itemVersion)
@@ -121,14 +128,16 @@ class HierarchyResource {
     Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
       case Some(topic) if !hierarchyService.hasModifyKeyResourceAccess(topic) =>
         ApiErrorResponse.forbiddenRequest(
-          s"Permission denied to update the key resources of topic $compoundUuid")
+          s"Permission denied to update the key resources of topic $compoundUuid"
+        )
       case Some(_)
           if addResource && hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
         ApiErrorResponse.conflictError(s"Item ${itemId.toString()} is already a key resource")
       case Some(_)
           if !addResource && !hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
         ApiErrorResponse.resourceNotFound(
-          s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid")
+          s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid"
+        )
       case Some(_) => update()
       case None =>
         ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")

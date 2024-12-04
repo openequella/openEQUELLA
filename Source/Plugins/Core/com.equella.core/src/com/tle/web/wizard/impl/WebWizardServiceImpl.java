@@ -46,7 +46,6 @@ import com.tle.web.workflow.tasks.ModerationView;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(WebWizardService.class)
 @Singleton
 public class WebWizardServiceImpl implements WebWizardService, ModerationView {

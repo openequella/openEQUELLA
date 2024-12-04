@@ -6,7 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author Aaron */
 public class CanvasSettingsPage extends AbstractCanvasCoursePage<CanvasSettingsPage> {
   @FindBy(xpath = "//li[@id='external_tools_tab']/a")
   private WebElement appsLink;

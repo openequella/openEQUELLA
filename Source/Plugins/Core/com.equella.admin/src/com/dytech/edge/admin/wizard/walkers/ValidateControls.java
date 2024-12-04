@@ -22,7 +22,6 @@ import com.dytech.edge.admin.wizard.Validation;
 import com.dytech.edge.admin.wizard.model.Control;
 import com.tle.common.applet.client.ClientService;
 
-/** @author Nicholas Read */
 public class ValidateControls extends ControlTreeWalker {
   private final ClientService clientService;
 
@@ -36,7 +35,9 @@ public class ValidateControls extends ControlTreeWalker {
     return invalidControl != null;
   }
 
-  /** @return Returns the first invalid control, or null if they are all valid. */
+  /**
+   * @return Returns the first invalid control, or null if they are all valid.
+   */
   public Control getInvalidControl() {
     return invalidControl;
   }

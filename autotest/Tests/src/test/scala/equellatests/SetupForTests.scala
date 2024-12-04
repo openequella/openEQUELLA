@@ -29,37 +29,40 @@ class ImportInsts(allowed: String => Boolean) {
 
   def run(): Unit = {
     TestChecker.withServerAdmin(
-      "import", { context =>
-        insts.foreach {
-          instFolder =>
-            val shortName    = instFolder.getName
-            val instutionUrl = context.getTestConfig.getInstitutionUrl(shortName)
+      "import",
+      { context =>
+        insts.foreach { instFolder =>
+          val shortName    = instFolder.getName
+          val instutionUrl = context.getTestConfig.getInstitutionUrl(shortName)
 
-            val listTab    = new InstitutionListTab(context)
-            var importTab  = new ImportTab(context)
-            val choice     = new UndeterminedPage[InstitutionTabInterface](context, listTab, importTab)
-            var currentTab = choice.load
-            if (currentTab eq listTab) {
-              if (listTab.institutionExists(instutionUrl)) {
-                val statusPage = listTab.delete(instutionUrl, choice)
-                assert(statusPage.waitForFinish)
-                currentTab = statusPage.back
-              }
-              if (currentTab ne importTab) importTab = listTab.importTab
+          val listTab   = new InstitutionListTab(context)
+          var importTab = new ImportTab(context)
+          val choice    = new UndeterminedPage[InstitutionTabInterface](context, listTab, importTab)
+          var currentTab = choice.load
+          if (currentTab eq listTab) {
+            if (listTab.institutionExists(instutionUrl)) {
+              val statusPage = listTab.delete(instutionUrl, choice)
+              assert(statusPage.waitForFinish)
+              currentTab = statusPage.back
             }
+            if (currentTab ne importTab) importTab = listTab.importTab
+          }
 
-            assert(
-              importTab
-                .importInstitution(instutionUrl,
-                                   shortName,
-                                   new File(instFolder, INSTITUTION_FILE).toPath)
-                .waitForFinish)
-            if (testConfig.isNewUI) {
-              val instCtx = new PageContext(context, instutionUrl)
-              new LoginPage(instCtx).load.login("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
-              val sp = new SettingsPage(instCtx).load()
-              sp.setNewUI(true)
-            }
+          assert(
+            importTab
+              .importInstitution(
+                instutionUrl,
+                shortName,
+                new File(instFolder, INSTITUTION_FILE).toPath
+              )
+              .waitForFinish
+          )
+          if (testConfig.isNewUI) {
+            val instCtx = new PageContext(context, instutionUrl)
+            new LoginPage(instCtx).load.login("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
+            val sp = new SettingsPage(instCtx).load()
+            sp.setNewUI(true)
+          }
         }
       }
     )

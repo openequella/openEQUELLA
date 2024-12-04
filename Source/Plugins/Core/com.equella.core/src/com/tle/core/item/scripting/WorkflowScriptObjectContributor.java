@@ -21,7 +21,6 @@ package com.tle.core.item.scripting;
 import com.tle.common.scripting.service.ScriptContextCreationParams;
 import java.util.Map;
 
-/** @author aholland */
 public interface WorkflowScriptObjectContributor // extends
 // ScriptObjectContributor
 {

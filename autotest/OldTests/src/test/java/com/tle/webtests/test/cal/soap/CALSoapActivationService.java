@@ -1,6 +1,5 @@
 package com.tle.webtests.test.cal.soap;
 
-/** @author aholland */
 public interface CALSoapActivationService {
   /**
    * Activates the copyright on said attachments

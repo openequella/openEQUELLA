@@ -29,7 +29,6 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public class PortletPreference {

@@ -33,7 +33,6 @@ import javax.inject.Singleton;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class RecentContribPortletService implements PortletServiceExtension {

@@ -26,15 +26,23 @@ import java.io.Serializable;
  * @author Aaron
  */
 public interface BaseEntityScriptType extends Serializable {
-  /** @return The UUID of the entity */
+  /**
+   * @return The UUID of the entity
+   */
   String getUniqueID();
 
-  /** @return This function is an alias for getUniqueID() */
+  /**
+   * @return This function is an alias for getUniqueID()
+   */
   String getUuid();
 
-  /** @return The name of the entity in the current user's language */
+  /**
+   * @return The name of the entity in the current user's language
+   */
   String getName();
 
-  /** @return The name of the entity in the current user's language */
+  /**
+   * @return The name of the entity in the current user's language
+   */
   String getDescription();
 }

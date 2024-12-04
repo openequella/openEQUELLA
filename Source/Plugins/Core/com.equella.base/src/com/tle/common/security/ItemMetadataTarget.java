@@ -22,7 +22,6 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class ItemMetadataTarget implements Serializable {
   private static final long serialVersionUID = 1L;
 

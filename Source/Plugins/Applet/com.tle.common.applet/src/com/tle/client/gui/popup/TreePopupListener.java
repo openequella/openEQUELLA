@@ -24,7 +24,6 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 
-/** @author Nicholas Read */
 public class TreePopupListener extends AbstractPopupListener {
   private final JTree tree;
 

@@ -23,7 +23,6 @@ import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
-/** @author aholland */
 public interface PackageTreeBuilder {
 
   /**

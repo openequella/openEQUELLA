@@ -229,7 +229,9 @@ public class ClusteredTaskServiceImpl extends AbstractTaskServiceImpl
     }
   }
 
-  /** @return true if task was already running */
+  /**
+   * @return true if task was already running
+   */
   private boolean ensureGlobalTaskRunner(String taskId, ClusteredTask globalTask) {
     if (!isTaskActive(taskId)) {
       startInternal(globalTask, taskId);

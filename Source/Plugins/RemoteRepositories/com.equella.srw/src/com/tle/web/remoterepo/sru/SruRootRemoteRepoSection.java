@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class SruRootRemoteRepoSection extends AbstractRootRemoteRepoSection {
   protected static final String CONTEXT_KEY = "sruRepoContext";

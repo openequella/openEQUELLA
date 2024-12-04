@@ -23,7 +23,6 @@ import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.node.WorkflowNode;
 import java.util.Set;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface WorkflowNodesSaveExtension {
   void workflowNodesSaved(

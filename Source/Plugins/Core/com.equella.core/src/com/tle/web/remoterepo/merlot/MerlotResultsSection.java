@@ -33,7 +33,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.SectionRenderable;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class MerlotResultsSection
     extends RemoteRepoResultsSection<

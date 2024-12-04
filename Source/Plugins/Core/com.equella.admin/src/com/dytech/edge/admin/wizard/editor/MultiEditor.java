@@ -36,7 +36,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class MultiEditor extends AbstractControlEditor<Multi> implements TargetListener {
   private static final long serialVersionUID = 1L;
   private SingleTargetChooser picker;

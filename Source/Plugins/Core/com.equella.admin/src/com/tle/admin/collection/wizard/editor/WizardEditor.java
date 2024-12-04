@@ -32,7 +32,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-/** @author aholland */
 public class WizardEditor extends Editor {
   private static final long serialVersionUID = 8609815614841392333L;
 

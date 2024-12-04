@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -208,7 +207,9 @@ public final class LanguageBundleMigration extends XmlMigrator implements ItemXm
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private interface CustomProcessor {
     void process(PropBagEx xml, Locale locale);
   }
