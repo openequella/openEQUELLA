@@ -126,11 +126,34 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
     * A JWT will be created with the IdP configuration and signed by the private key generated for the
     * configuration, and failing to find the key will result in a [[com.auth0.jwt.exceptions.JWTCreationException]]
     *
+    * The doco also states that only the org authorization server (Okta built-in auth server) can mint access tokens
+    * that contain Okta API scopes. As a result, if user chooses to use the token URL of a different auth server
+    * (e.g. the default custom auth server), a URL transformation is required to make sure the access token request is
+    * sent to the org authorization server.
+    *
     * Reference links:
     *   - https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#create-and-sign-the-jwt
     *   - https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#get-an-access-token
+    *   - https://developer.okta.com/docs/concepts/auth-servers/#which-authorization-server-should-you-use
     */
   override protected def tokenRequest(idp: OktaDetails): AssertionTokenRequest = {
+    val tokenUrl: String = {
+      // The token URL of of a custom auth server always has the format of 'https://{domain}/oauth2/{authServerId}/{version}/token',
+      // whereas that of the org auth server is similar but without the auth server ID in between path 'oauth2' and 'version'.
+      // So we can have a regex of 3 groups to support the transformation:
+      // First group contains everything up to '/oauth2';
+      // Second group contains the auth server ID;
+      // Third group contains everything after the auth server ID until '/token';
+      // And combine the first group and the third group.
+      val TokenRegex = "(.+/oauth2)/(.+)/(.+/token)".r
+      val configured = idp.commonDetails.tokenUrl.toString
+
+      configured match {
+        case TokenRegex(group1, _, group3) => s"$group1/$group3"
+        case _                             => configured
+      }
+    }
+
     def clientAssertion(okta: OktaDetails): String = {
       val keyId = okta.keyId
 
@@ -141,7 +164,7 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
           JWT
             .create()
             .withIssuer(okta.apiClientId)
-            .withAudience(okta.commonDetails.tokenUrl.toString)
+            .withAudience(tokenUrl)
             .withSubject(okta.apiClientId)
             .withIssuedAt(Instant.now)
             .withNotBefore(Instant.now)
@@ -158,7 +181,7 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
     }
 
     AssertionTokenRequest(
-      authTokenUrl = idp.commonDetails.tokenUrl.toString,
+      authTokenUrl = tokenUrl,
       clientId = idp.apiClientId,
       assertionType = OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE_JWT_BEARER,
       assertion = clientAssertion(idp),
