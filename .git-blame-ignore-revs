@@ -1,0 +1,12 @@
+# Ignore file for reformats etc
+# To use you have to manually specify with either the CLI:
+#     git blame --ignore-revs-file .git-blame-ignore-revs <rev>
+#
+# Or configuration
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# initial mega reformat
+1ed81e9c52b5bf3436c93272eb23ad8a9f6fccea
+
+# scalafmt 3.8 reformat
+fca2d19bd92134957a2b474a128a2aa477c42ae1
