@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "coursier:checkstyle": "./coursier bootstrap com.puppycrawl.tools:checkstyle:10.20.2 -f -o node_modules/.bin/checkstyle -M com.puppycrawl.tools.checkstyle.Main",
-    "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.25.0 -f -o node_modules/.bin/google-java-format",
+    "coursier:google-java-format": "./coursier bootstrap com.google.googlejavaformat:google-java-format:1.25.0 -f -o node_modules/.bin/google-java-format --jvm-option-file google-java-format.jvmopts",
     "coursier:scalafmt": "./coursier bootstrap org.scalameta::scalafmt-cli:3.8.3 -f -o node_modules/.bin/scalafmt",
     "postinstall": "run-s coursier:*",
     "format:scala": "find . -name \"*.scala\" -o -name \"*.sbt\" | xargs scalafmt",
