@@ -1,5 +1,6 @@
 val guiceVersion = "5.1.0"
 val slf4jVersion = "2.0.16"
+val sttpVersion  = "3.9.7"
 
 libraryDependencies ++= Seq(
   // Logging dependencies
@@ -26,7 +27,12 @@ libraryDependencies ++= Seq(
       organization = "aopalliance",
       name = "aopalliance"
     )
-  )
+  ),
+  // STTP for REST calls, ideally match the version with the transitive from graphql-client
+  "com.softwaremill.sttp.client3" %% "core"  % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe" % sttpVersion,
+  // Circe generic for decoding REST JSON responses
+  "io.circe" %% "circe-generic" % "0.14.10"
 )
 
 excludeDependencies ++= Seq(
