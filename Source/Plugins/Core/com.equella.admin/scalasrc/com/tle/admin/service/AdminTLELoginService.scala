@@ -16,27 +16,17 @@
  * limitations under the License.
  */
 
-package com.tle.common.applet.client;
+package com.tle.admin.service
 
-import java.net.URL;
+import java.util.Optional
 
-public interface ClientService {
-  void showDocument(URL url);
+/**
+  * Service to manage the currently authenticated session.
+  */
+trait AdminTLELoginService {
+  def keepAlive(): Unit
 
-  void stop();
+  def logout(): Unit
 
-  String getParameter(String key);
-
-  URL getServerURL();
-
-  /* SERVICES */
-
-  /**
-   * Get a service which may be one of the new local implementations, or one provided by HTTP
-   * Invoker
-   */
-  <T> T getService(Class<T> clazz);
-
-  /** Get a service with is provided by HTTP Invoker */
-  <T> T getInvokerService(Class<T> clazz);
+  def getLoggedInUserId: Optional[String]
 }

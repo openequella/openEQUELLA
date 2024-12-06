@@ -18,7 +18,6 @@
 
 package com.tle.common.applet.client;
 
-import com.tle.common.applet.SessionHolder;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
 import com.tle.core.plugins.PluginAwareObjectOutputStream;
 import java.io.IOException;
@@ -36,17 +35,16 @@ import org.springframework.remoting.support.RemoteInvocation;
 
 public final class ClientProxyFactory {
   public static <T> T createSessionProxy(ClientService client, Class<T> api, String service) {
-    return createSessionProxy(client.getSession(), api, client.getServerURL(), service);
+    return createSessionProxy(api, client.getServerURL(), service);
   }
 
-  public static <T> T createSessionProxy(
-      SessionHolder sessionHolder, Class<T> api, URL url, String service) {
+  public static <T> T createSessionProxy(Class<T> api, URL url, String service) {
     try {
       url = new URL(url, url.getPath() + service);
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
-    return create(sessionHolder, api, createProxy(api, url));
+    return create(api, createProxy(api, url));
   }
 
   @SuppressWarnings("unchecked")
@@ -84,8 +82,8 @@ public final class ClientProxyFactory {
   }
 
   @SuppressWarnings("unchecked")
-  private static <T> T create(SessionHolder session, Class<T> api, Object iface) {
-    ClientProxy handler = new ClientProxy(session, iface);
+  private static <T> T create(Class<T> api, Object iface) {
+    ClientProxy handler = new ClientProxy(iface);
     return (T) Proxy.newProxyInstance(api.getClassLoader(), new Class[] {api}, handler);
   }
 

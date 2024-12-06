@@ -23,7 +23,6 @@ import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
 import com.tle.client.impl.ClientServiceImpl;
 import com.tle.client.impl.CurrentTimeZoneClientSide;
-import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
@@ -98,10 +97,8 @@ public class AdminConsole implements HarnessInterface {
         System.setProperty("java.io.tmpdir", tempDir);
       }
 
-      // Initialise server session
-      SessionHolder holder = new SessionHolder(endpointURL);
       // Initialise services
-      clientService = new ClientServiceImpl(holder);
+      clientService = new ClientServiceImpl(endpointURL);
 
       // Initialise bundle cache
       BundleCache.initialise(clientService.getService(RemoteLanguageService.class));

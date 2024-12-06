@@ -18,17 +18,14 @@
 
 package com.tle.common.applet.client;
 
-import com.tle.common.applet.SessionHolder;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ClientProxy implements InvocationHandler {
   private final Object iface;
-  final SessionHolder session;
 
-  public ClientProxy(SessionHolder session, Object iface) {
-    this.session = session;
+  public ClientProxy(Object iface) {
     this.iface = iface;
   }
 

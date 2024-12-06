@@ -16,38 +16,18 @@
  * limitations under the License.
  */
 
-package com.tle.common.applet;
+package com.tle.admin.service
 
-import java.net.URL;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+/**
+  * Service to keep the oEQ session alive by calling the openEQUELLA server keep alive endpoint.
+  */
+trait AdminTLEKeepAliveService {
 
-public class SessionHolder {
-  static final Log LOGGER = LogFactory.getLog(SessionHolder.class);
+  /**
+    * Start the keep alive service. This will result in a background thread regularly calling
+    * the openEQUELLA server keep alive endpoint.
+    */
+  def start(): Unit
 
-  private final LoginService loginService;
-  private final KeepAliveTask keepAliveTask;
-  private final URL url;
-
-  public SessionHolder(URL url) {
-    this.url = url;
-    loginService = new LoginService(this);
-    keepAliveTask = new KeepAliveTask(this);
-  }
-
-  public void enableKeepAlive(boolean b) {
-    if (b) {
-      keepAliveTask.onSchedule();
-    } else {
-      keepAliveTask.cancel();
-    }
-  }
-
-  public URL getUrl() {
-    return url;
-  }
-
-  public LoginService getLoginService() {
-    return loginService;
-  }
+  def stop(): Unit
 }
