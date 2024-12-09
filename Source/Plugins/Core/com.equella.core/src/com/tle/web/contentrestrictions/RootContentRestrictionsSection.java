@@ -73,7 +73,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @TreeIndexed
 public class RootContentRestrictionsSection extends OneColumnLayout<OneColumnLayoutModel> {

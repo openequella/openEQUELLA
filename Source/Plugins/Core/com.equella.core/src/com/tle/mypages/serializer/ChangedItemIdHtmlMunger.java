@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ChangedItemIdHtmlMunger implements CloneFileProcessingExtension {

@@ -18,7 +18,6 @@
 
 package com.tle.web.wizard.scripting;
 
-/** @author aholland */
 public final class WizardScriptConstants {
   public static final String WORKFLOW_STEP = "workflowstep"; // $NON-NLS-1$
   public static final String PAGE = "page"; // $NON-NLS-1$

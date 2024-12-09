@@ -31,7 +31,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-/** @author Nicholas Read */
 public class ButtonEditor extends AbstractControlEditor<Button> {
   private static final long serialVersionUID = 1L;
 

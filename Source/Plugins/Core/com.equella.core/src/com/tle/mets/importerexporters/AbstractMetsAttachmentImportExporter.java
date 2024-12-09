@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public abstract class AbstractMetsAttachmentImportExporter
     implements MetsAttachmentImporterExporter {

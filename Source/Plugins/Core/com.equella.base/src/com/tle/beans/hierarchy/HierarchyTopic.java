@@ -55,7 +55,6 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
-/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 public class HierarchyTopic

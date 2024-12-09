@@ -23,7 +23,6 @@ import com.tle.beans.entity.Schema;
 import com.tle.core.entity.event.BaseEntityReferencesEvent;
 import com.tle.core.schema.event.listener.SchemaReferencesListener;
 
-/** @author Aaron */
 @NonNullByDefault
 public class SchemaReferencesEvent
     extends BaseEntityReferencesEvent<Schema, SchemaReferencesListener> {

@@ -32,7 +32,6 @@ import com.tle.web.wizard.section.WizardSection;
 import com.tle.web.wizard.section.WizardSectionInfo;
 import java.util.Map;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class TileAfterContributionSection extends WizardSection<Object> {

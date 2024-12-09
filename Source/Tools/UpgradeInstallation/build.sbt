@@ -19,7 +19,7 @@ excludeDependencies ++= Seq(
   "commons-logging" % "commons-logging"
 )
 
-(assembly / mainClass) := Some("com.tle.upgrade.UpgradeMain")
+(assembly / mainClass)      := Some("com.tle.upgrade.UpgradeMain")
 (assembly / assemblyOption) := (assembly / assemblyOption).value.withIncludeScala(true)
 
 val upgradeManager = LocalProject("UpgradeManager")

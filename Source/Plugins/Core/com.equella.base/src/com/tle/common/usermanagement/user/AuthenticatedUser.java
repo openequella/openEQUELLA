@@ -21,7 +21,6 @@ package com.tle.common.usermanagement.user;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 import java.io.Serializable;
 
-/** @author Nicholas Read */
 public class AuthenticatedUser implements Serializable {
   private static final long serialVersionUID = 1L;
   private final UserBean user;
@@ -32,7 +31,9 @@ public class AuthenticatedUser implements Serializable {
     this.role = role;
   }
 
-  /** @return Returns the role. */
+  /**
+   * @return Returns the role.
+   */
   public int getRole() {
     return role;
   }
@@ -41,7 +42,9 @@ public class AuthenticatedUser implements Serializable {
     this.role = role;
   }
 
-  /** @return Returns the user. */
+  /**
+   * @return Returns the user.
+   */
   public UserBean getUser() {
     return user;
   }

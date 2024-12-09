@@ -29,7 +29,6 @@ import com.tle.web.sections.events.js.JSHandler;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class PortletListItemFactory {

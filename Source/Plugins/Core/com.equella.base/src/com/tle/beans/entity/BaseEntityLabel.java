@@ -23,7 +23,6 @@ import com.tle.common.Check.FieldEquality;
 import com.tle.common.i18n.BundleReference;
 import java.io.Serializable;
 
-/** @author Nicholas Read */
 public class BaseEntityLabel
     implements Serializable, FieldEquality<BaseEntityLabel>, BundleReference {
   private static final long serialVersionUID = 1L;

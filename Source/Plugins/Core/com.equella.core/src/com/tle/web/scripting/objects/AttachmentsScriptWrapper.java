@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class AttachmentsScriptWrapper extends AbstractScriptWrapper
     implements AttachmentsScriptObject {

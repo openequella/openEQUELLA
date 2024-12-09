@@ -22,7 +22,6 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.freetext.event.listener.ItemReindexListener;
 import com.tle.core.freetext.reindex.ReindexFilter;
 
-/** @author Nicholas Read */
 public class ItemReindexEvent extends ApplicationEvent<ItemReindexListener> {
   private static final long serialVersionUID = 1L;
   private ReindexFilter filter;

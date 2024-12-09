@@ -24,7 +24,6 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-/** @author Nicholas Read */
 public class ExpressionListCellRenderer extends DefaultListCellRenderer {
   private static final long serialVersionUID = 1L;
   private ExpressionFormatter formatter;

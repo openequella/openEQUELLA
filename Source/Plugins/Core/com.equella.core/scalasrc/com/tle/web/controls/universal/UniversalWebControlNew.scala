@@ -94,10 +94,12 @@ object UniversalWebControlNew {
   val DELETE_CONFIRM               = WebFileUploads.label("list.delete.confirm")
   val PREVIEW                      = WebFileUploads.label("list.preview")
   val KEY_HIDDEN_FROM_SUMMARY_NOTE = WebFileUploads.r.key("list.hidden.from.summary")
-  val uploadListSrc = new IncludeFile(WebFileUploads.r.url("reactjs/scripts/uploadlist.js"),
-                                      JQueryProgression.PRERENDER,
-                                      FileDropRenderer.CSS,
-                                      ZebraTableRenderer.CSS)
+  val uploadListSrc = new IncludeFile(
+    WebFileUploads.r.url("reactjs/scripts/uploadlist.js"),
+    JQueryProgression.PRERENDER,
+    FileDropRenderer.CSS,
+    ZebraTableRenderer.CSS
+  )
   val uploadListFunc =
     new ExternallyDefinedFunction("FileUploader", uploadListSrc)
 }
@@ -176,12 +178,15 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
     def stateAction[A](info: SectionInfo)(f: => A): A = {
       var ret: Any = null
-      dialog.updateWizardState(info, { _ =>
-        ret = f
-        controlState.getStorageControl.getWizardPage
-          .saveToDocument(List(controlState.getStorageControl).asJava, null)
-        true
-      })
+      dialog.updateWizardState(
+        info,
+        { _ =>
+          ret = f
+          controlState.getStorageControl.getWizardPage
+            .saveToDocument(List(controlState.getStorageControl).asJava, null)
+          true
+        }
+      )
       ret.asInstanceOf[A]
     }
 
@@ -196,8 +201,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
       def getDuplicateWarningMessage         = CoreStrings.text("duplicatewarning.message")
 
       def getDivTag = {
-        def entries(attachments: Iterable[AttachmentNode],
-                    editable: Boolean): Iterable[AjaxFileEntry] = {
+        def entries(
+            attachments: Iterable[AttachmentNode],
+            editable: Boolean
+        ): Iterable[AjaxFileEntry] = {
           attachments.map { an =>
             val attachment = an.getAttachment
             val children   = entries(an.getChildren.asScala, false)
@@ -270,15 +277,19 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
         dialog.getControlConfiguration.getBooleanAttribute("LINK_DUPLICATION_CHECK")
 
       def fileDuplicateCheck(fileAttachment: FileAttachment): Unit = {
-        wizardService.checkFileAttachmentDuplicate(state,
-                                                   fileAttachment.getFilename,
-                                                   fileAttachment.getUuid)
+        wizardService.checkFileAttachmentDuplicate(
+          state,
+          fileAttachment.getFilename,
+          fileAttachment.getUuid
+        )
       }
 
       def linkDuplicateCheck(linkAttachment: LinkAttachment): Unit = {
-        wizardService.checkLinkAttachmentDuplicate(state,
-                                                   linkAttachment.getUrl,
-                                                   linkAttachment.getUuid)
+        wizardService.checkLinkAttachmentDuplicate(
+          state,
+          linkAttachment.getUrl,
+          linkAttachment.getUuid
+        )
       }
 
       def updateDuplicateWarningMessage(): Unit = {
@@ -291,8 +302,10 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
       val maxFiles = if (definition.isMaxFilesEnabled) definition.getMaxFiles else 1
 
-      if ((!definition.isMultipleSelection && uploadedAttachments > 1) ||
-          (definition.isMaxFilesEnabled && uploadedAttachments > maxFiles)) {
+      if (
+        (!definition.isMultipleSelection && uploadedAttachments > 1) ||
+        (definition.isMaxFilesEnabled && uploadedAttachments > maxFiles)
+      ) {
         setInvalid(
           true,
           new PluralKeyLabel(
@@ -316,37 +329,45 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
 
     def renderControl(context: RenderEventContext): SectionResult = {
       val m = new UniversalRenderModel(context)
-      wizardViewFactory.createWizardResult(renderModel("universalattachmentlist.ftl", m),
-                                           UniversalWebControlNew.this)
+      wizardViewFactory.createWizardResult(
+        renderModel("universalattachmentlist.ftl", m),
+        UniversalWebControlNew.this
+      )
     }
 
     def mimeTypeForFilename(name: String): String = mimeTypeService.getMimeTypeForFilename(name)
 
-    val stagingContext = new FileStagingContext(Option(repo.getStagingid),
-                                                repo.getItem.getItemId,
-                                                fileSystemService,
-                                                thumbnailService,
-                                                videoService,
-                                                mimeTypeService,
-                                                repository)
+    val stagingContext = new FileStagingContext(
+      Option(repo.getStagingid),
+      repo.getItem.getItemId,
+      fileSystemService,
+      thumbnailService,
+      videoService,
+      mimeTypeService,
+      repository
+    )
 
     def viewFactory: FreemarkerFactory = wizardViewFactory
 
-    def entryForAttachment(info: SectionInfo,
-                           a: IAttachment,
-                           editable: Boolean,
-                           children: Iterable[AjaxFileEntry]): AjaxFileEntry = {
+    def entryForAttachment(
+        info: SectionInfo,
+        a: IAttachment,
+        editable: Boolean,
+        children: Iterable[AjaxFileEntry]
+    ): AjaxFileEntry = {
       val viewableResource =
         attachmentResourceService.getViewableResource(info, repository.getViewableItem, a)
       val desc = if (Option(dialog.findHandlerForAttachment(a)).exists(_.isHiddenFromSummary(a))) {
         new KeyLabel(KEY_HIDDEN_FROM_SUMMARY_NOTE, a.getDescription).getText
       } else a.getDescription
-      AjaxFileEntry(a.getUuid,
-                    desc,
-                    viewableResource.createDefaultViewerUrl().getHref,
-                    editable,
-                    a.isPreview,
-                    children)
+      AjaxFileEntry(
+        a.getUuid,
+        desc,
+        viewableResource.createDefaultViewerUrl().getHref,
+        editable,
+        a.isPreview,
+        children
+      )
     }
 
     // Returns true if any attachment in this control has duplicate information found
@@ -364,7 +385,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
             state.remove(uploadId)
             def illegal(reason: IllegalFileReason) =
               UploadFailed(
-                WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText)
+                WebFileUploads.labelForIllegalReason(reason, uf.originalFilename).getText
+              )
             val mimeType = mimeTypeForFilename(uf.originalFilename)
             // Retrieve file from form data. If not found then try to get it from request body.
             val r = WebFileUploads
@@ -395,7 +417,7 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                         }
                     }
                   case IllegalFile(reason) => illegal(reason)
-                  case Errored(t)          => UploadFailed(Option(t.getMessage).getOrElse("Unknown error"))
+                  case Errored(t) => UploadFailed(Option(t.getMessage).getOrElse("Unknown error"))
                 }
               }
             r
@@ -416,7 +438,8 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                 validate
                 RemoveEntries(
                   Iterable(attachmentUuid),
-                  Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info))))
+                  Option(new AttachmentDuplicateInfo(duplicatesFound, getElementId(info)))
+                )
               }
             case NewUpload(filename, size) =>
               stateAction(info) {
@@ -430,9 +453,11 @@ class UniversalWebControlNew extends AbstractWebControl[UniversalWebControlModel
                   .getOrElse {
                     state.initialiseUpload(uploadId, uniqueName, uniqueName)
                     val uploadUrl = ajax
-                      .getModifiedAjaxUrl(info,
-                                          new SimpleBookmarkModifier("uploadId", uploadId.toString),
-                                          "uploadCommand")
+                      .getModifiedAjaxUrl(
+                        info,
+                        new SimpleBookmarkModifier("uploadId", uploadId.toString),
+                        "uploadCommand"
+                      )
                       .getHref
                     NewUploadResponse(uploadUrl, uploadId.toString, uniqueName)
                   }

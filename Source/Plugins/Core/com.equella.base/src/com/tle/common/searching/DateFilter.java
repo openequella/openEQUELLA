@@ -20,7 +20,6 @@ package com.tle.common.searching;
 
 import java.util.Date;
 
-/** @author aholland */
 public class DateFilter {
   public enum Format {
     ISO,

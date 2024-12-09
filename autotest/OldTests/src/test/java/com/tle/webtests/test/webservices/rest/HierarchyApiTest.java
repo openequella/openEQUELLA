@@ -78,12 +78,10 @@ public class HierarchyApiTest extends AbstractRestApiTest {
             + "\"hideSubtopicsWithNoResults\" : true,"
             + "\"parent\" : { \"uuid\" :  \""
             + uuidOfParent
-            + "\" },"
-            + "\"virtualisationPath\" : \"/item/itembody/abstract\","
-            + "\"virtualisationId\" : \"contributedValuesVirtualiser\","
-            + "\"attributes\" : [ { \"key\" : \"manualListVirtualiser\","
-            + "\"value\" : \"<list> <string>no one knows</string> <string>no one cares</string> </list>\" } ] "
-            + " }";
+            + "\" },\"virtualisationPath\" : \"/item/itembody/abstract\",\"virtualisationId\" :"
+            + " \"contributedValuesVirtualiser\",\"attributes\" : [ { \"key\" :"
+            + " \"manualListVirtualiser\",\"value\" : \"<list> <string>no one knows</string>"
+            + " <string>no one cares</string> </list>\" } ]  }";
     postResponse = postEntity(jsonString, uri.toString(), token, false);
 
     postStatus = postResponse.getStatusLine().getStatusCode();

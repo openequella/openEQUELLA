@@ -28,7 +28,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public interface GenericDao<T, ID extends Serializable> {
   Class<T> getPersistentClass();
@@ -68,6 +67,7 @@ public interface GenericDao<T, ID extends Serializable> {
 
   Object findByDetachedCriteria(
       DetachedCriteria criteria, final Function<Criteria, Object> process);
+
   /**
    * @param order can be null if no order is required
    * @param maxResults can be -1 to retrieve all results.

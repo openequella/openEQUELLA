@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @Bind(CourseResource.class)
 @Singleton

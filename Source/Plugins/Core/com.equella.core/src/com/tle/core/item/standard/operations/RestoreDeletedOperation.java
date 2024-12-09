@@ -26,7 +26,6 @@ import com.tle.core.item.standard.operations.workflow.TaskOperation;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author jmaginnis */
 @SecureItemStatus(ItemStatus.DELETED)
 @SecureOnCall(priv = "DELETE_ITEM")
 public class RestoreDeletedOperation extends TaskOperation {

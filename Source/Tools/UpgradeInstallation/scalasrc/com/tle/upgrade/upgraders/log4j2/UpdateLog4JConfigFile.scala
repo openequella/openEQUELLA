@@ -32,12 +32,14 @@ import com.tle.upgrade.upgraders.log4j2.Logger.buildLoggerConfig
 import java.io.File
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
-/**
-  * Data structure for the Log4j2 configuration in YAML format.
+/** Data structure for the Log4j2 configuration in YAML format.
   *
-  * @param status Log4j internal logging level.
-  * @param appenders A map where key is an Appender type and value is a list of the Appender configuration.
-  * @param Loggers The logger configuration including root logger and normal loggers.
+  * @param status
+  *   Log4j internal logging level.
+  * @param appenders
+  *   A map where key is an Appender type and value is a list of the Appender configuration.
+  * @param Loggers
+  *   The logger configuration including root logger and normal loggers.
   */
 case class Configuration(
     status: String,
@@ -45,19 +47,18 @@ case class Configuration(
     Loggers: LoggerConfig
 )
 
-/**
-  * This migration is intended to update Log4J configuration files to use the new syntax and YAML format.
+/** This migration is intended to update Log4J configuration files to use the new syntax and YAML
+  * format.
   *
   * Files to be updated:
-  * 1. 'learningedge-log4j.properties' under folder `learningedge-config`;
-  * 2. 'log4j.properties' under folder `manager`;
-  * 3. 'upgrader-log4j.properties' under folder `manager`.
+  *   1. 'learningedge-log4j.properties' under folder `learningedge-config`; 2. 'log4j.properties'
+  *      under folder `manager`; 3. 'upgrader-log4j.properties' under folder `manager`.
   *
   * The result of this migration is to have three YAML files in above folders alongside the original
   * configuration files.
   *
-  * All the errors captured during the update will be printed out and the default configurations files
-  * will be copied and pasted to above folders.
+  * All the errors captured during the update will be printed out and the default configurations
+  * files will be copied and pasted to above folders.
   */
 class UpdateLog4JConfigFile extends AbstractUpgrader {
   val mapper = new ObjectMapper(new YAMLFactory())
@@ -98,7 +99,8 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
           copyDefaultConfigFile(propertyFile)
           result.info(
             s"Failed to update Log4J configuration for file ${propertyFile.getName} due to \n ${e
-              .mkString_("\n")}")
+                .mkString_("\n")}"
+          )
         case Valid(config) =>
           mapper.writeValue(new File(propertyFile.getParent, yamlFileName(propertyFile)), config)
           result.info(s"Successfully update Log4J configuration for file ${propertyFile.getName}")

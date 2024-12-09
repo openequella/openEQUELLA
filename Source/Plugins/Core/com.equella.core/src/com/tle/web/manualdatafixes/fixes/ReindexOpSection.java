@@ -40,7 +40,6 @@ import com.tle.web.sections.standard.Button;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author larry */
 @Bind
 @SuppressWarnings("nls")
 public class ReindexOpSection extends AbstractPrototypeSection<ReindexOpSection.ReindexModel>

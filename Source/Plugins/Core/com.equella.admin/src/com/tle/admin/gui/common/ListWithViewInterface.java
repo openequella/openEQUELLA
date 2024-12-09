@@ -22,7 +22,6 @@ import com.dytech.gui.Changeable;
 import java.awt.Component;
 import java.awt.event.KeyListener;
 
-/** @author Nicholas Read */
 public interface ListWithViewInterface<LIST_TYPE> extends Changeable {
   Component getComponent();
 

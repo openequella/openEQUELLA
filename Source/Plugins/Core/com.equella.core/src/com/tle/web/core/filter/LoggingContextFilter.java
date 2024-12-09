@@ -38,7 +38,6 @@ import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

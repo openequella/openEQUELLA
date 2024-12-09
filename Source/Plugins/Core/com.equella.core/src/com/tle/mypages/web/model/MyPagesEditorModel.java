@@ -20,7 +20,6 @@ package com.tle.mypages.web.model;
 
 import com.tle.web.sections.render.SectionRenderable;
 
-/** @author aholland */
 public class MyPagesEditorModel {
   private SectionRenderable editorRenderable;
   private SectionRenderable extraRenderable;

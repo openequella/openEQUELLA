@@ -23,10 +23,11 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemPack;
 
-/** @author aholland */
 @NonNullByDefault
 public interface WorkflowOperation {
-  /** @return true if you modified the item */
+  /**
+   * @return true if you modified the item
+   */
   boolean execute();
 
   @Nullable

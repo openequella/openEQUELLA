@@ -33,7 +33,6 @@ import com.tle.web.settings.menu.SettingsUtils;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
-/** @author Aaron */
 @TreeIndexed
 @SuppressWarnings("nls")
 public abstract class AbstractRootEntitySection<M extends OneColumnLayoutModel>

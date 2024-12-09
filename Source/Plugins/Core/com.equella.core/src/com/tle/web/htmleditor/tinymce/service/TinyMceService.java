@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author aholland */
 public interface TinyMceService extends HtmlEditorFactoryInterface {
   /**
    * E.g. textAreaComponent.addReadyStatements(context,

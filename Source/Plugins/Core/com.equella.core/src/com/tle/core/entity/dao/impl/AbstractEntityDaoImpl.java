@@ -476,7 +476,8 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                     session.createQuery(
                         "UPDATE "
                             + getPersistentClass().getName()
-                            + " SET owner = :toOwner WHERE owner = :fromOwner AND institution = :institution");
+                            + " SET owner = :toOwner WHERE owner = :fromOwner AND institution ="
+                            + " :institution");
                 query.setParameter("toOwner", toOwnerId);
                 query.setParameter("fromOwner", fromOwnerId);
                 query.setParameter("institution", CurrentInstitution.get());

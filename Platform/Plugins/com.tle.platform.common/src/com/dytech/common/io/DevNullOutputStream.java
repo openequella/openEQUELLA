@@ -20,7 +20,6 @@ package com.dytech.common.io;
 
 import java.io.OutputStream;
 
-/** @author Nicholas Read */
 @Deprecated
 public class DevNullOutputStream extends OutputStream {
   public DevNullOutputStream() {

@@ -36,13 +36,14 @@ class ACLApiTest extends AbstractRestApiTest {
       SettingPrivilegeTest(SEARCH_SETTING, useLowPrivilegeUser = false, isGranted = true),
       HierarchyPrivilegeTest(NORMAL_TOPIC_ID, useLowPrivilegeUser = true, isGranted = false),
       HierarchyPrivilegeTest(VIRTUAL_TOPIC_ID, useLowPrivilegeUser = true, isGranted = false),
-      SettingPrivilegeTest(SEARCH_SETTING, useLowPrivilegeUser = true, isGranted = false),
+      SettingPrivilegeTest(SEARCH_SETTING, useLowPrivilegeUser = true, isGranted = false)
     )
   }
 
-  @Test(dataProvider = "testDataProvider",
-        description =
-          "Check whether a specified privilege is granted to the current user for an entity")
+  @Test(
+    dataProvider = "testDataProvider",
+    description = "Check whether a specified privilege is granted to the current user for an entity"
+  )
   def checkPrivilegeForEntity(testData: PrivilegeTest): Unit = {
     if (testData.useLowPrivilegeUser) loginAsLowPrivilegeUser()
 

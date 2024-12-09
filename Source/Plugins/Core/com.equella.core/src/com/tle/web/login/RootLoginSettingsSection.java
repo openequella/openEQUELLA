@@ -69,7 +69,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class RootLoginSettingsSection
     extends OneColumnLayout<RootLoginSettingsSection.LoginSettingsModel> {

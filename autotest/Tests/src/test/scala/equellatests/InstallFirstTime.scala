@@ -12,7 +12,8 @@ object InstallFirstTime extends App {
   import java.util.function.{Function => JavaFunction}
 
   implicit def scalaFunctionToJavaFunction[From, To](
-      function: (From) => To): JavaFunction[From, To] = {
+      function: (From) => To
+  ): JavaFunction[From, To] = {
     new java.util.function.Function[From, To] {
       override def apply(input: From): To = function(input)
     }

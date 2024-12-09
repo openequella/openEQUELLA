@@ -77,14 +77,17 @@ public class ContentObject {
 
   @JsonProperty("Url")
   private String url;
+
   // Possibly always needed...
   @JsonInclude(Include.ALWAYS)
   @JsonProperty("StartDate")
   private String startDate;
+
   // Possibly always needed...
   @JsonInclude(Include.ALWAYS)
   @JsonProperty("EndDate")
   private String endDate;
+
   // Possibly always needed...
   @JsonInclude(Include.ALWAYS)
   @JsonProperty("DueDate")

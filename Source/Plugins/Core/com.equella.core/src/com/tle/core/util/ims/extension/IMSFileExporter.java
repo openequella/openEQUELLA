@@ -23,7 +23,6 @@ import com.tle.beans.item.attachments.Attachment;
 import com.tle.common.filesystem.handle.StagingFile;
 import java.util.Collection;
 
-/** @author Aaron */
 public interface IMSFileExporter {
   /**
    * Copies necessary files from the item to the staging

@@ -21,7 +21,6 @@ package com.tle.common.filesystem.remoting;
 import com.tle.common.NameValue;
 import java.util.List;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public interface RemoteFileSystemService {
   String DEFAULT_FILESTORE_ID = "default";

@@ -21,7 +21,6 @@ package com.tle.common.settings.standard;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 
-/** @author Nicholas Read */
 public class OAISettings implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
 

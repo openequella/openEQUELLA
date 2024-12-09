@@ -24,7 +24,6 @@ import javax.swing.Action;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
-/** @author Nicholas Read */
 public class TablePopupListener extends AbstractPopupListener {
   private final JTable table;
 

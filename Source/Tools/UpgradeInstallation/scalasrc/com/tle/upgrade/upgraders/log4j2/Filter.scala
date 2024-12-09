@@ -34,35 +34,45 @@ case class RegexFilter(regex: String, onMatch: String, onMismatch: String) exten
 
 object Filter {
 
-  /**
-    * Find out if an Appender is configured to use ThresholdFilter. If yes, build a ThresholdFilter.
+  /** Find out if an Appender is configured to use ThresholdFilter. If yes, build a ThresholdFilter.
     *
-    * @param appender Appender for which a ThresholdFilter is built.
-    * @param props Property file providing details of the ThresholdFilter.
-    * @return A ThresholdFilter or None, or a list of errors captured during the build.
+    * @param appender
+    *   Appender for which a ThresholdFilter is built.
+    * @param props
+    *   Property file providing details of the ThresholdFilter.
+    * @return
+    *   A ThresholdFilter or None, or a list of errors captured during the build.
     */
-  def getThresholdFilter(appender: String,
-                         props: Properties): ValidatedNec[String, Option[ThresholdFilter]] = {
+  def getThresholdFilter(
+      appender: String,
+      props: Properties
+  ): ValidatedNec[String, Option[ThresholdFilter]] = {
     def buildFilter(level: String) =
       Either
-        .cond(StandardLevel.values().map(s => s.toString).contains(level),
-              ThresholdFilter(level),
-              "Unknown Threshold filter level")
+        .cond(
+          StandardLevel.values().map(s => s.toString).contains(level),
+          ThresholdFilter(level),
+          "Unknown Threshold filter level"
+        )
         .toValidatedNec
 
     readProperty(s"$appender.Threshold", props)
       .traverse(buildFilter)
   }
 
-  /**
-    * Find out if an Appender is configured to use RegexFilter. If yes, build a list of RegexFilter.
+  /** Find out if an Appender is configured to use RegexFilter. If yes, build a list of RegexFilter.
     *
-    * @param appender Appender for which a list of RegexFilter is built.
-    * @param props Property file providing details of the RegexFilter.
-    * @return A list of RegexFilter or None, or a list of errors captured during the build.
+    * @param appender
+    *   Appender for which a list of RegexFilter is built.
+    * @param props
+    *   Property file providing details of the RegexFilter.
+    * @return
+    *   A list of RegexFilter or None, or a list of errors captured during the build.
     */
-  def getRegexFilters(appender: String,
-                      props: Properties): ValidatedNec[String, Option[Seq[RegexFilter]]] = {
+  def getRegexFilters(
+      appender: String,
+      props: Properties
+  ): ValidatedNec[String, Option[Seq[RegexFilter]]] = {
 
     def buildFilter(key: String, props: Properties): ValidatedNec[String, RegexFilter] = {
       def filterResult(value: Boolean) =
@@ -79,11 +89,12 @@ object Filter {
 
       props.getProperty(key) match {
         case "org.apache.log4j.varia.StringMatchFilter" =>
-          (stringToMatch, acceptOnMatch).mapN(
-            (regex, onMatch) =>
-              RegexFilter(regex = regex,
-                          onMatch = filterResult(onMatch),
-                          onMismatch = filterResult(!onMatch))
+          (stringToMatch, acceptOnMatch).mapN((regex, onMatch) =>
+            RegexFilter(
+              regex = regex,
+              onMatch = filterResult(onMatch),
+              onMismatch = filterResult(!onMatch)
+            )
           )
         case unsupported => Validated.invalidNec(s"Unsupported filter $unsupported")
       }
@@ -103,16 +114,20 @@ object Filter {
       .map(Option(_).filter(_.nonEmpty))
   }
 
-  /**
-    * Find out if an Appender is configured to any filter. If yes, build all the filters
+  /** Find out if an Appender is configured to any filter. If yes, build all the filters
     *
-    * @param appender Appender for which a list of RegexFilter is built.
-    * @param props Property file providing details of all the filters.
-    * @return None if no filter is used, or a Map where key is the filter type and value is a list of the filters.
-    *          Or a list of errors captured during the build.
+    * @param appender
+    *   Appender for which a list of RegexFilter is built.
+    * @param props
+    *   Property file providing details of all the filters.
+    * @return
+    *   None if no filter is used, or a Map where key is the filter type and value is a list of the
+    *   filters. Or a list of errors captured during the build.
     */
-  def getFilters(appender: String,
-                 props: Properties): ValidatedNec[String, Option[Map[String, Seq[Filter]]]] = {
+  def getFilters(
+      appender: String,
+      props: Properties
+  ): ValidatedNec[String, Option[Map[String, Seq[Filter]]]] = {
     // Group filters by their types.
     def group(filters: Seq[Filter]) = {
       filters.groupBy(_.getClass.getSimpleName)

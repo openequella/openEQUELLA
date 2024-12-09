@@ -20,7 +20,6 @@ package com.tle.core.freetext.reindex;
 
 import com.tle.beans.item.Item;
 
-/** @author Nicholas Read */
 public class ItemFilter extends ReindexFilter {
   private static final long serialVersionUID = 1L;
 

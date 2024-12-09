@@ -41,7 +41,6 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 public abstract class SimpleContentHandler<S extends ContentHandlerSection>
     implements ContentHandler {
   private SectionTree tree;

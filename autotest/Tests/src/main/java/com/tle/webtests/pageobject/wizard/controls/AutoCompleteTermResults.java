@@ -20,7 +20,8 @@ public class AutoCompleteTermResults extends AbstractPage<AutoCompleteTermResult
     List<WebElement> controls =
         driver.findElements(
             By.xpath(
-                "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all']"));
+                "//ul[@class='ui-autocomplete ui-menu ui-widget ui-widget-content"
+                    + " ui-corner-all']"));
 
     rootUl = controls.get(0);
     for (WebElement element : controls) {

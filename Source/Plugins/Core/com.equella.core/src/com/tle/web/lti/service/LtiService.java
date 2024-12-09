@@ -22,7 +22,6 @@ import com.tle.web.lti.LtiData;
 import com.tle.web.lti.imsx.ImsxPOXEnvelopeType;
 import javax.servlet.http.HttpServletResponse;
 
-/** @author Aaron */
 public interface LtiService {
   void sendGrade(LtiData ltiData, String grade);
 

@@ -927,7 +927,9 @@ final class ShadowDataController {
   }
 
   static class ShadowFileFilter implements FileFilter {
-    /** @see java.io.FileFilter#accept(java.io.File) */
+    /**
+     * @see java.io.FileFilter#accept(java.io.File)
+     */
     @Override
     public boolean accept(final File file) {
       return !META_FILE_NAME.equals(file.getName());
@@ -951,7 +953,9 @@ final class RegexpFileFilter implements FileFilter {
     }
   }
 
-  /** @see java.io.FileFilter#accept(java.io.File) */
+  /**
+   * @see java.io.FileFilter#accept(java.io.File)
+   */
   @Override
   public boolean accept(final File file) {
     for (Pattern element : patterns) {
@@ -975,7 +979,9 @@ final class CombinedFileFilter implements FileFilter {
     excludesFilter = excludes;
   }
 
-  /** @see java.io.FileFilter#accept(java.io.File) */
+  /**
+   * @see java.io.FileFilter#accept(java.io.File)
+   */
   @Override
   public boolean accept(final File file) {
     if (includesFilter != null) {

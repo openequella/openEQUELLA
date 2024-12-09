@@ -25,7 +25,6 @@ import com.tle.beans.item.IItem;
 import com.tle.beans.item.ItemKey;
 import com.tle.beans.item.attachments.IAttachment;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface ItemResolverExtension {
   @Nullable

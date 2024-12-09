@@ -38,12 +38,12 @@ class Auth {
   val RESOURCE_HELPER: PluginResourceHelper =
     ResourcesService.getResourceHelper(classOf[Auth])
 
-  /**
-    * Provide simple username / password login as per a legacy oEQ form based authentication but for
+  /** Provide simple username / password login as per a legacy oEQ form based authentication but for
     * use with REST APIs - possible the start of an authenticated Single Page App. This basically
     * mimics the existing form based login logic.
     *
-    * @see com.tle.web.login.LogonSection#authenticate(SectionInfo)
+    * @see
+    *   com.tle.web.login.LogonSection#authenticate(SectionInfo)
     */
   @POST
   @Path("login")
@@ -53,9 +53,11 @@ class Auth {
       "Provides a means to establish a simple cookie based (JSESSIONID) session, for easy use of the REST API for user based operations.",
     response = classOf[String]
   )
-  def login(@Context req: HttpServletRequest,
-            @QueryParam("username") username: String,
-            @QueryParam("password") password: String): Response = {
+  def login(
+      @Context req: HttpServletRequest,
+      @QueryParam("username") username: String,
+      @QueryParam("password") password: String
+  ): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
 
     val us  = LegacyGuice.userService
@@ -87,9 +89,11 @@ class Auth {
     Response.ok().build()
   }
 
-  def loginFailedResponse(wad: WebAuthenticationDetails,
-                          username: String,
-                          message: String): Response = {
+  def loginFailedResponse(
+      wad: WebAuthenticationDetails,
+      username: String,
+      message: String
+  ): Response = {
     LegacyGuice.auditLogService.logUserFailedAuthentication(username, wad)
     Response.status(401, message).entity(message).build()
   }

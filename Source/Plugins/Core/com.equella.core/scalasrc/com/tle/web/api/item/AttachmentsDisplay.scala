@@ -37,9 +37,11 @@ import scala.jdk.CollectionConverters._
 
 object AttachmentsDisplay {
 
-  def createAttachment(rc: RenderContext,
-                       vi: NewDefaultViewableItem,
-                       attachment: Attachment): AttachmentSummary = {
+  def createAttachment(
+      rc: RenderContext,
+      vi: NewDefaultViewableItem,
+      attachment: Attachment
+  ): AttachmentSummary = {
 
     val vr   = LegacyGuice.attachmentResourceService.getViewableResource(rc, vi, attachment)
     val uuid = attachment.getUuid
@@ -50,20 +52,24 @@ object AttachmentsDisplay {
     }
     val attachmentUrl =
       LegacyGuice.institutionService.institutionalise(vr.createDefaultViewerUrl().getHref)
-    AttachmentSummary(vr.getDescription,
-                      uuid,
-                      attachmentUrl,
-                      vr.createStandardThumbnailRenderer(new TextLabel("HELLO")).getSource,
-                      Map.empty,
-                      deets,
-                      None)
+    AttachmentSummary(
+      vr.getDescription,
+      uuid,
+      attachmentUrl,
+      vr.createStandardThumbnailRenderer(new TextLabel("HELLO")).getSource,
+      Map.empty,
+      deets,
+      None
+    )
   }
 
-  def create(info: SectionInfo,
-             vi: NewDefaultViewableItem,
-             itemXml: PropBagEx,
-             stitle: String,
-             config: String): Option[AttachmentsSummarySection] = {
+  def create(
+      info: SectionInfo,
+      vi: NewDefaultViewableItem,
+      itemXml: PropBagEx,
+      stitle: String,
+      config: String
+  ): Option[AttachmentsSummarySection] = {
     val rc                 = new StandardRenderContext(info)
     val xml                = Option(config).map(new PropBagEx(_)).getOrElse(new PropBagEx())
     val showFull           = xml.isNodeTrue(SHOW_FULLSCREEN_LINK_KEY)

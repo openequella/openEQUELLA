@@ -23,7 +23,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import java.util.List;
 
-/** @author Aaron */
 public interface ContentHandlerSection extends SectionId {
   List<HtmlComponentState> getMajorActions(RenderContext context);
 

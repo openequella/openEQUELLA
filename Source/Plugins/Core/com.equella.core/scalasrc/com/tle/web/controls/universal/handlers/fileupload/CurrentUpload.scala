@@ -38,13 +38,14 @@ sealed trait CurrentUpload {
   def temporaryPath(path: String): String = s"${FileUploadState.UPLOADS_FOLDER}/${id}_files/$path"
 }
 
-case class UploadingFile(id: UUID,
-                         started: Instant,
-                         originalFilename: String,
-                         uploadPath: String,
-                         description: String,
-                         cancel: AtomicReference[Boolean])
-    extends CurrentUpload {
+case class UploadingFile(
+    id: UUID,
+    started: Instant,
+    originalFilename: String,
+    uploadPath: String,
+    description: String,
+    cancel: AtomicReference[Boolean]
+) extends CurrentUpload {
   def success(fileInfo: FileInfo): SuccessfulUpload =
     SuccessfulUpload(id, started, originalFilename, uploadPath, description, fileInfo)
   def failed(reason: UploadResult): CurrentUpload =
@@ -52,13 +53,14 @@ case class UploadingFile(id: UUID,
   def finished = false
 }
 
-case class SuccessfulUpload(id: UUID,
-                            started: Instant,
-                            originalFilename: String,
-                            uploadPath: String,
-                            description: String,
-                            fileInfo: FileInfo)
-    extends CurrentUpload {
+case class SuccessfulUpload(
+    id: UUID,
+    started: Instant,
+    originalFilename: String,
+    uploadPath: String,
+    description: String,
+    fileInfo: FileInfo
+) extends CurrentUpload {
   def finished            = true
   override def successful = true
 }

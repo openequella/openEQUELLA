@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
-/** @author jmaginnis */
 public class InvalidDataException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
 
@@ -65,7 +64,9 @@ public class InvalidDataException extends RuntimeApplicationException {
     return msg.toString();
   }
 
-  /** @return Returns the errors. */
+  /**
+   * @return Returns the errors.
+   */
   public List<ValidationError> getErrors() {
     return errors;
   }

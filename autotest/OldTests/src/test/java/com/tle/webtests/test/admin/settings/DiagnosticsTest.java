@@ -10,7 +10,6 @@ import com.tle.webtests.pageobject.settings.DiagnosticsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author Dongsheng Cai */
 @TestInstitution("vanilla")
 public class DiagnosticsTest extends AbstractSessionTest {
 

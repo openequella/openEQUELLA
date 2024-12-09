@@ -58,18 +58,21 @@ trait TemplatedNotification {
     def getHeader        = AppendedLabel.get(getHello, getReason)
   }
 
-  def emails(user: UserBean,
-             notifications: Iterable[Notification],
-             totals: Map[String, Int]): Iterable[NotificationEmail] = {
-    toFreemarkerModel(notifications).groupBy(_.group).map {
-      case (group, notes) =>
-        val writer = new StringWriter()
-        viewFactory.render(
-          viewFactory.createResultWithModel(
-            group.templateName,
-            new StandardEmailModel(group.headerHello(user), group.headerReason(notes.size), notes)),
-          writer)
-        NotificationEmail(group.subjectLabel.getText, writer.toString, notes.map(_.note))
+  def emails(
+      user: UserBean,
+      notifications: Iterable[Notification],
+      totals: Map[String, Int]
+  ): Iterable[NotificationEmail] = {
+    toFreemarkerModel(notifications).groupBy(_.group).map { case (group, notes) =>
+      val writer = new StringWriter()
+      viewFactory.render(
+        viewFactory.createResultWithModel(
+          group.templateName,
+          new StandardEmailModel(group.headerHello(user), group.headerReason(notes.size), notes)
+        ),
+        writer
+      )
+      NotificationEmail(group.subjectLabel.getText, writer.toString, notes.map(_.note))
     }
   }
 

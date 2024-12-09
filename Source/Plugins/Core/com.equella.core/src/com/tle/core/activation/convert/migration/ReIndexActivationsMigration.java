@@ -53,7 +53,8 @@ public class ReIndexActivationsMigration extends AbstractHibernateDataMigration 
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     session
         .createSQLQuery(
-            "update item set date_for_index = ?0 where id in (select ar.item_id from activate_request ar)")
+            "update item set date_for_index = ?0 where id in (select ar.item_id from"
+                + " activate_request ar)")
         .setParameter(0, new Date())
         .executeUpdate();
   }

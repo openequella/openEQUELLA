@@ -38,7 +38,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public abstract class BulkAction<T> extends TLEAction {
   static final Log LOGGER = LogFactory.getLog(BulkAction.class);
 

@@ -30,7 +30,6 @@ import com.tle.web.sections.standard.js.impl.DelayedJSTableComponent;
 import com.tle.web.sections.standard.model.TableModel;
 import com.tle.web.sections.standard.model.TableState;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class Table extends AbstractTable<TableState> implements JSTableComponent {

@@ -27,7 +27,6 @@ import com.tle.common.util.TleDate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-/** @author jmaginnis */
 @NonNullByDefault
 public class DateRangeQuery extends BaseQuery {
   private static final long serialVersionUID = 1L;

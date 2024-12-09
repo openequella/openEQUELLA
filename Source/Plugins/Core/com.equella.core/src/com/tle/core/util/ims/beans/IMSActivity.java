@@ -22,7 +22,6 @@ import com.tle.core.xstream.XMLData;
 import com.tle.core.xstream.XMLDataMappings;
 import com.tle.core.xstream.mapping.NodeMapping;
 
-/** @author jmaginnis */
 public class IMSActivity implements XMLData {
   private static final long serialVersionUID = 1L;
 

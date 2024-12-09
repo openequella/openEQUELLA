@@ -20,7 +20,6 @@ package com.tle.common.scripting.types;
 
 import java.io.Serializable;
 
-/** @author aholland */
 public interface DrmPartyScriptType extends Serializable {
   String getEmail();
 

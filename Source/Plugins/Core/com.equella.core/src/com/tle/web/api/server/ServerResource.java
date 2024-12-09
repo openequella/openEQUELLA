@@ -28,7 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-/** @author Seb */
 @Bind
 @Path("status")
 @Api(value = "Server status", description = "status")

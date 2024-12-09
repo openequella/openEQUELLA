@@ -35,7 +35,8 @@ class ItemEditsExisting {
       edits: ItemEdits,
       itemKey: ItemKey,
       lockId: String,
-      ensureOnIndexList: Boolean): com.tle.common.Pair[ItemEditResponses, ItemIdKey] = {
+      ensureOnIndexList: Boolean
+  ): com.tle.common.Pair[ItemEditResponses, ItemIdKey] = {
     val editor =
       LegacyGuice.itemEditorService.getItemEditor(itemKey, null, lockId, Collections.emptyList())
     val response  = ItemEdits.performEdits(edits, editor)

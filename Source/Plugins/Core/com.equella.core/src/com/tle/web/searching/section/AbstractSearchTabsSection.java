@@ -44,7 +44,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public abstract class AbstractSearchTabsSection<M extends AbstractSearchTabsSection.SearchTabsModel>

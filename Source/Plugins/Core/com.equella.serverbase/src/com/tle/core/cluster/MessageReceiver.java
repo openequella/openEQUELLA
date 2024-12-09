@@ -117,7 +117,8 @@ public class MessageReceiver implements Runnable {
                       "Expected offset: {0}, Current offset: {1}", messageOffset, cmo));
             }
             LOGGER.warn(
-                "Message offset greater than known offset. Messages may have been missed. Offset expected: "
+                "Message offset greater than known offset. Messages may have been missed. Offset"
+                    + " expected: "
                     + messageOffset
                     + ", Offset received: "
                     + cmo);
@@ -165,7 +166,8 @@ public class MessageReceiver implements Runnable {
     if (lastConnected != 0
         && System.currentTimeMillis() - lastConnected > TimeUnit.MINUTES.toMillis(30)) {
       LOGGER.warn(
-          "This NODE has been unable to connect for more than 30 minutes and may require a restart");
+          "This NODE has been unable to connect for more than 30 minutes and may require a"
+              + " restart");
     }
   }
 

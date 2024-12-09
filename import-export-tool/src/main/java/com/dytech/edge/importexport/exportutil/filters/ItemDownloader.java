@@ -19,7 +19,6 @@ import java.net.URLEncoder;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ItemDownloader extends Warehouse<Item> implements Runnable {
   private static final int IGNORE_THIS_ERROR = 0;

@@ -50,7 +50,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 public class DetailsTab extends JPanel {
   private static final long serialVersionUID = 1L;
 

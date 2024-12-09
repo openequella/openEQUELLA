@@ -32,7 +32,6 @@ import com.tle.core.plugins.AbstractPluginService;
 import java.util.List;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

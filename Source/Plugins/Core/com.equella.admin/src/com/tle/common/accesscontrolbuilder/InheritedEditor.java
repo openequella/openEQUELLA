@@ -24,7 +24,6 @@ import com.tle.core.remoting.RemoteUserService;
 import java.util.List;
 import javax.swing.JComponent;
 
-/** @author Nicholas Read */
 public class InheritedEditor implements PrivilegeListEditor {
   private final RemoteTLEAclManager aclManager;
   private final RemoteUserService userService;

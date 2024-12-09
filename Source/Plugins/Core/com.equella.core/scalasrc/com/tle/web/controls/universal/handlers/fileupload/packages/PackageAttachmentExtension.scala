@@ -33,10 +33,9 @@ import com.tle.web.sections.render.Label
 import com.tle.web.wizard.PackageInfo
 import scala.jdk.CollectionConverters._
 
-/**
-  * IMS attachment commit type.
-  * simply returns the attachment on apply.
-  * Uses the specialised IMSPackageExtension.deleteIMSFiles to ensure that both original zip file and its unzipped contents are deleted.
+/** IMS attachment commit type. simply returns the attachment on apply. Uses the specialised
+  * IMSPackageExtension.deleteIMSFiles to ensure that both original zip file and its unzipped
+  * contents are deleted.
   */
 object IMSAttachmentCommit extends AttachmentCommit {
   override def apply(a: Attachment, stg: StagingContext): Attachment = a
@@ -64,17 +63,21 @@ object IMSPackageExtension extends PackageAttachmentExtension {
   def handlesPackage(upload: SuccessfulUpload, d: Seq[PackageType]): Boolean =
     d.contains(IMSPackage)
 
-  def unzipPackage(info: SectionInfo,
-                   upload: SuccessfulUpload,
-                   ctx: ControlContext): (PackageInfo, String) = {
+  def unzipPackage(
+      info: SectionInfo,
+      upload: SuccessfulUpload,
+      ctx: ControlContext
+  ): (PackageInfo, String) = {
     val pkgUnzip = upload.temporaryPath("pkg")
     ctx.repo.unzipFile(upload.uploadPath, pkgUnzip, true)
     (ctx.repo.readPackageInfo(info, pkgUnzip), pkgUnzip)
   }
 
-  def standardPackageDetails(a: Attachment,
-                             pkgInfo: PackageInfo,
-                             upload: SuccessfulUpload): Unit = {
+  def standardPackageDetails(
+      a: Attachment,
+      pkgInfo: PackageInfo,
+      upload: SuccessfulUpload
+  ): Unit = {
     val pkgFolder = upload.originalFilename
     a.setMd5sum(upload.fileInfo.getMd5CheckSum)
     a.setUrl(pkgFolder)

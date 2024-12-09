@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.rmi.server.ExportException;
 import java.util.Collection;
 
-/** @author bmillar */
 public interface Export {
   /**
    * Exports the file specified by <code>in</code> to the file specified by <code>out</code>.

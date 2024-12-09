@@ -48,14 +48,17 @@ public class BlackboardUploadBuildingBlockPage
       // upload in chrome;
       JavascriptExecutor js = (JavascriptExecutor) driver;
       js.executeScript(
-          "document.getElementById('top_submitButtonRow').innerHTML += \"<input type='file' name='pluginFile_LocalFile0' id='pluginFile_chooseLocalFile1' title='Browse'>\";");
+          "document.getElementById('top_submitButtonRow').innerHTML += \"<input type='file'"
+              + " name='pluginFile_LocalFile0' id='pluginFile_chooseLocalFile1'"
+              + " title='Browse'>\";");
       js.executeScript(
           "widget.InlineSingleLocalFilePicker.pickerMap['pluginFile'].required = false;");
       js.executeScript("document.getElementById('pluginFile_attachmentType').value = 'L';");
       js.executeScript(
           "document.getElementById('pluginFile_fileId').value = arguments[0].value;", fileUpload);
       js.executeScript(
-          "var anElement = document.getElementById('pluginFile_chooseLocalFile'); anElement.parentNode.removeChild(anElement);");
+          "var anElement = document.getElementById('pluginFile_chooseLocalFile');"
+              + " anElement.parentNode.removeChild(anElement);");
 
       final File block;
       TestConfig testConfig = getContext().getTestConfig();

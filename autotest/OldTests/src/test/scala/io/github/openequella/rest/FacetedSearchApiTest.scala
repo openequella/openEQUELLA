@@ -71,7 +71,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
 
   @Test(description = "Search with owner")
   def searchWithOwner(): Unit = {
-    //auto test user
+    // auto test user
     val params =
       Seq(("nodes", FACET_AUTHOR_NODE), ("owner", "adfcaf58-241b-4eca-9740-6a26d1c3dd58"))
     val results = getFacetSearch(params)
@@ -112,40 +112,39 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
 
   @Test(description = "Search hierarchy with duplicated criteria which should be ignored")
   def hierarchySearchIgnoreTest(): Unit = {
-    val params = Seq(("nodes", FACET_AUTHOR_NODE),
-                     ("hierarchy", HIERARCHY_UUID),
-                     ("status", "ARCHIVED"),
-                     ("collections", "non-exist-collection-uuid"))
+    val params = Seq(
+      ("nodes", FACET_AUTHOR_NODE),
+      ("hierarchy", HIERARCHY_UUID),
+      ("status", "ARCHIVED"),
+      ("collections", "non-exist-collection-uuid")
+    )
     val results = getFacetSearch(params)
     assertEquals(results.size(), 3)
   }
 
-  /**
-    * Get the count of a term in the result.
+  /** Get the count of a term in the result.
     */
   private def getTermCount(result: JsonNode, termName: String): Int = {
     val scalaIterator = result.elements().asScala
 
     scalaIterator
-      .filter(
-        node =>
-          Option(node.get("term"))
-            .map(_.asText())
-            .contains(termName))
+      .filter(node =>
+        Option(node.get("term"))
+          .map(_.asText())
+          .contains(termName)
+      )
       .map(_.get("count").asInt())
       .toList
       .headOption
       .getOrElse(-1)
   }
 
-  /**
-    * Get the name of the first term in the result.
+  /** Get the name of the first term in the result.
     */
   private def getFirstTermName(results: JsonNode): String =
     Option(results.get(0)).flatMap(node => Option(node.get("term"))).map(_.asText()).orNull
 
-  /**
-    * Get the facet search result.
+  /** Get the facet search result.
     */
   private def getFacetSearch(queryParams: Seq[(String, String)] = Seq()): JsonNode = {
     val uriBuilder = new URIBuilder(FACET_SEARCH_API_ENDPOINT)

@@ -98,11 +98,12 @@ object CloudWizardControl {
     }
   }
 
-  class CloudWizardControl(uri: Uri,
-                           controlDef: HTMLControl,
-                           provider: CloudProviderInstance,
-                           controlType: String)
-      extends AbstractWebControl[WebControlModel]
+  class CloudWizardControl(
+      uri: Uri,
+      controlDef: HTMLControl,
+      provider: CloudProviderInstance,
+      controlType: String
+  ) extends AbstractWebControl[WebControlModel]
       with ParametersEventListener {
     setWrappedControl(controlDef)
 
@@ -128,8 +129,10 @@ object CloudWizardControl {
     override def renderHtml(context: RenderEventContext): SectionResult = {
 
       val renderControl =
-        new ExternallyDefinedFunction(renderControlFunc.getName,
-                                      new IncludeFile(uri.toString(), renderControlFunc))
+        new ExternallyDefinedFunction(
+          renderControlFunc.getName,
+          new IncludeFile(uri.toString(), renderControlFunc)
+        )
       val ts = new TagState()
 
       val configValues = new ObjectExpression

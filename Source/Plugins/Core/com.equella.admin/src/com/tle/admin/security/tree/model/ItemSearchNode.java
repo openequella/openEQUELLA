@@ -23,7 +23,6 @@ import com.tle.common.i18n.CurrentLocale;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ItemSearchNode extends AbstractLazyNode {
   public ItemSearchNode() {
     super(

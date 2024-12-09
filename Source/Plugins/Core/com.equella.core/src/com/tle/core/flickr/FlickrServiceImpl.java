@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Singleton;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @Bind(FlickrService.class)
 @Singleton

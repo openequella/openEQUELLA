@@ -213,7 +213,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     identifyExe = ExecUtils.findExe(imageMagicDir, "identify");
     if (convertExe == null || identifyExe == null) {
       throw new RuntimeException(
-          "ImageMagick was not found, specifically the convert and identify programs.  The configured path is "
+          "ImageMagick was not found, specifically the convert and identify programs.  The"
+              + " configured path is "
               + imageMagicDir.getCanonicalPath());
     }
   }

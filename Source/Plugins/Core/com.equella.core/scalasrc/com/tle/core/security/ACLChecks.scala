@@ -24,21 +24,23 @@ import scala.jdk.CollectionConverters._
 
 object ACLChecks {
 
-  /**
-    * Checks if the current user has the specified ACL.
+  /** Checks if the current user has the specified ACL.
     *
-    * @param privilege Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
-    * @param includePossibleOwnerAcls `true` to include possible owner ACLs
+    * @param privilege
+    *   Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
+    * @param includePossibleOwnerAcls
+    *   `true` to include possible owner ACLs
     */
   def hasAcl(privilege: String, includePossibleOwnerAcls: Boolean = false): Boolean = {
     LegacyGuice.aclManager.hasPrivilege(Set(privilege).asJava, includePossibleOwnerAcls)
   }
 
-  /**
-    * Checks if the current user has the specified ACL or throws `PrivilegeRequiredException`.
+  /** Checks if the current user has the specified ACL or throws `PrivilegeRequiredException`.
     *
-    * @param privilege Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
-    * @param includePossibleOwnerAcls `true` to include possible owner ACLs
+    * @param privilege
+    *   Required ACL, typically defined as a constant in `com.tle.common.security.SecurityConstants`
+    * @param includePossibleOwnerAcls
+    *   `true` to include possible owner ACLs
     */
   def hasAclOrThrow(privilege: String, includePossibleOwnerAcls: Boolean = false): Unit = {
     if (!hasAcl(privilege, includePossibleOwnerAcls)) {

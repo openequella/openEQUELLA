@@ -24,8 +24,6 @@ import com.tle.core.guice.Bind;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-/** @author Aaron */
-
 // FIXME: With the new GenericLtiWrapperExtension, this code shouldn't be called anymore
 
 @Bind

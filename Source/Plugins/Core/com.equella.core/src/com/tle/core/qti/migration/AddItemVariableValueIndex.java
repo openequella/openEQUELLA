@@ -33,7 +33,6 @@ import javax.persistence.Id;
 import org.hibernate.Session;
 import org.hibernate.annotations.Index;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

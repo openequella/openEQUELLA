@@ -26,7 +26,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ExpressionTableCellRenderer extends DefaultTableCellRenderer {
   private static final long serialVersionUID = 1L;

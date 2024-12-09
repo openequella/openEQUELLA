@@ -24,7 +24,6 @@ import com.tle.core.item.operations.WorkflowOperation;
 import com.tle.core.item.standard.filter.AbstractStandardOperationFilter;
 import java.util.Map;
 
-/** @author jmaginnis */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SuppressWarnings("nls")

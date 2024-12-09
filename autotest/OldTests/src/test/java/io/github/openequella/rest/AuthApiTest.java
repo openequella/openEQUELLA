@@ -48,6 +48,7 @@ public class AuthApiTest extends AbstractRestApiTest {
         "Incorrect response for (what should be a) failed authentication.");
     assertFalse(
         hasAuthenticatedSession(),
-        "A valid session has been established, even though we authenticated with rubbish credentials.");
+        "A valid session has been established, even though we authenticated with rubbish"
+            + " credentials.");
   }
 }

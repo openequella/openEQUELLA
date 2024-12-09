@@ -3,7 +3,6 @@ package com.dytech.edge.cache;
 import java.io.Serializable;
 import java.util.StringTokenizer;
 
-/** @author jmaginnis */
 public class ItemKey implements Serializable {
   private static final long serialVersionUID = 1L;
   private String uuid;
@@ -24,12 +23,16 @@ public class ItemKey implements Serializable {
     setItemdef(itemdef);
   }
 
-  /** @param value <quot>item_uuid:itemdef:item_version</quot>. */
+  /**
+   * @param value <quot>item_uuid:itemdef:item_version</quot>.
+   */
   public ItemKey(String value) {
     setFromString(value);
   }
 
-  /** @param value <quot>item_uuid:itemdef:item_version</quot>. */
+  /**
+   * @param value <quot>item_uuid:itemdef:item_version</quot>.
+   */
   public void setFromString(String value) {
     final StringTokenizer stok = new StringTokenizer(value, ":");
     uuid = stok.nextToken();

@@ -43,9 +43,11 @@ object FreemarkerDisplay {
     // and Freemarker. No harm but a bit ghetto
 
     val context = new StandardRenderContext(info)
-    val itemPack = new ItemPack(itemInfo.getItem,
-                                LegacyGuice.itemXsltService.getXmlForXslt(context, itemInfo),
-                                null)
+    val itemPack = new ItemPack(
+      itemInfo.getItem,
+      LegacyGuice.itemXsltService.getXmlForXslt(context, itemInfo),
+      null
+    )
     val params = new StandardScriptContextParams(itemPack, null, true, null)
 
     params.getAttributes.put("context", context.getPreRenderContext)
@@ -57,15 +59,19 @@ object FreemarkerDisplay {
 
     // Uses custom Freemarker Factory (Removes access to internal sections
     // functions) AdvancedWebScriptControl uses similar
-    val result = LegacyGuice.basicFreemarkerFactory.createResult("viewItemFreemarker", //$NON-NLS-1$
-                                                                 new StringReader(markup),
-                                                                 context)
+    val result = LegacyGuice.basicFreemarkerFactory.createResult(
+      "viewItemFreemarker", // $NON-NLS-1$
+      new StringReader(markup),
+      context
+    )
     for (entry <- scriptContext.getScriptObjects.entrySet.asScala) {
       result.addExtraObject(entry.getKey, entry.getValue)
     }
-    HtmlSummarySection(sectionTitle,
-                       false,
-                       "freemarker",
-                       SectionUtils.renderToString(context, result))
+    HtmlSummarySection(
+      sectionTitle,
+      false,
+      "freemarker",
+      SectionUtils.renderToString(context, result)
+    )
   }
 }

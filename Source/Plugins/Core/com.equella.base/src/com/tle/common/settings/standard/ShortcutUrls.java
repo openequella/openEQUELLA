@@ -23,7 +23,6 @@ import com.tle.common.settings.annotation.PropertyHashMap;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public class ShortcutUrls implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
 

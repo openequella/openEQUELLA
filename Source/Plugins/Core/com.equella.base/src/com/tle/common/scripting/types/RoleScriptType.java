@@ -22,11 +22,15 @@ import com.tle.common.usermanagement.user.valuebean.RoleBean;
 
 /** Role object for usage in scripts */
 public interface RoleScriptType extends RoleBean {
-  /** @return A unique, unchanging ID for the role */
+  /**
+   * @return A unique, unchanging ID for the role
+   */
   @Override
   String getUniqueID();
 
-  /** @return The name of the role */
+  /**
+   * @return The name of the role
+   */
   @Override
   String getName();
 }

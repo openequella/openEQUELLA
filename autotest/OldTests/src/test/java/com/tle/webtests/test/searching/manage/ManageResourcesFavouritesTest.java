@@ -14,7 +14,6 @@ import java.text.ParseException;
 import java.util.List;
 import org.testng.annotations.Test;
 
-/** @author Dustin */
 @TestInstitution("manageresources")
 public class ManageResourcesFavouritesTest extends AbstractCleanupAutoTest {
   private static final String OTHER_COLLECTION_ITEM = "Something in a different collection";

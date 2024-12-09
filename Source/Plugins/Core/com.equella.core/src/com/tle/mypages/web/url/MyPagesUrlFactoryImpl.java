@@ -34,7 +34,6 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(MyPagesUrlFactory.class)
 @Singleton
 public class MyPagesUrlFactoryImpl implements MyPagesUrlFactory {

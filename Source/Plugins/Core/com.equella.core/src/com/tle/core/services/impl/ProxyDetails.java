@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class ProxyDetails {
   private String host;

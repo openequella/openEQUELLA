@@ -21,7 +21,6 @@ package com.tle.core.office2html.guice;
 import com.tle.core.config.guice.MandatoryConfigModule;
 import com.tle.core.config.guice.OptionalConfigModule;
 
-/** @author Aaron */
 public class Office2HtmlModule extends MandatoryConfigModule {
   @Override
   protected void configure() {

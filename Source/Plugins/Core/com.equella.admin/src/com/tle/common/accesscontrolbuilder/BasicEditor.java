@@ -32,7 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
 
-/** @author Nicholas Read */
 public class BasicEditor implements PrivilegeListEditor {
   private final RemoteUserService userService;
 

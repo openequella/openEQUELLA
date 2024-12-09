@@ -53,7 +53,6 @@ import java.text.ParseException;
 import java.util.Date;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class CourseDefaultsSettingsSection
@@ -222,22 +221,30 @@ public class CourseDefaultsSettingsSection
     return dateAsString;
   }
 
-  /** @return the startDate */
+  /**
+   * @return the startDate
+   */
   public Calendar getStartDate() {
     return startDate;
   }
 
-  /** @return the endDate */
+  /**
+   * @return the endDate
+   */
   public Calendar getEndDate() {
     return endDate;
   }
 
-  /** @return the saveButton */
+  /**
+   * @return the saveButton
+   */
   public Button getSaveButton() {
     return saveButton;
   }
 
-  /** @return the clearButton */
+  /**
+   * @return the clearButton
+   */
   public Button getClearButton() {
     return clearButton;
   }

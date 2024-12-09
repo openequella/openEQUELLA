@@ -15,7 +15,8 @@ public class ModerationCommentsPage extends AbstractPage<ModerationCommentsPage>
     if (Check.isEmpty(comment)) {
       return "//div[@class='modcomment' and count(div[@class='comment-content']) = 0]";
     }
-    return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and normalize-space(text()) = "
+    return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and"
+        + " normalize-space(text()) = "
         + quoteXPath(comment)
         + "]]";
   }

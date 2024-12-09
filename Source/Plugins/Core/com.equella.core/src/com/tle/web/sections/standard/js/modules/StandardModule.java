@@ -23,7 +23,6 @@ import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class StandardModule implements JavascriptModule {
   private static final long serialVersionUID = 1L;

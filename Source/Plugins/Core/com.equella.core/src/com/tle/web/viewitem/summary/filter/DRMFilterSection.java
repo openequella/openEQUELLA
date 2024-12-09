@@ -106,6 +106,7 @@ public class DRMFilterSection extends AbstractContentSection<DRMFilterSection.DR
   @TreeLookup private SummarySection summarySection;
   @TreeLookup private MajorActionsGroupSection majorActionsGroupSection;
   @TreeLookup private MinorActionsGroupSection minorActionsGroupSection;
+
   // This is bad. Real bad.
   @TreeLookup(mandatory = false)
   private ItemDetailsAndActionsSummarySection integItemDetailsSection;

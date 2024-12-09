@@ -91,8 +91,9 @@ public class ConstraintToAvoidDuplicateNotificationsMigration
   }
 
   private String getDupesFrom() {
-    return "FROM Notification n WHERE 1 < (SELECT COUNT(*) FROM Notification n2 WHERE n2.institution = n.institution"
-        + " AND n2.itemid = n.itemid AND n2.reason = n.reason AND n2.userTo = n.userTo)";
+    return "FROM Notification n WHERE 1 < (SELECT COUNT(*) FROM Notification n2 WHERE"
+        + " n2.institution = n.institution AND n2.itemid = n.itemid AND n2.reason = n.reason"
+        + " AND n2.userTo = n.userTo)";
   }
 
   @Override

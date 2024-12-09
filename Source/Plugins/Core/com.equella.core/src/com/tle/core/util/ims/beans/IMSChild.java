@@ -20,7 +20,6 @@ package com.tle.core.util.ims.beans;
 
 import com.tle.core.xstream.XMLDataChild;
 
-/** @author jmaginnis */
 public abstract class IMSChild extends IMSWrapper implements XMLDataChild {
   private static final long serialVersionUID = 1L;
 

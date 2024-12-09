@@ -11,7 +11,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author Aaron */
 public class OAuthClientEditorPage extends AbstractPage<OAuthClientEditorPage> {
   @FindBy(xpath = "id('oace_n')/div/input")
   private WebElement nameField;

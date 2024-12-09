@@ -51,7 +51,8 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
       password.isBlank shouldBe false
 
       And(
-        "if another set of credentials are requested for the same id, the same current ones are returned")
+        "if another set of credentials are requested for the same id, the same current ones are returned"
+      )
       val (newCredsUsername, newCredsPassword) =
         f.webDavAuthService.createCredentials(id, UUID.randomUUID().toString, "oequser2")
       newCredsUsername shouldBe username
@@ -114,8 +115,10 @@ class WebDavAuthServiceImplTest extends AnyFunSpec with Matchers with GivenWhenT
 
       Then("no further authentication is possible as the ID/context is invalid")
       f.webDavAuthService
-        .validateCredentials(id, generateAuthHeaderPayload(validUsername, validPassword)) shouldBe Left(
-        InvalidContext())
+        .validateCredentials(
+          id,
+          generateAuthHeaderPayload(validUsername, validPassword)
+        ) shouldBe Left(InvalidContext())
     }
   }
 

@@ -18,7 +18,6 @@
 
 package com.tle.admin.helper;
 
-/** @author Nicholas Read */
 public class Network {
   private String name;
   private String min;

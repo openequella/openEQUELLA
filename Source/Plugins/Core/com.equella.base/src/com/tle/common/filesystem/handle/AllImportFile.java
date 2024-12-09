@@ -20,7 +20,6 @@ package com.tle.common.filesystem.handle;
 
 import com.tle.annotation.NonNullByDefault;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class AllImportFile extends AbstractRootFile {

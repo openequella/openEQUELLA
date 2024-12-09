@@ -25,11 +25,13 @@ import io.circe.Json
 import io.circe.generic.semiauto._
 import io.circe.parser._
 
-case class CloudAttachmentJson(providerId: UUID,
-                               display: Option[Map[String, Json]],
-                               meta: Option[Map[String, Json]],
-                               indexText: Option[String],
-                               indexFiles: Option[Iterable[String]])
+case class CloudAttachmentJson(
+    providerId: UUID,
+    display: Option[Map[String, Json]],
+    meta: Option[Map[String, Json]],
+    indexText: Option[String],
+    indexFiles: Option[Iterable[String]]
+)
 
 object CloudAttachmentJson {
   val defaultJson = CloudAttachmentJson(new UUID(0L, 0L), None, None, None, None)

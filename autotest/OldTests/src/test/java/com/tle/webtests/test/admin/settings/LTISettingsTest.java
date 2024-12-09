@@ -12,7 +12,6 @@ import com.tle.webtests.pageobject.externaltools.ShowExternalToolsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author larry (updated by Seb 6/2014) */
 @TestInstitution("fiveo")
 public class LTISettingsTest extends AbstractSessionTest {
   @Name("test tool")

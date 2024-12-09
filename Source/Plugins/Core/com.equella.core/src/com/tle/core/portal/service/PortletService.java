@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 public interface PortletService
     extends AbstractEntityService<PortletEditingBean, Portlet>, RemotePortletService {
   String ENTITY_TYPE = "PORTLET"; // $NON-NLS-1$

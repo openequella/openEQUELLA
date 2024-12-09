@@ -26,7 +26,6 @@ import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.LangUtils;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public final class Validation {
   /** Validates a control against the validation rules in the control definition. */

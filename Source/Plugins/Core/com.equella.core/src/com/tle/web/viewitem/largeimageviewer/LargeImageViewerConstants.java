@@ -18,7 +18,6 @@
 
 package com.tle.web.viewitem.largeimageviewer;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class LargeImageViewerConstants {
   public static final String VIEWER_ID = "livNavTreeViewer";

@@ -27,7 +27,6 @@ import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.GridLayout;
 
-/** @author Nicholas Read */
 public class AccessControlTab<T extends BaseEntity> extends BaseEntityTab<T> {
   private final Node privilegeNode;
 

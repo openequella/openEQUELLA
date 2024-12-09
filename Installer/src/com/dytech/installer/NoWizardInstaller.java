@@ -29,7 +29,8 @@ public class NoWizardInstaller {
       System.err.println("======================================");
       System.err.println("ERROR DURING INSTALLATION");
       System.err.println(
-          "An error has occurred performing the installation.  Please try to installing the application again.");
+          "An error has occurred performing the installation.  Please try to installing the"
+              + " application again.");
       System.err.println("======================================");
       ex.printStackTrace();
     }

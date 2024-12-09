@@ -80,7 +80,8 @@ public class EventListenerBeanChecker implements BeanChecker {
     else if (listenerClass.startsWith("object:")) prefixLen = 7;
     if (prefixLen == -1) {
       throw new RuntimeException(
-          "All listenerClass values should be for bean name, and that in turn should be a class name");
+          "All listenerClass values should be for bean name, and that in turn should be a class"
+              + " name");
     }
 
     listenerClass = listenerClass.substring(prefixLen);

@@ -35,7 +35,6 @@ import javax.persistence.InheritanceType;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 
-/** @author larry */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

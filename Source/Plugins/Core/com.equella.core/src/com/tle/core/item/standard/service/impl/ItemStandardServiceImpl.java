@@ -82,7 +82,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind(ItemStandardService.class)
 @Singleton

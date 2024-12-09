@@ -26,7 +26,6 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-/** @author Nicholas Read */
 public abstract class AbstractPopupListener extends MouseAdapter {
   private final JPopupMenu menu;
 

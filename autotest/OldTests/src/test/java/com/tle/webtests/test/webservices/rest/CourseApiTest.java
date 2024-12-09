@@ -13,13 +13,14 @@ import java.util.List;
 import org.apache.http.HttpResponse;
 import org.testng.annotations.Test;
 
-/** @author larry */
 public class CourseApiTest extends AbstractRestApiTest {
   private static final String API_TASK_PATH = "api/course";
+
   /** Course to test for initially */
   private static final String EXISTING_EQ1001 = "EQ-1001";
 
   private static final String OAUTH_CLIENT_ID = "CourseApiTestClient";
+
   /**
    * Using the OAUTH_CLIENT_ID as recognisable (and hence disposable) temporary course name prefix
    */

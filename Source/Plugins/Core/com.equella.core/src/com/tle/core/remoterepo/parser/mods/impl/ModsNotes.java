@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import org.w3c.dom.Node;
 
-/** @author aholland */
 public class ModsNotes extends ModsPart {
   protected Map<String, Set<String>> notes;
   protected Set<String> allNotes;

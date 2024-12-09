@@ -59,7 +59,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.TreePath;
 
-/** @author cofarrell */
 public class LDAPMappingPanel extends AbstractLDAPPanel implements ActionListener, ItemListener {
   private static final long serialVersionUID = 1L;
 

@@ -30,7 +30,6 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-/** @author Nicholas Read */
 public class WizardModel implements TreeModel {
   /** A list of event listeners. */
   private EventListenerList listenerList;
@@ -211,7 +210,9 @@ public class WizardModel implements TreeModel {
     return root;
   }
 
-  /** @return Returns the metadataControl. */
+  /**
+   * @return Returns the metadataControl.
+   */
   public boolean hasMetadataControl() {
     return metadataControl;
   }

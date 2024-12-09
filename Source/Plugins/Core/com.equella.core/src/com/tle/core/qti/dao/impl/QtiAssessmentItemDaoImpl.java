@@ -39,7 +39,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiAssessmentItemDao.class)

@@ -23,7 +23,6 @@ import com.tle.core.item.event.listener.ItemOperationBatchListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ItemOperationBatchEvent extends ApplicationEvent<ItemOperationBatchListener> {
   private final List<ItemOperationEvent> events;
 

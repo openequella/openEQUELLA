@@ -18,7 +18,6 @@
 
 package com.dytech.gui;
 
-/** @author Nicholas Read */
 public interface Changeable {
   /**
    * Indicates whether a change has been detected since construction of the <code>Changeable</code>

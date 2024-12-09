@@ -35,7 +35,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 @TreeIndexed
 @Bind

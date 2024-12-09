@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Larry. Based on the YouTube plugin. */
 @SuppressWarnings("nls")
 public final class FlickrUtils {
   public static final String ATTACHMENT_TYPE = "flickr";

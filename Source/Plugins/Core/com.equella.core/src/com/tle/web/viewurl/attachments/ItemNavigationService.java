@@ -23,7 +23,6 @@ import com.tle.beans.item.attachments.IAttachment;
 import com.tle.beans.item.attachments.ItemNavigationNode;
 import java.util.List;
 
-/** @author aholland */
 public interface ItemNavigationService {
   /**
    * @param item The item to add nodes to

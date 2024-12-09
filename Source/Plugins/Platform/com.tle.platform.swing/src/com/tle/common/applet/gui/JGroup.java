@@ -32,7 +32,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-/** @deprecated Use GroupBox instead. */
+/**
+ * @deprecated Use GroupBox instead.
+ */
 @Deprecated
 public class JGroup extends JPanel implements ChangeListener, ActionListener, ItemSelectable {
   private static final long serialVersionUID = 1L;

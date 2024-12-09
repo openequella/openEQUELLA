@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind

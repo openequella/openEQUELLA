@@ -21,7 +21,6 @@ package com.tle.mypages.web.model;
 import com.tle.beans.item.attachments.Attachment;
 import java.util.List;
 
-/** @author aholland */
 public class MyPagesAttachmentsModel {
   private List<Attachment> attachments;
 

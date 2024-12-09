@@ -373,7 +373,8 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     // wait for the dialog to loading
     By hierarchyXpath =
         By.xpath(
-            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(), '"
+            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(),"
+                + " '"
                 + hierarchyName
                 + "')]]]");
     By plusButtonXpath = By.xpath(".//button[@aria-label='Add to hierarchy']");

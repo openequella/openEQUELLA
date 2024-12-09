@@ -47,7 +47,6 @@ import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 import org.w3c.dom.Node;
 
-/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

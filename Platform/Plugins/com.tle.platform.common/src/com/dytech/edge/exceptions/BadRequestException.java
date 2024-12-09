@@ -18,7 +18,6 @@
 
 package com.dytech.edge.exceptions;
 
-/** @author Aaron */
 public class BadRequestException extends WebException {
   private static final long serialVersionUID = 1L;
 

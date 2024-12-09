@@ -9,7 +9,6 @@ import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class HarvesterSkipDrmTest extends AbstractSessionTest {
 

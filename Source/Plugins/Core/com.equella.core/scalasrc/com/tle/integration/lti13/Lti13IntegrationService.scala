@@ -53,12 +53,12 @@ import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
 
-/**
-  * Data required to support the LTI 1.3 content selection workflow.
+/** Data required to support the LTI 1.3 content selection workflow.
   */
-case class Lti13IntegrationSessionData(deepLinkingSettings: LtiDeepLinkingSettings,
-                                       context: Option[LtiDeepLinkingContext])
-    extends IntegrationSessionData {
+case class Lti13IntegrationSessionData(
+    deepLinkingSettings: LtiDeepLinkingSettings,
+    context: Option[LtiDeepLinkingContext]
+) extends IntegrationSessionData {
   override def isForSelection: Boolean    = true
   override def getIntegrationType: String = "lti13"
 }
@@ -69,11 +69,9 @@ object Lti13IntegrationSessionData {
   }
 }
 
-/**
-  * This Integration Service is dedicated to the integration established by LTI 1.3. It provides
+/** This Integration Service is dedicated to the integration established by LTI 1.3. It provides
   * core functions that are used in the context of Selection Session, such as launching Selection
   * Session and communicating with LMS to complete content selections.
-  *
   */
 @Bind
 @Singleton
@@ -87,12 +85,14 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   private val LTI13_INTEGRATION_CALLBACK             = "$LTI13$INTEG$RETURNER"
 
   @Inject
-  def this(integrationService: IntegrationService,
-           webKeySetService: WebKeySetService,
-           ltiPlatformService: LtiPlatformService,
-           sectionsController: SectionsController,
-           treeRegistry: TreeRegistry,
-           linkFactory: ViewItemLinkFactory) = {
+  def this(
+      integrationService: IntegrationService,
+      webKeySetService: WebKeySetService,
+      ltiPlatformService: LtiPlatformService,
+      sectionsController: SectionsController,
+      treeRegistry: TreeRegistry,
+      linkFactory: ViewItemLinkFactory
+  ) = {
     this()
     this.treeRegistry = treeRegistry
     this.integrationService = integrationService
@@ -105,16 +105,19 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   // The value of each ContentItem must be constructed as a `Map` so that it will be accepted by `com.auth0.jwt.JWTCreator`.
   private def buildDeepLinkingContentItems(
       info: SectionInfo,
-      session: SelectionSession): java.util.List[java.util.Map[String, Object]] = {
+      session: SelectionSession
+  ): java.util.List[java.util.Map[String, Object]] = {
     def buildSelectedContent(resource: SelectedResource): java.util.Map[String, Object] = {
       val item = getItemForResource(resource)
 
       def buildUrl: String =
-        getLinkForResource(info,
-                           createViewableItem(item, resource),
-                           resource,
-                           false,
-                           session.isAttachmentUuidUrls).getLmsLink.getUrl
+        getLinkForResource(
+          info,
+          createViewableItem(item, resource),
+          resource,
+          false,
+          session.isAttachmentUuidUrls
+        ).getLmsLink.getUrl
 
       def buildIcon: Option[java.util.Map[String, Any]] = {
         val itemID = resource.createItemId()
@@ -138,7 +141,7 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
         "type"  -> "ltiResourceLink",
         "title" -> resource.getTitle,
         "url"   -> buildUrl,
-        "text"  -> resource.getDescription,
+        "text"  -> resource.getDescription
       )
 
       buildIcon
@@ -153,25 +156,32 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       .asJava
   }
 
-  /**
-    * According to the spec for LTI 1.3 workflow <https://www.imsglobal.org/spec/lti-dl/v2p0#redirection-back-to-the-platform>,
-    * we (tool provider) MUST redirect the workflow to the return URL provided in the Deep linking setting once the user has
-    * completed the selection or creation portion of the overall flow. To do this, we MUST always perform this redirection using
-    * an auto-submitted form as an HTTP POST request using the JWT parameter.
+  /** According to the spec for LTI 1.3 workflow
+    * <https://www.imsglobal.org/spec/lti-dl/v2p0#redirection-back-to-the-platform>, we (tool
+    * provider) MUST redirect the workflow to the return URL provided in the Deep linking setting
+    * once the user has completed the selection or creation portion of the overall flow. To do this,
+    * we MUST always perform this redirection using an auto-submitted form as an HTTP POST request
+    * using the JWT parameter.
     *
-    * In New UI, we have to rely on `LegacyContentApi` to return the form back to the front-end. So we need to build a `FormTag` and
-    * add it to the render context of `SectionInfo`.
-    * But in Old UI, we can directly output the form and a script to submit the form in the response.
+    * In New UI, we have to rely on `LegacyContentApi` to return the form back to the front-end. So
+    * we need to build a `FormTag` and add it to the render context of `SectionInfo`. But in Old UI,
+    * we can directly output the form and a script to submit the form in the response.
     *
-    * @param deepLinkReturnUrl The URL redirected to to complete a selection
-    * @param jwt JWT generated based on the Deep linking response to be sent back to platform.
-    * @param info The Legacy SectionInfo used to help submit the form in New UI.
-    * @param response HTTP servlet response used to help submit the form in Old UI.
+    * @param deepLinkReturnUrl
+    *   The URL redirected to to complete a selection
+    * @param jwt
+    *   JWT generated based on the Deep linking response to be sent back to platform.
+    * @param info
+    *   The Legacy SectionInfo used to help submit the form in New UI.
+    * @param response
+    *   HTTP servlet response used to help submit the form in Old UI.
     */
-  private def submitForm(deepLinkReturnUrl: String,
-                         jwt: String,
-                         info: SectionInfo,
-                         response: HttpServletResponse): Unit = {
+  private def submitForm(
+      deepLinkReturnUrl: String,
+      jwt: String,
+      info: SectionInfo,
+      response: HttpServletResponse
+  ): Unit = {
     val formId = "deep_linking_response"
 
     if (RenderNewTemplate.isNewUIEnabled) {
@@ -204,9 +214,11 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
   }
 
   // Build a custom call back which will be fired when a selection is either confirmed or cancelled.
-  private def buildSelectionMadeCallback(deepLinkingRequest: LtiDeepLinkingRequest,
-                                         platformDetails: PlatformDetails,
-                                         response: HttpServletResponse): SelectionsMadeCallback =
+  private def buildSelectionMadeCallback(
+      deepLinkingRequest: LtiDeepLinkingRequest,
+      platformDetails: PlatformDetails,
+      response: HttpServletResponse
+  ): SelectionsMadeCallback =
     new SelectionsMadeCallback {
       override def executeSelectionsMade(info: SectionInfo, session: SelectionSession): Boolean =
         ltiPlatformService.getPrivateKeyForPlatform(platformDetails.platformId) match {
@@ -235,14 +247,17 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
 
             val token = deepLinkingResponse.sign(Algorithm.RSA256(privateKey))
 
-            submitForm(deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl.toString,
-                       token,
-                       info,
-                       response)
+            submitForm(
+              deepLinkingRequest.deepLinkingSettings.deepLinkReturnUrl.toString,
+              token,
+              info,
+              response
+            )
             false // Return `false` so selections are not maintained, which is what `IntegrationSection` does.
           case Left(error) =>
             throw new RuntimeException(
-              s"Failed to process selections as unable to find details for provided platform: $error")
+              s"Failed to process selections as unable to find details for provided platform: $error"
+            )
         }
 
       override def executeModalFinished(info: SectionInfo, session: ModalSession): Unit =
@@ -266,33 +281,42 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
     data.context.map(_.id).orNull
 
   // This method should not be used in the context of LTI 1.3 integration because of the custom selection callback.
-  override def select(info: SectionInfo,
-                      data: Lti13IntegrationSessionData,
-                      session: SelectionSession): Boolean = throw new UnsupportedOperationException
+  override def select(
+      info: SectionInfo,
+      data: Lti13IntegrationSessionData,
+      session: SelectionSession
+  ): Boolean = throw new UnsupportedOperationException
 
-  override def setupSelectionSession(info: SectionInfo,
-                                     data: Lti13IntegrationSessionData,
-                                     session: SelectionSession,
-                                     model: SingleSignonForm): SelectionSession = {
+  override def setupSelectionSession(
+      info: SectionInfo,
+      data: Lti13IntegrationSessionData,
+      session: SelectionSession,
+      model: SingleSignonForm
+  ): SelectionSession = {
     session.setSelectMultiple(data.deepLinkingSettings.acceptMultiple.getOrElse(true))
     super.setupSelectionSession(info, data, session, model)
   }
 
-  /**
-    * Launch Selection Session for LTI 1.3. This is achieved by
-    * 1. Build a temporary SectionInfo;
-    * 2. Use LTI deep linking request details to build an IntegrationData and IntegrationActionInfo.
-    * 3. Use `IntegrationService#standardForward` to navigate the page to Selection Session.
+  /** Launch Selection Session for LTI 1.3. This is achieved by
+    *   1. Build a temporary SectionInfo; 2. Use LTI deep linking request details to build an
+    *      IntegrationData and IntegrationActionInfo. 3. Use `IntegrationService#standardForward` to
+    *      navigate the page to Selection Session.
     *
-    * @param deepLinkingRequest Deep linking request details providing claims to be used to configure Selection Session.
-    * @param platformDetails Details of the LTI platform to be used to build a JWT.
-    * @param req HTTP Servlet request to be used to build a SectionInfo.
-    * @param resp HTTP Servlet response to be used to build a SectionInfo.
+    * @param deepLinkingRequest
+    *   Deep linking request details providing claims to be used to configure Selection Session.
+    * @param platformDetails
+    *   Details of the LTI platform to be used to build a JWT.
+    * @param req
+    *   HTTP Servlet request to be used to build a SectionInfo.
+    * @param resp
+    *   HTTP Servlet response to be used to build a SectionInfo.
     */
-  def launchSelectionSession(deepLinkingRequest: LtiDeepLinkingRequest,
-                             platformDetails: PlatformDetails,
-                             req: HttpServletRequest,
-                             resp: HttpServletResponse): Unit = {
+  def launchSelectionSession(
+      deepLinkingRequest: LtiDeepLinkingRequest,
+      platformDetails: PlatformDetails,
+      req: HttpServletRequest,
+      resp: HttpServletResponse
+  ): Unit = {
 
     def buildSectionInfo = {
       val section = new AbstractScalaSection {
@@ -303,13 +327,15 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       val sectionNode = new SectionNode("LTI13SelectionSession", section)
       val blankTree   = new DefaultSectionTree(treeRegistry, sectionNode)
 
-      val info = sectionsController.createInfo(blankTree,
-                                               "/",
-                                               req,
-                                               resp,
-                                               null,
-                                               Map.empty[String, Array[String]].asJava,
-                                               null)
+      val info = sectionsController.createInfo(
+        blankTree,
+        "/",
+        req,
+        resp,
+        null,
+        Map.empty[String, Array[String]].asJava,
+        null
+      )
 
       // For those wondering why saving the callback in Section Tree, the reason being that in cluster environment,
       // the callback, which is an anonymous class, will be serialised as part of `SelectionSession`.
@@ -319,14 +345,19 @@ class Lti13IntegrationService extends AbstractIntegrationService[Lti13Integratio
       // Because this callback is used when a selection is made, we save it in `RootSelectionSection`.
       Option(
         info.lookupSection[RootSelectionSection, RootSelectionSection](
-          classOf[RootSelectionSection]))
+          classOf[RootSelectionSection]
+        )
+      )
         .flatMap(section => Option(section.getTree)) match {
         case Some(tree) =>
-          tree.setAttribute(LTI13_INTEGRATION_CALLBACK,
-                            buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp))
+          tree.setAttribute(
+            LTI13_INTEGRATION_CALLBACK,
+            buildSelectionMadeCallback(deepLinkingRequest, platformDetails, resp)
+          )
         case None =>
           throw new RuntimeException(
-            s"Missing RootSelectionSection to create a callback for making selections in LTI 1.3 integration.")
+            s"Missing RootSelectionSection to create a callback for making selections in LTI 1.3 integration."
+          )
       }
 
       info.fireBeforeEvents()

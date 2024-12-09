@@ -45,7 +45,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class ListWithView<LIST_TYPE, VIEW_TYPE extends ListWithViewInterface<LIST_TYPE>>
     extends AbstractListWithView<

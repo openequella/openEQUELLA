@@ -44,7 +44,6 @@ import com.tle.core.security.impl.SecureOnCall;
 import java.util.Objects;
 import javax.inject.Inject;
 
-/** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureOnCall(priv = SecurityConstants.MOVE_ITEM)
@@ -62,6 +61,7 @@ public final class MoveDirectOperation extends AbstractStandardWorkflowOperation
   private final boolean copyFiles;
 
   private String transform;
+
   /** If forWizard == true then it's only generating the wizard item, not persisting to DB */
   private boolean forWizard;
 

@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/** @author aholland */
 public interface TextExtracterExtension {
   void extractText(
       String mimeType,

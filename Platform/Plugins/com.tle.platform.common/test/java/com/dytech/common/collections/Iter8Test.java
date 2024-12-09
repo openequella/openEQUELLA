@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import junit.framework.TestCase;
 
-/** @author Nicholas Read */
 public class Iter8Test extends TestCase {
   private final String value1 = "111";
   private final String value2 = "222";

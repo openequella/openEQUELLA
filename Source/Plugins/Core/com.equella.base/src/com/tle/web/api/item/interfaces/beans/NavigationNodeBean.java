@@ -22,7 +22,6 @@ import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class NavigationNodeBean extends AbstractExtendableBean {
   private String uuid;

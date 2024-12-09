@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import org.w3c.dom.Node;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class ModsNames extends ModsPart {
   // protected Map<String, ModsName> names;

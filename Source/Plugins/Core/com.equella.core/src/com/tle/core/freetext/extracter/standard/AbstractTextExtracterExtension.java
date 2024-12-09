@@ -22,7 +22,6 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.core.TextExtracterExtension;
 import com.tle.core.plugins.AbstractPluginService;
 
-/** @author aholland */
 public abstract class AbstractTextExtracterExtension implements TextExtracterExtension {
   private static String PFX_KEY =
       AbstractPluginService.getMyPluginId(AbstractTextExtracterExtension.class) + ".";

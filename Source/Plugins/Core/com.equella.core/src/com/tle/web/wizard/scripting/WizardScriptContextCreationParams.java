@@ -24,7 +24,6 @@ import com.tle.core.wizard.controls.HTMLControl;
 import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.wizard.WizardState;
 
-/** @author aholland */
 public interface WizardScriptContextCreationParams extends ScriptContextCreationParams {
   HTMLControl getControl();
 

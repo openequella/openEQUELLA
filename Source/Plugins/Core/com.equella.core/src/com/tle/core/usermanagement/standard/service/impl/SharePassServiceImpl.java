@@ -41,7 +41,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(SharePassService.class)
 @Singleton
 @SuppressWarnings("nls")

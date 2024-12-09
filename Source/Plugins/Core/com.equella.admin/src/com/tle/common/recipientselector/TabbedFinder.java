@@ -29,7 +29,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 
-/** @author Nicholas Read */
 public class TabbedFinder extends JTabbedPane implements UserGroupRoleFinder, FinderListener {
   private static final long serialVersionUID = 1L;
 

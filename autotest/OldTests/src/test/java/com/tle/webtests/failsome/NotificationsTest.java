@@ -90,10 +90,10 @@ public class NotificationsTest extends AbstractCleanupTest {
     wizard.editbox(1, MOD_OVERDUE_REJECT);
     wizard.editbox(
         2,
-        "Given the existence as uttered forth in the public works of Puncher and Wattman "
-            + "of a personal god quaquaquaqua with white beard quaquaquaqua outside time without extension "
-            + "who from the heights of divine apathia divine athambia divine aphasisa loves us dearly with "
-            + "some exceptions for reasons unknown but time will tell ...");
+        "Given the existence as uttered forth in the public works of Puncher and Wattman of a"
+            + " personal god quaquaquaqua with white beard quaquaquaqua outside time without"
+            + " extension who from the heights of divine apathia divine athambia divine aphasisa"
+            + " loves us dearly with some exceptions for reasons unknown but time will tell ...");
     Calendar sixMonthsAgo = Calendar.getInstance();
     sixMonthsAgo.add(Calendar.MONTH, -6);
     Date syxmunsago = sixMonthsAgo.getTime();
@@ -293,10 +293,10 @@ public class NotificationsTest extends AbstractCleanupTest {
     wizard.editbox(1, MOD_AUTO_ACCEPT);
     wizard.editbox(
         2,
-        "Given the existence as uttered forth in the public works of Puncher and Wattman "
-            + "of a personal god quaquaquaqua with white beard quaquaquaqua outside time without extension "
-            + "who from the heights of divine apathia divine athambia divine aphasisa loves us dearly with "
-            + "some exceptions for reasons unknown but time will tell ...");
+        "Given the existence as uttered forth in the public works of Puncher and Wattman of a"
+            + " personal god quaquaquaqua with white beard quaquaquaqua outside time without"
+            + " extension who from the heights of divine apathia divine athambia divine aphasisa"
+            + " loves us dearly with some exceptions for reasons unknown but time will tell ...");
     // first calendar at control[3] defaults to current date (pre-configured
     // in collection definition)
     Calendar sixMonthsAgo = Calendar.getInstance();
@@ -311,7 +311,8 @@ public class NotificationsTest extends AbstractCleanupTest {
     ModerationView mv = taskList.exactQuery(MOD_AUTO_ACCEPT).moderate(MOD_AUTO_ACCEPT);
     mv.acceptToMessagePage()
         .acceptWithMessage(
-            "Moderated manually to first stage, should now be Automatically Accepted at second stage");
+            "Moderated manually to first stage, should now be Automatically Accepted at second"
+                + " stage");
     runNotifyNewTasksAsSystemSuperUserAndReloginAs(null, null);
   }
 

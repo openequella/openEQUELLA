@@ -20,7 +20,6 @@ package com.tle.core.htmleditor.service;
 
 import com.tle.core.entity.EntityEditingBean;
 
-/** @author Aaron */
 public class HtmlEditorPluginEditingBean extends EntityEditingBean {
   private static final long serialVersionUID = 1L;
 

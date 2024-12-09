@@ -71,7 +71,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author larry */
 @Bind
 @NonNullByDefault
 public class LtiHandler extends BasicAbstractAttachmentHandler<LtiHandlerModel> {
@@ -136,6 +135,7 @@ public class LtiHandler extends BasicAbstractAttachmentHandler<LtiHandlerModel> 
   @SuppressWarnings("nls")
   private static final JSCallable FUNC_UPDATE_BASE_MATCH =
       new ExternallyDefinedFunction("updateBaseUrlMatches", INCLUDE_FILE);
+
   /**
    * A javascript timer wrapper for the above method, so that when entering keystrokes in user-time,
    * there is a discrete pause (3 seconds) before invoking the match.

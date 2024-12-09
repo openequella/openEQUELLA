@@ -26,7 +26,6 @@ import com.tle.core.item.standard.filter.AbstractStandardOperationFilter;
 import com.tle.core.item.standard.operations.AbstractStandardWorkflowOperation;
 import java.util.Map;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public class ArchiveOldFilter extends AbstractStandardOperationFilter {
   private final ItemKey key;

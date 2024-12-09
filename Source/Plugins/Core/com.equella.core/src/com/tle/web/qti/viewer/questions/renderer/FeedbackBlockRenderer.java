@@ -24,7 +24,6 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import com.tle.web.qti.viewer.questions.renderer.base.FeedbackElementRenderer;
 import uk.ac.ed.ph.jqtiplus.node.content.variable.FeedbackBlock;
 
-/** @author Aaron */
 public class FeedbackBlockRenderer extends FeedbackElementRenderer {
   // private final FeedbackBlock model;
 

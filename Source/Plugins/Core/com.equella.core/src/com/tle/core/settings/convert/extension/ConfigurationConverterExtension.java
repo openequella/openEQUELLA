@@ -23,7 +23,6 @@ import com.tle.core.settings.service.ConfigurationService;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author Aaron */
 public abstract class ConfigurationConverterExtension<T extends ConfigurationProperties> {
   @Inject protected ConfigurationService configurationService;
 

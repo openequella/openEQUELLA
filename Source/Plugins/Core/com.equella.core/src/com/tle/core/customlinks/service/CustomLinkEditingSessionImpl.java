@@ -22,7 +22,6 @@ import com.tle.common.EntityPack;
 import com.tle.common.customlinks.entity.CustomLink;
 import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 
-/** @author aholland */
 public class CustomLinkEditingSessionImpl
     extends EntityEditingSessionImpl<CustomLinkEditingBean, CustomLink>
     implements CustomLinkEditingSession {

@@ -61,46 +61,52 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
       val itemIds     = state.getItemKeys
       val holdingsMap = calDao.getHoldingsForItemIds(itemIds).asScala
       val portionsMap = calDao.getPortionsForItemIds(itemIds).asScala.groupBy(_.getItem.getId)
-      holdingsMap.foreach {
-        case (itemId, ch) =>
-          portionsMap
-            .get(itemId)
-            .flatMap(_.headOption)
-            .foreach(cp => state.setData(itemId, "caldata", (ch, cp)))
+      holdingsMap.foreach { case (itemId, ch) =>
+        portionsMap
+          .get(itemId)
+          .flatMap(_.headOption)
+          .foreach(cp => state.setData(itemId, "caldata", (ch, cp)))
       }
     }
 
   override def writeXmlResult(xml: XMLStreamer, state: ItemSerializerState, itemId: Long): Unit = {}
 
-  override def writeItemBeanResult(equellaItemBean: EquellaItemBean,
-                                   state: ItemSerializerState,
-                                   itemId: Long): Unit =
+  override def writeItemBeanResult(
+      equellaItemBean: EquellaItemBean,
+      state: ItemSerializerState,
+      itemId: Long
+  ): Unit =
     if (state.hasCategory(CATEGORY_DISPLAY)) {
       Option(state.getData[SearchDetails](itemId, "colSearchDetails")).foreach { csd =>
         equellaItemBean.setDisplayOptions(
-          new DisplayOptions(csd.getAttDisplay,
-                             csd.isDisableThumbnail,
-                             csd.isStandardOpen,
-                             csd.isIntegrationOpen))
+          new DisplayOptions(
+            csd.getAttDisplay,
+            csd.isDisableThumbnail,
+            csd.isStandardOpen,
+            csd.isIntegrationOpen
+          )
+        )
       }
       val displayNodes = Option(
-        state.getData[java.util.List[Pair[LanguageBundle, LanguageBundle]]](itemId,
-                                                                            "searchDetails")).map {
-        sd =>
-          sd.asScala.map { p =>
-            val name = BundleString.getString(p.getFirst)
-            val html = BundleString.getString(p.getSecond)
-            new DisplayField("node", name, html)
-          }
+        state.getData[java.util.List[Pair[LanguageBundle, LanguageBundle]]](itemId, "searchDetails")
+      ).map { sd =>
+        sd.asScala.map { p =>
+          val name = BundleString.getString(p.getFirst)
+          val html = BundleString.getString(p.getSecond)
+          new DisplayField("node", name, html)
+        }
       }
       val citation = Option(state.getData[(CALHolding, CALPortion)](itemId, "caldata")).map {
         case (ch, cp) =>
           val citation = calService.citate(ch, cp)
-          new DisplayField("cal-citation",
-                           new SimpleI18NString(R.getString("list.citation")),
-                           new SimpleI18NString(citation))
+          new DisplayField(
+            "cal-citation",
+            new SimpleI18NString(R.getString("list.citation")),
+            new SimpleI18NString(citation)
+          )
       }
       equellaItemBean.setDisplayFields(
-        (displayNodes.getOrElse(mutable.Buffer.empty) ++ citation).asJava)
+        (displayNodes.getOrElse(mutable.Buffer.empty) ++ citation).asJava
+      )
     }
 }

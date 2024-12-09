@@ -21,7 +21,6 @@ package com.tle.web.harvesterskipdrmsettings;
 import com.google.inject.name.Names;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/** @author larry */
 public class HarvesterSkipDrmSettingsModule extends SectionsModule {
   @Override
   protected void configure() {

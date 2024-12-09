@@ -57,7 +57,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.JTextComponent;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 public class I18nTextField extends JComponent implements Changeable {
   private static final long serialVersionUID = 1L;
   private final NavigableMap<Locale, String> textMap;

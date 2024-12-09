@@ -22,7 +22,6 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
-/** @author Aaron */
 public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   private List<ItemId> toDelete = Lists.newArrayList();
   protected static final String COLLECTION_ATTACHMENTS = "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c";

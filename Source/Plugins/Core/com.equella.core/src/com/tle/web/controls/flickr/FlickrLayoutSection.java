@@ -27,7 +27,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.render.TextLabel;
 import java.util.List;
 
-/** @author larry */
 public class FlickrLayoutSection
     extends AbstractRootSearchSection<AbstractRootSearchSection.Model> {
   @PlugURL("css/flickr.css")

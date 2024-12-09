@@ -29,8 +29,7 @@ import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
 
-/**
-  * Handles the OpenID Connect Launch Flow as outlined in section 5.1 of the LTI 1.3 spec.
+/** Handles the OpenID Connect Launch Flow as outlined in section 5.1 of the LTI 1.3 spec.
   */
 @Bind
 @Singleton
@@ -52,8 +51,10 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     InitiateLoginRequest(req.getParameterMap.asScala.toMap) match {
       case Some(initReq) => handleInitiateLoginRequest(initReq, resp)
       case None =>
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                       "Unsupported 'GET' LTI 1.3 launch request received.")
+        resp.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Unsupported 'GET' LTI 1.3 launch request received."
+        )
     }
 
     LOGGER.debug("doGet() complete")
@@ -65,44 +66,56 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // TODO Needs validation around the request - was it a form POST request, does it have any params, etc.
 
     val params = req.getParameterMap.asScala.toMap
-    val processedRequest = InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse AuthErrorResponse(
-      params)
+    val processedRequest =
+      InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse AuthErrorResponse(
+        params
+      )
 
     processedRequest match {
       case Some(validRequest) =>
         validRequest match {
           case initReq: InitiateLoginRequest => handleInitiateLoginRequest(initReq, resp)
           case authResp: AuthenticationResponse =>
-            handleAuthenticationResponse(authResp,
-                                         userService.getWebAuthenticationDetails(req),
-                                         req,
-                                         resp)
+            handleAuthenticationResponse(
+              authResp,
+              userService.getWebAuthenticationDetails(req),
+              req,
+              resp
+            )
           case errorResponse: AuthErrorResponse => handleErrorResponse(errorResponse, resp)
         }
       case None =>
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                       "Unsupported LTI 1.3 launch request received.")
+        resp.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Unsupported LTI 1.3 launch request received."
+        )
     }
 
     LOGGER.debug("doPost() complete")
   }
 
-  private def handleInitiateLoginRequest(initLogin: InitiateLoginRequest,
-                                         resp: HttpServletResponse): Unit = {
+  private def handleInitiateLoginRequest(
+      initLogin: InitiateLoginRequest,
+      resp: HttpServletResponse
+  ): Unit = {
     LOGGER.debug("Received a request to initiate a login. Supplied values:")
     LOGGER.debug(initLogin.toString)
     lti13AuthService.buildAuthReqUrl(initLogin).map(resp.encodeRedirectURL) match {
       case Some(authRedirectUrl) => resp.sendRedirect(authRedirectUrl)
       case None =>
-        resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                       "Unable to start launch with provided request.")
+        resp.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Unable to start launch with provided request."
+        )
     }
   }
 
-  private def handleAuthenticationResponse(auth: AuthenticationResponse,
-                                           wad: WebAuthenticationDetails,
-                                           req: HttpServletRequest,
-                                           resp: HttpServletResponse): Unit = {
+  private def handleAuthenticationResponse(
+      auth: AuthenticationResponse,
+      wad: WebAuthenticationDetails,
+      req: HttpServletRequest,
+      resp: HttpServletResponse
+  ): Unit = {
     LOGGER.debug("Received an authentication response. Supplied values:")
     LOGGER.debug(auth.toString)
 
@@ -154,7 +167,8 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
               .getPlatform(platformId)
               .fold(
                 onAuthFailure,
-                lti13IntegrationService.launchSelectionSession(deepLinkingRequest, _, req, resp))
+                lti13IntegrationService.launchSelectionSession(deepLinkingRequest, _, req, resp)
+              )
 
           case resourceLinkRequest: LtiResourceLinkRequest =>
             resp.sendRedirect(resp.encodeRedirectURL(resourceLinkRequest.targetLinkUri))
@@ -165,8 +179,10 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     stateService.invalidateState(auth.state)
   }
 
-  private def handleErrorResponse(errorResponse: AuthErrorResponse,
-                                  resp: HttpServletResponse): Unit = {
+  private def handleErrorResponse(
+      errorResponse: AuthErrorResponse,
+      resp: HttpServletResponse
+  ): Unit = {
     LOGGER.error(s"Received Error Response from LTI Platform: $errorResponse")
 
     val output =

@@ -49,7 +49,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class NewTreeNavigationSection extends TreeNavigationSection {

@@ -21,7 +21,6 @@ package com.tle.admin.security.tree.model;
 import com.tle.common.security.PrivilegeTree.Node;
 import javax.swing.tree.TreeNode;
 
-/** @author Nicholas Read */
 public interface SecurityTreeNode extends TreeNode {
   /** Name as should appear in the tree. */
   String getDisplayName();

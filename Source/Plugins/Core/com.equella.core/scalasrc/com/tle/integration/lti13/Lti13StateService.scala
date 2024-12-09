@@ -24,22 +24,24 @@ import com.tle.integration.oauth2.{OAuth2StateService, StateConfig}
 import java.net.URI
 import javax.inject.{Inject, Singleton}
 
-/**
-  * Details for an entry being stored in state.
+/** Details for an entry being stored in state.
   *
-  * @param platformId The ID of the platform which this state is linked to. (VALIDATION)
-  * @param loginHint The initial login hint for the connection. (VALIDATION - maybe)
-  * @param targetLinkUri The intended link to be launched as per the initial request. Once
-  *                      authentication is complete, this link should be redirected to.
+  * @param platformId
+  *   The ID of the platform which this state is linked to. (VALIDATION)
+  * @param loginHint
+  *   The initial login hint for the connection. (VALIDATION - maybe)
+  * @param targetLinkUri
+  *   The intended link to be launched as per the initial request. Once authentication is complete,
+  *   this link should be redirected to.
   */
 @SerialVersionUID(1)
 case class Lti13StateDetails(platformId: String, loginHint: String, targetLinkUri: URI)
     extends Serializable
 
-/**
-  * Manages the `state` values for LTI 1.3 Authentication processes where a state is valid for 10 seconds.
+/** Manages the `state` values for LTI 1.3 Authentication processes where a state is valid for 10
+  * seconds.
   */
 @Bind
 @Singleton
-class Lti13StateService @Inject()(rcs: ReplicatedCacheService)
+class Lti13StateService @Inject() (rcs: ReplicatedCacheService)
     extends OAuth2StateService[Lti13StateDetails](rcs, StateConfig(10, "lti13-state"))

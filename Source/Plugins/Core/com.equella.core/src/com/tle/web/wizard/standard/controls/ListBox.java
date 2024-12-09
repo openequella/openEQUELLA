@@ -32,7 +32,6 @@ import com.tle.web.wizard.controls.CListBox;
 import com.tle.web.wizard.controls.Item;
 import com.tle.web.wizard.controls.SimpleValueControl;
 
-/** @author jmaginnis */
 @Bind
 public class ListBox extends AbstractOptionControl implements SimpleValueControl {
   private CListBox box;

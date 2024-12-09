@@ -22,7 +22,6 @@ import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.institution.convert.service.InstitutionImportService.ConvertType;
 import com.tle.core.institution.convert.service.impl.InstitutionImportServiceImpl.ConverterTasks;
 
-/** @author nread */
 public abstract class Migrator {
   public abstract void execute(
       final TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params)

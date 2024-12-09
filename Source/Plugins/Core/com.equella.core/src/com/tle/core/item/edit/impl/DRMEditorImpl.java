@@ -30,7 +30,6 @@ import com.tle.core.item.edit.ItemEditorChangeTracker;
 import java.util.Date;
 import java.util.List;
 
-/** @author Aaron */
 public class DRMEditorImpl implements DRMEditor {
   private final Item item;
   private DrmSettings drmSettings;

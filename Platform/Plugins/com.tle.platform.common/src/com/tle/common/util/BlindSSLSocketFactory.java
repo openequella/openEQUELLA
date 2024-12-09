@@ -83,7 +83,9 @@ public class BlindSSLSocketFactory extends SSLSocketFactory {
 
   private static SSLSocketFactory blindFactory = createBlindSSLContext().getSocketFactory();
 
-  /** @see javax.net.SocketFactory#getDefault() */
+  /**
+   * @see javax.net.SocketFactory#getDefault()
+   */
   public static synchronized SocketFactory getDefault() {
     return new BlindSSLSocketFactory();
   }

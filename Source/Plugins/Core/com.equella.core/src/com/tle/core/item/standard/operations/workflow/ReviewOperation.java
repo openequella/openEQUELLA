@@ -29,7 +29,6 @@ import com.tle.core.security.impl.SecureOnCall;
 import com.tle.exceptions.AccessDeniedException;
 import java.util.Date;
 
-/** @author jmaginnis */
 @SecureItemStatus({ItemStatus.LIVE, ItemStatus.ARCHIVED})
 @SecureOnCall(priv = "REVIEW_ITEM")
 public class ReviewOperation extends TaskOperation {
@@ -45,7 +44,9 @@ public class ReviewOperation extends TaskOperation {
     this.force = force;
   }
 
-  /** @throws WorkflowException */
+  /**
+   * @throws WorkflowException
+   */
   @SuppressWarnings("nls")
   @Override
   public boolean execute() {

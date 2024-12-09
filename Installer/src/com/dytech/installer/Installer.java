@@ -35,7 +35,8 @@ public class Installer {
       ExceptionDialog dialog =
           new ExceptionDialog(
               "Error During Installation",
-              "An error has occurred performing the installation.  Please try to installing the application again.",
+              "An error has occurred performing the installation.  Please try to installing the"
+                  + " application again.",
               "v1.0",
               ex);
       dialog.setTitle("Error During Installation");

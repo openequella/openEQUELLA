@@ -300,9 +300,11 @@ public class EditIconSection extends AbstractPrototypeSection<EditIconSection.Ed
 
     @Bookmarked(name = "hc")
     private boolean hasCustomIcon;
+
     // for reference later
     @Bookmarked(name = "mt")
     private String mimeType;
+
     // Needed to stop damn image caching
     @Bookmarked(name = "r")
     private int rand;

@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class UploadPage extends WizardPage {
   protected int itemTotal;

@@ -45,7 +45,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import net.sf.json.JSONArray;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class ShowcasePortletEditorSection

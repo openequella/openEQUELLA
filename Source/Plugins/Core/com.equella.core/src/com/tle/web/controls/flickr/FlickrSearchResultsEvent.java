@@ -26,9 +26,9 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent;
 import com.tle.web.sections.equella.search.event.SearchResultsListener;
 
-/** @author larry */
 public class FlickrSearchResultsEvent extends AbstractSearchResultsEvent<FlickrSearchResultsEvent> {
   private final SearchResults<Photo> results;
+
   /**
    * This variable serves as a boolean: rather than quiz the Flickr service to determine whether and
    * if so how many items are filtered out by the query's filter elements, we simply determine if
@@ -77,13 +77,17 @@ public class FlickrSearchResultsEvent extends AbstractSearchResultsEvent<FlickrS
     listener.processResults(info, this);
   }
 
-  /** @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getOffset() */
+  /**
+   * @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getOffset()
+   */
   @Override
   public int getOffset() {
     return results.getOffset();
   }
 
-  /** @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getCount() */
+  /**
+   * @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getCount()
+   */
   @Override
   public int getCount() {
     return results.getCount();
@@ -97,7 +101,9 @@ public class FlickrSearchResultsEvent extends AbstractSearchResultsEvent<FlickrS
     return results.getAvailable();
   }
 
-  /** @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getFilteredOut() */
+  /**
+   * @see com.tle.web.sections.equella.search.event.AbstractSearchResultsEvent#getFilteredOut()
+   */
   @Override
   public int getFilteredOut() {
     return filteredOut;

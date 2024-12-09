@@ -38,7 +38,6 @@ import com.tle.web.sections.js.validators.Confirm;
 import com.tle.web.sections.render.Label;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class PortletResultsSection
     extends AbstractSearchResultsSection<

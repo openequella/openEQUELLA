@@ -28,7 +28,6 @@ import com.tle.web.sections.standard.model.TableState.TableCell;
 import com.tle.web.sections.standard.model.TableState.TableHeaderRow;
 import com.tle.web.sections.standard.model.TableState.TableRow;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class AbstractTable<S extends TableState> extends AbstractRenderedComponent<S> {
   public enum Sort {

@@ -12,17 +12,21 @@ package object testprovider {
     val XPath, Textfield, Dropdown, Check, Radio = Value
   }
 
-  case class RCloudControlConfig(id: String,
-                                 name: String,
-                                 description: Option[String],
-                                 configType: RCloudControlConfigType.Value,
-                                 options: Iterable[RCloudConfigOption],
-                                 min: Int,
-                                 max: Int)
+  case class RCloudControlConfig(
+      id: String,
+      name: String,
+      description: Option[String],
+      configType: RCloudControlConfigType.Value,
+      options: Iterable[RCloudConfigOption],
+      min: Int,
+      max: Int
+  )
 
-  case class RProviderControlDefinition(name: String,
-                                        iconUrl: Option[String],
-                                        configuration: Iterable[RCloudControlConfig])
+  case class RProviderControlDefinition(
+      name: String,
+      iconUrl: Option[String],
+      configuration: Iterable[RCloudControlConfig]
+  )
 
   object RProviderControlDefinition {
     implicit val typeEnc: Encoder[RCloudControlConfigType.Value] =

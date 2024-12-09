@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 public class ScriptedLiteralMapping extends JPanel implements Mapping, ListSelectionListener {
   private static final long serialVersionUID = 1L;
   private SchemaList targets;

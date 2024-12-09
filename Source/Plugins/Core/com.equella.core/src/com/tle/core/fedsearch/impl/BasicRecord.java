@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.tle.core.fedsearch.GenericRecord;
 import java.util.Collection;
 
-/** @author aholland */
 public class BasicRecord implements GenericRecord {
   private PropBagEx xml;
   private String title;

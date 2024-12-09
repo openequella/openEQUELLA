@@ -23,7 +23,6 @@ import com.google.inject.Provides;
 import com.tle.core.services.FileSystemService;
 import javax.inject.Named;
 
-/** @author Aaron */
 public class FileSystemWebModule extends AbstractModule {
   @Override
   protected void configure() {

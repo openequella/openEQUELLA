@@ -42,7 +42,9 @@ public class IMSOrganisation extends IMSChild {
     sbuf.append("</wrapper>"); // $NON-NLS-1$
   }
 
-  /** @return Returns the items. */
+  /**
+   * @return Returns the items.
+   */
   public List<IMSItem> getItems() {
     return items;
   }

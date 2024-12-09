@@ -465,7 +465,8 @@ public class TaxonomyControlsTest extends AbstractCleanupTest {
     } finally {
       assertEquals(
           message,
-          "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.");
+          "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter"
+              + " value of true.");
     }
 
     message = "";
@@ -476,7 +477,8 @@ public class TaxonomyControlsTest extends AbstractCleanupTest {
     } finally {
       assertEquals(
           message,
-          "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter value of true.");
+          "Taxonomy is locked in a different session.  Call unlockTaxonomy with a force parameter"
+              + " value of true.");
     }
 
     soapService.login("NoSearchCreateUser", "``````");
@@ -500,7 +502,8 @@ public class TaxonomyControlsTest extends AbstractCleanupTest {
     } finally {
       assertEquals(
           message,
-          "You do not own the lock on this taxonomy.  It is held by user ID adfcaf58-241b-4eca-9740-6a26d1c3dd58");
+          "You do not own the lock on this taxonomy.  It is held by user ID"
+              + " adfcaf58-241b-4eca-9740-6a26d1c3dd58");
     }
 
     login();

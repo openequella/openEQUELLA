@@ -127,7 +127,8 @@ public class PSSSettingsPage extends AbstractPage<PSSSettingsPage> {
         visibilityWaiter(
             driver,
             By.xpath(
-                "//p[@class='ctrlinvalidmessage' and text()='You must successfully test the Pearson SCORM Services settings before saving.']"));
+                "//p[@class='ctrlinvalidmessage' and text()='You must successfully test the Pearson"
+                    + " SCORM Services settings before saving.']"));
     saveButton.click();
     return waiter.get();
   }

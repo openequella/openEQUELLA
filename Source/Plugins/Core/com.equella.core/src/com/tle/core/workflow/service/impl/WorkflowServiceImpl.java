@@ -570,7 +570,9 @@ public class WorkflowServiceImpl
     return moderators;
   }
 
-  /** @return non-null List of WorkflowMessage */
+  /**
+   * @return non-null List of WorkflowMessage
+   */
   @Override
   @Transactional
   public List<WorkflowMessage> getCommentsForTask(ItemTaskId itemTaskId) {

@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.z3950;
 import com.tle.common.searching.SimpleSearchResults;
 import java.util.List;
 
-/** @author aholland */
 public class Z3950SearchResults extends SimpleSearchResults<Z3950SearchResult> {
   private static final long serialVersionUID = 1L;
 

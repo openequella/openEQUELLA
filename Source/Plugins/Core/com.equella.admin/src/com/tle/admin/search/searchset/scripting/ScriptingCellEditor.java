@@ -33,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-/** @author Nicholas Read */
 public class ScriptingCellEditor extends AbstractCellEditor
     implements TableCellEditor, ActionListener {
   private static final long serialVersionUID = 1L;

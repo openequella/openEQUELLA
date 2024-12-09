@@ -18,17 +18,23 @@
 
 package com.tle.web.api.search.model
 
-/**
-  * Represents the results for a search query.
+/** Represents the results for a search query.
   *
-  * @param start The starting offset into the total search results
-  * @param length How many results can be found in `results`
-  * @param available The maximum number of results available for paging
-  * @param results The individual items which match the search
-  * @param highlight List of words to use to highlight when displaying the results
+  * @param start
+  *   The starting offset into the total search results
+  * @param length
+  *   How many results can be found in `results`
+  * @param available
+  *   The maximum number of results available for paging
+  * @param results
+  *   The individual items which match the search
+  * @param highlight
+  *   List of words to use to highlight when displaying the results
   */
-case class SearchResult[T](start: Int,
-                           length: Int,
-                           available: Int,
-                           results: List[T],
-                           highlight: List[String])
+case class SearchResult[T](
+    start: Int,
+    length: Int,
+    available: Int,
+    results: List[T],
+    highlight: List[String]
+)

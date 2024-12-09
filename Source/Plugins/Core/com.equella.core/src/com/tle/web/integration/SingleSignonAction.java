@@ -29,7 +29,6 @@ import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import javax.inject.Inject;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class SingleSignonAction extends AbstractPrototypeSection<SingleSignonForm> {

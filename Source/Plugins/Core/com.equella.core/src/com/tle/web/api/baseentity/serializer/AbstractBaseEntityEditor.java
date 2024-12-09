@@ -55,7 +55,6 @@ import javax.inject.Inject;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class AbstractBaseEntityEditor<BE extends BaseEntity, BEB extends BaseEntityBean>
     implements BaseEntityEditor<BE, BEB>, DeleteHandler {

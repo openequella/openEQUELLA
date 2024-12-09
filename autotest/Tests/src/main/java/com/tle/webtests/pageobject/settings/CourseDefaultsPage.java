@@ -9,7 +9,6 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class CourseDefaultsPage extends AbstractPage<CourseDefaultsPage> {
   public static String START_PREFIX_ID = "_sdt"; // full id is _sdtvis
   public static String END_PREFIX_ID = "_edt"; // full id is _edtvis

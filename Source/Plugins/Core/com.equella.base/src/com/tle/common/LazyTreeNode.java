@@ -20,7 +20,6 @@ package com.tle.common;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/** @author Nicholas Read */
 public class LazyTreeNode extends DefaultMutableTreeNode {
   private String name;
   private ChildrenState childrenState;

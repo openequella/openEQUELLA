@@ -36,7 +36,6 @@ import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 import java.util.Set;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class StylishDropDownRenderer extends DropDownRenderer {
   static {
@@ -45,6 +44,7 @@ public class StylishDropDownRenderer extends DropDownRenderer {
 
   /** integer pixel heights only */
   public static final String KEY_MAX_HEIGHT = "StylishMaxHeight";
+
   /** boolean */
   public static final String KEY_ALWAYS_DISPLAY_UP = "StylishAlwaysDisplayUp";
 

@@ -20,16 +20,17 @@ package com.tle.web.settings
 
 import com.tle.web.resources.PluginResourceHelper
 
-case class SettingsPage(helper: PluginResourceHelper,
-                        id: String,
-                        group: String,
-                        nameKey: String,
-                        descKey: String,
-                        uri: String,
-                        uriType: String,
-                        editable: () => Boolean,
-                        isRoute: Boolean = true)
-    extends EditableSettings {
+case class SettingsPage(
+    helper: PluginResourceHelper,
+    id: String,
+    group: String,
+    nameKey: String,
+    descKey: String,
+    uri: String,
+    uriType: String,
+    editable: () => Boolean,
+    isRoute: Boolean = true
+) extends EditableSettings {
   override def name: String = helper.getString(nameKey)
 
   override def description: String = helper.getString(descKey)

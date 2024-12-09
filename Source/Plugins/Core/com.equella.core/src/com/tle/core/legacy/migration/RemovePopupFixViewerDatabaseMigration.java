@@ -34,7 +34,6 @@ import javax.inject.Singleton;
 import net.sf.json.JSONArray;
 import org.hibernate.Session;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

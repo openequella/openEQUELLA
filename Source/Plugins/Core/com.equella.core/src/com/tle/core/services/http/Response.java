@@ -31,14 +31,18 @@ import java.util.List;
  * @author Aaron
  */
 public interface Response extends Closeable {
-  /** @return true if it is any 2xx response. */
+  /**
+   * @return true if it is any 2xx response.
+   */
   boolean isOk();
 
   int getCode();
 
   String getMessage();
 
-  /** @return Will return null if you used the getWebContent with an OutputStream */
+  /**
+   * @return Will return null if you used the getWebContent with an OutputStream
+   */
   String getBody();
 
   List<NameValue> getHeaders();

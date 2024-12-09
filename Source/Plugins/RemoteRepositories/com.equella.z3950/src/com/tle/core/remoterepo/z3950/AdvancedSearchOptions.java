@@ -22,7 +22,6 @@ import com.tle.core.remoterepo.z3950.Z3950Constants.Operator;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Aaron */
 public class AdvancedSearchOptions {
   private final List<ExtraQuery> extra = new ArrayList<ExtraQuery>();
 

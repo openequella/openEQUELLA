@@ -31,7 +31,6 @@ import com.tle.common.i18n.StringLookup;
 import java.awt.event.ActionEvent;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public abstract class AbstractTreeNodeEditor extends JPanel {
   private static final long serialVersionUID = 1L;
 

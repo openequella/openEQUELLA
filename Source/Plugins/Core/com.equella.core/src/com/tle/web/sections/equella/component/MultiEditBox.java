@@ -49,7 +49,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.inject.Inject;
 
-/** @author Andrew Gibb */
 @Bind
 @NonNullByDefault
 public class MultiEditBox extends AbstractDisablerComponent<MultiEditBoxState> {

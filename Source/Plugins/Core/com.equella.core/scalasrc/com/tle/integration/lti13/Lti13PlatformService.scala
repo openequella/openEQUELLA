@@ -25,17 +25,15 @@ import com.tle.core.lti13.service.LtiPlatformService
 import org.slf4j.LoggerFactory
 import javax.inject.Singleton
 
-/**
-  * Specialised platform service for functionality required during LTI 1.3 authentication.
+/** Specialised platform service for functionality required during LTI 1.3 authentication.
   */
 @Bind
 @Singleton
-class Lti13PlatformService @Inject()(platformService: LtiPlatformService) {
+class Lti13PlatformService @Inject() (platformService: LtiPlatformService) {
   private val LOGGER = LoggerFactory.getLogger(classOf[Lti13PlatformService])
 
-  /**
-    * Attempt to retrieve the details of an LTI 1.3 platform by platform ID. If the platform is not enabled or
-    * if there isn't a platform matching the ID, return a `PlatformDetailsError`.
+  /** Attempt to retrieve the details of an LTI 1.3 platform by platform ID. If the platform is not
+    * enabled or if there isn't a platform matching the ID, return a `PlatformDetailsError`.
     */
   def getPlatform(platformId: String): Either[PlatformDetailsError, PlatformDetails] =
     platformService
@@ -47,13 +45,13 @@ class Lti13PlatformService @Inject()(platformService: LtiPlatformService) {
         PlatformDetailsError(s"Unable to retrieve platform details of $platformId")
       }
 
-  /**
-    * Verify if the custom username claim configured for an LTI 1.3 platform is in the format of bracket notation,
-    * and return a list of paths. If the verification fails, return a `PlatformDetailsError`. If the claim is not
-    * configured yet, return `None`.
+  /** Verify if the custom username claim configured for an LTI 1.3 platform is in the format of
+    * bracket notation, and return a list of paths. If the verification fails, return a
+    * `PlatformDetailsError`. If the claim is not configured yet, return `None`.
     */
   def verifyUsernameClaim(
-      platform: PlatformDetails): Either[PlatformDetailsError, Option[List[String]]] =
+      platform: PlatformDetails
+  ): Either[PlatformDetailsError, Option[List[String]]] =
     platform.usernameClaim
       .filter(_.nonEmpty)
       .map(Lti13UsernameClaimParser.parse(_).leftMap(PlatformDetailsError))

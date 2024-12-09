@@ -50,7 +50,8 @@ public class UserScriptsDaoImpl extends AbstractEntityDaoImpl<UserScript>
                   @Override
                   public Object doInHibernate(Session session) throws HibernateException {
                     String query =
-                        "From UserScript WHERE scriptType LIKE :type AND disabled = :disabled AND institution = :inst";
+                        "From UserScript WHERE scriptType LIKE :type AND disabled = :disabled AND"
+                            + " institution = :inst";
                     final Query q =
                         session
                             .createQuery(query)
@@ -71,7 +72,8 @@ public class UserScriptsDaoImpl extends AbstractEntityDaoImpl<UserScript>
                   @Override
                   public Object doInHibernate(Session session) throws HibernateException {
                     String query =
-                        "From UserScript WHERE moduleName = :moduleName AND institution = :inst AND scriptType LIKE :type AND id != :id";
+                        "From UserScript WHERE moduleName = :moduleName AND institution = :inst AND"
+                            + " scriptType LIKE :type AND id != :id";
                     final Query q =
                         session
                             .createQuery(query)

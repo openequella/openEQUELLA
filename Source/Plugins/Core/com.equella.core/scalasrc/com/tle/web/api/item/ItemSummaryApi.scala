@@ -50,46 +50,51 @@ object ItemSummaryApi {
       null,
       null,
       null,
-      Map[AnyRef, AnyRef](ItemServlet.VIEWABLE_ITEM -> vi).asJava)
+      Map[AnyRef, AnyRef](ItemServlet.VIEWABLE_ITEM -> vi).asJava
+    )
     val ii = ParentViewItemSectionUtils.getItemInfo(info)
     if (!ii.getPrivileges.contains(SecurityConstants.VIEW_ITEM)) {
       throw new PrivilegeRequiredException(SecurityConstants.VIEW_ITEM)
     }
     val converted =
-      item.getItemDefinition.getItemSummaryDisplayTemplate.getConfigList.asScala.flatMap(
-        c =>
-          convert(info,
-                  vi,
-                  c.getValue,
-                  LangUtils.getString(c.getBundleTitle, ""),
-                  c.getConfiguration))
+      item.getItemDefinition.getItemSummaryDisplayTemplate.getConfigList.asScala.flatMap(c =>
+        convert(info, vi, c.getValue, LangUtils.getString(c.getBundleTitle, ""), c.getConfiguration)
+      )
 
-    ItemSummary(LangUtils.getString(item.getName, item.getUuid),
-                false,
-                false,
-                converted,
-                CalSummaryDisplay.copyrightData(info, ii))
+    ItemSummary(
+      LangUtils.getString(item.getName, item.getUuid),
+      false,
+      false,
+      converted,
+      CalSummaryDisplay.copyrightData(info, ii)
+    )
   }
 
-  def convert(info: SectionInfo,
-              vitem: NewDefaultViewableItem,
-              summaryType: String,
-              sectionTitle: String,
-              config: String): Option[ItemSummarySection] = {
+  def convert(
+      info: SectionInfo,
+      vitem: NewDefaultViewableItem,
+      summaryType: String,
+      sectionTitle: String,
+      config: String
+  ): Option[ItemSummarySection] = {
     val item    = vitem.getItem
     val ii      = ParentViewItemSectionUtils.getItemInfo(info)
     val itemXml = ii.getItemxml
     summaryType match {
       case "basicSection" =>
         Some(
-          BasicDetails(sectionTitle,
-                       LangUtils.getString(item.getName, item.getUuid),
-                       Option(LangUtils.getString(item.getDescription, null: String))))
+          BasicDetails(
+            sectionTitle,
+            LangUtils.getString(item.getName, item.getUuid),
+            Option(LangUtils.getString(item.getDescription, null: String))
+          )
+        )
       case "displayNodes" =>
         val dn = xstream.fromXML(config).asInstanceOf[java.util.List[DisplayNode]].asScala
         val fullItemXml = LegacyGuice.itemHelper.convertToXml(
           new ItemPack[Item](item, itemXml, ""),
-          new ItemHelper.ItemHelperSettings(true))
+          new ItemHelper.ItemHelperSettings(true)
+        )
         Some(DisplayNodesSummarySection(sectionTitle, dn.flatMap(DisplayNodes.create(fullItemXml))))
       case "attachmentsSection" =>
         AttachmentsDisplay.create(info, vitem, itemXml, sectionTitle, config)
@@ -97,7 +102,8 @@ object ItemSummaryApi {
         val html = LegacyGuice.itemXsltService.renderSimpleXsltResult(
           new StandardRenderContext(info),
           ii,
-          config)
+          config
+        )
         Some(HtmlSummarySection(sectionTitle, false, "xslt", html))
       case "freemarkerSection" =>
         Some(FreemarkerDisplay.create(info, ii, sectionTitle, config))

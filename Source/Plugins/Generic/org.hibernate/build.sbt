@@ -6,7 +6,8 @@ libraryDependencies := Seq(
   "org.hibernate"            % "hibernate-validator"   % "6.2.5.Final",
   "javax.persistence"        % "javax.persistence-api" % "2.2",
   "com.thoughtworks.xstream" % "xstream-hibernate"     % xstreamVersion excludeAll ExclusionRule(
-    organization = "org.hibernate"),
+    organization = "org.hibernate"
+  ),
   "org.springframework" % "spring-orm" % springVersion excludeAll (
     ExclusionRule(organization = "com.oracle", name = "toplink-essentials"),
     ExclusionRule(organization = "org.springframework", name = "spring-beans"),

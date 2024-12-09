@@ -27,7 +27,6 @@ import com.tle.web.copyright.section.AbstractCopyrightAgreementDialog;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class CLAResourceViewerFilter extends AbstractCopyrightResourceViewerFilter {

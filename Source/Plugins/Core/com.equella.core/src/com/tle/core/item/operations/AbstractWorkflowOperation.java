@@ -45,7 +45,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class AbstractWorkflowOperation implements WorkflowOperation {
   @Inject protected ItemDefinitionService itemdefService;

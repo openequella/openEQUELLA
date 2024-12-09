@@ -27,7 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 
-/** @author aholland */
 public final class DialogUtils {
   private static final int MAX_SUGGEST_FILENAME_LENGTH = 100;
 

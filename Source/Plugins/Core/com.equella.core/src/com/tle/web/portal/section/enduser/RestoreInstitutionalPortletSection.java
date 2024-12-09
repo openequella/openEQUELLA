@@ -46,7 +46,6 @@ import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class RestoreInstitutionalPortletSection
     extends AbstractPrototypeSection<

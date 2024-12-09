@@ -39,7 +39,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(AclDao.class)
 @Singleton
 @SuppressWarnings("nls")
@@ -250,7 +249,8 @@ public class AclDaoImpl extends GenericDaoImpl<AccessEntry, Long> implements Acl
     return (List<AccessEntry>)
         getHibernateTemplate()
             .findByNamedParam(
-                "FROM AccessEntry WHERE institution = :inst AND aclPriority in (:priorities) order by aclOrder desc",
+                "FROM AccessEntry WHERE institution = :inst AND aclPriority in (:priorities) order"
+                    + " by aclOrder desc",
                 new String[] {"inst", "priorities"},
                 new Object[] {CurrentInstitution.get(), priorities});
   }

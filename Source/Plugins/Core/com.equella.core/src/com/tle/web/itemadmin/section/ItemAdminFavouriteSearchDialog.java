@@ -23,7 +23,6 @@ import com.tle.web.search.actions.AbstractFavouriteSearchDialog;
 import com.tle.web.search.actions.AbstractFavouriteSearchSection;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind
 public class ItemAdminFavouriteSearchDialog extends AbstractFavouriteSearchDialog {
   @Inject private ItemAdminFavouriteSearchSection contentSection;

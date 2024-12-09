@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.merlot.service.impl;
 import com.tle.common.searching.SimpleSearchResults;
 import java.util.List;
 
-/** @author aholland */
 public class MerlotSearchResults extends SimpleSearchResults<MerlotSearchResult> {
   private static final long serialVersionUID = 1L;
 

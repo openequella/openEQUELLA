@@ -50,7 +50,6 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 import java.util.Arrays;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class FlickrSortOptionsSection extends AbstractPrototypeSection<Object>
     implements HtmlRenderer, SearchEventListener<FlickrSearchEvent> {

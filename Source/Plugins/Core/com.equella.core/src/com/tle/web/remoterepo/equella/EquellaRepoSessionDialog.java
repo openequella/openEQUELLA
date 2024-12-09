@@ -47,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind

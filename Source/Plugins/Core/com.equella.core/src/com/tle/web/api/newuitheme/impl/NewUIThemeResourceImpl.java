@@ -33,7 +33,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-/** @author Samantha Fisher */
 @Bind(NewUIThemeResource.class)
 @Singleton
 public class NewUIThemeResourceImpl implements NewUIThemeResource {

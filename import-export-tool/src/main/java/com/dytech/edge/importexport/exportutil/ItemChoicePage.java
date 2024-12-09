@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ItemChoicePage extends WizardPage implements ActionListener {
   protected JLabel errorLabel;

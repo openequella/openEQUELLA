@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-/** @author Charles O'Farrell */
 public interface ActivateRequestDao extends GenericDao<ActivateRequest, Long>, ItemDaoExtension {
   List<ActivateRequest> getAllRequestsForDateRange(String type, Item item, Date start, Date end);
 

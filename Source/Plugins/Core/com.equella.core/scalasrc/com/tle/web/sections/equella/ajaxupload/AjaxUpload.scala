@@ -45,12 +45,14 @@ import io.circe.{Decoder, Encoder}
 import scala.beans.BeanProperty
 import scala.util.Try
 
-case class AjaxFileEntry(id: String,
-                         name: String,
-                         link: String,
-                         editable: Boolean,
-                         preview: Boolean,
-                         children: Iterable[AjaxFileEntry])
+case class AjaxFileEntry(
+    id: String,
+    name: String,
+    link: String,
+    editable: Boolean,
+    preview: Boolean,
+    children: Iterable[AjaxFileEntry]
+)
 
 object AjaxFileEntry {
   implicit val config                            = Configuration.default
@@ -65,12 +67,14 @@ sealed trait AjaxUploadResponse
 case class NewUploadResponse(uploadUrl: String, id: String, name: String) extends AjaxUploadResponse
 case class UploadFailed(reason: String)                                   extends AjaxUploadResponse
 case class AddEntries(entries: Iterable[AjaxFileEntry])                   extends AjaxUploadResponse
-case class UpdateEntry(entry: AjaxFileEntry,
-                       attachmentDuplicateInfo: Option[AttachmentDuplicateInfo])
-    extends AjaxUploadResponse
-case class RemoveEntries(ids: Iterable[String],
-                         attachmentDuplicateInfo: Option[AttachmentDuplicateInfo])
-    extends AjaxUploadResponse
+case class UpdateEntry(
+    entry: AjaxFileEntry,
+    attachmentDuplicateInfo: Option[AttachmentDuplicateInfo]
+) extends AjaxUploadResponse
+case class RemoveEntries(
+    ids: Iterable[String],
+    attachmentDuplicateInfo: Option[AttachmentDuplicateInfo]
+) extends AjaxUploadResponse
 
 // This class as part of AjaxResponse includes if duplicates are found and the attachment control's parent id
 case class AttachmentDuplicateInfo(displayWarningMessage: Boolean, warningMessageWebId: String) {}
@@ -107,17 +111,21 @@ object AjaxUpload {
   private val PROGESSONLY_UPLOAD_FUNC =
     new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "simpleUploadEntry", 4)
 
-  def createValidate(maxSize: Long,
-                     mimeTypes: java.util.List[String],
-                     errorCallback: JSExpression,
-                     startedUpload: JSExpression,
-                     doneCallback: JSExpression) =
-    Js.call(AjaxUpload.VALIDATE_FUNC,
-            maxSize.asInstanceOf[Object],
-            mimeTypes,
-            errorCallback,
-            startedUpload,
-            doneCallback)
+  def createValidate(
+      maxSize: Long,
+      mimeTypes: java.util.List[String],
+      errorCallback: JSExpression,
+      startedUpload: JSExpression,
+      doneCallback: JSExpression
+  ) =
+    Js.call(
+      AjaxUpload.VALIDATE_FUNC,
+      maxSize.asInstanceOf[Object],
+      mimeTypes,
+      errorCallback,
+      startedUpload,
+      doneCallback
+    )
 
   def createProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
     PartiallyApply.partial(ADD_UPLOAD_FUNC, 3, jquery, cancelCallback)
@@ -125,9 +133,11 @@ object AjaxUpload {
   def createSimpleProgressFunc(jquery: JQuerySelector, cancelCallback: Object) =
     PartiallyApply.partial(PROGESSONLY_UPLOAD_FUNC, 3, jquery, cancelCallback)
 
-  def writeCancellableStream(writeFile: InputStream => FileInfo,
-                             stream: InputStream,
-                             cancelled: AtomicReference[Boolean]): Try[FileInfo] = {
+  def writeCancellableStream(
+      writeFile: InputStream => FileInfo,
+      stream: InputStream,
+      cancelled: AtomicReference[Boolean]
+  ): Try[FileInfo] = {
     val str = new FilterInputStream(stream) {
       def checkCancelled(): Unit = {
         if (cancelled.get) throw new StreamKilledException
@@ -152,7 +162,8 @@ object AjaxUpload {
 
     Js.functionValue(
       AjaxUpload
-        .createValidate(0, Collections.emptyList[String], completed, startedUpload, completed))
+        .createValidate(0, Collections.emptyList[String], completed, startedUpload, completed)
+    )
   }
 
 }

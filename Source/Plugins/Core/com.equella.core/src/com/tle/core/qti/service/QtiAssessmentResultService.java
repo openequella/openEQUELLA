@@ -26,7 +26,6 @@ import uk.ac.ed.ph.jqtiplus.node.result.AssessmentResult;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 import uk.ac.ed.ph.jqtiplus.running.TestSessionController;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiAssessmentResultService {
   @Nullable

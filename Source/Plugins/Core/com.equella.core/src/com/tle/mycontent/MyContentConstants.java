@@ -18,7 +18,6 @@
 
 package com.tle.mycontent;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class MyContentConstants {
   public static final String MY_CONTENT_UUID = "6b356e2e-e6a0-235a-5730-15ad1d8ad630";

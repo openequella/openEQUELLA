@@ -18,7 +18,6 @@
 
 package com.tle.web.htmleditor.tinymce.addon.tle;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class TleTinyMceAddonConstants {
   public static final String RESOURCE_LINKER_ID = "tle_reslinker";

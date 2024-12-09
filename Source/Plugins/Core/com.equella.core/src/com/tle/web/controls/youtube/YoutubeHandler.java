@@ -426,8 +426,8 @@ public class YoutubeHandler
         String embed =
             "<embed id=\"ytpreview\" class=\"preview\" src=\"//www.youtube.com/v/"
                 + videoId
-                + "?version=3\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" "
-                + "allowfullscreen=\"true\"></embed>";
+                + "?version=3\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\""
+                + " allowfullscreen=\"true\"></embed>";
         model.addSpecificDetail("embed", new Pair<Label, Object>(null, embed));
       } else {
         String embed =

@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class TokenUserStateHook implements UserStateHook {

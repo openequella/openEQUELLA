@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-/** @author Nicholas Read */
 public class JCalendar extends JComponent implements ActionListener, MouseListener {
   @SuppressWarnings("nls")
   private static final String[] DAYS = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};

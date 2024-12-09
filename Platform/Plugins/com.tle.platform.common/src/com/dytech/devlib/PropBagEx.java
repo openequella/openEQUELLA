@@ -212,7 +212,9 @@ public class PropBagEx implements Serializable {
     return m_elRoot;
   }
 
-  /** @return true if both PropBag objects point to the same root node */
+  /**
+   * @return true if both PropBag objects point to the same root node
+   */
   public boolean equalsDOM(final PropBagEx obj) {
     if (obj == null) {
       return false;
@@ -1216,8 +1218,8 @@ public class PropBagEx implements Serializable {
         dest = doc.createEntityReference(n.getNodeValue());
         break;
 
-        // see Jira Defect TLE-1832 :
-        // http://apps.dytech.com.au/jira/browse/TLE-1832
+      // see Jira Defect TLE-1832 :
+      // http://apps.dytech.com.au/jira/browse/TLE-1832
       case Node.COMMENT_NODE:
         dest = doc.createComment(n.getNodeValue());
         break;

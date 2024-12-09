@@ -41,7 +41,6 @@ import java.util.Map;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-/** @author aholland */
 public class XPathMapper extends Mapper {
   private static final long serialVersionUID = 1L;
 

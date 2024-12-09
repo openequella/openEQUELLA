@@ -39,7 +39,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

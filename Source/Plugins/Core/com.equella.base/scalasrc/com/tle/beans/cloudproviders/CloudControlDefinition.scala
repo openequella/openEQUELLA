@@ -30,13 +30,15 @@ object CloudControlConfigType extends Enumeration {
   val XPath, Textfield, Dropdown, Check, Radio = Value
 }
 
-case class CloudControlConfig(id: String,
-                              name: String,
-                              description: Option[String],
-                              configType: CloudControlConfigType.Value,
-                              options: Option[Iterable[CloudConfigOption]],
-                              min: Option[Int],
-                              max: Option[Int]) {
+case class CloudControlConfig(
+    id: String,
+    name: String,
+    description: Option[String],
+    configType: CloudControlConfigType.Value,
+    options: Option[Iterable[CloudConfigOption]],
+    min: Option[Int],
+    max: Option[Int]
+) {
   def isConfigMandatory: Boolean = {
     getMin > 0
   }
@@ -47,17 +49,21 @@ case class CloudControlConfig(id: String,
   def getMax         = max.getOrElse(Int.MaxValue)
 }
 
-case class CloudControlDefinition(providerId: UUID,
-                                  controlId: String,
-                                  name: String,
-                                  iconUrl: String,
-                                  configDefinition: Iterable[CloudControlConfig]) {
+case class CloudControlDefinition(
+    providerId: UUID,
+    controlId: String,
+    name: String,
+    iconUrl: String,
+    configDefinition: Iterable[CloudControlConfig]
+) {
   def getConfigDefinition = configDefinition.asJava
 }
 
-case class ProviderControlDefinition(name: String,
-                                     iconUrl: Option[String],
-                                     configuration: Iterable[CloudControlConfig])
+case class ProviderControlDefinition(
+    name: String,
+    iconUrl: Option[String],
+    configuration: Iterable[CloudControlConfig]
+)
 
 object ProviderControlDefinition {
   implicit val typeDec        = Decoder.decodeEnumeration(CloudControlConfigType)

@@ -21,7 +21,6 @@ package com.tle.core.events;
 import com.tle.common.usermanagement.user.UserState;
 import com.tle.core.events.listeners.UserSessionLogoutListener;
 
-/** @author Nicholas Read */
 public class UserSessionLogoutEvent extends ApplicationEvent<UserSessionLogoutListener>
     implements UserSessionEvent {
   private static final long serialVersionUID = 1L;

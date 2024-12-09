@@ -52,7 +52,6 @@ import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
 import scala.Option;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(MyContentService.class)
 @Singleton
@@ -103,7 +102,8 @@ public class MyContentServiceImpl implements MyContentService {
       throw new RuntimeException(
           "My Content collection is missing or does not have a UUID of "
               + MyContentConstants.MY_CONTENT_UUID
-              + ".  This collection and UUID are mandatory for the Scrapbook to function correctly.");
+              + ".  This collection and UUID are mandatory for the Scrapbook to function"
+              + " correctly.");
     }
     return itemdef;
   }

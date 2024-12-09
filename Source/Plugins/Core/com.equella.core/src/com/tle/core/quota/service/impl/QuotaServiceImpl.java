@@ -53,7 +53,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Charles O'Farrell */
 @NonNullByDefault
 @Bind(QuotaService.class)
 @Singleton

@@ -17,7 +17,6 @@ import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("pss")
 public class PearsonSCORMPlayerTest extends AbstractCleanupTest {
   // Key & Secret from Larry's "SCORM integration" Icodeon consumer account

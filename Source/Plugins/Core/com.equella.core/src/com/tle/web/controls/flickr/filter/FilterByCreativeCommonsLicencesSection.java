@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class FilterByCreativeCommonsLicencesSection extends AbstractPrototypeSection<Object>
     implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FlickrSearchEvent> {

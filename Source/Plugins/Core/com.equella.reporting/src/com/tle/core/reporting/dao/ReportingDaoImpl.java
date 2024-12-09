@@ -43,7 +43,8 @@ public class ReportingDaoImpl extends AbstractEntityDaoImpl<Report> implements R
         (List<Report>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "from Report where (filename = :filename or filename like :filelike) and institution = :inst",
+                    "from Report where (filename = :filename or filename like :filelike) and"
+                        + " institution = :inst",
                     new String[] {"filename", "filelike", "inst"},
                     new Object[] {filename, "%/" + filename, CurrentInstitution.get()});
     if (reportsByName.isEmpty()) {

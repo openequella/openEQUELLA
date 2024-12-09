@@ -46,7 +46,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(HierarchyDao.class)
 @Singleton
 @SuppressWarnings("nls")
@@ -230,7 +229,8 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
         (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND institution = ?1",
+                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND"
+                        + " institution = ?1",
                     new Object[] {dynamicHierarchyId, institution});
     return keyResources;
   }
@@ -245,8 +245,8 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
         (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND itemUuid = ?1 "
-                        + "AND itemVersion =?2 AND institution = ?3",
+                    "from HierarchyTopicKeyResource t WHERE hierarchyCompoundUuid = ?0 AND itemUuid"
+                        + " = ?1 AND itemVersion =?2 AND institution = ?3",
                     new Object[] {legacyHierarchyCompoundUuid, itemUuid, itemVersion, institution});
     return keyResources.isEmpty() ? Optional.empty() : Optional.of(keyResources.getFirst());
   }
@@ -259,7 +259,8 @@ public class HierarchyDaoImpl extends AbstractTreeDaoImpl<HierarchyTopic> implem
         (List<HierarchyTopicKeyResource>)
             getHibernateTemplate()
                 .find(
-                    "from HierarchyTopicKeyResource t WHERE itemUuid = ?0 AND itemVersion =?1 AND  institution = ?2",
+                    "from HierarchyTopicKeyResource t WHERE itemUuid = ?0 AND itemVersion =?1 AND "
+                        + " institution = ?2",
                     new Object[] {itemUuid, itemVersion, institution});
     return keyResources;
   }

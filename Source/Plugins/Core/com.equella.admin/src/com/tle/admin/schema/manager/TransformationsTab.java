@@ -28,7 +28,6 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import javax.swing.JLabel;
 
-/** @author Nicholas Read */
 public class TransformationsTab extends BaseEntityTab<Schema> {
   private TransformationsPanel ip;
   private TransformationsPanel ep;

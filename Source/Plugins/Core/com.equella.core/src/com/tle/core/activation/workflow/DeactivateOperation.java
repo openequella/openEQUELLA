@@ -25,7 +25,6 @@ import com.tle.core.activation.ActivateRequestDao;
 import com.tle.core.security.impl.SecureOnCall;
 import java.util.Date;
 
-/** @author Aaron */
 @SecureOnCall(priv = "DEACTIVATE_ACTIVATION_ITEM")
 public class DeactivateOperation extends AbstractBulkableActivationOperation {
   @AssistedInject

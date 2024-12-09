@@ -42,7 +42,6 @@ import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class CreatePortletEntities extends AbstractCreateMigration {

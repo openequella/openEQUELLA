@@ -26,7 +26,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public final class Portlet extends BaseEntity {

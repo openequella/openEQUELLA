@@ -16,7 +16,8 @@ public class BlackboardToolAvailabilityPage
     WebElement check =
         driver.findElement(
             By.xpath(
-                "//label[text()='Available in Content Area - EQUELLA Object']/following-sibling::input"));
+                "//label[text()='Available in Content Area - EQUELLA"
+                    + " Object']/following-sibling::input"));
     if (!check.isSelected()) {
       check.click();
     }

@@ -22,7 +22,6 @@ import com.tle.web.api.interfaces.beans.BaseEntityBean;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author larry */
 @XmlRootElement
 public class CourseBean extends BaseEntityBean {
   /** Course code, for POST /course, a mandatory field, must be unique */
@@ -33,6 +32,7 @@ public class CourseBean extends BaseEntityBean {
   private String departmentName;
   private Date from;
   private Date until;
+
   /** no of students in the course, must be integer */
   private Integer students;
 

@@ -27,12 +27,7 @@ import { validate } from './Utils';
 
 const OIDC_CONFIG_PATH = '/oidc/config';
 
-export type IdentityProviderPlatform =
-  | 'AZURE'
-  | 'COGNITO'
-  | 'GENERIC'
-  | 'GOOGLE'
-  | 'OKTA';
+export type IdentityProviderPlatform = 'AUTH0' | 'ENTRA_ID' | 'OKTA';
 
 /**
  * Data structure for the common details of an Identity Provider, containing fields
@@ -131,7 +126,7 @@ export interface IdentityProvider extends IdentityProviderBase {
  * fields related to interacting with the Identity Provider's API.
  */
 export interface GenericIdentityProvider extends IdentityProvider {
-  platform: 'GENERIC';
+  platform: 'AUTH0' | 'ENTRA_ID';
   /**
    * The API endpoint for the Identity Provider, use for operations such as search for users
    */
@@ -145,10 +140,6 @@ export interface GenericIdentityProvider extends IdentityProvider {
    */
   apiClientSecret?: string;
 }
-
-export const isGenericIdentityProvider = (
-  idp: IdentityProvider
-): idp is GenericIdentityProvider => idp.platform === 'GENERIC';
 
 /**
  * Data structure for the response of an Identity Provider, which is slightly different

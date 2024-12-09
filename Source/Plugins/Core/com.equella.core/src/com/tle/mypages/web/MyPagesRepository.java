@@ -45,7 +45,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.inject.Inject;
 
-/** @author aholland */
 // TODO: could use WebRepository and change the WizardState/MyPagesState to an
 // iface
 @Bind

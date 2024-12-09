@@ -28,7 +28,6 @@ import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 import com.tle.web.sections.result.util.BundleLabel;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class StandardExpressions {
   private static final PluginResourceHelper URL_HELPER =

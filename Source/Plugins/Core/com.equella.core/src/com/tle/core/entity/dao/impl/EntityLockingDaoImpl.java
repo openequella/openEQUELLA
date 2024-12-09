@@ -28,7 +28,6 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(EntityLockingDao.class)
 @Singleton
 @SuppressWarnings("nls")

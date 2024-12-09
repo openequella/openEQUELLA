@@ -75,7 +75,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
-/** @author Nicholas Read */
 public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetailsTab<Workflow> {
   private WorkflowTree tree;
   private WorkflowTreeModel model;

@@ -62,7 +62,8 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
     driver
         .findElement(
             By.xpath(
-                "//div[@id='more-actions']/ul/li/div/a[normalize-space(text())='Select thumbnail']"))
+                "//div[@id='more-actions']/ul/li/div/a[normalize-space(text())='Select"
+                    + " thumbnail']"))
         .click();
     return new SelectThumbnailDialog(context).get();
   }

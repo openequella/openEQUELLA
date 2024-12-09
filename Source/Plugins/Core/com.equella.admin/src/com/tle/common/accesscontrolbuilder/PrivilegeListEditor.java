@@ -21,7 +21,6 @@ package com.tle.common.accesscontrolbuilder;
 import com.tle.common.security.PrivilegeTree.Node;
 import javax.swing.JComponent;
 
-/** @author Nicholas Read */
 public interface PrivilegeListEditor {
   /** Indicates whether the editor is able to handle the list of privileges. */
   boolean canHandle(Node privNode, PrivilegeList list);

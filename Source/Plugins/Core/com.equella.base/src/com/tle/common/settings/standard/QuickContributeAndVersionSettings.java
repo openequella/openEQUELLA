@@ -22,7 +22,6 @@ import com.tle.beans.item.VersionSelection;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 
-/** @author larry */
 public class QuickContributeAndVersionSettings implements ConfigurationProperties {
   private static final long serialVersionUID = 1069120212116280127L;
 

@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Peng */
 public class YoutubeSettingsPanel extends UniversalControlSettingPanel {
   private static final long serialVersionUID = 1L;
 

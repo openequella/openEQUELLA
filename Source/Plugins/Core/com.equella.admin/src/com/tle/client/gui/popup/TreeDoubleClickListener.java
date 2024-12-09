@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.Action;
 import javax.swing.JTree;
 
-/** @author Nicholas Read */
 public class TreeDoubleClickListener extends AbstractDoubleClickListener {
   private final JTree tree;
 

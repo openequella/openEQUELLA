@@ -22,7 +22,6 @@ import com.tle.beans.entity.Schema;
 import com.tle.core.events.listeners.ApplicationListener;
 import java.util.List;
 
-/** @author Aaron */
 public interface SchemaReferencesListener extends ApplicationListener {
   void addSchemaReferencingClasses(Schema schema, List<Class<?>> referencingClasses);
 }

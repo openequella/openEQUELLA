@@ -42,7 +42,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class ItemStatusAccessControlTab extends AbstractItemdefTab implements Changeable {
   private JComboBox statuses;
   private AccessEditor editor;

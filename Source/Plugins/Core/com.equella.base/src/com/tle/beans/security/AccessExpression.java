@@ -37,7 +37,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import org.hibernate.annotations.AccessType;
 
-/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 public class AccessExpression implements Cloneable {

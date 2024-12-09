@@ -29,7 +29,6 @@ import java.util.Stack;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-/** @author Nicholas Read */
 public class ExpressionBuilderModel extends DefaultTreeModel {
   private static final long serialVersionUID = 1L;
 
@@ -168,7 +167,9 @@ public class ExpressionBuilderModel extends DefaultTreeModel {
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   protected static class Parser extends PostfixExpressionParser<ExpressionTreeNode> {
     public ExpressionTreeNode convertToTreeNodes(String expression) {
       ExpressionTreeNode root = getResult(expression);

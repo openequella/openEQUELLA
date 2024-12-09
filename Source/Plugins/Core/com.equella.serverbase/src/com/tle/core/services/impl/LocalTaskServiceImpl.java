@@ -62,8 +62,10 @@ public class LocalTaskServiceImpl extends AbstractTaskServiceImpl {
 
   /** All task statuses for anything that is running or suspended. */
   private final Map<String, TaskStatusImpl> taskStatuses = new HashMap<String, TaskStatusImpl>();
+
   /** Only tasks actually running on a node somewhere. */
   private final Map<String, ClusteredTask> activeTasks = new HashMap<String, ClusteredTask>();
+
   /** Mapping from globalId to taskId. */
   private final Map<String, GlobalTaskStat> globalTasks = new HashMap<String, GlobalTaskStat>();
 

@@ -45,7 +45,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 // TODO: should this file live here?
 @Bind
 @Singleton

@@ -69,7 +69,8 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
               public Object doInHibernate(Session session) {
                 Query query =
                     session.createQuery(
-                        "UPDATE TaskHistory SET exitDate = :date WHERE item = :item AND exitDate IS NULL");
+                        "UPDATE TaskHistory SET exitDate = :date WHERE item = :item AND exitDate IS"
+                            + " NULL");
                 query.setParameter("date", end);
                 query.setParameter("item", item);
 
@@ -120,9 +121,11 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
                       public Object doInHibernate(final Session session) {
                         final Query query =
                             session.createQuery(
-                                "SELECT wi.id, wi.name.id, count(*) FROM TaskHistory th JOIN th.task wi "
-                                    + "WHERE wi.workflow.institution = :inst and wi.id = th.task.id AND wi.workflow.uuid in (:uuids) AND th.exitDate IS NULL "
-                                    + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
+                                "SELECT wi.id, wi.name.id, count(*) FROM TaskHistory th JOIN"
+                                    + " th.task wi WHERE wi.workflow.institution = :inst and wi.id"
+                                    + " = th.task.id AND wi.workflow.uuid in (:uuids) AND"
+                                    + " th.exitDate IS NULL GROUP BY wi.id, wi.name.id ORDER BY"
+                                    + " count(*) DESC");
                         query.setParameter("inst", CurrentInstitution.get());
                         query.setParameterList("uuids", uuids);
                         return query.setMaxResults(5).list();
@@ -152,9 +155,10 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
                       public Object doInHibernate(Session session) {
                         Query query =
                             session.createQuery(
-                                "SELECT wi.id, count(*) FROM TaskHistory th JOIN th.task wi WHERE wi.id IN (:ids) AND "
-                                    + "th.entryDate < :date AND (th.exitDate > :date OR th.exitDate IS NULL)"
-                                    + "GROUP BY wi.id, wi.name.id ORDER BY count(*) DESC");
+                                "SELECT wi.id, count(*) FROM TaskHistory th JOIN th.task wi WHERE"
+                                    + " wi.id IN (:ids) AND th.entryDate < :date AND (th.exitDate >"
+                                    + " :date OR th.exitDate IS NULL)GROUP BY wi.id, wi.name.id"
+                                    + " ORDER BY count(*) DESC");
                         query.setParameterList("ids", trendMap.keySet());
                         query.setParameter("date", date);
                         return query.list();
@@ -188,8 +192,8 @@ public class TaskHistoryDaoImpl extends GenericDaoImpl<TaskHistory, Long>
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "DELETE FROM TaskHistory th WHERE th.task in "
-                                + "(select wn.id from Workflow w join w.nodes as wn where w.id = :workflow)");
+                            "DELETE FROM TaskHistory th WHERE th.task in (select wn.id from"
+                                + " Workflow w join w.nodes as wn where w.id = :workflow)");
                     query.setParameter("workflow", workflowId);
                     return query.executeUpdate();
                   }

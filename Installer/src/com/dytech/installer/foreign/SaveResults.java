@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/** @author Nicholas Read */
 public class SaveResults extends ForeignCommand {
   private File file;
 

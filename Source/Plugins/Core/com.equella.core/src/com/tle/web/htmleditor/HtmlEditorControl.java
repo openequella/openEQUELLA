@@ -26,7 +26,6 @@ import com.tle.web.sections.standard.js.JSDisableable;
 import java.util.Map;
 import java.util.Set;
 
-/** @author aholland */
 public interface HtmlEditorControl extends Section, HtmlRenderer, JSDisableable {
   void setData(
       SectionInfo info,

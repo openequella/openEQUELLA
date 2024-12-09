@@ -45,17 +45,19 @@ class EntityServiceImpl extends EntityService {
   }
 
   @Transactional
-  override def createOrUpdate(uuid: String,
-                              typeId: String,
-                              name: String,
-                              nameStrings: String,
-                              description: String,
-                              descriptionStrings: String,
-                              created: Instant,
-                              modified: Instant,
-                              owner: String,
-                              data: String,
-                              institution: Institution): Unit = {
+  override def createOrUpdate(
+      uuid: String,
+      typeId: String,
+      name: String,
+      nameStrings: String,
+      description: String,
+      descriptionStrings: String,
+      created: Instant,
+      modified: Instant,
+      owner: String,
+      data: String,
+      institution: Institution
+  ): Unit = {
     val id = new EntityID
     id.uuid = uuid
     id.inst_id = institution.getDatabaseId

@@ -175,7 +175,8 @@ public class SecurityAttributeSource {
       attr.setOnCallmode(mode);
     } else if (attr.getOnCallmode() != mode) {
       throw new Error(
-          "Can't mix RequiresPrivilege, RequiresPrivilegeWithNoTarget and SecureOnCall"); //$NON-NLS-1$
+          "Can't mix RequiresPrivilege, RequiresPrivilegeWithNoTarget and"
+              + " SecureOnCall"); //$NON-NLS-1$
     }
   }
 

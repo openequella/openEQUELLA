@@ -69,7 +69,8 @@ public class ConnectorEntityUtils {
           cc.setFolders(children);
         } else {
           LOGGER.debug(
-              "Parent folder stated it was not a leaf, but there are no known children folders.  Parent folder: "
+              "Parent folder stated it was not a leaf, but there are no known children folders. "
+                  + " Parent folder: "
                   + cc.getName()
                   + " - "
                   + cc.getId());

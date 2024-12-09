@@ -27,8 +27,7 @@ import javax.ws.rs.core.Response.Status
 case class ApiResponseMessage(message: String)
 case class ApiErrorResponse(errors: Seq[ApiResponseMessage])
 
-/**
-  * Helper object to centralise the creation of error responses and provide a general error handler.
+/** Helper object to centralise the creation of error responses and provide a general error handler.
   */
 object ApiErrorResponse {
 
@@ -56,11 +55,11 @@ object ApiErrorResponse {
     buildErrorResponse(Status.CONFLICT, errors)
   }
 
-  /**
-    * Error handler to create an error response for an API request.
-    * More exceptions will be supported as needed.
+  /** Error handler to create an error response for an API request. More exceptions will be
+    * supported as needed.
     *
-    * @param error Error captured in a API request which will determine what error code to be returned.
+    * @param error
+    *   Error captured in a API request which will determine what error code to be returned.
     */
   def apiErrorHandler(error: Throwable): Response =
     error match {

@@ -18,7 +18,6 @@
 
 package com.tle.core.harvester.old.dsoap;
 
-/** @author gfrancis */
 public class SoapCallException extends Exception {
   private int error;
   private String html;

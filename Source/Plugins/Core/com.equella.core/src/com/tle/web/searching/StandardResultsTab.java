@@ -29,7 +29,6 @@ import com.tle.web.sections.render.LabelRenderer;
 import com.tle.web.sections.result.util.PluralKeyLabel;
 import com.tle.web.selection.section.CourseListSection;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind

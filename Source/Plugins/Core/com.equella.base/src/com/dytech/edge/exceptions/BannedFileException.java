@@ -18,7 +18,6 @@
 
 package com.dytech.edge.exceptions;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class BannedFileException extends FileSystemException {
   private static final long serialVersionUID = 1L;

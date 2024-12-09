@@ -80,7 +80,8 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
   @Override
   public List<FileAttachment> findFilesWithNoMD5Sum() {
     String hql =
-        "FROM FileAttachment WHERE (md5sum IS NULL OR md5sum = '') AND item.institution = :institution";
+        "FROM FileAttachment WHERE (md5sum IS NULL OR md5sum = '') AND item.institution ="
+            + " :institution";
     return (List<FileAttachment>)
         getHibernateTemplate().findByNamedParam(hql, "institution", CurrentInstitution.get());
   }
@@ -90,7 +91,8 @@ public class AttachmentDaoImpl extends GenericDaoImpl<Attachment, Long> implemen
       final String query, boolean liveOnly, String sortHql) {
     String q = query;
     String hql =
-        "FROM CustomAttachment a WHERE a.item.institution = :institution AND a.value1 = :resourcetype";
+        "FROM CustomAttachment a WHERE a.item.institution = :institution AND a.value1 ="
+            + " :resourcetype";
 
     final List<String> params = Lists.newArrayList();
     params.add("institution");

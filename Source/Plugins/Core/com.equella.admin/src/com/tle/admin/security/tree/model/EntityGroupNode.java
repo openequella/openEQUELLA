@@ -26,7 +26,6 @@ import com.tle.i18n.BundleCache;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class EntityGroupNode extends AbstractLazyNode {
   private final Node childNode;
   private final RemoteAbstractEntityService<? extends BaseEntity> service;

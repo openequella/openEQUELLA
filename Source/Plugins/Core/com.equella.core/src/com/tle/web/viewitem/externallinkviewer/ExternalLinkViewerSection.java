@@ -49,7 +49,6 @@ import com.tle.web.viewurl.ViewableResource;
 import java.util.Collection;
 import javax.inject.Inject;
 
-/** @author aholland */
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind

@@ -22,7 +22,6 @@ import com.tle.common.scripting.ScriptObject;
 import com.tle.web.scripting.ScriptTypeFactory;
 import javax.inject.Inject;
 
-/** @author aholland */
 public abstract class AbstractScriptWrapper implements ScriptObject {
   private static final long serialVersionUID = -2982385813518349536L;
 

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** @author larry */
 public class LTISettings extends UniversalSettings {
   @SuppressWarnings("nls")
   public static final String KEY_EXTTOOLS = "EXT_TOOLS";

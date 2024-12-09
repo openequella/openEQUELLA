@@ -34,10 +34,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class XMLCompare {
   private static final Logger LOGGER = LoggerFactory.getLogger(XMLCompare.class.toString());
+
   /** A shared instance of the document builder factory. */
   private static DocumentBuilderFactory documentFactory;
 

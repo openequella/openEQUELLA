@@ -17,7 +17,8 @@ public class MoodleExternalToolPage extends AbstractPage<MoodleExternalToolPage>
     super(
         context,
         By.xpath(
-            "//h2[contains(text(), 'Manage external tool types') or contains(text(), 'External Tool') or contains(text(), 'LTI')]"));
+            "//h2[contains(text(), 'Manage external tool types') or contains(text(), 'External"
+                + " Tool') or contains(text(), 'LTI')]"));
   }
 
   @Override
@@ -49,11 +50,13 @@ public class MoodleExternalToolPage extends AbstractPage<MoodleExternalToolPage>
   private String getToolXpath(String name) {
     waitForTable();
     if (isPresent(By.xpath("//div[@id='lti_configured_tools_container']"))) {
-      return "//div[@id='lti_configured_tools_container']/table/tbody[@class='yui-dt-data']/tr/td/div[contains(text(), '"
+      return "//div[@id='lti_configured_tools_container']/table/tbody[@class='yui-dt-data']/tr/td/div[contains(text(),"
+                 + " '"
           + name
           + "')]";
     }
-    return "//div[@id='lti_configured_container']/table/tbody[@class='yui-dt-data']/tr/td/div[contains(text(), '"
+    return "//div[@id='lti_configured_container']/table/tbody[@class='yui-dt-data']/tr/td/div[contains(text(),"
+               + " '"
         + name
         + "')]";
   }

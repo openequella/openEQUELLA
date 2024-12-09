@@ -6,19 +6,21 @@ case class JacocoAgent(jar: File, jacocoOpts: String) {
   def opts = s"-javaagent:${jar.absolutePath}=$jacocoOpts"
 }
 
-case class InstallOptions(installDir: File,
-                          jvmHome: File,
-                          url: String,
-                          hostname: String,
-                          port: Int,
-                          jacoco: Option[JacocoAgent],
-                          dbtype: String,
-                          dbhost: String,
-                          dbport: Int,
-                          dbname: String,
-                          dbuser: String,
-                          dbpassword: String,
-                          auditLevel: String) {
+case class InstallOptions(
+    installDir: File,
+    jvmHome: File,
+    url: String,
+    hostname: String,
+    port: Int,
+    jacoco: Option[JacocoAgent],
+    dbtype: String,
+    dbhost: String,
+    dbport: Int,
+    dbname: String,
+    dbuser: String,
+    dbpassword: String,
+    auditLevel: String
+) {
   def writeXML(xmlFile: File, baseInstall: File) = {
     val optXml = <commands>
       <installer>
@@ -54,7 +56,9 @@ case class InstallOptions(installDir: File,
         <host>{hostname}</host>
         <port>{port}</port>
         <context>/</context>
-        <javaopts>-Xss2m -Dequella.autotest=true -Duser.timezone=Australia/Hobart {jacoco.map(_.opts).getOrElse("")}</javaopts>
+        <javaopts>-Xss2m -Dequella.autotest=true -Duser.timezone=Australia/Hobart {
+      jacoco.map(_.opts).getOrElse("")
+    }</javaopts>
       </webserver>
       <service>
         <port>3000</port>

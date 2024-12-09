@@ -24,13 +24,14 @@ import com.tle.beans.item.ItemKey;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface ItemDefinitionDao extends AbstractEntityDao<ItemDefinition> {
   List<ItemDefinition> findByType(String type);
 
   List<BaseEntityLabel> listAllForSchema(long schemaID);
 
-  /** @deprecated Use an event to ask for reference */
+  /**
+   * @deprecated Use an event to ask for reference
+   */
   @Deprecated
   List<Class<?>> getReferencingClasses(long id);
 

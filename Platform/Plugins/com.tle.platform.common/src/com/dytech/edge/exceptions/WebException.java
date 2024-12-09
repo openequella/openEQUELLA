@@ -18,7 +18,6 @@
 
 package com.dytech.edge.exceptions;
 
-/** @author Aaron */
 public class WebException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -40,7 +39,9 @@ public class WebException extends RuntimeException {
     return code;
   }
 
-  /** @return A short string uniquely identifying the error */
+  /**
+   * @return A short string uniquely identifying the error
+   */
   public String getError() {
     return error;
   }

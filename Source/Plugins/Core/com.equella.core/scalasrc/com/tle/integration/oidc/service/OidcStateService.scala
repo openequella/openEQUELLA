@@ -24,24 +24,26 @@ import com.tle.integration.oauth2.OAuth2StateService
 
 import javax.inject.{Inject, Singleton}
 
-/**
-  * Details of an entry stored in state for an OIDC authentication request.
+/** Details of an entry stored in state for an OIDC authentication request.
   *
-  * @param codeVerifier The code verifier used by an authorisation server to verify the code challenge
-  * @param codeChallenge A transformed version of the code verifier sent to the authorisation server along with
-  *                      the transformation method being `S256`
-  * @param targetPage OEQ page the user was attempting to access before the login process
+  * @param codeVerifier
+  *   The code verifier used by an authorisation server to verify the code challenge
+  * @param codeChallenge
+  *   A transformed version of the code verifier sent to the authorisation server along with the
+  *   transformation method being `S256`
+  * @param targetPage
+  *   OEQ page the user was attempting to access before the login process
   */
 final case class OidcStateDetails(
     codeVerifier: String,
     codeChallenge: String,
-    targetPage: Option[String],
+    targetPage: Option[String]
 )
 
-/**
-  * Manages the `state` values for OIDC Authentication processes where a state is valid for 300 seconds.
+/** Manages the `state` values for OIDC Authentication processes where a state is valid for 300
+  * seconds.
   */
 @Bind
 @Singleton
-class OidcStateService @Inject()(rcs: ReplicatedCacheService)
+class OidcStateService @Inject() (rcs: ReplicatedCacheService)
     extends OAuth2StateService[OidcStateDetails](rcs)

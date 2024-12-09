@@ -57,7 +57,6 @@ import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(ViewItemService.class)

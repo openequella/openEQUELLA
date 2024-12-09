@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
 
-/** @author aholland */
 public class StatementBlock implements JSStatements {
   protected final Deque<JSStatements> statementsList = Lists.newLinkedList();
   private boolean seperate = false;

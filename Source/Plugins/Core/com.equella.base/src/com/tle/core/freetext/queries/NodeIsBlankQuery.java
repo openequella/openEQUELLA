@@ -21,7 +21,6 @@ package com.tle.core.freetext.queries;
 import com.dytech.edge.queries.FreeTextQuery;
 import java.util.Collection;
 
-/** @author jmaginnis */
 public class NodeIsBlankQuery extends BaseQuery {
   private static final long serialVersionUID = 1L;
   protected boolean not;

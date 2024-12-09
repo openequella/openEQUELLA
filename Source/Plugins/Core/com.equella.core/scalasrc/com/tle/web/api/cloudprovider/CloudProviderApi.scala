@@ -52,10 +52,14 @@ class CloudProviderApi {
 
   @POST
   @Path("register")
-  @ApiOperation(value = "Register a cloud provider",
-                response = classOf[CloudProviderRegistrationResponse])
-  def register(@QueryParam(TokenParam) @DefaultValue("") regtoken: String,
-               registration: CloudProviderRegistration): Response = {
+  @ApiOperation(
+    value = "Register a cloud provider",
+    response = classOf[CloudProviderRegistrationResponse]
+  )
+  def register(
+      @QueryParam(TokenParam) @DefaultValue("") regtoken: String,
+      registration: CloudProviderRegistration
+  ): Response = {
     def forwardUrl: String =
       UriBuilder
         .fromUri(CurrentInstitution.get.getUrlAsUri)
@@ -75,12 +79,15 @@ class CloudProviderApi {
   @Path("register/init")
   @ApiOperation(
     value = "Generate a cloud provider registration URL",
-    notes = "Given a URL to a cloud provider, generate a response with that URL and two extra parameters.\n" +
-      "'institution' - The institution URL to register against\n" +
-      "'register' - a relative URI which the cloud provider should post it's registration to."
+    notes =
+      "Given a URL to a cloud provider, generate a response with that URL and two extra parameters.\n" +
+        "'institution' - The institution URL to register against\n" +
+        "'register' - a relative URI which the cloud provider should post it's registration to."
   )
-  def prepareRegistration(@QueryParam("url") @DefaultValue("") providerUrl: String,
-                          @Context uriInfo: UriInfo): CloudProviderForward = {
+  def prepareRegistration(
+      @QueryParam("url") @DefaultValue("") providerUrl: String,
+      @Context uriInfo: UriInfo
+  ): CloudProviderForward = {
     checkPermissions()
     UrlParser.parseUrl(providerUrl) match {
       case Success(u: Url) =>
@@ -97,7 +104,8 @@ class CloudProviderApi {
         CloudProviderForward(
           u.addParam(RegistrationParam, returnUrl)
             .addParam(InstUrl, LegacyGuice.urlService.getBaseInstitutionURI.toString)
-            .toString)
+            .toString
+        )
       case _ => throw new BadRequestException("Invalid provider registration url")
     }
   }
@@ -105,15 +113,18 @@ class CloudProviderApi {
   @PUT
   @Path("provider/{uuid}")
   @ApiOperation(value = "Edit a cloud provider's service details")
-  def editServiceDetails(@PathParam("uuid") uuid: UUID,
-                         registration: CloudProviderRegistration): Response = {
+  def editServiceDetails(
+      @PathParam("uuid") uuid: UUID,
+      registration: CloudProviderRegistration
+  ): Response = {
     checkPermissions()
     Option(entityService.getByUuid(uuid.toString))
       .map(registrationService.editRegistered(_, registration))
       .map(
         _.map(_ => Response.noContent.build)
           .leftMap(collectErrors)
-          .valueOr(badRequest(_: _*)))
+          .valueOr(badRequest(_: _*))
+      )
       .getOrElse(resourceNotFound(s"Failed to find Cloud provider matching UUID: $uuid"))
   }
 

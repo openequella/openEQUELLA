@@ -22,7 +22,6 @@ import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author larry */
 @XmlRootElement
 public class ItemDefinitionScriptBean extends AbstractExtendableBean {
   private BaseEntityReference collection;

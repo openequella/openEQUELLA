@@ -25,7 +25,6 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-/** @author Nicholas Read */
 public abstract class TLEAction extends AbstractAction {
   public TLEAction() {
     super();

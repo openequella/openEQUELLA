@@ -42,13 +42,15 @@ case class CloudProviderListPage(ctx: PageContext)
 
   def waitForResults(): Unit = {
     waitFor(
-      ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath("id('cloudProviderList')//li"), 0))
+      ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath("id('cloudProviderList')//li"), 0)
+    )
   }
 
   def add(url: String): Unit = {
     findElement(By.id("add-entity")).click()
     val urlTextField: WebElement = waitFor(
-      ExpectedConditions.presenceOfElementLocated(By.id("new_cloud_provider_url")))
+      ExpectedConditions.presenceOfElementLocated(By.id("new_cloud_provider_url"))
+    )
     urlTextField.sendKeys(url)
     waitFor(ExpectedConditions.elementToBeClickable(By.id("confirm-register"))).click()
   }

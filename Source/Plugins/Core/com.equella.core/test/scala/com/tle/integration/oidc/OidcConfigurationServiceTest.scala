@@ -6,11 +6,7 @@ import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.{
-  CommonDetails,
-  GenericIdentityProvider,
-  GenericIdentityProviderDetails
-}
+import com.tle.integration.oidc.idp.{CommonDetails, Auth0, GenericIdentityProviderDetails}
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
@@ -28,7 +24,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   val userService: UserService                       = mock(classOf[UserService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
 
-  val auth0: GenericIdentityProvider = GenericIdentityProvider(
+  val auth0: Auth0 = Auth0(
     issuer = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
     authCodeClientSecret =
@@ -42,11 +38,11 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     enabled = true,
     apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"),
+    apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I")
   )
 
   val auth0EncryptedStringRepr =
-    """{"commonDetails":{"platform":"GENERIC","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
+    """{"commonDetails":{"platform":"AUTH0","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   mockStatic(classOf[CurrentUser])
@@ -71,7 +67,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val idpStringRepr = ArgumentCaptor.forClass[String, String](classOf[String])
       verify(mockConfigurationService).setProperty(
         ArgumentCaptor.forClass[String, String](classOf[String]).capture(),
-        idpStringRepr.capture(),
+        idpStringRepr.capture()
       )
 
       idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
@@ -85,16 +81,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         authCodeClientId = "",
         authUrl = "http://abc/ authorise/",
         keysetUrl = "htp://keyset.com",
-        apiUrl = "www.userlisting.com",
+        apiUrl = "www.userlisting.com"
       )
 
       When("attempting to save this configuration")
       val result = f.service.save(badAuth0)
 
       Then("All the invalid values should be captured")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for IdP API URL: URI is not absolute"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for API URL: URI is not absolute"
       }
     }
 
@@ -109,9 +104,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.save(auth0)
 
       Then("The error message should be captured")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe error
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe error
       }
     }
 
@@ -125,7 +119,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       When("A new configuration does not include sensitive values")
       val newAuth0 = auth0.copy(
         authCodeClientSecret = None,
-        apiClientSecret = None,
+        apiClientSecret = None
       )
       f.service.save(newAuth0)
 
@@ -133,14 +127,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val idpStringRepr = ArgumentCaptor.forClass[String, String](classOf[String])
       verify(mockConfigurationService, atLeastOnce()).setProperty(
         ArgumentCaptor.forClass[String, String](classOf[String]).capture(),
-        idpStringRepr.capture(),
+        idpStringRepr.capture()
       )
 
       idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
     }
 
     it(
-      "returns errors for sensitive values if they are neither provided or available in an existing config") {
+      "returns errors for sensitive values if they are neither provided or available in an existing config"
+    ) {
       val f = fixture
 
       Given("No configuration is available")
@@ -150,16 +145,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       When("A new configuration does not include sensitive values")
       val newAuth0 = auth0.copy(
         authCodeClientSecret = None,
-        apiClientSecret = None,
+        apiClientSecret = None
       )
 
       Then("Error messages returned for the missing sensitive values")
       val result = f.service.save(newAuth0)
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe
-            "Missing value for required field: Authorisation Code flow Client Secret," +
-              "Missing value for required field: API Client Secret"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe
+          "Missing value for required field: Authorisation Code flow Client Secret," +
+          "Missing value for required field: API Client Secret"
       }
     }
 
@@ -176,7 +170,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         null,
         null,
         null,
-        auth0EncryptedStringRepr,
+        auth0EncryptedStringRepr
       )
     }
 
@@ -195,7 +189,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then(
-        "The string representation should have been converted to the object and returned through ConfigurationService")
+        "The string representation should have been converted to the object and returned through ConfigurationService"
+      )
       val expected = GenericIdentityProviderDetails(
         commonDetails = CommonDetails(
           platform = auth0.platform,
@@ -208,7 +203,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
           usernameClaim = auth0.usernameClaim,
           defaultRoles = auth0.defaultRoles,
           roleConfig = auth0.roleConfig,
-          enabled = auth0.enabled,
+          enabled = auth0.enabled
         ),
         apiUrl = URI.create(auth0.apiUrl).toURL,
         apiClientId = auth0.apiClientId,
@@ -227,9 +222,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "No Identity Provider configured"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "No Identity Provider configured"
       }
     }
 
@@ -245,9 +239,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "DecodingFailure at .authCodeClientId: Missing required field"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "DecodingFailure at .authCodeClientId: Missing required field"
       }
     }
   }

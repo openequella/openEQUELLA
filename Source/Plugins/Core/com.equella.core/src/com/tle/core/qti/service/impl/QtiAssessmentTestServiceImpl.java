@@ -57,7 +57,6 @@ import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 import uk.ac.ed.ph.jqtiplus.resolution.RootNodeLookup;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiAssessmentTestService.class)

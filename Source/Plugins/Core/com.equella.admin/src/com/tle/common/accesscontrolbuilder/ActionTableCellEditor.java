@@ -24,7 +24,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 
-/** @author Nicholas Read */
 public class ActionTableCellEditor extends DefaultCellEditor {
   private static final long serialVersionUID = 1L;
   private static final String GRANT = CurrentLocale.get("security.editor.grant"); // $NON-NLS-1$

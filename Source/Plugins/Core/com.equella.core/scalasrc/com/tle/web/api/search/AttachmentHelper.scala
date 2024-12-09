@@ -31,18 +31,18 @@ import com.tle.web.controls.youtube.YoutubeAttachmentBean
 import java.util.Optional
 import scala.jdk.CollectionConverters._
 
-/**
-  * Object to provide helper functions for building a SearchResultAttachment.
+/** Object to provide helper functions for building a SearchResultAttachment.
   */
 object AttachmentHelper {
 
-  /**
-    * Build the links maps for an attachment, which can also include external links (or IDs) for
+  /** Build the links maps for an attachment, which can also include external links (or IDs) for
     * custom attachments.
     *
-    * @param attachment to build the links map for
-    * @return a map containing the standard links (view, thumbnail), plus optionally external links
-    *         if suitable for the attachment type.
+    * @param attachment
+    *   to build the links map for
+    * @return
+    *   a map containing the standard links (view, thumbnail), plus optionally external links if
+    *   suitable for the attachment type.
     */
   def buildAttachmentLinks(attachment: AttachmentBean): java.util.Map[String, String] = {
     val addExternalId = (links: Map[String, String], externalId: Optional[String]) =>
@@ -57,13 +57,13 @@ object AttachmentHelper {
     }).asJava
   }
 
-  /**
-    * When an AttachmentBean is converted to SearchResultAttachment, it may require some extra sanitising
-    * to complete the conversion. The sanitising work includes tasks listed below.
+  /** When an AttachmentBean is converted to SearchResultAttachment, it may require some extra
+    * sanitising to complete the conversion. The sanitising work includes tasks listed below.
     *
-    * 1. Help ResourceAttachmentBean check the version of its linked resource.
+    *   1. Help ResourceAttachmentBean check the version of its linked resource.
     *
-    * @param att An AttachmentBean to be sanitised.
+    * @param att
+    *   An AttachmentBean to be sanitised.
     */
   def sanitiseAttachmentBean(att: AttachmentBean): AttachmentBean = {
     att match {
@@ -76,25 +76,29 @@ object AttachmentHelper {
     att
   }
 
-  /**
-    * Produces a function to support checking whether a user has permission to view an attachment.
+  /** Produces a function to support checking whether a user has permission to view an attachment.
     * Currently only checking around the concept of 'restricted attachments', but could be expanded
     * if other checks required.
     *
-    * @param hasRestrictedAttachmentPrivileges typically a `lazy val` from hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
-    * @param att the attachment to check if the user is allows to view
-    * @return True if viewable, otherwise false
+    * @param hasRestrictedAttachmentPrivileges
+    *   typically a `lazy val` from hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+    * @param att
+    *   the attachment to check if the user is allows to view
+    * @return
+    *   True if viewable, otherwise false
     */
   def isViewable(hasRestrictedAttachmentPrivileges: => Boolean)(att: AttachmentBean) =
     !att.isRestricted || hasRestrictedAttachmentPrivileges
 
-  /**
-    * Given an `AttachmentBean` and details of the owning Item, builds a `SearchResultAttachment` for
-    * use in search results.
+  /** Given an `AttachmentBean` and details of the owning Item, builds a `SearchResultAttachment`
+    * for use in search results.
     *
-    * @param itemKey Key for the owning item of `att`.
-    * @param att The attachment to convert.
-    * @return The resultant `SearchResultAttachment`.
+    * @param itemKey
+    *   Key for the owning item of `att`.
+    * @param att
+    *   The attachment to convert.
+    * @return
+    *   The resultant `SearchResultAttachment`.
     */
   def toSearchResultAttachment(itemKey: ItemIdKey, att: AttachmentBean): SearchResultAttachment = {
     val attachment = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
@@ -117,7 +121,7 @@ object AttachmentHelper {
       // nothing so use the on in `AttachmentBean`.
       description =
         ifNotBroken((a: Attachment) => Option(a.getDescription), Option(att.getDescription)),
-      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att)),
+      mimeType = ifNotBroken(_ => getMimetypeForAttachment(att))
     )
   }
 }

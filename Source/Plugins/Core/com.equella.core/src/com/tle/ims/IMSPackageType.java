@@ -20,7 +20,6 @@ package com.tle.ims;
 
 import com.tle.annotation.NonNullByDefault;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public final class IMSPackageType {

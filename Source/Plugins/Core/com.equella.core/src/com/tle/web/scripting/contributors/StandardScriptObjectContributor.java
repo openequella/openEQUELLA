@@ -38,7 +38,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class StandardScriptObjectContributor implements ScriptObjectContributor {

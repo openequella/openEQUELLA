@@ -28,7 +28,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class DynaCollectionEditor extends BaseEntityEditor<DynaCollection> {
   public DynaCollectionEditor(BaseEntityTool<DynaCollection> tool, boolean readonly) {
     super(tool, readonly);

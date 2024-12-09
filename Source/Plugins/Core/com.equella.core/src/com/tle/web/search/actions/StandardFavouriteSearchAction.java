@@ -22,7 +22,6 @@ import com.tle.web.sections.equella.dialog.EquellaDialog;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author Aaron */
 public class StandardFavouriteSearchAction extends AbstractFavouriteSearchAction {
   @Inject
   @Component(name = "fd")

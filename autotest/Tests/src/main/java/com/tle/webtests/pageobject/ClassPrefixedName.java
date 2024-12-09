@@ -1,6 +1,5 @@
 package com.tle.webtests.pageobject;
 
-/** @author Aaron */
 public class ClassPrefixedName implements PrefixedName {
   protected final String name;
   protected final Class<?> c;

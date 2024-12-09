@@ -194,7 +194,8 @@ public class CALSummaryPage extends AbstractPage<CALSummaryPage> {
         .findElement(
             By.xpath(
                 findBookRow(chapterText, attachment)
-                    + "//td/div[@class='sectionAttachment']/a[contains(@class, 'copyright-sectionlink')]"))
+                    + "//td/div[@class='sectionAttachment']/a[contains(@class,"
+                    + " 'copyright-sectionlink')]"))
         .click();
   }
 
@@ -202,14 +203,16 @@ public class CALSummaryPage extends AbstractPage<CALSummaryPage> {
     return isPresent(
         By.xpath(
             findBookRow(getChapterNumText(chapter), attachment)
-                + "//td/div[@class='sectionAttachment']/a[contains(@class, 'copyright-sectionlink')]"));
+                + "//td/div[@class='sectionAttachment']/a[contains(@class,"
+                + " 'copyright-sectionlink')]"));
   }
 
   public boolean viewPortionLinkPresent(int chapter, String attachment) {
     return isPresent(
         By.xpath(
             findBookRow(getChapterNumText(chapter), attachment)
-                + "//td/div[@class='sectionAttachment']/a[contains(@class, 'copyright-portionlink')]"));
+                + "//td/div[@class='sectionAttachment']/a[contains(@class,"
+                + " 'copyright-portionlink')]"));
   }
 
   public boolean otherPortionsLinksPresent() {

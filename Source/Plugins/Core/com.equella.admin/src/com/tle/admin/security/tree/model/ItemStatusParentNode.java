@@ -24,7 +24,6 @@ import com.tle.common.i18n.CurrentLocale;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ItemStatusParentNode extends AbstractLazyNode {
   private final ItemDefinition itemDefinition;
 

@@ -18,7 +18,6 @@
 
 package com.tle.core.util.archive;
 
-/** @author aholland */
 public abstract class ArchiveProgress {
   private final long entryCount;
 

@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SecureOnCall(priv = "COPYRIGHT_ITEM")
 public class RolloverOperation extends AbstractBulkableActivationOperation {
   private final long courseId;

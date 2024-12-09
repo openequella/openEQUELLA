@@ -34,7 +34,6 @@ import org.java.plugin.registry.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 public abstract class AbstractTaskServiceImpl implements PrivateTaskService {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTaskServiceImpl.class);
 

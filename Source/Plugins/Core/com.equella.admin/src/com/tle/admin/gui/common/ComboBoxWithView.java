@@ -31,7 +31,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.ListCellRenderer;
 
-/** @author Nicholas Read */
 public abstract class ComboBoxWithView<
         LIST_TYPE, VIEW_TYPE extends ListWithViewInterface<LIST_TYPE>>
     extends AbstractListWithView<

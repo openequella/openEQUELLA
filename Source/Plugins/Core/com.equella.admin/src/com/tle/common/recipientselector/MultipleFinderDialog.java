@@ -32,7 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class MultipleFinderDialog implements ActionListener {
   private JButton ok;

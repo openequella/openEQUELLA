@@ -23,7 +23,6 @@ import com.tle.core.entity.dao.AbstractEntityDao;
 import com.tle.core.portal.service.PortletSearch;
 import java.util.List;
 
-/** @author aholland */
 public interface PortletDao extends AbstractEntityDao<Portlet> {
   List<Portlet> getForUser(final String userId);
 

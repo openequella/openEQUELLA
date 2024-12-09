@@ -71,6 +71,7 @@ public interface RemoteTermService {
    *     sibling.
    */
   void move(Taxonomy taxonomy, String termToMove, String moveToParent, int index);
+
   /**
    * Renames a term. The user should always remember that renaming a term will change the lineage of
    * child terms, and depending on the number of terms that require modification, could be an

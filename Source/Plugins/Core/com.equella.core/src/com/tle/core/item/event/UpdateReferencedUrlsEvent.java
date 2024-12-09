@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.UpdateReferencedUrlsListener;
 
-/** @author Nicholas Read */
 public class UpdateReferencedUrlsEvent extends ApplicationEvent<UpdateReferencedUrlsListener> {
   private static final long serialVersionUID = 1L;
   private ItemId itemKey;

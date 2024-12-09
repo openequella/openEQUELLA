@@ -23,7 +23,6 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSUtils;
 
-/** @author aholland */
 public class EqualityExpression extends BooleanExpression {
   protected final JSExpression first;
   protected final JSExpression second;

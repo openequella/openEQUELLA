@@ -25,30 +25,36 @@ import com.tle.core.freetext.queries.{FreeTextBooleanQuery, FreeTextDateQuery, F
 
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Provides one Wizard control's targeted schema nodes and supplied values.
+/** Provides one Wizard control's targeted schema nodes and supplied values.
   *
-  * @param schemaNodes The 'fullPath's for the targetNode.
-  * @param values Values of one Wizard Control.
-  * @param queryType The query type which must be either 'DateRange', 'Tokenised' or 'Phrase'.
+  * @param schemaNodes
+  *   The 'fullPath's for the targetNode.
+  * @param values
+  *   Values of one Wizard Control.
+  * @param queryType
+  *   The query type which must be either 'DateRange', 'Tokenised' or 'Phrase'.
   */
-case class WizardControlFieldValue(schemaNodes: Array[String],
-                                   values: Array[String],
-                                   queryType: String)
+case class WizardControlFieldValue(
+    schemaNodes: Array[String],
+    values: Array[String],
+    queryType: String
+)
 
-/**
-  * Provides a list of `WizardControlFieldValue` to help build the full criteria.
+/** Provides a list of `WizardControlFieldValue` to help build the full criteria.
   *
-  * @param advancedSearchCriteria A list of `WizardControlFieldValue`.
+  * @param advancedSearchCriteria
+  *   A list of `WizardControlFieldValue`.
   */
 case class AdvancedSearchParameters(advancedSearchCriteria: Array[WizardControlFieldValue])
 
 object AdvancedSearchParameters {
   // Build FreeTextFieldQuery for each value and put all values into one FreeTextBooleanQuery.
   // The relationship between each FreeTextFieldQuery is `OR`.
-  private def buildTextFieldQuery(field: String,
-                                  values: Array[String],
-                                  isTokenised: Boolean = false): FreeTextQuery = {
+  private def buildTextFieldQuery(
+      field: String,
+      values: Array[String],
+      isTokenised: Boolean = false
+  ): FreeTextQuery = {
     val queries: Array[FreeTextQuery] =
       values.map(v => {
         val q = new FreeTextFieldQuery(field, v, false)
@@ -71,7 +77,8 @@ object AdvancedSearchParameters {
             case Success(value) => value
             case Failure(e) =>
               throw new IllegalArgumentException(
-                s"Failed to build date range query for field $field due to ${e.getMessage}")
+                s"Failed to build date range query for field $field due to ${e.getMessage}"
+              )
           }
       }
     }
@@ -95,7 +102,8 @@ object AdvancedSearchParameters {
       // For others like an empty array or an array having more than 2 values, throw an exception.
       case _ =>
         throw new IllegalArgumentException(
-          "Wrong data structure for building a date range query - must have one or two values")
+          "Wrong data structure for building a date range query - must have one or two values"
+        )
     }
   }
 
@@ -114,19 +122,21 @@ object AdvancedSearchParameters {
           buildTextFieldQuery(node, values)
         case "Tokenised" =>
           buildTextFieldQuery(node, values, isTokenised = true)
-    })
+      }
+    )
 
     new FreeTextBooleanQuery(false, false, queries: _*)
   }
 
-  /**
-    * Function to build a FreeTextQuery for each Wizard Control and put all the FreeTextQuery
-    * into one FreeTextBooleanQuery. The relationship between each FreeTextQuery is `AND`.
+  /** Function to build a FreeTextQuery for each Wizard Control and put all the FreeTextQuery into
+    * one FreeTextBooleanQuery. The relationship between each FreeTextQuery is `AND`.
     *
-    * @param fieldValues A array of `WizardControlFieldValue` providing each Wizard controls' information
+    * @param fieldValues
+    *   A array of `WizardControlFieldValue` providing each Wizard controls' information
     */
   def buildAdvancedSearchCriteria(
-      fieldValues: Array[WizardControlFieldValue]): FreeTextBooleanQuery = {
+      fieldValues: Array[WizardControlFieldValue]
+  ): FreeTextBooleanQuery = {
     val queries = fieldValues.map(buildCriteriaForOneControl)
     new FreeTextBooleanQuery(false, true, queries: _*)
   }

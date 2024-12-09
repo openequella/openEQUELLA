@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.UriInfo;
 
-/** @author larry */
 @Bind(SchemaResource.class)
 @Singleton
 public class SchemaResourceImpl

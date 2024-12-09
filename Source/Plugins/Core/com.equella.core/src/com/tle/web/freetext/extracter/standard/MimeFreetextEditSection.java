@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class MimeFreetextEditSection

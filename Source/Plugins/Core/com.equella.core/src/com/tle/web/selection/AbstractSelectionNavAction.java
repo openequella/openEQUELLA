@@ -21,7 +21,6 @@ package com.tle.web.selection;
 import com.tle.web.sections.SectionInfo;
 import java.util.Set;
 
-/** @author Aaron */
 public abstract class AbstractSelectionNavAction implements SelectionNavAction {
   @Override
   public boolean isActionAvailable(SectionInfo info, SelectionSession session) {

@@ -54,7 +54,6 @@ import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.section.WizardBodySection;
 import com.tle.web.wizard.standard.controls.EditBox.EditBoxModel;
 
-/** @author jmaginnis */
 @Bind
 public class EditBox extends AbstractWebControl<EditBoxModel> implements SimpleValueControl {
   @ViewFactory(name = "wizardFreemarkerFactory")

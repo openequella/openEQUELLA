@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface BaseEntityDao {
   LanguageBundle getEntityNameForId(long id);
 

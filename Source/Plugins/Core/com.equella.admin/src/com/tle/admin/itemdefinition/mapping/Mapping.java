@@ -21,7 +21,6 @@ package com.tle.admin.itemdefinition.mapping;
 import com.tle.beans.entity.itemdef.MetadataMapping;
 import javax.swing.JComponent;
 
-/** @author Charles O'Farrell */
 public interface Mapping {
   /** Gets the viewable component for this mapping. */
   JComponent getComponent();

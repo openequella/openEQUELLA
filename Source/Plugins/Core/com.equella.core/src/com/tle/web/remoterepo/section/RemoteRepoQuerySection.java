@@ -38,7 +38,6 @@ import com.tle.web.sections.js.generic.StatementHandler;
 import com.tle.web.sections.render.Label;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class RemoteRepoQuerySection<E extends RemoteRepoSearchEvent<E>>
     extends AbstractQuerySection<RemoteRepoQuerySection.RemoteRepoQueryModel, E> {

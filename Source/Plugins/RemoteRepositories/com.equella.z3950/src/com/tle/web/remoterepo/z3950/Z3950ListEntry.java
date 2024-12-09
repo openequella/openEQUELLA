@@ -26,7 +26,6 @@ import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
 import java.util.List;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class Z3950ListEntry extends RemoteRepoListEntry<Z3950SearchResult> {

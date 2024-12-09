@@ -48,7 +48,6 @@ import com.tle.web.sections.standard.model.SimpleHtmlListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class FilterByFlickrInstitutionSection extends AbstractPrototypeSection<Object>
     implements HtmlRenderer, ResetFiltersListener, SearchEventListener<FlickrSearchEvent> {
@@ -182,7 +181,9 @@ public class FilterByFlickrInstitutionSection extends AbstractPrototypeSection<O
     return validInstiFlickrId;
   }
 
-  /** @see com.tle.web.search.filter.ResetFiltersListener#reset(com.tle.web.sections.SectionInfo) */
+  /**
+   * @see com.tle.web.search.filter.ResetFiltersListener#reset(com.tle.web.sections.SectionInfo)
+   */
   @Override
   public void reset(SectionInfo info) {
     flickrInstitutionSelector.setSelectedValue(info, null);

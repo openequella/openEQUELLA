@@ -26,7 +26,9 @@ public class OAuthClientEditorTest extends AbstractCleanupTest {
 
   String savedSecret;
 
-  /** @see Redmine: #7227 */
+  /**
+   * @see Redmine: #7227
+   */
   // Most of the REST tests do this indirectly, but let's give it a good
   // thrash here
   @Test
@@ -56,7 +58,8 @@ public class OAuthClientEditorTest extends AbstractCleanupTest {
     assertNotEquals(
         secret,
         editPage.getSecret(),
-        "Either the client secret was not regenerated or two random Uuid's were equal (not likely)");
+        "Either the client secret was not regenerated or two random Uuid's were equal (not"
+            + " likely)");
     savedSecret = editPage.getSecret();
 
     assertEquals(editPage.getSelectedFlow(), "");

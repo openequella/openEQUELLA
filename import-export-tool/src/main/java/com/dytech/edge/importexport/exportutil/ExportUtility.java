@@ -9,7 +9,6 @@ import com.dytech.edge.importexport.WizardPage;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class ExportUtility extends BaseUtility {
   protected WizardFrame frame;
 

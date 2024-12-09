@@ -32,7 +32,6 @@ import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 import java.util.List;
 
-/** @author aholland */
 @Bind
 @SuppressWarnings("nls")
 public class MerlotListEntry extends RemoteRepoListEntry<MerlotSearchResult> {

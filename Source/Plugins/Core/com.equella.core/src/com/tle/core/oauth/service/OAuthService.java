@@ -24,7 +24,6 @@ import com.tle.core.entity.service.AbstractEntityService;
 import com.tle.core.oauth.event.DeleteOAuthTokensEvent;
 import java.util.List;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public interface OAuthService extends AbstractEntityService<OAuthClientEditingBean, OAuthClient> {
   String ENTITY_TYPE = "OAUTH_CLIENT";

@@ -7,7 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
-/** @author Aaron */
 public abstract class AbstractEditEntityPage<
         THIS extends AbstractEditEntityPage<THIS, SHOWLISTPAGE>,
         SHOWLISTPAGE extends AbstractShowEntitiesPage<SHOWLISTPAGE>>

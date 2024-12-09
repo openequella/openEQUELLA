@@ -22,7 +22,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 
-/** @author aholland */
 public class SimpleBooleanExpression extends BooleanExpression {
   protected JSExpression unary;
 

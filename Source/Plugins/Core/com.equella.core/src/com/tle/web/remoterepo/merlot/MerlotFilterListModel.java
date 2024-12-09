@@ -27,7 +27,6 @@ import com.tle.web.sections.standard.model.DynamicHtmlListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Aaron */
 public class MerlotFilterListModel extends DynamicHtmlListModel<NameValue> {
   private static final PluginResourceHelper RESOURCES =
       ResourcesService.getResourceHelper(MerlotFilterListModel.class);

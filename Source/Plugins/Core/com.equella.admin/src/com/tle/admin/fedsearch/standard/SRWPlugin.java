@@ -25,7 +25,6 @@ import com.tle.common.i18n.StringLookup;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-/** @author cofarrell */
 public class SRWPlugin extends SearchPlugin<SRWSettings> {
   private JTextField urlField;
   private JTextField schemaIdField;

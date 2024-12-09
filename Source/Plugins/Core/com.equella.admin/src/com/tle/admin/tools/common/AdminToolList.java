@@ -211,7 +211,9 @@ public abstract class AdminToolList extends AdminTool {
   /** Called when the delete button is pressed. */
   protected abstract void onRemove();
 
-  /** @return The currently selected Object from the list. */
+  /**
+   * @return The currently selected Object from the list.
+   */
   protected List<NameValue> getSelectedObjects() {
     return list.getSelectedValuesList();
   }

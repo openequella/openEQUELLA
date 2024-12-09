@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class AjaxExceptionHandler implements SectionsExceptionHandler {

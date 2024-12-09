@@ -29,7 +29,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.List;
 
-/** @author aholland */
 @Bind
 public class RemoteRepoListSection<R extends RemoteRepoSearchResult>
     extends AbstractListSection<

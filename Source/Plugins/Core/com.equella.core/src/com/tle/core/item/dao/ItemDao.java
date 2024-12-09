@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface ItemDao extends GenericInstitutionalDao<Item, Long> {
   List<Integer> getCommentCounts(List<Item> items);
 

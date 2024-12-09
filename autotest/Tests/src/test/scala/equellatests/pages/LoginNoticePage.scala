@@ -47,7 +47,8 @@ case class LoginNoticePage(ctx: PageContext)
   private def switchFromTinyMCEIFrame(): Unit = {
     driver.switchTo().defaultContent()
     waiter.until(
-      ExpectedConditions.presenceOfElementLocated(By.xpath("//h5[text()='Login notice editor']")))
+      ExpectedConditions.presenceOfElementLocated(By.xpath("//h5[text()='Login notice editor']"))
+    )
   }
 
   private def clearAndPopulatePreNoticeField(notice: String): Unit = {

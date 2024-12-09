@@ -43,7 +43,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 public class CheckURLsScheduledTask implements ScheduledTask {

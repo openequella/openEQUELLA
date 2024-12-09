@@ -28,7 +28,6 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewItemUrl;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface ViewableItemResolver {
   <I extends IItem<?>> ViewableItem<I> createViewableItem(I item, @Nullable String extensionType);

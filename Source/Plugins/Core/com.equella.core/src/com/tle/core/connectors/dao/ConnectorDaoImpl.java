@@ -25,7 +25,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 
-/** @author aholland */
 @Bind(ConnectorDao.class)
 @Singleton
 public class ConnectorDaoImpl extends AbstractEntityDaoImpl<Connector> implements ConnectorDao {

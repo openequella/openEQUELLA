@@ -37,7 +37,6 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-/** @author Nicholas Read */
 public class ProgressWindow extends JFrame implements Progress {
   private JProgressBar whole;
   private JProgressBar current;

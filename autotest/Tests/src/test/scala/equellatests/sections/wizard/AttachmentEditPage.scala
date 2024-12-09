@@ -74,7 +74,8 @@ sealed trait AttachmentEditPage extends WaitingBrowserPage {
     val saveButton = uc
       .elemForId("_dialog")
       .findElement(
-        By.xpath("//div[@class='modal-footer-inner']/button[normalize-space(text())='Save']"))
+        By.xpath("//div[@class='modal-footer-inner']/button[normalize-space(text())='Save']")
+      )
     saveButton.click()
     waitFor(expected)
     uc.page.get()

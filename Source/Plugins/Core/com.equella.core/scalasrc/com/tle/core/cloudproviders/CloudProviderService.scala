@@ -57,41 +57,52 @@ object CloudProviderService {
       .get(OAuthServiceId)
       .map { oauthService =>
         IO.fromEither(
-          UriTemplateService.replaceVariables(oauthService.url, provider.baseUrl, Map()))
+          UriTemplateService.replaceVariables(oauthService.url, provider.baseUrl, Map())
+        )
       }
       .getOrElse(IO.raiseError(new Throwable("No OAuth service URL")))
   }
 
-  def serviceUri(provider: CloudProviderInstance,
-                 serviceUri: ServiceUrl,
-                 params: Map[String, Any]): Either[UriParseError, Uri] = {
+  def serviceUri(
+      provider: CloudProviderInstance,
+      serviceUri: ServiceUrl,
+      params: Map[String, Any]
+  ): Either[UriParseError, Uri] = {
     UriTemplateService.replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params)
   }
 
   // Use Any probably because this map will later concat with other maps which have unknown type for values.
   def contextParams: Map[String, Any] = Map("userid" -> CurrentUser.getDetails.getUniqueID)
 
-  def serviceRequest[T](serviceUri: ServiceUrl,
-                        provider: CloudProviderInstance,
-                        params: Map[String, Any],
-                        f: Uri => Request[T, Stream[IO, Byte]]): IO[Response[T]] = {
+  def serviceRequest[T](
+      serviceUri: ServiceUrl,
+      provider: CloudProviderInstance,
+      params: Map[String, Any],
+      f: Uri => Request[T, Stream[IO, Byte]]
+  ): IO[Response[T]] = {
     for {
       uri <- IO.fromEither(
         UriTemplateService
-          .replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params))
+          .replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params)
+      )
 
-      req            = f(uri)
-      requestContext = "[" + RandomStringUtils.randomAlphanumeric(6) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
+      req = f(uri)
+      requestContext = "[" + RandomStringUtils.randomAlphanumeric(
+        6
+      ) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
       _ = Logger.debug(
         requestContext + ", method: " + req.method.method + ", request: " + uri.toString.split('?')(
-          0))
+          0
+        )
+      )
       auth = provider.providerAuth
-      response <- if (serviceUri.authenticated) {
-        tokenUrlForProvider(provider).map { oauthUrl =>
-          OAuthClientService
-            .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
-        }
-      } else sttpBackend.flatMap(implicit backend => req.send())
+      response <-
+        if (serviceUri.authenticated) {
+          tokenUrlForProvider(provider).map { oauthUrl =>
+            OAuthClientService
+              .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
+          }
+        } else sttpBackend.flatMap(implicit backend => req.send())
 
     } yield {
       Logger.debug(requestContext + ", response status: " + response.code)
@@ -100,7 +111,8 @@ object CloudProviderService {
   }
 
   private def getControlDefinition(
-      provider: CloudProviderInstance): Either[String, List[CloudControlDefinition]] = {
+      provider: CloudProviderInstance
+  ): Either[String, List[CloudControlDefinition]] = {
     provider.serviceUrls.get(ControlsServiceId) match {
       case None => Right(List.empty)
       case Some(controlsService) => {
@@ -108,24 +120,29 @@ object CloudProviderService {
           controlsService,
           provider,
           Map(),
-          u => basicRequest.get(u).response(asJson[Map[String, ProviderControlDefinition]])).attempt
+          u => basicRequest.get(u).response(asJson[Map[String, ProviderControlDefinition]])
+        ).attempt
           .map { responseOrError =>
             for {
               response   <- responseOrError.leftMap(CloudProviderError)
               controlMap <- response.body.leftMap(CloudProviderError)
             } yield {
-              controlMap.map {
-                case (controlId, config) =>
-                  CloudControlDefinition(provider.id,
-                                         controlId,
-                                         config.name,
-                                         config.iconUrl.getOrElse("/icons/control.gif"),
-                                         config.configuration)
+              controlMap.map { case (controlId, config) =>
+                CloudControlDefinition(
+                  provider.id,
+                  controlId,
+                  config.name,
+                  config.iconUrl.getOrElse("/icons/control.gif"),
+                  config.configuration
+                )
               }.toList
             }
           }
-          .map(_.leftMap(err =>
-            s"Failed to retrieve the Cloud Control definitions of ${provider.name} due to $err"))
+          .map(
+            _.leftMap(err =>
+              s"Failed to retrieve the Cloud Control definitions of ${provider.name} due to $err"
+            )
+          )
           .unsafeRunSync
       }
     }

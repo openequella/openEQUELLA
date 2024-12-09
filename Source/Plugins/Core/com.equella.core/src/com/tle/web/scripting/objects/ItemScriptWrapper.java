@@ -28,7 +28,6 @@ import com.tle.web.scripting.ScriptTypeFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(ItemScriptObject.class)
 @Singleton
 public class ItemScriptWrapper extends AbstractScriptWrapper implements ItemScriptObject {

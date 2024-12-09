@@ -31,7 +31,9 @@ import com.tle.common.scripting.types.DrmSettingsScriptType;
 public interface DrmScriptObject extends ScriptObject {
   String DEFAULT_VARIABLE = "drm";
 
-  /** @return The DRM settings of the current item */
+  /**
+   * @return The DRM settings of the current item
+   */
   DrmSettingsScriptType getSettings();
 
   /**

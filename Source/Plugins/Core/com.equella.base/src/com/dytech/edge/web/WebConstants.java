@@ -18,7 +18,6 @@
 
 package com.dytech.edge.web;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public final class WebConstants {
   public static final String TOKEN_AUTHENTICATION_PARAM = "token";

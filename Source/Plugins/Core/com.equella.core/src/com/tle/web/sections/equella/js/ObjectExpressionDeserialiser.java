@@ -32,7 +32,6 @@ import com.tle.web.sections.js.generic.expression.StringExpression;
 import java.io.IOException;
 import java.util.List;
 
-/** @author Aaron */
 public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpression> {
   public ObjectExpressionDeserialiser() {
     super(ObjectExpression.class);

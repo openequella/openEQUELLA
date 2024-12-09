@@ -21,7 +21,6 @@ package com.tle.beans.entity.itemdef;
 import java.io.Serializable;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class DisplayTemplate implements Serializable {
   private static final long serialVersionUID = 1;
 

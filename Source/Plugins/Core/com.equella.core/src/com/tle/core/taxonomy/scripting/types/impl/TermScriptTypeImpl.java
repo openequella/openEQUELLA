@@ -22,7 +22,6 @@ import com.tle.core.taxonomy.TaxonomyService;
 import com.tle.core.taxonomy.TermResult;
 import com.tle.core.taxonomy.scripting.types.TermScriptType;
 
-/** @author aholland */
 public class TermScriptTypeImpl implements TermScriptType {
   private final TaxonomyService taxonomyService;
   private final String taxonomyUuid;

@@ -102,32 +102,44 @@ public class IMSManifest extends IMSChild {
     return allmap;
   }
 
-  /** @return Returns the organisations. */
+  /**
+   * @return Returns the organisations.
+   */
   public List<IMSOrganisation> getOrganisations() {
     return organisations;
   }
 
-  /** @param organisations The organisations to set. */
+  /**
+   * @param organisations The organisations to set.
+   */
   public void setOrganisations(List<IMSOrganisation> organisations) {
     this.organisations = organisations;
   }
 
-  /** @return Returns the resources. */
+  /**
+   * @return Returns the resources.
+   */
   public List<IMSResource> getResources() {
     return resources;
   }
 
-  /** @param resources The resources to set. */
+  /**
+   * @param resources The resources to set.
+   */
   public void setResources(List<IMSResource> resources) {
     this.resources = resources;
   }
 
-  /** @return Returns the subManifests. */
+  /**
+   * @return Returns the subManifests.
+   */
   public List<IMSManifest> getSubManifests() {
     return subManifests;
   }
 
-  /** @param subManifests The subManifests to set. */
+  /**
+   * @param subManifests The subManifests to set.
+   */
   public void setSubManifests(List<IMSManifest> subManifests) {
     this.subManifests = subManifests;
   }

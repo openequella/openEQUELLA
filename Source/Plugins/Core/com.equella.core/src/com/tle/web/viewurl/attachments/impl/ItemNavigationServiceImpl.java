@@ -34,7 +34,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(ItemNavigationService.class)
 @Singleton
 public class ItemNavigationServiceImpl implements ItemNavigationService {

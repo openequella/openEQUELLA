@@ -34,7 +34,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.datatools.connectivity.oda.OdaException;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ConnectorListQueryDelegate extends SimpleTypeQuery {

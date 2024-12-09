@@ -34,7 +34,6 @@ import com.tle.web.sections.standard.model.Option;
 import java.util.Collections;
 import java.util.List;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class ContributableCollectionsModel extends DynamicHtmlListModel<ItemDefinition> {
   private final ItemDefinitionService itemdefService;

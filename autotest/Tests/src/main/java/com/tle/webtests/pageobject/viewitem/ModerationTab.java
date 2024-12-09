@@ -22,7 +22,8 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
   public boolean isTaskPresent(String task) {
     return isPresent(
         By.xpath(
-            "//h3[text()='Tasks awaiting moderation']/following-sibling::table[1]/tbody/tr/td[text()="
+            "//h3[text()='Tasks awaiting"
+                + " moderation']/following-sibling::table[1]/tbody/tr/td[text()="
                 + quoteXPath(task)
                 + "]"));
   }
@@ -77,7 +78,8 @@ public class ModerationTab extends AbstractPage<ModerationTab> {
     if (Check.isEmpty(comment)) {
       return "//div[@class='modcomment' and count(div[@class='comment-content']) = 0]";
     }
-    return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and normalize-space(text()) = "
+    return "//div[contains(@class,'modcomment') and .//div[@class='modcomment-content' and"
+        + " normalize-space(text()) = "
         + quoteXPath(comment)
         + "]]";
   }

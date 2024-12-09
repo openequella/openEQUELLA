@@ -36,7 +36,6 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 import org.java.plugin.registry.Extension;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class DetailsTab extends BaseEntityTab<Taxonomy> implements AbstractDetailsTab<Taxonomy> {
   private JTextField uuid;

@@ -50,7 +50,6 @@ import com.tle.web.sections.js.validators.FunctionCallValidator;
 import com.tle.web.sections.js.validators.SimpleValidator;
 import com.tle.web.sections.render.Label;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public final class Js {

@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class Control {
   private final ControlDefinition definition;

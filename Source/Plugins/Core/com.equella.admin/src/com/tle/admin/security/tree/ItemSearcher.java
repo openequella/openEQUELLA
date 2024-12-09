@@ -50,7 +50,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ItemSearcher extends JPanel implements ActionListener, ListSelectionListener {
   private static final long serialVersionUID = 1L;

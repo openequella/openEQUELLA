@@ -55,7 +55,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind(ScrapbookSoapService.class)
 @Singleton
 public class ScrapbookSoapServiceImpl implements ScrapbookSoapService {

@@ -56,7 +56,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-/** @author Nicholas Read */
 public class AdvancedEditorPanel extends JComponent
     implements ListSelectionListener, ActionListener {
   private final String privilege;
@@ -299,7 +298,9 @@ public class AdvancedEditorPanel extends JComponent
     updateButtons();
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private static class MyTableModel extends AbstractTableModel {
     private static final String FIRST =
         CurrentLocale.get("security.editor.advanced.columnname.action"); // $NON-NLS-1$
@@ -437,7 +438,9 @@ public class AdvancedEditorPanel extends JComponent
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private abstract class ViewerChanger extends GlassSwingWorker<OverrideDefaultAclViewer> {
     private final int row;
     private final OverrideDefaultAclViewer.Filter filter;

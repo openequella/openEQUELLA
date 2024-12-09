@@ -152,7 +152,9 @@ public class UpdateOlderYoutubeAttachmentMigration extends AbstractHibernateData
     return wasModified;
   }
 
-  /** @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses() */
+  /**
+   * @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses()
+   */
   @Override
   protected Class<?>[] getDomainClasses() {
     return new Class[] {FakeAttachment.class};

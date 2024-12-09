@@ -89,7 +89,8 @@ public class RemoteRepoZ3950Test extends AbstractCleanupAutoTest {
         rrZ3950.exactQuery("Title", "Ubuntu", "AND", "Title", "Linux", "AND", "Title", "Fedora");
 
     String resultTitle =
-        "Linux bibleboot up to Ubuntu, Fedora, KNOPPIX, Debian, openSUSE, and 13 other distributions /";
+        "Linux bibleboot up to Ubuntu, Fedora, KNOPPIX, Debian, openSUSE, and 13 other"
+            + " distributions /";
     assertTrue(searchResults.doesResultExist(resultTitle, 1));
 
     RemoteRepoSearchResult sr = searchResults.getResultForTitle(resultTitle, 1);

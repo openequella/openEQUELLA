@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 // FIXME: not implemented
-/** @author Aaron */
 public interface HtmlTagScriptType extends Serializable {
   String getName();
 

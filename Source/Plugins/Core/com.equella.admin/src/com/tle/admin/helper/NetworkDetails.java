@@ -33,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class NetworkDetails extends JDialog implements ActionListener {
   public static final int RESULT_OK = 0;

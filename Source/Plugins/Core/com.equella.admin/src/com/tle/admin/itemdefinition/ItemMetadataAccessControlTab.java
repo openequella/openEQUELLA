@@ -58,7 +58,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-/** @author Nicholas Read */
 public class ItemMetadataAccessControlTab extends AbstractItemdefTab {
   private static final String UNTITLED =
       CurrentLocale.get(
@@ -176,7 +175,9 @@ public class ItemMetadataAccessControlTab extends AbstractItemdefTab {
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class Editor extends JPanel implements ListWithViewInterface<ItemMetadataRule> {
     private static final long serialVersionUID = 1L;
     private JTextField name;

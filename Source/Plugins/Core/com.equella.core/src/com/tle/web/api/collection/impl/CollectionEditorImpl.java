@@ -74,7 +74,6 @@ import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class CollectionEditorImpl extends AbstractBaseEntityEditor<ItemDefinition, CollectionBean>

@@ -50,7 +50,7 @@ class BrowseHierarchyResource {
     value = "Browse hierarchies",
     notes = "Retrieve all Hierarchy topics for the current institution.",
     responseContainer = "List",
-    response = classOf[HierarchyTopicSummary],
+    response = classOf[HierarchyTopicSummary]
   )
   def browseHierarchies(): Response = {
     // Fetch all topics with permission check for `VIEW_HIERARCHY_TOPIC`
@@ -71,10 +71,11 @@ class BrowseHierarchyResource {
     value = "Browse a hierarchy",
     notes =
       "Retrieve a Hierarchy topic details for a given topic compound UUID. This compound UUID MUST include compound UUIDs of all the virtual parent topic, seperated by comma.",
-    response = classOf[HierarchyTopic],
+    response = classOf[HierarchyTopic]
   )
   def browseHierarchy(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String): Response = {
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String
+  ): Response = {
     val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuids)
     val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
       hierarchyCompoundUuid
@@ -84,12 +85,16 @@ class BrowseHierarchyResource {
         ApiErrorResponse.forbiddenRequest(s"Permission denied to access topic $topicUuid")
       case Some(topicEntity) =>
         val topicSummary =
-          browseHierarchyHelper.getTopicSummary(topicEntity,
-                                                currentVirtualTopicName,
-                                                parentCompoundUuidList)
+          browseHierarchyHelper.getTopicSummary(
+            topicEntity,
+            currentVirtualTopicName,
+            parentCompoundUuidList
+          )
         val parents =
-          browseHierarchyHelper.getParents(topicEntity,
-                                           parentCompoundUuidList.getOrElse(List.empty))
+          browseHierarchyHelper.getParents(
+            topicEntity,
+            parentCompoundUuidList.getOrElse(List.empty)
+          )
         val allKeyResources =
           browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
 
@@ -103,11 +108,12 @@ class BrowseHierarchyResource {
   @Path("/key-resource/{item-uuid}/{version}")
   @ApiOperation(
     value = "Get all hierarchy IDs which have the provided key resource",
-    response = classOf[List[String]],
+    response = classOf[List[String]]
   )
   def getHierarchyIdsWithKeyResource(
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
-      @ApiParam("The item version") @PathParam("version") itemVersion: Int): Response = {
+      @ApiParam("The item version") @PathParam("version") itemVersion: Int
+  ): Response = {
     val version = itemService.getRealVersion(itemVersion, itemUuid)
     val itemId  = new ItemId(itemUuid, version)
     Try(itemService.getUnsecure(itemId)) match {
@@ -117,7 +123,8 @@ class BrowseHierarchyResource {
           .asScala
           .toList
           .map(legacyCompoundUuid =>
-            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).buildString(false))
+            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).buildString(false)
+          )
         Response.ok(ids).build()
       case Failure(e: ItemNotFoundException) =>
         ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")

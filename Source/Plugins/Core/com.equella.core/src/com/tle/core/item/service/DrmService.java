@@ -30,7 +30,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-/** @author Nicholas Read */
 public interface DrmService {
   DrmAcceptance getAgreement(String userID, Item item);
 

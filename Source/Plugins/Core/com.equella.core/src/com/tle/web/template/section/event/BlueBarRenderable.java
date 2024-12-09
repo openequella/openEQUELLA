@@ -24,7 +24,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import java.util.Collections;
 import java.util.List;
 
-/** @author Aaron */
 public class BlueBarRenderable {
   private final String key;
   private final Label label;

@@ -126,7 +126,9 @@ public interface HTMLControl {
 
   void setUniquified(boolean uniquified);
 
-  /** @return Gets the parent. Provided it's a repeater ;) */
+  /**
+   * @return Gets the parent. Provided it's a repeater ;)
+   */
   @Nullable
   HTMLControl getParent();
 

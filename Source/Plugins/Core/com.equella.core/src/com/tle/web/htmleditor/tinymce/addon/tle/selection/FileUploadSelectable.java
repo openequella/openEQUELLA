@@ -26,7 +26,6 @@ import com.tle.web.selection.SelectionSession;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class FileUploadSelectable implements SelectableInterface {

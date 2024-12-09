@@ -22,7 +22,6 @@ import com.tle.web.api.interfaces.beans.UserBean;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class DrmAcceptanceBean {
   private UserBean user;

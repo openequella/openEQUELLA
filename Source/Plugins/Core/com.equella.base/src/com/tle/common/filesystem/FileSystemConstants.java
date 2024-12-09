@@ -18,7 +18,6 @@
 
 package com.tle.common.filesystem;
 
-/** @author Aaron */
 public final class FileSystemConstants {
   public static final String IMS_FOLDER = "_IMS";
 

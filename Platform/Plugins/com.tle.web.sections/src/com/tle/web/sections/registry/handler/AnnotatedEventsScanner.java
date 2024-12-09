@@ -73,7 +73,8 @@ public class AnnotatedEventsScanner {
         if (params.length == 0
             || (params[0] != SectionContext.class && params[0] != SectionInfo.class)) {
           throw new SectionsRuntimeException(
-              "Event handler methods must start with SectionContext or SectionInfo parameter - we're all looking at you "
+              "Event handler methods must start with SectionContext or SectionInfo parameter -"
+                  + " we're all looking at you "
                   + clazz.getName()
                   + "."
                   + method.getName()

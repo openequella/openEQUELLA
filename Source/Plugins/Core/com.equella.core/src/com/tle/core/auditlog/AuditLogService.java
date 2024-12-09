@@ -31,7 +31,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.hibernate.criterion.Order;
 
-/** @author Nicholas Read */
 public interface AuditLogService {
   void logUserLoggedIn(UserState us, HttpServletRequest request);
 

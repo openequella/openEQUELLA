@@ -41,7 +41,6 @@ import com.tle.web.template.Decorations.MenuMode;
 import com.tle.web.viewurl.ViewItemUrl;
 import javax.inject.Inject;
 
-/** @author aholland */
 @TreeIndexed
 public abstract class AbstractRootModalSessionSection<
         M extends AbstractRootModalSessionSection.RootModalSessionModel>

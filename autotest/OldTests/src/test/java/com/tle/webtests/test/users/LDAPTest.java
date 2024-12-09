@@ -148,6 +148,7 @@ public class LDAPTest extends AbstractSessionTest {
 
     logout(context);
   }
+
   // acls, itemdefinition, properties
   @Test
   public void testViaAdvancedScripts() {

@@ -28,7 +28,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.CCheckBoxGroup;
 import com.tle.web.wizard.controls.Item;
 
-/** @author jmaginnis */
 @Bind
 public class CheckBoxGroup extends AbstractOptionControl {
   @Component(stateful = false, register = false)

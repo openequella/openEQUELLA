@@ -28,7 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JComponent;
 
-/** @author Nicholas Read */
 public class InheritedEditorPanel extends JComponent implements ActionListener {
   private static final long serialVersionUID = 1L;
   private final Object domainObj;

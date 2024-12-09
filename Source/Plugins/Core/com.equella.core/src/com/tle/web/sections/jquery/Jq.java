@@ -23,7 +23,6 @@ import com.tle.web.sections.js.ElementId;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 
-/** @author Aaron */
 public final class Jq {
   private Jq() {
     throw new Error();

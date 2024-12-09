@@ -31,7 +31,6 @@ import java.awt.LayoutManager;
 import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Aaron */
 public abstract class UniversalControlSettingPanel extends DynamicChoicePanel<UniversalSettings> {
   private int wizardType;
   private SchemaModel schemaModel;

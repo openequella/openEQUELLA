@@ -36,7 +36,6 @@ import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
 import com.tle.web.sections.standard.renderers.LinkRenderer;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class GoogleDocViewerConfigDialog extends AbstractNewWindowConfigDialog {
   /**

@@ -48,46 +48,53 @@ package object cloudproviders {
     implicit val decodeServiceUri: Decoder[ServiceUrl] = deriveDecoder
   }
 
-  case class CloudProviderRegistration(name: String,
-                                       description: Option[String],
-                                       vendorId: String,
-                                       baseUrl: String,
-                                       iconUrl: Option[String],
-                                       providerAuth: CloudOAuthCredentials,
-                                       serviceUrls: Map[String, ServiceUrl],
-                                       viewers: Map[String, Map[String, Viewer]])
+  case class CloudProviderRegistration(
+      name: String,
+      description: Option[String],
+      vendorId: String,
+      baseUrl: String,
+      iconUrl: Option[String],
+      providerAuth: CloudOAuthCredentials,
+      serviceUrls: Map[String, ServiceUrl],
+      viewers: Map[String, Map[String, Viewer]]
+  )
 
   case class CloudProviderRegistrationResponse(instance: CloudProviderInstance, forwardUrl: String)
 
-  case class CloudProviderInstance(id: UUID,
-                                   name: String,
-                                   description: Option[String],
-                                   vendorId: String,
-                                   baseUrl: String,
-                                   iconUrl: Option[String],
-                                   providerAuth: CloudOAuthCredentials,
-                                   oeqAuth: CloudOAuthCredentials,
-                                   serviceUrls: Map[String, ServiceUrl],
-                                   viewers: Map[String, Map[String, Viewer]])
+  case class CloudProviderInstance(
+      id: UUID,
+      name: String,
+      description: Option[String],
+      vendorId: String,
+      baseUrl: String,
+      iconUrl: Option[String],
+      providerAuth: CloudOAuthCredentials,
+      oeqAuth: CloudOAuthCredentials,
+      serviceUrls: Map[String, ServiceUrl],
+      viewers: Map[String, Map[String, Viewer]]
+  )
 
-  case class CloudProviderDetails(id: UUID,
-                                  name: String,
-                                  description: Option[String],
-                                  iconUrl: Option[String],
-                                  vendorId: String,
-                                  canRefresh: Boolean)
+  case class CloudProviderDetails(
+      id: UUID,
+      name: String,
+      description: Option[String],
+      iconUrl: Option[String],
+      vendorId: String,
+      canRefresh: Boolean
+  )
 
-  case class CloudProviderData(baseUrl: String,
-                               iconUrl: Option[String],
-                               vendorId: String,
-                               providerAuth: CloudOAuthCredentials,
-                               oeqAuth: CloudOAuthCredentials,
-                               serviceUrls: Map[String, ServiceUrl],
-                               viewers: Map[String, Map[String, Viewer]])
+  case class CloudProviderData(
+      baseUrl: String,
+      iconUrl: Option[String],
+      vendorId: String,
+      providerAuth: CloudOAuthCredentials,
+      oeqAuth: CloudOAuthCredentials,
+      serviceUrls: Map[String, ServiceUrl],
+      viewers: Map[String, Map[String, Viewer]]
+  )
 
-  /**
-    * Object to provide Circe encoders and decoders for the types of CloudProviderData,
-    * Viewer, ServiceUrl and CloudOAuthCredentials.
+  /** Object to provide Circe encoders and decoders for the types of CloudProviderData, Viewer,
+    * ServiceUrl and CloudOAuthCredentials.
     */
   object CloudProviderData {
     implicit val decoderV = deriveDecoder[Viewer]

@@ -27,6 +27,7 @@ public class Availability implements Serializable {
   public static final String NO = "No";
   private String available; // Yes
   private Boolean allowGuests;
+
   // private Object adaptiveRelease;
 
   public String getAvailable() {

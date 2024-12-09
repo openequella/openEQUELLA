@@ -21,7 +21,6 @@ package com.tle.core.harvester.old.dsoap.sax;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author adame */
 public class StringArrayResultSoapHandler extends DefaultSoapHandler {
   private List results;
 

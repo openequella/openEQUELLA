@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface TLEAclManager extends RemoteTLEAclManager {
   /**
    * Removes objects from a collection that the user has not been granted the given privileges. (All

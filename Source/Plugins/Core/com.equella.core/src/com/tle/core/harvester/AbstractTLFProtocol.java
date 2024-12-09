@@ -62,6 +62,7 @@ public abstract class AbstractTLFProtocol extends AbstractHarvesterProtocol {
   private static final String RESULT_NODE = "contentChange";
   private static final String RESULT_IDENTIFIER_NODE = "identifier";
   private static final String RESULT_DATE_NODE = "changeDate";
+
   /**
    * SOAP call may have a SOAPAction property, which is simply the method name suffixed, hence
    * method name chaseHeadlessRooster, SOAPAction chaseHeaDlessRoosterRequest

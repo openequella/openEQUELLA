@@ -63,7 +63,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Dustin */
 @SuppressWarnings("nls")
 @Bind(EquellaTaskResource.class)
 @Singleton

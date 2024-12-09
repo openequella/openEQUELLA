@@ -26,7 +26,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.template.section.HelpAndScreenOptionsSection;
 import java.util.EventListener;
 
-/** @author Aaron */
 public class BlueBarEvent extends AbstractSectionEvent<BlueBarEventListener> {
   private final RenderContext context;
 

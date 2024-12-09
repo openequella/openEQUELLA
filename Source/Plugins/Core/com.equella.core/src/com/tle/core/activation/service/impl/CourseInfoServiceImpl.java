@@ -130,7 +130,9 @@ public class CourseInfoServiceImpl
     }
   }
 
-  /** @return A list of the offending object names that are holding onto this Entity */
+  /**
+   * @return A list of the offending object names that are holding onto this Entity
+   */
   @Override
   public List<Class<?>> getReferencingClasses(long id) {
     return dao.getReferencingClasses(id);

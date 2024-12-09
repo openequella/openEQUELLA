@@ -27,7 +27,6 @@ import com.tle.web.sections.js.generic.function.ParentFrameFunction;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.result.util.CloseWindowResult;
 
-/** @author aholland */
 public class ParentFrameCallback implements ModalSessionCallback {
   private static final long serialVersionUID = 1L;
 

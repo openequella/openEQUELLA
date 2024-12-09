@@ -52,9 +52,11 @@ import io.circe.{Json, JsonNumber, JsonObject}
 import scala.jdk.CollectionConverters._
 
 class CloudAttachmentResourceExtension extends AttachmentResourceExtension[IAttachment] {
-  override def process(info: SectionInfo,
-                       resource: ViewableResource,
-                       attachment: IAttachment): ViewableResource = attachment match {
+  override def process(
+      info: SectionInfo,
+      resource: ViewableResource,
+      attachment: IAttachment
+  ): ViewableResource = attachment match {
     case attach: CustomAttachment => CloudAttachmentViewableResource(info, resource, attach)
   }
 }
@@ -63,10 +65,11 @@ object CloudAttachmentViewableResource {
   final val EquellaViewerId = "file"
 }
 
-case class CloudAttachmentViewableResource(info: SectionInfo,
-                                           parent: ViewableResource,
-                                           attach: CustomAttachment)
-    extends AbstractWrappedResource(parent) {
+case class CloudAttachmentViewableResource(
+    info: SectionInfo,
+    parent: ViewableResource,
+    attach: CustomAttachment
+) extends AbstractWrappedResource(parent) {
 
   import CloudAttachmentViewableResource._
   val fields = CloudAttachmentFields(attach)
@@ -96,8 +99,10 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
   def viewerForId(provider: CloudProviderInstance, viewerId: String): Option[Viewer] =
     viewerMap(provider).flatMap(_.get(viewerId))
 
-  def serviceUriForViewer(provider: CloudProviderInstance,
-                          viewerId: String): Option[(Viewer, ServiceUrl)] =
+  def serviceUriForViewer(
+      provider: CloudProviderInstance,
+      viewerId: String
+  ): Option[(Viewer, ServiceUrl)] =
     for {
       viewer     <- viewerForId(provider, viewerId)
       serviceUri <- provider.serviceUrls.get(viewer.serviceId)
@@ -109,20 +114,22 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
         .map(_.view.mapValues(_.foldWith(MetaJsonFolder)))
         .getOrElse(Map.empty)
         .toMap
-    metaParams ++ Map("item"       -> itemId.getUuid,
-                      "version"    -> itemId.getVersion,
-                      "attachment" -> attach.getUuid,
-                      "viewer"     -> viewerId)
+    metaParams ++ Map(
+      "item"       -> itemId.getUuid,
+      "version"    -> itemId.getVersion,
+      "attachment" -> attach.getUuid,
+      "viewer"     -> viewerId
+    )
   }
 
   override def getCommonAttachmentDetails: util.List[AttachmentDetail] = {
     fields.cloudJson.display
       .getOrElse(Map.empty)
-      .map {
-        case (name, value) =>
-          AbstractWrappedResource.makeDetail(
-            new TextLabel(name + ":"),
-            new TextLabel(value.foldWith(CloudAttachmentSerializer.javaFolder).toString))
+      .map { case (name, value) =>
+        AbstractWrappedResource.makeDetail(
+          new TextLabel(name + ":"),
+          new TextLabel(value.foldWith(CloudAttachmentSerializer.javaFolder).toString)
+        )
       }
       .toBuffer
       .asJava
@@ -177,7 +184,9 @@ case class CloudAttachmentViewableResource(info: SectionInfo,
           viewerDetails._2,
           provider,
           uriParameters,
-          uri => basicRequest.get(uri).response(asStream[Stream[IO, Byte]])))
+          uri => basicRequest.get(uri).response(asStream[Stream[IO, Byte]])
+        )
+      )
     } yield response).value map {
       case None => EmptyResponseStream
       case Some(response) =>
@@ -206,9 +215,10 @@ object MetaJsonFolder extends Folder[Any] {
     value.toMap.view.mapValues(_.foldWith(this))
 }
 
-case class SttpResponseContentStream(response: Response[Either[String, fs2.Stream[IO, Byte]]],
-                                     responseStream: fs2.Stream[IO, Byte])
-    extends AbstractContentStream(null, response.contentType.orNull) {
+case class SttpResponseContentStream(
+    response: Response[Either[String, fs2.Stream[IO, Byte]]],
+    responseStream: fs2.Stream[IO, Byte]
+) extends AbstractContentStream(null, response.contentType.orNull) {
   override def getContentLength: Long      = response.contentLength.getOrElse(-1L)
   override def getInputStream: InputStream = null
   override def mustWrite(): Boolean        = true

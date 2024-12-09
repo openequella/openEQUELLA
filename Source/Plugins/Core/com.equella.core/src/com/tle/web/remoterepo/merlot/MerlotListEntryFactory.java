@@ -27,7 +27,6 @@ import com.tle.web.sections.SectionInfo;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class MerlotListEntryFactory implements RemoteRepoListEntryFactory<MerlotSearchResult> {

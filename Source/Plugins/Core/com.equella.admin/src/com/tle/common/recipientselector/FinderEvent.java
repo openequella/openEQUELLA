@@ -18,7 +18,6 @@
 
 package com.tle.common.recipientselector;
 
-/** @author Nicholas Read */
 public class FinderEvent {
   private UserGroupRoleFinder source;
   private int selectionCount;

@@ -34,7 +34,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/** @author Dongsheng Cai */
 @Path("activation/")
 @Api(value = "Copyright activations", description = "activation")
 @Produces({"application/json"})

@@ -21,7 +21,6 @@ package com.tle.core.freetext.reindex;
 import com.tle.core.item.service.ItemService;
 import java.io.Serializable;
 
-/** @author jmaginnis */
 public abstract class ReindexFilter implements Serializable {
   public void updateIndexTimes(ItemService itemService) {
     itemService.updateIndexTimes(getWhereClause(), getNames(), getValues());

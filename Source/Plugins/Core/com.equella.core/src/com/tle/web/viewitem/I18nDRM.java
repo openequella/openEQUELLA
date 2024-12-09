@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class I18nDRM {
   private static PluginResourceHelper r = ResourcesService.getResourceHelper(I18nDRM.class);

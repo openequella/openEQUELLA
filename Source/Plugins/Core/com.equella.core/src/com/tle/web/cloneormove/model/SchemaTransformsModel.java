@@ -30,7 +30,6 @@ import com.tle.web.sections.standard.model.Option;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author aholland */
 public class SchemaTransformsModel extends DynamicHtmlListModel<String> {
   private final SingleSelectionList<ItemDefinition> collections;
   private final SchemaService schemaService;

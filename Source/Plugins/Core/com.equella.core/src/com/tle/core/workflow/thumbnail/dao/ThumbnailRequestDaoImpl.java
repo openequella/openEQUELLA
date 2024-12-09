@@ -38,7 +38,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(ThumbnailRequestDao.class)
@@ -112,9 +111,10 @@ public class ThumbnailRequestDaoImpl extends GenericInstitionalDaoImpl<Thumbnail
                     Query query =
                         session
                             .createQuery(
-                                "select filename from ThumbnailRequest "
-                                    + "where institution = :institution and itemUuid = :itemUuid"
-                                    + " and itemVersion = :itemVersion and handle = :serialHandle and filenameHash = :filenameHash")
+                                "select filename from ThumbnailRequest where institution ="
+                                    + " :institution and itemUuid = :itemUuid and itemVersion ="
+                                    + " :itemVersion and handle = :serialHandle and filenameHash ="
+                                    + " :filenameHash")
                             .setParameter("institution", CurrentInstitution.get())
                             .setParameter("itemUuid", itemId.getUuid())
                             .setParameter("itemVersion", itemId.getVersion())

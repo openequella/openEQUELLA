@@ -21,7 +21,6 @@ package com.tle.web.controls.advancedscript.scripting.objects.impl;
 import com.tle.web.controls.advancedscript.scripting.objects.RequestMapScriptObject;
 import java.util.Map;
 
-/** @author aholland */
 public class RequestMapScriptWrapper implements RequestMapScriptObject {
   private static final long serialVersionUID = 1L;
 

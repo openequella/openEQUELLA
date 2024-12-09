@@ -197,7 +197,8 @@ public class MigrateOldTaxonomyToNew extends AbstractHibernateSchemaMigration {
     // NOTE THAT THIS IS NOT HQL!!! IT IS PRETTY MUCH SQL!!!
     final StringBuilder sql =
         new StringBuilder(
-            "SELECT all_parents_id, COUNT(*) AS CHILD_COUNT FROM taxonomy_node_all_parents GROUP BY all_parents_id");
+            "SELECT all_parents_id, COUNT(*) AS CHILD_COUNT FROM taxonomy_node_all_parents GROUP BY"
+                + " all_parents_id");
 
     final Map<Long, Integer> totalChildCounts = new HashMap<Long, Integer>();
     final SQLQuery countQuery = session.createSQLQuery(sql.toString());

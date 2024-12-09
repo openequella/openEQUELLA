@@ -34,7 +34,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

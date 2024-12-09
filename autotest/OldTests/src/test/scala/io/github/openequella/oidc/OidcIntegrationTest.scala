@@ -17,7 +17,8 @@ class OidcIntegrationTest extends AbstractSessionTest {
 
   @Test(
     description =
-      "The OIDC login button should be hidden if there isn't an enabled OIDC configuration")
+      "The OIDC login button should be hidden if there isn't an enabled OIDC configuration"
+  )
   def hideLoginButton(): Unit = {
     // todo:  disable OIDC configuration and then check the button.
   }

@@ -44,7 +44,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author nread */
 public class ControlDialog implements ActionListener, ListSelectionListener, MouseListener {
   private ControlDefinition result;
   private ControlRepository repository;

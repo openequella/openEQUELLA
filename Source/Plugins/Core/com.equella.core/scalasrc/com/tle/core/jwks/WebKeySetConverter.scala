@@ -33,15 +33,16 @@ import scala.jdk.CollectionConverters._
 import javax.inject.{Inject, Singleton}
 import java.time.Instant
 
-/**
-  * Case class for the export model.
+/** Case class for the export model.
   */
-case class WebKeySetExport(keyId: String,
-                           algorithm: String,
-                           publicKey: String,
-                           privateKey: String,
-                           created: Instant,
-                           deactivated: Option[Instant])
+case class WebKeySetExport(
+    keyId: String,
+    algorithm: String,
+    publicKey: String,
+    privateKey: String,
+    created: Instant,
+    deactivated: Option[Instant]
+)
 
 object WebKeySetExport {
   def apply(keySet: WebKeySet): WebKeySetExport =
@@ -55,11 +56,10 @@ object WebKeySetExport {
     )
 }
 
-/**
-  * This Converter is used to support
-  * 1. Exporting RSA keys to JSON files under directory 'keyset';
-  * 2. Reading the JSON files and importing the keys to the current Institution;
-  * 3. Deleting all the keys when the Institution is deleted.
+/** This Converter is used to support
+  *   1. Exporting RSA keys to JSON files under directory 'keyset'; 2. Reading the JSON files and
+  *      importing the keys to the current Institution; 3. Deleting all the keys when the
+  *      Institution is deleted.
   */
 @Bind
 @Singleton
@@ -69,18 +69,24 @@ class WebKeySetConverter extends AbstractJsonConverter[Object] {
 
   @Inject var webKeySetService: WebKeySetService = _
 
-  override def doExport(staging: TemporaryFileHandle,
-                        institution: Institution,
-                        callback: ConverterParams): Unit =
-    webKeySetService.getAll.foreach(
-      keySet =>
-        json.write(new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${keySet.algorithm}"),
-                   s"${keySet.id}.json",
-                   WebKeySetExport(keySet)))
+  override def doExport(
+      staging: TemporaryFileHandle,
+      institution: Institution,
+      callback: ConverterParams
+  ): Unit =
+    webKeySetService.getAll.foreach(keySet =>
+      json.write(
+        new SubTemporaryFile(staging, s"${EXPORT_FOLDER}/${keySet.algorithm}"),
+        s"${keySet.id}.json",
+        WebKeySetExport(keySet)
+      )
+    )
 
-  override def doImport(staging: TemporaryFileHandle,
-                        institution: Institution,
-                        params: ConverterParams): Unit = {
+  override def doImport(
+      staging: TemporaryFileHandle,
+      institution: Institution,
+      params: ConverterParams
+  ): Unit = {
     val dir = new SubTemporaryFile(staging, EXPORT_FOLDER)
     json
       .getFileList(dir)
@@ -95,8 +101,10 @@ class WebKeySetConverter extends AbstractJsonConverter[Object] {
   override def doDelete(institution: Institution, callback: ConverterParams): Unit =
     webKeySetService.deleteAll()
 
-  override def addTasks(convertType: ConvertType,
-                        tasks: ConverterTasks,
-                        params: ConverterParams): Unit =
+  override def addTasks(
+      convertType: ConvertType,
+      tasks: ConverterTasks,
+      params: ConverterParams
+  ): Unit =
     tasks.add(new NameValue("Web key set", "web_key_set"))
 }

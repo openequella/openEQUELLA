@@ -100,7 +100,6 @@ import javax.inject.Singleton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 @Bind(FileSystemService.class)
 @Singleton
 @SuppressWarnings("nls")

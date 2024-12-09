@@ -82,7 +82,8 @@ public class SearchEnhancementsTest extends AbstractCleanupAutoTest {
     notExpected =
         Lists.newArrayList(
             "Summary DRM - Link to DRM Require Composition Acceptance - Package",
-            "Summary DRM - Link to DRM Show On Summary and Require Composition Acceptance - Package");
+            "Summary DRM - Link to DRM Show On Summary and Require Composition Acceptance -"
+                + " Package");
 
     sp.search("\"Summary DRM - Link to DRM\" -\"Require Composition Acceptance\"");
     checkResults(sp.results(), expected, notExpected);
@@ -121,7 +122,8 @@ public class SearchEnhancementsTest extends AbstractCleanupAutoTest {
     notExpected =
         Lists.newArrayList(
             "Summary DRM - Link to DRM Require Composition Acceptance - Package",
-            "Summary DRM - Link to DRM Show On Summary and Require Composition Acceptance - Package");
+            "Summary DRM - Link to DRM Show On Summary and Require Composition Acceptance -"
+                + " Package");
 
     sp.search("\"Summary DRM - Link to DRM\" !\"Require Composition Acceptance\"");
     checkResults(sp.results(), expected, notExpected);

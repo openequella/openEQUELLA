@@ -27,7 +27,6 @@ import com.tle.common.dynacollection.SearchSetAdapter;
 import java.awt.Component;
 import java.awt.GridLayout;
 
-/** @author Nicholas Read */
 public class FilterTab extends BaseEntityTab<DynaCollection> {
   private final EntityCache cache;
 

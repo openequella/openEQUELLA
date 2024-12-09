@@ -30,13 +30,19 @@ public interface ItemScriptType extends Serializable {
   /** The variable name of the item being edited (if any) */
   String CURRENT_ITEM = "currentItem";
 
-  /** @return The system generated UUID of the item */
+  /**
+   * @return The system generated UUID of the item
+   */
   String getUuid();
 
-  /** @return The version number of the item */
+  /**
+   * @return The version number of the item
+   */
   int getVersion();
 
-  /** @return The name of the item in the current user's language (if language pack available). */
+  /**
+   * @return The name of the item in the current user's language (if language pack available).
+   */
   String getName();
 
   /**
@@ -93,10 +99,14 @@ public interface ItemScriptType extends Serializable {
    */
   boolean removeSharedOwner(String userUniqueId);
 
-  /** @return A list of the unique IDs of the current shared owners. */
+  /**
+   * @return A list of the unique IDs of the current shared owners.
+   */
   List<String> listSharedOwners();
 
-  /** @return The collection that this item belongs to */
+  /**
+   * @return The collection that this item belongs to
+   */
   CollectionScriptType getCollection();
 
   /**
@@ -107,7 +117,9 @@ public interface ItemScriptType extends Serializable {
    */
   void setThumbnail(String thumbnail);
 
-  /** @return The thumbnail to show in gallery view and search results. */
+  /**
+   * @return The thumbnail to show in gallery view and search results.
+   */
   String getThumbnail();
 
   /**

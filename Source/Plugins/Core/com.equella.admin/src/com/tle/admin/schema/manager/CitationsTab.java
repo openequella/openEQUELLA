@@ -56,7 +56,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-/** @author Nicholas Read */
 public class CitationsTab extends BaseEntityTab<Schema>
     implements ActionListener, ListSelectionListener {
   CitationTableModel model;

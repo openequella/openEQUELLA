@@ -31,7 +31,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 public final class CurrentLocale {
   private static Logger LOGGER = LoggerFactory.getLogger(CurrentLocale.class);
 

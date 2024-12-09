@@ -23,7 +23,6 @@ import com.tle.common.usermanagement.user.UserState;
 import com.tle.common.usermanagement.user.WebAuthenticationDetails;
 import java.util.concurrent.Callable;
 
-/** @author Nicholas Read */
 public interface RunAsUser {
   <V> V execute(Institution institution, String userID, Callable<V> callable);
 

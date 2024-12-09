@@ -28,7 +28,6 @@ import java.util.Map;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IHTMLActionHandler;
 
-/** @author Nicholas Read */
 public interface ReportingService
     extends AbstractEntityService<EntityEditingBean, Report>, RemoteReportingService {
   public static final String DIR_DESIGN = "reportFiles";

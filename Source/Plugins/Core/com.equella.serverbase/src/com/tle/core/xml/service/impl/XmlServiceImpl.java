@@ -30,7 +30,6 @@ import java.io.Reader;
 import java.io.Writer;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind(XmlService.class)
 @Singleton
 public final class XmlServiceImpl implements XmlService {

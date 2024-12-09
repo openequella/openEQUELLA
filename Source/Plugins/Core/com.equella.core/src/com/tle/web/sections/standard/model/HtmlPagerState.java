@@ -20,7 +20,6 @@ package com.tle.web.sections.standard.model;
 
 import com.tle.web.sections.render.Label;
 
-/** @author aholland */
 public class HtmlPagerState extends HtmlComponentState {
   private int current = 1;
   private int startPage;

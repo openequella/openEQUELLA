@@ -23,7 +23,6 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.exceptions.AccessDeniedException;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Aaron */
 public abstract class RestImportExportHelper {
   private RestImportExportHelper() {
     throw new Error();

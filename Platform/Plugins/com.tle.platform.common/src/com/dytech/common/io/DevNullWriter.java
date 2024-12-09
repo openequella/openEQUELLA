@@ -20,7 +20,6 @@ package com.dytech.common.io;
 
 import java.io.Writer;
 
-/** @author Nicholas Read */
 public class DevNullWriter extends Writer {
   public DevNullWriter() {
     super();

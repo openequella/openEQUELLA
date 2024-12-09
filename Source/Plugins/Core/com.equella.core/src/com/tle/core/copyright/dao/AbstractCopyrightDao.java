@@ -91,8 +91,10 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
             SQLQuery sqlQuery =
                 session.createSQLQuery(
                     sqlQuery(
-                        "select count(h.item_id) as hcount, count(p.item_id) as pcount from item i left outer join %h h on h.item_id = i.id "
-                            + "left outer join %p p on p.item_id = i.id where i.id = ?0 and (h.id is not null or p.id is not null)"));
+                        "select count(h.item_id) as hcount, count(p.item_id) as pcount from item i"
+                            + " left outer join %h h on h.item_id = i.id left outer join %p p on"
+                            + " p.item_id = i.id where i.id = ?0 and (h.id is not null or p.id is"
+                            + " not null)"));
             sqlQuery.setLong(0, itemId);
             Object[] hasSome = (Object[]) sqlQuery.uniqueResult();
             int numHoldings = ((Number) hasSome[0]).intValue();
@@ -300,8 +302,9 @@ public abstract class AbstractCopyrightDao<H extends Holding, P extends Portion,
             getHibernateTemplate()
                 .iterate(
                     query(
-                        "select a from %s s join s.portion as p join p.item as i join i.attachments as a"
-                            + " where a.class = FileAttachment and a.uuid = s.attachment and a.url = ?0 and i = ?1"),
+                        "select a from %s s join s.portion as p join p.item as i join i.attachments"
+                            + " as a where a.class = FileAttachment and a.uuid = s.attachment and"
+                            + " a.url = ?0 and i = ?1"),
                     new Object[] {filepath, item});
     if (!iter.hasNext()) {
       return null;

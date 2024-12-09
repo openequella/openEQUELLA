@@ -23,7 +23,6 @@ import com.tle.beans.Institution;
 import java.io.Serializable;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface TreeNodeInterface<T extends TreeNodeInterface<T>>
     extends Serializable, IdCloneable {
   String getUuid();

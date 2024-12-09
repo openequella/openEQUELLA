@@ -26,7 +26,6 @@ import com.tle.core.services.http.Response;
 import com.tle.core.services.impl.ProxyDetails;
 import java.util.List;
 
-/** @author aholland */
 @NonNullByDefault
 public interface HttpService {
   boolean canAccessInternet();

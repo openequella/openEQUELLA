@@ -55,7 +55,9 @@ public interface HtmlEditorService {
 
   void setStylesheetContents(String css);
 
-  /** @return Will return null if no user styles have been created */
+  /**
+   * @return Will return null if no user styles have been created
+   */
   @Nullable
   String getStylesheetRelativeUrl();
 

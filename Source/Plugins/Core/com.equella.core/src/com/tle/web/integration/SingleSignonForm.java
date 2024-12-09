@@ -20,7 +20,6 @@ package com.tle.web.integration;
 
 import com.tle.web.sections.annotations.Bookmarked;
 
-/** @author jmaginnis */
 @Bookmarked(supported = true)
 public class SingleSignonForm {
   @Bookmarked(stateful = false)

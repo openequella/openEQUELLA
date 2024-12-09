@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class ActiveCachingPage extends AbstractPage<ActiveCachingPage> {
   public static final String ACTIVE_CACHING_TITLE =
       "Active caching"; // original property key: remotecaching.title

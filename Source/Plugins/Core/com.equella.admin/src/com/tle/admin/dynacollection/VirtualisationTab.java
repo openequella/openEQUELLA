@@ -26,7 +26,6 @@ import com.tle.common.dynacollection.SearchSetAdapter;
 import java.awt.Component;
 import java.awt.GridLayout;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class VirtualisationTab extends BaseEntityTab<DynaCollection> {
   private VirtualisationEditor editor;

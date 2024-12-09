@@ -27,7 +27,6 @@ import com.tle.web.sections.standard.RendererFactoryExtension;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class EquellaSelectionsTableExtension implements RendererFactoryExtension {

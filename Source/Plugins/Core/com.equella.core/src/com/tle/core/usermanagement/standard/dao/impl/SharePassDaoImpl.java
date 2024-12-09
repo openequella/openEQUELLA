@@ -24,7 +24,6 @@ import com.tle.core.hibernate.dao.GenericDaoImpl;
 import com.tle.core.usermanagement.standard.dao.SharePassDao;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind(SharePassDao.class)
 @Singleton
 public class SharePassDaoImpl extends GenericDaoImpl<SharePass, String> implements SharePassDao {

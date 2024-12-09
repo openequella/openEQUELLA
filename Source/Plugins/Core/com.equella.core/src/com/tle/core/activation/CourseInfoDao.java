@@ -22,7 +22,6 @@ import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import java.util.List;
 
-/** @author Charles O'Farrell */
 public interface CourseInfoDao extends AbstractEntityDao<CourseInfo> {
   List<Class<?>> getReferencingClasses(long id);
 }

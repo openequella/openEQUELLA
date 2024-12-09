@@ -73,7 +73,8 @@ public class UserPreferenceDaoImpl
         (List<String>)
             getHibernateTemplate()
                 .find(
-                    "select distinct u.key.userID from UserPreference u where u.key.institution = ?0",
+                    "select distinct u.key.userID from UserPreference u where u.key.institution ="
+                        + " ?0",
                     CurrentInstitution.get().getDatabaseId());
     final Set<String> userIdSet = new HashSet<String>(userIds.size());
     userIdSet.addAll(userIds);
@@ -89,8 +90,8 @@ public class UserPreferenceDaoImpl
               public Object doInHibernate(Session session) throws HibernateException {
                 Query query =
                     session.createQuery(
-                        "UPDATE UserPreference"
-                            + " SET key.userID = :toUserId WHERE key.userID = :fromUserId AND key.institution = :i");
+                        "UPDATE UserPreference SET key.userID = :toUserId WHERE key.userID ="
+                            + " :fromUserId AND key.institution = :i");
                 query.setParameter("toUserId", toUserId);
                 query.setParameter("fromUserId", fromUserId);
                 query.setParameter("i", CurrentInstitution.get().getDatabaseId());

@@ -30,7 +30,6 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 
-/** @author Aaron */
 public class EquellaSyntaxTextArea extends RSyntaxTextArea {
   @SuppressWarnings("nls")
   public static final String SYNTAX_EQUELLA = "text/equellascript";

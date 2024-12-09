@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 public interface ItemOperationParams {
   public static final int COMMIT_HOOK_PRIORITY_LOW = 1000;
   public static final int COMMIT_HOOK_PRIORITY_MEDIUM = 500;

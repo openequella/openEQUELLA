@@ -36,7 +36,7 @@ object ServiceUriParser extends RegexParsers with JavaTokenParsers {
   private def text: Parser[Text] = rep1(textOnly | escapeDollar) ^^ { l =>
     Text(l.map(_.text).mkString)
   }
-  private def replacement: Parser[Replacement]             = ("${" ~> ident <~ "}") ^^ { Replacement.apply }
+  private def replacement: Parser[Replacement] = ("${" ~> ident <~ "}") ^^ { Replacement.apply }
   private def uriTemplateParser: Parser[List[UriTemplate]] = phrase(rep1(text | replacement))
 
   def parse(str: String): Either[UriParseError, List[UriTemplate]] =
@@ -49,13 +49,17 @@ object ServiceUriParser extends RegexParsers with JavaTokenParsers {
 
 object UriTemplateService {
 
-  case class CollectTemplate(raw: List[String] = List.empty,
-                             args: List[Any] = List.empty,
-                             previous: Option[UriTemplate] = None)
+  case class CollectTemplate(
+      raw: List[String] = List.empty,
+      args: List[Any] = List.empty,
+      previous: Option[UriTemplate] = None
+  )
 
-  def replaceVariables(template: String,
-                       baseurl: String,
-                       variables: Map[String, Any]): Either[UriParseError, Uri] = {
+  def replaceVariables(
+      template: String,
+      baseurl: String,
+      variables: Map[String, Any]
+  ): Either[UriParseError, Uri] = {
 
     def maybeBlank(strings: List[String], prev: Option[UriTemplate]): List[String] = prev match {
       case Some(Text(_)) => strings

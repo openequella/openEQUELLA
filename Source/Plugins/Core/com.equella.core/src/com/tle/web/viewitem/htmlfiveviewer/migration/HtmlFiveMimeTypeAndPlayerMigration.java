@@ -57,7 +57,8 @@ public class HtmlFiveMimeTypeAndPlayerMigration extends AbstractHibernateDataMig
 
   private static final String HTML_FIVE_VIEWER_ID = "htmlFiveViewer";
   private static final String FROM =
-      "From MimeEntry WHERE type = 'video/mp4' OR type = 'video/ogg' OR type = 'video/webm' AND institution = :institution";
+      "From MimeEntry WHERE type = 'video/mp4' OR type = 'video/ogg' OR type = 'video/webm' AND"
+          + " institution = :institution";
   private static final String COUNT_WEBM =
       "SELECT COUNT(*) FROM MimeEntry WHERE type = 'video/webm' and institution = :institution";
   private static final String COUNT_OGG =

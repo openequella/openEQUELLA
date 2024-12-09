@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-/** @author Nicholas Read */
 // The purpose of this class is to wrap Enumeration instances, hence Sonar's
 // warning about replacing Enumerations with Iterator is superfluous
 public class Iter8<T> implements Iterator<T>, Enumeration<T>, Iterable<T> // NOSONAR
@@ -97,7 +96,9 @@ public class Iter8<T> implements Iterator<T>, Enumeration<T>, Iterable<T> // NOS
     return next();
   }
 
-  /** @return Returns the count. */
+  /**
+   * @return Returns the count.
+   */
   public int getCount() {
     return count;
   }

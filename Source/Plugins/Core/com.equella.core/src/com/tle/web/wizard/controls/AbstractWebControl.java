@@ -44,7 +44,6 @@ import com.tle.web.sections.standard.renderers.LabelTagRenderer;
 import com.tle.web.wizard.WebWizardPage;
 import com.tle.web.wizard.impl.WebRepository;
 
-/** @author jmaginnis */
 @NonNullByDefault
 @SuppressWarnings("nls")
 public abstract class AbstractWebControl<M extends WebControlModel> extends HTMLCtrlWrapper

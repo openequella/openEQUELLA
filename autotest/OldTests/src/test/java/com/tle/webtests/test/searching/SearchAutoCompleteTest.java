@@ -23,7 +23,8 @@ public class SearchAutoCompleteTest extends AbstractCleanupAutoTest {
   private static final String SHORT_ITEM = "drm allowing composition - package";
   private static final String SHORT_ITEM_ESCAPED = "drm allowing composition \\- package";
   private static final String LONG_ITEM =
-      "long words - pneumonoultramicroscopicsilicovolcanoconiosis supercalifragilisticexpialidocious pseudopseudohypoparathyroidism";
+      "long words - pneumonoultramicroscopicsilicovolcanoconiosis"
+          + " supercalifragilisticexpialidocious pseudopseudohypoparathyroidism";
 
   private static final String STEMMING_QUERY = "searchstemming";
   private static final String STEMMING_RESULT = STEMMING_QUERY + " - walk";

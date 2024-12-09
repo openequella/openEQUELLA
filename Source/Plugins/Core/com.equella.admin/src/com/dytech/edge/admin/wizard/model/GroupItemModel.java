@@ -28,7 +28,6 @@ import com.tle.common.i18n.LangUtils;
 import java.util.Arrays;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class GroupItemModel extends AbstractControlModel<GroupItem> {
   private GroupItem groupItem;

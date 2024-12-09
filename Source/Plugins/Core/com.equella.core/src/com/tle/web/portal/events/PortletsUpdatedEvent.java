@@ -20,7 +20,6 @@ package com.tle.web.portal.events;
 
 import com.tle.core.events.ApplicationEvent;
 
-/** @author aholland */
 public class PortletsUpdatedEvent extends ApplicationEvent<PortletsUpdatedEventListener> {
   public enum PortletUpdateEventType {
     MOVED,
@@ -46,7 +45,9 @@ public class PortletsUpdatedEvent extends ApplicationEvent<PortletsUpdatedEventL
     this.type = type;
   }
 
-  /** @return May be null, in which case all users are (or potentially are) affected */
+  /**
+   * @return May be null, in which case all users are (or potentially are) affected
+   */
   public String getUserId() {
     return userId;
   }

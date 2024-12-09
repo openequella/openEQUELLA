@@ -7,7 +7,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class AddGroupPage extends AbstractPage<AddGroupPage> {
   public static final String ADD_GROUP_DIALOG_HEADER =
       "Create a grouping"; // original property key: addgrouping.dialog.title

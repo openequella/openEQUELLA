@@ -63,7 +63,6 @@ import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import org.w3c.dom.Node;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(LtiService.class)
 @Singleton

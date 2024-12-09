@@ -26,7 +26,6 @@ import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.BaseEntityBean;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface BaseEntitySerializer<BE extends BaseEntity, BEB extends BaseEntityBean> {
   BEB serialize(BE entity, @Nullable Object data, boolean heavy);

@@ -55,7 +55,6 @@ import org.mozilla.javascript.commonjs.module.Require;
 import org.mozilla.javascript.commonjs.module.RequireBuilder;
 import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(ScriptingService.class)
 @Singleton

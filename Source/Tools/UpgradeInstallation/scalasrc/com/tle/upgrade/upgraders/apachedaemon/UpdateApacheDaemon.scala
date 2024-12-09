@@ -29,13 +29,15 @@ import com.tle.upgrade.{LineFileModifier, UpgradeResult}
 import java.io.File
 import scala.util.{Failure, Success, Try}
 
-/**
-  * This upgrade aims to update Apache Daemon executables to version v1.3.3 which is compatible with Java 11.
+/** This upgrade aims to update Apache Daemon executables to version v1.3.3 which is compatible with
+  * Java 11.
   *
-  * For Linux, it will replace file 'jsvc' as well as the two scripts for Equella server and the Manager server.
-  * For Windows, it will replace 'prunsrv.exe', 'prunmgr.exe' and the two BAT files for Equella server and the Manager server.
+  * For Linux, it will replace file 'jsvc' as well as the two scripts for Equella server and the
+  * Manager server. For Windows, it will replace 'prunsrv.exe', 'prunmgr.exe' and the two BAT files
+  * for Equella server and the Manager server.
   *
-  * The upgrade will also try to replace the old Java GC configuration with a new one in the Equella configuration file.
+  * The upgrade will also try to replace the old Java GC configuration with a new one in the Equella
+  * configuration file.
   */
 class UpdateApacheDaemon extends AbstractUpgrader {
   val JSVC    = "jsvc"
@@ -106,13 +108,17 @@ class UpdateApacheDaemon extends AbstractUpgrader {
 
     ExecUtils.determinePlatform() match {
       case ExecUtils.PLATFORM_WIN64 =>
-        update(Array(PRUNMGR, PRUNSRV, EQUELLA_SERVER_WINDOWS, MANAGER_SERVER_WINDOWS),
-               EQUELLA_SERVER_CONFIG_WINDOWS,
-               "windows")
+        update(
+          Array(PRUNMGR, PRUNSRV, EQUELLA_SERVER_WINDOWS, MANAGER_SERVER_WINDOWS),
+          EQUELLA_SERVER_CONFIG_WINDOWS,
+          "windows"
+        )
       case ExecUtils.PLATFORM_LINUX64 =>
-        update(Array(JSVC, EQUELLA_SERVER_LINUX, MANAGER_SERVER_LINUX),
-               EQUELLA_SERVER_CONFIG_LINUX,
-               "linux")
+        update(
+          Array(JSVC, EQUELLA_SERVER_LINUX, MANAGER_SERVER_LINUX),
+          EQUELLA_SERVER_CONFIG_LINUX,
+          "linux"
+        )
       case other => result.info(s"Unsupported OS $other")
     }
   }

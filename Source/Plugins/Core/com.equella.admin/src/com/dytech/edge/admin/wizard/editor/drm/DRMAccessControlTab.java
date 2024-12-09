@@ -57,7 +57,6 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 public class DRMAccessControlTab extends JPanel {
   private static final long serialVersionUID = 1L;
 

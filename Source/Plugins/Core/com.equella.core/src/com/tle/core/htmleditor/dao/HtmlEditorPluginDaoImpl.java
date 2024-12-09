@@ -28,7 +28,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(HtmlEditorPluginDao.class)

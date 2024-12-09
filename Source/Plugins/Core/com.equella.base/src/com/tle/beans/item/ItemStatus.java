@@ -18,7 +18,6 @@
 
 package com.tle.beans.item;
 
-/** @author Nicholas Read */
 public enum ItemStatus {
   DRAFT,
   LIVE,

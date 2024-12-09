@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-/** @author Nicholas Read */
 public interface HierarchyDao extends AbstractTreeDao<HierarchyTopic> {
   List<HierarchyTopic> enumerateAll();
 

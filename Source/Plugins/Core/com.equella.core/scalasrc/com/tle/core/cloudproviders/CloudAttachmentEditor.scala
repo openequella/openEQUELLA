@@ -64,8 +64,10 @@ class CloudAttachmentEditor extends AbstractCustomAttachmentEditor {
 
   override def newAttachment(): Attachment = {
     val attach = super.newAttachment()
-    CloudAttachmentJson.encodeJson(attach.asInstanceOf[CustomAttachment],
-                                   CloudAttachmentJson.defaultJson)
+    CloudAttachmentJson.encodeJson(
+      attach.asInstanceOf[CustomAttachment],
+      CloudAttachmentJson.defaultJson
+    )
     attach
   }
 }

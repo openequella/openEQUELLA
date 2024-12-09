@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-/** @author jmaginnis */
 public class XMLDataMappings {
   private SortedMap<String, SortedSet<AbstractMapping>> nodeMapping;
   private boolean ignoreNS;
@@ -69,7 +68,9 @@ public class XMLDataMappings {
     return ignoreNS;
   }
 
-  /** @param b */
+  /**
+   * @param b
+   */
   public void setIgnoreNS(boolean ignoreNS) {
     this.ignoreNS = ignoreNS;
   }

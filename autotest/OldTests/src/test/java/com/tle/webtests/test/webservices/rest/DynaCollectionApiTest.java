@@ -10,15 +10,16 @@ import java.net.URI;
 import java.util.List;
 import org.testng.annotations.Test;
 
-/** @author larry */
 public class DynaCollectionApiTest extends AbstractRestApiTest {
   private static final String API_DYNACOLL_PATH = "api/dynacollection";
+
   /**
    * Note this test assumes the pre-existence of a Dynamic Collection with exactly this name, and it
    * applicability restricted to search(Usage), with 4 items within its definition, 2 of those items
    * with date_last_modified being before march 2013
    */
   private static final String OAUTH_CLIENT_ID = "DynaCollectionApiTestClient";
+
   /**
    * Test assumes existence of manual virtual value dyna collection with this UUID and 'giant' as
    * one of its virtual values. (Also required by SearchApiTest)

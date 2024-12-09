@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-/** @author aholland */
 public class ProxyPage extends WizardPage {
   protected JTextField host;
   protected JTextField port;

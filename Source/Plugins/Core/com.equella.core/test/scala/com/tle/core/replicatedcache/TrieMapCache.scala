@@ -7,11 +7,11 @@ import com.tle.core.replicatedcache.ReplicatedCacheService.ReplicatedCache
 import java.lang
 import scala.collection.concurrent.TrieMap
 
-/**
-  * A implementation of `ReplicatedCache` for testing which is _not_ replicated and simply stores
+/** A implementation of `ReplicatedCache` for testing which is _not_ replicated and simply stores
   * things in a TriMap instance.
   *
-  * @tparam T the type of data to be stored
+  * @tparam T
+  *   the type of data to be stored
   */
 class TrieMapCache[T <: Serializable] extends ReplicatedCache[T] {
   private val cache: TrieMap[String, T] = TrieMap()

@@ -25,7 +25,6 @@ import com.tle.web.sections.js.JSCallAndReference;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.js.generic.function.IncludeFile;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class AjaxEffects {
   private static final PluginResourceHelper resources =

@@ -45,7 +45,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(GoogleService.class)
 @Singleton

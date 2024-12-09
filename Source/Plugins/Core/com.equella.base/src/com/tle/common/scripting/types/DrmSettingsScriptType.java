@@ -21,7 +21,6 @@ package com.tle.common.scripting.types;
 import java.io.Serializable;
 import java.util.List;
 
-/** @author aholland */
 public interface DrmSettingsScriptType extends Serializable {
   boolean isAllowSummary();
 

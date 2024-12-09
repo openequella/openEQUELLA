@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class DynamicSelectionsTableModel<T> implements SelectionsTableModel {
   protected abstract Collection<T> getSourceList(SectionInfo info);

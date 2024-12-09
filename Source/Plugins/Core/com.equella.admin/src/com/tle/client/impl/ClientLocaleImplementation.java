@@ -30,7 +30,6 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ClientLocaleImplementation extends AbstractCurrentLocale {
   private final Locale locale;

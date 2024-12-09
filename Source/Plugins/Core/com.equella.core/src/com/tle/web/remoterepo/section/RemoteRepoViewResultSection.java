@@ -58,7 +58,6 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class RemoteRepoViewResultSection<
         M extends RemoteRepoViewResultSection.RemoteRepoViewResultModel<R>,

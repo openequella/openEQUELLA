@@ -168,7 +168,6 @@ import uk.ac.ed.ph.jqtiplus.node.item.interaction.content.Gap;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.content.Hottext;
 import uk.ac.ed.ph.jqtiplus.node.test.TestFeedback;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind
 @Singleton

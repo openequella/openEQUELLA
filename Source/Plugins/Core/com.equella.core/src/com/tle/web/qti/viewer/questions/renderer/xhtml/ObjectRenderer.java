@@ -24,7 +24,6 @@ import com.tle.web.qti.viewer.QtiViewerContext;
 import java.util.Map;
 import uk.ac.ed.ph.jqtiplus.node.content.xhtml.object.Object;
 
-/** @author Aaron */
 public class ObjectRenderer extends XhtmlElementRenderer {
   @SuppressWarnings("unused")
   private final Object model;

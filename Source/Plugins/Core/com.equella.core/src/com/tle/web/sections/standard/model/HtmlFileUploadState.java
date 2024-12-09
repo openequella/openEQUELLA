@@ -21,7 +21,6 @@ package com.tle.web.sections.standard.model;
 import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.js.JSAssignable;
 
-/** @author Aaron, Doolse */
 public class HtmlFileUploadState extends HtmlComponentState {
   private Bookmark ajaxUploadUrl;
   private JSAssignable validateFile;

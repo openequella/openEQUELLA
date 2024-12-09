@@ -77,7 +77,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import net.sf.json.JSONArray;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class MyPagesHandler extends AbstractAttachmentHandler<MyPagesHandler.MyPagesHandlerModel>

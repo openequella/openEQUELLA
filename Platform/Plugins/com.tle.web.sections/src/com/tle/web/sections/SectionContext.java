@@ -29,7 +29,9 @@ package com.tle.web.sections;
  */
 public interface SectionContext extends SectionId, SectionInfo {
 
-  /** @return The <code>SectionInfo</code> that this <code>Section</code> is associated with. */
+  /**
+   * @return The <code>SectionInfo</code> that this <code>Section</code> is associated with.
+   */
   @Deprecated
   SectionInfo getInfo();
 

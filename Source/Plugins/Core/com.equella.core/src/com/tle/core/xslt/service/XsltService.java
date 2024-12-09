@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import javax.xml.transform.URIResolver;
 
-/** @author Nicholas Read */
 public interface XsltService {
   /** Transforms the input with the XSLT. The service may cache the compiled form of the XSLT. */
   String transform(FileHandle handle, String xslt, Reader input);

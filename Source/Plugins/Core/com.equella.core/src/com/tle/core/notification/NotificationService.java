@@ -63,6 +63,8 @@ public interface NotificationService {
 
   ClusteredTask getClusteredTask(boolean batched);
 
-  /** @return true if there were changes. */
+  /**
+   * @return true if there were changes.
+   */
   boolean userIdChanged(ItemKey itemKey, String fromUserId, String toUserId);
 }

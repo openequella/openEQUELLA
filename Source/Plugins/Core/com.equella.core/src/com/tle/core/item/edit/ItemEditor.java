@@ -37,6 +37,7 @@ public interface ItemEditor {
   void doEdits(EquellaItemBean itemBean);
 
   Attachment attachmentForUuid(String uuid);
+
   /**
    * Also asks each ItemDeserializerEditor to do processFiles
    *

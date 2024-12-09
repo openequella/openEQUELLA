@@ -25,7 +25,6 @@ import com.tle.common.qti.entity.QtiItemResult;
 import com.tle.core.entity.service.impl.EntityInitialiserCallback;
 import com.tle.core.hibernate.equella.service.Property;
 
-/** @author Aaron */
 public class QtiObjectInitialiserCallback extends EntityInitialiserCallback {
   @Override
   public void set(Object obj, Property property, Object value) {

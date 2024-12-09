@@ -24,18 +24,22 @@ import com.tle.core.services.item.FreetextResult
 import com.tle.legacy.LegacyGuice
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean
 
-/**
-  * This class provides general information of an Item to be used inside a SearchResult.
+/** This class provides general information of an Item to be used inside a SearchResult.
   *
-  * @param idKey An ItemIdKey
-  * @param bean An EquellaItemBean
-  * @param keywordFound Indicates if a search term has been found inside attachment content
+  * @param idKey
+  *   An ItemIdKey
+  * @param bean
+  *   An EquellaItemBean
+  * @param keywordFound
+  *   Indicates if a search term has been found inside attachment content
   */
 case class SearchItem(idKey: ItemIdKey, bean: EquellaItemBean, keywordFound: Boolean)
 object SearchItem {
-  def apply(itemIdKey: ItemIdKey,
-            isKeywordFoundInAttachment: Boolean,
-            serializer: ItemSerializerItemBean): SearchItem = {
+  def apply(
+      itemIdKey: ItemIdKey,
+      isKeywordFoundInAttachment: Boolean,
+      serializer: ItemSerializerItemBean
+  ): SearchItem = {
     val itemBean = new EquellaItemBean
     itemBean.setUuid(itemIdKey.getUuid)
     itemBean.setVersion(itemIdKey.getVersion)

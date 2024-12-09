@@ -112,7 +112,8 @@ public class Office2HtmlConversionServiceImpl implements Office2HtmlConversionSe
     File cjFile = new File(conversionJar);
     if (!cjFile.exists() || cjFile.isDirectory()) {
       throw new RuntimeException(
-          "Error setting conversionService.conversionServicePath: Conversion service JAR does not exist at "
+          "Error setting conversionService.conversionServicePath: Conversion service JAR does not"
+              + " exist at "
               + cjFile);
     }
     this.conversionDir = cjFile.getParentFile();

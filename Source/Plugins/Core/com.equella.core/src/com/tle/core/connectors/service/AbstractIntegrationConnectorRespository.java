@@ -30,7 +30,6 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.ViewableItemResolver;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class AbstractIntegrationConnectorRespository
     implements ConnectorRepositoryImplementation {

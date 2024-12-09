@@ -22,7 +22,6 @@ import com.tle.beans.item.Item;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 
-/** @author aholland */
 public class LoadItemEvent extends AbstractMyPagesEvent<LoadItemEventListener> {
   private final Item item;
   private final String pageUuid;

@@ -25,8 +25,7 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import java.net.{URI, URL}
 import scala.util.Try
 
-/**
-  * Centralise all the required codecs for different types of IdentityProvider.
+/** Centralise all the required codecs for different types of IdentityProvider.
   */
 object IdentityProviderCodec {
   private implicit val uriEncoder = Encoder.encodeString.contramap[URL](_.toString)
@@ -58,7 +57,8 @@ object IdentityProviderCodec {
     case generic: GenericIdentityProviderDetails => genericIdPDetailsEncoder(generic)
     case unsupported =>
       throw new IllegalArgumentException(
-        s"Unsupported OIDC Identity Provider: ${unsupported.commonDetails.platform}")
+        s"Unsupported OIDC Identity Provider: ${unsupported.commonDetails.platform}"
+      )
   }
 
   implicit val idpDetailsDecoder: Decoder[IdentityProviderDetails] = Decoder.instance { cursor =>
@@ -67,10 +67,12 @@ object IdentityProviderCodec {
       .downField("platform")
       .as[IdentityProviderPlatform.Value]
       .flatMap {
-        case IdentityProviderPlatform.GENERIC => cursor.as[GenericIdentityProviderDetails]
+        case IdentityProviderPlatform.AUTH0 | IdentityProviderPlatform.ENTRA_ID =>
+          cursor.as[GenericIdentityProviderDetails]
         case unsupported =>
           Left(
-            DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil))
+            DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil)
+          )
       }
   }
 }

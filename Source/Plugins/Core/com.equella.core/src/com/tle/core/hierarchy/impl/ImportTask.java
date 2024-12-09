@@ -105,7 +105,9 @@ public class ImportTask extends SingleShotTask {
     return count;
   }
 
-  /** @return true if the recursion should continue */
+  /**
+   * @return true if the recursion should continue
+   */
   @SuppressWarnings("nls")
   private boolean doImportRecursive(ExportedHierarchyNode node, HierarchyTopic parent) {
     HierarchyTopic topic = node.getTopic();

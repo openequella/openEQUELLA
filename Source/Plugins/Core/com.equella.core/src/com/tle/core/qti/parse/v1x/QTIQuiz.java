@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** @author will */
 public class QTIQuiz implements Serializable {
   private static final long serialVersionUID = 1L;
   private String title;

@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public class EntityCache {
   private final Map<Long, NameId> schemas;
   private final Map<Long, NameId> itemDefinitions;

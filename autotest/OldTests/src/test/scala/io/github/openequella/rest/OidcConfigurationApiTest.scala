@@ -7,7 +7,7 @@ import org.testng.annotations.Test
 
 class OidcConfigurationApiTest extends AbstractRestApiTest {
   private val OIDC_ENDPOINT           = getTestConfig.getInstitutionUrl + "api/oidc/config"
-  private val PLATFORM                = "GENERIC"
+  private val PLATFORM                = "AUTH0"
   private val AUTH_URL                = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize"
   private val AUTH_CODE_CLIENT_SECRET = "authCodeClientSecret"
   private val API_CLIENT_ID           = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps"
@@ -18,8 +18,10 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     body.put("platform", PLATFORM)
     body.put("issuer", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com")
     body.put("authCodeClientId", "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ")
-    body.put(AUTH_CODE_CLIENT_SECRET,
-             "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L")
+    body.put(
+      AUTH_CODE_CLIENT_SECRET,
+      "_If_ItaRIw6eq0mKGMgoetTLjnGiuGvYbC012yA26F8I4vIZ7PaLGYwF3T89Yo1L"
+    )
     body.put("authUrl", AUTH_URL)
     body.put("keysetUrl", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json")
     body.put("tokenUrl", "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token")
@@ -64,8 +66,10 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     assertEquals(idp.get("apiClientId").asText(), API_CLIENT_ID)
   }
 
-  @Test(description = "Update OIDC configuration without providing sensitive values",
-        dependsOnMethods = Array("add"))
+  @Test(
+    description = "Update OIDC configuration without providing sensitive values",
+    dependsOnMethods = Array("add")
+  )
   def addWithoutSensitiveValues(): Unit = {
     val newClientId = "A5tvBaB7svqjLPe0dDPBicgPcVPDJumZ"
 
@@ -99,7 +103,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     assertEquals(
       "Missing value for required field: Authorisation Code flow Client ID," +
         "Invalid value for Key set URL: Illegal character in path at index 11: http://abc/ keyset/," +
-        "Missing value for required field: IdP API Client ID",
+        "Missing value for required field: API Client ID",
       errors
     )
   }
@@ -114,8 +118,10 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_BAD_REQUEST, respCode)
   }
 
-  @Test(description = "Return 403 when user has no permission to access OIDC configuration",
-        dependsOnMethods = Array("get"))
+  @Test(
+    description = "Return 403 when user has no permission to access OIDC configuration",
+    dependsOnMethods = Array("get")
+  )
   def withoutPermission(): Unit = {
     loginAsLowPrivilegeUser()
 

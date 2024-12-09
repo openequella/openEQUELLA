@@ -50,7 +50,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind
 public class CanvasContentItemPlacementReturn extends AbstractPrototypeSection<Object>
     implements HtmlRenderer {

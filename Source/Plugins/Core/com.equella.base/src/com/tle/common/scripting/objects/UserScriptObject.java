@@ -34,19 +34,29 @@ import java.util.List;
 public interface UserScriptObject extends ScriptObject {
   String DEFAULT_VARIABLE = "user"; // $NON-NLS-1$
 
-  /** @return The given name of the logged in user. */
+  /**
+   * @return The given name of the logged in user.
+   */
   String getFirstName();
 
-  /** @return The family name of the logged in user. */
+  /**
+   * @return The family name of the logged in user.
+   */
   String getLastName();
 
-  /** @return The login name of the logged in user. */
+  /**
+   * @return The login name of the logged in user.
+   */
   String getUsername();
 
-  /** @return The email address of the logged in user. */
+  /**
+   * @return The email address of the logged in user.
+   */
   String getEmail();
 
-  /** @return The unique ID of the logged in user. */
+  /**
+   * @return The unique ID of the logged in user.
+   */
   String getID();
 
   /**

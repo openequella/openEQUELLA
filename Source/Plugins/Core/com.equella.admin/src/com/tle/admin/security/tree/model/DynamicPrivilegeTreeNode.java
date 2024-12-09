@@ -25,7 +25,6 @@ import com.tle.common.security.remoting.RemotePrivilegeTreeService.SecurityTarge
 import com.tle.core.plugins.PluginService;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class DynamicPrivilegeTreeNode extends AbstractLazyNode {
   private final SecurityTarget target;
   private final PluginService pluginService;

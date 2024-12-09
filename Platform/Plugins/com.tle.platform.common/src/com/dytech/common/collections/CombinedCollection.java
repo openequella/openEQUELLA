@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-/** @author Nicholas Read */
 public class CombinedCollection<T> implements Collection<T> {
   private final Collection<T> first;
   private final Collection<T> second;

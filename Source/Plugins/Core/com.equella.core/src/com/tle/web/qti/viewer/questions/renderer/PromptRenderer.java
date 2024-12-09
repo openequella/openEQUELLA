@@ -30,7 +30,6 @@ import java.util.Map;
 import uk.ac.ed.ph.jqtiplus.node.content.basic.InlineStatic;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.Prompt;
 
-/** @author Aaron */
 public class PromptRenderer extends QtiNodeRenderer {
   private final Prompt model;
 

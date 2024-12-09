@@ -23,7 +23,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.jackson.MapperExtension;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

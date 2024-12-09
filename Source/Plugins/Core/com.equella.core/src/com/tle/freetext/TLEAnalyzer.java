@@ -26,7 +26,6 @@ import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
-/** @author aholland */
 public class TLEAnalyzer extends Analyzer {
   private final CharArraySet stopSet;
   private final boolean useStemming;

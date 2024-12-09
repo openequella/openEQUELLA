@@ -34,16 +34,15 @@ import com.tle.integration.oidc.idp.{
 import io.circe.parser._
 import io.circe.syntax._
 import com.tle.integration.oidc.idp.IdentityProviderCodec._
-import org.slf4j.{Logger, LoggerFactory}
-
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 @Bind(classOf[OidcConfigurationService])
-class OidcConfigurationServiceImpl @Inject()(
+class OidcConfigurationServiceImpl @Inject() (
     configurationService: ConfigurationService,
     auditLogService: AuditLogService,
-    userService: UserService)(implicit val encryptionService: EncryptionService)
+    userService: UserService
+)(implicit val encryptionService: EncryptionService)
     extends OidcConfigurationService {
   private val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
@@ -83,7 +82,7 @@ class OidcConfigurationServiceImpl @Inject()(
             commonDetails = decryptCommonDetails(commonDetails),
             apiUrl = apiUrl,
             apiClientId = apiClientId,
-            apiClientSecret = encryptionService.decrypt(apiClientSecret),
+            apiClientSecret = encryptionService.decrypt(apiClientSecret)
           )
         case other => other
       }

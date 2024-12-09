@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** @author Aaron */
 public class NamedThreadFactory implements ThreadFactory {
   private final Cache<String, AtomicInteger> threadNumber =
       CacheBuilder.newBuilder().concurrencyLevel(20).build();

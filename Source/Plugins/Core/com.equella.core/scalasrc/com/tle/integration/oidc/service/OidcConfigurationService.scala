@@ -20,25 +20,26 @@ package com.tle.integration.oidc.service
 
 import com.tle.integration.oidc.idp.{IdentityProvider, IdentityProviderDetails}
 
-/**
-  * Service to manage the persistence of Identity Provider configurations.
+/** Service to manage the persistence of Identity Provider configurations.
   */
 trait OidcConfigurationService {
 
-  /**
-    * Retrieve an Identity Provider configuration from the OEQ standard configuration.
+  /** Retrieve an Identity Provider configuration from the OEQ standard configuration.
     *
-    * @return Either the configuration or an error describing why failed to get the configuration
+    * @return
+    *   Either the configuration or an error describing why failed to get the configuration
     */
   def get: Either[Throwable, IdentityProviderDetails]
 
-  /**
-    * Validate and save an Identity Provider configuration. If the validation fails, returns a message
-    * listing all the invalid values. If the validation passes, save the string representation of the
-    * configuration in the OEQ standard configuration.
+  /** Validate and save an Identity Provider configuration. If the validation fails, returns a
+    * message listing all the invalid values. If the validation passes, save the string
+    * representation of the configuration in the OEQ standard configuration.
     *
-    * @param idp Configuration of an Identity Provider to be validated and then saved in the OEQ standard configuration
-    * @return Either an error describing why failed to save or nothing if the save is successful
+    * @param idp
+    *   Configuration of an Identity Provider to be validated and then saved in the OEQ standard
+    *   configuration
+    * @return
+    *   Either an error describing why failed to save or nothing if the save is successful
     */
   def save(idp: IdentityProvider): Either[Throwable, Unit]
 }

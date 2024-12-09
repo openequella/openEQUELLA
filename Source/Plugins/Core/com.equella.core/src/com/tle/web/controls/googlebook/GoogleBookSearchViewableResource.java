@@ -57,6 +57,7 @@ public class GoogleBookSearchViewableResource extends AbstractWrappedResource {
 
   @PlugKey("gbook.details.pages")
   private static KeyLabel PAGES;
+
   // @PlugKey("details.authors")
   // private static KeyLabel AUTHORS;
   @PlugKey("gbook.details.published")

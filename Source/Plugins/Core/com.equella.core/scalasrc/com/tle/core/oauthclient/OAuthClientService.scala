@@ -40,40 +40,48 @@ object OAuthTokenType extends Enumeration {
 
   def fromString(s: Option[String]): Value =
     s.map {
-        _.toLowerCase match {
-          case "bearer"      => Bearer
-          case "equella_api" => EquellaApi
-        }
+      _.toLowerCase match {
+        case "bearer"      => Bearer
+        case "equella_api" => EquellaApi
       }
-      .getOrElse(Bearer)
+    }.getOrElse(Bearer)
 
 }
 
-/**
-  * Represent a POST request to obtain an OAuth2 Access Token.
+/** Represent a POST request to obtain an OAuth2 Access Token.
   *
-  * @param authTokenUrl The URL used to obtain an access token from the selected Identity Provider
-  * @param clientId Client ID used to get an Access Token to be used in API calls
-  * @param clientSecret  Client Secret used with `clientId` to get an Access Token
-  * @param data Any additional data required in the request (e.g. 'audience' for Auth0)
+  * @param authTokenUrl
+  *   The URL used to obtain an access token from the selected Identity Provider
+  * @param clientId
+  *   Client ID used to get an Access Token to be used in API calls
+  * @param clientSecret
+  *   Client Secret used with `clientId` to get an Access Token
+  * @param data
+  *   Any additional data required in the request (e.g. 'audience' for Auth0)
   */
-case class TokenRequest(authTokenUrl: String,
-                        clientId: String,
-                        clientSecret: String,
-                        data: Option[Map[String, String]] = None) {
+case class TokenRequest(
+    authTokenUrl: String,
+    clientId: String,
+    clientSecret: String,
+    data: Option[Map[String, String]] = None
+) {
   def key: String = clientId + authTokenUrl
 }
 
-case class OAuthTokenState(token: String,
-                           tokenType: OAuthTokenType.Value,
-                           expires: Option[Instant],
-                           refreshToken: Option[String])
+case class OAuthTokenState(
+    token: String,
+    tokenType: OAuthTokenType.Value,
+    expires: Option[Instant],
+    refreshToken: Option[String]
+)
 
-case class OAuthTokenResponse(access_token: String,
-                              refresh_token: Option[String],
-                              token_type: Option[String],
-                              expires_in: Option[Long],
-                              state: Option[String])
+case class OAuthTokenResponse(
+    access_token: String,
+    refresh_token: Option[String],
+    token_type: Option[String],
+    expires_in: Option[Long],
+    state: Option[String]
+)
 
 object OAuthTokenResponse {
   implicit val dec = deriveDecoder[OAuthTokenResponse]
@@ -128,10 +136,12 @@ object OAuthClientService {
 
   def responseToState(response: OAuthTokenResponse): OAuthTokenState = {
     val expires = response.expires_in.filterNot(_ == Long.MaxValue).map(Instant.now().plusSeconds)
-    OAuthTokenState(response.access_token,
-                    OAuthTokenType.fromString(response.token_type),
-                    expires,
-                    response.refresh_token)
+    OAuthTokenState(
+      response.access_token,
+      OAuthTokenType.fromString(response.token_type),
+      expires,
+      response.refresh_token
+    )
   }
 
   def removeToken(tokenRequest: TokenRequest): Unit = {
@@ -146,9 +156,11 @@ object OAuthClientService {
     replicatedCache.get(tokenKey).or(() => requestToken(tokenRequest, tokenKey))
   }
 
-  def requestWithToken[T](request: Request[T, Stream[IO, Byte]],
-                          token: String,
-                          tokenType: OAuthTokenType.Value): Response[T] = {
+  def requestWithToken[T](
+      request: Request[T, Stream[IO, Byte]],
+      token: String,
+      tokenType: OAuthTokenType.Value
+  ): Response[T] = {
     val (name, value) = tokenType match {
       case OAuthTokenType.EquellaApi =>
         OAuthWebConstants.HEADER_X_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_ACCESS_TOKEN}=$token"
@@ -161,10 +173,12 @@ object OAuthClientService {
       .unsafeRunSync()
   }
 
-  def authorizedRequest[T](authTokenUrl: String,
-                           clientId: String,
-                           clientSecret: String,
-                           request: Request[T, Stream[IO, Byte]]): Response[T] = {
+  def authorizedRequest[T](
+      authTokenUrl: String,
+      clientId: String,
+      clientSecret: String,
+      request: Request[T, Stream[IO, Byte]]
+  ): Response[T] = {
     val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)

@@ -44,8 +44,7 @@ object CalSummaryDisplay {
     val comp = new NumberStringComparator[BookChapter] {
       override def convertToString(t: BookChapter): String = t.chapterName
     }
-    (c1: BookChapter, c2: BookChapter) =>
-      comp.compare(c1, c2) < 0
+    (c1: BookChapter, c2: BookChapter) => comp.compare(c1, c2) < 0
   }
 
   def citationForItem(item: Item): Option[String] = {
@@ -66,10 +65,12 @@ object CalSummaryDisplay {
     } else attachment.getDescription
   }
 
-  def copyrightAttachment(info: SectionInfo,
-                          item: Item,
-                          vi: NewDefaultViewableItem,
-                          at: Attachment) = {
+  def copyrightAttachment(
+      info: SectionInfo,
+      item: Item,
+      vi: NewDefaultViewableItem,
+      at: Attachment
+  ) = {
     val vr     = LegacyGuice.attachmentResourceService.getViewableResource(info, vi, at)
     val ls     = LegacyGuice.viewItemService.getViewableLink(info, vr, null).getLinkState
     val href   = Option(ls.getBookmark).map(b => ItemUrlDisplay.addBaseUri(b.getHref))
@@ -82,9 +83,11 @@ object CalSummaryDisplay {
     CopyrightAttachment(item.getItemId, href, attachmentDisplayName(at), atUuid, status)
   }
 
-  def bookData(info: SectionInfo,
-               holding: CALHolding,
-               activatable: util.Set[Item]): HoldingSummary = {
+  def bookData(
+      info: SectionInfo,
+      holding: CALHolding,
+      activatable: util.Set[Item]
+  ): HoldingSummary = {
     val bookPortions = holding.getPortions.asScala.map { p =>
       val item = p.getItem
 
@@ -102,8 +105,10 @@ object CalSummaryDisplay {
       }
       BookChapter(title, p.getChapter, activatable.contains(item), sections)
     }
-    BookSummary(PageCounter.countTotalPages(holding.getLength),
-                bookPortions.sortWith(chapterNameCompare))
+    BookSummary(
+      PageCounter.countTotalPages(holding.getLength),
+      bookPortions.sortWith(chapterNameCompare)
+    )
   }
 
   def journalData(info: SectionInfo, holding: CALHolding): HoldingSummary = {
@@ -118,8 +123,8 @@ object CalSummaryDisplay {
           p.getTitle -> JournalSection(copyrightAttachment(info, item, vi, at))
         }
       }
-      sections.groupBy(_._1).map {
-        case (title, s) => JournalPortion(title, s.map(_._2))
+      sections.groupBy(_._1).map { case (title, s) =>
+        JournalPortion(title, s.map(_._2))
       }
     }
 
@@ -134,7 +139,8 @@ object CalSummaryDisplay {
     else
       Option(calService.getHoldingForItem(item)).map { holding =>
         val activatableItems = activationService.filterActivatableItems(
-          new util.HashSet[Item](holding.getPortions.asScala.map(_.getItem).asJava))
+          new util.HashSet[Item](holding.getPortions.asScala.map(_.getItem).asJava)
+        )
         val holdingSummary = holding.getType match {
           case CALConstants.BOOK    => bookData(info, holding, activatableItems)
           case CALConstants.JOURNAL => journalData(info, holding)

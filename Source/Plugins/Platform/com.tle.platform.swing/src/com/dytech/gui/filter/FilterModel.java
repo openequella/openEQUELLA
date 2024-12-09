@@ -20,7 +20,6 @@ package com.dytech.gui.filter;
 
 import java.util.List;
 
-/** @author Nicholas Read */
 public abstract class FilterModel<T> {
   private List<T> exclusion;
 
@@ -37,12 +36,16 @@ public abstract class FilterModel<T> {
     return c;
   }
 
-  /** @return Returns the exclusion. */
+  /**
+   * @return Returns the exclusion.
+   */
   public List<T> getExclusion() {
     return exclusion;
   }
 
-  /** @param exclusion The exclusion to set. */
+  /**
+   * @param exclusion The exclusion to set.
+   */
   public void setExclusion(List<T> exclusion) {
     this.exclusion = exclusion;
   }

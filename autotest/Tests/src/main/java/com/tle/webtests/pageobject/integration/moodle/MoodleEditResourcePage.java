@@ -88,7 +88,10 @@ public class MoodleEditResourcePage extends MoodleBasePage<MoodleEditResourcePag
       driver.switchTo().defaultContent();
       ((JavascriptExecutor) driver)
           .executeScript(
-              "var tempVar = tinymce.DOM.setAttrib; tinymce.DOM.setAttrib = function(id, attr, val) { if (attr == 'src' && val.trim().match(/javascript\\s*:\\s*(\"\\s*\"|'\\s*')/)) {return;} else {tempVar.apply(this, arguments);} }");
+              "var tempVar = tinymce.DOM.setAttrib; tinymce.DOM.setAttrib = function(id, attr, val)"
+                  + " { if (attr == 'src' &&"
+                  + " val.trim().match(/javascript\\s*:\\s*(\"\\s*\"|'\\s*')/)) {return;} else"
+                  + " {tempVar.apply(this, arguments);} }");
       waiter.until(
           ExpectedConditions2.frameToBeAvailableAndSwitchToIt(
               driver, By.xpath("//div[@class='mceMiddle']//iframe")));

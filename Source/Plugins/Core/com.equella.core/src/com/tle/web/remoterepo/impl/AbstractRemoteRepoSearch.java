@@ -23,7 +23,6 @@ import com.tle.web.remoterepo.RemoteRepoSearch;
 import com.tle.web.remoterepo.RemoteRepoSection;
 import com.tle.web.sections.SectionInfo;
 
-/** @author aholland */
 public abstract class AbstractRemoteRepoSearch implements RemoteRepoSearch {
   @Override
   public void forward(SectionInfo info, FederatedSearch search) {

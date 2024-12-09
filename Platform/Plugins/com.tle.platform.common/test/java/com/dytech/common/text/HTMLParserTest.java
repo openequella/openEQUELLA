@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import junit.framework.TestCase;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class HTMLParserTest extends TestCase {
   public HTMLParserTest() {

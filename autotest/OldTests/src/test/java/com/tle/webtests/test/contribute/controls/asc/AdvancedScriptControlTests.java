@@ -652,7 +652,8 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
     assertEquals(getDivMessageForId("responseContentType"), "text/html;charset=UTF-8");
     // get collection details
     expectedString =
-        "Name: Utils script object collection\nDescription: Collection for testing the util scripting object";
+        "Name: Utils script object collection\n"
+            + "Description: Collection for testing the util scripting object";
     clickAscButtonAndWait("Get collection details", wizard, expectedString, "collectionDetails");
     assertEquals(getDivMessageForId("collectionDetails"), expectedString);
     // create xml document

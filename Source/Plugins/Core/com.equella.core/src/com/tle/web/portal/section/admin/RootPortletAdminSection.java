@@ -37,7 +37,6 @@ import com.tle.web.template.section.event.BlueBarEvent;
 import com.tle.web.template.section.event.BlueBarEventListener;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class RootPortletAdminSection
     extends ContextableSearchSection<ContextableSearchSection.Model>

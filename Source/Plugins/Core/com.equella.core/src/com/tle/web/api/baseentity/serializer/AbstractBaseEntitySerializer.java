@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @NonNullByDefault
 public abstract class AbstractBaseEntitySerializer<
         BE extends BaseEntity, BEB extends BaseEntityBean, ED extends BaseEntityEditor<BE, BEB>>

@@ -28,11 +28,10 @@ import java.io.{File, IOException}
 import java.util
 import java.util.regex.Pattern
 
-/**
-  * This migration is intended to replace tool libav with ffmpeg.
+/** This migration is intended to replace tool libav with ffmpeg.
   *
   * File to be updated:
-  * 1. 'optional-config.properties' under folder `learningedge-config`;
+  *   1. 'optional-config.properties' under folder `learningedge-config`;
   *
   * The result of this migration is to replace property `libav.path`` with `ffmpeg.path`
   */
@@ -73,7 +72,8 @@ class AddFfmpegConfig extends AbstractUpgrader {
       case e: IOException =>
         throw new RuntimeException(
           "Failed to update optional-config.properties to support use of FFmpeg.",
-          e)
+          e
+        )
     }
   }
 }

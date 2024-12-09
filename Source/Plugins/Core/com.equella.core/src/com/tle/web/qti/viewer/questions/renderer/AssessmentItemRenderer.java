@@ -37,7 +37,6 @@ import uk.ac.ed.ph.jqtiplus.node.item.ModalFeedback;
 import uk.ac.ed.ph.jqtiplus.node.item.Stylesheet;
 import uk.ac.ed.ph.jqtiplus.types.Identifier;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class AssessmentItemRenderer extends QtiNodeRenderer {
   private final DisplayModel dm = new DisplayModel();

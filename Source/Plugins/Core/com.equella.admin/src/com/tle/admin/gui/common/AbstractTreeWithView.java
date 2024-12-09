@@ -50,7 +50,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-/** @author Nicholas Read */
 public abstract class AbstractTreeWithView<
         NODE_TYPE extends DefaultMutableTreeNode,
         VIEW_TYPE extends TreeWithViewInterface<NODE_TYPE>>

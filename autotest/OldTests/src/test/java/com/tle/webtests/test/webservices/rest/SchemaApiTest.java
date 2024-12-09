@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.List;
 import org.testng.annotations.Test;
 
-/** @author larry */
 public class SchemaApiTest extends AbstractRestApiTest {
   private static final String OAUTH_CLIENT_ID = "SchemaApiTest";
   private static final String API_TASK_PATH = "api/schema";

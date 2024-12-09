@@ -54,7 +54,6 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class AutocompleteEditBoxWebControl
@@ -191,7 +190,9 @@ public class AutocompleteEditBoxWebControl
     }
   }
 
-  /** @return The parent path and the term value */
+  /**
+   * @return The parent path and the term value
+   */
   private Pair<String, String> getTermComponents(String fullTermPath) {
     String parentFullPath = "";
     final String termValue;

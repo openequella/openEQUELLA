@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SecureOnCall(priv = "COPYRIGHT_ITEM")
 public class ActivateOperation extends AbstractStandardWorkflowOperation {
   protected List<ActivateRequest> requests;

@@ -26,7 +26,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.TextLabel;
 import uk.ac.ed.ph.jqtiplus.node.content.basic.TextRun;
 
-/** @author Aaron */
 public class TextRunRenderer extends QtiNodeRenderer {
   private final TextRun model;
 

@@ -13,7 +13,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-/** @author Aaron */
 public abstract class AbstractShowEntitiesPage<THIS extends AbstractShowEntitiesPage<THIS>>
     extends AbstractPage<THIS> {
   protected WebElement getAddLink() {

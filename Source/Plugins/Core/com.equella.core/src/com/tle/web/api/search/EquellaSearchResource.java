@@ -37,7 +37,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Aaron */
 @Path("search")
 @Api(value = "Searching", description = "search")
 @Produces(MediaType.APPLICATION_JSON)
@@ -105,7 +104,8 @@ public interface EquellaSearchResource extends SearchResource {
           String reverse,
       @ApiParam(
               value =
-                  "For details on structuring the where clause see https://docs.edalex.com/books/rest-apis/page/openequella-rest-api-guide#bkmrk-searching",
+                  "For details on structuring the where clause see"
+                      + " https://docs.edalex.com/books/rest-apis/page/openequella-rest-api-guide#bkmrk-searching",
               required = false)
           @QueryParam("where")
           String where,
@@ -143,7 +143,8 @@ public interface EquellaSearchResource extends SearchResource {
           String modifiedBefore,
       @ApiParam(
               value =
-                  "An advanced search UUID. If a value is supplied, the collections in the advanced search will be used and the collections parameter will be ignored",
+                  "An advanced search UUID. If a value is supplied, the collections in the advanced"
+                      + " search will be used and the collections parameter will be ignored",
               required = false)
           @QueryParam("advancedsearch")
           String advancedSearch,

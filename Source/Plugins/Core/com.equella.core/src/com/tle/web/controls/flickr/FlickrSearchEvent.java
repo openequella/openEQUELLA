@@ -25,7 +25,6 @@ import com.tle.web.sections.equella.search.event.AbstractSearchEvent;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 import java.util.Date;
 
-/** @author larry */
 public class FlickrSearchEvent extends AbstractSearchEvent<FlickrSearchEvent> {
   private FlickrSearchParameters params;
   private boolean moreThanKeywordFilter;
@@ -62,12 +61,16 @@ public class FlickrSearchEvent extends AbstractSearchEvent<FlickrSearchEvent> {
     params.setUserId(ownerId);
   }
 
-  /** @return the params */
+  /**
+   * @return the params
+   */
   public FlickrSearchParameters getParams() {
     return params;
   }
 
-  /** @param params the params to set */
+  /**
+   * @param params the params to set
+   */
   public void setParams(FlickrSearchParameters params) {
     this.params = params;
   }

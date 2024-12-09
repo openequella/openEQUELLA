@@ -13,7 +13,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-/** @author larry */
 public class WhereQueryPage<T extends PageObject>
     extends AbstractWizardControlPage<WhereQueryPage<T>> {
   public static final String QUERY_DIV_ID = "iaw_div";

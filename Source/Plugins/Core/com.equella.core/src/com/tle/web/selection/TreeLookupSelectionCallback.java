@@ -22,7 +22,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.TreeLookupCallback;
 import java.io.Serializable;
 
-/** @author aholland */
 public class TreeLookupSelectionCallback extends TreeLookupCallback
     implements SelectionsMadeCallback {
   private static final long serialVersionUID = 1L;

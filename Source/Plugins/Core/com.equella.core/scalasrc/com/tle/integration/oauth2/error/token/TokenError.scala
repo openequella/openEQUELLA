@@ -23,14 +23,14 @@ import com.tle.integration.oauth2.error.token.TokenErrorResponseCode.Code
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-/**
-  * Valid error codes for the error response of a token request as per section 5.2 (Error Response) of the OAuth2 spec.
+/** Valid error codes for the error response of a token request as per section 5.2 (Error Response)
+  * of the OAuth2 spec.
   */
 object TokenErrorResponseCode extends Enumeration {
   type Code = Value
 
   val invalid_request, invalid_client, invalid_grant, unauthorized_client, unsupported_grant_type,
-  invalid_scope = Value
+      invalid_scope = Value
 
   implicit val tokenErrorCodeEncoder: Encoder[TokenErrorResponseCode.Value] =
     Encoder.encodeEnumeration(TokenErrorResponseCode)
@@ -38,12 +38,14 @@ object TokenErrorResponseCode extends Enumeration {
     Decoder.decodeEnumeration(TokenErrorResponseCode)
 }
 
-/**
-  * Structure for the response of a failed ID token request as per section 5.2 (Error Response) of the OAuth2 spec.
+/** Structure for the response of a failed ID token request as per section 5.2 (Error Response) of
+  * the OAuth2 spec.
   */
-final case class TokenErrorResponse(error: TokenErrorResponseCode.Code,
-                                    error_description: Option[String],
-                                    error_uri: Option[String])
+final case class TokenErrorResponse(
+    error: TokenErrorResponseCode.Code,
+    error_description: Option[String],
+    error_uri: Option[String]
+)
 object TokenErrorResponse {
   implicit val tokenErrorResponseEncoder = deriveEncoder[TokenErrorResponse]
   implicit val tokenErrorResponseDecoder = deriveDecoder[TokenErrorResponse]

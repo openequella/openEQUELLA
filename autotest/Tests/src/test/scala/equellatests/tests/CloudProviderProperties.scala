@@ -29,8 +29,10 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
   case class RegisterProvider(provider: TestCloudProviderDetails) extends CloudProviderTestCommand
   case class DeleteProvider(providerName: String)                 extends CloudProviderTestCommand
 
-  case class ProviderTestState(registered: Set[TestCloudProviderDetails],
-                               scenarios: Scenarios.ValueSet)
+  case class ProviderTestState(
+      registered: Set[TestCloudProviderDetails],
+      scenarios: Scenarios.ValueSet
+  )
 
   type State   = ProviderTestState
   type Command = CloudProviderTestCommand
@@ -42,20 +44,24 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
     name     <- RandomWords.someWords
     descSize <- Gen.choose(0, 10)
     desc     <- Gen.listOfN(descSize, RandomWord.word)
-  } yield
-    TestCloudProviderDetails(name.asString,
-                             Some(desc.map(_.word).mkString(" ")).filter(_.nonEmpty),
-                             None)
+  } yield TestCloudProviderDetails(
+    name.asString,
+    Some(desc.map(_.word).mkString(" ")).filter(_.nonEmpty),
+    None
+  )
 
   override def logon = tleAdminLogon
 
   def doAdd: Gen[List[CloudProviderTestCommand]] =
     for {
       nProviders <- Gen.choose(1, 3)
-      providers <- Gen.listOfN(nProviders, for {
-        sz <- Gen.choose(0, 10)
-        p  <- Gen.resize(sz, genCloudProvider)
-      } yield p)
+      providers <- Gen.listOfN(
+        nProviders,
+        for {
+          sz <- Gen.choose(0, 10)
+          p  <- Gen.resize(sz, genCloudProvider)
+        } yield p
+      )
     } yield providers.map(RegisterProvider)
 
   def genTestCommands(s: ProviderTestState): Gen[List[CloudProviderTestCommand]] = s match {
@@ -85,8 +91,10 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
         s.copy(scenarios = s.scenarios + Scenarios.Add, registered = s.registered + provider)
 
       case DeleteProvider(providerName) =>
-        s.copy(scenarios = s.scenarios + Scenarios.Delete,
-               registered = s.registered.filter(_.name != providerName))
+        s.copy(
+          scenarios = s.scenarios + Scenarios.Delete,
+          registered = s.registered.filter(_.name != providerName)
+        )
     }
 
   def loadProviderPage(b: SimpleSeleniumBrowser): CloudProviderListPage = {
@@ -98,9 +106,11 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
     listPage
   }
 
-  override def runCommandInBrowser(c: CloudProviderTestCommand,
-                                   s: ProviderTestState,
-                                   b: SimpleSeleniumBrowser): Prop = c match {
+  override def runCommandInBrowser(
+      c: CloudProviderTestCommand,
+      s: ProviderTestState,
+      b: SimpleSeleniumBrowser
+  ): Prop = c match {
     case RegisterProvider(provider) =>
       val actualProvider   = provider.copy(name = s"${b.unique} ${provider.name}")
       var listPage         = loadProviderPage(b)
@@ -116,7 +126,10 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
       val result      = listPage.resultForName(actualProvider.name)
       val description = result.description()
       Prop.all(
-        ((firstName, lastName) ?= CloudProviderFirstLast) :| "Should be able to authenticate as the cloud provider",
+        ((
+          firstName,
+          lastName
+        ) ?= CloudProviderFirstLast) :| "Should be able to authenticate as the cloud provider",
         (description ?= actualProvider.description) :| "Description should match"
       )
 

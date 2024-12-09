@@ -21,7 +21,6 @@ package com.tle.web.sections.equella;
 import com.tle.web.sections.SectionInfo;
 import java.io.Serializable;
 
-/** @author aholland */
 public interface ModalSessionCallback extends Serializable {
   void executeModalFinished(SectionInfo info, ModalSession session);
 }

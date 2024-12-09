@@ -22,7 +22,6 @@ import com.tle.beans.item.Item;
 import java.util.Date;
 import java.util.List;
 
-/** @author Aaron */
 public interface Holding {
   Date getIssueDate();
 

@@ -24,7 +24,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-/** @author Nicholas Read */
 public interface SchemaDataSourceService {
   DataSourceHolder getDataSourceForId(long schemaId);
 

@@ -26,7 +26,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface ModalHtmlEditorSettingsSection extends Section {
   void addBreadcrumbsAndTitle(SectionInfo info, Decorations decorations, Breadcrumbs crumbs);

@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author jmaginnis */
 @Bind
 public class StatusOperation extends TaskOperation {
   private static final String MODERATE_ITEM = "MODERATE_ITEM"; // $NON-NLS-1$

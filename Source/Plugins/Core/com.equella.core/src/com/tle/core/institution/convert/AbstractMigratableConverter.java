@@ -139,14 +139,18 @@ public abstract class AbstractMigratableConverter<T> implements Converter {
     throw new Error("You must override doDelete() or deleteIt()"); // $NON-NLS-1$
   }
 
-  /** @throws IOException */
+  /**
+   * @throws IOException
+   */
   public void doExport(
       TemporaryFileHandle staging, Institution institution, ConverterParams callback)
       throws IOException {
     throw new Error("You must override doExport() or exportIt()"); // $NON-NLS-1$
   }
 
-  /** @throws IOException */
+  /**
+   * @throws IOException
+   */
   public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
       throws IOException {
     throw new Error("You must override importIt() or doImport()"); // $NON-NLS-1$

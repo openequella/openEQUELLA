@@ -27,7 +27,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public abstract class Renderer {
   protected static final Font DEFAULT_FONT = new Font("SansSerif", Font.PLAIN, 12); // $NON-NLS-1$
   protected static final Font NOTE_FONT = new Font("SansSerif", Font.ITALIC, 12); // $NON-NLS-1$

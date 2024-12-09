@@ -47,7 +47,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hibernate.criterion.Restrictions;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

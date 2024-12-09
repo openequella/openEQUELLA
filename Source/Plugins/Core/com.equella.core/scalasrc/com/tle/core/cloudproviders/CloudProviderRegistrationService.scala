@@ -53,9 +53,11 @@ class CloudProviderRegistrationService {
   val Logger           = LoggerFactory.getLogger(getClass)
 
   // Apply the provided Cloud provider details to the provided Entity.
-  private def applyValues(entity: Entity,
-                          edits: EntityStdEdits,
-                          data: CloudProviderData): Entity = {
+  private def applyValues(
+      entity: Entity,
+      edits: EntityStdEdits,
+      data: CloudProviderData
+  ): Entity = {
     entity.data = data.asJson.noSpaces
     entity.modified = Instant.now
     entity.name = edits.name
@@ -66,11 +68,11 @@ class CloudProviderRegistrationService {
     entity
   }
 
-  /**
-    * Check whether a registration token is valid. If yes, return the token.
-    * If no, return an EntityValidation indicating the failure.
+  /** Check whether a registration token is valid. If yes, return the token. If no, return an
+    * EntityValidation indicating the failure.
     *
-    * @param regToken The token to be checked.
+    * @param regToken
+    *   The token to be checked.
     */
   def validToken(regToken: String): ValidatedNec[EntityValidation, String] =
     if (tokenCache.get(regToken).isPresent)
@@ -79,8 +81,7 @@ class CloudProviderRegistrationService {
       EntityValidation("token", "invalid").invalidNec
     }
 
-  /**
-    * Create a new token for Cloud provider registration.
+  /** Create a new token for Cloud provider registration.
     */
   def createRegistrationToken: String = {
     val newToken = UUID.randomUUID().toString
@@ -88,62 +89,73 @@ class CloudProviderRegistrationService {
     newToken
   }
 
-  /**
-    * Check whether a registration is valid. For example, check if the vendor ID is blank.
+  /** Check whether a registration is valid. For example, check if the vendor ID is blank.
     *
-    * @param reg A Cloud provider registration to be validated.
-    * @return ValidatedNec where left is all the accumulated validation errors and right is
-    *         the validated standard registration data.
+    * @param reg
+    *   A Cloud provider registration to be validated.
+    * @return
+    *   ValidatedNec where left is all the accumulated validation errors and right is the validated
+    *   standard registration data.
     */
   def validateRegistrationFields(
-      reg: CloudProviderRegistration): ValidatedNec[EntityValidation, EntityStdEdits] = {
+      reg: CloudProviderRegistration
+  ): ValidatedNec[EntityValidation, EntityStdEdits] = {
     EntityValidation.nonBlankString(FieldVendorId, reg.vendorId) *>
       EntityValidation.standardValidation(
         EntityStdEdits(name = reg.name, description = reg.description),
-        CurrentLocale.getLocale)
+        CurrentLocale.getLocale
+      )
   }
 
-  /**
-    * Register a Cloud provider with provided token and registration information.
+  /** Register a Cloud provider with provided token and registration information.
     *
-    * @param regToken Token created for a specific registration.
-    * @param registration Cloud provider registration data to be used to create a Cloud provider instance.
-    * @return ValidatedNec where left is all the errors accumulated during the registration and right is
-    *         the details of the registered Cloud provider.
+    * @param regToken
+    *   Token created for a specific registration.
+    * @param registration
+    *   Cloud provider registration data to be used to create a Cloud provider instance.
+    * @return
+    *   ValidatedNec where left is all the errors accumulated during the registration and right is
+    *   the details of the registered Cloud provider.
     */
-  def register(regToken: String, registration: CloudProviderRegistration)
-    : ValidatedNec[EntityValidation, CloudProviderInstance] =
+  def register(
+      regToken: String,
+      registration: CloudProviderRegistration
+  ): ValidatedNec[EntityValidation, CloudProviderInstance] =
     (validToken(regToken), validateRegistrationFields(registration))
-      .mapN(
-        (token, fields) => {
-          val newData = CloudProviderData(
-            baseUrl = registration.baseUrl,
-            iconUrl = registration.iconUrl,
-            vendorId = registration.vendorId,
-            providerAuth = registration.providerAuth,
-            oeqAuth = CloudOAuthCredentials.random(),
-            serviceUrls = registration.serviceUrls,
-            viewers = registration.viewers
-          )
-          val entity = applyValues(Entity.blankEntity(typeId), fields, newData)
+      .mapN((token, fields) => {
+        val newData = CloudProviderData(
+          baseUrl = registration.baseUrl,
+          iconUrl = registration.iconUrl,
+          vendorId = registration.vendorId,
+          providerAuth = registration.providerAuth,
+          oeqAuth = CloudOAuthCredentials.random(),
+          serviceUrls = registration.serviceUrls,
+          viewers = registration.viewers
+        )
+        val entity = applyValues(Entity.blankEntity(typeId), fields, newData)
 
-          tokenCache.invalidate(token)                // Invalidate the token so it can't be reused.
-          entityService.createOrUpdate(entity)        // Persist the new Entity.
-          buildCloudProviderInstance(entity, newData) // Return the CloudProviderInstance representing the new Entity.
-        }
-      )
+        tokenCache.invalidate(token)         // Invalidate the token so it can't be reused.
+        entityService.createOrUpdate(entity) // Persist the new Entity.
+        buildCloudProviderInstance(
+          entity,
+          newData
+        ) // Return the CloudProviderInstance representing the new Entity.
+      })
 
-  /**
-    * Update details of a Cloud provider.
+  /** Update details of a Cloud provider.
     *
-    * @param entity Entity representing a Cloud provider instance.
-    * @param reg Cloud provider registration data to be used to update a Cloud provider instance.
-    * @return ValidatedNec where left is all the errors accumulated during the update and right is
-    *         the details of the updated Cloud provider.
+    * @param entity
+    *   Entity representing a Cloud provider instance.
+    * @param reg
+    *   Cloud provider registration data to be used to update a Cloud provider instance.
+    * @return
+    *   ValidatedNec where left is all the errors accumulated during the update and right is the
+    *   details of the updated Cloud provider.
     */
   def editRegistered(
       entity: Entity,
-      reg: CloudProviderRegistration): ValidatedNec[EntityValidation, CloudProviderInstance] =
+      reg: CloudProviderRegistration
+  ): ValidatedNec[EntityValidation, CloudProviderInstance] =
     (extractData(entity.data), validateRegistrationFields(reg))
       .mapN((data, fields) => {
         val validatedData = CloudProviderData(
@@ -161,11 +173,11 @@ class CloudProviderRegistrationService {
         buildCloudProviderInstance(entity, validatedData)
       })
 
-  /**
-    * Get all the registered Cloud providers.
+  /** Get all the registered Cloud providers.
     *
-    * @return ValidatedNec where left is errors accumulated during the retrieval and right is a list
-    *         of Cloud provider details.
+    * @return
+    *   ValidatedNec where left is errors accumulated during the retrieval and right is a list of
+    *   Cloud provider details.
     */
   def getAllProviders: ValidatedNec[EntityValidation, List[CloudProviderDetails]] = {
     entityService
@@ -180,46 +192,49 @@ class CloudProviderRegistrationService {
             vendorId = data.vendorId,
             iconUrl = data.iconUrl,
             canRefresh = DebugSettings.isDevMode && data.serviceUrls.contains(RefreshServiceId)
-        ))
+          )
+        )
       }
       .toList
       .sequence
   }
 
-  /**
-    * Refresh and update a registered Cloud provider.
+  /** Refresh and update a registered Cloud provider.
     *
-    * @param entity Entity where the type must be 'cloudprovider'.
-    * @return Validated where left is an error message and right is an option of CloudProviderInstance.
+    * @param entity
+    *   Entity where the type must be 'cloudprovider'.
+    * @return
+    *   Validated where left is an error message and right is an option of CloudProviderInstance.
     */
   def refreshRegistration(
-      entity: Entity): Validated[List[String], Option[CloudProviderInstance]] = {
+      entity: Entity
+  ): Validated[List[String], Option[CloudProviderInstance]] = {
     def refresh(
-        provider: CloudProviderInstance): Validated[List[String], Option[CloudProviderInstance]] = {
+        provider: CloudProviderInstance
+    ): Validated[List[String], Option[CloudProviderInstance]] = {
       provider.serviceUrls
         .get(RefreshServiceId)
-        .map(
-          refreshService =>
-            CloudProviderService
-              .serviceRequest(
-                refreshService,
-                provider,
-                Map.empty,
-                uri =>
-                  basicRequest
-                    .post(uri)
-                    .body(CloudProviderRefreshRequest(provider.id))
-                    .response(asJson[CloudProviderRegistration])
-              )
-              .map(
-                _.body match {
-                  case Right(registration) =>
-                    // Update with the new registration. If errors happen during the update, combine all errors into one string.
-                    editRegistered(entity, registration).leftMap(EntityValidation.collectErrors)
-                  case Left(error) => List(error.getMessage).invalid
-                }
-              )
-              .unsafeRunSync
+        .map(refreshService =>
+          CloudProviderService
+            .serviceRequest(
+              refreshService,
+              provider,
+              Map.empty,
+              uri =>
+                basicRequest
+                  .post(uri)
+                  .body(CloudProviderRefreshRequest(provider.id))
+                  .response(asJson[CloudProviderRegistration])
+            )
+            .map(
+              _.body match {
+                case Right(registration) =>
+                  // Update with the new registration. If errors happen during the update, combine all errors into one string.
+                  editRegistered(entity, registration).leftMap(EntityValidation.collectErrors)
+                case Left(error) => List(error.getMessage).invalid
+              }
+            )
+            .unsafeRunSync
         )
         .sequence
     }

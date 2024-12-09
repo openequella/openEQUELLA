@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-/** @author Aaron */
 public class FinishedPage extends WizardPage {
   private final JLabel title;
   private final JLabel text;

@@ -93,7 +93,8 @@ public class RelationDaoImpl extends GenericInstitionalDaoImpl<Relation, Long>
   @Transactional(propagation = Propagation.MANDATORY)
   public List<Relation> getAllMentioningItem(ItemKey itemId) {
     String query =
-        "from Relation where (firstItem.uuid = :uuid and firstItem.version = :version) or (secondItem.uuid = :uuid and secondItem.version = :version)";
+        "from Relation where (firstItem.uuid = :uuid and firstItem.version = :version) or"
+            + " (secondItem.uuid = :uuid and secondItem.version = :version)";
     return (List<Relation>)
         getHibernateTemplate()
             .findByNamedParam(

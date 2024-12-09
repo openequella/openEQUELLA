@@ -21,7 +21,6 @@ package com.tle.beans.usermanagement.canvas;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 
-/** @author aholland */
 public class CanvasWrapperSettings extends UserManagementSettings {
   @Property(key = "wrapper.canvas.url")
   private String canvasUrl;

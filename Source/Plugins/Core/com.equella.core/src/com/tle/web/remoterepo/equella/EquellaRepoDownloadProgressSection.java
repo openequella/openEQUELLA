@@ -54,7 +54,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.selection.section.CourseListVetoSection;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class EquellaRepoDownloadProgressSection

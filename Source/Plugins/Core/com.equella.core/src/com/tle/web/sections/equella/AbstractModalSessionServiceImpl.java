@@ -26,7 +26,6 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.generic.AbstractSectionFilter;
 import javax.inject.Inject;
 
-/** @author aholland */
 @NonNullByDefault
 public abstract class AbstractModalSessionServiceImpl<S extends ModalSession>
     extends AbstractSectionFilter {

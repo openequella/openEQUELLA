@@ -22,7 +22,6 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.core.security.impl.SecureItemStatus;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author jmaginnis */
 @SecureOnCall(priv = "REDRAFT_ITEM")
 @SecureItemStatus(
     not = true,

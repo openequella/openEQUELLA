@@ -129,7 +129,8 @@ public class ApidocsTest extends AbstractSessionTest {
         "JSON should contain error status, instead it contained: [" + respText + "]");
     assertTrue(
         respText.contains(
-            "\"error_description\":\"You do not have the required privileges to access this object [VIEW_APIDOCS]\""),
+            "\"error_description\":\"You do not have the required privileges to access this object"
+                + " [VIEW_APIDOCS]\""),
         "JSON should contain error description, instead it contained: [" + respText + "]");
   }
 }

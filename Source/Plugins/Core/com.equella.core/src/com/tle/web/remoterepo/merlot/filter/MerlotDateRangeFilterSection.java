@@ -30,7 +30,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.Label;
 import javax.inject.Inject;
 
-/** @author Aaron */
 public class MerlotDateRangeFilterSection extends RemoteRepoDateRangeFilterSection {
   @PlugKey("filter.date.title")
   private static Label TITLE;

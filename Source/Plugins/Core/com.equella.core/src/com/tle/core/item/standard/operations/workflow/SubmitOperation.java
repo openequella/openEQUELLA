@@ -29,7 +29,6 @@ import com.tle.common.workflow.Workflow;
 import com.tle.common.workflow.WorkflowMessage;
 import com.tle.core.security.impl.SecureItemStatus;
 
-/** @author jmaginnis */
 @SecureItemStatus(ItemStatus.DRAFT)
 public class SubmitOperation extends TaskOperation {
   private String message;

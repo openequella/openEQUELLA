@@ -58,7 +58,9 @@ public final class Driver {
   private ControlRepository controlRepository;
   private final PluginServiceImpl pluginService;
 
-  /** @return The singleton Driver instance or null. */
+  /**
+   * @return The singleton Driver instance or null.
+   */
   public static Driver instance() {
     return driver;
   }

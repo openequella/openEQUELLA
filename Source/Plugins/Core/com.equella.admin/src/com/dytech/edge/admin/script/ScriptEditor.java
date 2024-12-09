@@ -35,7 +35,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class ScriptEditor extends JPanel implements StatusBarContainer {
   private static final long serialVersionUID = 1L;
 

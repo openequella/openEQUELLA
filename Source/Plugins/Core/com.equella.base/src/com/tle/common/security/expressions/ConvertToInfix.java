@@ -21,7 +21,6 @@ package com.tle.common.security.expressions;
 import com.tle.common.Pair;
 import java.util.Stack;
 
-/** @author Nicholas Read */
 public class ConvertToInfix extends PostfixExpressionParser<String> {
   public ConvertToInfix() {
     super();

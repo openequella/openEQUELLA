@@ -23,7 +23,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/** @author Nicholas Read */
 public class UploadCallbackInputStream extends FilterInputStream {
   private final PercentageProgressCallback callback;
 

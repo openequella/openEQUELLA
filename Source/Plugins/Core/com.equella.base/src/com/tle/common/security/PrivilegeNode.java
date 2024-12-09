@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** @author Nicholas Read */
 class PrivilegeNode {
   private final List<PrivilegeNode> children = new ArrayList<PrivilegeNode>();
   private final Set<String> privileges = new HashSet<String>();

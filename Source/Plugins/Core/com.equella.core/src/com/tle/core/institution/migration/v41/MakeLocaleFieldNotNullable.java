@@ -34,7 +34,6 @@ import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class MakeLocaleFieldNotNullable extends AbstractHibernateSchemaMigration {

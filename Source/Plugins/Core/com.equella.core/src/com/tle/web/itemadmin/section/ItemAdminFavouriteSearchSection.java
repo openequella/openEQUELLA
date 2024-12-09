@@ -30,7 +30,6 @@ import com.tle.web.sections.annotations.TreeLookup;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind
 public class ItemAdminFavouriteSearchSection extends AbstractFavouriteSearchSection {
   @Inject private BundleCache bundleCache;

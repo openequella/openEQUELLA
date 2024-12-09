@@ -9,7 +9,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class SelectionSessionSettingsPage extends AbstractPage<SelectionSessionSettingsPage> {
   public static final String SELECTION_SESSIONS_HEADER =
       "Quick contribute"; // original property key: quickcontribute.title

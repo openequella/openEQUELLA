@@ -29,7 +29,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Query;
 
-/** @author Nicholas Read */
 @Bind(PowerSearchDao.class)
 @Singleton
 public class PowerSearchDaoImpl extends AbstractEntityDaoImpl<PowerSearch>

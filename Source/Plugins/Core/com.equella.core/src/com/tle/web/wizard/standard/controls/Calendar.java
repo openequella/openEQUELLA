@@ -48,7 +48,6 @@ import com.tle.web.wizard.controls.CCalendar;
 import com.tle.web.wizard.controls.WebControlModel;
 import com.tle.web.wizard.standard.controls.Calendar.CalendarWebControlModel;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind

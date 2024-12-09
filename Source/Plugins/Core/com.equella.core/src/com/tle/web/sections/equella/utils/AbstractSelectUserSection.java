@@ -113,6 +113,7 @@ public abstract class AbstractSelectUserSection<M extends AbstractSelectUserSect
 
   @Component(name = "t")
   private Link groupFilterTooltip;
+
   // Dynamic @Component
   private MultiSelectionList<UserBean> userList;
 

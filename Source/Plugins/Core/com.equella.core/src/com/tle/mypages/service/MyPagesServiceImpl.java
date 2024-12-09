@@ -99,7 +99,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 // TODO: make subclass of WizardService and override methods
 @Bind(MyPagesService.class)
 @Singleton

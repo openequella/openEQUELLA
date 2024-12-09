@@ -18,7 +18,6 @@
 
 package com.tle.common.applet;
 
-/** @author Nicholas Read */
 public interface TimeoutHandler {
   /**
    * Called in the event that the session has timed out, and allows the user to log back in.

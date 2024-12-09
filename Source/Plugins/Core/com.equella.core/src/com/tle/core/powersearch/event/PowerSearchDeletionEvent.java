@@ -22,7 +22,6 @@ import com.tle.beans.entity.PowerSearch;
 import com.tle.core.entity.event.BaseEntityDeletionEvent;
 import com.tle.core.powersearch.event.listener.PowerSearchDeletionListener;
 
-/** @author Nicholas Read */
 public class PowerSearchDeletionEvent
     extends BaseEntityDeletionEvent<PowerSearch, PowerSearchDeletionListener> {
   public PowerSearchDeletionEvent(PowerSearch powerSearch) {

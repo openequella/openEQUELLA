@@ -21,7 +21,6 @@ package com.tle.web.api.interfaces.beans;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class SearchBean<T> extends AbstractExtendableBean {
   private int start;

@@ -21,7 +21,6 @@ package com.tle.common.wizard.controls.universal;
 import com.dytech.edge.wizard.beans.control.CustomControl;
 import java.util.Set;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class UniversalSettings {
   private static final String KEY_ALLOW_MULTIPLE = "AllowMultiple";

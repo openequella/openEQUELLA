@@ -18,7 +18,6 @@
 
 package com.tle.mycontent.soap;
 
-/** @author Aaron */
 public interface ScrapbookSoapService {
   /**
    * Searches the current user's scrapbook content. The XML returned is the same format as the

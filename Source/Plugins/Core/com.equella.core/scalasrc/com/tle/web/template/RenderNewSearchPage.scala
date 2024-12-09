@@ -25,9 +25,11 @@ import com.tle.web.sections.js.JSStatements
 import com.tle.web.sections.render.SimpleSectionResult
 
 object RenderNewSearchPage {
-  private def buildSection(context: RenderEventContext,
-                           file: String,
-                           additionalJS: Option[JSStatements] = None): SimpleSectionResult = {
+  private def buildSection(
+      context: RenderEventContext,
+      file: String,
+      additionalJS: Option[JSStatements] = None
+  ): SimpleSectionResult = {
     val (p, body) = RenderNewTemplate.parseEntryHtml(file)
     context.getBody.addPreRenderable(p)
     context.getBody.addPreRenderable(AjaxEffects.EFFECTS_LIB)
@@ -39,8 +41,10 @@ object RenderNewSearchPage {
     new SimpleSectionResult(body.body().children())
   }
 
-  def renderNewSearchPage(context: RenderEventContext,
-                          additionalJS: JSStatements): SimpleSectionResult = {
+  def renderNewSearchPage(
+      context: RenderEventContext,
+      additionalJS: JSStatements
+  ): SimpleSectionResult = {
     val file = context.getSectionObject match {
       case _: RootAdvancedSearchSection => "AdvancedSearchPage.html"
       case _: RootSearchSection         => "SearchPage.html"

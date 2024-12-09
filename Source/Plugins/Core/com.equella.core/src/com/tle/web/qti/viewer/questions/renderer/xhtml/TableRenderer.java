@@ -23,7 +23,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.web.qti.viewer.QtiViewerContext;
 import uk.ac.ed.ph.jqtiplus.node.content.xhtml.table.Table;
 
-/** @author Aaron */
 public class TableRenderer extends XhtmlElementRenderer {
   @AssistedInject
   public TableRenderer(@Assisted Table model, @Assisted QtiViewerContext context) {

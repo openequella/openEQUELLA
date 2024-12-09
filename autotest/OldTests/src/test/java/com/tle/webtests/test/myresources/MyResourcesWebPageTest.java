@@ -198,7 +198,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     String[] pageTitles = {"Chapter 1", "Chapter 2"};
     String[] pageBodies = {
       "And Gilgamesh said to Enkidu: 'Let us journey to the land of the scorpion men.'",
-      "And Enkidu said unto Gilgamesh 'One of us shall lead and the other follow: let our strength of arm decide!'"
+      "And Enkidu said unto Gilgamesh 'One of us shall lead and the other follow: let our strength"
+          + " of arm decide!'"
     };
 
     MyResourcesPage myResourcesPage =

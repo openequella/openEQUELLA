@@ -22,7 +22,6 @@ import com.tle.common.Check;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class ItemMetadataRule implements Serializable {
   private static final long serialVersionUID = 1L;
 

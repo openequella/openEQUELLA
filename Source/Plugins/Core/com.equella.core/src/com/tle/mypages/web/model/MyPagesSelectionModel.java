@@ -21,7 +21,6 @@ package com.tle.mypages.web.model;
 import com.tle.web.viewitem.attachments.AttachmentView;
 import java.util.List;
 
-/** @author aholland */
 public class MyPagesSelectionModel {
   private List<AttachmentView> attachments;
   private boolean selectMultiple;

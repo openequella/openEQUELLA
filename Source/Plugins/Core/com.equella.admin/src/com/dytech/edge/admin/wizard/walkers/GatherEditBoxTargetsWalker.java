@@ -23,7 +23,6 @@ import com.dytech.edge.admin.wizard.model.Control;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/** @author Nicholas Read */
 public class GatherEditBoxTargetsWalker extends ControlTreeWalker {
   private final Collection<String> targets = new ArrayList<String>();
 
@@ -32,7 +31,9 @@ public class GatherEditBoxTargetsWalker extends ControlTreeWalker {
     super();
   }
 
-  /** @return Returns the targets. */
+  /**
+   * @return Returns the targets.
+   */
   public Collection<String> getTargets() {
     return targets;
   }

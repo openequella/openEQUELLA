@@ -23,7 +23,6 @@ import com.tle.common.security.TargetList;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Andrew Gibb */
 public class DynamicMetadataRule implements Serializable {
   private static final long serialVersionUID = 1L;
 

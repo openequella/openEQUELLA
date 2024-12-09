@@ -41,7 +41,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Bind(ActivateRequestDao.class)
 @Singleton
 @SuppressWarnings({"unchecked", "nls"})
@@ -62,8 +61,8 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     return (List<ActivateRequest>)
         getHibernateTemplate()
             .findByNamedParam(
-                "from ActivateRequest r"
-                    + " where r.type = :type and r.item = :item and not (r.from > :until or r.until < :from)",
+                "from ActivateRequest r where r.type = :type and r.item = :item and not (r.from >"
+                    + " :until or r.until < :from)",
                 new String[] {"type", "item", "from", "until"},
                 new Object[] {type, item, start, end});
   }
@@ -116,7 +115,9 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     return (List<ActivateRequest>)
         getHibernateTemplate()
             .findByNamedParam(
-                "from ActivateRequest req where req.type = :type and req.attachment = :attachmentUuid and req.status != :status and req.item.institution = :institution",
+                "from ActivateRequest req where req.type = :type and req.attachment ="
+                    + " :attachmentUuid and req.status != :status and req.item.institution ="
+                    + " :institution",
                 new String[] {"type", "attachmentUuid", "status", "institution"},
                 new Object[] {
                   type, attachmentUuid, ActivateRequest.TYPE_INACTIVE, CurrentInstitution.get()
@@ -149,7 +150,8 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     return (List<ActivateRequest>)
         getHibernateTemplate()
             .findByNamedParam(
-                "from ActivateRequest where type = :type and item in (:items) and status in (:statuses)",
+                "from ActivateRequest where type = :type and item in (:items) and status in"
+                    + " (:statuses)",
                 new String[] {"type", "items", "statuses"},
                 new Object[] {
                   type,
@@ -210,9 +212,9 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "from ActivateRequest req"
-                                + " where req.type = :type and req.item = :item and req.attachment = :att and req.status = :status"
-                                + " order by req.until desc");
+                            "from ActivateRequest req where req.type = :type and req.item = :item"
+                                + " and req.attachment = :att and req.status = :status order by"
+                                + " req.until desc");
                     query.setFetchSize(1);
                     query.setFirstResult(0);
                     query.setString("type", type);
@@ -232,9 +234,9 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     return (Collection<ItemId>)
         getHibernateTemplate()
             .findByNamedParam(
-                "select new com.tle.beans.item.ItemId(a.item.uuid, a.item.version) "
-                    + " from ActivateRequest a"
-                    + " where a.item.institution = :institution group by a.item.uuid, a.item.version",
+                "select new com.tle.beans.item.ItemId(a.item.uuid, a.item.version)  from"
+                    + " ActivateRequest a where a.item.institution = :institution group by"
+                    + " a.item.uuid, a.item.version",
                 new String[] {"institution"},
                 new Object[] {CurrentInstitution.get()});
   }
@@ -309,8 +311,9 @@ public class ActivateRequestDaoImpl extends GenericDaoImpl<ActivateRequest, Long
     return (List<ItemIdKey>)
         getHibernateTemplate()
             .findByNamedParam(
-                "SELECT new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM ActivateRequest a "
-                    + "JOIN a.item i WHERE a.user = :user and i.institution = :institution",
+                "SELECT new com.tle.beans.item.ItemIdKey(i.id, i.uuid, i.version) FROM"
+                    + " ActivateRequest a JOIN a.item i WHERE a.user = :user and i.institution ="
+                    + " :institution",
                 new String[] {"user", "institution"},
                 new Object[] {userId, CurrentInstitution.get()});
   }

@@ -119,7 +119,9 @@ public class WizardTree extends JPanel
     setup(wizardType);
   }
 
-  /** @dytech.jira see Jira Defect TLE-1108 : http://apps.dytech.com.au/jira/browse/TLE-1108 */
+  /**
+   * @dytech.jira see Jira Defect TLE-1108 : http://apps.dytech.com.au/jira/browse/TLE-1108
+   */
   private void setupDefaultWizard() {
     model = new WizardModel(repository);
   }
@@ -214,7 +216,9 @@ public class WizardTree extends JPanel
   // // LOADING WIZARD FROM XML FUNCTIONS
   // /////////////////////////////////////
 
-  /** @dytech.jira see Jira Defect TLE-1108 : http://apps.dytech.com.au/jira/browse/TLE-1108 */
+  /**
+   * @dytech.jira see Jira Defect TLE-1108 : http://apps.dytech.com.au/jira/browse/TLE-1108
+   */
   public void loadItem(Object wizard) {
     if (wizard != null) {
       model = new WizardModel(repository);
@@ -244,12 +248,16 @@ public class WizardTree extends JPanel
     getModel().controlChanged(control);
   }
 
-  /** @see javax.swing.JTree.addTreeSelectionListener(TreeSelectionListener) */
+  /**
+   * @see javax.swing.JTree.addTreeSelectionListener(TreeSelectionListener)
+   */
   public void addTreeSelectionListener(TreeSelectionListener listener) {
     tree.addTreeSelectionListener(listener);
   }
 
-  /** @see javax.swing.JTree.removeTreeSelectionListener(TreeSelectionListener) */
+  /**
+   * @see javax.swing.JTree.removeTreeSelectionListener(TreeSelectionListener)
+   */
   public void removeTreeSelectionListener(TreeSelectionListener listener) {
     tree.removeTreeSelectionListener(listener);
   }

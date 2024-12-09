@@ -25,7 +25,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/** @author Nicholas Read */
 public class TLFSaxDownloader extends DefaultHandler {
   private static final int MAX_BUFFER_LENGTH = 2048;
   private static final int MIN_ASCII_CHARACTER = 32;

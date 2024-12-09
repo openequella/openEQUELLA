@@ -18,7 +18,6 @@
 
 package com.tle.core.harvester.old.dsoap.sax;
 
-/** @author adame */
 public class StringResultSoapHandler extends DefaultSoapHandler {
   protected String result;
 

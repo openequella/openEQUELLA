@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author larry */
 @Bind
 @Singleton
 public class UpdateOlderYoutubeAttachmentsXmlMigration

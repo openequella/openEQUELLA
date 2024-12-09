@@ -22,7 +22,6 @@ import com.tle.annotation.NonNullByDefault;
 import com.tle.common.PathUtils;
 import com.tle.core.services.FileSystemService;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public final class QtiConstants {

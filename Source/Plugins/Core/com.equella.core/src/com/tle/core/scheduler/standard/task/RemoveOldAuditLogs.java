@@ -25,7 +25,6 @@ import com.tle.core.scheduler.ScheduledTask;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 public class RemoveOldAuditLogs implements ScheduledTask {

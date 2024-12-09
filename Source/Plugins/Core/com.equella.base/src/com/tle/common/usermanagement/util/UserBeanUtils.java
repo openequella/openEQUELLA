@@ -28,7 +28,6 @@ import com.tle.core.remoting.RemoteUserService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author aholland */
 public final class UserBeanUtils {
   private static final Log LOGGER = LogFactory.getLog(UserBeanUtils.class);
 

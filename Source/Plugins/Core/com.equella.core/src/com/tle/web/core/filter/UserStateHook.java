@@ -22,7 +22,6 @@ import com.dytech.edge.exceptions.WebException;
 import com.tle.common.usermanagement.user.UserState;
 import javax.servlet.http.HttpServletRequest;
 
-/** @author Aaron */
 public interface UserStateHook {
   UserStateResult getUserState(HttpServletRequest request, UserState userState) throws WebException;
 

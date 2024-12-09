@@ -28,7 +28,6 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class TabManager extends JPanel {
   private static final long serialVersionUID = 1L;

@@ -46,52 +46,72 @@ public class FileNode {
     length = orig.getLength();
   }
 
-  /** @return Returns the indent. */
+  /**
+   * @return Returns the indent.
+   */
   public int getIndent() {
     return indent;
   }
 
-  /** @param indent The indent to set. */
+  /**
+   * @param indent The indent to set.
+   */
   public void setIndent(int indent) {
     this.indent = indent;
   }
 
-  /** @return Returns the name. */
+  /**
+   * @return Returns the name.
+   */
   public String getName() {
     return name;
   }
 
-  /** @return Returns the original. */
+  /**
+   * @return Returns the original.
+   */
   public FileNode getOriginal() {
     return original;
   }
 
-  /** @return Returns the actualfile. */
+  /**
+   * @return Returns the actualfile.
+   */
   public boolean isActualfile() {
     return actualfile;
   }
 
-  /** @return Returns the files. */
+  /**
+   * @return Returns the files.
+   */
   public List<FileNode> getFiles() {
     return files;
   }
 
-  /** @param files The files to set. */
+  /**
+   * @param files The files to set.
+   */
   public void setFiles(List<FileNode> files) {
     this.files = files;
   }
 
-  /** @return Returns the fullpath. */
+  /**
+   * @return Returns the fullpath.
+   */
   public String getFullpath() {
     return fullpath;
   }
 
-  /** @param fullpath The fullpath to set. */
+  /**
+   * @param fullpath The fullpath to set.
+   */
   public void setFullpath(String fullpath) {
     this.fullpath = fullpath;
   }
 
-  /** @return Returns the length. */
+  /**
+   * @return Returns the length.
+   */
   public int getLength() {
     return length;
   }

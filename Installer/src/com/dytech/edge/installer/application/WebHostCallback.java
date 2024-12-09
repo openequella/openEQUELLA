@@ -31,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public class WebHostCallback implements Callback {
   public static final Pattern URL_PATT =
       Pattern.compile("^http://([\\.\\w\\-]+)(?::(\\d+))?(/[\\w/]*)?$");

@@ -63,7 +63,6 @@ import com.tle.web.template.Decorations;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class MimeTypesEditSection extends AbstractPrototypeSection<MimeTypesEditModel>
     implements HtmlRenderer {

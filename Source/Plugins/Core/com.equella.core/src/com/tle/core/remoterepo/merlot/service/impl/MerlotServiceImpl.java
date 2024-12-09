@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 public class MerlotServiceImpl implements MerlotService {
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(MerlotServiceImpl.class) + ".";
+
   /** Returned from the Basic API */
   private static final String STATUS_OK = "ok";
 

@@ -62,22 +62,23 @@ const { select: selectLabel } = languageStrings.common.action;
 const { missingValue, invalidUrl } = languageStrings.error;
 
 export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
-  ["GENERIC", "Generic"],
+  ["ENTRA_ID", "Entra ID"],
+  ["AUTH0", "Auth0"],
 ]);
 
-// Use 'platform' as the discriminator
+// Use 'platform' as the discriminator.
 export interface GenericApiDetails
   extends Pick<
     OEQ.Oidc.GenericIdentityProvider,
     "platform" | "apiUrl" | "apiClientId" | "apiClientSecret"
   > {}
 
-//TODO: Add more platform API details: Azure, Cognito, Google, Okta.
+//TODO: Add more platform API details: Okta.
 export type ApiDetails = GenericApiDetails;
 
 export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   enabled: false,
-  platform: "GENERIC",
+  platform: "ENTRA_ID",
   issuer: "",
   authCodeClientId: "",
   authCodeClientSecret: "",
@@ -87,23 +88,26 @@ export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   defaultRoles: new Set(),
 };
 
-export const defaultGenericApiDetails: GenericApiDetails = {
-  platform: "GENERIC",
+export const defaultAuth0ApiDetails: GenericApiDetails = {
+  platform: "AUTH0",
   apiUrl: "",
   apiClientId: "",
   apiClientSecret: "",
 };
 
-//TODO: Update default values for other platforms.
+export const defaultEntraIdApiDetails: GenericApiDetails = {
+  ...defaultAuth0ApiDetails,
+  platform: "ENTRA_ID",
+};
+
 export const defaultApiDetailsMap: Record<
   OEQ.Oidc.IdentityProviderPlatform,
   ApiDetails
 > = {
-  GENERIC: defaultGenericApiDetails,
-  AZURE: defaultGenericApiDetails,
-  COGNITO: defaultGenericApiDetails,
-  GOOGLE: defaultGenericApiDetails,
-  OKTA: defaultGenericApiDetails,
+  ENTRA_ID: defaultEntraIdApiDetails,
+  AUTH0: defaultAuth0ApiDetails,
+  //TODO: Update default values for OKTA.
+  OKTA: defaultEntraIdApiDetails,
 };
 
 const platformSelector = (
@@ -275,12 +279,12 @@ export const generateGeneralDetails = (
   },
 });
 
-const genericApiDetails = (
+const commonApiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   apiDetails: GenericApiDetails,
   isConfigured: boolean,
-) => {
+): Record<string, FieldRenderOptions> => {
   const { apiUrl, apiClientId, apiClientSecret } = apiDetails;
 
   return {
@@ -346,7 +350,7 @@ const genericApiDetails = (
 export const generatePlatform = (
   platform: OEQ.Oidc.IdentityProviderPlatform,
   platformOnChange: (newValue: string) => void,
-) => ({
+): Record<string, FieldRenderOptions> => ({
   platform: {
     label: platformLabel,
     required: true,
@@ -356,11 +360,9 @@ export const generatePlatform = (
 });
 
 /**
- * Generate the render options for the API configuration of different identity providers.
+ * Generate the render options for the API configuration of the selected identity providers.
  *
-
  * @param apiDetails The value of the platform specific details.
-
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
  * @param isConfigured Whether the server already has the API details.
@@ -370,17 +372,22 @@ export const generateApiDetails = (
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   isConfigured: boolean,
-) => {
-  const p = apiDetails.platform;
-  switch (p) {
-    case "GENERIC":
-      return genericApiDetails(
-        apiDetailsOnChange,
-        showValidationErrors,
-        apiDetails,
-        isConfigured,
-      );
+): Record<string, FieldRenderOptions> => {
+  const platform = apiDetails.platform;
+
+  const apiCommonFields = commonApiDetails(
+    apiDetailsOnChange,
+    showValidationErrors,
+    apiDetails,
+    isConfigured,
+  );
+  const { apiClientId, apiClientSecret } = apiCommonFields;
+  switch (platform) {
+    case "AUTH0":
+      return apiCommonFields;
+    case "ENTRA_ID":
+      return { apiClientId, apiClientSecret };
     default:
-      throw new Error(`Unsupported platform: ${p}`);
+      throw new Error(`Unsupported platform: ${platform}`);
   }
 };

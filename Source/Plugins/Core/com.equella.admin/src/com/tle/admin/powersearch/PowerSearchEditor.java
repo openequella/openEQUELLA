@@ -29,7 +29,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class PowerSearchEditor extends BaseEntityEditor<PowerSearch> {
   private SchemaModel schema;
 

@@ -18,7 +18,6 @@
 
 package com.tle.mypages;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class MyPagesConstants {
   public static final String PLUGIN_ID = "com.tle.mypages";

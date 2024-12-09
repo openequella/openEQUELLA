@@ -45,7 +45,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-/** @author Nicholas Read */
 public class ScriptedLiterals extends JComponent implements ActionListener, ListSelectionListener {
   private static final long serialVersionUID = 1L;
   private static final String UP_ICON = "/icons/up.gif"; // $NON-NLS-1$
@@ -115,7 +114,9 @@ public class ScriptedLiterals extends JComponent implements ActionListener, List
     loadTarget(null);
   }
 
-  /** @param target The target to load, or null if none. */
+  /**
+   * @param target The target to load, or null if none.
+   */
   public void loadTarget(ScriptedTarget target) {
     setTitle(target);
 

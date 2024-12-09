@@ -22,7 +22,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.ElementId;
 
-/** @author aholland */
 public class ScriptVariable extends AbstractExpression {
   protected final String name;
   private final ElementId elementId;

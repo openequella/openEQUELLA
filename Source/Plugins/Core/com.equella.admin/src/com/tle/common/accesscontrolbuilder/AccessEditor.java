@@ -53,7 +53,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class AccessEditor extends JPanel implements ActionListener, Changeable {
   private static final long serialVersionUID = 1L;

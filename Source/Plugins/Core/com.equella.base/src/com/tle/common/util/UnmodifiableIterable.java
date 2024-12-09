@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-/** @author aholland */
 public class UnmodifiableIterable<E> implements Iterable<E> {
   protected final List<E> inner;
 

@@ -8,7 +8,6 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class ActiveCacheTreeNode extends AbstractPage<ActiveCacheTreeNode> {
   @FindBy(xpath = "div/a")
   private WebElement treeNode;

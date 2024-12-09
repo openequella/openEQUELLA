@@ -8,7 +8,6 @@ import com.tle.webtests.pageobject.integration.canvas.course.CanvasSettingsPage;
 import com.tle.webtests.pageobject.integration.canvas.course.CanvasWikiPage;
 import com.tle.webtests.test.AbstractCleanupTest;
 
-/** @author Aaron */
 @TestInstitution("canvas")
 public class AbstractCanvasTest extends AbstractCleanupTest {
   protected static final String ADMIN_USERNAME = "developmentteam@equella.com";

@@ -26,7 +26,10 @@ public class QTITest extends AbstractCleanupAutoTest {
   public void QTIPackageTest() {
     String q1 =
         "Question 1 - Welcome\n"
-            + "This is a brief introduction to Respondus. As you can see, this is not a wizard or a typical user manual. Instead, this is an \"assessment\" in which each \"question\" introduces a feature that is available in Respondus. Let's go to the next question.\n"
+            + "This is a brief introduction to Respondus. As you can see, this is not a wizard or a"
+            + " typical user manual. Instead, this is an \"assessment\" in which each \"question\""
+            + " introduces a feature that is available in Respondus. Let's go to the next"
+            + " question.\n"
             + "Single Choice\n"
             + "The user must select one of the following options\n"
             + "Continue.\n"
@@ -37,7 +40,8 @@ public class QTITest extends AbstractCleanupAutoTest {
 
     String q15 =
         "Question 15 - Matching\n"
-            + "The Matching question type requires students to match items from two columns or lists.\n"
+            + "The Matching question type requires students to match items from two columns or"
+            + " lists.\n"
             + "\n"
             + "Question: Select the country in which the following cities are located.\n"
             + "Matching\n"
@@ -61,7 +65,8 @@ public class QTITest extends AbstractCleanupAutoTest {
 
     String q16 =
         "Question 16 - Many Answers\n"
-            + "The \"Multiple Response\" question format is similar to \"Multiple Choice\" except that more than one answer can be (and should be) selected by the student.\n"
+            + "The \"Multiple Response\" question format is similar to \"Multiple Choice\" except"
+            + " that more than one answer can be (and should be) selected by the student.\n"
             + "\n"
             + "Question: Which of the following are fruits? (select all that apply)\n"
             + "Multiple Choice\n"

@@ -48,7 +48,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind(IMSNavigationHelper.class)
 @Singleton
 public class IMSNavigationHelperImpl implements IMSNavigationHelper {

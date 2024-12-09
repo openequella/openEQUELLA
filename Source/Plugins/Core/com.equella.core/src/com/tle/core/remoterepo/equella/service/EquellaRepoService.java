@@ -30,7 +30,9 @@ import com.tle.core.services.impl.Task;
  * @author aholland
  */
 public interface EquellaRepoService {
-  /** @return A session id */
+  /**
+   * @return A session id
+   */
   String downloadAttachments(
       TLESettings settings, String uuid, int version, PercentageProgressCallback callback);
 

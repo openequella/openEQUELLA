@@ -32,11 +32,10 @@ import scala.util.Try
 
 @Bind
 @Singleton
-/**
-  * The JWK Provider which uses [[InstitutionCache]] to cache instances of JWK Providers for each keyset URL
-  * (for an institution). Doing so enables the code to benefit from the internal caching features
-  * of `JwkProvider` (instead of recreating each time) while not keeping around stale instances
-  * (such as if we just store them in a simple `TrieMap`.
+/** The JWK Provider which uses [[InstitutionCache]] to cache instances of JWK Providers for each
+  * keyset URL (for an institution). Doing so enables the code to benefit from the internal caching
+  * features of `JwkProvider` (instead of recreating each time) while not keeping around stale
+  * instances (such as if we just store them in a simple `TrieMap`.
   *
   * The key benefit being that the JWKS endpoint of the platforms will get queried a reduced number
   * of times. This also speeds up the JWT validation process - and thereby faster launches.
@@ -49,13 +48,14 @@ class JwkProvider {
   @Inject
   def setupJwkProviderCache(institutionService: InstitutionService): Unit =
     jwkProviderCache = institutionService.newInstitutionAwareCache(
-      CacheLoader.from(
-        (_: Institution) =>
-          CacheBuilder
-            .newBuilder()
-            .maximumSize(10)
-            .expireAfterAccess(1, TimeUnit.DAYS)
-            .build[String, JsonWebKeySetProvider]()))
+      CacheLoader.from((_: Institution) =>
+        CacheBuilder
+          .newBuilder()
+          .maximumSize(10)
+          .expireAfterAccess(1, TimeUnit.DAYS)
+          .build[String, JsonWebKeySetProvider]()
+      )
+    )
 
   def get(jwksUrl: URL): Either[ServerError, JsonWebKeySetProvider] =
     Try(
@@ -67,7 +67,10 @@ class JwkProvider {
           // long to wait for any issues to be resolved - so reduced to 1 hour.
           new JwkProviderBuilder(jwksUrl).cached(5, 1, TimeUnit.HOURS).build()
         }
-      )).toEither.left.map(t =>
+      )
+    ).toEither.left.map(t =>
       ServerError(
-        s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}"))
+        s"Failed to establish key (JWK) provider to validate JWT signature: ${t.getMessage}"
+      )
+    )
 }

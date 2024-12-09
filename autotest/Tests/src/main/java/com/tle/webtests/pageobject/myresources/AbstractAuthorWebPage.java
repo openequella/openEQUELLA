@@ -45,7 +45,8 @@ public abstract class AbstractAuthorWebPage<T extends AbstractAuthorWebPage<T>>
 
   @FindBy(
       xpath =
-          "//table[@id='mpctinyedit_html_toolbar3']//img[@class = 'mceIcon'][contains(@src, 'paperclip.gif')]")
+          "//table[@id='mpctinyedit_html_toolbar3']//img[@class = 'mceIcon'][contains(@src,"
+              + " 'paperclip.gif')]")
   private WebElement attachmentButton;
 
   @FindBy(id = "_fileName")

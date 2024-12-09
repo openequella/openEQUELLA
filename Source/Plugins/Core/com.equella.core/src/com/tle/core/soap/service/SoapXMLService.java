@@ -25,7 +25,6 @@ import com.tle.beans.item.ItemPack;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 
-/** @author aholland */
 public interface SoapXMLService {
   PropBagEx convertCollectionToXML(final ItemDefinition collection);
 

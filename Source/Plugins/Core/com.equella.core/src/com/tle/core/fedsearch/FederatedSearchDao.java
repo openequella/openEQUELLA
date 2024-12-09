@@ -23,7 +23,6 @@ import com.tle.beans.entity.FederatedSearch;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface FederatedSearchDao extends AbstractEntityDao<FederatedSearch> {
   List<Long> findEngineNamesByType(String type);
 

@@ -21,7 +21,6 @@ package com.tle.common.i18n;
 import java.io.Serializable;
 import java.util.Locale;
 
-/** @author Nicholas Read */
 public class LocaleData implements Serializable {
   private static final long serialVersionUID = 1L;
 

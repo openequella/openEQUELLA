@@ -283,7 +283,9 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
     clearChanges();
   }
 
-  /** @return true if password has changed */
+  /**
+   * @return true if password has changed
+   */
   private boolean saveDetails() {
     loadedUser.setUsername(username.getText().trim());
     loadedUser.setFirstName(firstName.getText());
@@ -363,7 +365,9 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
     return error;
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private abstract class MyGlassSwingWorker extends GlassSwingWorker<Object> {
     public abstract void doStuff();
 

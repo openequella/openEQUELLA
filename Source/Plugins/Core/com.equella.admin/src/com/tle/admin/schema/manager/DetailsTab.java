@@ -37,7 +37,6 @@ import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class DetailsTab extends BaseEntityTab<Schema> implements AbstractDetailsTab<Schema> {
   private final SchemaModel model;

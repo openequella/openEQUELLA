@@ -45,18 +45,22 @@ object StandardMimeTypes {
     } + "file"
   }
 
-  def commonDetailsForFile(tf: TestFile,
-                           filename: String,
-                           description: String): Set[(String, String)] = {
+  def commonDetailsForFile(
+      tf: TestFile,
+      filename: String,
+      description: String
+  ): Set[(String, String)] = {
     def first30(l: String) = if (l.length > 30) l.substring(0, 30) + "..." else l
 
     val dtype = first30(
-      tf.packageType.getOrElse(friendlyType(extMimeMapping(PathUtils.extension(filename)))))
+      tf.packageType.getOrElse(friendlyType(extMimeMapping(PathUtils.extension(filename))))
+    )
     val fsize      = FileSizeUtils.humanReadableFileSize(tf.fileSize)
     val nameDetail = if (tf.ispackage) "Name:" -> description else "Filename:" -> filename
     Set(
       "Type:" -> dtype,
       nameDetail,
-      (if (tf.packageType.contains(TestFile.qtiTestType)) "Package size:" else "Size:") -> fsize) ++ tf.extraDetails
+      (if (tf.packageType.contains(TestFile.qtiTestType)) "Package size:" else "Size:") -> fsize
+    ) ++ tf.extraDetails
   }
 }

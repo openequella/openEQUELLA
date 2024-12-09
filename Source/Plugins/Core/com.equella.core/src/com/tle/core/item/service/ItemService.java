@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 import org.hibernate.criterion.DetachedCriteria;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public interface ItemService
     extends RemoteItemService, ScriptEvaluator, WorkflowScriptObjectContributor {

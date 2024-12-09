@@ -55,7 +55,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class AclEditor extends AbstractAclEditor implements SecurityTreeTab {
   protected ClientService services;
@@ -272,7 +271,9 @@ public class AclEditor extends AbstractAclEditor implements SecurityTreeTab {
         }
       };
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class MyTableModel extends AbstractAclEditorTableModel {
     public MyTableModel(Node privilegeNode, TargetList targetList, String defaultPrivilege) {
       super(privilegeNode, targetList, defaultPrivilege);

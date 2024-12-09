@@ -32,7 +32,8 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
         clientId = "",
         unknownUserHandling = "RUN",
         allowExpression = Option(
-          "Everyone OR Administrative User [admin] OR Alistair Oliver [al] OR Carl Hoffman [carl] OR Andrew Hunter [ahunter] OR Demonstration Student [demostudent] OR Demonstration Sysadmin [demosysadmin] OR Bob Carter [bcarter] OR Cath Fitzgerald [cfitzgerald] OR Damian McShane [dmcshane] OR Demonstration Content Admin [democontentadmin] OR Demonstration Librarian [demolibrarian] OR Demonstration Teacher [demoteacher] OR Documentation Administrator [DocAdmin] OR EQUELLA Documentation [Documentation] OR Greg Brown [gbrown] OR Jane Jones [jjones] OR Jennifer Seidenwurm [ilikedrawing@gmail.com] OR Joe Bloggs [jbloggs] OR John Smith [jsmith] OR Sue Smith [ssmith] OR q q [test] OR whitespace whitespace [whitespace]")
+          "Everyone OR Administrative User [admin] OR Alistair Oliver [al] OR Carl Hoffman [carl] OR Andrew Hunter [ahunter] OR Demonstration Student [demostudent] OR Demonstration Sysadmin [demosysadmin] OR Bob Carter [bcarter] OR Cath Fitzgerald [cfitzgerald] OR Damian McShane [dmcshane] OR Demonstration Content Admin [democontentadmin] OR Demonstration Librarian [demolibrarian] OR Demonstration Teacher [demoteacher] OR Documentation Administrator [DocAdmin] OR EQUELLA Documentation [Documentation] OR Greg Brown [gbrown] OR Jane Jones [jjones] OR Jennifer Seidenwurm [ilikedrawing@gmail.com] OR Joe Bloggs [jbloggs] OR John Smith [jsmith] OR Sue Smith [ssmith] OR q q [test] OR whitespace whitespace [whitespace]"
+        )
       )
       val result = LtiPlatformBean.validateLtiPlatformBean(invalidBean)
 
@@ -42,7 +43,8 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
           "Invalid value for Auth URL : no protocol: abc",
           "Unknown handling for unknown users: No value found for 'RUN'",
           "ACL expression is too long (maximum 255 characters allowed)"
-        ))
+        )
+      )
     }
 
     it("returns the original bean if it's valid") {

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class PropBagExTest extends TestCase {
   private static final String DOC1 = "doc1.xml";

@@ -46,7 +46,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author nread */
 public class StepDialog implements ActionListener, ListSelectionListener, MouseListener {
 
   private JPanel content;

@@ -31,7 +31,6 @@ import uk.ac.ed.ph.jqtiplus.running.ItemSessionController;
 import uk.ac.ed.ph.jqtiplus.state.ItemSessionState;
 import uk.ac.ed.ph.jqtiplus.value.Value;
 
-/** @author Aaron */
 public abstract class FeedbackElementRenderer extends QtiNodeRenderer {
   @Inject private QtiService qtiService;
 

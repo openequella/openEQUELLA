@@ -30,7 +30,6 @@ import com.tle.web.sections.js.generic.expression.ObjectExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.PreRenderable;
 
-/** @author Aaron */
 public class JQueryStylishSelect implements JavascriptModule {
   private static final long serialVersionUID = 1L;
 

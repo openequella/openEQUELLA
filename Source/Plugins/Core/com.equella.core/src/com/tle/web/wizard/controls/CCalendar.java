@@ -77,7 +77,9 @@ public class CCalendar extends EditableCtrl {
     setDates(vals);
   }
 
-  /** @param dates The date(s) for the range must represent midnight *our* time zone. */
+  /**
+   * @param dates The date(s) for the range must represent midnight *our* time zone.
+   */
   public void setDates(TleDate[] dates) {
     dateFrom = dates[0];
     dateTo = dates[1];

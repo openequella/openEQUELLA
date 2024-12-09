@@ -23,7 +23,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.tle.web.qti.viewer.QtiViewerContext;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.GraphicAssociateInteraction;
 
-/** @author Aaron */
 public class GraphicAssociateInteractionRenderer extends GraphicInteractionRenderer {
   @AssistedInject
   protected GraphicAssociateInteractionRenderer(

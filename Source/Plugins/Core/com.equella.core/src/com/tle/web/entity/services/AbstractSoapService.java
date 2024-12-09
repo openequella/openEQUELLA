@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
-/** @author jmaginnis */
 public abstract class AbstractSoapService {
   @Inject private UserService userService;
   @Inject private WebServiceContext webServiceContext;

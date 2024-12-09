@@ -27,9 +27,11 @@ import scala.jdk.CollectionConverters._
 
 object CommentsDisplay {
 
-  def create(ii: ItemSectionInfo,
-             sectionTitle: String,
-             config: String): Option[ItemSummarySection] = {
+  def create(
+      ii: ItemSectionInfo,
+      sectionTitle: String,
+      config: String
+  ): Option[ItemSummarySection] = {
 
     val privileges = ii.getPrivileges.asScala
 
@@ -50,22 +52,26 @@ object CommentsDisplay {
               if (v == null) false else v.toLowerCase() == "true"
             }
             if (boolFlag("DISPLAY_IDENTITY_KEY")) {
-              (true,
-               boolFlag("ANONYMOUSLY_COMMENTS_KEY"),
-               boolFlag("SUPPRESS_USERNAME_KEY"),
-               NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY")))
+              (
+                true,
+                boolFlag("ANONYMOUSLY_COMMENTS_KEY"),
+                boolFlag("SUPPRESS_USERNAME_KEY"),
+                NameDisplayType.valueOf(xml.getNode("DISPLAY_NAME_KEY"))
+              )
             } else (false, true, true, NameDisplayType.BOTH)
           } else {
             (true, true, false, NameDisplayType.BOTH)
           }
-        CommentSummarySection(sectionTitle,
-                              canView,
-                              canCreate,
-                              canDelete,
-                              whichName.toString.toLowerCase(),
-                              !displayIdentity,
-                              hideUsername,
-                              allowAnonymous)
+        CommentSummarySection(
+          sectionTitle,
+          canView,
+          canCreate,
+          canDelete,
+          whichName.toString.toLowerCase(),
+          !displayIdentity,
+          hideUsername,
+          allowAnonymous
+        )
       }
 
   }

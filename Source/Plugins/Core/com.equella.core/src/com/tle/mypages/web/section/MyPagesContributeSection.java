@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class MyPagesContributeSection extends AbstractMyPagesSection<MyPagesContributeModel>
     implements HtmlRenderer, ContentHandlerSection, ReadyToRespondListener {

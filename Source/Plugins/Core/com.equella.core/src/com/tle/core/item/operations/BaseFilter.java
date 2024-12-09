@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 public abstract class BaseFilter implements ItemOperationFilter {
   private Date dateNow;

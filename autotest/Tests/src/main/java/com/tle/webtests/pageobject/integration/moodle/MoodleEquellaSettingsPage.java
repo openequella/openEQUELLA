@@ -112,7 +112,9 @@ public class MoodleEquellaSettingsPage extends MoodleBasePage<MoodleEquellaSetti
     managerSecretField.sendKeys(secret);
   }
 
-  /** @param restriction - none, itemonly, attachmentonly */
+  /**
+   * @param restriction - none, itemonly, attachmentonly
+   */
   public void setRestriction(String restriction) {
     new Select(restrictions).selectByValue(restriction);
   }

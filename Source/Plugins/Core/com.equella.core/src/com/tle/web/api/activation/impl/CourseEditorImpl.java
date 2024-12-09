@@ -32,7 +32,6 @@ import com.tle.web.api.activation.CourseEditor;
 import com.tle.web.api.baseentity.serializer.AbstractBaseEntityEditor;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class CourseEditorImpl extends AbstractBaseEntityEditor<CourseInfo, CourseBean>

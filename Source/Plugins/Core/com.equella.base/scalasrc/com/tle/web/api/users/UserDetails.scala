@@ -20,16 +20,20 @@ package com.tle.web.api.users
 
 import com.tle.common.usermanagement.user.valuebean.UserBean
 
-case class UserDetails(id: String,
-                       username: String,
-                       firstName: String,
-                       lastName: String,
-                       email: Option[String])
+case class UserDetails(
+    id: String,
+    username: String,
+    firstName: String,
+    lastName: String,
+    email: Option[String]
+)
 object UserDetails {
   def apply(ub: UserBean): UserDetails =
-    UserDetails(ub.getUniqueID,
-                ub.getUsername,
-                ub.getFirstName,
-                ub.getLastName,
-                Option(ub.getEmailAddress))
+    UserDetails(
+      ub.getUniqueID,
+      ub.getUsername,
+      ub.getFirstName,
+      ub.getLastName,
+      Option(ub.getEmailAddress)
+    )
 }

@@ -21,7 +21,6 @@ package com.tle.web.login;
 import com.google.inject.name.Names;
 import com.tle.web.sections.equella.guice.SectionsModule;
 
-/** @author larry */
 public class LoginSettingsModule extends SectionsModule {
 
   @Override

@@ -27,7 +27,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** @author Nicholas Read */
 public final class LocaleUtils {
   private static final Pattern LOCALE_REGEX =
       Pattern.compile("^([a-z][a-z])?(?:_([A-Z][A-Z])?(?:_(\\w+))?)?$"); // $NON-NLS-1$

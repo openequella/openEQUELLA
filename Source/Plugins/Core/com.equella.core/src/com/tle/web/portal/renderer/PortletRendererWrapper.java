@@ -57,7 +57,6 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class PortletRendererWrapper

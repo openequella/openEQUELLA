@@ -21,7 +21,6 @@ package com.tle.client.harness;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/** @author Nicholas Read */
 public class HarnessConfig {
   private String lastSelectedName;
   private ProxySettings proxy;

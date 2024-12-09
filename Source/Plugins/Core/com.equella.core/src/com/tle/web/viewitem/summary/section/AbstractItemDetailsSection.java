@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public abstract class AbstractItemDetailsSection<
         M extends AbstractItemDetailsSection.ItemDetailsModel>

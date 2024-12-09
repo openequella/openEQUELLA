@@ -43,7 +43,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-/** @author Nicholas Read */
 public class AclViewer extends JPanel implements ActionListener, SecurityTreeTab {
   private static final long serialVersionUID = 1L;
   private final Node privilegeNode;

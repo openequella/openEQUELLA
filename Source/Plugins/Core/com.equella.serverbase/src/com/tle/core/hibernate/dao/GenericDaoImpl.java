@@ -37,7 +37,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernateDao
     implements GenericDao<T, ID> {
@@ -250,6 +249,7 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
               }
             });
   }
+
   /*
    * (non-Javadoc)
    * @see

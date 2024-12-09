@@ -27,7 +27,6 @@ import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface ItemDefinitionService
     extends AbstractEntityService<EntityEditingBean, ItemDefinition>, RemoteItemDefinitionService {
   List<ItemDefinition> enumerateForType(String type);

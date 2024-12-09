@@ -46,19 +46,23 @@ class GdprResource {
     .addModule(DefaultScalaModule)
     .build()
 
-  case class AuditEntry(category: String,
-                        `type`: String,
-                        timestamp: String,
-                        sessionId: String,
-                        data: Map[String, String])
+  case class AuditEntry(
+      category: String,
+      `type`: String,
+      timestamp: String,
+      sessionId: String,
+      data: Map[String, String]
+  )
 
   object AuditEntry {
     def apply(ale: AuditLogEntry): AuditEntry = {
-      val data = Map(("1" -> Option(ale.getData1)),
-                     ("2" -> Option(ale.getData2)),
-                     ("3" -> Option(ale.getData3)),
-                     ("4" -> Option(ale.getData4))).collect {
-        case (key, Some(value)) => (key, value)
+      val data = Map(
+        ("1" -> Option(ale.getData1)),
+        ("2" -> Option(ale.getData2)),
+        ("3" -> Option(ale.getData3)),
+        ("4" -> Option(ale.getData4))
+      ).collect { case (key, Some(value)) =>
+        (key, value)
       }
 
       val meta = Option(ale.getMeta) match {
@@ -69,11 +73,13 @@ class GdprResource {
         case None => Map.empty
       }
 
-      AuditEntry(ale.getEventCategory,
-                 ale.getEventType,
-                 StdDateFormat.instance.clone().format(ale.getTimestamp),
-                 ale.getSessionId,
-                 data ++ meta)
+      AuditEntry(
+        ale.getEventCategory,
+        ale.getEventType,
+        StdDateFormat.instance.clone().format(ale.getTimestamp),
+        ale.getSessionId,
+        data ++ meta
+      )
     }
   }
 
@@ -84,8 +90,12 @@ class GdprResource {
 
   @DELETE
   @Path("{user}")
-  def delete(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user",
-                                          required = true) user: String): Response = {
+  def delete(
+      @PathParam("user") @ApiParam(
+        value = "An ID (not a username) of a user",
+        required = true
+      ) user: String
+  ): Response = {
     checkPriv()
     LegacyGuice.auditLogService.removeEntriesForUser(user)
     Response.ok().build()
@@ -94,8 +104,12 @@ class GdprResource {
   @GET
   @Path("{user}")
   @Produces(Array("application/zip"))
-  def retrieve(@PathParam("user") @ApiParam(value = "An ID (not a username) of a user",
-                                            required = true) user: String): Response = {
+  def retrieve(
+      @PathParam("user") @ApiParam(
+        value = "An ID (not a username) of a user",
+        required = true
+      ) user: String
+  ): Response = {
     checkPriv()
     Response
       .ok(

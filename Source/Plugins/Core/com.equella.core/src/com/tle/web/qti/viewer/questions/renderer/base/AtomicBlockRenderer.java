@@ -21,7 +21,6 @@ package com.tle.web.qti.viewer.questions.renderer.base;
 import com.tle.web.qti.viewer.QtiViewerContext;
 import uk.ac.ed.ph.jqtiplus.node.content.basic.AtomicBlock;
 
-/** @author Aaron */
 public abstract class AtomicBlockRenderer extends FlowStaticRenderer {
   @SuppressWarnings("unused")
   private final AtomicBlock model;

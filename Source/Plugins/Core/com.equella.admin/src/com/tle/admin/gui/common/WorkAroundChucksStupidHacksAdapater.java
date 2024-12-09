@@ -23,7 +23,6 @@ import java.awt.GridLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class WorkAroundChucksStupidHacksAdapater extends JPanel implements Changeable {
   private static final long serialVersionUID = 1L;
   private final Changeable changeable;

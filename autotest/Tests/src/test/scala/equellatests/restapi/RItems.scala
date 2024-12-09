@@ -32,10 +32,9 @@ object RItems {
         case _                   => None
       })
       idUri <- OptionT(ERest.relative(fullUri, baseUri))
-    } yield
-      idUri.path match {
-        case IdFromUriRegex(uuid, version) => new ItemId(UUID.fromString(uuid), version.toInt)
-      }).getOrElse(sys.error("OOPS"))
+    } yield idUri.path match {
+      case IdFromUriRegex(uuid, version) => new ItemId(UUID.fromString(uuid), version.toInt)
+    }).getOrElse(sys.error("OOPS"))
   }
 
   def getHistory(i: ItemId): ERest[Seq[RHistoryEvent]] = {

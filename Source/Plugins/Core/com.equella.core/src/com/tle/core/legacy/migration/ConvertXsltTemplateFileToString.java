@@ -57,7 +57,6 @@ import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author Andrew Gibb */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

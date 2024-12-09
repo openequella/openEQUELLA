@@ -20,7 +20,6 @@ package com.tle.core.harvester.old;
 
 import java.util.Date;
 
-/** @author Nicholas Read */
 public class TLEItem {
   private String uuid;
   private int version;

@@ -18,7 +18,6 @@
 
 package com.dytech.installer;
 
-/** @author Nicholas Read */
 public interface Progress {
   void addMessage(String msg);
 

@@ -21,7 +21,6 @@ package com.tle.core.fedsearch;
 import com.dytech.devlib.PropBagEx;
 import java.util.Collection;
 
-/** @author aholland */
 public interface GenericRecord {
   String getTitle();
 
@@ -43,6 +42,8 @@ public interface GenericRecord {
 
   String getPhysicalDescription();
 
-  /** @return MODS or MARCXML etc */
+  /**
+   * @return MODS or MARCXML etc
+   */
   String getType();
 }

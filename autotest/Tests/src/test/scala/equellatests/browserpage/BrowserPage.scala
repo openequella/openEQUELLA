@@ -26,8 +26,10 @@ trait BrowserPage {
   def waitFor[A](c: ExpectedCondition[A]): A   = waiter.until(c)
 
   def updatedBy(by: By): ExpectedCondition[_] =
-    ExpectedConditions.and(ExpectedConditions.stalenessOf(findElement(by)),
-                           ExpectedConditions.visibilityOfElementLocated(by))
+    ExpectedConditions.and(
+      ExpectedConditions.stalenessOf(findElement(by)),
+      ExpectedConditions.visibilityOfElementLocated(by)
+    )
 
   def quoteXPath(i: String): String = BrowserPage.quoteXPath(i)
 }

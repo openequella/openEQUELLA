@@ -28,7 +28,6 @@ import com.tle.web.sections.render.TagState;
 import com.tle.web.viewurl.ViewableResource;
 import java.util.List;
 
-/** @author Aaron */
 public interface ItemlikeListEntry<I extends IItem<?>> extends ListEntry {
   // This can be null in the case that the item no longer exists
   @Nullable

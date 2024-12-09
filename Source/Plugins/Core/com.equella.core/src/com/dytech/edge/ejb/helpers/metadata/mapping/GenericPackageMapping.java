@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.tle.beans.entity.itemdef.mapping.IMSMapping.MappingType;
 import java.util.Map;
 
-/** @author aholland */
 public class GenericPackageMapping extends Mapping {
   private final PropBagEx xml;
 

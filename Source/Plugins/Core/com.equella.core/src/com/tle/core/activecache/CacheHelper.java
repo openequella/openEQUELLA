@@ -372,22 +372,30 @@ public class CacheHelper {
       return (include ? "i" : "e") + ":" + query;
     }
 
-    /** @return Returns the include. */
+    /**
+     * @return Returns the include.
+     */
     public boolean isInclude() {
       return include;
     }
 
-    /** @param include The include to set. */
+    /**
+     * @param include The include to set.
+     */
     public void setInclude(boolean include) {
       this.include = include;
     }
 
-    /** @return Returns the query. */
+    /**
+     * @return Returns the query.
+     */
     public String getQuery() {
       return query;
     }
 
-    /** @param query The query to set. */
+    /**
+     * @param query The query to set.
+     */
     public void setQuery(String query) {
       this.query = query;
     }

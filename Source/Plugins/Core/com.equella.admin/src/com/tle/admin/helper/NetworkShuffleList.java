@@ -34,7 +34,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class NetworkShuffleList extends JComponent
     implements ActionListener, ListSelectionListener {

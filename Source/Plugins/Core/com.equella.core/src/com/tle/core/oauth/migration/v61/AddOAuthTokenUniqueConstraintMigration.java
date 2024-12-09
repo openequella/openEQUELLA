@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hibernate.Session;
 
-/** @author larry */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -64,15 +63,14 @@ public class AddOAuthTokenUniqueConstraintMigration extends AbstractHibernateMig
             // @formatter:off
             session
                 .createSQLQuery(
-                    "Delete From OAuth_Token Where id in ("
-                        + "	Select Oat.id From OAuth_Token Oat "
-                        + "	Join OAuth_Token chaff on ("
-                        + "		oat.client_id = chaff.client_id and oat.user_id = chaff.user_id)"
-                        + "	Where Oat.id <> chaff.id)")
+                    "Delete From OAuth_Token Where id in (	Select Oat.id From OAuth_Token Oat 	Join"
+                        + " OAuth_Token chaff on (		oat.client_id = chaff.client_id and oat.user_id"
+                        + " = chaff.user_id)	Where Oat.id <> chaff.id)")
                 .executeUpdate();
             session
                 .createSQLQuery(
-                    "Alter Table OAuth_Token Add Constraint UNIQ_USERID_CLIENTID Unique(user_id, client_id)")
+                    "Alter Table OAuth_Token Add Constraint UNIQ_USERID_CLIENTID Unique(user_id,"
+                        + " client_id)")
                 .executeUpdate();
             // @formatter:on
           }

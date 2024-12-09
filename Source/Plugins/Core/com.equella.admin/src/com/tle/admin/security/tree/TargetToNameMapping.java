@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class TargetToNameMapping {
   private final ClientService services;

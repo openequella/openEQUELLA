@@ -56,7 +56,6 @@ import com.tle.web.viewurl.ViewItemUrl;
 import java.io.IOException;
 import java.util.Collection;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public abstract class AbstractCopyrightAgreementDialog

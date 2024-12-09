@@ -24,7 +24,6 @@ import com.tle.core.entity.service.impl.EntityEditingSessionImpl;
 import com.tle.core.oauth.service.OAuthClientEditingBean;
 import com.tle.core.oauth.service.OAuthClientEditingSession;
 
-/** @author aholland */
 public class OAuthClientEditingSessionImpl
     extends EntityEditingSessionImpl<OAuthClientEditingBean, OAuthClient>
     implements OAuthClientEditingSession {

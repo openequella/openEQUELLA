@@ -22,7 +22,6 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.ItemDeletedListener;
 
-/** @author Nicholas Read */
 public class ItemDeletedEvent extends ApplicationEvent<ItemDeletedListener> {
   private static final long serialVersionUID = 1L;
   private final ItemIdKey itemKey;

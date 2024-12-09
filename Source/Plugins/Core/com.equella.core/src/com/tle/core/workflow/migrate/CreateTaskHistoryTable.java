@@ -70,7 +70,8 @@ public class CreateTaskHistoryTable extends AbstractHibernateSchemaMigration {
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     Query query =
         session.createQuery(
-            "update Item set moderating = true, dateForIndex = ?0 where status = 'MODERATING' and moderating = false");
+            "update Item set moderating = true, dateForIndex = ?0 where status = 'MODERATING' and"
+                + " moderating = false");
     query.setParameter(0, new Date());
     int fixes = query.executeUpdate();
     if (fixes > 0) {
@@ -79,8 +80,9 @@ public class CreateTaskHistoryTable extends AbstractHibernateSchemaMigration {
     ScrollableResults results =
         session
             .createQuery(
-                "SELECT ws.started, i.id, ws.wnode.id FROM Item i JOIN i.moderation AS ms JOIN ms.statuses AS ws "
-                    + "WHERE ws.status = 'i' AND ws.acttype = 'task' and i.moderating = true")
+                "SELECT ws.started, i.id, ws.wnode.id FROM Item i JOIN i.moderation AS ms JOIN"
+                    + " ms.statuses AS ws WHERE ws.status = 'i' AND ws.acttype = 'task' and"
+                    + " i.moderating = true")
             .scroll();
 
     while (results.next()) {

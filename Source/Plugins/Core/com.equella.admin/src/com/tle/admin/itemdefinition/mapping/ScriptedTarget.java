@@ -38,22 +38,30 @@ class ScriptedTarget {
     }
   }
 
-  /** @return Returns the rules. */
+  /**
+   * @return Returns the rules.
+   */
   public List<ScriptedRule> getRules() {
     return rules;
   }
 
-  /** @param rules The rules to set. */
+  /**
+   * @param rules The rules to set.
+   */
   public void setRules(List<ScriptedRule> rules) {
     this.rules = rules;
   }
 
-  /** @return Returns the target. */
+  /**
+   * @return Returns the target.
+   */
   public SchemaNode getTarget() {
     return target;
   }
 
-  /** @param target The target to set. */
+  /**
+   * @param target The target to set.
+   */
   public void setTarget(SchemaNode newTarget) {
     if (target != null) {
       target.unlock();

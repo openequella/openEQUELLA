@@ -32,7 +32,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(PortletPreferenceDao.class)

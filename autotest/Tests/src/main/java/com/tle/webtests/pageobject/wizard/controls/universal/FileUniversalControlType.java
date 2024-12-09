@@ -135,7 +135,8 @@ public class FileUniversalControlType extends AbstractAttachmentDialogPage<FileU
         uploadRow,
         new ByChained(
             By.xpath(
-                "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Delete file')]")));
+                "div/div/div[contains(@class, 'actions')]/div/button[contains(@title, 'Delete"
+                    + " file')]")));
   }
 
   public FileUniversalControlType uploadError(URL file, String errorMessage) {

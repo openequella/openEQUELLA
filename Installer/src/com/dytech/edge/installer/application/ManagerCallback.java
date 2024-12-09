@@ -39,7 +39,8 @@ public class ManagerCallback implements Callback {
       result =
           JOptionPane.showConfirmDialog(
               parent,
-              "You have not specified a port for openEQUELLA manager to run on. Should we use the default port (3000)?",
+              "You have not specified a port for openEQUELLA manager to run on. Should we use the"
+                  + " default port (3000)?",
               "Warning", //$NON-NLS-1$ //$NON-NLS-2$
               JOptionPane.YES_NO_OPTION,
               JOptionPane.WARNING_MESSAGE);

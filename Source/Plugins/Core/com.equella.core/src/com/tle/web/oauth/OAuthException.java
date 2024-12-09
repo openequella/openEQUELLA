@@ -21,7 +21,6 @@ package com.tle.web.oauth;
 import com.dytech.edge.exceptions.QuietlyLoggable;
 import com.dytech.edge.exceptions.WebException;
 
-/** @author Aaron */
 public class OAuthException extends WebException implements QuietlyLoggable {
   private static final long serialVersionUID = 1L;
 

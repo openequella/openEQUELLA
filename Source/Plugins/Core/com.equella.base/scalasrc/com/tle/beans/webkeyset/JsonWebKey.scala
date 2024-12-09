@@ -32,22 +32,29 @@ object JWKAlg extends Enumeration {
   val RS256, RS384, RS512 = Value
 }
 
-/**
-  * Model class for the structure of a public key in JWK format
+/** Model class for the structure of a public key in JWK format
   *
-  * @param kty The cryptographic algorithm used with the key, such as "RSA".
-  * @param e Exponent of the public key represented as a Base64urlUInt-encoded value.
-  * @param use The intended use of the key which is either Signature or Encryption.
-  * @param kid Unique ID of the key.
-  * @param alg The algorithm intended for use with the key.
-  * @param n Modules of the public key represented as a Base64urlUInt-encoded value.
+  * @param kty
+  *   The cryptographic algorithm used with the key, such as "RSA".
+  * @param e
+  *   Exponent of the public key represented as a Base64urlUInt-encoded value.
+  * @param use
+  *   The intended use of the key which is either Signature or Encryption.
+  * @param kid
+  *   Unique ID of the key.
+  * @param alg
+  *   The algorithm intended for use with the key.
+  * @param n
+  *   Modules of the public key represented as a Base64urlUInt-encoded value.
   */
-case class JsonWebKey(kty: JWKKeyType.Value,
-                      e: String,
-                      use: JWKUse.Value,
-                      kid: String,
-                      alg: JWKAlg.Value,
-                      n: String)
+case class JsonWebKey(
+    kty: JWKKeyType.Value,
+    e: String,
+    use: JWKUse.Value,
+    kid: String,
+    alg: JWKAlg.Value,
+    n: String
+)
 
 case class JsonWebKeySet(keys: Array[JsonWebKey])
 

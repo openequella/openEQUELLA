@@ -21,7 +21,6 @@ package com.tle.mypages.web.event;
 import com.tle.web.sections.SectionInfo;
 import java.util.EventListener;
 
-/** @author Aaron */
 public interface ChangePageEventListener extends EventListener {
   void changePage(SectionInfo info, ChangePageEvent event);
 }

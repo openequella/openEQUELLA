@@ -10,8 +10,11 @@ case class ContributePage(ctx: PageContext)
 
   def openWizard(name: String): WizardPageTab = {
     findElement(
-      By.xpath(".//table[contains(@class, 'zebra')]//a[normalize-space(text())="
-        + quoteXPath(name) + "]")).click()
+      By.xpath(
+        ".//table[contains(@class, 'zebra')]//a[normalize-space(text())="
+          + quoteXPath(name) + "]"
+      )
+    ).click()
     new WizardPageTab(ctx, 0).get()
   }
 }

@@ -43,7 +43,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(AccessExpressionDao.class)
@@ -108,8 +107,8 @@ public class AccessExpressionDaoImpl extends GenericDaoImpl<AccessExpression, Lo
               public Object doInHibernate(Session session) {
                 Query query =
                     session.createQuery(
-                        "from AccessExpression expression"
-                            + " where expression.id not in (select distinct entry.expression.id from AccessEntry entry)");
+                        "from AccessExpression expression where expression.id not in (select"
+                            + " distinct entry.expression.id from AccessEntry entry)");
 
                 int count = 0;
                 for (Object obj : query.list()) {

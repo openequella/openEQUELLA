@@ -29,7 +29,6 @@ import com.tle.web.sections.standard.model.HtmlComponentState;
 import com.tle.web.sections.standard.renderers.FreemarkerComponentRendererFactory;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class BoxRendererFactory extends FreemarkerComponentRendererFactory {

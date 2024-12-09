@@ -51,7 +51,6 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public class TransformationsPanel extends JPanel implements ActionListener, ListSelectionListener {
   private static final Log LOGGER = LogFactory.getLog(TransformationsPanel.class);
 

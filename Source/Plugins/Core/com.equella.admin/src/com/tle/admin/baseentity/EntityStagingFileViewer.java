@@ -50,7 +50,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import net.miginfocom.swing.MigLayout;
 
-/** @author Andrew Gibb */
 @SuppressWarnings({"nls", "serial"})
 public class EntityStagingFileViewer extends JPanel {
   private static final int UPLOAD_CHUNK_SIZE = 1048576;

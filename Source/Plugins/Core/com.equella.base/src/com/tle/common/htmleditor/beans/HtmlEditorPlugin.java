@@ -25,7 +25,6 @@ import javax.persistence.Lob;
 import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.Index;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 // TODO: how do you do this when it's across two tables????
@@ -37,6 +36,7 @@ public final class HtmlEditorPlugin extends BaseEntity {
   @Index(name = "htmleditorPluginIdIndex")
   @Column(nullable = false, length = 100)
   private String pluginId;
+
   /** E.g. tinymce */
   @Index(name = "htmleditorPluginType")
   @Column(nullable = false, length = 20)

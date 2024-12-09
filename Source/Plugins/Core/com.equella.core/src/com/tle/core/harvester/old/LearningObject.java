@@ -59,7 +59,9 @@ public class LearningObject {
     return title;
   }
 
-  /** @return Returns the attachments. */
+  /**
+   * @return Returns the attachments.
+   */
   public boolean hasAttachment() {
     return attachment;
   }

@@ -41,7 +41,6 @@ import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
 import org.java.plugin.registry.Extension;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class DetailsTab extends BaseEntityTab<DynaCollection>
     implements AbstractDetailsTab<DynaCollection> {

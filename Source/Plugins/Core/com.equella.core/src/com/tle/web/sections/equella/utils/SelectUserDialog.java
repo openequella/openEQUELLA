@@ -242,7 +242,8 @@ public class SelectUserDialog extends AbstractOkayableDialog<SelectUserDialog.Mo
       ViewableItem<Item> item = context.getAttribute(ItemServlet.VIEWABLE_ITEM);
       if (item == null) {
         throw new IllegalStateException(
-            "Access control has been set to check against item, however 'item' is currently 'null'.");
+            "Access control has been set to check against item, however 'item' is currently"
+                + " 'null'.");
       }
       return !(securityManager.filterNonGrantedPrivileges(item.getItem(), permission).isEmpty());
     }

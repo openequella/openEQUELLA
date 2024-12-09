@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class QtiAttachmentListener implements ItemAttachmentListener {

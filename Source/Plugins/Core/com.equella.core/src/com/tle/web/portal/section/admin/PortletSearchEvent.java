@@ -24,7 +24,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.search.event.AbstractSearchEvent;
 import com.tle.web.sections.equella.search.event.SearchEventListener;
 
-/** @author aholland */
 public class PortletSearchEvent extends AbstractSearchEvent<PortletSearchEvent> {
   private final PortletSearch search;
   private final PortletSearch unfiltered;

@@ -23,7 +23,6 @@ import com.tle.annotation.Nullable;
 import com.tle.common.lti.consumers.entity.LtiConsumer;
 import javax.servlet.http.HttpServletRequest;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface LtiWrapperExtension {
   @Nullable

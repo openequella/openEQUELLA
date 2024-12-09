@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @Bind
 public class StartTilingOperation extends AbstractStandardWorkflowOperation {
   @Inject private LargeImageViewer largeImageViewer;

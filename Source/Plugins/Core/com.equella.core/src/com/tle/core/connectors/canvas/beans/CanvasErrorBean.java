@@ -21,7 +21,6 @@ package com.tle.core.connectors.canvas.beans;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class CanvasErrorBean {
   private List<CanvasErrorMessageBean> errors;

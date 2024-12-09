@@ -22,7 +22,6 @@ import java.awt.Component;
 import java.awt.event.KeyListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/** @author Nicholas Read */
 public interface TreeWithViewInterface<NODE_TYPE extends DefaultMutableTreeNode> {
   Component getComponent();
 

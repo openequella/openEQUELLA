@@ -91,7 +91,8 @@ public class JQueryTimeAgo implements JavascriptModule, PreRenderable {
     public void preRender(PreRenderContext info) {
       info.addReadyStatements(statement);
     }
-  };
+  }
+  ;
 
   private static final JQueryLibraryInclude TIMEAGO_JS =
       new JQueryLibraryInclude("jquery.timeago.js", JQueryCore.PRERENDER);

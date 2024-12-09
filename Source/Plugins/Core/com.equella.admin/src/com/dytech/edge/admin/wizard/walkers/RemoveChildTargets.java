@@ -21,7 +21,6 @@ package com.dytech.edge.admin.wizard.walkers;
 import com.dytech.edge.admin.wizard.model.AbstractControlModel;
 import com.dytech.edge.admin.wizard.model.Control;
 
-/** @author Nicholas Read */
 public class RemoveChildTargets extends ControlTreeWalker {
   private boolean removedTargets = false;
 
@@ -30,7 +29,9 @@ public class RemoveChildTargets extends ControlTreeWalker {
     super();
   }
 
-  /** @return Returns the removedTargets. */
+  /**
+   * @return Returns the removedTargets.
+   */
   public boolean hasRemovedTargets() {
     return removedTargets;
   }

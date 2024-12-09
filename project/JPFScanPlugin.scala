@@ -11,12 +11,14 @@ object JPFScanPlugin extends AutoPlugin {
   val serverRef = LocalProject("equellaserver")
   val adminRef  = LocalProject("adminTool")
 
-  case class ParsedJPF(baseDir: File,
-                       group: String,
-                       id: String,
-                       internalDeps: Set[(String, Boolean)],
-                       externalDeps: Set[(String, Boolean)],
-                       adminConsole: Boolean) {
+  case class ParsedJPF(
+      baseDir: File,
+      group: String,
+      id: String,
+      internalDeps: Set[(String, Boolean)],
+      externalDeps: Set[(String, Boolean)],
+      adminConsole: Boolean
+  ) {
     def isExtensionOnly: Boolean = group == "Extensions"
   }
 
@@ -42,12 +44,14 @@ object JPFScanPlugin extends AutoPlugin {
       }
       .exists(_.getAttributeValue("value") == "admin-console")
 
-    val result = ParsedJPF(f.getParentFile,
-                           f.getParentFile.getParentFile.getName,
-                           pluginId,
-                           deps.toSet,
-                           extDeps.toSet,
-                           adminConsole)
+    val result = ParsedJPF(
+      f.getParentFile,
+      f.getParentFile.getParentFile.getName,
+      pluginId,
+      deps.toSet,
+      extDeps.toSet,
+      adminConsole
+    )
 
     val jpfPath = f.relativeTo(baseDir).get
     println(s"Parsed JPF for ${pluginId.padTo(30, " ").mkString} from ${jpfPath}")
@@ -67,11 +71,13 @@ object JPFScanPlugin extends AutoPlugin {
       }
     }
 
-    def convertAll(already: Set[String],
-                   processed: List[Project],
-                   pId: Iterable[String]): (Set[String], List[Project]) = {
-      pId.foldLeft((already, processed)) {
-        case ((a, p), c) => convertOne(a, p, c)
+    def convertAll(
+        already: Set[String],
+        processed: List[Project],
+        pId: Iterable[String]
+    ): (Set[String], List[Project]) = {
+      pId.foldLeft((already, processed)) { case ((a, p), c) =>
+        convertOne(a, p, c)
       }
     }
 
@@ -81,14 +87,17 @@ object JPFScanPlugin extends AutoPlugin {
       if (newDeps.isEmpty) added
       else {
         val exportedNew = newDeps.flatMap(s =>
-          parsedMap.get(s).map(_.internalDeps.filter(_._2).map(_._1)).getOrElse(Set.empty))
+          parsedMap.get(s).map(_.internalDeps.filter(_._2).map(_._1)).getOrElse(Set.empty)
+        )
         depsWithExports(exportedNew, added ++ newDeps)
       }
     }
 
-    def convertOne(already: Set[String],
-                   processed: List[Project],
-                   pId: String): (Set[String], List[Project]) = {
+    def convertOne(
+        already: Set[String],
+        processed: List[Project],
+        pId: String
+    ): (Set[String], List[Project]) = {
       if (already.contains(pId)) (already, processed)
       else {
         parsedMap
@@ -102,11 +111,16 @@ object JPFScanPlugin extends AutoPlugin {
               val prj = Project(toSbtPrj(pId), baseDir)
                 .dependsOn(prjDeps: _*)
                 .settings(
-                  (Compile / managedClasspath) ++= (parentForPlugin(pjpf) / Compile / managedClasspath).value,
+                  (Compile / managedClasspath) ++= (parentForPlugin(
+                    pjpf
+                  ) / Compile / managedClasspath).value,
                   (Compile / managedClasspath) ++= {
                     jpfLibraryJars
-                      .all(ScopeFilter(
-                        inProjects(depsWithExports(deps, Set.empty).map(toLocalProject).toSeq: _*)))
+                      .all(
+                        ScopeFilter(
+                          inProjects(depsWithExports(deps, Set.empty).map(toLocalProject).toSeq: _*)
+                        )
+                      )
                       .value
                       .flatten
                   },

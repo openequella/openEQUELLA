@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-/** @author jmaginnis */
 public class HTMLFilter {
 
   /** Creates a new instance of HTMLFilter */

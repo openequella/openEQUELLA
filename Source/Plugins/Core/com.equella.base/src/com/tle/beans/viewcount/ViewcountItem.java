@@ -28,15 +28,15 @@ import org.hibernate.annotations.NamedQuery;
 @NamedQuery(
     name = "getItemViewCountForCollection",
     query =
-        "SELECT sum(vci.count) FROM ViewcountItem vci "
-            + "inner join com.tle.beans.item.Item i on vci.id.itemUuid = i.uuid and vci.id.itemVersion = i.version "
-            + "inner join com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id "
-            + "WHERE be.id= :collectionId and vci.id.inst = :institutionId")
+        "SELECT sum(vci.count) FROM ViewcountItem vci inner join com.tle.beans.item.Item i on"
+            + " vci.id.itemUuid = i.uuid and vci.id.itemVersion = i.version inner join"
+            + " com.tle.beans.entity.BaseEntity be on be.id = i.itemDefinition.id WHERE be.id="
+            + " :collectionId and vci.id.inst = :institutionId")
 @NamedQuery(
     name = "deleteItemViewCount",
     query =
-        "DELETE FROM ViewcountItem "
-            + "Where id.itemVersion = :itemVersion and id.itemUuid = :itemUuid and id.inst = :institutionId")
+        "DELETE FROM ViewcountItem Where id.itemVersion = :itemVersion and id.itemUuid = :itemUuid"
+            + " and id.inst = :institutionId")
 @Entity
 @AttributeAccessor("field")
 public class ViewcountItem extends AbstractViewcount {

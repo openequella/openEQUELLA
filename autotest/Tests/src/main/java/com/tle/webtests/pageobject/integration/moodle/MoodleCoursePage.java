@@ -226,7 +226,8 @@ public class MoodleCoursePage extends MoodleBasePage<MoodleCoursePage> {
         new ResourceRow(
             section,
             By.xpath(
-                ".//li[contains(@class, 'equella') and contains(@class, 'activity')]//div[@class='activityinstance']"));
+                ".//li[contains(@class, 'equella') and contains(@class,"
+                    + " 'activity')]//div[@class='activityinstance']"));
 
     while (row.isLoaded()) {
       row.delete();
@@ -262,14 +263,16 @@ public class MoodleCoursePage extends MoodleBasePage<MoodleCoursePage> {
       element =
           driver.findElement(
               By.xpath(
-                  "//div[contains(@class, 'block_equella_search')]//a//span[text()='Delete EQUELLA Search block']"));
+                  "//div[contains(@class, 'block_equella_search')]//a//span[text()='Delete EQUELLA"
+                      + " Search block']"));
       waiter.until(ExpectedConditions.elementToBeClickable(element));
       element.click();
     } else {
       element =
           driver.findElement(
               By.xpath(
-                  "//div[contains(@class, 'block_equella_search')]//a[@title='Delete EQUELLA Search block']"));
+                  "//div[contains(@class, 'block_equella_search')]//a[@title='Delete EQUELLA Search"
+                      + " block']"));
       element.sendKeys(Keys.RETURN);
     }
 
@@ -308,13 +311,15 @@ public class MoodleCoursePage extends MoodleBasePage<MoodleCoursePage> {
       element =
           driver.findElement(
               By.xpath(
-                  "//div[contains(@class, 'block_equella_tasks')]//a//span[text()='Delete EQUELLA Tasks block']"));
+                  "//div[contains(@class, 'block_equella_tasks')]//a//span[text()='Delete EQUELLA"
+                      + " Tasks block']"));
       element.click();
     } else {
       element =
           driver.findElement(
               By.xpath(
-                  "//div[contains(@class, 'block_equella_tasks')]//a[@title='Delete EQUELLA Tasks block']"));
+                  "//div[contains(@class, 'block_equella_tasks')]//a[@title='Delete EQUELLA Tasks"
+                      + " block']"));
       element.sendKeys(Keys.RETURN);
     }
 

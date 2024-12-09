@@ -23,7 +23,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.Action;
 
-/** @author Nicholas Read */
 public abstract class AbstractDoubleClickListener extends MouseAdapter {
   private final Action action;
 

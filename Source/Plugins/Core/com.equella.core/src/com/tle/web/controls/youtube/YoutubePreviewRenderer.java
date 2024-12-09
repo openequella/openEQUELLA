@@ -51,13 +51,15 @@ public class YoutubePreviewRenderer implements VideoPreviewRenderer {
         if (ua != null
             && (ua.contains("MSIE 7.0") || ua.contains("MSIE 8.0") || ua.contains("MSIE 9.0"))) {
           embed =
-              "embed id=\"ytpreview\" class=\"preview\" style=\"width:320px; height:180px;\" src=\"//www.youtube.com/v/"
+              "embed id=\"ytpreview\" class=\"preview\" style=\"width:320px; height:180px;\""
+                  + " src=\"//www.youtube.com/v/"
                   + videoId
-                  + "?version=3\" type=\"application/x-shockwave-flash\" allowscriptaccess=\"always\" "
-                  + "allowfullscreen=\"true\"";
+                  + "?version=3\" type=\"application/x-shockwave-flash\""
+                  + " allowscriptaccess=\"always\" allowfullscreen=\"true\"";
         } else {
           embed =
-              "iframe id=\"ytpreview\" type=\"text/html\" style=\"width:320px; height:180px;\" class=\"preview\" src=\"//www.youtube.com/embed/"
+              "iframe id=\"ytpreview\" type=\"text/html\" style=\"width:320px; height:180px;\""
+                  + " class=\"preview\" src=\"//www.youtube.com/embed/"
                   + videoId
                   + "\" frameborder=\"0\" allowfullscreen";
         }

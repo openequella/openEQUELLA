@@ -30,7 +30,6 @@ import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 
-/** @author aholland */
 public abstract class AbstractMyPagesSection<M> extends AbstractPrototypeSection<M> {
   protected static final PluginResourceHelper RESOURCES =
       ResourcesService.getResourceHelper(AbstractMyPagesSection.class);

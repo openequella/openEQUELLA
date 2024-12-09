@@ -28,7 +28,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewitem.summary.content.ChangeOwnershipContentSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-/** @author Andrew Gibb */
 @Bind
 public class ChangeOwnershipSection extends GenericMinorActionWithPageSection {
   @PlugKey("summary.sidebar.actions.changeownership.title")

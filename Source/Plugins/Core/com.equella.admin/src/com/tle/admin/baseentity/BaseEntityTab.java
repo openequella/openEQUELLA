@@ -86,7 +86,9 @@ public abstract class BaseEntityTab<T extends BaseEntity> extends JFakePanel {
 
   public abstract void init(Component parent);
 
-  /** @return the title that should appear on the tab. */
+  /**
+   * @return the title that should appear on the tab.
+   */
   public abstract String getTitle();
 
   /**

@@ -22,9 +22,8 @@ import com.tle.integration.oauth2.error.authorisation.AuthorisationError
 import com.tle.integration.oauth2.error.general.GeneralError
 import com.tle.integration.util.NO_FURTHER_INFO
 
-/**
-  * Represent all the possible errors occurred during the LTI 1.3 integration, including all the standard OAuth2 errors
-  * and LTI 1.3 specific errors.
+/** Represent all the possible errors occurred during the LTI 1.3 integration, including all the
+  * standard OAuth2 errors and LTI 1.3 specific errors.
   */
 sealed abstract class Lti13Error {
   val msg: String
@@ -39,14 +38,12 @@ object Lti13Error {
     result.left.map(fromGeneralError)
 }
 
-/**
-  * Typically used for an error related to an LTI 1.3 platform configuration.
+/** Typically used for an error related to an LTI 1.3 platform configuration.
   */
 final case class PlatformDetailsError(msg: String) extends Lti13Error
 
-/**
-  * Due to not having the feature of union types in Scala v2, this case class is created as a wrapper of the standard
-  * OAuth2 errors to help reduce the complexity of error handling.
+/** Due to not having the feature of union types in Scala v2, this case class is created as a
+  * wrapper of the standard OAuth2 errors to help reduce the complexity of error handling.
   */
 final case class OAuth2LayerError(error: AuthorisationError) extends Lti13Error {
   val code: String         = error.code.toString

@@ -24,8 +24,8 @@ import scala.jdk.CollectionConverters._
 object QueryParams {
 
   def paramString(map: java.util.Map[String, Array[String]]): String = {
-    val paramVector = map.asScala.toVector.flatMap {
-      case (n, vals) => vals.map(v => n -> Some(v))
+    val paramVector = map.asScala.toVector.flatMap { case (n, vals) =>
+      vals.map(v => n -> Some(v))
     }
     QueryString(paramVector).toString
   }

@@ -29,7 +29,8 @@ public class ClonePage extends AbstractPage<ClonePage> implements DbSelectable<C
 
   @FindBy(
       xpath =
-          "//div[@class='settingRow' and div[@class='settingLabel']//label[text()='Target database']]")
+          "//div[@class='settingRow' and div[@class='settingLabel']//label[text()='Target"
+              + " database']]")
   private WebElement dbSettingRow;
 
   private final InstitutionListTab listTab;

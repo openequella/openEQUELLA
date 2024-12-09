@@ -18,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-/** @author nread */
 @SuppressWarnings("nls")
 public class WizardFrame extends JFrame implements ActionListener {
   protected JImage header;

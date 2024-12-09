@@ -21,7 +21,6 @@ package com.tle.common.portal;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class PortletTypeTarget implements Serializable {
   private static final long serialVersionUID = 1L;

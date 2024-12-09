@@ -20,7 +20,6 @@ package com.dytech.edge.ejb.helpers.metadata.exception;
 
 import java.util.List;
 
-/** @author aholland */
 public class InvalidPackageFileException extends Exception {
   private final List<String> formats;
 

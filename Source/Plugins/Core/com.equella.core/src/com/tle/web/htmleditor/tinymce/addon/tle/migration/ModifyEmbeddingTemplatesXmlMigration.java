@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ModifyEmbeddingTemplatesXmlMigration extends XmlMigrator {

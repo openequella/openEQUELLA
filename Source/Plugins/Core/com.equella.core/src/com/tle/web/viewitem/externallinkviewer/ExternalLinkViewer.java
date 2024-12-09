@@ -26,7 +26,6 @@ import com.tle.web.sections.equella.viewers.AbstractResourceViewer;
 import com.tle.web.viewurl.ViewableResource;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class ExternalLinkViewer extends AbstractResourceViewer {

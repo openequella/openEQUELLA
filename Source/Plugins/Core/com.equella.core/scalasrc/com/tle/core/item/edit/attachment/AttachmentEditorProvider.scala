@@ -33,7 +33,8 @@ object AttachmentEditorProvider {
         case c if c == classOf[CloudAttachmentEditor].getName => new CloudAttachmentEditor()
         case _ =>
           throw new ItemEditingException(
-            s"No extension for '$className' ${classOf[CloudAttachmentEditor].getName}")
+            s"No extension for '$className' ${classOf[CloudAttachmentEditor].getName}"
+          )
       }
     }
   }

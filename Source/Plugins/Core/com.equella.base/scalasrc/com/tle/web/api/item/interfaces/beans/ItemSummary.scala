@@ -31,11 +31,13 @@ object ItemRef {
   }
 }
 
-case class ItemSummary(title: String,
-                       hideOwner: Boolean,
-                       hideCollaborators: Boolean,
-                       sections: Iterable[ItemSummarySection],
-                       copyright: Option[CopyrightData])
+case class ItemSummary(
+    title: String,
+    hideOwner: Boolean,
+    hideCollaborators: Boolean,
+    sections: Iterable[ItemSummarySection],
+    copyright: Option[CopyrightData]
+)
 
 sealed trait ItemSummarySection {
   def `type`: String
@@ -47,26 +49,30 @@ case class BasicDetails(sectionTitle: String, title: String, description: Option
   override val `type` = "basic"
 }
 
-case class HtmlSummarySection(sectionTitle: String,
-                              showTitle: Boolean,
-                              sourceType: String,
-                              html: String)
-    extends ItemSummarySection {
+case class HtmlSummarySection(
+    sectionTitle: String,
+    showTitle: Boolean,
+    sourceType: String,
+    html: String
+) extends ItemSummarySection {
   val `type` = "html"
 }
 
-case class AttachmentSummary(title: String,
-                             uuid: String,
-                             href: String,
-                             thumbnailHref: String,
-                             viewers: Map[String, String],
-                             details: Iterable[MetaDisplay],
-                             children: Option[Iterable[AttachmentSummary]])
+case class AttachmentSummary(
+    title: String,
+    uuid: String,
+    href: String,
+    thumbnailHref: String,
+    viewers: Map[String, String],
+    details: Iterable[MetaDisplay],
+    children: Option[Iterable[AttachmentSummary]]
+)
 
-case class AttachmentsSummarySection(sectionTitle: String,
-                                     attachments: Iterable[AttachmentSummary],
-                                     nodes: Iterable[String])
-    extends ItemSummarySection {
+case class AttachmentsSummarySection(
+    sectionTitle: String,
+    attachments: Iterable[AttachmentSummary],
+    nodes: Iterable[String]
+) extends ItemSummarySection {
   val `type` = "attachments"
 }
 
@@ -77,15 +83,16 @@ case class DisplayNodesSummarySection(sectionTitle: String, meta: Iterable[MetaD
   val `type` = "displayNodes"
 }
 
-case class CommentSummarySection(sectionTitle: String,
-                                 canView: Boolean,
-                                 canAdd: Boolean,
-                                 canDelete: Boolean,
-                                 userDisplay: String,
-                                 anonymousOnly: Boolean,
-                                 hideUsername: Boolean,
-                                 allowAnonymous: Boolean)
-    extends ItemSummarySection {
+case class CommentSummarySection(
+    sectionTitle: String,
+    canView: Boolean,
+    canAdd: Boolean,
+    canDelete: Boolean,
+    userDisplay: String,
+    anonymousOnly: Boolean,
+    hideUsername: Boolean,
+    allowAnonymous: Boolean
+) extends ItemSummarySection {
   val `type` = "comments"
 }
 
@@ -93,21 +100,27 @@ sealed trait HoldingSummary {
   def `type`: String
 }
 
-case class CopyrightAttachment(item: ItemRef,
-                               href: Option[String],
-                               title: String,
-                               uuid: String,
-                               status: String)
+case class CopyrightAttachment(
+    item: ItemRef,
+    href: Option[String],
+    title: String,
+    uuid: String,
+    status: String
+)
 
-case class BookSection(attachment: CopyrightAttachment,
-                       range: String,
-                       pageCount: Int,
-                       illustration: Boolean)
+case class BookSection(
+    attachment: CopyrightAttachment,
+    range: String,
+    pageCount: Int,
+    illustration: Boolean
+)
 
-case class BookChapter(title: String,
-                       chapterName: String,
-                       canActivate: Boolean,
-                       sections: Iterable[BookSection])
+case class BookChapter(
+    title: String,
+    chapterName: String,
+    canActivate: Boolean,
+    sections: Iterable[BookSection]
+)
 
 case class BookSummary(totalPages: Int, chapters: Iterable[BookChapter]) extends HoldingSummary {
   val `type` = "book"
@@ -117,10 +130,11 @@ case class JournalSection(attachment: CopyrightAttachment)
 
 case class JournalPortion(title: String, sections: Iterable[JournalSection])
 
-case class JournalSummary(volume: Option[String],
-                          issueNumber: Option[String],
-                          portions: Iterable[JournalPortion])
-    extends HoldingSummary {
+case class JournalSummary(
+    volume: Option[String],
+    issueNumber: Option[String],
+    portions: Iterable[JournalPortion]
+) extends HoldingSummary {
   val `type` = "journal"
 }
 

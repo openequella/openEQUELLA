@@ -29,7 +29,6 @@ import com.tle.common.taxonomy.Taxonomy;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class TaxonomyEditor extends BaseEntityEditor<Taxonomy> {
   private static final StringLookup taxonomyStrings = Lookup.withPrefix("taxonomy");
 

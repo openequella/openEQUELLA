@@ -49,7 +49,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.UriBuilder;
 
-/** @author larry */
 @Bind
 @Path("connector")
 @Api(value = "External connectors", description = "connector")

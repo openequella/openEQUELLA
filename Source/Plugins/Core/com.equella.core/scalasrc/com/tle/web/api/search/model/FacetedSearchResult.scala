@@ -18,15 +18,15 @@
 
 package com.tle.web.api.search.model
 
-/**
-  * Information about a search facet result.
+/** Information about a search facet result.
   *
-  * @param term The derived facet.
-  * @param count The number of items matching this term.
+  * @param term
+  *   The derived facet.
+  * @param count
+  *   The number of items matching this term.
   */
 case class FacetedResultItem(term: String, count: Int)
 
-/**
-  * Represents the result for a faceted search.
+/** Represents the result for a faceted search.
   */
 case class FacetedSearchResult(results: List[FacetedResultItem])

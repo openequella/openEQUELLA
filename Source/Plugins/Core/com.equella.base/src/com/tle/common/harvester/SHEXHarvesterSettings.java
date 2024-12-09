@@ -18,7 +18,6 @@
 
 package com.tle.common.harvester;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class SHEXHarvesterSettings extends AbstractTLFHarvesterSettings {
   public static final String SHEX_HARVESTER_TYPE = "SHEXHarvesterSettings";

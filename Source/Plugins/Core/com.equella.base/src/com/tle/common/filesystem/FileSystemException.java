@@ -20,7 +20,6 @@ package com.tle.common.filesystem;
 
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 
-/** @author Nicholas Read */
 public class FileSystemException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
 

@@ -28,7 +28,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 
-/** @author Aaron */
 public class FileCopier {
   private final File src;
   private final File dest;

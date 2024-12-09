@@ -54,7 +54,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class RootQuickContributeAndVersionSettingsSection
     extends OneColumnLayout<
@@ -214,7 +213,9 @@ public class RootQuickContributeAndVersionSettingsSection
     return versionViewOptions;
   }
 
-  /** @return the saveButton */
+  /**
+   * @return the saveButton
+   */
   public Button getSaveButton() {
     return saveButton;
   }

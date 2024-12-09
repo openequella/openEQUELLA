@@ -44,7 +44,6 @@ import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
@@ -143,8 +142,8 @@ public class ItemXmlTwoWayMigration extends AbstractHibernateSchemaMigration {
     List<Object[]> list =
         session
             .createQuery(
-                "select x.id, i.id FROM Item i, ItemXml x WHERE x.itemUuid = i.uuid AND x.itemVersion = i.version"
-                    + " AND x.institution = i.institution")
+                "select x.id, i.id FROM Item i, ItemXml x WHERE x.itemUuid = i.uuid AND"
+                    + " x.itemVersion = i.version AND x.institution = i.institution")
             .list();
     session.clear();
 

@@ -20,7 +20,6 @@ package com.tle.core.connectors.brightspace.guice;
 
 import com.tle.core.config.guice.OptionalConfigModule;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class BrightspaceConnectorModule extends OptionalConfigModule {
   private static final String LE_VERSION = "1.7";

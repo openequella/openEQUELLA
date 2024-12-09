@@ -3,7 +3,6 @@ package com.dytech.edge.importexport.types;
 import com.dytech.devlib.PropBagEx;
 import java.io.File;
 
-/** @author Nicholas Read */
 public class Item {
   private String name;
   private String uuid;

@@ -22,8 +22,8 @@ import scala.collection.mutable
 object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with LogonTestCase {
 
   case class BrowserWithNameMapping(name2id: mutable.Map[String, ItemId] = mutable.Map.empty)(
-      var page: BrowserPage)
-      extends SeleniumBrowser
+      var page: BrowserPage
+  ) extends SeleniumBrowser
 
   type Command = BulkCommand
   type State   = BulkState
@@ -47,11 +47,13 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
 
   case class Reassign(username: String) extends BulkOp(BulkOpTypes.Reassign)
 
-  case class BulkItem(name: String,
-                      currentTask: Option[String],
-                      status: RStatus,
-                      assignedTo: Option[String],
-                      assignedAtStep: Map[String, Option[String]] = Map.empty) {
+  case class BulkItem(
+      name: String,
+      currentTask: Option[String],
+      status: RStatus,
+      assignedTo: Option[String],
+      assignedAtStep: Map[String, Option[String]] = Map.empty
+  ) {
     def assignTo(user: Option[String]): BulkItem =
       currentTask
         .map { task =>
@@ -60,9 +62,11 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
         .getOrElse(this)
   }
 
-  case class BulkState(items: Seq[BulkItem] = Seq.empty,
-                       selected: Seq[String] = Seq.empty,
-                       scenarios: BulkOpTypes.ValueSet = BulkOpTypes.ValueSet.empty) {
+  case class BulkState(
+      items: Seq[BulkItem] = Seq.empty,
+      selected: Seq[String] = Seq.empty,
+      scenarios: BulkOpTypes.ValueSet = BulkOpTypes.ValueSet.empty
+  ) {
     lazy val itemsInModeration = items.filter(_.currentTask.isDefined)
     lazy val itemNames         = items.map(_.name).toSet
   }
@@ -95,8 +99,10 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
             selections <- Gen.pick(numPicks, s.itemsInModeration.map(_.name))
             msg        <- Arbitrary.arbitrary[RandomWords].map(_.asString)
             randomUser <- Gen.oneOf("admin", "SimpleModerator")
-            op <- Fairness.favour3to1[BulkOp](Seq(Approve(msg), Reject(msg), Reassign(randomUser)),
-                                              b => s.scenarios.contains(b.typ))
+            op <- Fairness.favour3to1[BulkOp](
+              Seq(Approve(msg), Reject(msg), Reassign(randomUser)),
+              b => s.scenarios.contains(b.typ)
+            )
           } yield List(SelectItems(selections.toSeq), PerformOp(op), VerifyItems)
         case _ => List()
       }
@@ -129,15 +135,17 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
               case Approve(message) =>
                 val nextTask   = i.currentTask.flatMap(nextTask3Step)
                 val assignedTo = processAutoAssign(i, nextTask)
-                i.copy(currentTask = nextTask,
-                        status = if (nextTask.isDefined) RStatus.moderating else RStatus.live)
-                  .assignTo(assignedTo)
+                i.copy(
+                  currentTask = nextTask,
+                  status = if (nextTask.isDefined) RStatus.moderating else RStatus.live
+                ).assignTo(assignedTo)
               case Reject(message) =>
                 val nextTask   = i.currentTask.flatMap(t => rejectionTasks3Step(t).headOption)
                 val assignedTo = processAutoAssign(i, nextTask)
-                i.copy(currentTask = nextTask,
-                        status = if (nextTask.isDefined) RStatus.moderating else RStatus.rejected)
-                  .assignTo(assignedTo)
+                i.copy(
+                  currentTask = nextTask,
+                  status = if (nextTask.isDefined) RStatus.moderating else RStatus.rejected
+                ).assignTo(assignedTo)
               case Reassign(to) => i.assignTo(Some(to))
             }
           } else i
@@ -153,7 +161,8 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
           ERest.run(b.page.ctx) {
             RItems
               .create(
-                RCreateItem(RCollectionRef(threeStepWMUuid), simpleMetadata(b.uniquePrefix(name))))
+                RCreateItem(RCollectionRef(threeStepWMUuid), simpleMetadata(b.uniquePrefix(name)))
+              )
               .map { itemId =>
                 b.name2id.update(name, itemId)
               }
@@ -171,32 +180,32 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
           mrp
         }
       case PerformOp(op) =>
-        b.runOnPage {
-          case mtp: ManageTasksPage =>
-            val bd = mtp.performOperation()
+        b.runOnPage { case mtp: ManageTasksPage =>
+          val bd = mtp.performOperation()
 
-            def commentOn(bmd: PageContext => BulkModerateMessage,
-                          msg: String)(bd: BulkOperationDialog): Unit = {
-              val msgPage = bd.next(bmd)
-              msgPage.comment = msg
-            }
+          def commentOn(bmd: PageContext => BulkModerateMessage, msg: String)(
+              bd: BulkOperationDialog
+          ): Unit = {
+            val msgPage = bd.next(bmd)
+            msgPage.comment = msg
+          }
 
-            def reassignTo(to: String)(bd: BulkOperationDialog): Unit = {
-              val up = bd.next(BulkAssignUserPage)
-              up.search(to)
-              up.selectByUsername(to)
-            }
+          def reassignTo(to: String)(bd: BulkOperationDialog): Unit = {
+            val up = bd.next(BulkAssignUserPage)
+            up.search(to)
+            up.selectByUsername(to)
+          }
 
-            val (opName, opConfig) = op match {
-              case Approve(m)   => "Approve tasks..."                -> commentOn(BulkApproveMessage, m) _
-              case Reject(m)    => "Reject tasks..."                 -> commentOn(BulkRejectMessage, m) _
-              case Reassign(to) => "Assign/reassign to moderator..." -> reassignTo(to) _
-            }
-            bd.selectAction(opName)
-            opConfig(bd)
-            bd.execute()
-            bd.cancel()
-            mtp
+          val (opName, opConfig) = op match {
+            case Approve(m) => "Approve tasks..." -> commentOn(BulkApproveMessage, m) _
+            case Reject(m)  => "Reject tasks..."  -> commentOn(BulkRejectMessage, m) _
+            case Reassign(to) => "Assign/reassign to moderator..." -> reassignTo(to) _
+          }
+          bd.selectAction(opName)
+          opConfig(bd)
+          bd.execute()
+          bd.cancel()
+          mtp
         }
       case VerifyItems =>
         b.verify {
@@ -215,7 +224,8 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
                         )
                     }
                     .getOrElse(
-                      (bi.currentTask =? None).label(s"Expecting to be on ${bi.currentTask}")),
+                      (bi.currentTask =? None).label(s"Expecting to be on ${bi.currentTask}")
+                    ),
                   (mod.status ?= status).label("Status")
                 )
               }

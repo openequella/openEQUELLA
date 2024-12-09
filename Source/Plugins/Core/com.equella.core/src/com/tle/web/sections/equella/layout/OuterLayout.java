@@ -20,7 +20,6 @@ package com.tle.web.sections.equella.layout;
 
 import com.tle.web.sections.SectionInfo;
 
-/** @author aholland */
 public class OuterLayout {
   private static final String OUTER_LAYOUT_KEY = "$OUTER_LAYOUT$"; // $NON-NLS-1$
 

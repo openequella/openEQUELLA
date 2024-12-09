@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class DummyTaxonomyDataSourceFactory implements TaxonomyDataSourceFactory {

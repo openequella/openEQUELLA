@@ -23,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-/** @author Nicholas Read */
 public class MessagePanel extends JPanel implements SecurityTreeTab {
   private static final long serialVersionUID = 1L;
 

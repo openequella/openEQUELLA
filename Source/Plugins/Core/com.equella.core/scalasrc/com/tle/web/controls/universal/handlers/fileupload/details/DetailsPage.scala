@@ -72,9 +72,11 @@ trait DetailsPage {
 
   def prepareUI(info: SectionInfo): Unit
 
-  def editAttachment(info: SectionInfo,
-                     a: Attachment,
-                     ctx: ControlContext): (Attachment, Option[AttachmentDelete])
+  def editAttachment(
+      info: SectionInfo,
+      a: Attachment,
+      ctx: ControlContext
+  ): (Attachment, Option[AttachmentDelete])
 
   def validate(info: SectionInfo): Boolean
 

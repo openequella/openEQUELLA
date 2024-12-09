@@ -20,7 +20,6 @@ package com.tle.web.qti.viewer.questions.renderer.unsupported;
 
 import com.tle.common.i18n.CurrentLocale;
 
-/** @author Aaron */
 public class UnsupportedQuestionException extends RuntimeException {
   private final String nodeName;
   private final boolean element;

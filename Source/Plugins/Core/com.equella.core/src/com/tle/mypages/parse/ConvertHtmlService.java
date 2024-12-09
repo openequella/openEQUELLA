@@ -24,7 +24,6 @@ import com.tle.mypages.parse.conversion.HrefConversion;
 import java.io.Reader;
 import java.util.List;
 
-/** @author Aaron */
 public interface ConvertHtmlService {
   String convert(Reader reader, boolean fullUrl, List<HrefConversion> conversions);
 

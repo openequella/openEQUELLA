@@ -21,7 +21,6 @@ package com.tle.core.reporting.dao;
 import com.tle.beans.entity.report.Report;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/** @author Nicholas Read */
 public interface ReportingDao extends AbstractEntityDao<Report> {
   Report findByReportFilename(String filename);
 }

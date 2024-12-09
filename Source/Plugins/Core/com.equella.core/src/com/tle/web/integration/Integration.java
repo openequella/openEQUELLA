@@ -30,7 +30,6 @@ import com.tle.web.selection.SelectedResource;
 import com.tle.web.selection.SelectionSession;
 import com.tle.web.viewable.ViewableItem;
 
-/** @author jmaginnis */
 @NonNullByDefault
 public interface Integration<T extends IntegrationSessionData> {
   T createDataForViewing(SectionInfo info);

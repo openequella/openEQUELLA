@@ -22,16 +22,24 @@ import java.io.Serializable;
 
 /** NavigationTab in script */
 public interface NavigationTabScriptType extends Serializable {
-  /** @return The navigation node that this tab is attached to */
+  /**
+   * @return The navigation node that this tab is attached to
+   */
   NavigationNodeScriptType getNode();
 
-  /** @return Display name for the tab. Not shown if there is only one tab present. */
+  /**
+   * @return Display name for the tab. Not shown if there is only one tab present.
+   */
   String getDescription();
 
-  /** @param description Display name for the tab. Not shown if there is only one tab present. */
+  /**
+   * @param description Display name for the tab. Not shown if there is only one tab present.
+   */
   void setDescription(String description);
 
-  /** @return The ID of the viewer used to view the attachment on this tab */
+  /**
+   * @return The ID of the viewer used to view the attachment on this tab
+   */
   String getViewerId();
 
   /**
@@ -40,6 +48,8 @@ public interface NavigationTabScriptType extends Serializable {
    */
   void setViewerId(String viewerId);
 
-  /** @return The item attachment that this tab will display */
+  /**
+   * @return The item attachment that this tab will display
+   */
   AttachmentScriptType getAttachment();
 }

@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory
 object WizardControlHelper {
   private val LOGGER = LoggerFactory.getLogger(getClass)
 
-  /**
-    * `CustomControl` has multiple subclasses. Call this function to convert a subclass
-    * to `WizardControlDefinition`. If fail to convert, return `UnknownWizardControl`.
+  /** `CustomControl` has multiple subclasses. Call this function to convert a subclass to
+    * `WizardControlDefinition`. If fail to convert, return `UnknownWizardControl`.
     *
-    * @param customControl An instance of CustomControl.
+    * @param customControl
+    *   An instance of CustomControl.
     */
   def wizardCustomControlConverter(customControl: CustomControl): WizardControlDefinition = {
     customControl.getClassType match {
@@ -71,10 +71,11 @@ object WizardControlHelper {
     }
   }
 
-  /**
-    * Convert a list of `com.dytech.edge.wizard.beans.control.WizardControl` to a list of `WizardControlDefinition`
+  /** Convert a list of `com.dytech.edge.wizard.beans.control.WizardControl` to a list of
+    * `WizardControlDefinition`
     *
-    * @param controls The list of Java Wizard controls.
+    * @param controls
+    *   The list of Java Wizard controls.
     */
   def wizardControlConverter(controls: List[WizardControl]): List[WizardControlDefinition] = {
     controls.map {
@@ -82,19 +83,25 @@ object WizardControlHelper {
       case c @ (_: ListBox | _: CheckBoxGroup | _: RadioGroup | _: ShuffleBox | _: Html) =>
         WizardBasicControl(c)
       case c: Calendar =>
-        WizardCalendarControl(WizardBasicControl(c),
-                              c.isRange,
-                              Option(c.getFormat).getOrElse(DateFormat.DMY).name())
+        WizardCalendarControl(
+          WizardBasicControl(c),
+          c.isRange,
+          Option(c.getFormat).getOrElse(DateFormat.DMY).name()
+        )
       case c: ShuffleList =>
-        WizardShuffleListControl(WizardBasicControl(c),
-                                 ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication),
-                                 c.isTokenise)
+        WizardShuffleListControl(
+          WizardBasicControl(c),
+          ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication),
+          c.isTokenise
+        )
       case c: EditBox =>
-        WizardEditBoxControl(WizardBasicControl(c),
-                             c.isAllowLinks,
-                             c.isNumber,
-                             c.isAllowMultiLang,
-                             ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication))
+        WizardEditBoxControl(
+          WizardBasicControl(c),
+          c.isAllowLinks,
+          c.isNumber,
+          c.isAllowMultiLang,
+          ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication)
+        )
       case c: CustomControl => wizardCustomControlConverter(c)
       case _ =>
         LOGGER.error("Unknown Wizard Control type")

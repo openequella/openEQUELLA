@@ -21,7 +21,6 @@ package com.dytech.edge.common;
 import com.tle.common.Check;
 import com.tle.common.Pair;
 
-/** @author Nicholas Read */
 public final class IpAddressUtils {
   public static boolean matches(String ipAddress, String cidrAddress) {
     Check.checkNotNull(ipAddress, cidrAddress);

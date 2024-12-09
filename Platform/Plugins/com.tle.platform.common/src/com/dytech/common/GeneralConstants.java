@@ -18,7 +18,6 @@
 
 package com.dytech.common;
 
-/** @author Nicholas Read */
 public final class GeneralConstants {
   public static final String ISO_DATE_FORMAT_STR = "yyyy-MM-dd'T'HH:mm:ss"; // $NON-NLS-1$
 

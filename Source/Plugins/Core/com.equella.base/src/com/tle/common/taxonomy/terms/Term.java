@@ -69,12 +69,14 @@ import org.hibernate.annotations.NamedQuery;
   @NamedQuery(
       name = "shiftLeftIndex",
       query =
-          "UPDATE Term SET lft = lft + :amount WHERE lft >= :from AND lft <= :to AND taxonomy = :taxonomy",
+          "UPDATE Term SET lft = lft + :amount WHERE lft >= :from AND lft <= :to AND taxonomy ="
+              + " :taxonomy",
       cacheable = true),
   @NamedQuery(
       name = "shiftRightIndex",
       query =
-          "UPDATE Term SET rht = rht + :amount WHERE rht >= :from AND rht <= :to AND taxonomy = :taxonomy",
+          "UPDATE Term SET rht = rht + :amount WHERE rht >= :from AND rht <= :to AND taxonomy ="
+              + " :taxonomy",
       cacheable = true),
   @NamedQuery(
       name = "shift",
@@ -285,7 +287,9 @@ public class Term implements Serializable {
     return null;
   }
 
-  /** @return true if the attribute did not previously exist */
+  /**
+   * @return true if the attribute did not previously exist
+   */
   public boolean setAttribute(String key, String value) {
     ensureAttributes();
     final boolean created = (attributes.get(key) == null);

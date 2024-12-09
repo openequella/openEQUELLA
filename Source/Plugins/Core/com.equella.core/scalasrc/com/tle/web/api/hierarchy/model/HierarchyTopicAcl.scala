@@ -18,12 +18,14 @@
 
 package com.tle.web.api.hierarchy.model
 
-/**
-  * Provides the ACLs for a hierarchy topic.
+/** Provides the ACLs for a hierarchy topic.
   *
-  * @param VIEW_HIERARCHY_TOPIC Whether the user has permission to view the topic.
-  * @param EDIT_HIERARCHY_TOPIC Whether the user has permission to edit the topic.
-  * @param MODIFY_KEY_RESOURCE Whether the user has permission to modify the key resource of the topic.
+  * @param VIEW_HIERARCHY_TOPIC
+  *   Whether the user has permission to view the topic.
+  * @param EDIT_HIERARCHY_TOPIC
+  *   Whether the user has permission to edit the topic.
+  * @param MODIFY_KEY_RESOURCE
+  *   Whether the user has permission to modify the key resource of the topic.
   */
 case class HierarchyTopicAcl(
     VIEW_HIERARCHY_TOPIC: Boolean,

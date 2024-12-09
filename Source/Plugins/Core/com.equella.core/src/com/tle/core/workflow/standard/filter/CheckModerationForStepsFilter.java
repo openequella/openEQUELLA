@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author jmaginnis */
 public class CheckModerationForStepsFilter extends BaseFilter {
   private final Collection<Long> changedNodes;
   private final boolean forceSave;

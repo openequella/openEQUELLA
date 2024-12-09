@@ -20,7 +20,6 @@ package com.tle.common.security;
 
 import java.io.Serializable;
 
-/** @author Nicholas Read */
 public class SettingsTarget implements Serializable {
   private static final long serialVersionUID = 1L;
 

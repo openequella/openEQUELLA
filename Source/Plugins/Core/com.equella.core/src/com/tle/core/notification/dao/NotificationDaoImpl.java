@@ -73,7 +73,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
         (List<Notification>)
             getHibernateTemplate()
                 .findByNamedParam(
-                    "from Notification where itemid = :itemid and reason = :reason and userTo = :user and institution = :inst",
+                    "from Notification where itemid = :itemid and reason = :reason and userTo ="
+                        + " :user and institution = :inst",
                     new String[] {ITEMID, REASON, USER, INST},
                     new Object[] {keyAsString, reason, user, CurrentInstitution.get()});
     if (notifications.isEmpty()) {
@@ -125,7 +126,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                         }
                         Query query =
                             session.createQuery(
-                                "delete from Notification where itemidOnly = :itemid and reason in (:reasons) and institution = :inst");
+                                "delete from Notification where itemidOnly = :itemid and reason in"
+                                    + " (:reasons) and institution = :inst");
                         query.setParameter(ITEMID, itemId.toString());
                         query.setParameterList(REASONS, reasons);
                         query.setParameter(INST, CurrentInstitution.get());
@@ -149,7 +151,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                         }
                         Query query =
                             session.createQuery(
-                                "delete from Notification where itemid = :uuid and reason in (:reasons) and institution = :inst");
+                                "delete from Notification where itemid = :uuid and reason in"
+                                    + " (:reasons) and institution = :inst");
                         query.setParameter("uuid", uuid);
                         query.setParameterList(REASONS, reasons);
                         query.setParameter(INST, CurrentInstitution.get());
@@ -173,7 +176,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                         }
                         Query query =
                             session.createQuery(
-                                "delete from Notification where itemid = :itemkey and reason in (:reasons) and institution = :inst");
+                                "delete from Notification where itemid = :itemkey and reason in"
+                                    + " (:reasons) and institution = :inst");
                         query.setParameter(ITEMKEY, itemKey.toString());
                         query.setParameterList(REASONS, reasons);
                         query.setParameter(INST, CurrentInstitution.get());
@@ -198,7 +202,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                         }
                         Query query =
                             session.createQuery(
-                                "delete from Notification where itemid = :itemkey and userTo = :user and reason in (:reasons) and institution = :inst");
+                                "delete from Notification where itemid = :itemkey and userTo ="
+                                    + " :user and reason in (:reasons) and institution = :inst");
                         query.setParameter(ITEMKEY, itemKey.toString());
                         query.setParameter(USER, userId);
                         query.setParameterList(REASONS, reasons);
@@ -221,8 +226,8 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
-                            "UPDATE Notification SET userTo = :toUserId"
-                                + " WHERE userTo = :fromUserId AND itemid = :itemKey AND institution = :inst");
+                            "UPDATE Notification SET userTo = :toUserId WHERE userTo = :fromUserId"
+                                + " AND itemid = :itemKey AND institution = :inst");
                     query.setParameter("toUserId", toUserId);
                     query.setParameter("fromUserId", fromUserId);
                     query.setParameter(ITEMKEY, itemKey.toString());
@@ -244,9 +249,11 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query query =
                         session.createQuery(
-                            "select n.userTo, i.uniqueId from Notification n join n.institution as i "
-                                + "where n.processed = false and n.batched = :batched and (n.attemptId is null or n.attemptId <> :attempt) and "
-                                + "(n.lastAttempt < :date or n.lastAttempt is null) group by i.uniqueId, n.userTo");
+                            "select n.userTo, i.uniqueId from Notification n join n.institution as"
+                                + " i where n.processed = false and n.batched = :batched and"
+                                + " (n.attemptId is null or n.attemptId <> :attempt) and"
+                                + " (n.lastAttempt < :date or n.lastAttempt is null) group by"
+                                + " i.uniqueId, n.userTo");
                     query.setParameter("date", notAfter);
                     query.setParameter("batched", batched);
                     query.setParameter(ATTEMPT, attemptId);
@@ -282,9 +289,9 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                     }
                     Query query =
                         session.createQuery(
-                            "from Notification where attemptId = :attempt and reason in (:reasons) "
-                                + "and institution = :inst and userTo = :user and processed = false "
-                                + "order by date desc");
+                            "from Notification where attemptId = :attempt and reason in (:reasons)"
+                                + " and institution = :inst and userTo = :user and processed ="
+                                + " false order by date desc");
                     query.setMaxResults(maximum);
                     query.setParameter(ATTEMPT, attemptId);
                     query.setParameterList(REASONS, reasons);
@@ -348,9 +355,9 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "update Notification set processed = true "
-                                + "where institution = :inst and userTo = :user and processed = false "
-                                + "and reason in (:reasons) and attemptId = :attempt");
+                            "update Notification set processed = true where institution = :inst and"
+                                + " userTo = :user and processed = false and reason in (:reasons)"
+                                + " and attemptId = :attempt");
                     query.setParameter(ATTEMPT, attemptId);
                     query.setParameterList(REASONS, reasons);
                     query.setParameter(USER, user);
@@ -375,9 +382,9 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "delete from Notification "
-                                + "where institution = :inst and userTo = :user and processed = false "
-                                + "and reason in (:reasons) and attemptId = :attempt");
+                            "delete from Notification where institution = :inst and userTo = :user"
+                                + " and processed = false and reason in (:reasons) and attemptId ="
+                                + " :attempt");
 
                     query.setParameter(ATTEMPT, attemptId);
                     query.setParameterList(REASONS, reasons);
@@ -403,9 +410,9 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "update Notification set processed = true "
-                                + "where institution = :inst and userTo = :user and processed = false "
-                                + "and id in (:noteid) and attemptId = :attempt");
+                            "update Notification set processed = true where institution = :inst and"
+                                + " userTo = :user and processed = false and id in (:noteid) and"
+                                + " attemptId = :attempt");
                     query.setParameter(ATTEMPT, attemptId);
                     query.setParameterList(NOTEID, notifications);
                     query.setParameter(USER, user);
@@ -430,9 +437,9 @@ public class NotificationDaoImpl extends GenericInstitionalDaoImpl<Notification,
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "delete from Notification "
-                                + "where institution = :inst and userTo = :user and processed = false "
-                                + "and id in (:noteid) and attemptId = :attempt");
+                            "delete from Notification where institution = :inst and userTo = :user"
+                                + " and processed = false and id in (:noteid) and attemptId ="
+                                + " :attempt");
 
                     query.setParameter(ATTEMPT, attemptId);
                     query.setParameterList(NOTEID, notifications);

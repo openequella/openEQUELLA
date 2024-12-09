@@ -23,8 +23,7 @@ import io.swagger.annotations.ApiParam
 
 import javax.ws.rs.{DefaultValue, QueryParam}
 
-/**
-  * Provide shared query parameters for both of the search and facet search endpoints.
+/** Provide shared query parameters for both of the search and facet search endpoints.
   */
 class BaseSearchParam {
   @ApiParam("Query string")
@@ -32,7 +31,8 @@ class BaseSearchParam {
   var query: String = _
 
   @ApiParam(
-    "For details on structuring the where clause see https://github.com/openequella/openequella.github.io/blob/master/guides/RestAPIGuide.md#searching")
+    "For details on structuring the where clause see https://github.com/openequella/openequella.github.io/blob/master/guides/RestAPIGuide.md#searching"
+  )
   @QueryParam("whereClause")
   var whereClause: String = _
 
@@ -57,7 +57,8 @@ class BaseSearchParam {
   var mimeTypes: Array[String] = _
 
   @ApiParam(
-    "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
+    "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true."
+  )
   @QueryParam("musts")
   var musts: Array[String] = _
 
@@ -70,10 +71,9 @@ class BaseSearchParam {
   var hierarchy: String = _
 }
 
-/**
-  * Provide a full list of query parameters used in the search endpoint.
-  * Typically used with @BeanParam in order to aggregate lots of Search parameters instead of
-  * having a long list of parameters.
+/** Provide a full list of query parameters used in the search endpoint. Typically used with
+  * \@BeanParam in order to aggregate lots of Search parameters instead of having a long list of
+  * parameters.
   */
 class SearchParam extends BaseSearchParam {
 
@@ -85,9 +85,10 @@ class SearchParam extends BaseSearchParam {
   @QueryParam("length") @DefaultValue("10")
   var length: Int = _
 
-  @ApiParam(value = "The order of the search results",
-            allowableValues =
-              "relevance,modified,name,rating,created,task_submitted,task_lastaction")
+  @ApiParam(
+    value = "The order of the search results",
+    allowableValues = "relevance,modified,name,rating,created,task_submitted,task_lastaction"
+  )
   @QueryParam("order")
   var order: String = _
 
@@ -101,13 +102,15 @@ class SearchParam extends BaseSearchParam {
   var searchAttachments: Boolean = _
 
   @ApiParam(
-    "Whether to include full attachment details in results. Including attachments incurs extra processing and can slow down response times.")
+    "Whether to include full attachment details in results. Including attachments incurs extra processing and can slow down response times."
+  )
   @DefaultValue("true")
   @QueryParam("includeAttachments")
   var includeAttachments: Boolean = _
 
   @ApiParam(
-    "An advanced search UUID. If a value is supplied, the collections in the advanced search will be used and the collections parameter will be ignored.")
+    "An advanced search UUID. If a value is supplied, the collections in the advanced search will be used and the collections parameter will be ignored."
+  )
   @QueryParam("advancedSearch")
   var advancedSearch: String = _
 
@@ -116,8 +119,7 @@ class SearchParam extends BaseSearchParam {
   var dynaCollection: String = _
 }
 
-/**
-  * Similar to {{SearchParam}} but used in the faceted search endpoint.
+/** Similar to {{SearchParam}} but used in the faceted search endpoint.
   */
 class FacetedSearchParam extends BaseSearchParam {
   @ApiParam(value = "List of schema nodes to facet over", required = true)
@@ -125,9 +127,9 @@ class FacetedSearchParam extends BaseSearchParam {
   var nodes: Array[String] = _
 }
 
-/**
-  * Data structure to represent all the supported search criteria, which is typically used as the type of POST request payload.
-  * It also supports the transformation from both [[SearchParam]] and [[FacetedSearchParam]].
+/** Data structure to represent all the supported search criteria, which is typically used as the
+  * type of POST request payload. It also supports the transformation from both [[SearchParam]] and
+  * [[FacetedSearchParam]].
   */
 case class SearchPayload(
     query: Option[String],

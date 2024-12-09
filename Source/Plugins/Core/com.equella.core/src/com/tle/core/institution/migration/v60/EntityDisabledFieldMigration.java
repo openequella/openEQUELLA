@@ -65,7 +65,8 @@ public class EntityDisabledFieldMigration extends AbstractHibernateSchemaMigrati
     ScrollableResults scroll =
         session
             .createQuery(
-                "FROM BaseEntity be LEFT JOIN be.attributes att WHERE att.key = :archived AND att.value = :true")
+                "FROM BaseEntity be LEFT JOIN be.attributes att WHERE att.key = :archived AND"
+                    + " att.value = :true")
             .setParameter("archived", KEY_ARCHIVED)
             .setParameter("true", "true")
             .scroll();
@@ -84,7 +85,8 @@ public class EntityDisabledFieldMigration extends AbstractHibernateSchemaMigrati
     Query query =
         session
             .createQuery(
-                "SELECT COUNT(*) FROM BaseEntity be LEFT JOIN be.attributes att WHERE att.key = :archived AND att.value = :true")
+                "SELECT COUNT(*) FROM BaseEntity be LEFT JOIN be.attributes att WHERE att.key ="
+                    + " :archived AND att.value = :true")
             .setParameter("archived", KEY_ARCHIVED)
             .setParameter("true", "true");
     return 1 + count(query);

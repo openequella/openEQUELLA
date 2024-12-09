@@ -26,7 +26,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-/** @author adame */
 public class ElementArrayResultSoapHandler extends DefaultSoapHandler {
   private List results;
   private Document doc;

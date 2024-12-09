@@ -20,7 +20,6 @@ package com.tle.core.events;
 
 import com.tle.core.events.listeners.UMPChangedListener;
 
-/** @author Nicholas Read */
 public class UMPChangedEvent extends ApplicationEvent<UMPChangedListener> {
   private static final long serialVersionUID = 1L;
 

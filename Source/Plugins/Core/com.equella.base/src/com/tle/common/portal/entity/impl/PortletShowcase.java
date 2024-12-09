@@ -29,7 +29,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.AccessType;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public class PortletShowcase {

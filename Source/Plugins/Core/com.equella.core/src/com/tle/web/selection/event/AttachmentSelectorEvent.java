@@ -35,6 +35,7 @@ public class AttachmentSelectorEvent extends AbstractSectionEvent<AttachmentSele
   private final ItemKey itemId;
   private final SelectionSession session;
   private JSCallable function;
+
   /** Much the same as the function, only it's something invokable in Java */
   private SelectAttachmentHandler handler;
 
@@ -76,7 +77,9 @@ public class AttachmentSelectorEvent extends AbstractSectionEvent<AttachmentSele
     this.function = function;
   }
 
-  /** @return Much the same as the function, only it's something invokable in Java */
+  /**
+   * @return Much the same as the function, only it's something invokable in Java
+   */
   public SelectAttachmentHandler getHandler() {
     return handler;
   }

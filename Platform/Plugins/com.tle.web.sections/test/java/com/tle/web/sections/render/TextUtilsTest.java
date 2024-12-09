@@ -15,7 +15,28 @@ public class TextUtilsTest extends TestCase {
   }
 
   private final String testDescription =
-      "start nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing first nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing middle nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing end";
+      "start nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing first nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing middle nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing"
+          + " nothing nothing nothing nothing nothing nothing nothing nothing nothing nothing end";
 
   public void testMostOccurences() {
     List<String> testCaseStart = Arrays.asList("start");

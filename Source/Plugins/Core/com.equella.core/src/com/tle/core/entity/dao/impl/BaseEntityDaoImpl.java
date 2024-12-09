@@ -35,7 +35,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 @Bind(BaseEntityDao.class)
 @Singleton

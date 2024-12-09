@@ -28,7 +28,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import org.hibernate.annotations.AccessType;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public class ItemXml implements Serializable, IdCloneable {

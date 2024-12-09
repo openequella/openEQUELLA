@@ -29,7 +29,6 @@ import uk.ac.ed.ph.jqtiplus.node.test.TestFeedback;
 import uk.ac.ed.ph.jqtiplus.node.test.TestFeedbackAccess;
 import uk.ac.ed.ph.jqtiplus.state.TestSessionState;
 
-/** @author Dongsheng */
 public class TestFeedbackRenderer extends QtiNodeRenderer {
   private final TestFeedback model;
 

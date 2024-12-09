@@ -74,6 +74,7 @@ public class WorkflowItem extends WorkflowNode {
       name = "workflow_node_auto_assigns",
       joinColumns = @JoinColumn(name = "workflow_node_id"))
   private Set<String> autoAssigns;
+
   // Auto-assign based on user ID in this metadata path
   @Column(length = 512)
   private String autoAssignNode;

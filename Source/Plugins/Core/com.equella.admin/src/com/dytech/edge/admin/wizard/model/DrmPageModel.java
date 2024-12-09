@@ -27,7 +27,6 @@ import com.tle.common.i18n.CurrentLocale;
 import java.util.Date;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class DrmPageModel extends AbstractPageModel<DRMPage> {
   public DrmPageModel(ControlDefinition definition) {

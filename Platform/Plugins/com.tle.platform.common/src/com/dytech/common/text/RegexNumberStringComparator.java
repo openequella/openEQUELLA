@@ -132,12 +132,16 @@ public class RegexNumberStringComparator<T> implements Comparator<T>, Serializab
     return t.toString();
   }
 
-  /** @return Returns the caseInsensitive. */
+  /**
+   * @return Returns the caseInsensitive.
+   */
   public boolean isCaseInsensitive() {
     return caseInsensitive;
   }
 
-  /** @param caseInsensitive The caseInsensitive to set. */
+  /**
+   * @param caseInsensitive The caseInsensitive to set.
+   */
   public void setCaseInsensitive(boolean caseInsensitive) {
     this.caseInsensitive = caseInsensitive;
   }

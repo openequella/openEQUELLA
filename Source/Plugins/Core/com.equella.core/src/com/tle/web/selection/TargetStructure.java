@@ -24,7 +24,6 @@ import com.tle.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-/** @author Aaron */
 @NonNullByDefault
 public class TargetStructure extends TargetFolder {
   private Map<String, String> attributes = Maps.newHashMap();

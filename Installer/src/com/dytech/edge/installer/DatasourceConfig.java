@@ -31,6 +31,7 @@ import java.io.FileWriter;
 public class DatasourceConfig extends ForeignCommand {
 
   public static final String ROOT_NODE = "datasource";
+
   /** Marker used in configuration template files to mark variables to be substituted. */
   public static final String SUBSTITUTION_MARKER = "${ }";
 

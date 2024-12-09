@@ -27,7 +27,6 @@ import com.tle.beans.entity.itemdef.Wizard;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class PagedWizardModel extends BasicAbstractControl {
   private Wizard wizard;
 

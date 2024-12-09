@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class ContributionsSegment extends AbstractRecentSegment {
   @PlugKey("recently.contributed")
   private static Label TITLE;

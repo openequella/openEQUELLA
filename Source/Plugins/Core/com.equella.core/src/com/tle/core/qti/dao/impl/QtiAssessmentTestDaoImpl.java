@@ -33,7 +33,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(QtiAssessmentTestDao.class)

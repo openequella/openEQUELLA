@@ -41,7 +41,6 @@ import com.tle.web.sections.standard.annotations.Component;
 import java.util.Collection;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class MerlotQuerySection extends RemoteRepoQuerySection<MerlotRemoteRepoSearchEvent> {
   @Inject private MerlotWebService merlotWebService;

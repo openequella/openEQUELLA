@@ -21,7 +21,6 @@ package com.tle.admin.controls.googlebook.universal;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class GoogleBookSettingsPanel extends UniversalControlSettingPanel {
   private static final long serialVersionUID = 1L;

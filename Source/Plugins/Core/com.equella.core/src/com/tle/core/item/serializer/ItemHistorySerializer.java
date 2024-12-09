@@ -24,7 +24,6 @@ import com.tle.web.api.interfaces.beans.UserBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class ItemHistorySerializer {

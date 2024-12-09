@@ -38,7 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-/** @author Nicholas Read */
 public class TopicEditor extends AbstractTreeNodeEditor {
   private static final long serialVersionUID = 1L;
 
@@ -155,7 +154,9 @@ public class TopicEditor extends AbstractTreeNodeEditor {
     void apply(AbstractTopicEditorTab tab);
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public abstract static class AbstractTopicEditorTab extends JPanel {
     private static final long serialVersionUID = 1L;
 

@@ -21,7 +21,6 @@ package com.tle.beans.usermanagement.shibboleth.wrapper;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.common.settings.annotation.Property;
 
-/** @author aholland */
 public class ExternalAuthorisationWrapperSettings extends UserManagementSettings {
   public static final String USAGE_REMOTE_USER = "R"; // $NON-NLS-1$
   public static final String USAGE_HTTP_HEADER = "H"; // $NON-NLS-1$

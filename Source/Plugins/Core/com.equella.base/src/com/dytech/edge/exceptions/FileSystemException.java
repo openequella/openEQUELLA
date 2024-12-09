@@ -18,7 +18,6 @@
 
 package com.dytech.edge.exceptions;
 
-/** @author Nicholas Read */
 public class FileSystemException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
 

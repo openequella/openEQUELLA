@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-/** @author Nicholas Read */
 public class ActionTableCellRenderer extends DefaultTableCellRenderer {
   private static final long serialVersionUID = 1L;
   private static final String GRANT = CurrentLocale.get("security.editor.grant"); // $NON-NLS-1$

@@ -55,7 +55,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class AbstractTreeEditorTree<NodeType extends LazyTreeNode> extends JPanel
     implements TreeNodeChangeListener {
@@ -318,7 +317,8 @@ public abstract class AbstractTreeEditorTree<NodeType extends LazyTreeNode> exte
                     JOptionPane.showMessageDialog(
                         getComponent(),
                         "An error has occurred while removing the selected nodes\n"
-                            + "and children (if any).  This operation may still successfully complete\n"
+                            + "and children (if any).  This operation may still successfully"
+                            + " complete\n"
                             + "on the server.  The tree of nodes will now be reloaded in order to\n"
                             + "keep this editor synchronised with the server.",
                         "Error",

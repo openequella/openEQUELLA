@@ -25,7 +25,6 @@ import com.tle.common.security.expressions.EvaluateExpression;
 import com.tle.common.usermanagement.user.UserState;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class AclExpressionEvaluator extends EvaluateExpression {
   private Matcher ipAddressMatcher;

@@ -22,7 +22,6 @@ import com.tle.web.discoverability.scripting.objects.MetaScriptObject;
 import com.tle.web.sections.events.PreRenderContext;
 import org.apache.commons.lang.StringEscapeUtils;
 
-/** @author aholland */
 public class MetaScriptWrapper implements MetaScriptObject {
   private static final long serialVersionUID = 1L;
   private PreRenderContext render;

@@ -21,7 +21,6 @@ package com.tle.common.settings.standard;
 import com.tle.common.settings.ConfigurationProperties;
 import com.tle.common.settings.annotation.Property;
 
-/** @author Nicholas Read */
 public class MailSettings implements ConfigurationProperties {
   private static final long serialVersionUID = 1;
 
@@ -59,17 +58,23 @@ public class MailSettings implements ConfigurationProperties {
     this.sender = sender;
   }
 
-  /** @return The display name of the sender */
+  /**
+   * @return The display name of the sender
+   */
   public String getSenderName() {
     return senderName;
   }
 
-  /** @param senderName The display name of the sender */
+  /**
+   * @param senderName The display name of the sender
+   */
   public void setSenderName(String senderName) {
     this.senderName = senderName;
   }
 
-  /** @return Returns the server. */
+  /**
+   * @return Returns the server.
+   */
   public String getServer() {
     return server;
   }

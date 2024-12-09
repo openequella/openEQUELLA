@@ -67,16 +67,15 @@ public class ReplicatedConfiguration extends UserManagementSettings {
       "SELECT [Membership].UserID " + "FROM [Membership] WHERE [Membership].GroupID = ?";
 
   private static final String SEARCH_USERS_IN_GROUP_RECURSIVE =
-      "SELECT DISTINCT [Membership].UserID "
-          + "FROM [CachedGroupMembership] INNER JOIN [Membership] "
-          + "ON [Membership].GroupID = [CachedGroupMembership].ChildGroupID "
-          + "INNER JOIN [User] ON [Membership].UserID = [User].ID "
-          + "WHERE [CachedGroupMembership].AncestorGroupID = ? AND ([User].Username LIKE ? OR [User].FirstName LIKE ? OR [User].LastName LIKE ?)";
+      "SELECT DISTINCT [Membership].UserID FROM [CachedGroupMembership] INNER JOIN [Membership] ON"
+          + " [Membership].GroupID = [CachedGroupMembership].ChildGroupID INNER JOIN [User] ON"
+          + " [Membership].UserID = [User].ID WHERE [CachedGroupMembership].AncestorGroupID = ? AND"
+          + " ([User].Username LIKE ? OR [User].FirstName LIKE ? OR [User].LastName LIKE ?)";
 
   private static final String SEARCH_USERS_IN_GROUP =
-      "SELECT [Membership].UserID "
-          + "FROM [Membership] INNER JOIN [User] ON [Membership].UserID = [User].ID "
-          + "WHERE [Membership].GroupID = ? AND ([User].Username LIKE ? OR [User].FirstName LIKE ? OR [User].LastName LIKE ?)";
+      "SELECT [Membership].UserID FROM [Membership] INNER JOIN [User] ON [Membership].UserID ="
+          + " [User].ID WHERE [Membership].GroupID = ? AND ([User].Username LIKE ? OR"
+          + " [User].FirstName LIKE ? OR [User].LastName LIKE ?)";
 
   private static final String GROUPS_CONTAINING_USER =
       "SELECT DISTINCT [CachedGroupMembership].AncestorGroupID "

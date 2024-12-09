@@ -65,6 +65,8 @@ public abstract class BatchingIterator<T> implements Iterator<T>, Iterable<T> {
     throw new UnsupportedOperationException();
   }
 
-  /** @param obj this will be null for the first round. */
+  /**
+   * @param obj this will be null for the first round.
+   */
   protected abstract Iterator<T> getMore(Optional<T> lastObjGivenToUser);
 }

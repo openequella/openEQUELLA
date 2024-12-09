@@ -20,7 +20,6 @@ package com.tle.admin.gui.common.actions;
 
 import com.tle.common.i18n.CurrentLocale;
 
-/** @author Nicholas Read */
 public abstract class RefreshAction extends TLEAction {
   @SuppressWarnings("nls")
   public RefreshAction() {

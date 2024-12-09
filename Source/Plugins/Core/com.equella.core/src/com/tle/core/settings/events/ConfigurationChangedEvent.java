@@ -21,7 +21,6 @@ package com.tle.core.settings.events;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.settings.events.listeners.ConfigurationChangeListener;
 
-/** @author Nicholas Read */
 public class ConfigurationChangedEvent extends ApplicationEvent<ConfigurationChangeListener> {
   private static final long serialVersionUID = 1L;
 

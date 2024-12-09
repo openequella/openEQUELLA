@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault

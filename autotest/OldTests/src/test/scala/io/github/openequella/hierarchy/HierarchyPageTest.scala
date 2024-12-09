@@ -30,8 +30,7 @@ import org.testng.Assert.{assertEquals, assertFalse, assertTrue}
 import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
-/**
-  * New UI tests for hierarchy page.
+/** New UI tests for hierarchy page.
   */
 @TestInstitution("fiveo") class HierarchyPageTest extends AbstractCleanupAutoTest {
   private val A_TOPIC_NAME            = "A Topic"
@@ -81,7 +80,8 @@ import testng.annotation.NewUIOnly
 
   @NewUIOnly
   @Test(
-    description = "User should be able to add key resource by clicking the pin icon in item list.")
+    description = "User should be able to add key resource by clicking the pin icon in item list."
+  )
   def addKeyResourceFromResultList(): Unit = {
     val hierarchyPage = openHierarchyPage(A_TOPIC_NAME, A_TOPIC_UUID)
 
@@ -99,7 +99,7 @@ import testng.annotation.NewUIOnly
   @NewUIOnly
   @Test(
     description =
-      "User should be able to remove key resource by clicking the pin icon in result list.",
+      "User should be able to remove key resource by clicking the pin icon in result list."
   )
   def removeKeyResourceFromResultList(): Unit = {
     val hierarchyPage = openHierarchyPage(A_TOPIC_NAME, A_TOPIC_UUID)
@@ -114,7 +114,7 @@ import testng.annotation.NewUIOnly
   @NewUIOnly
   @Test(
     description =
-      "User should be able to remove key resource by clicking the pin icon in key resource panel.",
+      "User should be able to remove key resource by clicking the pin icon in key resource panel."
   )
   def removeKeyResourceFromKeyResourcePanel(): Unit = {
     val hierarchyPage = openHierarchyPage(A_TOPIC_NAME, A_TOPIC_UUID)
@@ -245,7 +245,8 @@ import testng.annotation.NewUIOnly
 
   @NewUIOnly
   @Test(
-    description = "navigate to the Browse page by clicking the Browse link from the breadcrumb.")
+    description = "navigate to the Browse page by clicking the Browse link from the breadcrumb."
+  )
   def browseBreadcrumbTest(): Unit = {
     val hierarchyPage = openHierarchyPage(CHILD_TOPIC_NAME, CHILD_TOPIC_UUID)
 
@@ -262,7 +263,8 @@ import testng.annotation.NewUIOnly
 
     val newHierarchyPage = hierarchyPage.clickBreadcrumb(
       A_TOPIC_NAME,
-      new HierarchyPage(context, A_TOPIC_NAME, A_TOPIC_UUID))
+      new HierarchyPage(context, A_TOPIC_NAME, A_TOPIC_UUID)
+    )
     assertTrue(newHierarchyPage.isLoaded)
     assertEquals(hierarchyPage.breadcrumbCount, 2)
   }

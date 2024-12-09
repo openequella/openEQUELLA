@@ -23,7 +23,6 @@ import com.tle.upgrade.UpgradeResult;
 import java.io.File;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class RemoveClusterGroupName extends AbstractUpgrader {
   public static final String ID = "RemoveClusterGroupName";

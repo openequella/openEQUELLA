@@ -22,8 +22,7 @@ import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.AbstractPage
 import org.openqa.selenium.{By, WebElement}
 
-/**
-  * Hierarchy panel. Which is a part of the BrowseHierarchiesPage and HierarchyPage.
+/** Hierarchy panel. Which is a part of the BrowseHierarchiesPage and HierarchyPage.
   */
 class HierarchyPanel(context: PageContext) extends AbstractPage[HierarchyPanel](context) {
 
@@ -33,11 +32,12 @@ class HierarchyPanel(context: PageContext) extends AbstractPage[HierarchyPanel](
     driver.findElement(hierarchyTree)
   }
 
-  /**
-    * Click on the hierarchy in the tree view.
+  /** Click on the hierarchy in the tree view.
     *
-    * @param hierarchyName The name of the hierarchy.
-    * @param compoundUuid  The compound UUID of the hierarchy.
+    * @param hierarchyName
+    *   The name of the hierarchy.
+    * @param compoundUuid
+    *   The compound UUID of the hierarchy.
     */
   def clickHierarchy(hierarchyName: String, compoundUuid: String): HierarchyPage = {
     getHierarchyTree
@@ -46,63 +46,71 @@ class HierarchyPanel(context: PageContext) extends AbstractPage[HierarchyPanel](
     new HierarchyPage(context, hierarchyName, compoundUuid)
   }
 
-  /**
-    * Expand the hierarchy tree.
+  /** Expand the hierarchy tree.
     *
-    * @param hierarchyName The name of the hierarchy.
+    * @param hierarchyName
+    *   The name of the hierarchy.
     */
   def expandHierarchy(hierarchyName: String): Unit = {
-    val hierarchyLabel = getHierarchyTree.findElement(By.xpath(
-      ".//a[contains(text(), '" + hierarchyName + "')]/ancestor::div[contains(@class, 'HierarchyTopic-label')]"))
+    val hierarchyLabel = getHierarchyTree.findElement(
+      By.xpath(
+        ".//a[contains(text(), '" + hierarchyName + "')]/ancestor::div[contains(@class, 'HierarchyTopic-label')]"
+      )
+    )
     val expandButton =
       hierarchyLabel.findElement(By.xpath(".//button[@aria-label='Expand hierarchy']"))
     expandButton.click()
   }
 
-  /**
-    * Check if the hierarchy is present in the tree view.
+  /** Check if the hierarchy is present in the tree view.
     *
-    * @param name The name of the hierarchy.
+    * @param name
+    *   The name of the hierarchy.
     */
   def hasHierarchy(name: String): Boolean = {
     val tree = getHierarchyTree
     !tree.findElements(By.xpath(".//a[contains(text(), '" + name + "')]")).isEmpty
   }
 
-  /**
-    * Check if the hierarchy tree has the short description.
+  /** Check if the hierarchy tree has the short description.
     *
-    * @param shortDesc The short description of the hierarchy.
+    * @param shortDesc
+    *   The short description of the hierarchy.
     */
   def hasHierarchyShortDesc(shortDesc: String): Boolean = {
     val tree = getHierarchyTree
     !tree.findElements(By.xpath(".//div[contains(text(), '" + shortDesc + "')]")).isEmpty
   }
 
-  /**
-    * Check if the hierarchy tree has result count.
+  /** Check if the hierarchy tree has result count.
     *
-    * @param hierarchyName The name of the hierarchy.
+    * @param hierarchyName
+    *   The name of the hierarchy.
     */
   def hasHierarchyResultCount(hierarchyName: String): Boolean = {
     val tree = getHierarchyTree
     !tree
       .findElements(
-        By.xpath(".//a[contains(text(), '" + hierarchyName + "')]/following-sibling::span"))
+        By.xpath(".//a[contains(text(), '" + hierarchyName + "')]/following-sibling::span")
+      )
       .isEmpty
   }
 
-  /**
-    * Check if the hierarchy tree has result count.
+  /** Check if the hierarchy tree has result count.
     *
-    * @param hierarchyName The name of the hierarchy.
-    * @param count         The result count number of the hierarchy.
+    * @param hierarchyName
+    *   The name of the hierarchy.
+    * @param count
+    *   The result count number of the hierarchy.
     */
   def isResultCountShowed(hierarchyName: String, count: Int): Boolean = {
     val tree = getHierarchyTree
     !tree
-      .findElements(By.xpath(
-        ".//a[contains(text(), '" + hierarchyName + "')]/following-sibling::span[contains(., '(" + count + ")')]"))
+      .findElements(
+        By.xpath(
+          ".//a[contains(text(), '" + hierarchyName + "')]/following-sibling::span[contains(., '(" + count + ")')]"
+        )
+      )
       .isEmpty
   }
 }

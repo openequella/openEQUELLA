@@ -32,6 +32,7 @@ public class TasksSortingAndFilteringTest extends AbstractCleanupTest {
 
   private static final String MMAM = PREFIX + " - Mustmod assigned";
   private static final String MMAN = PREFIX + " - Mustmod, unassigned";
+
   // @formatter:on
 
   @Test

@@ -80,7 +80,6 @@ import org.java.plugin.registry.Extension;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind(PortletService.class)
 @Singleton

@@ -18,7 +18,6 @@
 
 package com.tle.core.harvester.soap;
 
-/** @author will */
 public interface SoapHarvesterService {
   /**
    * Login with the given username and password.

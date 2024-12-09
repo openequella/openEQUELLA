@@ -27,7 +27,6 @@ import com.tle.web.sections.equella.AbstractRootModalSessionSection.RootModalSes
 import com.tle.web.sections.equella.ModalSession;
 import com.tle.web.sections.events.RenderEventContext;
 
-/** @author aholland */
 public class RootModalSessionSection
     extends AbstractRootModalSessionSection<RootModalSessionModel> {
   @TreeLookup private ModalErrorSection errorSection;

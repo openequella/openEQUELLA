@@ -22,7 +22,8 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
 
   object Pages extends Enumeration {
     val Home, Contribute, ManageTasks, ManageResources, TaskList, Notifications, Reports,
-    MyResources, Searching, Hierarchy, Harvester, RemoteRepos, Favourites, ManageActivations = Value
+        MyResources, Searching, Hierarchy, Harvester, RemoteRepos, Favourites, ManageActivations =
+      Value
   }
   import Pages._
   case class SanityState(completedPages: Pages.ValueSet = Pages.ValueSet.empty)
@@ -40,9 +41,11 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   override def runCommand(c: SanityTestProperties.Command, s: SanityState): SanityState =
     s.copy(s.completedPages + c)
 
-  override def runCommandInBrowser(c: SanityTestProperties.Command,
-                                   s: SanityState,
-                                   b: SanityTestProperties.Browser): Prop = b.verify {
+  override def runCommandInBrowser(
+      c: SanityTestProperties.Command,
+      s: SanityState,
+      b: SanityTestProperties.Browser
+  ): Prop = b.verify {
     val lp: PageContext => LoadablePage = c match {
       case Home              => HomePage
       case Contribute        => ContributePage

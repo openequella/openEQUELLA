@@ -24,7 +24,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSExpression;
 
-/** @author aholland */
 @NonNullByDefault
 public class NotEqualsExpression extends BooleanExpression {
   protected final JSExpression first;

@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author jmaginnis */
 @NonNullByDefault
 @SuppressWarnings("nls")
 @Bind(SectionsController.class)

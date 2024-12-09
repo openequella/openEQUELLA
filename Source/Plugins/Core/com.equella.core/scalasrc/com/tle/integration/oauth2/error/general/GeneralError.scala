@@ -20,19 +20,17 @@ package com.tle.integration.oauth2.error.general
 
 import com.tle.integration.oauth2.error.OAuth2Error
 
-/**
-  * Represent any error other than the standard OAuth2 errors that can occur during the integration of OAuth2.
+/** Represent any error other than the standard OAuth2 errors that can occur during the integration
+  * of OAuth2.
   */
 sealed abstract class GeneralError(error: String) extends OAuth2Error {
   override val msg: Option[String] = Option(error)
 }
 
-/**
-  * Typically used for an error related to the use or verification of a JWT.
+/** Typically used for an error related to the use or verification of a JWT.
   */
 final case class InvalidJWT(error: String) extends GeneralError(error)
 
-/**
-  * Typically used for an error which cannot be better classified with one of the other errors.
+/** Typically used for an error which cannot be better classified with one of the other errors.
   */
 final case class ServerError(error: String) extends GeneralError(error)

@@ -126,7 +126,9 @@ public class Workflow extends BaseEntity {
     return results;
   }
 
-  /** @return true if the recursion should stop. */
+  /**
+   * @return true if the recursion should stop.
+   */
   private static boolean recurseWorkflowItems(
       Map<String, WorkflowItem> items, WorkflowNode node, String stopAtID) {
     if (stopAtID != null && stopAtID.equals(node.getId())) {

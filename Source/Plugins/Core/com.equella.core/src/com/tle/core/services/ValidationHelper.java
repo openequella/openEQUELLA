@@ -27,7 +27,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author nread */
 public final class ValidationHelper {
   private static final ReflectionProvider REFLECTION = new ReflectionProvider();
   private static final Logger LOGGER = LoggerFactory.getLogger(ValidationHelper.class);

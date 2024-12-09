@@ -52,7 +52,6 @@ import com.tle.web.selection.section.RootSelectionSection.Layout;
 import com.tle.web.template.RenderNewTemplate;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class SearchPortletRenderer extends PortletContentRenderer<Object> {

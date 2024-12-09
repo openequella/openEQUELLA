@@ -5,7 +5,6 @@ package com.dytech.common.text;
 
 import junit.framework.TestCase;
 
-/** @author Nicholas Read */
 public class NumberStringComparatorTest extends TestCase {
   NumberStringComparator<String> comparator;
 

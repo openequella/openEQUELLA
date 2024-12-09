@@ -11,7 +11,6 @@ import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class SelectionSessionSettingsTest extends AbstractSessionTest {
   public static final String SELECTION_SESSION_SETTINGS_LINK =

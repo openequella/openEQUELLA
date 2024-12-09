@@ -406,7 +406,8 @@ public class ItemApiViewTest extends AbstractItemApiTest {
         "http://i.ytimg.com/vi/Ahg6qcgoay4/default.jpg");
     assertEquals(
         youtubeAttachment.get("tags").asText(),
-        "test, awareness, basketball, visual, do, the, attention, span, bike, ad, cycling, TFL, safety, moonwalking, bear");
+        "test, awareness, basketball, visual, do, the, attention, span, bike, ad, cycling, TFL,"
+            + " safety, moonwalking, bear");
     assertEquals(youtubeAttachment.get("duration").asText(), "PT1M9S");
   }
 

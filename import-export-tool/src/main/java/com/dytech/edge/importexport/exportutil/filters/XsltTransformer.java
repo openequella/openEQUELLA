@@ -16,7 +16,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class XsltTransformer implements Runnable {
   private final SharedData data;

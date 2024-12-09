@@ -38,7 +38,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public final class WizardHelper {
   /** Indicates that the current wizard is a contribution wizard. */
   public static final int WIZARD_TYPE_CONTRIBUTION = 0;

@@ -112,15 +112,16 @@ class TaskNotifications
     def headerReason(total: Int): Label =
       new KeyLabel(
         NotificationLangStrings.pluralKey(NotificationLangStrings.KEY_HEADER + groupName, total),
-        taskName)
+        taskName
+      )
   }
 
   case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item)
       extends TaskNotification
       with OwnerLookup {
     val status = Option(workflowService.getIncompleteStatus(itemTaskId))
-    val currentTask: Option[WorkflowItem] = workflowItem(taskId).collect {
-      case wi: WorkflowItem => wi
+    val currentTask: Option[WorkflowItem] = workflowItem(taskId).collect { case wi: WorkflowItem =>
+      wi
     }
     val getAutoAction = currentTask.flatMap { workflowItem =>
       Option(workflowItem.getAutoAction)
@@ -149,7 +150,8 @@ class TaskNotifications
             case c if msgTypes(c.getType) => new Message(lul, c)
           }
           .toSeq
-          .sortBy(_.date))
+          .sortBy(_.date)
+      )
       .getOrElse(Seq.empty)
       .asJava
 
@@ -160,7 +162,8 @@ class TaskNotifications
     def isSingleModerator: Boolean =
       currentTask
         .map(wi =>
-          workflowService.getAllModeratorUserIDs(new PropBagEx(item.getItemXml.getXml), wi))
+          workflowService.getAllModeratorUserIDs(new PropBagEx(item.getItemXml.getXml), wi)
+        )
         .exists(_.size() == 1)
 
     override def group = note.getReason match {

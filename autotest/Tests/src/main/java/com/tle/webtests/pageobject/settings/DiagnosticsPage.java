@@ -10,7 +10,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-/** @author Dongsheng Cai */
 public class DiagnosticsPage extends AbstractPage<DiagnosticsPage> {
   public static final String DIAGNOSTICS_PAGE_SETTINGS_SECTION_TITLE = "Diagnostics";
 

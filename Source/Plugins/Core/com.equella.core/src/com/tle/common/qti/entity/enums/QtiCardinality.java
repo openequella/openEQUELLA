@@ -18,7 +18,6 @@
 
 package com.tle.common.qti.entity.enums;
 
-/** @author Aaron */
 public enum QtiCardinality {
   SINGLE,
   MULTIPLE,

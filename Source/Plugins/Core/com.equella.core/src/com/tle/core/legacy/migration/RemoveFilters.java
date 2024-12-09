@@ -57,7 +57,6 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
-/** @author Andrew Gibb */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

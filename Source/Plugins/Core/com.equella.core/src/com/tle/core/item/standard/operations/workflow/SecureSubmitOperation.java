@@ -24,7 +24,6 @@ import com.tle.annotation.Nullable;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author jmaginnis */
 @SecureOnCall(priv = SecurityConstants.EDIT_ITEM)
 public class SecureSubmitOperation extends SubmitOperation {
   @AssistedInject

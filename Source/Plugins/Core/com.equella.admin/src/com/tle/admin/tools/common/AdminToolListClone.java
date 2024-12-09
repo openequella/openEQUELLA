@@ -30,7 +30,6 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public abstract class AdminToolListClone extends AdminToolList {
   protected boolean enableClone = true;
 

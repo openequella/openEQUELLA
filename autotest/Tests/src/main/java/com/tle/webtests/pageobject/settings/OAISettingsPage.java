@@ -6,7 +6,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class OAISettingsPage extends AbstractPage<OAISettingsPage> {
   public static final String OAI_SETTINGS_HEADER =
       "OAI identifier"; // original properties key: oaiidentifier.title

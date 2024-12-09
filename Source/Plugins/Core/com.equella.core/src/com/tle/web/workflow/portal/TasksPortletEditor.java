@@ -31,7 +31,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import com.tle.web.sections.render.SimpleSectionResult;
 import java.util.Map;
 
-/** @author aholland / agibb */
 @Bind
 public class TasksPortletEditor
     extends AbstractPortletEditorSection<TasksPortletEditor.WorkflowTasksPortletEditorModel> {

@@ -18,7 +18,6 @@
 
 package com.tle.core.wizard;
 
-/** @author miken */
 public class WizardPageException extends Exception {
   /** Creates new <code>WizardPageException</code> without detail message. */
   public WizardPageException() {

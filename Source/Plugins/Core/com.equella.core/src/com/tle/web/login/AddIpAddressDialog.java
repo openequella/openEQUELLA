@@ -46,7 +46,6 @@ import com.tle.web.sections.standard.dialog.model.DialogModel;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @Bind
 @NonNullByDefault

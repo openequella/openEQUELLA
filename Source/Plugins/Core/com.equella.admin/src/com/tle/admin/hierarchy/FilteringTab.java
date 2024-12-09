@@ -33,7 +33,6 @@ import com.tle.common.i18n.StringLookup;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 
-/** @author Nicholas Read */
 public class FilteringTab extends AbstractTopicEditorTab {
   private static final StringLookup strings = Lookup.withPrefix("filteringtab");
 

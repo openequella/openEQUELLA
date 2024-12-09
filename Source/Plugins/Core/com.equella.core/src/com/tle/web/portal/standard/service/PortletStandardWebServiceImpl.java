@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(PortletStandardWebService.class)
 @Singleton
 public class PortletStandardWebServiceImpl implements PortletStandardWebService {

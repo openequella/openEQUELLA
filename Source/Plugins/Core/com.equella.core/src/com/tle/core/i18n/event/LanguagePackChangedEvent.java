@@ -22,7 +22,6 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.i18n.event.listener.LanguagePackChangedListener;
 import java.util.Locale;
 
-/** @author Nicholas Read */
 public class LanguagePackChangedEvent extends ApplicationEvent<LanguagePackChangedListener> {
   private static final long serialVersionUID = 1L;
 

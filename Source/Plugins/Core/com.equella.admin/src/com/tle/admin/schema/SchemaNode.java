@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import java.util.Objects;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/** @author Nicholas Read */
 public class SchemaNode extends DefaultMutableTreeNode {
   private static final long serialVersionUID = 1L;
   private String name;

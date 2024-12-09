@@ -28,7 +28,6 @@ import com.tle.web.viewurl.ViewableResource;
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension;
 import javax.inject.Inject;
 
-/** @author Larry. Based on the YouTube plugin. */
 @Bind
 public class FlickrResource
     implements AttachmentResourceExtension<CustomAttachment>,

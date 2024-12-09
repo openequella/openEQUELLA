@@ -22,7 +22,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMap;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class EquellaSyntaxTokenMaker extends JavaScriptTokenMaker {
   /** Usually seen in source files as String DEFAULT_VARIABLE */

@@ -6,7 +6,6 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-/** @author Aaron */
 public class SearchTabsPage extends AbstractPage<SearchTabsPage> {
   public SearchTabsPage(PageContext context) {
     super(context, context.getDriver(), By.id("searchtabs"));

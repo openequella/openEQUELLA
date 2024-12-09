@@ -22,7 +22,6 @@ import com.tle.common.activecache.settings.CacheSettings;
 import com.tle.common.activecache.settings.CacheSettings.Node;
 import java.util.Map;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public interface RemoteCachingWebService {
   String KEY_ROOT = "";

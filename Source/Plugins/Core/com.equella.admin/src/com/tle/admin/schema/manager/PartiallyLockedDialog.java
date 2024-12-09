@@ -40,7 +40,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
-/** @author Nicholas Read */
 public class PartiallyLockedDialog implements ActionListener {
   private static final Dimension WINDOW_SIZE = new Dimension(500, 450);
 

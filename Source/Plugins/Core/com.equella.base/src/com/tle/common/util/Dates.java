@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public enum Dates {

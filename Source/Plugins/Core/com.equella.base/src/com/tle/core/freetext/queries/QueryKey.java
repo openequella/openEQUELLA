@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author jmaginnis */
 public class QueryKey implements Serializable {
   private static final long serialVersionUID = 1L;
   List<Object> parts = new ArrayList<Object>(3);

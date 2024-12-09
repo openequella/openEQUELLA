@@ -56,8 +56,8 @@ class UpdateEnabledStatusRequest {
 @Api("LTI 1.3 Platform")
 class LtiPlatformResource {
   private val aclProvider: LTI13PlatformsSettingsPrivilegeTreeProvider = LegacyGuice.ltiPrivProvider
-  private val ltiPlatformService                                       = LegacyGuice.ltiPlatformService
-  private val logger: Logger                                           = LoggerFactory.getLogger(classOf[LtiPlatformResource])
+  private val ltiPlatformService = LegacyGuice.ltiPlatformService
+  private val logger: Logger     = LoggerFactory.getLogger(classOf[LtiPlatformResource])
 
   // Lazily evaluated the result and capture the potential exceptions in an Either. Use the provided handler to build a response for success, or
   // return a server error response if any exception is triggered.
@@ -75,7 +75,8 @@ class LtiPlatformResource {
       onSome: A => Response,
       onNone: () => Response = () =>
         ApiErrorResponse.resourceNotFound("Target LTI platform is not found."),
-      onFailureMessage: String) = {
+      onFailureMessage: String
+  ) = {
     def processOption(maybeResult: Option[A]): Response =
       maybeResult.map(onSome).getOrElse(onNone())
 
@@ -89,17 +90,20 @@ class LtiPlatformResource {
   @ApiOperation(
     value = "Get LTI Platform by ID",
     notes = "This endpoints retrieves a LTI Platform by Platform ID",
-    response = classOf[LtiPlatformBean],
+    response = classOf[LtiPlatformBean]
   )
   def getPlatform(
       @ApiParam(
-        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
-        "id") id: String): Response = {
+        "The Platform ID has to be double URL encoded to protect against premature decoding."
+      ) @PathParam("id") id: String
+  ): Response = {
     aclProvider.checkAuthorised()
 
-    processOptionResult[LtiPlatformBean](ltiPlatformService.getByPlatformID(decodeId(id)),
-                                         Response.ok(_).build,
-                                         onFailureMessage = s"Failed to get LTI platform by ID $id")
+    processOptionResult[LtiPlatformBean](
+      ltiPlatformService.getByPlatformID(decodeId(id)),
+      Response.ok(_).build,
+      onFailureMessage = s"Failed to get LTI platform by ID $id"
+    )
 
   }
 
@@ -113,17 +117,20 @@ class LtiPlatformResource {
   def getPlatforms: Response = {
     aclProvider.checkAuthorised()
 
-    processResult[List[LtiPlatformBean]](ltiPlatformService.getAll,
-                                         Response.ok.entity(_).build,
-                                         "Failed to get a list of LTI platform")
+    processResult[List[LtiPlatformBean]](
+      ltiPlatformService.getAll,
+      Response.ok.entity(_).build,
+      "Failed to get a list of LTI platform"
+    )
   }
 
   @POST
   @ApiOperation(
     value = "Create a new LTI platform",
-    notes = "This endpoint creates a new LTI platform and includes ID of the created platform in the response header. " +
-      "The ID has to be double URL encoded to protect against premature decoding.",
-    response = classOf[String],
+    notes =
+      "This endpoint creates a new LTI platform and includes ID of the created platform in the response header. " +
+        "The ID has to be double URL encoded to protect against premature decoding.",
+    response = classOf[String]
   )
   def createPlatform(bean: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
@@ -134,7 +141,7 @@ class LtiPlatformResource {
         ltiPlatformService.create(bean),
         id =>
           Response
-          // Double encoding the ID to make sure any forward slash is fully escaped due to the Tomcat 'no slash' issue.
+            // Double encoding the ID to make sure any forward slash is fully escaped due to the Tomcat 'no slash' issue.
             .created(new URI(s"/ltiplatform/${urlEncode(urlEncode(id))}"))
             .build(),
         "Failed to create a new LTI platform"
@@ -150,15 +157,17 @@ class LtiPlatformResource {
   @ApiOperation(
     value = "Update an existing LTI platform",
     notes = "This endpoint updates an existing LTI platform",
-    response = classOf[Unit],
+    response = classOf[Unit]
   )
   def updatePlatform(updates: LtiPlatformBean): Response = {
     aclProvider.checkAuthorised()
 
     def update: Response =
-      processOptionResult[String](ltiPlatformService.update(updates),
-                                  Response.ok(_).build,
-                                  onFailureMessage = "Failed to update LTI platform")
+      processOptionResult[String](
+        ltiPlatformService.update(updates),
+        Response.ok(_).build,
+        onFailureMessage = "Failed to update LTI platform"
+      )
 
     validateLtiPlatformBean(updates) match {
       case Invalid(error) => ApiErrorResponse.badRequest(error: _*)
@@ -171,17 +180,20 @@ class LtiPlatformResource {
   @ApiOperation(
     value = "Delete a LTI platform by ID",
     notes = "This endpoints deletes an existing LTI platform by platform ID",
-    response = classOf[Int],
+    response = classOf[Int]
   )
   def deletePlatform(
       @ApiParam(
-        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
-        "id") id: String): Response = {
+        "The Platform ID has to be double URL encoded to protect against premature decoding."
+      ) @PathParam("id") id: String
+  ): Response = {
     aclProvider.checkAuthorised()
 
-    processOptionResult[Unit](ltiPlatformService.delete(decodeId(id)),
-                              Response.ok(_).build,
-                              onFailureMessage = s"Failed to delete LTI platform by ID $id")
+    processOptionResult[Unit](
+      ltiPlatformService.delete(decodeId(id)),
+      Response.ok(_).build,
+      onFailureMessage = s"Failed to delete LTI platform by ID $id"
+    )
   }
 
   @DELETE
@@ -192,15 +204,18 @@ class LtiPlatformResource {
     responseContainer = "List"
   )
   def deletePlatforms(
-      @ApiParam(value = "List of Platform ID") @QueryParam("ids") ids: Array[String]): Response = {
+      @ApiParam(value = "List of Platform ID") @QueryParam("ids") ids: Array[String]
+  ): Response = {
     aclProvider.checkAuthorised()
 
     def delete(id: String): ApiBatchOperationResponse = {
       Either.catchNonFatal(ltiPlatformService.delete(id)) match {
         case Left(error) =>
-          ApiBatchOperationResponse(id,
-                                    500,
-                                    s"Failed to delete platform for $id : ${error.getMessage}")
+          ApiBatchOperationResponse(
+            id,
+            500,
+            s"Failed to delete platform for $id : ${error.getMessage}"
+          )
         case Right(maybeDeleted) =>
           maybeDeleted
             .map(_ => ApiBatchOperationResponse(id, 200, s"Platform $id has been deleted."))
@@ -242,8 +257,10 @@ class LtiPlatformResource {
               .toRight(ApiBatchOperationResponse(id, 500, s"Failed to update platform $id"))
           }
         }
-        .fold(e => identity(e),
-              r => ApiBatchOperationResponse(r, 200, s"Platform $id has been updated."))
+        .fold(
+          e => identity(e),
+          r => ApiBatchOperationResponse(r, 200, s"Platform $id has been updated.")
+        )
     }
 
     val responses = idWithStatus.map(updateEnabledStatus).toList
@@ -256,12 +273,13 @@ class LtiPlatformResource {
   @ApiOperation(
     value = "Rotate Key Pair For the specified Platform",
     notes = "This endpoint will rotate the activated key pair for an LTI platform.",
-    response = classOf[String],
+    response = classOf[String]
   )
   def rotateKeyPair(
       @ApiParam(
-        "The Platform ID has to be double URL encoded to protect against premature decoding.") @PathParam(
-        "id") id: String): Response = {
+        "The Platform ID has to be double URL encoded to protect against premature decoding."
+      ) @PathParam("id") id: String
+  ): Response = {
     aclProvider.checkAuthorised()
 
     val result = ltiPlatformService.rotateKeyPairForPlatform(decodeId(id));

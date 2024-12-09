@@ -60,7 +60,7 @@ public class MethodSecurityInteceptor implements MethodInterceptor {
       switch (secAttr.getOnCallmode()) {
         case DOMAIN:
           domainObj = invocation.getArguments()[secAttr.getDomainArg()]; // NOSONAR
-          // Let it fall through
+        // Let it fall through
         case TOPLEVEL:
           if (tleAclManager.filterNonGrantedPrivileges(domainObj, onCallPrivs).isEmpty()) {
             throwAccessDenied(onCallPrivs);

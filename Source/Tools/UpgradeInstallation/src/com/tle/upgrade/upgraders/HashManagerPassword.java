@@ -32,7 +32,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class HashManagerPassword extends AbstractUpgrader {
   private static final Logger LOGGER = LoggerFactory.getLogger(HashManagerPassword.class);

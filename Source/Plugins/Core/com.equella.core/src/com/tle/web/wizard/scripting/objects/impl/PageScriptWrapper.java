@@ -22,7 +22,6 @@ import com.tle.core.wizard.controls.WizardPage;
 import com.tle.web.wizard.scripting.objects.ControlScriptObject;
 import com.tle.web.wizard.scripting.objects.PageScriptObject;
 
-/** @author aholland */
 public class PageScriptWrapper implements PageScriptObject {
   private static final long serialVersionUID = 1L;
 

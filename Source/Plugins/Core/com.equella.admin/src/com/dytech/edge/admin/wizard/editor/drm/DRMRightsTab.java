@@ -35,7 +35,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-/** @author Nicholas Read */
 public class DRMRightsTab extends JPanel {
   private static final long serialVersionUID = 1L;
   private SectorPanel sector;

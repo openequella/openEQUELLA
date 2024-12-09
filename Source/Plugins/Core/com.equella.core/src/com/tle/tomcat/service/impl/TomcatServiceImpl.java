@@ -134,7 +134,8 @@ public class TomcatServiceImpl implements TomcatService, StartupBean, TomcatRest
   public void startup() {
     if (ajpPort == -1 && httpPort == -1 && httpsPort == -1) {
       throw new RuntimeException(
-          "You must specify either 'http.port, https.port' or 'ajp.port' in your mandatory-config.properties");
+          "You must specify either 'http.port, https.port' or 'ajp.port' in your"
+              + " mandatory-config.properties");
     }
     try {
       setupDirectories();

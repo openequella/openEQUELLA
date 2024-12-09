@@ -229,7 +229,9 @@ public class XmlDocument {
     return deleteAll(xpath, null);
   }
 
-  /** @return false if no nodes deleted */
+  /**
+   * @return false if no nodes deleted
+   */
   public synchronized boolean deleteAll(String xpath, Node nodeContext) {
     NodeListIterable nodes = nodeList(xpath, nodeContext);
     NodeListIterable.NodeListIterator nodeIter = nodes.iterator();

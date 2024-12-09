@@ -40,7 +40,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
-/** @author Charles O'Farrell */
 public abstract class AbstractTableMapping<MAPPING> extends JChangeDetectorPanel
     implements Mapping, ListSelectionListener, ActionListener {
   private JTable table;

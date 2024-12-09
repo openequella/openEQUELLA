@@ -42,14 +42,17 @@ object SearchMenuContributor extends MenuContributor {
       val uis          = UISettings.getUISettings
       val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
       val hls = new HtmlLinkState(
-        new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do"))
+        new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do")
+      )
       hls.setLabel(SearchMenuContributor.LABEL_KEY)
-      val mc = new MenuContributor.MenuContribution(hls,
-                                                    SearchMenuContributor.ICON_PATH,
-                                                    1,
-                                                    20,
-                                                    "search",
-                                                    if (useNewSearch) "/page/search" else null)
+      val mc = new MenuContributor.MenuContribution(
+        hls,
+        SearchMenuContributor.ICON_PATH,
+        1,
+        20,
+        "search",
+        if (useNewSearch) "/page/search" else null
+      )
       Collections.singletonList(mc)
     }
   }

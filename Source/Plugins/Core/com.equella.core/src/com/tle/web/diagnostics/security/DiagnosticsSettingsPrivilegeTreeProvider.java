@@ -23,7 +23,6 @@ import com.tle.core.guice.Bind;
 import com.tle.core.settings.security.AbstractSettingsPrivilegeTreeProvider;
 import com.tle.web.resources.ResourcesService;
 
-/** @author Dongsheng Cai */
 @Bind
 public class DiagnosticsSettingsPrivilegeTreeProvider
     extends AbstractSettingsPrivilegeTreeProvider {

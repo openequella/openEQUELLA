@@ -10,7 +10,6 @@ import com.tle.webtests.test.AbstractSessionTest;
 import java.util.TimeZone;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class CourseDefaultsTest extends AbstractSessionTest {
   @Test

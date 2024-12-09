@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-/** @author larry */
 public class CourseDefaultsSettings implements ConfigurationProperties {
   private static final long serialVersionUID = -883052925969453965L;
 
@@ -37,6 +36,7 @@ public class CourseDefaultsSettings implements ConfigurationProperties {
    * com.tle.common.util.Dates.CALENDAR_CONTROL_FORM.
    */
   public static final String COURSE_DEFAULT_DATE_FMT = "dd/MM/yyyy";
+
   /** Persisted data need be primitive ...? */
   @Property(key = "course.start")
   private String startDate;
@@ -86,24 +86,32 @@ public class CourseDefaultsSettings implements ConfigurationProperties {
     return dateFormat.format(date);
   }
 
-  /** @return the startDate */
+  /**
+   * @return the startDate
+   */
   @Nullable
   public String getStartDate() {
     return startDate;
   }
 
-  /** @param startDate the startDate to set */
+  /**
+   * @param startDate the startDate to set
+   */
   public void setStartDate(@Nullable String startDate) {
     this.startDate = startDate;
   }
 
-  /** @return the endDate */
+  /**
+   * @return the endDate
+   */
   @Nullable
   public String getEndDate() {
     return endDate;
   }
 
-  /** @param endDate the endDate to set */
+  /**
+   * @param endDate the endDate to set
+   */
   public void setEndDate(@Nullable String endDate) {
     this.endDate = endDate;
   }

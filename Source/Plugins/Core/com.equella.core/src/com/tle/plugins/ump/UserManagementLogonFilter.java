@@ -26,7 +26,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** @author nread */
 public interface UserManagementLogonFilter {
 
   boolean init(Map<Object, Object> attributes);

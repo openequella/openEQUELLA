@@ -31,7 +31,6 @@ import com.tle.web.template.Breadcrumbs;
 import com.tle.web.template.Decorations;
 import java.util.List;
 
-/** @author aholland */
 public interface ContentHandler {
   HtmlLinkState decorate(SectionInfo info, StandardItemListEntry itemEntry);
 

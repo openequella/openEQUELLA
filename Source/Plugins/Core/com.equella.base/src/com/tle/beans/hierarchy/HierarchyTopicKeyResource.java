@@ -40,7 +40,8 @@ import org.hibernate.annotations.Index;
 @NamedQuery(
     name = "getByItemUuidAndInstitution",
     query =
-        "FROM HierarchyTopicKeyResource t WHERE t.itemUuid = :itemUuid AND t.institution = :institution")
+        "FROM HierarchyTopicKeyResource t WHERE t.itemUuid = :itemUuid AND t.institution ="
+            + " :institution")
 public class HierarchyTopicKeyResource {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

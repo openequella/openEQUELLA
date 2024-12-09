@@ -82,7 +82,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class RssPortletRenderer

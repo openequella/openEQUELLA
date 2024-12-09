@@ -22,7 +22,6 @@ import com.tle.core.item.operations.BaseFilter;
 import com.tle.core.item.standard.ItemOperationFactory;
 import javax.inject.Inject;
 
-/** @author Aaron */
 public abstract class AbstractStandardOperationFilter extends BaseFilter {
   @Inject protected ItemOperationFactory operationFactory;
 }

@@ -53,13 +53,14 @@ object FileOptions {
 
 import com.tle.web.controls.universal.handlers.fileupload.details.FileOptions._
 
-class FileOptions(parentId: String,
-                  tree: SectionTree,
-                  settings: FileUploadSettings,
-                  ctx: ControlContext,
-                  currentUpload: SectionInfo => ValidatedUpload,
-                  resolved: (SectionInfo, ValidatedUpload) => Unit)
-    extends AbstractScalaSection
+class FileOptions(
+    parentId: String,
+    tree: SectionTree,
+    settings: FileUploadSettings,
+    ctx: ControlContext,
+    currentUpload: SectionInfo => ValidatedUpload,
+    resolved: (SectionInfo, ValidatedUpload) => Unit
+) extends AbstractScalaSection
     with RenderHelper {
   type M = Model
 
@@ -78,10 +79,13 @@ class FileOptions(parentId: String,
   @EventHandlerMethod def nextPage(info: SectionInfo) = {
     val vu      = getModel(info).vu
     val selType = packageOptions.getSelectedValue(info)
-    resolved(info, selType.value match {
-      case "file" => vu.copy(detected = Seq.empty)
-      case o      => vu.copy(detected = Seq(PackageType.fromString(o)))
-    })
+    resolved(
+      info,
+      selType.value match {
+        case "file" => vu.copy(detected = Seq.empty)
+        case o      => vu.copy(detected = Seq(PackageType.fromString(o)))
+      }
+    )
   }
 
   tree.registerSubInnerSection(this, parentId)
@@ -92,8 +96,10 @@ class FileOptions(parentId: String,
     if (!settings.isPackagesOnly) Seq(TreatAsOption(LABEL_TREAT_AS_FILE, "file")) else Seq.empty
 
   def defaultResolve(vu: ValidatedUpload): Option[ValidatedUpload] = {
-    if ((settings.isPackagesOnly && (settings.isQtiPackagesOnly || settings.isScormPackagesOnly || vu.detected.size == 1)) ||
-        (!settings.isPackagesOnly && vu.detected.isEmpty)) Some(vu)
+    if (
+      (settings.isPackagesOnly && (settings.isQtiPackagesOnly || settings.isScormPackagesOnly || vu.detected.size == 1)) ||
+      (!settings.isPackagesOnly && vu.detected.isEmpty)
+    ) Some(vu)
     else None
   }
 
@@ -111,10 +117,14 @@ class FileOptions(parentId: String,
 
   def prepareUI(info: SectionInfo, vu: ValidatedUpload): Unit = {}
 
-  def render(context: RenderContext,
-             vu: ValidatedUpload): (SectionRenderable, DialogRenderOptions => Unit) = {
-    (renderModel("file/file-packageoptions.ftl", new PackageEditOptionsModel),
-     _.addAction(optionsButton))
+  def render(
+      context: RenderContext,
+      vu: ValidatedUpload
+  ): (SectionRenderable, DialogRenderOptions => Unit) = {
+    (
+      renderModel("file/file-packageoptions.ftl", new PackageEditOptionsModel),
+      _.addAction(optionsButton)
+    )
   }
 
   override def registered(id: String, tree: SectionTree): Unit = {

@@ -26,7 +26,6 @@ import com.tle.core.usermanagement.standard.service.SharePassService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 public class RemoveExpiredSecurity implements ScheduledTask {

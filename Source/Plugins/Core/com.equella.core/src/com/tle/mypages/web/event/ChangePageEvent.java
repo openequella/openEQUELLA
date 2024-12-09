@@ -22,7 +22,6 @@ import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
 import java.util.EventListener;
 
-/** @author Aaron */
 public class ChangePageEvent extends AbstractMyPagesEvent<ChangePageEventListener> {
   private final String oldPageUuid;
   private final String newPageUuid;

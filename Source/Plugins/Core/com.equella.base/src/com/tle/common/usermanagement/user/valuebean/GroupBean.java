@@ -20,11 +20,14 @@ package com.tle.common.usermanagement.user.valuebean;
 
 import java.io.Serializable;
 
-/** @author adame */
 public interface GroupBean extends Serializable {
-  /** @return a unique, unchanging ID for the group */
+  /**
+   * @return a unique, unchanging ID for the group
+   */
   String getUniqueID();
 
-  /** @return a name for the group */
+  /**
+   * @return a name for the group
+   */
   String getName();
 }

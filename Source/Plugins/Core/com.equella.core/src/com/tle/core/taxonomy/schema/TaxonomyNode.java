@@ -38,7 +38,6 @@ import org.hibernate.annotations.AccessType;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
-/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 public class TaxonomyNode implements TreeNodeInterface<TaxonomyNode>, FieldEquality<TaxonomyNode> {

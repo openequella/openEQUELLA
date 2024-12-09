@@ -36,7 +36,6 @@ import com.tle.core.security.impl.SecureOnCall;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author aholland */
 // Sonar maintains that 'Class cannot be instantiated and does not provide any
 // static methods or fields', but methinks thats bunkum
 @SecureOnCall(priv = "CLONE_ITEM")

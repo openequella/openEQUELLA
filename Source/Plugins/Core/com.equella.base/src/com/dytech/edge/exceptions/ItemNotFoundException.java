@@ -21,7 +21,6 @@ package com.dytech.edge.exceptions;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.beans.exception.NotFoundException;
 
-/** @author aholland */
 public class ItemNotFoundException extends NotFoundException {
   private static final long serialVersionUID = 1L;
 

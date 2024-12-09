@@ -35,7 +35,7 @@ class PKCETest extends AnyFunSpec with Matchers with GivenWhenThen {
       verifier.length should (be >= 43 and be <= 128)
 
       Then("Challenge should be a SHA-256 hash of the verifier")
-      val digest            = MessageDigest.getInstance("SHA-256").digest(verifier.getBytes("US-ASCII"))
+      val digest = MessageDigest.getInstance("SHA-256").digest(verifier.getBytes("US-ASCII"))
       val expectedChallenge = Base64.getUrlEncoder.withoutPadding.encodeToString(digest)
       challenge shouldBe expectedChallenge
     }

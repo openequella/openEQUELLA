@@ -271,7 +271,9 @@ public abstract class AbstractIndexEngine {
   }
 
   public interface IndexBuilder {
-    /** @return The index generation to wait for, or -1 if you don't care. */
+    /**
+     * @return The index generation to wait for, or -1 if you don't care.
+     */
     long buildIndex(SearcherManager searcherManager, IndexWriter writer) throws Exception;
   }
 

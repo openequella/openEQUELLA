@@ -27,28 +27,33 @@ import java.util.Base64
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 
-/**
-  * Storage format for the credentials stored in cache. The username and password are stored
-  * so that if credentials for the same id are requested, the currently valid ones can be provided.
+/** Storage format for the credentials stored in cache. The username and password are stored so that
+  * if credentials for the same id are requested, the currently valid ones can be provided.
   *
-  * @param username the username part.
-  * @param password the password part.
-  * @param encoded the HTTP Basic Auth encoded representation - for easy validation.
-  * @param webUserDetails the details of the user from the oEQ Web UI side which is expected to use
-  *                       these credentials.
+  * @param username
+  *   the username part.
+  * @param password
+  *   the password part.
+  * @param encoded
+  *   the HTTP Basic Auth encoded representation - for easy validation.
+  * @param webUserDetails
+  *   the details of the user from the oEQ Web UI side which is expected to use these credentials.
   */
 @SerialVersionUID(1)
-case class WebDavCredentials(username: String,
-                             password: String,
-                             encoded: String,
-                             webUserDetails: WebUserDetails)
-    extends Serializable
+case class WebDavCredentials(
+    username: String,
+    password: String,
+    encoded: String,
+    webUserDetails: WebUserDetails
+) extends Serializable
 object WebDavCredentials {
   def apply(username: String, password: String, webUserDetails: WebUserDetails): WebDavCredentials =
-    WebDavCredentials(username,
-                      password,
-                      Base64.getEncoder.encodeToString(s"$username:$password".getBytes),
-                      webUserDetails)
+    WebDavCredentials(
+      username,
+      password,
+      Base64.getEncoder.encodeToString(s"$username:$password".getBytes),
+      webUserDetails
+    )
 }
 
 @Bind(classOf[WebDavAuthService])
@@ -63,13 +68,16 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
     // RCS works.
     this(
       rcs
-        .getCache[WebDavCredentials]("webdav-creds", 1000, 1, TimeUnit.HOURS))
+        .getCache[WebDavCredentials]("webdav-creds", 1000, 1, TimeUnit.HOURS)
+    )
 
   }
 
-  override def createCredentials(id: String,
-                                 oeqUserId: String,
-                                 oeqUsername: String): (String, String) =
+  override def createCredentials(
+      id: String,
+      oeqUserId: String,
+      oeqUsername: String
+  ): (String, String) =
     Option(credStorage.get(id).orNull())
       .map(c => (c.username, c.password))
       .getOrElse({
@@ -88,13 +96,14 @@ class WebDavAuthServiceImpl(credStorage: ReplicatedCache[WebDavCredentials])
 
   override def removeCredentials(id: String): Unit = credStorage.invalidate(id)
 
-  override def validateCredentials(id: String,
-                                   authRequest: String): Either[WebDavAuthError, Boolean] =
+  override def validateCredentials(
+      id: String,
+      authRequest: String
+  ): Either[WebDavAuthError, Boolean] =
     Option(credStorage.get(id).orNull())
-      .map {
-        case WebDavCredentials(_, _, expectedPayload, _) =>
-          if (expectedPayload == authRequest) Right(true)
-          else Left(InvalidCredentials())
+      .map { case WebDavCredentials(_, _, expectedPayload, _) =>
+        if (expectedPayload == authRequest) Right(true)
+        else Left(InvalidCredentials())
       }
       .getOrElse(Left(InvalidContext()))
 

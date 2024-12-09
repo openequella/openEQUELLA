@@ -57,7 +57,6 @@ import com.tle.web.sections.standard.renderers.LinkRenderer;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractMyPagesPageActionsSection
     extends AbstractMyPagesSection<AbstractMyPagesPageActionsSection.MyPagesPageActionsModel>

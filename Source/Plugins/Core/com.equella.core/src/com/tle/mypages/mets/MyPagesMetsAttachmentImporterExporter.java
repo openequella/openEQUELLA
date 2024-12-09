@@ -56,7 +56,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class MyPagesMetsAttachmentImporterExporter extends AbstractMetsAttachmentImportExporter {

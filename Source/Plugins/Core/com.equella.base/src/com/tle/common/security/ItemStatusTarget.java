@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemStatus;
 import java.io.Serializable;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class ItemStatusTarget implements Serializable {
   private static final long serialVersionUID = 1L;
 

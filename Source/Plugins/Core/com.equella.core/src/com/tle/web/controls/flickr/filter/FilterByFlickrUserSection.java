@@ -37,7 +37,6 @@ import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 
-/** @author larry */
 @NonNullByDefault
 @SuppressWarnings("nls")
 public class FilterByFlickrUserSection

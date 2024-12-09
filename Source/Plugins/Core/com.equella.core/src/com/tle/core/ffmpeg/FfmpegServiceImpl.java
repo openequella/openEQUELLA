@@ -63,7 +63,8 @@ public class FfmpegServiceImpl implements FfmpegService {
       ffprobeExe = ExecUtils.findExe(ffmpegDir, "ffprobe");
       if (ffprobeExe == null || ffmpegExe == null) {
         throw new RuntimeException(
-            "FFmpeg was not found, specifically the ffmpeg and ffprobe programs.  The configured path is "
+            "FFmpeg was not found, specifically the ffmpeg and ffprobe programs.  The configured"
+                + " path is "
                 + ffmpegDir.getCanonicalPath());
       }
     }

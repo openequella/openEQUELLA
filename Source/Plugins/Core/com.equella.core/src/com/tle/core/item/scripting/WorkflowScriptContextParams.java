@@ -25,7 +25,6 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.scripting.service.StandardScriptContextParams;
 import java.util.Map;
 
-/** @author aholland */
 public class WorkflowScriptContextParams extends StandardScriptContextParams {
   private final ItemService service;
 

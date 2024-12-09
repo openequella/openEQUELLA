@@ -66,7 +66,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class ZebraTableRenderer extends TableRenderer implements JSTableComponent {
   private static final int DEFAULT_FILTER_THRESHOLD = 10;

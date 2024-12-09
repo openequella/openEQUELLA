@@ -38,7 +38,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-/** @author Nicholas Read */
 public class DetailsTab extends AbstractTopicEditorTab {
   private static final StringLookup strings = Lookup.withPrefix("detailstab");
 

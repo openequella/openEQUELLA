@@ -25,7 +25,6 @@ import com.tle.core.item.operations.WorkflowOperation;
 import java.util.Calendar;
 import java.util.Map;
 
-/** @author jmaginnis */
 public class RemoveDeletedItemsFilter extends AbstractStandardOperationFilter {
   private final int daysOld;
 

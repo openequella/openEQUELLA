@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/** @author Nicholas Read */
 public interface LanguageService extends RemoteLanguageService {
   boolean isRightToLeft(Locale locale);
 

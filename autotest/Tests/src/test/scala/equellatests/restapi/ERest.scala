@@ -19,12 +19,13 @@ import io.circe.parser._
 
 sealed trait ERestA[A]
 
-case class ERequest[A](method: Method,
-                       uri: Uri,
-                       params: Map[String, Seq[String]],
-                       body: Option[Json],
-                       f: Response[IO] => IO[A])
-    extends ERestA[A]
+case class ERequest[A](
+    method: Method,
+    uri: Uri,
+    params: Map[String, Seq[String]],
+    body: Option[Json],
+    f: Response[IO] => IO[A]
+) extends ERestA[A]
 case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
 
 object ERest {
@@ -51,8 +52,8 @@ object ERest {
         case ERequest(method, uri, params, body, f) =>
           pageIO { ctx =>
             val reqUri = ctx.base.resolve(uri).setQueryParams(params)
-            val _req   = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
-            val req    = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
+            val _req = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
+            val req  = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
             client.fetch(req)(resp => f(resp))
           }
         case ERelativeUri(uri, base) =>
@@ -75,22 +76,25 @@ object ERest {
         .getCookies
         .asScala
         .map(c => RequestCookie(c.getName, c.getValue))
-        .toList)
+        .toList
+    )
     val reqctx = ReqContext(Uri.unsafeFromString(ctx.getBaseUrl), cookies)
     er.foldMap(pureCompiler).run(reqctx).unsafeRunSync()
   }
 
   def get[A: Decoder](uri: Uri, params: Map[String, Seq[String]] = Map.empty): ERest[A] =
     Free.liftF {
-      ERequest(Method.GET,
-               uri,
-               params,
-               None,
-               resp =>
-                 jsonDecoder[IO]
-                   .decode(resp, false)
-                   .flatMapF(j => IO.pure(j.as[A]))
-                   .fold(throw _, identity))
+      ERequest(
+        Method.GET,
+        uri,
+        params,
+        None,
+        resp =>
+          jsonDecoder[IO]
+            .decode(resp, false)
+            .flatMapF(j => IO.pure(j.as[A]))
+            .fold(throw _, identity)
+      )
     }
 
   def relative(fullUri: Uri, base: Uri): ERest[Option[Uri]] =
@@ -99,16 +103,20 @@ object ERest {
   def postCheckHeaders[A: Encoder](
       uri: Uri,
       a: A,
-      params: Map[String, Seq[String]] = Map.empty): ERest[(Status, Headers)] = Free.liftF {
-    ERequest(Method.POST,
-             uri,
-             params,
-             Some(a.asJson),
-             resp => resp.body.compile.drain.map(_ => (resp.status, resp.headers)))
+      params: Map[String, Seq[String]] = Map.empty
+  ): ERest[(Status, Headers)] = Free.liftF {
+    ERequest(
+      Method.POST,
+      uri,
+      params,
+      Some(a.asJson),
+      resp => resp.body.compile.drain.map(_ => (resp.status, resp.headers))
+    )
   }
 
-  def postEmpty[A](uri: Uri, params: Map[String, Seq[String]] = Map.empty)(
-      implicit dec: Decoder[A]): ERest[A] =
+  def postEmpty[A](uri: Uri, params: Map[String, Seq[String]] = Map.empty)(implicit
+      dec: Decoder[A]
+  ): ERest[A] =
     Free.liftF {
       ERequest(
         Method.POST,

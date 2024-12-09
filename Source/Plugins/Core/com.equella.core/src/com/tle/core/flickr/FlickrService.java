@@ -22,7 +22,6 @@ import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotoList;
 
-/** @author larry */
 public interface FlickrService {
   /**
    * @param params prepopulated query values, to be supplemented by boilerplate defaults to guide

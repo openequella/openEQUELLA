@@ -23,7 +23,6 @@ import com.tle.common.i18n.LangUtils;
 import javax.persistence.Entity;
 import org.hibernate.annotations.AccessType;
 
-/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 public class Report extends BaseEntity {

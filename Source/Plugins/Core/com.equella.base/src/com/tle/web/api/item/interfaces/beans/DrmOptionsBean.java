@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 public class DrmOptionsBean extends AbstractExtendableBean {
   private String drmPageUuid;
   private boolean hideLicencesFromOwner;

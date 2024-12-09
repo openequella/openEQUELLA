@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class HtmlPortletEditorSection

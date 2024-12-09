@@ -39,7 +39,8 @@ public class RemoteRepoListPage
     }
     if (isPresent(
         By.xpath(
-            "//div[@class='searchError']/p[contains(text(),'The host did not accept the connection')]"))) {
+            "//div[@class='searchError']/p[contains(text(),'The host did not accept the"
+                + " connection')]"))) {
       throw new SkipException("Remote repo timed out...");
     }
     super.isError();

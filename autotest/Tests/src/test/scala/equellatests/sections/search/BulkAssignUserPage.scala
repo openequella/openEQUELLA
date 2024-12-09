@@ -18,7 +18,8 @@ case class BulkAssignUserPage(ctx: PageContext) extends WaitingBrowserPage {
   def selectByUsername(username: String): Unit = {
     val expect = updatedExpectation()
     val radio = pageElement.findElement(
-      By.xpath(s".//ul/li[div[@class='username' and text() = ${quoteXPath(username)}]]/input"))
+      By.xpath(s".//ul/li[div[@class='username' and text() = ${quoteXPath(username)}]]/input")
+    )
     radio.click()
     waitFor(expect)
   }

@@ -47,7 +47,9 @@ public interface SoapCourseService {
    */
   void bulkImport(String csvText);
 
-  /** @return A list of course Codes */
+  /**
+   * @return A list of course Codes
+   */
   String[] enumerateCourseCodes();
 
   /**

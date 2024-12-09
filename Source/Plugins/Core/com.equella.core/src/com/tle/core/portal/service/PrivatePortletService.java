@@ -22,7 +22,6 @@ import com.tle.common.portal.PortletTypeTarget;
 import java.util.Collection;
 import java.util.Set;
 
-/** @author aholland */
 interface PrivatePortletService extends PortletService {
   // @SecureOnReturn(priv="CREATE_PORTLET")
   Set<PortletTypeTarget> filterContributableTypes(Collection<PortletTypeTarget> all);

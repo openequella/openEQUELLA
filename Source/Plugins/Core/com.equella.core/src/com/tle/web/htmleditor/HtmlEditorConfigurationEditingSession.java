@@ -21,7 +21,6 @@ package com.tle.web.htmleditor;
 import com.tle.common.htmleditor.HtmlEditorConfiguration;
 import java.io.Serializable;
 
-/** @author Aaron */
 public class HtmlEditorConfigurationEditingSession implements Serializable {
   private String sessionId;
   private HtmlEditorConfiguration config;

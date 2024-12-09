@@ -21,7 +21,6 @@ package com.tle.web.wizard.section.model;
 import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.equella.layout.TwoColumnLayout.TwoColumnModel;
 
-/** @author jmaginnis */
 public class WizardForm extends TwoColumnModel {
   // Wizard stuff
   @Bookmarked protected String wizid;

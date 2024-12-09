@@ -20,7 +20,6 @@ package com.tle.core.system;
 
 import com.tle.exceptions.BadCredentialsException;
 
-/** @author Nicholas Read */
 public interface SystemConfigService {
   void setAdminPassword(String oldPass, String newPass);
 

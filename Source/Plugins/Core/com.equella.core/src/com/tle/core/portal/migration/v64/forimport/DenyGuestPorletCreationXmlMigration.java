@@ -33,7 +33,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class DenyGuestPorletCreationXmlMigration

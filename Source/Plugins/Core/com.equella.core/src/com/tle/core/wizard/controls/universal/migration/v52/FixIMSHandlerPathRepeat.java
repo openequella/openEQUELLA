@@ -23,7 +23,6 @@ import com.tle.core.migration.MigrationInfo;
 import com.tle.core.wizard.controls.universal.migration.v50.FixIMSHandlerPath;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

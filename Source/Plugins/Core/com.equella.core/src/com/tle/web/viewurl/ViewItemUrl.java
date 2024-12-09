@@ -39,6 +39,7 @@ public class ViewItemUrl implements Bookmark {
   // public static int FLAG_NO_BACK = 1;
   public static final int FLAG_IGNORE_TRANSIENT = 2;
   public static final int FLAG_FULL_URL = 4;
+
   /**
    * This means the url represents a resource which can leave of some parameters, for example hiding
    * navigation doesn't need to be included.

@@ -24,7 +24,6 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.core.entity.dao.AbstractEntityDao;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface PowerSearchDao extends AbstractEntityDao<PowerSearch> {
   List<Long> enumerateItemdefIds(long powerSearchId);
 

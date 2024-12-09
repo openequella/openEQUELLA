@@ -53,12 +53,14 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
         IMSPackageExtension.standardPackageDetails(ma, pkgInfo, upload)
         val destFile  = PathUtils.filePath(METS_FOLDER_PREFIX, upload.originalFilename)
         val pkgFolder = upload.originalFilename
-        metsTreeBuilder.createTree(ctx.repo.getItem,
-                                   stg.stgFile,
-                                   extractedFolder,
-                                   upload.uploadPath,
-                                   pkgFolder,
-                                   false)
+        metsTreeBuilder.createTree(
+          ctx.repo.getItem,
+          stg.stgFile,
+          extractedFolder,
+          upload.uploadPath,
+          pkgFolder,
+          false
+        )
         stg.moveFile(upload.uploadPath, destFile)
         stg.moveFile(extractedFolder, pkgFolder)
         stg.deregisterFilename(upload.id)
@@ -74,7 +76,8 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
   val treatAsLabel = new KeyLabel(r.key("mets.packageoptions.aspackage"))
 
   override def delete(ctx: ControlContext, a: Attachment): AttachmentDelete = AttachmentDelete(
-    Seq(a), { stg =>
+    Seq(a),
+    { stg =>
       MetsPackageCommit.cancel(a, stg)
     }
   )
@@ -84,10 +87,9 @@ class MetsPackageAttachmentHandlerNew extends PackageAttachmentExtension {
     case _                                               => false
   }
 
-  /**
-    * Mets package commit type.
-    * Simply returns the attachment on apply,
-    * but on cancel ensures all content is deleted from the dedicated METS package folder and unpack folder in the staging area.
+  /** Mets package commit type. Simply returns the attachment on apply, but on cancel ensures all
+    * content is deleted from the dedicated METS package folder and unpack folder in the staging
+    * area.
     */
   object MetsPackageCommit extends AttachmentCommit {
     override def apply(a: Attachment, stg: StagingContext): Attachment = a

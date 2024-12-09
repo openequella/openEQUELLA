@@ -21,7 +21,6 @@ package com.dytech.edge.admin.script.options;
 import com.tle.common.NameValue;
 import java.util.List;
 
-/** @author nread */
 public class ScriptOptionsWrapper implements ScriptOptions {
   private final ScriptOptions parent;
 

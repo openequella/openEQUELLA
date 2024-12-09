@@ -26,7 +26,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestion
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.SliderInteraction;
 
-/** @author Aaron */
 public class SliderInteractionRenderer extends QtiNodeRenderer {
   @AssistedInject
   public SliderInteractionRenderer(

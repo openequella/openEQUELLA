@@ -166,12 +166,16 @@ public final class TablePasteAdapter implements ActionListener {
     converters.remove(klass);
   }
 
-  /** @return Returns the selectOnPaste. */
+  /**
+   * @return Returns the selectOnPaste.
+   */
   public boolean isSelectOnPaste() {
     return selectOnPaste;
   }
 
-  /** @param selectOnPaste The selectOnPaste to set. */
+  /**
+   * @param selectOnPaste The selectOnPaste to set.
+   */
   public void setSelectOnPaste(boolean selectOnPaste) {
     this.selectOnPaste = selectOnPaste;
   }

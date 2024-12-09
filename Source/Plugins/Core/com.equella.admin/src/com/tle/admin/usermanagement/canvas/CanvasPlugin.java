@@ -22,7 +22,6 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.beans.usermanagement.canvas.CanvasWrapperSettings;
 
-/** @author aholland */
 public class CanvasPlugin extends GeneralPlugin<CanvasWrapperSettings> {
   private final CanvasSettingsPanel generalPanel;
 

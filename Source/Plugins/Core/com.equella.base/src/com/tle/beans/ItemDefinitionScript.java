@@ -28,7 +28,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.AccessType;
 
-/** @author Nicholas Read */
 @Embeddable
 @AccessType("field")
 public class ItemDefinitionScript

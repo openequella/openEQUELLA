@@ -20,7 +20,6 @@ package com.tle.common.beans.exception;
 
 import java.io.Serializable;
 
-/** @author jmaginnis */
 public class ValidationError implements Serializable {
   private static final long serialVersionUID = 1L;
   private final String field;

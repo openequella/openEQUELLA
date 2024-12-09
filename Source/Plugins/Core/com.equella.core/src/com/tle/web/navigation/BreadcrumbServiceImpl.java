@@ -29,7 +29,6 @@ import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(BreadcrumbService.class)
 @Singleton
 public class BreadcrumbServiceImpl implements BreadcrumbService {

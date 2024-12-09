@@ -55,7 +55,8 @@ public class AddQTIMimeTypeMigration extends AbstractHibernateDataMigration {
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(AddQTIMimeTypeMigration.class) + ".";
   private static final String COUNT =
-      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/qtitest' and institution = :institution";
+      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/qtitest' and institution ="
+          + " :institution";
 
   @Override
   public boolean isBackwardsCompatible() {

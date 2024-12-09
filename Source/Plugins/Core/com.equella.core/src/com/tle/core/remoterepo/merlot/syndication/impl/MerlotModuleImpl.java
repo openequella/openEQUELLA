@@ -23,7 +23,6 @@ import com.rometools.rome.feed.module.Module;
 import com.rometools.rome.feed.module.ModuleImpl;
 import com.tle.core.remoterepo.merlot.syndication.MerlotModule;
 
-/** @author aholland */
 @SuppressWarnings("serial")
 public class MerlotModuleImpl extends ModuleImpl implements MerlotModule {
   private String title;

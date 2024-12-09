@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/** @author aholland */
 public class ModifiableAttachments extends UnmodifiableAttachments {
   protected final List<IAttachment> allAttachments;
 

@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface ItemCommentDao extends GenericDao<Comment, Long> {
   float getAverageRatingForItem(ItemKey itemId);
 

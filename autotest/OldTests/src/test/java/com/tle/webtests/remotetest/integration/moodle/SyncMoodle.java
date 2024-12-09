@@ -37,7 +37,8 @@ public class SyncMoodle {
         } else {
           System.out.println(
               MessageFormat.format(
-                  "ERROR: Moodle{0} has no moodle.{0}.url configured but is included in moodles.allowed!",
+                  "ERROR: Moodle{0} has no moodle.{0}.url configured but is included in"
+                      + " moodles.allowed!",
                   version));
         }
       }

@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public interface RemoteLanguageService {
   Map<Long, String> getNames(Collection<Long> bundleRefs);
 

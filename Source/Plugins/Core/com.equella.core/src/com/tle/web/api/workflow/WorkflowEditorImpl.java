@@ -53,7 +53,6 @@ import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class WorkflowEditorImpl extends AbstractBaseEntityEditor<Workflow, WorkflowBean>
     implements WorkflowEditor {

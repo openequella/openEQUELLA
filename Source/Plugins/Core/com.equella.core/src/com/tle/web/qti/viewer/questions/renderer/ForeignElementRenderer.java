@@ -27,7 +27,6 @@ import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.ForeignElement;
 import uk.ac.ed.ph.jqtiplus.node.QtiNode;
 
-/** @author Aaron */
 public class ForeignElementRenderer extends QtiNodeRenderer {
   private final ForeignElement model;
 

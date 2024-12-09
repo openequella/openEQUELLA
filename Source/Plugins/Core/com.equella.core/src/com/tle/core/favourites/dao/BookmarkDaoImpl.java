@@ -65,7 +65,8 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
         (List<Bookmark>)
             getHibernateTemplate()
                 .find(
-                    "FROM Bookmark WHERE owner = ?0 AND item.uuid = ?1 AND item.version = ?2 AND institution = ?3",
+                    "FROM Bookmark WHERE owner = ?0 AND item.uuid = ?1 AND item.version = ?2 AND"
+                        + " institution = ?3",
                     new Object[] {
                       userId, itemId.getUuid(), itemId.getVersion(), CurrentInstitution.get()
                     });
@@ -141,7 +142,8 @@ public class BookmarkDaoImpl extends GenericInstitionalDaoImpl<Bookmark, Long>
         (List<Bookmark>)
             getHibernateTemplate()
                 .find(
-                    "FROM Bookmark WHERE institution = ?0 AND item.uuid = ?1 AND always_latest = true AND item <> ?2",
+                    "FROM Bookmark WHERE institution = ?0 AND item.uuid = ?1 AND always_latest ="
+                        + " true AND item <> ?2",
                     new Object[] {CurrentInstitution.get(), newItem.getUuid(), newItem});
     for (Bookmark b : bookmarks) {
       Item existingItem = b.getItem();

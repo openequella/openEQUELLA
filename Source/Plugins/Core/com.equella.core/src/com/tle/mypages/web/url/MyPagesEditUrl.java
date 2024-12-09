@@ -25,7 +25,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.equella.ModalSessionCallback;
 import com.tle.web.sections.equella.ModalSessionService;
 
-/** @author aholland */
 public class MyPagesEditUrl implements Bookmark {
   private final SectionInfo originalInfo;
   private final String wizid;

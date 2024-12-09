@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
-/** @author aholland */
 public class PagerRenderer extends AbstractComponentRenderer {
   private static final String ALREADY_RENDERED = "PagerRenderer"; // $NON-NLS-1$
   private static final PluginResourceHelper RESOURCES =

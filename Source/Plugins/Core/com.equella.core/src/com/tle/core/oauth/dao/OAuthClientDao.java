@@ -21,7 +21,6 @@ package com.tle.core.oauth.dao;
 import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.core.entity.dao.AbstractEntityDao;
 
-/** @author aholland */
 public interface OAuthClientDao extends AbstractEntityDao<OAuthClient> {
   OAuthClient getByClientIdAndRedirectUrl(String clientId, String redirectUrl);
 

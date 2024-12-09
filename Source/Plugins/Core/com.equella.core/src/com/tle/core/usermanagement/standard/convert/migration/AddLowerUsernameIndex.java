@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Singleton;
 import org.hibernate.Session;
 
-/** @author larry Refers to Redmine #6955 */
 @Bind
 @Singleton
 @SuppressWarnings("nls")
@@ -49,7 +48,9 @@ public class AddLowerUsernameIndex extends AbstractHibernateSchemaMigration {
   /** All supported dialects user the same function name to convert to lower case */
   private static final String FUNCTION_LOWER = "lower";
 
-  /** @see com.tle.core.migration.Migration#createMigrationInfo() */
+  /**
+   * @see com.tle.core.migration.Migration#createMigrationInfo()
+   */
   @Override
   public MigrationInfo createMigrationInfo() {
     return new MigrationInfo(keyPrefix + "title");
@@ -100,7 +101,9 @@ public class AddLowerUsernameIndex extends AbstractHibernateSchemaMigration {
     return sql;
   }
 
-  /** @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses() */
+  /**
+   * @see com.tle.core.migration.AbstractHibernateDataMigration#getDomainClasses()
+   */
   @Override
   protected Class<?>[] getDomainClasses() {
     return new Class<?>[] {Institution.class, TLEUser.class};

@@ -60,7 +60,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
-/** @author Nicholas Read */
 public class DetailsTab extends BaseEntityTab<Report>
     implements AbstractDetailsTab<Report>, ActionListener {
   @SuppressWarnings("nls")

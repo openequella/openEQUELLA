@@ -21,7 +21,6 @@ package com.tle.common.recipientselector;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class ExpressionTreeNode extends DefaultMutableTreeNode {
   private static final long serialVersionUID = 1L;

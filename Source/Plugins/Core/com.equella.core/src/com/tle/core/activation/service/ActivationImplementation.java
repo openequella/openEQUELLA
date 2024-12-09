@@ -22,7 +22,6 @@ import com.tle.beans.activation.ActivateRequest;
 import com.tle.beans.item.Item;
 import java.util.List;
 
-/** @author Aaron */
 public interface ActivationImplementation {
   List<ActivateRequest> getAllRequests(Item item);
 

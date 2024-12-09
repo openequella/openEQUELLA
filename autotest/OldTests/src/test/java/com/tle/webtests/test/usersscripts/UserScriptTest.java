@@ -44,13 +44,17 @@ public class UserScriptTest extends AbstractCleanupTest {
 
   private static final String DISPLAY_SCRIPT = "<span id=\"timer\"></span>";
   private static final String EXECUTE_SCRIPT =
-      "var count=5;var counter=setInterval(timer, 1000);function timer(){if (count <= 0){clearInterval(counter);document.getElementById(\"timer\").innerHTML=\"finished!\";return;}document.getElementById(\"timer\").innerHTML=count + \" seconds\";count=count-1;}";
+      "var count=5;var counter=setInterval(timer, 1000);function timer(){if (count <="
+          + " 0){clearInterval(counter);document.getElementById(\"timer\").innerHTML=\"finished!\";return;}document.getElementById(\"timer\").innerHTML=count"
+          + " + \" seconds\";count=count-1;}";
   private static final String MODULE_PREFIX =
       "var itemNamePrefix = \"test-\"; exports.itemNamePrefix = itemNamePrefix;";
   private static final String MODULE_ITEMNAME =
       "exports.getItemName = function(){return xml.get(\"/name\");}";
   private static final String MODULE_ITEMMODIFY =
-      "var prefix = require(\"prefixModule\"); var itemFun = require(\"itemNameModule\"); exports.setName = function(){var newItemName = prefix.itemNamePrefix + itemFun.getItemName();xml.set(\"/newItemName\",newItemName);};";
+      "var prefix = require(\"prefixModule\"); var itemFun = require(\"itemNameModule\");"
+          + " exports.setName = function(){var newItemName = prefix.itemNamePrefix +"
+          + " itemFun.getItemName();xml.set(\"/newItemName\",newItemName);};";
   private static final String SET_ITEM_NAME_SCRIPT = "require(\"itemModify\").setName();";
 
   @Test

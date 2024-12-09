@@ -22,7 +22,6 @@ import com.tle.common.interfaces.UuidReference;
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class NavigationTabBean extends AbstractExtendableBean {
   private String name;

@@ -38,17 +38,23 @@ public class FileInfo implements Serializable {
     this.md5CheckSum = md5CheckSum;
   }
 
-  /** @return Returns the length. */
+  /**
+   * @return Returns the length.
+   */
   public long getLength() {
     return length;
   }
 
-  /** @return Returns the filename (which may be different to the filename requested) */
+  /**
+   * @return Returns the filename (which may be different to the filename requested)
+   */
   public String getFilename() {
     return filename;
   }
 
-  /** @return Returns the md5CheckSum */
+  /**
+   * @return Returns the md5CheckSum
+   */
   public String getMd5CheckSum() {
     return md5CheckSum;
   }

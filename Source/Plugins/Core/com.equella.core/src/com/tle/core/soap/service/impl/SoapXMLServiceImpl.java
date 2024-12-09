@@ -33,7 +33,6 @@ import com.tle.core.soap.service.SoapXMLService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(SoapXMLService.class)

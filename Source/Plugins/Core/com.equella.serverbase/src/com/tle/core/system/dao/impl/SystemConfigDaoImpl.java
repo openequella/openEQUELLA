@@ -115,7 +115,8 @@ public class SystemConfigDaoImpl extends AbstractSystemDaoImpl<SystemConfig, Str
 
                 session
                     .createQuery(
-                        "UPDATE SystemConfig sc SET sc.value = :value WHERE sc.key = :key AND sc.value < :value")
+                        "UPDATE SystemConfig sc SET sc.value = :value WHERE sc.key = :key AND"
+                            + " sc.value < :value")
                     .setParameter("key", key)
                     .setParameter("value", value)
                     .executeUpdate();

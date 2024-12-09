@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Aaron */
 public class LanguageBundleBean implements Serializable {
   private static final long serialVersionUID = 1L;
 

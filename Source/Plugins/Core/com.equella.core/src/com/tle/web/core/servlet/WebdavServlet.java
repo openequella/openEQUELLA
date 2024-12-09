@@ -412,7 +412,12 @@ public class WebdavServlet extends HttpServlet {
         if (actualserve) {
           try (PrintWriter out = new PrintWriter(response.getOutputStream())) {
             out.write(
-                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"><html><head><meta http-equiv=\"Content-type\" content=\"text/html;charset=UTF-8\"><title>No</title></head><body><div><h1>Please open this URL as a web folder.  Do not paste the URL directly in the web browser.</h1></div></body></html>");
+                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\""
+                    + " \"http://www.w3.org/TR/html4/strict.dtd\"><html><head><meta"
+                    + " http-equiv=\"Content-type\""
+                    + " content=\"text/html;charset=UTF-8\"><title>No</title></head><body><div><h1>Please"
+                    + " open this URL as a web folder.  Do not paste the URL directly in the web"
+                    + " browser.</h1></div></body></html>");
             out.flush();
           }
         }

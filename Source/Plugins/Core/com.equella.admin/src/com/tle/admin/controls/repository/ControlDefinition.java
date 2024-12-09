@@ -24,7 +24,6 @@ import com.tle.admin.controls.EditorFactory;
 import com.tle.admin.schema.SchemaModel;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface ControlDefinition {
   EditorFactory editorFactory();
 

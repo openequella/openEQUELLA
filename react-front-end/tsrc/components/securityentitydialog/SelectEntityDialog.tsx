@@ -33,7 +33,7 @@ import * as RA from "fp-ts/ReadonlyArray";
 import * as RS from "fp-ts/ReadonlySet";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { BaseSecurityEntity } from "../../modules/ACLEntityModule";
 import { languageStrings } from "../../util/langstrings";
 import ConfirmDialog from "../ConfirmDialog";
@@ -101,6 +101,10 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
   const [selectedEntities, setSelectedEntities] =
     useState<ReadonlySet<T>>(value);
 
+  useEffect(() => {
+    setSelectedEntities(value);
+  }, [value]);
+
   const eqByID = EQ.contramap<string, T>((entry: T) => entry.id)(S.Eq);
 
   const handleConfirm = () => {
@@ -141,7 +145,11 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
           {searchComponent(handleOnAdd, handleOnSelectAll)}
         </Grid>
 
-        <Divider orientation="vertical" flexItem light sx={{ margin: "5px" }} />
+        <Divider
+          orientation="vertical"
+          flexItem
+          sx={{ opacity: 0.6, margin: "5px" }}
+        />
 
         <Grid container item xs direction="column" rowSpacing={2}>
           <Grid item>

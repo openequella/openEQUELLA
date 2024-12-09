@@ -77,7 +77,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-/** @author larry */
 @SuppressWarnings("nls")
 public class RootLanguageSection extends OneColumnLayout<OneColumnLayout.OneColumnLayoutModel> {
   @PlugKey("language.title")

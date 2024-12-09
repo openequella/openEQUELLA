@@ -36,7 +36,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.EventListenerList;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class SpecialUsersFinder extends JPanel implements UserGroupRoleFinder {
   private static final long serialVersionUID = 1L;

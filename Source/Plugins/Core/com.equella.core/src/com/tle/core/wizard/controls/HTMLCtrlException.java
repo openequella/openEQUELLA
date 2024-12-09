@@ -18,7 +18,6 @@
 
 package com.tle.core.wizard.controls;
 
-/** @author miken */
 public class HTMLCtrlException extends Exception {
   /** Creates new <code>HTMLCtrlException</code> without detail message. */
   public HTMLCtrlException() {

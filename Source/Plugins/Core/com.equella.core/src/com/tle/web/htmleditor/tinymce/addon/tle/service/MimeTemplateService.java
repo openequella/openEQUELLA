@@ -23,7 +23,6 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.viewurl.ViewableResource;
 import java.util.Collection;
 
-/** @author aholland */
 public interface MimeTemplateService {
   String getTemplateForMimeType(String mime);
 

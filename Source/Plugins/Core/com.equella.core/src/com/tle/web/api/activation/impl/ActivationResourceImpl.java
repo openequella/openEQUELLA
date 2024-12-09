@@ -56,7 +56,6 @@ import javax.ws.rs.core.Response.Status;
 // TODO: anything that returns an error response here should be changed to throw the exception
 // instead,
 // the RestEasyExceptionMapper will turn that into a JSON object
-/** @author Dongsheng Cai */
 @SuppressWarnings("nls")
 @Bind(ActivationResource.class)
 @Singleton

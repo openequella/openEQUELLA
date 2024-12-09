@@ -30,10 +30,11 @@ object NotifyMyLive {
     val users = ups
       .getPreferenceForUsers(
         UserPreferenceService.NOTIFY_MYLIVE,
-        (item.getCollaborators.asScala.toBuffer :+ item.getOwner).asJavaCollection)
+        (item.getCollaborators.asScala.toBuffer :+ item.getOwner).asJavaCollection
+      )
       .asScala
-      .collect {
-        case (u, "true") => u
+      .collect { case (u, "true") =>
+        u
       }
     op.addNotifications(item.getItemId, users.asJavaCollection, Notification.REASON_MYLIVE, false)
   }

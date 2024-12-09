@@ -76,7 +76,6 @@ import uk.ac.ed.ph.jqtiplus.node.content.xhtml.text.Span;
 import uk.ac.ed.ph.jqtiplus.node.content.xhtml.text.Strong;
 import uk.ac.ed.ph.jqtiplus.node.content.xhtml.text.Var;
 
-/** @author Aaron */
 public class XhtmlElementRenderer extends QtiNodeRenderer {
   @AssistedInject
   public XhtmlElementRenderer(@Assisted P p, @Assisted QtiViewerContext context) {
