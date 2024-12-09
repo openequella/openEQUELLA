@@ -49,9 +49,9 @@ object ClientConfigurationHelper {
   }
 
   /**
-    * Load system cookies into a ClientConfiguration object. With the knowledge that the knowledge
-    * that the `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which
-    * only stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
+    * Load system cookies into a ClientConfiguration object. With the knowledge that the
+    * `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which only
+    * stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
     */
   def loadSystemCookies(cfg: ClientConfiguration): Unit = {
     def convertCookies(cookieMap: mutable.Map[String, java.util.List[String]]) =
