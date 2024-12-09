@@ -24,10 +24,31 @@ import java.util.Optional
 
 trait AdminTLEUserService {
 
+  /**
+    * Add a new user to the database.
+    *
+    * @param user the user to add
+    * @return the UUID of the new user
+    * @throws ClientRequestException if there are any errors adding the user
+    */
   def add(user: TLEUser): String
 
+  /**
+    * Get a user by UUID.
+    *
+    * @param uniqueId the UUID of the user to get
+    * @return the user, or an empty `Optional` if the user does not exist
+    * @throws ClientRequestException if there are any errors getting the user
+    */
   def get(uniqueId: String): Optional[TLEUser]
 
+  /**
+    * Get a user by username.
+    *
+    * @param username the username of the user to get
+    * @return the user, or an empty `Optional` if the user does not exist
+    * @throws ClientRequestException if there are any errors getting the user
+    */
   def getByUsername(username: String): Optional[TLEUser]
 
   /**
