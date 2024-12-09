@@ -24,11 +24,13 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 
 class TleUserApiTest extends AnyFunSpec with Matchers {
-  private val autotest = TleUserView(uniqueId = "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
-                                     username = "AutoTest",
-                                     email = Some("auto@test.com"),
-                                     firstName = "Auto",
-                                     lastName = "Test")
+  private val autotest = TleUserView(
+    uniqueId = "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+    username = "AutoTest",
+    email = Some("auto@test.com"),
+    firstName = "Auto",
+    lastName = "Test"
+  )
 
   implicit val cfg: ClientConfiguration =
     TestHelper.login("rest", TestHelper.CREDENTIALS_AUTOTEST)
@@ -46,7 +48,8 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
 
     it("should return an AccessDeniedError if not authenticated") {
       val response = TleUserApi.getByUsername(autotest.username)(
-        cfg.copy(cookies = scala.collection.mutable.Set.empty))
+        cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      )
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }

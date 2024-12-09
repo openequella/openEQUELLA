@@ -1,8 +1,8 @@
 name := "graphql-client"
 
-ThisBuild / scalaVersion := "2.13.14"
-ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / organization := "io.github.openequella"
+ThisBuild / scalaVersion     := "2.13.14"
+ThisBuild / version          := "0.1.0-SNAPSHOT"
+ThisBuild / organization     := "io.github.openequella"
 ThisBuild / organizationName := "openEQUELLA GraphQL Client"
 
 lazy val root = (project in file("."))
@@ -15,13 +15,13 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp.client3" %% "zio"            % "3.9.7",
   // Add Scala Test
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-  "org.scalatest"  %% "scalatest"      % "3.2.19" % Test,
+  "org.scalatest" %% "scalatest"       % "3.2.19" % Test
 )
 
 scalacOptions ++= Seq(
   "-Werror",
   "-Wunused",
-  "-Xlint",
+  "-Xlint"
 )
 
 enablePlugins(CalibanPlugin)
@@ -43,7 +43,8 @@ headerLicense := Some(
        |WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
        |See the License for the specific language governing permissions and
        |limitations under the License.
-       |""".stripMargin))
+       |""".stripMargin)
+)
 
 // Scapegoat Configuration
 // - Ignore the code generated files

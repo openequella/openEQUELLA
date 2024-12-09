@@ -7,11 +7,12 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import io.github.openequella.ziohelpers._
 
-case class TestPaginationArgs(first: Option[Int] = None,
-                              last: Option[Int] = None,
-                              before: Option[String] = None,
-                              after: Option[String] = None)
-    extends PaginationArgs[Base64Cursor] {
+case class TestPaginationArgs(
+    first: Option[Int] = None,
+    last: Option[Int] = None,
+    before: Option[String] = None,
+    after: Option[String] = None
+) extends PaginationArgs[Base64Cursor] {
   override def toString: String = {
     def decodeCursor(cursor: String): String = Cursor[Base64Cursor].decode(cursor) match {
       case Left(_)      => "Bad cursor!!"
@@ -58,7 +59,7 @@ class PaginationTest extends AnyFunSpec with Matchers with GivenWhenThen {
         (TestPaginationArgs(first = tenItems, after = item(99)), 100, 0),
         (TestPaginationArgs(first = tenItems, before = item(5)), 0, 5),
         (TestPaginationArgs(last = tenItems, after = item(90)), 91, 9),
-        (TestPaginationArgs(last = tenItems, before = item(0)), 0, 0),
+        (TestPaginationArgs(last = tenItems, before = item(0)), 0, 0)
       )
 
       forAll(paginationsFor100Items) { (pagination, offset, limit) =>

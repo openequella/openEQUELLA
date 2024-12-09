@@ -32,12 +32,12 @@ object Mutations {
       lastName: String,
       password: String
   )(innerSelection: SelectionBuilder[User, A])(implicit
-                                               encoder0: ArgEncoder[String],
-                                               encoder1: ArgEncoder[scala.Option[String]],
-                                               encoder2: ArgEncoder[String],
-                                               encoder3: ArgEncoder[String],
-                                               encoder4: ArgEncoder[String])
-    : SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[String]],
+      encoder2: ArgEncoder[String],
+      encoder3: ArgEncoder[String],
+      encoder4: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserCreate",
       OptionOf(Obj(innerSelection)),
@@ -60,13 +60,13 @@ object Mutations {
       lastName: scala.Option[String] = None,
       password: scala.Option[String] = None
   )(innerSelection: SelectionBuilder[User, A])(implicit
-                                               encoder0: ArgEncoder[String],
-                                               encoder1: ArgEncoder[scala.Option[String]],
-                                               encoder2: ArgEncoder[scala.Option[String]],
-                                               encoder3: ArgEncoder[scala.Option[String]],
-                                               encoder4: ArgEncoder[scala.Option[String]],
-                                               encoder5: ArgEncoder[scala.Option[String]])
-    : SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[String]],
+      encoder2: ArgEncoder[scala.Option[String]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]],
+      encoder5: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserUpdate",
       OptionOf(Obj(innerSelection)),
@@ -83,8 +83,8 @@ object Mutations {
   /** Delete an existing internal user
     */
   def internalUserDelete(id: String)(implicit
-                                     encoder0: ArgEncoder[String])
-    : SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[Unit]] =
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[Unit]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserDelete",
       OptionOf(Scalar()),

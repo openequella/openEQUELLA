@@ -28,15 +28,14 @@ import java.util.Optional
 import javax.inject.{Inject, Singleton}
 import scala.language.implicitConversions
 
-/**
-  * Service class for admin operations on TLEUser objects via the GraphQL library. Because this
-  * class is intended for use primarily by the existing Java code, preference is given to Java
-  * types over Scala types.
+/** Service class for admin operations on TLEUser objects via the GraphQL library. Because this
+  * class is intended for use primarily by the existing Java code, preference is given to Java types
+  * over Scala types.
   */
 @Singleton
-class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
-    implicit val cfg: ClientConfiguration)
-    extends AdminTLEUserService {
+class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(implicit
+    val cfg: ClientConfiguration
+) extends AdminTLEUserService {
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
 
   private implicit def tleUserViewToTleUser(view: TleUserView): TLEUser = {
@@ -52,11 +51,13 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
 
   override def add(user: TLEUser): String = {
     LOGGER.debug("Adding user: " + user.getUsername)
-    TleUserApi.createUser(user.getUsername,
-                          Option(user.getEmailAddress),
-                          user.getFirstName,
-                          user.getLastName,
-                          user.getPassword) match {
+    TleUserApi.createUser(
+      user.getUsername,
+      Option(user.getEmailAddress),
+      user.getFirstName,
+      user.getLastName,
+      user.getPassword
+    ) match {
       case Right(newUser) =>
         LOGGER.debug(s"User [${newUser.username}] added with UUID: ${newUser.uniqueId}")
         newUser.uniqueId
@@ -71,11 +72,12 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
   override def getByUsername(username: String): Optional[TLEUser] =
     getUser(username, TleUserApi.getByUsername)
 
-  /**
-    * Delete a user by UUID.
+  /** Delete a user by UUID.
     *
-    * @param uuid the UUID of the user to delete
-    * @throws ClientRequestException if there are any errors deleting the user
+    * @param uuid
+    *   the UUID of the user to delete
+    * @throws ClientRequestException
+    *   if there are any errors deleting the user
     */
   override def delete(uuid: String): Unit = {
     LOGGER.debug("Deleting user with UUID: " + uuid)
@@ -85,14 +87,16 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
     }
   }
 
-  /**
-    * Given an existing user's TLEUser entity which has been modified, update the user in the
+  /** Given an existing user's TLEUser entity which has been modified, update the user in the
     * database.
     *
-    * @param user              The user to update
-    * @param passwordNotHashed Whether the password is already hashed - if not, validate it meets
-    *                          password requirements and hash it before updating the user.
-    * @return The UUID of the updated user
+    * @param user
+    *   The user to update
+    * @param passwordNotHashed
+    *   Whether the password is already hashed - if not, validate it meets password requirements and
+    *   hash it before updating the user.
+    * @return
+    *   The UUID of the updated user
     */
   override def edit(user: TLEUser, passwordNotHashed: Boolean): String =
     implementMe { d =>
@@ -111,7 +115,8 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
 
   private def getUser(
       identifier: String,
-      f: String => Either[List[ApiError], Option[TleUserView]]): Optional[TLEUser] = {
+      f: String => Either[List[ApiError], Option[TleUserView]]
+  ): Optional[TLEUser] = {
     f(identifier) match {
       case Right(user) =>
         user
@@ -128,8 +133,10 @@ class AdminTLEUserServiceImpl @Inject()(val delegate: RemoteTLEUserService)(
   }
 
   private def implementMe[T](f: RemoteTLEUserService => T): T = {
-    LOGGER.debug("Still waiting on GraphQL implementation, will try delegate.",
-                 new NotImplementedError())
+    LOGGER.debug(
+      "Still waiting on GraphQL implementation, will try delegate.",
+      new NotImplementedError()
+    )
     f(delegate)
   }
 }

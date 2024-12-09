@@ -23,16 +23,15 @@ import com.tle.core.guice.Bind
 
 import javax.inject.{Inject, Singleton}
 
-/**
-  * The main schema for the GraphQL API. This is where all the different schemas are combined into a single API.
+/** The main schema for the GraphQL API. This is where all the different schemas are combined into a
+  * single API.
   */
 @Bind
 @Singleton
 class Schema {
   @Inject private var tleUserSchema: TLEUserSchema = _
 
-  /**
-    * Get the full API for the GraphQL interface.
+  /** Get the full API for the GraphQL interface.
     */
   def getFullApi: GraphQL[Any] = {
     // NOTE: The idea here is to combine the APIs from all the different schemas using the

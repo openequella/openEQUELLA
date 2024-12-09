@@ -27,29 +27,25 @@ import java.net.{CookieHandler, URL}
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 
-/**
-  * Helper class for Java interop with the ClientConfiguration class. Main area of helping is loading
-  * system cookies. As can be seen in the login methods
-  * (e.g. `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
+/** Helper class for Java interop with the ClientConfiguration class. Main area of helping is
+  * loading system cookies. As can be seen in the login methods (e.g.
+  * `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
   * `CookieHandler.getDefault` method to load system cookies. This helper class provides a way to
   * load system cookies into a ClientConfiguration object.
   *
   * The main cookie of interest is the `JSESSIONID` cookie. This cookie is used to maintain a
   * session with the openEQUELLA.
-  *
   */
 object ClientConfigurationHelper {
   private val LOGGER = LoggerFactory.getLogger(ClientConfigurationHelper.getClass)
 
-  /**
-    * Create a ClientConfiguration object from a java URL.
+  /** Create a ClientConfiguration object from a java URL.
     */
   def create(url: URL): ClientConfiguration = {
     ClientConfiguration(Uri(url.toURI))
   }
 
-  /**
-    * Load system cookies into a ClientConfiguration object. With the knowledge that the
+  /** Load system cookies into a ClientConfiguration object. With the knowledge that the
     * `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which only
     * stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
     */

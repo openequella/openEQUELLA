@@ -30,17 +30,17 @@ import org.apache.catalina.connector.ClientAbortException
 
 import java.io.IOException
 
-/**
-  * Utility object for handling during the processing of GraphQL requests.
+/** Utility object for handling during the processing of GraphQL requests.
   */
 object Errors {
 
-  /**
-    * Maps an exception to a string error code. Based on
+  /** Maps an exception to a string error code. Based on
     * com.tle.web.remoting.resteasy.RestEasyExceptionMapper#mapException(java.lang.Throwable).
     *
-    * @param throwable the exception to map
-    * @return the error code
+    * @param throwable
+    *   the exception to map
+    * @return
+    *   the error code
     */
   def mapException(throwable: Throwable): ErrorCode.Code = throwable match {
     case _: ItemEditingException | _: InvalidDataException | _: InUseException => BAD_REQUEST
@@ -52,22 +52,25 @@ object Errors {
     case _                                                                     => INTERNAL_ERROR
   }
 
-  /**
-    * Standardises the building of the `cause` `extension` object for an error. We use `cause` to
+  /** Standardises the building of the `cause` `extension` object for an error. We use `cause` to
     * report a string error code (from `ErrorCodes`) to the client.
     *
-    * @param cause the value to put in `cause` - ideally an error code from `ErrorCodes`
-    * @return an `ObjectValue` to be added to `extensions`
+    * @param cause
+    *   the value to put in `cause` - ideally an error code from `ErrorCodes`
+    * @return
+    *   an `ObjectValue` to be added to `extensions`
     */
   def buildCauseObjectValue(cause: String): ObjectValue =
     ObjectValue(List("cause" -> StringValue(cause)))
 
-  /**
-    * Standardises the building of the `cause` `extension` object for an error for exceptions.
+  /** Standardises the building of the `cause` `extension` object for an error for exceptions.
     *
-    * @see #buildCauseObjectValue(String)
-    * @param cause an Exception which caused an error that is to be converted to a standard error code
-    * @return an `ObjectValue` to be added to `extensions`
+    * @see
+    *   #buildCauseObjectValue(String)
+    * @param cause
+    *   an Exception which caused an error that is to be converted to a standard error code
+    * @return
+    *   an `ObjectValue` to be added to `extensions`
     */
   def buildCauseObjectValue(cause: Throwable): ObjectValue =
     buildCauseObjectValue(mapException(cause).toString)

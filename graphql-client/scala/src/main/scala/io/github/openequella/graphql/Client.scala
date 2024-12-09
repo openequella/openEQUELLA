@@ -25,9 +25,10 @@ import sttp.client3.{Request, SimpleHttpClient, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
 
-final case class ClientConfiguration(institutionUrl: Uri,
-                                     cookies: scala.collection.mutable.Set[CookieWithMeta] =
-                                       scala.collection.mutable.Set.empty)
+final case class ClientConfiguration(
+    institutionUrl: Uri,
+    cookies: scala.collection.mutable.Set[CookieWithMeta] = scala.collection.mutable.Set.empty
+)
 
 final case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponseError])
 
@@ -35,24 +36,25 @@ object Client {
   private val GRAPHQL_PATH = Seq("graphql")
   private val LOGIN_PATH   = Seq("api", "auth", "login")
 
-  def query[R](request: SelectionBuilder[Operations.RootQuery, R])(
-      implicit cfg: ClientConfiguration
+  def query[R](request: SelectionBuilder[Operations.RootQuery, R])(implicit
+      cfg: ClientConfiguration
   ): Either[List[ApiError], R] = sendRequest(request)
 
-  def mutate[R](request: SelectionBuilder[Operations.RootMutation, R])(
-      implicit cfg: ClientConfiguration
+  def mutate[R](request: SelectionBuilder[Operations.RootMutation, R])(implicit
+      cfg: ClientConfiguration
   ): Either[List[ApiError], R] = sendRequest(request)
 
-  /**
-    * Login to the specified institution with the given credentials.
+  /** Login to the specified institution with the given credentials.
     */
-  def login(username: String, password: String)(
-      implicit cfg: ClientConfiguration): Either[(StatusCode, String), Unit] = {
+  def login(username: String, password: String)(implicit
+      cfg: ClientConfiguration
+  ): Either[(StatusCode, String), Unit] = {
     val request = basicRequest
       .post(
         cfg.institutionUrl
           .addPath(LOGIN_PATH)
-          .addParams("username" -> username, "password" -> password))
+          .addParams("username" -> username, "password" -> password)
+      )
       .response(asString)
 
     SimpleHttpClient().send(request) match {
@@ -60,8 +62,8 @@ object Client {
         // There is a slight short falling in this API. If you target an institution URL that is invalid,
         // you still get a 200 back with a cookie. Ideally, the API needs to reply with a body as well
         // so that we can confirm we have actually logged in.
-        cfg.cookies ++= response.cookies.collect {
-          case Right(cookie) => cookie
+        cfg.cookies ++= response.cookies.collect { case Right(cookie) =>
+          cookie
         }
         Right(())
       case response =>
@@ -69,13 +71,12 @@ object Client {
     }
   }
 
-  /**
-    * Whereas `send` is at the lower level of using sttp to send a HTTP request, `sendRequest` is
-    * at the higher level of sending a request and handling the response. This is where the
+  /** Whereas `send` is at the lower level of using sttp to send a HTTP request, `sendRequest` is at
+    * the higher level of sending a request and handling the response. This is where the
     * Caliban-specific code is.
     */
-  private def sendRequest[O, R](request: SelectionBuilder[O, R])(
-      implicit cfg: ClientConfiguration,
+  private def sendRequest[O, R](request: SelectionBuilder[O, R])(implicit
+      cfg: ClientConfiguration,
       ev: IsOperation[O]
   ): Either[List[ApiError], R] = {
 
@@ -90,8 +91,8 @@ object Client {
         case __ObjectValue(fields) =>
           // Next we expect to pull out a `cause` property from the object of type string.
           // (Again, anything else is not the GraphQL structure we know about.)
-          fields.toMap.get("cause").collect {
-            case __StringValue(cause) => cause
+          fields.toMap.get("cause").collect { case __StringValue(cause) =>
+            cause
           }
         case _ => None
       }
@@ -123,22 +124,26 @@ object Client {
     }
   }
 
-  /**
-    * Basic sending of a request and handling of cookies. Nothing in here should be specific to the
+  /** Basic sending of a request and handling of cookies. Nothing in here should be specific to the
     * library used for GraphQL.
     *
-    * @param cookieJar The cookie jar to use for the request, and to update with any new cookies.
-    * @param request The request to send.
-    * @tparam T The type of the response body.
-    * @return The response body.
+    * @param cookieJar
+    *   The cookie jar to use for the request, and to update with any new cookies.
+    * @param request
+    *   The request to send.
+    * @tparam T
+    *   The type of the response body.
+    * @return
+    *   The response body.
     */
-  private def send[T](cookieJar: scala.collection.mutable.Set[CookieWithMeta])(
-      request: Request[T, Any]): T = {
+  private def send[T](
+      cookieJar: scala.collection.mutable.Set[CookieWithMeta]
+  )(request: Request[T, Any]): T = {
     val result =
       SimpleHttpClient().send(request.contentType(MediaType.ApplicationJson).cookies(cookieJar))
 
-    val cookies = result.cookies.collect {
-      case Right(cookie) => cookie
+    val cookies = result.cookies.collect { case Right(cookie) =>
+      cookie
     }
     cookieJar ++= cookies
 

@@ -29,17 +29,15 @@ import zio.IO
 
 import javax.inject.{Inject, Singleton}
 
-/**
-  * The schema for the TLE User GraphQL API. Because `TLEUser`s are effectively 'internal' users, all
-  * operations in this schema using the namespace prefix of `internalUser`.
+/** The schema for the TLE User GraphQL API. Because `TLEUser`s are effectively 'internal' users,
+  * all operations in this schema using the namespace prefix of `internalUser`.
   */
 @Bind
 @Singleton
 class TLEUserSchema {
   private var tleUserProvider: TLEUserProvider = _
 
-  /**
-    * Default constructor for Guice.
+  /** Default constructor for Guice.
     */
   @Inject def this(tleUserProvider: TLEUserProvider) = {
     this()
@@ -49,20 +47,24 @@ class TLEUserSchema {
   case class ListUsersArgs(
       @GQLDescription("A string to filter users by") query: Option[String],
       @GQLDescription(
-        "Pagination - how many items to return from the start of the possible list of items")
+        "Pagination - how many items to return from the start of the possible list of items"
+      )
       first: Option[Int],
       @GQLDescription(
-        "Pagination - how many items to return from the end of the possible list of items")
+        "Pagination - how many items to return from the end of the possible list of items"
+      )
       last: Option[Int],
       @GQLDescription(
-        "Pagination - the cursor for a item before which all items should be returned")
+        "Pagination - the cursor for a item before which all items should be returned"
+      )
       before: Option[String],
       @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
-      after: Option[String])
-      extends PaginationArgs[Base64Cursor]
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   case class UserByUsernameArgs(
-      @GQLDescription("Username of the user to retrieve") username: String)
+      @GQLDescription("Username of the user to retrieve") username: String
+  )
 
   case class UserByIdArgs(@GQLDescription("Unique ID of the user to retrieve") id: String)
 
@@ -77,7 +79,8 @@ class TLEUserSchema {
 
   case class CreateUserArgs(
       @GQLDescription(
-        "Username of the user to create which they'll use for authentication - must be unique")
+        "Username of the user to create which they'll use for authentication - must be unique"
+      )
       username: String,
       @GQLDescription("Email address of the user")
       email: Option[String],
@@ -124,28 +127,27 @@ class TLEUserSchema {
 
   private val mutations = Mutations(
     internalUserCreate = args =>
-      tleUserProvider.createUser(args.username,
-                                 args.email,
-                                 args.firstName,
-                                 args.lastName,
-                                 args.password),
+      tleUserProvider
+        .createUser(args.username, args.email, args.firstName, args.lastName, args.password),
     internalUserUpdate = args =>
-      tleUserProvider.updateUser(args.id,
-                                 args.username,
-                                 args.email,
-                                 args.firstName,
-                                 args.lastName,
-                                 args.password),
+      tleUserProvider.updateUser(
+        args.id,
+        args.username,
+        args.email,
+        args.firstName,
+        args.lastName,
+        args.password
+      ),
     internalUserDelete = args => tleUserProvider.deleteUser(args.id)
   )
 
-  /**
-    * Get the API for the TLE User GraphQL schema.
+  /** Get the API for the TLE User GraphQL schema.
     */
   def getApi: GraphQL[Any] =
     graphQL(
       RootResolver(
         queries,
         mutations
-      ))
+      )
+    )
 }

@@ -24,62 +24,70 @@ import java.util.Optional
 
 trait AdminTLEUserService {
 
-  /**
-    * Add a new user to the database.
+  /** Add a new user to the database.
     *
-    * @param user the user to add
-    * @return the UUID of the new user
-    * @throws ClientRequestException if there are any errors adding the user
+    * @param user
+    *   the user to add
+    * @return
+    *   the UUID of the new user
+    * @throws ClientRequestException
+    *   if there are any errors adding the user
     */
   def add(user: TLEUser): String
 
-  /**
-    * Get a user by UUID.
+  /** Get a user by UUID.
     *
-    * @param uniqueId the UUID of the user to get
-    * @return the user, or an empty `Optional` if the user does not exist
-    * @throws ClientRequestException if there are any errors getting the user
+    * @param uniqueId
+    *   the UUID of the user to get
+    * @return
+    *   the user, or an empty `Optional` if the user does not exist
+    * @throws ClientRequestException
+    *   if there are any errors getting the user
     */
   def get(uniqueId: String): Optional[TLEUser]
 
-  /**
-    * Get a user by username.
+  /** Get a user by username.
     *
-    * @param username the username of the user to get
-    * @return the user, or an empty `Optional` if the user does not exist
-    * @throws ClientRequestException if there are any errors getting the user
+    * @param username
+    *   the username of the user to get
+    * @return
+    *   the user, or an empty `Optional` if the user does not exist
+    * @throws ClientRequestException
+    *   if there are any errors getting the user
     */
   def getByUsername(username: String): Optional[TLEUser]
 
-  /**
-    * Delete a user by UUID.
+  /** Delete a user by UUID.
     *
-    * @param uuid the UUID of the user to delete
-    * @throws ClientRequestException if there are any errors deleting the user
+    * @param uuid
+    *   the UUID of the user to delete
+    * @throws ClientRequestException
+    *   if there are any errors deleting the user
     */
   def delete(uuid: String): Unit
 
-  /**
-    * Given an existing user's TLEUser entity which has been modified, update the user in the
+  /** Given an existing user's TLEUser entity which has been modified, update the user in the
     * database.
     *
-    * @param user              The user to update
-    * @param passwordNotHashed Whether the password is already hashed - if not, validate it meets
-    *                          password requirements and hash it before updating the user.
-    * @return The UUID of the updated user
+    * @param user
+    *   The user to update
+    * @param passwordNotHashed
+    *   Whether the password is already hashed - if not, validate it meets password requirements and
+    *   hash it before updating the user.
+    * @return
+    *   The UUID of the updated user
     */
   def edit(user: TLEUser, passwordNotHashed: Boolean): String
 
-  /**
-    * Returns a list of all users matching the specified query. Note, there is no pagination limit on
-    * how many users will be returned.
+  /** Returns a list of all users matching the specified query. Note, there is no pagination limit
+    * on how many users will be returned.
     */
   def searchUsers(query: String): java.util.List[TLEUser]
 
-  /**
-    * Fired when the list of suspended user accounts has been updated.
+  /** Fired when the list of suspended user accounts has been updated.
     *
-    * @param uuids UUIDs of suspended user accounts
+    * @param uuids
+    *   UUIDs of suspended user accounts
     */
   def onSuspension(uuids: java.util.Set[String]): Unit
 }

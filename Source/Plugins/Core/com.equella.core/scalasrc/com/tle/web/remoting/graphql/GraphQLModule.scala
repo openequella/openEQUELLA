@@ -21,24 +21,20 @@ package com.tle.web.remoting.graphql
 import com.tle.core.config.guice.OptionalConfigModule
 import com.tle.web.remoting.graphql.GraphQLConfig.{CFG_GRAPHQL_SCHEMA, CFG_GRAPHQL_UI}
 
-/**
-  * List of configuration properties for the GraphQL module.
+/** List of configuration properties for the GraphQL module.
   */
 object GraphQLConfig {
 
-  /**
-    * Optional configuration property that enables the GraphQL schema endpoint.
+  /** Optional configuration property that enables the GraphQL schema endpoint.
     */
   final val CFG_GRAPHQL_SCHEMA = "graphql.schema"
 
-  /**
-    * Optional configuration property that enables the GraphQL UI (graphiql).
+  /** Optional configuration property that enables the GraphQL UI (graphiql).
     */
   final val CFG_GRAPHQL_UI = "graphql.ui"
 }
 
-/**
-  * Module for the GraphQL servlet.
+/** Module for the GraphQL servlet.
   */
 class GraphQLModule extends OptionalConfigModule {
 

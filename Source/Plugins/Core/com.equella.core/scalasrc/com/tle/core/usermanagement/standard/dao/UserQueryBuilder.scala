@@ -26,11 +26,12 @@ import org.hibernate.query.Query
 
 import scala.jdk.CollectionConverters._
 
-/**
-  * A builder for creating a query for TLEUser which can be used for searching and/or counting (or
+/** A builder for creating a query for TLEUser which can be used for searching and/or counting (or
   * may other types of queries and projections).
   *
-  * @tparam E The type of the entity to return from the query (commonly `TLEUser`, but could be numeric etc.)
+  * @tparam E
+  *   The type of the entity to return from the query (commonly `TLEUser`, but could be numeric
+  *   etc.)
   */
 class UserQueryBuilder[E] {
   private var selectStatement: Option[String]      = None
@@ -38,57 +39,64 @@ class UserQueryBuilder[E] {
   private var byGroupId: Option[(String, Boolean)] = None
   private var orderByFields: List[Order]           = List.empty
 
-  /**
-    * Set the SELECT statement for the query. e.g. specify `"count(*)"` to get a count of the results.
-    * @param select a string to be added at the start of the query string following the `SELECT` keyword.
-    * @return this UserQueryBuilder instance
+  /** Set the SELECT statement for the query. e.g. specify `"count(*)"` to get a count of the
+    * results.
+    * @param select
+    *   a string to be added at the start of the query string following the `SELECT` keyword.
+    * @return
+    *   this UserQueryBuilder instance
     */
   def select(select: String): UserQueryBuilder[E] = {
     selectStatement = Option(select).filter(_.nonEmpty)
     this
   }
 
-  /**
-    * Set the query string to search for users by. This will be tokenised and used to search for users
-    * where the first name, last name or username contains the token.
+  /** Set the query string to search for users by. This will be tokenised and used to search for
+    * users where the first name, last name or username contains the token.
     *
-    * @param query The query string to search for users by
-    * @return this UserQueryBuilder instance
+    * @param query
+    *   The query string to search for users by
+    * @return
+    *   this UserQueryBuilder instance
     */
   def withQueryString(query: String): UserQueryBuilder[E] = {
     queryTokens = Option(query).filter(_.nonEmpty).map(tokeniseQuery).getOrElse(List.empty)
     this
   }
 
-  /**
-    * Set the parent group ID to search for users by. If recurse is true, then users in the group and all
-    * sub-groups will be returned.
+  /** Set the parent group ID to search for users by. If recurse is true, then users in the group
+    * and all sub-groups will be returned.
     *
-    * @param parentGroupID The ID of the parent group to search for users in
-    * @param recurse Whether to search for users in sub-groups
-    * @return this UserQueryBuilder instance
+    * @param parentGroupID
+    *   The ID of the parent group to search for users in
+    * @param recurse
+    *   Whether to search for users in sub-groups
+    * @return
+    *   this UserQueryBuilder instance
     */
   def withParentGroupID(parentGroupID: String, recurse: Boolean): UserQueryBuilder[E] = {
     byGroupId = Option(parentGroupID).filter(_.nonEmpty).map((_, recurse))
     this
   }
 
-  /**
-    * Add an ORDER BY clause to the query. Can be called multiple times for each field to order by.
+  /** Add an ORDER BY clause to the query. Can be called multiple times for each field to order by.
     *
-    * @param orderBy The Order to add to the query
-    * @return this UserQueryBuilder instance
+    * @param orderBy
+    *   The Order to add to the query
+    * @return
+    *   this UserQueryBuilder instance
     */
   def orderBy(orderBy: Order): UserQueryBuilder[E] = {
     orderByFields = orderByFields :+ orderBy
     this
   }
 
-  /**
-    * Build the query using the current settings.
+  /** Build the query using the current settings.
     *
-    * @param session The Hibernate session to use to build the query
-    * @return The built query
+    * @param session
+    *   The Hibernate session to use to build the query
+    * @return
+    *   The built query
     */
   def build(session: Session): Query[E] = {
     val paramInstitution = "institution"
@@ -101,24 +109,23 @@ class UserQueryBuilder[E] {
     q.append(s"FROM TLEUser t WHERE t.institution = :$paramInstitution")
 
     val queryTokensWithIndex = queryTokens.zipWithIndex
-    queryTokensWithIndex.foreach {
-      case (_, i) =>
-        val token = s":$paramUserToken$i"
-        q.append(s" AND (LOWER(first_name) LIKE $token")
-        q.append(s" OR LOWER(last_name) LIKE $token")
-        q.append(s" OR LOWER(username) LIKE $token)")
+    queryTokensWithIndex.foreach { case (_, i) =>
+      val token = s":$paramUserToken$i"
+      q.append(s" AND (LOWER(first_name) LIKE $token")
+      q.append(s" OR LOWER(last_name) LIKE $token")
+      q.append(s" OR LOWER(username) LIKE $token)")
     }
 
-    byGroupId.foreach {
-      case (_, recurse) =>
-        q.append(" AND t.uuid IN (SELECT ELEMENTS(g.users) FROM TLEGroup g")
-        if (recurse) {
-          q.append(" LEFT OUTER JOIN g.allParents sg")
-          q.append(
-            s" WHERE g.institution = :$paramInstitution AND (sg.uuid = :$paramGroupId OR g.uuid = :$paramGroupId))")
-        } else {
-          q.append(s" WHERE g.institution = :$paramInstitution AND g.uuid = :$paramGroupId)")
-        }
+    byGroupId.foreach { case (_, recurse) =>
+      q.append(" AND t.uuid IN (SELECT ELEMENTS(g.users) FROM TLEGroup g")
+      if (recurse) {
+        q.append(" LEFT OUTER JOIN g.allParents sg")
+        q.append(
+          s" WHERE g.institution = :$paramInstitution AND (sg.uuid = :$paramGroupId OR g.uuid = :$paramGroupId))"
+        )
+      } else {
+        q.append(s" WHERE g.institution = :$paramInstitution AND g.uuid = :$paramGroupId)")
+      }
     }
 
     if (orderByFields.nonEmpty) {
@@ -131,27 +138,26 @@ class UserQueryBuilder[E] {
     // Step 2. Create the Query, and set the parameters
     val query: Query[E] = session.createQuery(q.toString).asInstanceOf[Query[E]]
     query.setParameter(paramInstitution, CurrentInstitution.get)
-    queryTokensWithIndex.foreach {
-      case (token, i) =>
-        query.setParameter(s"$paramUserToken$i", token)
+    queryTokensWithIndex.foreach { case (token, i) =>
+      query.setParameter(s"$paramUserToken$i", token)
     }
-    byGroupId.foreach {
-      case (groupId, _) =>
-        query.setParameter(paramGroupId, groupId)
+    byGroupId.foreach { case (groupId, _) =>
+      query.setParameter(paramGroupId, groupId)
     }
 
     query
   }
 
-  /**
-    * Tokenise the query string into a list of tokens, where:
+  /** Tokenise the query string into a list of tokens, where:
     *
-    * - each token is surrounded by %'s
-    * - all tokens are lowercased
-    * - all *'s are replaced with %'s
+    *   - each token is surrounded by %'s
+    *   - all tokens are lowercased
+    *   - all *'s are replaced with %'s
     *
-    * @param query The query string to tokenise
-    * @return A list of tokens
+    * @param query
+    *   The query string to tokenise
+    * @return
+    *   A list of tokens
     */
   private def tokeniseQuery(query: String): List[String] = {
     // Prep the query by converting all *'s to %'s and lowercase it.

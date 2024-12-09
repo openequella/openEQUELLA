@@ -22,17 +22,17 @@ import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo, Pagination}
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.user.TLEUser
 
-/**
-  * A universal representation of users, for which the various user types in oEQ will be mapped to.
+/** A universal representation of users, for which the various user types in oEQ will be mapped to.
   */
-case class User(@GQLDescription("The unique identifier for the user") uniqueId: String,
-                @GQLDescription("The username a user authenticates with") username: String,
-                @GQLDescription("User's email address") email: Option[String],
-                @GQLDescription("User's first name") firstName: String,
-                @GQLDescription("User's last name") lastName: String)
+case class User(
+    @GQLDescription("The unique identifier for the user") uniqueId: String,
+    @GQLDescription("The username a user authenticates with") username: String,
+    @GQLDescription("User's email address") email: Option[String],
+    @GQLDescription("User's first name") firstName: String,
+    @GQLDescription("User's last name") lastName: String
+)
 
-/**
-  * Companion object for `User` to provide a conversion from the various oEQ user types.
+/** Companion object for `User` to provide a conversion from the various oEQ user types.
   */
 object User {
   def apply(u: TLEUser): User =
@@ -47,5 +47,6 @@ object UserEdge {
 }
 
 @GQLDescription(
-  "A Connection object paging through Users as per the GraphQL Cursor Connections Specification")
+  "A Connection object paging through Users as per the GraphQL Cursor Connections Specification"
+)
 case class UserConnection(pageInfo: PageInfo, edges: List[UserEdge]) extends Connection[UserEdge]

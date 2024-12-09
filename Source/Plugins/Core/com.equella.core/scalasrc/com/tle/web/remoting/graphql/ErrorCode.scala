@@ -18,8 +18,7 @@
 
 package com.tle.web.remoting.graphql
 
-/**
-  * Codifies all the possible error codes we may return to a client.
+/** Codifies all the possible error codes we may return to a client.
   */
 object ErrorCode extends Enumeration {
   type Code = Value

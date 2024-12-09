@@ -25,19 +25,21 @@ import zio.{IO, ZIO}
 
 package object schema {
 
-  /**
-    * A common return type for Providers to enable error handling in GraphQL requests.
-    * @tparam T the success result from a Provider
+  /** A common return type for Providers to enable error handling in GraphQL requests.
+    * @tparam T
+    *   the success result from a Provider
     */
   type ResultWithErrors[T] = IO[ExecutionError, T]
 
-  /**
-    * Implicitly convert an `Either[ProviderError, T]` into a `ResultWithErrors[T]` to reduce the
+  /** Implicitly convert an `Either[ProviderError, T]` into a `ResultWithErrors[T]` to reduce the
     * repetition of error handling for Providers.
     *
-    * @param eitherResult the result to convert - typically from a call to a Provider
-    * @tparam T the success result from a Provider
-    * @return a `ResultWithErrors[T]` that can be used in a GraphQL requests
+    * @param eitherResult
+    *   the result to convert - typically from a call to a Provider
+    * @tparam T
+    *   the success result from a Provider
+    * @return
+    *   a `ResultWithErrors[T]` that can be used in a GraphQL requests
     */
   implicit def errorHandler[T](eitherResult: Either[ProviderError, T]): ResultWithErrors[T] =
     eitherResult match {
@@ -45,19 +47,23 @@ package object schema {
       case Right(data)                                         => ZIO.succeed(data)
     }
 
-  /**
-    * Convert a `Pagination` object into an offset and limit pair for use in a database query, such
-    * that the result will match
-    * [GraphQL Cursor Connections Specification - 4.4 Pagination Algorithm](https://relay.dev/graphql/connections.htm#sec-Pagination-algorithm).
+  /** Convert a `Pagination` object into an offset and limit pair for use in a database query, such
+    * that the result will match [GraphQL Cursor Connections Specification - 4.4 Pagination
+    * Algorithm](https://relay.dev/graphql/connections.htm#sec-Pagination-algorithm).
     *
     * Caliban provides a single implementation, but it only supports a `List` of entities. This
-    * implementation is focused on use with traditional offset/max style DB access. The caliban example
-    * can be found at `caliban.relay.Connection#fromList`.
+    * implementation is focused on use with traditional offset/max style DB access. The caliban
+    * example can be found at `caliban.relay.Connection#fromList`.
     *
-    * @param pagination the pagination object
-    * @param max the maximum number of items in the database
-    * @return a tuple of `(offset, limit)` where `limit` will be capped based on max (and if zero, the DB query should not be made)
-    * @see [[caliban.relay.Connection#fromList]]
+    * @param pagination
+    *   the pagination object
+    * @param max
+    *   the maximum number of items in the database
+    * @return
+    *   a tuple of `(offset, limit)` where `limit` will be capped based on max (and if zero, the DB
+    *   query should not be made)
+    * @see
+    *   [[caliban.relay.Connection#fromList]]
     */
   def paginationOffsetLimit(pagination: Pagination[Base64Cursor], max: Int): (Int, Int) = {
     val offset = pagination.cursor match {

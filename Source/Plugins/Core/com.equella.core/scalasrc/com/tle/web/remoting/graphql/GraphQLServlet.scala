@@ -35,8 +35,7 @@ import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import javax.ws.rs.core.MediaType
 import scala.io.Source
 
-/**
-  * Servlet for handling GraphQL requests. Relies on standard oEQ servlet security/authentication
+/** Servlet for handling GraphQL requests. Relies on standard oEQ servlet security/authentication
   * filters/mechanisms.
   */
 @Bind
@@ -48,12 +47,13 @@ class GraphQLServlet extends HttpServlet {
   private var schemaEndpointEnabled: Boolean = false
   private var graphQLUIEnabled: Boolean      = false
 
-  /**
-    * Default constructor for Guice.
+  /** Default constructor for Guice.
     */
-  @Inject def this(schema: Schema,
-                   @Named(CFG_GRAPHQL_SCHEMA) graphQLSchemaEnabled: Boolean,
-                   @Named(CFG_GRAPHQL_UI) graphQLUIEnabled: Boolean) = {
+  @Inject def this(
+      schema: Schema,
+      @Named(CFG_GRAPHQL_SCHEMA) graphQLSchemaEnabled: Boolean,
+      @Named(CFG_GRAPHQL_UI) graphQLUIEnabled: Boolean
+  ) = {
     this()
     this.graphQL = schema.getFullApi
     this.schemaEndpointEnabled = graphQLSchemaEnabled
@@ -75,8 +75,7 @@ class GraphQLServlet extends HttpServlet {
     }
   }
 
-  /**
-    * Add support for browser pre-flight requests.
+  /** Add support for browser pre-flight requests.
     */
   override def doOptions(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     resp.setHeader("Access-Control-Allow-Origin", "*")
@@ -87,23 +86,27 @@ class GraphQLServlet extends HttpServlet {
     super.doOptions(req, resp)
   }
 
-  /**
-    * Handles the POST request as per the [GraphQL-over-HTTP spec](https://graphql.github.io/graphql-over-http/draft/)
-    * with a focus on section [5.4 POST Request](https://graphql.github.io/graphql-over-http/draft/#sec-POST).
+  /** Handles the POST request as per the [GraphQL-over-HTTP
+    * spec](https://graphql.github.io/graphql-over-http/draft/) with a focus on section [5.4 POST
+    * Request](https://graphql.github.io/graphql-over-http/draft/#sec-POST).
     *
-    * The body is expected to be JSON and as a result should have header `Content-Type: application/json`.
+    * The body is expected to be JSON and as a result should have header `Content-Type:
+    * application/json`.
     *
     * The JSON object should have the following properties:
-    * - `query`: A string GraphQL document to be executed.
-    * - `operationName`: If the provided `query` contains multiple named operations, this specifies which operation to execute.
-    * - `variables`: The runtime values to use for any GraphQL query variables as a JSON object.
+    *   - `query`: A string GraphQL document to be executed.
+    *   - `operationName`: If the provided `query` contains multiple named operations, this
+    *     specifies which operation to execute.
+    *   - `variables`: The runtime values to use for any GraphQL query variables as a JSON object.
     */
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse): Unit = {
     LOGGER.debug("doPost() called")
 
     if (req.getHeader("Content-Type") != MediaType.APPLICATION_JSON) {
-      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                     s"Content-Type must be ${MediaType.APPLICATION_JSON}")
+      resp.sendError(
+        HttpServletResponse.SC_BAD_REQUEST,
+        s"Content-Type must be ${MediaType.APPLICATION_JSON}"
+      )
       return
     }
 
@@ -138,8 +141,7 @@ class GraphQLServlet extends HttpServlet {
 
   import zio._
 
-  /**
-    * Executes a GraphQL request and returns the result as a JSON string.
+  /** Executes a GraphQL request and returns the result as a JSON string.
     */
   private def execute(req: GraphQLRequest): Either[Throwable, String] = zio.Unsafe.unsafe {
     implicit unsafe =>
@@ -155,8 +157,7 @@ class GraphQLServlet extends HttpServlet {
       Runtime.default.unsafe.run(calibanExecute).toEither.map(_.toResponseValue.toString)
   }
 
-  /**
-    * Handles errors that occur during the execution of a GraphQL query, rather than simply ending
+  /** Handles errors that occur during the execution of a GraphQL query, rather than simply ending
     * up with error responses with a message of "Effect failure".
     */
   private def errorHandler(error: CalibanError): CalibanError = {
@@ -183,11 +184,12 @@ class GraphQLServlet extends HttpServlet {
     }
   }
 
-  /**
-    * Streams the requested GraphiQL file which is stored in the `graphql-ui` resources folder.
+  /** Streams the requested GraphiQL file which is stored in the `graphql-ui` resources folder.
     *
-    * @param resp The response object matching the servlet request
-    * @param path The path to the requested file
+    * @param resp
+    *   The response object matching the servlet request
+    * @param path
+    *   The path to the requested file
     */
   private def graphiQL(resp: HttpServletResponse, path: String): Unit = {
     def extension(str: String): String = {

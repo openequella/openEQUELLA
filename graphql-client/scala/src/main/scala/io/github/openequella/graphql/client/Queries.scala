@@ -32,12 +32,12 @@ object Queries {
       before: scala.Option[String] = None,
       after: scala.Option[String] = None
   )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
-                                                         encoder0: ArgEncoder[scala.Option[String]],
-                                                         encoder1: ArgEncoder[scala.Option[Int]],
-                                                         encoder2: ArgEncoder[scala.Option[Int]],
-                                                         encoder3: ArgEncoder[scala.Option[String]],
-                                                         encoder4: ArgEncoder[scala.Option[String]])
-    : SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+      encoder0: ArgEncoder[scala.Option[String]],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUsers",
       OptionOf(Obj(innerSelection)),
@@ -63,10 +63,9 @@ object Queries {
 
   /** Retrieve details of a user based on unique ID
     */
-  def internalUserById[A](id: String)(innerSelection: SelectionBuilder[User, A])(
-      implicit
-      encoder0: ArgEncoder[String])
-    : SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+  def internalUserById[A](id: String)(innerSelection: SelectionBuilder[User, A])(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserById",
       OptionOf(Obj(innerSelection)),

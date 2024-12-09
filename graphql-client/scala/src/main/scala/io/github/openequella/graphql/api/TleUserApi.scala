@@ -21,14 +21,18 @@ package io.github.openequella.graphql.api
 import io.github.openequella.graphql.client.{Mutations, Queries, User}
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
-/**
-  * Represents an internal openEQUELLA user.
+/** Represents an internal openEQUELLA user.
   *
-  * @param uniqueId  The unique identifier of the user.
-  * @param username  The username of the user.
-  * @param email     The email address of the user.
-  * @param firstName The first name of the user.
-  * @param lastName  The last name of the user.
+  * @param uniqueId
+  *   The unique identifier of the user.
+  * @param username
+  *   The username of the user.
+  * @param email
+  *   The email address of the user.
+  * @param firstName
+  *   The first name of the user.
+  * @param lastName
+  *   The last name of the user.
   */
 final case class TleUserView(
     uniqueId: String,
@@ -38,24 +42,25 @@ final case class TleUserView(
     lastName: String
 )
 
-/**
-  * Provides access to the openEQUELLA internal user API.
+/** Provides access to the openEQUELLA internal user API.
   */
 object TleUserApi {
   private val tleUser = (
     User.uniqueId ~ User.username ~ User.email ~ User.firstName ~ User.lastName
   ).mapN(TleUserView)
 
-  /**
-    * Retrieves the details of an individual user by their unique identifier.
+  /** Retrieves the details of an individual user by their unique identifier.
     *
-    * @param uniqueId The unique identifier of the user.
-    * @param cfg     The client configuration.
-    * @return       Left containing a list of errors or Right if the operation was successful.
-    *               Some if user was found, None if not.
+    * @param uniqueId
+    *   The unique identifier of the user.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right if the operation was successful. Some if user was
+    *   found, None if not.
     */
-  def getByUniqueId(uniqueId: String)(
-      implicit cfg: ClientConfiguration
+  def getByUniqueId(uniqueId: String)(implicit
+      cfg: ClientConfiguration
   ): Either[List[ApiError], Option[TleUserView]] = {
     val query = Queries.internalUserById(uniqueId) {
       tleUser
@@ -64,16 +69,19 @@ object TleUserApi {
     Client.query(query)
   }
 
-  /**
-    * Retrieves the details of an individual user by their username.
+  /** Retrieves the details of an individual user by their username.
     *
-    * @param username The username of the user.
-    * @param cfg The client configuration.
-    * @return Left containing a list of errors or Right if the operation was successful.
-    *         Some if user was found, None if not.
+    * @param username
+    *   The username of the user.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right if the operation was successful. Some if user was
+    *   found, None if not.
     */
-  def getByUsername(username: String)(
-      implicit cfg: ClientConfiguration): Either[List[ApiError], Option[TleUserView]] = {
+  def getByUsername(
+      username: String
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Option[TleUserView]] = {
     val query = Queries.internalUserByUsername(username) {
       tleUser
     }
@@ -81,12 +89,13 @@ object TleUserApi {
     Client.query(query)
   }
 
-  /**
-    * Creates a new user.
+  /** Creates a new user.
     *
-    * @param cfg The client configuration.
-    * @return Left containing a list of errors or Right with the new user's details if the operation
-    *         was successful.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right with the new user's details if the operation was
+    *   successful.
     */
   def createUser(
       username: String,
@@ -104,15 +113,18 @@ object TleUserApi {
     }
   }
 
-  /**
-    * Deletes a user.
+  /** Deletes a user.
     *
-    * @param uniqueId The unique identifier of the user.
-    * @param cfg The client configuration.
-    * @return Left containing a list of errors or Right if the operation was successful.
+    * @param uniqueId
+    *   The unique identifier of the user.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right if the operation was successful.
     */
-  def deleteUser(uniqueId: String)(
-      implicit cfg: ClientConfiguration): Either[List[ApiError], Unit] = {
+  def deleteUser(
+      uniqueId: String
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Unit] = {
     val query = Mutations.internalUserDelete(uniqueId)
 
     flattenResult {
