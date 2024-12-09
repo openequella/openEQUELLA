@@ -58,8 +58,8 @@ case class CurrentUserDetails(id: String,
   * The `LegacyContentApi` object provides a client for the /api/content endpoints of the openEQUELLA REST API.
   */
 object LegacyContentApi {
-  private val LOGGER: Logger = LoggerFactory.getLogger(LegacyContentApi.getClass)
-  private val API_PATH       = "content"
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(LegacyContentApi.getClass)
+  private val API_PATH                = "content"
 
   implicit val menuItemDecoder: Decoder[MenuItem]                     = deriveDecoder
   implicit val itemCountsDecoder: Decoder[ItemCounts]                 = deriveDecoder
@@ -69,13 +69,10 @@ object LegacyContentApi {
     * Retrieves the details of the currently authenticated user.
     */
   def currentUserDetails(implicit cfg: RestConfiguration): Either[RestError, CurrentUserDetails] = {
-    val response = sendWithCookies(cfg) {
-      basicRequest
-        .get(cfg.apiUrl().addPath(API_PATH, "currentuser"))
-        .response(asJson[CurrentUserDetails])
-    }
-
-    if (response.isSuccess) {
+    val request = basicRequest
+      .get(cfg.apiUrl().addPath(API_PATH, "currentuser"))
+      .response(asJson[CurrentUserDetails])
+    handleResult(extractAction(request), sendWithCookies(request)) { response =>
       response.body match {
         case Left(error) =>
           LOGGER.error(s"Failed to decode current user details: ${error.getMessage}")
@@ -84,9 +81,6 @@ object LegacyContentApi {
           LOGGER.debug(s"Retrieved current user details: ${userDetails.username}")
           Right(userDetails)
       }
-    } else {
-      LOGGER.error(s"Failed to retrieve current user details with status code ${response.code}")
-      Left(StatusCodeError("Failed to retrieve current user details.", response.code))
     }
   }
 }

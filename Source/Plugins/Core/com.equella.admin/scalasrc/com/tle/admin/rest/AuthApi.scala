@@ -20,28 +20,21 @@ package com.tle.admin.rest
 
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.basicRequest
-import sttp.model.StatusCode
 
 /**
   * The `AuthApi` object provides a client for the /api/auth endpoints of the openEQUELLA REST API.
   */
 object AuthApi {
-  private val LOGGER: Logger = LoggerFactory.getLogger(AuthApi.getClass)
-  private val API_PATH       = "auth"
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(AuthApi.getClass)
+  private val API_PATH                = "auth"
 
   /**
     * Terminates the session for the currently authenticated user.
     */
   def logout(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
-    sendWithCookies(cfg) {
-      basicRequest.put(cfg.apiUrl().addPath(API_PATH, "logout"))
-    } match {
-      case response if response.code == StatusCode.Ok =>
-        LOGGER.debug("Logout successful")
-        Right(())
-      case response =>
-        LOGGER.error(s"Logout failed with status code ${response.code}")
-        Left(StatusCodeError(s"Request for logout results in non-OK status code", response.code))
+    val request = basicRequest.put(cfg.apiUrl().addPath(API_PATH, "logout"))
+    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+      Right(())
     }
   }
 }

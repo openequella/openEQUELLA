@@ -36,3 +36,5 @@ final case class StatusCodeError(message: String, code: StatusCode) extends Rest
   * Represents an error where the response (typically content) from the server was not as expected.
   */
 final case class UnexpectedResponseError(message: String) extends RestError
+
+final case class ClientError(message: String, cause: Throwable) extends RestError

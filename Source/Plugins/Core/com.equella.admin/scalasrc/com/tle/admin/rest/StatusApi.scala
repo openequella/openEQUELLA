@@ -26,22 +26,16 @@ import sttp.model.StatusCode
   * The `StatusApi` object provides a client for the /api/status endpoints of the openEQUELLA REST API.
   */
 object StatusApi {
-  private val LOGGER: Logger = LoggerFactory.getLogger(StatusApi.getClass)
-  private val API_PATH       = "status"
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(StatusApi.getClass)
+  private val API_PATH                = "status"
 
   /**
     * Update the heartbeat for the current user. Typically used to keep the session alive.
     */
   def heartbeat(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
-    sendWithCookies(cfg) {
-      basicRequest.get(cfg.apiUrl().addPath(API_PATH, "heartbeat")).response(asString)
-    } match {
-      case response if response.code == StatusCode.Ok =>
-        LOGGER.debug("Heartbeat successful")
-        Right(())
-      case response =>
-        LOGGER.error(s"Heartbeat failed with status code ${response.code}")
-        Left(StatusCodeError(s"Request for heartbeat results in non-OK status code", response.code))
+    val request = basicRequest.get(cfg.apiUrl().addPath(API_PATH, "heartbeat")).response(asString)
+    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+      Right(())
     }
   }
 }
