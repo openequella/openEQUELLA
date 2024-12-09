@@ -16,30 +16,9 @@
  * limitations under the License.
  */
 
-package com.tle.common.applet.client;
+package com.tle.admin.service
 
-import com.tle.common.applet.SessionHolder;
-import java.net.URL;
+import io.github.openequella.graphql.api.ApiError
 
-public interface ClientService {
-  void showDocument(URL url);
-
-  void stop();
-
-  String getParameter(String key);
-
-  URL getServerURL();
-
-  SessionHolder getSession();
-
-  /* SERVICES */
-
-  /**
-   * Get a service which may be one of the new local implementations, or one provided by HTTP
-   * Invoker
-   */
-  <T> T getService(Class<T> clazz);
-
-  /** Get a service with is provided by HTTP Invoker */
-  <T> T getInvokerService(Class<T> clazz);
-}
+class ClientRequestException(message: String, apiErrors: List[ApiError])
+    extends RuntimeException(message) {}

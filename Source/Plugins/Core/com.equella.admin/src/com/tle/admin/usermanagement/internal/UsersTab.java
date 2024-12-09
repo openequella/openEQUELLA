@@ -27,17 +27,16 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.AddAction;
 import com.tle.admin.gui.common.actions.RemoveAction;
+import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Format;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteTLEGroupService;
-import com.tle.core.remoting.RemoteTLEUserService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -49,7 +48,7 @@ import javax.swing.event.ListSelectionListener;
 public class UsersTab extends JChangeDetectorPanel implements ListSelectionListener {
   private static final long serialVersionUID = 1L;
 
-  protected final RemoteTLEUserService userService;
+  protected final AdminTLEUserService userService;
   protected final RemoteTLEGroupService groupService;
   protected final RemoteUserService userCacheService;
 
@@ -61,7 +60,7 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
   private final RemoveUserAction removeAction;
 
   public UsersTab(
-      RemoteTLEUserService userService,
+      AdminTLEUserService userService,
       RemoteTLEGroupService groupService,
       RemoteUserService userCacheService) {
     this.userService = userService;
@@ -94,12 +93,9 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
                   wildPattern += WILD;
                 }
 
-                List<TLEUser> results = userService.searchUsers(wildPattern, null, true);
-                Collections.sort(
-                    results,
-                    new NumberStringComparator<TLEUser>() {
-                      private static final long serialVersionUID = 1L;
-
+                List<TLEUser> results = userService.searchUsers(wildPattern);
+                results.sort(
+                    new NumberStringComparator<>() {
                       @Override
                       public String convertToString(TLEUser t) {
                         return t.getUsername();

@@ -18,6 +18,7 @@
 
 package com.tle.admin.usermanagement.internal;
 
+import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.BulkImport;
@@ -27,19 +28,18 @@ import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.util.CsvReader;
 import com.tle.core.remoting.RemoteTLEGroupService;
-import com.tle.core.remoting.RemoteTLEUserService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserBulkImporter extends BulkImport<TLEUser> {
   private final RemoteTLEGroupService groupService;
-  private final RemoteTLEUserService userService;
+  private final AdminTLEUserService userService;
 
   private boolean passwordNotHashed;
   private String groupName;
 
-  public UserBulkImporter(RemoteTLEUserService userService, RemoteTLEGroupService groupService) {
+  public UserBulkImporter(AdminTLEUserService userService, RemoteTLEGroupService groupService) {
     this.userService = userService;
     this.groupService = groupService;
   }
@@ -82,12 +82,12 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
 
   @Override
   public TLEUser getOld(CsvReader reader) throws IOException {
-    String uuid = reader.get("uuid"); // $NON-NLS-1$
-    String username = reader.get("username"); // $NON-NLS-1$
+    String uuid = reader.get("uuid");
+    String username = reader.get("username");
     if (!Check.isEmpty(uuid)) {
-      return userService.get(uuid);
+      return userService.get(uuid).orElse(null);
     } else if (!Check.isEmpty(username)) {
-      return userService.getByUsername(username);
+      return userService.getByUsername(username).orElse(null);
     }
     return null;
   }

@@ -66,14 +66,13 @@ public final class Driver {
   public static Driver create(ClientService clientService, PluginServiceImpl pluginService)
       throws Exception {
     if (driver != null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("Invalid attempt to try and create second Driver instance");
     }
 
     driver = new Driver(clientService, pluginService);
     return driver;
   }
 
-  @SuppressWarnings("nls")
   private Driver(ClientService clientService, PluginServiceImpl pluginService) throws Exception {
     this.clientService = clientService;
 
@@ -102,6 +101,9 @@ public final class Driver {
     session.enableKeepAlive(true);
   }
 
+  // This is deprecated as far back as the history we have is (i.e. before 2013), but yet it is
+  // used extensively and I don't see an alternative.
+  // So perhaps this annotation should be removed.
   @Deprecated
   public ClientService getClientService() {
     return clientService;

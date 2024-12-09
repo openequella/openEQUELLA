@@ -23,10 +23,14 @@ import java.net.URL;
 import java.util.Locale;
 
 public interface HarnessInterface {
+  /**
+   * Method called after successful login result in JSESSIONID being set in the system cookie store.
+   */
   void start();
 
   void setLocale(Locale locale);
 
+  /** The endpoint for the openEQUELA server which has already been authenticated against. */
   void setEndpointURL(URL url);
 
   void setPluginService(PluginServiceImpl pluginService);

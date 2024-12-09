@@ -20,6 +20,10 @@ package com.tle.client.impl;
 
 import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.MutableClassToInstanceMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.tle.client.guice.ClientModule;
 import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.common.applet.client.ClientService;
@@ -28,17 +32,22 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientServiceImpl implements ClientService {
-  private static final Log LOGGER = LogFactory.getLog(ClientService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClientServiceImpl.class);
 
   private final SessionHolder session;
   private final ClassToInstanceMap<Object> services = MutableClassToInstanceMap.create();
 
+  private final Injector injector;
+
   public ClientServiceImpl(SessionHolder session) {
     this.session = session;
+
+    LOGGER.debug("Starting up Guice");
+    this.injector = Guice.createInjector(new ClientModule(session, this));
   }
 
   @Override
@@ -83,9 +92,20 @@ public class ClientServiceImpl implements ClientService {
     return session;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> T getService(Class<T> clazz) {
+    // If one of the new classes managed with Guice, then use Guice to create it
+    if (injector.getExistingBinding(Key.get(clazz)) != null) {
+      return injector.getInstance(clazz);
+    }
+
+    // Otherwise, use the old HTTP Invoker service instantiation method
+    return getInvokerService(clazz);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T getInvokerService(Class<T> clazz) {
     synchronized (services) {
       T t = services.getInstance(clazz);
       if (t == null) {

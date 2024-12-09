@@ -1,14 +1,32 @@
+val guiceVersion = "5.1.0"
+val slf4jVersion = "2.0.16"
+
 libraryDependencies ++= Seq(
-  "com.github.equella.jpf" % "jpf"            % "1.0.7",
-  "com.google.guava"       % "guava"          % "32.1.3-jre",
-  "org.slf4j"              % "jcl-over-slf4j" % "2.0.13",
-  "org.slf4j"              % "slf4j-simple"   % "2.0.13",
+  // Logging dependencies
+  "org.slf4j" % "jcl-over-slf4j" % slf4jVersion,
+  "org.slf4j" % "slf4j-api"      % slf4jVersion,
+  log4jSlf4jImpl,
+  // (support YAML based logging configuration)
+  jacksonDataBind,
+  jacksonDataFormatYaml,
+  // General dependencies
+  "com.github.equella.jpf" % "jpf"   % "1.0.7",
+  "com.google.guava"       % "guava" % "32.1.3-jre",
   springWeb,
   springAop,
   springContext,
   "com.fifesoft"  % "rsyntaxtextarea" % "1.5.2",
   "com.miglayout" % "miglayout-swing" % "4.2",
-  xstreamDep
+  xstreamDep,
+  "io.github.openequella" %% "graphql-client" % "0.1.0-SNAPSHOT",
+  "com.google.inject"     % "guice"           % guiceVersion excludeAll (
+    // Due to deduplicates with aopalliance via Spring AOP.
+    // Maybe it can be removed when all HTTP Invoker code is gone
+    ExclusionRule(
+      organization = "aopalliance",
+      name = "aopalliance"
+    )
+  )
 )
 
 excludeDependencies ++= Seq(
