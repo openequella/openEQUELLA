@@ -22,15 +22,14 @@ import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.{asString, basicRequest}
 import sttp.model.StatusCode
 
-/**
-  * The `StatusApi` object provides a client for the /api/status endpoints of the openEQUELLA REST API.
+/** The `StatusApi` object provides a client for the /api/status endpoints of the openEQUELLA REST
+  * API.
   */
 object StatusApi {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(StatusApi.getClass)
   private val API_PATH                = "status"
 
-  /**
-    * Update the heartbeat for the current user. Typically used to keep the session alive.
+  /** Update the heartbeat for the current user. Typically used to keep the session alive.
     */
   def heartbeat(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
     val request = basicRequest.get(cfg.apiUrl().addPath(API_PATH, "heartbeat")).response(asString)

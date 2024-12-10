@@ -21,18 +21,20 @@ package com.tle.admin.rest
 import sttp.model.Uri
 import sttp.model.headers.CookieWithMeta
 
-/**
-  * Configuration for the REST API client. Pretty well identical to the one we get from the
-  * GraphQL Client Library - however, that one is technically outside the control of this codebase.
-  * So it makes sense to have a similar one here where full control is maintained. It does unfortunately
+/** Configuration for the REST API client. Pretty well identical to the one we get from the GraphQL
+  * Client Library - however, that one is technically outside the control of this codebase. So it
+  * makes sense to have a similar one here where full control is maintained. It does unfortunately
   * result in some code duplication.
   *
-  * @param institutionUrl The URL of the institution to connect to.
-  * @param cookies The cookies to use for the connection.
+  * @param institutionUrl
+  *   The URL of the institution to connect to.
+  * @param cookies
+  *   The cookies to use for the connection.
   */
-final case class RestConfiguration(institutionUrl: Uri,
-                                   cookies: scala.collection.mutable.Set[CookieWithMeta] =
-                                     scala.collection.mutable.Set.empty) {
+final case class RestConfiguration(
+    institutionUrl: Uri,
+    cookies: scala.collection.mutable.Set[CookieWithMeta] = scala.collection.mutable.Set.empty
+) {
   def apiUrl(): Uri = {
     institutionUrl.addPath("api")
   }

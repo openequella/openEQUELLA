@@ -26,12 +26,14 @@ import sttp.client3.circe.asJson
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
-case class MenuItem(title: String,
-                    href: Option[String],
-                    systemIcon: Option[String],
-                    route: Option[String],
-                    iconUrl: Option[String],
-                    newWindow: Boolean)
+case class MenuItem(
+    title: String,
+    href: Option[String],
+    systemIcon: Option[String],
+    route: Option[String],
+    iconUrl: Option[String],
+    newWindow: Boolean
+)
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
@@ -39,23 +41,25 @@ case class ItemCounts(tasks: Int, notifications: Int)
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
-case class CurrentUserDetails(id: String,
-                              username: String,
-                              firstName: String,
-                              lastName: String,
-                              emailAddress: String,
-                              accessibilityMode: Boolean,
-                              autoLoggedIn: Boolean,
-                              guest: Boolean,
-                              prefsEditable: Boolean,
-                              menuGroups: Iterable[Iterable[MenuItem]],
-                              counts: Option[ItemCounts],
-                              canDownloadSearchResult: Boolean,
-                              roles: Iterable[String],
-                              scrapbookEnabled: Boolean)
+case class CurrentUserDetails(
+    id: String,
+    username: String,
+    firstName: String,
+    lastName: String,
+    emailAddress: String,
+    accessibilityMode: Boolean,
+    autoLoggedIn: Boolean,
+    guest: Boolean,
+    prefsEditable: Boolean,
+    menuGroups: Iterable[Iterable[MenuItem]],
+    counts: Option[ItemCounts],
+    canDownloadSearchResult: Boolean,
+    roles: Iterable[String],
+    scrapbookEnabled: Boolean
+)
 
-/**
-  * The `LegacyContentApi` object provides a client for the /api/content endpoints of the openEQUELLA REST API.
+/** The `LegacyContentApi` object provides a client for the /api/content endpoints of the
+  * openEQUELLA REST API.
   */
 object LegacyContentApi {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(LegacyContentApi.getClass)
@@ -65,8 +69,7 @@ object LegacyContentApi {
   implicit val itemCountsDecoder: Decoder[ItemCounts]                 = deriveDecoder
   implicit val currentUserDetailsDecoder: Decoder[CurrentUserDetails] = deriveDecoder
 
-  /**
-    * Retrieves the details of the currently authenticated user.
+  /** Retrieves the details of the currently authenticated user.
     */
   def currentUserDetails(implicit cfg: RestConfiguration): Either[RestError, CurrentUserDetails] = {
     val request = basicRequest

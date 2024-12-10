@@ -21,15 +21,13 @@ package com.tle.admin.rest
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.basicRequest
 
-/**
-  * The `AuthApi` object provides a client for the /api/auth endpoints of the openEQUELLA REST API.
+/** The `AuthApi` object provides a client for the /api/auth endpoints of the openEQUELLA REST API.
   */
 object AuthApi {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(AuthApi.getClass)
   private val API_PATH                = "auth"
 
-  /**
-    * Terminates the session for the currently authenticated user.
+  /** Terminates the session for the currently authenticated user.
     */
   def logout(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
     val request = basicRequest.put(cfg.apiUrl().addPath(API_PATH, "logout"))

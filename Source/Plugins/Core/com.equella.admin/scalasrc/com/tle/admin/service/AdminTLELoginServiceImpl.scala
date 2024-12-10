@@ -25,7 +25,7 @@ import java.util.Optional
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AdminTLELoginServiceImpl @Inject()(implicit cfg: RestConfiguration)
+class AdminTLELoginServiceImpl @Inject() (implicit cfg: RestConfiguration)
     extends AdminTLELoginService {
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLELoginServiceImpl])
 

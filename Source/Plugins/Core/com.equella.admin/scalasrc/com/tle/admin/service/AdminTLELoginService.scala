@@ -20,8 +20,7 @@ package com.tle.admin.service
 
 import java.util.Optional
 
-/**
-  * Service to manage the currently authenticated session.
+/** Service to manage the currently authenticated session.
   */
 trait AdminTLELoginService {
   def keepAlive(): Unit

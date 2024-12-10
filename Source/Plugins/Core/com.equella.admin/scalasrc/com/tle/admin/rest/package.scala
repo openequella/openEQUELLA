@@ -31,13 +31,18 @@ package object rest {
 
   /** Sends a request with the cookies from the given configuration.
     *
-    * @param cfg the REST configuration to use for the request
-    * @param request the request to send
-    * @tparam T the type of the response body
-    * @return the response from the server
+    * @param cfg
+    *   the REST configuration to use for the request
+    * @param request
+    *   the request to send
+    * @tparam T
+    *   the type of the response body
+    * @return
+    *   the response from the server
     */
-  def sendWithCookies[T](request: Request[T, Any])(
-      implicit cfg: RestConfiguration): Either[RestError, Response[T]] = {
+  def sendWithCookies[T](
+      request: Request[T, Any]
+  )(implicit cfg: RestConfiguration): Either[RestError, Response[T]] = {
     val client = SimpleHttpClient()
     Try(client.send(request.cookies(cfg.cookies))) match {
       case Failure(exception) =>
@@ -49,19 +54,23 @@ package object rest {
     }
   }
 
-  /**
-    * Handles the result of a REST API call, logging the success or failure of the action.
+  /** Handles the result of a REST API call, logging the success or failure of the action.
     *
-    * @param action the action that was attempted for prefixing log calls
-    * @param result the result of the REST API call
-    * @param onSuccess the function to call if the REST API call was successful
-    * @param LOGGER the logger to use for logging - so that logging can align with caller
-    * @return the result of the onSuccess function if the REST API call was successful, or the error
-    *         that occurred if the REST API call was not successful
+    * @param action
+    *   the action that was attempted for prefixing log calls
+    * @param result
+    *   the result of the REST API call
+    * @param onSuccess
+    *   the function to call if the REST API call was successful
+    * @param LOGGER
+    *   the logger to use for logging - so that logging can align with caller
+    * @return
+    *   the result of the onSuccess function if the REST API call was successful, or the error that
+    *   occurred if the REST API call was not successful
     */
   def handleResult[T, R](action: String, result: Either[RestError, Response[R]])(
-      onSuccess: Response[R] => Either[RestError, T])(
-      implicit LOGGER: Logger): Either[RestError, T] = {
+      onSuccess: Response[R] => Either[RestError, T]
+  )(implicit LOGGER: Logger): Either[RestError, T] = {
     result match {
       case Right(response) if response.isSuccess =>
         LOGGER.debug(s"$action successful")
@@ -75,8 +84,7 @@ package object rest {
     }
   }
 
-  /**
-    * Extracts the action from the given request, providing a useful string in logs.
+  /** Extracts the action from the given request, providing a useful string in logs.
     *
     * Similar to Request.showBasic, but more suitable for our usage.
     */
