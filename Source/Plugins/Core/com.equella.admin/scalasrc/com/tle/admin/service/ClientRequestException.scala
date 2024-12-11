@@ -21,4 +21,14 @@ package com.tle.admin.service
 import io.github.openequella.graphql.api.ApiError
 
 class ClientRequestException(message: String, apiErrors: List[ApiError])
-    extends RuntimeException(message) {}
+    extends RuntimeException(message) {
+  override def getMessage: String = {
+    val sb = new StringBuilder(super.getMessage)
+    sb.append("\nApi Errors:\n")
+    apiErrors.foreach { e =>
+      sb.append(s"  $e")
+      sb.append("\n")
+    }
+    sb.toString()
+  }
+}

@@ -20,7 +20,6 @@ package com.tle.admin.rest
 
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.{asString, basicRequest}
-import sttp.model.StatusCode
 
 /** The `StatusApi` object provides a client for the /api/status endpoints of the openEQUELLA REST
   * API.
