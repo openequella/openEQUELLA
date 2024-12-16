@@ -29,6 +29,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.hierarchy.TopicUtils;
@@ -130,7 +131,8 @@ public class HierarchyTreeSection extends AbstractContentSection<Object> {
     hierarchyService.deleteKeyResources(iinfo.getItem());
 
     for (String topicId : selectedTopics) {
-      hierarchyService.addKeyResource(topicId, iinfo.getItemId());
+      HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
+      hierarchyService.addKeyResource(compoundUuid, iinfo.getItemId());
     }
 
     receiptService.setReceipt(new KeyLabel(RECEIPT_SINGLE_KEY));

@@ -74,7 +74,7 @@ const SettingPageTemplate = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item container xs={9} spacing={2}>
+        <Grid item container xs={9} spacing={2} mb={2}>
           {
             // Put each child in this nested Grid
             React.Children.map(children, (child) => (

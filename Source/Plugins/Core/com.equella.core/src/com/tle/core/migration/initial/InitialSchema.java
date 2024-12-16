@@ -34,8 +34,28 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.LanguageString;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.beans.entity.itemdef.ItemdefBlobs;
-import com.tle.beans.item.*;
-import com.tle.beans.item.attachments.*;
+import com.tle.beans.item.Bookmark;
+import com.tle.beans.item.Comment;
+import com.tle.beans.item.DrmAcceptance;
+import com.tle.beans.item.DrmSettings;
+import com.tle.beans.item.HistoryEvent;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemLock;
+import com.tle.beans.item.ItemXml;
+import com.tle.beans.item.ModerationStatus;
+import com.tle.beans.item.Relation;
+import com.tle.beans.item.VersionSelection;
+import com.tle.beans.item.attachments.Attachment;
+import com.tle.beans.item.attachments.CustomAttachment;
+import com.tle.beans.item.attachments.FileAttachment;
+import com.tle.beans.item.attachments.HtmlAttachment;
+import com.tle.beans.item.attachments.IMSResourceAttachment;
+import com.tle.beans.item.attachments.ImsAttachment;
+import com.tle.beans.item.attachments.ItemNavigationNode;
+import com.tle.beans.item.attachments.ItemNavigationTab;
+import com.tle.beans.item.attachments.LinkAttachment;
+import com.tle.beans.item.attachments.NavigationSettings;
+import com.tle.beans.item.attachments.ZipAttachment;
 import com.tle.beans.item.cal.request.CourseInfo;
 import com.tle.beans.lti.LtiPlatform;
 import com.tle.beans.lti.LtiPlatformCustomRole;
@@ -156,7 +176,7 @@ public class InitialSchema extends AbstractCreateMigration {
         Entity.class,
         WebKeySet.class,
         LtiPlatformCustomRole.class,
-        LtiPlatform.class
+        LtiPlatform.class,
       };
 
   @SuppressWarnings("nls")

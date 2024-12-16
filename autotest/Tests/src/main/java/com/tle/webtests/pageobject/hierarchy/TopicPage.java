@@ -49,6 +49,13 @@ public class TopicPage
     driver.get(context.getBaseUrl() + "hierarchy.do");
   }
 
+  // Because it will remember the history and jump to the last visited hierarchy page in the old UI,
+  // use `topic=All` to force opening the browse page
+  public TopicPage loadBrowsePage() {
+    driver.get(context.getBaseUrl() + "hierarchy.do?topic=ALL");
+    return get();
+  }
+
   public boolean resultsHidden() {
     return !isPresent(By.id("searchresults"));
   }

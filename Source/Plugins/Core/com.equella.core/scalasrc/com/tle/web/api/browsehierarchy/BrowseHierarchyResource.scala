@@ -75,8 +75,9 @@ class BrowseHierarchyResource {
   )
   def browseHierarchy(
       @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String): Response = {
+    val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuids)
     val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
-      HierarchyCompoundUuid(compoundUuids)
+      hierarchyCompoundUuid
 
     Option(hierarchyService.getHierarchyTopicByUuid(topicUuid)) match {
       case Some(topic) if !hierarchyService.hasViewAccess(topic) =>
@@ -89,7 +90,8 @@ class BrowseHierarchyResource {
         val parents =
           browseHierarchyHelper.getParents(topicEntity,
                                            parentCompoundUuidList.getOrElse(List.empty))
-        val allKeyResources = browseHierarchyHelper.getAllKeyResources(topicEntity, compoundUuids)
+        val allKeyResources =
+          browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
 
         val result = HierarchyTopic(topicSummary, parents, allKeyResources)
         Response.ok(result).build
@@ -115,7 +117,7 @@ class BrowseHierarchyResource {
           .asScala
           .toList
           .map(legacyCompoundUuid =>
-            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).toString(false))
+            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).buildString(false))
         Response.ok(ids).build()
       case Failure(e: ItemNotFoundException) =>
         ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")

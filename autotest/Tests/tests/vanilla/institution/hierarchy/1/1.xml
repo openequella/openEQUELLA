@@ -3,7 +3,6 @@
   <uuid>c93ad696-860f-d5ef-231f-2778682044a3</uuid>
   <listPosition>0</listPosition>
   <advancedSearch entityclass="com.tle.beans.entity.PowerSearch" uuid="b157440a-c0b8-a4f0-8718-31eb5876bdd5"/>
-  <keyResources/>
   <showResults>true</showResults>
   <inheritFreetext>false</inheritFreetext>
   <addIdefs/>

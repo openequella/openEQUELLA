@@ -202,6 +202,9 @@ const SearchBar = forwardRef(
           onChange={handleOnChange}
           value={state.query}
           placeholder={searchStrings.searchBarPlaceholder}
+          inputProps={{
+            "aria-label": searchStrings.title,
+          }}
         />
         {advancedSearchFilter && (
           <TooltipIconButton

@@ -577,6 +577,18 @@ public class HibernateMigrationHelper {
     return sqlStrings;
   }
 
+  public String getRenameTableSQL(String tableName, String newTableName) {
+    Table table = findTable(tableName);
+    return extDialect.getRenameTableSql(
+        table.getQualifiedName(sqlStringGenerationContext), newTableName);
+  }
+
+  public String getRenameIndexSQL(String tableName, String index, String newIndexName) {
+    Table table = findTable(tableName);
+    return extDialect.getRenameIndexSql(
+        table.getQualifiedName(sqlStringGenerationContext), index, newIndexName);
+  }
+
   public String getQuotedIdentifier(String ident) {
     return dialect.openQuote() + ident + dialect.closeQuote();
   }

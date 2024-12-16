@@ -22,7 +22,6 @@ import static com.tle.common.hierarchy.VirtualTopicUtils.buildTopicId;
 import static com.tle.web.hierarchy.TopicUtils.labelForValue;
 
 import com.dytech.common.GeneralConstants;
-import com.google.api.client.util.Lists;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ForwardingMap;
 import com.google.common.collect.Maps;
@@ -30,7 +29,6 @@ import com.tle.annotation.Nullable;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
@@ -49,6 +47,8 @@ import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.item.FreetextResult;
 import com.tle.core.services.item.FreetextSearchResults;
 import com.tle.core.services.user.UserSessionService;
+import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.hierarchy.model.TopicDisplayModel;
@@ -104,6 +104,7 @@ public class TopicDisplaySection
   private static Label rootTitle;
 
   @Inject private HierarchyService hierarchyService;
+  @Inject private BrowseHierarchyHelper browseHierarchyHelper;
   @Inject private BundleCache bundleCache;
   @Inject private FreeTextService freeTextService;
   @Inject private TLEAclManager aclManager;
@@ -232,21 +233,24 @@ public class TopicDisplaySection
       HierarchyTopic childTopic = p.getVt();
       String childValue = p.getVirtualisedValue();
 
-      String dynamicHierarchyId = buildTopicId(childTopic, childValue, values);
-
+      String legacyHierarchyUuid = buildTopicId(childTopic, childValue, values);
+      HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(legacyHierarchyUuid, true);
       HtmlLinkState link =
-          new HtmlLinkState(events.getNamedHandler("changeTopic", dynamicHierarchyId));
-      List<HierarchyTopicDynamicKeyResources> dynamicKeyResources =
-          hierarchyService.getDynamicKeyResource(dynamicHierarchyId);
+          new HtmlLinkState(events.getNamedHandler("changeTopic", legacyHierarchyUuid));
+      List<Item> keyResourcesItems = hierarchyService.getKeyResourceItems(compoundUuid);
 
       int searchCount = p.getCount();
-      if (dynamicKeyResources != null) {
-        searchCount += dynamicKeyResources.size();
-      }
 
       DisplayHierarchyNode node =
           new DisplayHierarchyNode(
-              childTopic, childValue, link, searchCount, bundleCache, aclManager, keyResPrivs);
+              childTopic,
+              keyResourcesItems,
+              childValue,
+              link,
+              searchCount,
+              bundleCache,
+              aclManager,
+              keyResPrivs);
 
       if (!hideZero || node.getResultCountInt() > 0) {
         subNodes.add(node);
@@ -312,11 +316,6 @@ public class TopicDisplaySection
     public HierarchyTopic getTopic() {
       ensureParsed();
       return topic;
-    }
-
-    public List<Item> getKeyResources() {
-      ensureParsed();
-      return Lists.newArrayList(topic.getKeyResources());
     }
 
     public String getTopicValue() {
@@ -482,8 +481,7 @@ public class TopicDisplaySection
    */
   public FreetextSearchResults<? extends FreetextResult> processFreetextResults(
       SectionInfo info, FreetextSearchEvent searchEvent) {
-    List<Item> keyResources = new ArrayList<>(getNormalKeyResources(info));
-    keyResources.addAll(getDynamicKeyResources(info));
+    List<Item> keyResources = new ArrayList<>(getKeyResources(info));
 
     int offset = searchEvent.getOffset() - keyResources.size();
     if (offset < 0) {
@@ -495,7 +493,7 @@ public class TopicDisplaySection
     return new KeyResourceAddedResults<FreetextResult>(results, keyResources, searchEvent);
   }
 
-  public List<Item> getDynamicKeyResourceItems(SectionInfo info) {
+  public List<Item> getKeyResourceItems(SectionInfo info) {
     List<Item> keyResources = new ArrayList<Item>();
 
     ExtendedTopicDisplayModel model = getModel(info);
@@ -503,23 +501,17 @@ public class TopicDisplaySection
     Map<String, String> values = model.getValues();
     String value = Check.isEmpty(values) ? null : values.get(topic.getUuid());
     String topicId = buildTopicId(topic, value, values);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
 
-    List<HierarchyTopicDynamicKeyResources> dynamicTopicItems =
-        hierarchyService.getDynamicKeyResource(topicId);
+    List<Item> topicItems = hierarchyService.getKeyResourceItems(compoundUuid);
 
-    if (dynamicTopicItems != null) {
-      for (HierarchyTopicDynamicKeyResources h : dynamicTopicItems) {
-        String uuid = h.getUuid();
-        int version = h.getVersion();
-        ItemId id = new ItemId(uuid, version);
+    if (!topicItems.isEmpty()) {
+      for (Item item : topicItems) {
+        ItemId id = item.getItemId();
         Map<String, Object> itemObject = itemService.getItemInfo(id);
 
         if (itemObject != null) {
           keyResources.add(itemService.get(id));
-        } else {
-          // if item is deleted, then remove the reference from
-          // dynamic key resource
-          hierarchyService.removeDeletedItemReference(uuid, version);
         }
       }
     }
@@ -539,7 +531,7 @@ public class TopicDisplaySection
     Collection<String> words = event.getSearchEvent().getFinalSearch().getTokenisedQuery();
     ListSettings<StandardItemListEntry> settings = itemList.getListSettings(info);
     settings.setHilightedWords(words);
-    int keySize = getNormalKeyResources(info).size() + getDynamicKeyResources(info).size();
+    int keySize = getKeyResources(info).size();
 
     int count = results.getCount();
     int offset = results.getOffset();
@@ -571,14 +563,9 @@ public class TopicDisplaySection
     return aclManager.filterNonGrantedObjects(privileges, items);
   }
 
-  // Get normal key resources filter by `DISCOVER_ITEM` ACL.
-  private Collection<Item> getNormalKeyResources(SectionInfo info) {
-    return filterKeyResourcesByACLs(info, getModel(info).getKeyResources());
-  }
-
-  // Get dynamic key resources filter by `DISCOVER_ITEM` ACL.
-  private Collection<Item> getDynamicKeyResources(SectionInfo info) {
-    return filterKeyResourcesByACLs(info, getDynamicKeyResourceItems(info));
+  // Get key resources filter by `DISCOVER_ITEM` ACL.
+  private Collection<Item> getKeyResources(SectionInfo info) {
+    return filterKeyResourcesByACLs(info, getKeyResourceItems(info));
   }
 
   private void logFilterByKeyword(

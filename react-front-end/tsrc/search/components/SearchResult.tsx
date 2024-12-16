@@ -64,14 +64,10 @@ import { isLiveItem, searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
 import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
-import type {
-  FavDialogConfirmToAdd,
-  FavDialogConfirmToDelete,
-} from "./FavouriteItemDialog";
-import { FavouriteItemDialog } from "./FavouriteItemDialog";
+import FavouriteItemDialog from "./FavouriteItemDialog";
+import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 import ModifyKeyResourceDialog from "./ModifyKeyResourceDialog";
 import { ResourceSelector } from "./ResourceSelector";
-import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 
 const PREFIX = "ItemDrmContext";
 
@@ -121,7 +117,7 @@ const {
   starRatings: ratingStrings,
   selectResource: selectResourceStrings,
   favouriteItem: favouriteItemStrings,
-  addItemToHierarchy: { title: addToHierarchyTitle },
+  addToHierarchy: { title: addToHierarchyTitle },
 } = languageStrings.searchpage;
 
 /**
@@ -278,24 +274,26 @@ export default function SearchResult({
     };
   }, [drmCheckOnSuccessHandler, uuid, version, drmStatus]);
 
-  const handleAddFavouriteItem: FavDialogConfirmToAdd = {
-    action: "add",
-    onConfirm: (tags: string[], isAlwaysLatest: boolean) =>
-      addFavouriteItem(`${uuid}/${version}`, tags, isAlwaysLatest).then(
-        ({ bookmarkID }) => setBookmarkId(bookmarkID),
-      ),
-  };
+  // Handlers for adding and deleting favourite items.
+  const updateFavouriteItem = (
+    isAdded: boolean,
+    isAlwaysLatest: boolean,
+    tags?: string[],
+  ) => {
+    // Add favourite item
+    if (!isAdded) {
+      return addFavouriteItem(
+        `${uuid}/${version}`,
+        tags ?? [],
+        isAlwaysLatest,
+      ).then(({ bookmarkID }) => setBookmarkId(bookmarkID));
+    }
 
-  const handleDeleteFavouriteItem: FavDialogConfirmToDelete = {
-    action: "delete",
-    onConfirm: () => {
-      if (!bookmarkId) {
-        throw new Error("Bookmark ID can't be falsy.");
-      }
-      return deleteFavouriteItem(bookmarkId).then(() =>
-        setBookmarkId(undefined),
-      );
-    },
+    // Delete favourite item
+    if (!bookmarkId) {
+      throw new Error("Bookmark ID can't be falsy.");
+    }
+    return deleteFavouriteItem(bookmarkId).then(() => setBookmarkId(undefined));
   };
 
   const generateItemMetadata = () => {
@@ -327,8 +325,8 @@ export default function SearchResult({
             <TooltipIconButton
               title={
                 bookmarkId
-                  ? favouriteItemStrings.title.remove
-                  : favouriteItemStrings.title.add
+                  ? favouriteItemStrings.remove
+                  : favouriteItemStrings.add
               }
               onClick={() => setShowFavouriteItemDialog(true)}
               size="small"
@@ -526,17 +524,17 @@ export default function SearchResult({
           secondaryTypographyProps={{ component: "section" }}
         />
       </ListItem>
+
       {showFavouriteItemDialog && (
         <FavouriteItemDialog
-          isAddedToFavourite={bookmarkId !== undefined}
+          isAdded={bookmarkId !== undefined}
           isLatestVersion={isLatestVersion}
-          onConfirmProps={
-            bookmarkId ? handleDeleteFavouriteItem : handleAddFavouriteItem
-          }
+          updateFavouriteItem={updateFavouriteItem}
           open={showFavouriteItemDialog}
           closeDialog={() => setShowFavouriteItemDialog(false)}
         />
       )}
+
       {showAddHierarchyDialog && (
         <ModifyKeyResourceDialog
           item={item}
@@ -544,6 +542,7 @@ export default function SearchResult({
           onClose={() => setShowAddHierarchyDialog(false)}
         />
       )}
+
       {drmDialog}
     </Root>
   );

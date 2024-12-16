@@ -89,6 +89,7 @@ public class TopicDisplayModel extends AbstractResetFiltersQuerySection.Abstract
 
     public DisplayHierarchyNode(
         HierarchyTopic topic,
+        Collection<Item> keyResources,
         String value,
         HtmlComponentState link,
         int searchCount,
@@ -101,9 +102,6 @@ public class TopicDisplayModel extends AbstractResetFiltersQuerySection.Abstract
               new BundleLabel(topic.getShortDescription(), bundleCache).setHtml(true), value);
 
       this.link = link;
-
-      Collection<Item> keyResources = topic.getKeyResources();
-
       if (!Check.isEmpty(keyResources)) {
         keyResources = aclManager.filterNonGrantedObjects(keyResPrivs, keyResources);
         searchCount += keyResources.size();

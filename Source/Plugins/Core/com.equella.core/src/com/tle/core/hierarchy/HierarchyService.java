@@ -21,14 +21,15 @@ package com.tle.core.hierarchy;
 import com.thoughtworks.xstream.XStream;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.hierarchy.HierarchyTopic;
-import com.tle.beans.hierarchy.HierarchyTopicDynamicKeyResources;
-import com.tle.beans.hierarchy.HierarchyTreeNode;
+import com.tle.beans.hierarchy.HierarchyTopicKeyResource;
 import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.beans.item.ItemKey;
 import com.tle.common.hierarchy.RemoteHierarchyService;
 import com.tle.common.search.PresetSearch;
 import com.tle.core.freetext.queries.FreeTextBooleanQuery;
 import com.tle.core.search.VirtualisableAndValue;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -108,11 +109,21 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   HierarchyTopic getHierarchyTopic(long id);
 
-  /** All name of the virtual topics in compound ID must be encoded. */
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(String dynamicHierarchyId);
+  /** Get all key resources for a given hierarchy compound UUID. */
+  List<HierarchyTopicKeyResource> getKeyResources(HierarchyCompoundUuid compoundUuid);
 
-  List<HierarchyTopicDynamicKeyResources> getDynamicKeyResource(
-      String dynamicHierarchyId, String itemUuid, int itemVersion);
+  /** Get all key resources for a given item UUID. */
+  List<HierarchyTopicKeyResource> getKeyResources(String itemUuid);
+
+  /**
+   * For legacy code. Get all key resources and convert to Item for a given hierarchy compound UUID.
+   * For key resource always point to the latest version, it will get the latest's version of item.
+   */
+  List<Item> getKeyResourceItems(HierarchyCompoundUuid compoundUuid);
+
+  /** Get the key resource with given item and hierarchy. */
+  Optional<HierarchyTopicKeyResource> getKeyResource(
+      HierarchyCompoundUuid compoundUuid, String itemUuid, int itemVersion);
 
   int countChildTopics(HierarchyTopic topic);
 
@@ -136,21 +147,17 @@ public interface HierarchyService extends RemoteHierarchyService {
       Map<String, String> compoundUuidMap,
       Collection<String> collectionUuids);
 
-  void addKeyResource(HierarchyTreeNode node, ItemKey item);
+  /** Add key resource to a topic. */
+  void addKeyResource(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey item);
 
-  /**
-   * Add key resource to a topic. Based on the topic type it will either add to key resource table
-   * or dynamic key resource table. Compound uuid must be encoded.
-   */
-  void addKeyResource(String encodedCompoundUuid, ItemKey item);
-
-  /**
-   * Check whether a topic has the given key resource. Based on the topic type it will either check
-   * key resource table or dynamic key resource table.
-   */
-  boolean hasKeyResource(String compoundUuid, ItemKey item);
+  /** Check whether a hierarchy topic has the given key resource. */
+  boolean hasKeyResource(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey item);
 
   void edit(HierarchyTopic topic);
+
+  /** For legacy API to batch update(add/delete) the key resources. */
+  void updateKeyResources(
+      HierarchyCompoundUuid hierarchyCompoundUuid, List<ItemId> keyResourcesItems);
 
   long addRoot(HierarchyTopic newTopic, int position);
 
@@ -160,11 +167,16 @@ public interface HierarchyService extends RemoteHierarchyService {
 
   void delete(HierarchyTopic topic);
 
+  /** Delete key resource by the given key resource entity. */
+  void deleteKeyResource(HierarchyTopicKeyResource keyResource);
+
+  /** Delete key resource by the given itemId from current institution. */
+  void deleteKeyResources(ItemKey itemId);
+
   void deleteKeyResources(Item item);
 
-  void deleteKeyResources(String uuid, ItemKey itemId);
-
-  void removeDeletedItemReference(String uuid, int version);
+  /** Delete key resource by the given itemId from the given hierarchy. */
+  void deleteKeyResources(HierarchyCompoundUuid hierarchyCompoundUuid, ItemKey itemId);
 
   Collection<String> getTopicIdsWithKeyResource(Item item);
 

@@ -19,7 +19,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -30,7 +29,6 @@ import {
 } from "@mui/material";
 import ErrorOutline from "@mui/icons-material/ErrorOutline";
 import InfoIcon from "@mui/icons-material/Info";
-import SearchIcon from "@mui/icons-material/Search";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as EQ from "fp-ts/Eq";
@@ -482,11 +480,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   const queryBar = (
     <Grid id={genId("QueryBar")} container spacing={1}>
-      <Grid item>
-        <IconButton onClick={handleOnSearch}>
-          <SearchIcon />
-        </IconButton>
-      </Grid>
       <Grid item style={{ flexGrow: 1 }}>
         <TextField
           label={queryFieldLabel}

@@ -17,17 +17,16 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import {
-  FavouriteItemDialog,
+import FavouriteItemDialog, {
   FavouriteItemDialogProps,
-} from "../../tsrc/search/components/FavouriteItemDialog";
+} from "../../tsrc/search/components//FavouriteItemDialog";
 
 export default {
   title: "Search/FavouriteItemDialog",
   component: FavouriteItemDialog,
   argTypes: {
     closeDialog: { action: "on close dialog" },
-    onConfirm: {
+    updateFavouriteItem: {
       action: "on click confirm",
     },
   },
@@ -35,7 +34,7 @@ export default {
 
 const commonProps = {
   open: true,
-  isAddedToFavourite: false,
+  isAdded: false,
   isOnLatestVersion: false,
 };
 
@@ -60,5 +59,5 @@ export const RemoveFavouriteItem: StoryFn<FavouriteItemDialogProps> = (
 
 RemoveFavouriteItem.args = {
   ...commonProps,
-  isAddedToFavourite: true,
+  isAdded: true,
 };

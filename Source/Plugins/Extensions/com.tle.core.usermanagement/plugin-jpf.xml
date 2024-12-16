@@ -11,4 +11,9 @@
     <parameter-def id="settingsClass" multiplicity="none-or-one" />
     <parameter-def id="order" type="number" multiplicity="none-or-one" />
   </extension-point>
+  <extension-point id="oidcUserDir">
+    <parameter-def id="bean" />
+    <parameter-def id="platform" type="string" multiplicity="one" />
+    <parameter-def id="order" type="number" />
+  </extension-point>
 </plugin>

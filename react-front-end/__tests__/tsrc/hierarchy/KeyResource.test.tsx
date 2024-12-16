@@ -27,7 +27,11 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Route, Router } from "react-router-dom";
 import { DRM_VIOLATION, drmTerms } from "../../../__mocks__/Drm.mock";
-import { normalItem } from "../../../__mocks__/Hierarchy.mock";
+import {
+  keyResourceWithAttachment,
+  keyResourceWithoutName,
+  normalKeyResource,
+} from "../../../__mocks__/Hierarchy.mock";
 import {
   itemWithAttachment,
   normalItemWithoutName,
@@ -44,7 +48,9 @@ import "@testing-library/jest-dom";
 
 const { removeKeyResource: removeKeyResourceText } = languageStrings.hierarchy;
 
-const renderKeyResource = (item: OEQ.Search.SearchResultItem): RenderResult => {
+const renderKeyResource = (
+  keyResource: OEQ.BrowseHierarchy.KeyResource,
+): RenderResult => {
   const path = "/page/hierarchy/uuid";
   const history = createMemoryHistory();
   history.push(path);
@@ -52,7 +58,10 @@ const renderKeyResource = (item: OEQ.Search.SearchResultItem): RenderResult => {
   return render(
     <Router history={history}>
       <Route path={path}>
-        <KeyResource item={item} onPinIconClick={() => {}} />
+        <KeyResource
+          keyResource={keyResource}
+          onPinIconClick={Promise.resolve}
+        />
       </Route>
     </Router>,
   );
@@ -65,25 +74,25 @@ describe("<KeyResource/>", () => {
   jest.spyOn(DrmModule, "listDrmTerms").mockResolvedValue(drmTerms);
 
   it("displays title if item has name", async () => {
-    const { findByText } = renderKeyResource(normalItem);
+    const { findByText } = renderKeyResource(normalKeyResource);
 
-    expect(await findByText(normalItem.name!)).toBeInTheDocument();
+    expect(await findByText(normalKeyResource.item.name!)).toBeInTheDocument();
   });
 
   it("displays uuid if item doesn't have name", async () => {
-    const { findByText } = renderKeyResource(normalItemWithoutName);
+    const { findByText } = renderKeyResource(keyResourceWithoutName);
 
     expect(await findByText(normalItemWithoutName.uuid)).toBeInTheDocument();
   });
 
   it("displays pin icon", async () => {
-    const { findByLabelText } = renderKeyResource(normalItem);
+    const { findByLabelText } = renderKeyResource(normalKeyResource);
 
     expect(await findByLabelText(removeKeyResourceText)).toBeInTheDocument();
   });
 
   it("displays attachment count", async () => {
-    const { findByText } = renderKeyResource(itemWithAttachment);
+    const { findByText } = renderKeyResource(keyResourceWithAttachment);
 
     expect(
       await findByText(itemWithAttachment.attachments!.length),
@@ -91,7 +100,14 @@ describe("<KeyResource/>", () => {
   });
 
   it("shows the DRM dialog", async () => {
-    const { getByText } = renderKeyResource(drmAttachObj);
+    const { getByText } = renderKeyResource({
+      item: {
+        ...drmAttachObj,
+        createdDate: "2020-05-26T13:24:00.889+10:00",
+        modifiedDate: "2020-05-26T12:45:06.857+10:00",
+      } as OEQ.Search.SearchResultItemRaw,
+      isLatest: false,
+    });
     await userEvent.click(getByText(DRM_ITEM_NAME));
 
     expect(
@@ -100,7 +116,14 @@ describe("<KeyResource/>", () => {
   });
 
   it("supports viewing a DRM Item's summary page without accepting the terms", async () => {
-    const { getByText } = renderKeyResource(drmAllowSummaryObj);
+    const { getByText } = renderKeyResource({
+      item: {
+        ...drmAllowSummaryObj,
+        createdDate: "2020-05-26T13:24:00.889+10:00",
+        modifiedDate: "2020-05-26T12:45:06.857+10:00",
+      } as OEQ.Search.SearchResultItemRaw,
+      isLatest: false,
+    });
     await userEvent.click(getByText(DRM_ITEM_NAME));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

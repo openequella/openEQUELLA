@@ -610,6 +610,7 @@ export const SearchPageBody = ({
         title: searchStrings.remoteSearchSelector.title,
         component: (
           <AuxiliarySearchSelector
+            label={searchStrings.remoteSearchSelector.label}
             auxiliarySearchesSupplier={getRemoteSearchesProvider}
             urlGeneratorForRouteLink={routes.RemoteSearch.to}
             urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}

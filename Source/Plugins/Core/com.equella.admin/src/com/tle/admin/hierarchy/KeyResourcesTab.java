@@ -279,12 +279,12 @@ public class KeyResourcesTab extends AbstractTopicEditorTab implements ActionLis
 
   @Override
   public void load(HierarchyPack pack) {
-    selectedModel.setEntries(pack.getTopic().getKeyResources());
+    selectedModel.setEntries(pack.getKeyResources());
   }
 
   @Override
   public void save(HierarchyPack pack) {
-    pack.getTopic().setKeyResources(selectedModel.getEntries());
+    pack.setKeyResources(selectedModel.getEntries());
   }
 
   @Override

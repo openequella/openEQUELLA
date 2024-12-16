@@ -48,6 +48,7 @@ import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.api.hierarchy.beans.HierarchyBrowseBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
@@ -400,8 +401,8 @@ public class BrowseHierarchyResource {
     bean.setSearchResults(result);
 
     // Key resources, if present, are not paged
-    List<Item> keyItems = hierarchy.getKeyResources();
-
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(hierarchy.getUuid(), true);
+    List<Item> keyItems = hierarchyService.getKeyResourceItems(compoundUuid);
     if (!Check.isEmpty(keyItems)) {
       // detail keyword from ItemResource.ALL_ALLOWABLE_INFOS
       List<ItemBean> keyItemBeans =
@@ -505,7 +506,7 @@ public class BrowseHierarchyResource {
       collectionUuids.add(aScript.getEntity().getUuid());
     }
 
-    return collectionUuids.size() > 0 ? collectionUuids : null;
+    return !collectionUuids.isEmpty() ? collectionUuids : null;
   }
 
   private URI getSelfLink(String hierarchyUuid) {

@@ -1,9 +1,12 @@
 package io.github.openequella.rest;
 
+import static io.github.openequella.rest.JsonNodeHelper.getNode;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Streams;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.IOException;
 import java.util.Optional;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -52,10 +55,27 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
   @Test(description = "Get a virtual hierarchy topic")
   public void getVirtualHierarchy() throws IOException {
     JsonNode results = request(JAMES_HIERARCHY_UUID);
+
     // Should be able to get the request hierarchy topic
     assertEquals(getCompoundUuid(results), JAMES_HIERARCHY_UUID);
+  }
+
+  @Test(description = "Get hierarchy key resource item version")
+  public void getItemVersion() throws IOException {
+    final String BOOK_A_V2_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a";
+    final String BOOK_B_UUID = "e35390cf-7c45-4f71-bb94-e6ccc1f09394";
+
+    JsonNode keyResources = request(JAMES_HIERARCHY_UUID).get("keyResources");
+
     // Key resource should point to the correct version
-    assertEquals(results.get("keyResources").get(0).get("version").asInt(), 2);
+    assertFalse(getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("isLatest").asBoolean());
+    assertEquals(
+        getKeyResource(keyResources, BOOK_A_V2_UUID, 2).get("item").get("version").asInt(), 2);
+    // BOOK_B has 2 versions and as an "Always latest key resource" it should point to the latest
+    // version 2.
+    assertTrue(getKeyResource(keyResources, BOOK_B_UUID, 2).get("isLatest").asBoolean());
+    assertEquals(
+        getKeyResource(keyResources, BOOK_B_UUID, 2).get("item").get("version").asInt(), 2);
   }
 
   @Test(description = "Get a virtual hierarchy topic which name contains comma")
@@ -79,14 +99,14 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Get hierarchy IDs with key resource")
   public void getHierarchyIdsWithKeyResource() throws IOException {
-    final String ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a";
+    final String ITEM_UUID = "7e633e1d-e343-4e51-babc-403265c7b7c4";
     final GetMethod method =
-        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/2");
+        new GetMethod(BROWSE_HIERARCHY_API_ENDPOINT + "/key-resource/" + ITEM_UUID + "/1");
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
     JsonNode result = mapper.readTree(method.getResponseBody());
-    assertEquals(result.get(0).asText(), JAMES_HIERARCHY_UUID);
+    assertEquals(result.get(0).asText(), "43e60e9a-a3ed-497d-b79d-386fed23675c");
   }
 
   private JsonNode request(String compoundUuid) throws IOException {
@@ -103,16 +123,19 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
 
   // get specific topic from endpoint result
   private JsonNode getTopic(JsonNode result, String topicUuid) {
-    Optional<JsonNode> topic =
-        Streams.stream(result.elements())
-            .filter(
-                t ->
-                    Optional.ofNullable(t.get("compoundUuid"))
-                        .map(JsonNode::asText)
-                        .map(uuid -> uuid.equals(topicUuid))
-                        .orElse(false))
-            .findFirst();
-    return topic.orElseThrow();
+    return getNode((ArrayNode) result, "compoundUuid", topicUuid);
+  }
+
+  private JsonNode getKeyResource(JsonNode result, String itemUuid, int version) {
+    return getNode(
+        (ArrayNode) result,
+        n ->
+            n.get("item").findParents("uuid").stream()
+                .filter(item -> item.get("version").asInt() == version)
+                .findFirst()
+                .map(item -> item.get("uuid"))
+                .orElse(null),
+        itemUuid);
   }
 
   private String getCompoundUuid(JsonNode result) {

@@ -91,7 +91,7 @@ public class SelectUserDialog extends AbstractPage<SelectUserDialog> {
   private By getByForUsername(String username) {
     String xpath =
         MessageFormat.format(
-            "id({0})//div[@id={1}]//ul/li[div[contains(text(), {2})]]/input",
+            "id({0})//div[@id={1}]//ul/li[div[text() = {2}]]/input",
             quoteXPath(baseId), quoteXPath("results"), quoteXPath(username));
     return By.xpath(xpath);
   }

@@ -39,7 +39,7 @@ const { breadcrumb: breadcrumbText } = languageStrings.common;
 const { browse: browseText } = languageStrings.hierarchy;
 
 const buildBreadcrumbs = (
-  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>,
+  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>,
 ): React.JSX.Element => {
   const crumbs = pipe(
     hierarchy.parents,
@@ -87,7 +87,7 @@ export interface HierarchyPanelProps {
   /**
    * The hierarchy to be displayed.
    */
-  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem>;
+  hierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>;
 }
 
 /**

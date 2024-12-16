@@ -26,10 +26,10 @@ import { GET } from './AxiosInstance';
 import {
   HierarchyTopicCodec,
   HierarchyTopicSummaryCodec,
+  KeyResourceCodec,
 } from './gen/BrowseHierarchy';
-import { SearchResultItemRawCodec } from './gen/Search';
-import type { SearchResultItem, SearchResultItemRaw } from './Search';
-import { convertDateFields, STANDARD_DATE_FIELDS, validate } from './Utils';
+import type { SearchResultItemRaw } from './Search';
+import { validate } from './Utils';
 
 const BROWSE_HIERARCHY_ROOT_PATH = '/browsehierarchy2';
 
@@ -114,11 +114,13 @@ export interface HierarchyTopic<T> {
   keyResources: T[];
 }
 
-const processRawKeyResource = (data: HierarchyTopic<SearchResultItemRaw>) =>
-  convertDateFields<HierarchyTopic<SearchResultItem>>(
-    data,
-    STANDARD_DATE_FIELDS
-  );
+/**
+ * Key resource type returned by the API.
+ */
+export interface KeyResource {
+  item: SearchResultItemRaw;
+  isLatest: boolean;
+}
 
 /**
  * Retrieve summaries of all the Hierarchy topics for the current institution.
@@ -143,11 +145,11 @@ export const browseHierarchies = (
 export const browseHierarchy = (
   apiBasePath: string,
   compoundUuid: string
-): Promise<HierarchyTopic<SearchResultItem>> =>
-  GET<HierarchyTopic<SearchResultItemRaw>>(
+): Promise<HierarchyTopic<KeyResource>> =>
+  GET<HierarchyTopic<KeyResource>>(
     apiBasePath + BROWSE_HIERARCHY_ROOT_PATH + `/${compoundUuid}`,
-    validate(HierarchyTopicCodec(SearchResultItemRawCodec))
-  ).then(processRawKeyResource);
+    validate(HierarchyTopicCodec(KeyResourceCodec))
+  );
 
 /**
  * Retrieve the compound UUIDs of hierarchies which have the key resource specified by the supplied Item UUID and version.

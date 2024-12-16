@@ -2,7 +2,6 @@
   <id>216953</id>
   <uuid>e8c49738-7609-0079-e354-67b2e4e6b54c</uuid>
   <listPosition>0</listPosition>
-  <keyResources/>
   <showResults>true</showResults>
   <freetext>basic OR random</freetext>
   <inheritFreetext>false</inheritFreetext>
@@ -25,6 +24,21 @@
       </entry>
     </strings>
   </name>
+  <shortDescription>
+    <id>1621261</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>1621262</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>This is short descriptions</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </shortDescription>
   <hideSubtopicsWithNoResults>false</hideSubtopicsWithNoResults>
   <attributes/>
 </com.tle.beans.hierarchy.HierarchyTopic>

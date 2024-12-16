@@ -94,6 +94,16 @@ public class ExtendedPostgresDialect extends PostgreSQL9Dialect implements Exten
   }
 
   @Override
+  public String getRenameTableSql(String table, String newName) {
+    return "ALTER TABLE " + table + " RENAME TO " + newName;
+  }
+
+  @Override
+  public String getRenameIndexSql(String table, String indexName, String newName) {
+    return "ALTER INDEX " + indexName + " RENAME TO " + newName;
+  }
+
+  @Override
   public String getDropColumnSql(String table, Column column) {
     return "alter table " + table + " drop column " + column.getQuotedName(this);
   }

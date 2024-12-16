@@ -238,6 +238,7 @@ export const languageStrings = {
       success: "Saved successfully.",
       fail: "Failed to save.",
       errors: "Some changes are not saved due to errors listed below",
+      checkForm: "Please check the form for errors.",
     },
     users: "Users",
     groups: "Groups",
@@ -375,6 +376,8 @@ export const languageStrings = {
       title: "Access Denied",
       message: "No permission to access %s - missing ACL(s): %s",
     },
+    missingValue: "Missing value",
+    invalidUrl: "Invalid URL",
   },
   errorpage: {
     title: "Error",
@@ -576,29 +579,23 @@ export const languageStrings = {
       },
     },
     favouriteItem: {
+      add: "Add to favourites",
+      remove: "Remove from favourites",
       removeAlert: "Are you sure you want to remove from your favourites?",
-      tags: {
-        description: "Tags to help when searching (optional).",
-        selectVersion: "Select version to add:",
-        toThisVersion:
-          "NOTE: Adding this favourite will point to this version forever.",
-        versionOptions: {
-          useLatestVersion: "Always use latest version",
-          useThisVersion: "This version",
-        },
-      },
-      title: {
-        add: "Add to favourites",
-        remove: "Remove from favourites",
-      },
+      tagDescription: "Tags to help when searching (optional).",
     },
-    addItemToHierarchy: {
+    addToHierarchy: {
       title: "Add as key resource to a hierarchy",
       dialogTitle: "Modify key resource",
       dialogDesc:
         "Click add/remove icon to update the key resource for the hierarchy",
       add: "Add to hierarchy",
       remove: "Remove from hierarchy",
+    },
+    hierarchyKeyResourceDialog: {
+      add: "Add to key resource",
+      remove: "Remove from key resource",
+      removeAlert: "Are you sure you want to remove from key resource?",
     },
     favouriteSearch: {
       saveSearchConfirmationText: "Search added to favourites",
@@ -645,6 +642,7 @@ export const languageStrings = {
     },
     remoteSearchSelector: {
       title: "Access Remote repositories",
+      label: "Remote repositories",
     },
     searchAttachmentsSelector: {
       title: "Search attachments",
@@ -694,6 +692,15 @@ export const languageStrings = {
       allAttachments: "Select all attachments",
     },
   },
+  selectItemVersionDialog: {
+    selectVersion: "Select version to add:",
+    toThisVersion:
+      "Note: Once this item is added, it will to point to this version permanently.",
+    versionOptions: {
+      useLatestVersion: "Always use latest version",
+      useThisVersion: "This version",
+    },
+  },
   settings: {
     general: { name: "General", desc: "General settings" },
     integration: {
@@ -737,6 +744,8 @@ export const languageStrings = {
             usableBy: "Usable by",
             usableByDesc:
               "Only allow user matching this expression to use this platform",
+            usableByValidationError:
+              "The processed ACL expression exceeds the permitted length",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",
@@ -755,14 +764,9 @@ export const languageStrings = {
             customRoles: "Custom roles",
             customRolesDesc:
               "Select an LTI role, then select the openEQUELLA roles",
-            customRoleDialogTitle: "Select LTI and oEQ roles",
-            customRoleSelectLtiRole: "Select LTI role",
-            customRoleSelectOeqRole: "Select oEQ role",
-            customRoleCurrentSelections: "Current selections",
+            customRoleDialogTitle: "Select LTI and openEQUELLA roles",
+            customRoleSelectLtiRoleLabel: "Select LTI role",
             customRoleTableLtiRoleColumn: "LTI Role Name",
-            customRoleTableOeqRoleColumn: "openEQUELLA Role Name",
-            customRoleAddRoles:
-              "Please add roles with the selector and search control",
             unknownRoles: "Unknown roles",
             unknownRolesDesc:
               "Select the openEQUELLA roles that should be used for all unmapped LTI roles",
@@ -821,6 +825,67 @@ export const languageStrings = {
             rotateKeyPairConfirmText: "Rotate Key Pair?",
             rotateKeyPairSuccess: "Key pair rotated successfully",
           },
+        },
+      },
+      oidc: {
+        name: "OIDC configuration",
+        generalDetails: {
+          title: "General Details",
+          issuer: "Issuer",
+          issuerDesc:
+            "The issuer identifier for the OpenID Connect provider. This value should match the 'iss' claim in the JWTs issued by this provider.",
+          authCodeClientId: "Client ID",
+          authCodeClientSecret: "Client secret",
+          authUrl: "Identity Provider Login URL",
+          authUrlDesc:
+            "Enter the URL of your Identity Provider's authorization endpoint. This is where users will be redirected to initiate the OpenID Connect login flow.",
+          keysetUrl: "Public Key Endpoint URL",
+          keysetUrlDesc:
+            "Enter the URL of the endpoint providing the JSON Web Key Set (JWKS). This set of public keys is used to verify the authenticity of tokens issued by the Identity Provider.",
+          tokenUrl: "Token URL",
+          tokenUrlDesc:
+            "Enter the URL of the token endpoint. openEQUELLA will use this (with the above Client ID and Secret) to obtain an ID token to identify the authenticated user.",
+          usernameClaim: "Username claim",
+          usernameClaimDesc:
+            "By default, openEQUELLA uses the 'sub' claim from the ID token as the username. To use a different claim (e.g., email or preferred_username), enter the claim name here. Leave blank to use the default 'sub' claim.",
+          enable: "Enable",
+        },
+        apiDetails: {
+          title: "Identity Provider API",
+          desc: "openEQUELLA uses the following Identity Provider API details to retrieve information about authenticated users. Please first specify which Identity Provider Platform you’re using, and then complete the displayed fields.",
+          platform: "Identity Provider",
+          platformDesc:
+            "The Identity Provider which users are authenticating against using the above details",
+          generic: {
+            apiUrl: "API endpoint",
+            apiUrlDesc:
+              "The base URL for your Identity Provider’s API - often unique to your account.",
+            apiClientId: "API Client ID",
+            apiClientIdDesc:
+              "Client ID provided by your identity provider to use when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
+            apiClientSecret: "API Client Secret",
+            apiClientSecretDesc:
+              "Client secret provided by your identity provider to use with the above Client ID when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
+          },
+        },
+        roleMappings: {
+          title: "Role Mappings",
+          defaultRole: "Default roles",
+          defaultRoleDesc:
+            "Map the openEQUELLA roles to be used for users logging in via the Identity Provider.",
+          roleClaim: "Role claim",
+          roleClaimDesc:
+            "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization. (Role mapping options will be displayed once specified.)",
+          customRoleDialog: {
+            title: "IdP role mappings",
+            customRoleLabel: "Enter IdP role",
+            customRoleColumnName: "IdP Role Name",
+          },
+        },
+        oeqDetails: {
+          title: "openEQUELLA (RP) details",
+          desc: "Below is the details for this openEQUELLA institution's OIDC interface. Please use this to configure your OIDC Platform.",
+          redirect: "Redirection URL",
         },
       },
     },
@@ -964,6 +1029,20 @@ export const languageStrings = {
     enableSearch: "Enable new search page",
     themeSettingsButton: "Edit Theme Settings",
   },
+  selectCustomRoleDialog: {
+    title: "Select Custom and openEQUELLA roles",
+    customRoleTitle: "Input Custom role",
+    customRoleLabel: "Enter custom role",
+    oeqRoleTitle: "Select openEQUELLA role",
+    currentMappings: "Mappings",
+    customRoleColumn: "Custom Role Name",
+    oeqRoleColumn: "openEQUELLA Role Name",
+    addRoles: "Please add roles with the selector and search control",
+  },
+  customRolesMappingControl: {
+    title: "Custom roles",
+    desc: "Map the values from your specified role claim to corresponding roles in openEQUELLA.",
+  },
   selectEntityDialog: {
     currentSelections: "Current selections",
   },
@@ -994,13 +1073,13 @@ export const languageStrings = {
     helpTitle: "Select group(s)",
     helpDesc: "The search query can contain a group name or partial name.",
     failedToFindMessage: "Unable to find any group matching '%s'",
-    queryFieldLabel: "Enter group",
+    queryFieldLabel: "Search groups",
   },
   roleSearchComponent: {
     helpTitle: "Select role(s)",
     helpDesc: "The search query can contain a role name or partial name.",
     failedToFindMessage: "Unable to find any role matching '%s'",
-    queryFieldLabel: "Enter role",
+    queryFieldLabel: "Search roles",
   },
   groupSearchDialog: {
     title: "Select group(s)",

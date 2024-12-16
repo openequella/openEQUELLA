@@ -116,6 +116,16 @@ public class SQLServerDialect extends SQLServer2012Dialect implements ExtendedDi
   }
 
   @Override
+  public String getRenameTableSql(String table, String newName) {
+    return "EXEC SP_RENAME '" + table + "', " + "'" + newName + "'";
+  }
+
+  @Override
+  public String getRenameIndexSql(String table, String indexName, String newName) {
+    return "EXEC SP_RENAME N'" + table + "." + indexName + "', N'" + newName + "', N'index'";
+  }
+
+  @Override
   public String getDropColumnSql(String table, Column column) {
     String dropSQL = dropConstraintsSQL.replaceAll("\\$table", Matcher.quoteReplacement(table));
     dropSQL = dropSQL.replaceAll("\\$column", Matcher.quoteReplacement(column.getName()));

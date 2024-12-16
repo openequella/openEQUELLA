@@ -42,6 +42,8 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.schema.service.SchemaService;
 import com.tle.core.security.TLEAclManager;
+import com.tle.web.api.browsehierarchy.BrowseHierarchyHelper;
+import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.api.hierarchy.beans.HierarchyEditBean;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
@@ -99,6 +101,7 @@ public class EditHierarchyResource {
   @Inject private ItemDefinitionService itemDefinitionService;
   @Inject private PowerSearchService powerSearchService;
   @Inject private SchemaService schemaService;
+  @Inject private BrowseHierarchyHelper browseHierarchyHelper;
 
   /**
    * Returns all root-level topics.
@@ -204,7 +207,9 @@ public class EditHierarchyResource {
   @ApiOperation(value = "edit a HierarchyTopic")
   public Response editHierarchy(
       // @formatter:off
-      @ApiParam(value = "target hierarchy uuid", required = true) @PathParam("uuid") String uuid,
+      @ApiParam(value = "target hierarchy uuid in legacy format", required = true)
+          @PathParam("uuid")
+          String uuid,
       @ApiParam(APIDOC_TOPICJSON) HierarchyEditBean hierarchyBean
       // @formatter:on
       ) {
@@ -216,8 +221,14 @@ public class EditHierarchyResource {
 
     // populate an Entity from the bean
     HierarchyTopic editedTopic = hierarchyTopicFromBean(hierarchyBean, hierarchy);
+    HierarchyCompoundUuid compoundUUid = HierarchyCompoundUuid.apply(hierarchyBean.getUuid(), true);
 
     hierarchyService.edit(editedTopic);
+    List<ItemId> itemIds =
+        hierarchyBean.getKeyResources().stream()
+            .map(itemBean -> new ItemId(itemBean.getUuid(), itemBean.getVersion()))
+            .toList();
+    hierarchyService.updateKeyResources(compoundUUid, itemIds);
     return Response.ok().build();
   }
 
@@ -330,10 +341,12 @@ public class EditHierarchyResource {
         bean.setVirtualisationId(hierarchyTopic.getVirtualisationId());
       }
 
+      HierarchyCompoundUuid compoundUuid =
+          HierarchyCompoundUuid.apply(hierarchyTopic.getUuid(), true);
       // Corresponding to the admin console's Key Resources tab
-      if (!Check.isEmpty(hierarchyTopic.getKeyResources())) {
-        List<ItemBean> keyResourceBeans =
-            itemBeansFromItems(hierarchyTopic.getKeyResources(), false);
+      List<Item> keyResources = hierarchyService.getKeyResourceItems(compoundUuid);
+      if (!Check.isEmpty(keyResources)) {
+        List<ItemBean> keyResourceBeans = itemBeansFromItems(keyResources, false);
         bean.setKeyResources(keyResourceBeans);
       }
 
@@ -353,20 +366,6 @@ public class EditHierarchyResource {
       } else {
         bean.setInheritFreetext(false);
       }
-
-      // dynamic filtering properties
-      //			if( !Check.isEmpty(hierarchyTopic.getAttributes()) )
-      //			{
-      //				List<HierarchyEditBean.AttributeBean> beanAttributes = Lists.newArrayList();
-      //				for( HierarchyTopic.Attribute topicAttribute : hierarchyTopic.getAttributes() )
-      //				{
-      //					HierarchyEditBean.AttributeBean attribBean = new HierarchyEditBean.AttributeBean();
-      //					attribBean.setKey(topicAttribute.getKey());
-      //					attribBean.setValue(topicAttribute.getValue());
-      //					beanAttributes.add(attribBean);
-      //				}
-      //				bean.setAttributes(beanAttributes);
-      //			}
 
       // minimal detail of subnodes, if any
       if (!Check.isEmpty(subnodes)) {
@@ -422,15 +421,6 @@ public class EditHierarchyResource {
     // Display items (true/false)
     hierarchyTopic.setShowResults(bean.isShowResults());
 
-    // key resources
-    if (!Check.isEmpty(bean.getKeyResources())) {
-      List<Item> keyResourceItems = new ArrayList<Item>(bean.getKeyResources().size());
-      for (ItemBean keyItemBean : bean.getKeyResources()) {
-        Item item = itemService.get(new ItemId(keyItemBean.getUuid(), keyItemBean.getVersion()));
-        keyResourceItems.add(item);
-      }
-      hierarchyTopic.setKeyResources(keyResourceItems);
-    }
     // Constraints ===================================================
     hierarchyTopic.setFreetext(bean.getFreetext());
 
@@ -451,13 +441,6 @@ public class EditHierarchyResource {
     if (!Check.isEmpty(bean.getVirtualisationPath())) {
       hierarchyTopic.setVirtualisationPath(bean.getVirtualisationPath());
       hierarchyTopic.setVirtualisationId(bean.getVirtualisationId());
-      //			if( !Check.isEmpty(bean.getAttributes()) )
-      //			{
-      //				for( HierarchyEditBean.AttributeBean beanAttribute : bean.getAttributes() )
-      //				{
-      //					hierarchyTopic.setAttribute(beanAttribute.getKey(), beanAttribute.getValue());
-      //				}
-      //			}
     }
     return hierarchyTopic;
   }
@@ -522,7 +505,6 @@ public class EditHierarchyResource {
   /**
    * Convert a list of ItemDefinitionScriptBeans to ItemDefinitionScripts
    *
-   * @param ItemDefinitionScriptBeans
    * @return list ItemDefinitionScript, or null if empty
    */
   private List<ItemDefinitionScript> objectsFromBeansItemDefinition(
@@ -544,8 +526,6 @@ public class EditHierarchyResource {
   /**
    * there's a set of inheritable ItemDefn Scripts which may or may not be a super-set of ItemDefn
    * Scripts actually inherited
-   *
-   * @return
    */
   private void getInheritedAndEligibleItemDefScripts(
       HierarchyEditBean bean, HierarchyTopic hierarchyTopic, HierarchyTopic parentHierachy) {
@@ -590,11 +570,7 @@ public class EditHierarchyResource {
     }
   }
 
-  /**
-   * Same logic as for ItemDefinitionScripts
-   *
-   * @return
-   */
+  /** Same logic as for ItemDefinitionScripts */
   private void getInheritedAndEligibleSchemaScripts(
       HierarchyEditBean bean, HierarchyTopic hierarchyTopic, HierarchyTopic parentHierachy) {
     // Set the explicitly inherited Schemas ...

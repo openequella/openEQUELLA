@@ -15,16 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PushPin, PushPinOutlined } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { constFalse, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { TooltipIconButton } from "../components/TooltipIconButton";
 import { AppContext } from "../mainui/App";
 import { NEW_HIERARCHY_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
@@ -35,11 +33,7 @@ import {
   getHierarchy,
   getMyAcls,
 } from "../modules/HierarchyModule";
-import { itemEq } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
-import SearchResult, {
-  defaultActionButtonProps,
-} from "../search/components/SearchResult";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
@@ -54,14 +48,11 @@ import { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import HierarchyPanel from "./components/HierarchyPanel";
 import HierarchyPanelSkeleton from "./components/HierarchyPanelSkeleton";
+import HierarchySearchResult from "./components/HierarchySearchResult";
 import KeyResourcePanel from "./components/KeyResourcePanel";
 import KeyResourcePanelSkeleton from "./components/KeyResourcePanelSkeleton";
 
-const {
-  addKeyResource: addKeyResourceText,
-  removeKeyResource: removeKeyResourceText,
-  hierarchyPageTitle,
-} = languageStrings.hierarchy;
+const { hierarchyPageTitle } = languageStrings.hierarchy;
 
 const refinePanelConfig: SearchPageRefinePanelConfig = {
   enableDisplayModeSelector: true,
@@ -97,7 +88,8 @@ const HierarchyPage = ({
   const { appErrorHandler } = useContext(AppContext);
 
   const [hierarchy, setHierarchy] = useState<
-    OEQ.BrowseHierarchy.HierarchyTopic<OEQ.Search.SearchResultItem> | undefined
+    | OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>
+    | undefined
   >();
   const [hierarchyAcls, setHierarchyAcls] =
     useState<OEQ.Hierarchy.HierarchyTopicAcl>(defaultHierarchyAcl);
@@ -136,17 +128,36 @@ const HierarchyPage = ({
   /**
    * Add/Delete a key resource to the hierarchy and then update the `needUpdateHierarchy` flag.
    *
-   * @param item the search result item to add/delete as a key resource.
+   * @param itemUuid the UUID of the item to be added/deleted.
+   * @param itemVersion the version of the item to be added/deleted.
    * @param isDelete true if the item is to be deleted, false if the item is to be added.
+   * @param isAlwaysLatest true if the key resource should point to the latest version of the referenced item.
+   *                       If it is undefined, this value will be generated inside the function,
+   *                       it retrieves the corresponding key resource for the item and check if it is the always-latest key resource.
    */
   const updateKeyResource = (
-    item: OEQ.Search.SearchResultItem,
+    itemUuid: OEQ.Common.UuidString,
+    itemVersion: number,
     isDelete: boolean,
-  ) => {
+    isAlwaysLatest?: boolean,
+  ): Promise<void> => {
+    const isLatest =
+      isAlwaysLatest !== undefined
+        ? isAlwaysLatest
+        : pipe(
+            hierarchy?.keyResources ?? [],
+            A.findFirst((resource) => {
+              const { uuid, version } = resource.item;
+              return itemUuid === uuid && itemVersion === version;
+            }),
+            O.map((resource) => resource.isLatest),
+            O.getOrElse(constFalse),
+          );
+
     const action = isDelete ? deleteKeyResource : addKeyResource;
-    pipe(
+    return pipe(
       TE.tryCatch(
-        () => action(compoundUuid, item.uuid, item.version),
+        () => action(compoundUuid, itemUuid, isLatest ? 0 : itemVersion),
         (e) => `Failed to update key resource: ${e}`,
       ),
       TE.match(appErrorHandler, (_) => setNeedUpdateHierarchy(true)),
@@ -180,38 +191,24 @@ const HierarchyPage = ({
     item: OEQ.Search.SearchResultItem,
     highlights: string[],
   ): React.ReactNode => {
+    const { uuid: itemUuid, version: itemVersion } = item;
+
     const isKeyResource = pipe(
       hierarchy?.keyResources ?? [],
-      A.exists((resource) => itemEq.equals(item, resource)),
-    );
-
-    const title = isKeyResource ? removeKeyResourceText : addKeyResourceText;
-
-    const updateKeyResourceButton = (
-      <TooltipIconButton
-        aria-label={title}
-        title={title}
-        onClick={() => updateKeyResource(item, isKeyResource)}
-        size="small"
-      >
-        {isKeyResource ? <PushPin color="secondary" /> : <PushPinOutlined />}
-      </TooltipIconButton>
+      A.exists((resource) => {
+        const { version, uuid } = resource.item;
+        return itemUuid === uuid && itemVersion === version;
+      }),
     );
 
     return (
-      <SearchResult
-        key={`${item.uuid}/${item.version}`}
+      <HierarchySearchResult
+        key={`${itemUuid}/${itemVersion}`}
         item={item}
         highlights={highlights}
-        customActionButtons={
-          hierarchyAcls.MODIFY_KEY_RESOURCE
-            ? [updateKeyResourceButton]
-            : undefined
-        }
-        actionButtonConfig={{
-          ...defaultActionButtonProps,
-          showAddToHierarchy: false,
-        }}
+        isKeyResource={isKeyResource}
+        hasModifyKeyResourceAcl={hierarchyAcls.MODIFY_KEY_RESOURCE}
+        updateKeyResource={updateKeyResource}
       />
     );
   };
@@ -271,10 +268,16 @@ const HierarchyPage = ({
                 O.map((keyResources) => (
                   <Grid item xs={12}>
                     <KeyResourcePanel
-                      items={keyResources}
+                      keyResources={keyResources}
                       onPinIconClick={
                         hierarchyAcls.MODIFY_KEY_RESOURCE
-                          ? (item) => updateKeyResource(item, true)
+                          ? ({ item, isLatest }) =>
+                              updateKeyResource(
+                                item.uuid,
+                                item.version,
+                                true,
+                                isLatest,
+                              )
                           : undefined
                       }
                     />

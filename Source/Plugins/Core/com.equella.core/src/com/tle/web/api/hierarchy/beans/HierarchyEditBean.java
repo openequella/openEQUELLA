@@ -165,16 +165,6 @@ public class HierarchyEditBean extends AbstractExtendableBean {
     this.virtualisationId = virtualisationId;
   }
 
-  //	public List<AttributeBean> getAttributes()
-  //	{
-  //		return attributes;
-  //	}
-  //
-  //	public void setAttributes(List<AttributeBean> attributes)
-  //	{
-  //		this.attributes = attributes;
-  //	}
-
   public List<ItemBean> getKeyResources() {
     return keyResources;
   }
@@ -241,35 +231,4 @@ public class HierarchyEditBean extends AbstractExtendableBean {
       List<ItemDefinitionScriptBean> inheritedCollectionScripts) {
     this.inheritedCollectionScripts = inheritedCollectionScripts;
   }
-
-  /**
-   * Simplified version of NameValue class - a minimal interface avoids superfluous duplicated
-   * properties
-   */
-  //	public static class AttributeBean
-  //	{
-  //		private String key;
-  //
-  //		private String value;
-  //
-  //		public String getKey()
-  //		{
-  //			return key;
-  //		}
-  //
-  //		public void setKey(String key)
-  //		{
-  //			this.key = key;
-  //		}
-  //
-  //		public String getValue()
-  //		{
-  //			return value;
-  //		}
-  //
-  //		public void setValue(String value)
-  //		{
-  //			this.value = value;
-  //		}
-  //	}
 }
