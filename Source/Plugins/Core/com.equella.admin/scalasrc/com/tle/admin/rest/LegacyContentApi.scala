@@ -18,8 +18,7 @@
 
 package com.tle.admin.rest
 
-import io.circe.Decoder
-import io.circe.generic.semiauto._
+import io.circe.generic.auto._
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.client3.basicRequest
 import sttp.client3.circe.asJson
@@ -64,10 +63,6 @@ final case class CurrentUserDetails(
 object LegacyContentApi {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(LegacyContentApi.getClass)
   private val API_PATH                = "content"
-
-  implicit val menuItemDecoder: Decoder[MenuItem]                     = deriveDecoder
-  implicit val itemCountsDecoder: Decoder[ItemCounts]                 = deriveDecoder
-  implicit val currentUserDetailsDecoder: Decoder[CurrentUserDetails] = deriveDecoder
 
   /** Retrieves the details of the currently authenticated user.
     */
