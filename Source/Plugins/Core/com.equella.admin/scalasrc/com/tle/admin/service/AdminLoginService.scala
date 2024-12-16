@@ -22,7 +22,7 @@ import java.util.Optional
 
 /** Service to manage the currently authenticated session.
   */
-trait AdminTLELoginService {
+trait AdminLoginService {
   def keepAlive(): Unit
 
   def logout(): Unit

@@ -23,8 +23,8 @@ import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.tle.admin.service.AdminTLEKeepAliveService;
-import com.tle.admin.service.AdminTLELoginService;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminLoginService;
 import com.tle.client.guice.ClientModule;
 import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.common.applet.client.ClientService;
@@ -71,8 +71,8 @@ public class ClientServiceImpl implements ClientService {
   public void stop() {
     LOGGER.info("Stopping the Admin Console");
 
-    getService(AdminTLEKeepAliveService.class).stop();
-    getService(AdminTLELoginService.class).logout();
+    getService(AdminKeepAliveService.class).stop();
+    getService(AdminLoginService.class).logout();
 
     System.exit(0);
   }

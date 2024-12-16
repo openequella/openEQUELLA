@@ -24,8 +24,8 @@ import com.dytech.gui.ExceptionDialog;
 import com.tle.admin.boot.Bootstrap;
 import com.tle.admin.controls.ControlRepositoryImpl;
 import com.tle.admin.controls.repository.ControlRepository;
-import com.tle.admin.service.AdminTLEKeepAliveService;
-import com.tle.admin.service.AdminTLELoginService;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminLoginService;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
@@ -82,7 +82,7 @@ public final class Driver {
     // Setup some initial state.
     loggedInUserID =
         clientService
-            .getService(AdminTLELoginService.class)
+            .getService(AdminLoginService.class)
             .getLoggedInUserId()
             .orElseThrow(() -> new IllegalStateException("No logged in user"));
     institutionName = clientService.getParameter(Bootstrap.SERVER_NAME_PARAMETER);
@@ -104,7 +104,7 @@ public final class Driver {
       throw new RuntimeException(e);
     }
 
-    clientService.getService(AdminTLEKeepAliveService.class).start();
+    clientService.getService(AdminKeepAliveService.class).start();
   }
 
   // This is deprecated as far back as the history we have is (i.e. before 2013), but yet it is

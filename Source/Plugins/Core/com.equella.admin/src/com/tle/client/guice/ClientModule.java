@@ -23,10 +23,10 @@ import com.google.inject.Provides;
 import com.tle.admin.helper.ClientConfigurationHelper;
 import com.tle.admin.helper.RestConfigurationHelper;
 import com.tle.admin.rest.RestConfiguration;
-import com.tle.admin.service.AdminTLEKeepAliveService;
-import com.tle.admin.service.AdminTLEKeepAliveServiceImpl;
-import com.tle.admin.service.AdminTLELoginService;
-import com.tle.admin.service.AdminTLELoginServiceImpl;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminKeepAliveServiceImpl;
+import com.tle.admin.service.AdminLoginService;
+import com.tle.admin.service.AdminLoginServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
 import com.tle.common.applet.client.ClientService;
@@ -51,8 +51,8 @@ public class ClientModule extends AbstractModule {
     // In the server code base we do have the ScannerModule which does something more like
     // component scanning, but it is not used in the client code base. And our list of classes
     // here will be straightforward, so we can just list them out.
-    bind(AdminTLEKeepAliveService.class).to(AdminTLEKeepAliveServiceImpl.class);
-    bind(AdminTLELoginService.class).to(AdminTLELoginServiceImpl.class);
+    bind(AdminKeepAliveService.class).to(AdminKeepAliveServiceImpl.class);
+    bind(AdminLoginService.class).to(AdminLoginServiceImpl.class);
     bind(AdminTLEUserService.class).to(AdminTLEUserServiceImpl.class);
   }
 

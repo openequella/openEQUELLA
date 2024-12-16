@@ -20,7 +20,7 @@ package com.tle.admin.service
 
 /** Service to keep the oEQ session alive by calling the openEQUELLA server keep alive endpoint.
   */
-trait AdminTLEKeepAliveService {
+trait AdminKeepAliveService {
 
   /** Start the keep alive service. This will result in a background thread regularly calling the
     * openEQUELLA server keep alive endpoint.

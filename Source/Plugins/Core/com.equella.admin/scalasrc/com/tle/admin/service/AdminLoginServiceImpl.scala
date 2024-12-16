@@ -25,9 +25,8 @@ import java.util.Optional
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AdminTLELoginServiceImpl @Inject() (implicit cfg: RestConfiguration)
-    extends AdminTLELoginService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLELoginServiceImpl])
+class AdminLoginServiceImpl @Inject() (implicit cfg: RestConfiguration) extends AdminLoginService {
+  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminLoginServiceImpl])
 
   override def keepAlive(): Unit = StatusApi.heartbeat
 

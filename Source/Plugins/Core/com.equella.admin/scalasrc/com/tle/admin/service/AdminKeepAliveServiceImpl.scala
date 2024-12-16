@@ -26,10 +26,10 @@ import java.util.{Timer, TimerTask}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AdminTLEKeepAliveServiceImpl @Inject() (implicit cfg: RestConfiguration)
-    extends AdminTLEKeepAliveService {
+class AdminKeepAliveServiceImpl @Inject() (implicit cfg: RestConfiguration)
+    extends AdminKeepAliveService {
 
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEKeepAliveServiceImpl])
+  private val LOGGER: Logger          = LoggerFactory.getLogger(classOf[AdminKeepAliveServiceImpl])
   private var task: Option[TimerTask] = None
 
   override def start(): Unit = {
