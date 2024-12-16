@@ -26,7 +26,7 @@ import sttp.client3.circe.asJson
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
-case class MenuItem(
+final case class MenuItem(
     title: String,
     href: Option[String],
     systemIcon: Option[String],
@@ -37,11 +37,11 @@ case class MenuItem(
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
-case class ItemCounts(tasks: Int, notifications: Int)
+final case class ItemCounts(tasks: Int, notifications: Int)
 
 // Copied from Source/Plugins/Core/com.equella.core/scalasrc/com/tle/web/api/LegacyContentApi.scala
 // We don't want to have a dependency on the core module, so we're copying the code here.
-case class CurrentUserDetails(
+final case class CurrentUserDetails(
     id: String,
     username: String,
     firstName: String,
