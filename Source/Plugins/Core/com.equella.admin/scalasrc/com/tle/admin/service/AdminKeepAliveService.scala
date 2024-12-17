@@ -18,17 +18,14 @@
 
 package com.tle.admin.service
 
-import io.github.openequella.graphql.api.ApiError
+/** Service to keep the oEQ session alive by calling the openEQUELLA server keep alive endpoint.
+  */
+trait AdminKeepAliveService {
 
-class ClientRequestException(message: String, apiErrors: List[ApiError])
-    extends RuntimeException(message) {
-  override def getMessage: String = {
-    val sb = new StringBuilder(super.getMessage)
-    sb.append("\nApi Errors:\n")
-    apiErrors.foreach { e =>
-      sb.append(s"  $e")
-      sb.append("\n")
-    }
-    sb.toString()
-  }
+  /** Start the keep alive service. This will result in a background thread regularly calling the
+    * openEQUELLA server keep alive endpoint.
+    */
+  def start(): Unit
+
+  def stop(): Unit
 }

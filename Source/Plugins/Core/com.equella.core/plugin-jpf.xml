@@ -597,11 +597,6 @@
     <parameter id="serviceInterface" value="com.tle.web.entity.services.SoapCourseService" />
     <parameter id="bean" value="bean:com.tle.web.entity.services.SoapCourseServiceImpl" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="loginService">
-    <parameter id="class" value="com.tle.core.remoting.RemoteLoginService" />
-    <parameter id="bean" value="bean:com.tle.web.remoting.impl.LoginServiceImpl" />
-    <parameter id="enableRequestCapturing" value="true" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="privilegeInvoker">
     <parameter id="class" value="com.tle.common.security.remoting.RemotePrivilegeTreeService" />
     <parameter id="bean" value="bean:remotePrivilegeTreeService" />

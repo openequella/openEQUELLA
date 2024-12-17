@@ -16,12 +16,24 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.admin.rest
 
-public interface RemoteLoginService {
-  String getLoggedInUserId();
+import org.slf4j.{Logger, LoggerFactory}
+import sttp.client3.{asString, basicRequest}
 
-  void logout();
+/** The `StatusApi` object provides a client for the /api/status endpoints of the openEQUELLA REST
+  * API.
+  */
+object StatusApi {
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(StatusApi.getClass)
+  private val API_PATH                = "status"
 
-  void keepAlive();
+  /** Update the heartbeat for the current user. Typically used to keep the session alive.
+    */
+  def heartbeat(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
+    val request = basicRequest.get(cfg.apiUrl().addPath(API_PATH, "heartbeat")).response(asString)
+    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+      Right(())
+    }
+  }
 }

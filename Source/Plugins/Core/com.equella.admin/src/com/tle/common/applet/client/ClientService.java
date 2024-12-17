@@ -18,7 +18,6 @@
 
 package com.tle.common.applet.client;
 
-import com.tle.common.applet.SessionHolder;
 import java.net.URL;
 
 public interface ClientService {
@@ -29,8 +28,6 @@ public interface ClientService {
   String getParameter(String key);
 
   URL getServerURL();
-
-  SessionHolder getSession();
 
   /* SERVICES */
 

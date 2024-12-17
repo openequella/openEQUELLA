@@ -16,38 +16,23 @@
  * limitations under the License.
  */
 
-package com.tle.common.applet;
+package com.tle.admin.rest
 
-import java.net.URL;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.{Logger, LoggerFactory}
+import sttp.client3.basicRequest
 
-public class SessionHolder {
-  static final Log LOGGER = LogFactory.getLog(SessionHolder.class);
+/** The `AuthApi` object provides a client for the /api/auth endpoints of the openEQUELLA REST API.
+  */
+object AuthApi {
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(AuthApi.getClass)
+  private val API_PATH                = "auth"
 
-  private final LoginService loginService;
-  private final KeepAliveTask keepAliveTask;
-  private final URL url;
-
-  public SessionHolder(URL url) {
-    this.url = url;
-    loginService = new LoginService(this);
-    keepAliveTask = new KeepAliveTask(this);
-  }
-
-  public void enableKeepAlive(boolean b) {
-    if (b) {
-      keepAliveTask.onSchedule();
-    } else {
-      keepAliveTask.cancel();
+  /** Terminates the session for the currently authenticated user.
+    */
+  def logout(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
+    val request = basicRequest.put(cfg.apiUrl().addPath(API_PATH, "logout"))
+    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+      Right(())
     }
-  }
-
-  public URL getUrl() {
-    return url;
-  }
-
-  public LoginService getLoginService() {
-    return loginService;
   }
 }

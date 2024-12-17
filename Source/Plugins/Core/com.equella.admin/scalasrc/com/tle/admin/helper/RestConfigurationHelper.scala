@@ -18,33 +18,37 @@
 
 package com.tle.admin.helper
 
-import io.github.openequella.graphql.ClientConfiguration
+import com.tle.admin.rest.RestConfiguration
 import sttp.model.Uri
 
 import java.net.URL
 
-/** Helper class for Java interop with the ClientConfiguration class. Main area of helping is
-  * loading system cookies. As can be seen in the login methods (e.g.
+/** Helper class for Java interop with the RestConfiguration class. Main area of helping is loading
+  * system cookies. As can be seen in the login methods (e.g.
   * `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
   * `CookieHandler.getDefault` method to load system cookies. This helper class provides a way to
-  * load system cookies into a ClientConfiguration object.
+  * load system cookies into a RestConfiguration object.
   *
   * The main cookie of interest is the `JSESSIONID` cookie. This cookie is used to maintain a
   * session with the openEQUELLA.
+  *
+  * Note that this is largely a duplicate of `ClientConfigurationHelper` in the same package.
+  * Alternatively, this duplication could've been abstracted out with typeclasses, however, there is
+  * only ever intended to be two of these. So the decision was to keep it simple.
   */
-object ClientConfigurationHelper {
+object RestConfigurationHelper {
 
-  /** Create a ClientConfiguration object from a java URL.
+  /** Create a RestConfiguration object from a java URL.
     */
-  def create(url: URL): ClientConfiguration = {
-    ClientConfiguration(Uri(url.toURI))
+  def create(url: URL): RestConfiguration = {
+    RestConfiguration(Uri(url.toURI))
   }
 
-  /** Load system cookies into a ClientConfiguration object. With the knowledge that the
-    * `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which only
-    * stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
+  /** Load system cookies into a RestConfiguration object to match those which have been used after
+    * logging into openEQUELLA.
     */
-  def loadSystemCookies(cfg: ClientConfiguration): Unit = {
+  def loadSystemCookies(cfg: RestConfiguration): Unit = {
     cfg.cookies.addAll(CookieHelper.getSystemCookies(cfg.institutionUrl))
   }
+
 }

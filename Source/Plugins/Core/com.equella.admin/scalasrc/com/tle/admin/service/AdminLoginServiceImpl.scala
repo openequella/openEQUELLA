@@ -18,17 +18,29 @@
 
 package com.tle.admin.service
 
-import io.github.openequella.graphql.api.ApiError
+import com.tle.admin.rest.{AuthApi, LegacyContentApi, RestConfiguration, StatusApi}
+import org.slf4j.{Logger, LoggerFactory}
 
-class ClientRequestException(message: String, apiErrors: List[ApiError])
-    extends RuntimeException(message) {
-  override def getMessage: String = {
-    val sb = new StringBuilder(super.getMessage)
-    sb.append("\nApi Errors:\n")
-    apiErrors.foreach { e =>
-      sb.append(s"  $e")
-      sb.append("\n")
+import java.util.Optional
+import javax.inject.{Inject, Singleton}
+
+@Singleton
+class AdminLoginServiceImpl @Inject() (implicit cfg: RestConfiguration) extends AdminLoginService {
+  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminLoginServiceImpl])
+
+  override def keepAlive(): Unit = StatusApi.heartbeat
+
+  override def logout(): Unit = {
+    LOGGER.info("Logging out")
+    AuthApi.logout
+  }
+
+  override def getLoggedInUserId: Optional[String] = {
+    LegacyContentApi.currentUserDetails match {
+      case Left(_) =>
+        LOGGER.error("Failed to get current user details")
+        Optional.empty()
+      case Right(userDetails) => Optional.of(userDetails.id)
     }
-    sb.toString()
   }
 }

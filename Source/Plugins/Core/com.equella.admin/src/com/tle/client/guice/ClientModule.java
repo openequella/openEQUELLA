@@ -21,20 +21,26 @@ package com.tle.client.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.tle.admin.helper.ClientConfigurationHelper;
+import com.tle.admin.helper.RestConfigurationHelper;
+import com.tle.admin.rest.RestConfiguration;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminKeepAliveServiceImpl;
+import com.tle.admin.service.AdminLoginService;
+import com.tle.admin.service.AdminLoginServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
-import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientService;
 import com.tle.core.remoting.RemoteTLEUserService;
 import io.github.openequella.graphql.ClientConfiguration;
+import java.net.URL;
 import javax.inject.Singleton;
 
 public class ClientModule extends AbstractModule {
-  final SessionHolder holder;
+  final URL serverUrl;
   final ClientService clientService;
 
-  public ClientModule(SessionHolder holder, ClientService clientService) {
-    this.holder = holder;
+  public ClientModule(URL serverUrl, ClientService clientService) {
+    this.serverUrl = serverUrl;
     this.clientService = clientService;
   }
 
@@ -45,6 +51,8 @@ public class ClientModule extends AbstractModule {
     // In the server code base we do have the ScannerModule which does something more like
     // component scanning, but it is not used in the client code base. And our list of classes
     // here will be straightforward, so we can just list them out.
+    bind(AdminKeepAliveService.class).to(AdminKeepAliveServiceImpl.class);
+    bind(AdminLoginService.class).to(AdminLoginServiceImpl.class);
     bind(AdminTLEUserService.class).to(AdminTLEUserServiceImpl.class);
   }
 
@@ -52,10 +60,19 @@ public class ClientModule extends AbstractModule {
   @Singleton
   ClientConfiguration provideClientConfiguration() {
     // Set the client configuration for the GraphQL library
-    ClientConfiguration clientConfiguration = ClientConfigurationHelper.create(holder.getUrl());
+    ClientConfiguration clientConfiguration = ClientConfigurationHelper.create(serverUrl);
     ClientConfigurationHelper.loadSystemCookies(clientConfiguration);
 
     return clientConfiguration;
+  }
+
+  @Provides
+  @Singleton
+  RestConfiguration provideRestConfiguration() {
+    RestConfiguration restConfiguration = RestConfigurationHelper.create(serverUrl);
+    RestConfigurationHelper.loadSystemCookies(restConfiguration);
+
+    return restConfiguration;
   }
 
   @Provides

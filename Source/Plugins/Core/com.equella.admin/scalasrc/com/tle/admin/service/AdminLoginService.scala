@@ -16,15 +16,16 @@
  * limitations under the License.
  */
 
-package com.tle.common.applet.client;
+package com.tle.admin.service
 
-import com.tle.common.applet.KeepAliveTask;
-import com.tle.common.applet.TimeoutHandler;
+import java.util.Optional
 
-public interface ClientInterface {
-  KeepAliveTask getKeepAliveTask();
+/** Service to manage the currently authenticated session.
+  */
+trait AdminLoginService {
+  def keepAlive(): Unit
 
-  TimeoutHandler getTimeoutHandler();
+  def logout(): Unit
 
-  String getSession();
+  def getLoggedInUserId: Optional[String]
 }

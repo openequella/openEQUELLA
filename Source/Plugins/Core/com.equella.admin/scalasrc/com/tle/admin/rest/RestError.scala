@@ -16,12 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.admin.rest
 
-public interface RemoteLoginService {
-  String getLoggedInUserId();
+import sttp.model.StatusCode
 
-  void logout();
-
-  void keepAlive();
+/** Represents any error while attempting a REST call.
+  */
+sealed abstract class RestError {
+  val message: String
 }
+
+/** Represents an error where the response from the server was not a successful HTTP status code.
+  */
+final case class StatusCodeError(message: String, code: StatusCode) extends RestError
+
+/** Represents an error where the response (typically content) from the server was not as expected.
+  */
+final case class UnexpectedResponseError(message: String) extends RestError
+
+final case class ClientError(message: String, cause: Throwable) extends RestError

@@ -16,35 +16,26 @@
  * limitations under the License.
  */
 
-package com.tle.web.remoting.impl;
+package com.tle.admin.rest
 
-import com.tle.common.usermanagement.user.CurrentUser;
-import com.tle.core.guice.Bind;
-import com.tle.core.remoting.RemoteLoginService;
-import com.tle.core.services.user.UserService;
-import com.tle.core.services.user.UserSessionService;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import sttp.model.Uri
+import sttp.model.headers.CookieWithMeta
 
-@Bind
-@Singleton
-public class LoginServiceImpl implements RemoteLoginService {
-  @Inject private UserService userService;
-  @Inject private UserSessionService sessionService;
-
-  @Override
-  public String getLoggedInUserId() {
-    return CurrentUser.getUserID();
-  }
-
-  @Override
-  public void keepAlive() {
-    userService.keepAlive();
-  }
-
-  @Override
-  @SuppressWarnings("nls")
-  public void logout() {
-    sessionService.setAttribute("$LOGOUT$", Boolean.TRUE);
+/** Configuration for the REST API client. Pretty well identical to the one we get from the GraphQL
+  * Client Library - however, that one is technically outside the control of this codebase. So it
+  * makes sense to have a similar one here where full control is maintained. It does unfortunately
+  * result in some code duplication.
+  *
+  * @param institutionUrl
+  *   The URL of the institution to connect to.
+  * @param cookies
+  *   The cookies to use for the connection.
+  */
+final case class RestConfiguration(
+    institutionUrl: Uri,
+    cookies: scala.collection.mutable.Set[CookieWithMeta] = scala.collection.mutable.Set.empty
+) {
+  def apiUrl(): Uri = {
+    institutionUrl.addPath("api")
   }
 }

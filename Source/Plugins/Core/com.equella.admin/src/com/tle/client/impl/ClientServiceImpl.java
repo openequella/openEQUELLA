@@ -23,8 +23,9 @@ import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.tle.admin.service.AdminKeepAliveService;
+import com.tle.admin.service.AdminLoginService;
 import com.tle.client.guice.ClientModule;
-import com.tle.common.applet.SessionHolder;
 import com.tle.common.applet.client.ClientProxyFactory;
 import com.tle.common.applet.client.ClientService;
 import com.tle.core.remoting.RemoteUserService;
@@ -38,16 +39,16 @@ import org.slf4j.LoggerFactory;
 public class ClientServiceImpl implements ClientService {
   private static final Logger LOGGER = LoggerFactory.getLogger(ClientServiceImpl.class);
 
-  private final SessionHolder session;
+  private final URL serverUrl;
   private final ClassToInstanceMap<Object> services = MutableClassToInstanceMap.create();
 
   private final Injector injector;
 
-  public ClientServiceImpl(SessionHolder session) {
-    this.session = session;
+  public ClientServiceImpl(URL serverUrl) {
+    this.serverUrl = serverUrl;
 
     LOGGER.debug("Starting up Guice");
-    this.injector = Guice.createInjector(new ClientModule(session, this));
+    this.injector = Guice.createInjector(new ClientModule(serverUrl, this));
   }
 
   @Override
@@ -68,28 +69,17 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public void stop() {
-    LOGGER.info("Stopping the Admin Console"); // $NON-NLS-1$
-    try {
-      session.getLoginService().logout();
-    } catch (Exception e) {
-      LOGGER.error("Error logging out", e); // $NON-NLS-1$
-    }
+    LOGGER.info("Stopping the Admin Console");
 
-    // Sonar disapproves of System.exit:
-    // ..."shuts down the entire Java virtual machine. This should only been done when it is
-    // appropriate"
-    // OK, so here it's appropriate.
-    System.exit(0); // NOSONAR
+    getService(AdminKeepAliveService.class).stop();
+    getService(AdminLoginService.class).logout();
+
+    System.exit(0);
   }
 
   @Override
   public URL getServerURL() {
-    return session.getUrl();
-  }
-
-  @Override
-  public SessionHolder getSession() {
-    return session;
+    return serverUrl;
   }
 
   @Override
