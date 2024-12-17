@@ -1355,4 +1355,8 @@
     <string>icons.items.28</string>
     <string>/icons/courses/sport2.jpg</string>
   </entry>
+  <entry>
+    <string>OIDC_IDENTITY_PROVIDER</string>
+    <string>{"commonDetails":{"issuer":"http://localhost:8083/oidc","platform":"AUTH0","authCodeClientId":"test_client","authCodeClientSecret":"IB+/6M5RYOSJo+JgtTAdBQ==","authUrl":"http://localhost:8083/oidc/authorise","keysetUrl":"http://localhost:8083/oidc/.well-known/jwks.json","tokenUrl":"http://localhost:8083/oidc/token","usernameClaim":"username","defaultRoles":[],"roleConfig":{"roleClaim":"roles","customRoles":{"developer":["ROLE_SYSTEM_ADMINISTRATOR"]}},"enabled":true},"apiUrl":"http://localhost:8083/oidc/api/users","apiClientId":"api_client_id","apiClientSecret":"RF9dD5OGQtLirYfv4qilvtqqS74ntksSvNs39IiV1Vc="}</string>
+  </entry>
 </map>

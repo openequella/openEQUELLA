@@ -11,8 +11,8 @@
         <p class="warning" role="alert">${b.gkey(m.failed)}</p>
       </#if>
       <#if m.error??>
-        <p class="warning" role="alert">${b.key('logon.problems')}</p>
-        <p class="warning">${m.error?html}</p>
+        <p class="warning" name="login_error_title" role="alert">${b.key('logon.problems')}</p>
+        <p class="warning" name="login_error_description">${m.error?html}</p>
       </#if>
 
       <noscript>
