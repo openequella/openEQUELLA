@@ -872,7 +872,7 @@ export const languageStrings = {
           title: "Role Mappings",
           defaultRole: "Default roles",
           defaultRoleDesc:
-            "Map the openEQUELLA roles to be used for users logging in via the Identity Provider.",
+            "Select the default openEQUELLA roles to be applied to users logging in via the Identity Provider. NOTE: These defaults apply only if no Role claim is defined.",
           roleClaim: "Role claim",
           roleClaimDesc:
             "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization. (Role mapping options will be displayed once specified.)",
