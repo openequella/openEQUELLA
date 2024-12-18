@@ -26,6 +26,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This interface provides methods to retrieve information about users, groups and roles from the
+ * user management system. The user management system is a plugin system, so the implementation of
+ * this interface will be provided by a plugin. Typically, that is a collection of UserDirectory
+ * plugins which are interacted with sequentially and the results aggregated.
+ *
+ * <p>This is different from the TLEUserService which is specifically focused on the internal TLE
+ * Users. (And sits alongside TLEGroupService and TLERoleService.)
+ */
 public interface RemoteUserService {
   /**
    * Resolve the list of userUniqueIDs into a list of UserBean objects. The returned list of users

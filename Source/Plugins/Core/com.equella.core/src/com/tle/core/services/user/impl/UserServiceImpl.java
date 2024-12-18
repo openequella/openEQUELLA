@@ -29,6 +29,7 @@ import com.google.inject.name.Named;
 import com.tle.beans.Institution;
 import com.tle.beans.ump.UserManagementSettings;
 import com.tle.beans.user.UserInfoBackup;
+import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Check;
 import com.tle.common.Triple;
 import com.tle.common.institution.CurrentInstitution;
@@ -51,6 +52,7 @@ import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.UserSessionLoginEvent;
 import com.tle.core.events.UserSessionLogoutEvent;
+import com.tle.core.events.UserSuspendEvent;
 import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UMPChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
@@ -86,6 +88,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -580,6 +583,15 @@ public class UserServiceImpl
   public void setPluginConfig(UserManagementSettings config) {
     configurationService.setProperties(config);
     setupCurrentSource(true);
+
+    // The above setupCurrentSource publishes an event which only triggers updates for
+    // User Management related components. This event is to trigger updates for other components
+    // that may be interested in the change. Especially the OAuth components that need to invalidate
+    // any current tokens.
+    if (config instanceof SuspendedUserWrapperSettings) {
+      Set<String> uuids = ((SuspendedUserWrapperSettings) config).getSuspendedUsers();
+      eventService.publishApplicationEvent(new UserSuspendEvent(uuids));
+    }
   }
 
   private InstitutionState getCurrentState() {

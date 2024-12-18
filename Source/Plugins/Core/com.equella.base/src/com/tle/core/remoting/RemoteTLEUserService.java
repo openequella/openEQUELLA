@@ -20,7 +20,6 @@ package com.tle.core.remoting;
 
 import com.tle.beans.user.TLEUser;
 import java.util.List;
-import java.util.Set;
 
 public interface RemoteTLEUserService {
   String add(TLEUser newUser);
@@ -54,13 +53,6 @@ public interface RemoteTLEUserService {
 
   List<TLEUser> searchUsers(
       String query, String parentGroupID, boolean recursive, Integer limit, Integer offset);
-
-  /**
-   * Fired when the list of suspended user accounts has been updated.
-   *
-   * @param uuids UUIDs of suspended user accounts
-   */
-  void onSuspension(Set<String> uuids);
 
   /**
    * Count the number of users in the system.

@@ -108,11 +108,6 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
       d.searchUsers(query, null, true)
     }
 
-  override def onSuspension(uuids: java.util.Set[String]): Unit =
-    implementMe { d =>
-      d.onSuspension(uuids)
-    }
-
   private def getUser(
       identifier: String,
       f: String => Either[List[ApiError], Option[TleUserView]]
