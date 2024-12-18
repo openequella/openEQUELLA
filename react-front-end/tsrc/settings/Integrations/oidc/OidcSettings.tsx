@@ -15,21 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Card,
-  CardContent,
-  Divider,
-  Grid,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { Card, CardContent, Divider, Grid } from "@mui/material";
 import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
 import { constVoid, flow, identity, pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import { isEqual } from "lodash";
 import { useContext, useEffect, useState } from "react";
 import * as React from "react";
-import { getBaseUrl } from "../../../AppConfig";
 import {
   CustomRolesMapping,
   transformCustomRoleMapping,
@@ -42,7 +34,6 @@ import GeneralDetailsSection, {
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
-import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
 import SettingsListAlert from "../../../components/SettingsListAlert";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
@@ -74,6 +65,7 @@ import {
   generateApiDetails,
   ApiDetails,
   generatePlatform,
+  oeqDetailsList,
 } from "./OidcSettingsHelper";
 import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
@@ -91,16 +83,9 @@ const {
     roleClaimDesc,
     customRoleDialog: customRoleDialogStrings,
   },
-  oeqDetails: {
-    title: oeqDetailsTitle,
-    desc: oeqDetailsDesc,
-    redirect: redirectTitle,
-  },
 } = languageStrings.settings.integration.oidc;
 const { edit: editLabel } = languageStrings.common.action;
 const { checkForm } = languageStrings.common.result;
-
-const redirectUrl = getBaseUrl() + "oidc/callback";
 
 // Compare the initial and current details to see if the configuration has changed.
 // In order to handle the secret field,
@@ -278,6 +263,12 @@ const OidcSettings = ({
                 apiClientId: idp.apiClientId,
                 apiClientSecret: idp.apiClientSecret,
               });
+            } else if (OEQ.Codec.Oidc.OktaCodec.is(idp)) {
+              setApiDetails({
+                platform: idp.platform,
+                apiUrl: idp.apiUrl,
+                apiClientId: idp.apiClientId,
+              });
             }
 
             // process role mappings value to display existing settings
@@ -349,15 +340,21 @@ const OidcSettings = ({
     const validateStructure = (): TE.TaskEither<
       string,
       OEQ.Oidc.IdentityProvider
-    > =>
-      pipe(
+    > => {
+      const codec =
+        currentOidcValue.platform === "OKTA"
+          ? OEQ.Codec.Oidc.OktaCodec
+          : OEQ.Codec.Oidc.GenericIdentityProviderCodec;
+
+      return pipe(
         currentOidcValue,
         E.fromPredicate(
-          OEQ.Codec.Oidc.GenericIdentityProviderCodec.is,
+          codec.is,
           () => `Validation for the structure of OIDC configuration failed.`,
         ),
         TE.fromEither,
       );
+    };
 
     const submit = (
       oidcValue: OEQ.Oidc.IdentityProvider,
@@ -471,18 +468,7 @@ const OidcSettings = ({
       </Card>
 
       <Card>
-        <CardContent>
-          <SettingsList subHeading={oeqDetailsTitle}>
-            <ListItem>
-              <ListItemText>{oeqDetailsDesc}</ListItemText>
-            </ListItem>
-
-            <SettingsListConfiguration
-              title={redirectTitle}
-              value={redirectUrl}
-            />
-          </SettingsList>
-        </CardContent>
+        <CardContent>{oeqDetailsList}</CardContent>
       </Card>
     </SettingPageTemplate>
   );

@@ -6227,5 +6227,10 @@
     <parameter id="platform" value="ENTRA_ID" />
     <parameter id="order" value="1100" />
   </extension>
+  <extension plugin-id="com.tle.core.usermanagement" point-id="oidcUserDir" id="oktaUserDir">
+    <parameter id="bean" value="bean:com.tle.core.usermanagement.OktaUserDirectory" />
+    <parameter id="platform" value="OKTA" />
+    <parameter id="order" value="1200" />
+  </extension>
   <!-- endregion -->
 </plugin>

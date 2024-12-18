@@ -71,10 +71,12 @@ describe("General details section", () => {
 describe("Platform details section", () => {
   const entraIdFields = [apiClientIdLabel, apiClientSecretLabel];
   const auth0Fields = [apiUrlLabel, apiClientIdLabel, apiClientSecretLabel];
+  const oktaFields = [apiUrlLabel, apiClientIdLabel];
 
   it.each<[OEQ.Oidc.IdentityProviderPlatform, string[]]>([
     ["ENTRA_ID", entraIdFields],
     ["AUTH0", auth0Fields],
+    ["OKTA", oktaFields],
   ])("should render fields for platform '%s'", async (platform, fields) => {
     const { container } = await renderOidcSettings();
 

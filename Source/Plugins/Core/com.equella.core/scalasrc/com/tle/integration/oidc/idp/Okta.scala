@@ -20,12 +20,11 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
-import com.fasterxml.jackson.annotation.JsonIgnore
 
-/** Configuration for Microsoft Entra ID including the common details for OIDC and the details
-  * required to interact the Graph REST API.
+/** Configuration for Okta including the common details for OIDC and the details required to
+  * interact the Core Okta API.
   */
-final case class EntraId(
+case class Okta(
     issuer: String,
     authCodeClientId: String,
     authCodeClientSecret: Option[String],
@@ -36,15 +35,22 @@ final case class EntraId(
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
     enabled: Boolean,
-    apiClientId: String,
-    apiClientSecret: Option[String]
+    apiUrl: String,
+    apiClientId: String
 ) extends IdentityProvider
     with RestApi {
-  override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.ENTRA_ID
+  override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.OKTA
 
-  @JsonIgnore
-  override val apiUrl: String = "https://graph.microsoft.com/v1.0"
+  /** Okta doesn't support the request of a scoped access token through client secret. Instead, the
+    * 'private_key_jwt' client authentication method is the only supported method. As a result, set
+    * the client secret to None.
+    *
+    * Reference links:
+    *   - https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#generate-the-jwk-using-the-api
+    *   - https://oauth.net/private-key-jwt/
+    */
+  override val apiClientSecret: Option[String] = None
 
-  override def validate: ValidatedNel[String, EntraId] =
+  override def validate: ValidatedNel[String, Okta] =
     (super.validate, validateApiDetails).mapN((_, _) => this)
 }
