@@ -36,10 +36,9 @@ public class LoginPage extends AbstractPage<LoginPage> {
     return get();
   }
 
-  public String getLoginError() {
+  public String getLoginFailure() {
     WebElement errorMessage =
-        waiter.until(
-            ExpectedConditions.visibilityOf(driver.findElement(By.name("login_error_title"))));
+        waiter.until(ExpectedConditions.visibilityOf(driver.findElement(By.name("login_failure"))));
     return errorMessage.getText();
   }
 
