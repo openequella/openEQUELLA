@@ -78,8 +78,8 @@ class Auth0UserDirectory extends ApiUserDirectory {
     new DefaultUserBean(
       user.user_id,
       user.username.getOrElse(user.user_id),
-      user.family_name.getOrElse(user.name),
       user.given_name.getOrElse(""),
+      user.family_name.getOrElse(user.name),
       user.email.orNull
     )
   }

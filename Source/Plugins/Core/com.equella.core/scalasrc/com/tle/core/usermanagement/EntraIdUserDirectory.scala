@@ -71,8 +71,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     new DefaultUserBean(
       user.id,
       username,
-      user.surname.getOrElse(username),
       user.givenName.getOrElse(""),
+      user.surname.getOrElse(username),
       user.mail.orNull
     )
   }
