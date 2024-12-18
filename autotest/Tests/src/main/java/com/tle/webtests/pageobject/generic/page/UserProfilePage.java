@@ -102,11 +102,11 @@ public class UserProfilePage extends AbstractPage<UserProfilePage> {
     return new EquellaSelect(context, dateFormatSelect).get().getSelectedText();
   }
 
-  public String getFirstName() {
+  public String getGivenName() {
     return driver.findElement(By.id("ed_fin")).getAttribute("value");
   }
 
-  public String getLastName() {
+  public String getFamilyName() {
     return driver.findElement(By.id("ed_fan")).getAttribute("value");
   }
 
