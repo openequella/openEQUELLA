@@ -672,7 +672,7 @@ export const SearchPageBody = ({
         disabled:
           !statusSelectorCustomConfig?.alwaysEnabled &&
           (!enableItemStatusSelector ||
-            (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true)),
+            !searchSettings.core?.searchingShowNonLiveCheckbox),
       },
       {
         idSuffix: "SearchAttachmentsSelector",
