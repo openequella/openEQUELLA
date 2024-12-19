@@ -82,4 +82,41 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
       TestHelper.checkApiError(response) shouldBe a[NotFoundError]
     }
   }
+
+  describe("updateUser") {
+    it("should be able to update a known user") {
+      val updated = "updated"
+      val results = for {
+        user <- TleUserApi.createUser("updateMe", None, "Update", "Me", "password")
+        uniqueId = user.uniqueId
+        updatedUser <- TleUserApi.updateUser(
+          uniqueId,
+          Some(updated),
+          Some("test@email.example"),
+          Some(updated),
+          Some(updated),
+          None
+        )
+        retrievedUser <- TleUserApi.getByUniqueId(uniqueId).map {
+          case Some(u) => u
+          case _       => fail("Failed to retrieve updated user")
+        }
+        _ <- TleUserApi.deleteUser(uniqueId)
+      } yield (updatedUser, retrievedUser)
+
+      results match {
+        case Right((updatedUser, retrievedUser)) =>
+          updatedUser shouldBe retrievedUser
+          retrievedUser.username shouldBe updated
+          retrievedUser.firstName shouldBe updated
+          retrievedUser.lastName shouldBe updated
+        case Left(errors) => fail("Failed to update user: " + errors)
+      }
+    }
+
+    it("should return an error for an unknown user") {
+      val response = TleUserApi.updateUser("no such user", None, None, None, None, None)
+      TestHelper.checkApiError(response) shouldBe a[NotFoundError]
+    }
+  }
 }

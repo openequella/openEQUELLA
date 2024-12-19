@@ -113,6 +113,44 @@ object TleUserApi {
     }
   }
 
+  /** Edits an existing user based on the unique identifier.
+    *
+    * @param uniqueId
+    *   The unique identifier of the user.
+    * @param username
+    *   A new username for the user or `None` to keep the existing username.
+    * @param email
+    *   A new email address for the user or `None` to keep the existing email address.
+    * @param firstName
+    *   A new first name for the user or `None` to keep the existing first name.
+    * @param lastName
+    *   A new last name for the user or `None` to keep the existing last name.
+    * @param password
+    *   A new password for the user or `None` to keep the existing password.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right with the updated user's details if the operation
+    *   was successful.
+    */
+  def updateUser(
+      uniqueId: String,
+      username: Option[String],
+      email: Option[String],
+      firstName: Option[String],
+      lastName: Option[String],
+      password: Option[String]
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] = {
+    val query =
+      Mutations.internalUserUpdate(uniqueId, username, email, firstName, lastName, password) {
+        tleUser
+      }
+
+    flattenResult {
+      Client.mutate(query)
+    }
+  }
+
   /** Deletes a user.
     *
     * @param uniqueId
