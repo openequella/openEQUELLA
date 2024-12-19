@@ -33,7 +33,7 @@ export type IdentityProviderPlatform = 'AUTH0' | 'ENTRA_ID' | 'OKTA';
  * Data structure for the common details of an Identity Provider, containing fields
  * with primitive types.
  **/
-interface IdentityProviderBase {
+interface CommonDetailsBase {
   /**
    * One of the supported Identity Provider: {@link IdentityProviderPlatform}
    */
@@ -78,7 +78,7 @@ interface IdentityProviderBase {
 /**
  * Full structure of an Identity Provider where types are looser in order to be handled by axios.
  */
-interface IdentityProviderRaw extends IdentityProviderBase {
+interface CommonDetailsRaw extends CommonDetailsBase {
   /**
    * A list of default OEQ roles to assign to the logged-in user.
    */
@@ -101,7 +101,7 @@ interface IdentityProviderRaw extends IdentityProviderBase {
 /**
  * Full structure of an Identity Provider, including default roles and custom role configuration.
  */
-export interface IdentityProvider extends IdentityProviderBase {
+export interface CommonDetails extends CommonDetailsBase {
   /**
    * A list of default OEQ roles to assign to the logged-in user.
    */
@@ -122,50 +122,53 @@ export interface IdentityProvider extends IdentityProviderBase {
 }
 
 /**
- * Full structure for an Generic Identity Provider, including all the common details and specific
- * fields related to interacting with the Identity Provider's API.
+ * API details configured for the use of an Identity Provider's REST APIs.
  */
-export interface GenericIdentityProvider extends IdentityProvider {
-  platform: 'AUTH0' | 'ENTRA_ID';
+export interface RestApiDetails {
   /**
-   * The API endpoint for the Identity Provider, use for operations such as search for users
+   * The API endpoint for the Identity Provider, use for operations such as search for users.
    */
   apiUrl: string;
   /**
-   *  Client ID used to get an Authorisation Token to use with the Identity Provider's API
+   *  Client ID used to get an Authorisation Token to use with the Identity Provider's API.
    */
   apiClientId: string;
   /**
-   * Client Secret used with `apiClientId` to get an Authorization Token to use with the Identity Provider's API
+   * Client Secret used with `apiClientId` to get an Authorization Token to use with the Identity Provider's API.
    */
   apiClientSecret?: string;
 }
 
-/**
- * Full structure for the configuration of Okta, including all the common details for OIDC and API
- * details for interacting with Core Okta API.
- */
-export interface Okta extends IdentityProvider {
+interface EntraId extends CommonDetails, RestApiDetails {
+  platform: 'ENTRA_ID';
+}
+
+interface Auth0 extends CommonDetails, RestApiDetails {
+  platform: 'AUTH0';
+}
+
+interface Okta extends CommonDetails, RestApiDetails {
   platform: 'OKTA';
+}
+
+export type IdentityProvider = EntraId | Auth0 | Okta;
+
+/**
+ * Data structure for the response of an Identity Provider where common details are consolidated in one field and secret values are excluded.
+ */
+interface IdentityProviderResponse {
+  commonDetails: CommonDetailsRaw;
   /**
-   * The base endpoint of Core Okta API, use for operations such as search for users
+   * The API endpoint for the Identity Provider, use for operations such as search for users.
    */
   apiUrl: string;
   /**
-   *  Client ID used to request an access token to use with Core Okta API
+   *  Client ID used to get an Authorisation Token to use with the Identity Provider's API.
    */
   apiClientId: string;
 }
 
-/**
- * Data structure for the response of an Identity Provider, which is slightly different
- * as all the common fields are centralised into a single field 'commonDetails'.
- */
-interface IdentityProviderResponse {
-  commonDetails: IdentityProviderRaw;
-}
-
-const toIdentityProviderRaw = (idp: IdentityProvider): IdentityProviderRaw => ({
+const toIdentityProviderRaw = (idp: IdentityProvider): CommonDetailsRaw => ({
   ...idp,
   defaultRoles: toStringArray(idp.defaultRoles),
   roleConfig: pipe(
@@ -195,6 +198,8 @@ const toIdentityProvider = ({
     O.toUndefined
   ),
   ...platformSpecific,
+  // Because server does not return the client secret, set it to undefined.
+  apiClientSecret: undefined,
 });
 
 /**

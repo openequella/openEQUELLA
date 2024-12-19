@@ -85,19 +85,12 @@ export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
   ["OKTA", "Okta"],
 ]);
 
-// Use 'platform' as the discriminator.
-export interface GenericApiDetails
-  extends Pick<
-    OEQ.Oidc.GenericIdentityProvider,
-    "platform" | "apiUrl" | "apiClientId" | "apiClientSecret"
-  > {}
+export const defaultApiDetails: OEQ.Oidc.RestApiDetails = {
+  apiUrl: "",
+  apiClientId: "",
+};
 
-export interface OkatApiDetails
-  extends Pick<OEQ.Oidc.Okta, "platform" | "apiUrl" | "apiClientId"> {}
-
-export type ApiDetails = GenericApiDetails | OkatApiDetails;
-
-export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
+export const defaultConfig: OEQ.Oidc.IdentityProvider = {
   enabled: false,
   platform: "ENTRA_ID",
   issuer: "",
@@ -107,33 +100,7 @@ export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   keysetUrl: "",
   tokenUrl: "",
   defaultRoles: new Set(),
-};
-
-export const defaultAuth0ApiDetails: GenericApiDetails = {
-  platform: "AUTH0",
-  apiUrl: "",
-  apiClientId: "",
-  apiClientSecret: "",
-};
-
-export const defaultEntraIdApiDetails: GenericApiDetails = {
-  ...defaultAuth0ApiDetails,
-  platform: "ENTRA_ID",
-};
-
-export const defaultOktaApiDetails: OkatApiDetails = {
-  platform: "OKTA",
-  apiUrl: "",
-  apiClientId: "",
-};
-
-export const defaultApiDetailsMap: Record<
-  OEQ.Oidc.IdentityProviderPlatform,
-  ApiDetails
-> = {
-  ENTRA_ID: defaultEntraIdApiDetails,
-  AUTH0: defaultAuth0ApiDetails,
-  OKTA: defaultOktaApiDetails,
+  ...defaultApiDetails,
 };
 
 const platformSelector = (
@@ -305,16 +272,12 @@ export const generateGeneralDetails = (
   },
 });
 
-const commonApiDetails = (
+const apiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  apiDetails: ApiDetails,
+  { apiUrl, apiClientId, apiClientSecret }: OEQ.Oidc.IdentityProvider,
   isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const { platform, apiUrl, apiClientId } = apiDetails;
-  // apiClientSecret is not exist in OktaApiDetails.
-  const apiClientSecret = platform === "OKTA" ? "" : apiDetails.apiClientSecret;
-
   return {
     apiUrl: {
       label: apiUrlLabel,
@@ -390,23 +353,23 @@ export const generatePlatform = (
 /**
  * Generate the render options for the API configuration of the selected identity providers.
  *
- * @param apiDetails The value of the platform specific details.
+ * @param idpDetails Contains the value of the platform specific details.
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
  * @param isSecretConfigured Whether the server already has the API secrete.
  */
 export const generateApiDetails = (
-  apiDetails: ApiDetails,
+  idpDetails: OEQ.Oidc.IdentityProvider,
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
   isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const platform = apiDetails.platform;
+  const platform = idpDetails.platform;
 
-  const apiCommonFields = commonApiDetails(
+  const apiCommonFields = apiDetails(
     apiDetailsOnChange,
     showValidationErrors,
-    apiDetails,
+    idpDetails,
     isSecretConfigured,
   );
   const { apiUrl, apiClientId, apiClientSecret } = apiCommonFields;
