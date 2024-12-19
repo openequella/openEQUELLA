@@ -83,11 +83,4 @@ trait AdminTLEUserService {
     * on how many users will be returned.
     */
   def searchUsers(query: String): java.util.List[TLEUser]
-
-  /** Fired when the list of suspended user accounts has been updated.
-    *
-    * @param uuids
-    *   UUIDs of suspended user accounts
-    */
-  def onSuspension(uuids: java.util.Set[String]): Unit
 }

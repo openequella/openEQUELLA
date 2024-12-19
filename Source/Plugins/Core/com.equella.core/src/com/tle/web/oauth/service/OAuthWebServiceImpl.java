@@ -415,6 +415,8 @@ public class OAuthWebServiceImpl
     Set<String> suspendedUserIds = event.getSuspendedUserId();
     Cache<String, ExpiringValue<UserState>> cache = getUserCache(CurrentInstitution.get());
 
+    LOGGER.debug("Suspended user accounts event received for IDs: {}", suspendedUserIds);
+
     // A set of tokens generated for users that have been suspended.
     Set<String> tokensToBeSuspended =
         cache.asMap().entrySet().stream()
@@ -427,6 +429,7 @@ public class OAuthWebServiceImpl
             .map(Entry::getKey)
             .collect(Collectors.toSet());
 
+    LOGGER.debug("Invalidating tokens for {} suspended user accounts.", tokensToBeSuspended.size());
     cache.invalidateAll(tokensToBeSuspended);
   }
 

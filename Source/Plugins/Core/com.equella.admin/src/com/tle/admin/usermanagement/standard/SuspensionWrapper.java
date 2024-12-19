@@ -23,7 +23,6 @@ import com.dytech.gui.filter.FilterModel;
 import com.dytech.gui.filter.FilteredShuffleBox;
 import com.tle.admin.Driver;
 import com.tle.admin.plugin.GeneralPlugin;
-import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.usermanagement.standard.wrapper.SuspendedUserWrapperSettings;
 import com.tle.common.Format;
 import com.tle.common.i18n.CurrentLocale;
@@ -34,62 +33,54 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Admin Console UI component targets to the configuration for suspended user account {@link
  * SuspendedUserWrapperSettings} and provides supports for user account suspension.
  */
 public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSettings> {
-  private static final Log LOGGER = LogFactory.getLog(SuspensionWrapper.class);
-  private FilteredShuffleBox<UserBean> fsb;
-
-  private AdminTLEUserService userService;
+  private static final Logger LOGGER = LoggerFactory.getLogger(SuspensionWrapper.class);
+  private final FilteredShuffleBox<UserBean> fsb;
 
   @Override
   public void init() {
     super.init();
-    userService = clientService.getService(AdminTLEUserService.class);
   }
 
   public SuspensionWrapper() {
-    fsb = new FilteredShuffleBox<UserBean>(new GroupFilter());
+    fsb = new FilteredShuffleBox<>(new GroupFilter());
     addFillComponent(fsb);
   }
 
   @Override
-  public void load(SuspendedUserWrapperSettings xml) {
+  public void load(SuspendedUserWrapperSettings settings) {
     RemoteUserService userService = clientService.getService(RemoteUserService.class);
     try {
       List<UserBean> users =
-          new ArrayList<UserBean>(
-              userService.getInformationForUsers(xml.getSuspendedUsers()).values());
-      Collections.sort(users, Format.USER_BEAN_COMPARATOR);
+          new ArrayList<>(
+              userService.getInformationForUsers(settings.getSuspendedUsers()).values());
+      users.sort(Format.USER_BEAN_COMPARATOR);
       fsb.addToRight(users);
     } catch (RuntimeApplicationException e) {
-      displayError(
-          CurrentLocale.get("com.tle.admin.usermanagement.suspensionwrapper.errorloading"),
-          e); //$NON-NLS-1$
+      displayError(s("errorloading"), e);
     }
   }
 
   @Override
-  public boolean save(SuspendedUserWrapperSettings xml) {
-    Set<String> right = new HashSet<String>();
+  public boolean save(SuspendedUserWrapperSettings settings) {
+    Set<String> right = new HashSet<>();
     for (UserBean user : fsb.getRight()) {
       right.add(user.getUniqueID());
     }
 
     boolean saved = false;
     try {
-      xml.setSuspendedUsers(right);
-      userService.onSuspension(right);
+      settings.setSuspendedUsers(right);
       saved = true;
     } catch (Exception e) {
-      displayError(
-          CurrentLocale.get("com.tle.admin.usermanagement.suspensionwrapper.errorsaving"),
-          e); //$NON-NLS-1$
+      displayError(s("errorsaving"), e);
     }
 
     return saved;
@@ -100,12 +91,10 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
     public List<UserBean> search(String query) {
       try {
         List<UserBean> users = clientService.getService(RemoteUserService.class).searchUsers(query);
-        Collections.sort(users, Format.USER_BEAN_COMPARATOR);
+        users.sort(Format.USER_BEAN_COMPARATOR);
         return users;
       } catch (RuntimeApplicationException e) {
-        displayError(
-            CurrentLocale.get("com.tle.admin.usermanagement.suspensionwrapper.errorsearching"),
-            e); //$NON-NLS-1$
+        displayError(s("errorsearching"), e);
         return Collections.emptyList();
       }
     }
@@ -113,6 +102,10 @@ public class SuspensionWrapper extends GeneralPlugin<SuspendedUserWrapperSetting
 
   protected void displayError(String s, Exception e) {
     LOGGER.error(s, e);
-    Driver.displayInformation(fsb, s + " : " + e.getMessage()); // $NON-NLS-1$
+    Driver.displayInformation(fsb, s + " : " + e.getMessage());
+  }
+
+  private String s(String s) {
+    return CurrentLocale.get("com.tle.admin.usermanagement.suspensionwrapper", s);
   }
 }

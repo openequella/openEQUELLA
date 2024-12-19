@@ -49,4 +49,9 @@ public class UserSuspendEvent extends ApplicationEvent<UserSuspendListener> {
   public void postEvent(UserSuspendListener listener) {
     listener.userSuspendEvent(this);
   }
+
+  @Override
+  public String toString() {
+    return "UserSuspendEvent{" + "suspendedUserId=" + suspendedUserId + '}';
+  }
 }
