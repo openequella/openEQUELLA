@@ -8,7 +8,7 @@ import integtester.oidc.OidcUser.TEST_USER
 import io.circe.generic.auto._
 import io.circe.syntax.EncoderOps
 import org.apache.http.client.utils.URIBuilder
-import org.http4s.{MediaType, Request, Response, Uri, UrlForm}
+import org.http4s.{Headers, MediaType, Request, Response, Uri, UrlForm}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import java.security.interfaces.RSAPrivateKey
@@ -177,96 +177,15 @@ object OidcIntegration extends Http4sDsl[IO] {
     */
   def token(req: Request[IO]): IO[Response[IO]] =
     req.decode[UrlForm] { form =>
-      val data = form.values.view.mapValues(_.toList.head).toMap
-      val validate: String => Either[String, String] = getRequiredParam(data)
-
-      def validateClientCredentials = {
-        def getCredentials =
-          req.headers.get(Authorization).toRight("Missing Authorization header") map { h =>
-            val credentials = h.toRaw.value.drop("Basic ".length)
-            new String(Base64.getDecoder.decode(credentials)).split(":")
-          }
-
-        def getClientId: Either[String, String] = getCredentials.flatMap(cred =>
-          cred match {
-            case Array(id, _) => Right(id)
-            case _            => Left("Failed to retrieve Client ID from the Authorization header")
-          }
-        )
-
-        def getClientSecret: Either[String, String] = getCredentials.flatMap(cred =>
-          cred match {
-            case Array(_, secret) => Right(secret)
-            case _ => Left("Failed to retrieve Client secret the Authorization header")
-          }
-        )
-
-        for {
-          _ <- getClientId.filterOrElse(_ == CLIENT_ID, "Unknown Client ID")
-          _ <- getClientSecret.filterOrElse(_ == CLIENT_SECRET, "Secret does not match Client ID")
-        } yield {
-          JWT
-            .create()
-            .withIssuer(ISSUER)
-            .withAudience(CLIENT_ID)
-            .withIssuedAt(Instant.now)
-            .withNotBefore(Instant.now)
-            .withExpiresAt(Instant.now.plusSeconds(60))
-            .withKeyId(KEY_ID)
-            .sign(Algorithm.RSA256(getPrivateKey))
-        }
-      }
-
-      def validateAuthorisationCode = {
-        for {
-          _ <- validate(OidcParams.CLIENT_ID).filterOrElse(_ == CLIENT_ID, "Unknown Client ID")
-          _ <- validate(OidcParams.CLIENT_SECRET)
-            .filterOrElse(_ == CLIENT_SECRET, "Secret does not match Client ID")
-          _ <- validate(OidcParams.REDIRECT_URI)
-            .filterOrElse(_ == REDIRECT_URI, "Unknown redirect URI")
-          authDetails <- validate(OidcParams.CODE).flatMap(session.get(_).toRight("Invalid code"))
-          codeChallenge = authDetails(OidcParams.CODE_CHALLENGE)
-          _ <- validate(OidcParams.CODE_VERIFIER).filterOrElse(
-            verifyCodeChallenge(codeChallenge, _),
-            "Code challenge verification fails"
-          )
-          nonce = authDetails(OidcParams.NONCE)
-        } yield {
-          val jwt = JWT
-            .create()
-            .withIssuer(
-              if (tokenRespCommand == TokenResponseCommand.invalid_jwt) "bad issuer" else ISSUER
-            )
-            .withAudience(CLIENT_ID)
-            .withIssuedAt(Instant.now)
-            .withNotBefore(Instant.now)
-            .withExpiresAt(Instant.now.plusSeconds(60))
-            .withKeyId(
-              if (tokenRespCommand == TokenResponseCommand.invalid_key) "bad key ID" else KEY_ID
-            )
-            .withClaim(
-              "nonce",
-              if (tokenRespCommand == TokenResponseCommand.invalid_nonce) "bad nonce" else nonce
-            )
-            .withSubject(TEST_USER.user_id)
-            .withClaim("family_name", TEST_USER.family_name)
-            .withClaim("given_name", TEST_USER.given_name)
-            .withClaim("email", TEST_USER.email)
-            .withClaim("roles", List("developer").asJava)
-
-          if (tokenRespCommand != TokenResponseCommand.missing_username_claim) {
-            jwt.withClaim("username", TEST_USER.username)
-          }
-
-          jwt.sign(Algorithm.RSA256(getPrivateKey))
-        }
-      }
+      def payload: Map[String, String] = form.values.view.mapValues(_.toList.head).toMap
+      def headers: Headers             = req.headers
+      val validate: String => Either[String, String] = getRequiredParam(payload)
 
       val result = for {
         grantType <- validate(OidcParams.GRANT_TYPE)
         jwt <-
-          if (grantType == GRANT_TYPE_CREDENTIALS) validateClientCredentials
-          else validateAuthorisationCode
+          if (grantType == GRANT_TYPE_CREDENTIALS) validateClientCredentials(headers)
+          else validateAuthorisationCode(validate)
       } yield jwt
 
       result match {
@@ -305,6 +224,91 @@ object OidcIntegration extends Http4sDsl[IO] {
 
   private def getRequiredParam(params: Map[String, String]): String => Either[String, String] =
     key => params.get(key).toRight(s"Missing required parameter: $key")
+
+  // Check if the client credentials are properly provided throught the Authoisation header. If yes,
+  // return a signed JWT.
+  private def validateClientCredentials(headers: Headers) = {
+    def getCredentials =
+      headers.get(Authorization).toRight("Missing Authorization header") map { h =>
+        val credentials = h.toRaw.value.drop("Basic ".length)
+        new String(Base64.getDecoder.decode(credentials)).split(":")
+      }
+
+    def getClientId: Either[String, String] = getCredentials.flatMap(cred =>
+      cred match {
+        case Array(id, _) => Right(id)
+        case _            => Left("Failed to retrieve Client ID from the Authorization header")
+      }
+    )
+
+    def getClientSecret: Either[String, String] = getCredentials.flatMap(cred =>
+      cred match {
+        case Array(_, secret) => Right(secret)
+        case _                => Left("Failed to retrieve Client secret the Authorization header")
+      }
+    )
+
+    for {
+      _ <- getClientId.filterOrElse(_ == CLIENT_ID, "Unknown Client ID")
+      _ <- getClientSecret.filterOrElse(_ == CLIENT_SECRET, "Secret does not match Client ID")
+    } yield {
+      JWT
+        .create()
+        .withIssuer(ISSUER)
+        .withAudience(CLIENT_ID)
+        .withIssuedAt(Instant.now)
+        .withNotBefore(Instant.now)
+        .withExpiresAt(Instant.now.plusSeconds(60))
+        .withKeyId(KEY_ID)
+        .sign(Algorithm.RSA256(getPrivateKey))
+    }
+  }
+
+  // Use the provided validator to check if mandatory fields are present with correct values. If yes,
+  // generate a signed JWT.
+  private def validateAuthorisationCode(validate: String => Either[String, String]) =
+    for {
+      _ <- validate(OidcParams.CLIENT_ID).filterOrElse(_ == CLIENT_ID, "Unknown Client ID")
+      _ <- validate(OidcParams.CLIENT_SECRET)
+        .filterOrElse(_ == CLIENT_SECRET, "Secret does not match Client ID")
+      _ <- validate(OidcParams.REDIRECT_URI)
+        .filterOrElse(_ == REDIRECT_URI, "Unknown redirect URI")
+      authDetails <- validate(OidcParams.CODE).flatMap(session.get(_).toRight("Invalid code"))
+      codeChallenge = authDetails(OidcParams.CODE_CHALLENGE)
+      _ <- validate(OidcParams.CODE_VERIFIER).filterOrElse(
+        verifyCodeChallenge(codeChallenge, _),
+        "Code challenge verification fails"
+      )
+      nonce = authDetails(OidcParams.NONCE)
+    } yield {
+      val jwt = JWT
+        .create()
+        .withIssuer(
+          if (tokenRespCommand == TokenResponseCommand.invalid_jwt) "bad issuer" else ISSUER
+        )
+        .withAudience(CLIENT_ID)
+        .withIssuedAt(Instant.now)
+        .withNotBefore(Instant.now)
+        .withExpiresAt(Instant.now.plusSeconds(60))
+        .withKeyId(
+          if (tokenRespCommand == TokenResponseCommand.invalid_key) "bad key ID" else KEY_ID
+        )
+        .withClaim(
+          "nonce",
+          if (tokenRespCommand == TokenResponseCommand.invalid_nonce) "bad nonce" else nonce
+        )
+        .withSubject(TEST_USER.user_id)
+        .withClaim("family_name", TEST_USER.family_name)
+        .withClaim("given_name", TEST_USER.given_name)
+        .withClaim("email", TEST_USER.email)
+        .withClaim("roles", List("developer").asJava)
+
+      if (tokenRespCommand != TokenResponseCommand.missing_username_claim) {
+        jwt.withClaim("username", TEST_USER.username)
+      }
+
+      jwt.sign(Algorithm.RSA256(getPrivateKey))
+    }
 
   private def getPrivateKey = {
     val key        = Source.fromResource("priv-key.base64").mkString
