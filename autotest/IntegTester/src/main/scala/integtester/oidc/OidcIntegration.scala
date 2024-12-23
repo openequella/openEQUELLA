@@ -17,6 +17,7 @@ import java.security.{KeyFactory, MessageDigest}
 import java.time.Instant
 import java.util.{Base64, UUID}
 import scala.collection.concurrent.TrieMap
+import scala.io.Source
 import scala.jdk.CollectionConverters._
 
 /** Enum to control what response to return for an auth request
@@ -284,24 +285,8 @@ object OidcIntegration extends Http4sDsl[IO] {
       }
     }
 
-  def jwks: IO[Response[IO]] = {
-    val publicKey =
-      s"""
-         |{
-         |  "keys": [
-         |    {
-         |      "kty" : "RSA",
-         |      "e" : "AQAB",
-         |      "use" : "sig",
-         |      "kid" : "$KEY_ID",
-         |      "alg" : "RS256",
-         |      "n" : "i48HmBJLRI-2aIPdwzzcgjdCOmJXl_tcG1WESgLm4_XtKzdut0xc23A7NgDWn2oDPfTfZHmGFu1j71LWxyCCSRPcCTmIuF1cb52XYPMWWcpLapjzqnLhzm4VvtQjmc-XzP8wVUNi44dbO5gx8xWGbGthH3Xg3m9Bc4_Fb4k60Sr4dvAT3pHoXcF5YbODTRO1CmpcvifAkq0jSt_vOsvuDD4b-UFk1hHcnLjh6As4ISfxgH8AvCkQTyiSalM38hA-En4WWFxEUK_SSYeONSCvB8ws3LMHjSjnwoevp2VQXaYhnC30fiAJw6Xe0E7d1F_ft9NFUzy8OuENnfXgcXD1zQ=="
-         |    }
-         |  ]
-         |}
-         |""".stripMargin
-    Ok(publicKey, `Content-Type`(MediaType.application.json))
-  }
+  def jwks: IO[Response[IO]] =
+    Ok(Source.fromResource("jwks.json").mkString, `Content-Type`(MediaType.application.json))
 
   def users: IO[Response[IO]] = {
     val NEW_USER = TEST_USER.copy(
@@ -322,8 +307,7 @@ object OidcIntegration extends Http4sDsl[IO] {
     key => params.get(key).toRight(s"Missing required parameter: $key")
 
   private def getPrivateKey = {
-    val key =
-      "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCLjweYEktEj7Zog93DPNyCN0I6YleX+1wbVYRKAubj9e0rN263TFzbcDs2ANafagM99N9keYYW7WPvUtbHIIJJE9wJOYi4XVxvnZdg8xZZyktqmPOqcuHObhW+1COZz5fM/zBVQ2Ljh1s7mDHzFYZsa2EfdeDeb0Fzj8VviTrRKvh28BPekehdwXlhs4NNE7UKaly+J8CSrSNK3+86y+4MPhv5QWTWEdycuOHoCzghJ/GAfwC8KRBPKJJqUzfyED4SfhZYXERQr9JJh441IK8HzCzcsweNKOfCh6+nZVBdpiGcLfR+IAnDpd7QTt3UX9+300VTPLw64Q2d9eBxcPXNAgMBAAECggEAAf/Ht6soOBBojoRR3IaDEIjcgmjL1G0dwdtIJj9DmEEuAPZ6t+/e5kEFuB2FW/DXoKWUJaS2aDgSVgIbxx9CGB9+tJ5SxQ4hUT//d4lD6Rld8//CgQIp4rXul2mc8PEcvZHSQWzSF9Kyjd7KQfv6JvqkZrnFKBDz7d6oKpOoRTxduiI7hSl5VDdcYZSgJIw6vK7m1HmvH1iA5PY8XovcM7G+NP1aNlNACSKFyhaYgKOv4kbPOOOCFvjv49LGnI12ZQjHMx65/gNI68J1etsyW+MgVD+OsLQG3ZZ88ygDgKX0f7jiLjTWl2cYKZj+vwWwSRkBrNC8+JDPC5nt/JX3iQKBgQDDWPcT7x9+o9yV96kACABAB3mtPPFxa0w+bMLcx6p3olwWwlt3Xm2YNiDthQIBXO2UcsUvyl/hpzzJDTjB3keJRrLwIvnkqaozBWVVKVvOpI+2QOSc7KYayyqL03Frlw5FhAOTD8OGi5YkzYtVtYMucFukWgzIelWNux3HEea99wKBgQC247zGgjWiF/J4C6Jr021P5SbrcqyMLGOOMHwKffnF8SbDyZ2cL1y5cVlPvAurr4+geN3ynzwZXUBpf0fTvPCWclvwBpxs+eX0K1MT7c6UgLfExKGoZtUpPXUZWDdzKCU8Ywz07ls0SrCfURdtEKw7zwXe3iIMe+MxdUji6cBJWwKBgFoWGgOQX/bX/G8QglhoWC0vBVb15uaGM+gJ4idM0PlQ36UDRoka+/GY7MB8eTtFrq6p6vOqIWN/61FQjp8hMd5Fw1lo19MyxzG2SE/ovdTjIP9Ml+EiZUuv69QF06VpSQSX58oXF/VhRAF+5MXG6lMtL6XwfTqq5+9vnkDiqYVrAoGAOlAiwKiDsUsxZFVRVE/1aqQF5MyLd6YvmAadhjrkiNh7I7IFLudrCTW65FFw5yzy/peLLPDYmL3C6+BJZpm3nECaT83L0nNbfp7Rvmj0lST1cye+45LmJGAUFiCqjW0fckGiv/W/3sxxxFp2va+zOt6nYIgzEwftSLe8pZ0iUkECgYEAtHeZQdhnxmTEx4OBoSHx90U/3eQLRClCMP/OOcK6kvn50pmA4n4sOJklf1IRUvKEElz3zAVfazzUEre9OpzgZjJhcsfRKwne3JawUe37sOo1+ffyhqPKLDzfGdnkLwInKvCBPY4Qvr/FgxKyQR1ULMI8kZz6h+Xbq+IjlbMY9Ak="
+    val key     = Source.fromResource("priv-key.base64").mkString
     val factory = KeyFactory.getInstance("RSA")
     val encoded = Base64.getDecoder.decode(key)
     factory.generatePrivate(new PKCS8EncodedKeySpec(encoded)).asInstanceOf[RSAPrivateKey]
