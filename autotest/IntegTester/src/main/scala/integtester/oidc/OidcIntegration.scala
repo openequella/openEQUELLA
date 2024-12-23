@@ -307,10 +307,10 @@ object OidcIntegration extends Http4sDsl[IO] {
     key => params.get(key).toRight(s"Missing required parameter: $key")
 
   private def getPrivateKey = {
-    val key     = Source.fromResource("priv-key.base64").mkString
-    val factory = KeyFactory.getInstance("RSA")
-    val encoded = Base64.getDecoder.decode(key)
-    factory.generatePrivate(new PKCS8EncodedKeySpec(encoded)).asInstanceOf[RSAPrivateKey]
+    val key        = Source.fromResource("priv-key.base64").mkString
+    val factory    = KeyFactory.getInstance("RSA")
+    val decodedKey = Base64.getDecoder.decode(key)
+    factory.generatePrivate(new PKCS8EncodedKeySpec(decodedKey)).asInstanceOf[RSAPrivateKey]
   }
 
   private def verifyCodeChallenge(challenge: String, verifier: String): Boolean = {

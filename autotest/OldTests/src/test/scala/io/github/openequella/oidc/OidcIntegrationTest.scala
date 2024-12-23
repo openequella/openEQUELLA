@@ -41,7 +41,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     "User should be able to login using OIDC and have proper profile and roles set up."
   )
   def singleSignOn(): Unit = {
-    authenticate()
+    logonOidc()
     // User should be redirected to the home page.
     new HomePage(context).get()
 
@@ -74,7 +74,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     val (errorType, errorMsg) = args
     OidcIntegration.setAuthRespCommand(errorType)
 
-    authenticate()
+    logonOidc()
     // OEQ Login page should be displayed with an error describing the failure
     val loginPage = new LoginPage(context).get()
     assertEquals(loginPage.getLoginErrorDetails, errorMsg)
@@ -116,7 +116,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     val (errorType, errorMsg) = args
     OidcIntegration.setTokenRespCommand(errorType)
 
-    authenticate()
+    logonOidc()
 
     val loginPage = new LoginPage(context).get()
     assertEquals(loginPage.getLoginErrorDetails, errorMsg)
@@ -126,7 +126,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
 
   @Test(description = "User signed in via OIDC should be able to create new Item")
   def contribute(): Unit = {
-    singleSignOn()
+    logonOidc()
     val wizard = new ContributePage(context).load().openWizard("Generic Testing Collection")
     val by     = By.xpath(s"//div[@id = '${wizard.getControlId(1)}']//input")
 
@@ -138,7 +138,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
   }
 
   @Test(
-    description = "User signed in via OIDC should be able to create new Item",
+    description = "OIDC users should be included in the user search result",
     dependsOnMethods = Array("contribute")
   )
   def searchUser(): Unit = {
@@ -150,7 +150,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     searchPage.waitForSearchCompleted(1)
   }
 
-  private def authenticate(): Unit = {
+  private def logonOidc(): Unit = {
     val loginPage = new LoginPage(context).load()
     loginPage.loginWithOidc()
   }
