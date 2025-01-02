@@ -4,6 +4,7 @@ package integtester
 
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import integtester.oauthredirector.OAuthRedirector
+import integtester.oidc.OidcIntegration
 import integtester.testprovider.TestingCloudProvider
 import io.circe.syntax._
 import org.http4s._
@@ -93,6 +94,20 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     )
   }
 
+  def oidcService: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case req @ POST -> Root / "token" =>
+      OidcIntegration.token(req)
+    case req @ GET -> Root / "authorise" =>
+      OidcIntegration.login(req)
+    case _ @GET -> Root / ".well-known" / "jwks.json" =>
+      OidcIntegration.jwks
+    case req @ GET -> Root / "api" / "users" / uuid =>
+      OidcIntegration.user
+    case req @ GET -> Root / "api" / "users" =>
+      OidcIntegration.users
+    case _ => NotFound("Unknown OIDC Integration endpoint")
+  }
+
   val appService = HttpRoutes.of[IO] {
     case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
     case request @ (GET | POST) -> Root / "viewitem.html"     => viewItemHtml(request)
@@ -112,6 +127,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
       )
       .mountService(appService, "/")
       .mountService(new TestingCloudProvider().oauthService, "/provider/")
+      .mountService(oidcService, "/oidc/")
       .serve
 
   lazy val embeddedRunning: Boolean = {

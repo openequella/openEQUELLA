@@ -63,7 +63,7 @@ public class LDAPTest extends AbstractSessionTest {
 
     LoginPage lp = new LoginPage(context).load();
     lp = lp.loginWithError(LDAP_USER_ANDREW, "fail");
-    assertEquals(lp.getLoginError(), "Sorry, the details you supplied were invalid.");
+    assertEquals(lp.getLoginFailure(), "Sorry, the details you supplied were invalid.");
   }
 
   // Simple group based permissions

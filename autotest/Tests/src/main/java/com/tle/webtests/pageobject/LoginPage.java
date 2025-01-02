@@ -3,11 +3,10 @@ package com.tle.webtests.pageobject;
 import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class LoginPage extends AbstractPage<LoginPage> {
-  @FindBy(className = "warning")
-  private WebElement errorMessage;
+  private By oidcLoginButton = By.name("_oidcLoginSection_loginButton");
 
   public LoginPage(PageContext context) {
     super(context, By.id("_logonButton"));
@@ -37,7 +36,17 @@ public class LoginPage extends AbstractPage<LoginPage> {
     return get();
   }
 
-  public String getLoginError() {
+  public String getLoginFailure() {
+    WebElement errorMessage =
+        waiter.until(ExpectedConditions.visibilityOf(driver.findElement(By.name("login_failure"))));
+    return errorMessage.getText();
+  }
+
+  public String getLoginErrorDetails() {
+    WebElement errorMessage =
+        waiter.until(
+            ExpectedConditions.visibilityOf(
+                driver.findElement(By.name("login_error_description"))));
     return errorMessage.getText();
   }
 
@@ -63,6 +72,17 @@ public class LoginPage extends AbstractPage<LoginPage> {
   }
 
   public boolean hasOidcLoginButton() {
-    return isPresent(By.name("_oidcLoginSection_loginButton"));
+    return isPresent(oidcLoginButton);
+  }
+
+  public void loginWithOidc() {
+    if (hasOidcLoginButton()) {
+      WebElement button =
+          waiter.until(
+              ExpectedConditions.elementToBeClickable(driver.findElement(oidcLoginButton)));
+      button.click();
+    } else {
+      throw new IllegalStateException("OIDC configuration is not available.");
+    }
   }
 }

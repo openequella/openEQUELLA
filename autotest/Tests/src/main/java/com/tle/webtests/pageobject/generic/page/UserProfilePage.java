@@ -101,4 +101,21 @@ public class UserProfilePage extends AbstractPage<UserProfilePage> {
   public String getDateFormat() {
     return new EquellaSelect(context, dateFormatSelect).get().getSelectedText();
   }
+
+  public String getGivenName() {
+    return driver.findElement(By.id("ed_fin")).getAttribute("value");
+  }
+
+  public String getFamilyName() {
+    return driver.findElement(By.id("ed_fan")).getAttribute("value");
+  }
+
+  public String getUsername() {
+    By xpath = By.xpath("//h3[text()='Username:']/following-sibling::div[@class='input text']");
+    return driver.findElement(xpath).getText();
+  }
+
+  public String getEmail() {
+    return driver.findElement(By.id("ed_em")).getAttribute("value");
+  }
 }
