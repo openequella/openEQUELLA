@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { listRoles } from "../../modules/RoleModule";
+import { searchRoles } from "../../modules/RoleModule";
 import { languageStrings } from "../../util/langstrings";
 import BaseSearch, {
   CommonEntitySearchProps,
@@ -37,7 +37,7 @@ export interface RoleSearchProps
  * Roles can then be selected (support single/multiple select).
  */
 const RoleSearch = ({
-  search = (query?: string) => listRoles(wildcardQuery(query)),
+  search = (query?: string) => searchRoles(wildcardQuery(query)),
   ...restProps
 }: RoleSearchProps) => {
   /**

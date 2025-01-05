@@ -20,11 +20,15 @@ import { Meta, StoryFn } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
-import { listRoles, roles } from "../../../../__mocks__/RoleModule.mock";
-import { eqRoleById } from "../../../../tsrc/modules/RoleModule";
+import { eqRoleById, roleIds } from "../../../../tsrc/modules/RoleModule";
 import SelectRoleControl, {
   SelectRoleControlProps,
 } from "../../../../tsrc/settings/Integrations/lti13/components/SelectRoleControl";
+import {
+  searchRoles,
+  findRolesByIds,
+  roles,
+} from "../../../../__mocks__/RoleModule.mock";
 
 export default {
   title: "settings/Integrations/Lti13/SelectRoleControl",
@@ -39,7 +43,8 @@ Empty.args = {
   secondaryText: "Secondary Text",
   onChange: action("onChange"),
   value: new Set(),
-  roleListProvider: listRoles,
+  searchRolesProvider: searchRoles,
+  findRolesByIdsProvider: findRolesByIds,
 };
 
 export const WithValue: StoryFn<SelectRoleControlProps> = (args) => (
@@ -47,5 +52,5 @@ export const WithValue: StoryFn<SelectRoleControlProps> = (args) => (
 );
 WithValue.args = {
   ...Empty.args,
-  value: pipe(roles, RS.fromReadonlyArray(eqRoleById)),
+  value: pipe(roles, RS.fromReadonlyArray(eqRoleById), roleIds),
 };

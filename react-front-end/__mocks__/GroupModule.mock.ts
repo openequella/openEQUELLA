@@ -62,24 +62,25 @@ export const groups: OEQ.UserQuery.GroupDetails[] = [
  *
  * @param ids A list of group IDs to lookup, should be one of those in `groups`
  */
-export const resolveGroups = async (
-  ids: ReadonlyArray<string>,
+export const findGroupsByIds = async (
+  ids: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
-  Promise.resolve(groups.filter(({ id }) => ids.includes(id)));
+  Promise.resolve(groups.filter(({ id }) => ids.has(id)));
 
 /**
  * Helper function for group retrieval by group id.
  *
  * @param id oEQ id
  */
-export const findGroupById = (id: string) => findEntityById(id, resolveGroups);
+export const findGroupById = (id: string) =>
+  findEntityById(id, findGroupsByIds);
 
 /**
  * Helper function to inject into component for group retrieval.
  *
  * @param query A simple string to filter by (no wildcard support)
  */
-export const listGroups = async (
+export const searchGroups = async (
   query?: string,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
   entityDetailsProvider(

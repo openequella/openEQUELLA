@@ -30,6 +30,7 @@ import {
   getPlatforms,
   platforms,
 } from "../../../../../__mocks__/Lti13PlatformsModule.mock";
+
 import Lti13PlatformsSettings, {
   Lti13PlatformsSettingsProps,
 } from "../../../../../tsrc/settings/Integrations/lti13/Lti13PlatformsSettings";

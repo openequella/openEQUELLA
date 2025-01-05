@@ -19,31 +19,42 @@ import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { listGroups, groups } from "../../../__mocks__/GroupModule.mock";
-import { eqGroupById } from "../../../tsrc/modules/GroupModule";
+import { eqGroupById, groupIds } from "../../../tsrc/modules/GroupModule";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../tsrc/components/securityentitydialog/SelectGroupDialog";
 import * as RS from "fp-ts/ReadonlySet";
+import {
+  searchGroups,
+  groups,
+  findGroupsByIds,
+} from "../../../__mocks__/GroupModule.mock";
 
 export default {
   title: "component/SecurityEntityDialog/SelectGroupDialog",
   component: SelectGroupDialog,
 } as Meta<SelectGroupDialogProps>;
 
-const commonParams = {
+const commonParams: SelectGroupDialogProps = {
+  value: RS.empty,
   open: true,
   onClose: action("onClose"),
-  groupListProvider: listGroups,
+  searchGroupsProvider: searchGroups,
+  findGroupsByIdsProvider: findGroupsByIds,
 };
 
-export const NoSelectedGroups = () => (
-  <SelectGroupDialog value={RS.empty} {...commonParams} />
-);
+export const NoSelectedGroups = () => <SelectGroupDialog {...commonParams} />;
 
 export const SelectedGroups = () => (
   <SelectGroupDialog
     {...commonParams}
-    value={pipe(groups, RS.fromReadonlyArray(eqGroupById))}
+    value={pipe(groups, RS.fromReadonlyArray(eqGroupById), groupIds)}
+  />
+);
+
+export const Skeleton = () => (
+  <SelectGroupDialog
+    {...commonParams}
+    findGroupsByIdsProvider={() => new Promise(() => {})}
   />
 );

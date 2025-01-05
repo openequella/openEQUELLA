@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { ordRole } from "../../modules/RoleModule";
+import { findRolesByIds, ordRole } from "../../modules/RoleModule";
 import { languageStrings } from "../../util/langstrings";
 import RoleSearch from "../securityentitysearch/RoleSearch";
 import SecurityEntityEntry from "./SecurityEntityEntry";
@@ -27,11 +27,19 @@ export interface SelectRoleDialogProps {
   /** Open the dialog when true. */
   open: boolean;
   /** The currently selected Roles. */
-  value: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  value: ReadonlySet<OEQ.Common.UuidString>;
   /** Handler for when dialog is closed. */
-  onClose: (selections?: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
+  onClose: (selections?: ReadonlySet<OEQ.Common.UuidString>) => void;
   /** Function which will provide the list of Role (search function) for RoleSearch. */
-  roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  searchRolesProvider?: (
+    query?: string,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  /**
+   * Function to get all roles details by ids.
+   */
+  findRolesByIdsProvider?: (
+    ids: ReadonlySet<string>,
+  ) => Promise<ReadonlyArray<OEQ.UserQuery.RoleDetails>>;
 }
 
 /**
@@ -42,7 +50,8 @@ const SelectRoleDialog = ({
   open,
   value,
   onClose,
-  roleListProvider,
+  searchRolesProvider,
+  findRolesByIdsProvider = findRolesByIds,
 }: SelectRoleDialogProps) => {
   const roleSearch = (
     onAdd: (roles: OEQ.UserQuery.RoleDetails) => void,
@@ -53,7 +62,7 @@ const SelectRoleDialog = ({
         type: "one_click",
         onAdd: onAdd,
       }}
-      search={roleListProvider}
+      search={searchRolesProvider}
       onSelectAll={onSelectAll}
     />
   );
@@ -73,6 +82,7 @@ const SelectRoleDialog = ({
       onConfirm={onClose}
       onCancel={onClose}
       addEntityMessage={languageStrings.selectRoleDialog.addRoles}
+      findEntitiesByIds={findRolesByIdsProvider}
     />
   );
 };

@@ -17,7 +17,7 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { listRoles } from "../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
 } from "../../tsrc/components/CustomRolesMappingControl";
@@ -31,7 +31,7 @@ export default {
 const defaultProps = {
   open: true,
   initialRoleMappings: new Map(),
-  searchRoleProvider: listRoles,
+  searchRoleProvider: searchRoles,
 };
 
 export const Standard: StoryFn<CustomRolesMappingControlProps> = (args) => (

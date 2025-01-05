@@ -18,7 +18,7 @@
 import GroupIcon from "@mui/icons-material/Group";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { ordGroup } from "../../modules/GroupModule";
+import { findGroupsByIds, ordGroup } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import SecurityEntityEntry from "./SecurityEntityEntry";
@@ -28,11 +28,19 @@ export interface SelectGroupDialogProps {
   /** Open the dialog when true. */
   open: boolean;
   /** The currently selected Groups. */
-  value: ReadonlySet<OEQ.UserQuery.GroupDetails>;
+  value: ReadonlySet<OEQ.Common.UuidString>;
   /** Handler for when dialog is closed. */
-  onClose: (selections?: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void;
+  onClose: (selections?: ReadonlySet<OEQ.Common.UuidString>) => void;
   /** Function which will provide the list of group (search function) for GroupSearch. */
-  groupListProvider?: (query?: string) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  searchGroupsProvider?: (
+    query?: string,
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  /**
+   * Function to get all groups details by ids.
+   */
+  findGroupsByIdsProvider?: (
+    ids: ReadonlySet<string>,
+  ) => Promise<ReadonlyArray<OEQ.UserQuery.GroupDetails>>;
 }
 
 /**
@@ -43,7 +51,8 @@ const SelectGroupDialog = ({
   open,
   value,
   onClose,
-  groupListProvider,
+  searchGroupsProvider,
+  findGroupsByIdsProvider = findGroupsByIds,
 }: SelectGroupDialogProps) => {
   const groupSearch = (
     onAdd: (group: OEQ.UserQuery.GroupDetails) => void,
@@ -54,7 +63,7 @@ const SelectGroupDialog = ({
         type: "one_click",
         onAdd: onAdd,
       }}
-      search={groupListProvider}
+      search={searchGroupsProvider}
       onSelectAll={onSelectAll}
     />
   );
@@ -79,6 +88,7 @@ const SelectGroupDialog = ({
       onConfirm={onClose}
       onCancel={onClose}
       addEntityMessage={languageStrings.selectGroupDialog.addGroups}
+      findEntitiesByIds={findGroupsByIdsProvider}
     />
   );
 };

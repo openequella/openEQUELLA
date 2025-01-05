@@ -19,7 +19,7 @@ import { action } from "@storybook/addon-actions";
 import { Meta, StoryFn } from "@storybook/react";
 import * as SET from "fp-ts/Set";
 import * as React from "react";
-import { listRoles, roles } from "../../../../__mocks__/RoleModule.mock";
+import { searchRoles, roles } from "../../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../../tsrc/modules/RoleModule";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
@@ -35,7 +35,7 @@ export const Empty: StoryFn<CustomRolesMappingControlProps> = (args) => (
 Empty.args = {
   initialRoleMappings: new Map(),
   onChange: action("onChange"),
-  searchRoleProvider: listRoles,
+  searchRoleProvider: searchRoles,
 };
 
 export const Standard: StoryFn<CustomRolesMappingControlProps> = (args) => (
