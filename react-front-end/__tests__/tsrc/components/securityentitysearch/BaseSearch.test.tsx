@@ -98,7 +98,7 @@ describe("<BaseSearch/>", () => {
       const renderResult = await renderBaseSearch({
         ...defaultBaseSearchProps,
         groupFilter: GroupFilter.args!.groupFilter,
-        resolveGroupsProvider: GroupModuleMock.resolveGroups,
+        resolveGroupsProvider: GroupModuleMock.findGroupsByIds,
       });
 
       const activeNotice = await renderResult.findByText(

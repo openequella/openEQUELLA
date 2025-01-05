@@ -18,7 +18,7 @@
 import { getByLabelText, render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { listRoles } from "../../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
 } from "../../../tsrc/components/CustomRolesMappingControl";
@@ -40,7 +40,7 @@ export const commonCustomRolesMappingControlProps: CustomRolesMappingControlProp
   {
     initialRoleMappings: new Map(),
     onChange: jest.fn(),
-    searchRoleProvider: listRoles,
+    searchRoleProvider: searchRoles,
   };
 
 /**

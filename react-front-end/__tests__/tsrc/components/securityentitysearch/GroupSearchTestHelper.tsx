@@ -38,7 +38,7 @@ export const defaultGroupSearchProps: BaseSearchProps<OEQ.UserQuery.GroupDetails
   {
     ...commonSearchProps,
     mode: generateDefaultCheckboxModeProps<OEQ.UserQuery.GroupDetails>(),
-    search: GroupModuleMock.listGroups,
+    search: GroupModuleMock.searchGroups,
     itemDetailsToEntry: ({ name }: OEQ.UserQuery.GroupDetails) => (
       <ListItemText primary={name} />
     ),

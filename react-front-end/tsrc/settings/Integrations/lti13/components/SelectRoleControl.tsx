@@ -21,7 +21,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
 import { useState } from "react";
-import SelectRoleDialog from "../../../../components/securityentitydialog/SelectRoleDialog";
+import SelectRoleDialog, {
+  SelectRoleDialogProps,
+} from "../../../../components/securityentitydialog/SelectRoleDialog";
 import SettingsListControl from "../../../../components/SettingsListControl";
 import { TooltipIconButton } from "../../../../components/TooltipIconButton";
 import { languageStrings } from "../../../../util/langstrings";
@@ -30,7 +32,11 @@ const { selectRole: selectRoleLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 
-export interface SelectRoleControlProps {
+export interface SelectRoleControlProps
+  extends Pick<
+    SelectRoleDialogProps,
+    "searchRolesProvider" | "findRolesByIdsProvider"
+  > {
   /**
    * Aria label for the edit icon
    */
@@ -46,15 +52,13 @@ export interface SelectRoleControlProps {
   /**
    * The initial list of selected roles
    */
-  value?: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  value?: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * The handler when option or selected roles has been changed.
    *
    * @param roles New set of roles.
    */
-  onChange: (roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
-  /** Function which will provide the list of Role (search function) for RoleSelector. */
-  roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  onChange: (roles: ReadonlySet<OEQ.Common.UuidString>) => void;
 }
 
 /**
@@ -65,8 +69,9 @@ const SelectRoleControl = ({
   secondaryText,
   value = RS.empty,
   onChange,
-  roleListProvider,
   ariaLabel = selectRoleLabel,
+  findRolesByIdsProvider,
+  searchRolesProvider,
 }: SelectRoleControlProps) => {
   const [showSelectRoleDialog, setShowSelectRoleDialog] = useState(false);
 
@@ -97,7 +102,8 @@ const SelectRoleControl = ({
             onChange(selectedRoles);
           }
         }}
-        roleListProvider={roleListProvider}
+        searchRolesProvider={searchRolesProvider}
+        findRolesByIdsProvider={findRolesByIdsProvider}
       />
     </>
   );

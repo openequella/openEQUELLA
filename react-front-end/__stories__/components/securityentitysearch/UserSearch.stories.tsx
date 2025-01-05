@@ -58,7 +58,7 @@ GroupFilter.args = {
   ...Default.args,
   search: UserModuleMock.listUsers,
   groupFilter: new Set(GroupModuleMock.groups.map(({ id }) => id)),
-  resolveGroupsProvider: GroupModuleMock.resolveGroups,
+  resolveGroupsProvider: GroupModuleMock.findGroupsByIds,
 };
 
 export const GroupFilterWithFailedGroupsResolver: StoryFn<UserSearchProps> = (
@@ -95,8 +95,8 @@ GroupFilterEditable.args = {
   search: UserModuleMock.listUsers,
   groupFilterEditable: true,
   groupFilter: RSET.empty,
-  groupSearch: GroupModuleMock.listGroups,
-  resolveGroupsProvider: GroupModuleMock.resolveGroups,
+  groupSearch: GroupModuleMock.searchGroups,
+  resolveGroupsProvider: GroupModuleMock.findGroupsByIds,
 };
 
 export const SelectAndCancelButton: StoryFn<UserSearchProps> = (args) => (

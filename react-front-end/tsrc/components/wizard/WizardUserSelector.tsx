@@ -139,13 +139,13 @@ export interface WizardUserSelectorProps extends WizardControlBasicProps {
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Function which can provide the full details of specified users based on id.
    */
   resolveUsersProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
 }
 
@@ -161,7 +161,7 @@ export const WizardUserSelector = ({
   userListProvider,
   resolveGroupsProvider,
   resolveUsersProvider = resolveUsers,
-}: WizardUserSelectorProps): JSX.Element => {
+}: WizardUserSelectorProps): React.JSX.Element => {
   const [showSelectUserDialog, setShowSelectUserDialog] =
     React.useState<boolean>(false);
   const [fullUsers, setFullUsers] = React.useState<

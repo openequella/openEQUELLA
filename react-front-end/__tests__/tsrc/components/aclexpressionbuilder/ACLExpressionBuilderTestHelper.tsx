@@ -25,10 +25,10 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../../../__mocks__/ACLExpressionBuilder.mock";
 import {
-  listGroups,
-  resolveGroups,
+  searchGroups,
+  findGroupsByIds,
 } from "../../../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../../../__mocks__/RoleModule.mock";
 import { getTokens, listUsers } from "../../../../__mocks__/UserModule.mock";
 import ACLExpressionBuilder, {
   ACLExpressionBuilderProps,
@@ -51,9 +51,9 @@ const {
 export const defaultACLExpressionBuilderProps: ACLExpressionBuilderProps = {
   onFinish: jest.fn(),
   searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
-  resolveGroupsProvider: resolveGroups,
+  searchGroupProvider: searchGroups,
+  searchRoleProvider: searchRoles,
+  resolveGroupsProvider: findGroupsByIds,
   aclEntityResolversProvider: defaultACLEntityResolvers,
   ssoTokensProvider: getTokens,
 };

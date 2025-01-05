@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Card, CardContent, Divider, Grid } from "@mui/material";
-import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
 import { constVoid, flow, identity, pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import { isEqual } from "lodash";
@@ -45,11 +44,10 @@ import {
   getOidcSettings,
   updateOidcSettings,
 } from "../../../modules/OidcModule";
-import { resolveRoles, roleIds } from "../../../modules/RoleModule";
+import { findRolesByIds } from "../../../modules/RoleModule";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
-import * as RS from "fp-ts/ReadonlySet";
 import * as E from "fp-ts/Either";
 import {
   generateCustomRoles,
@@ -116,18 +114,7 @@ const hasConfigurationChanged = (
   );
 };
 
-export interface OidcSettingsProps extends TemplateUpdateProps {
-  /**
-   * Function used to search oEQ roles.
-   */
-  searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
-  /**
-   * Function used to search roles from the server by their IDs.
-   */
-  resolveRolesProvider?: (
-    ids: ReadonlyArray<OEQ.Common.UuidString>,
-  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
-}
+export interface OidcSettingsProps extends TemplateUpdateProps {}
 
 /**
  * Show warning message for role selector related controls,
@@ -138,11 +125,7 @@ interface RoleWarningMessages {
   customRoles?: string[];
 }
 
-const OidcSettings = ({
-  updateTemplate,
-  searchRoleProvider,
-  resolveRolesProvider = resolveRoles,
-}: OidcSettingsProps) => {
+const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const { appErrorHandler } = useContext(AppContext);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
@@ -150,9 +133,6 @@ const OidcSettings = ({
   // States for values displayed in different sections.
   const [config, setConfig] =
     useState<OEQ.Oidc.IdentityProvider>(defaultConfig);
-  const [defaultRoles, setDefaultRoles] = useState<ReadonlySet<RoleDetails>>(
-    new Set(),
-  );
   const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
   // Warning messages if the oeq roles can't be found in the server.
   const [
@@ -167,7 +147,6 @@ const OidcSettings = ({
   // Build final submit values for OIDC.
   const currentConfig = {
     ...config,
-    defaultRoles: pipe(roleIds(defaultRoles), RS.toSet),
     roleConfig: config.roleConfig?.roleClaim
       ? {
           roleClaim: config.roleConfig.roleClaim,
@@ -216,13 +195,10 @@ const OidcSettings = ({
       )();
 
     const getRolesWithMsgTask = (roleIds: ReadonlySet<OEQ.Common.UuidString>) =>
-      pipe(getRolesTask(roleIds, resolveRolesProvider), TE.getOrThrow)();
+      pipe(getRolesTask(roleIds, findRolesByIds), TE.getOrThrow)();
 
     const getCustomRolesWithMsgTask = (customRoles: Map<string, Set<string>>) =>
-      pipe(
-        generateCustomRoles(customRoles, resolveRolesProvider),
-        TE.getOrThrow,
-      )();
+      pipe(generateCustomRoles(customRoles, findRolesByIds), TE.getOrThrow)();
 
     // Set the default and custom roles, or their warning messages if any role can't be found in the server.
     const setRoles = async (idp: OEQ.Oidc.IdentityProvider) => {
@@ -231,7 +207,7 @@ const OidcSettings = ({
         getCustomRolesWithMsgTask(idp.roleConfig?.customRoles ?? new Map()),
       ])
         .then(([defaultRolesWithMsg, customRolesWithMsg]) => {
-          setDefaultRoles(defaultRolesWithMsg.entities);
+          // TODO: REMOVE THIS IN OEQ-2359.
           setCustomRoles(customRolesWithMsg.mappings);
           setWarningMessages({
             defaultRoles: defaultRolesWithMsg.warning,
@@ -256,7 +232,7 @@ const OidcSettings = ({
         ),
       ),
     )();
-  }, [appErrorHandler, resolveRolesProvider]);
+  }, [appErrorHandler]);
 
   // Update the corresponding value in idpConfigurations state based on the provided key.
   const onConfigChange = (key: string, newValue: unknown) =>
@@ -381,9 +357,8 @@ const OidcSettings = ({
                 ariaLabel={`${editLabel} ${defaultRoleTitle}`}
                 primaryText={defaultRoleTitle}
                 secondaryText={defaultRoleDesc}
-                value={defaultRoles}
-                onChange={setDefaultRoles}
-                roleListProvider={searchRoleProvider}
+                value={config.defaultRoles}
+                onChange={(role) => onConfigChange("defaultRoles", role)}
               />
               {defaultRolesWarnings && (
                 <SettingsListAlert
@@ -418,7 +393,6 @@ const OidcSettings = ({
                   <CustomRolesMappingControl
                     initialRoleMappings={customRoles}
                     onChange={setCustomRoles}
-                    searchRoleProvider={searchRoleProvider}
                     strings={customRoleDialogStrings}
                   />
                   {customRolesWarnings && (

@@ -19,6 +19,7 @@ import { Button } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { roleIds } from "../../../../modules/RoleModule";
 import * as TE from "../../../../util/TaskEither.extended";
 import * as React from "react";
 import { useContext, useState } from "react";
@@ -49,6 +50,7 @@ import {
   getGroupsTask,
   getRolesTask,
 } from "./EditLti13PlatformHelper";
+import { groupIds } from "../../../../modules/GroupModule";
 
 const {
   name: editPageName,
@@ -213,12 +215,12 @@ const EditLti13Platform = ({
               generalDetails: generalDetailsValue,
               aclExpression:
                 platform.allowExpression ?? ACLRecipientTypes.Everyone,
-              unknownRoles: unknownRolesWithMsg.entities,
-              instructorRoles: instructorRolesWithMsg.entities,
+              unknownRoles: roleIds(unknownRolesWithMsg.entities),
+              instructorRoles: roleIds(instructorRolesWithMsg.entities),
               customRoles: customRolesWithMsg.mappings,
               unknownUserHandlingData: {
                 selection: platform.unknownUserHandling,
-                groups: unknownUserDefaultGroupsWithMsg.entities,
+                groups: groupIds(unknownUserDefaultGroupsWithMsg.entities),
               },
               enabled: platform.enabled,
             });

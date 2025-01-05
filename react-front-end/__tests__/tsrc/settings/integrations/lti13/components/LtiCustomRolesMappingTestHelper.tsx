@@ -18,7 +18,7 @@
 import "@testing-library/jest-dom";
 import { render, RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { listRoles } from "../../../../../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../../../../../__mocks__/RoleModule.mock";
 
 import LtiCustomRolesMapping, {
   LtiCustomRolesMappingProps,
@@ -34,7 +34,7 @@ const { customRoleSelectLtiRoleLabel } =
 export const commonLtiCustomRolesMappingProps = {
   value: new Map(),
   onChange: jest.fn(),
-  searchRoleProvider: listRoles,
+  searchRoleProvider: searchRoles,
 };
 
 /**

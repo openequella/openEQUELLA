@@ -18,7 +18,7 @@
 import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { listRoles, roles } from "../../__mocks__/RoleModule.mock";
+import { searchRoles, roles } from "../../__mocks__/RoleModule.mock";
 import type { CustomRole } from "../../tsrc/components/CustomRoleHelper";
 import {
   getRoleNameByUrn,
@@ -36,9 +36,9 @@ export default {
 } as Meta<SelectCustomRoleDialogProps>;
 
 const defaultProps = {
+  initialRoleMappings: new Map(),
   open: true,
-  value: new Map(),
-  roleListProvider: listRoles,
+  searchRoleProvider: searchRoles,
 };
 
 export const EmptySelection: StoryFn<SelectCustomRoleDialogProps> = (args) => (
