@@ -22,6 +22,9 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
+import org.scalatest.prop.TableDrivenPropertyChecks._
+
+import scala.annotation.tailrec
 
 class TleUserApiTest extends AnyFunSpec with Matchers {
   private val autotest = TleUserView(
@@ -81,6 +84,14 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
       val response = TleUserApi.deleteUser("no such user")
       TestHelper.checkApiError(response) shouldBe a[NotFoundError]
     }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TleUserApi.deleteUser(autotest.uniqueId)(
+        cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      )
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
   }
 
   describe("updateUser") {
@@ -117,6 +128,156 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     it("should return an error for an unknown user") {
       val response = TleUserApi.updateUser("no such user", None, None, None, None, None)
       TestHelper.checkApiError(response) shouldBe a[NotFoundError]
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TleUserApi.updateUser(autotest.uniqueId, None, None, None, None, None)(
+        cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      )
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("searchUsers") {
+    // There are 10 users in the target institution
+    val TOTAL_USERS = 10
+    val BIG_LIMIT   = 100
+
+    it("supports searching for all users") {
+      // I know there's less than 100 users in the test institution
+      val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT))
+      response match {
+        case Right(users) =>
+          assert(users.items.nonEmpty)
+          assert(users.continue.isEmpty) // We should have all the users
+        case Left(errors) => fail("Failed to search for users: " + errors)
+      }
+    }
+
+    // Both are tested in the one test, as they should both result in the same order of users. So
+    // the call from one can be used to validate the other.
+    it("supports forward and backward pagination") {
+      @tailrec
+      def getUsersForward(
+          pagination: Pagination,
+          users: List[TleUserView] = List.empty
+      ): List[TleUserView] = {
+        assert(pagination.isInstanceOf[ForwardPagination])
+
+        TleUserApi.searchUsers(pagination) match {
+          case Left(errors) => fail("Failed to search for users: " + errors)
+          case Right(result) if result.continue.nonEmpty =>
+            getUsersForward(result.continue.get, users ++ result.items)
+          case Right(result) => users ++ result.items
+        }
+      }
+
+      // This pretty well identical to getUsersForward, but with the way users are appended to the
+      // list reversed. This is to ensure that the order of users is the same as the forward
+      // pagination.
+      //
+      // There is value in having these two implementations stand-alone for reference purposes.
+      @tailrec
+      def getUsersBackward(
+          pagination: Pagination,
+          users: List[TleUserView] = List.empty
+      ): List[TleUserView] = {
+        assert(pagination.isInstanceOf[BackwardPagination])
+
+        TleUserApi.searchUsers(pagination) match {
+          case Left(errors) => fail("Failed to search for users: " + errors)
+          case Right(result) if result.continue.nonEmpty =>
+            getUsersBackward(result.continue.get, result.items ++ users)
+          case Right(result) => result.items ++ users
+        }
+      }
+
+      val pageSize      = 4
+      val usersForward  = getUsersForward(ForwardPagination(pageSize))
+      val usersBackward = getUsersBackward(BackwardPagination(pageSize))
+      usersBackward shouldBe usersForward
+      usersForward.size shouldBe TOTAL_USERS
+      usersBackward.size shouldBe TOTAL_USERS
+    }
+
+    it("supports searching for a specific user") {
+      val response = TleUserApi.searchUsers(ForwardPagination(1), Some(autotest.username))
+      response match {
+        case Right(users) =>
+          assert(users.items.size == 1)
+          assert(users.items.head == autotest)
+        case Left(errors) => fail("Failed to search for user: " + errors)
+      }
+    }
+
+    it("returns all partially matching users") {
+      val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT), Some("test"))
+      response match {
+        case Right(users) =>
+          // There are three known users with 'test' in their details
+          assert(users.items.size == 3)
+        case Left(errors) => fail("Failed to search for users: " + errors)
+      }
+    }
+
+    it("should return an empty list if the query matches no users") {
+      val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT), Some("gobbledygook"))
+      response match {
+        case Right(users) =>
+          assert(users.items.isEmpty)
+          assert(users.continue.isEmpty)
+        case Left(errors) => fail("Failed to search for users: " + errors)
+      }
+    }
+
+    it("handles special characters in the query string") {
+      val specialCharacters = Table(
+        "char",
+        "!",
+        "@",
+        "#",
+        "$",
+        "%",
+        "^",
+        "&",
+        "*",
+        "(",
+        ")",
+        "-",
+        "_",
+        "=",
+        "+",
+        "[",
+        "]",
+        "{",
+        "}",
+        "|",
+        "\\",
+        ":",
+        ";",
+        "\"",
+        "'",
+        "<",
+        ">",
+        ",",
+        ".",
+        "?",
+        "/"
+      )
+
+      forAll(specialCharacters) { char =>
+        val response = TleUserApi.searchUsers(ForwardPagination(1), Some(s"test$char"))
+        response shouldBe a[Right[_, _]]
+      }
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT))(
+        cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      )
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 }

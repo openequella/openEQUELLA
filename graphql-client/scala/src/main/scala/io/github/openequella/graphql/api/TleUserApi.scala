@@ -18,7 +18,7 @@
 
 package io.github.openequella.graphql.api
 
-import io.github.openequella.graphql.client.{Mutations, Queries, User}
+import io.github.openequella.graphql.client._
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
 /** Represents an internal openEQUELLA user.
@@ -167,6 +167,62 @@ object TleUserApi {
 
     flattenResult {
       Client.mutate(query)
+    }
+  }
+
+  /** Searches for users based on the provided query.
+    *
+    * @param pagination
+    *   Detail the number of items to return, and whether to page through forward or backwards.
+    *   Especially useful for paging through large result sets.
+    * @param query
+    *   The query to search for. If None, all users will be returned.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Left containing a list of errors or Right with the list of users if the operation was
+    *   successful.
+    */
+  def searchUsers(
+      pagination: Pagination,
+      query: Option[String] = None
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], PaginationResult[TleUserView]] = {
+    // Set up the various selectors
+    val pageInfo =
+      (PageInfo.hasNextPage ~ PageInfo.hasPreviousPage ~ PageInfo.startCursor ~ PageInfo.endCursor)
+        .mapN(
+          PageInfoView
+        )
+    val userEdge =
+      (UserEdge.cursor ~ UserEdge.node { tleUser }).mapN(NodeWithCursorView[TleUserView](_, _))
+    val userConnection = (UserConnection.pageInfo { pageInfo } ~ UserConnection.edges { userEdge })
+      .mapN(ConnectionView[TleUserView](_, _))
+
+    // Builds the query based on the pagination type
+    val q = pagination match {
+      case ForwardPagination(limit, after) =>
+        Queries.internalUsers(query, Some(limit), None, None, after) {
+          userConnection
+        }
+      case BackwardPagination(limit, before) =>
+        Queries.internalUsers(query, None, Some(limit), before, None) {
+          userConnection
+        }
+    }
+
+    // Execute the query
+    Client.query(q) match {
+      case Right(result) =>
+        result match {
+          case Some(ConnectionView(pageInfo, edges)) =>
+            val users    = edges.map(_.node)
+            val continue = ContinuationPagination(pagination, pageInfo)
+
+            Right(PaginationResult(users, continue))
+          case None => Right(PaginationResult(List.empty, None))
+
+        }
+      case Left(errors) => Left(errors)
     }
   }
 }
