@@ -52,7 +52,7 @@ export const Default: StoryFn<GroupSearchProps> = (args) => (
 Default.args = {
   mode: defaultCheckboxModeProps,
   listHeight: 150,
-  search: GroupModuleMock.listGroups,
+  search: GroupModuleMock.searchGroups,
 };
 
 export const MultiSelection: StoryFn<GroupSearchProps> = (args) => (
@@ -76,11 +76,11 @@ export const GroupFilterEditable: StoryFn<GroupSearchProps> = (args) => (
 );
 GroupFilterEditable.args = {
   ...Default.args,
-  search: GroupModuleMock.listGroups,
+  search: GroupModuleMock.searchGroups,
   groupFilterEditable: true,
   groupFilter: RSET.empty,
-  groupSearch: GroupModuleMock.listGroups,
-  resolveGroupsProvider: GroupModuleMock.resolveGroups,
+  groupSearch: GroupModuleMock.searchGroups,
+  resolveGroupsProvider: GroupModuleMock.findGroupsByIds,
 };
 
 export const OneClickMode: StoryFn<GroupSearchProps> = (args) => (

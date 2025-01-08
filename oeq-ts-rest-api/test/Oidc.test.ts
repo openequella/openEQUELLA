@@ -18,13 +18,13 @@
 import * as OEQ from '../src';
 import { IdentityProviderCodec } from '../src/gen/Oidc';
 import {
-  GenericIdentityProvider,
+  IdentityProvider,
   getIdentityProvider,
   updateIdentityProvider,
 } from '../src/Oidc';
 import * as TC from './TestConfig';
 
-const auth0: GenericIdentityProvider = {
+const auth0: IdentityProvider = {
   platform: 'AUTH0',
   issuer: 'https://dev-cqchwn4hfdb1p8xr.au.auth0.com',
   authCodeClientId: 'C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ',

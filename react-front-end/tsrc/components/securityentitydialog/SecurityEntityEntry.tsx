@@ -35,7 +35,7 @@ export interface SecurityEntityEntryProps {
   /** Handler for when bin icon is clicked. */
   onDelete: () => void;
   /** Icon to be displayed on the left side of the entry if provided. */
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
 }
 
 /**

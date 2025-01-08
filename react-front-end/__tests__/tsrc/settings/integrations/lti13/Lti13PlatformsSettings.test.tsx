@@ -24,6 +24,7 @@ import {
   moodle,
 } from "../../../../../__mocks__/Lti13PlatformsModule.mock";
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
+import { mockRoleAndGroupApis } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   clickDeleteButtonForPlatform,
   clickEnabledSwitchForPlatform,
@@ -32,6 +33,8 @@ import {
 } from "./Lti13PlatformSettingsTestHelper";
 
 const { save: saveLabel } = languageStrings.common.action;
+
+mockRoleAndGroupApis();
 
 describe("Lti13PlatformsSettings", () => {
   it("Should be able to show a list of platforms", async () => {

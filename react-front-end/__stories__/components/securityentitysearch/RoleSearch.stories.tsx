@@ -52,7 +52,7 @@ export const Default: StoryFn<RoleSearchProps> = (args) => (
 Default.args = {
   mode: defaultCheckboxModeProps,
   listHeight: 150,
-  search: RoleModuleMock.listRoles,
+  search: RoleModuleMock.searchRoles,
 };
 
 export const MultiSelection: StoryFn<RoleSearchProps> = (args) => (

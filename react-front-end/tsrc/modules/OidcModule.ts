@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
+
 /**
  * Get the OIDC settings from the server.
  */

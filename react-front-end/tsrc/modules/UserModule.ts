@@ -31,7 +31,6 @@ import * as Separated from "fp-ts/Separated";
 import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
 import { API_BASE_URL } from "../AppConfig";
-import { OrdAsIs } from "../util/Ord";
 import { findEntityById } from "./ACLEntityModule";
 
 /**
@@ -99,10 +98,10 @@ export const getCurrentUserDetails = () =>
  * @param ids An array of oEQ ids
  */
 export const resolveUsers = (
-  ids: ReadonlyArray<string>,
+  ids: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
   OEQ.UserQuery.lookup(API_BASE_URL, {
-    users: RA.toArray<string>(ids),
+    users: pipe(ids, RSET.toReadonlyArray<string>(S.Ord), RA.toArray),
     groups: [],
     roles: [],
   }).then((result: OEQ.UserQuery.SearchResult) => result.users);
@@ -140,7 +139,7 @@ export const resolveUsersCached =
     cache: UserCache,
     setCache: (c: UserCache) => void,
     resolver: (
-      ids: ReadonlyArray<string>,
+      ids: ReadonlySet<string>,
     ) => Promise<OEQ.UserQuery.UserDetails[]>,
   ) =>
   (
@@ -169,7 +168,6 @@ export const resolveUsersCached =
     const retrieveUserDetails: (
       userIds: ReadonlySet<string>,
     ) => TE.TaskEither<string, ReadonlySet<OEQ.UserQuery.UserDetails>> = flow(
-      RSET.toReadonlyArray<string>(OrdAsIs),
       (ids) =>
         TE.tryCatch<string, OEQ.UserQuery.UserDetails[]>(
           () => resolver(ids),

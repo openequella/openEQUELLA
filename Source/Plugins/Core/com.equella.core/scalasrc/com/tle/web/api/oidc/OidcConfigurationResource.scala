@@ -24,6 +24,7 @@ import com.tle.integration.oidc.idp.{
   GenericIdentityProviderDetails,
   IdentityProvider,
   IdentityProviderDetails,
+  OktaDetails,
   RoleConfiguration
 }
 import com.tle.integration.oidc.service.OidcConfigurationService
@@ -83,6 +84,14 @@ object IdentityProviderResponse {
             commonDetails = commonDetails,
             apiUrl = generic.apiUrl,
             apiClientId = generic.apiClientId
+          )
+        )
+      case okta: OktaDetails =>
+        Right(
+          GenericIdentityProviderResponse(
+            commonDetails = commonDetails,
+            apiUrl = okta.apiUrl,
+            apiClientId = okta.apiClientId
           )
         )
       case other =>

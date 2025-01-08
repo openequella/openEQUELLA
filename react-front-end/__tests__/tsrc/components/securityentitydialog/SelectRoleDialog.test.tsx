@@ -19,6 +19,7 @@ import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { LOGGED_IN_USER_ROLE_NAME } from "../../../../__mocks__/ACLRecipientModule.mock";
 import { roles } from "../../../../__mocks__/RoleModule.mock";
+import { roleIds } from "../../../../tsrc/modules/RoleModule";
 import {
   clickCancelButton,
   clickDeleteIconForEntity,
@@ -36,7 +37,7 @@ describe("SelectRoleDialog", () => {
   it("Should be able to add a role", async () => {
     const selectedRoleName = LOGGED_IN_USER_ROLE_NAME;
     const onClose = jest.fn();
-    const { getByRole } = renderSelectRoleDialog({
+    const { getByRole } = await renderSelectRoleDialog({
       ...commonSelectRoleDialogProps,
       onClose,
     });
@@ -47,7 +48,7 @@ describe("SelectRoleDialog", () => {
     await clickOkButton(dialog);
 
     const result = onClose.mock.lastCall[0];
-    expect(result).toEqual(SET.singleton(roles[0]));
+    expect(result).toEqual(SET.singleton(roles[0].id));
   });
 
   it("Should be able to remove selected role", async () => {
@@ -55,7 +56,7 @@ describe("SelectRoleDialog", () => {
       (onClose: jest.Mock) =>
         renderSelectRoleDialog({
           ...commonSelectRoleDialogProps,
-          value: SET.singleton(roles[0]),
+          value: SET.singleton(roles[0].id),
           onClose,
         }),
       roles[0].name,
@@ -66,9 +67,9 @@ describe("SelectRoleDialog", () => {
   it("Should be able to cancel the action", async () => {
     const selectedRoleName = "Guest User Role";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectRoleDialog({
+    const { getByRole } = await renderSelectRoleDialog({
       ...commonSelectRoleDialogProps,
-      value: SET.singleton(roles[0]),
+      value: SET.singleton(roles[0].id),
       onClose,
     });
 
@@ -87,7 +88,7 @@ describe("SelectRoleDialog", () => {
     const result = await testRemoveAll((onClose: jest.Mock) =>
       renderSelectRoleDialog({
         ...commonSelectRoleDialogProps,
-        value: new Set(roles),
+        value: roleIds(new Set(roles)),
         onClose,
       }),
     );

@@ -51,7 +51,7 @@ interface SelectUserDialogProps {
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 

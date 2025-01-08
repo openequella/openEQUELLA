@@ -86,7 +86,7 @@ export interface ACLHomePanelProps {
    * Function used to replace the default `resolveGroupsProvider` prop for `UserSearch` and `GroupSearch` component.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 

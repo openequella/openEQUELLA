@@ -18,6 +18,7 @@
 import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { groups } from "../../../../__mocks__/GroupModule.mock";
+import { groupIds } from "../../../../tsrc/modules/GroupModule";
 import {
   clickCancelButton,
   clickDeleteIconForEntity,
@@ -35,7 +36,7 @@ describe("SelectGroupDialog", () => {
   it("Should be able to add a group", async () => {
     const selectedGroupName = "Engineering & Computer Science Students";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectGroupDialog({
+    const { getByRole } = await renderSelectGroupDialog({
       ...commonSelectGroupDialogProps,
       onClose,
     });
@@ -46,7 +47,7 @@ describe("SelectGroupDialog", () => {
     await clickOkButton(dialog);
 
     const result = onClose.mock.lastCall[0];
-    expect(result).toEqual(SET.singleton(groups[0]));
+    expect(result).toEqual(SET.singleton(groups[0].id));
   });
 
   it("Should be able to remove selected group", async () => {
@@ -54,7 +55,7 @@ describe("SelectGroupDialog", () => {
       (onClose: jest.Mock) =>
         renderSelectGroupDialog({
           ...commonSelectGroupDialogProps,
-          value: SET.singleton(groups[0]),
+          value: SET.singleton(groups[0].id),
           onClose,
         }),
       groups[0].name,
@@ -65,9 +66,9 @@ describe("SelectGroupDialog", () => {
   it("Should be able to cancel the action", async () => {
     const selectedGroupName = "group200";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectGroupDialog({
+    const { getByRole } = await renderSelectGroupDialog({
       ...commonSelectGroupDialogProps,
-      value: SET.singleton(groups[0]),
+      value: SET.singleton(groups[0].id),
       onClose,
     });
 
@@ -86,7 +87,7 @@ describe("SelectGroupDialog", () => {
     const result = await testRemoveAll((onClose: jest.Mock) =>
       renderSelectGroupDialog({
         ...commonSelectGroupDialogProps,
-        value: new Set(groups),
+        value: groupIds(new Set(groups)),
         onClose,
       }),
     );

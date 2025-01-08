@@ -94,12 +94,12 @@ export const generateWarnMsgForMissingIds = (
 const getEntitiesTask = <T extends BaseSecurityEntity>(
   entityType: "role" | "group",
   ids: ReadonlySet<string>,
-  resolveEntitiesProvider: (ids: ReadonlyArray<string>) => Promise<T[]>,
+  resolveEntitiesProvider: (ids: ReadonlySet<string>) => Promise<T[]>,
 ): TE.TaskEither<string, EntityResult<T>> => {
   const task = (ids: ReadonlySet<string>) =>
     pipe(
       TE.tryCatch(
-        () => resolveEntitiesProvider(RS.toReadonlyArray(S.Ord)(ids)),
+        () => resolveEntitiesProvider(ids),
         (e) => `Failed to get ${entityType}s by IDs: ${e}`,
       ),
       TE.map(RS.fromReadonlyArray(eqEntityById<T>())),
@@ -141,7 +141,7 @@ const getEntitiesTask = <T extends BaseSecurityEntity>(
 export const getRolesTask = (
   roleIds: ReadonlySet<string>,
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.RoleDetails[]>,
 ): TE.TaskEither<string, EntityResult<OEQ.UserQuery.RoleDetails>> =>
   getEntitiesTask("role", roleIds, resolveRolesProvider);
@@ -156,7 +156,7 @@ export const getRolesTask = (
 export const getGroupsTask = (
   groupsIds: ReadonlySet<string>,
   resolveGroupsProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>,
 ): TE.TaskEither<string, EntityResult<OEQ.UserQuery.GroupDetails>> =>
   getEntitiesTask("group", groupsIds, resolveGroupsProvider);
@@ -173,7 +173,7 @@ export const getGroupsTask = (
 export const generateCustomRoles = (
   customRoles: Map<string, Set<string>>,
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.RoleDetails[]>,
 ): TE.TaskEither<string, CustomRoleMappingsResult> => {
   // Raw mapping result for each LTI role

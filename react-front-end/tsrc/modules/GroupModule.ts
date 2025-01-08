@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { contramap, Eq } from "fp-ts/Eq";
-import { flow } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -58,13 +58,13 @@ export const groupOrd = ORD.contramap(
  *
  * @param ids An array of oEQ ids
  */
-export const resolveGroups = async (
-  ids: ReadonlyArray<string>,
+export const findGroupsByIds = async (
+  ids: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>
   (
     await OEQ.UserQuery.lookup(API_BASE_URL, {
       users: [],
-      groups: RA.toArray<string>(ids),
+      groups: pipe(ids, RSET.toReadonlyArray<string>(S.Ord), RA.toArray),
       roles: [],
     })
   ).groups;
@@ -75,7 +75,7 @@ export const resolveGroups = async (
  * @param groupId The unique ID of a role
  */
 export const findGroupById = (groupId: string) =>
-  findEntityById(groupId, resolveGroups);
+  findEntityById(groupId, findGroupsByIds);
 
 /**
  * List groups known in oEQ.
@@ -83,7 +83,7 @@ export const findGroupById = (groupId: string) =>
  * @param query A wildcard supporting string to filter the result based on name
  * @param groupFilter A list of group UUIDs to filter the search by
  */
-export const listGroups = async (
+export const searchGroups = async (
   query?: string,
   groupFilter?: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.GroupDetails[]> =>

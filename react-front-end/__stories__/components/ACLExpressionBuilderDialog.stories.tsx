@@ -20,8 +20,8 @@ import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { defaultACLEntityResolvers } from "../../__mocks__/ACLExpressionBuilder.mock";
 import { complexExpressionACLExpression } from "../../__mocks__/ACLExpressionModule.mock";
-import { listGroups } from "../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../__mocks__/RoleModule.mock";
+import { searchGroups } from "../../__mocks__/GroupModule.mock";
+import { searchRoles } from "../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../__mocks__/UserModule.mock";
 import { generate } from "../../tsrc/modules/ACLExpressionModule";
 import ACLExpressionBuilderDialog, {
@@ -41,7 +41,7 @@ Standard.args = {
   onClose: action("onClose"),
   value: generate(complexExpressionACLExpression),
   searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
+  searchGroupProvider: searchGroups,
+  searchRoleProvider: searchRoles,
   aclEntityResolversProvider: defaultACLEntityResolvers,
 };

@@ -745,7 +745,7 @@ export const languageStrings = {
             usableByDesc:
               "Only allow user matching this expression to use this platform",
             usableByValidationError:
-              "ACL expression is too long (maximum 255 characters allowed)",
+              "The processed ACL expression exceeds the permitted length",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",
@@ -872,7 +872,7 @@ export const languageStrings = {
           title: "Role Mappings",
           defaultRole: "Default roles",
           defaultRoleDesc:
-            "Map the openEQUELLA roles to be used for users logging in via the Identity Provider.",
+            "Select the default openEQUELLA roles to be applied to users logging in via the Identity Provider. NOTE: These defaults apply only if no Role claim is defined.",
           roleClaim: "Role claim",
           roleClaimDesc:
             "Specify a custom claim provided by your Identity Provider (IdP) in the ID Token to represent the user's role. This allows you to map IdP roles to openEQUELLA roles for authorization. (Role mapping options will be displayed once specified.)",

@@ -49,7 +49,10 @@ export interface GroupWarning {
 }
 
 export interface UnknownUserHandlingControlProps
-  extends Pick<SelectGroupDialogProps, "groupListProvider">,
+  extends Pick<
+      SelectGroupDialogProps,
+      "searchGroupsProvider" | "findGroupsByIdsProvider"
+    >,
     GroupWarning {
   /**
    * Initial selected option.
@@ -58,7 +61,7 @@ export interface UnknownUserHandlingControlProps
   /**
    * The list of groups to be added to the user object If the unknown user handling is CREATE
    */
-  groups?: ReadonlySet<OEQ.UserQuery.GroupDetails>;
+  groups?: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * The handler when option or selected groups has been changed.
    *
@@ -67,7 +70,7 @@ export interface UnknownUserHandlingControlProps
    */
   onChange: (
     selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
+    groups: ReadonlySet<OEQ.Common.UuidString>,
   ) => void;
 }
 
@@ -96,13 +99,13 @@ const UnknownUserHandlingControl = ({
   selection,
   groups = RS.empty,
   onChange,
-  groupListProvider,
   warningMessageForGroups,
+  searchGroupsProvider,
+  findGroupsByIdsProvider,
 }: UnknownUserHandlingControlProps) => {
   const [showSelectGroupDialog, setShowSelectGroupDialog] = useState(false);
 
-  const [defaultGroups] =
-    useState<ReadonlySet<OEQ.UserQuery.GroupDetails>>(groups);
+  const [defaultGroups] = useState<ReadonlySet<OEQ.Common.UuidString>>(groups);
 
   return (
     <>
@@ -160,7 +163,8 @@ const UnknownUserHandlingControl = ({
                 setShowSelectGroupDialog(false);
                 selectedGroups && onChange(selection, selectedGroups);
               }}
-              groupListProvider={groupListProvider}
+              searchGroupsProvider={searchGroupsProvider}
+              findGroupsByIdsProvider={findGroupsByIdsProvider}
             />
           </ListItem>
         </>

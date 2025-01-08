@@ -38,7 +38,7 @@ export const defaultRoleSearchProps: BaseSearchProps<OEQ.UserQuery.RoleDetails> 
   {
     ...commonSearchProps,
     mode: generateDefaultCheckboxModeProps<OEQ.UserQuery.GroupDetails>(),
-    search: RoleModuleMock.listRoles,
+    search: RoleModuleMock.searchRoles,
     itemDetailsToEntry: ({ name }: OEQ.UserQuery.RoleDetails) => (
       <ListItemText primary={name} />
     ),

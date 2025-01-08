@@ -20,26 +20,38 @@ import * as React from "react";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../../tsrc/components/securityentitydialog/SelectGroupDialog";
-import { listGroups } from "../../../../__mocks__/GroupModule.mock";
+import {
+  searchGroups,
+  findGroupsByIds,
+} from "../../../../__mocks__/GroupModule.mock";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { doSearch, searchAndSelect } from "./SelectEntityDialogTestHelper";
+import {
+  doSearch,
+  searchAndSelect,
+  waitForEntityDialogToRender,
+} from "./SelectEntityDialogTestHelper";
 import * as OEQ from "@openequella/rest-api-client";
 
 const { queryFieldLabel } = languageStrings.groupSearchComponent;
 
 export const commonSelectGroupDialogProps: SelectGroupDialogProps = {
   open: true,
-  value: new Set<OEQ.UserQuery.GroupDetails>(),
+  value: new Set<OEQ.Common.UuidString>(),
   onClose: jest.fn(),
-  groupListProvider: listGroups,
+  searchGroupsProvider: searchGroups,
+  findGroupsByIdsProvider: findGroupsByIds,
 };
 
 /**
  * Helper to render SelectGroupDialog.
  */
-export const renderSelectGroupDialog = (
+export const renderSelectGroupDialog = async (
   props: SelectGroupDialogProps = commonSelectGroupDialogProps,
-): RenderResult => render(<SelectGroupDialog {...props} />);
+): Promise<RenderResult> => {
+  const result = render(<SelectGroupDialog {...props} />);
+  await waitForEntityDialogToRender(result);
+  return result;
+};
 
 const searchGroup = (dialog: HTMLElement, queryName: string) =>
   doSearch(dialog, queryFieldLabel, queryName);

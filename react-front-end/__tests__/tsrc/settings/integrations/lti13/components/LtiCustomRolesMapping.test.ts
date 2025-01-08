@@ -20,7 +20,10 @@ import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { roles } from "../../../../../../__mocks__/RoleModule.mock";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
-import { clickOkButton } from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
+import {
+  clickOkButton,
+  mockRoleAndGroupApis,
+} from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   doSearchAndSelectRole,
   openDialog,
@@ -33,6 +36,8 @@ import {
 
 const { ltiRoles } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
+
+mockRoleAndGroupApis();
 
 describe("LtiCustomRolesMapping", () => {
   it("Should be able to select different LTI roles", async () => {

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-
 import { languageStrings } from "../../../../../tsrc/util/langstrings";
+import { mockRoleAndGroupApis } from "../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   fillMuiTextFieldByAriaLabel,
   getMuiTextFieldByAriaLabel,
@@ -45,6 +45,8 @@ const {
   },
 } = languageStrings.settings.integration.oidc.apiDetails;
 
+mockRoleAndGroupApis();
+
 describe("General details section", () => {
   const allTextFields = [
     issuerLabel,
@@ -71,10 +73,12 @@ describe("General details section", () => {
 describe("Platform details section", () => {
   const entraIdFields = [apiClientIdLabel, apiClientSecretLabel];
   const auth0Fields = [apiUrlLabel, apiClientIdLabel, apiClientSecretLabel];
+  const oktaFields = [apiUrlLabel, apiClientIdLabel];
 
   it.each<[OEQ.Oidc.IdentityProviderPlatform, string[]]>([
     ["ENTRA_ID", entraIdFields],
     ["AUTH0", auth0Fields],
+    ["OKTA", oktaFields],
   ])("should render fields for platform '%s'", async (platform, fields) => {
     const { container } = await renderOidcSettings();
 

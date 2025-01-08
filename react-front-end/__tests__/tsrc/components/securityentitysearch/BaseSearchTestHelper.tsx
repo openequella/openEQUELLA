@@ -165,8 +165,8 @@ export const querySearchResultList = (container: HTMLElement): Element | null =>
 export const commonSearchProps = {
   enableMultiSelection: false,
   onChange: jest.fn(),
-  groupSearch: GroupModuleMock.listGroups,
-  resolveGroupsProvider: GroupModuleMock.resolveGroups,
+  groupSearch: GroupModuleMock.searchGroups,
+  resolveGroupsProvider: GroupModuleMock.findGroupsByIds,
 };
 
 /**

@@ -34,7 +34,7 @@ const { usableByValidationError } = accessControl;
  */
 export interface UnknownUserHandlingData {
   selection: OEQ.LtiPlatform.UnknownUserHandling;
-  groups: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  groups: ReadonlySet<OEQ.Common.UuidString>;
 }
 
 export interface AccessControlSectionProps
@@ -116,7 +116,6 @@ const AccessControlSection = ({
           groups: groups,
         })
       }
-      groupListProvider={searchGroupProvider}
       warningMessageForGroups={warningMessageForGroups}
     />
   </SettingsList>

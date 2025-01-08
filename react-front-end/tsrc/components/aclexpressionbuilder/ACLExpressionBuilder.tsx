@@ -128,7 +128,7 @@ export interface ACLExpressionBuilderProps {
    * Function used to replace the default `resolveGroupsProvider` prop for `UserSearch` and `GroupSearch` component.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Object includes functions used to replace default acl entity resolvers for `ACLOtherPanel`

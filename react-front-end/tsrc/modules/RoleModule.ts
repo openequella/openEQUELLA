@@ -17,7 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as EQ from "fp-ts/Eq";
-import { flow } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as ORD from "fp-ts/Ord";
 import * as RA from "fp-ts/ReadonlyArray";
 import * as RSET from "fp-ts/ReadonlySet";
@@ -51,14 +51,14 @@ export const roleIds: (
  *
  * @param ids An array of oEQ ids
  */
-export const resolveRoles = async (
-  ids: ReadonlyArray<string>,
+export const findRolesByIds = async (
+  ids: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   (
     await OEQ.UserQuery.lookup(API_BASE_URL, {
       users: [],
       groups: [],
-      roles: RA.toArray<string>(ids),
+      roles: pipe(ids, RSET.toReadonlyArray<string>(S.Ord), RA.toArray),
     })
   ).roles;
 
@@ -68,14 +68,14 @@ export const resolveRoles = async (
  * @param roleId The unique ID of a role
  */
 export const findRoleById = (roleId: string) =>
-  findEntityById(roleId, resolveRoles);
+  findEntityById(roleId, findRolesByIds);
 
 /**
  * List roles known in oEQ.
  *
  * @param query A wildcard supporting string to filter the result based on name
  */
-export const listRoles = async (
+export const searchRoles = async (
   query?: string,
 ): Promise<OEQ.UserQuery.RoleDetails[]> =>
   (

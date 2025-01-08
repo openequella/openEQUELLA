@@ -21,7 +21,7 @@ import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
 import { groups } from "../../../../__mocks__/GroupModule.mock";
-import { eqGroupById } from "../../../../tsrc/modules/GroupModule";
+import { eqGroupById, groupIds } from "../../../../tsrc/modules/GroupModule";
 import UnknownUserHandlingControl, {
   UnknownUserHandlingControlProps,
 } from "../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
@@ -53,5 +53,5 @@ export const CreateOptionWithSelectedGroups: StoryFn<
 CreateOptionWithSelectedGroups.args = {
   ...DefaultOption.args,
   selection: "CREATE",
-  groups: pipe(groups, RS.fromReadonlyArray(eqGroupById)),
+  groups: pipe(groups, RS.fromReadonlyArray(eqGroupById), groupIds),
 };

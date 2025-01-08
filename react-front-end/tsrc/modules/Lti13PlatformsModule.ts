@@ -41,10 +41,15 @@ const { ltiRoles: ltiRolesStrings } =
 
 const baseUrl = getBaseUrl();
 
-interface ProviderDetail {
+export interface ProviderDetail {
   readonly name: string;
   readonly value: string;
 }
+
+export const keysetUrlDetails = {
+  name: keysetUrlinitiaLabel,
+  value: `${baseUrl}.well-known/jwks.json`,
+};
 
 /**
  * LTI 1.3 provider details which can be used to configure LTI platform.
@@ -54,10 +59,7 @@ export const providerDetails: { [key: string]: ProviderDetail } = {
     name: toolUrlLabel,
     value: baseUrl,
   },
-  keysetUrl: {
-    name: keysetUrlinitiaLabel,
-    value: `${baseUrl}.well-known/jwks.json`,
-  },
+  keysetUrl: keysetUrlDetails,
   initialLoginUrl: {
     name: initialLoginUrlLabel,
     value: `${baseUrl}lti13/launch`,

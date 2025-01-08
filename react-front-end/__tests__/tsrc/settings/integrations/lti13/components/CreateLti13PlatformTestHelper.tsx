@@ -21,15 +21,18 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
 import { defaultACLEntityResolvers } from "../../../../../../__mocks__/ACLExpressionBuilder.mock";
-import { listGroups } from "../../../../../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../../../../../__mocks__/RoleModule.mock";
+import { searchGroups } from "../../../../../../__mocks__/GroupModule.mock";
+import { searchRoles } from "../../../../../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../../../../../__mocks__/UserModule.mock";
 import CreateLti13Platform, {
   CreateLti13PlatformProps,
 } from "../../../../../../tsrc/settings/Integrations/lti13/components/CreateLti13Platform";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
 import { selectAllAndConfirm } from "../../../../components/aclexpressionbuilder/ACLExpressionBuilderTestHelper";
-import { clickOkButton } from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
+import {
+  clickOkButton,
+  waitForEntityDialogToRender,
+} from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import { searchAndSelectGroup } from "../../../../components/securityentitydialog/SelectGroupDialogTestHelper";
 import { searchAndSelectRole } from "../../../../components/securityentitydialog/SelectRoleDialogTestHelper";
 import { searchUser } from "../../../../components/securityentitysearch/UserSearchTestHelpler";
@@ -58,8 +61,8 @@ const {
 export const commonCreateLti13PlatformProps: CreateLti13PlatformProps = {
   updateTemplate: () => {},
   searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
+  searchGroupProvider: searchGroups,
+  searchRoleProvider: searchRoles,
   aclEntityResolversProvider: defaultACLEntityResolvers,
 };
 
@@ -177,6 +180,8 @@ export const configureUnknownUserHandling = async (
   );
   const selectGroupsButton = await renderResult.findByText(selectGroupsLabel);
   await userEvent.click(selectGroupsButton);
+  await waitForEntityDialogToRender(renderResult);
+
   const selectGroupDialog = renderResult.getByRole("dialog");
   await searchAndSelectGroup(selectGroupDialog, "", groupName);
   await clickOkButton(selectGroupDialog);
@@ -195,6 +200,8 @@ const configureSelectRoleDialog = async (
   roleName: string,
 ): Promise<void> => {
   await userEvent.click(renderResult.getByLabelText(`${editLabel} ${label}`));
+  await waitForEntityDialogToRender(renderResult);
+
   const dialog = renderResult.getByRole("dialog");
   await searchAndSelectRole(dialog, "", roleName);
   await clickOkButton(dialog);

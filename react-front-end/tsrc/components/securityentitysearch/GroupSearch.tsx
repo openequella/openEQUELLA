@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { listGroups } from "../../modules/GroupModule";
+import { searchGroups } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import BaseSearch, {
   CommonEntitySearchProps,
@@ -41,7 +41,7 @@ export interface GroupSearchProps
  */
 const GroupSearch = ({
   search = (query?: string, groupFilter?: ReadonlySet<string>) =>
-    listGroups(wildcardQuery(query), groupFilter),
+    searchGroups(wildcardQuery(query), groupFilter),
   ...restProps
 }: GroupSearchProps) => {
   /**

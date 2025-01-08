@@ -23,8 +23,8 @@ import {
   aclEveryone,
   aclWithComplexSubExpression,
 } from "../../../../__mocks__/ACLExpressionModule.mock";
-import { listGroups } from "../../../../__mocks__/GroupModule.mock";
-import { listRoles } from "../../../../__mocks__/RoleModule.mock";
+import { searchGroups } from "../../../../__mocks__/GroupModule.mock";
+import { searchRoles } from "../../../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../../../__mocks__/UserModule.mock";
 import UsableByControlControl, {
   UsableByControlProps,
@@ -42,8 +42,8 @@ Standard.args = {
   onChange: action("onChange"),
   value: aclEveryone,
   searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
+  searchGroupProvider: searchGroups,
+  searchRoleProvider: searchRoles,
   aclEntityResolversProvider: defaultACLEntityResolvers,
 };
 

@@ -53,11 +53,10 @@ import {
   eqGroupById,
   groupIds,
   groupOrd,
-  listGroups,
-  resolveGroups,
+  searchGroups,
+  findGroupsByIds,
 } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
-import { OrdAsIs } from "../../util/Ord";
 import { CheckboxList } from "../CheckboxList";
 import { SelectList } from "../SelectList";
 import GroupSearch from "./GroupSearch";
@@ -187,7 +186,7 @@ export interface CommonEntitySearchProps<T> {
    * used for display.
    */
   resolveGroupsProvider?: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /** Function which will provide the list of group. Used to let user choose what groups are used to filter the result.
    *
@@ -259,8 +258,8 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   groupFilterEditable = false,
   groupFilter,
   search,
-  groupSearch = (query?: string) => listGroups(wildcardQuery(query)),
-  resolveGroupsProvider = resolveGroups,
+  groupSearch = (query?: string) => searchGroups(wildcardQuery(query)),
+  resolveGroupsProvider = findGroupsByIds,
 }: BaseSearchProps<T>) => {
   const [query, setQuery] = useState<string>("");
   const [items, setItems] = useState<T[]>([]);
@@ -310,7 +309,6 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       O.fromPredicate(not(RSET.isEmpty)),
       O.map(
         flow(
-          RSET.toReadonlyArray<string>(OrdAsIs),
           TE.tryCatchK(
             resolveGroupsProvider,
             (reason) => `Failed to retrieve full group details: ${reason}`,

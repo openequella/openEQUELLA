@@ -53,12 +53,15 @@ object IdentityProviderCodec {
   private implicit val genericIdPDetailsDecoder: Decoder[GenericIdentityProviderDetails] =
     deriveDecoder[GenericIdentityProviderDetails]
 
+  private implicit val oktaDetailsEncoder: Encoder.AsObject[OktaDetails] =
+    deriveEncoder[OktaDetails]
+
+  private implicit val oktaDetailsDecoder: Decoder[OktaDetails] =
+    deriveDecoder[OktaDetails]
+
   implicit val idpDetailsEncoder: Encoder[IdentityProviderDetails] = Encoder.instance {
     case generic: GenericIdentityProviderDetails => genericIdPDetailsEncoder(generic)
-    case unsupported =>
-      throw new IllegalArgumentException(
-        s"Unsupported OIDC Identity Provider: ${unsupported.commonDetails.platform}"
-      )
+    case okta: OktaDetails                       => oktaDetailsEncoder(okta)
   }
 
   implicit val idpDetailsDecoder: Decoder[IdentityProviderDetails] = Decoder.instance { cursor =>
@@ -69,10 +72,8 @@ object IdentityProviderCodec {
       .flatMap {
         case IdentityProviderPlatform.AUTH0 | IdentityProviderPlatform.ENTRA_ID =>
           cursor.as[GenericIdentityProviderDetails]
-        case unsupported =>
-          Left(
-            DecodingFailure(CustomReason(s"Unsupported OIDC Identity Provider: $unsupported"), Nil)
-          )
+        case IdentityProviderPlatform.OKTA =>
+          cursor.as[OktaDetails]
       }
   }
 }

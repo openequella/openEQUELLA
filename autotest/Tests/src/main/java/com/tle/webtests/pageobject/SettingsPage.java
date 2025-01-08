@@ -183,7 +183,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   public OidcSettingsPage oidcSettingsPage() {
-    return clickSetting(GROUP_INTEGRATIONS, "OIDC", new OidcSettingsPage(context));
+    return clickSetting(GROUP_INTEGRATIONS, "OpenID Connect (OIDC)", new OidcSettingsPage(context));
   }
 
   /** Enable or disable new search UI. */

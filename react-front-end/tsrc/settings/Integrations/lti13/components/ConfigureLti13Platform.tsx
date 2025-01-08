@@ -19,7 +19,6 @@ import { Card, CardContent, Divider, Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
 import * as R from "fp-ts/Record";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
@@ -38,8 +37,6 @@ import {
 } from "../../../../mainui/Template";
 import { defaultACLEntityResolvers } from "../../../../modules/ACLExpressionModule";
 import { ACLRecipientTypes } from "../../../../modules/ACLRecipientModule";
-import { groupIds } from "../../../../modules/GroupModule";
-import { roleIds } from "../../../../modules/RoleModule";
 import { languageStrings } from "../../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../../util/validation";
 import AccessControlSection, {
@@ -101,11 +98,11 @@ export interface ConfigurePlatformValue {
   /**
    * A list of roles to be assigned to a LTI instructor role
    */
-  instructorRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  instructorRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
    */
-  unknownRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  unknownRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * Mappings from LTI roles to OEQ roles
    */
@@ -240,11 +237,11 @@ const ConfigureLti13Platform = ({
     useState<UnknownUserHandlingData>(value.unknownUserHandlingData);
 
   const [selectedUnknownRoles, setSelectedUnknownRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
+    ReadonlySet<OEQ.Common.UuidString>
   >(value.unknownRoles);
 
   const [selectedInstructorRoles, setSelectedInstructorRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
+    ReadonlySet<OEQ.Common.UuidString>
   >(value.instructorRoles);
 
   const [selectedCustomRolesMapping, setSelectedCustomRolesMapping] =
@@ -394,13 +391,10 @@ const ConfigureLti13Platform = ({
       enabled: value.enabled,
       unknownUserHandling: selectedUnknownUserHandling.selection,
       allowExpression: aclExpression,
-      instructorRoles: pipe(roleIds(selectedInstructorRoles), RS.toSet),
-      unknownRoles: pipe(roleIds(selectedUnknownRoles), RS.toSet),
+      instructorRoles: selectedInstructorRoles,
+      unknownRoles: selectedUnknownRoles,
       customRoles: transformCustomRoleMapping(selectedCustomRolesMapping),
-      unknownUserDefaultGroups: pipe(
-        groupIds(selectedUnknownUserHandling.groups),
-        RS.toSet,
-      ),
+      unknownUserDefaultGroups: selectedUnknownUserHandling.groups,
     };
 
     // Verify the base platform value and save it.
@@ -514,7 +508,6 @@ const ConfigureLti13Platform = ({
               setCustomRolesMapping={setSelectedCustomRolesMapping}
               unknownRoles={selectedUnknownRoles}
               setUnknownRoles={setSelectedUnknownRoles}
-              searchRoleProvider={searchRoleProvider}
               warningMessages={warningMessages}
             />
           </Grid>

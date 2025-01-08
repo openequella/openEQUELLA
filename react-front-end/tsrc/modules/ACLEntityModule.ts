@@ -67,19 +67,19 @@ export interface ACLEntityResolversMulti {
    * Lookup users known in oEQ.
    */
   resolveUsersProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.UserDetails[]>;
   /**
    * Lookup groups known in oEQ.
    */
   resolveGroupsProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
   /**
    * Lookup roles known in oEQ.
    */
   resolveRolesProvider: (
-    ids: ReadonlyArray<string>,
+    ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
@@ -104,10 +104,10 @@ export const entityIds: <T extends BaseSecurityEntity>(
  */
 export const findEntityById = async <T>(
   entityId: string,
-  resolveEntities: (ids: ReadonlyArray<string>) => Promise<T[]>,
+  resolveEntities: (ids: ReadonlySet<string>) => Promise<T[]>,
 ): Promise<T | undefined> =>
   pipe(
-    await resolveEntities([entityId]),
+    await resolveEntities(RSET.singleton(entityId)),
     E.fromPredicate(
       (a) => a.length <= 1,
       constant(`More than one entity was resolved for id: ${entityId}`),

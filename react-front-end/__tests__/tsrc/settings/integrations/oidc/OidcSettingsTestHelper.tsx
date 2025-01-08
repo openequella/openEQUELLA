@@ -17,7 +17,6 @@
  */
 import { pipe } from "fp-ts/function";
 import { Router } from "react-router-dom";
-import { listRoles } from "../../../../../__mocks__/RoleModule.mock";
 import OidcSettings from "../../../../../tsrc/settings/Integrations/oidc/OidcSettings";
 import { render, RenderResult, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
@@ -40,7 +39,6 @@ const { select: selectLabel } = languageStrings.common.action;
 export const renderOidcSettings = async (): Promise<RenderResult> => {
   const props = {
     updateTemplate: () => {},
-    searchRoleProvider: listRoles,
   };
 
   const history = createMemoryHistory();

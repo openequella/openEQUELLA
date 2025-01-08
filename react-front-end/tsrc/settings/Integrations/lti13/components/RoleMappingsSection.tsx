@@ -50,11 +50,11 @@ export interface RoleMappingsSectionProps {
   /**
    * Selected roles that should be used when the LTI Instructor role is detected Instructor Roles.
    */
-  instructorRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  instructorRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * Function to update the value of `instructorRoles`.
    */
-  setInstructorRoles: (roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
+  setInstructorRoles: (roles: ReadonlySet<OEQ.Common.UuidString>) => void;
   /**
    * The mapping relationships between LTI roles and oEQ roles.
    */
@@ -66,15 +66,11 @@ export interface RoleMappingsSectionProps {
   /**
    * The roles that should be used for all unmapped LTI roles.
    */
-  unknownRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  unknownRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * Function to update the value of `unknownRoles`.
    */
-  setUnknownRoles: (roles: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
-  /**
-   * Function used to search roles.
-   */
-  searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  setUnknownRoles: (roles: ReadonlySet<OEQ.Common.UuidString>) => void;
   /**
    * WarningMessages for each role selectors.
    */
@@ -92,7 +88,6 @@ const RoleMappingsSection = ({
   setCustomRolesMapping,
   unknownRoles,
   setUnknownRoles,
-  searchRoleProvider,
   warningMessages,
 }: RoleMappingsSectionProps) => {
   const {
@@ -112,7 +107,6 @@ const RoleMappingsSection = ({
         secondaryText={instructorRolesDesc}
         value={instructorRoles}
         onChange={setInstructorRoles}
-        roleListProvider={searchRoleProvider}
       />
       {warningMessages?.instructorRoles && (
         <SettingsListAlert
@@ -124,7 +118,6 @@ const RoleMappingsSection = ({
       <LtiCustomRolesMapping
         value={customRolesMapping}
         onChange={setCustomRolesMapping}
-        searchRoleProvider={searchRoleProvider}
       />
       {warningMessages?.customRolesMapping && (
         <SettingsListAlert
@@ -140,7 +133,6 @@ const RoleMappingsSection = ({
         secondaryText={unknownRolesDesc}
         value={unknownRoles}
         onChange={setUnknownRoles}
-        roleListProvider={searchRoleProvider}
       />
       {warningMessages?.unknownRoles && (
         <SettingsListAlert

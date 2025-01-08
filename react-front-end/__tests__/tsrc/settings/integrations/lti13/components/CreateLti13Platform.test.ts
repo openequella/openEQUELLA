@@ -25,6 +25,7 @@ import { groups } from "../../../../../../__mocks__/GroupModule.mock";
 import { roles } from "../../../../../../__mocks__/RoleModule.mock";
 import { users } from "../../../../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
+import { mockRoleAndGroupApis } from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import {
   commonCreateLti13PlatformProps,
   configureCustomRoles,
@@ -52,6 +53,8 @@ const {
   },
   accessControl: { unknownUserHandlingCreate: unknownUserHandlingCreateLabel },
 } = languageStrings.settings.integration.lti13PlatformsSettings.createPage;
+
+mockRoleAndGroupApis();
 
 describe("CreateLti13Platform", () => {
   const errorOutlineClass = "Mui-error";

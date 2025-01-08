@@ -40,8 +40,8 @@ import {
   showRecipient,
   showRecipientHumanReadable,
 } from "./ACLRecipientModule";
-import { findGroupById, resolveGroups } from "./GroupModule";
-import { findRoleById, resolveRoles } from "./RoleModule";
+import { findGroupById, findGroupsByIds } from "./GroupModule";
+import { findRoleById, findRolesByIds } from "./RoleModule";
 import { findUserById, resolveUsers } from "./UserModule";
 
 const {
@@ -1242,7 +1242,7 @@ export const defaultACLEntityResolvers: ACLEntityResolvers = {
 };
 
 export const defaultACLEntityMultiResolvers: ACLEntityResolversMulti = {
-  resolveGroupsProvider: resolveGroups,
+  resolveGroupsProvider: findGroupsByIds,
   resolveUsersProvider: resolveUsers,
-  resolveRolesProvider: resolveRoles,
+  resolveRolesProvider: findRolesByIds,
 };

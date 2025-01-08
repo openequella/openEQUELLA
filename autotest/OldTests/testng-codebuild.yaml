@@ -10,6 +10,7 @@ tests:
       - io.github.openequella.jwks
       - io.github.openequella.hierarchy
       - io.github.openequella.pages
+      - io.github.openequella.oidc
     classes:
       - com.tle.webtests.test.searching.BrowsebyTest
       - com.tle.webtests.test.searching.GallerySearchTest

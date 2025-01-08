@@ -312,8 +312,8 @@ class OidcAuthService @Inject() (
       user = new DefaultUserBean(
         userId,
         username,
-        claim(OpenIDConnectParams.FAMILY_NAME).getOrElse(""),
         claim(OpenIDConnectParams.GIVEN_NAME).getOrElse(""),
+        claim(OpenIDConnectParams.FAMILY_NAME).getOrElse(""),
         claim(OpenIDConnectParams.EMAIL).orNull
       )
       // Confirm the OEQ roles

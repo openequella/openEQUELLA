@@ -6,7 +6,8 @@ import com.tle.core.encryption.EncryptionService
 import com.tle.core.encryption.impl.EncryptionServiceImpl
 import com.tle.core.services.user.UserService
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.integration.oidc.idp.{CommonDetails, Auth0, GenericIdentityProviderDetails}
+import com.tle.core.webkeyset.service.{WebKeySetService, WebKeySetServiceImpl}
+import com.tle.integration.oidc.idp.{Auth0, CommonDetails, GenericIdentityProviderDetails}
 import com.tle.integration.oidc.service.OidcConfigurationServiceImpl
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
@@ -23,7 +24,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   val mockAuditLogService: AuditLogService           = mock(classOf[AuditLogService])
   val userService: UserService                       = mock(classOf[UserService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
-
+  implicit val webKeySetService: WebKeySetService    = new WebKeySetServiceImpl
   val auth0: Auth0 = Auth0(
     issuer = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",

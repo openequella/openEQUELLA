@@ -16,21 +16,32 @@
  * limitations under the License.
  */
 import Switch from "@mui/material/Switch";
+import { getBaseUrl } from "../../../AppConfig";
 import {
   FieldRenderOptions,
   passwordMask,
   passwordTextFiled,
   plainTextFiled,
 } from "../../../components/GeneralDetailsSection";
-import { FormControl, MenuItem, Select } from "@mui/material";
-import { constTrue, pipe } from "fp-ts/function";
+import {
+  FormControl,
+  ListItem,
+  ListItemText,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { absurd, constTrue, pipe } from "fp-ts/function";
 import * as React from "react";
+import SettingsList from "../../../components/SettingsList";
+import SettingsListConfiguration from "../../../components/SettingsListConfiguration";
+import { keysetUrlDetails } from "../../../modules/Lti13PlatformsModule";
 import { languageStrings } from "../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../util/validation";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as M from "fp-ts/Map";
 import * as S from "fp-ts/string";
+import * as R from "fp-ts/Record";
 
 const {
   enable: enableLabel,
@@ -60,23 +71,26 @@ const {
 } = languageStrings.settings.integration.oidc.apiDetails;
 const { select: selectLabel } = languageStrings.common.action;
 const { missingValue, invalidUrl } = languageStrings.error;
+const {
+  title: oeqDetailsTitle,
+  desc: oeqDetailsDesc,
+  redirect: redirectTitle,
+} = languageStrings.settings.integration.oidc.oeqDetails;
+
+const baseUrl = getBaseUrl();
 
 export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
   ["ENTRA_ID", "Entra ID"],
   ["AUTH0", "Auth0"],
+  ["OKTA", "Okta"],
 ]);
 
-// Use 'platform' as the discriminator.
-export interface GenericApiDetails
-  extends Pick<
-    OEQ.Oidc.GenericIdentityProvider,
-    "platform" | "apiUrl" | "apiClientId" | "apiClientSecret"
-  > {}
+export const defaultApiDetails: OEQ.Oidc.RestApiDetails = {
+  apiUrl: "",
+  apiClientId: "",
+};
 
-//TODO: Add more platform API details: Okta.
-export type ApiDetails = GenericApiDetails;
-
-export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
+export const defaultConfig: OEQ.Oidc.IdentityProvider = {
   enabled: false,
   platform: "ENTRA_ID",
   issuer: "",
@@ -86,28 +100,7 @@ export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   keysetUrl: "",
   tokenUrl: "",
   defaultRoles: new Set(),
-};
-
-export const defaultAuth0ApiDetails: GenericApiDetails = {
-  platform: "AUTH0",
-  apiUrl: "",
-  apiClientId: "",
-  apiClientSecret: "",
-};
-
-export const defaultEntraIdApiDetails: GenericApiDetails = {
-  ...defaultAuth0ApiDetails,
-  platform: "ENTRA_ID",
-};
-
-export const defaultApiDetailsMap: Record<
-  OEQ.Oidc.IdentityProviderPlatform,
-  ApiDetails
-> = {
-  ENTRA_ID: defaultEntraIdApiDetails,
-  AUTH0: defaultAuth0ApiDetails,
-  //TODO: Update default values for OKTA.
-  OKTA: defaultEntraIdApiDetails,
+  ...defaultApiDetails,
 };
 
 const platformSelector = (
@@ -279,14 +272,12 @@ export const generateGeneralDetails = (
   },
 });
 
-const commonApiDetails = (
+const apiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  apiDetails: GenericApiDetails,
-  isConfigured: boolean,
+  { apiUrl, apiClientId, apiClientSecret }: OEQ.Oidc.IdentityProvider,
+  isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const { apiUrl, apiClientId, apiClientSecret } = apiDetails;
-
   return {
     apiUrl: {
       label: apiUrlLabel,
@@ -325,7 +316,7 @@ const commonApiDetails = (
       desc: apiClientSecretDesc,
       required: true,
       // Validation is not required for updating but required for the initial creation.
-      validate: isConfigured ? constTrue : isNonEmptyString,
+      validate: isSecretConfigured ? constTrue : isNonEmptyString,
       component: passwordTextFiled({
         name: apiClientSecretLabel,
         value: apiClientSecret,
@@ -333,9 +324,9 @@ const commonApiDetails = (
         required: true,
         onChange: (value) => onChange("apiClientSecret", value),
         showValidationErrors,
-        validate: isConfigured ? constTrue : isNonEmptyString,
+        validate: isSecretConfigured ? constTrue : isNonEmptyString,
         errorMessage: missingValue,
-        placeholder: isConfigured ? passwordMask : undefined,
+        placeholder: isSecretConfigured ? passwordMask : undefined,
       }),
     },
   };
@@ -362,32 +353,59 @@ export const generatePlatform = (
 /**
  * Generate the render options for the API configuration of the selected identity providers.
  *
- * @param apiDetails The value of the platform specific details.
+ * @param idpDetails Contains the value of the platform specific details.
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
- * @param isConfigured Whether the server already has the API details.
+ * @param isSecretConfigured Whether the server already has the API secrete.
  */
 export const generateApiDetails = (
-  apiDetails: ApiDetails,
+  idpDetails: OEQ.Oidc.IdentityProvider,
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  isConfigured: boolean,
+  isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const platform = apiDetails.platform;
+  const platform = idpDetails.platform;
 
-  const apiCommonFields = commonApiDetails(
+  const apiCommonFields = apiDetails(
     apiDetailsOnChange,
     showValidationErrors,
-    apiDetails,
-    isConfigured,
+    idpDetails,
+    isSecretConfigured,
   );
-  const { apiClientId, apiClientSecret } = apiCommonFields;
+  const { apiUrl, apiClientId, apiClientSecret } = apiCommonFields;
+
   switch (platform) {
     case "AUTH0":
       return apiCommonFields;
     case "ENTRA_ID":
       return { apiClientId, apiClientSecret };
+    case "OKTA":
+      return { apiUrl, apiClientId };
     default:
-      throw new Error(`Unsupported platform: ${platform}`);
+      return absurd(platform);
   }
 };
+
+const oeqDetails = {
+  redirect: {
+    name: redirectTitle,
+    value: `${baseUrl}oidc/callback`,
+  },
+  keysetUrl: keysetUrlDetails,
+};
+
+/*** A list of OEQ details for the OIDC settings. **/
+export const oeqDetailsList = (
+  <SettingsList subHeading={oeqDetailsTitle}>
+    <ListItem>
+      <ListItemText>{oeqDetailsDesc}</ListItemText>
+    </ListItem>
+    {pipe(
+      oeqDetails,
+      R.toEntries,
+      A.map(([key, { name, value }]) => (
+        <SettingsListConfiguration key={key} title={name} value={value} />
+      )),
+    )}
+  </SettingsList>
+);

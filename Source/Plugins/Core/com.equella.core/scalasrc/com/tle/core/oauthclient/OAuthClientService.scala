@@ -18,22 +18,23 @@
 
 package com.tle.core.oauthclient
 
-import java.time.Instant
-import java.util.concurrent._
 import cats.effect.IO
-import sttp.client._
-import sttp.client.circe._
 import com.tle.common.institution.CurrentInstitution
-import com.tle.web.oauth.OAuthWebConstants
-import fs2.Stream
-import io.circe.generic.semiauto._
-import io.circe.{Decoder, Encoder}
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
 import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
-import sttp.model.Header
-import sttp.model.StatusCode
+import com.tle.web.oauth.OAuthWebConstants
+import fs2.Stream
+import io.circe.generic.semiauto._
+import io.circe.{Decoder, Encoder}
+import sttp.client._
+import sttp.client.circe._
+import sttp.model.{Header, StatusCode}
+
+import java.net.URI
+import java.time.Instant
+import java.util.concurrent._
 
 object OAuthTokenType extends Enumeration {
   val Bearer, EquellaApi = Value
@@ -48,25 +49,55 @@ object OAuthTokenType extends Enumeration {
 
 }
 
-/** Represent a POST request to obtain an OAuth2 Access Token.
+/** Structure for the bare minimum of data required in one of the OAuth2 Client Authentication
+  * methods listed below:
   *
-  * @param authTokenUrl
-  *   The URL used to obtain an access token from the selected Identity Provider
-  * @param clientId
-  *   Client ID used to get an Access Token to be used in API calls
-  * @param clientSecret
-  *   Client Secret used with `clientId` to get an Access Token
-  * @param data
-  *   Any additional data required in the request (e.g. 'audience' for Auth0)
+  *   - Client Secret
+  *   - Mutual TLS
+  *   - Private Key JWT
+  *
+  * Currently, this structure provides the support for the Client Secret and Private Key JWT, but it
+  * can be extended to support Mutual TLS in the future if needed.
+  *
+  * Reference: https://oauth.net/2/client-authentication/
   */
-case class TokenRequest(
+sealed trait TokenRequest {
+
+  /** The URL used to obtain an access token from the selected Identity Provider
+    */
+  def authTokenUrl: String
+
+  /** Client ID used to get an Access Token to be used in API calls
+    */
+  def clientId: String
+
+  /** Any additional data required in the request (e.g. 'audience' for Auth0)
+    */
+  def data: Option[Map[String, String]]
+
+  /** Build a unique key to identity the token request.
+    */
+  final def key: String = clientId + authTokenUrl
+}
+
+/** Data structure for requesting an OAuth2 Access Token using the Client Secret method.
+  */
+final case class ClientSecretTokenRequest(
     authTokenUrl: String,
     clientId: String,
     clientSecret: String,
     data: Option[Map[String, String]] = None
-) {
-  def key: String = clientId + authTokenUrl
-}
+) extends TokenRequest
+
+/** Data structure for requesting an OAuth2 Access Token using the Private Key JWT method.
+  */
+final case class AssertionTokenRequest(
+    authTokenUrl: String,
+    clientId: String,
+    assertion: String,
+    assertionType: URI,
+    data: Option[Map[String, String]] = None
+) extends TokenRequest
 
 case class OAuthTokenState(
     token: String,
@@ -108,16 +139,31 @@ object OAuthTokenCacheHelper {
     val body = token.data
       .getOrElse(Map.empty)
       .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
-    val postRequest = basicRequest.auth
-      .basic(token.clientId, token.clientSecret)
-      .body(body: _*)
-      .response(asJsonAlways[OAuthTokenResponse])
-      .post(uri"${token.authTokenUrl}")
+
+    val postRequest = token match {
+      case req: ClientSecretTokenRequest =>
+        basicRequest.auth
+          .basic(req.clientId, req.clientSecret)
+          .body(body: _*)
+      case req: AssertionTokenRequest =>
+        val assertionParams = Seq(
+          OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE -> req.assertionType.toString,
+          OAuthWebConstants.PARAM_CLIENT_ASSERTION      -> req.assertion
+        )
+
+        val fullBody = body :++ assertionParams
+        basicRequest.body(fullBody: _*)
+    }
 
     lazy val newOAuthTokenState =
       sttpBackend
-        .flatMap(implicit backend => postRequest.send())
-        .map(r => r.body.fold(de => throw de.error, responseToState))
+        .flatMap(implicit backend =>
+          postRequest
+            .response(asJson[OAuthTokenResponse])
+            .post(uri"${token.authTokenUrl}")
+            .send()
+        )
+        .map(r => r.body.fold(de => throw de, responseToState))
         .unsafeRunSync()
 
     // Save the token in both cache and DB.
@@ -179,7 +225,7 @@ object OAuthClientService {
       clientSecret: String,
       request: Request[T, Stream[IO, Byte]]
   ): Response[T] = {
-    val tokenRequest = TokenRequest(authTokenUrl, clientId, clientSecret)
+    val tokenRequest = ClientSecretTokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)
     val res          = requestWithToken(request, token.token, token.tokenType)
     if (res.code == StatusCode.Unauthorized) removeToken(tokenRequest)

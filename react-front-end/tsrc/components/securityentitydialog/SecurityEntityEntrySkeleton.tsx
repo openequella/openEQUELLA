@@ -15,21 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult } from "@testing-library/react";
+import {
+  Avatar,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  Skeleton,
+} from "@mui/material";
 import * as React from "react";
-import UnknownUserHandlingControl from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
 
-/***
- * Helper to render UnknownHandlingControl.
- */
-export const renderUnknownUserHandlingControl = (
-  selection: OEQ.LtiPlatform.UnknownUserHandling = "ERROR",
-  onChange: (
-    selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.Common.UuidString>,
-  ) => void,
-): RenderResult =>
-  render(
-    <UnknownUserHandlingControl selection={selection} onChange={onChange} />,
-  );
+/** Skeleton for what entities haven been selected in the security entity selection dialog. */
+const SecurityEntityEntrySkeleton = () => (
+  <ListItem>
+    <ListItemIcon>
+      <Skeleton variant="circular" width={24} height={24}>
+        <Avatar />
+      </Skeleton>
+    </ListItemIcon>
+
+    <ListItemText secondary={<Skeleton />} />
+
+    <ListItemSecondaryAction>
+      <Skeleton variant="rounded" width={24} height={24}>
+        <Avatar />
+      </Skeleton>
+    </ListItemSecondaryAction>
+  </ListItem>
+);
+
+export default SecurityEntityEntrySkeleton;

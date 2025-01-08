@@ -24,10 +24,7 @@ libraryDependencies ++= Seq(
   "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
 ).map(_ % Birt)
 
-resolvers += Resolver.url(
-  "SpringSource Ivy Repository",
-  url("https://repository.springsource.com/ivy/bundles/external/")
-)(Patterns(false, "[organisation]/[module]/[revision]/[artifact]-[revision].[ext]"))
+resolvers += "Camunda Public" at "https://artifacts.camunda.com/artifactory/public"
 
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 

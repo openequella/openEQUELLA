@@ -20,9 +20,12 @@ import { findByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+
 import { platforms } from "../../../../../../__mocks__/Lti13PlatformsModule.mock";
+
 import { generateWarnMsgForMissingIds } from "../../../../../../tsrc/settings/Integrations/lti13/components/EditLti13PlatformHelper";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
+import { mockRoleAndGroupApis } from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import { savePlatform } from "./CreateLti13PlatformTestHelper";
 import {
   commonEditLti13PlatformProps,
@@ -36,6 +39,8 @@ const { unknownUserHandlingCreate } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
 const { ok: okLabel } = languageStrings.common.action;
+
+mockRoleAndGroupApis();
 
 describe("EditLti13Platform", () => {
   it("loads the existing platform by platformID from URL", async () => {

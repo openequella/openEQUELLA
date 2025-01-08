@@ -19,4 +19,10 @@ public class ItemDetailsPage extends AbstractPage<ItemDetailsPage> {
     final String viewsText = viewsElem.getText();
     return Integer.parseInt(viewsText.substring(7));
   }
+
+  public String getOwner() {
+    By ownerLocator = By.xpath("//li[starts-with(text(),'Owner:')]/span");
+    String owner = driver.findElement(ownerLocator).getText();
+    return owner;
+  }
 }
