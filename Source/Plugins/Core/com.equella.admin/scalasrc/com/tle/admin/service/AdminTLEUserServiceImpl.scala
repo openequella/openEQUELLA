@@ -21,11 +21,14 @@ package com.tle.admin.service
 import com.tle.beans.user.TLEUser
 import com.tle.core.remoting.RemoteTLEUserService
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{ApiError, TleUserApi, TleUserView}
+import io.github.openequella.graphql.api._
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util.Optional
 import javax.inject.{Inject, Singleton}
+import scala.annotation.tailrec
+import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
 /** Service class for admin operations on TLEUser objects via the GraphQL library. Because this
@@ -114,10 +117,34 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
     }
   }
 
-  override def searchUsers(query: String): java.util.List[TLEUser] =
-    implementMe { d =>
-      d.searchUsers(query, null, true)
+  override def searchUsers(query: String): java.util.List[TLEUser] = {
+    LOGGER.debug("Searching for users with query: {}", query)
+
+    // Helper function to recursively fetch all users. Using ListBuffer primarily to ensure
+    // a mutable list is returned to Java code. Especially seeing the first operation done
+    // with the returned list from this function is typically a java.util.List.sort() operation.
+    @tailrec
+    def getUsers(
+        pagination: Pagination,
+        query: Option[String],
+        users: ListBuffer[TLEUser] = ListBuffer()
+    ): Either[List[ApiError], ListBuffer[TLEUser]] = {
+      TleUserApi.searchUsers(pagination, query) match {
+        case Right(result) if result.continue.nonEmpty =>
+          getUsers(result.continue.get, query, users ++ result.items.map(tleUserViewToTleUser))
+        case Right(result) => Right(users ++ result.items.map(tleUserViewToTleUser))
+        case Left(errors)  => Left(errors)
+      }
     }
+
+    getUsers(ForwardPagination(100), Option(query)) match {
+      case Right(users) =>
+        LOGGER.debug("Found {} users", users.size)
+        users.asJava
+      case Left(errors) =>
+        throw new ClientRequestException("Error searching for users", errors)
+    }
+  }
 
   private def getUser(
       identifier: String,
@@ -136,13 +163,5 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
       case Left(errors) =>
         throw new ClientRequestException(s"Error retrieving user [$identifier]", errors)
     }
-  }
-
-  private def implementMe[T](f: RemoteTLEUserService => T): T = {
-    LOGGER.debug(
-      "Still waiting on GraphQL implementation, will try delegate.",
-      new NotImplementedError()
-    )
-    f(delegate)
   }
 }
