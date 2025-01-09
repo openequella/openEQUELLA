@@ -11,20 +11,26 @@ tests:
       - io.github.openequella.hierarchy
       - io.github.openequella.pages
       - io.github.openequella.oidc
-      - com.tle.webtests.test.searching
-      - com.tle.webtests.test.contribute
-      - com.tle.webtests.test.reporting
-      - com.tle.webtests.test.viewing
-      - com.tle.webtests.test.admin
       - com.tle.webtests.test.accessibility
       - com.tle.webtests.test.acl
+      - com.tle.webtests.test.admin
       - com.tle.webtests.test.cal
+      - com.tle.webtests.test.contribute.bugs
+      - com.tle.webtests.test.contribute.controls
+      - com.tle.webtests.test.contribute.controls.asc
+      - com.tle.webtests.test.contribute.controls.attachments
+      - com.tle.webtests.test.contribute
       - com.tle.webtests.test.dashboard
       - com.tle.webtests.test.drm
       - com.tle.webtests.test.dynamichierarchy
       - com.tle.webtests.test.importexport
       - com.tle.webtests.test.myresource
-      - com.tle.webtests.test.users
+      - com.tle.webtests.test.reporting
+      - com.tle.webtests.test.searching.manage
+      - com.tle.webtests.test.searching.indexing
+      - com.tle.webtests.test.searching
       - com.tle.webtests.test.usersscripts
+      - com.tle.webtests.test.users
+      - com.tle.webtests.test.viewing
       - com.tle.webtests.test.webservices
       - com.tle.webtests.test.workflow
