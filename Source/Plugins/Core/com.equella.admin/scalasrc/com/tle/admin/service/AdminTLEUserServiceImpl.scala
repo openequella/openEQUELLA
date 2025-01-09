@@ -92,16 +92,27 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
     *
     * @param user
     *   The user to update
-    * @param passwordNotHashed
-    *   Whether the password is already hashed - if not, validate it meets password requirements and
-    *   hash it before updating the user.
     * @return
     *   The UUID of the updated user
     */
-  override def edit(user: TLEUser, passwordNotHashed: Boolean): String =
-    implementMe { d =>
-      d.edit(user, passwordNotHashed)
+  override def edit(user: TLEUser): String = {
+    val uuid = user.getUuid
+    LOGGER.debug("Editing user: {}", uuid)
+    TleUserApi.updateUser(
+      uuid,
+      Option(user.getUsername),
+      Option(user.getEmailAddress),
+      Option(user.getFirstName),
+      Option(user.getLastName),
+      Option(user.getPassword)
+    ) match {
+      case Right(updatedUser) =>
+        LOGGER.debug("User {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
+        updatedUser.uniqueId
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error updating user [${uuid}]", errors)
     }
+  }
 
   override def searchUsers(query: String): java.util.List[TLEUser] =
     implementMe { d =>

@@ -283,10 +283,8 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
     clearChanges();
   }
 
-  /**
-   * @return true if password has changed
-   */
-  private boolean saveDetails() {
+  /** Copy across the details from the UI into the {@code loadedUser} object. */
+  private void refreshLoadedUser() {
     loadedUser.setUsername(username.getText().trim());
     loadedUser.setFirstName(firstName.getText());
     loadedUser.setLastName(lastName.getText());
@@ -301,12 +299,10 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
             Collections.singletonList(
                 new ValidationError(
                     "password",
-                    CurrentLocale //$NON-NLS-1$
-                        .get(
-                        "com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch")))); //$NON-NLS-1$
+                    CurrentLocale.get(
+                        "com.tle.admin.usermanagement.internal.userdetailspanel.mustmatch"))));
       }
     }
-    return passwordChanged;
   }
 
   public void save() throws EditorException {
@@ -320,7 +316,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
   }
 
   public void saveLoadedUser() {
-    boolean needsHashing = saveDetails();
+    refreshLoadedUser();
     String id = loadedUser.getUuid();
     if (Check.isEmpty(id)) {
       id = userService.add(loadedUser);
@@ -329,7 +325,7 @@ public class UserDetailsPanel extends JChangeDetectorPanel {
               .get(id)
               .orElseThrow(() -> new IllegalStateException("Failed to retrieve newly added user."));
     } else {
-      id = userService.edit(loadedUser, needsHashing);
+      id = userService.edit(loadedUser);
       userCacheService.removeFromCache(id);
     }
     loadedUser.setUuid(id);
