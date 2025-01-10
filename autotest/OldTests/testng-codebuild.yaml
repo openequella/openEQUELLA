@@ -24,13 +24,20 @@ tests:
       - com.tle.webtests.test.drm
       - com.tle.webtests.test.dynamichierarchy
       - com.tle.webtests.test.importexport
+      - com.tle.webtests.test.myresources.favourites
       - com.tle.webtests.test.myresource
       - com.tle.webtests.test.reporting
       - com.tle.webtests.test.searching.manage
       - com.tle.webtests.test.searching.indexing
+      - com.tle.webtests.test.searching.hierarchy
       - com.tle.webtests.test.searching
       - com.tle.webtests.test.usersscripts
       - com.tle.webtests.test.users
       - com.tle.webtests.test.viewing
+      - com.tle.webtests.test.webservices.rest
+      - com.tle.webtests.test.webservices.soap
       - com.tle.webtests.test.webservices
+      - com.tle.webtests.test.workflow.assignment
+      - com.tle.webtests.test.workflow.movetolive
+      - com.tle.webtests.test.workflow.rejection
       - com.tle.webtests.test.workflow
