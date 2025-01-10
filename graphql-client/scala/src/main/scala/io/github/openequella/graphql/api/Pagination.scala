@@ -100,20 +100,15 @@ object ContinuationPagination {
     * @return
     *   The pagination information to continue the query, or None if there are no more items.
     */
-  def apply(requestPagination: Pagination, resultPageInfo: PageInfoView): Option[Pagination] = {
-    val hasMore = requestPagination match {
-      case ForwardPagination(_, _)  => resultPageInfo.hasNextPage
-      case BackwardPagination(_, _) => resultPageInfo.hasPreviousPage
+  def apply(requestPagination: Pagination, resultPageInfo: PageInfoView): Option[Pagination] =
+    requestPagination match {
+      case ForwardPagination(limit, _) =>
+        Option.when(resultPageInfo.hasNextPage)(
+          ForwardPagination(limit = limit, after = resultPageInfo.endCursor)
+        )
+      case BackwardPagination(limit, _) =>
+        Option.when(resultPageInfo.hasPreviousPage)(
+          BackwardPagination(limit = limit, before = resultPageInfo.startCursor)
+        )
     }
-    if (hasMore) {
-      requestPagination match {
-        case ForwardPagination(limit, _) =>
-          Some(ForwardPagination(limit = limit, after = resultPageInfo.endCursor))
-        case BackwardPagination(limit, _) =>
-          Some(BackwardPagination(limit = limit, before = resultPageInfo.startCursor))
-      }
-    } else {
-      None
-    }
-  }
 }
