@@ -19,7 +19,6 @@
 package com.tle.admin.service
 
 import com.tle.beans.user.TLEUser
-import com.tle.core.remoting.RemoteTLEUserService
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api._
 import org.slf4j.{Logger, LoggerFactory}
@@ -36,7 +35,7 @@ import scala.language.implicitConversions
   * over Scala types.
   */
 @Singleton
-class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(implicit
+class AdminTLEUserServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminTLEUserService {
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
