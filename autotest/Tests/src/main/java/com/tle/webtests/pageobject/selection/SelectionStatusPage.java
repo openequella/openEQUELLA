@@ -20,6 +20,8 @@ public class SelectionStatusPage extends AbstractPage<SelectionStatusPage> {
   }
 
   public SelectionCheckoutPage finishSelections() {
+    String frameContent = driver.getPageSource();
+    System.out.println("Current frame content: " + frameContent);
     WebElement finishedButton = waitForElement(By.id("ss_finishedButton"));
     scrollToElement(finishedButton);
     finishedButton.click();
