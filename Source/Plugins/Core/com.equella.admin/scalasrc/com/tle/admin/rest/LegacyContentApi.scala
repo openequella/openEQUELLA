@@ -45,7 +45,7 @@ final case class CurrentUserDetails(
     username: String,
     firstName: String,
     lastName: String,
-    emailAddress: String,
+    emailAddress: Option[String],
     accessibilityMode: Boolean,
     autoLoggedIn: Boolean,
     guest: Boolean,
