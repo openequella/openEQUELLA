@@ -79,7 +79,7 @@ class HierarchyPage(
   // By XPath to find the pin icon button on search result list.
   private def pinIconXpath(itemName: String, pinLabel: String): By =
     By.xpath(
-      ".//a[text()='" + itemName + "']/../following-sibling::section//button[@aria-label='" + pinLabel + "']"
+      searchResultListXpath + "//a[text()='" + itemName + "']/../following-sibling::section//button[@aria-label='" + pinLabel + "']"
     )
 
   // Select the version of the key resource in the dialog
@@ -106,7 +106,10 @@ class HierarchyPage(
     */
   def addKeyResourceFromResultList(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val addButton = getSearchList.findElement(pinIconXpath(itemName, addKeyResourceLabel))
+    val addButton = waiter.until(
+      ExpectedConditions.visibilityOfElementLocated(pinIconXpath(itemName, addKeyResourceLabel))
+    )
+
     addButton.click()
 
     selectKeyResourceVersion(isLatest = false);
@@ -122,8 +125,10 @@ class HierarchyPage(
     */
   def removeKeyResourceFromSearchResult(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val button = getSearchList.findElement(pinIconXpath(itemName, removeKeyResourceLabel))
-    waiter.until(ExpectedConditions.elementToBeClickable(button))
+    val button = waiter.until(
+      ExpectedConditions.visibilityOfElementLocated(pinIconXpath(itemName, removeKeyResourceLabel))
+    )
+
     button.click()
 
     confirmDialog()
