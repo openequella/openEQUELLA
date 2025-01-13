@@ -108,7 +108,7 @@ public class HierarchyServiceImpl
         SchemaDeletionListener,
         ItemDefinitionDeletionListener,
         PowerSearchDeletionListener {
-  private static final String TOPIC_ORDERING = "listPosition";
+  private static final String TOPIC_ORDERING = "listPosition,uuid";
   private static final Collection<String> EDIT_PRIV_LIST =
       Collections.singleton("EDIT_HIERARCHY_TOPIC");
 

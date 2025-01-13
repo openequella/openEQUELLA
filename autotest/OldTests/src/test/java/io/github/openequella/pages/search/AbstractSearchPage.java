@@ -29,7 +29,9 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   @FindBy(id = "exportSearchResult")
   protected WebElement exportButton;
 
-  private final By searchResultListBy = By.xpath("//ul[@data-testid='search-result-list']");
+  public final String searchResultListXpath = "//ul[@data-testid='search-result-list']";
+
+  private final By searchResultListBy = By.xpath(searchResultListXpath);
 
   public AbstractSearchPage(PageContext context) {
     super(context);
