@@ -123,7 +123,7 @@ jobs:
             target/*.zip
 
       - name: Save primary artefacts
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: Artefacts
           path: artefacts.tar
@@ -174,7 +174,7 @@ jobs:
           tar cvf storybook.tar storybook-static
 
       - name: Save Static Storybook instance
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: Storybook
           path: react-front-end/storybook.tar
@@ -264,7 +264,7 @@ jobs:
 
       - name: Save Scalacheck results
         if: matrix.newui && failure()
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: ScalacheckReports-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports
@@ -275,21 +275,21 @@ jobs:
 
       - name: Save TestNG Reports
         if: failure()
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: TestNGReports-${{ env.MATRIX_ID }}
           path: autotest/OldTests/target/testng
 
       - name: Save oEQ Logs
         if: failure()
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: oEQLogs-${{ env.MATRIX_ID }}
           path: autotest/equella-install/logs
 
       - name: Save Screenshots
         if: failure()
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: Screenshots-${{ env.MATRIX_ID }}
           path: autotest/Tests/target/test-reports/screenshots
@@ -306,7 +306,7 @@ jobs:
           tar cvf coverage_report.tar autotest/target/coverage-report/
 
       - name: Save Coverage Report
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: CoverageReport-${{ env.MATRIX_ID }}
           path: coverage_report.tar
@@ -388,7 +388,7 @@ jobs:
 
       - name: Save oEQ logs for REST Module
         if: failure()
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: oEQ-logs-rest-module
           path: autotest/equella-install/logs
