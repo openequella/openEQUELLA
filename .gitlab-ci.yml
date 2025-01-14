@@ -1,8 +1,4 @@
 include:
-  - project: edalex-group/development/oeq/openequella-ci
-    file: build/main.yml
-    ref: build/split-up-test-execution
-  - project: edalex-group/development/oeq/openequella-ci
-    file: build/anchors.yml
-    ref: build/split-up-test-execution
-    
+  project: edalex-group/development/oeq/openequella-ci
+  file: build/main.yml
+  ref: build/split-up-test-execution
