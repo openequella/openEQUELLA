@@ -237,7 +237,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Download Artefacts
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4.1.8
         with:
           path: Artefacts
           name: Artefacts
@@ -357,7 +357,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Download installer
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4.1.8
         with:
           path: Artefacts
           name: Artefacts
