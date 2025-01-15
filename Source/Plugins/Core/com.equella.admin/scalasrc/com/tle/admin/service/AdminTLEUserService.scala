@@ -71,13 +71,10 @@ trait AdminTLEUserService {
     *
     * @param user
     *   The user to update
-    * @param passwordNotHashed
-    *   Whether the password is already hashed - if not, validate it meets password requirements and
-    *   hash it before updating the user.
     * @return
     *   The UUID of the updated user
     */
-  def edit(user: TLEUser, passwordNotHashed: Boolean): String
+  def edit(user: TLEUser): String
 
   /** Returns a list of all users matching the specified query. Note, there is no pagination limit
     * on how many users will be returned.

@@ -30,7 +30,6 @@ import com.tle.admin.service.AdminLoginServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
 import com.tle.common.applet.client.ClientService;
-import com.tle.core.remoting.RemoteTLEUserService;
 import io.github.openequella.graphql.ClientConfiguration;
 import java.net.URL;
 import javax.inject.Singleton;
@@ -73,12 +72,5 @@ public class ClientModule extends AbstractModule {
     RestConfigurationHelper.loadSystemCookies(restConfiguration);
 
     return restConfiguration;
-  }
-
-  @Provides
-  @Singleton
-  RemoteTLEUserService provideRemoteTLEUserService() {
-    // Make sure to use getInvokerService as getService will also end up calling this method.
-    return clientService.getInvokerService(RemoteTLEUserService.class);
   }
 }

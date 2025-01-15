@@ -19,13 +19,15 @@
 package com.tle.admin.service
 
 import com.tle.beans.user.TLEUser
-import com.tle.core.remoting.RemoteTLEUserService
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{ApiError, TleUserApi, TleUserView}
+import io.github.openequella.graphql.api._
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util.Optional
 import javax.inject.{Inject, Singleton}
+import scala.annotation.tailrec
+import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
 
 /** Service class for admin operations on TLEUser objects via the GraphQL library. Because this
@@ -33,7 +35,7 @@ import scala.language.implicitConversions
   * over Scala types.
   */
 @Singleton
-class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(implicit
+class AdminTLEUserServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminTLEUserService {
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
@@ -92,21 +94,56 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
     *
     * @param user
     *   The user to update
-    * @param passwordNotHashed
-    *   Whether the password is already hashed - if not, validate it meets password requirements and
-    *   hash it before updating the user.
     * @return
     *   The UUID of the updated user
     */
-  override def edit(user: TLEUser, passwordNotHashed: Boolean): String =
-    implementMe { d =>
-      d.edit(user, passwordNotHashed)
+  override def edit(user: TLEUser): String = {
+    val uuid = user.getUuid
+    LOGGER.debug("Editing user: {}", uuid)
+    TleUserApi.updateUser(
+      uuid,
+      Option(user.getUsername),
+      Option(user.getEmailAddress),
+      Option(user.getFirstName),
+      Option(user.getLastName),
+      Option(user.getPassword)
+    ) match {
+      case Right(updatedUser) =>
+        LOGGER.debug("User {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
+        updatedUser.uniqueId
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error updating user [${uuid}]", errors)
+    }
+  }
+
+  override def searchUsers(query: String): java.util.List[TLEUser] = {
+    LOGGER.debug("Searching for users with query: {}", query)
+
+    // Helper function to recursively fetch all users. Using ListBuffer primarily to ensure
+    // a mutable list is returned to Java code. Especially seeing the first operation done
+    // with the returned list from this function is typically a java.util.List.sort() operation.
+    @tailrec
+    def getUsers(
+        pagination: Pagination,
+        query: Option[String],
+        users: ListBuffer[TLEUser] = ListBuffer()
+    ): Either[List[ApiError], ListBuffer[TLEUser]] = {
+      TleUserApi.searchUsers(pagination, query) match {
+        case Right(result) if result.continue.nonEmpty =>
+          getUsers(result.continue.get, query, users ++ result.items.map(tleUserViewToTleUser))
+        case Right(result) => Right(users ++ result.items.map(tleUserViewToTleUser))
+        case Left(errors)  => Left(errors)
+      }
     }
 
-  override def searchUsers(query: String): java.util.List[TLEUser] =
-    implementMe { d =>
-      d.searchUsers(query, null, true)
+    getUsers(ForwardPagination(100), Option(query)) match {
+      case Right(users) =>
+        LOGGER.debug("Found {} users", users.size)
+        users.asJava
+      case Left(errors) =>
+        throw new ClientRequestException("Error searching for users", errors)
     }
+  }
 
   private def getUser(
       identifier: String,
@@ -125,13 +162,5 @@ class AdminTLEUserServiceImpl @Inject() (val delegate: RemoteTLEUserService)(imp
       case Left(errors) =>
         throw new ClientRequestException(s"Error retrieving user [$identifier]", errors)
     }
-  }
-
-  private def implementMe[T](f: RemoteTLEUserService => T): T = {
-    LOGGER.debug(
-      "Still waiting on GraphQL implementation, will try delegate.",
-      new NotImplementedError()
-    )
-    f(delegate)
   }
 }

@@ -36,7 +36,6 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
   private final RemoteTLEGroupService groupService;
   private final AdminTLEUserService userService;
 
-  private boolean passwordNotHashed;
   private String groupName;
 
   public UserBulkImporter(AdminTLEUserService userService, RemoteTLEGroupService groupService) {
@@ -77,7 +76,7 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
 
   @Override
   public void edit(TLEUser t) {
-    userService.edit(t, passwordNotHashed);
+    userService.edit(t);
   }
 
   @Override
@@ -106,9 +105,8 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
     String password = reader.get("password");
     if (!Check.isEmpty(password)) {
       t.setPassword(password);
-      passwordNotHashed = true;
     } else if (create) {
-      List<ValidationError> errors = new ArrayList<ValidationError>();
+      List<ValidationError> errors = new ArrayList<>();
       errors.add(
           new ValidationError(
               "password", CurrentLocale.get("tleuserservice.bulkimport.nopassword")));
