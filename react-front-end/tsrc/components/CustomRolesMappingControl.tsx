@@ -17,88 +17,123 @@
  */
 import EditIcon from "@mui/icons-material/Edit";
 import { Badge } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import { useContext, useEffect, useState } from "react";
 import * as React from "react";
-import type { CustomRolesMapping } from "./CustomRoleHelper";
+import { AppContext } from "../mainui/App";
+import { findRolesByIds } from "../modules/RoleModule";
+import { generateCustomRoles } from "./securityentitydialog/SecurityEntityHelper";
+import * as TE from "../util/TaskEither.extended";
+import {
+  CustomRolesDetailsMappings,
+  CustomRolesMappings,
+  transformCustomRoleMapping,
+} from "./CustomRoleHelper";
+import SettingsListAlert from "./SettingsListAlert";
 import SettingsListControl from "./SettingsListControl";
 import { TooltipIconButton } from "./TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import SelectCustomRoleDialog, {
   SelectCustomRoleDialogProps,
 } from "./SelectCustomRoleDialog";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { title: customRolesTitle, desc: customRolesDesc } =
   languageStrings.customRolesMappingControl;
 const { edit: editLabel } = languageStrings.common.action;
 
 export interface CustomRolesMappingControlProps
-  extends Omit<SelectCustomRoleDialogProps, "open" | "onClose"> {
+  extends Omit<
+    SelectCustomRoleDialogProps,
+    "open" | "onClose" | "initialMappings"
+  > {
+  /** Initial custom roles mappings value with IDs. */
+  initialMappings: CustomRolesMappings;
   /** Custom title for the settings control. */
   title?: string;
   /** Custom description for the settings control. */
   description?: string;
   /** Handler for when roles mapping is updated. */
-  onChange: (maps: CustomRolesMapping) => void;
+  onChange: (maps: CustomRolesMappings) => void;
+  /**
+   * Functions to find role details by their IDs.
+   */
+  findRolesByIdsProvider?: (
+    ids: ReadonlySet<string>,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 export const CustomRolesMappingControl = ({
   title,
   description,
-  initialRoleMappings,
+  initialMappings,
   onChange,
-  searchRoleProvider,
-  defaultCustomRole,
+  searchRolesProvider,
+  findRolesByIdsProvider = findRolesByIds,
+  defaultCustomRoleId,
   customRoleSelector,
   strings,
 }: CustomRolesMappingControlProps) => {
+  const { appErrorHandler } = useContext(AppContext);
+
   const [showDialog, setShowDialog] = React.useState(false);
 
-  const SelectButton = ({
-    title,
-    badge,
-    onClick,
-  }: {
-    title: string;
-    badge: React.ReactNode;
-    onClick: () => void;
-  }): React.JSX.Element => (
-    <Badge badgeContent={badge} color="secondary">
-      <TooltipIconButton
-        color="primary"
-        title={title}
-        aria-label={title}
-        onClick={onClick}
-      >
-        <EditIcon fontSize="large"></EditIcon>
-      </TooltipIconButton>
-    </Badge>
-  );
+  // Role details for the initial mappings.
+  const [rolesMappings, setRolesMappings] =
+    React.useState<CustomRolesDetailsMappings>();
+  // Warning messages if any oEQ role details can't be found in the server.
+  const [warningMessages, setWarningMessages] = useState<string[]>();
+
+  // Fetch role details from server.
+  useEffect(() => {
+    pipe(
+      generateCustomRoles(initialMappings, findRolesByIdsProvider),
+      TE.match(appErrorHandler, (result) => {
+        setRolesMappings(result.mappings);
+        setWarningMessages(result.warnings);
+      }),
+    )();
+  }, [appErrorHandler, findRolesByIdsProvider, initialMappings]);
+
+  const buttonTitle = `${editLabel} ${title ?? customRolesTitle}`;
 
   return (
-    <SettingsListControl
-      primaryText={title ?? customRolesTitle}
-      secondaryText={description ?? customRolesDesc}
-      control={
-        <>
-          <SelectButton
-            title={`${editLabel} ${title ?? customRolesTitle}`}
-            badge={initialRoleMappings.size}
-            onClick={() => setShowDialog(true)}
-          />
-          <SelectCustomRoleDialog
-            open={showDialog}
-            initialRoleMappings={initialRoleMappings}
-            onClose={(result) => {
-              setShowDialog(false);
-              result && onChange(result);
-            }}
-            searchRoleProvider={searchRoleProvider}
-            defaultCustomRole={defaultCustomRole}
-            customRoleSelector={customRoleSelector}
-            strings={strings}
-          />
-        </>
-      }
-    />
+    <>
+      <SettingsListControl
+        primaryText={title ?? customRolesTitle}
+        secondaryText={description ?? customRolesDesc}
+        control={
+          <>
+            <Badge badgeContent={initialMappings.size} color="secondary">
+              <TooltipIconButton
+                color="primary"
+                title={buttonTitle}
+                aria-label={buttonTitle}
+                onClick={() => setShowDialog(true)}
+              >
+                <EditIcon fontSize="large"></EditIcon>
+              </TooltipIconButton>
+            </Badge>
+
+            <SelectCustomRoleDialog
+              open={showDialog}
+              initialMappings={rolesMappings}
+              onClose={(result) => {
+                setShowDialog(false);
+                result && pipe(result, transformCustomRoleMapping, onChange);
+              }}
+              searchRolesProvider={searchRolesProvider}
+              defaultCustomRoleId={defaultCustomRoleId}
+              customRoleSelector={customRoleSelector}
+              strings={strings}
+            />
+          </>
+        }
+      />
+      {warningMessages && (
+        <SettingsListAlert severity="warning" messages={warningMessages} />
+      )}
+    </>
   );
 };
 

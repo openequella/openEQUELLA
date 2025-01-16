@@ -29,19 +29,19 @@ import * as TE from "fp-ts/TaskEither";
 import { sprintf } from "sprintf-js";
 import type {
   CustomRole,
-  CustomRolesMapping,
-} from "../../../../components/CustomRoleHelper";
+  CustomRolesDetailsMappings,
+  CustomRolesMappings,
+} from "../CustomRoleHelper";
 import {
   BaseSecurityEntity,
   entityIds,
   eqEntityById,
-} from "../../../../modules/ACLEntityModule";
-import { getRoleNameByUrn } from "../../../../modules/Lti13PlatformsModule";
-import { languageStrings } from "../../../../util/langstrings";
-import { pfTernary } from "../../../../util/pointfree";
+} from "../../modules/ACLEntityModule";
+import { getRoleNameByUrn } from "../../modules/Lti13PlatformsModule";
+import { languageStrings } from "../../util/langstrings";
+import { pfTernary } from "../../util/pointfree";
 
-const { mismatchWarning, savingWarning } =
-  languageStrings.settings.integration.lti13PlatformsSettings.editPage;
+const { mismatchWarning, savingWarning } = languageStrings.securityEntity;
 
 /**
  * Contains a set of entities and an optional warning message.
@@ -65,7 +65,7 @@ export interface EntityResult<T extends BaseSecurityEntity> {
  * Check more details at {@link EntityResult}
  */
 export interface CustomRoleMappingsResult {
-  mappings: CustomRolesMapping;
+  mappings: CustomRolesDetailsMappings;
   warnings?: string[];
 }
 
@@ -165,60 +165,64 @@ export const getGroupsTask = (
  * For a given map of role ids, it resolves the associated role details and
  * returns a new map with the resolved role details.
  *
- * @param customRoles A map where the key is an LTI custom role ID
+ * @param customRoles A map where the key is an custom role ID
  *                    and the value is a set of oEQ role IDs associated with this identifier.
  * @param resolveRolesProvider A function that takes an array of role IDs and returns details of the roles.
- * @return a Map where the keys are the LTI role names, and the values are sets of full resolved oEQ roles - e.g. including names etc.
+ * @return a Map where the keys are the custom role names, and the values are sets of full resolved oEQ roles - e.g. including names etc.
  */
 export const generateCustomRoles = (
-  customRoles: Map<string, Set<string>>,
+  customRoles: CustomRolesMappings,
   resolveRolesProvider: (
     ids: ReadonlySet<string>,
   ) => Promise<OEQ.UserQuery.RoleDetails[]>,
 ): TE.TaskEither<string, CustomRoleMappingsResult> => {
   // Raw mapping result for each LTI role
-  type LtiRoleMappingResult = [string, EntityResult<OEQ.UserQuery.RoleDetails>];
+  type CustomRoleMappingResult = [
+    string,
+    EntityResult<OEQ.UserQuery.RoleDetails>,
+  ];
 
-  // It takes a LTI role ID and a set of role IDs, and
-  // returns a Task that resolves with an array contains the LTI role ID and
+  // It takes a custom role ID and a set of role IDs, and
+  // returns a Task that resolves with an array contains the custom role ID and
   // the resolved oEQ role details with possible warning message.
-  const resolveRolesForLtiRole = (
-    ltiRole: string,
+  const resolveRolesForCustomRole = (
+    customRole: string,
     oeqRoleIds: ReadonlySet<string>,
-  ): TE.TaskEither<string, LtiRoleMappingResult> =>
+  ): TE.TaskEither<string, CustomRoleMappingResult> =>
     pipe(
       getRolesTask(oeqRoleIds, resolveRolesProvider),
       TE.map((roleDetailsSetWithMessage) => [
-        ltiRole,
+        customRole,
         roleDetailsSetWithMessage,
       ]),
     );
 
-  // This function creates a JSX Element warning message for the provided LTI role.
-  const generateWarnMsgForLtiRole = ([
-    ltiRole,
+  // This function creates a JSX Element warning message for the provided custom role.
+  const generateWarnMsgForCustomRole = ([
+    customRole,
     { warning },
-  ]: LtiRoleMappingResult): O.Option<string> =>
+  ]: CustomRoleMappingResult): O.Option<string> =>
     pipe(
       warning,
       O.fromNullable,
-      O.map((m) => `LTI role: ${ltiRole} - ${m}`),
+      O.map((m) => `Custom role: ${customRole} - ${m}`),
     );
 
   // generate the final Map structure from rawMappings
   const generateMappings: (
-    rawMappings: ReadonlyArray<LtiRoleMappingResult>,
-  ) => CustomRolesMapping = flow(
+    rawMappings: ReadonlyArray<CustomRoleMappingResult>,
+  ) => CustomRolesDetailsMappings = flow(
     // Get role set
-    RA.map<LtiRoleMappingResult, [CustomRole, Set<OEQ.UserQuery.RoleDetails>]>(
-      ([ltiRole, roleDetailsWithWarningMessage]) => [
-        {
-          role: ltiRole,
-          name: getRoleNameByUrn(ltiRole),
-        },
-        pipe(roleDetailsWithWarningMessage.entities, RS.toSet),
-      ],
-    ),
+    RA.map<
+      CustomRoleMappingResult,
+      [CustomRole, Set<OEQ.UserQuery.RoleDetails>]
+    >(([ltiRole, roleDetailsWithWarningMessage]) => [
+      {
+        role: ltiRole,
+        name: getRoleNameByUrn(ltiRole),
+      },
+      pipe(roleDetailsWithWarningMessage.entities, RS.toSet),
+    ]),
     // Remove empty elements
     RA.filter(([_, oeqRoleSet]) => !SET.isEmpty(oeqRoleSet)),
     // Build map
@@ -234,13 +238,15 @@ export const generateCustomRoles = (
       roles,
       M.toArray(S.Ord),
       // create a TE array.
-      A.map(([ltiRole, roleIds]) => resolveRolesForLtiRole(ltiRole, roleIds)),
+      A.map(([ltiRole, roleIds]) =>
+        resolveRolesForCustomRole(ltiRole, roleIds),
+      ),
       TE.sequenceArray,
       TE.map((rawMappings) => ({
         mappings: generateMappings(rawMappings),
         warnings: pipe(
           rawMappings,
-          RA.map(generateWarnMsgForLtiRole),
+          RA.map(generateWarnMsgForCustomRole),
           RA.compact,
           O.fromPredicate(not(RA.isEmpty)),
           O.map(RA.toArray),

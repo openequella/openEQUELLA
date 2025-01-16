@@ -15,23 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
-import * as React from "react";
-import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
-import UnknownUserHandlingControl, {
-  UnknownUserHandlingControlProps,
-} from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+import "@testing-library/jest-dom";
+import { generateWarnMsgForMissingIds } from "../../../tsrc/components/securityentitydialog/SecurityEntityHelper";
 
-export const commonUnknownUserHandlingControlProps: UnknownUserHandlingControlProps =
-  {
-    selection: "ERROR",
-    onChange: jest.fn(),
-    findGroupsByIdsProvider: findGroupsByIds,
-  };
+import {
+  commonSelectRoleControlProps,
+  renderSelectRoleControl,
+} from "./SelectRoleControlTestHelper";
 
-/***
- * Helper to render UnknownHandlingControl.
- */
-export const renderUnknownUserHandlingControl = (
-  props: UnknownUserHandlingControlProps = commonUnknownUserHandlingControlProps,
-): RenderResult => render(<UnknownUserHandlingControl {...props} />);
+describe("SelectRoleControl", () => {
+  it("Shows warning messages for roles has been deleted but still in the initial value", async () => {
+    const roleIds = ["deletedRole1", "deletedRole2"];
+
+    const { findByText } = renderSelectRoleControl({
+      ...commonSelectRoleControlProps,
+      value: new Set(roleIds),
+    });
+
+    const expectedWarnMsg = generateWarnMsgForMissingIds(
+      new Set(roleIds),
+      "role",
+    );
+    const message = await findByText(expectedWarnMsg);
+
+    expect(message).toBeInTheDocument();
+  });
+});

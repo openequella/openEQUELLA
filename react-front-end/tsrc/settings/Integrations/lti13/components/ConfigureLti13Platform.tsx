@@ -24,10 +24,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  CustomRolesMapping,
-  transformCustomRoleMapping,
-} from "../../../../components/CustomRoleHelper";
+import { CustomRolesMappings } from "../../../../components/CustomRoleHelper";
 import SettingPageTemplate from "../../../../components/SettingPageTemplate";
 import { AppContext } from "../../../../mainui/App";
 import { routes } from "../../../../mainui/routes";
@@ -49,10 +46,7 @@ import GeneralDetailsSection, {
   plainTextFiled,
 } from "../../../../components/GeneralDetailsSection";
 import { validateUsernameClaim } from "./LtiUsernameClaimParser";
-import RoleMappingsSection, {
-  RoleMappingWarnings,
-} from "./RoleMappingsSection";
-import { GroupWarning } from "./UnknownUserHandlingControl";
+import RoleMappingsSection from "./RoleMappingsSection";
 import { UsableByControlProps } from "./UsableByControl";
 import * as S from "fp-ts/string";
 
@@ -71,10 +65,6 @@ const {
 } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .generalDetails;
-/**
- * Warning messages for group and role selector related controls in ConfigureLti13Platform component.
- */
-export type WarningMessages = RoleMappingWarnings & GroupWarning;
 
 export type LtiGeneralDetails = Omit<
   OEQ.LtiPlatform.LtiPlatformBase,
@@ -106,7 +96,7 @@ export interface ConfigurePlatformValue {
   /**
    * Mappings from LTI roles to OEQ roles
    */
-  customRoles: CustomRolesMapping;
+  customRoles: CustomRolesMappings;
   /**
    * The UnknownUserHandling option and list of groups to be added to the user object If the unknown user handling is CREATE
    */
@@ -165,18 +155,6 @@ export interface ConfigureLti13PlatformProps
     platform: OEQ.LtiPlatform.LtiPlatform,
   ) => Promise<void>;
   /**
-   * Show warning message for group and role selector related controls
-   * if the IDs of group/role details fetched form server
-   * doesn't match with the initial group/groups IDs.
-   *
-   * For example:
-   * suppose users select Role A and Role B for UnknownRoles. Later, if Role A gets deleted,
-   * its ID will still be stored in the platform.
-   * When the Edit page tries to get Role A and B, the server will only return Role B.
-   * Consequently, a warning message will be displayed stating that Role A is missing.
-   */
-  warningMessages?: WarningMessages;
-  /**
    * KeyRotationSection for edit platform page.
    */
   KeyRotationSection?: React.ReactNode;
@@ -201,7 +179,6 @@ const ConfigureLti13Platform = ({
   searchRoleProvider,
   configurePlatformProvider,
   aclEntityResolversProvider = defaultACLEntityResolvers,
-  warningMessages,
   KeyRotationSection,
 }: ConfigureLti13PlatformProps) => {
   const { appErrorHandler } = useContext(AppContext);
@@ -245,7 +222,7 @@ const ConfigureLti13Platform = ({
   >(value.instructorRoles);
 
   const [selectedCustomRolesMapping, setSelectedCustomRolesMapping] =
-    useState<CustomRolesMapping>(value.customRoles);
+    useState<CustomRolesMappings>(value.customRoles);
 
   // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
   const onGeneralDetailsChange = (key: string, newValue: unknown) =>
@@ -393,7 +370,7 @@ const ConfigureLti13Platform = ({
       allowExpression: aclExpression,
       instructorRoles: selectedInstructorRoles,
       unknownRoles: selectedUnknownRoles,
-      customRoles: transformCustomRoleMapping(selectedCustomRolesMapping),
+      customRoles: selectedCustomRolesMapping,
       unknownUserDefaultGroups: selectedUnknownUserHandling.groups,
     };
 
@@ -493,7 +470,6 @@ const ConfigureLti13Platform = ({
               searchGroupProvider={searchGroupProvider}
               searchRoleProvider={searchRoleProvider}
               aclEntityResolversProvider={aclEntityResolversProvider}
-              warningMessageForGroups={warningMessages?.warningMessageForGroups}
               showValidationErrors={showValidationErrors}
             />
           </Grid>
@@ -508,7 +484,6 @@ const ConfigureLti13Platform = ({
               setCustomRolesMapping={setSelectedCustomRolesMapping}
               unknownRoles={selectedUnknownRoles}
               setUnknownRoles={setSelectedUnknownRoles}
-              warningMessages={warningMessages}
             />
           </Grid>
           {KeyRotationSection && (

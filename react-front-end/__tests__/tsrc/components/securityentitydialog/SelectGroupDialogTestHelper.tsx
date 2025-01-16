@@ -20,10 +20,7 @@ import * as React from "react";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../../tsrc/components/securityentitydialog/SelectGroupDialog";
-import {
-  searchGroups,
-  findGroupsByIds,
-} from "../../../../__mocks__/GroupModule.mock";
+import { searchGroups } from "../../../../__mocks__/GroupModule.mock";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import {
   doSearch,
@@ -36,10 +33,9 @@ const { queryFieldLabel } = languageStrings.groupSearchComponent;
 
 export const commonSelectGroupDialogProps: SelectGroupDialogProps = {
   open: true,
-  value: new Set<OEQ.Common.UuidString>(),
+  value: new Set<OEQ.UserQuery.GroupDetails>(),
   onClose: jest.fn(),
   searchGroupsProvider: searchGroups,
-  findGroupsByIdsProvider: findGroupsByIds,
 };
 
 /**
