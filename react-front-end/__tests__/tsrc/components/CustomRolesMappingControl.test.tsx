@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { roles } from "../../../__mocks__/RoleModule.mock";
-import { eqRoleById } from "../../../tsrc/modules/RoleModule";
+import { generateWarnMsgForMissingIds } from "../../../tsrc/components/securityentitydialog/SecurityEntityHelper";
 import {
   clickDeleteIconForEntity,
   clickOkButton,
   testRemoveAllAsync,
+  waitForEntityDialogToRender,
 } from "./securityentitydialog/SelectEntityDialogTestHelper";
 import {
   commonCustomRolesMappingControlProps,
@@ -32,22 +32,18 @@ import {
   renderCustomRolesMappingControl,
   inputCustomRoleName,
 } from "./CustomRolesMappingControlTestHelper";
+import * as S from "fp-ts/string";
 
 describe("CustomRolesMappingControl", () => {
   const systemAdmin = "System Administrator";
   const sharedRoleMapping = new Map().set(
-    { role: systemAdmin },
-    SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
+    systemAdmin,
+    SET.singleton(roles[0].id),
   );
 
   it("Should be able to input custom roles", async () => {
     const guest = "Guest";
-    const expectedResult = new Map().set(
-      {
-        role: guest,
-      },
-      SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
-    );
+    const expectedResult = new Map().set(guest, SET.singleton(roles[0].id));
     const selectedRoleName = roles[0].name;
     const onChange = jest.fn();
     const { container, getByRole } = renderCustomRolesMappingControl({
@@ -70,7 +66,7 @@ describe("CustomRolesMappingControl", () => {
     const { container, getByRole } = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      initialRoleMappings: sharedRoleMapping,
+      initialMappings: sharedRoleMapping,
     });
 
     await openDialog(container);
@@ -84,17 +80,20 @@ describe("CustomRolesMappingControl", () => {
 
   it("Should be able to remove one oEQ role from an existing custom role row", async () => {
     const initialRoleMapping = new Map().set(
-      { role: systemAdmin },
-      SET.fromArray(eqRoleById)([roles[0], roles[1]]),
+      systemAdmin,
+      SET.fromArray(S.Eq)([roles[0].id, roles[1].id]),
     );
     const onChange = jest.fn();
-    const { container, getByRole } = renderCustomRolesMappingControl({
+    const renderResult = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      initialRoleMappings: initialRoleMapping,
+      initialMappings: initialRoleMapping,
     });
+    const { container, getByRole } = renderResult;
 
     await openDialog(container);
+    await waitForEntityDialogToRender(renderResult);
+
     const dialog = getByRole("dialog");
     await clickDeleteIconForEntity(dialog, roles[1].name);
     await clickOkButton(dialog);
@@ -123,15 +122,15 @@ describe("CustomRolesMappingControl", () => {
 
   it("Should be able to add a oEQ role to an existing custom role row", async () => {
     const expectedResult = new Map().set(
-      { role: systemAdmin },
-      SET.fromArray(eqRoleById)([roles[0], roles[1]]),
+      systemAdmin,
+      SET.fromArray(S.Eq)([roles[0].id, roles[1].id]),
     );
     const selectedRoleName = roles[1].name;
     const onChange = jest.fn();
     const { container, getByRole } = renderCustomRolesMappingControl({
       ...commonCustomRolesMappingControlProps,
       onChange,
-      initialRoleMappings: sharedRoleMapping,
+      initialMappings: sharedRoleMapping,
     });
 
     await openDialog(container);
@@ -149,12 +148,27 @@ describe("CustomRolesMappingControl", () => {
       const renderResult = renderCustomRolesMappingControl({
         ...commonCustomRolesMappingControlProps,
         onChange,
-        initialRoleMappings: sharedRoleMapping,
+        initialMappings: sharedRoleMapping,
       });
       await openDialog(renderResult.container);
       return renderResult;
     });
 
     expect(result).toEqual(new Map());
+  });
+
+  it("Shows warning messages for CustomRoles if any role has been deleted but still passed as initial value", async () => {
+    const customRole =
+      "http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator";
+    const { findByText } = renderCustomRolesMappingControl({
+      ...commonCustomRolesMappingControlProps,
+      initialMappings: new Map([[customRole, new Set(["deletedRole"])]]),
+    });
+    const expectedWarnMsg = `Custom role: ${customRole} - ${generateWarnMsgForMissingIds(
+      new Set(["deletedRole"]),
+      "role",
+    )}`;
+    const message = await findByText(expectedWarnMsg);
+    expect(message).toBeInTheDocument();
   });
 });

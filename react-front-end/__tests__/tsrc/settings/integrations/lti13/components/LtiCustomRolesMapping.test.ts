@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { roles } from "../../../../../../__mocks__/RoleModule.mock";
@@ -42,11 +41,8 @@ mockRoleAndGroupApis();
 describe("LtiCustomRolesMapping", () => {
   it("Should be able to select different LTI roles", async () => {
     const expectedResult = new Map().set(
-      {
-        role: "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
-        name: ltiRoles.institution.Guest,
-      },
-      SET.singleton(roles[0] as OEQ.UserQuery.RoleDetails),
+      "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Guest",
+      SET.singleton(roles[0].id),
     );
     const selectedRoleName = roles[0].name;
     const onChange = jest.fn();

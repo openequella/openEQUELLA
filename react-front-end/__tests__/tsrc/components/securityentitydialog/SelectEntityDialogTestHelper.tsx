@@ -58,7 +58,7 @@ export const mockRoleAndGroupApis = () => {
  * Helper function to wait for the dialog to render.
  */
 export const waitForEntityDialogToRender = async (result: RenderResult) => {
-  const dialog = result.getByRole("dialog");
+  const dialog = await result.findByRole("dialog");
   // Wait for the confirm button to be enabled.
   await waitFor(() => {
     const okButton = getMuiButtonByText(dialog, okLabel);

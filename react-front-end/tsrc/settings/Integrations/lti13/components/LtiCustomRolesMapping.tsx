@@ -19,7 +19,7 @@ import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import * as React from "react";
 import {
   CustomRole,
-  CustomRolesMapping,
+  CustomRolesMappings,
 } from "../../../../components/CustomRoleHelper";
 import {
   defaultSelectedRoleUrn,
@@ -38,18 +38,13 @@ const {
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 
-export const defaultLtiRole = {
-  role: defaultSelectedRoleUrn,
-  name: getRoleNameByUrn(defaultSelectedRoleUrn),
-};
-
 const selectLtiRole = (
   onChange: (value: CustomRole) => void,
   value?: CustomRole,
 ) => (
   <FormControl fullWidth>
     <Select
-      value={value?.role ?? defaultLtiRole.role}
+      value={value?.role ?? defaultSelectedRoleUrn}
       onChange={(event) => {
         const claimValue = event.target.value;
         onChange({
@@ -78,9 +73,9 @@ const selectLtiRole = (
 
 export interface LtiCustomRolesMappingProps {
   /** The custom roles mappings. */
-  value: CustomRolesMapping;
+  value: CustomRolesMappings;
   /** Handler for when roles mapping is updated. */
-  onChange: (maps: CustomRolesMapping) => void;
+  onChange: (maps: CustomRolesMappings) => void;
   /** Function which will provide the list of Role (search function). */
   searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
@@ -91,16 +86,16 @@ const LtiCustomRolesMapping = ({
   searchRoleProvider,
 }: LtiCustomRolesMappingProps) => (
   <CustomRolesMappingControl
-    initialRoleMappings={value}
+    initialMappings={value}
     onChange={onChange}
-    searchRoleProvider={searchRoleProvider}
+    searchRolesProvider={searchRoleProvider}
     strings={{
       title: customRoleDialogTitle,
       customRoleLabel: customRoleSelectLtiRoleLabel,
       customRoleColumnName: customRoleTableLtiRoleColumn,
     }}
     customRoleSelector={selectLtiRole}
-    defaultCustomRole={defaultLtiRole}
+    defaultCustomRoleId={defaultSelectedRoleUrn}
   />
 );
 
