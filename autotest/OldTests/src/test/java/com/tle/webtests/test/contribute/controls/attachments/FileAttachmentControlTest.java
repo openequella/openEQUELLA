@@ -124,6 +124,7 @@ public class FileAttachmentControlTest extends AbstractCleanupAutoTest {
     String FILE3_NEW = "Special characters - <script> %test3+.zip";
     String FILE4 = "Special characters - #& test4.html";
 
+    // Test
     String rename = "<script>alert('fail')</script>";
 
     String itemName = context.getFullName("Special characters");
