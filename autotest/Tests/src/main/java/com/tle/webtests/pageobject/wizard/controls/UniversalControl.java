@@ -9,6 +9,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.AttachmentType;
 import com.tle.webtests.pageobject.wizard.controls.universal.PickAttachmentTypeDialog;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -49,7 +50,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   public <T extends AttachmentType<T, ?>> T addDefaultResource(T type) {
     WebElement addResourceButton =
         waiter.until(ExpectedConditions.elementToBeClickable(getAddResourceButton()));
-    addResourceButton.click();
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", addResourceButton);
     return type.get();
   }
 
