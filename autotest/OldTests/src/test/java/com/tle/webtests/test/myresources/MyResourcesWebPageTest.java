@@ -32,7 +32,6 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     String scrapbookItem = context.getFullName("An authored page");
     String pageTitle = "A Page";
     String pageContent = "This is a verifiable attachment";
-    int presumedPageNo = 1;
 
     authorWebPageAndVerify(scrapbookItem, pageTitle, pageContent)
         .openWebpage(scrapbookItem, pageTitle);
@@ -305,7 +304,6 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
         new MyResourcesPage(context, "scrapbook")
             .load()
             .authorWebPage(scrapbookItem, pageTitle, pageContent);
-
     assertNewPageCreated(myResourcesPage, scrapbookItem);
 
     return myResourcesPage;
