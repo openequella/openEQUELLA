@@ -9,6 +9,7 @@ import com.tle.webtests.pageobject.wizard.controls.universal.AttachmentType;
 import com.tle.webtests.pageobject.wizard.controls.universal.PickAttachmentTypeDialog;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByChained;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -98,7 +99,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
         waiter.until(
             ExpectedConditions.elementToBeClickable(
                 getFullBy(new ByChained(rowBy, getActionLink(action)))));
-    button.click();
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
   }
 
   public <P extends AttachmentEditPage, T extends AttachmentType<T, P>> P editResource(
