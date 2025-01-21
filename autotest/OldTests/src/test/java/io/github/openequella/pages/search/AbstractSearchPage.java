@@ -102,6 +102,12 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
             By.xpath("//span[text()='Search results (" + itemCount + ")']")));
   }
 
+  /** Wait until the result is rendered. */
+  public void waitForSearchCompleted() {
+    By loading = By.xpath("//span[@aria-label='Loading search results...']");
+    waiter.until(ExpectedConditions.invisibilityOfElementLocated(loading));
+  }
+
   /** Perform a new search. */
   public void newSearch() {
     newSearchButton.click();
