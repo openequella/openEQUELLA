@@ -94,7 +94,9 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   private void clickAction(By rowBy, String action) {
-    driver.findElement(getFullBy(new ByChained(rowBy, getActionLink(action)))).click();
+    WebElement button = driver.findElement(getFullBy(new ByChained(rowBy, getActionLink(action))));
+    waiter.until(ExpectedConditions.elementToBeClickable(button));
+    button.click();
   }
 
   public <P extends AttachmentEditPage, T extends AttachmentType<T, P>> P editResource(
