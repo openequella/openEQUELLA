@@ -557,5 +557,5 @@ public abstract class AbstractPage<T extends PageObject>
    */
   public void forceButtonClickWithJS(WebElement button) {
     ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
-  };
+  }
 }
