@@ -50,7 +50,15 @@ export const customRoleOrd: ORD.Ord<CustomRole> = ORD.contramap(
   (r: CustomRole) => r.name ?? r.role,
 )(S.Ord);
 
-export type CustomRolesMapping = Map<
+/**
+ * Mappings for the ID of a custom role and the IDs of oEQ roles.
+ */
+export type CustomRolesMappings = Map<string, Set<OEQ.Common.UuidString>>;
+
+/**
+ * Mappings for the details of a custom role and the details of oEQ roles.
+ */
+export type CustomRolesDetailsMappings = Map<
   CustomRole,
   Set<OEQ.UserQuery.RoleDetails>
 >;
@@ -60,8 +68,8 @@ export type CustomRolesMapping = Map<
  * It will transform the key(custom role) to a string and the value(oEQ role) to a set of UUID.
  */
 export const transformCustomRoleMapping = (
-  maps: CustomRolesMapping,
-): Map<string, Set<OEQ.Common.UuidString>> =>
+  maps: CustomRolesDetailsMappings,
+): CustomRolesMappings =>
   pipe(
     maps,
     M.reduceWithIndex(customRoleOrd)(

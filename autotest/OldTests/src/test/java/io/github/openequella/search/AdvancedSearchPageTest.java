@@ -220,7 +220,9 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
   @NewUIOnly
   public void script() {
     advancedSearchPage.clearSelection();
+    advancedSearchPage.waitForSearchCompleted();
     advancedSearchPage.selectAdvancedSearch("script test");
+    advancedSearchPage.waitForSearchCompleted();
 
     // Only show options for QLD cities if select the state QLD.
     advancedSearchPage.selectRadio("qld");

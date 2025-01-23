@@ -132,6 +132,8 @@ public class MyResourcesPage
 
   @Override
   protected WebElement findLoadedElement() {
+    // Wait for my resource page to completely load.
+    resultsPageObject().isResultsAvailable(isNewUI());
     if (isNewUI()) {
       return driver.findElement(By.xpath("//h5[text() = " + quoteXPath("My resources") + "]"));
     }
@@ -427,7 +429,8 @@ public class MyResourcesPage
     getScrapbookByName(scrapbookName).click();
     // Wait until the Accordion is expanded.
     waiter.until(
-        ExpectedConditions.visibilityOfElementLocated(By.className("MuiAccordionDetails-root")));
+        ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//ul[contains(@class, 'SearchResultAttachmentsList-attachmentListItem')]")));
   }
 
   /** Applicable to New UI only to check whether a Scrapbook has a certain number of attachments. */
@@ -496,8 +499,9 @@ public class MyResourcesPage
   public void openWebpage(String pageName, String pageTitle) {
     if (isNewUI()) {
       expandAttachmentsForScrapbookItem(pageName);
-
-      WebElement title = driver.findElement(individualPageXpath(pageTitle));
+      WebElement title =
+          waiter.until(
+              ExpectedConditions.visibilityOfElementLocated(individualPageXpath(pageTitle)));
       ((JavascriptExecutor) driver).executeScript("arguments[0].click();", title);
 
       // Switch to the second tab where the index is 1.

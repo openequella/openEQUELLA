@@ -135,11 +135,29 @@ public abstract class AbstractResultList<
     return found;
   }
 
+  /**
+   * Legacy method to check if results are available. It always uses the old UI element to check.
+   */
   public boolean isResultsAvailable() {
+    return isResultsAvailable(false);
+  }
+
+  /**
+   * Check if results are available.
+   *
+   * @param newUi - true to use the new UI element to check.
+   */
+  public boolean isResultsAvailable(boolean newUi) {
     try {
-      waiter.until(
-          ExpectedConditions.presenceOfElementLocated(
-              By.xpath("//div[@class='itemresult-wrapper']")));
+      if (newUi) {
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//*[contains(@aria-label, 'Search result list item')]")));
+      } else {
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[@class='itemresult-wrapper']")));
+      }
       return true;
     } catch (TimeoutException Time) {
       return false;
