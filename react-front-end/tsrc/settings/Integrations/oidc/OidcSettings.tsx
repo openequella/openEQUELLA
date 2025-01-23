@@ -21,10 +21,6 @@ import * as T from "fp-ts/Task";
 import { isEqual } from "lodash";
 import { useContext, useEffect, useState } from "react";
 import * as React from "react";
-import {
-  CustomRolesMapping,
-  transformCustomRoleMapping,
-} from "../../../components/CustomRoleHelper";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
   checkValidations,
@@ -33,7 +29,6 @@ import GeneralDetailsSection, {
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
-import SettingsListAlert from "../../../components/SettingsListAlert";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
@@ -44,17 +39,12 @@ import {
   getOidcSettings,
   updateOidcSettings,
 } from "../../../modules/OidcModule";
-import { findRolesByIds } from "../../../modules/RoleModule";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
 import * as E from "fp-ts/Either";
-import {
-  generateCustomRoles,
-  getRolesTask,
-} from "../lti13/components/EditLti13PlatformHelper";
 import * as S from "fp-ts/string";
-import SelectRoleControl from "../lti13/components/SelectRoleControl";
+import SelectRoleControl from "../../../components/SelectRoleControl";
 import {
   defaultConfig,
   generateGeneralDetails,
@@ -116,15 +106,6 @@ const hasConfigurationChanged = (
 
 export interface OidcSettingsProps extends TemplateUpdateProps {}
 
-/**
- * Show warning message for role selector related controls,
- * if the IDs of role details fetched form server doesn't match with the initial group/groups IDs.
- */
-interface RoleWarningMessages {
-  defaultRoles?: string[];
-  customRoles?: string[];
-}
-
 const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const { appErrorHandler } = useContext(AppContext);
   const [showSnackBar, setShowSnackBar] = useState(false);
@@ -133,39 +114,15 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   // States for values displayed in different sections.
   const [config, setConfig] =
     useState<OEQ.Oidc.IdentityProvider>(defaultConfig);
-  const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
-  // Warning messages if the oeq roles can't be found in the server.
-  const [
-    { defaultRoles: defaultRolesWarnings, customRoles: customRolesWarnings },
-    setWarningMessages,
-  ] = useState<RoleWarningMessages>({
-    defaultRoles: undefined,
-    customRoles: undefined,
-  });
-
-  // TODO: remove this in OEQ-2359.
-  // Build final submit values for OIDC.
-  const currentConfig = {
-    ...config,
-    roleConfig: config.roleConfig?.roleClaim
-      ? {
-          roleClaim: config.roleConfig.roleClaim,
-          customRoles: transformCustomRoleMapping(customRoles),
-        }
-      : undefined,
-  };
 
   // Initial configuration retrieved from server, but before the config is returned, use the defaults values of "config".
   const [initialConfig, setInitialConfig] =
-    useState<OEQ.Oidc.IdentityProvider>(currentConfig);
+    useState<OEQ.Oidc.IdentityProvider>(config);
 
   // Flag to indicate if there is an existing configuration in server.
   const [serverHasConfiguration, setServerHasConfiguration] = useState(false);
 
-  const configurationChanged = hasConfigurationChanged(
-    initialConfig,
-    currentConfig,
-  );
+  const configurationChanged = hasConfigurationChanged(initialConfig, config);
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -194,29 +151,6 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
         ),
       )();
 
-    const getRolesWithMsgTask = (roleIds: ReadonlySet<OEQ.Common.UuidString>) =>
-      pipe(getRolesTask(roleIds, findRolesByIds), TE.getOrThrow)();
-
-    const getCustomRolesWithMsgTask = (customRoles: Map<string, Set<string>>) =>
-      pipe(generateCustomRoles(customRoles, findRolesByIds), TE.getOrThrow)();
-
-    // Set the default and custom roles, or their warning messages if any role can't be found in the server.
-    const setRoles = async (idp: OEQ.Oidc.IdentityProvider) => {
-      await Promise.all([
-        getRolesWithMsgTask(idp.defaultRoles),
-        getCustomRolesWithMsgTask(idp.roleConfig?.customRoles ?? new Map()),
-      ])
-        .then(([defaultRolesWithMsg, customRolesWithMsg]) => {
-          // TODO: REMOVE THIS IN OEQ-2359.
-          setCustomRoles(customRolesWithMsg.mappings);
-          setWarningMessages({
-            defaultRoles: defaultRolesWithMsg.warning,
-            customRoles: customRolesWithMsg.warnings,
-          });
-        })
-        .catch(appErrorHandler);
-    };
-
     pipe(
       TE.tryCatch(() => getOidcSettingsFromServer(), String),
       TE.match(
@@ -226,8 +160,6 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
             setServerHasConfiguration(true);
             setInitialConfig(idp);
             setConfig(idp);
-            // process role mappings value to display existing settings
-            setRoles(idp);
           }),
         ),
       ),
@@ -291,7 +223,7 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       OEQ.Oidc.IdentityProvider
     > =>
       pipe(
-        currentConfig,
+        config,
         E.fromPredicate(
           OEQ.Codec.Oidc.IdentityProviderCodec.is,
           () => `Validation for the structure of OIDC configuration failed.`,
@@ -310,7 +242,7 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       TE.chain(submit),
       TE.match(appErrorHandler, () => {
         // Reset the initial values since user has saved the settings.
-        setInitialConfig(currentConfig);
+        setInitialConfig(config);
         setShowSnackBar(true);
       }),
     )();
@@ -360,12 +292,6 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                 value={config.defaultRoles}
                 onChange={(role) => onConfigChange("defaultRoles", role)}
               />
-              {defaultRolesWarnings && (
-                <SettingsListAlert
-                  severity="warning"
-                  messages={defaultRolesWarnings}
-                />
-              )}
 
               <SettingsListControl
                 primaryText={roleClaimTitle}
@@ -388,20 +314,26 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                 })}
               />
 
-              {config.roleConfig?.roleClaim && (
-                <>
+              {pipe(
+                O.fromNullable(config.roleConfig?.roleClaim),
+                O.map((roleClaim) => (
                   <CustomRolesMappingControl
-                    initialRoleMappings={customRoles}
-                    onChange={setCustomRoles}
+                    initialMappings={
+                      config.roleConfig?.customRoles ?? new Map()
+                    }
+                    onChange={(value) =>
+                      setConfig({
+                        ...config,
+                        roleConfig: {
+                          roleClaim,
+                          customRoles: value,
+                        },
+                      })
+                    }
                     strings={customRoleDialogStrings}
                   />
-                  {customRolesWarnings && (
-                    <SettingsListAlert
-                      severity="warning"
-                      messages={customRolesWarnings}
-                    />
-                  )}
-                </>
+                )),
+                O.toUndefined,
               )}
             </SettingsList>
           </Grid>

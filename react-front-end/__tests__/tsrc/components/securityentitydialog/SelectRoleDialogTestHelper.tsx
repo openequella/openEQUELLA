@@ -28,19 +28,15 @@ import {
   searchAndSelect,
   waitForEntityDialogToRender,
 } from "./SelectEntityDialogTestHelper";
-import {
-  findRolesByIds,
-  searchRoles,
-} from "../../../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../../../__mocks__/RoleModule.mock";
 
 const { queryFieldLabel } = languageStrings.roleSearchComponent;
 
 export const commonSelectRoleDialogProps: SelectRoleDialogProps = {
   open: true,
-  value: new Set<OEQ.Common.UuidString>(),
+  value: new Set<OEQ.UserQuery.RoleDetails>(),
   onClose: jest.fn(),
   searchRolesProvider: searchRoles,
-  findRolesByIdsProvider: findRolesByIds,
 };
 
 /**
