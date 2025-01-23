@@ -1,4 +1,4 @@
 include:
   project: edalex-group/development/oeq/openequella-ci
   file: build/main.yml
-  ref: build/dynamic-pipeline
+  ref: main
