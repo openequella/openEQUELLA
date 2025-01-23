@@ -6,7 +6,7 @@ name := "IntegTester"
 version := "1.0"
 
 val CirceVersion  = "0.12.1"
-val Http4sVersion = "0.21.8"
+val Http4sVersion = "0.23.17"
 val jsoupVersion  = "1.16.2"
 
 scalaVersion := "2.13.13"
