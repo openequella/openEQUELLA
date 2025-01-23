@@ -47,7 +47,9 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   public <T extends AttachmentType<T, ?>> T addDefaultResource(T type) {
-    getAddResourceButton().click();
+    WebElement addResourceButton =
+        waiter.until(ExpectedConditions.elementToBeClickable(getAddResourceButton()));
+    forceButtonClickWithJS(addResourceButton);
     return type.get();
   }
 
