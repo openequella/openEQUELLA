@@ -548,4 +548,14 @@ public abstract class AbstractPage<T extends PageObject>
     String tab = new ArrayList<>(driver.getWindowHandles()).get(tabIndex);
     driver.switchTo().window(tab);
   }
+
+  /**
+   * Force click on a button using JavaScript. This is useful when the button can't be clicked by
+   * calling webElement.click() function due to some unknown reasons.
+   *
+   * @param button WebElement to be clicked.
+   */
+  public void forceButtonClickWithJS(WebElement button) {
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+  }
 }
