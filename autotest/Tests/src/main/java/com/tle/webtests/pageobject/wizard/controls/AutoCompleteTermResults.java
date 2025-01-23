@@ -3,7 +3,6 @@ package com.tle.webtests.pageobject.wizard.controls;
 import com.tle.webtests.pageobject.AbstractPage;
 import java.util.List;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -38,7 +37,7 @@ public class AutoCompleteTermResults extends AbstractPage<AutoCompleteTermResult
     WebElement listElem = waitForElement(rootUl, By.xpath("li[" + number + "]/a/.."));
     waiter.until(ExpectedConditions.elementToBeClickable(listElem));
     scrollToElement(listElem);
-    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", listElem);
+    forceButtonClickWithJS(listElem);
     return control.get();
   }
 }
