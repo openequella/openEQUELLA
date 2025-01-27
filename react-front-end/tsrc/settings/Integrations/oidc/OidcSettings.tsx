@@ -16,10 +16,9 @@
  * limitations under the License.
  */
 import { Card, CardContent, Divider, Grid } from "@mui/material";
-import { constVoid, flow, identity, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
-import { isEqual } from "lodash";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useReducer } from "react";
 import * as React from "react";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
@@ -29,6 +28,7 @@ import GeneralDetailsSection, {
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
+import SpinnerOverlay from "../../../components/SpinnerOverlay";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
@@ -43,10 +43,8 @@ import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
 import * as E from "fp-ts/Either";
-import * as S from "fp-ts/string";
 import SelectRoleControl from "../../../components/SelectRoleControl";
 import {
-  defaultConfig,
   generateGeneralDetails,
   generateApiDetails,
   generatePlatform,
@@ -55,7 +53,7 @@ import {
 } from "./OidcSettingsHelper";
 import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
-import * as A from "fp-ts/Array";
+import { initialState, reducer } from "./OidcSettingsReducer";
 
 const {
   name,
@@ -73,37 +71,6 @@ const {
 const { edit: editLabel } = languageStrings.common.action;
 const { checkForm } = languageStrings.common.result;
 
-// Compare the initial and current details to see if the configuration has changed.
-// In order to handle the secret field,
-// It will consider the configuration is not changed if the current value is an empty string and the initial value is missing.
-const hasConfigurationChanged = (
-  initialDetails: OEQ.Oidc.IdentityProvider,
-  currentDetails: OEQ.Oidc.IdentityProvider,
-): boolean => {
-  // Helper function to check if a field has changed compared to the initial value.
-  const hasKeyChanged = (key: string, currentValue: unknown): boolean =>
-    pipe(
-      Object.entries(initialDetails),
-      R.fromEntries,
-      R.lookup(key),
-      O.fold(
-        // If the key is missing in initialDetails, consider it changed if currentValue is a non-empty string.
-        // For secret values which are absent in the initial details, if the current value is a non-empty string, it's considered changed;
-        // For other values do a normal comparison.
-        // Because there is a case user might input some value and then delete it, then the value will become empty string.
-        () => S.isString(currentValue) && !S.isEmpty(currentValue),
-        // If the key is present in initialDetails, check for equality
-        (initialValue) => !isEqual(initialValue, currentValue),
-      ),
-    );
-
-  return pipe(
-    Object.entries(currentDetails),
-    // Check if any key-value pair in currentDetails indicates a change
-    A.some(([key, currentValue]) => hasKeyChanged(key, currentValue)),
-  );
-};
-
 export interface OidcSettingsProps extends TemplateUpdateProps {}
 
 const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
@@ -111,18 +78,9 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  // States for values displayed in different sections.
-  const [config, setConfig] =
-    useState<OEQ.Oidc.IdentityProvider>(defaultConfig);
-
-  // Initial configuration retrieved from server, but before the config is returned, use the defaults values of "config".
-  const [initialConfig, setInitialConfig] =
-    useState<OEQ.Oidc.IdentityProvider>(config);
-
-  // Flag to indicate if there is an existing configuration in server.
-  const [serverHasConfiguration, setServerHasConfiguration] = useState(false);
-
-  const configurationChanged = hasConfigurationChanged(initialConfig, config);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { status, config, initialConfig, serverHasConfig, isConfigChanged } =
+    state;
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -133,6 +91,8 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
 
   // Fetch OIDC settings from the server.
   useEffect(() => {
+    if (status !== "initialising") return;
+
     // Get the OIDC settings from the server and for the 404 error only indicates the settings are not set yet,
     // thus return None, otherwise for other error throw it.
     const getOidcSettingsFromServer = (): Promise<
@@ -154,43 +114,55 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
     pipe(
       TE.tryCatch(() => getOidcSettingsFromServer(), String),
       TE.match(
-        appErrorHandler,
-        flow(
-          O.fold(constVoid, (idp) => {
-            setServerHasConfiguration(true);
-            setInitialConfig(idp);
-            setConfig(idp);
-          }),
-        ),
+        (e) => {
+          appErrorHandler(e);
+          dispatch({ type: "init-complete", serverHasConfig: false });
+        },
+        flow(O.toUndefined, (idp) => {
+          dispatch({
+            type: "init-complete",
+            initialConfig: idp,
+            serverHasConfig: idp !== undefined,
+          });
+        }),
       ),
     )();
-  }, [appErrorHandler]);
+  }, [appErrorHandler, status]);
 
   // Update the corresponding value in idpConfigurations state based on the provided key.
   const onConfigChange = (key: string, newValue: unknown) =>
-    setConfig({
-      ...config,
-      [key]: newValue,
+    dispatch({
+      type: "configure",
+      config: {
+        ...config,
+        [key]: newValue,
+      },
     });
 
-  const onPlatformChange = (newValue: string) => {
-    if (!OEQ.Codec.Oidc.IdentityProviderPlatformCodec.is(newValue)) {
-      throw new Error(`Unsupported platform ${newValue}`);
-    }
-
-    // Update platform and reset the API details.
-    setConfig({
-      ...config,
-      platform: newValue,
-      ...defaultApiDetails,
-    });
-  };
+  const onPlatformChange = (newValue: string) =>
+    pipe(
+      newValue,
+      O.fromPredicate(OEQ.Codec.Oidc.IdentityProviderPlatformCodec.is),
+      O.fold(
+        () => appErrorHandler(`Unsupported platform ${newValue}`),
+        (platform) => {
+          dispatch({
+            type: "configure",
+            config: {
+              ...config,
+              platform,
+              ...defaultApiDetails,
+            },
+          });
+        },
+      ),
+    );
 
   const generalDetailsRenderOptions = generateGeneralDetails(
     config,
     onConfigChange,
     showValidationErrors,
-    serverHasConfiguration,
+    serverHasConfig,
   );
 
   const apiDetailsRenderOptions = generateApiDetails(
@@ -198,10 +170,12 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
     onConfigChange,
     showValidationErrors,
     // OKTA platform doesn't have client secret field which means there is no secret configuration in the server.
-    serverHasConfiguration && initialConfig.platform !== "OKTA",
+    serverHasConfig && initialConfig.platform !== "OKTA",
   );
 
-  const handleOnSave = async () => {
+  useEffect(() => {
+    if (status !== "saving") return;
+
     setShowValidationErrors(true);
 
     const validateEachField = (): TE.TaskEither<string, void> =>
@@ -236,27 +210,43 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
     ): TE.TaskEither<string, void> =>
       TE.tryCatch(() => updateOidcSettings(oidcValue), String);
 
-    await pipe(
+    pipe(
       validateEachField(),
       TE.chain(validateStructure),
       TE.chain(submit),
       TE.match(appErrorHandler, () => {
         // Reset the initial values since user has saved the settings.
-        setInitialConfig(config);
+        dispatch({
+          type: "reset",
+        });
         setShowSnackBar(true);
       }),
     )();
-  };
+  }, [
+    apiDetailsRenderOptions,
+    appErrorHandler,
+    config,
+    generalDetailsRenderOptions,
+    status,
+  ]);
 
   return (
     <SettingPageTemplate
-      onSave={handleOnSave}
-      preventNavigation={configurationChanged}
-      saveButtonDisabled={!configurationChanged}
+      onSave={() => dispatch({ type: "submit" })}
+      preventNavigation={isConfigChanged}
+      saveButtonDisabled={
+        status === "saving" ||
+        status === "initialising" ||
+        (status === "configuring" && !isConfigChanged)
+      }
       snackBarOnClose={() => setShowSnackBar(false)}
       snackbarOpen={showSnackBar}
     >
-      <Card>
+      <Card sx={{ position: "relative" }}>
+        {/*Display a loading spinner when the page is initialising.*/}
+        {(state.status === "initialising" || status === "saving") && (
+          <SpinnerOverlay />
+        )}
         <CardContent>
           {/* General details section. */}
           <Grid>
@@ -302,12 +292,15 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                   disabled: false,
                   required: true,
                   onChange: (value) =>
-                    setConfig({
-                      ...config,
-                      roleConfig: {
-                        roleClaim: value,
-                        customRoles:
-                          config.roleConfig?.customRoles ?? new Map(),
+                    dispatch({
+                      type: "configure",
+                      config: {
+                        ...config,
+                        roleConfig: {
+                          roleClaim: value,
+                          customRoles:
+                            config.roleConfig?.customRoles ?? new Map(),
+                        },
                       },
                     }),
                   showValidationErrors,
@@ -322,11 +315,14 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                       config.roleConfig?.customRoles ?? new Map()
                     }
                     onChange={(value) =>
-                      setConfig({
-                        ...config,
-                        roleConfig: {
-                          roleClaim,
-                          customRoles: value,
+                      dispatch({
+                        type: "configure",
+                        config: {
+                          ...config,
+                          roleConfig: {
+                            roleClaim,
+                            customRoles: value,
+                          },
                         },
                       })
                     }

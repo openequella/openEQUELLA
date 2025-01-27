@@ -37,7 +37,7 @@ public class AutoCompleteTermResults extends AbstractPage<AutoCompleteTermResult
     WebElement listElem = waitForElement(rootUl, By.xpath("li[" + number + "]/a/.."));
     waiter.until(ExpectedConditions.elementToBeClickable(listElem));
     scrollToElement(listElem);
-    listElem.click();
+    forceButtonClickWithJS(listElem);
     return control.get();
   }
 }

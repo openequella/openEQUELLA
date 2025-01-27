@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import Switch from "@mui/material/Switch";
+import * as O from "fp-ts/Option";
+import { isEqual } from "lodash";
 import { getBaseUrl } from "../../../AppConfig";
 import {
   FieldRenderOptions,
@@ -90,6 +92,9 @@ export const defaultApiDetails: OEQ.Oidc.RestApiDetails = {
   apiClientId: "",
 };
 
+/**
+ * Because Entra ID is selected by default, use the default Entra ID API values for apiDetails.
+ */
 export const defaultConfig: OEQ.Oidc.IdentityProvider = {
   enabled: false,
   platform: "ENTRA_ID",
@@ -409,3 +414,36 @@ export const oeqDetailsList = (
     )}
   </SettingsList>
 );
+
+/**
+ * Compare the initial and current details to see if the configuration has changed.
+ * In order to handle the secret field,
+ * It will consider the configuration is not changed if the current value is an empty string and the initial value is missing.
+ */
+export const hasConfigurationChanged = (
+  initialDetails: OEQ.Oidc.IdentityProvider,
+  currentDetails: OEQ.Oidc.IdentityProvider,
+): boolean => {
+  // Helper function to check if a field has changed compared to the initial value.
+  const hasKeyChanged = (key: string, currentValue: unknown): boolean =>
+    pipe(
+      Object.entries(initialDetails),
+      R.fromEntries,
+      R.lookup(key),
+      O.fold(
+        // If the key is missing in initialDetails, consider it changed if currentValue is a non-empty string.
+        // For secret values which are absent in the initial details, if the current value is a non-empty string, it's considered changed;
+        // For other values do a normal comparison.
+        // Because there is a case user might input some value and then delete it, then the value will become empty string.
+        () => S.isString(currentValue) && !S.isEmpty(currentValue),
+        // If the key is present in initialDetails, check for equality
+        (initialValue) => !isEqual(initialValue, currentValue),
+      ),
+    );
+
+  return pipe(
+    Object.entries(currentDetails),
+    // Check if any key-value pair in currentDetails indicates a change
+    A.some(([key, currentValue]) => hasKeyChanged(key, currentValue)),
+  );
+};
