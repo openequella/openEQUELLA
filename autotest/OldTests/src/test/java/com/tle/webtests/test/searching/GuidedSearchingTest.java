@@ -142,7 +142,7 @@ public class GuidedSearchingTest extends AbstractCleanupTest {
 
     mySearches = new FavouritesPage(context).load().searches();
     mySearches.open("live item search");
-    SearchPage guidedSearchPage = new SearchPage(context).load();
+    SearchPage guidedSearchPage = new SearchPage(context).get();
     assertFalse(guidedSearchPage.hasResults());
     assertItems(guidedSearchPage.setIncludeNonLive(true).results(), false, false, true);
 
