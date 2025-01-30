@@ -15,23 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import "@testing-library/jest-dom";
 import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
-import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
-import UnknownUserHandlingControl, {
-  UnknownUserHandlingControlProps,
-} from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+import {
+  findRolesByIds,
+  searchRoles,
+} from "../../../__mocks__/RoleModule.mock";
 
-export const commonUnknownUserHandlingControlProps: UnknownUserHandlingControlProps =
-  {
-    selection: "ERROR",
-    onChange: jest.fn(),
-    findGroupsByIdsProvider: findGroupsByIds,
-  };
+import SelectRoleControl, {
+  SelectRoleControlProps,
+} from "../../../tsrc/components/SelectRoleControl";
 
-/***
- * Helper to render UnknownHandlingControl.
+export const commonSelectRoleControlProps: SelectRoleControlProps = {
+  value: new Set(),
+  onChange: () => {},
+  primaryText: "Select Role",
+  searchRolesProvider: searchRoles,
+  findRolesByIdsProvider: findRolesByIds,
+};
+
+/**
+ * Helper to render SelectRoleControl.
  */
-export const renderUnknownUserHandlingControl = (
-  props: UnknownUserHandlingControlProps = commonUnknownUserHandlingControlProps,
-): RenderResult => render(<UnknownUserHandlingControl {...props} />);
+export const renderSelectRoleControl = (
+  props: SelectRoleControlProps = commonSelectRoleControlProps,
+): RenderResult => render(<SelectRoleControl {...props} />);

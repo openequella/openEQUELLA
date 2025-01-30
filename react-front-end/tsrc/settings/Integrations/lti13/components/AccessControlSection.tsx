@@ -20,9 +20,7 @@ import * as React from "react";
 import SettingsList from "../../../../components/SettingsList";
 import { languageStrings } from "../../../../util/langstrings";
 import SettingsListAlert from "../../../../components/SettingsListAlert";
-import UnknownUserHandlingControl, {
-  GroupWarning,
-} from "./UnknownUserHandlingControl";
+import UnknownUserHandlingControl from "./UnknownUserHandlingControl";
 import UsableByControl, { UsableByControlProps } from "./UsableByControl";
 
 const { accessControl } =
@@ -39,13 +37,12 @@ export interface UnknownUserHandlingData {
 
 export interface AccessControlSectionProps
   extends Pick<
-      UsableByControlProps,
-      | "searchUserProvider"
-      | "searchGroupProvider"
-      | "searchRoleProvider"
-      | "aclEntityResolversProvider"
-    >,
-    GroupWarning {
+    UsableByControlProps,
+    | "searchUserProvider"
+    | "searchGroupProvider"
+    | "searchRoleProvider"
+    | "aclEntityResolversProvider"
+  > {
   /**
    * AclExpression string used to control who can use the platform.
    */
@@ -88,7 +85,6 @@ const AccessControlSection = ({
   searchGroupProvider,
   searchRoleProvider,
   aclEntityResolversProvider,
-  warningMessageForGroups,
   showValidationErrors,
 }: AccessControlSectionProps) => (
   <SettingsList subHeading={accessControl.title}>
@@ -116,7 +112,6 @@ const AccessControlSection = ({
           groups: groups,
         })
       }
-      warningMessageForGroups={warningMessageForGroups}
     />
   </SettingsList>
 );

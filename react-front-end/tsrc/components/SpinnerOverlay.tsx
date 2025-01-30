@@ -15,23 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
-import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
-import UnknownUserHandlingControl, {
-  UnknownUserHandlingControlProps,
-} from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+import { Box, CircularProgress } from "@mui/material";
 
-export const commonUnknownUserHandlingControlProps: UnknownUserHandlingControlProps =
-  {
-    selection: "ERROR",
-    onChange: jest.fn(),
-    findGroupsByIdsProvider: findGroupsByIds,
-  };
-
-/***
- * Helper to render UnknownHandlingControl.
+/**
+ * A spinner overlay that covers the parent element.
+ *
+ * Make sure the parent element has a position attribute of relative or absolute.
  */
-export const renderUnknownUserHandlingControl = (
-  props: UnknownUserHandlingControlProps = commonUnknownUserHandlingControlProps,
-): RenderResult => render(<UnknownUserHandlingControl {...props} />);
+const SpinnerOverlay = () => (
+  <Box
+    sx={{
+      position: "absolute",
+      // The backdrop should cover the whole card. But still under the page header.
+      zIndex: 10,
+      // The color and background color are set to match the material UI disabled button.
+      color: "rgba(0, 0, 0, 0.26)",
+      backgroundColor: "rgba(0, 0, 0, 0.12)",
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+    }}
+  >
+    <CircularProgress
+      sx={(theme) => ({
+        marginTop: theme.spacing(4),
+      })}
+    />
+  </Box>
+);
+
+export default SpinnerOverlay;

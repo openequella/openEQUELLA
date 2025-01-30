@@ -16,23 +16,48 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import { generateWarnMsgForMissingIds } from "../../../../../../tsrc/components/securityentitydialog/SecurityEntityHelper";
 
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
-import { renderUnknownUserHandlingControl } from "./UnknownUserHandlingControlTestHelper";
+import {
+  commonUnknownUserHandlingControlProps,
+  renderUnknownUserHandlingControl,
+} from "./UnknownUserHandlingControlTestHelper";
 
 const { groups: groupsLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .accessControl;
 describe("UnknownUserHandlingControlProps", () => {
   it("Should not be able to see the group selector if user didn't choose option `CREATE`", () => {
-    const { queryByText } = renderUnknownUserHandlingControl("ERROR", () => {});
+    const { queryByText } = renderUnknownUserHandlingControl();
 
     expect(queryByText(groupsLabel)).not.toBeInTheDocument();
   });
 
   it("Should be able to see a group selector if user choose option `CREATE`", () => {
-    const { getByText } = renderUnknownUserHandlingControl("CREATE", () => {});
+    const { getByText } = renderUnknownUserHandlingControl({
+      ...commonUnknownUserHandlingControlProps,
+      selection: "CREATE",
+    });
 
     expect(getByText(groupsLabel)).toBeInTheDocument();
+  });
+
+  it("Shows warning messages for groups has been deleted but still in the initial value", async () => {
+    const groupIds = ["deletedGroup1", "deletedGroup2"];
+
+    const { findByText } = renderUnknownUserHandlingControl({
+      ...commonUnknownUserHandlingControlProps,
+      groups: new Set(groupIds),
+      selection: "CREATE",
+    });
+
+    const expectedWarnMsg = generateWarnMsgForMissingIds(
+      new Set(groupIds),
+      "group",
+    );
+    const message = await findByText(expectedWarnMsg);
+
+    expect(message).toBeInTheDocument();
   });
 });

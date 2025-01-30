@@ -15,23 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
-import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
-import UnknownUserHandlingControl, {
-  UnknownUserHandlingControlProps,
-} from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+import type { Meta, StoryFn } from "@storybook/react";
 
-export const commonUnknownUserHandlingControlProps: UnknownUserHandlingControlProps =
-  {
-    selection: "ERROR",
-    onChange: jest.fn(),
-    findGroupsByIdsProvider: findGroupsByIds,
-  };
+import SpinnerOverlay from "../../tsrc/components/SpinnerOverlay";
 
-/***
- * Helper to render UnknownHandlingControl.
- */
-export const renderUnknownUserHandlingControl = (
-  props: UnknownUserHandlingControlProps = commonUnknownUserHandlingControlProps,
-): RenderResult => render(<UnknownUserHandlingControl {...props} />);
+export default {
+  title: "Component/SpinnerOverlay",
+  component: SpinnerOverlay,
+} as Meta;
+
+export const Standard: StoryFn = () => (
+  <div style={{ position: "relative", height: "200px", width: "200px" }}>
+    <SpinnerOverlay />
+  </div>
+);
