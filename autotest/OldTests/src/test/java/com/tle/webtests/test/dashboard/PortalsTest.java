@@ -351,12 +351,10 @@ public class PortalsTest extends AbstractCleanupTest {
 
     // Check that the queried item is displayed
     assertTrue(checkContributionExistence(waiter, recentName, itemToQuery));
-    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.descriptionExists(description, true));
 
     // Edit portlet for description option
-    home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
@@ -364,7 +362,6 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
-    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertFalse(recent.descriptionExists(description, false));
   }
