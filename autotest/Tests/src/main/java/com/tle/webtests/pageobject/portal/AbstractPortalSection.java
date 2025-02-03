@@ -76,12 +76,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    WebElement editButton =
-        driver.findElement(
-            By.xpath(
-                "//div[contains(@title,"
-                    + quoteXPath(getTitle())
-                    + ")]/following-sibling::img[contains(@class, 'box_edit')]"));
+    WebElement editButton = getBoxHead().findElement(By.className("box_edit"));
     waiter.until(ExpectedConditions.elementToBeClickable(editButton));
     editButton.click();
     return portal.get();

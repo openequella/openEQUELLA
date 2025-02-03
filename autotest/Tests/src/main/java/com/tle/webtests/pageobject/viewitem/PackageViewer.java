@@ -36,7 +36,8 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
 
   public boolean selectedAttachmentContainsText(String text) {
     switchToFrame(0);
-    boolean containsText = driver.findElement(By.tagName("body")).getText().contains(text);
+    WebElement body = waiter.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
+    boolean containsText = body.getText().contains(text);
     driver.switchTo().defaultContent();
     return containsText;
   }
