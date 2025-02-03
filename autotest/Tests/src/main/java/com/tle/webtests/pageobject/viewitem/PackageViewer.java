@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -35,11 +36,15 @@ public class PackageViewer extends AbstractPage<PackageViewer> {
   }
 
   public boolean selectedAttachmentContainsText(String text) {
-    switchToFrame(0);
-    boolean containsText =
-        waiter.until(ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), text));
-    driver.switchTo().defaultContent();
-    return containsText;
+    try {
+      switchToFrame(0);
+      return waiter.until(
+          ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), text));
+    } catch (TimeoutException e) {
+      return false;
+    } finally {
+      driver.switchTo().defaultContent();
+    }
   }
 
   private void switchToFrame(int frame) {
