@@ -320,7 +320,6 @@ public class PortalsTest extends AbstractCleanupTest {
     assertTrue(checkContributionExistence(waiter, recentName, liveItemName));
 
     // Edit the portal
-    new MenuSection(context).home();
     RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
@@ -328,7 +327,6 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.save(new HomePage(context));
 
     // Check that the draft item is displayed
-    home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.recentContributionExists(draftItemName));
 
@@ -342,7 +340,8 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard3.save().publish();
 
     // Edit portlet for query option
-    home = new MenuSection(context).home();
+    new MenuSection(context).home();
+    recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setQuery("query item");
     edit.setStatus("live");
