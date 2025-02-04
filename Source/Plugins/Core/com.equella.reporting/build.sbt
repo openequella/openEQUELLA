@@ -20,8 +20,6 @@ libraryDependencies ++= Seq(
   xstreamDep
 ).map(_ % Birt)
 
-resolvers += "Camunda Public" at "https://artifacts.camunda.com/artifactory/public"
-
 ivyConfigurations := overrideConfigs(Birt, CustomCompile)(ivyConfigurations.value)
 
 // This setting should include all the managed JARs and unmanaged JARs extracted from zip file
