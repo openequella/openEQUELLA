@@ -14,14 +14,10 @@ libraryDependencies ++= Seq(
     Artifact.DefaultType,
     "zip"
   ),
-  "com.github.equella.reporting" % "reporting-common"                               % "6.5",
-  "com.github.equella.reporting" % "reporting-oda"                                  % "6.5",
-  "com.github.equella.reporting" % "reporting-oda-connectors"                       % "6.5",
-  "org.apache.commons"           % "com.springsource.org.apache.commons.httpclient" % "3.1.0",
-  "org.apache.commons"           % "com.springsource.org.apache.commons.logging"    % "1.1.1",
-  "org.apache.commons"           % "com.springsource.org.apache.commons.codec"      % "1.6.0",
-  xstreamDep,
-  "javax.xml.stream" % "com.springsource.javax.xml.stream" % "1.0.1"
+  "com.github.equella.reporting" % "reporting-common"         % "6.5",
+  "com.github.equella.reporting" % "reporting-oda"            % "6.5",
+  "com.github.equella.reporting" % "reporting-oda-connectors" % "6.5",
+  xstreamDep
 ).map(_ % Birt)
 
 resolvers += "Camunda Public" at "https://artifacts.camunda.com/artifactory/public"
