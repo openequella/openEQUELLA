@@ -327,8 +327,7 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.save(new HomePage(context));
 
     // Check that the draft item is displayed
-    recent = new RecentContributionsSection(context, recentName).get();
-    assertTrue(recent.recentContributionExists(draftItemName));
+    assertTrue(checkContributionExistence(waiter, recentName, draftItemName));
 
     String itemToQuery = context.getFullName("query item");
     String description = context.getFullName("query item description");
