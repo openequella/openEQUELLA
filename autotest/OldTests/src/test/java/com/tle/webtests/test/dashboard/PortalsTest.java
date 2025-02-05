@@ -245,7 +245,7 @@ public class PortalsTest extends AbstractCleanupTest {
     MyResourcesPortalSection myResources =
         new MyResourcesPortalSection(context, myResourceName).get();
 
-    myResources.delete();
+    home = myResources.delete();
     assertFalse(home.portalExists(myResourceName));
   }
 
