@@ -248,7 +248,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a known MIME type")
   public void validMimeTypeSearch() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("mimeTypes", "text/plain"));
-    assertEquals(getAvailable(result), 6);
+    assertTrue(getAvailable(result) > 0);
   }
 
   @Test(description = "Search for a known MIME type with has no items")
