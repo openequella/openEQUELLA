@@ -7,7 +7,6 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
@@ -45,11 +44,10 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
   }
 
   public HomePage delete() {
-    ExpectedCondition<Boolean> removalCondition = removalCondition(getBoxHead());
     showButtons();
     getBoxHead().findElement(By.className("box_close")).click();
     acceptConfirmation();
-    waiter.until(removalCondition);
+    waiter.until(ExpectedConditions.stalenessOf(getBoxHead()));
     return new HomePage(context).get();
   }
 
