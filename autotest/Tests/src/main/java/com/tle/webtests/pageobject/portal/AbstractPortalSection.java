@@ -44,10 +44,11 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
   }
 
   public HomePage delete() {
+    WebElement boxHead = getBoxHead();
     showButtons();
-    getBoxHead().findElement(By.className("box_close")).click();
+    boxHead.findElement(By.className("box_close")).click();
     acceptConfirmation();
-    waiter.until(ExpectedConditions.stalenessOf(getBoxHead()));
+    waiter.until(ExpectedConditions.stalenessOf(boxHead));
     return new HomePage(context).get();
   }
 
