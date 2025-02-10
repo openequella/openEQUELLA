@@ -2,8 +2,8 @@ lazy val Hibernate     = config("hibernate")
 lazy val CustomCompile = config("compile") extend Hibernate
 
 libraryDependencies := Seq(
-  "org.hibernate"            % "hibernate-core"        % "5.6.15.Final",
-  "org.hibernate"            % "hibernate-validator"   % "6.2.5.Final",
+  "org.hibernate"            % "hibernate-core"        % "6.6.7.Final",
+  "org.hibernate"            % "hibernate-validator"   % "8.0.2.Final",
   "javax.persistence"        % "javax.persistence-api" % "2.2",
   "com.thoughtworks.xstream" % "xstream-hibernate"     % xstreamVersion excludeAll ExclusionRule(
     organization = "org.hibernate"
