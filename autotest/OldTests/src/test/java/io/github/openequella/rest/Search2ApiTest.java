@@ -247,8 +247,13 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Search for a known MIME type")
   public void validMimeTypeSearch() throws IOException {
-    JsonNode result = doSearch(200, null, new NameValuePair("mimeTypes", "text/plain"));
-    assertEquals(getAvailable(result), 6);
+    // This query should match two items, but with MIME type filter 'text/plain' only one should be
+    // returned.
+    String query = "Search2 API test";
+    JsonNode result = doSearch(200, query);
+    assertEquals(getAvailable(result), 2);
+    result = doSearch(200, query, new NameValuePair("mimeTypes", "text/plain"));
+    assertEquals(getAvailable(result), 1);
   }
 
   @Test(description = "Search for a known MIME type with has no items")
