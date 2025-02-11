@@ -381,7 +381,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a hierarchy topic result")
   public void hierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
-    assertEquals(getAvailable(result), 56);
+    assertEquals(getAvailable(result), 58);
   }
 
   @Test(description = "Search for a non-existent hierarchy topic result")
@@ -446,7 +446,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
             new NameValuePair("collections", "non-existing"),
             new NameValuePair("status", "ARCHIVED"));
-    assertEquals(getAvailable(result), 56);
+    assertEquals(getAvailable(result), 58);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
