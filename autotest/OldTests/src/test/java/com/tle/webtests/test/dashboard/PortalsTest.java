@@ -324,7 +324,7 @@ public class PortalsTest extends AbstractCleanupTest {
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
-    edit.save(new HomePage(context));
+    waiter = edit.save(new HomePage(context)).getWaiter();
 
     // Check that the draft item is displayed
     assertTrue(checkContributionExistence(waiter, recentName, draftItemName));

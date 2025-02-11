@@ -44,8 +44,8 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
   }
 
   public HomePage delete() {
-    WebElement boxHead = getBoxHead();
     showButtons();
+    WebElement boxHead = getBoxHead();
     boxHead.findElement(By.className("box_close")).click();
     acceptConfirmation();
     waiter.until(ExpectedConditions.stalenessOf(boxHead));
