@@ -7,7 +7,6 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
@@ -45,11 +44,11 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
   }
 
   public HomePage delete() {
-    ExpectedCondition<Boolean> removalCondition = removalCondition(getBoxHead());
     showButtons();
-    getBoxHead().findElement(By.className("box_close")).click();
+    WebElement boxHead = getBoxHead();
+    boxHead.findElement(By.className("box_close")).click();
     acceptConfirmation();
-    waiter.until(removalCondition);
+    waiter.until(ExpectedConditions.stalenessOf(boxHead));
     return new HomePage(context).get();
   }
 
@@ -76,12 +75,7 @@ public abstract class AbstractPortalSection<T extends AbstractPortalSection<T>>
 
   public <P extends AbstractPortalEditPage<P>> P edit(P portal) {
     showButtons();
-    WebElement editButton =
-        driver.findElement(
-            By.xpath(
-                "//div[contains(@title,"
-                    + quoteXPath(getTitle())
-                    + ")]/following-sibling::img[contains(@class, 'box_edit')]"));
+    WebElement editButton = getBoxHead().findElement(By.className("box_edit"));
     waiter.until(ExpectedConditions.elementToBeClickable(editButton));
     editButton.click();
     return portal.get();

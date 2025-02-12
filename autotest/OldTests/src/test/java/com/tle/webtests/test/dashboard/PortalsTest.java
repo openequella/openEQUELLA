@@ -245,7 +245,7 @@ public class PortalsTest extends AbstractCleanupTest {
     MyResourcesPortalSection myResources =
         new MyResourcesPortalSection(context, myResourceName).get();
 
-    myResources.delete();
+    home = myResources.delete();
     assertFalse(home.portalExists(myResourceName));
   }
 
@@ -320,17 +320,14 @@ public class PortalsTest extends AbstractCleanupTest {
     assertTrue(checkContributionExistence(waiter, recentName, liveItemName));
 
     // Edit the portal
-    new MenuSection(context).home();
     RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
     edit.checkSelectedCollection();
-    edit.save(new HomePage(context));
+    waiter = edit.save(new HomePage(context)).getWaiter();
 
     // Check that the draft item is displayed
-    home = new MenuSection(context).home();
-    recent = new RecentContributionsSection(context, recentName).get();
-    assertTrue(recent.recentContributionExists(draftItemName));
+    assertTrue(checkContributionExistence(waiter, recentName, draftItemName));
 
     String itemToQuery = context.getFullName("query item");
     String description = context.getFullName("query item description");
@@ -342,7 +339,8 @@ public class PortalsTest extends AbstractCleanupTest {
     wizard3.save().publish();
 
     // Edit portlet for query option
-    home = new MenuSection(context).home();
+    new MenuSection(context).home();
+    recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setQuery("query item");
     edit.setStatus("live");
@@ -351,12 +349,10 @@ public class PortalsTest extends AbstractCleanupTest {
 
     // Check that the queried item is displayed
     assertTrue(checkContributionExistence(waiter, recentName, itemToQuery));
-    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertTrue(recent.descriptionExists(description, true));
 
     // Edit portlet for description option
-    home = new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
@@ -364,7 +360,6 @@ public class PortalsTest extends AbstractCleanupTest {
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
-    new MenuSection(context).home();
     recent = new RecentContributionsSection(context, recentName).get();
     assertFalse(recent.descriptionExists(description, false));
   }

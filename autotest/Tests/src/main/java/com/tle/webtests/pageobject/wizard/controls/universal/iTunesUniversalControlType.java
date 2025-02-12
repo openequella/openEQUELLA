@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject.wizard.controls.universal;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
@@ -25,7 +26,7 @@ public class iTunesUniversalControlType
 
   public iTunesUniversalControlType(UniversalControl control) {
     super(control);
-    waiter = new WebDriverWait(context.getDriver(), 120);
+    waiter = new WebDriverWait(context.getDriver(), Duration.ofMinutes(2));
   }
 
   @Override

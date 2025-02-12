@@ -5,6 +5,7 @@ import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.remoterepo.AbstractRemoteRepoSearchPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoListPage;
 import com.tle.webtests.pageobject.remoterepo.RemoteRepoSearchResult;
+import java.time.Duration;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -26,7 +27,8 @@ public class RemoteRepoSRUSearchPage
 
   public RemoteRepoSRUSearchPage(PageContext context) {
     super(context);
-    this.waiter = new WebDriverWait(context.getDriver(), 60, 50);
+    this.waiter =
+        new WebDriverWait(context.getDriver(), Duration.ofMinutes(1), Duration.ofMillis(50));
   }
 
   @Override
