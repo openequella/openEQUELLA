@@ -1,0 +1,89 @@
+<com.tle.beans.item.Item>
+  <id>952814</id>
+  <uuid>7d9c77d7-948d-4d7e-8ce8-c2b1bf578270</uuid>
+  <version>1</version>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2025-02-11 12:48:25.145</dateModified>
+  <dateCreated class="sql-timestamp">2025-02-11 12:48:25.146</dateCreated>
+  <dateForIndex class="sql-timestamp">2025-02-11 12:48:25.145</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>952819</id>
+      <uuid>5d5117eb-5bad-460b-aba9-10c94d30ce26</uuid>
+      <url>Search2 API test.txt</url>
+      <description>Search2 API test.txt</description>
+      <value1>18</value1>
+      <md5sum>5c516c150e9cdc38333c3fe1e2035857</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>952816</id>
+    <liveApprovalDate class="sql-timestamp">2025-02-11 12:48:25.145</liveApprovalDate>
+    <lastAction class="sql-timestamp">2025-02-11 12:48:25.145</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>952820</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2025-02-11 12:48:25.145</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>952821</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2025-02-11 12:48:25.145</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>952822</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2025-02-11 12:48:25.145</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>952817</id>
+    <strings>
+      <entry>
+        <string>en_GB</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>952818</id>
+          <locale>en_GB</locale>
+          <priority>2</priority>
+          <text>Search2 API test - Text</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>
