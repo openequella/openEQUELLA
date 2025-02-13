@@ -16,31 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.core.usermanagement.standard.dao;
+package com.tle.web.remoting.graphql.schema
 
-import com.tle.beans.user.TLEGroup;
-import com.tle.core.dao.AbstractTreeDao;
-import java.util.Collection;
-import java.util.List;
-
-public interface TLEGroupDao extends AbstractTreeDao<TLEGroup> {
-  List<TLEGroup> listAllGroups();
-
-  List<TLEGroup> getGroupsContainingUser(String userID);
-
-  List<TLEGroup> searchGroups(String query, String parentId);
-
-  List<String> getUsersInGroup(String parentGroupID, boolean recurse);
-
-  TLEGroup findByUuid(String id);
-
-  List<TLEGroup> getInformationForGroups(Collection<String> groups);
-
-  boolean addUserToGroup(String groupUuid, String userUuid);
-
-  boolean removeUserFromGroup(String groupUuid, String userUuid);
-
-  long countUsersInGroup(String groupId);
-
-  long countGroupsInGroup(String groupId);
-}
+final case class Group(
+    uniqueId: String,
+    name: String,
+    parentId: Option[String],
+    hasGroups: Boolean,
+    hasUsers: Boolean
+)

@@ -20,7 +20,9 @@ package com.tle.core.hibernate.dao;
 
 import com.tle.annotation.NonNullByDefault;
 import com.tle.core.hibernate.HibernateService;
+import java.util.function.Function;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.dao.DataAccessException;
@@ -34,6 +36,21 @@ public abstract class AbstractHibernateDao {
   private SessionFactory lastFactory;
 
   private HibernateTemplate template;
+
+  /**
+   * Query the database using an EntityManager.
+   *
+   * @param queryFn A function that takes an EntityManager and returns a result
+   * @return The result of the query
+   */
+  protected <T> T queryWithEntityManager(Function<EntityManager, T> queryFn) {
+    return getHibernateTemplate()
+        .execute(
+            session -> {
+              EntityManager entityManager = createEntityManager(session);
+              return queryFn.apply(entityManager);
+            });
+  }
 
   protected synchronized HibernateTemplate getHibernateTemplate() {
     SessionFactory newFactory =
@@ -58,6 +75,15 @@ public abstract class AbstractHibernateDao {
       template.setExposeNativeSession(true);
     }
     return template;
+  }
+
+  /**
+   * Return an EntityManager to help criteria query building.
+   *
+   * @param session An active Hibernate Session
+   */
+  protected EntityManager createEntityManager(Session session) {
+    return session.getEntityManagerFactory().createEntityManager();
   }
 
   protected boolean isSystemDataSource() {

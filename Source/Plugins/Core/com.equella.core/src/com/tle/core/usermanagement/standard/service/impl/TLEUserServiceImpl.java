@@ -163,8 +163,7 @@ public class TLEUserServiceImpl
   @Override
   @Transactional
   public TLEUser get(String id) {
-    return dao.findByCriteria(
-        Restrictions.eq("uuid", id), Restrictions.eq("institution", CurrentInstitution.get()));
+    return dao.findByCriteria(Restrictions.eq("uuid", id), CurrentInstitution.equalityCriteria());
   }
 
   @Override

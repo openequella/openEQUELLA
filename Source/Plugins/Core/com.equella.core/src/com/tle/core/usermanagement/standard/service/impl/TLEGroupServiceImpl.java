@@ -22,6 +22,7 @@ import com.tle.beans.user.GroupTreeNode;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
@@ -47,6 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -77,7 +79,11 @@ public class TLEGroupServiceImpl
     TLEGroup group = createGroup(null, name);
 
     if (parentID != null) {
-      group.setParent(get(parentID));
+      var parent =
+          Optional.ofNullable(get(parentID))
+              .orElseThrow(
+                  () -> new NotFoundException("No such parent with id of " + parentID + " found."));
+      group.setParent(parent);
     }
 
     if (Check.isEmpty(group.getUuid())) {
@@ -132,11 +138,21 @@ public class TLEGroupServiceImpl
         Restrictions.eq("name", name), Restrictions.eq("institution", CurrentInstitution.get()));
   }
 
-  private void checkInUse(TLEGroup group, boolean forAdd) {
-    Criterion c1 = forAdd ? null : Restrictions.ne("uuid", group.getUuid());
-    Criterion c2 = Restrictions.eq("name", group.getName());
-    Criterion c3 = Restrictions.eq("institution", CurrentInstitution.get());
-    if (!dao.findAllByCriteria(c1, c2, c3).isEmpty()) {
+  /**
+   * Check if the group is in use, looking for any other group (different by uuid) in the same
+   * institution and with the same name. Thereby attempting to ensure the name is unique.
+   *
+   * @param group The group to check
+   * @param ignoreUuid Whether to ignore the UUID of the group when checking for uniqueness, useful
+   *     when adding a new group which doesn't yet have a UUID.
+   */
+  private void checkInUse(TLEGroup group, boolean ignoreUuid) {
+    Criterion hasDifferentUuid = ignoreUuid ? null : Restrictions.ne("uuid", group.getUuid());
+    Criterion withSameName = Restrictions.eq("name", group.getName());
+    boolean unique =
+        dao.findAllByCriteria(hasDifferentUuid, withSameName, CurrentInstitution.equalityCriteria())
+            .isEmpty();
+    if (!unique) {
       ValidationError error = new ValidationError("name", "Name already exists");
       throw new InvalidDataException(Collections.singletonList(error));
     }
@@ -185,7 +201,7 @@ public class TLEGroupServiceImpl
     TLEGroup parent = group.getParent();
 
     if (!deleteChildren) {
-      // Move children up to same level as group we're deleting
+      // Move children up to the same level as the group we're deleting
       for (TLEGroup child : getGroupsInGroup(group)) {
         child.setParent(parent);
         updateGroup(child);
@@ -209,17 +225,19 @@ public class TLEGroupServiceImpl
     return dao.getUsersInGroup(parentGroupID, recurse);
   }
 
-  private List<TLEGroup> getGroupsInGroup(TLEGroup group) {
-    Criterion c1 = group == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", group);
-    return dao.findAllByCriteria(c1);
+  @Override
+  public List<TLEGroup> getGroupsInGroup(TLEGroup group) {
+    Criterion parentCriteria =
+        group == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", group);
+    return dao.findAllByCriteria(parentCriteria, CurrentInstitution.equalityCriteria());
   }
 
   @Override
   public List<TLEGroup> search(String query) {
-    Criterion c1 = Restrictions.ilike("name", query.replace('*', '%'));
-    Criterion c2 = Restrictions.eq("institution", CurrentInstitution.get());
+    Criterion nameLikeQuery = Restrictions.ilike("name", query.replace('*', '%'));
 
-    return dao.findAllByCriteria(Order.asc("name"), -1, c1, c2);
+    return dao.findAllByCriteria(
+        Order.asc("name"), -1, nameLikeQuery, CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -418,5 +436,15 @@ public class TLEGroupServiceImpl
     }
 
     return searchString;
+  }
+
+  @Override
+  public long countUsersInGroup(String groupId) {
+    return dao.countUsersInGroup(groupId);
+  }
+
+  @Override
+  public long countGroupsInGroup(String groupId) {
+    return dao.countGroupsInGroup(groupId);
   }
 }

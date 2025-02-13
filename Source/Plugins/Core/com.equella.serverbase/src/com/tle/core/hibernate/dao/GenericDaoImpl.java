@@ -23,7 +23,6 @@ import com.tle.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Function;
-import javax.persistence.EntityManager;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -379,14 +378,5 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
       throw new RuntimeException("Expected unique result by found " + results.size() + " results");
     }
     return results.get(0);
-  }
-
-  /**
-   * Return an EntityManager to help criteria query building.
-   *
-   * @param session An active Hibernate Session
-   */
-  protected EntityManager createEntityManager(Session session) {
-    return session.getEntityManagerFactory().createEntityManager();
   }
 }
