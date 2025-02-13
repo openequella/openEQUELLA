@@ -4,7 +4,7 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.AbstractReport;
 import com.tle.webtests.pageobject.ExpectWaiter;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -39,7 +39,7 @@ public class AbstractReportWindow<R extends AbstractReport<R>, T extends Abstrac
   }
 
   public R getReport() {
-    report.getWaiter().withTimeout(5, TimeUnit.MINUTES);
+    report.getWaiter().withTimeout(Duration.ofMinutes(5));
     return ExpectWaiter.waiter(
             ExpectedConditions.frameToBeAvailableAndSwitchToIt("reportFrame"), report)
         .get();

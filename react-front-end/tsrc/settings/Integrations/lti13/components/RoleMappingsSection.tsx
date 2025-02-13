@@ -17,34 +17,15 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import type { CustomRolesMapping } from "../../../../components/CustomRoleHelper";
+import type { CustomRolesMappings } from "../../../../components/CustomRoleHelper";
 import SettingsList from "../../../../components/SettingsList";
 import { languageStrings } from "../../../../util/langstrings";
 import LtiCustomRolesMapping from "./LtiCustomRolesMapping";
-import SettingsListAlert from "../../../../components/SettingsListAlert";
-import SelectRoleControl from "./SelectRoleControl";
+import SelectRoleControl from "../../../../components/SelectRoleControl";
 
 const { roleMappings: roleMappingsStrings } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
 const { edit: editLabel } = languageStrings.common.action;
-
-/**
- * Warning messages for role related controls.
- *
- * Those controls will show a warning message if the IDs of role details fetched form server
- * can't match with the initial role IDs.
- *
- * For example:
- * suppose users select Role A and Role B for instructorRoles. Later, if Role A gets deleted,
- * its ID will still be stored in the platform.
- * When the Edit page tries to get Role A and B, the server will only return Role B.
- * Consequently, a warning message will be displayed stating that Role A is missing.
- */
-export interface RoleMappingWarnings {
-  instructorRoles?: string[];
-  customRolesMapping?: string[];
-  unknownRoles?: string[];
-}
 
 export interface RoleMappingsSectionProps {
   /**
@@ -58,11 +39,11 @@ export interface RoleMappingsSectionProps {
   /**
    * The mapping relationships between LTI roles and oEQ roles.
    */
-  customRolesMapping: CustomRolesMapping;
+  customRolesMapping: CustomRolesMappings;
   /**
    * Function to update the value of `customRolesMapping`.
    */
-  setCustomRolesMapping: (mappings: CustomRolesMapping) => void;
+  setCustomRolesMapping: (mappings: CustomRolesMappings) => void;
   /**
    * The roles that should be used for all unmapped LTI roles.
    */
@@ -71,10 +52,6 @@ export interface RoleMappingsSectionProps {
    * Function to update the value of `unknownRoles`.
    */
   setUnknownRoles: (roles: ReadonlySet<OEQ.Common.UuidString>) => void;
-  /**
-   * WarningMessages for each role selectors.
-   */
-  warningMessages?: RoleMappingWarnings;
 }
 
 /**
@@ -88,7 +65,6 @@ const RoleMappingsSection = ({
   setCustomRolesMapping,
   unknownRoles,
   setUnknownRoles,
-  warningMessages,
 }: RoleMappingsSectionProps) => {
   const {
     title,
@@ -108,23 +84,11 @@ const RoleMappingsSection = ({
         value={instructorRoles}
         onChange={setInstructorRoles}
       />
-      {warningMessages?.instructorRoles && (
-        <SettingsListAlert
-          severity="warning"
-          messages={warningMessages?.instructorRoles}
-        />
-      )}
 
       <LtiCustomRolesMapping
         value={customRolesMapping}
         onChange={setCustomRolesMapping}
       />
-      {warningMessages?.customRolesMapping && (
-        <SettingsListAlert
-          severity="warning"
-          messages={warningMessages?.customRolesMapping}
-        />
-      )}
 
       {/*Unknown Roles*/}
       <SelectRoleControl
@@ -134,12 +98,6 @@ const RoleMappingsSection = ({
         value={unknownRoles}
         onChange={setUnknownRoles}
       />
-      {warningMessages?.unknownRoles && (
-        <SettingsListAlert
-          severity="warning"
-          messages={warningMessages?.unknownRoles}
-        />
-      )}
     </SettingsList>
   );
 };

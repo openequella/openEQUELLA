@@ -83,9 +83,10 @@ describe('Search with GET:', () => {
 
     it('should return results which match one of multiple MIME types', async () => {
       const searchResult = await doSearch({
-        mimeTypes: ['text/plain', 'application/pdf'],
+        query: 'Search2 API test',
+        mimeTypes: ['text/plain', 'image/png'],
       });
-      expect(searchResult.results).toHaveLength(7);
+      expect(searchResult.results).toHaveLength(2);
     });
 
     it("supports a list of 'musts' specifications", async () => {
@@ -252,13 +253,14 @@ describe('Search with POST:', () => {
     const mimeTypes = pipe(
       NEA.range(1, 100),
       NEA.map((i) => 'text/plain' + i),
-      NEA.concat(['text/plain', 'application/pdf'])
+      NEA.concat(['text/plain', 'image/png'])
     );
     const searchResult = await doSearchWithPOST({
       mimeTypes: mimeTypes,
+      query: 'Search2 API test',
     });
 
-    expect(searchResult.results).toHaveLength(7);
+    expect(searchResult.results).toHaveLength(2);
   });
 });
 
@@ -267,7 +269,7 @@ describe('Hierarchy search:', () => {
     const results = await doSearch({
       hierarchy: '6135b550-ce1c-43c2-b34c-0a3cf793759d',
     });
-    expect(results.available).toBe(56);
+    expect(results.available).toBe(58);
   });
 });
 

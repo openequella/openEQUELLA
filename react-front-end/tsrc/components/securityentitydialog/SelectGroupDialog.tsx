@@ -18,7 +18,7 @@
 import GroupIcon from "@mui/icons-material/Group";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
-import { findGroupsByIds, ordGroup } from "../../modules/GroupModule";
+import { ordGroup } from "../../modules/GroupModule";
 import { languageStrings } from "../../util/langstrings";
 import GroupSearch from "../securityentitysearch/GroupSearch";
 import SecurityEntityEntry from "./SecurityEntityEntry";
@@ -27,20 +27,17 @@ import SelectEntityDialog from "./SelectEntityDialog";
 export interface SelectGroupDialogProps {
   /** Open the dialog when true. */
   open: boolean;
-  /** The currently selected Groups. */
-  value: ReadonlySet<OEQ.Common.UuidString>;
+  /**
+   * The currently selected Groups.
+   * Undefined means the component should wait for the group details to be provided.
+   */
+  value?: ReadonlySet<OEQ.UserQuery.GroupDetails>;
   /** Handler for when dialog is closed. */
-  onClose: (selections?: ReadonlySet<OEQ.Common.UuidString>) => void;
+  onClose: (selections?: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void;
   /** Function which will provide the list of group (search function) for GroupSearch. */
   searchGroupsProvider?: (
     query?: string,
   ) => Promise<OEQ.UserQuery.GroupDetails[]>;
-  /**
-   * Function to get all groups details by ids.
-   */
-  findGroupsByIdsProvider?: (
-    ids: ReadonlySet<string>,
-  ) => Promise<ReadonlyArray<OEQ.UserQuery.GroupDetails>>;
 }
 
 /**
@@ -52,7 +49,6 @@ const SelectGroupDialog = ({
   value,
   onClose,
   searchGroupsProvider,
-  findGroupsByIdsProvider = findGroupsByIds,
 }: SelectGroupDialogProps) => {
   const groupSearch = (
     onAdd: (group: OEQ.UserQuery.GroupDetails) => void,
@@ -88,7 +84,6 @@ const SelectGroupDialog = ({
       onConfirm={onClose}
       onCancel={onClose}
       addEntityMessage={languageStrings.selectGroupDialog.addGroups}
-      findEntitiesByIds={findGroupsByIdsProvider}
     />
   );
 };

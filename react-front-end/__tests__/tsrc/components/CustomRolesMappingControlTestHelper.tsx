@@ -18,7 +18,10 @@
 import { getByLabelText, render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { searchRoles } from "../../../__mocks__/RoleModule.mock";
+import {
+  findRolesByIds,
+  searchRoles,
+} from "../../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
 } from "../../../tsrc/components/CustomRolesMappingControl";
@@ -38,9 +41,10 @@ const { customRoleLabel } = languageStrings.selectCustomRoleDialog;
 
 export const commonCustomRolesMappingControlProps: CustomRolesMappingControlProps =
   {
-    initialRoleMappings: new Map(),
+    initialMappings: new Map(),
     onChange: jest.fn(),
-    searchRoleProvider: searchRoles,
+    searchRolesProvider: searchRoles,
+    findRolesByIdsProvider: findRolesByIds,
   };
 
 /**

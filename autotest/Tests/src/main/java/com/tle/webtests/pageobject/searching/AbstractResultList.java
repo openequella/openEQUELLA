@@ -12,7 +12,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractResultList<
@@ -135,11 +135,29 @@ public abstract class AbstractResultList<
     return found;
   }
 
+  /**
+   * Legacy method to check if results are available. It always uses the old UI element to check.
+   */
   public boolean isResultsAvailable() {
+    return isResultsAvailable(false);
+  }
+
+  /**
+   * Check if results are available.
+   *
+   * @param newUi - true to use the new UI element to check.
+   */
+  public boolean isResultsAvailable(boolean newUi) {
     try {
-      waiter.until(
-          ExpectedConditions.presenceOfElementLocated(
-              By.xpath("//div[@class='itemresult-wrapper']")));
+      if (newUi) {
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//*[contains(@aria-label, 'Search result list item')]")));
+      } else {
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[@class='itemresult-wrapper']")));
+      }
       return true;
     } catch (TimeoutException Time) {
       return false;

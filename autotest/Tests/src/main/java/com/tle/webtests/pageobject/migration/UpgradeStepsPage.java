@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject.migration;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -13,7 +14,7 @@ public class UpgradeStepsPage extends AbstractPage<UpgradeStepsPage> {
 
   public UpgradeStepsPage(PageContext context) {
     super(context, By.id("mp_confirmBackup"));
-    waiter = new WebDriverWait(driver, 240);
+    waiter = new WebDriverWait(driver, Duration.ofMinutes(4));
   }
 
   public void upgrade(String password) {

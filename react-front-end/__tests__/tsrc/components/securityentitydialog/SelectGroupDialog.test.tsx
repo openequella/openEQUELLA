@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import * as SET from "fp-ts/Set";
 import { groups } from "../../../../__mocks__/GroupModule.mock";
-import { groupIds } from "../../../../tsrc/modules/GroupModule";
 import {
   clickCancelButton,
   clickDeleteIconForEntity,
@@ -47,7 +46,7 @@ describe("SelectGroupDialog", () => {
     await clickOkButton(dialog);
 
     const result = onClose.mock.lastCall[0];
-    expect(result).toEqual(SET.singleton(groups[0].id));
+    expect(result).toEqual(SET.singleton(groups[0]));
   });
 
   it("Should be able to remove selected group", async () => {
@@ -55,7 +54,7 @@ describe("SelectGroupDialog", () => {
       (onClose: jest.Mock) =>
         renderSelectGroupDialog({
           ...commonSelectGroupDialogProps,
-          value: SET.singleton(groups[0].id),
+          value: SET.singleton(groups[0]),
           onClose,
         }),
       groups[0].name,
@@ -68,7 +67,7 @@ describe("SelectGroupDialog", () => {
     const onClose = jest.fn();
     const { getByRole } = await renderSelectGroupDialog({
       ...commonSelectGroupDialogProps,
-      value: SET.singleton(groups[0].id),
+      value: SET.singleton(groups[0]),
       onClose,
     });
 
@@ -87,7 +86,7 @@ describe("SelectGroupDialog", () => {
     const result = await testRemoveAll((onClose: jest.Mock) =>
       renderSelectGroupDialog({
         ...commonSelectGroupDialogProps,
-        value: groupIds(new Set(groups)),
+        value: new Set(groups),
         onClose,
       }),
     );

@@ -5,6 +5,7 @@ import static org.testng.Assert.assertEquals;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -37,15 +38,16 @@ public class Search2ApiVariationTest extends AbstractRestApiTest {
     // to make sure the endpoint still returns the correct result.
     ArrayList<String> mimeTypes = new ArrayList<>();
     mimeTypes.add("text/plain");
+    mimeTypes.add("image/png");
     for (int i = 1; i <= 100; i++) {
-      mimeTypes.add("text/plain" + Integer.toString(i));
+      mimeTypes.add("text/plain" + i);
     }
 
     ObjectNode payload = mapper.createObjectNode();
     payload.set("mimeTypes", mapper.valueToTree(mimeTypes));
-
+    payload.set("query", new TextNode("Search2 API test"));
     JsonNode result = doSearch(200, payload);
-    assertEquals(result.get("available").asInt(), 6);
+    assertEquals(result.get("available").asInt(), 2);
   }
 
   private JsonNode doSearch(int expectedCode, JsonNode payload) throws IOException {

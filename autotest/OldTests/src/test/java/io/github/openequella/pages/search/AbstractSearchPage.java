@@ -29,7 +29,9 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   @FindBy(id = "exportSearchResult")
   protected WebElement exportButton;
 
-  private final By searchResultListBy = By.xpath("//ul[@data-testid='search-result-list']");
+  public final String searchResultListXpath = "//ul[@data-testid='search-result-list']";
+
+  private final By searchResultListBy = By.xpath(searchResultListXpath);
 
   public AbstractSearchPage(PageContext context) {
     super(context);
@@ -98,6 +100,12 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     waiter.until(
         ExpectedConditions.visibilityOfElementLocated(
             By.xpath("//span[text()='Search results (" + itemCount + ")']")));
+  }
+
+  /** Wait until the result is rendered. */
+  public void waitForSearchCompleted() {
+    By loading = By.xpath("//span[@aria-label='Loading search results...']");
+    waiter.until(ExpectedConditions.invisibilityOfElementLocated(loading));
   }
 
   /** Perform a new search. */

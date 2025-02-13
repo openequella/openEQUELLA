@@ -1,7 +1,5 @@
 package com.tle.webtests.framework;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.tle.common.Check;
@@ -142,7 +140,6 @@ public class StandardDriverFactory {
         } else {
           binary = new FirefoxBinary();
         }
-        binary.setTimeout(SECONDS.toMillis(120));
         FirefoxProfile profile = new FirefoxProfile();
         profile.addExtension(getClass(), "firebug-1.10.2-fx.xpi");
         profile.addExtension(getClass(), "firepath-0.9.7-fx.xpi");

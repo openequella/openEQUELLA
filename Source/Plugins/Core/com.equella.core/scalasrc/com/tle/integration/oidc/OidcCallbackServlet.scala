@@ -28,7 +28,7 @@ import com.tle.integration.util.NO_FURTHER_INFO
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Named, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
 
@@ -41,6 +41,10 @@ class OidcCallbackServlet @Inject() (
     userService: UserService,
     authService: OidcAuthService
 ) extends HttpServlet {
+
+  @Inject
+  @Named("enable.oidc.token.logging")
+  private var tokenLoggingEnabled: Boolean = _
 
   private val LOGGER = LoggerFactory.getLogger(classOf[OidcCallbackServlet])
 
@@ -64,7 +68,8 @@ class OidcCallbackServlet @Inject() (
       stateDetails = callbackDetails.stateDetails
       code         = callbackDetails.code
 
-      idToken       <- authService.requestIdToken(code, stateDetails, idp)
+      idToken <- authService.requestIdToken(code, stateDetails, idp)
+      _ = if (tokenLoggingEnabled) LOGGER.debug(s"Retrieved ID Token: $idToken")
       verifiedToken <- authService.verifyIdToken(idToken, state, idp)
       _ <- authService.login(verifiedToken, userService.getWebAuthenticationDetails(req), idp)
     } yield stateDetails.targetPage

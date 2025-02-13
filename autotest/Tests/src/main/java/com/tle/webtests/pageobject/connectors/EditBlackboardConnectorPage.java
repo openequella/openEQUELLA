@@ -1,6 +1,7 @@
 package com.tle.webtests.pageobject.connectors;
 
 import com.tle.webtests.pageobject.WaitingPageObject;
+import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -47,7 +48,8 @@ public class EditBlackboardConnectorPage
 
   public EditBlackboardConnectorPage(ShowConnectorsPage connectorsPage) {
     super(connectorsPage);
-    this.bbWaiter = new WebDriverWait(context.getDriver(), 60, 50);
+    this.bbWaiter =
+        new WebDriverWait(context.getDriver(), Duration.ofMinutes(1), Duration.ofMillis(50));
   }
 
   public EditBlackboardConnectorPage setUrl(String url, String user, String password) {

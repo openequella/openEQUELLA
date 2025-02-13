@@ -23,7 +23,7 @@ import { pipe } from "fp-ts/function";
 
 import { platforms } from "../../../../../../__mocks__/Lti13PlatformsModule.mock";
 
-import { generateWarnMsgForMissingIds } from "../../../../../../tsrc/settings/Integrations/lti13/components/EditLti13PlatformHelper";
+import { generateWarnMsgForMissingIds } from "../../../../../../tsrc/components/securityentitydialog/SecurityEntityHelper";
 import { languageStrings } from "../../../../../../tsrc/util/langstrings";
 import { mockRoleAndGroupApis } from "../../../../components/securityentitydialog/SelectEntityDialogTestHelper";
 import { savePlatform } from "./CreateLti13PlatformTestHelper";
@@ -119,21 +119,6 @@ describe("EditLti13Platform", () => {
       expect(getByText(expectedWarnMsg)).toBeInTheDocument();
     },
   );
-
-  it("shows warning messages for CustomRoles if any role has been deleted but still selected in platform", async () => {
-    const renderResult = await renderEditLti13Platform(
-      commonEditLti13PlatformProps,
-      // http://localhost:8100
-      "aHR0cDovL2xvY2FsaG9zdDo4MTAw",
-    );
-    const { getByText } = renderResult;
-    const expectedWarnMsg = `LTI role: http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator - ${generateWarnMsgForMissingIds(
-      new Set(["deletedRole3"]),
-      "role",
-    )}`;
-
-    expect(getByText(expectedWarnMsg)).toBeInTheDocument();
-  });
 
   it("execute rotateKeyPair function if user confirm the rotate key pair action", async () => {
     const rotateKeyPair = jest.fn();

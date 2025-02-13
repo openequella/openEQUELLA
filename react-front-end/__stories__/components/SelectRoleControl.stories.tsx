@@ -20,18 +20,18 @@ import { Meta, StoryFn } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
 import * as React from "react";
-import { eqRoleById, roleIds } from "../../../../tsrc/modules/RoleModule";
+import { eqRoleById, roleIds } from "../../tsrc/modules/RoleModule";
 import SelectRoleControl, {
   SelectRoleControlProps,
-} from "../../../../tsrc/settings/Integrations/lti13/components/SelectRoleControl";
+} from "../../tsrc/components/SelectRoleControl";
 import {
   searchRoles,
   findRolesByIds,
   roles,
-} from "../../../../__mocks__/RoleModule.mock";
+} from "../../__mocks__/RoleModule.mock";
 
 export default {
-  title: "settings/Integrations/Lti13/SelectRoleControl",
+  title: "Component/SelectRoleControl",
   component: SelectRoleControl,
 } as Meta<SelectRoleControlProps>;
 

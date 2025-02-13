@@ -18,25 +18,28 @@
 import EditIcon from "@mui/icons-material/Edit";
 import { Badge } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../mainui/App";
+import { findRolesByIds, roleIds } from "../modules/RoleModule";
+import { getRolesTask } from "./securityentitydialog/SecurityEntityHelper";
 import SelectRoleDialog, {
   SelectRoleDialogProps,
-} from "../../../../components/securityentitydialog/SelectRoleDialog";
-import SettingsListControl from "../../../../components/SettingsListControl";
-import { TooltipIconButton } from "../../../../components/TooltipIconButton";
-import { languageStrings } from "../../../../util/langstrings";
+} from "./securityentitydialog/SelectRoleDialog";
+import SettingsListAlert from "./SettingsListAlert";
+import SettingsListControl from "./SettingsListControl";
+import { TooltipIconButton } from "./TooltipIconButton";
+import { languageStrings } from "../util/langstrings";
 
 const { selectRole: selectRoleLabel } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .roleMappings;
 
 export interface SelectRoleControlProps
-  extends Pick<
-    SelectRoleDialogProps,
-    "searchRolesProvider" | "findRolesByIdsProvider"
-  > {
+  extends Pick<SelectRoleDialogProps, "searchRolesProvider"> {
   /**
    * Aria label for the edit icon
    */
@@ -50,7 +53,7 @@ export interface SelectRoleControlProps
    */
   secondaryText?: string;
   /**
-   * The initial list of selected roles
+   * The initial list of selected roles IDs.
    */
   value?: ReadonlySet<OEQ.Common.UuidString>;
   /**
@@ -59,6 +62,12 @@ export interface SelectRoleControlProps
    * @param roles New set of roles.
    */
   onChange: (roles: ReadonlySet<OEQ.Common.UuidString>) => void;
+  /**
+   * Function to get all entity details by their ids.
+   */
+  findRolesByIdsProvider?: (
+    ids: ReadonlySet<string>,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 /**
@@ -70,10 +79,33 @@ const SelectRoleControl = ({
   value = RS.empty,
   onChange,
   ariaLabel = selectRoleLabel,
-  findRolesByIdsProvider,
+  findRolesByIdsProvider = findRolesByIds,
   searchRolesProvider,
 }: SelectRoleControlProps) => {
+  const { appErrorHandler } = useContext(AppContext);
+
+  const [roles, setRoles] = useState<ReadonlySet<OEQ.UserQuery.RoleDetails>>();
+  // Show warning messages if the IDs of role details fetched form server
+  // doesn't match with the initial group/groups IDs.
+  //
+  // For example:
+  //   suppose users select Role A and Role B for UnknownRoles. Later, if Role A gets deleted,
+  //   its ID will still be stored in the platform.
+  //   When the Edit page tries to get Role A and B, the server will only return Role B.
+  //   Consequently, a warning message will be displayed stating that Role A is missing.
+  const [warningMessages, setWarningMessages] = useState<string[]>();
+
   const [showSelectRoleDialog, setShowSelectRoleDialog] = useState(false);
+
+  useEffect(() => {
+    pipe(
+      getRolesTask(value, findRolesByIdsProvider),
+      TE.match(appErrorHandler, (result) => {
+        setRoles(result.entities);
+        setWarningMessages(result.warning);
+      }),
+    )();
+  }, [appErrorHandler, findRolesByIdsProvider, value]);
 
   return (
     <>
@@ -93,17 +125,19 @@ const SelectRoleControl = ({
           </Badge>
         }
       />
+      {warningMessages && (
+        <SettingsListAlert severity="warning" messages={warningMessages} />
+      )}
       <SelectRoleDialog
-        value={value}
+        value={roles}
         open={showSelectRoleDialog}
         onClose={(selectedRoles) => {
           setShowSelectRoleDialog(false);
           if (selectedRoles) {
-            onChange(selectedRoles);
+            pipe(selectedRoles, roleIds, onChange);
           }
         }}
         searchRolesProvider={searchRolesProvider}
-        findRolesByIdsProvider={findRolesByIdsProvider}
       />
     </>
   );

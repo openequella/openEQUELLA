@@ -2,6 +2,7 @@ package io.github.openequella.oidc
 
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.generic.page.UserProfilePage
+import com.tle.webtests.pageobject.portal.MenuSection
 import com.tle.webtests.pageobject.viewitem.SummaryPage
 import com.tle.webtests.pageobject.wizard.ContributePage
 import com.tle.webtests.pageobject.{HomePage, LoginPage, SettingsPage}
@@ -127,10 +128,15 @@ class OidcIntegrationTest extends AbstractSessionTest {
   @Test(description = "User signed in via OIDC should be able to create new Item")
   def contribute(): Unit = {
     logonOidc()
-    val wizard = new ContributePage(context).load().openWizard("Generic Testing Collection")
-    val by     = By.xpath(s"//div[@id = '${wizard.getControlId(1)}']//input")
 
-    wizard.getWaiter.until(ExpectedConditions.visibilityOfElementLocated(by)).sendKeys("Edalex")
+    val menu           = new MenuSection(context).get
+    val contributePage = menu.clickMenu("Contribute", new ContributePage(context))
+    val wizard         = contributePage.openWizard("Generic Testing Collection")
+
+    val textField = By.xpath(s"//div[@id = '${wizard.getControlId(1)}']//input")
+    wizard.getWaiter
+      .until(ExpectedConditions.visibilityOfElementLocated(textField))
+      .sendKeys("Edalex")
     val summaryPage: SummaryPage = wizard.save().publish()
 
     val owner = summaryPage.itemDetails().getOwner
