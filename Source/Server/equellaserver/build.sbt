@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
-libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.3"
+libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.4"
 
 val prometheusGroup = "io.prometheus"
 libraryDependencies ++= Seq(
