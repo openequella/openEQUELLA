@@ -108,22 +108,8 @@ class TLEGroupSchema extends SchemaProvider {
 
   case class ListGroupUsersArgs(
       @GQLDescription("The unique ID of the group to list users for")
-      uniqueId: String,
-      @GQLDescription(
-        "Pagination - how many items to return from the start of the possible list of items"
-      )
-      first: Option[Int],
-      @GQLDescription(
-        "Pagination - how many items to return from the end of the possible list of items"
-      )
-      last: Option[Int],
-      @GQLDescription(
-        "Pagination - the cursor for a item before which all items should be returned"
-      )
-      before: Option[String],
-      @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
-      after: Option[String]
-  ) extends PaginationArgs[Base64Cursor]
+      uniqueId: String
+  )
 
   case class Mutations(
       @GQLDescription("Create a new group")
