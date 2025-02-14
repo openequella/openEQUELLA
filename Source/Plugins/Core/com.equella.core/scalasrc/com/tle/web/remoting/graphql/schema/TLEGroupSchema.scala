@@ -64,7 +64,7 @@ class TLEGroupSchema extends SchemaProvider {
     internalGroupCreate = args => tleGroupProvider.createGroup(args.name, args.parentId),
     internalGroupDelete = args => tleGroupProvider.deleteGroup(args.uniqueId, args.deleteChildren),
     internalGroupUpdate =
-      args => tleGroupProvider.updateGroup(args.uniqueId, args.name, args.parentId)
+      args => tleGroupProvider.updateGroup(args.uniqueId, args.name, args.parentId, args.users)
   )
 
   case class Queries(
@@ -146,6 +146,10 @@ class TLEGroupSchema extends SchemaProvider {
       @GQLDescription("The new name of the group")
       name: Option[String],
       @GQLDescription("The new parent ID of the group")
-      parentId: Option[String]
+      parentId: Option[String],
+      @GQLDescription(
+        "The updated list of users in the group - replacing what was previously there."
+      )
+      users: Option[Set[String]]
   )
 }

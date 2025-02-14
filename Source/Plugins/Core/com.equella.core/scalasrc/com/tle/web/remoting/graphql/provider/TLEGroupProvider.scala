@@ -211,7 +211,8 @@ class TLEGroupProvider {
   def updateGroup(
       uniqueId: String,
       name: Option[String],
-      parentId: Option[String]
+      parentId: Option[String],
+      users: Option[Set[String]]
   ): Either[ProviderError, Group] = {
     def updateParent(g: TLEGroup, parentId: Option[String]) = parentId match {
       case Some(pid) =>
@@ -227,6 +228,7 @@ class TLEGroupProvider {
       .flatMap(updateParent(_, parentId))
       .flatMap { g =>
         name.foreach(g.setName)
+        users.map(_.asJava).foreach(g.setUsers)
 
         ProviderError.Try("Failed to update group: ") {
           val uuid = tleGroupService.edit(g)
