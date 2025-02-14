@@ -53,7 +53,7 @@ object CommonSettings extends AutoPlugin {
     lazy val springAop     = "org.springframework" % "spring-aop"     % springVersion
     lazy val springContext = "org.springframework" % "spring-context" % springVersion
 
-    lazy val xstreamVersion = "1.4.20"
+    lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
     lazy val jacksonVersion  = "2.15.3"
