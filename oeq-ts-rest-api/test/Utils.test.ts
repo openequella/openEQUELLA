@@ -18,7 +18,12 @@
 import * as t from 'io-ts';
 import * as td from 'io-ts-types';
 import * as OEQ from '../src';
-import { asCsvList } from '../src/Utils';
+import { asCsvList, waitFor } from '../src/Utils';
+
+const waitOneSecond = () =>
+  new Promise((resolve) => {
+    setTimeout(resolve, 1000);
+  });
 
 describe('Convert date fields', () => {
   interface StringDate {
@@ -78,4 +83,31 @@ describe('Support for server CsvList params', () => {
 
   it('with lists of numbers', () =>
     expect(asCsvList<number>([1, 2, 3])).toBe('1,2,3'));
+});
+
+describe('waitFor', () => {
+  it('Throw timeout error if callback is not success in time', async () => {
+    await expect(
+      waitFor(
+        async () => {
+          await waitOneSecond();
+          expect('1').toBe('2');
+        },
+        {
+          timeout: 1500,
+        }
+      )
+    ).rejects.toThrow('Callback is not successful after 1500ms');
+  });
+
+  it('Return result if callback is success in time', async () => {
+    const expectedResult = 'success';
+    const result = await waitFor(async () => {
+      await waitOneSecond();
+      expect('1').toBe('1');
+      return expectedResult;
+    });
+
+    expect(result).toBe(expectedResult);
+  });
 });
