@@ -18,10 +18,20 @@
 
 package com.tle.web.remoting.graphql.schema
 
+import caliban.schema.Annotations.GQLDescription
+
+/** The model for internal TLE Groups */
 final case class Group(
+    @GQLDescription("The unique identifier for the group - typically a UUID")
     uniqueId: String,
+    @GQLDescription("The name of the group")
     name: String,
+    @GQLDescription(
+      "The unique identifier of the parent group, or null if this is a top-level group"
+    )
     parentId: Option[String],
+    @GQLDescription("Whether this group has sub-groups")
     hasGroups: Boolean,
+    @GQLDescription("Whether this group has users")
     hasUsers: Boolean
 )
