@@ -5,8 +5,9 @@
     ":maintainLockFilesMonthly",
     "group:definitelyTyped"
   ],
-  "prConcurrentLimit": 20,
+  "prConcurrentLimit": 10,
   "prHourlyLimit": 2,
+  "semanticCommits": "enabled",
   "packageRules": [
     {
       "depTypeList": ["devDependencies"],
