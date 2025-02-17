@@ -35,14 +35,12 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class TLEGroupSchema extends SchemaProvider {
   private var tleGroupProvider: TLEGroupProvider = _
-  private var tleUserProvider: TLEUserProvider   = _
 
   /** Default constructor for Guice.
     */
-  @Inject def this(tleGroupProvider: TLEGroupProvider, TLEUserProvider: TLEUserProvider) = {
+  @Inject def this(tleGroupProvider: TLEGroupProvider) = {
     this()
     this.tleGroupProvider = tleGroupProvider
-    this.tleUserProvider = TLEUserProvider
   }
 
   override def getApi: GraphQL[Any] = graphQL(
