@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import * as E from 'fp-ts/Either';
-import { constTrue, pipe } from 'fp-ts/function';
+import { constTrue, identity, pipe } from 'fp-ts/function';
+import * as T from 'fp-ts/Task';
+import * as TE from 'fp-ts/TaskEither';
 import * as t from 'io-ts';
 import * as PathReporter from 'io-ts/PathReporter';
 import { cloneDeep, isArray, set } from 'lodash';
@@ -136,3 +138,51 @@ export const convertDateFields = <T>(input: unknown, fields: string[]): T => {
  */
 export const asCsvList = <T>(list: T[] | undefined): string | undefined =>
   list?.join(',');
+
+/**
+ * Waits for a given callback to succeed before the specified timeout.
+ * Retry the callback at a given interval if it fails.
+ *
+ * @template T - The type of the value that `callback` resolves to.
+ * @param callback - A function that returns either a value of type T or Promise<T>.
+ * @param options
+ * @param options.timeout - The maximum time (in milliseconds) to wait before timing out.
+ * @param options.interval - The delay (in milliseconds) between retry attempts.
+ * @returns A Promise that resolves with the value from `callback` once it succeeds,
+ *          or rejects with an Error if the timeout is reached first.
+ */
+export const waitFor = async <T>(
+  callback: () => Promise<T>,
+  options: { timeout?: number; interval?: number } = {}
+): Promise<T> => {
+  // Flag to stop the retry task when the timeout is reached.
+  const isTimeout = false;
+
+  // Consider the default timeout for each test is only 5000ms, use 2000ms for the default timeout value.
+  const { timeout = 2000, interval = 100 } = options;
+
+  const raceMonoid = T.getRaceMonoid<E.Either<string, T>>();
+
+  const timeoutTask: TE.TaskEither<string, never> = pipe(
+    TE.left(`Callback is not successful after ${timeout}ms`),
+    T.delay(timeout)
+  );
+
+  const retryTask: TE.TaskEither<string, T> = pipe(
+    TE.tryCatch(callback, () => 'Callback failed'),
+    TE.orElse(() =>
+      pipe(
+        T.of(undefined),
+        T.delay(interval),
+        T.chain(() => (isTimeout ? TE.left('Timeout') : retryTask))
+      )
+    )
+  );
+
+  return pipe(
+    await raceMonoid.concat(retryTask, timeoutTask)(),
+    E.match((e) => {
+      throw new Error(e);
+    }, identity)
+  );
+};

@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from '../src';
+import { waitFor } from '../src/Utils';
 import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
@@ -47,8 +48,14 @@ describe('SearchSettings', () => {
         ...defaultSearchSettings,
         defaultSearchSort: 'rating',
       });
-      const settings = await OEQ.SearchSettings.getSearchSettings(TC.API_PATH);
-      expect(settings.defaultSearchSort).toBe('rating');
+
+      // Use waitFor to wait for the cache to be updated in the server.
+      await waitFor(async () => {
+        const settings = await OEQ.SearchSettings.getSearchSettings(
+          TC.API_PATH
+        );
+        expect(settings.defaultSearchSort).toBe('rating');
+      });
     });
   });
 });
