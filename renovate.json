@@ -10,10 +10,6 @@
   "semanticCommits": "enabled",
   "packageRules": [
     {
-      "depTypeList": ["devDependencies"],
-      "automerge": true
-    },
-    {
       "matchPackagePatterns": ["^com.fasterxml.jackson"],
       "groupName": "Jackson (XML) packages"
     },
