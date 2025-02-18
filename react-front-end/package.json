@@ -57,7 +57,7 @@
     "@mui/x-tree-view": "6.17.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "4.3.2",
-    "axios": "1.6.8",
+    "axios": "1.7.8",
     "clsx": "1.2.1",
     "es6-object-assign": "1.1.0",
     "fp-ts": "2.16.8",
