@@ -20,7 +20,6 @@ package com.tle.core.harvester;
 
 import com.dytech.devlib.PropBagEx;
 import com.google.common.io.Closeables;
-import com.google.gdata.util.common.util.Base64;
 import com.tle.beans.item.ItemStatus;
 import com.tle.common.Check;
 import com.tle.common.filesystem.handle.StagingFile;
@@ -41,6 +40,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import javax.inject.Inject;
@@ -401,7 +401,7 @@ public abstract class AbstractTLFProtocol extends AbstractHarvesterProtocol {
       call.callWithSoapSAX(handler, getContentType());
       responseXml = new PropBagEx(handler.getElementResult());
       String base64Data = responseXml.getNode("retrieveContentResult");
-      out.write(Base64.decode(base64Data));
+      out.write(Base64.getDecoder().decode(base64Data));
     } catch (Exception ex) {
       getLogger()
           .error(

@@ -21,6 +21,9 @@ package com.tle.core.google;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.books.v1.Books;
+import com.google.api.services.books.v1.model.Volume;
+import com.google.api.services.books.v1.model.Volumes;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
@@ -29,17 +32,13 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.common.collect.Lists;
-import com.google.gdata.client.books.BooksService;
-import com.google.gdata.client.books.VolumeQuery;
-import com.google.gdata.data.books.VolumeEntry;
-import com.google.gdata.data.books.VolumeFeed;
-import com.google.gdata.util.ServiceException;
 import com.tle.common.Check;
+import com.tle.common.URLUtils;
 import com.tle.core.guice.Bind;
 import com.tle.core.settings.service.ConfigurationService;
 import com.tle.web.google.api.GoogleApiUtils;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
@@ -54,7 +53,7 @@ public class GoogleServiceImpl implements GoogleService {
   @Inject private ConfigurationService configService;
 
   private YouTube tubeService;
-  private BooksService booksService;
+  private Books booksService;
 
   @Override
   public List<SearchResult> searchVideos(String query, String orderBy, long limit)
@@ -192,31 +191,48 @@ public class GoogleServiceImpl implements GoogleService {
   }
 
   @Override
-  public VolumeEntry getBook(String bookId) {
+  public Volume getBook(String bookId) {
     try {
-      return getBooksService().getEntry(new URL(bookId), VolumeEntry.class);
-    } catch (IOException | ServiceException e) {
+      // For books added by the previous GDATA API, their IDs are actually full URLs. To support
+      // these books,
+      // we need to extract the last segment and use it as the ID.
+      String id = URLUtils.isAbsoluteUrl(bookId) ? getBookIdFromUrl(bookId) : bookId;
+      return getBooksService().volumes().get(id).setKey(getApiKey()).execute();
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   @Override
-  public VolumeFeed searchBooks(String query, int offset, int limit) {
+  public Volumes searchBooks(String query, int offset, int limit) {
     try {
-      VolumeQuery vquery = new VolumeQuery(new URL("http://www.google.com/books/feeds/volumes"));
-      vquery.setMinViewability(VolumeQuery.MinViewability.PARTIAL);
-      vquery.setFullTextQuery(query.trim());
-      vquery.setStartIndex(offset + 1);
-      vquery.setMaxResults(limit);
-      return getBooksService().query(vquery, VolumeFeed.class);
-    } catch (IOException | ServiceException e) {
+      String PARTIALLY_AVAILABLE = "partial";
+      return getBooksService()
+          .volumes()
+          .list(query.trim())
+          .setMaxResults((long) limit)
+          .setStartIndex((long) offset + 1)
+          .setFilter(PARTIALLY_AVAILABLE)
+          .setKey(getApiKey())
+          .execute();
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private synchronized BooksService getBooksService() {
+  private String getBookIdFromUrl(String url) {
+    String path = URI.create(url).getPath();
+    String[] segments = path.split("/");
+    return segments[segments.length - 1];
+  }
+
+  private synchronized Books getBooksService() {
+
     if (booksService == null) {
-      booksService = new BooksService("EQUELLA");
+      booksService =
+          new Books.Builder(new NetHttpTransport(), new GsonFactory(), null)
+              .setApplicationName(EQUELLA)
+              .build();
     }
     return booksService;
   }
