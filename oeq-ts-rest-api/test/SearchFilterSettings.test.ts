@@ -15,10 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
 import * as OEQ from '../src';
+import { waitFor } from '../src/Utils';
 import * as TC from './TestConfig';
 import { BatchOperationResponse } from '../src/BatchOperationResponse';
 import { MimeTypeFilter } from '../src/SearchFilterSettings';
+import * as A from 'fp-ts/Array';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
@@ -43,14 +46,11 @@ describe('SearchFilterSettings', () => {
     },
   ];
 
-  const createNewFilterSettings = async (): Promise<
-    BatchOperationResponse[]
-  > => {
-    return OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
+  const createNewFilterSettings = async (): Promise<BatchOperationResponse[]> =>
+    await OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
       TC.API_PATH,
       newFilterSettingsData
     );
-  };
 
   beforeAll(async () => {
     filterSettingsAtStart =
@@ -77,27 +77,32 @@ describe('SearchFilterSettings', () => {
 
   it('Should be possible to create a batch of the filter settings', async () => {
     // Create new filters
-    await createNewFilterSettings();
-    const allFilterSettings =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-    expect(allFilterSettings).toHaveLength(
-      filterSettingsAtStart.length + newFilterSettingsData.length
-    );
+    const newFilterIds = await createNewFilterSettings();
+    // Use waitFor to wait for the cache to be updated in the server.
+    await waitFor(async () => {
+      const allFilterSettings =
+        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      const allIds = getIds(allFilterSettings);
+      expect(newFilterIds.every(({ id }) => allIds.includes(id))).toBe(true);
+    });
   });
 
   it('Should be possible to update a batch of the filter settings', async () => {
     // Create new filter settings
     const responses = await createNewFilterSettings();
     // Get new filter ids and create update data
-    const ids = responses.map(({ id }) => id);
+    const newFilterIds = responses.map(({ id }) => id);
+    const filter1Id = newFilterIds[0];
+    const filter2Id = newFilterIds[1];
+
     const updateFilterSettingsData = [
       {
-        id: ids[0],
+        id: filter1Id,
         name: 'filter1-new-name',
         mimeTypes: ['image/png', 'video/mp4'],
       },
       {
-        id: ids[1],
+        id: filter2Id,
         name: 'filter2-new-name',
         mimeTypes: ['image/png'],
       },
@@ -108,23 +113,37 @@ describe('SearchFilterSettings', () => {
       TC.API_PATH,
       updateFilterSettingsData
     );
-    const updatedFilterSettings =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-    expect(updatedFilterSettings).toEqual(updateFilterSettingsData);
+
+    const assertResultIsUpdated = async () => {
+      const newFilterSettings =
+        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      const updatedFilterSettings = pipe(
+        newFilterSettings,
+        A.filter(({ id }) => id === filter1Id || id === filter2Id)
+      );
+      expect(updatedFilterSettings).toEqual(updateFilterSettingsData);
+    };
+    // Use waitFor to wait for the cache to be updated in the server.
+    await waitFor(assertResultIsUpdated);
   });
 
   it('Should be possible to delete a batch of the filter settings', async () => {
     // Create new filter settings
     const responses = await createNewFilterSettings();
-    const ids = responses.map(({ id }) => id);
+    const newFilterIds = responses.map(({ id }) => id);
 
     // Delete filters
     await OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
       TC.API_PATH,
-      ids
+      newFilterIds
     );
-    const finalFilterSettings =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-    expect(finalFilterSettings).toHaveLength(filterSettingsAtStart.length);
+
+    // Use waitFor to wait for the cache to be updated in the server.
+    await waitFor(async () => {
+      const finalFilterSettings =
+        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      const finalIds = getIds(finalFilterSettings);
+      expect(newFilterIds.every((id) => !finalIds.includes(id))).toBe(true);
+    });
   });
 });

@@ -17,11 +17,11 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.89"
+val TomcatVersion     = "9.0.100"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.6.0"
-val cxfVersion        = "3.6.3"
+val cxfVersion        = "3.6.5"
 val fs2Version        = "2.5.12"
 val guiceVersion      = "5.1.0"
 val jsassVersion      = "5.10.5"
@@ -29,14 +29,14 @@ val jsoupVersion      = "1.16.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.1"
-val luceneVersion     = "9.10.0"
+val luceneVersion     = "9.12.1"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
-libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.3"
+libraryDependencies += "io.circe" %% "circe-generic-extras" % "0.14.4"
 
 val prometheusGroup = "io.prometheus"
 libraryDependencies ++= Seq(
@@ -96,7 +96,7 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.jersey")
   ),
   "com.miglayout"       % "miglayout-swing"      % "4.2",
-  "org.asynchttpclient" % "async-http-client"    % "2.12.3",
+  "org.asynchttpclient" % "async-http-client"    % "2.12.4",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
   "io.swagger"          % "swagger-annotations"  % SwaggerVersion,
@@ -242,7 +242,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                    % "1.7.15",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.3.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.172",
+  "io.github.classgraph"          % "classgraph"               % "4.8.179",
   "com.fasterxml"                 % "classmate"                % "1.7.0",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.0.2",
