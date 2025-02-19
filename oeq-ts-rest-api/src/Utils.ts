@@ -158,8 +158,8 @@ export const waitFor = async <T>(
   // Flag to stop the retry task when the timeout is reached.
   const isTimeout = false;
 
-  // Consider the default timeout for each test is only 5000ms, use 2000ms for the default timeout value.
-  const { timeout = 2000, interval = 100 } = options;
+  // Consider the default timeout for each test is only 5000ms, use 3000ms for the default timeout value.
+  const { timeout = 3000, interval = 100 } = options;
 
   const raceMonoid = T.getRaceMonoid<E.Either<string, T>>();
 
