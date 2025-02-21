@@ -29,6 +29,15 @@ public interface TLEGroupService extends RemoteTLEGroupService {
 
   List<String> getUsersInGroup(String parentGroupID, boolean recurse);
 
+  /**
+   * Get all immediate child groups of the specified group, or all top-level groups if the group is
+   * null.
+   *
+   * @param group The parent group, or null to get top-level groups.
+   * @return The list of child groups.
+   */
+  List<TLEGroup> getGroupsInGroup(TLEGroup group);
+
   List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
 
   void addUserToGroup(String groupUuid, String userUuid);
@@ -38,4 +47,20 @@ public interface TLEGroupService extends RemoteTLEGroupService {
   void removeAllUsersFromGroup(String groupUuid);
 
   String prepareQuery(String searchString);
+
+  /**
+   * Returns the number of users in the target group. (Non-recursive.)
+   *
+   * @param groupId The group ID.
+   * @return The number of users in the group.
+   */
+  long countUsersInGroup(String groupId);
+
+  /**
+   * Returns the number of groups in the target group. (Non-recursive.)
+   *
+   * @param groupId The group ID.
+   * @return The number of groups in the group.
+   */
+  long countGroupsInGroup(String groupId);
 }

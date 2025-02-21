@@ -25,11 +25,16 @@ import com.tle.common.Check;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.core.dao.impl.AbstractTreeDaoImpl;
 import com.tle.core.guice.Bind;
+import com.tle.core.hibernate.dao.AssociationCountQueryBuilder;
 import com.tle.core.usermanagement.standard.dao.TLEGroupDao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -222,5 +227,46 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
                   });
     }
     return Lists.newArrayList();
+  }
+
+  public long countUsersInGroup(String groupId) {
+    return Optional.ofNullable(groupId)
+        .flatMap(
+            id -> countWithHibernate(entityManager -> buildCountGroupUsersQuery(entityManager, id)))
+        .orElse(0L);
+  }
+
+  public long countGroupsInGroup(String groupId) {
+    return Optional.ofNullable(groupId)
+        .flatMap(
+            id ->
+                countWithHibernate(
+                    entityManager -> buildCountGroupsInGroupQuery(entityManager, id)))
+        .orElse(0L);
+  }
+
+  private Optional<Long> countWithHibernate(
+      Function<EntityManager, TypedQuery<Long>> queryBuilderFn) {
+    return Optional.ofNullable(
+        queryWithEntityManager(
+            entityManager -> queryBuilderFn.apply(entityManager).getSingleResult()));
+  }
+
+  private TypedQuery<Long> buildCountGroupUsersQuery(EntityManager entityManager, String groupId) {
+    return new AssociationCountQueryBuilder<TLEGroup>(entityManager)
+        .forEntity(TLEGroup.class)
+        .forAssociation("users")
+        .withId("uuid", groupId)
+        .build();
+  }
+
+  private TypedQuery<Long> buildCountGroupsInGroupQuery(
+      EntityManager entityManager, String groupId) {
+    return new AssociationCountQueryBuilder<TLEGroup>(entityManager)
+        .forEntity(TLEGroup.class)
+        .forAssociation("parent")
+        .withId("uuid", groupId)
+        .targetIdOnAssociation()
+        .build();
   }
 }

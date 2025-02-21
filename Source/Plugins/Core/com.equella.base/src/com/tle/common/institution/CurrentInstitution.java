@@ -19,6 +19,8 @@
 package com.tle.common.institution;
 
 import com.tle.beans.Institution;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 public final class CurrentInstitution {
   private static final ThreadLocal<Institution> local = new ThreadLocal<Institution>();
@@ -33,6 +35,14 @@ public final class CurrentInstitution {
 
   public static void remove() {
     local.remove();
+  }
+
+  /**
+   * @return a Hibernate criterion that filters by the current institution - based on property name
+   *     of "institution"
+   */
+  public static Criterion equalityCriteria() {
+    return Restrictions.eq("institution", get());
   }
 
   private CurrentInstitution() {

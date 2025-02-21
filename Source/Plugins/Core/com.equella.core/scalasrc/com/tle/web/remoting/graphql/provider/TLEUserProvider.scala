@@ -20,6 +20,7 @@ package com.tle.web.remoting.graphql.provider
 
 import caliban.relay.{Base64Cursor, PageInfo, Pagination}
 import com.tle.beans.user.TLEUser
+import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
@@ -40,8 +41,6 @@ import scala.util.Try
 @Bind
 @Singleton
 class TLEUserProvider {
-  private final val EDIT_USER_MANAGEMENT = "EDIT_USER_MANAGEMENT"
-
   private var tleUserService: TLEUserService = _
 
   /** Default constructor for Guice.
@@ -69,27 +68,10 @@ class TLEUserProvider {
     * @return
     *   a `UserConnection` object containing the users and pagination information
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def listUsers(query: Option[String], pagination: Pagination[Base64Cursor]): UserConnection = {
-    // the following call should match the call below to tleUserService.searchUsers
-    val userCount       = tleUserService.countUsers(query.getOrElse(""), "", true)
-    val (offset, limit) = paginationOffsetLimit(pagination, userCount)
-
-    val users =
-      tleUserService.searchUsers(query.getOrElse(""), "", true, limit, offset).asScala.toList
-
-    // Construct the connection
-    val edges = users.zipWithIndex.map { case (u, idx) =>
-      UserEdge(User(u), idx + offset)
-    }
-    val pageInfo = PageInfo(
-      startCursor = edges.headOption.map(_.encodeCursor),
-      endCursor = edges.lastOption.map(_.encodeCursor),
-      hasNextPage = offset + limit < userCount,
-      hasPreviousPage = offset > 0
-    )
-
-    UserConnection(pageInfo, edges)
+    val searchResult = new UserSearch().withQuery(query).searchSubGroups(pagination)
+    buildUserConnection(searchResult)
   }
 
   /** Retrieve a user by their username, if the user can't be found `None` is returned.
@@ -97,7 +79,7 @@ class TLEUserProvider {
     * @param username
     *   the username of the user to retrieve
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def userByUsername(username: String): Option[User] = {
     tleUserService.getByUsername(username)
   }
@@ -107,7 +89,7 @@ class TLEUserProvider {
     * @param id
     *   The ID is the DB identifier for the user - typically a UUID, but can be anything.
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def userById(id: String): Option[User] = {
     tleUserService.get(id)
   }
@@ -127,7 +109,7 @@ class TLEUserProvider {
     * @return
     *   the new user, or an error if the user could not be created
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def createUser(
       username: String,
       email: Option[String],
@@ -172,7 +154,7 @@ class TLEUserProvider {
     * @return
     *   the updated user, or an error if the user could not be updated
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def updateUser(
       id: String,
       username: Option[String],
@@ -201,9 +183,88 @@ class TLEUserProvider {
     * @param id
     *   the database ID of the user to delete - typically a UUID but can be anything.
     */
-  @RequiresPrivilege(priv = EDIT_USER_MANAGEMENT)
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def deleteUser(id: String): Either[ProviderError, Unit] =
     ProviderError.Try("Failed to delete user: ") {
       tleUserService.delete(id)
     }
+
+  private def buildUserConnection(searchResult: SearchResult): UserConnection = searchResult match {
+    case SearchResult(users, count, offset, limit) =>
+      val edges = users.zipWithIndex.map { case (u, idx) =>
+        UserEdge(User(u), idx + offset)
+      }
+      val pageInfo = PageInfo(
+        startCursor = edges.headOption.map(_.encodeCursor),
+        endCursor = edges.lastOption.map(_.encodeCursor),
+        hasNextPage = offset + limit < count,
+        hasPreviousPage = offset > 0
+      )
+      UserConnection(pageInfo, edges)
+  }
+
+  /** Helper class to encapsulate the search parameters for user searches.
+    */
+  private class UserSearch {
+    private var query: Option[String]    = None
+    private var parentId: Option[String] = None
+    private var recursive: Boolean       = false
+
+    /** Set the query string to search for.
+      */
+    def withQuery(query: Option[String]): UserSearch = {
+      this.query = query
+      this
+    }
+
+    /** Set the parent ID to search for users within.
+      */
+    def withParentId(parentId: String): UserSearch = {
+      this.parentId = Some(parentId)
+      this
+    }
+
+    /** Search for users with the provided criteria, walking the group hierarchy if required. If no
+      * parent ID is provided, the search will be for all users.
+      *
+      * @param pagination
+      *   the pagination parameters to limit the search
+      * @return
+      *   the search result
+      */
+    def searchSubGroups(pagination: Pagination[Base64Cursor]): SearchResult = {
+      this.recursive = true
+      search(pagination)
+    }
+
+    /** Search for users with the provided criteria. If no parent ID is provided, the search will be
+      * for top level users only, otherwise only users within the provided group will be returned.
+      *
+      * @param pagination
+      *   the pagination parameters to limit the search
+      * @return
+      *   the search result
+      */
+    def search(pagination: Pagination[Base64Cursor]): SearchResult = {
+      // The arguments to this call should match those below for searchUsers.
+      val userCount = tleUserService.countUsers(query.getOrElse(""), parentId.orNull, recursive)
+      val (offset, limit) = paginationOffsetLimit(pagination, userCount)
+
+      val users = if (userCount > 0) {
+        tleUserService
+          .searchUsers(query.getOrElse(""), parentId.orNull, recursive, limit, offset)
+          .asScala
+          .toList
+      } else {
+        List.empty
+      }
+
+      SearchResult(users, userCount, offset, limit)
+    }
+  }
+
+  /** The result of a user search, containing the users found, the total count of users, and the
+    * offset and limit used for the search.
+    */
+  private case class SearchResult(users: List[TLEUser], count: Int, offset: Int, limit: Int)
 }

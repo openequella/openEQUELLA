@@ -32,8 +32,23 @@ public interface RemoteTLEGroupService {
 
   String edit(final TLEGroup group);
 
+  /**
+   * Delete a group and optionally all its children. If the children are to be kept, they will be
+   * moved to the parent of the group being deleted.
+   *
+   * @param groupID The ID of the group to delete
+   * @param deleteChildren Whether to delete all children of the group (true) or move them to the
+   *     parent (false)
+   */
   void delete(String groupID, boolean deleteChildren);
 
+  /**
+   * Searches for groups (anywhere within the group hierarchy) that match the query. No wildcards
+   * are appended, so should be added as needed. (Asterisks are replaced with % in the query.)
+   *
+   * @param query The query to search for matching groups with
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
   List<TLEGroup> search(String query);
 
   List<TLEGroup> search(String query, String parentId);

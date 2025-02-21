@@ -34,7 +34,7 @@ import javax.inject.{Inject, Singleton}
   */
 @Bind
 @Singleton
-class TLEUserSchema {
+class TLEUserSchema extends SchemaProvider {
   private var tleUserProvider: TLEUserProvider = _
 
   /** Default constructor for Guice.
@@ -143,7 +143,7 @@ class TLEUserSchema {
 
   /** Get the API for the TLE User GraphQL schema.
     */
-  def getApi: GraphQL[Any] =
+  override def getApi: GraphQL[Any] =
     graphQL(
       RootResolver(
         queries,

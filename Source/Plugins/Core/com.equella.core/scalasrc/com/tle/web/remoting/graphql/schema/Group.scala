@@ -16,31 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.usermanagement.standard.dao;
+package com.tle.web.remoting.graphql.schema
 
-import com.tle.beans.user.TLEGroup;
-import com.tle.core.dao.AbstractTreeDao;
-import java.util.Collection;
-import java.util.List;
+import caliban.schema.Annotations.GQLDescription
 
-public interface TLEGroupDao extends AbstractTreeDao<TLEGroup> {
-  List<TLEGroup> listAllGroups();
-
-  List<TLEGroup> getGroupsContainingUser(String userID);
-
-  List<TLEGroup> searchGroups(String query, String parentId);
-
-  List<String> getUsersInGroup(String parentGroupID, boolean recurse);
-
-  TLEGroup findByUuid(String id);
-
-  List<TLEGroup> getInformationForGroups(Collection<String> groups);
-
-  boolean addUserToGroup(String groupUuid, String userUuid);
-
-  boolean removeUserFromGroup(String groupUuid, String userUuid);
-
-  long countUsersInGroup(String groupId);
-
-  long countGroupsInGroup(String groupId);
-}
+/** The model for internal TLE Groups */
+final case class Group(
+    @GQLDescription("The unique identifier for the group - typically a UUID")
+    uniqueId: String,
+    @GQLDescription("The name of the group")
+    name: String,
+    @GQLDescription(
+      "The unique identifier of the parent group, or null if this is a top-level group"
+    )
+    parentId: Option[String],
+    @GQLDescription("Whether this group has sub-groups")
+    hasGroups: Boolean,
+    @GQLDescription("Whether this group has users")
+    hasUsers: Boolean
+)
