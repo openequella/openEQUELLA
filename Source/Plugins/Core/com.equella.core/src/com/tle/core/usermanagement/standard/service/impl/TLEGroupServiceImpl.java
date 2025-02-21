@@ -26,6 +26,7 @@ import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.dao.helpers.Pagination;
 import com.tle.core.events.GroupDeletedEvent;
 import com.tle.core.events.GroupEditEvent;
 import com.tle.core.events.GroupIdChangedEvent;
@@ -228,9 +229,15 @@ public class TLEGroupServiceImpl
 
   @Override
   public List<TLEGroup> getGroupsInGroup(TLEGroup group) {
-    Criterion parentCriteria =
-        group == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", group);
-    return dao.findAllByCriteria(parentCriteria, CurrentInstitution.equalityCriteria());
+    return getGroupsInGroup(group, null, null);
+  }
+
+  public List<TLEGroup> getGroupsInGroup(TLEGroup group, Integer limit, Integer offset) {
+    return dao.findAllByCriteria(
+        orderByName(),
+        Pagination.of(offset, limit),
+        withParent(group),
+        CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -238,7 +245,7 @@ public class TLEGroupServiceImpl
     Criterion nameLikeQuery = Restrictions.ilike("name", query.replace('*', '%'));
 
     return dao.findAllByCriteria(
-        Order.asc("name"), -1, nameLikeQuery, CurrentInstitution.equalityCriteria());
+        orderByName(), -1, nameLikeQuery, CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -446,6 +453,19 @@ public class TLEGroupServiceImpl
 
   @Override
   public long countGroupsInGroup(String groupId) {
-    return dao.countGroupsInGroup(groupId);
+    return countGroupsInGroup(get(groupId));
+  }
+
+  @Override
+  public long countGroupsInGroup(TLEGroup parent) {
+    return dao.countByCriteria(withParent(parent), CurrentInstitution.equalityCriteria());
+  }
+
+  private Order orderByName() {
+    return Order.asc("name");
+  }
+
+  private Criterion withParent(TLEGroup parent) {
+    return parent == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", parent);
   }
 }

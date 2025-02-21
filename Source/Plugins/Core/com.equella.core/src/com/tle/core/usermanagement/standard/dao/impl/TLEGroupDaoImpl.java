@@ -236,15 +236,6 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
         .orElse(0L);
   }
 
-  public long countGroupsInGroup(String groupId) {
-    return Optional.ofNullable(groupId)
-        .flatMap(
-            id ->
-                countWithHibernate(
-                    entityManager -> buildCountGroupsInGroupQuery(entityManager, id)))
-        .orElse(0L);
-  }
-
   private Optional<Long> countWithHibernate(
       Function<EntityManager, TypedQuery<Long>> queryBuilderFn) {
     return Optional.ofNullable(
@@ -257,16 +248,6 @@ public class TLEGroupDaoImpl extends AbstractTreeDaoImpl<TLEGroup> implements TL
         .forEntity(TLEGroup.class)
         .forAssociation("users")
         .withId("uuid", groupId)
-        .build();
-  }
-
-  private TypedQuery<Long> buildCountGroupsInGroupQuery(
-      EntityManager entityManager, String groupId) {
-    return new AssociationCountQueryBuilder<TLEGroup>(entityManager)
-        .forEntity(TLEGroup.class)
-        .forAssociation("parent")
-        .withId("uuid", groupId)
-        .targetIdOnAssociation()
         .build();
   }
 }

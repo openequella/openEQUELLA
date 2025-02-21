@@ -52,6 +52,17 @@ public abstract class AbstractHibernateDao {
             });
   }
 
+  /**
+   * Query the database using a Hibernate Session.
+   *
+   * @param queryFn A function that takes a Session and returns a result
+   * @return The result of the query
+   * @param <T> The type of the result
+   */
+  protected <T> T withSession(Function<Session, T> queryFn) {
+    return getHibernateTemplate().execute(queryFn::apply);
+  }
+
   protected synchronized HibernateTemplate getHibernateTemplate() {
     SessionFactory newFactory =
         hibernateService.getTransactionAwareSessionFactory(getFactoryName(), isSystemDataSource());

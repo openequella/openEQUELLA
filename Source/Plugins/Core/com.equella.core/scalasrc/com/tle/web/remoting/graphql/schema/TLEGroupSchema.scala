@@ -19,12 +19,13 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban._
-import caliban.relay.{Base64Cursor, PaginationArgs}
+import caliban.relay.{Base64Cursor, Pagination, PaginationArgs}
 import caliban.schema.Annotations.GQLDescription
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
-import com.tle.web.remoting.graphql.provider.{TLEGroupProvider, TLEUserProvider}
+import com.tle.web.remoting.graphql.provider.TLEGroupProvider
+import zio.IO
 
 import javax.inject.{Inject, Singleton}
 
@@ -53,7 +54,11 @@ class TLEGroupSchema extends SchemaProvider {
   private val queries = Queries(
     internalGroupById = args => tleGroupProvider.groupById(args.uniqueId),
     internalGroupByName = args => tleGroupProvider.groupByName(args.name),
-    internalGroups = args => tleGroupProvider.listGroups(args.parentId),
+    internalGroups = args =>
+      for {
+        pagination <- Pagination(args)
+        groups     <- tleGroupProvider.listGroups(args.parentId, pagination)
+      } yield groups,
     internalGroupSearch = args => tleGroupProvider.searchGroups(args.query),
     internalGroupUsers = args => tleGroupProvider.listGroupUsers(args.uniqueId)
   )
@@ -70,11 +75,10 @@ class TLEGroupSchema extends SchemaProvider {
       internalGroupById: GroupByIdArgs => Option[Group],
       @GQLDescription("Retrieve a group by its name")
       internalGroupByName: GroupByNameArgs => Option[Group],
-      // TODO: Add pagination
       @GQLDescription(
         "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
       )
-      internalGroups: ListGroupsArgs => ResultWithErrors[List[Group]],
+      internalGroups: ListGroupsArgs => IO[CalibanError, GroupConnection],
       // TODO: Add pagination
       @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
       internalGroupSearch: GroupSearchArgs => List[Group],
@@ -101,8 +105,22 @@ class TLEGroupSchema extends SchemaProvider {
 
   case class ListGroupsArgs(
       @GQLDescription("The unique ID of the parent group to list groups for - or none for the root")
-      parentId: Option[String]
-  )
+      parentId: Option[String],
+      @GQLDescription(
+        "Pagination - how many items to return from the start of the possible list of items"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many items to return from the end of the possible list of items"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a item before which all items should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   case class ListGroupUsersArgs(
       @GQLDescription("The unique ID of the group to list users for")

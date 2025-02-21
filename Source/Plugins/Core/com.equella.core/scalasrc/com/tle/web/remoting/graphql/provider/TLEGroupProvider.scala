@@ -18,13 +18,14 @@
 
 package com.tle.web.remoting.graphql.provider
 
+import caliban.relay.{Base64Cursor, Pagination}
 import com.tle.beans.user.TLEGroup
 import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEGroupService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.Group
+import com.tle.web.remoting.graphql.schema.{Group, GroupConnection, Page, paginationOffsetLimit}
 import org.springframework.transaction.annotation.Transactional
 
 import javax.inject.{Inject, Singleton}
@@ -76,19 +77,29 @@ class TLEGroupProvider {
     )
   }
 
-  /** List all groups in the system within the specified (via `parentId`) group.
+  /** List groups in the system within the specified (via `parentId`) group for the provided
+    * `pagination`.
     *
     * @param parentId
     *   the unique ID of the parent group to list groups within. If `None`, the root groups are
     *   listed.
+    * @param pagination
+    *   the pagination object to use for the query
     * @return
-    *   a list of `Group` objects within the specified group, but if the specified group doesn't
-    *   exist, a `Left` containing a `ProviderError` is returned.
+    *   a list of `Group` objects within the specified group (contained in a `GroupConnection`, but
+    *   if the specified group doesn't exist, a `Left` containing a `ProviderError` is returned.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def listGroups(parentId: Option[String]): Either[ProviderError, List[Group]] = {
-    def getSubGroups(group: Option[TLEGroup]): Either[ProviderError, List[Group]] = Try(
-      tleGroupService.getGroupsInGroup(group.orNull)
+  def listGroups(
+      parentId: Option[String],
+      pagination: Pagination[Base64Cursor]
+  ): Either[ProviderError, GroupConnection] = {
+    def getSubGroups(
+        group: Option[TLEGroup],
+        limit: Int,
+        offset: Int
+    ): Either[ProviderError, List[Group]] = Try(
+      tleGroupService.getGroupsInGroup(group.orNull, limit, offset)
     ) match {
       case Failure(exception) =>
         Left(ProviderError("Failed to retrieve subgroups", exception))
@@ -96,10 +107,16 @@ class TLEGroupProvider {
         Right(groups.asScala.map(toGroup).toList)
     }
 
-    parentId match {
-      case Some(pid) => getParentGroup(pid).flatMap(g => getSubGroups(Some(g)))
-      case None      => getSubGroups(None)
-    }
+    for {
+      parent <- parentId match {
+        case Some(id) => getParentGroup(id).map(Some)
+        case None     => Right(None)
+      }
+      groupCount      = tleGroupService.countGroupsInGroup(parent.orNull).toInt
+      (offset, limit) = paginationOffsetLimit(pagination, groupCount)
+      groups <- getSubGroups(parent, limit, offset)
+      page = Page(groups, groupCount, offset, limit)
+    } yield GroupConnection(page)
   }
 
   /** Search for groups by name using a wildcard query.

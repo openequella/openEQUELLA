@@ -41,6 +41,4 @@ public interface TLEGroupDao extends AbstractTreeDao<TLEGroup> {
   boolean removeUserFromGroup(String groupUuid, String userUuid);
 
   long countUsersInGroup(String groupId);
-
-  long countGroupsInGroup(String groupId);
 }
