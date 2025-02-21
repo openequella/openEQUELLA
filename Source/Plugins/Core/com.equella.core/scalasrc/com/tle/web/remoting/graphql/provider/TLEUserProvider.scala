@@ -40,18 +40,7 @@ import scala.util.Try
   */
 @Bind
 @Singleton
-class TLEUserProvider {
-  private var tleUserService: TLEUserService = _
-
-  /** Default constructor for Guice.
-    *
-    * @param tleUserService
-    *   the `TLEUserService` to use for operations
-    */
-  @Inject def this(tleUserService: TLEUserService) = {
-    this()
-    this.tleUserService = tleUserService
-  }
+class TLEUserProvider @Inject() (tleUserService: TLEUserService) {
 
   /** Retrieval of TLEUser objects often result in `null` values, so this helper `implicit`
     * conversion is used to convert `null` to `None`.

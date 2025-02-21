@@ -41,18 +41,7 @@ import scala.util.{Failure, Success, Try}
   */
 @Bind
 @Singleton
-class TLEGroupProvider {
-  private var tleGroupService: TLEGroupService = _
-
-  /** Default constructor for Guice.
-    *
-    * @param tleGroupService
-    *   the `TLEGroupService` to use for operations
-    */
-  @Inject def this(tleGroupService: TLEGroupService) = {
-    this()
-    this.tleGroupService = tleGroupService
-  }
+class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
 
   /** Retrieval of TLEGroup objects often result in `null` values, so this helper `implicit`
     * conversion is used to convert `null` to `None`.
