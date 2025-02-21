@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Share from "@mui/icons-material/Share";
 import {
   Accordion,
   AccordionDetails,
@@ -49,6 +50,7 @@ import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import {
   getSearchPageAttachmentClass,
   isSelectionSessionInSkinny,
@@ -306,15 +308,24 @@ export const SearchResultAttachmentsList = ({
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {isAttachmentSelectable(brokenAttachment) && (
-            <ListItemSecondaryAction>
+          <ListItemSecondaryAction>
+            {isAttachmentSelectable(brokenAttachment) && (
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
                 isStopPropagation
                 onClick={() => selectResource(itemKey, [id])}
               />
-            </ListItemSecondaryAction>
-          )}
+            )}
+            <TooltipIconButton
+              title={languageStrings.common.action.share}
+              onClick={(event) => {
+                event.stopPropagation();
+                // todo: OEQ-2407 display the Share dialog
+              }}
+            >
+              <Share />
+            </TooltipIconButton>
+          </ListItemSecondaryAction>
         </ListItem>
       );
     },
