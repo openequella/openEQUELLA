@@ -79,11 +79,12 @@ public class TLEGroupServiceImpl
     TLEGroup group = createGroup(null, name);
 
     if (parentID != null) {
-      var parent =
-          Optional.ofNullable(get(parentID))
-              .orElseThrow(
-                  () -> new NotFoundException("No such parent with id of " + parentID + " found."));
-      group.setParent(parent);
+      Optional.ofNullable(get(parentID))
+          .ifPresentOrElse(
+              group::setParent,
+              () -> {
+                throw new NotFoundException("No such parent with id of " + parentID + " found.");
+              });
     }
 
     if (Check.isEmpty(group.getUuid())) {
