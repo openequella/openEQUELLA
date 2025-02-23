@@ -241,7 +241,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
 
       Then("An error message should be returned")
       inside(result) { case Left(e) =>
-        e.getMessage shouldBe "DecodingFailure at .authCodeClientId: Missing required field"
+        e.getMessage shouldBe "DecodingFailure at .commonDetails.authCodeClientId: Missing required field"
       }
     }
   }

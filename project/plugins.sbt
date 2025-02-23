@@ -24,7 +24,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 //    - revision is optional
 addDependencyTreePlugin
 
-val circeVersion = "0.14.9"
+val circeVersion = "0.14.10"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,

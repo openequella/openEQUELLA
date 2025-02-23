@@ -19,11 +19,11 @@
 package com.tle.core.google;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.books.v1.model.Volume;
+import com.google.api.services.books.v1.model.Volumes;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
-import com.google.gdata.data.books.VolumeEntry;
-import com.google.gdata.data.books.VolumeFeed;
 import java.util.List;
 
 public interface GoogleService {
@@ -48,13 +48,9 @@ public interface GoogleService {
   List<Channel> getChannels(List<String> channelIds);
 
   // Google books
-  // Volume getBook(String bookId);
+  Volume getBook(String bookId);
 
-  // List<SearchResult> searchBooks(String query, int offset, int limit);
-
-  VolumeEntry getBook(String bookId);
-
-  VolumeFeed searchBooks(String query, int offset, int limit);
+  Volumes searchBooks(String query, int offset, int limit);
 
   boolean isEnabled();
 }

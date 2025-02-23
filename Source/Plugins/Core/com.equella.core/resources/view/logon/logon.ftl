@@ -6,40 +6,45 @@
 
 <div class="area">
   <div id="login-page">
-    <div id="native-login">
-      <#if m.failed??>
-        <p class="warning" name="login_failure" role="alert">${b.gkey(m.failed)}</p>
-      </#if>
-      <#if m.error??>
-        <p class="warning" name="login_error_title" role="alert">${b.key('logon.problems')}</p>
-        <p class="warning" name="login_error_description">${m.error?html}</p>
-      </#if>
+    <div id="login-content">
+      <div id="login-error">
+        <#if m.failed??>
+          <p class="warning" name="login_failure" role="alert">${b.gkey(m.failed)}</p>
+        </#if>
+        <#if m.error??>
+          <p class="warning" name="login_error_title" role="alert">${b.key('logon.problems')}</p>
+          <p class="warning" name="login_error_description">${m.error?html}</p>
+        </#if>
 
-      <noscript>
-        <p class="warning" role="alert">${b.key("logon.enablejs")}</p>
-      </noscript>
-      <p id="cookieWarning" class="warning" style="display: none" role="alert">${b.key("logon.enablecookies")}</p>
+        <noscript>
+          <p class="warning" role="alert">${b.key("logon.enablejs")}</p>
+        </noscript>
+        <p id="cookieWarning" class="warning" style="display: none" role="alert">${b.key("logon.enablecookies")}</p>
+      </div>
+      <div id="login-form">
+        <div id="native-login">
+          <p>
+            <label for="username">${b.key("logon.username")}</label>
+            <@textfield id="username" section=s.username autoSubmitButton=s.logonButton/>
+          </p>
+          <p>
+            <label for="password">${b.key("logon.password")}</label>
+            <@textfield id="password" section=s.password password=true autoSubmitButton=s.logonButton/>
+          </p>
+          <p>
+            <@button section=s.logonButton class="loginbutton" size="medium" />
+          </p>
+          <#if m.childSections??>
+            <@render m.childSections/>
+          </#if>
 
-      <p>
-        <label for="username">${b.key("logon.username")}</label>
-        <@textfield id="username" section=s.username autoSubmitButton=s.logonButton/>
-      </p>
-      <p>
-        <label for="password">${b.key("logon.password")}</label>
-        <@textfield id="password" section=s.password password=true autoSubmitButton=s.logonButton/>
-      </p>
-      <p>
-        <@button section=s.logonButton class="loginbutton" size="medium" />
-      </p>
-      <#if m.childSections??>
-        <@render m.childSections/>
-      </#if>
-
-      <#list m.loginLinks as link>
-        <@render link />
-      </#list>
+          <#list m.loginLinks as link>
+            <@render link />
+          </#list>
+        </div>
+        <@render s.oidcLoginSection />
+      </div>
     </div>
-    <@render s.oidcLoginSection />
   </div>
 </div>
 <#if m.loginNotice??>
