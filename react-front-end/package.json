@@ -105,7 +105,7 @@
     "@types/jquery": "3.5.32",
     "@types/lodash": "4.17.15",
     "@types/luxon": "3.4.2",
-    "@types/node": "22.13.4",
+    "@types/node": "22.13.5",
     "@types/object-hash": "3.0.6",
     "@types/react": "18.3.18",
     "@types/react-autosuggest": "10.1.11",
