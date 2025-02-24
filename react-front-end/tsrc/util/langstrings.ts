@@ -226,6 +226,7 @@ export const languageStrings = {
       select: "Select",
       selectAll: "Select all",
       selectNone: "Select none",
+      share: "Share",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",
