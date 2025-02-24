@@ -97,6 +97,18 @@ export const getMuiTextFieldByAriaLabel = (
 };
 
 /**
+ * Helper to get Mui text field value by aria label.
+ *
+ * @param container The container element.
+ * @param label The aria label of the text field.
+ */
+export const getMuiTextFieldValueByAriaLabel = (
+  container: HTMLElement,
+  label: string,
+): string | null =>
+  getMuiTextFieldByAriaLabel(container, label).getAttribute("value");
+
+/**
  * Helper to type in text field input.
  *
  * @param container The container element.
