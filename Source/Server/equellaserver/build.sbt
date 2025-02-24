@@ -249,13 +249,6 @@ libraryDependencies ++= Seq(
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"  % "2.0.1.Final"
 )
 
-/*
-Although very old and has vulns, axis 1.4 is required for the SRW feature and is needed when
-using the very old (and unsure where the code is) oclc-srw.
-See Source/Plugins/RemoteRepositories/com.equella.srw/build.sbt
- */
-libraryDependencies += "axis" % "axis" % "1.4"
-
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
     oracleDriverMavenCoordinate.value
