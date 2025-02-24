@@ -21,9 +21,11 @@ import { mockRoleAndGroupApis } from "../../../components/securityentitydialog/S
 import {
   fillMuiTextFieldByAriaLabel,
   getMuiTextFieldByAriaLabel,
+  getMuiTextFieldValueByAriaLabel,
 } from "../../../MuiTestHelpers";
 import { renderOidcSettings, selectPlatform } from "./OidcSettingsTestHelper";
 import * as OEQ from "@openequella/rest-api-client";
+import * as oidcModule from "../../../../../tsrc/modules/OidcModule";
 
 const { title: customRolesTitle } = languageStrings.customRolesMappingControl;
 const { roleClaim: roleClaimTitle } =
@@ -88,6 +90,35 @@ describe("Platform details section", () => {
       const textField = getMuiTextFieldByAriaLabel(container, field);
       expect(textField).toBeInTheDocument();
     });
+  });
+
+  it("If user switch back to the original IdP it should display the original value", async () => {
+    const mockData: OEQ.Oidc.IdentityProvider = {
+      platform: "OKTA",
+      issuer: "https://issuer.com/",
+      authCodeClientId: "authCodeClientId",
+      authUrl: "https://auth.com",
+      keysetUrl: "https://keyset/.well-known/jwks.json",
+      tokenUrl: "https://token.com",
+      usernameClaim: "",
+      defaultRoles: new Set(),
+      enabled: false,
+      apiUrl: "https://test.com",
+      apiClientId: "test ID",
+    };
+    jest.spyOn(oidcModule, "getOidcSettings").mockResolvedValue(mockData);
+
+    const { container } = await renderOidcSettings();
+
+    await selectPlatform(container, "AUTH0");
+    await selectPlatform(container, "OKTA");
+
+    expect(getMuiTextFieldValueByAriaLabel(container, apiUrlLabel)).toBe(
+      mockData.apiUrl,
+    );
+    expect(getMuiTextFieldValueByAriaLabel(container, apiClientIdLabel)).toBe(
+      mockData.apiClientId,
+    );
   });
 });
 

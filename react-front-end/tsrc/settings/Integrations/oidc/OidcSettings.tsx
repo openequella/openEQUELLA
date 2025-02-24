@@ -146,12 +146,20 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       O.fold(
         () => appErrorHandler(`Unsupported platform ${newValue}`),
         (platform) => {
+          // If user switch back to the initial platform, show the initial API details.
+          const apiDetails: OEQ.Oidc.RestApiDetails =
+            platform === initialConfig.platform
+              ? {
+                  apiUrl: initialConfig.apiUrl,
+                  apiClientId: initialConfig.apiClientId,
+                }
+              : defaultApiDetails;
           dispatch({
             type: "configure",
             config: {
               ...config,
               platform,
-              ...defaultApiDetails,
+              ...apiDetails,
             },
           });
         },
