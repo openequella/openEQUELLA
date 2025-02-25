@@ -18,14 +18,14 @@
 
 package com.tle.web.remoting.graphql.provider
 
-import caliban.relay.{Base64Cursor, PageInfo, Pagination}
+import caliban.relay.{Base64Cursor, Pagination}
 import com.tle.beans.user.TLEUser
 import com.tle.common.security.SecurityConstants
 import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.{User, UserConnection, UserEdge, paginationOffsetLimit}
+import com.tle.web.remoting.graphql.schema.{Page, User, UserConnection, paginationOffsetLimit}
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -40,18 +40,7 @@ import scala.util.Try
   */
 @Bind
 @Singleton
-class TLEUserProvider {
-  private var tleUserService: TLEUserService = _
-
-  /** Default constructor for Guice.
-    *
-    * @param tleUserService
-    *   the `TLEUserService` to use for operations
-    */
-  @Inject def this(tleUserService: TLEUserService) = {
-    this()
-    this.tleUserService = tleUserService
-  }
+class TLEUserProvider @Inject() (tleUserService: TLEUserService) {
 
   /** Retrieval of TLEUser objects often result in `null` values, so this helper `implicit`
     * conversion is used to convert `null` to `None`.
@@ -71,7 +60,7 @@ class TLEUserProvider {
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
   def listUsers(query: Option[String], pagination: Pagination[Base64Cursor]): UserConnection = {
     val searchResult = new UserSearch().withQuery(query).searchSubGroups(pagination)
-    buildUserConnection(searchResult)
+    UserConnection(searchResult)
   }
 
   /** Retrieve a user by their username, if the user can't be found `None` is returned.
@@ -189,20 +178,6 @@ class TLEUserProvider {
       tleUserService.delete(id)
     }
 
-  private def buildUserConnection(searchResult: SearchResult): UserConnection = searchResult match {
-    case SearchResult(users, count, offset, limit) =>
-      val edges = users.zipWithIndex.map { case (u, idx) =>
-        UserEdge(User(u), idx + offset)
-      }
-      val pageInfo = PageInfo(
-        startCursor = edges.headOption.map(_.encodeCursor),
-        endCursor = edges.lastOption.map(_.encodeCursor),
-        hasNextPage = offset + limit < count,
-        hasPreviousPage = offset > 0
-      )
-      UserConnection(pageInfo, edges)
-  }
-
   /** Helper class to encapsulate the search parameters for user searches.
     */
   private class UserSearch {
@@ -232,7 +207,7 @@ class TLEUserProvider {
       * @return
       *   the search result
       */
-    def searchSubGroups(pagination: Pagination[Base64Cursor]): SearchResult = {
+    def searchSubGroups(pagination: Pagination[Base64Cursor]): Page[User] = {
       this.recursive = true
       search(pagination)
     }
@@ -245,7 +220,7 @@ class TLEUserProvider {
       * @return
       *   the search result
       */
-    def search(pagination: Pagination[Base64Cursor]): SearchResult = {
+    def search(pagination: Pagination[Base64Cursor]): Page[User] = {
       // The arguments to this call should match those below for searchUsers.
       val userCount = tleUserService.countUsers(query.getOrElse(""), parentId.orNull, recursive)
       val (offset, limit) = paginationOffsetLimit(pagination, userCount)
@@ -254,17 +229,13 @@ class TLEUserProvider {
         tleUserService
           .searchUsers(query.getOrElse(""), parentId.orNull, recursive, limit, offset)
           .asScala
+          .map(User(_))
           .toList
       } else {
         List.empty
       }
 
-      SearchResult(users, userCount, offset, limit)
+      Page(users, userCount, offset, limit)
     }
   }
-
-  /** The result of a user search, containing the users found, the total count of users, and the
-    * offset and limit used for the search.
-    */
-  private case class SearchResult(users: List[TLEUser], count: Int, offset: Int, limit: Int)
 }

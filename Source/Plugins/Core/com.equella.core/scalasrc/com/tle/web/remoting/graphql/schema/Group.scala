@@ -18,6 +18,7 @@
 
 package com.tle.web.remoting.graphql.schema
 
+import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo}
 import caliban.schema.Annotations.GQLDescription
 
 /** The model for internal TLE Groups */
@@ -35,3 +36,25 @@ final case class Group(
     @GQLDescription("Whether this group has users")
     hasUsers: Boolean
 )
+
+@GQLDescription("An Edge object for Groups as per the GraphQL Cursor Connections Specification")
+final case class GroupEdge(cursor: Base64Cursor, node: Group) extends Edge[Base64Cursor, Group]
+
+object GroupEdge {
+  def apply(x: Group, i: Int): GroupEdge = GroupEdge(Base64Cursor(i), x)
+}
+
+@GQLDescription(
+  "A Connection object paging through Groups as per the GraphQL Cursor Connections Specification"
+)
+final case class GroupConnection(pageInfo: PageInfo, edges: List[GroupEdge])
+    extends Connection[GroupEdge]
+
+object GroupConnection {
+  def apply(page: Page[Group]): GroupConnection =
+    Page.toConnection[Group, GroupEdge, GroupConnection](
+      page,
+      GroupEdge.apply,
+      GroupConnection.apply
+    )
+}

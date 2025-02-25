@@ -18,7 +18,7 @@
 
 package com.tle.web.remoting.graphql.schema
 
-import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo, Pagination}
+import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo}
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.user.TLEUser
 
@@ -50,3 +50,11 @@ object UserEdge {
   "A Connection object paging through Users as per the GraphQL Cursor Connections Specification"
 )
 case class UserConnection(pageInfo: PageInfo, edges: List[UserEdge]) extends Connection[UserEdge]
+
+object UserConnection {
+  def apply(page: Page[User]): UserConnection = Page.toConnection[User, UserEdge, UserConnection](
+    page,
+    UserEdge.apply,
+    UserConnection.apply
+  )
+}

@@ -19,9 +19,11 @@
 package com.tle.web.remoting.graphql
 
 import caliban.CalibanError.ExecutionError
-import caliban.relay.{Base64Cursor, Pagination, PaginationCount, PaginationCursor}
+import caliban.relay._
 import com.tle.web.remoting.graphql.provider.ProviderError
 import zio.{IO, ZIO}
+
+import scala.language.implicitConversions
 
 package object schema {
 
@@ -100,5 +102,40 @@ package object schema {
     }
 
     (offset, cappedLimit)
+  }
+
+  /** A simple page of items with pagination information.
+    *
+    * @param items
+    *   the list of items on the page
+    * @param count
+    *   the total number of items available
+    * @param offset
+    *   the offset of the first item in the list
+    * @param limit
+    *   the maximum number of items to return
+    * @tparam T
+    *   the type of item in the list
+    */
+  final case class Page[T](items: List[T], count: Int, offset: Int, limit: Int)
+
+  object Page {
+    def toConnection[T, E <: Edge[_, _], C <: Connection[E]](
+        page: Page[T],
+        buildEdge: (T, Int) => E,
+        buildConnection: (PageInfo, List[E]) => C
+    ): C = page match {
+      case Page(items, count, offset, limit) =>
+        val edges = items.zipWithIndex.map { case (u, idx) =>
+          buildEdge(u, idx + offset)
+        }
+        val pageInfo = PageInfo(
+          startCursor = edges.headOption.map(_.encodeCursor),
+          endCursor = edges.lastOption.map(_.encodeCursor),
+          hasNextPage = offset + limit < count,
+          hasPreviousPage = offset > 0
+        )
+        buildConnection(pageInfo, edges)
+    }
   }
 }
