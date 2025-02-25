@@ -50,6 +50,6 @@ libraryDependencies ++= Seq(
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.9.4",
   "commons-codec"          % "commons-codec"         % "1.17.0",
-  "org.slf4j"              % "slf4j-nop"             % "2.0.13",
+  "org.slf4j"              % "slf4j-nop"             % "2.0.17",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )
