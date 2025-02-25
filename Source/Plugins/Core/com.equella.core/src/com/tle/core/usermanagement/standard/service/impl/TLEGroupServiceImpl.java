@@ -228,6 +228,12 @@ public class TLEGroupServiceImpl
   }
 
   @Override
+  public List<String> getUsersInGroup(
+      String parentGroupID, boolean recurse, Integer limit, Integer offset) {
+    return dao.getUsersInGroup(parentGroupID, recurse, Pagination.of(offset, limit));
+  }
+
+  @Override
   public List<TLEGroup> getGroupsInGroup(TLEGroup group) {
     return getGroupsInGroup(group, null, null);
   }

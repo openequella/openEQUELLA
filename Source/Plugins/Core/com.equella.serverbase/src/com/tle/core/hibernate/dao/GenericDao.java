@@ -59,6 +59,12 @@ public interface GenericDao<T, ID extends Serializable> {
   @Nullable
   T findById(ID id);
 
+  /**
+   * Find an entity by criteria.
+   *
+   * @param criterion the criteria to filter by
+   * @return the entity matching the criteria, or null if no entity matches
+   */
   @Nullable
   T findByCriteria(Criterion... criterion);
 

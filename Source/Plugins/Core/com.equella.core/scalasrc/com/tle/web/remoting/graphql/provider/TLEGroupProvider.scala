@@ -25,7 +25,13 @@ import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEGroupService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.{Group, GroupConnection, Page, paginationOffsetLimit}
+import com.tle.web.remoting.graphql.schema.{
+  Group,
+  GroupConnection,
+  Page,
+  StringConnection,
+  paginationOffsetLimit
+}
 import org.springframework.transaction.annotation.Transactional
 
 import javax.inject.{Inject, Singleton}
@@ -154,9 +160,13 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   TLE Users and may include other user types (LDAP, LTI, etc).
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def listGroupUsers(uniqueId: String): List[String] = {
-    val users = tleGroupService.getUsersInGroup(uniqueId, false)
-    users.asScala.toList
+  def listGroupUsers(uniqueId: String, pagination: Pagination[Base64Cursor]): StringConnection = {
+    val userCount       = tleGroupService.countUsersInGroup(uniqueId).toInt
+    val (offset, limit) = paginationOffsetLimit(pagination, userCount)
+
+    val users = tleGroupService.getUsersInGroup(uniqueId, false, limit, offset).asScala.toList
+
+    StringConnection(Page(users, userCount, offset, limit))
   }
 
   /** Create a new group with the specified name and parent group.

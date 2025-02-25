@@ -162,25 +162,15 @@ public class GenericDaoImpl<T, ID extends Serializable> extends AbstractHibernat
     return getHibernateTemplate().get(getPersistentClass(), id);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.dao.AbstractEntityDao#findByCriteria(org.hibernate.criterion
-   * .Criterion[])
-   */
   @Override
   @SuppressWarnings("unchecked")
   public T findByCriteria(final Criterion... criterion) {
     return (T)
-        getHibernateTemplate()
-            .execute(
-                new TLEHibernateCallback() {
-                  @Override
-                  public Object doInHibernate(Session session) throws HibernateException {
-                    Criteria criteria = createCriteria(session, criterion);
-                    return criteria.uniqueResult();
-                  }
-                });
+        withSession(
+            session -> {
+              Criteria criteria = withCriteria(session, criterion);
+              return criteria.uniqueResult();
+            });
   }
 
   /*

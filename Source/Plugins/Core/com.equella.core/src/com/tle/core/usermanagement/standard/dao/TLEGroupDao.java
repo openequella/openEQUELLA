@@ -20,6 +20,7 @@ package com.tle.core.usermanagement.standard.dao;
 
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.dao.AbstractTreeDao;
+import com.tle.core.dao.helpers.Pagination;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,7 +31,25 @@ public interface TLEGroupDao extends AbstractTreeDao<TLEGroup> {
 
   List<TLEGroup> searchGroups(String query, String parentId);
 
-  List<String> getUsersInGroup(String parentGroupID, boolean recurse);
+  /**
+   * Get the users (all types, not just TLE Users) in the specified group.
+   *
+   * @param parentGroupID The group to get users for.
+   * @param includeSubGroups Whether to include users in subgroups.
+   * @return The list of users in the group (and subgroups if requested).
+   */
+  List<String> getUsersInGroup(String parentGroupID, boolean includeSubGroups);
+
+  /**
+   * Get the users (all types, not just TLE Users) in the specified group.
+   *
+   * @param parentGroupID The group to get users for.
+   * @param includeSubGroups Whether to include users in subgroups.
+   * @param pagination The pagination to use.
+   * @return The list of users in the group (and subgroups if requested).
+   */
+  List<String> getUsersInGroup(
+      String parentGroupID, boolean includeSubGroups, Pagination pagination);
 
   TLEGroup findByUuid(String id);
 
