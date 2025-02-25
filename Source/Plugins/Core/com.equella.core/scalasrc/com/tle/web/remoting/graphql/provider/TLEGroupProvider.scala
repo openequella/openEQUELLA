@@ -67,7 +67,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       uniqueId = g.getUuid,
       name = g.getName,
       parentId = Option(g.getParent).map(_.getUuid),
-      hasGroups = tleGroupService.countGroupsInGroup(g.getUuid) > 0,
+      hasGroups = tleGroupService.countGroupsInGroupById(g.getUuid) > 0,
       hasUsers = tleGroupService.countUsersInGroup(g.getUuid) > 0
     )
   }

@@ -458,7 +458,7 @@ public class TLEGroupServiceImpl
   }
 
   @Override
-  public long countGroupsInGroup(String groupId) {
+  public long countGroupsInGroupById(String groupId) {
     return countGroupsInGroup(get(groupId));
   }
 

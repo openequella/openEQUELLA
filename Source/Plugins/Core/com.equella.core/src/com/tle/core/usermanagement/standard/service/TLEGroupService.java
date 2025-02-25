@@ -94,7 +94,7 @@ public interface TLEGroupService extends RemoteTLEGroupService {
    * @param groupId The group ID.
    * @return The number of groups in the group.
    */
-  long countGroupsInGroup(String groupId);
+  long countGroupsInGroupById(String groupId);
 
   /**
    * Returns the number of groups in the target group. (Non-recursive.)
