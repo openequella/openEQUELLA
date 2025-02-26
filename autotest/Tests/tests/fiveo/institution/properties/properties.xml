@@ -455,4 +455,44 @@
     <string>security.shared.secrets.0.ignoreFailure</string>
     <string>false</string>
   </entry>
+  <entry>
+    <string>wrapper.role.enabled</string>
+    <string>true</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.name</string>
+    <string>Developer</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.expression</string>
+    <string></string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.0.id</string>
+    <string>28e1689f-5677-4840-9c10-72b66a92e147</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.name</string>
+    <string>Student</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.expression</string>
+    <string></string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.1.id</string>
+    <string>d28f62b6-9389-414d-8033-e881d8ecad80</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.name</string>
+    <string>Admin</string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.expression</string>
+    <string></string>
+  </entry>
+  <entry>
+    <string>wrapper.role.roles.2.id</string>
+    <string>7e8ec7f0-6bdb-413e-9788-da60527c576d</string>
+  </entry>
 </map>
