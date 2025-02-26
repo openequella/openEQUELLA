@@ -32,7 +32,7 @@
     "axios": "1.7.9",
     "axios-cookiejar-support": "^4.0.0",
     "fp-ts": "2.16.8",
-    "io-ts": "2.2.21",
+    "io-ts": "2.2.22",
     "io-ts-types": "0.5.19",
     "lodash": "^4.17.21",
     "monocle-ts": "2.3.13",

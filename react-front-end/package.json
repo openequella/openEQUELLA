@@ -64,7 +64,7 @@
     "fp-ts-contrib": "0.1.29",
     "history": "4.10.1",
     "html-react-parser": "3.0.16",
-    "io-ts": "2.2.21",
+    "io-ts": "2.2.22",
     "io-ts-types": "0.5.19",
     "jspolyfill-array.prototype.find": "0.1.3",
     "lodash": "4.17.21",
