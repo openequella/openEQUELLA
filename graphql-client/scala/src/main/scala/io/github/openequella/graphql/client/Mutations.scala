@@ -90,4 +90,61 @@ object Mutations {
       OptionOf(Scalar()),
       arguments = List(Argument("id", id, "String!")(encoder0))
     )
+
+  /** Create a new group
+    */
+  def internalGroupCreate[A](name: String, parentId: scala.Option[String] = None)(
+      innerSelection: SelectionBuilder[Group, A]
+  )(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupCreate",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("name", name, "String!")(encoder0),
+        Argument("parentId", parentId, "String")(encoder1)
+      )
+    )
+
+  /** Delete a group by its unique ID
+    */
+  def internalGroupDelete(uniqueId: String, deleteChildren: Boolean)(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[Unit]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupDelete",
+      OptionOf(Scalar()),
+      arguments = List(
+        Argument("uniqueId", uniqueId, "String!")(encoder0),
+        Argument("deleteChildren", deleteChildren, "Boolean!")(encoder1)
+      )
+    )
+
+  /** Update a group by its unique ID - can also be used to move group within the hierarchy by
+    * changing the parent ID
+    */
+  def internalGroupUpdate[A](
+      uniqueId: String,
+      name: scala.Option[String] = None,
+      parentId: scala.Option[String] = None,
+      users: scala.Option[List[String]] = None
+  )(innerSelection: SelectionBuilder[Group, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[String]],
+      encoder2: ArgEncoder[scala.Option[String]],
+      encoder3: ArgEncoder[scala.Option[List[String]]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupUpdate",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("uniqueId", uniqueId, "String!")(encoder0),
+        Argument("name", name, "String")(encoder1),
+        Argument("parentId", parentId, "String")(encoder2),
+        Argument("users", users, "[String!]")(encoder3)
+      )
+    )
 }
