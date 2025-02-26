@@ -10,10 +10,11 @@ import com.tle.webtests.test.AbstractSessionTest
 import integtester.IntegTester
 import integtester.oidc.OidcIntegration
 import integtester.oidc.OidcUser.TEST_USER
+import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.testng.Assert.{assertEquals, assertTrue}
+import org.testng.Assert.{assertEquals, assertFalse, assertTrue}
 import org.testng.annotations.{BeforeClass, DataProvider, Test}
 
 @TestInstitution("vanilla")
@@ -22,20 +23,6 @@ class OidcIntegrationTest extends AbstractSessionTest {
   @BeforeClass
   def runIntegTester(): Unit = {
     IntegTester.stream(List.empty).compile.drain.unsafeRunAsync(_ => ())
-  }
-
-  @Test(description = "The OIDC login button should be displayed in the Login page")
-  def showLoginButton(): Unit = {
-    val loginPage = new LoginPage(context).load()
-    assertTrue(loginPage.hasOidcLoginButton)
-  }
-
-  @Test(
-    description =
-      "The OIDC login button should be hidden if there isn't an enabled OIDC configuration"
-  )
-  def hideLoginButton(): Unit = {
-    // todo:  disable OIDC configuration and then check the button.
   }
 
   @Test(description =
