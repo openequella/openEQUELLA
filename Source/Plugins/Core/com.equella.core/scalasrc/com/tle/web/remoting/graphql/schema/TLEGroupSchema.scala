@@ -59,7 +59,11 @@ class TLEGroupSchema extends SchemaProvider {
         pagination <- Pagination(args)
         groups     <- tleGroupProvider.listGroups(args.parentId, pagination)
       } yield groups,
-    internalGroupSearch = args => tleGroupProvider.searchGroups(args.query),
+    internalGroupSearch = args =>
+      for {
+        pagination <- Pagination(args)
+        groups = tleGroupProvider.searchGroups(args.query, pagination)
+      } yield groups,
     internalGroupUsers = args =>
       for {
         pagination <- Pagination(args)
@@ -85,7 +89,7 @@ class TLEGroupSchema extends SchemaProvider {
       internalGroups: ListGroupsArgs => IO[CalibanError, GroupConnection],
       // TODO: Add pagination
       @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
-      internalGroupSearch: GroupSearchArgs => List[Group],
+      internalGroupSearch: GroupSearchArgs => IO[CalibanError, GroupConnection],
       @GQLDescription("List user ids for all users in the specified group")
       internalGroupUsers: ListGroupUsersArgs => IO[CalibanError, StringConnection]
   )
@@ -104,8 +108,22 @@ class TLEGroupSchema extends SchemaProvider {
       @GQLDescription(
         "The query string to search for groups by (server will surround with wildcard)"
       )
-      query: String
-  )
+      query: String,
+      @GQLDescription(
+        "Pagination - how many items to return from the start of the possible list of items"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many items to return from the end of the possible list of items"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a item before which all items should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
 
   case class ListGroupsArgs(
       @GQLDescription("The unique ID of the parent group to list groups for - or none for the root")

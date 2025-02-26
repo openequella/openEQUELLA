@@ -248,10 +248,16 @@ public class TLEGroupServiceImpl
 
   @Override
   public List<TLEGroup> search(String query) {
-    Criterion nameLikeQuery = Restrictions.ilike("name", query.replace('*', '%'));
+    return search(query, null, null);
+  }
 
+  @Override
+  public List<TLEGroup> search(String query, Integer limit, Integer offset) {
     return dao.findAllByCriteria(
-        orderByName(), -1, nameLikeQuery, CurrentInstitution.equalityCriteria());
+        orderByName(),
+        Pagination.of(offset, limit),
+        withNameLike(query),
+        CurrentInstitution.equalityCriteria());
   }
 
   @Override
@@ -467,11 +473,20 @@ public class TLEGroupServiceImpl
     return dao.countByCriteria(withParent(parent), CurrentInstitution.equalityCriteria());
   }
 
+  @Override
+  public long countGroupsForQuery(String query) {
+    return dao.countByCriteria(withNameLike(query), CurrentInstitution.equalityCriteria());
+  }
+
   private Order orderByName() {
     return Order.asc("name");
   }
 
   private Criterion withParent(TLEGroup parent) {
     return parent == null ? Restrictions.isNull("parent") : Restrictions.eq("parent", parent);
+  }
+
+  private Criterion withNameLike(String name) {
+    return Restrictions.ilike("name", name.replace('*', '%'));
   }
 }
