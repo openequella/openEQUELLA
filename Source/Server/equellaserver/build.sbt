@@ -52,9 +52,8 @@ libraryDependencies ++= Seq(
 )
 
 // Libraries needed for GraphQL
-val calibanVersion = "2.5.3"
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr" %% "caliban" % calibanVersion
+  "com.github.ghostdogpr" %% "caliban" % "2.9.2"
 )
 
 libraryDependencies ++= Seq(
