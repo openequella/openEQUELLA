@@ -25,9 +25,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Note: retention of RUNTIME and target of LOCAL are required for Goose.
+ * Used to indicate that a method, parameter, field, or local variable can accept or return a null
+ * value. It serves as a marker to help developers understand that null is an acceptable value,
+ * which can be useful for static analysis tools and for improving code readability and
+ * maintainability.
  *
- * @author Aaron
+ * <p>Note: retention of RUNTIME and target of LOCAL are required for Guice.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -27,7 +27,28 @@ public interface TLEGroupService extends RemoteTLEGroupService {
 
   TLEGroup createGroup(String groupID, String name);
 
+  /**
+   * Return the list of user IDs in the specified group. These can then be further resolved via the
+   * RemoteUserService, as they may be TLEUsers, or they could be external users.
+   *
+   * @param parentGroupID The group to get users for.
+   * @param recurse Whether to include users in subgroups.
+   * @return The list of user IDs in the group (and subgroups if requested).
+   */
   List<String> getUsersInGroup(String parentGroupID, boolean recurse);
+
+  /**
+   * Return the list of user IDs in the specified group. These can then be further resolved via the
+   * RemoteUserService, as they may be TLEUsers, or they could be external users.
+   *
+   * @param parentGroupID The group to get users for.
+   * @param recurse Whether to include users in subgroups.
+   * @param limit The maximum number of users to return.
+   * @param offset The number of users to skip before returning results.
+   * @return The list of user IDs in the group (and subgroups if requested).
+   */
+  List<String> getUsersInGroup(
+      String parentGroupID, boolean recurse, Integer limit, Integer offset);
 
   /**
    * Get all immediate child groups of the specified group, or all top-level groups if the group is
@@ -73,7 +94,7 @@ public interface TLEGroupService extends RemoteTLEGroupService {
    * @param groupId The group ID.
    * @return The number of groups in the group.
    */
-  long countGroupsInGroup(String groupId);
+  long countGroupsInGroupById(String groupId);
 
   /**
    * Returns the number of groups in the target group. (Non-recursive.)
