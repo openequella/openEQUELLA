@@ -69,6 +69,14 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
       val u = TleUserApi.getByUniqueId("unknown")
       u shouldBe Right(None)
     }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleUserApi.getByUniqueId(knownUser.uniqueId)(unauthenticated)
+      }
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
   }
 
   describe("deleteUser") {
