@@ -44,6 +44,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
 import * as E from "fp-ts/Either";
 import SelectRoleControl from "../../../components/SelectRoleControl";
+import { isNonEmptyString } from "../../../util/validation";
 import {
   generateGeneralDetails,
   generateApiDetails,
@@ -222,13 +223,22 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       validateEachField(),
       TE.chain(validateStructure),
       TE.chain(submit),
-      TE.match(appErrorHandler, () => {
-        // Reset the initial values since user has saved the settings.
-        dispatch({
-          type: "reset",
-        });
-        setShowSnackBar(true);
-      }),
+      TE.match(
+        (e) => {
+          appErrorHandler(e);
+          dispatch({
+            type: "configure",
+            config,
+          });
+        },
+        () => {
+          // Reset the initial values since user has saved the settings.
+          dispatch({
+            type: "reset",
+          });
+          setShowSnackBar(true);
+        },
+      ),
     )();
   }, [
     apiDetailsRenderOptions,
@@ -316,7 +326,8 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
               />
 
               {pipe(
-                O.fromNullable(config.roleConfig?.roleClaim),
+                config.roleConfig?.roleClaim,
+                O.fromPredicate(isNonEmptyString),
                 O.map((roleClaim) => (
                   <CustomRolesMappingControl
                     initialMappings={
