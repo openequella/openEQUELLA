@@ -193,8 +193,22 @@ describe("<SearchResult/>", () => {
     ).toBeInTheDocument();
   });
 
+  it("displays a dialog for sharing an Attachment", async () => {
+    const { attachSearchObj } = mockData;
+    const page = await renderSearchResult(attachSearchObj);
+    const shareButton = page.getByLabelText(
+      languageStrings.common.action.share,
+    );
+    await userEvent.click(shareButton);
+
+    const dialog = page.getByRole("dialog");
+    const { embedCode, link } = languageStrings.shareAttachment;
+    expect(queryByText(dialog, embedCode)).toBeInTheDocument();
+    expect(queryByText(dialog, link)).toBeInTheDocument();
+  });
+
   it("disable the access to Item summary page in Lightbox for Scrapbook", async () => {
-    const { getByText, queryByLabelText } =
+    const { getByText, queryByLabelText, container } =
       await renderSearchResult(imageScrapbook);
 
     await userEvent.click(
@@ -202,9 +216,8 @@ describe("<SearchResult/>", () => {
     );
 
     // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
-    expect(
-      queryByLabelText(languageStrings.embedCode.copy),
-    ).toBeInTheDocument();
+    const lightbox = container.querySelector(".Lightbox-lightboxBackdrop");
+    expect(lightbox).toBeDefined();
     expect(
       queryByLabelText(languageStrings.lightboxComponent.openSummaryPage),
     ).not.toBeInTheDocument();

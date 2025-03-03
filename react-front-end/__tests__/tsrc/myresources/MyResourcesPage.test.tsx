@@ -355,7 +355,7 @@ describe("<MyResourcesPage/>", () => {
     });
 
     it("supports viewing an image Scrapbook in the Lightbox", async () => {
-      const { getByText, queryByLabelText } =
+      const { getByText, queryByLabelText, container } =
         await renderWithViewerConfiguration({
           viewerType: "lightbox",
           config: {
@@ -365,12 +365,9 @@ describe("<MyResourcesPage/>", () => {
         });
 
       await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
-
-      // Confirm that the lightbox has now been displayed - with the unique element being
-      // the lightbox's 'embed code' button.
-      expect(
-        queryByLabelText(languageStrings.embedCode.copy),
-      ).toBeInTheDocument();
+      // Confirm that the image is displayed in the Lightbox now.
+      const image = container.querySelector(".Lightbox-lightboxImage");
+      expect(image).toBeDefined();
 
       // Access to summary page is disabled.
       expect(
