@@ -34,7 +34,7 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonModuleScala,
   "com.auth0" % "jwks-rsa" % "0.22.1",
-  "com.auth0" % "java-jwt" % "4.4.0"
+  "com.auth0" % "java-jwt" % "4.5.0"
 )
 
 (Compile / resourceGenerators) += Def.task {
