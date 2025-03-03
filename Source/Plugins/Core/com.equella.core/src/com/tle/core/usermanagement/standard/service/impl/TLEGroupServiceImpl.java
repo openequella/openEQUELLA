@@ -219,7 +219,12 @@ public class TLEGroupServiceImpl
   @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
   @Transactional(propagation = Propagation.REQUIRED)
   public void delete(String groupID, boolean deleteChildren) {
-    delete(get(groupID), deleteChildren);
+    Optional.ofNullable(get(groupID))
+        .ifPresentOrElse(
+            group -> delete(group, deleteChildren),
+            () -> {
+              throw new NotFoundException("No such group with id of " + groupID + " found.");
+            });
   }
 
   @Override
