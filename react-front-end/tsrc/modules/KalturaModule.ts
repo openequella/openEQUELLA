@@ -29,6 +29,17 @@ const KalturaPlayerVersionCodec = t.union([t.literal("V2"), t.literal("V7")]);
  */
 export type KalturaPlayerVersion = t.TypeOf<typeof KalturaPlayerVersionCodec>;
 
+const KalturaEmbedStyleCodec = t.union([
+  t.literal("AUTO"),
+  t.literal("IFRAME"),
+]);
+
+/**
+ * Kaltura supports 3 methods to embed a resource: Iframe Embed, Auto Embed and Dynamic Embed, but only the first two
+ * are used in OEQ. Each style will generate different embed code.
+ */
+export type KalturaEmbedStyle = t.TypeOf<typeof KalturaEmbedStyleCodec>;
+
 /**
  * The bare minimum fields to create an embedded player and matches those found over in
  * `KalturaPlayerEmbedProps`.
@@ -150,11 +161,9 @@ export const updateKalturaAttachment = (
  * Build a Kaltura player embed URL based on the provided external IDs and player version.
  */
 export const buildPlayerUrl = (
-  partnerId: number,
-  uiconfId: number,
-  entryId: string,
-  version: KalturaPlayerVersion,
+  { partnerId, uiconfId, entryId, version }: KalturaPlayerDetails,
   playerId: string,
+  kalturaEmbedStyle: KalturaEmbedStyle = "AUTO",
 ): string => {
   const src = new URL(
     version === "V7"
@@ -163,11 +172,14 @@ export const buildPlayerUrl = (
   );
   (
     [
-      ["autoembed", true],
+      [kalturaEmbedStyle === "AUTO" ? "autoembed" : "iframeembed", true],
       ["entry_id", entryId],
-      [version === "V7" ? "targetId" : "playerId", playerId],
     ] as [string, string][]
   ).forEach(([name, value]) => src.searchParams.set(name, value));
+
+  if (kalturaEmbedStyle === "AUTO") {
+    src.searchParams.set(version === "V7" ? "targetId" : "playerId", playerId);
+  }
 
   return src.toString();
 };
