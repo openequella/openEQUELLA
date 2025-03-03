@@ -113,13 +113,17 @@ export const getMuiTextFieldValueByAriaLabel = (
  *
  * @param container The container element.
  * @param label The aria label of the text field.
- * @param value The value to type in.
+ * @param value The value to type in. It will clear the input value if value is not provided.
  */
-export const fillMuiTextFieldByAriaLabel = async (
+export const inputMuiTextFieldByAriaLabel = async (
   container: HTMLElement,
   label: string,
-  value: string,
+  value?: string,
 ): Promise<void> => {
   const input = getMuiTextFieldByAriaLabel(container, label);
-  await userEvent.type(input, `${value}`);
+
+  await userEvent.clear(input);
+  if (value) {
+    await userEvent.type(input, value);
+  }
 };
