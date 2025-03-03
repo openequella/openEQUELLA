@@ -81,12 +81,14 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
 
   describe("deleteUser") {
     it("should be able to delete a known user") {
+      val testUsername = "deleteMe"
       val response = for {
-        user <- TleUserApi.createUser("deleteMe", None, "Delete", "Me", "password")
+        user <- TleUserApi.createUser(testUsername, None, "Delete", "Me", "password")
         uniqueId = user.uniqueId
       } yield TleUserApi.deleteUser(uniqueId)
 
       response shouldBe a[Right[_, _]]
+      TleUserApi.getByUsername(testUsername) shouldBe Right(None)
     }
 
     it("should return None for an unknown user") {
