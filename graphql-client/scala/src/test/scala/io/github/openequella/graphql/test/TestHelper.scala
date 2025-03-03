@@ -28,6 +28,14 @@ import sttp.model.Uri
 object TestHelper {
   val CREDENTIALS_AUTOTEST: (String, String) = ("AutoTest", "automated")
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
+  val INSTITUTION_REST: String               = "rest"
+
+  /** Login to the REST institution with the automated test user.
+    *
+    * @return
+    *   the client configuration if successful, or fail the test with an error message if not
+    */
+  def loginToRestInstitution(): ClientConfiguration = login(INSTITUTION_REST, CREDENTIALS_AUTOTEST)
 
   /** Login to the specified institution with the given credentials.
     *
@@ -37,7 +45,7 @@ object TestHelper {
     * @param credentials
     *   the credentials to use (typically one of the constants defined in this object)
     * @return
-    *   the client configuration if successful, or an error message if not
+    *   the client configuration if successful, or fail the test with an error message if not
     */
   def login(institution: String, credentials: (String, String)): ClientConfiguration = {
     val instUrl                           = Uri("localhost").port(8080).withPath(institution)
@@ -47,6 +55,14 @@ object TestHelper {
       case Right(_)  => cfg
       case Left(err) => fail(err._2)
     }
+  }
+
+  def asUnauthenticatedUser[T](
+      action: ClientConfiguration => T
+  )(implicit cfg: ClientConfiguration): T = {
+    val unAuthenticatedCfg: ClientConfiguration =
+      cfg.copy(cookies = scala.collection.mutable.Set.empty)
+    action(unAuthenticatedCfg)
   }
 
   /** Check that the response is an error response, and return the error. This can then be used to

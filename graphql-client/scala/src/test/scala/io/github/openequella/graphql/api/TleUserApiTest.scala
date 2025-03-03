@@ -27,7 +27,9 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.annotation.tailrec
 
 class TleUserApiTest extends AnyFunSpec with Matchers {
-  private val autotest = TleUserView(
+  // A known user in the Rest institution to test with. The values are those found in the
+  // institution export - and imported at test time.
+  private val knownUser = TleUserView(
     uniqueId = "adfcaf58-241b-4eca-9740-6a26d1c3dd58",
     username = "AutoTest",
     email = Some("auto@test.com"),
@@ -35,13 +37,12 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     lastName = "Test"
   )
 
-  implicit val cfg: ClientConfiguration =
-    TestHelper.login("rest", TestHelper.CREDENTIALS_AUTOTEST)
+  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
 
   describe("getByUsername") {
     it("should be able to retrieve a known user by username") {
-      val u = TleUserApi.getByUsername(autotest.username)
-      u shouldBe Right(Some(autotest))
+      val u = TleUserApi.getByUsername(knownUser.username)
+      u shouldBe Right(Some(knownUser))
     }
 
     it("should return None for an unknown user") {
@@ -50,9 +51,9 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TleUserApi.getByUsername(autotest.username)(
-        cfg.copy(cookies = scala.collection.mutable.Set.empty)
-      )
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleUserApi.getByUsername(knownUser.username)(unauthenticated)
+      }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
@@ -60,8 +61,8 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
 
   describe("getByUniqueId") {
     it("should be able to retrieve a known user by uniqueId") {
-      val u = TleUserApi.getByUniqueId(autotest.uniqueId)
-      u shouldBe Right(Some(autotest))
+      val u = TleUserApi.getByUniqueId(knownUser.uniqueId)
+      u shouldBe Right(Some(knownUser))
     }
 
     it("should return None for an unknown user") {
@@ -86,9 +87,9 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TleUserApi.deleteUser(autotest.uniqueId)(
-        cfg.copy(cookies = scala.collection.mutable.Set.empty)
-      )
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleUserApi.deleteUser(knownUser.uniqueId)(unauthenticated)
+      }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
@@ -131,9 +132,9 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TleUserApi.updateUser(autotest.uniqueId, None, None, None, None, None)(
-        cfg.copy(cookies = scala.collection.mutable.Set.empty)
-      )
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleUserApi.updateUser(knownUser.uniqueId, None, None, None, None, None)(unauthenticated)
+      }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
@@ -202,11 +203,11 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("supports searching for a specific user") {
-      val response = TleUserApi.searchUsers(ForwardPagination(1), Some(autotest.username))
+      val response = TleUserApi.searchUsers(ForwardPagination(1), Some(knownUser.username))
       response match {
         case Right(users) =>
           assert(users.items.size == 1)
-          assert(users.items.head == autotest)
+          assert(users.items.head == knownUser)
         case Left(errors) => fail("Failed to search for user: " + errors)
       }
     }
@@ -273,9 +274,9 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("should return an AccessDeniedError if not authenticated") {
-      val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT))(
-        cfg.copy(cookies = scala.collection.mutable.Set.empty)
-      )
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT))(unauthenticated)
+      }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
