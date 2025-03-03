@@ -15,23 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Backdrop, Grid, Toolbar, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
-import CodeIcon from "@mui/icons-material/Code";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ShareIcon from "@mui/icons-material/Share";
+import { Backdrop, Grid, Toolbar, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import {
-  ReactElement,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import {
   CustomMimeTypes,
   isBrowserSupportedAudio,
@@ -40,23 +34,27 @@ import {
 } from "../modules/MimeTypesModule";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-import { EmbedCodeDialog } from "./EmbedCodeDialog";
-import { buildCustomEmbed } from "./LightboxHelper";
-import LightboxMessage from "./LightboxMessage";
+import {
+  buildEmbedCode,
+  buildEmbeddedComponent,
+} from "./embedattachment/EmbeddedAttachment";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
+import { ShareAttachmentDialog } from "./ShareAttachmentDialog";
 import { TooltipIconButton } from "./TooltipIconButton";
 
 const {
   common: {
-    action: { close: labelClose, openInNewTab: labelOpenInNewTab },
+    action: {
+      close: labelClose,
+      openInNewTab: labelOpenInNewTab,
+      share: labelShare,
+    },
   },
   lightboxComponent: {
     viewNext: labelViewNext,
     viewPrevious: labelViewPrevious,
     openSummaryPage: labelOpenSummaryPage,
-    unsupportedContent: labelUnsupportedContent,
   },
-  embedCode: { copy: labelCopyEmbedCode },
 } = languageStrings;
 
 const PREFIX = "Lightbox";
@@ -156,13 +154,11 @@ export interface LightboxProps {
   config: LightboxConfig;
 }
 
-const domParser = new DOMParser();
-
 const Lightbox = ({ open, onClose, config }: LightboxProps) => {
-  const [content, setContent] = useState<ReactElement | undefined>();
+  const [content, setContent] = useState<React.JSX.Element | undefined>();
+  const [embedCode, setEmbedCode] = useState<O.Option<string>>(O.none);
   const [lightBoxConfig, setLightBoxConfig] = useState<LightboxConfig>(config);
-  const [openEmbedCodeDialog, setOpenEmbedCodeDialog] =
-    useState<boolean>(false);
+  const [openShareDialog, setOpenShareDialog] = useState<boolean>(false);
 
   const { src, title, mimeType, onPrevious, onNext, item } = lightBoxConfig;
 
@@ -170,8 +166,6 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     setContent(undefined);
     setLightBoxConfig(getLightboxConfig());
   };
-
-  const contentEmbedCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const keyDownHandler = (e: KeyboardEvent) => {
@@ -189,56 +183,20 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     };
   }, [onPrevious, onNext, onClose]);
 
-  // Update content when config is updated.
+  // Update content and embed code when config is updated.
   useEffect(() => {
-    const unsupportedContent = (
-      <LightboxMessage message={labelUnsupportedContent} />
+    pipe(
+      splitMimeType(mimeType)[0],
+      simpleMatch({
+        image: () => classes.lightboxImage,
+        video: () => classes.lightboxContent,
+        audio: () => classes.lightboxAudio,
+        _: () => undefined,
+      }),
+      (styles) => buildEmbeddedComponent(mimeType, src, title, styles),
+      setContent,
     );
-
-    const buildContent = (): JSX.Element =>
-      pipe(
-        splitMimeType(mimeType)[0],
-        simpleMatch<JSX.Element>({
-          image: () => (
-            <img
-              className={`${classes.lightboxContent} ${classes.lightboxImage}`}
-              alt={title}
-              src={src}
-            />
-          ),
-          video: () =>
-            isBrowserSupportedVideo(mimeType) ? (
-              <video
-                className={classes.lightboxContent}
-                controls
-                src={src}
-                aria-label={title}
-              />
-            ) : (
-              unsupportedContent
-            ),
-          audio: () =>
-            isBrowserSupportedAudio(mimeType) ? (
-              <audio
-                className={classes.lightboxAudio}
-                controls
-                src={src}
-                aria-label={title}
-              />
-            ) : (
-              unsupportedContent
-            ),
-          // same as OEQ_MIMETYPE_TYPE but unable to use with simpleMatch :'(
-          openequella: () =>
-            pipe(
-              buildCustomEmbed(mimeType, src),
-              O.getOrElse(() => unsupportedContent),
-            ),
-          _: () => unsupportedContent,
-        }),
-      );
-
-    setContent(buildContent());
+    setEmbedCode(buildEmbedCode(mimeType, src, title));
   }, [lightBoxConfig, mimeType, src, title]);
 
   const handleOpenInNewWindow = (event: SyntheticEvent) => {
@@ -249,25 +207,6 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
   const handleCloseLightbox = (event: SyntheticEvent) => {
     event.stopPropagation();
     onClose();
-  };
-
-  // Generate a HTML string from current Lightbox content.
-  // Also use DOMParser to help remove unneeded attributes such as 'class'.
-  const generateEmbedCode = (): string => {
-    const currentContent = contentEmbedCodeRef.current;
-    if (!currentContent) {
-      throw new Error("Failed to generate embed code for empty content");
-    }
-
-    const unneededAttributes = ["class"];
-    const fullHtml: HTMLDocument = domParser.parseFromString(
-      currentContent.innerHTML,
-      "text/html",
-    );
-    const contentHtml = fullHtml.body.childNodes[0] as HTMLElement;
-    unneededAttributes.forEach((a) => contentHtml.removeAttribute(a));
-
-    return contentHtml.outerHTML;
   };
 
   return (
@@ -287,16 +226,15 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             />
           )}
           <TooltipIconButton
-            title={labelCopyEmbedCode}
+            title={labelShare}
             color="inherit"
             className={classes.menuButton}
-            aria-label={labelCopyEmbedCode}
             onClick={(event) => {
               event.stopPropagation();
-              setOpenEmbedCodeDialog(true);
+              setOpenShareDialog(true);
             }}
           >
-            <CodeIcon />
+            <ShareIcon />
           </TooltipIconButton>
           <TooltipIconButton
             title={labelOpenInNewTab}
@@ -337,9 +275,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             )}
           </Grid>
           <Grid item container justifyContent="center" xs={10}>
-            <Grid item ref={contentEmbedCodeRef}>
-              {content}
-            </Grid>
+            <Grid item>{content}</Grid>
           </Grid>
           <Grid item container justifyContent="flex-end" xs={1}>
             <Grid item>
@@ -357,11 +293,12 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             </Grid>
           </Grid>
         </Grid>
-        {openEmbedCodeDialog && content && (
-          <EmbedCodeDialog
-            open={openEmbedCodeDialog}
-            onCloseDialog={() => setOpenEmbedCodeDialog(false)}
-            embedCode={generateEmbedCode()}
+        {openShareDialog && content && (
+          <ShareAttachmentDialog
+            open={openShareDialog}
+            onCloseDialog={() => setOpenShareDialog(false)}
+            src={src}
+            embedCode={embedCode}
           />
         )}
       </Backdrop>

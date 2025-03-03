@@ -16,25 +16,37 @@
  * limitations under the License.
  */
 import * as React from "react";
+import * as O from "fp-ts/Option";
 import { Meta, StoryFn } from "@storybook/react";
 import {
-  EmbedCodeDialog,
-  EmbedCodeDialogProps,
-} from "../../tsrc/components/EmbedCodeDialog";
+  ShareAttachmentDialog,
+  ShareAttachmentDialogProps,
+} from "../../tsrc/components/ShareAttachmentDialog";
 
 export default {
-  title: "component/EmbedCodeDialog",
-  component: EmbedCodeDialog,
+  title: "component/ShareAttachmentDialog",
+  component: ShareAttachmentDialog,
   argTypes: {
     closeDialog: { action: "on close dialog" },
   },
-} as Meta<EmbedCodeDialogProps>;
+} as Meta<ShareAttachmentDialogProps>;
 
-export const Standard: StoryFn<EmbedCodeDialogProps> = (
-  args: EmbedCodeDialogProps,
-) => <EmbedCodeDialog {...args} />;
+export const LinkOnly: StoryFn<ShareAttachmentDialogProps> = (
+  args: ShareAttachmentDialogProps,
+) => <ShareAttachmentDialog {...args} />;
 
-Standard.args = {
+LinkOnly.args = {
   open: true,
-  embedCode: `<img alt="placeholder-500x500.png" src="./placeholder-500x500.png"/>`,
+  src: "https://localhost/inst/items/1eeb3df5-3809-4655-925b-24d994e42ff6/1/image.jpg",
+};
+
+export const WithEmbedCode: StoryFn<ShareAttachmentDialogProps> = (
+  args: ShareAttachmentDialogProps,
+) => <ShareAttachmentDialog {...args} />;
+
+WithEmbedCode.args = {
+  ...LinkOnly.args,
+  embedCode: O.of(
+    `<img alt="placeholder-500x500.png" src="./placeholder-500x500.png"/>`,
+  ),
 };
