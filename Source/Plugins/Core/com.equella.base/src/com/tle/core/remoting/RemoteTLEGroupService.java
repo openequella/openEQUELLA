@@ -51,6 +51,17 @@ public interface RemoteTLEGroupService {
    */
   List<TLEGroup> search(String query);
 
+  /**
+   * Searches for groups (anywhere within the group hierarchy) that match the query. No wildcards
+   * are appended, so should be added as needed. (Asterisks are replaced with % in the query.)
+   *
+   * @param query The query to search for matching groups with
+   * @param limit The maximum number of results to return
+   * @param offset The number of results to skip before returning results
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
+  List<TLEGroup> search(String query, Integer limit, Integer offset);
+
   List<TLEGroup> search(String query, String parentId);
 
   List<TLEGroup> search(String query, String userId, boolean allParents);

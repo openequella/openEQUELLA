@@ -103,4 +103,13 @@ public interface TLEGroupService extends RemoteTLEGroupService {
    * @return The number of groups in the group.
    */
   long countGroupsInGroup(TLEGroup parent);
+
+  /**
+   * Returns the number of groups which have a name that matches the query. Useful alongside the
+   * search(query) method to get the names of groups that match the query.
+   *
+   * @param query The query to search for matching groups with - accepts wildcards.
+   * @return The number of groups that match the query
+   */
+  long countGroupsForQuery(String query);
 }

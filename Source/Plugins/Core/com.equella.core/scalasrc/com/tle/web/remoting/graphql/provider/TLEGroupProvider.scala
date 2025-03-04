@@ -118,15 +118,21 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *
     * @param query
     *   the query string to search for groups by
+    * @param pagination
+    *   the pagination parameters for the query
     * @return
     *   a list of `Group` objects matching the query
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  def searchGroups(query: String): List[Group] = {
-    val wildcardQuery = tleGroupService.prepareQuery(query)
-    val searchResult  = tleGroupService.search(wildcardQuery)
+  def searchGroups(query: String, pagination: Pagination[Base64Cursor]): GroupConnection = {
+    val wildcardQuery   = tleGroupService.prepareQuery(query)
+    val maxSearchResult = tleGroupService.countGroupsForQuery(wildcardQuery).toInt
+    val (offset, limit) = paginationOffsetLimit(pagination, maxSearchResult)
 
-    searchResult.asScala.map(toGroup).toList
+    val searchResult =
+      tleGroupService.search(wildcardQuery, limit, offset).asScala.map(toGroup).toList
+
+    GroupConnection(Page(searchResult, maxSearchResult, offset, limit))
   }
 
   /** Retrieve a group by its unique ID.
