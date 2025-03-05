@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Backdrop } from "@mui/material";
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
@@ -168,6 +169,14 @@ export const LegacyContent = React.memo(function LegacyContent({
   isReloadNeeded,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
+  // Flag indicating the Legacy page content is being updated. Usually, the value should be set to `true` before a
+  // Legacy API request is submitted. Once the request is resolved, if there is a callback function provided externally
+  // (typically from the Legacy server side rendering), use the callback to handle the new content. Or, if the response
+  // is in the format of `LegacyContentResponse`, use state `content` to handle the new content. Once the page content
+  // is updated through either way, this flag should be reset to `false`.
+  // If the response of a Legacy API request is in the format of `ChangeRoute`, a navigation will be performed to the
+  // new route, and this usually will result in another Legacy API request to update the page content. So in this case,
+  // do NOT reset this flag until the new content is updated.
   const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
   const submittingForm = React.useRef<LegacyContentSubmission>({
     submitting: false,
@@ -209,11 +218,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean,
   ) {
-    // Setting the below flag and page content in `flushSync` is crucial, as it forces the DOM to change immediately (to display a spinner)
-    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web browser where it would've
-    // reloaded the page. Which is needed based on the way some of the Legacy AJAX code is written.
-
-    flushSync(() => setUpdatingContent(true));
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -299,6 +303,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 
     preUpdateFullscreenMode(submitValues);
 
+    // Before a request is submitted to update the legacy page content, show a backdrop with a spinner.
+    setUpdatingContent(true);
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
@@ -308,6 +314,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 
         if (callback) {
           callback(content);
+          // After the externally provided callback is executed, reset the updating flag.
+          setUpdatingContent(false);
         } else if (isPageContent(content)) {
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
@@ -434,10 +442,19 @@ export const LegacyContent = React.memo(function LegacyContent({
     [content, updateTemplate],
   );
 
-  return !updatingContent && content ? (
-    <LegacyContentRenderer {...content} />
-  ) : (
-    <LoadingCircle />
+  return (
+    <>
+      {content && <LegacyContentRenderer {...content} />}
+      {updatingContent && (
+        <Backdrop
+          invisible // invisible to avoid the page flicking
+          sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
+          open={updatingContent}
+        >
+          <LoadingCircle />
+        </Backdrop>
+      )}
+    </>
   );
 });
 
