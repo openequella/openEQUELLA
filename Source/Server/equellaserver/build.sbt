@@ -30,6 +30,7 @@ val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.1"
 val luceneVersion     = "9.12.1"
+val nettyVersion      = "4.1.119.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -256,7 +257,17 @@ libraryDependencies ++= {
     Seq.empty
   }
 }
-dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
+dependencyOverrides ++= Seq(
+  "javax.mail" % "mail"                % "1.4.7",
+  "io.netty"   % "netty-common"        % nettyVersion,
+  "io.netty"   % "netty-buffer"        % nettyVersion,
+  "io.netty"   % "netty-codec"         % nettyVersion,
+  "io.netty"   % "netty-handler"       % nettyVersion,
+  "io.netty"   % "netty-transport"     % nettyVersion,
+  "io.netty"   % "netty-codec-socks"   % nettyVersion,
+  "io.netty"   % "netty-handler-proxy" % nettyVersion,
+  "io.netty"   % "netty-codec-http"    % nettyVersion
+)
 
 excludeDependencies ++= Seq(
   "com.google.guava"             % "guava-jdk5",
