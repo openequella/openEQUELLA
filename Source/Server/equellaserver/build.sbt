@@ -104,7 +104,7 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.10.1",
-  "commons-codec"             % "commons-codec"         % "1.17.0",
+  "commons-codec"             % "commons-codec"         % "1.18.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.3.4",
