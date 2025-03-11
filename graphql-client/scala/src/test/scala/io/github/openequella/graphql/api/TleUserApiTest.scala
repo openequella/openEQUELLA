@@ -24,8 +24,6 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 import org.scalatest.prop.TableDrivenPropertyChecks._
 
-import scala.annotation.tailrec
-
 class TleUserApiTest extends AnyFunSpec with Matchers {
   // A known user in the Rest institution to test with. The values are those found in the
   // institution export - and imported at test time.
@@ -166,50 +164,10 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
       }
     }
 
-    // Both are tested in the one test, as they should both result in the same order of users. So
-    // the call from one can be used to validate the other.
     it("supports forward and backward pagination") {
-      @tailrec
-      def getUsersForward(
-          pagination: Pagination,
-          users: List[TleUserView] = List.empty
-      ): List[TleUserView] = {
-        assert(pagination.isInstanceOf[ForwardPagination])
-
-        TleUserApi.searchUsers(pagination) match {
-          case Left(errors) => fail("Failed to search for users: " + errors)
-          case Right(result) if result.continue.nonEmpty =>
-            getUsersForward(result.continue.get, users ++ result.items)
-          case Right(result) => users ++ result.items
-        }
+      TestHelper.testPagination(pageSize = 4, totalExpectedItems = TOTAL_USERS) {
+        (pagination: Pagination) => TleUserApi.searchUsers(pagination)
       }
-
-      // This pretty well identical to getUsersForward, but with the way users are appended to the
-      // list reversed. This is to ensure that the order of users is the same as the forward
-      // pagination.
-      //
-      // There is value in having these two implementations stand-alone for reference purposes.
-      @tailrec
-      def getUsersBackward(
-          pagination: Pagination,
-          users: List[TleUserView] = List.empty
-      ): List[TleUserView] = {
-        assert(pagination.isInstanceOf[BackwardPagination])
-
-        TleUserApi.searchUsers(pagination) match {
-          case Left(errors) => fail("Failed to search for users: " + errors)
-          case Right(result) if result.continue.nonEmpty =>
-            getUsersBackward(result.continue.get, result.items ++ users)
-          case Right(result) => result.items ++ users
-        }
-      }
-
-      val pageSize      = 4
-      val usersForward  = getUsersForward(ForwardPagination(pageSize))
-      val usersBackward = getUsersBackward(BackwardPagination(pageSize))
-      usersBackward shouldBe usersForward
-      usersForward.size shouldBe TOTAL_USERS
-      usersBackward.size shouldBe TOTAL_USERS
     }
 
     it("supports searching for a specific user") {
