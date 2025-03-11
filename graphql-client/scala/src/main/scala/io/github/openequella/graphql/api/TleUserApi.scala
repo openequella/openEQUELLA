@@ -188,41 +188,16 @@ object TleUserApi {
       query: Option[String] = None
   )(implicit cfg: ClientConfiguration): Either[List[ApiError], PaginationResult[TleUserView]] = {
     // Set up the various selectors
-    val pageInfo =
-      (PageInfo.hasNextPage ~ PageInfo.hasPreviousPage ~ PageInfo.startCursor ~ PageInfo.endCursor)
-        .mapN(
-          PageInfoView
-        )
     val userEdge =
       (UserEdge.cursor ~ UserEdge.node { tleUser }).mapN(NodeWithCursorView[TleUserView](_, _))
-    val userConnection = (UserConnection.pageInfo { pageInfo } ~ UserConnection.edges { userEdge })
-      .mapN(ConnectionView[TleUserView](_, _))
+    val userConnection =
+      (UserConnection.pageInfo { PageInfoView.selector } ~ UserConnection.edges { userEdge })
+        .mapN(ConnectionView[TleUserView](_, _))
 
-    // Builds the query based on the pagination type
-    val q = pagination match {
-      case ForwardPagination(limit, after) =>
-        Queries.internalUsers(query, Some(limit), None, None, after) {
-          userConnection
-        }
-      case BackwardPagination(limit, before) =>
-        Queries.internalUsers(query, None, Some(limit), before, None) {
-          userConnection
-        }
-    }
-
-    // Execute the query
-    Client.query(q) match {
-      case Right(result) =>
-        result match {
-          case Some(ConnectionView(pageInfo, edges)) =>
-            val users    = edges.map(_.node)
-            val continue = ContinuationPagination(pagination, pageInfo)
-
-            Right(PaginationResult(users, continue))
-          case None => Right(PaginationResult(List.empty, None))
-
-        }
-      case Left(errors) => Left(errors)
+    queryWithPagination(pagination) { (first, last, before, after) =>
+      Queries.internalUsers(query, first, last, before, after) {
+        userConnection
+      }
     }
   }
 }

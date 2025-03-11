@@ -18,6 +18,9 @@
 
 package io.github.openequella.graphql.api
 
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.client.PageInfo
+
 /** Represents the Page Info part of Connection (pagination) GraphQL responses.
   *
   * @param hasNextPage
@@ -35,6 +38,16 @@ final case class PageInfoView(
     startCursor: Option[String],
     endCursor: Option[String]
 )
+object PageInfoView {
+
+  /** The selection builder for PageInfoView.
+    */
+  val selector: SelectionBuilder[PageInfo, PageInfoView] =
+    (PageInfo.hasNextPage ~ PageInfo.hasPreviousPage ~ PageInfo.startCursor ~ PageInfo.endCursor)
+      .mapN(
+        PageInfoView(_, _, _, _)
+      )
+}
 
 /** Represents a node with a cursor in a Connection (pagination) GraphQL response.
   *
@@ -86,6 +99,17 @@ final case class BackwardPagination(limit: Int, before: Option[String] = None) e
   *   The pagination information to continue the query, or None if there are no more items.
   */
 final case class PaginationResult[T](items: List[T], continue: Option[Pagination])
+object PaginationResult {
+
+  /** Creates a PaginationResult with no items and no continuation.
+    *
+    * @tparam T
+    *   The type of the items.
+    * @return
+    *   The empty PaginationResult.
+    */
+  def none[T]: PaginationResult[T] = PaginationResult[T](List.empty, None)
+}
 
 /** Helper object to determine the pagination information to continue a query.
   */
