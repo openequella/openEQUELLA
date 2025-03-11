@@ -42,8 +42,8 @@ const classes = {
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   [`& .${classes.dialogContent}`]: {
     // Extra indentation for the dialog content.
-    paddingLeft: theme.spacing(6),
-    paddingRight: theme.spacing(6),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
   },
   [`& .${classes.copyContent}`]: {
     backgroundColor: theme.palette.background.default,
@@ -80,6 +80,36 @@ const {
   share: actionShare,
 } = languageStrings.common.action;
 
+const ShareDetails = ({
+  title,
+  details,
+}: {
+  title: string;
+  details: string;
+}) => (
+  <Grid item container>
+    <Grid item container justifyContent="space-between" spacing={2}>
+      <Grid item>
+        <Typography variant="h6">{title}</Typography>
+      </Grid>
+      <Grid item>
+        <TooltipIconButton
+          title={actionCopy}
+          onClick={(event) => {
+            event.stopPropagation();
+            navigator.clipboard.writeText(details);
+          }}
+        >
+          <Copy />
+        </TooltipIconButton>
+      </Grid>
+    </Grid>
+    <Grid item className={classes.copyContent}>
+      <code>{details}</code>
+    </Grid>
+  </Grid>
+);
+
 /**
  * Provide a Dialog which allows users to copy the information of an Attachment, including:
  *
@@ -92,41 +122,20 @@ export const ShareAttachmentDialog = ({
   src,
   embedCode,
 }: ShareAttachmentDialogProps) => {
-  const sharing = (title: string, content: string) => (
-    <Grid item container>
-      <Grid item container justifyContent="space-between" spacing={2}>
-        <Grid item>
-          <Typography variant="h6">{title}</Typography>
-        </Grid>
-        <Grid item>
-          <TooltipIconButton
-            title={actionCopy}
-            onClick={(event) => {
-              event.stopPropagation();
-              navigator.clipboard.writeText(content);
-            }}
-          >
-            <Copy />
-          </TooltipIconButton>
-        </Grid>
-      </Grid>
-      <Grid item className={classes.copyContent}>
-        <code>{content}</code>
-      </Grid>
-    </Grid>
-  );
+  const shareDetails = (title: string, details: O.Option<string>) =>
+    pipe(
+      details,
+      O.map((d) => <ShareDetails title={title} details={d} />),
+      O.toUndefined,
+    );
 
   return (
     <StyledDialog open={open} fullWidth>
       <DialogTitle variant="h4">{actionShare}</DialogTitle>
       <DialogContent className={classes.dialogContent}>
         <Grid container direction="row" spacing={2}>
-          {pipe(
-            embedCode,
-            O.map((code) => sharing(embedCodeLabel, code)),
-            O.toUndefined,
-          )}
-          {sharing(linkLabel, src)}
+          {shareDetails(embedCodeLabel, embedCode)}
+          {shareDetails(linkLabel, O.of(src))}
         </Grid>
       </DialogContent>
       <DialogActions>
