@@ -103,9 +103,9 @@ const buildYouTube = (src: string): React.JSX.Element =>
  * @param mimeType The full MIME type pointing to a custom oEQ type - e.g. openequella/youtube.
  * @param src The src (typically a URL) for the item to embed.
  *
- * @return If a match for the `mimeType` is found a `JSX.Element` of either `src` or containing
- *         processing information will be returned. However if a MIME type match fails, then
- *         `O.none` is returned.
+ * @return If a match for the `mimeType` is found, a `React.JSX.Element` of either `src` or containing
+ *         processing information will be returned. However, if a MIME type match fails, then return a
+ *         component showing that the provided content is unsupported.
  */
 const customEmbeddedComponent = (
   mimeType: string,
@@ -124,7 +124,8 @@ const customEmbeddedComponent = (
 
 /**
  * Given an Attachment's MIME type and URL link, builds an embedded component for viewing the Attachment.
- * If browser doesn't support the MIME type or the build fails due to other reasons, return an error describing why.
+ * If browser doesn't support the MIME type or the build fails due to other reasons, return component to
+ * display an error to the user.
  *
  * @param mimeType MIME type of the Attachment which determines what type of embedded attachment to build.
  * @param src Link to view the Attachment

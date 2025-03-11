@@ -37,7 +37,7 @@ import { simpleMatch } from "../util/match";
 import {
   buildEmbedCode,
   buildEmbeddedComponent,
-} from "./embedattachment/EmbeddedAttachment";
+} from "./embedattachment/EmbeddedAttachmentHelper";
 import { OEQItemSummaryPageButton } from "./OEQItemSummaryPageButton";
 import { ShareAttachmentDialog } from "./ShareAttachmentDialog";
 import { TooltipIconButton } from "./TooltipIconButton";

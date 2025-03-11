@@ -49,7 +49,7 @@ import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { buildEmbedCode } from "../../components/embedattachment/EmbeddedAttachment";
+import { buildEmbedCode } from "../../components/embedattachment/EmbeddedAttachmentHelper";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import { ShareAttachmentDialog } from "../../components/ShareAttachmentDialog";
 import { TooltipIconButton } from "../../components/TooltipIconButton";

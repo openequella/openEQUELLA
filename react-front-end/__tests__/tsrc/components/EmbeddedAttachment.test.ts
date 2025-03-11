@@ -21,7 +21,7 @@ import * as O from "fp-ts/Option";
 import {
   buildEmbedCode,
   buildEmbeddedComponent,
-} from "../../../tsrc/components/embedattachment/EmbeddedAttachment";
+} from "../../../tsrc/components/embedattachment/EmbeddedAttachmentHelper";
 import { CustomMimeTypes } from "../../../tsrc/modules/MimeTypesModule";
 import { buildViewUrl } from "../../../tsrc/modules/YouTubeModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
