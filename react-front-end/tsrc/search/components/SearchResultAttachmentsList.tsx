@@ -262,6 +262,30 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
+  // Handler for sharing an Attachment.
+  const onShare = ({
+    attachmentType,
+    description,
+    mimeType,
+    filePath,
+    links: { view },
+  }: OEQ.Search.Attachment) => {
+    const src: string = determineAttachmentViewUrl(
+      uuid,
+      version,
+      attachmentType,
+      view,
+      filePath,
+    );
+    const embedCode: O.Option<string> = pipe(
+      mimeType,
+      O.fromNullable,
+      O.flatMap((m) => buildEmbedCode(m, src, description)),
+    );
+
+    setAttachmentToShare(O.of({ src, embedCode }));
+  };
+
   const buildIcon = (broken: boolean) => {
     if (broken) {
       return (
@@ -305,17 +329,8 @@ export const SearchResultAttachmentsList = ({
 
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
-      const {
-        attachment: {
-          id,
-          description,
-          brokenAttachment,
-          attachmentType,
-          mimeType,
-          filePath,
-          links: { view },
-        },
-      } = attachmentAndViewerConfig;
+      const { attachment } = attachmentAndViewerConfig;
+      const { id, description, brokenAttachment } = attachment;
 
       return (
         <ListItem
@@ -348,20 +363,7 @@ export const SearchResultAttachmentsList = ({
               title={languageStrings.common.action.share}
               onClick={(event) => {
                 event.stopPropagation();
-                const src: string = determineAttachmentViewUrl(
-                  uuid,
-                  version,
-                  attachmentType,
-                  view,
-                  filePath,
-                );
-                const embedCode: O.Option<string> = pipe(
-                  mimeType,
-                  O.fromNullable,
-                  O.flatMap((m) => buildEmbedCode(m, src, description)),
-                );
-
-                setAttachmentToShare(O.of({ src, embedCode }));
+                onShare(attachment);
               }}
             >
               <Share />
@@ -452,6 +454,19 @@ export const SearchResultAttachmentsList = ({
     </Badge>
   );
 
+  const shareAttachmentDialog = pipe(
+    attachmentToShare,
+    O.map(({ src, embedCode }) => (
+      <ShareAttachmentDialog
+        open
+        onCloseDialog={() => setAttachmentToShare(O.none)}
+        src={src}
+        embedCode={embedCode}
+      />
+    )),
+    O.toUndefined,
+  );
+
   return attachmentCount > 0 ? (
     <>
       <StyledAccordion
@@ -470,18 +485,7 @@ export const SearchResultAttachmentsList = ({
           {attachExpanded && buildAttachmentList()}
         </AccordionDetails>
       </StyledAccordion>
-      {pipe(
-        attachmentToShare,
-        O.map(({ src, embedCode }) => (
-          <ShareAttachmentDialog
-            open
-            onCloseDialog={() => setAttachmentToShare(O.none)}
-            src={src}
-            embedCode={embedCode}
-          />
-        )),
-        O.toUndefined,
-      )}
+      {shareAttachmentDialog}
     </>
   ) : null;
 };
