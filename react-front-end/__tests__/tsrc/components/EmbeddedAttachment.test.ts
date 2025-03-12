@@ -124,7 +124,7 @@ describe("buildEmbedCode", () => {
     [
       CustomMimeTypes.YOUTUBE,
       YOUTUBE_URL,
-      `<iframe width="560px" height="315px" src="https://www.youtube-nocookie.com/embed/fakeId" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+      `<iframe width="560px" height="315px" style={{ border: "none" }} src="https://www.youtube-nocookie.com/embed/fakeId" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
     ],
     [
       CustomMimeTypes.KALTURA,

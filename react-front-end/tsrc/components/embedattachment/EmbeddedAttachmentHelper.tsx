@@ -26,7 +26,7 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import {
-  buildPlayerUrl,
+  buildKalturaPlayerUrl,
   EXTERNAL_ID_PARAM,
   parseExternalId,
 } from "../../modules/KalturaModule";
@@ -170,7 +170,7 @@ const kalturaEmbedCode = (src: string): O.Option<string> =>
       ),
     ),
     O.map((details) =>
-      buildPlayerUrl(details, `kaltura_player_${Date.now()}`, "IFRAME"),
+      buildKalturaPlayerUrl(details, `kaltura_player_${Date.now()}`, "IFRAME"),
     ),
     O.map(
       (url) =>
@@ -184,7 +184,7 @@ const youtubeEmbedCode = (src: string): O.Option<string> =>
     O.fromNullable,
     O.map(
       (id) =>
-        `<iframe width="560px" height="315px" src="https://www.youtube-nocookie.com/embed/${id}" title="${languageStrings.youTubePlayer.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+        `<iframe width="560px" height="315px" style={{ border: "none" }} src="https://www.youtube-nocookie.com/embed/${id}" title="${languageStrings.youTubePlayer.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
     ),
   );
 

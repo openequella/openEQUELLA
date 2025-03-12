@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import {
-  buildPlayerUrl,
+  buildKalturaPlayerUrl,
   KalturaEmbedStyle,
   KalturaPlayerDetails,
   KalturaPlayerVersion,
@@ -75,7 +75,7 @@ describe("parseExternalId", () => {
       details: KalturaPlayerDetails,
       expected: string,
     ) => {
-      const playerUrl = buildPlayerUrl(details, PLAYER_ID);
+      const playerUrl = buildKalturaPlayerUrl(details, PLAYER_ID);
       expect(playerUrl).toBe(expected);
     },
   );
@@ -92,7 +92,11 @@ describe("parseExternalId", () => {
   ])(
     "builds a Kaltura player embed URL for %s embed style",
     (style: KalturaEmbedStyle, expected: string) => {
-      const playerUrl = buildPlayerUrl(V7_PLAYER_DETAILS, PLAYER_ID, style);
+      const playerUrl = buildKalturaPlayerUrl(
+        V7_PLAYER_DETAILS,
+        PLAYER_ID,
+        style,
+      );
       expect(playerUrl).toBe(expected);
     },
   );

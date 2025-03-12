@@ -160,7 +160,7 @@ export const updateKalturaAttachment = (
 /**
  * Build a Kaltura player embed URL based on the provided external IDs and player version.
  */
-export const buildPlayerUrl = (
+export const buildKalturaPlayerUrl = (
   { partnerId, uiconfId, entryId, version }: KalturaPlayerDetails,
   playerId: string,
   kalturaEmbedStyle: KalturaEmbedStyle = "AUTO",

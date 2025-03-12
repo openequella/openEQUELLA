@@ -18,7 +18,7 @@
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import {
-  buildPlayerUrl,
+  buildKalturaPlayerUrl,
   KalturaPlayerDetails,
 } from "../../modules/KalturaModule";
 
@@ -61,7 +61,7 @@ export const KalturaPlayerEmbed = ({
     if (divElem.current) {
       const script = document.createElement("script");
       script.async = true;
-      script.src = buildPlayerUrl(playerDetails, playerId);
+      script.src = buildKalturaPlayerUrl(playerDetails, playerId, "AUTO");
       // This will result in a <script> block being added below the playerId <div>. Which wil auto
       // execute and then add the player to the playerId `<div>`.
       divElem.current.appendChild(script);

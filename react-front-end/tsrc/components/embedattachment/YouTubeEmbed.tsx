@@ -49,6 +49,7 @@ const YouTubeEmbed = ({ dimensions, videoId }: YouTubeEmbedProps) => (
     className="skip-css-reset"
     width={dimensions?.width ?? 560}
     height={dimensions?.height ?? 315}
+    style={{ border: "none" }}
     src={`https://www.youtube-nocookie.com/embed/${videoId}`}
     title={languageStrings.youTubePlayer.title}
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
