@@ -367,7 +367,7 @@ describe("<MyResourcesPage/>", () => {
       await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
       // Confirm that the image is displayed in the Lightbox now.
       const image = container.querySelector(".Lightbox-lightboxImage");
-      expect(image).toBeDefined();
+      expect(image).toBeInTheDocument();
 
       // Access to summary page is disabled.
       expect(

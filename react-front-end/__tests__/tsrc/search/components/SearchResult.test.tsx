@@ -217,7 +217,7 @@ describe("<SearchResult/>", () => {
 
     // The lightbox has now been displayed with the unique element being the lightbox's 'embed code' button.
     const lightbox = container.querySelector(".Lightbox-lightboxBackdrop");
-    expect(lightbox).toBeDefined();
+    expect(lightbox).toBeInTheDocument();
     expect(
       queryByLabelText(languageStrings.lightboxComponent.openSummaryPage),
     ).not.toBeInTheDocument();
