@@ -20,6 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.test.TestHelper
+import io.github.openequella.graphql.test.TestHelper.specialCharacters
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should._
 import org.scalatest.prop.TableDrivenPropertyChecks._
@@ -201,42 +202,9 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
     }
 
     it("handles special characters in the query string") {
-      val specialCharacters = Table(
-        "char",
-        "!",
-        "@",
-        "#",
-        "$",
-        "%",
-        "^",
-        "&",
-        "*",
-        "(",
-        ")",
-        "-",
-        "_",
-        "=",
-        "+",
-        "[",
-        "]",
-        "{",
-        "}",
-        "|",
-        "\\",
-        ":",
-        ";",
-        "\"",
-        "'",
-        "<",
-        ">",
-        ",",
-        ".",
-        "?",
-        "/"
-      )
-
       forAll(specialCharacters) { char =>
         val response = TleUserApi.searchUsers(ForwardPagination(1), Some(s"test$char"))
+        // Basically, the server doesn't blow up - not testing search validity
         response shouldBe a[Right[_, _]]
       }
     }

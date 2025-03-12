@@ -23,6 +23,7 @@ import io.github.openequella.graphql.{Client, ClientConfiguration}
 import org.scalatest.Assertions.fail
 import org.scalatest.matchers.must.Matchers.have
 import org.scalatest.matchers.should.Matchers.{a, convertToAnyShouldWrapper}
+import org.scalatest.prop.Tables.Table
 import sttp.model.Uri
 
 import scala.annotation.tailrec
@@ -171,4 +172,40 @@ object TestHelper {
 
     retrieveItems(BackwardPagination(pageSize))
   }
+
+  /** Special characters to test in queries.
+    */
+  val specialCharacters = Table(
+    "char",
+    "!",
+    "@",
+    "#",
+    "$",
+    "%",
+    "^",
+    "&",
+    "*",
+    "(",
+    ")",
+    "-",
+    "_",
+    "=",
+    "+",
+    "[",
+    "]",
+    "{",
+    "}",
+    "|",
+    "\\",
+    ":",
+    ";",
+    "\"",
+    "'",
+    "<",
+    ">",
+    ",",
+    ".",
+    "?",
+    "/"
+  )
 }
