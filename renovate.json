@@ -3,7 +3,8 @@
     "config:base",
     ":dependencyDashboard",
     ":maintainLockFilesMonthly",
-    "group:definitelyTyped"
+    "group:definitelyTyped",
+    "packages:eslint"
   ],
   "prConcurrentLimit": 10,
   "prHourlyLimit": 2,
@@ -62,8 +63,16 @@
       "groupName": "Apache Tomcat packages"
     },
     {
+      "matchPackagePatterns": ["^org.typelevel:cats"],
+      "groupName": "Typelevel Cats"
+    },
+    {
       "matchPackagePatterns": ["^org.http4s:http4s"],
       "groupName": "http4s packages"
+    },
+    {
+      "matchPackagePatterns": ["scala", "sbt/sbt", "com.eed3si9n:sbt-assembly", "^org.scala-lang.modules", "^org.scala-sbt"],
+      "groupName": "Scala"
     },
     {
       "matchPackagePatterns": ["^org.slf4j"],
