@@ -28,6 +28,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom";
 import * as React from "react";
 import "../FpTsMatchers";
+import { HtmlValidate } from "html-validate";
 
 const {
   kalturaExternalIdIssue,
@@ -105,38 +106,45 @@ describe("buildEmbedCode", () => {
   const getCode = (code: O.Option<string>): string | undefined =>
     O.toUndefined(code);
 
+  const htmlValidate = new HtmlValidate();
+
   it.each([
     [
       MIME_TYPE_IMAGE,
       RESOURCE_URL,
-      `<img alt="resource" src="https://example.com/resource" />`,
+      `<img alt="resource" src="https://example.com/resource">`,
     ],
     [
       MIME_TYPE_VIDEO,
       RESOURCE_URL,
-      `<video controls src="https://example.com/resource" aria-label="resource" />`,
+      `<video controls src="https://example.com/resource" aria-label="resource"></video>`,
     ],
     [
       MIME_TYPE_AUDIO,
       RESOURCE_URL,
-      `<audio controls src="https://example.com/resource" aria-label="resource" />`,
+      `<audio controls src="https://example.com/resource" aria-label="resource"></audio>`,
     ],
     [
       CustomMimeTypes.YOUTUBE,
       YOUTUBE_URL,
-      `<iframe width="560px" height="315px" style={{ border: "none" }} src="https://www.youtube-nocookie.com/embed/fakeId" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+      `<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fakeId" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
     ],
     [
       CustomMimeTypes.KALTURA,
       KALTURA_URL,
-      `<iframe width="560px" height="395px" src="https://cdnapisec.kaltura.com/p/4211723/embedPlaykitJs/uiconf_id/48373143?iframeembed=true&entry_id=1_d1h8f1dx" allowfullscreen allow="autoplay *; fullscreen *; encrypted-media *"></iframe>`,
+      `<iframe width="560" height="395" src="https://cdnapisec.kaltura.com/p/4211723/embedPlaykitJs/uiconf_id/48373143?iframeembed=true&entry_id=1_d1h8f1dx" allowfullscreen allow="autoplay *; fullscreen *; encrypted-media *" title="Kaltura video player"></iframe>`,
     ],
   ])(
     "builds embed code for supported MIME type %s",
-    (mimeType: string, url: string, expectation: string) => {
+    async (mimeType: string, url: string, expectation: string) => {
       const code = buildEmbedCode(mimeType, url, RESOURCE_TITLE);
       expect(code).toBeSome();
-      expect(getCode(code)).toBe(expectation);
+
+      const embedCode = getCode(code);
+      expect(embedCode).toBe(expectation);
+
+      const result = await htmlValidate.validateString(embedCode!);
+      expect(result.valid).toBe(true);
     },
   );
 

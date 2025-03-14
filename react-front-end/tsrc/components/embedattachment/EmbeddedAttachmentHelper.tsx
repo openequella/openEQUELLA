@@ -174,7 +174,7 @@ const kalturaEmbedCode = (src: string): O.Option<string> =>
     ),
     O.map(
       (url) =>
-        `<iframe width="560px" height="395px" src="${url}" allowfullscreen allow="autoplay *; fullscreen *; encrypted-media *"></iframe>`,
+        `<iframe width="560" height="395" src="${url}" allowfullscreen allow="autoplay *; fullscreen *; encrypted-media *" title="${languageStrings.kalturaPlayer.title}"></iframe>`,
     ),
   );
 
@@ -184,7 +184,7 @@ const youtubeEmbedCode = (src: string): O.Option<string> =>
     O.fromNullable,
     O.map(
       (id) =>
-        `<iframe width="560px" height="315px" style={{ border: "none" }} src="https://www.youtube-nocookie.com/embed/${id}" title="${languageStrings.youTubePlayer.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
+        `<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/${id}" title="${languageStrings.youTubePlayer.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
     ),
   );
 
@@ -208,14 +208,14 @@ export const buildEmbedCode = (
   pipe(
     splitMimeType(mimeType)[0],
     simpleMatch({
-      image: () => O.of(`<img alt="${title}" src="${src}" />`),
+      image: () => O.of(`<img alt="${title}" src="${src}">`),
       video: () =>
         isBrowserSupportedVideo(mimeType)
-          ? O.of(`<video controls src="${src}" aria-label="${title}" />`)
+          ? O.of(`<video controls src="${src}" aria-label="${title}"></video>`)
           : O.none,
       audio: () =>
         isBrowserSupportedAudio(mimeType)
-          ? O.of(`<audio controls src="${src}" aria-label="${title}" />`)
+          ? O.of(`<audio controls src="${src}" aria-label="${title}"></audio>`)
           : O.none,
       openequella: () => customEmbedCode(mimeType, src),
       _: () => O.none,

@@ -399,6 +399,9 @@ export const languageStrings = {
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
+  kalturaPlayer: {
+    title: "Kaltura video player",
+  },
   lightboxComponent: {
     openSummaryPage: "Open resource summary page",
     viewNext: "View next attachment",
