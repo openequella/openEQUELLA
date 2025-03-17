@@ -444,7 +444,9 @@ export const LegacyContent = React.memo(function LegacyContent({
 
   return (
     <>
-      {content && <LegacyContentRenderer {...content} />}
+      {content && (
+        <LegacyContentRenderer {...content} key={content.contentId} />
+      )}
       {updatingContent && (
         <Backdrop
           invisible // invisible to avoid the page flicking
