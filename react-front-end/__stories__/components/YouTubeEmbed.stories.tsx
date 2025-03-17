@@ -19,7 +19,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import YouTubeEmbed, {
   YouTubeEmbedProps,
-} from "../../tsrc/components/YouTubeEmbed";
+} from "../../tsrc/components/embedattachment/YouTubeEmbed";
 
 export default {
   title: "component/YouTubeEmbed",

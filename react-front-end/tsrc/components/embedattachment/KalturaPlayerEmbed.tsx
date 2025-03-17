@@ -17,7 +17,10 @@
  */
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { buildPlayerUrl, KalturaPlayerVersion } from "../modules/KalturaModule";
+import {
+  buildKalturaPlayerUrl,
+  KalturaPlayerDetails,
+} from "../../modules/KalturaModule";
 
 export interface KalturaPlayerEmbedProps {
   dimensions?: {
@@ -30,28 +33,13 @@ export interface KalturaPlayerEmbedProps {
      */
     width: number;
   };
-  /**
-   * Kaltura Media Entry ID for the movie, audio, etc to be embedded.
-   */
-  entryId: string;
-  /**
-   * A Kaltura Partner ID for the Kaltura account which holds the content identified by `entryId`.
-   */
-  partnerId: number;
-  /**
-   * The player `uiconf_id` for the player configuration to be used to create the embedded player.
-   */
-  uiconfId: number;
-  /**
-   * Version of the selected player to use. Must be either "V2" or "V7".
-   */
-  version: KalturaPlayerVersion;
+  playerDetails: KalturaPlayerDetails;
 }
 
 /**
- * Embeds the specified Kaltura Media Entry (`entryId`) using the specified player configuration
- * (`uiconf_id`). This is achieved by requesting the `embedPlaykitJs ` script from the Kaltura CDN
- * using details of the hosting Kaltura account.
+ * Embeds the specified Kaltura Media Entry (`entryId`) using the AUTO Embed style. This is achieved
+ * by requesting the `embedPlaykitJs ` script with the specified player configuration (`uiconf_id`)
+ * from the Kaltura CDN using details of the hosting Kaltura account.
  *
  * When that script is retrieved and embedded in the page, it is then auto executed through the
  * use of the `async` flag on the `script` tag. The execution of the script causes a player to
@@ -64,10 +52,7 @@ export interface KalturaPlayerEmbedProps {
  */
 export const KalturaPlayerEmbed = ({
   dimensions = { width: 560, height: 395 }, // default to the standard V7 player dimensions
-  entryId,
-  partnerId,
-  uiconfId,
-  version,
+  playerDetails,
 }: KalturaPlayerEmbedProps) => {
   const divElem = useRef<HTMLElement>();
   const [playerId] = useState<string>(`kaltura_player_${Date.now()}`);
@@ -76,18 +61,12 @@ export const KalturaPlayerEmbed = ({
     if (divElem.current) {
       const script = document.createElement("script");
       script.async = true;
-      script.src = buildPlayerUrl(
-        partnerId,
-        uiconfId,
-        entryId,
-        version,
-        playerId,
-      );
+      script.src = buildKalturaPlayerUrl(playerDetails, playerId, "AUTO");
       // This will result in a <script> block being added below the playerId <div>. Which wil auto
       // execute and then add the player to the playerId `<div>`.
       divElem.current.appendChild(script);
     }
-  }, [dimensions, entryId, partnerId, playerId, uiconfId, version]);
+  }, [dimensions, playerDetails, playerId]);
 
   return (
     <div

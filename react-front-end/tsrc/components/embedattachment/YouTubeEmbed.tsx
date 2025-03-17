@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { languageStrings } from "../util/langstrings";
+import { languageStrings } from "../../util/langstrings";
 
 export interface YouTubeEmbedProps {
   /**
@@ -49,9 +49,9 @@ const YouTubeEmbed = ({ dimensions, videoId }: YouTubeEmbedProps) => (
     className="skip-css-reset"
     width={dimensions?.width ?? 560}
     height={dimensions?.height ?? 315}
+    style={{ border: "none" }}
     src={`https://www.youtube-nocookie.com/embed/${videoId}`}
     title={languageStrings.youTubePlayer.title}
-    frameBorder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowFullScreen
   />

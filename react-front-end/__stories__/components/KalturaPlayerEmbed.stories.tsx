@@ -20,7 +20,7 @@ import * as React from "react";
 import {
   KalturaPlayerEmbed,
   KalturaPlayerEmbedProps,
-} from "../../tsrc/components/KalturaPlayerEmbed";
+} from "../../tsrc/components/embedattachment/KalturaPlayerEmbed";
 
 export default {
   title: "component/KalturaEmbed",
@@ -32,14 +32,16 @@ export const EmbeddedKalturaVideoPlayerV2: StoryFn<KalturaPlayerEmbedProps> = (
 ) => <KalturaPlayerEmbed {...args} />;
 EmbeddedKalturaVideoPlayerV2.args = {
   // These video details were figured out from the publicly accessible demo video.
-  partnerId: 243342,
-  uiconfId: 21099702,
-  entryId: "1_sf5ovm7u",
+  playerDetails: {
+    partnerId: 243342,
+    uiconfId: 21099702,
+    entryId: "1_sf5ovm7u",
+    version: "V2",
+  },
   dimensions: {
     width: 400,
     height: 333,
   },
-  version: "V2",
 };
 
 export const EmbeddedKalturaVideoPlayerV7: StoryFn<KalturaPlayerEmbedProps> = (
@@ -48,14 +50,16 @@ export const EmbeddedKalturaVideoPlayerV7: StoryFn<KalturaPlayerEmbedProps> = (
 EmbeddedKalturaVideoPlayerV7.args = {
   // These video details were figured out from the publicly accessible demo video at:
   // https://knowledge.kaltura.com/help/player-embed
-  partnerId: 4834032,
-  uiconfId: 50952692,
-  entryId: "1_fwzaeesq",
+  playerDetails: {
+    partnerId: 4834032,
+    uiconfId: 50952692,
+    entryId: "1_fwzaeesq",
+    version: "V7",
+  },
   dimensions: {
     width: 560,
     height: 395,
   },
-  version: "V7",
 };
 
 export const EmbeddedKalturaVideoPlayerLarge: StoryFn<
