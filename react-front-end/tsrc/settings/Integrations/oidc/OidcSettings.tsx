@@ -44,6 +44,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
 import * as E from "fp-ts/Either";
 import SelectRoleControl from "../../../components/SelectRoleControl";
+import { isNonEmptyString } from "../../../util/validation";
 import {
   generateGeneralDetails,
   generateApiDetails,
@@ -146,12 +147,20 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       O.fold(
         () => appErrorHandler(`Unsupported platform ${newValue}`),
         (platform) => {
+          // If user switch back to the initial platform, show the initial API details.
+          const apiDetails: OEQ.Oidc.RestApiDetails =
+            platform === initialConfig.platform
+              ? {
+                  apiUrl: initialConfig.apiUrl,
+                  apiClientId: initialConfig.apiClientId,
+                }
+              : defaultApiDetails;
           dispatch({
             type: "configure",
             config: {
               ...config,
               platform,
-              ...defaultApiDetails,
+              ...apiDetails,
             },
           });
         },
@@ -214,13 +223,22 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
       validateEachField(),
       TE.chain(validateStructure),
       TE.chain(submit),
-      TE.match(appErrorHandler, () => {
-        // Reset the initial values since user has saved the settings.
-        dispatch({
-          type: "reset",
-        });
-        setShowSnackBar(true);
-      }),
+      TE.match(
+        (e) => {
+          appErrorHandler(e);
+          dispatch({
+            type: "configure",
+            config,
+          });
+        },
+        () => {
+          // Reset the initial values since user has saved the settings.
+          dispatch({
+            type: "reset",
+          });
+          setShowSnackBar(true);
+        },
+      ),
     )();
   }, [
     apiDetailsRenderOptions,
@@ -308,7 +326,8 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
               />
 
               {pipe(
-                O.fromNullable(config.roleConfig?.roleClaim),
+                config.roleConfig?.roleClaim,
+                O.fromPredicate(isNonEmptyString),
                 O.map((roleClaim) => (
                   <CustomRolesMappingControl
                     initialMappings={

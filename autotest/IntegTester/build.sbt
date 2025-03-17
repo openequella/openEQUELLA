@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
   "org.http4s"               %% "http4s-blaze-server" % Http4sVersion,
   "org.http4s"               %% "http4s-dsl"          % Http4sVersion,
   "org.http4s"               %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"                 % "slf4j-simple"        % "2.0.13",
+  "org.slf4j"                 % "slf4j-simple"        % "2.0.17",
   "org.jsoup"                 % "jsoup"               % jsoupVersion,
   "com.nulab-inc"            %% "scala-oauth2-core"   % "1.6.0",
   "javax.servlet"             % "javax.servlet-api"   % "4.0.1",
@@ -34,7 +34,7 @@ libraryDependencies ++= Seq(
   jacksonDataBind,
   jacksonModuleScala,
   "com.auth0" % "jwks-rsa" % "0.22.1",
-  "com.auth0" % "java-jwt" % "4.4.0"
+  "com.auth0" % "java-jwt" % "4.5.0"
 )
 
 (Compile / resourceGenerators) += Def.task {
