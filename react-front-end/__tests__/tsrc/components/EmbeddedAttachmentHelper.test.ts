@@ -28,7 +28,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import "@testing-library/jest-dom";
 import * as React from "react";
 import "../FpTsMatchers";
-import { HtmlValidate } from "html-validate";
+import "html-validate/jest";
 
 const {
   kalturaExternalIdIssue,
@@ -106,8 +106,6 @@ describe("buildEmbedCode", () => {
   const getCode = (code: O.Option<string>): string | undefined =>
     O.toUndefined(code);
 
-  const htmlValidate = new HtmlValidate();
-
   it.each([
     [
       MIME_TYPE_IMAGE,
@@ -142,9 +140,7 @@ describe("buildEmbedCode", () => {
 
       const embedCode = getCode(code);
       expect(embedCode).toBe(expectation);
-
-      const result = await htmlValidate.validateString(embedCode!);
-      expect(result.valid).toBe(true);
+      expect(embedCode!).toHTMLValidate();
     },
   );
 
