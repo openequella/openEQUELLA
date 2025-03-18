@@ -214,7 +214,7 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.4",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.0.3",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.1",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
