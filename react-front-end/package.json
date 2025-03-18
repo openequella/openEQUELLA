@@ -40,7 +40,7 @@
     "build:langbundle": "cross-env-shell \"node ${npm_package_config_tools}/BuildLanguageBundle.js > ${npm_package_config_buildlang}/jsbundle.json\"",
     "build:bundle": "cross-env-shell NODE_OPTIONS=\"--max_old_space_size=4096\" parcel build --no-scope-hoist --public-url=. --target mainapp ${npm_package_config_parcelEntryFiles}",
     "build": "npm-run-all compile:* build:*",
-    "dev": "npm run build && cross-env-shell parcel watch --no-autoinstall --public-url=. --target mainappdev ${npm_package_config_parcelEntryFiles}",
+    "dev": "npm run build && cross-env-shell parcel watch --public-url=. --target mainappdev ${npm_package_config_parcelEntryFiles}",
     "test": "jest test --maxWorkers 50%",
     "storybook": "storybook dev  -p 6006",
     "build-storybook": "storybook build"
@@ -119,6 +119,7 @@
     "@types/sprintf-js": "1.1.4",
     "@types/uuid": "9.0.8",
     "babel-jest": "29.7.0",
+    "buffer": "6.0.3",
     "core-js": "3.37.1",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
