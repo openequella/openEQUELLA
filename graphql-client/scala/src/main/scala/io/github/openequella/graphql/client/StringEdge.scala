@@ -16,18 +16,14 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.client
 
-package object client {
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import caliban.client.FieldBuilder._
+import caliban.client._
+
+object StringEdge {
+  def cursor: SelectionBuilder[StringEdge, String] =
+    _root_.caliban.client.SelectionBuilder.Field("cursor", Scalar())
+  def node: SelectionBuilder[StringEdge, String] =
+    _root_.caliban.client.SelectionBuilder.Field("node", Scalar())
 }

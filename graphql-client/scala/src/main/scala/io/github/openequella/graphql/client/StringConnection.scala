@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.client
 
-package object client {
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import caliban.client.FieldBuilder._
+import caliban.client._
+
+object StringConnection {
+  def pageInfo[A](
+      innerSelection: SelectionBuilder[PageInfo, A]
+  ): SelectionBuilder[StringConnection, A] =
+    _root_.caliban.client.SelectionBuilder.Field("pageInfo", Obj(innerSelection))
+  def edges[A](
+      innerSelection: SelectionBuilder[StringEdge, A]
+  ): SelectionBuilder[StringConnection, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("edges", ListOf(Obj(innerSelection)))
 }

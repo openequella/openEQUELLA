@@ -71,4 +71,108 @@ object Queries {
       OptionOf(Obj(innerSelection)),
       arguments = List(Argument("id", id, "String!")(encoder0))
     )
+
+  /** Retrieve a group by its unique ID
+    */
+  def internalGroupById[A](uniqueId: String)(innerSelection: SelectionBuilder[Group, A])(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupById",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("uniqueId", uniqueId, "String!")(encoder0))
+    )
+
+  /** Retrieve a group by its name
+    */
+  def internalGroupByName[A](name: String)(innerSelection: SelectionBuilder[Group, A])(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupByName",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("name", name, "String!")(encoder0))
+    )
+
+  /** List all groups at a specific level in the hierarchy determined by the parent ID - or none for
+    * the root.
+    */
+  def internalGroups[A](
+      parentId: scala.Option[String] = None,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+      encoder0: ArgEncoder[scala.Option[String]],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroups",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("parentId", parentId, "String")(encoder0),
+        Argument("first", first, "Int")(encoder1),
+        Argument("last", last, "Int")(encoder2),
+        Argument("before", before, "String")(encoder3),
+        Argument("after", after, "String")(encoder4)
+      )
+    )
+
+  /** Search for groups anywhere within the hierarchy by name (wildcard search)
+    */
+  def internalGroupSearch[A](
+      query: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupSearch",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("query", query, "String!")(encoder0),
+        Argument("first", first, "Int")(encoder1),
+        Argument("last", last, "Int")(encoder2),
+        Argument("before", before, "String")(encoder3),
+        Argument("after", after, "String")(encoder4)
+      )
+    )
+
+  /** List user ids for all users in the specified group
+    */
+  def internalGroupUsers[A](
+      uniqueId: String,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[StringConnection, A])(implicit
+      encoder0: ArgEncoder[String],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupUsers",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("uniqueId", uniqueId, "String!")(encoder0),
+        Argument("first", first, "Int")(encoder1),
+        Argument("last", last, "Int")(encoder2),
+        Argument("before", before, "String")(encoder3),
+        Argument("after", after, "String")(encoder4)
+      )
+    )
 }

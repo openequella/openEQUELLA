@@ -20,13 +20,13 @@ package com.tle.web.remoting.graphql
 
 import caliban.CalibanError.ExecutionError
 import caliban.{CalibanError, GraphQL, GraphQLRequest}
+import com.github.plokhotnyuk.jsoniter_scala.core.readFromString
 import com.google.common.io.ByteStreams
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.ErrorCode.{ACCESS_DENIED, INTERNAL_ERROR, IO_ERROR}
 import com.tle.web.remoting.graphql.Errors.mapException
 import com.tle.web.remoting.graphql.GraphQLConfig.{CFG_GRAPHQL_SCHEMA, CFG_GRAPHQL_UI}
 import com.tle.web.remoting.graphql.schema.Schema
-import io.circe.parser._
 import org.slf4j.LoggerFactory
 
 import java.util.UUID
@@ -34,6 +34,7 @@ import javax.inject.{Inject, Named, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import javax.ws.rs.core.MediaType
 import scala.io.Source
+import scala.util.Try
 
 /** Servlet for handling GraphQL requests. Relies on standard oEQ servlet security/authentication
   * filters/mechanisms.
@@ -113,8 +114,10 @@ class GraphQLServlet extends HttpServlet {
     try {
       val query = Source.fromInputStream(req.getInputStream).mkString
       val processing = for {
-        gqlRequest <- decode[GraphQLRequest](query)
-        result     <- execute(gqlRequest)
+        gqlRequest <- Try(
+          readFromString[GraphQLRequest](query)
+        ).toEither
+        result <- execute(gqlRequest)
       } yield result
 
       processing match {
