@@ -28,6 +28,7 @@ import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.helper.FilterUserBeanModel;
 import com.tle.admin.i18n.Lookup;
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.usermanagement.internal.GroupsTab.TreeUpdateName;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
@@ -38,7 +39,6 @@ import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -53,9 +53,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/** Panel for displaying and editing a group's details. */
 public class GroupDetailsPanel extends JChangeDetectorPanel {
   private static final long serialVersionUID = 1L;
-  private final RemoteTLEGroupService groupService;
+  private final AdminTLEGroupService groupService;
   private final RemoteUserService userService;
   private final TLEAction saveAction;
 
@@ -71,7 +72,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
 
   public GroupDetailsPanel(ClientService services, TLEAction saveAction) {
     this.saveAction = saveAction;
-    this.groupService = services.getService(RemoteTLEGroupService.class);
+    this.groupService = services.getService(AdminTLEGroupService.class);
     this.userService = services.getService(RemoteUserService.class);
 
     setupGui();
