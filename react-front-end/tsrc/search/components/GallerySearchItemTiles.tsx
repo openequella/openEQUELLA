@@ -144,15 +144,15 @@ export const GallerySearchItemTiles = ({
       key={key}
     >
       <GalleryThumbnail src={entry.thumbnailLarge} alt={altText} />
-      {enableItemSummaryButton && (
-        <ImageListItemBar
-          sx={{
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
-              "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
-          }}
-          actionIcon={
-            <>
+      <ImageListItemBar
+        sx={{
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.5) 0%, " +
+            "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
+        }}
+        actionIcon={
+          <>
+            {enableItemSummaryButton && (
               <OEQItemSummaryPageButton
                 title={viewItem}
                 color="secondary"
@@ -161,20 +161,20 @@ export const GallerySearchItemTiles = ({
                   drmStatus?.isAllowSummary ? undefined : checkDrmPermission
                 }
               />
-              <TooltipIconButton
-                title={languageStrings.common.action.share}
-                color="secondary"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onShare(entry);
-                }}
-              >
-                <Share />
-              </TooltipIconButton>
-            </>
-          }
-        />
-      )}
+            )}
+            <TooltipIconButton
+              title={languageStrings.common.action.share}
+              color="secondary"
+              onClick={(event) => {
+                event.stopPropagation();
+                onShare(entry);
+              }}
+            >
+              <Share />
+            </TooltipIconButton>
+          </>
+        }
+      />
     </ImageListItem>
   );
 
