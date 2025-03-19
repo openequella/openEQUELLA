@@ -49,6 +49,20 @@ const {
   youTubeVideoMissingId,
 } = languageStrings.shareAttachment.error;
 
+/**
+ * Structure for the information of an Attachment to be shared.
+ */
+export interface ShareAttachment {
+  /**
+   * URL to view the Attachment.
+   */
+  src: string;
+  /**
+   * Optional HTML code for embedding the Attachment if browser supports embedding the attachment type.
+   */
+  embedCode: O.Option<string>;
+}
+
 // Component to display why embedding an attachment is failed.
 const EmbedAttachmentFailure = ({
   reason,

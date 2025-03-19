@@ -49,7 +49,10 @@ import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { buildEmbedCode } from "../../components/embedattachment/EmbeddedAttachmentHelper";
+import {
+  buildEmbedCode,
+  ShareAttachment,
+} from "../../components/embedattachment/EmbeddedAttachmentHelper";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
 import { ShareAttachmentDialog } from "../../components/ShareAttachmentDialog";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
@@ -103,20 +106,6 @@ const {
   searchResult: searchResultStrings,
   selectResource: selectResourceStrings,
 } = languageStrings.searchpage;
-
-/**
- * Structure for the information of an Attachment to be shared.
- */
-interface ShareAttachment {
-  /**
-   * URL to view the Attachment.
-   */
-  src: string;
-  /**
-   * Optional HTML code for embedding the Attachment if browser supports embedding the attachment type.
-   */
-  embedCode: O.Option<string>;
-}
 
 export interface SearchResultAttachmentsListProps {
   /**

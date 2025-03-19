@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 import { ImageListItem, ImageListItemBar } from "@mui/material";
+import Share from "@mui/icons-material/Share";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { OEQItemSummaryPageButton } from "../../components/OEQItemSummaryPageButton";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { createDrmDialog } from "../../drm/DrmHelper";
 import { defaultDrmStatus } from "../../modules/DrmModule";
 import {
@@ -67,6 +69,10 @@ export interface GallerySearchTileProps {
    */
   updateGalleryItemList: (item: GallerySearchResultItem) => LightboxHandler;
   /**
+   * Handler for sharing the viewable Attachment of a Gallery entry.
+   */
+  onShare: (entry: GalleryEntry) => void;
+  /**
    * `true` to show an Info icon in the ImageListItem for accessing Item summary page.
    */
   enableItemSummaryButton?: boolean;
@@ -78,6 +84,7 @@ export interface GallerySearchTileProps {
 export const GallerySearchItemTiles = ({
   item,
   updateGalleryItemList,
+  onShare,
   enableItemSummaryButton = true,
 }: GallerySearchTileProps) => {
   const {
@@ -130,14 +137,13 @@ export const GallerySearchItemTiles = ({
     });
   };
 
-  const buildTile = (
-    key: string,
-    imgSrc: string,
-    altText: string,
-    onClick: () => void,
-  ) => (
-    <ImageListItem onClick={onClick} aria-label={ariaLabel} key={key}>
-      <GalleryThumbnail src={imgSrc} alt={altText} />
+  const buildTile = (entry: GalleryEntry, key: string, altText: string) => (
+    <ImageListItem
+      onClick={buildOnClickHandler(entry)}
+      aria-label={ariaLabel}
+      key={key}
+    >
+      <GalleryThumbnail src={entry.thumbnailLarge} alt={altText} />
       {enableItemSummaryButton && (
         <ImageListItemBar
           sx={{
@@ -146,14 +152,26 @@ export const GallerySearchItemTiles = ({
               "rgba(0,0,0,0.1) 70%, rgba(0,0,0,0) 100%)",
           }}
           actionIcon={
-            <OEQItemSummaryPageButton
-              title={viewItem}
-              color="secondary"
-              item={{ uuid, version }}
-              checkDrmPermission={
-                drmStatus?.isAllowSummary ? undefined : checkDrmPermission
-              }
-            />
+            <>
+              <OEQItemSummaryPageButton
+                title={viewItem}
+                color="secondary"
+                item={{ uuid, version }}
+                checkDrmPermission={
+                  drmStatus?.isAllowSummary ? undefined : checkDrmPermission
+                }
+              />
+              <TooltipIconButton
+                title={languageStrings.common.action.share}
+                color="secondary"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onShare(entry);
+                }}
+              >
+                <Share />
+              </TooltipIconButton>
+            </>
           }
         />
       )}
@@ -162,17 +180,15 @@ export const GallerySearchItemTiles = ({
 
   const tiles = [
     buildTile(
+      mainEntry,
       `${uuid}-mainEntry`,
-      mainEntry.thumbnailLarge,
       `${itemName} - Main Entry (${mainEntry.name})`,
-      buildOnClickHandler(mainEntry),
     ),
     additionalEntries.map((ae, idx) =>
       buildTile(
+        ae,
         `${uuid}-additionalEntry-${idx}`,
-        ae.thumbnailLarge,
         `${itemName} - Additional Entry ${idx + 1} (${ae.name})`,
-        buildOnClickHandler(ae),
       ),
     ),
   ];
