@@ -169,21 +169,36 @@ export const LegacyContent = React.memo(function LegacyContent({
   isReloadNeeded,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
-  // Flag indicating the Legacy page content is being updated. Usually, the value should be set to `true` before a
-  // Legacy API request is submitted. Once the request is resolved, if there is a callback function provided externally
-  // (typically from the Legacy server side rendering), use the callback to handle the new content. Or, if the response
-  // is in the format of `LegacyContentResponse`, use state `content` to handle the new content. Once the page content
-  // is updated through either way, this flag should be reset to `false`.
+  // Flag indicating the Legacy page content is being updated. The value must be set to `true` before a Legacy API request
+  // is submitted. Once the response is handled through either a callback provided externally (typically through the Legacy
+  // server side) or the state of this component, this value must be reset to `false`.
   // If the response of a Legacy API request is in the format of `ChangeRoute`, a navigation will be performed to the
-  // new route, and this usually will result in another Legacy API request to update the page content. So in this case,
-  // do NOT reset this flag until the new content is updated.
-  const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  // new route, and this usually will trigger another Legacy API request to update the page content. So in this case,
+  // do NOT reset the value.
+  // After a Legacy API request is submitted, if no response is received after 200ms, a Backdrop with a spinner will be displayed
+  // to indicate the request is still in progress and stop further page actions.
+  const [updatingContent, setUpdatingContent] = React.useState<boolean>(false);
+  const [showSpinner, setShowSpinner] = React.useState<boolean>(false);
+
   const submittingForm = React.useRef<LegacyContentSubmission>({
     submitting: false,
   });
   const { appErrorHandler, refreshUser } = useContext(AppContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (updatingContent) {
+        setShowSpinner(true);
+      }
+    }, 200);
+
+    return () => {
+      setShowSpinner(false);
+      clearTimeout(timer);
+    };
+  }, [updatingContent]);
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -447,11 +462,11 @@ export const LegacyContent = React.memo(function LegacyContent({
       {content && (
         <LegacyContentRenderer {...content} key={content.contentId} />
       )}
-      {updatingContent && (
+      {showSpinner && (
         <Backdrop
           invisible // invisible to avoid the page flicking
           sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
-          open={updatingContent}
+          open
         >
           <LoadingCircle />
         </Backdrop>

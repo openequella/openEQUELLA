@@ -49,7 +49,7 @@ public abstract class AbstractWizardTab<T extends AbstractWizardTab<T>> extends 
     ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, -document.body.scrollHeight)");
     WebElement elem = driver.findElement(By.xpath(xpath));
     waiter.until(ExpectedConditions.elementToBeClickable(elem));
-    forceButtonClickWithJS(elem);
+    elem.click();
   }
 
   public <T extends PageObject> T cancel(WaitingPageObject<T> targetPage) {

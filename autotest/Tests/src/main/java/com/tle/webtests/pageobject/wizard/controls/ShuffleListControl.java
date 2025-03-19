@@ -40,9 +40,7 @@ public class ShuffleListControl extends AbstractWizardControl<ShuffleListControl
   }
 
   public void remove(String value) {
-    WebElement removeBtn =
-        getDiv().findElement(getRowForValue(value)).findElement(By.className("shuffle-remove"));
-    forceButtonClickWithJS(removeBtn);
+    getDiv().findElement(getRowForValue(value)).findElement(By.className("shuffle-remove")).click();
   }
 
   public void edit(String value) {
