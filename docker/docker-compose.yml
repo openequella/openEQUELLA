@@ -45,7 +45,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:15.6
+    image: postgres:15.12
     restart: always
     networks:
       - oeq-cluster
