@@ -27,6 +27,7 @@ import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.SaveAction;
 import com.tle.admin.gui.common.actions.SearchAction;
 import com.tle.admin.gui.common.actions.TLEAction;
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.usermanagement.internal.GroupDetailsPanel.MyGlassSwingWorker;
 import com.tle.beans.user.GroupTreeNode;
 import com.tle.beans.user.TLEGroup;
@@ -35,7 +36,6 @@ import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -52,10 +52,16 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+/**
+ * The GroupsTab class displays the groups in a tree format on the left side of the screen. The
+ * right side of the screen displays the details of the selected group.
+ *
+ * @see GroupDetailsPanel
+ */
 public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionListener {
   private static final long serialVersionUID = 1L;
 
-  private final RemoteTLEGroupService groupService;
+  private final AdminTLEGroupService groupService;
 
   private GroupDetailsPanel details;
 
@@ -64,7 +70,7 @@ public class GroupsTab extends JChangeDetectorPanel implements TreeSelectionList
   private DefaultTreeModel model;
 
   public GroupsTab(ClientService services) {
-    groupService = services.getService(RemoteTLEGroupService.class);
+    groupService = services.getService(AdminTLEGroupService.class);
 
     setupGui(services);
   }

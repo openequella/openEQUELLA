@@ -20,10 +20,10 @@ package com.tle.admin.usermanagement.standard;
 
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.plugin.GeneralPlugin;
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.usermanagement.internal.UsersTab;
 import com.tle.beans.ump.UserManagementSettings;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 
 public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
@@ -40,7 +40,7 @@ public class UserWrapper extends GeneralPlugin<UserManagementSettings> {
     userPanel =
         new UsersTab(
             clientService.getService(AdminTLEUserService.class),
-            clientService.getService(RemoteTLEGroupService.class),
+            clientService.getService(AdminTLEGroupService.class),
             clientService.getService(RemoteUserService.class));
     addFillComponent(userPanel);
   }

@@ -27,12 +27,12 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JChangeDetectorPanel;
 import com.tle.admin.gui.common.actions.AddAction;
 import com.tle.admin.gui.common.actions.RemoveAction;
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.Format;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -48,7 +48,7 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
   private static final long serialVersionUID = 1L;
 
   protected final AdminTLEUserService userService;
-  protected final RemoteTLEGroupService groupService;
+  protected final AdminTLEGroupService groupService;
   protected final RemoteUserService userCacheService;
 
   protected UserDetailsPanel details;
@@ -60,7 +60,7 @@ public class UsersTab extends JChangeDetectorPanel implements ListSelectionListe
 
   public UsersTab(
       AdminTLEUserService userService,
-      RemoteTLEGroupService groupService,
+      AdminTLEGroupService groupService,
       RemoteUserService userCacheService) {
     this.userService = userService;
     this.groupService = groupService;

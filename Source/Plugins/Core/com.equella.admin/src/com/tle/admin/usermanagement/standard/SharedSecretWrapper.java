@@ -26,6 +26,7 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
 import com.tle.admin.plugin.GeneralPlugin;
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings.SharedSecretValue;
@@ -38,7 +39,6 @@ import com.tle.common.recipientselector.RecipientFilter;
 import com.tle.common.recipientselector.RecipientUtils;
 import com.tle.common.recipientselector.SingleFinderDialog;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -154,7 +154,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
   }
 
   protected class Editor extends JPanel implements ListWithViewInterface<SharedSecretValue> {
-    private RemoteTLEGroupService tleGroupService;
+    private AdminTLEGroupService tleGroupService;
 
     private final JTextField name = new JTextField();
     private final JTextField secret = new JTextField();
@@ -179,7 +179,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
 
     @Override
     public void setup() {
-      tleGroupService = clientService.getService(RemoteTLEGroupService.class);
+      tleGroupService = clientService.getService(AdminTLEGroupService.class);
 
       initFinderParts();
 

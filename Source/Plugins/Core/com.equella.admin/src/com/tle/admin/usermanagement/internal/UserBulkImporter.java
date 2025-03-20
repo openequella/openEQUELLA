@@ -18,6 +18,7 @@
 
 package com.tle.admin.usermanagement.internal;
 
+import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.beans.user.TLEGroup;
 import com.tle.beans.user.TLEUser;
@@ -27,18 +28,17 @@ import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.util.CsvReader;
-import com.tle.core.remoting.RemoteTLEGroupService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserBulkImporter extends BulkImport<TLEUser> {
-  private final RemoteTLEGroupService groupService;
+  private final AdminTLEGroupService groupService;
   private final AdminTLEUserService userService;
 
   private String groupName;
 
-  public UserBulkImporter(AdminTLEUserService userService, RemoteTLEGroupService groupService) {
+  public UserBulkImporter(AdminTLEUserService userService, AdminTLEGroupService groupService) {
     this.userService = userService;
     this.groupService = groupService;
   }
