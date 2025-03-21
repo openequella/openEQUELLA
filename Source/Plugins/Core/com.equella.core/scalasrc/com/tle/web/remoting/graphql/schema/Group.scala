@@ -27,6 +27,8 @@ final case class Group(
     uniqueId: String,
     @GQLDescription("The name of the group")
     name: String,
+    @GQLDescription("The description for the group")
+    description: Option[String],
     @GQLDescription(
       "The unique identifier of the parent group, or null if this is a top-level group"
     )
