@@ -38,6 +38,7 @@ final case class TleGroupView(
     uniqueId: String,
     parentId: Option[String],
     name: String,
+    description: Option[String],
     hasGroups: Boolean,
     hasUsers: Boolean
 )
@@ -46,7 +47,7 @@ final case class TleGroupView(
   */
 object TleGroupApi {
   private val tleGroup =
-    (Group.uniqueId ~ Group.parentId ~ Group.name ~ Group.hasGroups ~ Group.hasUsers)
+    (Group.uniqueId ~ Group.parentId ~ Group.name ~ Group.description ~ Group.hasGroups ~ Group.hasUsers)
       .mapN(TleGroupView)
   private val groupEdge =
     (GroupEdge.cursor ~ GroupEdge.node { tleGroup }).mapN(NodeWithCursorView[TleGroupView](_, _))
@@ -144,11 +145,14 @@ object TleGroupApi {
     * @param uniqueId
     *   The unique identifier of the group.
     * @param name
-    *   The new name of the group, or None if the name should not be changed.
+    *   The new name of the group, or `None` if the name should not be changed.
+    * @param description
+    *   The new description of the group, or `None` if the description should not be changed. To
+    *   clear the description, pass an empty string - e.g. `Some("")`.
     * @param parentId
-    *   The new parent group, or None if the parent should not be changed.
+    *   The new parent group, or `None` if the parent should not be changed.
     * @param users
-    *   The new list of users in the group, or None if the users should not be changed - and empty
+    *   The new list of users in the group, or `None` if the users should not be changed - and empty
     *   `List` if you want to remove all users. The specified users are 'remote' users, and so can
     *   be internal or external (LDAP, LTI, etc.) users.
     * @param cfg
@@ -159,12 +163,13 @@ object TleGroupApi {
   def updateGroup(
       uniqueId: String,
       name: Option[String] = None,
+      description: Option[String] = None,
       parentId: Option[String] = None,
       users: Option[List[String]] = None
   )(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], TleGroupView] = {
-    val query = Mutations.internalGroupUpdate(uniqueId, name, parentId, users) {
+    val query = Mutations.internalGroupUpdate(uniqueId, name, description, parentId, users) {
       tleGroup
     }
 

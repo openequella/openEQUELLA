@@ -46,6 +46,7 @@ class TleGroupApiTest
     uniqueId = "d72eb802-0ea6-4384-907a-341ee60628c0",
     parentId = None,
     name = "AutoGroup1",
+    description = None,
     hasGroups = false,
     hasUsers = true
   )
@@ -194,15 +195,23 @@ class TleGroupApiTest
   }
 
   describe("updateGroup") {
-    it("should be able to update a group's name") {
+    it("should be able to update a group's name and description") {
       val groupName    = "updateGroupTest"
       val newGroupName = "newName"
-      val blankGroup   = TleGroupView("", None, "", hasGroups = false, hasUsers = false)
+      val newGroupDesc = "newDescription"
+      val blankGroup = TleGroupView(
+        uniqueId = "",
+        parentId = None,
+        name = "",
+        description = None,
+        hasGroups = false,
+        hasUsers = false
+      )
 
       Given("A new group is created and subsequently its name is changed")
       val updatedGroupId = for {
         group <- addGroup(groupName)
-        _     <- TleGroupApi.updateGroup(group.uniqueId, Some(newGroupName))
+        _     <- TleGroupApi.updateGroup(group.uniqueId, Some(newGroupName), Some(newGroupDesc))
       } yield group.uniqueId
 
       When("The updated group is retrieved")
@@ -212,7 +221,11 @@ class TleGroupApiTest
       }
 
       Then("The group should have the new name")
-      updatedGroup shouldBe blankGroup.copy(uniqueId = updatedGroupId.value, name = newGroupName)
+      updatedGroup shouldBe blankGroup.copy(
+        uniqueId = updatedGroupId.value,
+        name = newGroupName,
+        description = Some(newGroupDesc)
+      )
     }
 
     it("should be possible to change the parent group of a group") {
