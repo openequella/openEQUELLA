@@ -184,12 +184,13 @@ import com.tle.webtests.pageobject.LoginPage
 
     oidcSettingsPage.selectDefaultRoles(List("Developer"))
     oidcSettingsPage.inputTextField("Role claim", "new role")
-    oidcSettingsPage.deleteCustomRoles(customRoles)
+    oidcSettingsPage.selectCustomRoles(customRoles)
     oidcSettingsPage.save()
 
     // Reload page and check the value.
     val newOidcSettingsPage = new OidcSettingsPage(context).load()
+    // 2 original roles + 1 new role.
     assertEquals(newOidcSettingsPage.getDefaultRolesNumber, 3)
-    assertEquals(newOidcSettingsPage.getCustomRolesNumber, 0)
+    assertEquals(newOidcSettingsPage.getCustomRolesNumber, 1)
   }
 }

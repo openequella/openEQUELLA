@@ -309,18 +309,23 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                   value: config.roleConfig?.roleClaim,
                   disabled: false,
                   required: true,
-                  onChange: (value) =>
+                  onChange: (value) => {
+                    const roleConfig = isNonEmptyString(value)
+                      ? {
+                          roleClaim: value,
+                          customRoles:
+                            config.roleConfig?.customRoles ?? new Map(),
+                        }
+                      : undefined;
+
                     dispatch({
                       type: "configure",
                       config: {
                         ...config,
-                        roleConfig: {
-                          roleClaim: value,
-                          customRoles:
-                            config.roleConfig?.customRoles ?? new Map(),
-                        },
+                        roleConfig,
                       },
-                    }),
+                    });
+                  },
                   showValidationErrors,
                 })}
               />
