@@ -37,7 +37,7 @@ libraryDependencies ++= Seq(
   "org.dspace"                % "oclc-harvester2"          % "1.0.0",
   "com.typesafe"              % "config"                   % "1.4.3",
   "org.slf4j"                 % "slf4j-simple"             % "2.0.17",
-  "org.scalacheck"           %% "scalacheck"               % "1.17.0" % "test,serial",
+  "org.scalacheck"           %% "scalacheck"               % "1.18.1" % "test,serial",
   "org.http4s"               %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"               %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"               %% "http4s-circe"             % http4sVersion,
