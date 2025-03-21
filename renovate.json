@@ -3,8 +3,7 @@
     "config:recommended",
     ":dependencyDashboard",
     ":maintainLockFilesMonthly",
-    "group:definitelyTyped",
-    "packages:eslint"
+    "group:definitelyTyped"
   ],
   "prConcurrentLimit": 10,
   "prHourlyLimit": 2,
@@ -89,6 +88,10 @@
       ]
     },
     {
+      "groupName": "ESLint",
+      "extends": ["packages:eslint"]
+    },
+    {
       "groupName": "Typelevel Cats",
       "matchPackageNames": [
         "/^org.typelevel:cats/"
@@ -103,9 +106,9 @@
     {
       "groupName": "Scala",
       "matchPackageNames": [
-        "/scala/",
-        "/sbt/sbt/",
-        "/com.eed3si9n:sbt-assembly/",
+        "scala",
+        "sbt/sbt",
+        "com.eed3si9n:sbt-assembly",
         "/^org.scala-lang.modules/",
         "/^org.scala-sbt/"
       ]
@@ -119,7 +122,8 @@
     {
       "groupName": "Swagger packages",
       "matchPackageNames": [
-        "/^io.swagger/"
+        "/^io.swagger/",
+        "swagger-ui"
       ]
     },
     {
