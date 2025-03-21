@@ -74,8 +74,14 @@ class TLEGroupSchema extends SchemaProvider {
   private val mutations = Mutations(
     internalGroupCreate = args => tleGroupProvider.createGroup(args.name, args.parentId),
     internalGroupDelete = args => tleGroupProvider.deleteGroup(args.uniqueId, args.deleteChildren),
-    internalGroupUpdate =
-      args => tleGroupProvider.updateGroup(args.uniqueId, args.name, args.parentId, args.users)
+    internalGroupUpdate = args =>
+      tleGroupProvider.updateGroup(
+        args.uniqueId,
+        args.name,
+        args.description,
+        args.parentId,
+        args.users
+      )
   )
 
   case class Queries(
@@ -197,6 +203,8 @@ class TLEGroupSchema extends SchemaProvider {
       uniqueId: String,
       @GQLDescription("The new name of the group")
       name: Option[String],
+      @GQLDescription("The new description for the group")
+      description: Option[String],
       @GQLDescription("The new parent ID of the group")
       parentId: Option[String],
       @GQLDescription(

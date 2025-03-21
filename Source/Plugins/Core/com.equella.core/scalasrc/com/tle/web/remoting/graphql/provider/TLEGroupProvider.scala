@@ -66,6 +66,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     Group(
       uniqueId = g.getUuid,
       name = g.getName,
+      description = Option(g.getDescription),
       parentId = Option(g.getParent).map(_.getUuid),
       hasGroups = tleGroupService.countGroupsInGroupById(g.getUuid) > 0,
       hasUsers = tleGroupService.countUsersInGroup(g.getUuid) > 0
@@ -233,6 +234,7 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
   def updateGroup(
       uniqueId: String,
       name: Option[String],
+      description: Option[String],
       parentId: Option[String],
       users: Option[Set[String]]
   ): Either[ProviderError, Group] = {
@@ -250,6 +252,9 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       .flatMap(updateParent(_, parentId))
       .flatMap { g =>
         name.foreach(g.setName)
+        description
+          .map(d => if (d.isEmpty) null else d)
+          .foreach(g.setDescription)
         users.map(_.asJava).foreach(g.setUsers)
 
         ProviderError.Try("Failed to update group: ") {
