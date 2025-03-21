@@ -397,6 +397,16 @@ public class TLEGroupServiceImpl
   }
 
   @Override
+  public List<TLEGroup> getInformationForGroups(
+      Collection<String> groupIds, Integer limit, Integer offset) {
+    return dao.findAllByCriteria(
+        orderByName(),
+        Pagination.of(offset, limit),
+        Restrictions.in("uuid", groupIds),
+        CurrentInstitution.equalityCriteria());
+  }
+
+  @Override
   @RequiresPrivilege(priv = "EDIT_USER_MANAGEMENT")
   @Transactional(propagation = Propagation.REQUIRED)
   public void addUserToGroup(String groupUuid, String userUuid) {
@@ -481,6 +491,12 @@ public class TLEGroupServiceImpl
   @Override
   public long countGroupsForQuery(String query) {
     return dao.countByCriteria(withNameLike(query), CurrentInstitution.equalityCriteria());
+  }
+
+  @Override
+  public long countValidGroups(Set<String> groupIds) {
+    return dao.countByCriteria(
+        Restrictions.in("uuid", groupIds), CurrentInstitution.equalityCriteria());
   }
 
   private Order orderByName() {
