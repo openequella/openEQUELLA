@@ -284,7 +284,7 @@ public class HierarchyServiceImpl
     HierarchyTopic topic = pack.getTopic();
     edit(topic);
 
-    HierarchyCompoundUuid uuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    HierarchyCompoundUuid uuid = HierarchyCompoundUuid.applyWithLegacyFormat(topic.getUuid());
     List<ItemId> ids = pack.getKeyResources().stream().map(Item::getItemId).toList();
     updateKeyResources(uuid, ids);
 
@@ -452,7 +452,8 @@ public class HierarchyServiceImpl
     pack.setInheritedItemDefinitions(getAllItemDefinitions(topic.getParent()));
     pack.setInheritedSchemas(getAllSchemas(topic.getParent()));
 
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    HierarchyCompoundUuid compoundUuid =
+        HierarchyCompoundUuid.applyWithLegacyFormat(topic.getUuid());
     pack.setKeyResources(getKeyResourceItems(compoundUuid));
 
     return pack;

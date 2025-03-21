@@ -203,13 +203,19 @@ class SearchResource {
 
   // create a PresetSearch for a hierarchy search
   private def createPresetSearch(compoundUuidStr: String): Either[String, PresetSearch] = {
-    val compoundUuid: HierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuidStr)
-    Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
-      case Some(topic) =>
-        val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
-        Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
-      case None =>
-        Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
+    def buildSearch(compoundUuid: HierarchyCompoundUuid) =
+      Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
+        case Some(topic) =>
+          val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
+          Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
+        case None =>
+          Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
+      }
+
+    HierarchyCompoundUuid(compoundUuidStr) match {
+      case Right(compoundUuid) => buildSearch(compoundUuid)
+      case Left(e) =>
+        Left(s"Failed to parse hierarchy compound UUID ${compoundUuidStr}: ${e.getMessage}")
     }
   }
 

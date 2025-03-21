@@ -15,31 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import {
-  getRootHierarchies,
-  getHierarchyIdsWithKeyResource,
-} from "../../__mocks__/Hierarchy.mock";
-import * as mockData from "../../__mocks__/searchresult_mock_data";
-import ModifyKeyResourceDialog, {
-  ModifyKeyResourceDialogProps,
-} from "../../tsrc/search/components/ModifyKeyResourceDialog";
+import HierarchyTopicSkeleton from "../../tsrc/hierarchy/components/HierarchyTopicSkeleton";
 
 export default {
-  title: "Search/ModifyKeyResourceDialog",
-  component: ModifyKeyResourceDialog,
-  argTypes: {
-    onClose: { action: "dialog on close" },
-  },
-} as Meta<ModifyKeyResourceDialogProps>;
+  title: "Hierarchy/HierarchyTopicSkeleton",
+  component: HierarchyTopicSkeleton,
+} as Meta;
 
-export const Standard: StoryFn<ModifyKeyResourceDialogProps> = (args) => (
-  <ModifyKeyResourceDialog {...args} />
-);
-Standard.args = {
-  item: mockData.basicSearchObj,
-  open: true,
-  getHierarchiesProvider: getRootHierarchies,
-  getHierarchyIdsWithKeyResourceProvider: getHierarchyIdsWithKeyResource,
-};
+export const Standard: StoryFn = (args) => <HierarchyTopicSkeleton {...args} />;

@@ -35,7 +35,7 @@ object NewUiRoutes {
     *   "b3b3b6d8-fccd-47ef-b62a-8df05186a02c:A+James"
     */
   def hierarchy(legacyCompoundUuid: String): String =
-    s"$PATH_HIERARCHY/${HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).buildString()}"
+    s"$PATH_HIERARCHY/${HierarchyCompoundUuid.applyWithLegacyFormat(legacyCompoundUuid).buildString()}"
 
   private def buildRelativeUrl(path: String, params: Vector[(String, Option[String])]): String =
     RelativeUrl.parse(path).withQueryString(QueryString(params)).toString()

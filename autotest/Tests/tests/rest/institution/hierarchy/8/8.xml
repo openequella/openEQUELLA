@@ -1,6 +1,6 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>27848</id>
-  <uuid>363f24f7-d982-4165-b761-b5fb0635e89a</uuid>
+  <id>27841</id>
+  <uuid>93b69bcc-ed9e-4d6a-b9e3-ffa334911596</uuid>
   <parent>
     <id>27647</id>
     <uuid>6135b550-ce1c-43c2-b34c-0a3cf793759d</uuid>
@@ -12,7 +12,7 @@
     <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
   </parent>
   <subTopics/>
-  <listPosition>2</listPosition>
+  <listPosition>1</listPosition>
   <showResults>true</showResults>
   <freetext></freetext>
   <inheritFreetext>true</inheritFreetext>
@@ -21,15 +21,15 @@
   <inhIdefs/>
   <inhSchemas/>
   <name>
-    <id>27851</id>
+    <id>27846</id>
     <strings>
       <entry>
         <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>27852</id>
+          <id>27847</id>
           <locale>en_AU</locale>
           <priority>2</priority>
-          <text>Child 3 Topic</text>
+          <text>Child 2 Topic</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>

@@ -23,13 +23,14 @@
 
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
+
+import type { SearchResultItemRaw } from './Search';
+import { validate } from './Utils';
 import {
   HierarchyTopicCodec,
   HierarchyTopicSummaryCodec,
   KeyResourceCodec,
 } from './gen/BrowseHierarchy';
-import type { SearchResultItemRaw } from './Search';
-import { validate } from './Utils';
 
 const BROWSE_HIERARCHY_ROOT_PATH = '/browsehierarchy2';
 
@@ -75,9 +76,9 @@ export interface HierarchyTopicSummary {
    */
   hideSubtopicsWithNoResults: boolean;
   /**
-   * A list of subtopics under this topic.
+   * Indicates whether this topic contains sub topics.
    */
-  subHierarchyTopics: HierarchyTopicSummary[];
+  hasSubTopic: boolean;
 }
 
 /**
@@ -109,6 +110,10 @@ export interface HierarchyTopic<T> {
    */
   parents: ParentTopic[];
   /**
+   * Summary information of all the child topics.
+   */
+  children: HierarchyTopicSummary[];
+  /**
    * The key resources of the given topic (include dynamic key resources).
    */
   keyResources: T[];
@@ -123,15 +128,30 @@ export interface KeyResource {
 }
 
 /**
- * Retrieve summaries of all the Hierarchy topics for the current institution.
+ * Retrieve summaries of all the root Hierarchy topics for the current institution.
  *
  * @param apiBasePath Base URI to the oEQ institution and API.
  */
-export const browseHierarchies = (
+export const browseRootHierarchies = (
   apiBasePath: string
 ): Promise<HierarchyTopicSummary[]> =>
   GET<HierarchyTopicSummary[]>(
     apiBasePath + BROWSE_HIERARCHY_ROOT_PATH,
+    validate(t.array(HierarchyTopicSummaryCodec))
+  );
+
+/**
+ * Retrieve summaries of all the sub Hierarchy topics for the given topic.
+ *
+ * @param apiBasePath Base URI to the oEQ institution and API.
+ * @param compoundUuid Topic compound UUID.
+ */
+export const browseSubHierarchies = (
+  apiBasePath: string,
+  compoundUuid: string
+): Promise<HierarchyTopicSummary[]> =>
+  GET<HierarchyTopicSummary[]>(
+    apiBasePath + BROWSE_HIERARCHY_ROOT_PATH + `/${compoundUuid}`,
     validate(t.array(HierarchyTopicSummaryCodec))
   );
 
@@ -142,12 +162,12 @@ export const browseHierarchies = (
  * @param apiBasePath Base URI to the oEQ institution and API.
  * @param compoundUuid Topic compound UUID.
  */
-export const browseHierarchy = (
+export const browseHierarchyDetails = (
   apiBasePath: string,
   compoundUuid: string
 ): Promise<HierarchyTopic<KeyResource>> =>
   GET<HierarchyTopic<KeyResource>>(
-    apiBasePath + BROWSE_HIERARCHY_ROOT_PATH + `/${compoundUuid}`,
+    apiBasePath + BROWSE_HIERARCHY_ROOT_PATH + `/details/${compoundUuid}`,
     validate(HierarchyTopicCodec(KeyResourceCodec))
   );
 

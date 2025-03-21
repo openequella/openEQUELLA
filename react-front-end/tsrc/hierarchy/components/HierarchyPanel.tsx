@@ -102,19 +102,20 @@ const HierarchyPanel = ({
   const {
     name,
     longDescription,
-    subHierarchyTopics,
     compoundUuid,
     subTopicSectionName,
     hideSubtopicsWithNoResults,
   } = hierarchy.summary;
 
+  const children = hierarchy.children;
+
   // Remove topics that doesn't have any result and are set to be hidden with no results.
   const subTopicsFiltered = hideSubtopicsWithNoResults
     ? pipe(
-        subHierarchyTopics,
+        children,
         A.filter((topic) => topic.matchingItemCount !== 0),
       )
-    : subHierarchyTopics;
+    : children;
 
   return (
     <Card>
