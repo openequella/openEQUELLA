@@ -122,6 +122,33 @@ object Queries {
       )
     )
 
+  /** List multiple groups by their unique IDs, invalid IDs will be ignored
+    */
+  def internalGroupsByIds[A](
+      uniqueIds: List[String] = Nil,
+      first: scala.Option[Int] = None,
+      last: scala.Option[Int] = None,
+      before: scala.Option[String] = None,
+      after: scala.Option[String] = None
+  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+      encoder0: ArgEncoder[List[String]],
+      encoder1: ArgEncoder[scala.Option[Int]],
+      encoder2: ArgEncoder[scala.Option[Int]],
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[String]]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "internalGroupsByIds",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("uniqueIds", uniqueIds, "[String!]!")(encoder0),
+        Argument("first", first, "Int")(encoder1),
+        Argument("last", last, "Int")(encoder2),
+        Argument("before", before, "String")(encoder3),
+        Argument("after", after, "String")(encoder4)
+      )
+    )
+
   /** Search for groups anywhere within the hierarchy by name (wildcard search)
     */
   def internalGroupSearch[A](

@@ -33,6 +33,11 @@ object Group {
   def name: SelectionBuilder[Group, String] =
     _root_.caliban.client.SelectionBuilder.Field("name", Scalar())
 
+  /** The description for the group
+    */
+  def description: SelectionBuilder[Group, scala.Option[String]] =
+    _root_.caliban.client.SelectionBuilder.Field("description", OptionOf(Scalar()))
+
   /** The unique identifier of the parent group, or null if this is a top-level group
     */
   def parentId: SelectionBuilder[Group, scala.Option[String]] =

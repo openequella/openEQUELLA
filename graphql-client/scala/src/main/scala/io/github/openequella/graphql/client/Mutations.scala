@@ -129,13 +129,15 @@ object Mutations {
   def internalGroupUpdate[A](
       uniqueId: String,
       name: scala.Option[String] = None,
+      description: scala.Option[String] = None,
       parentId: scala.Option[String] = None,
       users: scala.Option[List[String]] = None
   )(innerSelection: SelectionBuilder[Group, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[String]],
       encoder2: ArgEncoder[scala.Option[String]],
-      encoder3: ArgEncoder[scala.Option[List[String]]]
+      encoder3: ArgEncoder[scala.Option[String]],
+      encoder4: ArgEncoder[scala.Option[List[String]]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupUpdate",
@@ -143,8 +145,9 @@ object Mutations {
       arguments = List(
         Argument("uniqueId", uniqueId, "String!")(encoder0),
         Argument("name", name, "String")(encoder1),
-        Argument("parentId", parentId, "String")(encoder2),
-        Argument("users", users, "[String!]")(encoder3)
+        Argument("description", description, "String")(encoder2),
+        Argument("parentId", parentId, "String")(encoder3),
+        Argument("users", users, "[String!]")(encoder4)
       )
     )
 }
