@@ -93,7 +93,7 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
         // count dynamic hierarchy key resource
         String dynamicHierarchyId = buildTopicId(childTopic, childValue, null);
         HierarchyCompoundUuid dynamicCompoundUuid =
-            HierarchyCompoundUuid.apply(dynamicHierarchyId, true);
+            HierarchyCompoundUuid.applyWithLegacyFormat(dynamicHierarchyId);
         List<HierarchyTopicKeyResource> keyResources =
             hierarchyService.getKeyResources(dynamicCompoundUuid);
 
@@ -119,7 +119,8 @@ public class BrowsePortletRenderer extends PortletContentRenderer<TopicDisplayMo
         }
 
         String legacyUuid = buildTopicId(childTopic, childValue, null);
-        HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(legacyUuid, true);
+        HierarchyCompoundUuid compoundUuid =
+            HierarchyCompoundUuid.applyWithLegacyFormat(legacyUuid);
         List<Item> keyResourcesItem = hierarchyService.getKeyResourceItems(compoundUuid);
 
         final SectionInfo fwd = context.createForward("/hierarchy.do");

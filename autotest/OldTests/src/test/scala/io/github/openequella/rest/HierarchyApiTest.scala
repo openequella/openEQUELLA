@@ -183,8 +183,8 @@ class HierarchyApiTest extends AbstractRestApiTest {
   }
 
   // Get full information of a topic
-  private def getHierarchyTopic(compoundUuid: String): JsonNode = {
-    val url        = BROWSE_HIERARCHY_API_ENDPOINT + "/" + compoundUuid
+  private def browseHierarchyTopicDetails(compoundUuid: String): JsonNode = {
+    val url        = BROWSE_HIERARCHY_API_ENDPOINT + "/details/" + compoundUuid
     val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
@@ -197,14 +197,14 @@ class HierarchyApiTest extends AbstractRestApiTest {
       version: Int = DEFAULT_VERSION,
       expectedVersion: Int = DEFAULT_VERSION
   ): Unit = {
-    val hierarchyTopic = getHierarchyTopic(compoundUuid)
+    val hierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
 
     // make sure the ket resource is not existing
     assertFalse(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // add key resource
     addKeyResource(compoundUuid, itemUuid, version, 200)
-    val newHierarchyTopic = getHierarchyTopic(compoundUuid)
+    val newHierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
     // make sure key resources is added
     assertTrue(
       containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, expectedVersion)
@@ -216,14 +216,14 @@ class HierarchyApiTest extends AbstractRestApiTest {
       itemUuid: String = DEFAULT_ITEM_UUID,
       version: Int = DEFAULT_VERSION
   ): Unit = {
-    val hierarchyTopic = getHierarchyTopic(compoundUuid);
+    val hierarchyTopic = browseHierarchyTopicDetails(compoundUuid);
 
     // make sure the ket resource is existing
     assertTrue(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // delete key resource
     deleteKeyResource(compoundUuid, itemUuid, version, 200)
-    val newHierarchyTopic = getHierarchyTopic(compoundUuid)
+    val newHierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
     assertFalse(containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, version))
   }
 }

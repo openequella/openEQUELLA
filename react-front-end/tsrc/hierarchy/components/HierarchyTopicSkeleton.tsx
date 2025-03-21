@@ -15,18 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, StoryFn } from "@storybook/react";
+import {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Skeleton,
+} from "@mui/material";
 import * as React from "react";
-import HierarchyTreeSkeleton from "../../tsrc/hierarchy/components/HierarchyTreeSkeleton";
 
-export default {
-  title: "Hierarchy/HierarchyTreeSkeleton",
-  component: HierarchyTreeSkeleton,
-} as Meta;
-
-export const Standard: StoryFn = (args) => <HierarchyTreeSkeleton {...args} />;
-
-export const SkeletonNum10: StoryFn = (args) => (
-  <HierarchyTreeSkeleton {...args} />
+const HierarchyTopicSkeleton = () => (
+  <ListItem>
+    <ListItemAvatar>
+      <Skeleton variant="rounded" width={24} height={24} />
+    </ListItemAvatar>
+    <ListItemText
+      primary={<Skeleton variant="text" />}
+      secondary={<Skeleton variant="text" />}
+    />
+  </ListItem>
 );
-SkeletonNum10.args = { skeletonNum: 10 };
+
+export default HierarchyTopicSkeleton;

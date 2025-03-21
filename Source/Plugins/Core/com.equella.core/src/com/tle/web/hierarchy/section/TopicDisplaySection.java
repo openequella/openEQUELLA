@@ -234,7 +234,8 @@ public class TopicDisplaySection
       String childValue = p.getVirtualisedValue();
 
       String legacyHierarchyUuid = buildTopicId(childTopic, childValue, values);
-      HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(legacyHierarchyUuid, true);
+      HierarchyCompoundUuid compoundUuid =
+          HierarchyCompoundUuid.applyWithLegacyFormat(legacyHierarchyUuid);
       HtmlLinkState link =
           new HtmlLinkState(events.getNamedHandler("changeTopic", legacyHierarchyUuid));
       List<Item> keyResourcesItems = hierarchyService.getKeyResourceItems(compoundUuid);
@@ -501,7 +502,7 @@ public class TopicDisplaySection
     Map<String, String> values = model.getValues();
     String value = Check.isEmpty(values) ? null : values.get(topic.getUuid());
     String topicId = buildTopicId(topic, value, values);
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.applyWithLegacyFormat(topicId);
 
     List<Item> topicItems = hierarchyService.getKeyResourceItems(compoundUuid);
 

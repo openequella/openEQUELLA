@@ -400,7 +400,8 @@ public class BrowseHierarchyResource {
     bean.setSearchResults(result);
 
     // Key resources, if present, are not paged
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(hierarchy.getUuid(), true);
+    HierarchyCompoundUuid compoundUuid =
+        HierarchyCompoundUuid.applyWithLegacyFormat(hierarchy.getUuid());
     List<Item> keyItems = hierarchyService.getKeyResourceItems(compoundUuid);
     if (!Check.isEmpty(keyItems)) {
       // detail keyword from ItemResource.ALL_ALLOWABLE_INFOS

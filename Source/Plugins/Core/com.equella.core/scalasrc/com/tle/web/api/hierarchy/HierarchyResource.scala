@@ -55,21 +55,24 @@ class HierarchyResource {
   def getAcls(
       @ApiParam("The compound UUID") @PathParam("compound-uuid") compoundUuid: String
   ): Response = {
-    val currentTopicUuid = HierarchyCompoundUuid(compoundUuid).uuid
-
-    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
-      case Some(topicEntity) =>
-        Response
-          .ok(
-            HierarchyTopicAcl(
-              hierarchyService.hasViewAccess(topicEntity),
-              hierarchyService.hasEditAccess(topicEntity),
-              hierarchyService.hasModifyKeyResourceAccess(topicEntity)
+    withValidCompoundUuid(compoundUuid) { hierarchyCompoundUuid =>
+      val currentTopicUuid = hierarchyCompoundUuid.uuid
+      Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+        case Some(topicEntity) =>
+          Response
+            .ok(
+              HierarchyTopicAcl(
+                hierarchyService.hasViewAccess(topicEntity),
+                hierarchyService.hasEditAccess(topicEntity),
+                hierarchyService.hasModifyKeyResourceAccess(topicEntity)
+              )
             )
+            .build
+        case None =>
+          ApiErrorResponse.resourceNotFound(
+            s"Failed to get ACLs: topic $currentTopicUuid not found"
           )
-          .build
-      case None =>
-        ApiErrorResponse.resourceNotFound(s"Failed to get ACLs: topic $currentTopicUuid not found")
+      }
     }
   }
 
@@ -111,36 +114,58 @@ class HierarchyResource {
     val itemId     = new ItemId(itemUuid, itemVersion)
     val realItemId = new ItemId(itemUuid, realVersion)
 
-    val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuid)
-    val currentTopicUuid      = hierarchyCompoundUuid.uuid
+    withValidCompoundUuid(compoundUuid) { hierarchyCompoundUuid =>
+      val currentTopicUuid = hierarchyCompoundUuid.uuid
 
-    def update() =
-      Try(itemService.getUnsecure(realItemId)) match {
-        case Success(_) => {
-          if (addResource) hierarchyService.addKeyResource(hierarchyCompoundUuid, itemId)
-          else hierarchyService.deleteKeyResources(hierarchyCompoundUuid, itemId)
-          Response.ok.build
+      def update() =
+        Try(itemService.getUnsecure(realItemId)) match {
+          case Success(_) => {
+            if (addResource) hierarchyService.addKeyResource(hierarchyCompoundUuid, itemId)
+            else hierarchyService.deleteKeyResources(hierarchyCompoundUuid, itemId)
+            Response.ok.build
+          }
+          case Failure(e: ItemNotFoundException) =>
+            ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
         }
-        case Failure(e: ItemNotFoundException) =>
-          ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
-      }
 
-    Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
-      case Some(topic) if !hierarchyService.hasModifyKeyResourceAccess(topic) =>
-        ApiErrorResponse.forbiddenRequest(
-          s"Permission denied to update the key resources of topic $compoundUuid"
+      Option(hierarchyService.getHierarchyTopicByUuid(currentTopicUuid)) match {
+        case Some(topic) if !hierarchyService.hasModifyKeyResourceAccess(topic) =>
+          ApiErrorResponse.forbiddenRequest(
+            s"Permission denied to update the key resources of topic $compoundUuid"
+          )
+        case Some(_)
+            if addResource && hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
+          ApiErrorResponse.conflictError(s"Item ${itemId.toString()} is already a key resource")
+        case Some(_)
+            if !addResource && !hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
+          ApiErrorResponse.resourceNotFound(
+            s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid"
+          )
+        case Some(_) => update()
+        case None =>
+          ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")
+      }
+    }
+  }
+
+  /** Execute the provided function if the topic UUID is valid.
+    *
+    * @param compoundUuid
+    *   The compound UUID of the topic.
+    * @param function
+    *   The function to execute.
+    */
+  private def withValidCompoundUuid(
+      compoundUuid: String
+  )(
+      function: (HierarchyCompoundUuid) => Response
+  ): Response = {
+    HierarchyCompoundUuid(compoundUuid) match {
+      case Left(e) =>
+        ApiErrorResponse.serverError(
+          s"Failed to parse the compound UUID $compoundUuid: ${e.getMessage}"
         )
-      case Some(_)
-          if addResource && hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
-        ApiErrorResponse.conflictError(s"Item ${itemId.toString()} is already a key resource")
-      case Some(_)
-          if !addResource && !hierarchyService.hasKeyResource(hierarchyCompoundUuid, itemId) =>
-        ApiErrorResponse.resourceNotFound(
-          s"Item ${itemId.toString()} is not a key resource of topic $compoundUuid"
-        )
-      case Some(_) => update()
-      case None =>
-        ApiErrorResponse.resourceNotFound(s"Topic $currentTopicUuid not found")
+      case Right((validCompoundUuid)) => function(validCompoundUuid)
     }
   }
 }

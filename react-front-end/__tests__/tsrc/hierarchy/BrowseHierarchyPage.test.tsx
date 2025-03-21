@@ -21,7 +21,9 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
 import {
-  hierarchies,
+  getRootHierarchies,
+  getSubHierarchies,
+  rootHierarchies,
   topicWithHideNoResultChild,
   topicWithNoResultChild,
   topicWithShortAndLongDesc,
@@ -32,7 +34,8 @@ import "@testing-library/jest-dom";
 import { selectHierarchy } from "./HierarchyTestHelper";
 
 jest.mock("../../../tsrc/modules/HierarchyModule", () => ({
-  getHierarchies: jest.fn(() => Promise.resolve(hierarchies)),
+  getRootHierarchies: jest.fn(getRootHierarchies),
+  getSubHierarchies: jest.fn(getSubHierarchies),
 }));
 
 const renderBrowseHierarchyPage = async (): Promise<RenderResult> => {
@@ -42,7 +45,7 @@ const renderBrowseHierarchyPage = async (): Promise<RenderResult> => {
       <BrowseHierarchyPage updateTemplate={jest.fn()} />
     </Router>,
   );
-  await result.findByText(hierarchies[0].name!);
+  await result.findByText(rootHierarchies[0].name!);
   return result;
 };
 
@@ -57,34 +60,41 @@ describe("<BrowseHierarchyPage/>", () => {
   });
 
   it("displays sub hierarchy topic", async () => {
+    const subHierarchyTopics = await getSubHierarchies(
+      virtualTopics.compoundUuid,
+    );
     const { container, getByText } = await renderBrowseHierarchyPage();
 
     await selectHierarchy(container, virtualTopics.name!);
 
-    virtualTopics.subHierarchyTopics.forEach(({ name }) =>
+    subHierarchyTopics.forEach(({ name }) =>
       expect(getByText(name!)).toBeInTheDocument(),
     );
-    expect.assertions(virtualTopics.subHierarchyTopics.length);
+    expect.assertions(subHierarchyTopics.length);
   });
 
   it("hide sub hierarchy topic if it has no result when `hideSubtopicsWithNoResults` is set to `true`", async () => {
+    const subHierarchyTopics = await getSubHierarchies(
+      topicWithHideNoResultChild.compoundUuid,
+    );
+
     const { container, queryByText } = await renderBrowseHierarchyPage();
 
     await selectHierarchy(container, topicWithHideNoResultChild.name!);
 
-    expect(
-      queryByText(topicWithHideNoResultChild.subHierarchyTopics[0].name!),
-    ).not.toBeInTheDocument();
+    expect(queryByText(subHierarchyTopics[0].name!)).not.toBeInTheDocument();
   });
 
   it("show sub hierarchy topic even if it has no result when `hideSubtopicsWithNoResults` is set to `false`", async () => {
+    const subHierarchyTopics = await getSubHierarchies(
+      topicWithNoResultChild.compoundUuid,
+    );
+
     const { container, queryByText } = await renderBrowseHierarchyPage();
 
     await selectHierarchy(container, topicWithNoResultChild.name!);
 
-    expect(
-      queryByText(topicWithNoResultChild.subHierarchyTopics[0].name!),
-    ).toBeInTheDocument();
+    expect(queryByText(subHierarchyTopics[0].name!)).toBeInTheDocument();
   });
 
   it.each([
@@ -93,11 +103,13 @@ describe("<BrowseHierarchyPage/>", () => {
   ])(
     "should $text sub hierarchy topic if `hideSubtopicsWithNoResults` is set to $show",
     async ({ topic, show }) => {
+      const subHierarchyTopics = await getSubHierarchies(topic.compoundUuid);
+
       const { container, queryByText } = await renderBrowseHierarchyPage();
 
       await selectHierarchy(container, topic.name!);
 
-      const isPresent = !!queryByText(topic.subHierarchyTopics[0].name!);
+      const isPresent = !!queryByText(subHierarchyTopics[0].name!);
       expect(isPresent).toBe(show);
     },
   );

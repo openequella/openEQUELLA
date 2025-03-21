@@ -19,22 +19,30 @@ import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
 
 /**
- * Get summaries of all the hierarchy topics.
+ * Get summaries of all the root hierarchy topics.
  */
-export const getHierarchies = (): Promise<
+export const getRootHierarchies = (): Promise<
   OEQ.BrowseHierarchy.HierarchyTopicSummary[]
-> => OEQ.BrowseHierarchy.browseHierarchies(API_BASE_URL);
+> => OEQ.BrowseHierarchy.browseRootHierarchies(API_BASE_URL);
+
+/**
+ * Get summaries of all the sub hierarchy topics.
+ */
+export const getSubHierarchies = (
+  compoundUuid: string,
+): Promise<OEQ.BrowseHierarchy.HierarchyTopicSummary[]> =>
+  OEQ.BrowseHierarchy.browseSubHierarchies(API_BASE_URL, compoundUuid);
 
 /**
  * Get details of a hierarchy topic, including all the key resources and basic information of parent topics.
  *
  * @param compoundUuid Compound UUID of the hierarchy topic.
  */
-export const getHierarchy = (
+export const getHierarchyDetails = (
   compoundUuid: string,
 ): Promise<
   OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>
-> => OEQ.BrowseHierarchy.browseHierarchy(API_BASE_URL, compoundUuid);
+> => OEQ.BrowseHierarchy.browseHierarchyDetails(API_BASE_URL, compoundUuid);
 
 /**
  * Get hierarchy IDs which contains the given key resource.

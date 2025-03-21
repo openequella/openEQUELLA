@@ -1,32 +1,95 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>117570</id>
-  <uuid>91a08805-d5f9-478d-aaaf-eff61a266667</uuid>
-  <listPosition>2</listPosition>
+  <id>27628</id>
+  <uuid>43e60e9a-a3ed-497d-b79d-386fed23675c</uuid>
+  <subTopics/>
+  <listPosition>1</listPosition>
   <showResults>true</showResults>
+  <freetext>HierarchyApiTest</freetext>
   <inheritFreetext>false</inheritFreetext>
-  <addIdefs>
-    <com.tle.beans.ItemDefinitionScript>
-      <entity entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="4c147089-cddb-e67c-b5ab-189614eb1463"/>
-    </com.tle.beans.ItemDefinitionScript>
-  </addIdefs>
+  <addIdefs/>
   <addSchemas/>
   <inhIdefs/>
   <inhSchemas/>
   <name>
-    <id>117571</id>
+    <id>27631</id>
     <strings>
       <entry>
         <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>117572</id>
+          <id>27632</id>
           <locale>en_AU</locale>
           <priority>2</priority>
-          <text>Browse books</text>
+          <text>HierarchyApiTestClient</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>
     </strings>
   </name>
+  <shortDescription>
+    <id>27635</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27636</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>a simple one level persistent hierarchy for make benefit glorious HierarchyApiTest</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </shortDescription>
+  <longDescription>
+    <id>27629</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27630</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>;; from https://en.wikipedia.org/wiki/Scheme_%28programming_language%29&lt;br&gt;
+;; Calculation of Hofstadter&apos;s male and female sequences as a list of pairs&lt;br&gt;
+(define (hofstadter-male-female n)&lt;br&gt;
+  (letrec ((female (lambda (n) (if (= n 0) 1 (- n (male (female (- n 1))))))) (male (lambda (n) (if (= n 0) 0 (- n (female (male (- n 1)))))))) (let loop ((i 0)) (if (&gt; i n) &apos;() (cons (cons (female i) (male i)) (loop (+ i 1))))))) (hofstadter-male-female 8)&lt;br&gt;
+&lt;br&gt;
+===&gt; ((1 . 0) (1 . 0) (2 . 1) (2 . 2) (3 . 2) (3 . 3) (4 . 4) (5 . 4) (5 . 5))</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </longDescription>
+  <subtopicsSectionName>
+    <id>27637</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27638</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>don&apos;t want no subtopix</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </subtopicsSectionName>
+  <resultsSectionName>
+    <id>27633</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27634</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>maybe a search result, maybe not ...</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </resultsSectionName>
   <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
   <attributes/>
 </com.tle.beans.hierarchy.HierarchyTopic>
