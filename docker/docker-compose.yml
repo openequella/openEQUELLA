@@ -1,5 +1,3 @@
-version: "3.6"
-
 services:
   oeq:
     build:
@@ -45,7 +43,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:15.12
+    image: postgres:17.4
     restart: always
     networks:
       - oeq-cluster
