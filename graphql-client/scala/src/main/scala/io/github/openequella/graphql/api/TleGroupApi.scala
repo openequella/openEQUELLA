@@ -29,6 +29,8 @@ import io.github.openequella.graphql.{Client, ClientConfiguration}
   *   The unique identifier of the parent group, or None if this is a top-level group.
   * @param name
   *   The name of the group.
+  * @param description
+  *   The description for the group.
   * @param hasGroups
   *   Whether this group has sub-groups.
   * @param hasUsers
