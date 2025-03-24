@@ -59,6 +59,11 @@ class TLEGroupSchema extends SchemaProvider {
         pagination <- Pagination(args)
         groups     <- tleGroupProvider.listGroups(args.parentId, pagination)
       } yield groups,
+    internalGroupsByIds = args =>
+      for {
+        pagination <- Pagination(args)
+        groups     <- tleGroupProvider.listGroupsByIds(args.uniqueIds, pagination)
+      } yield groups,
     internalGroupSearch = args =>
       for {
         pagination <- Pagination(args)
@@ -93,7 +98,8 @@ class TLEGroupSchema extends SchemaProvider {
         "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
       )
       internalGroups: ListGroupsArgs => IO[CalibanError, GroupConnection],
-      // TODO: Add pagination
+      @GQLDescription("List multiple groups by their unique IDs, invalid IDs will be ignored")
+      internalGroupsByIds: ListGroupsByIdsArgs => IO[CalibanError, GroupConnection],
       @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
       internalGroupSearch: GroupSearchArgs => IO[CalibanError, GroupConnection],
       @GQLDescription("List user ids for all users in the specified group")
@@ -134,6 +140,25 @@ class TLEGroupSchema extends SchemaProvider {
   case class ListGroupsArgs(
       @GQLDescription("The unique ID of the parent group to list groups for - or none for the root")
       parentId: Option[String],
+      @GQLDescription(
+        "Pagination - how many items to return from the start of the possible list of items"
+      )
+      first: Option[Int],
+      @GQLDescription(
+        "Pagination - how many items to return from the end of the possible list of items"
+      )
+      last: Option[Int],
+      @GQLDescription(
+        "Pagination - the cursor for a item before which all items should be returned"
+      )
+      before: Option[String],
+      @GQLDescription("Pagination - the cursor for a item after which all items should be returned")
+      after: Option[String]
+  ) extends PaginationArgs[Base64Cursor]
+
+  case class ListGroupsByIdsArgs(
+      @GQLDescription("The unique IDs of the groups to retrieve")
+      uniqueIds: Set[String],
       @GQLDescription(
         "Pagination - how many items to return from the start of the possible list of items"
       )

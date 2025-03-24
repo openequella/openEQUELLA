@@ -32,6 +32,7 @@ import com.tle.web.remoting.graphql.schema.{
   StringConnection,
   paginationOffsetLimit
 }
+import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 
 import javax.inject.{Inject, Singleton}
@@ -48,6 +49,7 @@ import scala.util.{Failure, Success, Try}
 @Bind
 @Singleton
 class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
+  private val LOGGER = LoggerFactory.getLogger(classOf[TLEGroupProvider])
 
   /** Retrieval of TLEGroup objects often result in `null` values, so this helper `implicit`
     * conversion is used to convert `null` to `None`.
@@ -111,6 +113,50 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
       groupCount      = tleGroupService.countGroupsInGroup(parent.orNull).toInt
       (offset, limit) = paginationOffsetLimit(pagination, groupCount)
       groups <- getSubGroups(parent, limit, offset)
+      page = Page(groups, groupCount, offset, limit)
+    } yield GroupConnection(page)
+  }
+
+  /** List groups by their unique IDs, invalid IDs are ignored.
+    *
+    * @param ids
+    *   the unique IDs of the groups to list
+    * @param pagination
+    *   the pagination parameters for the query
+    * @return
+    *   a list of `Group` objects matching the provided IDs
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
+  def listGroupsByIds(
+      ids: Set[String],
+      pagination: Pagination[Base64Cursor]
+  ): Either[ProviderError, GroupConnection] = {
+    def countValidGroups(ids: Set[String]): Either[ProviderError, Int] = Try(
+      tleGroupService.countValidGroups(ids.asJava).toInt
+    ) match {
+      case Failure(exception) =>
+        Left(ProviderError("Failed to count groups by ids", exception))
+      case Success(count) =>
+        if (count < ids.size) {
+          LOGGER.info("Request to list groups by ids contained invalid ids")
+        }
+        Right(count)
+    }
+
+    def getGroups(ids: Set[String], limit: Int, offset: Int): Either[ProviderError, List[Group]] =
+      Try(
+        tleGroupService.getInformationForGroups(ids.asJava, limit, offset)
+      ) match {
+        case Failure(exception) =>
+          Left(ProviderError("Failed to retrieve groups by ids", exception))
+        case Success(groups) =>
+          Right(groups.asScala.map(toGroup).toList)
+      }
+
+    for {
+      groupCount <- countValidGroups(ids)
+      (offset, limit) = paginationOffsetLimit(pagination, groupCount)
+      groups <- getGroups(ids, limit, offset)
       page = Page(groups, groupCount, offset, limit)
     } yield GroupConnection(page)
   }

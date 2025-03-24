@@ -21,6 +21,7 @@ package com.tle.core.usermanagement.standard.service;
 import com.tle.beans.user.TLEGroup;
 import com.tle.core.remoting.RemoteTLEGroupService;
 import java.util.List;
+import java.util.Set;
 
 public interface TLEGroupService extends RemoteTLEGroupService {
   String add(TLEGroup group);
@@ -112,4 +113,13 @@ public interface TLEGroupService extends RemoteTLEGroupService {
    * @return The number of groups that match the query
    */
   long countGroupsForQuery(String query);
+
+  /**
+   * Returns the number of groups which could be found.
+   *
+   * @param groupIds The group IDs to check.
+   * @return The number of groups that could be found. If all could be found, then the returned
+   *     number will be equal to the size of the groupIds set.
+   */
+  long countValidGroups(Set<String> groupIds);
 }

@@ -69,4 +69,15 @@ public interface RemoteTLEGroupService {
   GroupTreeNode searchTree(String query);
 
   List<TLEGroup> getInformationForGroups(Collection<String> groups);
+
+  /**
+   * Get information for a list of groups.
+   *
+   * @param groupIds The IDs of the groups to get information for
+   * @param limit The maximum number of results to return
+   * @param offset The number of results to skip before returning results
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
+  List<TLEGroup> getInformationForGroups(
+      Collection<String> groupIds, Integer limit, Integer offset);
 }
