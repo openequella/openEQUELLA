@@ -95,6 +95,28 @@ object TleGroupApi {
     Client.query(query)
   }
 
+  /** Retrieves the details of multiple groups by their unique identifiers.
+    *
+    * @param pagination
+    *   Detail the number of items to return, and whether to page through forward or backwards.
+    *   Especially useful for paging through large result sets.
+    * @param groupIds
+    *   The unique identifiers of the groups to retrieve.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   `Left` containing a list of errors or `Right` if the operation was successful with a list of
+    *   groups as well as pagination information which can be used to get the next/previous page.
+    */
+  def getGroupsByIds(pagination: Pagination, groupIds: Set[String])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], PaginationResult[TleGroupView]] =
+    queryWithPagination(pagination) { (first, last, before, after) =>
+      Queries.internalGroupsByIds(groupIds.toList, first, last, before, after) {
+        groupConnection
+      }
+    }
+
   /** Creates a new group.
     *
     * @param name

@@ -101,6 +101,47 @@ class TleGroupApiTest
     }
   }
 
+  describe("getGroupsByIds") {
+    val unknownGroupId = "unknown"
+
+    it("should be able to retrieve known groups by uniqueId") {
+      val groups = getGroupsByIds(Set(knownGroup.uniqueId))
+      groups shouldBe List(knownGroup)
+    }
+
+    it("should silently ignore unknown group Ids") {
+      When("A known and unknown group are requested")
+      val groups = getGroupsByIds(Set(knownGroup.uniqueId, unknownGroupId))
+
+      Then("Only the known group should be returned")
+      groups shouldBe List(knownGroup)
+    }
+
+    it("should be able to retrieve multiple known groups by uniqueId") {
+      val groupIdSelectGroup0    = "276eaccc-59bf-4ac0-a50b-a007e0390ccd"
+      val groupIdSelectSubGroup1 = "f975419d-4d58-4848-b3a5-fd85d1d08c41"
+      val groupIds = Set(knownGroup.uniqueId, groupIdSelectGroup0, groupIdSelectSubGroup1)
+
+      val groups = getGroupsByIds(groupIds, SMALL_PAGE_SIZE)
+      groups.map(_.uniqueId).sorted shouldBe groupIds.toList.sorted
+    }
+
+    it("should return an empty set for unknown groups") {
+      val groups = getGroupsByIds(Set(unknownGroupId))
+      groups shouldBe List()
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleGroupApi.getGroupsByIds(ForwardPagination(LARGE_PAGE_SIZE), Set(knownGroup.uniqueId))(
+          unauthenticated
+        )
+      }
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
   describe("createGroup") {
     it("should be able to create a group") {
       val groupName = "createGroupTest"
@@ -469,5 +510,10 @@ class TleGroupApiTest
   private def getAllGroupsInGroup(groupId: Option[String], pageSize: Int = LARGE_PAGE_SIZE) =
     TestHelper.paginateForward(pageSize) { pagination =>
       TleGroupApi.listGroups(pagination, groupId)
+    }
+
+  private def getGroupsByIds(ids: Set[String], pageSize: Int = LARGE_PAGE_SIZE) =
+    TestHelper.paginateForward(pageSize) { pagination =>
+      TleGroupApi.getGroupsByIds(pagination, ids)
     }
 }
