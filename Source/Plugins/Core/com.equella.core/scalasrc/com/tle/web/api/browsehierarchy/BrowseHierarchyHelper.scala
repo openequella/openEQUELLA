@@ -264,12 +264,9 @@ class BrowseHierarchyHelper {
   /** Return details of all the key resources for the given topic ID by following steps:
     *
     *   1. Get the list of raw key resource by the given ID.
-    *
-    * 2. For each raw key resource, find the real version of the referenced item.
-    *
-    * 3. Get the referenced Items with permission check.
-    *
-    * 4. Generate key resource details based on the reference Items.
+    *   2. For each raw key resource, find the real version of the referenced item.
+    *   3. Get the referenced Items with permission check.
+    *   4. Generate key resource details based on the reference Items.
     *
     * @param topicCompoundUuid
     *   The compound uuid of the given topic entity.

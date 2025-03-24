@@ -160,13 +160,10 @@ class BrowseHierarchyResource {
     * @param function
     *   The function to execute, which has the following parameters:
     *   1. [[HierarchyTopicEntity]]: The hierarchy topic entity;
-    *
-    * 2. [[Option[String]]]: An optional virtual topic name;
-    *
-    * 3. [[Option[List[HierarchyCompoundUuid]]: An optional list of parent HierarchyCompoundUuid;
-    *
-    * 4. [[HierarchyCompoundUuid]]: The validated HierarchyCompoundUuid generated from
-    * `compoundUuid`.
+    *   2. [[Option[String]]]: An optional virtual topic name;
+    *   3. [[Option[List[HierarchyCompoundUuid]]: An optional list of parent HierarchyCompoundUuid;
+    *   4. [[HierarchyCompoundUuid]]: The validated HierarchyCompoundUuid generated from
+    *      `compoundUuid`.
     */
   private def withTopic(
       compoundUuid: String
