@@ -18,6 +18,8 @@
 
 package com.tle.web.wizard.impl;
 
+import static com.tle.common.wizard.controls.universal.UniversalControl.UNIVERSAL_CONTROL;
+
 import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.Constants;
 import com.dytech.edge.common.FileNode;
@@ -33,6 +35,7 @@ import com.dytech.edge.wizard.beans.FixedMetadata;
 import com.dytech.edge.wizard.beans.Metadata;
 import com.dytech.edge.wizard.beans.NavPage;
 import com.dytech.edge.wizard.beans.WizardPage;
+import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.google.common.base.Strings;
 import com.google.inject.Provider;
 import com.tle.annotation.NonNullByDefault;
@@ -464,11 +467,13 @@ public class WizardServiceImpl
   }
 
   /**
-   * @param state
-   * @param cloneOp
-   * @return
+   * @param state Wizard state created with the source Item
+   * @param cloneOp Clone operation to be performed
+   * @param copyAttachments Whether to clone attachments
+   * @return A new Wizard state for the new cloned Item
    */
-  protected WizardState cloneItemInternal(WizardState state, AbstractCloneOperation cloneOp) {
+  protected WizardState cloneItemInternal(
+      WizardState state, AbstractCloneOperation cloneOp, boolean copyAttachments) {
     try {
       ItemKey itemKey = state.getItemId();
       ItemPack<Item> itemPack = itemService.operation(itemKey, cloneOp, initProvider.get());
@@ -484,6 +489,22 @@ public class WizardServiceImpl
       }
 
       Item item = itemPack.getItem();
+
+      // If clone without attachments, create a copy of the original Item's XML and remove all the
+      // attachment nodes
+      // from the copy.
+      if (!copyAttachments) {
+        PropBagEx copy = new PropBagEx(itemPack.getOriginalItem().getItemXml().getXml());
+
+        itemService
+            .getWizardControlsForItem(item)
+            .filter(c -> c instanceof CustomControl && c.getClassType().equals(UNIVERSAL_CONTROL))
+            .flatMap(c -> c.getTargetnodes().stream())
+            .forEach(node -> copy.deleteNode(node.getTarget()));
+
+        itemPack.setXml(copy);
+      }
+
       newState.setItemPack(itemPack);
       newState.setItemId(new ItemId(item.getUuid(), item.getVersion()));
       newState.setMergeDRMDefaults(true);
@@ -501,7 +522,7 @@ public class WizardServiceImpl
       WizardState state, String newItemdefUuid, String transform, boolean copyAttachments) {
     CloneOperation clone = cloneFactory.clone(newItemdefUuid, copyAttachments, false);
     clone.setTransform(transform);
-    return cloneItemInternal(state, clone);
+    return cloneItemInternal(state, clone, copyAttachments);
   }
 
   @Override
