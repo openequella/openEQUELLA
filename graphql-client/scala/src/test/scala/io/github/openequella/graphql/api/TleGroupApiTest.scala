@@ -46,6 +46,7 @@ class TleGroupApiTest
     uniqueId = "d72eb802-0ea6-4384-907a-341ee60628c0",
     parentId = None,
     name = "AutoGroup1",
+    description = None,
     hasGroups = false,
     hasUsers = true
   )
@@ -94,6 +95,47 @@ class TleGroupApiTest
     it("should return an AccessDeniedError if not authenticated") {
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         TleGroupApi.getByUniqueId(knownGroup.uniqueId)(unauthenticated)
+      }
+
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("getGroupsByIds") {
+    val unknownGroupId = "unknown"
+
+    it("should be able to retrieve known groups by uniqueId") {
+      val groups = getGroupsByIds(Set(knownGroup.uniqueId))
+      groups shouldBe List(knownGroup)
+    }
+
+    it("should silently ignore unknown group Ids") {
+      When("A known and unknown group are requested")
+      val groups = getGroupsByIds(Set(knownGroup.uniqueId, unknownGroupId))
+
+      Then("Only the known group should be returned")
+      groups shouldBe List(knownGroup)
+    }
+
+    it("should be able to retrieve multiple known groups by uniqueId") {
+      val groupIdSelectGroup0    = "276eaccc-59bf-4ac0-a50b-a007e0390ccd"
+      val groupIdSelectSubGroup1 = "f975419d-4d58-4848-b3a5-fd85d1d08c41"
+      val groupIds = Set(knownGroup.uniqueId, groupIdSelectGroup0, groupIdSelectSubGroup1)
+
+      val groups = getGroupsByIds(groupIds, SMALL_PAGE_SIZE)
+      groups.map(_.uniqueId).sorted shouldBe groupIds.toList.sorted
+    }
+
+    it("should return an empty set for unknown groups") {
+      val groups = getGroupsByIds(Set(unknownGroupId))
+      groups shouldBe List()
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        TleGroupApi.getGroupsByIds(ForwardPagination(LARGE_PAGE_SIZE), Set(knownGroup.uniqueId))(
+          unauthenticated
+        )
       }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
@@ -194,15 +236,23 @@ class TleGroupApiTest
   }
 
   describe("updateGroup") {
-    it("should be able to update a group's name") {
+    it("should be able to update a group's name and description") {
       val groupName    = "updateGroupTest"
       val newGroupName = "newName"
-      val blankGroup   = TleGroupView("", None, "", hasGroups = false, hasUsers = false)
+      val newGroupDesc = "newDescription"
+      val blankGroup = TleGroupView(
+        uniqueId = "",
+        parentId = None,
+        name = "",
+        description = None,
+        hasGroups = false,
+        hasUsers = false
+      )
 
       Given("A new group is created and subsequently its name is changed")
       val updatedGroupId = for {
         group <- addGroup(groupName)
-        _     <- TleGroupApi.updateGroup(group.uniqueId, Some(newGroupName))
+        _     <- TleGroupApi.updateGroup(group.uniqueId, Some(newGroupName), Some(newGroupDesc))
       } yield group.uniqueId
 
       When("The updated group is retrieved")
@@ -212,7 +262,11 @@ class TleGroupApiTest
       }
 
       Then("The group should have the new name")
-      updatedGroup shouldBe blankGroup.copy(uniqueId = updatedGroupId.value, name = newGroupName)
+      updatedGroup shouldBe blankGroup.copy(
+        uniqueId = updatedGroupId.value,
+        name = newGroupName,
+        description = Some(newGroupDesc)
+      )
     }
 
     it("should be possible to change the parent group of a group") {
@@ -456,5 +510,10 @@ class TleGroupApiTest
   private def getAllGroupsInGroup(groupId: Option[String], pageSize: Int = LARGE_PAGE_SIZE) =
     TestHelper.paginateForward(pageSize) { pagination =>
       TleGroupApi.listGroups(pagination, groupId)
+    }
+
+  private def getGroupsByIds(ids: Set[String], pageSize: Int = LARGE_PAGE_SIZE) =
+    TestHelper.paginateForward(pageSize) { pagination =>
+      TleGroupApi.getGroupsByIds(pagination, ids)
     }
 }
