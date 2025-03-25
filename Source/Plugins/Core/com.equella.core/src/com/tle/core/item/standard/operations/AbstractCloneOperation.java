@@ -36,7 +36,6 @@ import com.tle.core.filesystem.ItemFile;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.hibernate.equella.service.InitialiserService;
 import com.tle.core.item.operations.WorkflowOperation;
-import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.CloneFileProcessingExtension;
 import com.tle.core.plugins.PluginService;
 import com.tle.core.plugins.PluginTracker;
@@ -56,7 +55,6 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
 
   private InitialiserService initialiserService;
   @Inject private StagingService stagingService;
-  @Inject private ItemService itemService;
 
   private PluginTracker<CloneFileProcessingExtension> fileProcessorTracker;
   private List<WorkflowOperation> ranOperations = new ArrayList<WorkflowOperation>();
