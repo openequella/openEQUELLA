@@ -511,7 +511,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       <ListItemText
         secondary={
           hasSearched
-            ? errorMessage ?? sprintf(failedToFindMessage, query)
+            ? (errorMessage ?? sprintf(failedToFindMessage, query))
             : provideQueryMessage
         }
       />
