@@ -59,8 +59,7 @@ object OAuthRedirector extends Http4sDsl[IO] {
         session.put(state, testInfo)
 
         testInfo
-      case None
-          if state.nonEmpty => // This is a redirect back from oEQ and the state has been registered.
+      case None if state.nonEmpty => // This is a redirect back from oEQ and the state has been registered.
         val conf = session.get(state)
         TestInfo(conf.clientId, conf.clientSecret, conf.equellaUrl, state)
       case _ => throw WebException(400, "Client ID not supplied")
