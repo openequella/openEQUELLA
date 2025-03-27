@@ -282,7 +282,8 @@ class BrowseHierarchyHelper {
       .flatMap(convertToKeyResourceItem)
 
     val itemIdKeys = keyResourceItems.map(_.item).map(new ItemIdKey(_))
-    val serializer = SearchHelper.createSerializer(itemIdKeys)
+    // No need to know the attachment details of a Key resources.
+    val serializer = SearchHelper.createSerializer(itemIdKeys, includeAttachments = false)
 
     keyResourceItems.map(convertToKeyResource(_, serializer))
   }
