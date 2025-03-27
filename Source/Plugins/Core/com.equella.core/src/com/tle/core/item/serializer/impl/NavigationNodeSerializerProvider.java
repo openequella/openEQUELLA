@@ -18,6 +18,8 @@
 
 package com.tle.core.item.serializer.impl;
 
+import static com.tle.core.item.serializer.ItemSerializerService.CATEGORY_NAVIGATION;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -47,8 +49,6 @@ import org.hibernate.criterion.Projections;
 @SuppressWarnings("nls")
 public class NavigationNodeSerializerProvider implements ItemSerializerProvider {
   private static final String KEY_NAVIGATION_NODES = "nodes";
-
-  private static final String CATEGORY_NAVIGATION = "navigation";
 
   private static final String ALIAS_MANUAL_NAVIGATION = "manualnav";
   private static final String ALIAS_SHOW_SPLIT = "showsplit";

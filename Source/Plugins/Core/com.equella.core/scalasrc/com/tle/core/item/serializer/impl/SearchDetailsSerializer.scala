@@ -27,6 +27,7 @@ import com.tle.common.Pair
 import com.tle.common.interfaces.SimpleI18NString
 import com.tle.common.interfaces.equella.BundleString
 import com.tle.core.guice.Bind
+import com.tle.core.item.serializer.ItemSerializerService.CATEGORY_DISPLAY
 import com.tle.core.item.serializer.{ItemSerializerProvider, ItemSerializerState, XMLStreamer}
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions, EquellaItemBean}
 import com.tle.web.resources.ResourcesService
@@ -44,8 +45,6 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
   var calDao: CALDao = _
   @Inject
   var calService: CALService = _
-
-  val CATEGORY_DISPLAY = "display"
 
   override def prepareItemQuery(state: ItemSerializerState): Unit =
     if (state.hasCategory(CATEGORY_DISPLAY)) {

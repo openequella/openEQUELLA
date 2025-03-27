@@ -27,11 +27,23 @@ import java.util.List;
 
 @SuppressWarnings("nls")
 public interface ItemSerializerService {
+  String CATEGORY_ALL = "all";
+  String CATEGORY_ATTACHMENT = "attachment";
   String CATEGORY_BASIC = "basic";
   String CATEGORY_DETAIL = "detail";
+  String CATEGORY_DISPLAY = "display";
+  String CATEGORY_DRM = "drm";
   String CATEGORY_METADATA = "metadata";
-  String CATEGORY_ATTACHMENT = "attachment";
-  String CATEGORY_ALL = "all";
+  String CATEGORY_NAVIGATION = "navigation";
+
+  List<String> ALL_EXCEPT_ATTACHMENT =
+      List.of(
+          CATEGORY_BASIC,
+          CATEGORY_DETAIL,
+          CATEGORY_DISPLAY,
+          CATEGORY_DRM,
+          CATEGORY_METADATA,
+          CATEGORY_NAVIGATION);
 
   /**
    * @param itemIds

@@ -18,6 +18,8 @@
 
 package com.tle.core.item.serializer.impl;
 
+import static com.tle.core.item.serializer.ItemSerializerService.CATEGORY_DRM;
+
 import com.google.common.collect.Lists;
 import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.DrmSettings.Party;
@@ -42,7 +44,6 @@ import org.hibernate.criterion.Projections;
 @Singleton
 @SuppressWarnings("nls")
 public class DrmSerializerProvider implements ItemSerializerProvider {
-  private static final String CATEGORY_DRM = "drm";
   private static final String ALIAS_DRM = "drm";
 
   @Override
