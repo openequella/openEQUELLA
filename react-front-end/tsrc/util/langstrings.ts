@@ -737,8 +737,6 @@ export const languageStrings = {
             usableBy: "Usable by",
             usableByDesc:
               "Only allow user matching this expression to use this platform",
-            usableByValidationError:
-              "The processed ACL expression exceeds the permitted length",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",

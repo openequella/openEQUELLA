@@ -195,20 +195,12 @@ object LtiPlatformBean {
     def checkACLExpression =
       bean.allowExpression match {
         case Some(expression) =>
+          val evaluator = new AclExpressionEvaluator
           Either
-            .cond(
-              expression.length <= 255,
-              expression,
-              "ACL expression is too long (maximum 255 characters allowed)"
-            )
-            .flatMap { exp =>
-              val evaluator = new AclExpressionEvaluator
-              Either
-                // We only check whether the provided ACl Expression is valid so what User State to be used
-                // and whether the user is owner do not really matter.
-                .catchNonFatal(evaluator.evaluate(exp, CurrentUser.getUserState, false))
-                .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
-            }
+            // We only check whether the provided ACl Expression is valid so what User State to be used
+            // and whether the user is owner do not really matter.
+            .catchNonFatal(evaluator.evaluate(expression, CurrentUser.getUserState, false))
+            .leftMap(err => s"Invalid value for ACL expression: ${err.getMessage}")
             .toValidatedNel
         case None => Validated.valid()
       }

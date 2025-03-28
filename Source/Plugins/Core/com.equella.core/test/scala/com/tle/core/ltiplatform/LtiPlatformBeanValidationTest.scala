@@ -26,14 +26,12 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
   )
 
   describe("validate LTI Platform Bean") {
+    // TODO: Test validation of `allowExpression` (which need to mock usermanagement Module).
     it("accumulates all the errors found from the provided bean") {
       val invalidBean = validBean.copy(
         authUrl = "abc",
         clientId = "",
-        unknownUserHandling = "RUN",
-        allowExpression = Option(
-          "Everyone OR Administrative User [admin] OR Alistair Oliver [al] OR Carl Hoffman [carl] OR Andrew Hunter [ahunter] OR Demonstration Student [demostudent] OR Demonstration Sysadmin [demosysadmin] OR Bob Carter [bcarter] OR Cath Fitzgerald [cfitzgerald] OR Damian McShane [dmcshane] OR Demonstration Content Admin [democontentadmin] OR Demonstration Librarian [demolibrarian] OR Demonstration Teacher [demoteacher] OR Documentation Administrator [DocAdmin] OR EQUELLA Documentation [Documentation] OR Greg Brown [gbrown] OR Jane Jones [jjones] OR Jennifer Seidenwurm [ilikedrawing@gmail.com] OR Joe Bloggs [jbloggs] OR John Smith [jsmith] OR Sue Smith [ssmith] OR q q [test] OR whitespace whitespace [whitespace]"
-        )
+        unknownUserHandling = "RUN"
       )
       val result = LtiPlatformBean.validateLtiPlatformBean(invalidBean)
 
@@ -41,8 +39,7 @@ class LtiPlatformBeanValidationTest extends AnyFunSpec with Matchers {
         List(
           "Missing value for required field client ID",
           "Invalid value for Auth URL : no protocol: abc",
-          "Unknown handling for unknown users: No value found for 'RUN'",
-          "ACL expression is too long (maximum 255 characters allowed)"
+          "Unknown handling for unknown users: No value found for 'RUN'"
         )
       )
     }

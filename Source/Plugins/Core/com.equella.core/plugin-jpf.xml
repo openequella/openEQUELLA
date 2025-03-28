@@ -6114,6 +6114,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20242.MergeDynamicAndNormalKeyResourceTable"/>
     <parameter id="date" value="2024-07-03"/>
   </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="UpdateAllowExpressionColumn">
+    <parameter id="id" value="com.tle.core.institution.migration.v20251.UpdateAllowExpressionColumn"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20251.UpdateAllowExpressionColumn"/>
+    <parameter id="date" value="2025-03-24"/>
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />
   </extension>
