@@ -29,9 +29,7 @@ import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.helper.FilterUserBeanModel;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.service.AdminTLEGroupService;
-import com.tle.admin.usermanagement.internal.GroupsTab.TreeUpdateName;
-import com.tle.beans.user.TLEGroup;
-import com.tle.common.Check;
+import com.tle.admin.service.BasicGroupDetails;
 import com.tle.common.Format;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -42,9 +40,12 @@ import com.tle.common.usermanagement.user.valuebean.UserBean;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,15 +53,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Panel for displaying and editing a group's details. */
 public class GroupDetailsPanel extends JChangeDetectorPanel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
+
+  private final Logger LOGGER = LoggerFactory.getLogger(GroupDetailsPanel.class);
+
   private final AdminTLEGroupService groupService;
   private final RemoteUserService userService;
   private final TLEAction saveAction;
 
-  private transient TLEGroup loadedGroup;
+  private transient BasicGroupDetails loadedGroup;
 
   private ChangeDetector changeDetector;
   private JTextField groupId;
@@ -77,26 +83,22 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
 
     setupGui();
 
-    loadGroup(null);
+    clearGroupDetails();
   }
 
   private void setupGui() {
     JLabel groupIdLabel =
         new JLabel(
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.groupid")); //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.groupid"));
     JLabel groupNameLabel =
         new JLabel(
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.groupname")); //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.groupname"));
     JLabel descriptionLabel =
         new JLabel(
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.desc")); //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.desc"));
     JLabel usersLabel =
         new JLabel(
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.members")); //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.members"));
 
     descriptionLabel.setVerticalTextPosition(SwingConstants.TOP);
     descriptionLabel.setVerticalAlignment(SwingConstants.TOP);
@@ -151,12 +153,15 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     saveAction.setEnabled(false);
   }
 
-  public void loadGroup(final TLEGroup group) {
-    loadGroup(group, null);
+  /** Clear the group details from the panel, resetting fields and internal state. */
+  public void clearGroupDetails() {
+    loadGroup(null, null);
   }
 
-  public void loadGroup(final TLEGroup group, final TreeUpdateName r) {
-    if (loadedGroup != null && group != null && loadedGroup.getId() == group.getId()) {
+  public void loadGroup(final BasicGroupDetails group, final Consumer<String> updateTreeName) {
+    if (loadedGroup != null
+        && group != null
+        && Objects.equals(loadedGroup.getUuid(), group.getUuid())) {
       return;
     }
 
@@ -165,17 +170,15 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     } else {
       Object[] buttons =
           new Object[] {
-            CurrentLocale.get(
-                "com.tle.admin.usermanagement.internal.groupdetailspanel.save"), //$NON-NLS-1$
+            CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.save"),
             CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.dontsave")
-          }; //$NON-NLS-1$
+          };
       int results =
           JOptionPane.showOptionDialog(
               this,
+              CurrentLocale.get("com.tle.admin.usermanagement.internal.groupdetailspanel.savemods"),
               CurrentLocale.get(
-                  "com.tle.admin.usermanagement.internal.groupdetailspanel.savemods"), //$NON-NLS-1$
-              CurrentLocale.get(
-                  "com.tle.admin.usermanagement.internal.groupdetailspanel.savegroup"), //$NON-NLS-1$
+                  "com.tle.admin.usermanagement.internal.groupdetailspanel.savegroup"),
               JOptionPane.YES_NO_OPTION,
               JOptionPane.QUESTION_MESSAGE,
               null,
@@ -193,8 +196,8 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
 
           @Override
           public void finished() {
-            if (r != null && loadedGroup != null) {
-              r.update(loadedGroup.getName());
+            if (updateTreeName != null && loadedGroup != null) {
+              updateTreeName.accept(loadedGroup.getName());
             }
             loadDetails(group);
           }
@@ -207,7 +210,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     setEnabled(loadedGroup != null);
   }
 
-  private void loadDetails(TLEGroup group) {
+  private void loadDetails(BasicGroupDetails group) {
     loadedGroup = group;
 
     boolean enabled = loadedGroup != null;
@@ -220,42 +223,49 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     users.removeAllItems();
 
     if (enabled) {
-      groupId.setText(Check.nullToEmpty(group.getUuid()));
-      groupName.setText(Check.nullToEmpty(group.getName()));
-      description.setText(Check.nullToEmpty(group.getDescription()));
+      groupId.setText(group.getUuid());
+      groupName.setText(group.getName());
+      description.setText(group.getDescription().orElse(""));
 
-      GlassSwingWorker<Collection<UserBean>> worker =
-          new GlassSwingWorker<Collection<UserBean>>() {
-            @Override
-            public Collection<UserBean> construct() {
-              return userService.getInformationForUsers(loadedGroup.getUsers()).values();
-            }
-
-            @Override
-            public void finished() {
-              if (get() != null) {
-                users.addItems(get());
-              }
-
-              clearChanges();
-            }
-
-            @Override
-            public void exception() {
-              Exception ex = getException();
-              ex.printStackTrace();
-              Driver.displayError(GroupDetailsPanel.this, "unknown", ex); // $NON-NLS-1$
-
-              clearChanges();
-            }
-          };
-      worker.setComponent(this);
+      GlassSwingWorker<Collection<UserBean>> worker = buildUsersSwingWorker();
       worker.start();
     } else {
       groupId.setText("");
       groupName.setText("");
+      description.setText("");
       clearChanges();
     }
+  }
+
+  private GlassSwingWorker<Collection<UserBean>> buildUsersSwingWorker() {
+    GlassSwingWorker<Collection<UserBean>> worker =
+        new GlassSwingWorker<>() {
+          @Override
+          public Collection<UserBean> construct() {
+            return userService.getInformationForUsers(loadedGroup.getUsers()).values();
+          }
+
+          @Override
+          public void finished() {
+            if (get() != null) {
+              users.addItems(get());
+            }
+
+            clearChanges();
+          }
+
+          @Override
+          public void exception() {
+            Exception ex = getException();
+            LOGGER.error("Error loading users", ex);
+            Driver.displayError(GroupDetailsPanel.this, "unknown", ex);
+
+            clearChanges();
+          }
+        };
+    worker.setComponent(this);
+
+    return worker;
   }
 
   private void saveDetails() {
@@ -275,7 +285,7 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     saveDetails();
 
     String id = groupService.edit(loadedGroup);
-    loadedGroup = groupService.get(id);
+    loadedGroup = groupService.get(id).orElse(null);
 
     clearChanges();
     return loadedGroup.getName();
@@ -287,9 +297,6 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     super.clearChanges();
   }
 
-  /**
-   * @author Nicholas Read
-   */
   protected abstract static class MyGlassSwingWorker<T> extends GlassSwingWorker<T> {
     public abstract T doStuff();
 
@@ -305,12 +312,11 @@ public class GroupDetailsPanel extends JChangeDetectorPanel {
     @Override
     public void exception() {
       Exception ex = getException();
-      if (ex instanceof InvalidDataException) {
-        InvalidDataException ide = (InvalidDataException) ex;
-        ValidationError error = ide.getErrors().get(0);
+      if (ex instanceof InvalidDataException ide) {
+        ValidationError error = ide.getErrors().getFirst();
         JOptionPane.showMessageDialog(getComponent(), error.getMessage());
       } else {
-        Driver.displayError(getComponent(), "unknown", ex); // $NON-NLS-1$
+        Driver.displayError(getComponent(), "unknown", ex);
       }
     }
   }
