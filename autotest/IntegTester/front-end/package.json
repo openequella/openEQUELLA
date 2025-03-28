@@ -7,8 +7,8 @@
     "dev": "parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@emotion/react": "11.11.4",
-    "@emotion/styled": "11.11.5",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
     "@mui/material": "5.15.16",
     "axios": "1.8.4",
     "babel-polyfill": "6.26.0",
