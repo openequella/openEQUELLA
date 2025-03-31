@@ -121,7 +121,7 @@
     "@types/uuid": "9.0.8",
     "babel-jest": "29.7.0",
     "buffer": "6.0.3",
-    "core-js": "3.37.1",
+    "core-js": "3.41.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
     "css-mediaquery": "0.1.2",
