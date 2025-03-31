@@ -47,7 +47,7 @@
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
-    "core-js": "3.37.1",
+    "core-js": "3.41.0",
     "eslint": "8.57.1",
     "eslint-plugin-unused-imports": "2.0.0",
     "eslint-config-prettier": "9.1.0",
