@@ -238,10 +238,10 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.9.9",
+  "org.scala-sbt"                %% "io"                       % "1.10.5",
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.3.0",
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.179",
   "com.fasterxml"                 % "classmate"                % "1.7.0",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
