@@ -20,6 +20,7 @@ package com.tle.web.remoting.graphql.provider
 
 import caliban.CalibanError.ExecutionError
 import com.tle.web.remoting.graphql.{ErrorCode, Errors}
+import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success}
 
@@ -33,6 +34,7 @@ import scala.util.{Failure, Success}
 case class ProviderError(message: String, cause: String)
 
 object ProviderError {
+  private val LOGGER = LoggerFactory.getLogger(classOf[ProviderError])
 
   /** Create a `ProviderError` with the provided human readable message and the `Throwable` which
     * caused the error.
@@ -83,6 +85,7 @@ object ProviderError {
     scala.util.Try(producer) match {
       case Success(result) => Right(result)
       case Failure(exception) =>
+        LOGGER.debug(s"Error: $msg", exception)
         Left(ProviderError(msg + exception.getMessage, exception))
     }
 }

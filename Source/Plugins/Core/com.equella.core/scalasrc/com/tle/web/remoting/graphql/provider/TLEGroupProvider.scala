@@ -33,7 +33,6 @@ import com.tle.web.remoting.graphql.schema.{
   paginationOffsetLimit
 }
 import org.slf4j.LoggerFactory
-import org.springframework.transaction.annotation.Transactional
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -276,7 +275,6 @@ class TLEGroupProvider @Inject() (tleGroupService: TLEGroupService) {
     *   updated
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_USER_MANAGEMENT)
-  @Transactional
   def updateGroup(
       uniqueId: String,
       name: Option[String],
