@@ -119,7 +119,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     final boolean reverseOrder = (reverse != null && Utils.parseLooseBool(reverse, false));
     final int offset = (start < 0 ? 0 : start);
     final int count = (length < 0 ? 10 : length);
-    final List<String> infos = CsvList.asList(info, SerialisationCategory.ALL.toString());
+    final List<String> infos = CsvList.asList(info, SerialisationCategory.BASIC.toString());
     final List<String> statuses = Optional.ofNullable(status).map(CsvList::asList).orElse(null);
 
     // String dynaCollectionCompound =
