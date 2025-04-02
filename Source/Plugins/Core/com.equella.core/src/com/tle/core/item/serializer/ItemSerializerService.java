@@ -22,28 +22,59 @@ import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.beans.HistoryEventBean;
 import com.tle.web.api.item.interfaces.beans.ItemExportBean;
 import com.tle.web.api.item.interfaces.beans.ItemLockBean;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @SuppressWarnings("nls")
 public interface ItemSerializerService {
-  String CATEGORY_ALL = "all";
-  String CATEGORY_ATTACHMENT = "attachment";
-  String CATEGORY_BASIC = "basic";
-  String CATEGORY_DETAIL = "detail";
-  String CATEGORY_DISPLAY = "display";
-  String CATEGORY_DRM = "drm";
-  String CATEGORY_METADATA = "metadata";
-  String CATEGORY_NAVIGATION = "navigation";
+  enum SerialisationCategory {
+    ALL("all"),
+    ATTACHMENT("attachment"),
+    BASIC("basic"),
+    DETAIL("detail"),
+    DISPLAY("display"),
+    DRM("drm"),
+    METADATA("metadata"),
+    NAVIGATION("navigation");
 
-  List<String> ALL_EXCEPT_ATTACHMENT =
+    private final String value;
+
+    SerialisationCategory(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return value;
+    }
+
+    /**
+     * Helper method to transform a collection of Category string representations to a collection of
+     * Categories. Throws IllegalArgumentException if any of the strings are not valid categories.
+     */
+    public static Collection<SerialisationCategory> toCategoryList(Collection<String> categories) {
+      return categories.stream().map(SerialisationCategory::fromString).toList();
+    }
+
+    public static SerialisationCategory fromString(String value) {
+      return Optional.ofNullable(value)
+          .map(String::toLowerCase)
+          .flatMap(v -> Arrays.stream(values()).filter(c -> c.value.equals(v)).findFirst())
+          .orElseThrow(() -> new IllegalArgumentException("Unknown category: " + value));
+    }
+  }
+
+  List<SerialisationCategory> ALL_EXCEPT_ATTACHMENT =
       List.of(
-          CATEGORY_BASIC,
-          CATEGORY_DETAIL,
-          CATEGORY_DISPLAY,
-          CATEGORY_DRM,
-          CATEGORY_METADATA,
-          CATEGORY_NAVIGATION);
+          SerialisationCategory.BASIC,
+          SerialisationCategory.DETAIL,
+          SerialisationCategory.DISPLAY,
+          SerialisationCategory.DRM,
+          SerialisationCategory.METADATA,
+          SerialisationCategory.NAVIGATION);
 
   /**
    * @param itemIds
@@ -53,7 +84,14 @@ public interface ItemSerializerService {
    * @return
    */
   ItemSerializerXml createXmlSerializer(
-      Collection<Long> itemIds, Collection<String> categories, String... privileges);
+      Collection<Long> itemIds, Collection<SerialisationCategory> categories, String... privileges);
+
+  /**
+   * Variant of {@link #createXmlSerializer(Collection, Collection, String...)} to support Legacy
+   * code that uses the string representation of a serialization category.
+   */
+  ItemSerializerXml createXmlSerializer(
+      Collection<Long> itemIds, Set<String> categories, String... privileges);
 
   /**
    * @param itemIds
@@ -64,12 +102,22 @@ public interface ItemSerializerService {
    */
   ItemSerializerItemBean createItemBeanSerializer(
       Collection<Long> itemIds,
-      Collection<String> categories,
+      Collection<SerialisationCategory> categories,
       boolean export,
       String... privileges);
 
+  /**
+   * Variant of {@link #createItemBeanSerializer(Collection, Collection, boolean, String...)} to
+   * support Legacy code that uses the string representation of a serialization category.
+   */
   ItemSerializerItemBean createItemBeanSerializer(
-      Collection<Long> itemIds, Collection<String> categories, boolean ignorePriv, boolean export);
+      Collection<Long> itemIds, List<String> categories, boolean export, String... privileges);
+
+  ItemSerializerItemBean createItemBeanSerializer(
+      Collection<Long> itemIds,
+      Collection<SerialisationCategory> categories,
+      boolean ignorePriv,
+      boolean export);
 
   /**
    * @param where
@@ -80,9 +128,17 @@ public interface ItemSerializerService {
    */
   ItemSerializerItemBean createItemBeanSerializer(
       ItemSerializerWhere where,
-      Collection<String> categories,
+      Collection<SerialisationCategory> categories,
       boolean export,
       String... privileges);
+
+  /**
+   * Variant of {@link #createItemBeanSerializer(ItemSerializerWhere, Collection, boolean,
+   * String...)} to support Legacy code that uses the string representation of a serialization
+   * category.
+   */
+  ItemSerializerItemBean createItemBeanSerializer(
+      ItemSerializerWhere where, List<String> categories, boolean export, String... privileges);
 
   /**
    * The presence of the optional 'export' flag in query parameters draws forth tailored detail.

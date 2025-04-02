@@ -27,7 +27,7 @@ import com.tle.common.Pair
 import com.tle.common.interfaces.SimpleI18NString
 import com.tle.common.interfaces.equella.BundleString
 import com.tle.core.guice.Bind
-import com.tle.core.item.serializer.ItemSerializerService.CATEGORY_DISPLAY
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.item.serializer.{ItemSerializerProvider, ItemSerializerState, XMLStreamer}
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions, EquellaItemBean}
 import com.tle.web.resources.ResourcesService
@@ -47,7 +47,7 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
   var calService: CALService = _
 
   override def prepareItemQuery(state: ItemSerializerState): Unit =
-    if (state.hasCategory(CATEGORY_DISPLAY)) {
+    if (state.hasCategory(SerialisationCategory.DISPLAY)) {
       val itemProjection = state.getItemProjection
       itemProjection.add(Projections.property("searchDetails"), "searchDetails")
       state.addCollectionQuery()
@@ -56,7 +56,7 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
     }
 
   override def performAdditionalQueries(state: ItemSerializerState): Unit =
-    if (state.hasCategory(CATEGORY_DISPLAY)) {
+    if (state.hasCategory(SerialisationCategory.DISPLAY)) {
       val itemIds     = state.getItemKeys
       val holdingsMap = calDao.getHoldingsForItemIds(itemIds).asScala
       val portionsMap = calDao.getPortionsForItemIds(itemIds).asScala.groupBy(_.getItem.getId)
@@ -75,7 +75,7 @@ class SearchDetailsSerializer extends ItemSerializerProvider {
       state: ItemSerializerState,
       itemId: Long
   ): Unit =
-    if (state.hasCategory(CATEGORY_DISPLAY)) {
+    if (state.hasCategory(SerialisationCategory.DISPLAY)) {
       Option(state.getData[SearchDetails](itemId, "colSearchDetails")).foreach { csd =>
         equellaItemBean.setDisplayOptions(
           new DisplayOptions(

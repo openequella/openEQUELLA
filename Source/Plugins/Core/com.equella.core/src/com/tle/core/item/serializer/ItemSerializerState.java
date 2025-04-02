@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import com.tle.beans.item.Item;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,7 +46,7 @@ public class ItemSerializerState {
   public static final String COLLAB_ALIAS = "collab";
   public static final String SECURITY_ALIAS = "metatargets";
 
-  private final Set<String> categories;
+  private final Set<SerialisationCategory> categories;
   private final boolean export;
 
   private final ProjectionList itemProjection;
@@ -67,10 +68,10 @@ public class ItemSerializerState {
 
   private Integer firstResult;
 
-  public ItemSerializerState(Set<String> categories, boolean export) {
+  public ItemSerializerState(Set<SerialisationCategory> categories, boolean export) {
     this.categories = categories;
     this.export = export;
-    if (categories.contains(ItemSerializerService.CATEGORY_ALL)) {
+    if (categories.contains(SerialisationCategory.ALL)) {
       allCategories = true;
     }
     itemProjection = Projections.projectionList().add(Projections.id().as(ID_ALIAS));
@@ -86,7 +87,7 @@ public class ItemSerializerState {
     return itemQueryResults.keySet();
   }
 
-  public boolean hasCategory(String category) {
+  public boolean hasCategory(SerialisationCategory category) {
     return allCategories || categories.contains(category);
   }
 

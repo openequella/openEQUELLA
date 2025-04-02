@@ -30,7 +30,7 @@ import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.AttachmentSerializer;
 import com.tle.core.item.serializer.ItemSerializerProvider;
-import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.item.serializer.ItemSerializerState;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.core.jackson.MapperExtension;
@@ -61,6 +61,12 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   private Logger LOGGER = LoggerFactory.getLogger(AttachmentSerializerProvider.class);
 
+  /**
+   * Serializes the given {@link Attachment} into a concrete subclass of {@link
+   * EquellaAttachmentBean}, using an appropriate serializer based on the attachment type.
+   *
+   * <p>If serialization fails, a {@link BrokenAttachmentBean} is returned instead.
+   */
   public EquellaAttachmentBean serializeAttachment(Attachment attachment) {
     String type = attachment.getAttachmentType().name().toLowerCase();
     String uuid = attachment.getUuid();
@@ -100,14 +106,14 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   @Override
   public void prepareItemQuery(ItemSerializerState state) {
-    if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)) {
+    if (state.hasCategory(SerialisationCategory.ATTACHMENT)) {
       state.addPrivilege(ItemSecurityConstants.VIEW_ITEM);
     }
   }
 
   @Override
   public void performAdditionalQueries(ItemSerializerState state) {
-    if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)) {
+    if (state.hasCategory(SerialisationCategory.ATTACHMENT)) {
       Multimap<Long, Attachment> attachments =
           itemDao.getAttachmentsForItemIds(
               state.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
@@ -119,7 +125,7 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
 
   @Override
   public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)) {
+    if (state.hasCategory(SerialisationCategory.ATTACHMENT)) {
       throw new UnsupportedOperationException();
     }
   }
@@ -127,7 +133,7 @@ public class AttachmentSerializerProvider implements ItemSerializerProvider, Map
   @Override
   public void writeItemBeanResult(
       EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(ItemSerializerService.CATEGORY_ATTACHMENT)
+    if (state.hasCategory(SerialisationCategory.ATTACHMENT)
         && state.hasPrivilege(itemId, ItemSecurityConstants.VIEW_ITEM)) {
       Collection<Attachment> attachments = state.getData(itemId, ALIAS_ATTACHMENTS);
       List<AttachmentBean> attachmentBeans = Lists.newArrayList();

@@ -18,8 +18,6 @@
 
 package com.tle.core.item.serializer.impl;
 
-import static com.tle.core.item.serializer.ItemSerializerService.CATEGORY_NAVIGATION;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -31,6 +29,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.item.serializer.ItemSerializerProvider;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.item.serializer.ItemSerializerState;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -59,7 +58,7 @@ public class NavigationNodeSerializerProvider implements ItemSerializerProvider 
 
   @Override
   public void prepareItemQuery(ItemSerializerState state) {
-    if (state.hasCategory(CATEGORY_NAVIGATION)) {
+    if (state.hasCategory(SerialisationCategory.NAVIGATION)) {
       state.addPrivilege(ItemSecurityConstants.VIEW_ITEM);
       final ProjectionList projection = state.getItemProjection();
       projection.add(
@@ -70,7 +69,7 @@ public class NavigationNodeSerializerProvider implements ItemSerializerProvider 
 
   @Override
   public void performAdditionalQueries(ItemSerializerState state) {
-    if (state.hasCategory(CATEGORY_NAVIGATION)) {
+    if (state.hasCategory(SerialisationCategory.NAVIGATION)) {
       ListMultimap<Long, ItemNavigationNode> nodes =
           itemDao.getNavigationNodesForItemIds(
               state.getItemIdsWithPrivilege(ItemSecurityConstants.VIEW_ITEM));
@@ -82,7 +81,7 @@ public class NavigationNodeSerializerProvider implements ItemSerializerProvider 
 
   @Override
   public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_NAVIGATION)) {
+    if (state.hasCategory(SerialisationCategory.NAVIGATION)) {
       throw new UnsupportedOperationException();
     }
   }
@@ -90,7 +89,7 @@ public class NavigationNodeSerializerProvider implements ItemSerializerProvider 
   @Override
   public void writeItemBeanResult(
       EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_NAVIGATION)
+    if (state.hasCategory(SerialisationCategory.NAVIGATION)
         && state.hasPrivilege(itemId, ItemSecurityConstants.VIEW_ITEM)) {
       final Collection<ItemNavigationNode> navigaton = state.getData(itemId, KEY_NAVIGATION_NODES);
       final boolean manualNavigation = (Boolean) state.getData(itemId, ALIAS_MANUAL_NAVIGATION);
