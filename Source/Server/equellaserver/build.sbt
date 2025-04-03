@@ -30,7 +30,7 @@ val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.1"
 val luceneVersion     = "9.12.1"
-val nettyVersion      = "4.1.119.Final"
+val nettyVersion      = "4.2.0.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
