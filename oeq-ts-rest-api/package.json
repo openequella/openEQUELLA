@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@types/jest": "29.5.14",
-    "@types/lodash": "4.17.15",
-    "@types/node": "18.19.76",
+    "@types/lodash": "4.17.16",
+    "@types/node": "18.19.86",
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
