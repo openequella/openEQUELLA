@@ -12,7 +12,7 @@ import scala.jdk.CollectionConverters._
 
 name := "equella-autotests"
 
-libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.12" classifier "runtime"
+libraryDependencies += "org.jacoco" % "org.jacoco.agent" % "0.8.13" classifier "runtime"
 
 lazy val config = (project in file("config"))
   .settings((Compile / resourceDirectory) := baseDirectory.value / "resources")
