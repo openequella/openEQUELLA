@@ -27,7 +27,7 @@ import com.tle.admin.gui.common.ListWithView;
 import com.tle.admin.gui.common.ListWithViewInterface;
 import com.tle.admin.plugin.GeneralPlugin;
 import com.tle.admin.service.AdminTLEGroupService;
-import com.tle.beans.user.TLEGroup;
+import com.tle.admin.service.BasicGroupDetails;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings;
 import com.tle.beans.usermanagement.standard.wrapper.SharedSecretSettings.SharedSecretValue;
 import com.tle.common.Check;
@@ -41,13 +41,8 @@ import com.tle.common.recipientselector.SingleFinderDialog;
 import com.tle.common.recipientselector.formatter.ExpressionFormatter;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyListener;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,11 +63,10 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
   @Override
   public void init() {
     listWithView =
-        new ListWithView<SharedSecretValue, Editor>() {
+        new ListWithView<>() {
           @Override
           protected SharedSecretValue createElement() {
-            SharedSecretValue mapping = new SharedSecretValue();
-            return mapping;
+            return new SharedSecretValue();
           }
 
           @Override
@@ -94,7 +88,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
                     super.getListCellRendererComponent(
                         list, value, index, isSelected, cellHasFocus);
             String id = ((SharedSecretValue) value).getId();
-            if (id.length() == 0) {
+            if (id.isEmpty()) {
               id = s("default");
             }
             d.setText(id);
@@ -129,7 +123,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
 
         requireAllowedCharacters(id2);
 
-        if (v.getSecret().length() == 0) {
+        if (v.getSecret().isEmpty()) {
           throw new EditorException(s("enter"));
         }
         row++;
@@ -168,7 +162,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
     private JRadioButton failNonExistantUser;
     private JRadioButton ignoreNonExistantUser;
     private JRadioButton autoCreateNonExistantUser;
-    private FilteredShuffleList<TLEGroup> autoAddToGroups;
+    private FilteredShuffleList<BasicGroupDetails> autoAddToGroups;
 
     private ChangeDetector changeDetector;
 
@@ -192,19 +186,14 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
               failNonExistantUser, ignoreNonExistantUser, autoCreateNonExistantUser);
 
       autoCreateNonExistantUser.addItemListener(
-          new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-              autoAddToGroups.setEnabled(e.getStateChange() == ItemEvent.SELECTED);
-            }
-          });
+          e -> autoAddToGroups.setEnabled(e.getStateChange() == ItemEvent.SELECTED));
 
       autoAddToGroups =
-          new FilteredShuffleList<TLEGroup>(
+          new FilteredShuffleList<>(
               null,
-              new FilterModel<TLEGroup>() {
+              new FilterModel<>() {
                 @Override
-                public List<TLEGroup> search(String pattern) {
+                public List<BasicGroupDetails> search(String pattern) {
                   String query = pattern;
                   if (!query.endsWith("*")) {
                     query += "*";
@@ -218,7 +207,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
             public Component getListCellRendererComponent(
                 JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
               super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-              setText(((TLEGroup) value).getName());
+              setText(((BasicGroupDetails) value).getName());
               return this;
             }
           });
@@ -226,18 +215,16 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
 
       setLayout(new MigLayout("fill", "[20][][][fill,grow]"));
 
-      // Sometime's Sonar's complaints about repeated string literals
-      // really don't help
       add(new JLabel(s("id")), "span 2");
-      add(name, "span, growx"); // NOSONAR
+      add(name, "span, growx");
       add(new JLabel(s("secret")), "span 2");
-      add(secret, "span, growx"); // NOSONAR
+      add(secret, "span, growx");
 
       add(new JLabel(s("modifyusernames")), "span");
       add(new JLabel(s("prefix")), "skip, span 2");
-      add(prefix, "span, growx"); // NOSONAR
+      add(prefix, "span, growx");
       add(new JLabel(s("postfix")), "skip, span 2");
-      add(postfix, "span, growx"); // NOSONAR
+      add(postfix, "span, growx");
 
       add(new JLabel(s("expression")), "span");
       add(expressionField, "skip, span, split 2, growx");
@@ -266,17 +253,14 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
 
       expressionButton = new JButton(s("configure"));
       expressionButton.addActionListener(
-          new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              SingleFinderDialog dialog = new SingleFinderDialog(finder);
-              Pair<RecipientFilter, Object> result = dialog.showFinder(parentDialog);
+          e -> {
+            SingleFinderDialog dialog = new SingleFinderDialog(finder);
+            Pair<RecipientFilter, Object> result = dialog.showFinder(parentDialog);
 
-              if (result != null) {
-                String currentValue =
-                    RecipientUtils.convertToRecipient(result.getFirst(), result.getSecond());
-                loadExpression(currentValue);
-              }
+            if (result != null) {
+              String currentValue =
+                  RecipientUtils.convertToRecipient(result.getFirst(), result.getSecond());
+              loadExpression(currentValue);
             }
           });
 
@@ -341,13 +325,9 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
 
       final List<String> groups = element.getGroups();
       groups.clear();
-      for (TLEGroup g : autoAddToGroups.getModel()) {
+      for (BasicGroupDetails g : autoAddToGroups.getModel()) {
         groups.add(g.getUuid());
       }
-    }
-
-    public ExpressionBuilderFinder getFinder() {
-      return finder;
     }
 
     @Override
@@ -364,14 +344,7 @@ public class SharedSecretWrapper extends GeneralPlugin<SharedSecretSettings> {
   @Override
   public void load(SharedSecretSettings xml) {
     List<SharedSecretValue> sharedSecrets = xml.getSharedSecrets();
-    Collections.sort(
-        sharedSecrets,
-        new Comparator<SharedSecretValue>() {
-          @Override
-          public int compare(SharedSecretValue o1, SharedSecretValue o2) {
-            return o1.getId().compareToIgnoreCase(o2.getId());
-          }
-        });
+    sharedSecrets.sort((o1, o2) -> o1.getId().compareToIgnoreCase(o2.getId()));
     listWithView.load(sharedSecrets);
   }
 

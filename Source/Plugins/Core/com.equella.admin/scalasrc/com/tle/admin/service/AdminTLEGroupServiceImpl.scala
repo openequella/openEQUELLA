@@ -19,7 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
-import com.tle.beans.user.{GroupTreeNode, TLEGroup}
+import com.tle.beans.user.GroupTreeNode
 import com.tle.core.remoting.RemoteTLEGroupService
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.{TleGroupApi, TleGroupView}
@@ -89,13 +89,18 @@ class AdminTLEGroupServiceImpl @Inject() (
     getEntity("Group [by name]", name, TleGroupApi.getByName).map(toBasicGroupDetails).toJava
   }
 
-  override def getInformationForGroups(groups: util.Collection[String]): util.List[TLEGroup] =
-    implementMe {
-      _.getInformationForGroups(groups)
-    }
+  override def getInformationForGroups(
+      groups: util.Collection[String]
+  ): util.List[BasicGroupDetails] =
+    getAll() {
+      TleGroupApi.getGroupsByIds(_, groups.asScala.toSet)
+    }.map(toBasicGroupDetails).asJava
 
-  override def search(query: String): util.List[TLEGroup] = implementMe {
-    _.search(query)
+  override def search(query: String): util.List[BasicGroupDetails] = {
+    LOGGER.debug("Searching for groups: {}", query)
+    getAll() {
+      TleGroupApi.searchGroups(_, query)
+    }.map(toBasicGroupDetails).asJava
   }
 
   override def searchTree(query: String): GroupTreeNode = implementMe {

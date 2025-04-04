@@ -18,7 +18,7 @@
 
 package com.tle.admin.service
 
-import com.tle.beans.user.{GroupTreeNode, TLEGroup}
+import com.tle.beans.user.GroupTreeNode
 
 import java.util
 import java.util.Optional
@@ -157,7 +157,14 @@ trait AdminTLEGroupService {
     */
   def getByName(name: String): Optional[BasicGroupDetails]
 
-  def getInformationForGroups(groups: util.Collection[String]): util.List[TLEGroup]
+  /** Get a list of groups by their UUIDs.
+    *
+    * @param groups
+    *   the UUIDs of the groups to get
+    * @return
+    *   a list of groups, with any missing groups filtered out/ignored
+    */
+  def getInformationForGroups(groups: util.Collection[String]): util.List[BasicGroupDetails]
 
   /** Searches for groups (anywhere within the group hierarchy) that match the query. No wildcards
     * are appended, so should be added as needed. (Asterisks are replaced with % in the query.)
@@ -167,7 +174,7 @@ trait AdminTLEGroupService {
     * @return
     *   The list of groups that match the query - or an empty list if none are found
     */
-  def search(query: String): util.List[TLEGroup]
+  def search(query: String): util.List[BasicGroupDetails]
 
   def searchTree(query: String): GroupTreeNode
 }
