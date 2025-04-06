@@ -492,8 +492,11 @@ class TleGroupApiTest
       _ = createdGroups += group.uniqueId
     } yield group
 
-  private def cleanupGroups(): Unit = createdGroups.foreach { uniqueId =>
-    TleGroupApi.deleteGroup(uniqueId)
+  private def cleanupGroups(): Unit = {
+    createdGroups.foreach { uniqueId =>
+      TleGroupApi.deleteGroup(uniqueId)
+    }
+    createdGroups.clear()
   }
 
   private def setGroupUsers(groupId: String, users: List[String]) =

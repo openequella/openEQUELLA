@@ -129,6 +129,7 @@ public class TLEGroupServiceImpl
     return null;
   }
 
+  @Transactional(readOnly = true)
   @Override
   public TLEGroup get(String id) {
     return dao.findByUuid(id);
@@ -167,10 +168,12 @@ public class TLEGroupServiceImpl
     boolean parentSame;
     {
       TLEGroup original = get(group.getUuid());
-      TLEGroup oldParent = original.getParent();
+      Optional<TLEGroup> oldParent = Optional.ofNullable(original.getParent());
+
       dao.unlinkFromSession(original);
-      dao.unlinkFromSession(oldParent);
-      parentSame = Objects.equals(oldParent, group.getParent());
+      oldParent.ifPresent(dao::unlinkFromSession);
+
+      parentSame = Objects.equals(oldParent.orElse(null), group.getParent());
     }
 
     group.setInstitution(CurrentInstitution.get());
