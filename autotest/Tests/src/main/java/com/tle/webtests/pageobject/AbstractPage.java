@@ -17,6 +17,7 @@ import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.SearchContext;
@@ -567,5 +568,18 @@ public abstract class AbstractPage<T extends PageObject>
    */
   public void forceButtonClickWithJS(WebElement button) {
     ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+  }
+
+  /**
+   * To clear the input of a text field, press "Ctrl + A" to select all content, then press
+   * "Backspace" to remove it. The native clear() method is discouraged in the Selenium community in
+   * favor of this approach, as it more reliably triggers input events. See details in <a
+   * href="https://github.com/SeleniumHQ/selenium/issues/6741">GitHub issue</a>
+   *
+   * @param textField the text field element.
+   */
+  public void clearText(WebElement textField) {
+    textField.sendKeys(Keys.CONTROL + "a");
+    textField.sendKeys(Keys.BACK_SPACE);
   }
 }

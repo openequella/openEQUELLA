@@ -1,0 +1,39 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>27662</id>
+  <uuid>a34b1f2a-455a-40be-b9b0-2920309a07b6</uuid>
+  <parent>
+    <id>27659</id>
+    <uuid>bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc</uuid>
+    <subTopics/>
+    <allParents/>
+    <listPosition>0</listPosition>
+    <showResults>true</showResults>
+    <inheritFreetext>false</inheritFreetext>
+    <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  </parent>
+  <subTopics/>
+  <listPosition>0</listPosition>
+  <showResults>true</showResults>
+  <inheritFreetext>true</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>27663</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27664</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Great Grandchild Topic</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

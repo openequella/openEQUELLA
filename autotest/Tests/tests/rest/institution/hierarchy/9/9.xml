@@ -1,0 +1,39 @@
+<com.tle.beans.hierarchy.HierarchyTopic>
+  <id>27656</id>
+  <uuid>25e7bdb9-a6a7-4c6f-a223-996a0fab76dd</uuid>
+  <parent>
+    <id>27653</id>
+    <uuid>46249813-019d-4d14-b772-2a8ca0120c99</uuid>
+    <subTopics/>
+    <allParents/>
+    <listPosition>0</listPosition>
+    <showResults>true</showResults>
+    <inheritFreetext>false</inheritFreetext>
+    <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  </parent>
+  <subTopics/>
+  <listPosition>0</listPosition>
+  <showResults>true</showResults>
+  <inheritFreetext>true</inheritFreetext>
+  <addIdefs/>
+  <addSchemas/>
+  <inhIdefs/>
+  <inhSchemas/>
+  <name>
+    <id>27657</id>
+    <strings>
+      <entry>
+        <string>en_AU</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>27658</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Sub Topic of Virtual Topic</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+  <attributes/>
+</com.tle.beans.hierarchy.HierarchyTopic>

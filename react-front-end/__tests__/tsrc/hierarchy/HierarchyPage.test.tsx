@@ -29,8 +29,9 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Route, Router } from "react-router-dom";
 import {
-  getHierarchy,
+  getHierarchyDetails,
   getMyAcls,
+  getSubHierarchies,
   topicWithChildren,
   topicWithHideNoResultChild,
   topicWithoutModifyKeyResources,
@@ -82,8 +83,8 @@ initialiseEssentialMocks({
 const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
 
 const mockGetHierarchy = jest
-  .spyOn(HierarchyModule, "getHierarchy")
-  .mockImplementation(getHierarchy);
+  .spyOn(HierarchyModule, "getHierarchyDetails")
+  .mockImplementation(getHierarchyDetails);
 
 jest.spyOn(HierarchyModule, "getMyAcls").mockImplementation(getMyAcls);
 
@@ -119,7 +120,7 @@ const renderHierarchyPage = async (
     </ThemeProvider>,
   );
 
-  const hierarchy = await getHierarchy(compoundUuid);
+  const hierarchy = await getHierarchyDetails(compoundUuid);
   // Wait for search result
   await act(async () => {
     await searchPromise;
@@ -134,7 +135,7 @@ const renderHierarchyPage = async (
 describe("Display of Hierarchy panel", () => {
   it("displays breadcrumb on hierarchy panel", async () => {
     const compoundUuid = topicWithChildren.compoundUuid;
-    const hierarchy = await getHierarchy(compoundUuid);
+    const hierarchy = await getHierarchyDetails(compoundUuid);
     const { findByText } = await renderHierarchyPage(compoundUuid);
 
     // Display breadcrumb.
@@ -150,7 +151,8 @@ describe("Display of Hierarchy panel", () => {
 
   it("displays hierarchy details on hierarchy panel", async () => {
     const compoundUuid = topicWithChildren.compoundUuid;
-    const hierarchy = await getHierarchy(compoundUuid);
+    const subTopics = await getSubHierarchies(compoundUuid);
+    const hierarchy = await getHierarchyDetails(compoundUuid);
     const { getByText, findByText } = await renderHierarchyPage(compoundUuid);
 
     // Display hierarchy name.
@@ -166,28 +168,25 @@ describe("Display of Hierarchy panel", () => {
       getByText(hierarchy.summary.subTopicSectionName!),
     ).toBeInTheDocument();
     // Display hierarchy summary.
-    hierarchy.summary.subHierarchyTopics.forEach(({ name }) =>
+    subTopics.forEach(({ name }) =>
       expect(getByText(name!)).toBeInTheDocument(),
     );
-    expect.assertions(hierarchy.summary.subHierarchyTopics.length + 3);
+    expect.assertions(subTopics.length + 3);
   });
 
   it("hide hierarchy topic if it has no result and parent hierarchy `hideSubtopicsWithNoResults` is set to `true`", async () => {
-    const { queryByText } = await renderHierarchyPage(
-      topicWithHideNoResultChild.compoundUuid,
-      true,
-    );
+    const compoundUuid = topicWithHideNoResultChild.compoundUuid;
+    const subHierarchyTopics = await getSubHierarchies(compoundUuid);
+    const { queryByText } = await renderHierarchyPage(compoundUuid, true);
 
-    expect(
-      queryByText(topicWithHideNoResultChild.subHierarchyTopics[0].name!),
-    ).not.toBeInTheDocument();
+    expect(queryByText(subHierarchyTopics[0].name!)).not.toBeInTheDocument();
   });
 });
 
 describe("Display of Key resource panel", () => {
   it("displays key resource panel if it has key resources", async () => {
     const compoundUuid = topicWithShortAndLongDesc.compoundUuid;
-    const hierarchy = await getHierarchy(compoundUuid);
+    const hierarchy = await getHierarchyDetails(compoundUuid);
     const { getByTestId } = await renderHierarchyPage(compoundUuid);
 
     const keyResourcePanel = getByTestId("key-resource-panel");
@@ -247,7 +246,7 @@ describe("Search result", () => {
 
   it("display search result section name if it has been set", async () => {
     const compoundUuid = topicWithChildren.compoundUuid;
-    const hierarchy = await getHierarchy(compoundUuid);
+    const hierarchy = await getHierarchyDetails(compoundUuid);
     const { getByText } = await renderHierarchyPage(compoundUuid);
 
     expect(

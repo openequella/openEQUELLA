@@ -37,7 +37,6 @@ import { ACLRecipientTypes } from "../../../../modules/ACLRecipientModule";
 import { languageStrings } from "../../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../../util/validation";
 import AccessControlSection, {
-  checkAclExpressionLength,
   UnknownUserHandlingData,
 } from "./AccessControlSection";
 import GeneralDetailsSection, {
@@ -427,10 +426,7 @@ const ConfigureLti13Platform = ({
   const handleSubmit = async () => {
     // once user try to submit the value, the validation error can be displayed.
     setShowValidationErrors(true);
-    if (
-      checkValidations(ltiGeneralDetailsRenderOptions, ltiGeneralDetails) &&
-      checkAclExpressionLength(aclExpression)
-    ) {
+    if (checkValidations(ltiGeneralDetailsRenderOptions, ltiGeneralDetails)) {
       // change page into saving mode
       setSaving(true);
     } else {

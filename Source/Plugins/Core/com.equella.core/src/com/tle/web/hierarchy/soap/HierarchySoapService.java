@@ -179,7 +179,7 @@ public class HierarchySoapService implements HierarchySoapInterface {
     }
 
     // Add Key resources.
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(newTopicUUID, true);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.applyWithLegacyFormat(newTopicUUID);
     buildKeyResourceItemIdsFromXml(new PropBagEx(topicXml))
         .forEach(
             itemId -> {
@@ -214,7 +214,7 @@ public class HierarchySoapService implements HierarchySoapInterface {
     buildTopicFromXml(updatedTopic, new PropBagEx(topicXml), topicUuid, isDynamicTopic);
 
     // Update key resources
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicUuid, true);
+    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.applyWithLegacyFormat(topicUuid);
     List<ItemId> itemIds = buildKeyResourceItemIdsFromXml(new PropBagEx(topicXml));
     hierarchyService.updateKeyResources(compoundUuid, itemIds);
     hierarchyService.edit(updatedTopic);
@@ -386,7 +386,7 @@ public class HierarchySoapService implements HierarchySoapInterface {
 
     // Key resources
     List<HierarchyTopicKeyResource> allKeyResources =
-        hierarchyService.getKeyResources(HierarchyCompoundUuid.apply(id, true));
+        hierarchyService.getKeyResources(HierarchyCompoundUuid.applyWithLegacyFormat(id));
     if (!Check.isEmpty(allKeyResources)) {
       PropBagEx keyResources = tx.newSubtree("keyresources");
       for (HierarchyTopicKeyResource ht : allKeyResources) {

@@ -226,6 +226,7 @@ export const languageStrings = {
       select: "Select",
       selectAll: "Select all",
       selectNone: "Select none",
+      share: "Share",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",
@@ -359,11 +360,6 @@ export const languageStrings = {
         "You are currently unable to access this item due to the following DRM violation: \n",
     },
   },
-  embedCode: {
-    label: "Embed code",
-    copy: "Copy embed code",
-    closeEmbedCodeDialog: "Close embed code dialog",
-  },
   entity: {
     edit: {
       tab: {
@@ -403,16 +399,13 @@ export const languageStrings = {
   },
   invalidLuceneQuery:
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
+  kalturaPlayer: {
+    title: "Kaltura video player",
+  },
   lightboxComponent: {
-    kalturaExternalIdIssue:
-      "There is an issue with the format of the externalId for the the Kaltura Video",
-    kalturaMissingId:
-      "The provided Kaltura media is missing externalId details",
     openSummaryPage: "Open resource summary page",
-    unsupportedContent: "Provided content is not supported",
     viewNext: "View next attachment",
     viewPrevious: "View previous attachment",
-    youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
   },
   loginnoticepage: {
     title: "Login notice editor",
@@ -744,8 +737,6 @@ export const languageStrings = {
             usableBy: "Usable by",
             usableByDesc:
               "Only allow user matching this expression to use this platform",
-            usableByValidationError:
-              "The processed ACL expression exceeds the permitted length",
             unknownUserHandling: "Unknown user handling",
             unknownUserHandlingDesc:
               "Choose how to handle logon attempts with a username that doesn't exist",
@@ -987,6 +978,18 @@ export const languageStrings = {
       },
     },
     ui: { name: "UI", desc: "UI settings" },
+  },
+  shareAttachment: {
+    embedCode: "Embed code",
+    link: "URL Link",
+    error: {
+      contentNotSupported: "Provided content is not supported",
+      kalturaExternalIdIssue:
+        "There is an issue with the format of the externalId for the the Kaltura Video",
+      kalturaMissingId:
+        "The provided Kaltura media is missing externalId details",
+      youTubeVideoMissingId: "The provided YouTube video is missing a video ID",
+    },
   },
   shuffleBox: {
     addAll: "Add all",

@@ -31,12 +31,15 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import HTMLReactParser from "html-react-parser";
+import { useEffect, useState } from "react";
 import * as React from "react";
 import { OEQLink } from "../../components/OEQLink";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
+import { getSubHierarchies } from "../../modules/HierarchyModule";
 import { buildSelectionSessionHierarchyLink } from "../../modules/LegacySelectionSessionModule";
 import { languageStrings } from "../../util/langstrings";
+import HierarchyTopicSkeleton from "./HierarchyTopicSkeleton";
 
 const { expandHierarchy: expandText, collapseHierarchy: collapseText } =
   languageStrings.hierarchy;
@@ -107,7 +110,7 @@ const HierarchyTopic = ({
     matchingItemCount,
     compoundUuid,
     shortDescription,
-    subHierarchyTopics,
+    hasSubTopic,
     hideSubtopicsWithNoResults,
     showResults,
   },
@@ -117,13 +120,46 @@ const HierarchyTopic = ({
   customActionBuilder,
 }: HierarchyTopicProps): React.JSX.Element => {
   const isExpanded = expandedNodes.includes(compoundUuid);
+  const [subHierarchyTopics, setSubHierarchyTopics] =
+    useState<OEQ.BrowseHierarchy.HierarchyTopicSummary[]>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
-  const filteredSubTopics = hideSubtopicsWithNoResults
-    ? pipe(
-        subHierarchyTopics,
-        A.filter((subTopic) => subTopic.matchingItemCount > 0),
-      )
-    : subHierarchyTopics;
+  // If the request loading time exceeds 100ms, show the skeleton.
+  // Reference: https://design.gitlab.com/components/spinner/#behavior
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        setShowSkeleton(true);
+      }
+    }, 100);
+
+    return () => {
+      setShowSkeleton(false);
+      clearTimeout(timer);
+    };
+  }, [isLoading]);
+
+  const subTopicsLoaded =
+    subHierarchyTopics !== undefined && A.isNonEmpty(subHierarchyTopics);
+
+  const handleExpandTopic = async () => {
+    if (hasSubTopic && subHierarchyTopics === undefined && !isLoading) {
+      setIsLoading(true);
+      const subTopics = await getSubHierarchies(compoundUuid);
+
+      const filteredSubTopics = hideSubtopicsWithNoResults
+        ? pipe(
+            subTopics,
+            A.filter((subTopic) => subTopic.matchingItemCount > 0),
+          )
+        : subTopics;
+
+      setSubHierarchyTopics(filteredSubTopics);
+
+      setIsLoading(false);
+    }
+  };
 
   const expandIcon = () =>
     isExpanded ? (
@@ -184,25 +220,34 @@ const HierarchyTopic = ({
       />
       {/* Use FlexShrink to avoid the influence of long title */}
       <Box sx={{ flexShrink: 0 }}>
-        {A.isNonEmpty(filteredSubTopics) && expandIcon()}
+        {hasSubTopic && expandIcon()}
         {customActionBuilder?.(compoundUuid)}
       </Box>
     </ListItem>
   );
 
   return (
-    <StyledTreeItem label={itemLabel()} nodeId={compoundUuid}>
+    <StyledTreeItem
+      label={itemLabel()}
+      nodeId={compoundUuid}
+      onClick={handleExpandTopic}
+    >
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-        {filteredSubTopics.map((subTopic) => (
-          <HierarchyTopic
-            key={subTopic.compoundUuid}
-            topic={subTopic}
-            expandedNodes={expandedNodes}
-            onlyShowTitle={onlyShowTitle}
-            disableTitleLink={disableTitleLink}
-            customActionBuilder={customActionBuilder}
-          />
-        ))}
+        {showSkeleton ? (
+          <HierarchyTopicSkeleton />
+        ) : (
+          subTopicsLoaded &&
+          subHierarchyTopics.map((subTopic) => (
+            <HierarchyTopic
+              key={subTopic.compoundUuid}
+              topic={subTopic}
+              expandedNodes={expandedNodes}
+              onlyShowTitle={onlyShowTitle}
+              disableTitleLink={disableTitleLink}
+              customActionBuilder={customActionBuilder}
+            />
+          ))
+        )}
       </Collapse>
     </StyledTreeItem>
   );

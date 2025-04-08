@@ -73,6 +73,9 @@ public abstract class AbstractHibernateSchemaMigration extends AbstractHibernate
     return true;
   }
 
+  /**
+   * This function will be executed after {@link #getAddSql} and before {@link #getDropModifySql}.
+   */
   protected abstract void executeDataMigration(
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception;
 

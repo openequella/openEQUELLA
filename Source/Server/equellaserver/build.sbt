@@ -17,19 +17,20 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.100"
+val TomcatVersion     = "9.0.102"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
-val curatorVersion    = "5.6.0"
-val cxfVersion        = "3.6.5"
+val curatorVersion    = "5.8.0"
+val cxfVersion        = "3.6.6"
 val fs2Version        = "2.5.12"
 val guiceVersion      = "5.1.0"
-val jsassVersion      = "5.10.5"
-val jsoupVersion      = "1.16.2"
+val jsassVersion      = "5.11.1"
+val jsoupVersion      = "1.19.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
 val tikaVersion       = "2.9.1"
 val luceneVersion     = "9.12.1"
+val nettyVersion      = "4.1.119.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -47,7 +48,7 @@ libraryDependencies ++= Seq(
 
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
-  "com.auth0" % "java-jwt" % "4.4.0",
+  "com.auth0" % "java-jwt" % "4.5.0",
   "com.auth0" % "jwks-rsa" % "0.22.1"
 )
 
@@ -77,7 +78,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "2.5.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240514-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.11.0",
+  "com.google.code.gson"  % "gson"                        % "2.12.1",
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
@@ -108,14 +109,14 @@ libraryDependencies ++= Seq(
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
-  "commons-beanutils"         % "commons-beanutils"     % "1.9.4",
-  "commons-codec"             % "commons-codec"         % "1.17.0",
+  "commons-beanutils"         % "commons-beanutils"     % "1.10.1",
+  "commons-codec"             % "commons-codec"         % "1.18.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.3.4",
+  "commons-daemon"            % "commons-daemon"        % "1.4.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.16.1",
+  "commons-io"                % "commons-io"            % "2.18.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -137,7 +138,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.26.2",
+  "org.apache.commons" % "commons-compress"         % "1.27.1",
   "org.apache.curator" % "curator-client"           % curatorVersion,
   "org.apache.curator" % "curator-framework"        % curatorVersion,
   "org.apache.curator" % "curator-recipes"          % curatorVersion,
@@ -206,7 +207,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.78.1",
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.80",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -218,14 +219,14 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.4",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.0.3",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.1",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,
   postgresDep,
   "org.scannotation" % "scannotation"   % "1.0.3",
-  "org.slf4j"        % "jcl-over-slf4j" % "2.0.13",
-  "org.slf4j"        % "slf4j-api"      % "2.0.13",
+  "org.slf4j"        % "jcl-over-slf4j" % "2.0.17",
+  "org.slf4j"        % "slf4j-api"      % "2.0.17",
   springAop,
   springWeb,
   springContext,
@@ -242,24 +243,17 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.9.9",
-  "org.mozilla"                   % "rhino"                    % "1.7.15",
+  "org.scala-sbt"                %% "io"                       % "1.10.5",
+  "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.3.0",
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.179",
   "com.fasterxml"                 % "classmate"                % "1.7.0",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
-  "jakarta.validation"            % "jakarta.validation-api"   % "3.0.2",
+  "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
   "org.jboss.spec.javax.xml.bind" % "jboss-jaxb-api_2.3_spec"  % "2.0.1.Final"
 )
-
-/*
-Although very old and has vulns, axis 1.4 is required for the SRW feature and is needed when
-using the very old (and unsure where the code is) oclc-srw.
-See Source/Plugins/RemoteRepositories/com.equella.srw/build.sbt
- */
-libraryDependencies += "axis" % "axis" % "1.4"
 
 libraryDependencies ++= {
   if (bundleOracleDriver.value) {
@@ -268,7 +262,17 @@ libraryDependencies ++= {
     Seq.empty
   }
 }
-dependencyOverrides += "javax.mail" % "mail" % "1.4.7"
+dependencyOverrides ++= Seq(
+  "javax.mail" % "mail"                % "1.4.7",
+  "io.netty"   % "netty-common"        % nettyVersion,
+  "io.netty"   % "netty-buffer"        % nettyVersion,
+  "io.netty"   % "netty-codec"         % nettyVersion,
+  "io.netty"   % "netty-handler"       % nettyVersion,
+  "io.netty"   % "netty-transport"     % nettyVersion,
+  "io.netty"   % "netty-codec-socks"   % nettyVersion,
+  "io.netty"   % "netty-handler-proxy" % nettyVersion,
+  "io.netty"   % "netty-codec-http"    % nettyVersion
+)
 
 excludeDependencies ++= Seq(
   "com.google.guava"             % "guava-jdk5",

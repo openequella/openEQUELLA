@@ -17,7 +17,7 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { hierarchies } from "../../__mocks__/Hierarchy.mock";
+import { rootHierarchies } from "../../__mocks__/Hierarchy.mock";
 import HierarchyTree, {
   HierarchyTreeProps,
 } from "../../tsrc/hierarchy/components/HierarchyTree";
@@ -31,14 +31,14 @@ export const Standard: StoryFn<HierarchyTreeProps> = (args) => (
   <HierarchyTree {...args} />
 );
 Standard.args = {
-  hierarchies,
+  hierarchies: rootHierarchies,
 };
 
 export const OnlyShowTitle: StoryFn<HierarchyTreeProps> = (args) => (
   <HierarchyTree {...args} />
 );
 OnlyShowTitle.args = {
-  hierarchies,
+  hierarchies: rootHierarchies,
   onlyShowTitle: true,
 };
 
@@ -46,7 +46,7 @@ export const DisableTitleLink: StoryFn<HierarchyTreeProps> = (args) => (
   <HierarchyTree {...args} />
 );
 DisableTitleLink.args = {
-  hierarchies,
+  hierarchies: rootHierarchies,
   disableTitleLink: true,
 };
 
@@ -54,6 +54,6 @@ export const CustomActionButtons: StoryFn<HierarchyTreeProps> = (args) => (
   <HierarchyTree {...args} />
 );
 CustomActionButtons.args = {
-  hierarchies,
+  hierarchies: rootHierarchies,
   customActionBuilder: (uuid) => <button>Custom Action: {uuid}</button>,
 };

@@ -131,7 +131,7 @@ describe("Support for YouTube videos", () => {
       src: "https://www.youtube.com/watch/", // missing param v=1234xyz
     });
     expect(
-      queryByText(languageStrings.lightboxComponent.youTubeVideoMissingId),
+      queryByText(languageStrings.shareAttachment.error.youTubeVideoMissingId),
     ).toBeInTheDocument();
   });
 });
@@ -178,15 +178,20 @@ describe("supports viewing Item Summary page", () => {
   });
 });
 
-describe("Provide embed code", () => {
-  it("shows a dialog to allow copying embed code", async () => {
+describe("Displays the Attachment sharing dialog", () => {
+  it("shows a dialog to allow copying Attachment URL and embed code", async () => {
+    const { link, embedCode } = languageStrings.shareAttachment;
     const page = renderLightbox(displayImage.args!.config!);
-    const codeIconButton = page.getByLabelText(languageStrings.embedCode.copy, {
-      selector: "button",
-    });
-    await userEvent.click(codeIconButton);
-    expect(
-      queryByText(page.getByRole("dialog"), languageStrings.embedCode.label),
-    ).toBeInTheDocument();
+    const shareIconButton = page.getByLabelText(
+      languageStrings.common.action.share,
+      {
+        selector: "button",
+      },
+    );
+    await userEvent.click(shareIconButton);
+
+    const sharingDialog = page.getByRole("dialog");
+    expect(queryByText(sharingDialog, embedCode)).toBeInTheDocument();
+    expect(queryByText(sharingDialog, link)).toBeInTheDocument();
   });
 });

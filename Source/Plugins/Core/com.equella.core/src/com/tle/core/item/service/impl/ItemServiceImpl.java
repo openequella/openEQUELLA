@@ -28,6 +28,8 @@ import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.exceptions.AttachmentNotFoundException;
 import com.dytech.edge.exceptions.ItemNotFoundException;
 import com.dytech.edge.exceptions.WorkflowException;
+import com.dytech.edge.wizard.beans.DefaultWizardPage;
+import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.google.common.base.Throwables;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -129,6 +131,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.logging.log4j.ThreadContext;
@@ -1246,5 +1249,11 @@ public class ItemServiceImpl
     }
 
     tlEntries.add(tle);
+  }
+
+  public Stream<WizardControl> getWizardControlsForItem(Item item) {
+    return item.getItemDefinition().getWizard().getPages().stream()
+        .filter(p -> p instanceof DefaultWizardPage)
+        .flatMap(p -> ((DefaultWizardPage) p).getControls().stream());
   }
 }

@@ -11,7 +11,7 @@ Configuration:
       name: STDOUT
       target: SYSTEM_OUT
       PatternLayout:
-        Pattern: "%d{ABSOLUTE} %-5p [%c{10}] %m%n"
+        Pattern: "%d{ISO8601} %-5p [%c{10}] %m%n"
       Filters:
         RegexFilter:
           # Filter out Hibernate Criteria deprecation warning and Generator warning.

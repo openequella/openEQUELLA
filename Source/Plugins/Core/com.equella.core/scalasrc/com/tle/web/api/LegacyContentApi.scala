@@ -543,9 +543,8 @@ class LegacyContentApi {
         redirectResponse(info)
           .orElse(renderedResponse(info))
           .orElse(
-            Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc =>
-              ajaxResponse(info, arc)
-            )
+            Option(info.getAttributeForClass(classOf[AjaxRenderContext]))
+              .map(arc => ajaxResponse(info, arc))
           )
           .getOrElse {
             info.setRendered()
@@ -691,10 +690,12 @@ class LegacyContentApi {
       renderedStatements.insertAll(0, statements.asScala)
       context.preRender(statements)
       origStatements = helper.dequeueStatements
-      if ({
-        iterations += 1;
-        iterations
-      } > 10) throw new SectionsRuntimeException("10 looks like infinity")
+      if (
+        {
+          iterations += 1;
+          iterations
+        } > 10
+      ) throw new SectionsRuntimeException("10 looks like infinity")
     }
     renderedStatements
   }

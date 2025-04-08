@@ -36,6 +36,7 @@ const standardHierarchy: OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.
   {
     summary: topicWithChildren,
     keyResources: keyResources,
+    children: [],
     parents: [
       { name: "Parent1", compoundUuid: "uuid1" },
       { name: "Parent2", compoundUuid: "uuid2" },

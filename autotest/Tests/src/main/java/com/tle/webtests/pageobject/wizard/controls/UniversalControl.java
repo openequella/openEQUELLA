@@ -59,7 +59,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
    * @return
    */
   public <T extends AttachmentType<T, ?>> T addResource(T type) {
-    getAddResourceButton().click();
+    forceButtonClickWithJS(getAddResourceButton());
     PickAttachmentTypeDialog dialog = new PickAttachmentTypeDialog(this).get();
     return dialog.clickType(type);
   }

@@ -23,6 +23,7 @@ import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid.base64Encode
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64
+import scala.util.Try
 
 /** A case class to represent a hierarchy compound UUID.
   *
@@ -141,17 +142,28 @@ object HierarchyCompoundUuid {
     *
     * New encode method: base64 Legacy encode method: application/x-www-form-urlencoded
     */
-  def apply(compoundUuid: String, inLegacyFormat: Boolean): HierarchyCompoundUuid = {
-    val (uuid, name) = getUuidAndName(compoundUuid, inLegacyFormat);
-    val parentMap    = buildParentMap(compoundUuid, inLegacyFormat);
+  def apply(
+      compoundUuid: String,
+      inLegacyFormat: Boolean
+  ): Either[Throwable, HierarchyCompoundUuid] =
+    Try {
+      val (uuid, name) = getUuidAndName(compoundUuid, inLegacyFormat);
+      val parentMap    = buildParentMap(compoundUuid, inLegacyFormat);
 
-    new HierarchyCompoundUuid(uuid, name, Option(parentMap));
-  }
+      new HierarchyCompoundUuid(uuid, name, Option(parentMap));
+    }.toEither
 
   /** Create a HierarchyCompoundUuid instance based on the given new format compound UUID.
     */
-  def apply(compoundUuid: String): HierarchyCompoundUuid =
+  def apply(compoundUuid: String): Either[Throwable, HierarchyCompoundUuid] =
     apply(compoundUuid, inLegacyFormat = false)
+
+  /** Create a HierarchyCompoundUuid based on the given legacy format compound UUID. Since the
+    * legacy format doesn't need the virtual name to follow the base64 schema, it will never fail.
+    * And consider it's most used in the legacy code, it will return the instance directly.
+    */
+  def applyWithLegacyFormat(legacyCompoundUuid: String): HierarchyCompoundUuid =
+    apply(legacyCompoundUuid, inLegacyFormat = true).fold(throw _, identity)
 
   // Encodes a plain string into a base64 string.
   private def base64Encode(originalString: String): String =

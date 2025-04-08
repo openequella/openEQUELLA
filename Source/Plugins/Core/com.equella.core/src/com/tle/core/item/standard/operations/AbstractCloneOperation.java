@@ -18,6 +18,10 @@
 
 package com.tle.core.item.standard.operations;
 
+import static com.tle.common.wizard.controls.universal.UniversalControl.UNIVERSAL_CONTROL;
+
+import com.dytech.devlib.PropBagEx;
+import com.dytech.edge.wizard.beans.control.CustomControl;
 import com.tle.beans.entity.LanguageBundle;
 import com.tle.beans.item.DrmSettings;
 import com.tle.beans.item.HistoryEvent;
@@ -89,15 +93,20 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
 
     ItemFile from = itemFileService.getItemFile(getItem());
     StagingFile staging = stagingService.createStagingArea();
+
+    ItemPack<Item> pack = getItemPack();
+    Item origItem = pack.getItem();
+
     if (copyAttachments) {
       fileSystemService.copy(from, staging);
+    } else {
+      pack.setXml(removeAttachmentsMetadata(origItem));
     }
-    ItemPack<Item> pack = getItemPack();
+
     pack.setStagingID(staging.getUuid());
 
     params.setUpdate(false);
 
-    Item origItem = pack.getItem();
     Item item = new Item();
     item.setId(0l);
     item.setNewItem(true);
@@ -215,6 +224,22 @@ public abstract class AbstractCloneOperation extends AbstractStandardWorkflowOpe
    * event will be dependant on the operation
    */
   protected abstract void doHistory();
+
+  /**
+   * Creates a copy of the source item's metadata and removes the attachment related elements (i.e.
+   * those for 'UNIVERSAL_CONTROL').
+   */
+  protected PropBagEx removeAttachmentsMetadata(Item origItem) {
+    PropBagEx copy = new PropBagEx(origItem.getItemXml().getXml());
+
+    itemService
+        .getWizardControlsForItem(getItem())
+        .filter(c -> c instanceof CustomControl && c.getClassType().equals(UNIVERSAL_CONTROL))
+        .flatMap(c -> c.getTargetnodes().stream())
+        .forEach(node -> copy.deleteNode(node.getTarget()));
+
+    return copy;
+  }
 
   /**
    * The CloningHelper class should be extended by your operation if you want to clone additional

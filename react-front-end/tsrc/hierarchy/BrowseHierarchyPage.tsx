@@ -26,7 +26,7 @@ import { useContext, useEffect, useState } from "react";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { getHierarchies } from "../modules/HierarchyModule";
+import { getRootHierarchies } from "../modules/HierarchyModule";
 import { languageStrings } from "../util/langstrings";
 import HierarchyTree from "./components/HierarchyTree";
 
@@ -47,7 +47,7 @@ const BrowseHierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
   useEffect(() => {
     pipe(
       TE.tryCatch(
-        () => getHierarchies(),
+        () => getRootHierarchies(),
         (e) => `Failed to get hierarchies: ${e}`,
       ),
       TE.match(appErrorHandler, setHierarchies),

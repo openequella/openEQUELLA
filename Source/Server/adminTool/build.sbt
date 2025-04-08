@@ -1,5 +1,5 @@
 val guiceVersion = "5.1.0"
-val slf4jVersion = "2.0.16"
+val slf4jVersion = "2.0.17"
 val sttpVersion  = "3.9.7"
 
 libraryDependencies ++= Seq(

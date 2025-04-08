@@ -15,31 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Skeleton,
-} from "@mui/material";
+
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
+import HierarchyTopicSkeleton from "./HierarchyTopicSkeleton";
 
-const HierarchyTreeSkeleton = () => {
-  const topicSkeleton = (index: number) => (
-    <ListItem key={index}>
-      <ListItemAvatar>
-        <Skeleton variant="rounded" width={30} height={30} />
-      </ListItemAvatar>
-      <ListItemText
-        primary={<Skeleton variant="text" />}
-        secondary={<Skeleton variant="text" />}
-      />
-    </ListItem>
-  );
-
-  return <TreeView>{pipe(NEA.range(1, 3), NEA.map(topicSkeleton))}</TreeView>;
-};
+const HierarchyTreeSkeleton = ({
+  skeletonNum = 3,
+}: {
+  skeletonNum?: number;
+}) => (
+  <TreeView>
+    {pipe(
+      NEA.range(1, skeletonNum),
+      NEA.map((index) => <HierarchyTopicSkeleton key={index} />),
+    )}
+  </TreeView>
+);
 
 export default HierarchyTreeSkeleton;

@@ -18,7 +18,7 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
-  getHierarchies,
+  getRootHierarchies,
   getHierarchyIdsWithKeyResource,
 } from "../../__mocks__/Hierarchy.mock";
 import * as mockData from "../../__mocks__/searchresult_mock_data";
@@ -40,6 +40,6 @@ export const Standard: StoryFn<ModifyKeyResourceDialogProps> = (args) => (
 Standard.args = {
   item: mockData.basicSearchObj,
   open: true,
-  getHierarchiesProvider: getHierarchies,
+  getHierarchiesProvider: getRootHierarchies,
   getHierarchyIdsWithKeyResourceProvider: getHierarchyIdsWithKeyResource,
 };

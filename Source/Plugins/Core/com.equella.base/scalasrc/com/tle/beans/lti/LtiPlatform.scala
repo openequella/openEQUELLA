@@ -36,6 +36,7 @@ import javax.persistence.{
   Index,
   JoinColumn,
   JoinTable,
+  Lob,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -138,6 +139,7 @@ class LtiPlatform {
 
   /** The ACL Expression to control access from this platform.
     */
+  @Lob
   var allowExpression: String = _
 
   /** Institution which the key set belongs to.

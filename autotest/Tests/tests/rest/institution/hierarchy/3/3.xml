@@ -1,7 +1,91 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>112610</id>
+  <id>27642</id>
   <uuid>886aa61d-f8df-4e82-8984-c487849f80ff</uuid>
-  <subTopics/>
+  <subTopics>
+    <com.tle.beans.hierarchy.HierarchyTopic>
+      <id>27653</id>
+      <uuid>46249813-019d-4d14-b772-2a8ca0120c99</uuid>
+      <institution>
+        <id>26437</id>
+        <uniqueId>0</uniqueId>
+        <quota>0.0</quota>
+        <enabled>true</enabled>
+      </institution>
+      <parent reference="../../.."/>
+      <subTopics>
+        <com.tle.beans.hierarchy.HierarchyTopic>
+          <id>27656</id>
+          <uuid>25e7bdb9-a6a7-4c6f-a223-996a0fab76dd</uuid>
+          <institution>
+            <id>26437</id>
+            <uniqueId>0</uniqueId>
+            <quota>0.0</quota>
+            <enabled>true</enabled>
+          </institution>
+          <parent reference="../../.."/>
+          <subTopics/>
+          <allParents>
+            <com.tle.beans.hierarchy.HierarchyTopic reference="../../../../../.."/>
+            <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
+          </allParents>
+          <listPosition>0</listPosition>
+          <showResults>true</showResults>
+          <inheritFreetext>true</inheritFreetext>
+          <addIdefs/>
+          <addSchemas/>
+          <inhIdefs/>
+          <inhSchemas/>
+          <name>
+            <id>27657</id>
+            <strings>
+              <entry>
+                <string>en_AU</string>
+                <com.tle.beans.entity.LanguageString>
+                  <id>27658</id>
+                  <locale>en_AU</locale>
+                  <priority>2</priority>
+                  <text>Sub Topic of Virtual Topic</text>
+                  <bundle reference="../../../.."/>
+                </com.tle.beans.entity.LanguageString>
+              </entry>
+            </strings>
+          </name>
+          <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+          <attributes/>
+        </com.tle.beans.hierarchy.HierarchyTopic>
+      </subTopics>
+      <allParents>
+        <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
+      </allParents>
+      <listPosition>0</listPosition>
+      <showResults>true</showResults>
+      <freetext></freetext>
+      <inheritFreetext>true</inheritFreetext>
+      <addIdefs/>
+      <addSchemas/>
+      <inhIdefs/>
+      <inhSchemas/>
+      <virtualisationId>contributedValuesVirtualiser</virtualisationId>
+      <virtualisationPath>/item/copyright/publication/place</virtualisationPath>
+      <name>
+        <id>27654</id>
+        <strings>
+          <entry>
+            <string>en_AU</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>27655</id>
+              <locale>en_AU</locale>
+              <priority>2</priority>
+              <text>Sub Virtual Topics: Place %s</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
+      <attributes/>
+    </com.tle.beans.hierarchy.HierarchyTopic>
+  </subTopics>
   <listPosition>2</listPosition>
   <showResults>true</showResults>
   <freetext></freetext>
@@ -13,12 +97,12 @@
   <virtualisationId>contributedValuesVirtualiser</virtualisationId>
   <virtualisationPath>/item/copyright/authors/author</virtualisationPath>
   <name>
-    <id>112664</id>
+    <id>27643</id>
     <strings>
       <entry>
         <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>112665</id>
+          <id>27644</id>
           <locale>en_AU</locale>
           <priority>2</priority>
           <text>Virtual Topics: Author %s</text>
@@ -28,12 +112,12 @@
     </strings>
   </name>
   <shortDescription>
-    <id>112666</id>
+    <id>27645</id>
     <strings>
       <entry>
         <string>en</string>
         <com.tle.beans.entity.LanguageString>
-          <id>112667</id>
+          <id>27646</id>
           <locale>en</locale>
           <priority>1</priority>
           <text>Author: %s</text>

@@ -131,7 +131,7 @@ public class HierarchyTreeSection extends AbstractContentSection<Object> {
     hierarchyService.deleteKeyResources(iinfo.getItem());
 
     for (String topicId : selectedTopics) {
-      HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topicId, true);
+      HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.applyWithLegacyFormat(topicId);
       hierarchyService.addKeyResource(compoundUuid, iinfo.getItemId());
     }
 

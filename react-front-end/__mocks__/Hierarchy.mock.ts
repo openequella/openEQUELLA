@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as R from "fp-ts/Record";
 import { itemWithAttachment, normalItemWithoutName } from "./SearchResult.mock";
 
 export const normalKeyResource: OEQ.BrowseHierarchy.KeyResource = {
@@ -157,7 +158,7 @@ export const topicWithShortAndLongDesc: OEQ.BrowseHierarchy.HierarchyTopicSummar
       ";; from https://en.wikipedia.org/wiki/Scheme_%28programming_language%29<br>\n;; Calculation of Hofstadter's male and female sequences as a list of pairs<br>\n(define (hofstadter-male-female n)<br>\n  (letrec ((female (lambda (n) (if (= n 0) 1 (- n (male (female (- n 1))))))) (male (lambda (n) (if (= n 0) 0 (- n (female (male (- n 1)))))))) (let loop ((i 0)) (if (> i n) '() (cons (cons (female i) (male i)) (loop (+ i 1))))))) (hofstadter-male-female 8)<br>\n<br>\n===> ((1 . 0) (1 . 0) (2 . 1) (2 . 2) (3 . 2) (3 . 3) (4 . 4) (5 . 4) (5 . 5))",
     showResults: true,
     hideSubtopicsWithNoResults: true,
-    subHierarchyTopics: [],
+    hasSubTopic: false,
   };
 
 export const topicWithHtmlDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
@@ -169,7 +170,7 @@ export const topicWithHtmlDesc: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
     "a long long long long long long long long text with img <img src='./thumb.jpg' alt='thumb'></img> and <h1>HTML</h1> tag.",
   showResults: true,
   hideSubtopicsWithNoResults: true,
-  subHierarchyTopics: [],
+  hasSubTopic: false,
 };
 
 export const simpleTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
@@ -178,7 +179,7 @@ export const simpleTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   name: "A simple topic",
   showResults: true,
   hideSubtopicsWithNoResults: true,
-  subHierarchyTopics: [],
+  hasSubTopic: false,
 };
 
 export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
@@ -191,34 +192,25 @@ export const topicWithChildren: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   hideSubtopicsWithNoResults: true,
   subTopicSectionName: "Subtopic Section",
   searchResultSectionName: "Search Result Section",
-  subHierarchyTopics: [
-    {
-      compoundUuid: "8dcb1d04-33cb-4935-9fa3-d753daca0b17",
-      matchingItemCount: 53,
-      name: "Child Topic",
-      showResults: true,
-      hideSubtopicsWithNoResults: true,
-      subHierarchyTopics: [
-        {
-          compoundUuid:
-            "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
-          matchingItemCount: 3,
-          name: "Sub Virtual Topics: Place Hobart",
-          showResults: true,
-          hideSubtopicsWithNoResults: true,
-          subHierarchyTopics: [],
-        },
-        {
-          compoundUuid: "bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc",
-          matchingItemCount: 55,
-          name: "Grandchild Topic",
-          showResults: true,
-          hideSubtopicsWithNoResults: true,
-          subHierarchyTopics: [],
-        },
-      ],
-    },
-  ],
+  hasSubTopic: true,
+};
+
+export const childTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid: "8dcb1d04-33cb-4935-9fa3-d753daca0b17",
+  matchingItemCount: 53,
+  name: "Child Topic",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  hasSubTopic: true,
+};
+
+export const grandchildTopic: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid: "bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc",
+  matchingItemCount: 55,
+  name: "Grandchild Topic",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  hasSubTopic: false,
 };
 
 export const topicWithNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSummary =
@@ -228,17 +220,17 @@ export const topicWithNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSummary =
     name: "topicWithNoResultChild",
     showResults: true,
     hideSubtopicsWithNoResults: false,
-    subHierarchyTopics: [
-      {
-        compoundUuid: "bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc",
-        matchingItemCount: 0,
-        name: "Topic with no result",
-        showResults: true,
-        hideSubtopicsWithNoResults: true,
-        subHierarchyTopics: [],
-      },
-    ],
+    hasSubTopic: true,
   };
+
+export const topicWithNoResult: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid: "bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc",
+  matchingItemCount: 0,
+  name: "Topic with no result",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  hasSubTopic: false,
+};
 
 export const topicWithHideNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSummary =
   {
@@ -247,45 +239,47 @@ export const topicWithHideNoResultChild: OEQ.BrowseHierarchy.HierarchyTopicSumma
     name: "topicWithHideNoResultChild",
     showResults: true,
     hideSubtopicsWithNoResults: true,
-    subHierarchyTopics: [
-      {
-        compoundUuid: "6a96be3c-a23a-4b16-af57-547222f6f6ea",
-        matchingItemCount: 0,
-        name: "Topic with no result",
-        showResults: true,
-        hideSubtopicsWithNoResults: true,
-        subHierarchyTopics: [],
-      },
-    ],
+    hasSubTopic: true,
   };
 
-export const virtualTopics = {
+export const topicWithHideNoResult: OEQ.BrowseHierarchy.HierarchyTopicSummary =
+  {
+    compoundUuid: "6a96be3c-a23a-4b16-af57-547222f6f6ea",
+    matchingItemCount: 0,
+    name: "Topic with no result",
+    showResults: true,
+    hideSubtopicsWithNoResults: true,
+    hasSubTopic: false,
+  };
+
+export const virtualTopics: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
   compoundUuid: "886aa61d-f8df-4e82-8984-c487849f80ff:A James",
   matchingItemCount: 3,
   name: "Virtual Topics: Author A James",
   shortDescription: "Author: A James",
   showResults: true,
   hideSubtopicsWithNoResults: true,
-  subHierarchyTopics: [
-    {
-      compoundUuid:
-        "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
-      matchingItemCount: 3,
-      name: "Sub Virtual Topics: Place Hobart",
-      showResults: true,
-      hideSubtopicsWithNoResults: true,
-      subHierarchyTopics: [],
-    },
-    {
-      compoundUuid:
-        "46249813-019d-4d14-b772-2a8ca0120c99:Paris,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
-      matchingItemCount: 1,
-      name: "Sub Virtual Topics: Place Paris",
-      showResults: true,
-      hideSubtopicsWithNoResults: true,
-      subHierarchyTopics: [],
-    },
-  ],
+  hasSubTopic: true,
+};
+
+export const virtualTopicHobart: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid:
+    "46249813-019d-4d14-b772-2a8ca0120c99:Hobart,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
+  matchingItemCount: 3,
+  name: "Sub Virtual Topics: Place Hobart",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  hasSubTopic: false,
+};
+
+export const virtualTopicParis: OEQ.BrowseHierarchy.HierarchyTopicSummary = {
+  compoundUuid:
+    "46249813-019d-4d14-b772-2a8ca0120c99:Paris,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==",
+  matchingItemCount: 1,
+  name: "Sub Virtual Topics: Place Paris",
+  showResults: true,
+  hideSubtopicsWithNoResults: true,
+  hasSubTopic: false,
 };
 
 export const topicWithoutSearchResults: OEQ.BrowseHierarchy.HierarchyTopicSummary =
@@ -295,7 +289,7 @@ export const topicWithoutSearchResults: OEQ.BrowseHierarchy.HierarchyTopicSummar
     name: "No Search Results Topic",
     showResults: false,
     hideSubtopicsWithNoResults: true,
-    subHierarchyTopics: [],
+    hasSubTopic: false,
   };
 
 export const topicWithoutModifyKeyResources: OEQ.BrowseHierarchy.HierarchyTopicSummary =
@@ -305,10 +299,10 @@ export const topicWithoutModifyKeyResources: OEQ.BrowseHierarchy.HierarchyTopicS
     name: "You can't modify key resources",
     showResults: false,
     hideSubtopicsWithNoResults: true,
-    subHierarchyTopics: [],
+    hasSubTopic: false,
   };
 
-export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
+export const rootHierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithShortAndLongDesc,
   topicWithHtmlDesc,
   virtualTopics,
@@ -319,12 +313,20 @@ export const hierarchies: OEQ.BrowseHierarchy.HierarchyTopicSummary[] = [
   topicWithoutModifyKeyResources,
 ];
 
+export const subHierarchies = {
+  [virtualTopics.compoundUuid]: [virtualTopicHobart, virtualTopicParis],
+  [topicWithChildren.compoundUuid]: [childTopic],
+  [childTopic.compoundUuid]: [grandchildTopic],
+  [topicWithNoResultChild.compoundUuid]: [topicWithNoResult],
+  [topicWithHideNoResultChild.compoundUuid]: [topicWithHideNoResult],
+};
+
 /**
- * Mock function to get hierarchies.
+ * Mock function to get all root hierarchies.
  */
-export const getHierarchies = (): Promise<
+export const getRootHierarchies = (): Promise<
   OEQ.BrowseHierarchy.HierarchyTopicSummary[]
-> => Promise.resolve(hierarchies);
+> => Promise.resolve(rootHierarchies);
 
 export const hierarchyIdsWithKeyResource: string[] = [
   topicWithShortAndLongDesc.compoundUuid,
@@ -334,19 +336,35 @@ export const hierarchyIdsWithKeyResource: string[] = [
 /**
  * Mock function to get hierarchy IDs with key resource.
  */
-export const getHierarchyIdsWithKeyResource = (): Promise<string[]> =>
+export const getHierarchyIdsWithKeyResource = async (): Promise<string[]> =>
   Promise.resolve(hierarchyIdsWithKeyResource);
 
 /**
- * Mock async function to get hierarchy.
+ * Mock async function to get sub hierarchies.
  */
-export const getHierarchy = (
+export const getSubHierarchies = async (
+  compoundUuid: string,
+): Promise<OEQ.BrowseHierarchy.HierarchyTopicSummary[]> => {
+  const result = pipe(
+    subHierarchies,
+    R.lookup(compoundUuid),
+    O.getOrElseW(() => []),
+  );
+  return Promise.resolve(result);
+};
+
+/**
+ * Mock async function to get hierarchy details.
+ */
+export const getHierarchyDetails = async (
   compoundUuid: string,
 ): Promise<
   OEQ.BrowseHierarchy.HierarchyTopic<OEQ.BrowseHierarchy.KeyResource>
-> =>
-  pipe(
-    hierarchies.find((h) => h.compoundUuid === compoundUuid),
+> => {
+  const subHierarchies = await getSubHierarchies(compoundUuid);
+
+  return pipe(
+    rootHierarchies.find((h) => h.compoundUuid === compoundUuid),
     O.fromNullable,
     O.fold(
       () => Promise.reject(`Can't find hierarchy: ${compoundUuid}`),
@@ -354,6 +372,7 @@ export const getHierarchy = (
         Promise.resolve({
           summary: hierarchy,
           keyResources,
+          children: subHierarchies,
           parents: [
             { name: "Parent1", compoundUuid: "uuid1" },
             { name: "Parent2", compoundUuid: "uuid2" },
@@ -361,6 +380,7 @@ export const getHierarchy = (
         }),
     ),
   );
+};
 
 const defaultAcls: OEQ.Hierarchy.HierarchyTopicAcl = {
   VIEW_HIERARCHY_TOPIC: true,

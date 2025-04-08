@@ -16,9 +16,16 @@
  * limitations under the License.
  */
 import { ImageList } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import {
+  buildEmbedCode,
+  ShareAttachment,
+} from "../../components/embedattachment/EmbeddedAttachmentHelper";
 import Lightbox, { LightboxProps } from "../../components/Lightbox";
+import { ShareAttachmentDialog } from "../../components/ShareAttachmentDialog";
 import {
   GalleryEntry,
   GallerySearchResultItem,
@@ -53,6 +60,10 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
 
   const [galleryItems, setGalleryItems] =
     useState<GallerySearchResultItem[]>(items);
+
+  const [itemToShare, setItemToShare] = useState<O.Option<ShareAttachment>>(
+    O.none,
+  );
 
   // Ensure gallery entries are consistent with gallery mode.
   useEffect(() => {
@@ -130,20 +141,44 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
       lightboxHandler(item, lightboxEntries, entry);
   };
 
+  const shareGalleryItem = ({
+    mimeType,
+    directUrl: src,
+    name,
+  }: GalleryEntry) => {
+    const embedCode = buildEmbedCode(mimeType, src, name);
+    setItemToShare(O.of({ src, embedCode }));
+  };
+
   const mapItemsToTiles = () =>
     items.map((item) => (
       <GallerySearchItemTiles
         item={item}
         updateGalleryItemList={updateGalleryItemList}
+        onShare={shareGalleryItem}
         key={`${item.uuid}/${item.version}`}
         enableItemSummaryButton={item.status !== "personal"}
       />
     ));
 
+  const shareAttachmentDialog = pipe(
+    itemToShare,
+    O.map(({ src, embedCode }) => (
+      <ShareAttachmentDialog
+        open
+        onCloseDialog={() => setItemToShare(O.none)}
+        src={src}
+        embedCode={embedCode}
+      />
+    )),
+    O.toUndefined,
+  );
+
   return (
     <>
       <ImageList cols={4}>{mapItemsToTiles()}</ImageList>
       {lightboxProps && <Lightbox {...lightboxProps} />}
+      {shareAttachmentDialog}
     </>
   );
 };

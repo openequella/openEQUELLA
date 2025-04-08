@@ -83,7 +83,9 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     }
 
     driver.findElement(By.id("select-action")).click();
-    driver.findElement(By.xpath("//li[@role='option' and text() = '" + action + "']")).click();
+    WebElement option =
+        driver.findElement(By.xpath("//li[@role='option' and text() = '" + action + "']"));
+    forceButtonClickWithJS(option);
 
     executeButton.click();
     get();

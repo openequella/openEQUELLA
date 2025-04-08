@@ -38,7 +38,7 @@ const containsKeyResources = (
   );
 
 const checkKeyResource = async (keyResourceExists: boolean) => {
-  const hierarchyTopic = await OEQ.BrowseHierarchy.browseHierarchy(
+  const hierarchyTopic = await OEQ.BrowseHierarchy.browseHierarchyDetails(
     TC.API_PATH,
     NORMAL_TOPIC_UUID
   );

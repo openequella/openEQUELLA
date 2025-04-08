@@ -20,8 +20,7 @@ package com.tle.web.api.browsehierarchy.model
 
 import com.tle.web.api.search.model.SearchResultItem
 
-/** Provides summary of a topic, including the number of matching Items and summaries of child
-  * topics.
+/** Provides summary of a topic, including the number of matching Items.
   *
   * @param compoundUuid
   *   The unique identifier for the topic. For virtual topics, the compoundUuid consist with uuid
@@ -42,8 +41,8 @@ import com.tle.web.api.search.model.SearchResultItem
   *   Flag to determine if results should be shown.
   * @param hideSubtopicsWithNoResults
   *   Flag to hide subtopics when there are no results.
-  * @param subHierarchyTopics
-  *   A list of subtopics under this topic.
+  * @param hasSubTopic
+  *   Flag to determine if the topic has sub topic.
   */
 case class HierarchyTopicSummary(
     compoundUuid: String,
@@ -55,7 +54,7 @@ case class HierarchyTopicSummary(
     searchResultSectionName: Option[String],
     showResults: Boolean,
     hideSubtopicsWithNoResults: Boolean,
-    subHierarchyTopics: List[HierarchyTopicSummary]
+    hasSubTopic: Boolean
 )
 
 /** Contains basic topic info to represent an parent topic.
@@ -82,11 +81,14 @@ case class KeyResource(
   *   Basic information of the topic.
   * @param parents
   *   Basic information of all the parent topics.
+  * @param children
+  *   Summary information of all the child topics.
   * @param keyResources
   *   All key resources of the given topic.
   */
 case class HierarchyTopic(
     summary: HierarchyTopicSummary,
     parents: List[ParentTopic],
+    children: List[HierarchyTopicSummary],
     keyResources: List[KeyResource]
 )

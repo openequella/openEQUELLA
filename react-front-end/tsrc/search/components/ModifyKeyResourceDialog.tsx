@@ -38,7 +38,7 @@ import HierarchyTreeSkeleton from "../../hierarchy/components/HierarchyTreeSkele
 import {
   addKeyResource,
   deleteKeyResource,
-  getHierarchies,
+  getRootHierarchies,
   getHierarchyIdsWithKeyResource,
 } from "../../modules/HierarchyModule";
 import { languageStrings } from "../../util/langstrings";
@@ -88,7 +88,7 @@ const ModifyKeyResourceDialog = ({
   open,
   onClose,
   item,
-  getHierarchiesProvider = getHierarchies,
+  getHierarchiesProvider = getRootHierarchies,
   getHierarchyIdsWithKeyResourceProvider = getHierarchyIdsWithKeyResource,
 }: ModifyKeyResourceDialogProps) => {
   const { searchPageErrorHandler } = useContext(SearchContext);

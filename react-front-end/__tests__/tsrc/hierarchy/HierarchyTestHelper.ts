@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getByLabelText, getByText } from "@testing-library/react";
+import { getByLabelText, getByText, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import "@testing-library/jest-dom";
 
 const { addKeyResource: addKeyResourceText } = languageStrings.hierarchy;
 
@@ -26,8 +27,17 @@ const { addKeyResource: addKeyResourceText } = languageStrings.hierarchy;
  * @param container The element which contains the tree view.
  * @param name The name of the Hierarchy topic summary.
  */
-export const selectHierarchy = (container: HTMLElement, name: string) =>
-  userEvent.click(getByText(container, name));
+export const selectHierarchy = async (container: HTMLElement, name: string) => {
+  await userEvent.click(getByText(container, name));
+
+  // Wait for the skeleton to disappear.
+  await waitFor(() => {
+    const skeleton = container.querySelector('span[class*="MuiSkeleton-root"]');
+    if (skeleton) {
+      throw new Error("Skeleton is still present");
+    }
+  });
+};
 
 /**
  * Helper function to mock click the add key resource button.

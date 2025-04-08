@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Backdrop } from "@mui/material";
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
@@ -168,13 +169,36 @@ export const LegacyContent = React.memo(function LegacyContent({
   isReloadNeeded,
 }: LegacyContentProps) {
   const [content, setContent] = React.useState<PageContent>();
-  const [updatingContent, setUpdatingContent] = React.useState<boolean>(true);
+  // Flag indicating the Legacy page content is being updated. The value must be set to `true` before a Legacy API request
+  // is submitted. Once the response is handled through either a callback provided externally (typically through the Legacy
+  // server side) or the state of this component, this value must be reset to `false`.
+  // If the response of a Legacy API request is in the format of `ChangeRoute`, a navigation will be performed to the
+  // new route, and this usually will trigger another Legacy API request to update the page content. So in this case,
+  // do NOT reset the value.
+  // After a Legacy API request is submitted, if no response is received after 200ms, a Backdrop with a spinner will be displayed
+  // to indicate the request is still in progress and stop further page actions.
+  const [updatingContent, setUpdatingContent] = React.useState<boolean>(false);
+  const [showSpinner, setShowSpinner] = React.useState<boolean>(false);
+
   const submittingForm = React.useRef<LegacyContentSubmission>({
     submitting: false,
   });
   const { appErrorHandler, refreshUser } = useContext(AppContext);
 
   const baseUrl = document.getElementsByTagName("base")[0].href;
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (updatingContent) {
+        setShowSpinner(true);
+      }
+    }, 200);
+
+    return () => {
+      setShowSpinner(false);
+      clearTimeout(timer);
+    };
+  }, [updatingContent]);
 
   React.useEffect(() => {
     if (isReloadNeeded) {
@@ -209,11 +233,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     content: LegacyContentResponse,
     scrollTop: boolean,
   ) {
-    // Setting the below flag and page content in `flushSync` is crucial, as it forces the DOM to change immediately (to display a spinner)
-    // thereby circumventing React rendering/DOM optimisations. This mimics the functioning of a web browser where it would've
-    // reloaded the page. Which is needed based on the way some of the Legacy AJAX code is written.
-
-    flushSync(() => setUpdatingContent(true));
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
@@ -299,6 +318,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 
     preUpdateFullscreenMode(submitValues);
 
+    // Before a request is submitted to update the legacy page content, show a backdrop with a spinner.
+    setUpdatingContent(true);
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
@@ -308,6 +329,8 @@ export const LegacyContent = React.memo(function LegacyContent({
 
         if (callback) {
           callback(content);
+          // After the externally provided callback is executed, reset the updating flag.
+          setUpdatingContent(false);
         } else if (isPageContent(content)) {
           updatePageContent(content, scrollTop);
         } else if (isChangeRoute(content)) {
@@ -434,10 +457,21 @@ export const LegacyContent = React.memo(function LegacyContent({
     [content, updateTemplate],
   );
 
-  return !updatingContent && content ? (
-    <LegacyContentRenderer {...content} />
-  ) : (
-    <LoadingCircle />
+  return (
+    <>
+      {content && (
+        <LegacyContentRenderer {...content} key={content.contentId} />
+      )}
+      {showSpinner && (
+        <Backdrop
+          invisible // invisible to avoid the page flicking
+          sx={(theme) => ({ zIndex: theme.zIndex.drawer + 1 })}
+          open
+        >
+          <LoadingCircle />
+        </Backdrop>
+      )}
+    </>
   );
 });
 

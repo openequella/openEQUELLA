@@ -20,7 +20,6 @@ package com.tle.web.api.settings
 
 import java.util.UUID
 import com.dytech.edge.common.Constants
-import com.tle.beans.mime.MimeEntry
 import com.tle.common.Check
 import com.tle.common.settings.standard.SearchSettings
 import com.tle.common.settings.standard.SearchSettings.SearchFilter
@@ -28,10 +27,12 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.api.{ApiBatchOperationResponse, ApiErrorResponse}
 import com.tle.web.api.settings.SettingsApiHelper.{loadSettings, updateSettings}
 import io.swagger.annotations.{Api, ApiOperation, ApiParam}
+
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{DELETE, GET, POST, PUT, Path, PathParam, Produces, QueryParam}
 import org.jboss.resteasy.annotations.cache.NoCache
+
 import scala.jdk.CollectionConverters._
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
