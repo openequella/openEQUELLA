@@ -470,7 +470,7 @@ public class EditHierarchyResource {
 
       ItemSerializerItemBean serializer =
           itemSerializerService.createItemBeanSerializer(
-              itemIds, Collections.singletonList("none"), true);
+              itemIds, Collections.<String>emptyList(), true);
 
       for (Item item : postFilt) {
         EquellaItemBean itemBean = new EquellaItemBean();

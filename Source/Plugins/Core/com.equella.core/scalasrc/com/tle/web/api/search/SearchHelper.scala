@@ -36,6 +36,10 @@ import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+import com.tle.core.item.serializer.ItemSerializerService.{
+  ALL_EXCEPT_ATTACHMENT,
+  SerialisationCategory
+}
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
 import com.tle.core.security.ACLChecks.hasAcl
@@ -296,10 +300,21 @@ object SearchHelper {
 
   /** Create a serializer for ItemBean.
     */
-  def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
-    val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
-    val category = List(ItemSerializerService.CATEGORY_ALL).asJavaCollection
-    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
+  def createSerializer(
+      itemIds: List[ItemIdKey],
+      includeAttachments: Boolean
+  ): ItemSerializerItemBean = {
+    val ids = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
+    val categories: java.util.Collection[SerialisationCategory] =
+      if (includeAttachments) List(SerialisationCategory.ALL).asJavaCollection
+      else ALL_EXCEPT_ATTACHMENT
+
+    LegacyGuice.itemSerializerService.createItemBeanSerializer(
+      ids,
+      categories,
+      false,
+      privileges: _*
+    )
   }
 
   /** Convert a SearchItem to an instance of SearchResultItem.
@@ -330,7 +345,7 @@ object SearchHelper {
       collectionId = bean.getCollection.getUuid,
       commentCount = getItemCommentCount(key),
       starRatings = bean.getRating,
-      attachmentCount = Option(bean.getAttachments).map(_.size).getOrElse(0),
+      attachmentCount = LegacyGuice.itemService.getAttachmentCountForItem(key),
       attachments =
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,

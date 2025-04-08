@@ -85,6 +85,7 @@ import com.tle.core.events.ApplicationEvent;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.ItemIdExtension;
+import com.tle.core.item.dao.AttachmentDao;
 import com.tle.core.item.dao.ItemDao;
 import com.tle.core.item.event.ItemOperationBatchEvent;
 import com.tle.core.item.event.ItemOperationEvent;
@@ -137,6 +138,7 @@ import javax.inject.Singleton;
 import org.apache.logging.log4j.ThreadContext;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.java.plugin.registry.Extension;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,7 +167,7 @@ public class ItemServiceImpl
   private Logger logger;
 
   @Inject private ItemDao dao;
-
+  @Inject private AttachmentDao attDao;
   @Inject private ItemLockingService lockingService;
   @Inject private TLEAclManager aclManager;
   @Inject private AuditLogService auditLogService;
@@ -1255,5 +1257,9 @@ public class ItemServiceImpl
     return item.getItemDefinition().getWizard().getPages().stream()
         .filter(p -> p instanceof DefaultWizardPage)
         .flatMap(p -> ((DefaultWizardPage) p).getControls().stream());
+  }
+
+  public int getAttachmentCountForItem(ItemIdKey itemId) {
+    return (int) attDao.countByCriteria(Restrictions.eq("item.id", itemId.getKey()));
   }
 }
