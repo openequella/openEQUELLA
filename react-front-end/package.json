@@ -99,7 +99,7 @@
     "@storybook/react": "7.6.20",
     "@storybook/react-webpack5": "7.6.20",
     "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/react": "14.3.1",
+    "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
     "@types/css-mediaquery": "0.1.4",
     "@types/jest": "29.5.14",
