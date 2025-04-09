@@ -17,6 +17,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.bidi.log.LogLevel;
+import org.openqa.selenium.bidi.module.LogInspector;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -28,9 +30,13 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class StandardDriverFactory {
-
+  Logger logger = LoggerFactory.getLogger(StandardDriverFactory.class);
   private final String firefoxBinary;
   private final String chromeBinary;
   private final boolean chrome;
@@ -123,7 +129,8 @@ public class StandardDriverFactory {
         prefs.put("profile.password_manager_enabled", false);
 
         options.setExperimentalOption("prefs", prefs);
-
+        // Enable BIDI.
+        options.setCapability("webSocketUrl", true);
         if (proxy != null) {
           capabilities.setCapability(CapabilityType.PROXY, proxy);
         }
@@ -158,6 +165,27 @@ public class StandardDriverFactory {
         driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
       }
     }
+
+    // Set up BIDI log inspector to capture JavaScript errors thrown from the interaction with OEQ.
+    try (LogInspector logInspector = new LogInspector(driver)) {
+      Marker jsMarker = MarkerFactory.getMarker("JS_ERROR");
+      logInspector.onJavaScriptException(
+          logEntry -> {
+            switch (logEntry.getLevel()) {
+              case LogLevel.ERROR:
+                logger.error(jsMarker, logEntry.getText());
+                break;
+              case LogLevel.WARNING:
+                logger.warn(jsMarker, logEntry.getText());
+                break;
+              default:
+                // nothing to do
+            }
+          });
+    } catch (IllegalArgumentException e) {
+      logger.error("Failed to set up BIDI log inspector", e);
+    }
+
     return driver;
   }
 
