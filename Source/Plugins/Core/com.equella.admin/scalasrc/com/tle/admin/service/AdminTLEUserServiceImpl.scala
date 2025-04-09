@@ -18,6 +18,7 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
 import com.tle.beans.user.TLEUser
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api._
@@ -25,7 +26,6 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import java.util.Optional
 import javax.inject.{Inject, Singleton}
-import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters._
 import scala.language.implicitConversions
@@ -38,7 +38,7 @@ import scala.language.implicitConversions
 class AdminTLEUserServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminTLEUserService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
 
   private implicit def tleUserViewToTleUser(view: TleUserView): TLEUser = {
     val u = new TLEUser()
@@ -50,6 +50,9 @@ class AdminTLEUserServiceImpl @Inject() (implicit
 
     u
   }
+
+  private implicit def optionalViewToUser(view: Option[TleUserView]): Optional[TLEUser] =
+    view.fold[Optional[TLEUser]](Optional.empty())(u => Optional.of(u))
 
   override def add(user: TLEUser): String = {
     LOGGER.debug("Adding user: " + user.getUsername)
@@ -69,10 +72,10 @@ class AdminTLEUserServiceImpl @Inject() (implicit
   }
 
   override def get(uniqueId: String): Optional[TLEUser] =
-    getUser(uniqueId, TleUserApi.getByUniqueId)
+    getEntity("User [by UUID]", uniqueId, TleUserApi.getByUniqueId)
 
   override def getByUsername(username: String): Optional[TLEUser] =
-    getUser(username, TleUserApi.getByUsername)
+    getEntity("User [by username]", username, TleUserApi.getByUsername)
 
   /** Delete a user by UUID.
     *
@@ -112,55 +115,20 @@ class AdminTLEUserServiceImpl @Inject() (implicit
         LOGGER.debug("User {} [{}] updated", updatedUser.username, updatedUser.uniqueId)
         updatedUser.uniqueId
       case Left(errors) =>
-        throw new ClientRequestException(s"Error updating user [${uuid}]", errors)
+        throw new ClientRequestException(s"Error updating user [$uuid]", errors)
     }
   }
 
   override def searchUsers(query: String): java.util.List[TLEUser] = {
     LOGGER.debug("Searching for users with query: {}", query)
-
-    // Helper function to recursively fetch all users. Using ListBuffer primarily to ensure
-    // a mutable list is returned to Java code. Especially seeing the first operation done
-    // with the returned list from this function is typically a java.util.List.sort() operation.
-    @tailrec
-    def getUsers(
-        pagination: Pagination,
-        query: Option[String],
-        users: ListBuffer[TLEUser] = ListBuffer()
-    ): Either[List[ApiError], ListBuffer[TLEUser]] = {
-      TleUserApi.searchUsers(pagination, query) match {
-        case Right(result) if result.continue.nonEmpty =>
-          getUsers(result.continue.get, query, users ++ result.items.map(tleUserViewToTleUser))
-        case Right(result) => Right(users ++ result.items.map(tleUserViewToTleUser))
-        case Left(errors)  => Left(errors)
-      }
+    val users = getAll() {
+      TleUserApi.searchUsers(_, Option(query))
     }
+    LOGGER.debug("Found {} users", users.size)
 
-    getUsers(ForwardPagination(100), Option(query)) match {
-      case Right(users) =>
-        LOGGER.debug("Found {} users", users.size)
-        users.asJava
-      case Left(errors) =>
-        throw new ClientRequestException("Error searching for users", errors)
-    }
-  }
-
-  private def getUser(
-      identifier: String,
-      f: String => Either[List[ApiError], Option[TleUserView]]
-  ): Optional[TLEUser] = {
-    f(identifier) match {
-      case Right(user) =>
-        user
-          .fold[Optional[TLEUser]]({
-            LOGGER.debug(s"User [$identifier] not found")
-            Optional.empty()
-          })(u => {
-            LOGGER.debug(s"User [$identifier] found")
-            Optional.of(u)
-          })
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error retrieving user [$identifier]", errors)
-    }
+    // We convert the following to a ListBuffer to ensure a proper mutable list is returned on the Java
+    // side. This is especially important, as the main caller of this method in the Admin Console
+    // calls java.util.List.sort() on the result.
+    users.map(tleUserViewToTleUser).to(ListBuffer).asJava
   }
 }

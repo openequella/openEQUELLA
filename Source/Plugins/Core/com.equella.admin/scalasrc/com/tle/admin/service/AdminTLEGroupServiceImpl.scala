@@ -18,6 +18,7 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
 import com.tle.beans.user.{GroupTreeNode, TLEGroup}
 import com.tle.core.remoting.RemoteTLEGroupService
 import io.github.openequella.graphql.ClientConfiguration
@@ -25,8 +26,10 @@ import io.github.openequella.graphql.api.{TleGroupApi, TleGroupView}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
+import java.util.Optional
 import javax.inject.Inject
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
 
 /** Service class for admin operations on TLEGroup objects via the GraphQL library. Because this
   * class is intended for use primarily by the existing Java code, preference is given to Java types
@@ -36,7 +39,7 @@ class AdminTLEGroupServiceImpl @Inject() (
     val delegate: RemoteTLEGroupService
 )(implicit val cfg: ClientConfiguration)
     extends AdminTLEGroupService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
 
   override def add(parentID: String, name: String): String = {
     LOGGER.debug("Adding group: {}", name)
@@ -49,15 +52,14 @@ class AdminTLEGroupServiceImpl @Inject() (
     }
   }
 
-  override def edit(group: TLEGroup): String = {
+  override def edit(group: BasicGroupDetails): String = {
     val uuid = group.getUuid
     LOGGER.debug("Editing group: {}", uuid)
     TleGroupApi.updateGroup(
-      uuid,
-      Option(group.getName),
-      Option(group.getDescription),
-      Option(group.getParent).map(_.getUuid),
-      Option(group.getUsers.asScala.toList)
+      uniqueId = uuid,
+      name = Option(group.getName),
+      description = group.getDescription.toScala,
+      users = Some(group.getUsers.asScala.toList)
     ) match {
       case Right(TleGroupView(uniqueId, _, newGroupName, _, _, _)) =>
         LOGGER.debug(s"Group '{}' [{}] updated", newGroupName, uniqueId)
@@ -77,12 +79,14 @@ class AdminTLEGroupServiceImpl @Inject() (
     }
   }
 
-  override def get(id: String): TLEGroup = implementMe {
-    _.get(id)
+  override def get(id: String): Optional[BasicGroupDetails] = {
+    LOGGER.debug("Retrieving group by ID: {}", id)
+    getEntity("Group [by UUID]", id, TleGroupApi.getByUniqueId).map(toBasicGroupDetails).toJava
   }
 
-  override def getByName(name: String): TLEGroup = implementMe {
-    _.getByName(name)
+  override def getByName(name: String): Optional[BasicGroupDetails] = {
+    LOGGER.debug("Retrieving group by name: {}", name)
+    getEntity("Group [by name]", name, TleGroupApi.getByName).map(toBasicGroupDetails).toJava
   }
 
   override def getInformationForGroups(groups: util.Collection[String]): util.List[TLEGroup] =
@@ -96,6 +100,19 @@ class AdminTLEGroupServiceImpl @Inject() (
 
   override def searchTree(query: String): GroupTreeNode = implementMe {
     _.searchTree(query)
+  }
+
+  private def toBasicGroupDetails(view: TleGroupView): BasicGroupDetails = {
+    LOGGER.debug("Retrieving users for group: {}", view.uniqueId)
+    val users = getAll() {
+      TleGroupApi.listGroupUsers(_, view.uniqueId)
+    }
+    new BasicGroupDetails(
+      view.uniqueId,
+      view.name,
+      view.description,
+      users.toSet
+    )
   }
 
   private def implementMe[T](f: RemoteTLEGroupService => T): T = {

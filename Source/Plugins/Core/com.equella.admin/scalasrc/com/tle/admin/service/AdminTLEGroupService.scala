@@ -21,6 +21,80 @@ package com.tle.admin.service
 import com.tle.beans.user.{GroupTreeNode, TLEGroup}
 
 import java.util
+import java.util.Optional
+import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
+
+/** A basic representation of a group, with only the most essential details. Working as a data and
+  * persistence layer agnostic representation of a group. Essentially a DTO. Preference is given to
+  * Java types over Scala types for the external API. As this is primarily consumed on the Java
+  * side.
+  */
+class BasicGroupDetails {
+  private var uuid: String                = _
+  private var name: String                = _
+  private var description: Option[String] = None
+  private var users: Set[String]          = Set.empty
+
+  /** Default constructor to provide a more java-esque API.
+    *
+    * @param id
+    *   The UUID of the group
+    * @param name
+    *   The name of the group
+    * @param description
+    *   The description of the group
+    * @param users
+    *   The users in the group
+    */
+  def this(
+      id: String,
+      name: String,
+      description: Option[String],
+      users: Set[String]
+  ) = {
+    this()
+    this.uuid = id
+    this.name = name
+    this.description = description
+    this.users = users
+  }
+
+  def getUuid: String = uuid
+
+  def getName: String = name
+
+  def getDescription: Optional[String] = description.toJava
+
+  def getUsers: util.Set[String] = users.asJava
+
+  def setUuid(id: String): Unit = this.uuid = id
+
+  def setName(name: String): Unit = this.name = name
+
+  /** Set the description of the group, if it is not blank or null. Otherwise the description will
+    * be set to None.
+    *
+    * @param description
+    *   The description of the group
+    */
+  def setDescription(description: String): Unit = this.description =
+    Option(description).filterNot(_.isBlank)
+
+  /** Set the users in the group. This will replace any existing users in the group.
+    *
+    * @param users
+    *   The users in the group
+    */
+  def setUsers(users: util.Set[String]): Unit = this.users = users.asScala.toSet
+
+  /** Add a user to the group. Appends the user to the existing list of users.
+    *
+    * @param user
+    *   The user to add to the group
+    */
+  def addUser(user: String): Unit = this.users += user
+}
 
 trait AdminTLEGroupService {
 
@@ -47,7 +121,7 @@ trait AdminTLEGroupService {
     * @throws ClientRequestException
     *   if there are any errors editing the group
     */
-  def edit(group: TLEGroup): String
+  def edit(group: BasicGroupDetails): String
 
   /** Delete a group and optionally all its children. If the children are to be kept, they will be
     * moved to the parent of the group being deleted.
@@ -61,9 +135,27 @@ trait AdminTLEGroupService {
     */
   def delete(groupID: String, deleteChildren: Boolean): Unit
 
-  def get(id: String): TLEGroup
+  /** Get a group by its UUID.
+    *
+    * @param id
+    *   The UUID of the group to get
+    * @return
+    *   The group if it exists, or None if it does not
+    * @throws ClientRequestException
+    *   if there are any errors getting the group
+    */
+  def get(id: String): Optional[BasicGroupDetails]
 
-  def getByName(name: String): TLEGroup
+  /** Get a group by its name.
+    *
+    * @param name
+    *   The name of the group to get
+    * @return
+    *   The group if it exists, or None if it does not
+    * @throws ClientRequestException
+    *   if there are any errors getting the group
+    */
+  def getByName(name: String): Optional[BasicGroupDetails]
 
   def getInformationForGroups(groups: util.Collection[String]): util.List[TLEGroup]
 

@@ -20,7 +20,7 @@ package com.tle.admin.usermanagement.internal;
 
 import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEUserService;
-import com.tle.beans.user.TLEGroup;
+import com.tle.admin.service.BasicGroupDetails;
 import com.tle.beans.user.TLEUser;
 import com.tle.common.BulkImport;
 import com.tle.common.Check;
@@ -31,8 +31,14 @@ import com.tle.common.util.CsvReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserBulkImporter extends BulkImport<TLEUser> {
+  private final Logger LOGGER = LoggerFactory.getLogger(UserBulkImporter.class);
+
   private final AdminTLEGroupService groupService;
   private final AdminTLEUserService userService;
 
@@ -44,29 +50,21 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
   }
 
   @Override
-  public void add(TLEUser t) throws Exception {
-    TLEGroup group = null;
-    if (!Check.isEmpty(groupName)) {
-      group = groupService.getByName(groupName);
-      if (group == null) {
-        List<ValidationError> errors = new ArrayList<ValidationError>();
-        errors.add(
-            new ValidationError(
-                "group", //$NON-NLS-1$
-                CurrentLocale.get("tleuserservice.bulkimport.nogroup", groupName) // $NON-NLS-1$
-                ));
-        throw new InvalidDataException(errors);
-      }
-    }
+  public void add(TLEUser u) throws Exception {
+    Optional<BasicGroupDetails> group =
+        Optional.ofNullable(groupName).filter(Strings::isNotBlank).map(this::validateGroupName);
 
     // add user, preferably avoiding inadvertent recursion
-    String uuid = userService.add(t);
+    LOGGER.debug("Adding user: {}", u.getUsername());
+    String uuid = userService.add(u);
 
     // add to group
-    if (group != null) {
-      group.getUsers().add(uuid);
-      groupService.edit(group);
-    }
+    group.ifPresent(
+        g -> {
+          LOGGER.debug("Adding [{}] to group [{}]", u.getUsername(), g.getName());
+          g.addUser(uuid);
+          groupService.edit(g);
+        });
   }
 
   @Override
@@ -113,6 +111,19 @@ public class UserBulkImporter extends BulkImport<TLEUser> {
       throw new InvalidDataException(errors);
     }
 
-    groupName = reader.get("group"); // $NON-NLS-1$
+    groupName = reader.get("group");
+  }
+
+  private BasicGroupDetails validateGroupName(String name) {
+    return groupService
+        .getByName(name)
+        .orElseThrow(
+            () -> {
+              List<ValidationError> errors = new ArrayList<>();
+              errors.add(
+                  new ValidationError(
+                      "group", CurrentLocale.get("unserviceable.bulkimport.nogroup", name)));
+              return new InvalidDataException(errors);
+            });
   }
 }
