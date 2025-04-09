@@ -28,7 +28,7 @@ val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.19.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.1"
+val tikaVersion       = "2.9.3"
 val luceneVersion     = "9.12.1"
 val nettyVersion      = "4.2.0.Final"
 
