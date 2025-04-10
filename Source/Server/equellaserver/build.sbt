@@ -174,16 +174,16 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
   "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
   "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
-  "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
+  "org.apache.rampart"        % "rampart-core"           % "1.8.0" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
   ),
-  "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll (
+  "org.apache.rampart" % "rampart-policy" % "1.8.0" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll (
+  "org.apache.rampart" % "rampart-trust" % "1.8.0" excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
