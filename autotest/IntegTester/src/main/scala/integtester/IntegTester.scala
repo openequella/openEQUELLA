@@ -13,6 +13,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
 import org.http4s.server.Router
 import org.http4s.blaze.server.BlazeServerBuilder
+import org.http4s.server.staticcontent.ResourceServiceBuilder
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.slf4j.LoggerFactory
@@ -113,13 +114,15 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
     case request @ (GET | POST) -> Root / "oauthredirector" =>
       OAuthRedirector.oauthRedirector(request)
+    case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }
 
   def stream(args: List[String]) = {
     val httpApp: HttpApp[IO] = Router(
-      "/"         -> appService,
-      "/provider" -> new TestingCloudProvider().oauthService,
-      "/oidc"     -> oidcService
+      "/"          -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
+      "/"          -> appService,
+      "/provider/" -> new TestingCloudProvider().oauthService,
+      "/oidc/"     -> oidcService
     ).orNotFound
 
     BlazeServerBuilder[IO]
