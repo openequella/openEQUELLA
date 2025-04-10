@@ -2,7 +2,8 @@
   */
 package integtester
 
-import cats.effect.{Blocker, ExitCode, IO, IOApp}
+import cats.effect.unsafe.implicits.global
+import cats.effect.{ExitCode, IO, IOApp}
 import integtester.oauthredirector.OAuthRedirector
 import integtester.oidc.OidcIntegration
 import integtester.testprovider.TestingCloudProvider
@@ -10,13 +11,11 @@ import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
-import org.http4s.server.blaze.BlazeBuilder
-import org.http4s.server.staticcontent._
+import org.http4s.server.Router
+import org.http4s.blaze.server.BlazeServerBuilder
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.slf4j.LoggerFactory
-
-import scala.concurrent.ExecutionContext
 
 object IntegTester extends IOApp with Http4sDsl[IO] {
 
@@ -33,7 +32,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     request.decode[UrlForm] { form =>
       val formJson = form.values.view.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
         "authenticated" ->
-          Seq(request.headers.get(Authorization).isDefined.toString)
+          Seq(request.headers.get[Authorization].isDefined.toString)
       )
 
       val doc = viewItemDocument.clone()
@@ -116,19 +115,18 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
       OAuthRedirector.oauthRedirector(request)
   }
 
-  def stream(args: List[String]) =
-    BlazeBuilder[IO]
+  def stream(args: List[String]) = {
+    val httpApp: HttpApp[IO] = Router(
+      "/"         -> appService,
+      "/provider" -> new TestingCloudProvider().oauthService,
+      "/oidc"     -> oidcService
+    ).orNotFound
+
+    BlazeServerBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
-      .mountService(
-        resourceService[IO](
-          ResourceService.Config("/www", Blocker.liftExecutionContext(ExecutionContext.global))
-        ),
-        "/"
-      )
-      .mountService(appService, "/")
-      .mountService(new TestingCloudProvider().oauthService, "/provider/")
-      .mountService(oidcService, "/oidc/")
+      .withHttpApp(httpApp)
       .serve
+  }
 
   lazy val embeddedRunning: Boolean = {
     stream(List.empty).compile.drain.unsafeRunAsync(_ => ())

@@ -1,5 +1,6 @@
 package io.github.openequella.oidc
 
+import cats.effect.unsafe.implicits.global
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.generic.page.UserProfilePage
 import com.tle.webtests.pageobject.portal.MenuSection
