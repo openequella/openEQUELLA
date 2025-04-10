@@ -202,9 +202,7 @@ export const SearchResultList = ({
               <Tooltip title={searchPageStrings.newSearchHelperText}>
                 <Button
                   variant="outlined"
-                  onClick={() => {
-                    throw new Error("test bidi support");
-                  }}
+                  onClick={onClearSearchOptions}
                   color="inherit"
                 >
                   {searchPageStrings.newSearch}

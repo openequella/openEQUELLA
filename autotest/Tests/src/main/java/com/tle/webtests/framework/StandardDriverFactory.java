@@ -166,7 +166,8 @@ public class StandardDriverFactory {
       }
     }
 
-    // Set up BIDI log inspector to capture JavaScript errors thrown from the interaction with OEQ.
+    // Set up BIDI log inspector to capture unexpected JavaScript exceptions thrown from the
+    // interaction with OEQ.
     try (LogInspector logInspector = new LogInspector(driver)) {
       Marker jsMarker = MarkerFactory.getMarker("JS_ERROR");
       logInspector.onJavaScriptException(
