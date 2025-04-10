@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.12"
+val http4sVersion = "0.23.17"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.6"
 
@@ -38,7 +38,6 @@ libraryDependencies ++= Seq(
   "com.typesafe"              % "config"                   % "1.4.3",
   "org.slf4j"                 % "slf4j-simple"             % "2.0.17",
   "org.scalacheck"           %% "scalacheck"               % "1.18.1" % "test,serial",
-  "org.http4s"               %% "http4s-async-http-client" % http4sVersion,
   "org.http4s"               %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"               %% "http4s-circe"             % http4sVersion,
   "org.typelevel"            %% "cats-free"                % catsVersion,
