@@ -176,5 +176,12 @@ trait AdminTLEGroupService {
     */
   def search(query: String): util.List[BasicGroupDetails]
 
+  /** Searches for groups (anywhere within the group hierarchy) that match the query.
+    *
+    * @param query
+    *   The query to search for matching groups with
+    * @return
+    *   The tree of groups that match the query - or an empty tree if none are found
+    */
   def searchTree(query: String): GroupTreeNode
 }

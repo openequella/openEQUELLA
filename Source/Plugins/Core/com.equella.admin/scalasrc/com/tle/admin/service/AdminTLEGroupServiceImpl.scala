@@ -79,10 +79,8 @@ class AdminTLEGroupServiceImpl @Inject() (
     }
   }
 
-  override def get(id: String): Optional[BasicGroupDetails] = {
-    LOGGER.debug("Retrieving group by ID: {}", id)
-    getEntity("Group [by UUID]", id, TleGroupApi.getByUniqueId).map(toBasicGroupDetails).toJava
-  }
+  override def get(id: String): Optional[BasicGroupDetails] =
+    getGroup(id).map(toBasicGroupDetails).toJava
 
   override def getByName(name: String): Optional[BasicGroupDetails] = {
     LOGGER.debug("Retrieving group by name: {}", name)
@@ -96,15 +94,28 @@ class AdminTLEGroupServiceImpl @Inject() (
       TleGroupApi.getGroupsByIds(_, groups.asScala.toSet)
     }.map(toBasicGroupDetails).asJava
 
-  override def search(query: String): util.List[BasicGroupDetails] = {
-    LOGGER.debug("Searching for groups: {}", query)
-    getAll() {
-      TleGroupApi.searchGroups(_, query)
-    }.map(toBasicGroupDetails).asJava
+  override def search(query: String): util.List[BasicGroupDetails] =
+    getGroupsByQuery(query).map(toBasicGroupDetails).asJava
+
+  override def searchTree(query: String): GroupTreeNode = {
+    val builder = new GroupTreeBuilder(
+      getGroupsByQuery = q => getGroupsByQuery(q),
+      getListGroups = parentId => getAll() { TleGroupApi.listGroups(_, parentId) },
+      getGroup = id => getGroup(id)
+    )
+    builder.buildSearchTree(query)
   }
 
-  override def searchTree(query: String): GroupTreeNode = implementMe {
-    _.searchTree(query)
+  private def getGroupsByQuery(query: String): List[TleGroupView] = {
+    LOGGER.debug("Searching for groups: [{}]", query)
+    getAll() {
+      TleGroupApi.searchGroups(_, query)
+    }
+  }
+
+  private def getGroup(id: String): Option[TleGroupView] = {
+    LOGGER.debug("Retrieving group by ID: {}", id)
+    getEntity("Group [by UUID]", id, TleGroupApi.getByUniqueId)
   }
 
   private def toBasicGroupDetails(view: TleGroupView): BasicGroupDetails = {
@@ -118,13 +129,5 @@ class AdminTLEGroupServiceImpl @Inject() (
       view.description,
       users.toSet
     )
-  }
-
-  private def implementMe[T](f: RemoteTLEGroupService => T): T = {
-    LOGGER.warn(
-      "Still waiting on GraphQL implementation, will try delegate.",
-      new NotImplementedError()
-    )
-    f(delegate)
   }
 }
