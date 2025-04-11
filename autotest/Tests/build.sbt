@@ -42,7 +42,7 @@ libraryDependencies ++= Seq(
   "org.http4s"               %% "http4s-blaze-client"      % http4sVersion,
   "org.http4s"               %% "http4s-circe"             % http4sVersion,
   "org.typelevel"            %% "cats-free"                % catsVersion,
-  "com.unboundid"             % "unboundid-ldapsdk"        % "6.0.11",
+  "com.unboundid"             % "unboundid-ldapsdk"        % "7.0.2",
   jacksonDataBind,
   "com.auth0" % "jwks-rsa" % "0.22.1"
 )
