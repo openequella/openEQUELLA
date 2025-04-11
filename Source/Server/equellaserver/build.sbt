@@ -16,7 +16,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.6.Final"
-val SwaggerVersion    = "1.6.12"
+val SwaggerVersion    = "1.6.15"
 val TomcatVersion     = "9.0.102"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
@@ -28,7 +28,7 @@ val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.19.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.1"
+val tikaVersion       = "2.9.3"
 val luceneVersion     = "9.12.1"
 val nettyVersion      = "4.2.0.Final"
 
@@ -63,7 +63,10 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"         % jacksonVersion,
   "com.fasterxml.jackson.core"     % "jackson-annotations"           % jacksonVersion,
   "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion exclude (
+    "javax.xml.bind",
+    "jaxb-api"
+  ),
   jacksonDataBind,
   jacksonModuleScala,
   "io.bit3"         % "jsass"       % jsassVersion,
