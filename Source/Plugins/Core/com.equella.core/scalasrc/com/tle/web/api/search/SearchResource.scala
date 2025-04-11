@@ -226,8 +226,7 @@ class SearchResource {
 
       val freetextResults         = searchResults.getSearchResults.asScala.toList
       val itemIds                 = freetextResults.map(_.getItemIdKey)
-      val includeAttachments      = payload.includeAttachments
-      val serializer              = createSerializer(itemIds, includeAttachments)
+      val serializer              = createSerializer(itemIds)
       val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
       val highlight =
         new DefaultSearch.QueryParser(payload.query.orNull).getHilightedList.asScala.toList
@@ -236,7 +235,7 @@ class SearchResource {
         searchResults.getOffset,
         searchResults.getCount,
         searchResults.getAvailable,
-        items.map(convertToItem(_, includeAttachments)),
+        items.map(convertToItem(_, payload.includeAttachments)),
         highlight
       )
     } match {
