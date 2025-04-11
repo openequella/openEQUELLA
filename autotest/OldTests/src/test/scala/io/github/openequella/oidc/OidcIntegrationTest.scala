@@ -23,7 +23,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
 
   @BeforeClass
   def runIntegTester(): Unit = {
-    IntegTester.stream(List.empty).compile.drain.unsafeRunAsync(_ => ())
+    IntegTester.server(List.empty).serve.compile.drain.unsafeRunAsync(_ => ())
   }
 
   @Test(description =

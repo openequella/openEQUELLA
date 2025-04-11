@@ -2,6 +2,7 @@
   */
 package integtester
 
+import cats.effect.kernel.Deferred
 import cats.effect.unsafe.implicits.global
 import cats.effect.{ExitCode, IO, IOApp}
 import integtester.oauthredirector.OAuthRedirector
@@ -117,7 +118,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }
 
-  def stream(args: List[String]) = {
+  def server(args: List[String]) = {
     val httpApp: HttpApp[IO] = Router(
       "/"          -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
       "/"          -> appService,
@@ -128,29 +129,28 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     BlazeServerBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
       .withHttpApp(httpApp)
-      .serve
   }
 
-  lazy val embeddedRunning: Boolean = {
-    stream(List.empty).compile.drain.unsafeRunAsync(_ => ())
-    true
+  // To use the server in an integration (e.g. a Selenium test), start the server first, and once the server
+  // is completely started, execute the provided callback and return the result.
+  def embeddedRunning[T](cb: () => T): T = {
+    val started: Deferred[IO, Unit] = Deferred.unsafe[IO, Unit]
+
+    server(List.empty).resource
+      .evalTap(_ => started.complete(())) // Once server is started, send a nofitication.
+      .useForever
+      .start
+      .flatMap(_ => started.get) // Wait until server has started
+      .map(_ => cb())
+      .unsafeRunSync()
   }
 
-  def integTesterUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/index.html"
-  }
+  def integTesterUrl: String = embeddedRunning(() => "http://localhost:8083/index.html")
 
-  def echoServerUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/echo"
-  }
+  def echoServerUrl: String = embeddedRunning(() => "http://localhost:8083/echo")
 
-  def providerRegistrationUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/provider.html"
-  }
+  def providerRegistrationUrl: String = embeddedRunning(() => "http://localhost:8083/provider.html")
 
   override def run(args: List[String]): IO[ExitCode] =
-    stream(args).compile.drain.map(_ => ExitCode.Success)
+    server(args).serve.compile.drain.as(ExitCode.Success)
 }
