@@ -1,6 +1,7 @@
 package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
+import integtester.IntegTester;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -10,6 +11,10 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   private final String shareId;
   private final String signonUrl;
   private final String testerUrl;
+
+  static {
+    IntegTester.start();
+  }
 
   @FindBy(name = "username")
   private WebElement usernameField;
@@ -56,7 +61,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   }
 
   public static String getUrl(PageContext context) {
-    return context.getTestConfig().getIntegTesterUrl();
+    return IntegTester.integTesterUrl();
   }
 
   @Override

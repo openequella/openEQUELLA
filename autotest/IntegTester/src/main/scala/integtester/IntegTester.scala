@@ -118,7 +118,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }
 
-  def server(args: List[String]) = {
+  def buildServer(args: List[String]) = {
     val httpApp: HttpApp[IO] = Router(
       "/"          -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
       "/"          -> appService,
@@ -131,26 +131,47 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
       .withHttpApp(httpApp)
   }
 
-  // To use the server in an integration (e.g. a Selenium test), start the server first, and once the server
-  // is completely started, execute the provided callback and return the result.
-  def embeddedRunning[T](cb: () => T): T = {
+  def integTesterUrl: String = "http://localhost:8083/index.html"
+
+  def echoServerUrl: String = "http://localhost:8083/echo"
+
+  def providerRegistrationUrl: String = "http://localhost:8083/provider.html"
+
+  /** Starts the HTTP server and keeps it running until the JVM is terminated. The stream does not
+    * emit any values and runs indefinitely.
+    */
+  override def run(args: List[String]): IO[ExitCode] =
+    buildServer(args).serve.compile.drain.as(ExitCode.Success)
+
+  /** Starts the HTTP server in the background and returns a function to stop it.
+    *
+    * This method is intended for use in test environments where the server needs to be started
+    * before running tests and shut down afterward.
+    *
+    * A `Deferred` signal is used to ensure the server is started before the test execution
+    * continues. The returned function can be called to cancel the shut down the server.
+    *
+    * @return
+    *   a `() => Unit` function that, when invoked, stops the running server
+    */
+  def start(): () => Unit = {
+    // Primitive used to indicate if the server has been started.
     val started: Deferred[IO, Unit] = Deferred.unsafe[IO, Unit]
 
-    server(List.empty).resource
-      .evalTap(_ => started.complete(())) // Once server is started, send a nofitication.
-      .useForever
-      .start
-      .flatMap(_ => started.get) // Wait until server has started
-      .map(_ => cb())
-      .unsafeRunSync()
+    def startServer =
+      for {
+        server <- buildServer(List.empty).resource
+          .evalTap(_ => started.complete(())) // Signal once server is started
+          .useForever // Creates a long-running IO[Unit] that never completes
+          .start      // Runs the IO which returns a Fibre that represents the running computation.
+        _ <- started.get // Wait until a signal is received
+      } yield server
+
+    // Unsafe run the server eventually.
+    val server = startServer.unsafeRunSync()
+
+    // Function to stop the server
+    val stopServer = () => server.cancel.unsafeRunSync()
+    stopServer
   }
-
-  def integTesterUrl: String = embeddedRunning(() => "http://localhost:8083/index.html")
-
-  def echoServerUrl: String = embeddedRunning(() => "http://localhost:8083/echo")
-
-  def providerRegistrationUrl: String = embeddedRunning(() => "http://localhost:8083/provider.html")
-
-  override def run(args: List[String]): IO[ExitCode] =
-    server(args).serve.compile.drain.as(ExitCode.Success)
 }

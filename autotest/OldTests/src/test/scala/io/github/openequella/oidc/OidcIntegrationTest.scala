@@ -15,15 +15,21 @@ import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.testng.Assert.{assertEquals, assertFalse, assertTrue}
-import org.testng.annotations.{BeforeClass, DataProvider, Test}
+import org.testng.Assert.{assertEquals, assertTrue}
+import org.testng.annotations.{AfterClass, BeforeClass, DataProvider, Test}
 
 @TestInstitution("vanilla")
 class OidcIntegrationTest extends AbstractSessionTest {
+  var stopIntegServer: () => Unit = _
 
   @BeforeClass
   def runIntegTester(): Unit = {
-    IntegTester.server(List.empty).serve.compile.drain.unsafeRunAsync(_ => ())
+    stopIntegServer = IntegTester.start()
+  }
+
+  @AfterClass
+  def stopIntegTester(): Unit = {
+    stopIntegServer()
   }
 
   @Test(description =
