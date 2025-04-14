@@ -221,7 +221,8 @@ public class EditHierarchyResource {
 
     // populate an Entity from the bean
     HierarchyTopic editedTopic = hierarchyTopicFromBean(hierarchyBean, hierarchy);
-    HierarchyCompoundUuid compoundUUid = HierarchyCompoundUuid.apply(hierarchyBean.getUuid(), true);
+    HierarchyCompoundUuid compoundUUid =
+        HierarchyCompoundUuid.applyWithLegacyFormat(hierarchyBean.getUuid());
 
     hierarchyService.edit(editedTopic);
     List<ItemId> itemIds =
@@ -342,7 +343,7 @@ public class EditHierarchyResource {
       }
 
       HierarchyCompoundUuid compoundUuid =
-          HierarchyCompoundUuid.apply(hierarchyTopic.getUuid(), true);
+          HierarchyCompoundUuid.applyWithLegacyFormat(hierarchyTopic.getUuid());
       // Corresponding to the admin console's Key Resources tab
       List<Item> keyResources = hierarchyService.getKeyResourceItems(compoundUuid);
       if (!Check.isEmpty(keyResources)) {

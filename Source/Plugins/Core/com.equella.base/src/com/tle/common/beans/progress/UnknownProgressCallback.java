@@ -18,7 +18,6 @@
 
 package com.tle.common.beans.progress;
 
-/** @author Aaron */
 public class UnknownProgressCallback implements ProgressCallback {
   private static final long serialVersionUID = 1L;
 

@@ -37,7 +37,6 @@ import com.tle.web.template.RenderNewTemplate;
 import java.util.Set;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class MyContentContributeSection extends TwoColumnLayout<MyContentContributeModel> {
   private static final PluginResourceHelper RESOURCES =
       ResourcesService.getResourceHelper(MyContentContributeSection.class);

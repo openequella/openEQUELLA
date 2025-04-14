@@ -19,7 +19,9 @@ public class BlackboardProxyPage extends AbstractPage<BlackboardProxyPage> {
     return isPresent(By.xpath("//td[normalize-space(text())='EQUELLA']"));
   }
 
-  /** @return The shared secret */
+  /**
+   * @return The shared secret
+   */
   public String setAvailable() {
     driver.findElement(By.xpath("//a[normalize-space(@title)='Pearson EQUELLA Edit']")).click();
     waitForElement(By.xpath("//a[@title='Edit']"));

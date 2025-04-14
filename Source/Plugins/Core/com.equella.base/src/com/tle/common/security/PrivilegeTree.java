@@ -83,7 +83,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public final class PrivilegeTree {
   // FIXME: at some stage someone is going to have to do something about

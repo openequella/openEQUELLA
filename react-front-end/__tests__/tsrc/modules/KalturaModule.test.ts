@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import {
-  buildPlayerUrl,
+  buildKalturaPlayerUrl,
+  KalturaEmbedStyle,
   KalturaPlayerDetails,
   KalturaPlayerVersion,
   parseExternalId,
@@ -50,19 +51,52 @@ describe("parseExternalId", () => {
   );
 
   const PLAYER_ID = "kaltura_player_id";
-  it.each<[KalturaPlayerVersion, string]>([
+  const V7_PLAYER_DETAILS: KalturaPlayerDetails = {
+    partnerId: 123,
+    uiconfId: 456,
+    entryId: "abc",
+    version: "V7",
+  };
+  it.each<[KalturaPlayerVersion, KalturaPlayerDetails, string]>([
     [
       "V2",
+      { ...V7_PLAYER_DETAILS, version: "V2" },
       `https://cdnapisec.kaltura.com/p/123/sp/12300/embedIframeJs/uiconf_id/456/partner_id/123?autoembed=true&entry_id=abc&playerId=${PLAYER_ID}`,
     ],
     [
       "V7",
+      V7_PLAYER_DETAILS,
       `https://cdnapisec.kaltura.com/p/123/embedPlaykitJs/uiconf_id/456?autoembed=true&entry_id=abc&targetId=${PLAYER_ID}`,
     ],
   ])(
     "builds a Kaltura player embed URL for %s",
-    (version: KalturaPlayerVersion, expected: string) => {
-      const playerUrl = buildPlayerUrl(123, 456, "abc", version, PLAYER_ID);
+    (
+      _: KalturaPlayerVersion,
+      details: KalturaPlayerDetails,
+      expected: string,
+    ) => {
+      const playerUrl = buildKalturaPlayerUrl(details, PLAYER_ID);
+      expect(playerUrl).toBe(expected);
+    },
+  );
+
+  it.each<[KalturaEmbedStyle, string]>([
+    [
+      "AUTO",
+      `https://cdnapisec.kaltura.com/p/123/embedPlaykitJs/uiconf_id/456?autoembed=true&entry_id=abc&targetId=${PLAYER_ID}`,
+    ],
+    [
+      "IFRAME",
+      `https://cdnapisec.kaltura.com/p/123/embedPlaykitJs/uiconf_id/456?iframeembed=true&entry_id=abc`,
+    ],
+  ])(
+    "builds a Kaltura player embed URL for %s embed style",
+    (style: KalturaEmbedStyle, expected: string) => {
+      const playerUrl = buildKalturaPlayerUrl(
+        V7_PLAYER_DETAILS,
+        PLAYER_ID,
+        style,
+      );
       expect(playerUrl).toBe(expected);
     },
   );

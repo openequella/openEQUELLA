@@ -21,7 +21,6 @@ package com.tle.web.wizard.section.model;
 import com.tle.web.sections.standard.model.HtmlComponentState;
 import java.util.List;
 
-/** @author aholland */
 public class ReContributeModel {
   private List<HtmlComponentState> cloneLinks;
 

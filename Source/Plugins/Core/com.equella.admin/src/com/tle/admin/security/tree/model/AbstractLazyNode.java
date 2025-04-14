@@ -29,7 +29,6 @@ import javax.swing.tree.TreeNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public abstract class AbstractLazyNode implements SecurityTreeNode {
   private static final Log LOGGER = LogFactory.getLog(AbstractLazyNode.class);
 

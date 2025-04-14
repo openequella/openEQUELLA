@@ -22,7 +22,6 @@ import com.tle.web.sections.Bookmark;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-/** @author jmaginnis */
 public class Link extends AbstractEventOnlyComponent<HtmlLinkState> {
   private boolean disablable;
 

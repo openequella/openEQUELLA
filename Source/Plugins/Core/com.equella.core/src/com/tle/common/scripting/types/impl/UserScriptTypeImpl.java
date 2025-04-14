@@ -22,7 +22,6 @@ import com.tle.common.scripting.types.UserScriptType;
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean;
 import com.tle.common.usermanagement.user.valuebean.UserBean;
 
-/** @author aholland */
 public class UserScriptTypeImpl extends DefaultUserBean implements UserScriptType {
   private static final long serialVersionUID = 1L;
 

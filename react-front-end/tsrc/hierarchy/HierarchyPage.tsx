@@ -30,7 +30,7 @@ import {
   addKeyResource,
   defaultHierarchyAcl,
   deleteKeyResource,
-  getHierarchy,
+  getHierarchyDetails,
   getMyAcls,
 } from "../modules/HierarchyModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
@@ -102,7 +102,7 @@ const HierarchyPage = ({
     if (needUpdateHierarchy) {
       pipe(
         TE.tryCatch(
-          () => getHierarchy(compoundUuid),
+          () => getHierarchyDetails(compoundUuid),
           (e) => `Failed to get hierarchy: ${e}`,
         ),
         TE.match(appErrorHandler, (h) => {

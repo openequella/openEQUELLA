@@ -25,7 +25,6 @@ import com.tle.common.applet.client.ClientService;
 import java.util.Arrays;
 import java.util.List;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class MultiModel extends AbstractControlModel<Multi> {
   private Multi multi;

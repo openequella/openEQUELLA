@@ -75,7 +75,7 @@ class SearchResource {
   @ApiOperation(
     value = "Search items",
     notes = "This endpoint is used to search for items based on specified criteria.",
-    response = classOf[SearchResult[SearchResultItem]],
+    response = classOf[SearchResult[SearchResultItem]]
   )
   def searchItems(@BeanParam params: SearchParam): Response = {
     val searchPayload = SearchPayload(params)
@@ -88,7 +88,7 @@ class SearchResource {
     value = "Faceted search",
     notes =
       "This endpoint is used to a faceted search and returns a list of terms and the number of Items matching the terms by a list of Schema nodes and general search queries.",
-    response = classOf[FacetedSearchResult],
+    response = classOf[FacetedSearchResult]
   )
   def searchFacet(@BeanParam params: FacetedSearchParam): Response = {
     val searchPayload = SearchPayload(params)
@@ -107,7 +107,7 @@ class SearchResource {
     value = "Search items - typically used to perform a search with large search criteria",
     notes =
       "This endpoint supports searching for items based on large search criteria such a hundreds of MIME types.",
-    response = classOf[SearchResult[SearchResultItem]],
+    response = classOf[SearchResult[SearchResultItem]]
   )
   def searchItemsPostVersion(payload: SearchPayload): Response = {
     doSearch(payload)
@@ -119,10 +119,12 @@ class SearchResource {
     value = "Search items with Advanced search criteria",
     notes =
       "This endpoint is used to search for items based on specified criteria, including Advanced search criteria.",
-    response = classOf[SearchResult[SearchResultItem]],
+    response = classOf[SearchResult[SearchResultItem]]
   )
-  def searchItemsWithAdvCriteria(@BeanParam params: SearchParam,
-                                 advancedSearchCriteria: AdvancedSearchParameters): Response = {
+  def searchItemsWithAdvCriteria(
+      @BeanParam params: SearchParam,
+      advancedSearchCriteria: AdvancedSearchParameters
+  ): Response = {
     val searchPayload                      = SearchPayload(params)
     val AdvancedSearchParameters(criteria) = advancedSearchCriteria
     getSearchResult(createSearch(searchPayload, Option(criteria)), searchPayload)
@@ -150,10 +152,12 @@ class SearchResource {
     val csvHeaders = buildCSVHeaders(schema)
     writeRow(bos, s"${csvHeaders.map(c => c.name).mkString(",")}")
 
-    exportService.export(createSearch(SearchPayload(params)),
-                         params.searchAttachments,
-                         csvHeaders,
-                         writeRow(bos, _))
+    exportService.export(
+      createSearch(SearchPayload(params)),
+      params.searchAttachments,
+      csvHeaders,
+      writeRow(bos, _)
+    )
 
     bos.close()
   }
@@ -177,12 +181,14 @@ class SearchResource {
     val collectionId = params.collections(0)
     val collection = Option(itemDefinitionService.getByUuid(collectionId)) match {
       case Some(c) => c
-      case None    => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
+      case None => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
     }
 
-    if (aclManager
-          .filterNonGrantedPrivileges(collection, SecurityConstants.EXPORT_SEARCH_RESULT)
-          .isEmpty) {
+    if (
+      aclManager
+        .filterNonGrantedPrivileges(collection, SecurityConstants.EXPORT_SEARCH_RESULT)
+        .isEmpty
+    ) {
       throw new PrivilegeRequiredException(SecurityConstants.EXPORT_SEARCH_RESULT)
     }
 
@@ -190,19 +196,26 @@ class SearchResource {
       case Some(s) => s
       case None =>
         throw new NotFoundException(
-          s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}")
+          s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}"
+        )
     }
   }
 
   // create a PresetSearch for a hierarchy search
   private def createPresetSearch(compoundUuidStr: String): Either[String, PresetSearch] = {
-    val compoundUuid: HierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuidStr)
-    Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
-      case Some(topic) =>
-        val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
-        Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
-      case None =>
-        Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
+    def buildSearch(compoundUuid: HierarchyCompoundUuid) =
+      Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
+        case Some(topic) =>
+          val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
+          Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
+        case None =>
+          Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
+      }
+
+    HierarchyCompoundUuid(compoundUuidStr) match {
+      case Right(compoundUuid) => buildSearch(compoundUuid)
+      case Left(e) =>
+        Left(s"Failed to parse hierarchy compound UUID ${compoundUuidStr}: ${e.getMessage}")
     }
   }
 
@@ -250,12 +263,12 @@ class SearchResource {
     val matrixResults: MatrixResults =
       freetextService.matrixSearch(search, params.nodes.toList.asJava, true, true)
     val results = matrixResults.getEntries.asScala
-      .map(
-        matrixEntry =>
-          FacetedResultItem(
-            term = matrixEntry.getFieldValues.toArray.mkString(","),
-            count = matrixEntry.getCount
-        ))
+      .map(matrixEntry =>
+        FacetedResultItem(
+          term = matrixEntry.getFieldValues.toArray.mkString(","),
+          count = matrixEntry.getCount
+        )
+      )
       .toList
     Response.ok.entity(FacetedSearchResult(results)).build()
   }

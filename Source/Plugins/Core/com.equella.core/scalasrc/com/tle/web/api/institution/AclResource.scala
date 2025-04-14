@@ -51,7 +51,8 @@ class AclResource {
   @GET
   @ApiOperation(value = "Determine if you have non-entity specific privilege(s)")
   @Path("/privilegecheck") def checkPrivilege(
-      @QueryParam("privilege") privs: Array[String]): Iterable[String] = {
+      @QueryParam("privilege") privs: Array[String]
+  ): Iterable[String] = {
     aclManager.filterNonGrantedPrivileges(privs: _*).asScala
   }
 
@@ -61,8 +62,10 @@ class AclResource {
     response = classOf[Boolean]
   )
   @Path("/privilegecheck/setting/{setting}")
-  def checkSettingPrivilege(@PathParam("setting") setting: String,
-                            @QueryParam("privilege") priv: String): Response = {
+  def checkSettingPrivilege(
+      @PathParam("setting") setting: String,
+      @QueryParam("privilege") priv: String
+  ): Response = {
     val isGranted =
       aclManager.filterNonGrantedPrivileges(new SettingsTarget(setting), priv).asScala.nonEmpty
     Response.ok.entity(isGranted).build()
@@ -74,8 +77,10 @@ class AclResource {
     response = classOf[Boolean]
   )
   @Path("/privilegecheck/hierarchy/{topic}")
-  def checkHierarchyPrivilege(@PathParam("topic") topicId: String,
-                              @QueryParam("privilege") priv: String): Response = {
+  def checkHierarchyPrivilege(
+      @PathParam("topic") topicId: String,
+      @QueryParam("privilege") priv: String
+  ): Response = {
     Option(hierarchyService.getHierarchyTopicByUuid(topicId)) match {
       case Some(topic) =>
         val isGranted = aclManager.filterNonGrantedPrivileges(topic, priv).asScala.nonEmpty

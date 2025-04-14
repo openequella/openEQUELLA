@@ -42,8 +42,9 @@ public class GoogleSettingsPage extends AbstractPage<GoogleSettingsPage> {
     WebElement trackerStatus =
         driver.findElement(
             By.xpath(
-                "//div[@class='settingRow' and ./div[@class='settingLabel' and "
-                    + "normalize-space(label/text())='Tracking status:']]//div[@class='control']/span"));
+                "//div[@class='settingRow' and ./div[@class='settingLabel' and"
+                    + " normalize-space(label/text())='Tracking"
+                    + " status:']]//div[@class='control']/span"));
     return trackerStatus.getText().trim().equals("Enabled");
   }
 

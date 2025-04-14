@@ -19,33 +19,29 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as React from "react";
 import SettingsList from "../../../../components/SettingsList";
 import { languageStrings } from "../../../../util/langstrings";
-import SettingsListAlert from "../../../../components/SettingsListAlert";
-import UnknownUserHandlingControl, {
-  GroupWarning,
-} from "./UnknownUserHandlingControl";
+import UnknownUserHandlingControl from "./UnknownUserHandlingControl";
 import UsableByControl, { UsableByControlProps } from "./UsableByControl";
 
 const { accessControl } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage;
-const { usableByValidationError } = accessControl;
+
 /**
  * Contains the selection for Unknown User Handling and
  * a list of groups if the unknown user handling is CREATE
  */
 export interface UnknownUserHandlingData {
   selection: OEQ.LtiPlatform.UnknownUserHandling;
-  groups: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  groups: ReadonlySet<OEQ.Common.UuidString>;
 }
 
 export interface AccessControlSectionProps
   extends Pick<
-      UsableByControlProps,
-      | "searchUserProvider"
-      | "searchGroupProvider"
-      | "searchRoleProvider"
-      | "aclEntityResolversProvider"
-    >,
-    GroupWarning {
+    UsableByControlProps,
+    | "searchUserProvider"
+    | "searchGroupProvider"
+    | "searchRoleProvider"
+    | "aclEntityResolversProvider"
+  > {
   /**
    * AclExpression string used to control who can use the platform.
    */
@@ -69,12 +65,6 @@ export interface AccessControlSectionProps
 }
 
 /**
- * Check if the ACL expression length is less or equal than 255 characters.
- */
-export const checkAclExpressionLength = (aclExpression: string) =>
-  aclExpression.length <= 255;
-
-/**
  * This component is used to display and edit who can access the platform,
  * and the way to handle unknown user of an LTI platform
  * within the LTI 1.3 platform creation page.
@@ -88,8 +78,6 @@ const AccessControlSection = ({
   searchGroupProvider,
   searchRoleProvider,
   aclEntityResolversProvider,
-  warningMessageForGroups,
-  showValidationErrors,
 }: AccessControlSectionProps) => (
   <SettingsList subHeading={accessControl.title}>
     <UsableByControl
@@ -100,12 +88,6 @@ const AccessControlSection = ({
       searchRoleProvider={searchRoleProvider}
       aclEntityResolversProvider={aclEntityResolversProvider}
     />
-    {showValidationErrors && !checkAclExpressionLength(aclExpression) && (
-      <SettingsListAlert
-        severity="error"
-        messages={[usableByValidationError]}
-      />
-    )}
 
     <UnknownUserHandlingControl
       selection={unknownUserHandling.selection}
@@ -116,8 +98,6 @@ const AccessControlSection = ({
           groups: groups,
         })
       }
-      groupListProvider={searchGroupProvider}
-      warningMessageForGroups={warningMessageForGroups}
     />
   </SettingsList>
 );

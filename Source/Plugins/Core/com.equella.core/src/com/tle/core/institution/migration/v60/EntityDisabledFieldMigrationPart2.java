@@ -107,7 +107,8 @@ public class EntityDisabledFieldMigrationPart2 extends AbstractHibernateSchemaMi
       HibernateMigrationHelper helper, MigrationResult result, Session session) {
     session
         .createSQLQuery(
-            "update base_entity set disabled = :true where id in (select fs.id from federated_search fs where fs.disabled = :true)")
+            "update base_entity set disabled = :true where id in (select fs.id from"
+                + " federated_search fs where fs.disabled = :true)")
         .setParameter("true", true)
         .executeUpdate();
   }

@@ -28,19 +28,22 @@ import scala.jdk.CollectionConverters._
 case class AppenderReference(ref: String)
 
 case class RootLogger(level: String, AppenderRef: Seq[AppenderReference])
-case class NormalLogger(name: String,
-                        level: String,
-                        AppenderRef: Option[Seq[AppenderReference]] = None)
+case class NormalLogger(
+    name: String,
+    level: String,
+    AppenderRef: Option[Seq[AppenderReference]] = None
+)
 
 case class LoggerConfig(Root: RootLogger, Logger: List[NormalLogger])
 
 object Logger {
 
-  /**
-    * Build the Root Logger.
+  /** Build the Root Logger.
     *
-    * @param props Property file which provides details of the Root Logger.
-    * @return A RootLogger or a list of errors captured the build.
+    * @param props
+    *   Property file which provides details of the Root Logger.
+    * @return
+    *   A RootLogger or a list of errors captured the build.
     */
   def buildRootLogger(props: Properties): ValidatedNec[String, RootLogger] = {
     readProperty("log4j.rootLogger", props)
@@ -55,11 +58,12 @@ object Logger {
       .toValidatedNec
   }
 
-  /**
-    * Build a list of normal Loggers.
+  /** Build a list of normal Loggers.
     *
-    * @param props Property file which provides details of all the normal Loggers.
-    * @return A list of NormalLogger or a list of errors captured the build.
+    * @param props
+    *   Property file which provides details of all the normal Loggers.
+    * @return
+    *   A list of NormalLogger or a list of errors captured the build.
     */
   def buildNormalLogger(props: Properties): ValidatedNec[String, List[NormalLogger]] = {
     val loggerPrefix = "log4j.logger."
@@ -70,9 +74,12 @@ object Logger {
       props.getProperty(key).split(",").map(_.trim) match {
         case Array(level, firstAppender, others @ _*) =>
           Right(
-            NormalLogger(name = name,
-                         level = level,
-                         AppenderRef = Option((others :+ firstAppender).map(AppenderReference))))
+            NormalLogger(
+              name = name,
+              level = level,
+              AppenderRef = Option((others :+ firstAppender).map(AppenderReference))
+            )
+          )
         // A normal logger can have a level without an Appender.
         case Array(level) => Right(NormalLogger(name = name, level = level))
         case _            => Left(s"Missing logger level for $name")
@@ -88,11 +95,12 @@ object Logger {
       .traverse(_.toValidatedNec)
   }
 
-  /**
-    * Build a Root Logger and a list of Normal Loggers.
+  /** Build a Root Logger and a list of Normal Loggers.
     *
-    * @param props Property file which provides details of all the normal Loggers.
-    * @return LoggerConfig including a Root Logger and a list of Normal Loggers.
+    * @param props
+    *   Property file which provides details of all the normal Loggers.
+    * @return
+    *   LoggerConfig including a Root Logger and a list of Normal Loggers.
     */
   def buildLoggerConfig(props: Properties): ValidatedNec[String, LoggerConfig] =
     (buildRootLogger(props), buildNormalLogger(props))

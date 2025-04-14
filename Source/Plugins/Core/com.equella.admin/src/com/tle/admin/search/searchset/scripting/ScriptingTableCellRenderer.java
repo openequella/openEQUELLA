@@ -24,7 +24,6 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-/** @author Nicholas Read */
 public class ScriptingTableCellRenderer extends DefaultTableCellRenderer {
   private static final long serialVersionUID = 1L;
   private final ScriptingTableModelInterface<?> model;

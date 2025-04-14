@@ -41,12 +41,14 @@ object PluginScanner {
 
   case class JPFLibrary(id: String, libType: String, path: String, export: Option[String])
 
-  case class ParsedJPF(baseFile: File,
-                       manUrl: URL,
-                       id: String,
-                       internalDeps: Set[(String, Boolean)],
-                       externalDeps: Set[(String, Boolean)],
-                       adminConsole: Boolean)
+  case class ParsedJPF(
+      baseFile: File,
+      manUrl: URL,
+      id: String,
+      internalDeps: Set[(String, Boolean)],
+      externalDeps: Set[(String, Boolean)],
+      adminConsole: Boolean
+  )
 
   def parseJPF(f: URL, base: File): ParsedJPF = {
     val x        = saxBuilder().build(f)
@@ -73,23 +75,26 @@ object PluginScanner {
     ParsedJPF(base, f, pluginId, deps.toSet, extDeps.toSet, adminConsole)
   }
 
-  def convertAll(parsedMap: Map[String, ParsedJPF],
-                 already: Set[String],
-                 processed: List[ParsedJPF],
-                 pId: Iterable[String]): (Set[String], List[ParsedJPF]) = {
+  def convertAll(
+      parsedMap: Map[String, ParsedJPF],
+      already: Set[String],
+      processed: List[ParsedJPF],
+      pId: Iterable[String]
+  ): (Set[String], List[ParsedJPF]) = {
 
-    def convertOne(already: Set[String],
-                   processed: List[ParsedJPF],
-                   pId: String): (Set[String], List[ParsedJPF]) = {
+    def convertOne(
+        already: Set[String],
+        processed: List[ParsedJPF],
+        pId: String
+    ): (Set[String], List[ParsedJPF]) = {
       if (already.contains(pId)) (already, processed)
       else {
         parsedMap
           .get(pId)
-          .map {
-            case pjpf =>
-              val (a, l) =
-                convertAll(parsedMap, already + pId, processed, pjpf.internalDeps.map(_._1))
-              (a, pjpf :: l)
+          .map { case pjpf =>
+            val (a, l) =
+              convertAll(parsedMap, already + pId, processed, pjpf.internalDeps.map(_._1))
+            (a, pjpf :: l)
           }
           .getOrElse {
             System.err.println(s"Could not find plugin for id $pId")
@@ -98,28 +103,33 @@ object PluginScanner {
       }
     }
 
-    pId.foldLeft((already, processed)) {
-      case ((a, p), c) => convertOne(a, p, c)
+    pId.foldLeft((already, processed)) { case ((a, p), c) =>
+      convertOne(a, p, c)
     }
   }
 
   @tailrec
-  def depsWithExports(d: Set[String],
-                      parsedMap: Map[String, ParsedJPF],
-                      added: Set[String]): Set[String] = {
+  def depsWithExports(
+      d: Set[String],
+      parsedMap: Map[String, ParsedJPF],
+      added: Set[String]
+  ): Set[String] = {
     val newDeps = d &~ added
     if (newDeps.isEmpty) added
     else {
       val exportedNew = newDeps.flatMap(s =>
-        parsedMap.get(s).map(_.internalDeps.filter(_._2).map(_._1)).getOrElse(Set.empty))
+        parsedMap.get(s).map(_.internalDeps.filter(_._2).map(_._1)).getOrElse(Set.empty)
+      )
       depsWithExports(exportedNew, parsedMap, added ++ newDeps)
     }
   }
 
-  def scanForPlugins(registry: PluginRegistry,
-                     pluginMap: java.util.Map[String, TLEPluginLocation],
-                     pluginsLocation: String,
-                     devMode: Boolean): Unit = {
+  def scanForPlugins(
+      registry: PluginRegistry,
+      pluginMap: java.util.Map[String, TLEPluginLocation],
+      pluginsLocation: String,
+      devMode: Boolean
+  ): Unit = {
     val basePaths = pluginsLocation.split(",").map(file)
     if (devMode) {
       val manifestMap = basePaths
@@ -139,17 +149,24 @@ object PluginScanner {
         val resLibrary =
           resourcesDir.map(d => JPFLibrary("resources", "resources", d.toURI.toString, None))
         val jpfJars = (jpfBase / "target/jpflibs" * "*.jar").get.map(j =>
-          JPFLibrary(j.getName, "code", j.toURI.toString, Some("*")))
-        val (id, manXml) = modifyManifestLibraries(jpfBase / "plugin-jpf.xml",
-                                                   Seq(codeLibrary) ++ resLibrary ++ jpfJars)
+          JPFLibrary(j.getName, "code", j.toURI.toString, Some("*"))
+        )
+        val (id, manXml) = modifyManifestLibraries(
+          jpfBase / "plugin-jpf.xml",
+          Seq(codeLibrary) ++ resLibrary ++ jpfJars
+        )
         val manXmlFile = manDir / id / "plugin-jpf.xml"
         val manUrl     = manXmlFile.toURI.toURL
         IO.write(manXmlFile, manXml)
-        pluginMap.put(id,
-                      new TLEPluginLocation(registry.readManifestInfo(manUrl),
-                                            "plugin-jpf.xml",
-                                            jpfBase.toURI.toURL,
-                                            manUrl))
+        pluginMap.put(
+          id,
+          new TLEPluginLocation(
+            registry.readManifestInfo(manUrl),
+            "plugin-jpf.xml",
+            jpfBase.toURI.toURL,
+            manUrl
+          )
+        )
       }
     } else {
       val manifestMap = basePaths
@@ -161,11 +178,15 @@ object PluginScanner {
         }
         .toMap
       convertAll(manifestMap, Set.empty, List.empty, manifestMap.keys)._2.foreach { jpf =>
-        pluginMap.put(jpf.id,
-                      new TLEPluginLocation(registry.readManifestInfo(jpf.manUrl),
-                                            jpf.baseFile.getName,
-                                            new URL("jar", "", jpf.baseFile.toURI + "!/"),
-                                            jpf.manUrl))
+        pluginMap.put(
+          jpf.id,
+          new TLEPluginLocation(
+            registry.readManifestInfo(jpf.manUrl),
+            jpf.baseFile.getName,
+            new URL("jar", "", jpf.baseFile.toURI + "!/"),
+            jpf.manUrl
+          )
+        )
       }
     }
   }

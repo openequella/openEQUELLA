@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author Aaron */
 public class TargetFolder implements Serializable {
   private String name;
   private String id;
@@ -84,7 +83,9 @@ public class TargetFolder implements Serializable {
     return this;
   }
 
-  /** @return A shallow search for selected resources, ie. only the resources in this folder */
+  /**
+   * @return A shallow search for selected resources, ie. only the resources in this folder
+   */
   public Map<SelectedResourceKey, SelectedResource> getResources() {
     return Collections.unmodifiableMap(selectedResources);
   }
@@ -165,7 +166,9 @@ public class TargetFolder implements Serializable {
     this.targetable = targetable;
   }
 
-  /** @return Is a default folder, ie. we came from this folder in the LMS */
+  /**
+   * @return Is a default folder, ie. we came from this folder in the LMS
+   */
   public boolean isDefaultFolder() {
     return defaultFolder;
   }

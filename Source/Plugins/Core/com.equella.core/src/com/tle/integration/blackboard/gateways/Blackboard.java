@@ -39,7 +39,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author cofarrel */
 public class Blackboard {
   private static final int TIMEOUT = 60 * 1000;
   private static final Log LOGGER = LogFactory.getLog(Blackboard.class);

@@ -58,10 +58,9 @@ import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
 import java.util.Date
 import scala.jdk.CollectionConverters._
 
-/**
-  * This object provides functions that help validate a variety of search criteria(e.g.
-  * the UUID of a collection and the UUID of an advanced search) and create an instance
-  * of search and search-related objects.
+/** This object provides functions that help validate a variety of search criteria(e.g. the UUID of
+  * a collection and the UUID of an advanced search) and create an instance of search and
+  * search-related objects.
   *
   * It also provides functions that can convert EquellaItemBean and AttachmentBean to
   * SearchResultItem and SearchResultAttachment, respectively.
@@ -72,37 +71,47 @@ object SearchHelper {
 
   val privileges = Array(ItemSecurityConstants.VIEW_ITEM)
 
-  /**
-    * Execute a search with provided search criteria.
+  /** Execute a search with provided search criteria.
     *
-    * @param defaultSearch A set of search criteria
-    * @param start The first record of a search result.
-    * @param length The maximum number of search results, or -1 for all.
-    * @param searchAttachments Whether to search attachments.
+    * @param defaultSearch
+    *   A set of search criteria
+    * @param start
+    *   The first record of a search result.
+    * @param length
+    *   The maximum number of search results, or -1 for all.
+    * @param searchAttachments
+    *   Whether to search attachments.
     */
-  def search(defaultSearch: DefaultSearch,
-             start: Int,
-             length: Int,
-             searchAttachments: Boolean): FreetextSearchResults[FreetextResult] =
+  def search(
+      defaultSearch: DefaultSearch,
+      start: Int,
+      length: Int,
+      searchAttachments: Boolean
+  ): FreetextSearchResults[FreetextResult] =
     LegacyGuice.freeTextService.search(defaultSearch, start, length, searchAttachments)
 
-  /**
-    * Create a new search with search criteria. The search criteria include two parts.
-    * 1. General criteria provided by `SearchPayload`.
-    * 2. Advanced search criteria defined by a list of `WizardControlFieldValue`.
+  /** Create a new search with search criteria. The search criteria include two parts.
+    *   1. General criteria provided by `SearchPayload`. 2. Advanced search criteria defined by a
+    *      list of `WizardControlFieldValue`.
     *
-    * Note: Preset Search is used for searching a hierarchy topic result.
-    * If a Preset search is provided, some general criteria are pre-defined and as a result those
-    * from the query params will be ignored.
+    * Note: Preset Search is used for searching a hierarchy topic result. If a Preset search is
+    * provided, some general criteria are pre-defined and as a result those from the query params
+    * will be ignored.
     *
-    * @param payload Search payload.
-    * @param fieldValues An option of an array of `WizardControlFieldValue`.
-    * @param presetSearch Option of pre-defined search criteria such as Hierarchy topic. Default to None.
-    * @return An instance of DefaultSearch
+    * @param payload
+    *   Search payload.
+    * @param fieldValues
+    *   An option of an array of `WizardControlFieldValue`.
+    * @param presetSearch
+    *   Option of pre-defined search criteria such as Hierarchy topic. Default to None.
+    * @return
+    *   An instance of DefaultSearch
     */
-  def createSearch(payload: SearchPayload,
-                   fieldValues: Option[Array[WizardControlFieldValue]] = None,
-                   presetSearch: Option[PresetSearch] = None): DefaultSearch = {
+  def createSearch(
+      payload: SearchPayload,
+      fieldValues: Option[Array[WizardControlFieldValue]] = None,
+      presetSearch: Option[PresetSearch] = None
+  ): DefaultSearch = {
     val search = presetSearch.getOrElse(new DefaultSearch)
 
     search.setUseServerTimeZone(true)
@@ -113,9 +122,11 @@ object SearchHelper {
     search.setSortFields(handleOrder(payload))
 
     presetSearch match {
-      case Some(_) => // Collections and itemStatus have been added to the search criteria so ignore the query param for Collections and Item statuses.
+      case Some(
+            _
+          ) => // Collections and itemStatus have been added to the search criteria so ignore the query param for Collections and Item statuses.
       case None =>
-        val itemStatus      = if (payload.status.isEmpty) None else Some(payload.status.toList.asJava)
+        val itemStatus = if (payload.status.isEmpty) None else Some(payload.status.toList.asJava)
         val collectionUuids = handleCollections(payload.advancedSearch, payload.collections)
         search.setCollectionUuids(collectionUuids.orNull)
         search.setItemStatuses(itemStatus.orNull)
@@ -128,7 +139,8 @@ object SearchHelper {
       search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
     }
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
-      payload.dynaCollection)
+      payload.dynaCollection
+    )
     val whereQuery: Option[FreeTextBooleanQuery] = payload.whereClause.map(WhereParser.parse)
     val advSearchCriteria: Option[FreeTextBooleanQuery] =
       fieldValues.map(buildAdvancedSearchCriteria)
@@ -140,21 +152,22 @@ object SearchHelper {
 
     search.setFreeTextQuery(freeTextQuery)
 
-    handleMusts(payload.musts) foreach {
-      case (field, value) => search.addMust(field, value.asJavaCollection)
+    handleMusts(payload.musts) foreach { case (field, value) =>
+      search.addMust(field, value.asJavaCollection)
     }
 
     search
   }
 
-  /**
-    * Using a number of the fields from `params` determines what is the requested sort order and
-    * captures that in a `SortField` which is used in setting the order in DefaultSearch. However
-    * if none of the specified orders apply - or the order param is absent or not matched - then
-    * a standard default order is applied.
+  /** Using a number of the fields from `params` determines what is the requested sort order and
+    * captures that in a `SortField` which is used in setting the order in DefaultSearch. However if
+    * none of the specified orders apply - or the order param is absent or not matched - then a
+    * standard default order is applied.
     *
-    * @param params the parameters supplied to a search request
-    * @return the definition of ordering to be used with DefaultSearch
+    * @param params
+    *   the parameters supplied to a search request
+    * @return
+    *   the definition of ordering to be used with DefaultSearch
     */
   def handleOrder(params: SearchPayload): SortField = {
     val providedOrder = params.order.map(_.toLowerCase)
@@ -165,35 +178,37 @@ object SearchHelper {
     if (params.reverseOrder) order.reversed() else order
   }
 
-  /**
-    * Return a free text query based on what dynamic collection uuid is provided.
-    * @param dynaCollectionUuid The uuid of a dynamic collection.
-    * @return An option which wraps an instance of FreeTextBooleanQuery.
+  /** Return a free text query based on what dynamic collection uuid is provided.
+    * @param dynaCollectionUuid
+    *   The uuid of a dynamic collection.
+    * @return
+    *   An option which wraps an instance of FreeTextBooleanQuery.
     */
   def handleDynaCollection(dynaCollectionUuid: Option[String]): Option[FreeTextBooleanQuery] = {
     dynaCollectionUuid
       .filter(_.nonEmpty)
-      .flatMap(
-        uuid => {
-          val virtualDynaColl = LegacyGuice.dynaCollectionService.getByCompoundId(uuid)
-          Option(virtualDynaColl) match {
-            case Some(v) =>
-              val dynaCollection: DynaCollection = v.getVt
-              val uuidAndVirtual: Array[String]  = uuid.split(":")
-              val virtual                        = if (uuidAndVirtual.length > 1) uuidAndVirtual(1) else null
-              Some(LegacyGuice.dynaCollectionService.getSearchClause(dynaCollection, virtual))
-            case None =>
-              throw new NotFoundException(s"No dynamic collection matching UUID $uuid")
-          }
+      .flatMap(uuid => {
+        val virtualDynaColl = LegacyGuice.dynaCollectionService.getByCompoundId(uuid)
+        Option(virtualDynaColl) match {
+          case Some(v) =>
+            val dynaCollection: DynaCollection = v.getVt
+            val uuidAndVirtual: Array[String]  = uuid.split(":")
+            val virtual = if (uuidAndVirtual.length > 1) uuidAndVirtual(1) else null
+            Some(LegacyGuice.dynaCollectionService.getSearchClause(dynaCollection, virtual))
+          case None =>
+            throw new NotFoundException(s"No dynamic collection matching UUID $uuid")
         }
-      )
+      })
   }
 
-  /**
-    * Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
-    * @param dateString The string to parse.
-    * @param time The time added to a date.
-    * @return An Option which wraps an instance of Date, combining the successfully parsed dateString and provided time (based on the system's default timezone).
+  /** Parse a string to a new instance of Date in the format of "yyyy-MM-dd".
+    * @param dateString
+    *   The string to parse.
+    * @param time
+    *   The time added to a date.
+    * @return
+    *   An Option which wraps an instance of Date, combining the successfully parsed dateString and
+    *   provided time (based on the system's default timezone).
     */
   def handleModifiedDate(dateString: Option[String], time: LocalTime): Option[Date] = {
     dateString
@@ -201,21 +216,26 @@ object SearchHelper {
       .map(date =>
         try {
           val dateTime = LocalDateTime.of(LocalDate.parse(date), time)
-          //Need to convert back to util.date to work compatibly with old methods.
+          // Need to convert back to util.date to work compatibly with old methods.
           Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant)
         } catch {
           case _: DateTimeParseException => throw new BadRequestException(s"Invalid date: $date")
-      })
+        }
+      )
   }
 
-  /**
-    * Return a list of Collection IDs, depending on if Advanced search is provided or not.
-    * @param advancedSearch The UUID of an Advanced search.
-    * @param collections A list of Collection IDs.
-    * @return An option which wraps a list of Collection IDs.
+  /** Return a list of Collection IDs, depending on if Advanced search is provided or not.
+    * @param advancedSearch
+    *   The UUID of an Advanced search.
+    * @param collections
+    *   A list of Collection IDs.
+    * @return
+    *   An option which wraps a list of Collection IDs.
     */
-  def handleCollections(advancedSearch: Option[String],
-                        collections: Array[String]): Option[java.util.Collection[String]] = {
+  def handleCollections(
+      advancedSearch: Option[String],
+      collections: Array[String]
+  ): Option[java.util.Collection[String]] = {
     def checkCollection(collection: String): ValidatedNec[String, String] =
       Option(LegacyGuice.itemDefinitionService.getByUuid(collection))
         .toValidNec(s"No collection matching UUID $collection")
@@ -223,18 +243,19 @@ object SearchHelper {
 
     advancedSearch
       .filter(_.nonEmpty)
-      .map(
-        adSearch =>
-          Option(LegacyGuice.powerSearchService.getByUuid(adSearch))
-            .map(ps => ps.getItemdefs.asScala.map(_.getUuid).toList)
-            .toValidNec(s"No advanced search UUID matching $adSearch"))
+      .map(adSearch =>
+        Option(LegacyGuice.powerSearchService.getByUuid(adSearch))
+          .map(ps => ps.getItemdefs.asScala.map(_.getUuid).toList)
+          .toValidNec(s"No advanced search UUID matching $adSearch")
+      )
       .getOrElse(
         Option
           .when(collections.nonEmpty)(
             collections
               .map(checkCollection)
               .toList
-              .sequence)
+              .sequence
+          )
           .getOrElse(Valid(List.empty[String]))
       ) match {
       case Invalid(err) => throw new NotFoundException(err.mkString_("\n"))
@@ -242,14 +263,15 @@ object SearchHelper {
     }
   }
 
-  /**
-    * Takes a list of colon delimited strings (i.e. key:value), and splits them to build up a map.
+  /** Takes a list of colon delimited strings (i.e. key:value), and splits them to build up a map.
     * Entries in the map can have multiple values, so each additional `key:value` will simply append
     * to the existing entry(key).
     *
-    * @param musts a list of colon delimited strings to be split
-    * @return the processed strings, ready for calls into `DefaultSearch.addMusts` or throws if there
-    *         was an issue processing the strings
+    * @param musts
+    *   a list of colon delimited strings to be split
+    * @return
+    *   the processed strings, ready for calls into `DefaultSearch.addMusts` or throws if there was
+    *   an issue processing the strings
     */
   def handleMusts(musts: Array[String]): Map[String, List[String]] = {
     val delimiter         = ':'
@@ -272,8 +294,7 @@ object SearchHelper {
     }
   }
 
-  /**
-    * Create a serializer for ItemBean.
+  /** Create a serializer for ItemBean.
     */
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
     val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
@@ -281,13 +302,15 @@ object SearchHelper {
     LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
   }
 
-  /**
-    * Convert a SearchItem to an instance of SearchResultItem.
+  /** Convert a SearchItem to an instance of SearchResultItem.
     *
-    * @param item Details of an item to convert.
-    * @param includeAttachments Controls whether to populate the 'attachments' property as that
-    *                           process can be intensive and slow down searches.
-    * @return The result of converting `item` to a `SearchResultItem`.
+    * @param item
+    *   Details of an item to convert.
+    * @param includeAttachments
+    *   Controls whether to populate the 'attachments' property as that process can be intensive and
+    *   slow down searches.
+    * @return
+    *   The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
     val key  = item.idKey
@@ -311,7 +334,8 @@ object SearchHelper {
       attachments =
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
-      thumbnailDetails = getThumbnailDetails(Option(bean.getAttachments).map(_.asScala.toList), key),
+      thumbnailDetails =
+        getThumbnailDetails(Option(bean.getAttachments).map(_.asScala.toList), key),
       displayFields = getDisplayFields(bean),
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
@@ -319,24 +343,24 @@ object SearchHelper {
       bookmarkId = getBookmarkId(key),
       isLatestVersion = isLatestVersion(key),
       drmStatus = getItemDrmStatus(rawItem),
-      moderationDetails = getModerationDetails(rawItem),
+      moderationDetails = getModerationDetails(rawItem)
     )
   }
 
-  /**
-    * Convert a list of AttachmentBean to a list of SearchResultAttachment
+  /** Convert a list of AttachmentBean to a list of SearchResultAttachment
     */
-  def convertToAttachment(attachmentBeans: Option[List[AttachmentBean]],
-                          itemKey: ItemIdKey): Option[List[SearchResultAttachment]] = {
+  def convertToAttachment(
+      attachmentBeans: Option[List[AttachmentBean]],
+      itemKey: ItemIdKey
+  ): Option[List[SearchResultAttachment]] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
-    attachmentBeans.map(
-      beans =>
-        beans
+    attachmentBeans.map(beans =>
+      beans
         // Filter out restricted attachments if the user does not have permissions to view them
-          .filter(isViewable(hasRestrictedAttachmentPrivileges))
-          .map(toSearchResultAttachment(itemKey, _))
+        .filter(isViewable(hasRestrictedAttachmentPrivileges))
+        .map(toSearchResultAttachment(itemKey, _))
     )
   }
 
@@ -344,18 +368,20 @@ object SearchHelper {
     for {
       item     <- Option(rawItem)
       settings <- Option(item.getDrmSettings)
-      termsAccepted = try {
-        LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
-      } catch {
-        // This exception is only thrown when the DRM has maximum number of acceptance allowable times.
-        case _: DRMException => false
-      }
-      isAuthorised = try {
-        LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
-        true
-      } catch {
-        case _: DRMException => false
-      }
+      termsAccepted =
+        try {
+          LegacyGuice.drmService.hasAcceptedOrRequiresNoAcceptance(item, false, false)
+        } catch {
+          // This exception is only thrown when the DRM has maximum number of acceptance allowable times.
+          case _: DRMException => false
+        }
+      isAuthorised =
+        try {
+          LegacyGuice.drmService.isAuthorised(item, CurrentUser.getUserState.getIpAddress)
+          true
+        } catch {
+          case _: DRMException => false
+        }
     } yield {
       DrmStatus(termsAccepted, isAuthorised, settings.isAllowSummary)
     }
@@ -373,30 +399,33 @@ object SearchHelper {
   def getItemCommentCount(key: ItemIdKey): Option[Integer] =
     Option(LegacyGuice.itemCommentService.getCommentCountWithACLCheck(key))
 
-  /**
-    * Extract the value of 'links' from the 'extras' of AbstractExtendableBean.
+  /** Extract the value of 'links' from the 'extras' of AbstractExtendableBean.
     */
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
 
-  /**
-    * Find the Bookmark linking to the Item and return the Bookmark's ID.
-    * @param itemID Unique Item ID
-    * @return Unique Bookmark ID
+  /** Find the Bookmark linking to the Item and return the Bookmark's ID.
+    * @param itemID
+    *   Unique Item ID
+    * @return
+    *   Unique Bookmark ID
     */
   def getBookmarkId(itemID: ItemIdKey): Option[Long] =
     Option(LegacyGuice.bookmarkService.getByItem(itemID)).map(_.getId)
 
-  /**
-    * Check whether a specific version is the latest version
-    * @param itemID Unique Item ID
-    * @return True if the version is the latest one
+  /** Check whether a specific version is the latest version
+    * @param itemID
+    *   Unique Item ID
+    * @return
+    *   True if the version is the latest one
     */
   def isLatestVersion(itemID: ItemIdKey): Boolean =
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
 
-  def getThumbnailDetails(attachmentBeans: Option[List[AttachmentBean]],
-                          itemKey: ItemIdKey): Option[ThumbnailDetails] = {
+  def getThumbnailDetails(
+      attachmentBeans: Option[List[AttachmentBean]],
+      itemKey: ItemIdKey
+  ): Option[ThumbnailDetails] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
@@ -421,7 +450,8 @@ object SearchHelper {
               true
             // For all others, no thumbnail is provided
             case _ => false
-        })
+          }
+        )
         .flatMap(_.links.asScala.get(ItemLinkServiceImpl.REL_THUMB))
 
     attachmentBeans
@@ -430,11 +460,13 @@ object SearchHelper {
       )
       .map(sanitiseAttachmentBean)
       .map(toSearchResultAttachment(itemKey, _))
-      .map(
-        a =>
-          ThumbnailDetails(attachmentType = a.attachmentType,
-                           mimeType = a.mimeType,
-                           link = determineThumbnailLink(a)))
+      .map(a =>
+        ThumbnailDetails(
+          attachmentType = a.attachmentType,
+          mimeType = a.mimeType,
+          link = determineThumbnailLink(a)
+        )
+      )
   }
 
   def getDisplayFields(bean: EquellaItemBean): List[DisplayField] = {

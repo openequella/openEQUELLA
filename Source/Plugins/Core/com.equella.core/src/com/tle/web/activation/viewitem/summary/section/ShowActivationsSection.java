@@ -73,7 +73,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import org.apache.commons.lang.time.FastDateFormat;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 public class ShowActivationsSection

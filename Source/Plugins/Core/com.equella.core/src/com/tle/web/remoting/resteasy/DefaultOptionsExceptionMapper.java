@@ -27,7 +27,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import org.jboss.resteasy.spi.DefaultOptionsMethodException;
 
-/** @author Aaron */
 @Provider
 public class DefaultOptionsExceptionMapper
     implements ExceptionMapper<DefaultOptionsMethodException> {

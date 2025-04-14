@@ -34,7 +34,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class ShuffleBoxEditor extends AbstractPowerSearchControlEditor<ShuffleBox> {
   private static final long serialVersionUID = 1L;
   private I18nTextField title;

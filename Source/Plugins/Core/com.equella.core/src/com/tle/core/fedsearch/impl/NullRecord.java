@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.tle.core.fedsearch.GenericRecord;
 import java.util.Collection;
 
-/** @author aholland */
 public class NullRecord implements GenericRecord {
   @Override
   public Collection<String> getAuthors() {

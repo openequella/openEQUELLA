@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.SearchContext;
@@ -56,23 +58,32 @@ public abstract class AbstractPage<T extends PageObject>
     loadedElement = null;
   }
 
-  public AbstractPage(PageContext context, By loadedBy, int timeOut) {
-    this(context, context.getDriver(), loadedBy, timeOut);
+  /**
+   * @param timeoutSeconds -1 for default timeout
+   */
+  public AbstractPage(PageContext context, By loadedBy, int timeoutSeconds) {
+    this(context, context.getDriver(), loadedBy, timeoutSeconds);
   }
 
   public AbstractPage(PageContext context, SearchContext searchContext, By loadedBy) {
     this(context, searchContext, loadedBy, -1);
   }
 
-  public AbstractPage(PageContext context, SearchContext searchContext, By loadedBy, int timeOut) {
+  /**
+   * @param timeoutSeconds -1 for default timeout
+   */
+  public AbstractPage(
+      PageContext context, SearchContext searchContext, By loadedBy, int timeoutSeconds) {
     this(
         context,
         searchContext,
         loadedBy,
         new WebDriverWait(
             context.getDriver(),
-            timeOut == -1 ? context.getTestConfig().getStandardTimeout() : timeOut,
-            50));
+            timeoutSeconds == -1
+                ? context.getTestConfig().getStandardTimeout()
+                : Duration.ofSeconds(timeoutSeconds),
+            Duration.ofMillis(50)));
   }
 
   public AbstractPage(PageContext context, By loadedBy) {
@@ -547,5 +558,28 @@ public abstract class AbstractPage<T extends PageObject>
   protected void switchTab(int tabIndex) {
     String tab = new ArrayList<>(driver.getWindowHandles()).get(tabIndex);
     driver.switchTo().window(tab);
+  }
+
+  /**
+   * Force click on a button using JavaScript. This is useful when the button can't be clicked by
+   * calling webElement.click() function due to some unknown reasons.
+   *
+   * @param button WebElement to be clicked.
+   */
+  public void forceButtonClickWithJS(WebElement button) {
+    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+  }
+
+  /**
+   * To clear the input of a text field, press "Ctrl + A" to select all content, then press
+   * "Backspace" to remove it. The native clear() method is discouraged in the Selenium community in
+   * favor of this approach, as it more reliably triggers input events. See details in <a
+   * href="https://github.com/SeleniumHQ/selenium/issues/6741">GitHub issue</a>
+   *
+   * @param textField the text field element.
+   */
+  public void clearText(WebElement textField) {
+    textField.sendKeys(Keys.CONTROL + "a");
+    textField.sendKeys(Keys.BACK_SPACE);
   }
 }

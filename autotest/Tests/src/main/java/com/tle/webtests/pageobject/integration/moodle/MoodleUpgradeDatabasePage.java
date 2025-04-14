@@ -16,7 +16,8 @@ public class MoodleUpgradeDatabasePage extends MoodleBasePage<MoodleUpgradeDatab
     super(
         context,
         By.xpath(
-            "//p[contains(text(), 'Your Moodle files have been changed, and you are about to automatically upgrade your server to this version:')]"));
+            "//p[contains(text(), 'Your Moodle files have been changed, and you are about to"
+                + " automatically upgrade your server to this version:')]"));
   }
 
   public MoodleServerStatusPage clickContinue() {

@@ -46,7 +46,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class EntityDialog implements ActionListener, ListSelectionListener, MouseListener {
   private JButton okButton;
@@ -177,7 +176,9 @@ public class EntityDialog implements ActionListener, ListSelectionListener, Mous
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public static class ItemDefinitionDialog extends EntityDialog {
     public ItemDefinitionDialog(Collection<NameId> values, Set<NameId> filterOut) {
       super(getString("entitydialog.collection"));
@@ -185,7 +186,9 @@ public class EntityDialog implements ActionListener, ListSelectionListener, Mous
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public static class SchemaDialog extends EntityDialog {
     public SchemaDialog(Collection<NameId> values, Set<NameId> filterOut) {
       super(getString("entitydialog.schema"));
@@ -193,7 +196,9 @@ public class EntityDialog implements ActionListener, ListSelectionListener, Mous
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public static class CourseInfoDialog extends EntityDialog {
     public CourseInfoDialog(Collection<NameId> values, Set<NameId> filterOut) {
       super(getString("entitydialog.course"));

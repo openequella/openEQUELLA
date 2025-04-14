@@ -4075,51 +4075,59 @@ html .km-ios .km-tabstrip .km-button:active:last-child {
       color-stop(0, rgba(255, 255, 255, 0)),
       color-stop(1, rgba(255, 255, 255, 0.18))
     ),
-    -webkit-gradient(linear, 0 50%, 100% 50%, color-stop(0, rgba(0, 0, 0, 0.6)), color-stop(0.03, rgba(0, 0, 0, 0)), color-stop(0.97, rgba(0, 0, 0, 0)), color-stop(1, rgba(0, 0, 0, 0.6)));
+    -webkit-gradient(
+        linear,
+        0 50%,
+        100% 50%,
+        color-stop(0, rgba(0, 0, 0, 0.6)),
+        color-stop(0.03, rgba(0, 0, 0, 0)),
+        color-stop(0.97, rgba(0, 0, 0, 0)),
+        color-stop(1, rgba(0, 0, 0, 0.6))
+      );
   background-image:
     -webkit-linear-gradient(
       top,
       rgba(255, 255, 255, 0),
       rgba(255, 255, 255, 0.18)
     ),
-    -webkit-linear-gradient(left, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 3%, rgba(
-            0,
-            0,
-            0,
-            0
-          )
-          97%, rgba(0, 0, 0, 0.6));
+    -webkit-linear-gradient(
+        left,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0) 3%,
+        rgba(0, 0, 0, 0) 97%,
+        rgba(0, 0, 0, 0.6)
+      );
   background-image:
     -moz-linear-gradient(
       top,
       rgba(255, 255, 255, 0),
       rgba(255, 255, 255, 0.18)
     ),
-    -moz-linear-gradient(left, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 3%, rgba(
-            0,
-            0,
-            0,
-            0
-          )
-          97%, rgba(0, 0, 0, 0.6));
+    -moz-linear-gradient(
+        left,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0) 3%,
+        rgba(0, 0, 0, 0) 97%,
+        rgba(0, 0, 0, 0.6)
+      );
   background-image:
     -ms-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.18)),
-    -ms-linear-gradient(left, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 3%, rgba(
-            0,
-            0,
-            0,
-            0
-          )
-          97%, rgba(0, 0, 0, 0.6));
+    -ms-linear-gradient(
+        left,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0) 3%,
+        rgba(0, 0, 0, 0) 97%,
+        rgba(0, 0, 0, 0.6)
+      );
   background-image:
     -o-linear-gradient(top, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.18)),
-    -o-linear-gradient(left, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0) 3%, rgba(
-            0,
-            0,
-            0,
-            0
-          )
-          97%, rgba(0, 0, 0, 0.6));
+    -o-linear-gradient(
+        left,
+        rgba(0, 0, 0, 0.6),
+        rgba(0, 0, 0, 0) 3%,
+        rgba(0, 0, 0, 0) 97%,
+        rgba(0, 0, 0, 0.6)
+      );
 }
 .km-ios .km-listinset > li:first-child,
 .km-ios .km-listgroupinset .km-list > li:first-child {
@@ -4436,7 +4444,13 @@ html .km-ios .km-tabstrip .km-button:active:last-child {
       color-stop(0.9, rgba(0, 0, 0, 0)),
       color-stop(1, rgba(0, 0, 0, 0.4))
     ),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0, #2a5db2), color-stop(1, #6da9f7));
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0, #2a5db2),
+        color-stop(1, #6da9f7)
+      );
   background-image:
     -webkit-linear-gradient(
       top,
@@ -4485,7 +4499,13 @@ html .km-ios .km-tabstrip .km-button:active:last-child {
       color-stop(0.9, rgba(0, 0, 0, 0)),
       color-stop(1, rgba(0, 0, 0, 0.4))
     ),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0, #dbdbdb), color-stop(1, #fff));
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0, #dbdbdb),
+        color-stop(1, #fff)
+      );
   background-image:
     -webkit-linear-gradient(
       top,
@@ -9018,28 +9038,46 @@ html .km-android .k-toolbar .km-state-active {
       color-stop(0.4, rgba(255, 255, 255, 0.2)),
       color-stop(1, rgba(255, 255, 255, 0))
     ),
-    -webkit-gradient(linear, 0 50%, 100% 50%, color-stop(0, rgba(255, 255, 255, 0)), color-stop(1, rgba(255, 255, 255, 0.3)));
+    -webkit-gradient(
+        linear,
+        0 50%,
+        100% 50%,
+        color-stop(0, rgba(255, 255, 255, 0)),
+        color-stop(1, rgba(255, 255, 255, 0.3))
+      );
   background-image:
     -webkit-linear-gradient(
       top,
       rgba(255, 255, 255, 0.2) 40%,
       rgba(255, 255, 255, 0)
     ),
-    -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.3));
+    -webkit-linear-gradient(
+        left,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.3)
+      );
   background-image:
     -moz-linear-gradient(
       top,
       rgba(255, 255, 255, 0.2) 40%,
       rgba(255, 255, 255, 0)
     ),
-    -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.3));
+    -moz-linear-gradient(
+        left,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.3)
+      );
   background-image:
     -ms-linear-gradient(
       top,
       rgba(255, 255, 255, 0.2) 40%,
       rgba(255, 255, 255, 0)
     ),
-    -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.3));
+    -ms-linear-gradient(
+        left,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.3)
+      );
   background-image:
     -o-linear-gradient(
       top,
@@ -9346,7 +9384,8 @@ html .km-android .k-toolbar .km-state-active {
         0 100%,
         from(rgba(0, 0, 0, 0)),
         to(rgba(0, 0, 0, 0.1))
-      ) transparent;
+      )
+      transparent;
   -webkit-background-size:
     auto 90%,
     auto;
@@ -9372,7 +9411,13 @@ html .km-android .k-toolbar .km-state-active {
   background:
     -webkit-calc(100% - 5px) 50% no-repeat
       url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAADICAQAAADrJAMDAAADrUlEQVR4Xu3a6UocWQCG4bqJhrkL933Lvu9LK25JJpjchTA3MhcSmCsIg4i4ZCSImjSJ2GpCcMuPbwwFdoIfpklOl6e63+/l/C8eDvWjqESZRPEDAE1AAw00AQ00AQ000AQ00AQ00EAT0EAT0EADTUADTUADDTQBDTQBDTTQBDTQBDTQQBPQQBPQQANNQANNQAMNNAENNAENNNAENNAENNBAE9BAE9BAA01AA01AAw00AQ00AQ000AR0h/7Wf0enA+ha9kKVvQS6Vk3px70AuhY918lNAR26P+X3HOiQPZNZaGqgn+r0PQM6RE/08z0FOjyz7wnQv9Ok3P4NSw30hNxm1KTXcpsE+lcal9usmpQcHX+rJ4AOyfytJs3IbRxon29MbnMpcyhqoEflNn/MXKGeldsY0NU0IreFlPkE9ZzcRoEOyZxSz8ttBOjTGpbboppTgDDUQBfltqSWnwA0aUFuw0C7HntmtVYB0KxFuRWBro75jWH2tWhJbo+B/r5Hclv2zD616s3p1EA/lNvblDkA9SOgv/UgEHNKvSy3h0B75hXDXC31W7k9aGzo+3JbtczVU6946saFvie3NcMchvp+Y0LfDcTsqVfldq/xoD3zutoCAbRqTW53Gwv6jtzeqT0gQJvWPXXjQN/2zMH/EG3XO7ndaQxoz/w+Zc6I+nb9Q9+SW0mdNfuf+r3cbtU39E25fTDM4epUyVPXL/SNDJg99Qe53axPaM+8YZizo75Rf9DX5baZMmdCvSG36/UFfU1u5ZQ5M+rNs6SuV2ZPXZbbtfqA9sxb6lKSeV3a8tT5h74qt211pwDRUF/NN/QVz6weJWdWt7Y9dX6hL8ttxzBnW4925HYln9Ce+ZN6lZx5vfokt8v5g74kt8/qMwAxUV/KF/TFqJh9ffqcJXV2zF9S5qiov8jtYj6gL8ht1zDHQL0rtwvxQ5+X255hjoV6T27nI4AOwxw/dbzQBfuJfV/9SqKuX/sG+qP+iBV62jAfaEBJ9A3owFD/FSv0K8M8qCQXDerwBPQ/ebnRh445fur4b3RBZVX2VUNKctWQvqqychzvaF/xmLqkc0py1zmVjpmLcX/rKGhar45OIU/A/vmzhKb4oQlooIEmoIEmoIEGmoAGmoAGGmgCGmgCGmigCWigCWiggSaggSaggQaagAaagAYaaAIaaAIaaKAJaKAJaKCBJqCBJqCBBpqABpqABhpoAhpoAhpooAlooAlooIEmoIEmoIEGmoAGmv4H0vCT+B5BT60AAAAASUVORK5CYII="),
-    -webkit-gradient(linear, 0 0, 0 100%, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.1))),
+    -webkit-gradient(
+        linear,
+        0 0,
+        0 100%,
+        from(rgba(0, 0, 0, 0)),
+        to(rgba(0, 0, 0, 0.1))
+      ),
     #00aae7;
   -webkit-background-size:
     auto 90%,
@@ -9442,8 +9487,22 @@ html .km-android .k-toolbar .km-state-active {
       color-stop(0.1, #777),
       color-stop(0.1, rgba(0, 0, 0, 0))
     ),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0, #777), color-stop(0.1, #777), color-stop(0.1, rgba(0, 0, 0, 0))),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0, #fff), color-stop(0.1, #fff), color-stop(0.1, rgba(0, 0, 0, 0)));
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0, #777),
+        color-stop(0.1, #777),
+        color-stop(0.1, rgba(0, 0, 0, 0))
+      ),
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0, #fff),
+        color-stop(0.1, #fff),
+        color-stop(0.1, rgba(0, 0, 0, 0))
+      );
   background-image:
     -webkit-linear-gradient(top, #777, #777 10%, transparent 10%),
     -webkit-linear-gradient(top, #777, #777 10%, transparent 10%),
@@ -9471,8 +9530,22 @@ html .km-android .k-toolbar .km-state-active {
       color-stop(0.9, #777),
       color-stop(1, #777)
     ),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0.9, rgba(0, 0, 0, 0)), color-stop(0.9, #777), color-stop(1, #777)),
-    -webkit-gradient(linear, 50% 0, 50% 100%, color-stop(0.9, rgba(0, 0, 0, 0)), color-stop(0.9, #fff), color-stop(1, #fff));
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0.9, rgba(0, 0, 0, 0)),
+        color-stop(0.9, #777),
+        color-stop(1, #777)
+      ),
+    -webkit-gradient(
+        linear,
+        50% 0,
+        50% 100%,
+        color-stop(0.9, rgba(0, 0, 0, 0)),
+        color-stop(0.9, #fff),
+        color-stop(1, #fff)
+      );
   background-image:
     -webkit-linear-gradient(top, transparent 90%, #777 90%, #777),
     -webkit-linear-gradient(top, transparent 90%, #777 90%, #777),

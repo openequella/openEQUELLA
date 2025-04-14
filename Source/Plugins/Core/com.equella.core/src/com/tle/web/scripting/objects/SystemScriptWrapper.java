@@ -31,7 +31,6 @@ import com.tle.web.scripting.types.AttachmentScriptTypeImpl;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(SystemScriptObject.class)
 @Singleton

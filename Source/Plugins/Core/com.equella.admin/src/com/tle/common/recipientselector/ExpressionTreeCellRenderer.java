@@ -24,7 +24,6 @@ import java.awt.Component;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-/** @author Nicholas Read */
 public class ExpressionTreeCellRenderer extends DefaultTreeCellRenderer {
   private static final long serialVersionUID = 1L;
   private ExpressionFormatter formatter;

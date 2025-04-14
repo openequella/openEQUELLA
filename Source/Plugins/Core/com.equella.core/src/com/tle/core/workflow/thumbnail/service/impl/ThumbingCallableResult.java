@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Aaron */
 @NonNullByDefault
 /* package protected */ class ThumbingCallableResult implements Serializable {
   @Nullable private final ThumbnailRequest thumbRequest;

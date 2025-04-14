@@ -29,7 +29,6 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.viewitem.summary.sidebar.actions.GenericMinorActionWithPageSection;
 import com.tle.web.viewurl.ItemSectionInfo;
 
-/** @author Aaron */
 @Bind
 public class ActivationsLinkSection extends GenericMinorActionWithPageSection {
   @PlugKey("viewitem.sidebar.summary.activations.title")

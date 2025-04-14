@@ -46,7 +46,6 @@ import com.tle.common.workflow.WorkflowNodeStatus;
 import com.tle.common.workflow.node.WorkflowNode;
 import java.util.Set;
 
-/** @author Aaron */
 public class ClassDependencies {
   public static Set<Class<?>> item() {
     final Set<Class<?>> deps = Sets.newHashSet();

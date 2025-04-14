@@ -48,7 +48,9 @@ public abstract class AbstractUserDirectory implements UserDirectory {
     return initialise(settings);
   }
 
-  /** @return true if the settings should be re-saved to the DB after initialisation. */
+  /**
+   * @return true if the settings should be re-saved to the DB after initialisation.
+   */
   protected abstract boolean initialise(UserManagementSettings settings);
 
   protected UserDirectoryChain getChain() {

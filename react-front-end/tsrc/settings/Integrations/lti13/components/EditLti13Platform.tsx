@@ -42,13 +42,7 @@ import ConfigureLti13Platform, {
   ConfigureLti13PlatformProps,
   ConfigurePlatformValue,
   LtiGeneralDetails,
-  WarningMessages,
 } from "./ConfigureLti13Platform";
-import {
-  generateCustomRoles,
-  getGroupsTask,
-  getRolesTask,
-} from "./EditLti13PlatformHelper";
 
 const {
   name: editPageName,
@@ -115,9 +109,6 @@ const EditLti13Platform = ({
   const [configurePlatformValue, setConfigurePlatformValue] = useState<
     ConfigurePlatformValue | undefined
   >();
-  const [warningMessages, setWarningMessages] = useState<
-    WarningMessages | undefined
-  >();
 
   React.useEffect(() => {
     // decode platform ID and update state
@@ -143,7 +134,7 @@ const EditLti13Platform = ({
     )();
   }, [getPlatformProvider, appErrorHandler, platformIdBase64]);
 
-  // get role and group details from initial platform value and update the related states
+  // build props for ConfigureLti13Platform
   React.useEffect(() => {
     (async () => {
       if (!platform) {
@@ -162,78 +153,18 @@ const EditLti13Platform = ({
         usernameSuffix: platform.usernameSuffix,
       };
 
-      // initialize groups and roles details
-      const unknownUserDefaultGroupsWithMsgTask = pipe(
-        getGroupsTask(
-          platform.unknownUserDefaultGroups ?? new Set(),
-          aclEntityResolversMultiProvider.resolveGroupsProvider,
-        ),
-        TE.getOrThrow,
-      );
-
-      const instructorRolesWithMsgTask = pipe(
-        getRolesTask(
-          platform.instructorRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider,
-        ),
-        TE.getOrThrow,
-      );
-
-      const customRolesWithMsgTask = pipe(
-        generateCustomRoles(
-          platform.customRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider,
-        ),
-        TE.getOrThrow,
-      );
-
-      const unknownRolesWithMsgTask = pipe(
-        getRolesTask(
-          platform.unknownRoles,
-          aclEntityResolversMultiProvider.resolveRolesProvider,
-        ),
-        TE.getOrThrow,
-      );
-
-      // execute tasks
-      await Promise.all([
-        unknownUserDefaultGroupsWithMsgTask(),
-        instructorRolesWithMsgTask(),
-        customRolesWithMsgTask(),
-        unknownRolesWithMsgTask(),
-      ])
-        .then(
-          ([
-            unknownUserDefaultGroupsWithMsg,
-            instructorRolesWithMsg,
-            customRolesWithMsg,
-            unknownRolesWithMsg,
-          ]) => {
-            setConfigurePlatformValue({
-              generalDetails: generalDetailsValue,
-              aclExpression:
-                platform.allowExpression ?? ACLRecipientTypes.Everyone,
-              unknownRoles: unknownRolesWithMsg.entities,
-              instructorRoles: instructorRolesWithMsg.entities,
-              customRoles: customRolesWithMsg.mappings,
-              unknownUserHandlingData: {
-                selection: platform.unknownUserHandling,
-                groups: unknownUserDefaultGroupsWithMsg.entities,
-              },
-              enabled: platform.enabled,
-            });
-            setWarningMessages({
-              unknownRoles: unknownRolesWithMsg.warning,
-              instructorRoles: instructorRolesWithMsg.warning,
-              customRolesMapping: customRolesWithMsg.warnings,
-              warningMessageForGroups: unknownUserDefaultGroupsWithMsg.warning,
-            });
-          },
-        )
-        .catch((e) => {
-          console.warn(e);
-          appErrorHandler(e);
-        });
+      setConfigurePlatformValue({
+        generalDetails: generalDetailsValue,
+        aclExpression: platform.allowExpression ?? ACLRecipientTypes.Everyone,
+        unknownRoles: platform.unknownRoles,
+        instructorRoles: platform.instructorRoles,
+        customRoles: platform.customRoles,
+        unknownUserHandlingData: {
+          selection: platform.unknownUserHandling,
+          groups: platform.unknownUserDefaultGroups ?? new Set(),
+        },
+        enabled: platform.enabled,
+      });
     })();
   }, [aclEntityResolversMultiProvider, appErrorHandler, platform]);
 
@@ -296,7 +227,6 @@ const EditLti13Platform = ({
       pageName={editPageName}
       value={configurePlatformValue}
       configurePlatformProvider={updatePlatformProvider}
-      warningMessages={warningMessages}
       KeyRotationSection={keyRotationSection()}
     />
   );

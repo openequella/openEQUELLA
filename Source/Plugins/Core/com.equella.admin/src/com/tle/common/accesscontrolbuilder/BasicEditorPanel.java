@@ -50,7 +50,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-/** @author Nicholas Read */
 public class BasicEditorPanel extends JComponent implements ItemListener, ActionListener {
   private static final long serialVersionUID = 1L;
   private final BasicEditor editor;

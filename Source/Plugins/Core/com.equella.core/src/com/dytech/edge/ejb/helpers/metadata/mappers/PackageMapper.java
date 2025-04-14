@@ -23,7 +23,6 @@ import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.filesystem.handle.FileHandle;
 import java.util.List;
 
-/** @author aholland */
 public interface PackageMapper {
   boolean isSupportedPackage(FileHandle handle, String packageExtractedFolder);
 

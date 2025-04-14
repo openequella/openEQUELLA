@@ -25,7 +25,6 @@ import javax.persistence.Lob;
 import javax.persistence.Transient;
 import org.hibernate.annotations.AccessType;
 
-/** @author aholland */
 @Entity
 @AccessType("field")
 public final class Connector extends BaseEntity {

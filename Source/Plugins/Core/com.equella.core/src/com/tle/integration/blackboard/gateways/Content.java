@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author cofarrel */
 @SuppressWarnings("nls")
 public class Content {
   public static final String NODE = "content";

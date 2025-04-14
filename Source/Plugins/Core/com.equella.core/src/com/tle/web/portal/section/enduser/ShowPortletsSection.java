@@ -53,7 +53,6 @@ import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class ShowPortletsSection
     extends AbstractPrototypeSection<ShowPortletsSection.ShowPortletsModel>
     implements HtmlRenderer, ParametersEventListener, AfterParametersListener {

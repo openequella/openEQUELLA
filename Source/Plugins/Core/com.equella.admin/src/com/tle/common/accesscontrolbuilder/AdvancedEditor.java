@@ -23,7 +23,6 @@ import com.tle.common.security.remoting.RemoteTLEAclManager;
 import com.tle.core.remoting.RemoteUserService;
 import javax.swing.JComponent;
 
-/** @author Nicholas Read */
 public class AdvancedEditor implements PrivilegeListEditor {
   private final RemoteTLEAclManager aclManager;
   private final RemoteUserService userService;

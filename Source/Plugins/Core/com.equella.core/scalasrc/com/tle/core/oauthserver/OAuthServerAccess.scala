@@ -108,22 +108,27 @@ object OAuthServerAccess {
     }.orNull
   }
 
-  def getOrCreateToken(authDetails: AuthorisationDetails,
-                       iclient: IOAuthClient,
-                       code: String): IOAuthToken = iclient match {
+  def getOrCreateToken(
+      authDetails: AuthorisationDetails,
+      iclient: IOAuthClient,
+      code: String
+  ): IOAuthToken = iclient match {
     case StdOAuthClient(client) =>
       val username = Option(authDetails.getUsername).getOrElse {
         LegacyGuice.userService.getInformationForUser(authDetails.getUserId).getUsername
       }
       StdOAuthToken(
-        LegacyGuice.oAuthService.getOrCreateToken(authDetails.getUserId, username, client, code))
+        LegacyGuice.oAuthService.getOrCreateToken(authDetails.getUserId, username, client, code)
+      )
 
     case CloudProviderClient(clientId, _) =>
       val clientIdBytes = clientId.toString.getBytes(StandardCharsets.UTF_8)
       Option(LegacyGuice.replicatedCacheDao.getByValue(CloudTokenCache, clientIdBytes)) match {
         case Some(tokenEntry) =>
-          CloudAuthToken(tokenEntry.getKey,
-                         Option(tokenEntry.getTtl).map(_.toInstant).getOrElse(Instant.now))
+          CloudAuthToken(
+            tokenEntry.getKey,
+            Option(tokenEntry.getTtl).map(_.toInstant).getOrElse(Instant.now)
+          )
         case None =>
           val tokenUuid = UUID.randomUUID().toString
           val expires   = Instant.now().plus(TokenTimeout)
@@ -142,18 +147,22 @@ object OAuthServerAccess {
       .authenticateAsUser(username, LegacyGuice.userService.getWebAuthenticationDetails(request))
   }
 
-  def lookupCloudToken(tokenData: String,
-                       request: HttpServletRequest): Option[ModifiableUserState] = {
+  def lookupCloudToken(
+      tokenData: String,
+      request: HttpServletRequest
+  ): Option[ModifiableUserState] = {
     val (actualToken, impersonateId) = tokenData.indexOf(';') match {
       case -1 => (tokenData, None)
       case i  => (tokenData.substring(0, i), Some(tokenData.substring(i + 1)))
     }
 
     val cpUser = Option(LegacyGuice.replicatedCacheDao.get(CloudTokenCache, actualToken))
-      .map(
-        cachedValue =>
-          new CloudProviderUserState(UUID.fromString(new String(cachedValue.getValue)),
-                                     CurrentInstitution.get()))
+      .map(cachedValue =>
+        new CloudProviderUserState(
+          UUID.fromString(new String(cachedValue.getValue)),
+          CurrentInstitution.get()
+        )
+      )
 
     def getCloudProviderName: String =
       cpUser.flatMap(user => CloudProviderHelper.getByUuid(user.providerId)) match {
@@ -196,7 +205,9 @@ object OAuthServerAccess {
   }
 
   def tokenNotFound(): OAuthException =
-    new OAuthException(403,
-                       OAuthConstants.ERROR_ACCESS_DENIED,
-                       CoreStrings.text(KEY_TOKEN_NOT_FOUND))
+    new OAuthException(
+      403,
+      OAuthConstants.ERROR_ACCESS_DENIED,
+      CoreStrings.text(KEY_TOKEN_NOT_FOUND)
+    )
 }

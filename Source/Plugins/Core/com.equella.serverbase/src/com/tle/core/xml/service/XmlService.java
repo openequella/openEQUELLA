@@ -22,7 +22,6 @@ import com.thoughtworks.xstream.XStream;
 import java.io.Reader;
 import java.io.Writer;
 
-/** @author Nicholas Read */
 public interface XmlService {
   String serialiseToXml(Object o);
 

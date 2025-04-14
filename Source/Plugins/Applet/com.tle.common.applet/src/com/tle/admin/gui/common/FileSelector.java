@@ -24,7 +24,6 @@ import com.tle.common.applet.client.DialogUtils.DialogResult;
 import com.tle.common.i18n.CurrentLocale;
 import javax.swing.filechooser.FileFilter;
 
-/** @author aholland */
 public class FileSelector extends JFileSelector {
   /**
    * This is why things should NEVER be made private unless you have a very good reason to. This

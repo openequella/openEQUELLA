@@ -100,6 +100,7 @@ public abstract class AbstractSelectRoleSection<M extends AbstractSelectRoleSect
 
   @Component(name = "t")
   private Link roleFilterTooltip;
+
   // Dynamic @Component
   private MultiSelectionList<RoleBean> roleList;
 

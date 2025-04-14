@@ -21,9 +21,8 @@ package com.tle.integration.oidc.idp
 import cats.data.ValidatedNel
 import cats.implicits._
 
-/**
-  * Configuration for Okta including the common details for OIDC and the details required
-  * to interact the Core Okta API.
+/** Configuration for Okta including the common details for OIDC and the details required to
+  * interact the Core Okta API.
   */
 case class Okta(
     issuer: String,
@@ -37,15 +36,14 @@ case class Okta(
     roleConfig: Option[RoleConfiguration],
     enabled: Boolean,
     apiUrl: String,
-    apiClientId: String,
+    apiClientId: String
 ) extends IdentityProvider
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.OKTA
 
-  /**
-    * Okta doesn't support the request of a scoped access token through client secret. Instead,
-    * the 'private_key_jwt' client authentication method is the only supported method. As a
-    * result, set the client secret to None.
+  /** Okta doesn't support the request of a scoped access token through client secret. Instead, the
+    * 'private_key_jwt' client authentication method is the only supported method. As a result, set
+    * the client secret to None.
     *
     * Reference links:
     *   - https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#generate-the-jwk-using-the-api

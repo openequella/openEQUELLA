@@ -30,7 +30,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class DRMConfigTab extends JPanel {
   private static final long serialVersionUID = 1L;
 

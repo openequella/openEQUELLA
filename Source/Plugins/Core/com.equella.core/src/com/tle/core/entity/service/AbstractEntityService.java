@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public interface AbstractEntityService<B extends EntityEditingBean, T extends BaseEntity>
     extends RemoteAbstractEntityService<T> {
@@ -151,10 +150,14 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
    */
   <S extends EntityEditingSession<B, T>> S startEditingSession(String entityUuid);
 
-  /** @param sessionId */
+  /**
+   * @param sessionId
+   */
   <S extends EntityEditingSession<B, T>> S loadSession(String sessionId);
 
-  /** @param session */
+  /**
+   * @param session
+   */
   void saveSession(EntityEditingSession<B, T> session);
 
   void commitSessionId(String sessionId);

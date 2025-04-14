@@ -91,12 +91,14 @@ public class ShowHideComponent<T extends JComponent> extends JComponent {
   public static void main(String[] args) {
     JLabel l1 =
         new JLabel(
-            "<html>This is a really long label with lots of stuff that should flow over multiple lines; who knows how many, but it could be heaps.");
+            "<html>This is a really long label with lots of stuff that should flow over multiple"
+                + " lines; who knows how many, but it could be heaps.");
 
     JCheckBox cb = new JCheckBox("Check box!");
     JLabel l2 =
         new JLabel(
-            "<html>This is a really long label with lots of stuff that should flow over multiple lines; who knows how many, but it could be heaps.");
+            "<html>This is a really long label with lots of stuff that should flow over multiple"
+                + " lines; who knows how many, but it could be heaps.");
 
     ShowHideComponent<JLabel> shc = new ShowHideComponent<JLabel>(cb, l2);
 

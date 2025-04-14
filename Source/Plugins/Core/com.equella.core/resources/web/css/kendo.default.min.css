@@ -190,22 +190,27 @@ textarea.k-textbox:hover,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.6) 0,
@@ -433,22 +438,27 @@ html .km-pane-wrapper .k-header {
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.6) 0,
@@ -636,22 +646,27 @@ div.k-filebrowser-dropzone em,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.4) 0,
@@ -680,22 +695,27 @@ div.k-filebrowser-dropzone em,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.2) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.2) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.2) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.2) 0,
@@ -727,22 +747,27 @@ div.k-filebrowser-dropzone em {
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.4) 0,
@@ -1412,22 +1437,27 @@ html .km-pane-wrapper .km-widget,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.6) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.6) 0,
@@ -1445,22 +1475,27 @@ html .km-pane-wrapper .km-widget,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.4) 0,
@@ -1484,22 +1519,27 @@ html .km-pane-wrapper .km-widget,
   background-image: url("textures/highlight.png");
   background-image:
     none,
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-            255,
-            255,
-            255,
-            0
-          )
-          100%);
+    -webkit-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
+    -moz-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
   background-image:
     none,
-    -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-          100%);
-  background-image: none,
+    -o-linear-gradient(
+        top,
+        rgba(255, 255, 255, 0.4) 0,
+        rgba(255, 255, 255, 0) 100%
+      );
+  background-image:
+    none,
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.4) 0,
@@ -1954,27 +1994,27 @@ html .km-pane-wrapper .km-widget,
     background-image: url("textures/highlight.png");
     background-image:
       none,
-      -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
-              255,
-              255,
-              255,
-              0
-            )
-            100%);
+      -webkit-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.6) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
     background-image:
       none,
-      -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(
-              255,
-              255,
-              255,
-              0
-            )
-            100%);
+      -moz-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.6) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
     background-image:
       none,
-      -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0, rgba(255, 255, 255, 0)
-            100%);
-    background-image: none,
+      -o-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.6) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
+    background-image:
+      none,
       linear-gradient(
         to bottom,
         rgba(255, 255, 255, 0.6) 0,
@@ -2051,27 +2091,27 @@ html .km-pane-wrapper .km-widget,
     background-image: url("textures/highlight.png");
     background-image:
       none,
-      -webkit-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-              255,
-              255,
-              255,
-              0
-            )
-            100%);
+      -webkit-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.4) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
     background-image:
       none,
-      -moz-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(
-              255,
-              255,
-              255,
-              0
-            )
-            100%);
+      -moz-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.4) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
     background-image:
       none,
-      -o-linear-gradient(top, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0)
-            100%);
-    background-image: none,
+      -o-linear-gradient(
+          top,
+          rgba(255, 255, 255, 0.4) 0,
+          rgba(255, 255, 255, 0) 100%
+        );
+    background-image:
+      none,
       linear-gradient(
         to bottom,
         rgba(255, 255, 255, 0.4) 0,

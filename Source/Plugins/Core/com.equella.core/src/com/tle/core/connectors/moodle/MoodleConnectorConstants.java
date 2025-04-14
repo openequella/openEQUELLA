@@ -18,7 +18,6 @@
 
 package com.tle.core.connectors.moodle;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class MoodleConnectorConstants {
   private MoodleConnectorConstants() {

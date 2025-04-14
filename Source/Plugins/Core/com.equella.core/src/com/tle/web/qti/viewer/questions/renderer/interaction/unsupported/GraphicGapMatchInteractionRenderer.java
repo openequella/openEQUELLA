@@ -25,7 +25,6 @@ import com.tle.web.qti.viewer.questions.renderer.unsupported.UnsupportedQuestion
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.GraphicGapMatchInteraction;
 
-/** @author Aaron */
 public class GraphicGapMatchInteractionRenderer extends GraphicInteractionRenderer {
   @AssistedInject
   protected GraphicGapMatchInteractionRenderer(

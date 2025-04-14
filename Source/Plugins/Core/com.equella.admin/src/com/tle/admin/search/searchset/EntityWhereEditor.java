@@ -64,7 +64,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
-/** @author Nicholas Read */
 public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntityScript<T>>
     extends JPanel implements Changeable {
   private final ClientService clientService;
@@ -280,7 +279,9 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
         }
       };
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class MyTableModel<T extends BaseEntity, U extends EntityScript<T>>
       extends AbstractTableModel implements ScriptingTableModelInterface<T> {
     private static final long serialVersionUID = 1L;
@@ -456,7 +457,9 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public static class ItemDefinitionWhereEditor
       extends EntityWhereEditor<ItemDefinition, ItemDefinitionScript> {
     private static final long serialVersionUID = 1L;
@@ -477,7 +480,9 @@ public abstract class EntityWhereEditor<T extends BaseEntity, U extends EntitySc
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public static class SchemaWhereEditor extends EntityWhereEditor<Schema, SchemaScript> {
     private static final long serialVersionUID = 1L;
 

@@ -52,7 +52,9 @@ public interface UserDirectory {
     STOP
   }
 
-  /** @return true if the settings should be re-saved to the DB after initialisation. */
+  /**
+   * @return true if the settings should be re-saved to the DB after initialisation.
+   */
   boolean initialise(UserDirectoryChain head, UserManagementSettings settings);
 
   /**

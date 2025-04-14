@@ -128,7 +128,9 @@ public class TasksApiTest extends AbstractRestApiTest {
         containsInAvailableResult(resultsNode, "9424a318-0c16-4080-a737-dc141cd46837", "uuid"));
   }
 
-  /** @throws Exception */
+  /**
+   * @throws Exception
+   */
   @Test
   public void taskFilterCountsTest() throws Exception {
     // An expectation is keyed by tasktype, with a target number and a

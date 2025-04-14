@@ -17,15 +17,54 @@
  */
 import userEvent from "@testing-library/user-event";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { queryMuiTextField } from "../../MuiQueries";
-import { findByText, getByText, RenderResult } from "@testing-library/react";
+import { getMuiButtonByText, queryMuiTextField } from "../../MuiQueries";
+import {
+  findByText,
+  getByText,
+  RenderResult,
+  waitFor,
+} from "@testing-library/react";
 import { selectEntitiesInOneClickMode } from "../securityentitysearch/BaseSearchTestHelper";
+import {
+  findRolesByIds,
+  searchRoles,
+} from "../../../../__mocks__/RoleModule.mock";
+import {
+  findGroupsByIds,
+  searchGroups,
+} from "../../../../__mocks__/GroupModule.mock";
+import * as GroupModule from "../../../../tsrc/modules/GroupModule";
+import * as RoleModule from "../../../../tsrc/modules/RoleModule";
 
 const {
   cancel: cancelLabel,
   ok: okLabel,
   removeAll: removeAllLabel,
 } = languageStrings.common.action;
+
+/**
+ * Provides a centralised place to mock all roles and groups API functions.
+ */
+export const mockRoleAndGroupApis = () => {
+  jest
+    .spyOn(GroupModule, "findGroupsByIds")
+    .mockImplementation(findGroupsByIds);
+  jest.spyOn(GroupModule, "searchGroups").mockImplementation(searchGroups);
+  jest.spyOn(RoleModule, "findRolesByIds").mockImplementation(findRolesByIds);
+  jest.spyOn(RoleModule, "searchRoles").mockImplementation(searchRoles);
+};
+
+/**
+ * Helper function to wait for the dialog to render.
+ */
+export const waitForEntityDialogToRender = async (result: RenderResult) => {
+  const dialog = await result.findByRole("dialog");
+  // Wait for the confirm button to be enabled.
+  await waitFor(() => {
+    const okButton = getMuiButtonByText(dialog, okLabel);
+    expect(okButton).toBeEnabled();
+  });
+};
 
 /**
  * Generic helper function to do the steps of submitting a search in the `SelectSecurityEntityDialog`
@@ -117,11 +156,11 @@ export const clickRemoveAllButton = (dialog: HTMLElement) =>
  * @param entityName The name of the entity users want to remove.
  */
 export const testRemoveEntity = async (
-  render: (onClose: jest.Mock) => RenderResult,
+  render: (onClose: jest.Mock) => Promise<RenderResult>,
   entityName: string,
 ) => {
   const onClose = jest.fn();
-  const { getByRole } = render(onClose);
+  const { getByRole } = await render(onClose);
 
   const dialog = getByRole("dialog");
 
@@ -154,8 +193,8 @@ export const testRemoveAllAsync = async (
  * Variety version of `testRemoveAllAsync`.
  * The only difference is it accepts a non-async render function as its param.
  *
- * @param render An non-async render function which takes a mock function to render the dialog.
+ * @param render An async render function which takes a mock function to render the dialog.
  */
 export const testRemoveAll = async (
-  render: (onClose: jest.Mock) => RenderResult,
-) => await testRemoveAllAsync((onClose) => Promise.resolve(render(onClose)));
+  render: (onClose: jest.Mock) => Promise<RenderResult>,
+) => await testRemoveAllAsync((onClose) => render(onClose));

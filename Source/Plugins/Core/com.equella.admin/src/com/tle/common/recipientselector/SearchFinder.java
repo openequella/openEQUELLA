@@ -54,7 +54,6 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class SearchFinder extends JPanel
     implements ActionListener, UserGroupRoleFinder, ListSelectionListener {

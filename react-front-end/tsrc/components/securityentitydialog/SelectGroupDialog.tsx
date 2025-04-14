@@ -27,12 +27,17 @@ import SelectEntityDialog from "./SelectEntityDialog";
 export interface SelectGroupDialogProps {
   /** Open the dialog when true. */
   open: boolean;
-  /** The currently selected Groups. */
-  value: ReadonlySet<OEQ.UserQuery.GroupDetails>;
+  /**
+   * The currently selected Groups.
+   * Undefined means the component should wait for the group details to be provided.
+   */
+  value?: ReadonlySet<OEQ.UserQuery.GroupDetails>;
   /** Handler for when dialog is closed. */
   onClose: (selections?: ReadonlySet<OEQ.UserQuery.GroupDetails>) => void;
   /** Function which will provide the list of group (search function) for GroupSearch. */
-  groupListProvider?: (query?: string) => Promise<OEQ.UserQuery.GroupDetails[]>;
+  searchGroupsProvider?: (
+    query?: string,
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 /**
@@ -43,7 +48,7 @@ const SelectGroupDialog = ({
   open,
   value,
   onClose,
-  groupListProvider,
+  searchGroupsProvider,
 }: SelectGroupDialogProps) => {
   const groupSearch = (
     onAdd: (group: OEQ.UserQuery.GroupDetails) => void,
@@ -54,7 +59,7 @@ const SelectGroupDialog = ({
         type: "one_click",
         onAdd: onAdd,
       }}
-      search={groupListProvider}
+      search={searchGroupsProvider}
       onSelectAll={onSelectAll}
     />
   );

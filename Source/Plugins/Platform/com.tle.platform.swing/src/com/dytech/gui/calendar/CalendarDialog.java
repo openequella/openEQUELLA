@@ -37,7 +37,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class CalendarDialog extends JDialog implements ActionListener {
   private Date result;

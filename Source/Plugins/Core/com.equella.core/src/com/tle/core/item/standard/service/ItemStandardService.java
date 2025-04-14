@@ -21,7 +21,6 @@ package com.tle.core.item.standard.service;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.ItemId;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface ItemStandardService {
   /**

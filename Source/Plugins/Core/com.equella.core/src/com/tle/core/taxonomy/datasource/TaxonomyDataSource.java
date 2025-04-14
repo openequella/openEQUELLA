@@ -29,7 +29,9 @@ import java.util.Map;
 public interface TaxonomyDataSource {
   TermResult getTerm(String fullTermPath);
 
-  /** @param parentFullTermPath use null or empty string to retrieve root terms. */
+  /**
+   * @param parentFullTermPath use null or empty string to retrieve root terms.
+   */
   List<TermResult> getChildTerms(String parentFullTermPath);
 
   /**

@@ -29,7 +29,6 @@ import java.util.Iterator;
 import uk.ac.ed.ph.jqtiplus.node.QtiNode;
 import uk.ac.ed.ph.jqtiplus.node.content.mathml.Math;
 
-/** @author Aaron */
 @NonNullByDefault
 @SuppressWarnings("nls")
 public class MathRenderer extends FlowStaticRenderer {

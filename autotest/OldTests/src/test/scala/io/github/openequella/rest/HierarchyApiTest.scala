@@ -8,8 +8,9 @@ import org.testng.annotations.Test
 import scala.jdk.CollectionConverters._
 
 class HierarchyApiTest extends AbstractRestApiTest {
-  private val HIERARCHY_API_ENDPOINT        = getTestConfig.getInstitutionUrl + "api/hierarchy"
-  private val BROWSE_HIERARCHY_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/browsehierarchy2"
+  private val HIERARCHY_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/hierarchy"
+  private val BROWSE_HIERARCHY_API_ENDPOINT =
+    getTestConfig.getInstitutionUrl + "api/browsehierarchy2"
 
   private val DEFAULT_ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
   private val DEFAULT_VERSION   = 2
@@ -67,8 +68,10 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertAddKeyResourceIsSucceed(normaTopicUuid, "2534e329-e37e-4851-896e-51d8b39104c4", 0, 1)
   }
 
-  @Test(description = "Add a duplicated key resources",
-        dependsOnMethods = Array("addKeyResourceToTopic"))
+  @Test(
+    description = "Add a duplicated key resources",
+    dependsOnMethods = Array("addKeyResourceToTopic")
+  )
   def addDuplicatedKeyResource(): Unit = {
     // add key resource
     addKeyResource(normaTopicUuid, DEFAULT_ITEM_UUID, DEFAULT_VERSION, 409)
@@ -80,8 +83,10 @@ class HierarchyApiTest extends AbstractRestApiTest {
     deleteKeyResource(normaTopicUuid, "e35390cf-7c45-4f71-bb94-e6ccc1f09394", 1, 404)
   }
 
-  @Test(description = "Delete a key resources",
-        dependsOnMethods = Array("addDuplicatedKeyResource"))
+  @Test(
+    description = "Delete a key resources",
+    dependsOnMethods = Array("addDuplicatedKeyResource")
+  )
   def deleteKeyResourceFromTopic(): Unit = {
     assertDeleteKeyResourceIsSucceed(normaTopicUuid)
   }
@@ -91,8 +96,10 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertAddKeyResourceIsSucceed(virtualTopicJamesUuid, DEFAULT_ITEM_UUID, 1, 1)
   }
 
-  @Test(description = "Delete a key resource from a virtual topic",
-        dependsOnMethods = Array("addKeyResourceToVirtualTopic"))
+  @Test(
+    description = "Delete a key resource from a virtual topic",
+    dependsOnMethods = Array("addKeyResourceToVirtualTopic")
+  )
   def deleteKeyResourceFromVirtualTopic(): Unit = {
     assertDeleteKeyResourceIsSucceed(virtualTopicJamesUuid, DEFAULT_ITEM_UUID, 1)
   }
@@ -103,8 +110,10 @@ class HierarchyApiTest extends AbstractRestApiTest {
     assertAddKeyResourceIsSucceed(virtualTopicHobartUuid)
   }
 
-  @Test(description = "Delete a key resource to a sub virtual topic",
-        dependsOnMethods = Array("addKeyResourceToSubVirtualTopic"))
+  @Test(
+    description = "Delete a key resource to a sub virtual topic",
+    dependsOnMethods = Array("addKeyResourceToSubVirtualTopic")
+  )
   def deleteKeyResourceFromSubVirtualTopic(): Unit = {
     assertDeleteKeyResourceIsSucceed(virtualTopicHobartUuid)
   }
@@ -132,78 +141,89 @@ class HierarchyApiTest extends AbstractRestApiTest {
   }
 
   // Add a key resource
-  private def addKeyResource(compoundUuid: String,
-                             itemUuid: String,
-                             itemVersion: Int,
-                             expectedCode: Int): JsonNode = {
-    val url        = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
-    val method     = new PostMethod(url)
+  private def addKeyResource(
+      compoundUuid: String,
+      itemUuid: String,
+      itemVersion: Int,
+      expectedCode: Int
+  ): JsonNode = {
+    val url    = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
+    val method = new PostMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, expectedCode)
     mapper.readTree(method.getResponseBody)
   }
 
   // Delete a key resource
-  private def deleteKeyResource(compoundUuid: String,
-                                itemUuid: String,
-                                itemVersion: Int,
-                                expectedCode: Int): JsonNode = {
-    val url        = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
-    val method     = new DeleteMethod(url)
+  private def deleteKeyResource(
+      compoundUuid: String,
+      itemUuid: String,
+      itemVersion: Int,
+      expectedCode: Int
+  ): JsonNode = {
+    val url    = HIERARCHY_API_ENDPOINT + s"/${compoundUuid}/keyresource/${itemUuid}/${itemVersion}"
+    val method = new DeleteMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, expectedCode)
     mapper.readTree(method.getResponseBody)
   }
 
   // Check if the item is in the key resource result
-  private def containsKeyResource(keyResources: JsonNode,
-                                  itemUuid: String,
-                                  itemVersion: Int): Boolean = {
-    keyResources.elements.asScala.exists(
-      resource =>
-        resource.get("item").get("uuid").asText == itemUuid && resource
-          .get("item")
-          .get("version")
-          .asInt == itemVersion)
+  private def containsKeyResource(
+      keyResources: JsonNode,
+      itemUuid: String,
+      itemVersion: Int
+  ): Boolean = {
+    keyResources.elements.asScala.exists(resource =>
+      resource.get("item").get("uuid").asText == itemUuid && resource
+        .get("item")
+        .get("version")
+        .asInt == itemVersion
+    )
   }
 
   // Get full information of a topic
-  private def getHierarchyTopic(compoundUuid: String): JsonNode = {
-    val url        = BROWSE_HIERARCHY_API_ENDPOINT + "/" + compoundUuid
+  private def browseHierarchyTopicDetails(compoundUuid: String): JsonNode = {
+    val url        = BROWSE_HIERARCHY_API_ENDPOINT + "/details/" + compoundUuid
     val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
     mapper.readTree(method.getResponseBody)
   }
 
-  private def assertAddKeyResourceIsSucceed(compoundUuid: String,
-                                            itemUuid: String = DEFAULT_ITEM_UUID,
-                                            version: Int = DEFAULT_VERSION,
-                                            expectedVersion: Int = DEFAULT_VERSION): Unit = {
-    val hierarchyTopic = getHierarchyTopic(compoundUuid)
+  private def assertAddKeyResourceIsSucceed(
+      compoundUuid: String,
+      itemUuid: String = DEFAULT_ITEM_UUID,
+      version: Int = DEFAULT_VERSION,
+      expectedVersion: Int = DEFAULT_VERSION
+  ): Unit = {
+    val hierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
 
     // make sure the ket resource is not existing
     assertFalse(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // add key resource
     addKeyResource(compoundUuid, itemUuid, version, 200)
-    val newHierarchyTopic = getHierarchyTopic(compoundUuid)
+    val newHierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
     // make sure key resources is added
     assertTrue(
-      containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, expectedVersion))
+      containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, expectedVersion)
+    )
   }
 
-  private def assertDeleteKeyResourceIsSucceed(compoundUuid: String,
-                                               itemUuid: String = DEFAULT_ITEM_UUID,
-                                               version: Int = DEFAULT_VERSION): Unit = {
-    val hierarchyTopic = getHierarchyTopic(compoundUuid);
+  private def assertDeleteKeyResourceIsSucceed(
+      compoundUuid: String,
+      itemUuid: String = DEFAULT_ITEM_UUID,
+      version: Int = DEFAULT_VERSION
+  ): Unit = {
+    val hierarchyTopic = browseHierarchyTopicDetails(compoundUuid);
 
     // make sure the ket resource is existing
     assertTrue(containsKeyResource(hierarchyTopic.get("keyResources"), itemUuid, version))
 
     // delete key resource
     deleteKeyResource(compoundUuid, itemUuid, version, 200)
-    val newHierarchyTopic = getHierarchyTopic(compoundUuid)
+    val newHierarchyTopic = browseHierarchyTopicDetails(compoundUuid)
     assertFalse(containsKeyResource(newHierarchyTopic.get("keyResources"), itemUuid, version))
   }
 }

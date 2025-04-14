@@ -108,7 +108,8 @@ public class TableLayout implements LayoutManager2 {
   private static final String ERROR_CONSTRAINT_NOT_RECTANGLE =
       "Constraint must be an instance of java.awt.Rectangle"; //$NON-NLS-1$
   private static final String ERROR_CONSTRAINT_OUT_OF_BOUNDS =
-      "Constraint is placing the component outside of the layouts defined rows and columns"; //$NON-NLS-1$
+      "Constraint is placing the component outside of the layouts defined rows and"
+          + " columns"; //$NON-NLS-1$
   private static final String ERROR_ADD_BY_STRING_NOT_SUPPORTED =
       "You need to add the component with a Rectangle as a constraint, not a String!"; //$NON-NLS-1$
   private static final int DEFAULT_CELL_GAP = 5;
@@ -197,17 +198,23 @@ public class TableLayout implements LayoutManager2 {
     throw new IllegalAccessError(ERROR_ADD_BY_STRING_NOT_SUPPORTED);
   }
 
-  /** @return Returns the columnGap. */
+  /**
+   * @return Returns the columnGap.
+   */
   public int getColumnGap() {
     return columnGap;
   }
 
-  /** @return Returns the columns. */
+  /**
+   * @return Returns the columns.
+   */
   public int[] getColumns() {
     return columns;
   }
 
-  /** @return Returns the column size for the given index. */
+  /**
+   * @return Returns the column size for the given index.
+   */
   public int getColumnSize(int index) {
     return columns[index];
   }
@@ -230,17 +237,23 @@ public class TableLayout implements LayoutManager2 {
     return 0;
   }
 
-  /** @return Returns the rowGap. */
+  /**
+   * @return Returns the rowGap.
+   */
   public int getRowGap() {
     return rowGap;
   }
 
-  /** @return Returns the rows. */
+  /**
+   * @return Returns the rows.
+   */
   public int[] getRows() {
     return rows;
   }
 
-  /** @return Returns the row size for the given index. */
+  /**
+   * @return Returns the row size for the given index.
+   */
   public int getRowSize(int index) {
     return rows[index];
   }
@@ -495,13 +508,17 @@ public class TableLayout implements LayoutManager2 {
     }
   }
 
-  /** @param columnGap The columnGap to set. */
+  /**
+   * @param columnGap The columnGap to set.
+   */
   public void setColumnGap(int columnGap) {
     this.columnGap = columnGap;
     forceRecalculation();
   }
 
-  /** @param columns The columns to set. */
+  /**
+   * @param columns The columns to set.
+   */
   public void setColumns(int[] columns) {
     this.columns = columns;
     forceRecalculation();
@@ -516,13 +533,17 @@ public class TableLayout implements LayoutManager2 {
     forceRecalculation();
   }
 
-  /** @param rowGap The rowGap to set. */
+  /**
+   * @param rowGap The rowGap to set.
+   */
   public void setRowGap(int rowGap) {
     this.rowGap = rowGap;
     forceRecalculation();
   }
 
-  /** @param rows The rows to set. */
+  /**
+   * @param rows The rows to set.
+   */
   public void setRows(int[] rows) {
     this.rows = rows;
     forceRecalculation();
@@ -537,7 +558,9 @@ public class TableLayout implements LayoutManager2 {
     forceRecalculation();
   }
 
-  /** @param recalculationRequired The recalculationRequired to set. */
+  /**
+   * @param recalculationRequired The recalculationRequired to set.
+   */
   private void forceRecalculation() {
     recalculationRequired = true;
   }

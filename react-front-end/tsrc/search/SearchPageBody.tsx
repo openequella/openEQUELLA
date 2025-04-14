@@ -19,6 +19,7 @@ import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { constant, identity, pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
@@ -233,6 +234,8 @@ export const SearchPageBody = ({
   });
   const [alreadyDownloaded, setAlreadyDownloaded] = useState<boolean>(false);
   const [showRefinePanel, setShowRefinePanel] = useState<boolean>(false);
+  // Set default value to `true` to ensure component is rendered if it's enabled and then the API request can be sent to get the real data.
+  const [hasRemoteSearches, setHasRemoteSearches] = useState<boolean>(true);
   const [showFavouriteSearchDialog, setShowFavouriteSearchDialog] =
     useState<boolean>(false);
   const [filterExpansion, setFilterExpansion] = useState(
@@ -611,12 +614,16 @@ export const SearchPageBody = ({
         component: (
           <AuxiliarySearchSelector
             label={searchStrings.remoteSearchSelector.label}
-            auxiliarySearchesSupplier={getRemoteSearchesProvider}
+            auxiliarySearchesSupplier={async () => {
+              const result = await getRemoteSearchesProvider();
+              setHasRemoteSearches(A.isNonEmpty(result));
+              return result;
+            }}
             urlGeneratorForRouteLink={routes.RemoteSearch.to}
             urlGeneratorForMuiLink={buildSelectionSessionRemoteSearchLink}
           />
         ),
-        disabled: !enableRemoteSearchSelector,
+        disabled: enableRemoteSearchSelector ? !hasRemoteSearches : true,
       },
       {
         idSuffix: "DateRangeSelector",
@@ -672,7 +679,7 @@ export const SearchPageBody = ({
         disabled:
           !statusSelectorCustomConfig?.alwaysEnabled &&
           (!enableItemStatusSelector ||
-            (!searchSettings.core?.searchingShowNonLiveCheckbox ?? true)),
+            !searchSettings.core?.searchingShowNonLiveCheckbox),
       },
       {
         idSuffix: "SearchAttachmentsSelector",

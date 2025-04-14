@@ -35,7 +35,7 @@ describe("SelectGroupDialog", () => {
   it("Should be able to add a group", async () => {
     const selectedGroupName = "Engineering & Computer Science Students";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectGroupDialog({
+    const { getByRole } = await renderSelectGroupDialog({
       ...commonSelectGroupDialogProps,
       onClose,
     });
@@ -65,7 +65,7 @@ describe("SelectGroupDialog", () => {
   it("Should be able to cancel the action", async () => {
     const selectedGroupName = "group200";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectGroupDialog({
+    const { getByRole } = await renderSelectGroupDialog({
       ...commonSelectGroupDialogProps,
       value: SET.singleton(groups[0]),
       onClose,

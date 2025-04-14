@@ -24,13 +24,14 @@ import com.tle.beans.Institution;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public interface UserSessionService {
   @Nullable
   <T> T getAttribute(String key);
 
-  /** @param attribute WARNING: This object should be immutable! */
+  /**
+   * @param attribute WARNING: This object should be immutable!
+   */
   void setAttribute(String key, Object attribute);
 
   void removeAttribute(String key);

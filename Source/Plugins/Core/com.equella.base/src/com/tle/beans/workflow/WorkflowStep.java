@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-/** @author jmaginnis */
 public class WorkflowStep implements Serializable {
   private static final long serialVersionUID = 1L;
 

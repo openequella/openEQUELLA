@@ -30,7 +30,6 @@ import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class BrowsePortletEditorSection

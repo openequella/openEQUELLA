@@ -247,8 +247,13 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   @Test(description = "Search for a known MIME type")
   public void validMimeTypeSearch() throws IOException {
-    JsonNode result = doSearch(200, null, new NameValuePair("mimeTypes", "text/plain"));
-    assertEquals(getAvailable(result), 6);
+    // This query should match two items, but with MIME type filter 'text/plain' only one should be
+    // returned.
+    String query = "Search2 API test";
+    JsonNode result = doSearch(200, query);
+    assertEquals(getAvailable(result), 2);
+    result = doSearch(200, query, new NameValuePair("mimeTypes", "text/plain"));
+    assertEquals(getAvailable(result), 1);
   }
 
   @Test(description = "Search for a known MIME type with has no items")
@@ -376,7 +381,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a hierarchy topic result")
   public void hierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
-    assertEquals(getAvailable(result), 56);
+    assertEquals(getAvailable(result), 58);
   }
 
   @Test(description = "Search for a non-existent hierarchy topic result")
@@ -441,7 +446,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
             new NameValuePair("collections", "non-existing"),
             new NameValuePair("status", "ARCHIVED"));
-    assertEquals(getAvailable(result), 56);
+    assertEquals(getAvailable(result), 58);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)

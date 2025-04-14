@@ -23,7 +23,6 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface TLEUserDao extends GenericDao<TLEUser, Long> {
   long totalExistingUsers();
 

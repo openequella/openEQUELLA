@@ -25,7 +25,6 @@ import com.tle.web.sections.standard.MultiSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.wizard.controls.Item;
 
-/** @author jmaginnis */
 @Bind
 public class ShuffleBoxWebControl extends AbstractOptionControl {
   @Component(stateful = false)

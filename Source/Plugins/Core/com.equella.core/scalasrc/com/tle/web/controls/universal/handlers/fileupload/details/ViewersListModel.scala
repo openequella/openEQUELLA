@@ -29,9 +29,10 @@ object ViewersListModel {
   val KEY_DEFAULT = WebFileUploads.r.key("handlers.file.viewer.default")
 }
 
-class ViewersListModel(viewItemService: ViewItemService,
-                       viewableResource: SectionInfo => ViewableResource)
-    extends DynamicHtmlListModel[NameValue] {
+class ViewersListModel(
+    viewItemService: ViewItemService,
+    viewableResource: SectionInfo => ViewableResource
+) extends DynamicHtmlListModel[NameValue] {
   override protected def populateModel(info: SectionInfo): java.lang.Iterable[NameValue] =
     viewItemService.getEnabledViewers(info, viewableResource(info))
 

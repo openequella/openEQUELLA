@@ -24,33 +24,23 @@ import {
   Select,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import * as RS from "fp-ts/ReadonlySet";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SelectGroupDialog, {
   SelectGroupDialogProps,
 } from "../../../../components/securityentitydialog/SelectGroupDialog";
 import SettingsListControl from "../../../../components/SettingsListControl";
+import { AppContext } from "../../../../mainui/App";
+import { findGroupsByIds, groupIds } from "../../../../modules/GroupModule";
 import { languageStrings } from "../../../../util/langstrings";
 import SettingsListAlert from "../../../../components/SettingsListAlert";
-
-export interface GroupWarning {
-  /**
-   * Show warning message if the IDs of group details fetched form server
-   * can't match with the initial group IDs.
-   *
-   * For example:
-   * suppose users select Group A and Group B for UnknownUserGroups. Later, if Group A gets deleted,
-   * its ID will still be stored in the platform.
-   * When the Edit page tries to get Group A and B, the server will only return Group B.
-   * Consequently, a warning message will be displayed stating that Group A is missing.
-   */
-  warningMessageForGroups?: string[];
-}
+import { getGroupsTask } from "../../../../components/securityentitydialog/SecurityEntityHelper";
 
 export interface UnknownUserHandlingControlProps
-  extends Pick<SelectGroupDialogProps, "groupListProvider">,
-    GroupWarning {
+  extends Pick<SelectGroupDialogProps, "searchGroupsProvider"> {
   /**
    * Initial selected option.
    */
@@ -58,7 +48,7 @@ export interface UnknownUserHandlingControlProps
   /**
    * The list of groups to be added to the user object If the unknown user handling is CREATE
    */
-  groups?: ReadonlySet<OEQ.UserQuery.GroupDetails>;
+  groups?: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * The handler when option or selected groups has been changed.
    *
@@ -67,8 +57,14 @@ export interface UnknownUserHandlingControlProps
    */
   onChange: (
     selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
+    groups: ReadonlySet<OEQ.Common.UuidString>,
   ) => void;
+  /**
+   * Function to get all groups details by ids.
+   */
+  findGroupsByIdsProvider?: (
+    ids: ReadonlySet<string>,
+  ) => Promise<OEQ.UserQuery.GroupDetails[]>;
 }
 
 const {
@@ -96,13 +92,35 @@ const UnknownUserHandlingControl = ({
   selection,
   groups = RS.empty,
   onChange,
-  groupListProvider,
-  warningMessageForGroups,
+  searchGroupsProvider,
+  findGroupsByIdsProvider = findGroupsByIds,
 }: UnknownUserHandlingControlProps) => {
-  const [showSelectGroupDialog, setShowSelectGroupDialog] = useState(false);
+  const { appErrorHandler } = useContext(AppContext);
 
-  const [defaultGroups] =
-    useState<ReadonlySet<OEQ.UserQuery.GroupDetails>>(groups);
+  const [showSelectGroupDialog, setShowSelectGroupDialog] = useState(false);
+  const [defaultGroups] = useState<ReadonlySet<OEQ.Common.UuidString>>(groups);
+  // Show warning message if the IDs of group details fetched form server
+  // can't match with the initial group IDs.
+  //
+  // For example:
+  // suppose users select Group A and Group B for UnknownUserGroups. Later, if Group A gets deleted,
+  // its ID will still be stored in the platform.
+  // When the Edit page tries to get Group A and B, the server will only return Group B.
+  // Consequently, a warning message will be displayed stating that Group A is missing.
+  const [warningMessageForGroups, setWarningMessageForGroups] =
+    useState<string[]>();
+  const [groupDetails, setGroupDetails] =
+    useState<ReadonlySet<OEQ.UserQuery.GroupDetails>>();
+
+  useEffect(() => {
+    pipe(
+      getGroupsTask(groups, findGroupsByIdsProvider),
+      TE.match(appErrorHandler, (result) => {
+        setGroupDetails(result.entities);
+        setWarningMessageForGroups(result.warning);
+      }),
+    )();
+  }, [appErrorHandler, findGroupsByIdsProvider, groups]);
 
   return (
     <>
@@ -154,13 +172,13 @@ const UnknownUserHandlingControl = ({
             </Badge>
 
             <SelectGroupDialog
-              value={groups}
+              value={groupDetails}
               open={showSelectGroupDialog}
               onClose={(selectedGroups) => {
                 setShowSelectGroupDialog(false);
-                selectedGroups && onChange(selection, selectedGroups);
+                selectedGroups && onChange(selection, groupIds(selectedGroups));
               }}
-              groupListProvider={groupListProvider}
+              searchGroupsProvider={searchGroupsProvider}
             />
           </ListItem>
         </>

@@ -13,7 +13,6 @@ import java.util.List;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class ShortcutURLsTest extends AbstractSessionTest {
   public static final String DISCARDABLE_URL =

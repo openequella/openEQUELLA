@@ -18,7 +18,6 @@
 
 package com.tle.web.controls.googlebook;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public final class GoogleBookConstants {
   public static final String ATTACHMENT_TYPE = "googlebook";

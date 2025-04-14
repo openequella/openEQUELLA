@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class UtcDate implements TleDate {
@@ -51,7 +50,9 @@ public class UtcDate implements TleDate {
     this(calendar.getTime().getTime(), null, DateHelper.UTC_TIMEZONE);
   }
 
-  /** @param conceptualValue *Must* be in Dates.ISO_DATE_ONLY format */
+  /**
+   * @param conceptualValue *Must* be in Dates.ISO_DATE_ONLY format
+   */
   protected UtcDate(String conceptualValue) throws ParseException {
     this(0, conceptualValue, DateHelper.UTC_TIMEZONE);
     Dates.ISO_DATE_ONLY.parse(conceptualValue, DateHelper.UTC_TIMEZONE);

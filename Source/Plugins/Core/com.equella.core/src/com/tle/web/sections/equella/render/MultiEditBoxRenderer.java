@@ -65,7 +65,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-/** @author Andrew Gibb */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public class MultiEditBoxRenderer extends TagRenderer

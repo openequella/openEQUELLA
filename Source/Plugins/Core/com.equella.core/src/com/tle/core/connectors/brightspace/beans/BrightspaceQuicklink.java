@@ -21,7 +21,6 @@ package com.tle.core.connectors.brightspace.beans;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author Aaron */
 @XmlRootElement
 public class BrightspaceQuicklink {
   @JsonProperty("LtiLinkId")

@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.Set;
 import javax.imageio.ImageIO;
 
-/** @author Nicholas Read */
 public class WorkflowVisualiser extends Canvas {
   private static final int PADDING = 10;
   private static final long serialVersionUID = 1L;

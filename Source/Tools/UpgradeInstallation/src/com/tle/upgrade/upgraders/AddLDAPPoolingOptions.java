@@ -29,7 +29,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Aaron */
 public class AddLDAPPoolingOptions extends AbstractUpgrader {
   @Override
   public List<UpgradeDepends> getDepends() {

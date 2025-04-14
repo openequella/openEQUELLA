@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author jmaginnis */
 public abstract class AbstractStandardWorkflowOperation extends AbstractWorkflowOperation {
   protected static final Logger LOGGER =
       LoggerFactory.getLogger(AbstractStandardWorkflowOperation.class);

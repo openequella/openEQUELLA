@@ -104,7 +104,6 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind(HttpService.class)

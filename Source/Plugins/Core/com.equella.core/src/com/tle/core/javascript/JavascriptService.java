@@ -21,7 +21,6 @@ package com.tle.core.javascript;
 import com.tle.common.javascript.RemoteJavascriptService;
 import java.util.List;
 
-/** @author aholland */
 public interface JavascriptService extends RemoteJavascriptService {
   List<JavascriptLibrary> getAllJavascriptLibraries();
 

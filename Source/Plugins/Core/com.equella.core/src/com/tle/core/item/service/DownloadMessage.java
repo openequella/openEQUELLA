@@ -21,7 +21,6 @@ package com.tle.core.item.service;
 import com.tle.beans.Institution;
 import java.io.Serializable;
 
-/** @author jmaginnis */
 public class DownloadMessage implements Serializable {
   private static final long serialVersionUID = 1L;
   private String url;

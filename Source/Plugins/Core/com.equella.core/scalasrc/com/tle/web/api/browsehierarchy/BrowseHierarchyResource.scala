@@ -18,7 +18,9 @@
 
 package com.tle.web.api.browsehierarchy
 
+import cats.implicits.{toBifunctorOps, toTraverseOps}
 import com.dytech.edge.exceptions.ItemNotFoundException
+import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
 import com.tle.beans.item.ItemId
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
@@ -47,55 +49,76 @@ class BrowseHierarchyResource {
 
   @GET
   @ApiOperation(
-    value = "Browse hierarchies",
-    notes = "Retrieve all Hierarchy topics for the current institution.",
+    value = "Browse root hierarchies",
+    notes = "Retrieve all root Hierarchy topics for the current institution.",
     responseContainer = "List",
-    response = classOf[HierarchyTopicSummary],
+    response = classOf[HierarchyTopicSummary]
   )
-  def browseHierarchies(): Response = {
-    // Fetch all topics with permission check for `VIEW_HIERARCHY_TOPIC`
-    val topLevelHierarchies = hierarchyService.getRootTopics
-    val result =
-      hierarchyService
-        .expandVirtualisedTopics(topLevelHierarchies, null, null)
-        .asScala
-        .toList
-        .map(browseHierarchyHelper.buildHierarchyTopicSummary(_))
-
-    Response.ok(result).build
+  def browseRootHierarchies(): Response = {
+    val rootTopics = browseHierarchyHelper.getRootTopics
+    Response.ok(rootTopics).build
   }
 
   @GET
   @Path("/{compound-uuid}")
   @ApiOperation(
-    value = "Browse a hierarchy",
+    value = "Browse sub hierarchies",
+    notes = "Retrieve all sub Hierarchy topics for the provided parent topic.",
+    responseContainer = "List",
+    response = classOf[HierarchyTopicSummary]
+  )
+  def browseSubHierarchies(
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String
+  ): Response = {
+    withTopic(compoundUuid) { (topicEntity, currentVirtualTopicName, parentCompoundUuidList, _) =>
+      {
+        val children = browseHierarchyHelper.getChildren(
+          topicEntity,
+          currentVirtualTopicName,
+          parentCompoundUuidList
+        )
+        Response.ok(children).build()
+      }
+    }
+  }
+
+  @GET
+  @Path("/details/{compound-uuid}")
+  @ApiOperation(
+    value = "Get Hierarchy topic details",
     notes =
       "Retrieve a Hierarchy topic details for a given topic compound UUID. This compound UUID MUST include compound UUIDs of all the virtual parent topic, seperated by comma.",
-    response = classOf[HierarchyTopic],
+    response = classOf[HierarchyTopic]
   )
-  def browseHierarchy(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuids: String): Response = {
-    val hierarchyCompoundUuid = HierarchyCompoundUuid(compoundUuids)
-    val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
-      hierarchyCompoundUuid
+  def browseHierarchyDetails(
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String
+  ): Response = {
+    withTopic(compoundUuid) {
+      (topicEntity, currentVirtualTopicName, parentCompoundUuidList, hierarchyCompoundUuid) =>
+        {
+          val topicSummary =
+            browseHierarchyHelper.getTopicSummary(
+              topicEntity,
+              currentVirtualTopicName,
+              parentCompoundUuidList
+            )
+          val parents =
+            browseHierarchyHelper.getParents(
+              topicEntity,
+              parentCompoundUuidList.getOrElse(List.empty)
+            )
+          val children =
+            browseHierarchyHelper.getChildren(
+              topicEntity,
+              currentVirtualTopicName,
+              parentCompoundUuidList
+            )
+          val allKeyResources =
+            browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
 
-    Option(hierarchyService.getHierarchyTopicByUuid(topicUuid)) match {
-      case Some(topic) if !hierarchyService.hasViewAccess(topic) =>
-        ApiErrorResponse.forbiddenRequest(s"Permission denied to access topic $topicUuid")
-      case Some(topicEntity) =>
-        val topicSummary =
-          browseHierarchyHelper.getTopicSummary(topicEntity,
-                                                currentVirtualTopicName,
-                                                parentCompoundUuidList)
-        val parents =
-          browseHierarchyHelper.getParents(topicEntity,
-                                           parentCompoundUuidList.getOrElse(List.empty))
-        val allKeyResources =
-          browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
-
-        val result = HierarchyTopic(topicSummary, parents, allKeyResources)
-        Response.ok(result).build
-      case None => ApiErrorResponse.resourceNotFound(s"Topic $topicUuid not found")
+          val result = HierarchyTopic(topicSummary, parents, children, allKeyResources)
+          Response.ok(result).build
+        }
     }
   }
 
@@ -103,11 +126,13 @@ class BrowseHierarchyResource {
   @Path("/key-resource/{item-uuid}/{version}")
   @ApiOperation(
     value = "Get all hierarchy IDs which have the provided key resource",
-    response = classOf[List[String]],
+    responseContainer = "List",
+    response = classOf[String]
   )
   def getHierarchyIdsWithKeyResource(
       @ApiParam("The item UUID") @PathParam("item-uuid") itemUuid: String,
-      @ApiParam("The item version") @PathParam("version") itemVersion: Int): Response = {
+      @ApiParam("The item version") @PathParam("version") itemVersion: Int
+  ): Response = {
     val version = itemService.getRealVersion(itemVersion, itemUuid)
     val itemId  = new ItemId(itemUuid, version)
     Try(itemService.getUnsecure(itemId)) match {
@@ -117,10 +142,64 @@ class BrowseHierarchyResource {
           .asScala
           .toList
           .map(legacyCompoundUuid =>
-            HierarchyCompoundUuid(legacyCompoundUuid, inLegacyFormat = true).buildString(false))
-        Response.ok(ids).build()
+            HierarchyCompoundUuid
+              .applyWithLegacyFormat(legacyCompoundUuid)
+              .buildString(inLegacyFormat = false)
+          )
+
+        Response.ok(ids).build
       case Failure(e: ItemNotFoundException) =>
         ApiErrorResponse.resourceNotFound(s"Failed to find key resource: ${e.getMessage}")
     }
+  }
+
+  /** Execute the provided function if the topic is found and the user has access permission.
+    *
+    * @param compoundUuid
+    *   The compound UUID of the topic.
+    * @param function
+    *   The function to execute, which has the following parameters:
+    *   1. [[HierarchyTopicEntity]]: The hierarchy topic entity;
+    *   2. [[Option[String]]]: An optional virtual topic name;
+    *   3. [[Option[List[HierarchyCompoundUuid]]: An optional list of parent HierarchyCompoundUuid;
+    *   4. [[HierarchyCompoundUuid]]: The validated HierarchyCompoundUuid generated from
+    *      `compoundUuid`.
+    */
+  private def withTopic(
+      compoundUuid: String
+  )(
+      function: (
+          HierarchyTopicEntity,
+          Option[String],
+          Option[List[HierarchyCompoundUuid]],
+          HierarchyCompoundUuid
+      ) => Response
+  ): Response = {
+    validateCompoundUuid(compoundUuid) match {
+      case Left(errorResponse) => errorResponse
+      case Right((validCompoundUuid, topicEntity)) =>
+        val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
+          validCompoundUuid
+        function(
+          topicEntity,
+          currentVirtualTopicName,
+          parentCompoundUuidList,
+          validCompoundUuid
+        )
+    }
+  }
+
+  // Validate the compound UUID string and return the HierarchyCompoundUuid object and topic entity if it is valid.
+  private def validateCompoundUuid(compoundUuid: String) = {
+    for {
+      validCompoundUuid <- HierarchyCompoundUuid(compoundUuid).leftMap(e =>
+        ApiErrorResponse.serverError(
+          s"Failed to parse the compound UUID $compoundUuid: ${e.getMessage}"
+        )
+      )
+      topicEntity <- browseHierarchyHelper
+        .fetchHierarchyEntity(validCompoundUuid.uuid)
+        .leftMap(e => ApiErrorResponse.apiErrorHandler(e))
+    } yield (validCompoundUuid, topicEntity)
   }
 }

@@ -22,6 +22,7 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.edge.common.ScriptContext;
 import com.dytech.edge.exceptions.AttachmentNotFoundException;
 import com.dytech.edge.exceptions.ItemNotFoundException;
+import com.dytech.edge.wizard.beans.control.WizardControl;
 import com.google.common.collect.Multimap;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.entity.LanguageBundle;
@@ -47,9 +48,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.hibernate.criterion.DetachedCriteria;
 
-/** @author Nicholas Read */
 @NonNullByDefault
 public interface ItemService
     extends RemoteItemService, ScriptEvaluator, WorkflowScriptObjectContributor {
@@ -200,4 +201,10 @@ public interface ItemService
       Map<String, Object> objects);
 
   void updateMetadataBasedSecurity(PropBagEx itemxml, Item item);
+
+  /**
+   * Use the supplied Item to retrieve a Stream of Wizard controls configured for standard Wizard
+   * pages in a Collection.
+   */
+  Stream<WizardControl> getWizardControlsForItem(Item item);
 }

@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public class FilterUserBeanModel extends FilterModel<UserBean> {
   private static final Log LOGGER = LogFactory.getLog(FilterUserBeanModel.class);
 

@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class AddContribLangPage extends AbstractPage<AddContribLangPage> {
   public static final String ADD_CONTRIBLANG_HEADER =
       "Select Language and/or Country"; // original property is addlanguage.dialog.title.title

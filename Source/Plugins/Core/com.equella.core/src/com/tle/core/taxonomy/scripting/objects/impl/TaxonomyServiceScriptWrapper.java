@@ -25,7 +25,6 @@ import com.tle.core.taxonomy.scripting.objects.TaxonomyServiceScriptObject;
 import com.tle.core.taxonomy.scripting.types.TaxonomyScriptType;
 import com.tle.core.taxonomy.scripting.types.impl.TaxonomyScriptTypeImpl;
 
-/** @author aholland */
 public class TaxonomyServiceScriptWrapper implements TaxonomyServiceScriptObject {
   private static final long serialVersionUID = 1L;
 

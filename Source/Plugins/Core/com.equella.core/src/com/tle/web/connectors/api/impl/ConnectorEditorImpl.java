@@ -31,7 +31,6 @@ import com.tle.web.connectors.api.ConnectorEditor;
 import com.tle.web.connectors.api.bean.ConnectorBean;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @NonNullByDefault
 public class ConnectorEditorImpl extends AbstractBaseEntityEditor<Connector, ConnectorBean>
     implements ConnectorEditor {

@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class TableRenderer extends AbstractComponentRenderer {
   private final TableState tableState;

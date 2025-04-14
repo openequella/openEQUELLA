@@ -29,7 +29,6 @@ import javax.persistence.Id;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton
@@ -50,7 +49,8 @@ public class RemoveUnusedSystemSettingsPrivilegesDatabaseMigration
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     session
         .createQuery(
-            "DELETE FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')")
+            "DELETE FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy',"
+                + " 'C:sif')")
         .executeUpdate();
   }
 
@@ -59,7 +59,8 @@ public class RemoveUnusedSystemSettingsPrivilegesDatabaseMigration
     int ct =
         count(
             session.createQuery(
-                "SELECT COUNT(*) FROM AccessEntry a WHERE a.targetObject IN ('C:attachmentFileTypes', 'C:proxy', 'C:sif')"));
+                "SELECT COUNT(*) FROM AccessEntry a WHERE a.targetObject IN"
+                    + " ('C:attachmentFileTypes', 'C:proxy', 'C:sif')"));
     return ct;
   }
 

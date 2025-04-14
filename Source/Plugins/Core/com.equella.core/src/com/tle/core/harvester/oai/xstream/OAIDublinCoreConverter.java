@@ -39,7 +39,8 @@ public class OAIDublinCoreConverter extends OAIAbstractConverter {
     writer.addAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
     writer.addAttribute(
         "xsi:schemaLocation",
-        "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd");
+        "http://www.openarchives.org/OAI/2.0/oai_dc/"
+            + " http://www.openarchives.org/OAI/2.0/oai_dc.xsd");
 
     DublinCore metadata = (DublinCore) arg0;
 

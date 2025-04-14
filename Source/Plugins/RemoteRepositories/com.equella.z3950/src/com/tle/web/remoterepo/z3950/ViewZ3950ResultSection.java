@@ -41,7 +41,6 @@ import com.tle.web.selection.section.CourseListVetoSection;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @Bind
 public class ViewZ3950ResultSection

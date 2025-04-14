@@ -156,10 +156,10 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
     // Remove any security privileges for Activity Wizards and the assembler
     session
         .createSQLQuery(
-            "DELETE FROM access_entry WHERE privilege LIKE '%_ACTIVITY_WIZARD'"
-                + " OR target_object = 'C:assemblerDrmReference' OR target_object = 'C:assesmblerFileTypes'"
-                + " OR target_object = 'C:assemblerLinks' OR target_object = 'C:lmsexport'"
-                + " OR target_object = 'C:taxonomies' OR target_object = 'C:webct'")
+            "DELETE FROM access_entry WHERE privilege LIKE '%_ACTIVITY_WIZARD' OR target_object ="
+                + " 'C:assemblerDrmReference' OR target_object = 'C:assesmblerFileTypes' OR"
+                + " target_object = 'C:assemblerLinks' OR target_object = 'C:lmsexport' OR"
+                + " target_object = 'C:taxonomies' OR target_object = 'C:webct'")
         .executeUpdate();
     result.incrementStatus();
 
@@ -190,7 +190,8 @@ public class RemoveAssemblerAndActivityWizard extends AbstractHibernateSchemaMig
     for (Long itemId : itemIds) {
       Query query =
           session.createQuery(
-              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity' and a.item.id = ?0 order by a.attindex");
+              "select a, a.item.institution.shortName from Attachment a where a.type = 'activity'"
+                  + " and a.item.id = ?0 order by a.attindex");
       query.setParameter(0, itemId);
       int index = 0;
       List<Object[]> attList = query.list();

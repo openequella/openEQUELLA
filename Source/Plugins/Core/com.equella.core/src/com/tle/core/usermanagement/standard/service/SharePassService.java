@@ -21,7 +21,6 @@ package com.tle.core.usermanagement.standard.service;
 import com.tle.beans.item.Item;
 import java.util.Date;
 
-/** @author Nicholas Read */
 public interface SharePassService {
   boolean isEnabled();
 

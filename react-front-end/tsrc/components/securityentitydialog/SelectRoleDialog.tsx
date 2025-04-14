@@ -26,12 +26,17 @@ import SelectEntityDialog from "./SelectEntityDialog";
 export interface SelectRoleDialogProps {
   /** Open the dialog when true. */
   open: boolean;
-  /** The currently selected Roles. */
-  value: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  /**
+   * The currently selected Roles.
+   * Undefined means the component should wait for the role details to be provided.
+   */
+  value?: ReadonlySet<OEQ.UserQuery.RoleDetails>;
   /** Handler for when dialog is closed. */
   onClose: (selections?: ReadonlySet<OEQ.UserQuery.RoleDetails>) => void;
   /** Function which will provide the list of Role (search function) for RoleSearch. */
-  roleListProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  searchRolesProvider?: (
+    query?: string,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
 
 /**
@@ -42,7 +47,7 @@ const SelectRoleDialog = ({
   open,
   value,
   onClose,
-  roleListProvider,
+  searchRolesProvider,
 }: SelectRoleDialogProps) => {
   const roleSearch = (
     onAdd: (roles: OEQ.UserQuery.RoleDetails) => void,
@@ -53,7 +58,7 @@ const SelectRoleDialog = ({
         type: "one_click",
         onAdd: onAdd,
       }}
-      search={roleListProvider}
+      search={searchRolesProvider}
       onSelectAll={onSelectAll}
     />
   );

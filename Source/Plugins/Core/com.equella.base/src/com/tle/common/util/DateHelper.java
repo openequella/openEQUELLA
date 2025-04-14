@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @NonNullByDefault
 public final class DateHelper {

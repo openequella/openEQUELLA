@@ -21,7 +21,6 @@ package com.tle.mypages.web.event;
 import com.tle.web.sections.SectionInfo;
 import java.util.EventListener;
 
-/** @author aholland */
 public interface LoadItemEventListener extends EventListener {
   void doLoadItemEvent(SectionInfo info, LoadItemEvent event);
 }

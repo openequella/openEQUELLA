@@ -25,7 +25,6 @@ import com.tle.common.qti.entity.QtiAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentItem;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiAssessmentItemService {
   /**

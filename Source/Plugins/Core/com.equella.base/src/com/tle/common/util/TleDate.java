@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.TimeZone;
 
-/** @author aholland */
 @NonNullByDefault
 public interface TleDate extends Serializable, Comparable<TleDate> {
   Date toDate();

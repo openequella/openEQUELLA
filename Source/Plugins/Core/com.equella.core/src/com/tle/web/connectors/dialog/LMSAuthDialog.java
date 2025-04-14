@@ -51,7 +51,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind
 public class LMSAuthDialog extends AbstractOkayableDialog<LMSAuthDialog.Model> {

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class VeryBasicSearch implements Search, Serializable {
   private static final long serialVersionUID = 1L;
 

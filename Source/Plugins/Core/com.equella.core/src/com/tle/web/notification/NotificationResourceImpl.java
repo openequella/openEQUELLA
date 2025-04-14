@@ -46,7 +46,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-/** @author Aaron & Dustin */
 @SuppressWarnings("nls")
 @Bind(NotificationResource.class)
 @Singleton

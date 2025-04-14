@@ -66,7 +66,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import org.jboss.resteasy.util.DateUtil;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(FileResource.class)
 @Singleton

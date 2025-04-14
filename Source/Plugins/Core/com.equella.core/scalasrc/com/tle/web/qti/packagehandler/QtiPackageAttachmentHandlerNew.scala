@@ -74,9 +74,11 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
     case _                                                                              => false
   }
 
-  private def populateDetails(stg: StagingContext,
-                              attachment: CustomAttachment,
-                              baseExtractedPath: String): Unit = {
+  private def populateDetails(
+      stg: StagingContext,
+      attachment: CustomAttachment,
+      baseExtractedPath: String
+  ): Unit = {
     val manifest = Option(imsService.getImsManifest(stg.stgFile, baseExtractedPath, false))
     manifest
       .flatMap(m => m.getAllResources.asScala.find(_.getType.startsWith("imsqti_test_xml")))
@@ -87,8 +89,10 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
         attachment.setDescription(details.getTitle)
         val testUuid = UUID.randomUUID.toString
         attachment.setData(QtiConstants.KEY_TEST_UUID, testUuid)
-        attachment.setData(QtiConstants.KEY_XML_PATH,
-                           PathUtils.filePath(QtiConstants.QTI_FOLDER_PATH, xmlRelLoc))
+        attachment.setData(
+          QtiConstants.KEY_XML_PATH,
+          PathUtils.filePath(QtiConstants.QTI_FOLDER_PATH, xmlRelLoc)
+        )
         val toolName = details.getToolName
         if (toolName != null) {
           attachment.setData(QtiConstants.KEY_TOOL_NAME, toolName)
@@ -107,10 +111,8 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
   def delete(ctx: ControlContext, a: Attachment): AttachmentDelete =
     AttachmentDelete(Seq(a), stg => QtiPackageCommit.cancel(a, stg))
 
-  /**
-    * Qti package commit type.
-    * Simply returns the attachment on apply,
-    * but on cancel ensures all content is deleted from the dedicated OTI package folder in the staging area.
+  /** Qti package commit type. Simply returns the attachment on apply, but on cancel ensures all
+    * content is deleted from the dedicated OTI package folder in the staging area.
     */
   object QtiPackageCommit extends AttachmentCommit {
     override def apply(a: Attachment, stg: StagingContext): Attachment = a

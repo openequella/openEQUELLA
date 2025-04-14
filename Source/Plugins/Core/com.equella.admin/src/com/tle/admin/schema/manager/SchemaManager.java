@@ -29,7 +29,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class SchemaManager extends BaseEntityEditor<Schema> {
   private SchemaModel schemaModel;
   private EditorTab editorTab;

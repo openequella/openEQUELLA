@@ -24,6 +24,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
@@ -43,14 +44,16 @@ import * as O from "fp-ts/Option";
 import * as SET from "fp-ts/Set";
 import { useEffect, useState } from "react";
 import * as React from "react";
+import { getRoleNameByUrn } from "../modules/Lti13PlatformsModule";
 import { isNonEmptyString } from "../util/validation";
 import ConfirmDialog from "./ConfirmDialog";
 import {
   CustomRole,
   customRoleEq,
   customRoleOrd,
-  CustomRolesMapping,
+  CustomRolesDetailsMappings,
 } from "./CustomRoleHelper";
+import SecurityEntityEntrySkeleton from "./securityentitydialog/SecurityEntityEntrySkeleton";
 import RoleSearch from "./securityentitysearch/RoleSearch";
 import SecurityEntityEntry from "./securityentitydialog/SecurityEntityEntry";
 import { eqRoleById, ordRole } from "../modules/RoleModule";
@@ -80,10 +83,13 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 export interface SelectCustomRoleDialogProps {
   /** Open the dialog when true. */
   open: boolean;
-  /** The initial roles mapping value. */
-  initialRoleMappings: CustomRolesMapping;
+  /**
+   * The initial roles mapping value with role details.
+   * Undefined means the dialog should display a skeleton and wait for a valid value.
+   */
+  initialMappings?: CustomRolesDetailsMappings;
   /** Handler for when dialog is closed. */
-  onClose: (selections?: CustomRolesMapping) => void;
+  onClose: (selections?: CustomRolesDetailsMappings) => void;
   /**
    * Strings used in the dialog.
    */
@@ -108,10 +114,45 @@ export interface SelectCustomRoleDialogProps {
   /**
    * Default role for the custom role field.
    */
-  defaultCustomRole?: CustomRole;
+  defaultCustomRoleId?: string;
   /** Function which will provide the list of Role (search function) for RoleSearch. */
-  searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
+  searchRolesProvider?: (
+    query?: string,
+  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
 }
+
+// Skeleton for the custom role mappings table.
+const TableSkeleton = () => (
+  <TableContainer>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            <ListItemText primary={<Skeleton />} />
+          </TableCell>
+          <TableCell>
+            <ListItemText primary={<Skeleton />} />
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+          <TableCell component="th" scope="row">
+            <Skeleton />
+          </TableCell>
+          <TableCell align="right">
+            <List>
+              {pipe(
+                A.makeBy(3, (i) => i + 1),
+                A.map((i) => <SecurityEntityEntrySkeleton key={i} />),
+              )}
+            </List>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  </TableContainer>
+);
 
 /**
  * This dialog used for selecting custom role and searching for oEQ roles,
@@ -122,31 +163,44 @@ export interface SelectCustomRoleDialogProps {
  */
 const SelectCustomRoleDialog = ({
   open,
-  initialRoleMappings,
+  initialMappings,
   onClose,
-  searchRoleProvider,
+  searchRolesProvider,
   strings = {
     title,
     customRoleLabel: customRoleLabelText,
     customRoleColumnName: defaultCustomRoleColumnName,
   },
-  defaultCustomRole,
+  defaultCustomRoleId,
   customRoleSelector,
 }: SelectCustomRoleDialogProps) => {
   const { title: dialogTitle, customRoleLabel, customRoleColumnName } = strings;
-  const [selectedCustomRole, setSelectedCustomRole] =
-    useState(defaultCustomRole);
+
+  const [selectedCustomRole, setSelectedCustomRole] = useState<
+    CustomRole | undefined
+  >(
+    defaultCustomRoleId
+      ? {
+          role: defaultCustomRoleId,
+          name: getRoleNameByUrn(defaultCustomRoleId),
+        }
+      : undefined,
+  );
 
   const [showErrorCustomRoleSelector, setShowErrorCustomRoleSelector] =
     useState(false);
 
-  // state for final selections which will be returned to the calling component when the user clicks OK
-  const [rolesMapping, setRolesMapping] =
-    React.useState<CustomRolesMapping>(initialRoleMappings);
+  // state for current user selections.
+  const [rolesMappings, setRolesMappings] =
+    React.useState<CustomRolesDetailsMappings>(new Map());
+
+  const hasInitialized = initialMappings !== undefined;
 
   useEffect(() => {
-    setRolesMapping(initialRoleMappings);
-  }, [initialRoleMappings]);
+    if (hasInitialized) {
+      setRolesMappings(initialMappings);
+    }
+  }, [hasInitialized, initialMappings]);
 
   // oEQ role entry in the `oEQ column`
   const oeqRoleEntry = (
@@ -158,7 +212,7 @@ const SelectCustomRoleDialog = ({
       name={role.name}
       onDelete={() =>
         pipe(
-          rolesMapping,
+          rolesMappings,
           // get current set of oEQ roles for corresponding custom role
           M.lookup(customRoleEq)(customRole),
           // remove selected role
@@ -166,13 +220,13 @@ const SelectCustomRoleDialog = ({
           // replace old oeq role set in map
           O.chain((newRoles) =>
             SET.isEmpty(newRoles)
-              ? pipe(rolesMapping, M.deleteAt(customRoleEq)(customRole), O.of)
+              ? pipe(rolesMappings, M.deleteAt(customRoleEq)(customRole), O.of)
               : pipe(
-                  rolesMapping,
+                  rolesMappings,
                   M.updateAt(customRoleEq)(customRole, newRoles),
                 ),
           ),
-          O.map(setRolesMapping),
+          O.map(setRolesMappings),
           O.getOrElse(() =>
             console.warn(`Can't find custom role: ${customRole} in map`),
           ),
@@ -209,7 +263,7 @@ const SelectCustomRoleDialog = ({
   };
 
   // the table shows the mapping relationships between custom roles and oEQ roles
-  const customOeqRoleMappingTable = (roleMaps: CustomRolesMapping) => (
+  const customOeqRoleMappingTable = (roleMaps: CustomRolesDetailsMappings) => (
     <TableContainer>
       <Table>
         <TableHead>
@@ -242,7 +296,7 @@ const SelectCustomRoleDialog = ({
       O.fromNullable,
       O.fold(constVoid, (customRole) => {
         pipe(
-          rolesMapping,
+          rolesMappings,
           M.lookup(customRoleEq)(customRole),
           // get current oEQ roles set for current custom role
           O.getOrElse<Set<OEQ.UserQuery.RoleDetails>>(() => new Set()),
@@ -250,19 +304,20 @@ const SelectCustomRoleDialog = ({
           flow(SET.union(eqRoleById)(selectedOeqRoles)),
           // replace old oeq role set in map
           (newRoles) =>
-            pipe(rolesMapping, M.upsertAt(customRoleEq)(customRole, newRoles)),
-          setRolesMapping,
+            pipe(rolesMappings, M.upsertAt(customRoleEq)(customRole, newRoles)),
+          setRolesMappings,
         );
       }),
     );
 
-  const handleOnConfirm = () => {
-    onClose(rolesMapping);
-  };
+  const handleOnConfirm = () => onClose(rolesMappings);
 
   const handleOnCancel = () => {
     onClose();
-    setRolesMapping(initialRoleMappings);
+
+    if (hasInitialized) {
+      setRolesMappings(initialMappings);
+    }
   };
 
   const defaultCustomRoleSelector = (
@@ -306,11 +361,23 @@ const SelectCustomRoleDialog = ({
             pipe(roles, RS.toSet, handleRoleSearchOnSelect);
           }
         }}
-        search={searchRoleProvider}
+        search={searchRolesProvider}
         listHeight={300}
       />
     </>
   );
+
+  const renderMappingsTable = () =>
+    M.isEmpty(rolesMappings) ? (
+      <ListItem>
+        <ListItemIcon>
+          <ErrorOutline />
+        </ListItemIcon>
+        <ListItemText secondary={addRoles} />
+      </ListItem>
+    ) : (
+      customOeqRoleMappingTable(rolesMappings)
+    );
 
   return (
     <ConfirmDialog
@@ -319,6 +386,7 @@ const SelectCustomRoleDialog = ({
       confirmButtonText={okLabel}
       onConfirm={handleOnConfirm}
       onCancel={handleOnCancel}
+      disableConfirmButton={!hasInitialized}
       maxWidth="lg"
     >
       <Grid container>
@@ -337,23 +405,14 @@ const SelectCustomRoleDialog = ({
             <Typography variant="h6" gutterBottom>
               {currentMappings}
             </Typography>
-            {M.isEmpty(rolesMapping) ? (
-              <ListItem>
-                <ListItemIcon>
-                  <ErrorOutline />
-                </ListItemIcon>
-                <ListItemText secondary={addRoles} />
-              </ListItem>
-            ) : (
-              customOeqRoleMappingTable(rolesMapping)
-            )}
+            {hasInitialized ? renderMappingsTable() : <TableSkeleton />}
           </Grid>
 
-          {!M.isEmpty(rolesMapping) && (
+          {!M.isEmpty(rolesMappings) && (
             <Grid item>
               <Button
                 color="secondary"
-                onClick={() => setRolesMapping(new Map())}
+                onClick={() => setRolesMappings(new Map())}
                 sx={{ float: "right" }}
               >
                 {removeAllLabel}

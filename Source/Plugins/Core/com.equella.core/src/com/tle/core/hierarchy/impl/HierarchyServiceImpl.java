@@ -99,7 +99,6 @@ import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @Singleton
 @SuppressWarnings("nls")
 @Bindings({@Bind(HierarchyService.class), @Bind(HierarchyServiceImpl.class)})
@@ -109,7 +108,7 @@ public class HierarchyServiceImpl
         SchemaDeletionListener,
         ItemDefinitionDeletionListener,
         PowerSearchDeletionListener {
-  private static final String TOPIC_ORDERING = "listPosition";
+  private static final String TOPIC_ORDERING = "listPosition,uuid";
   private static final Collection<String> EDIT_PRIV_LIST =
       Collections.singleton("EDIT_HIERARCHY_TOPIC");
 
@@ -285,7 +284,7 @@ public class HierarchyServiceImpl
     HierarchyTopic topic = pack.getTopic();
     edit(topic);
 
-    HierarchyCompoundUuid uuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    HierarchyCompoundUuid uuid = HierarchyCompoundUuid.applyWithLegacyFormat(topic.getUuid());
     List<ItemId> ids = pack.getKeyResources().stream().map(Item::getItemId).toList();
     updateKeyResources(uuid, ids);
 
@@ -453,7 +452,8 @@ public class HierarchyServiceImpl
     pack.setInheritedItemDefinitions(getAllItemDefinitions(topic.getParent()));
     pack.setInheritedSchemas(getAllSchemas(topic.getParent()));
 
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(topic.getUuid(), true);
+    HierarchyCompoundUuid compoundUuid =
+        HierarchyCompoundUuid.applyWithLegacyFormat(topic.getUuid());
     pack.setKeyResources(getKeyResourceItems(compoundUuid));
 
     return pack;

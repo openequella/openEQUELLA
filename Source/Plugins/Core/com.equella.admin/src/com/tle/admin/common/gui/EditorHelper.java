@@ -36,7 +36,6 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author Nicholas Read */
 public final class EditorHelper {
   private static final Log LOGGER = LogFactory.getLog(EditorHelper.class);
 
@@ -56,7 +55,9 @@ public final class EditorHelper {
     throw new Error();
   }
 
-  /** @return the default statusbar spinner icon for editors. */
+  /**
+   * @return the default statusbar spinner icon for editors.
+   */
   public static ImageIcon getStatusBarSpinner() {
     if (statusBarSpinner == null) {
       URL url = EditorHelper.class.getResource("/icons/network_spinner.gif"); // $NON-NLS-1$

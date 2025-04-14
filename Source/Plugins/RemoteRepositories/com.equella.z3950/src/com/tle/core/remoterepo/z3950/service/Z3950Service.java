@@ -28,7 +28,6 @@ import com.tle.core.remoterepo.z3950.Z3950SearchResult;
 import com.tle.core.remoting.RemoteZ3950Service;
 import java.util.List;
 
-/** @author aholland */
 public interface Z3950Service extends RemoteZ3950Service {
   SearchResults<Z3950SearchResult> search(
       FederatedSearch z3950Search,

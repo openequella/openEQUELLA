@@ -20,7 +20,6 @@ package com.tle.common.searching;
 
 import java.util.List;
 
-/** @author aholland */
 public class SimpleSearchResults<T> implements SearchResults<T> {
   private static final long serialVersionUID = 1L;
 

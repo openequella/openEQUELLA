@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author Aaron */
 public class LtiData implements Serializable {
   private String contextId;
   private String contextLabel;

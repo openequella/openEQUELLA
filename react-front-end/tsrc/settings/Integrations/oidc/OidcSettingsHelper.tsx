@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import Switch from "@mui/material/Switch";
+import * as O from "fp-ts/Option";
+import { isEqual } from "lodash";
 import { getBaseUrl } from "../../../AppConfig";
 import {
   FieldRenderOptions,
@@ -85,19 +87,15 @@ export const platforms = new Map<OEQ.Oidc.IdentityProviderPlatform, string>([
   ["OKTA", "Okta"],
 ]);
 
-// Use 'platform' as the discriminator.
-export interface GenericApiDetails
-  extends Pick<
-    OEQ.Oidc.GenericIdentityProvider,
-    "platform" | "apiUrl" | "apiClientId" | "apiClientSecret"
-  > {}
+export const defaultApiDetails: OEQ.Oidc.RestApiDetails = {
+  apiUrl: "",
+  apiClientId: "",
+};
 
-export interface OkatApiDetails
-  extends Pick<OEQ.Oidc.Okta, "platform" | "apiUrl" | "apiClientId"> {}
-
-export type ApiDetails = GenericApiDetails | OkatApiDetails;
-
-export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
+/**
+ * Because Entra ID is selected by default, use the default Entra ID API values for apiDetails.
+ */
+export const defaultConfig: OEQ.Oidc.IdentityProvider = {
   enabled: false,
   platform: "ENTRA_ID",
   issuer: "",
@@ -107,33 +105,7 @@ export const defaultGeneralDetails: OEQ.Oidc.IdentityProvider = {
   keysetUrl: "",
   tokenUrl: "",
   defaultRoles: new Set(),
-};
-
-export const defaultAuth0ApiDetails: GenericApiDetails = {
-  platform: "AUTH0",
-  apiUrl: "",
-  apiClientId: "",
-  apiClientSecret: "",
-};
-
-export const defaultEntraIdApiDetails: GenericApiDetails = {
-  ...defaultAuth0ApiDetails,
-  platform: "ENTRA_ID",
-};
-
-export const defaultOktaApiDetails: OkatApiDetails = {
-  platform: "OKTA",
-  apiUrl: "",
-  apiClientId: "",
-};
-
-export const defaultApiDetailsMap: Record<
-  OEQ.Oidc.IdentityProviderPlatform,
-  ApiDetails
-> = {
-  ENTRA_ID: defaultEntraIdApiDetails,
-  AUTH0: defaultAuth0ApiDetails,
-  OKTA: defaultOktaApiDetails,
+  ...defaultApiDetails,
 };
 
 const platformSelector = (
@@ -305,16 +277,12 @@ export const generateGeneralDetails = (
   },
 });
 
-const commonApiDetails = (
+const apiDetails = (
   onChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  apiDetails: ApiDetails,
-  isConfigured: boolean,
+  { apiUrl, apiClientId, apiClientSecret }: OEQ.Oidc.IdentityProvider,
+  isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const { platform, apiUrl, apiClientId } = apiDetails;
-  // apiClientSecret is not exist in OktaApiDetails.
-  const apiClientSecret = platform === "OKTA" ? "" : apiDetails.apiClientSecret;
-
   return {
     apiUrl: {
       label: apiUrlLabel,
@@ -353,7 +321,7 @@ const commonApiDetails = (
       desc: apiClientSecretDesc,
       required: true,
       // Validation is not required for updating but required for the initial creation.
-      validate: isConfigured ? constTrue : isNonEmptyString,
+      validate: isSecretConfigured ? constTrue : isNonEmptyString,
       component: passwordTextFiled({
         name: apiClientSecretLabel,
         value: apiClientSecret,
@@ -361,9 +329,9 @@ const commonApiDetails = (
         required: true,
         onChange: (value) => onChange("apiClientSecret", value),
         showValidationErrors,
-        validate: isConfigured ? constTrue : isNonEmptyString,
+        validate: isSecretConfigured ? constTrue : isNonEmptyString,
         errorMessage: missingValue,
-        placeholder: isConfigured ? passwordMask : undefined,
+        placeholder: isSecretConfigured ? passwordMask : undefined,
       }),
     },
   };
@@ -390,24 +358,24 @@ export const generatePlatform = (
 /**
  * Generate the render options for the API configuration of the selected identity providers.
  *
- * @param apiDetails The value of the platform specific details.
+ * @param idpDetails Contains the value of the platform specific details.
  * @param apiDetailsOnChange Function to be called when a platform specific field is changed.
  * @param showValidationErrors Whether to show validation errors for each field.
- * @param isConfigured Whether the server already has the API details.
+ * @param isSecretConfigured Whether the server already has the API secrete.
  */
 export const generateApiDetails = (
-  apiDetails: ApiDetails,
+  idpDetails: OEQ.Oidc.IdentityProvider,
   apiDetailsOnChange: (key: string, value: unknown) => void,
   showValidationErrors: boolean,
-  isConfigured: boolean,
+  isSecretConfigured: boolean,
 ): Record<string, FieldRenderOptions> => {
-  const platform = apiDetails.platform;
+  const platform = idpDetails.platform;
 
-  const apiCommonFields = commonApiDetails(
+  const apiCommonFields = apiDetails(
     apiDetailsOnChange,
     showValidationErrors,
-    apiDetails,
-    isConfigured,
+    idpDetails,
+    isSecretConfigured,
   );
   const { apiUrl, apiClientId, apiClientSecret } = apiCommonFields;
 
@@ -446,3 +414,36 @@ export const oeqDetailsList = (
     )}
   </SettingsList>
 );
+
+/**
+ * Compare the initial and current details to see if the configuration has changed.
+ * In order to handle the secret field,
+ * It will consider the configuration is not changed if the current value is an empty string and the initial value is missing.
+ */
+export const hasConfigurationChanged = (
+  initialDetails: OEQ.Oidc.IdentityProvider,
+  currentDetails: OEQ.Oidc.IdentityProvider,
+): boolean => {
+  // Helper function to check if a field has changed compared to the initial value.
+  const hasKeyChanged = (key: string, currentValue: unknown): boolean =>
+    pipe(
+      Object.entries(initialDetails),
+      R.fromEntries,
+      R.lookup(key),
+      O.fold(
+        // If the key is missing in initialDetails, consider it changed if currentValue is a non-empty string.
+        // For secret values which are absent in the initial details, if the current value is a non-empty string, it's considered changed;
+        // For other values do a normal comparison.
+        // Because there is a case user might input some value and then delete it, then the value will become empty string.
+        () => S.isString(currentValue) && !S.isEmpty(currentValue),
+        // If the key is present in initialDetails, check for equality
+        (initialValue) => !isEqual(initialValue, currentValue),
+      ),
+    );
+
+  return pipe(
+    Object.entries(currentDetails),
+    // Check if any key-value pair in currentDetails indicates a change
+    A.some(([key, currentValue]) => hasKeyChanged(key, currentValue)),
+  );
+};

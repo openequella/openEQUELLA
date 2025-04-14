@@ -24,7 +24,6 @@ import com.tle.core.hibernate.dao.GenericDao;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public interface AccessExpressionDao extends GenericDao<AccessExpression, Long> {
   AccessExpression retrieveOrCreate(String expression);
 

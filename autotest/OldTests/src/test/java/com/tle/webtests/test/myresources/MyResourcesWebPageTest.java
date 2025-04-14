@@ -32,7 +32,6 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     String scrapbookItem = context.getFullName("An authored page");
     String pageTitle = "A Page";
     String pageContent = "This is a verifiable attachment";
-    int presumedPageNo = 1;
 
     authorWebPageAndVerify(scrapbookItem, pageTitle, pageContent)
         .openWebpage(scrapbookItem, pageTitle);
@@ -198,7 +197,8 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
     String[] pageTitles = {"Chapter 1", "Chapter 2"};
     String[] pageBodies = {
       "And Gilgamesh said to Enkidu: 'Let us journey to the land of the scorpion men.'",
-      "And Enkidu said unto Gilgamesh 'One of us shall lead and the other follow: let our strength of arm decide!'"
+      "And Enkidu said unto Gilgamesh 'One of us shall lead and the other follow: let our strength"
+          + " of arm decide!'"
     };
 
     MyResourcesPage myResourcesPage =
@@ -304,7 +304,6 @@ public class MyResourcesWebPageTest extends AbstractCleanupTest {
         new MyResourcesPage(context, "scrapbook")
             .load()
             .authorWebPage(scrapbookItem, pageTitle, pageContent);
-
     assertNewPageCreated(myResourcesPage, scrapbookItem);
 
     return myResourcesPage;

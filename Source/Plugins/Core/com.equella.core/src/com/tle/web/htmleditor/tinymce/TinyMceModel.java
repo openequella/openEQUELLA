@@ -22,7 +22,6 @@ import com.tle.web.htmleditor.HtmlEditorModel;
 import java.util.List;
 import java.util.Map;
 
-/** @author aholland */
 public class TinyMceModel extends HtmlEditorModel {
   private String baseUrl;
   private String actionUrl;

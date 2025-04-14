@@ -36,7 +36,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(SoapActivationService.class)
 @Singleton
 public class SoapActivationServiceImpl implements SoapActivationService {

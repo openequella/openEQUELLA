@@ -20,7 +20,6 @@ package com.dytech.gui.workers;
 
 import java.awt.Component;
 
-/** @author Nicholas Read */
 public abstract class AbstractGlassSwingWorker<RESULT, GLASSPANE extends Component>
     extends AdvancedSwingWorker<RESULT> {
   private final Class<GLASSPANE> glassPaneClass;
@@ -105,12 +104,16 @@ public abstract class AbstractGlassSwingWorker<RESULT, GLASSPANE extends Compone
     }
   }
 
-  /** @return Returns the component. */
+  /**
+   * @return Returns the component.
+   */
   public Component getComponent() {
     return component;
   }
 
-  /** @param component The component to set. */
+  /**
+   * @param component The component to set.
+   */
   public void setComponent(Component component) {
     this.component = component;
   }
@@ -124,7 +127,9 @@ public abstract class AbstractGlassSwingWorker<RESULT, GLASSPANE extends Compone
     return disallowClosing;
   }
 
-  /** @param stopClosing The stopClosing to set. */
+  /**
+   * @param stopClosing The stopClosing to set.
+   */
   public void setDisallowClosing(boolean stopClosing) {
     this.disallowClosing = stopClosing;
   }

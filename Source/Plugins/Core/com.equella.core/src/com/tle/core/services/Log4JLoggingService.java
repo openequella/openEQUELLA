@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(LoggingService.class)
 @Singleton
 public class Log4JLoggingService implements LoggingService {

@@ -45,14 +45,16 @@ public interface SearchResource {
           CsvList nodes,
       @ApiParam(
               value =
-                  "The level at which to nest the facet search, the selected node must be flagged as nested in the schema definition",
+                  "The level at which to nest the facet search, the selected node must be flagged"
+                      + " as nested in the schema definition",
               required = false)
           @QueryParam("nest")
           String nestLevel,
       @ApiParam(value = "Query string", required = false) @QueryParam("q") String q,
       @ApiParam(
               value =
-                  "The number of term combinations to search for, a higher number will return more results and more accurate counts, but will take longer",
+                  "The number of term combinations to search for, a higher number will return more"
+                      + " results and more accurate counts, but will take longer",
               required = false,
               defaultValue = "10",
               allowableValues = "range[0,200]")
@@ -63,7 +65,8 @@ public interface SearchResource {
           CsvList collections,
       @ApiParam(
               value =
-                  "For details on structuring the where clause see https://apereo.github.io/openEQUELLA-docs/guides/RestAPIGuide.html#searching",
+                  "For details on structuring the where clause see"
+                      + " https://apereo.github.io/openEQUELLA-docs/guides/RestAPIGuide.html#searching",
               required = false)
           @QueryParam("where")
           String where,
@@ -83,11 +86,13 @@ public interface SearchResource {
           @QueryParam("showall")
           String showall,
       @ApiParam(
-              "A list of MIME types to filter items based on their attachments matching the specified types.")
+              "A list of MIME types to filter items based on their attachments matching the"
+                  + " specified types.")
           @QueryParam("mimeTypes")
           List<String> mimeTypes,
       @ApiParam(
-              "List of search index key/value pairs to filter by. e.g. videothumb:true or realthumb:true.")
+              "List of search index key/value pairs to filter by. e.g. videothumb:true or"
+                  + " realthumb:true.")
           @QueryParam("musts")
           List<String> musts);
   // @formatter:on

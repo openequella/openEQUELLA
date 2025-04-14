@@ -25,7 +25,6 @@ import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.qti.entity.QtiAssessmentTest;
 import uk.ac.ed.ph.jqtiplus.resolution.ResolvedAssessmentTest;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface QtiAssessmentTestService {
   QtiAssessmentTest convertTestToEntity(

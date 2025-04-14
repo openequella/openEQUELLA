@@ -22,7 +22,6 @@ import com.tle.common.oauth.beans.OAuthClient;
 import com.tle.core.events.listeners.ApplicationListener;
 import java.util.List;
 
-/** @author Aaron */
 public interface OAuthClientReferencesListener extends ApplicationListener {
   void addOAuthClientReferencingClasses(OAuthClient client, List<Class<?>> referencingClasses);
 }

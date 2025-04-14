@@ -65,7 +65,9 @@ abstract class ModerationMessageDialog(pfx: String) extends WaitingBrowserPage {
       By.xpath(
         s"//div[@class='file-upload' " +
           s"and //a[text()=${quoteXPath(filename.toLowerCase)}] " +
-          s"and //div[@class='progress-bar' and div[contains(@class, 'complete')]]]"))
+          s"and //div[@class='progress-bar' and div[contains(@class, 'complete')]]]"
+      )
+    )
     uploadAndWait(tf, filename, finished)
   }
 }
@@ -92,6 +94,7 @@ case class ModerationComment(ctx: PageContext)(elem: WebElement) extends Browser
   def message: String =
     elem
       .findElement(
-        By.xpath("div[@class = 'modcomment-content']/div[@class = 'modcomment-content']"))
+        By.xpath("div[@class = 'modcomment-content']/div[@class = 'modcomment-content']")
+      )
       .getText
 }

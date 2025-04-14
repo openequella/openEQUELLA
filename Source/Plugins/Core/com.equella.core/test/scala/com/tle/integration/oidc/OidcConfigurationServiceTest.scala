@@ -39,7 +39,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     enabled = true,
     apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"),
+    apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I")
   )
 
   val auth0EncryptedStringRepr =
@@ -68,7 +68,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val idpStringRepr = ArgumentCaptor.forClass[String, String](classOf[String])
       verify(mockConfigurationService).setProperty(
         ArgumentCaptor.forClass[String, String](classOf[String]).capture(),
-        idpStringRepr.capture(),
+        idpStringRepr.capture()
       )
 
       idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
@@ -82,16 +82,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         authCodeClientId = "",
         authUrl = "http://abc/ authorise/",
         keysetUrl = "htp://keyset.com",
-        apiUrl = "www.userlisting.com",
+        apiUrl = "www.userlisting.com"
       )
 
       When("attempting to save this configuration")
       val result = f.service.save(badAuth0)
 
       Then("All the invalid values should be captured")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for API URL: URI is not absolute"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "Missing value for required field: Authorisation Code flow Client ID,Invalid value for Auth URL: Illegal character in path at index 11: http://abc/ authorise/,Invalid value for Key set URL: unknown protocol: htp,Invalid value for API URL: URI is not absolute"
       }
     }
 
@@ -106,9 +105,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.save(auth0)
 
       Then("The error message should be captured")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe error
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe error
       }
     }
 
@@ -122,7 +120,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       When("A new configuration does not include sensitive values")
       val newAuth0 = auth0.copy(
         authCodeClientSecret = None,
-        apiClientSecret = None,
+        apiClientSecret = None
       )
       f.service.save(newAuth0)
 
@@ -130,14 +128,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val idpStringRepr = ArgumentCaptor.forClass[String, String](classOf[String])
       verify(mockConfigurationService, atLeastOnce()).setProperty(
         ArgumentCaptor.forClass[String, String](classOf[String]).capture(),
-        idpStringRepr.capture(),
+        idpStringRepr.capture()
       )
 
       idpStringRepr.getValue shouldBe auth0EncryptedStringRepr
     }
 
     it(
-      "returns errors for sensitive values if they are neither provided or available in an existing config") {
+      "returns errors for sensitive values if they are neither provided or available in an existing config"
+    ) {
       val f = fixture
 
       Given("No configuration is available")
@@ -147,16 +146,15 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       When("A new configuration does not include sensitive values")
       val newAuth0 = auth0.copy(
         authCodeClientSecret = None,
-        apiClientSecret = None,
+        apiClientSecret = None
       )
 
       Then("Error messages returned for the missing sensitive values")
       val result = f.service.save(newAuth0)
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe
-            "Missing value for required field: Authorisation Code flow Client Secret," +
-              "Missing value for required field: API Client Secret"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe
+          "Missing value for required field: Authorisation Code flow Client Secret," +
+          "Missing value for required field: API Client Secret"
       }
     }
 
@@ -173,7 +171,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
         null,
         null,
         null,
-        auth0EncryptedStringRepr,
+        auth0EncryptedStringRepr
       )
     }
 
@@ -192,7 +190,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then(
-        "The string representation should have been converted to the object and returned through ConfigurationService")
+        "The string representation should have been converted to the object and returned through ConfigurationService"
+      )
       val expected = GenericIdentityProviderDetails(
         commonDetails = CommonDetails(
           platform = auth0.platform,
@@ -205,7 +204,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
           usernameClaim = auth0.usernameClaim,
           defaultRoles = auth0.defaultRoles,
           roleConfig = auth0.roleConfig,
-          enabled = auth0.enabled,
+          enabled = auth0.enabled
         ),
         apiUrl = URI.create(auth0.apiUrl).toURL,
         apiClientId = auth0.apiClientId,
@@ -224,9 +223,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "No Identity Provider configured"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "No Identity Provider configured"
       }
     }
 
@@ -242,9 +240,8 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
       val result = f.service.get
 
       Then("An error message should be returned")
-      inside(result) {
-        case Left(e) =>
-          e.getMessage shouldBe "DecodingFailure at .authCodeClientId: Missing required field"
+      inside(result) { case Left(e) =>
+        e.getMessage shouldBe "DecodingFailure at .commonDetails.authCodeClientId: Missing required field"
       }
     }
   }

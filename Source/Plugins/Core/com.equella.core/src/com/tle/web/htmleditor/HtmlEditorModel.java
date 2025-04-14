@@ -20,7 +20,6 @@ package com.tle.web.htmleditor;
 
 import com.tle.common.scripting.ScriptContextFactory;
 
-/** @author aholland */
 public class HtmlEditorModel {
   protected String width;
   protected String height;

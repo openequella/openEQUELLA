@@ -48,7 +48,6 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-/** @author Nicholas Read */
 @Bind(XsltService.class)
 @Singleton
 public final class XsltServiceImpl implements XsltService {

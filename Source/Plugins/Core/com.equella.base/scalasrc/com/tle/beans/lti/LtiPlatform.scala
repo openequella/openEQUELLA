@@ -36,6 +36,7 @@ import javax.persistence.{
   Index,
   JoinColumn,
   JoinTable,
+  Lob,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -43,8 +44,7 @@ import javax.persistence.{
   UniqueConstraint
 }
 
-/**
-  * This entity is used to store the configuration of LTI 1.3 platform.
+/** This entity is used to store the configuration of LTI 1.3 platform.
   */
 @Entity
 @Table(
@@ -56,106 +56,93 @@ import javax.persistence.{
 )
 @NamedQuery(
   name = "getByPlatformID",
-  query = "from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
+  query = "from LtiPlatform WHERE platformId = :platformId AND institution = :institution"
+)
 @NamedQuery(
   name = "deleteByPlatformID",
-  query = "Delete from LtiPlatform WHERE platformId = :platformId AND institution = :institution")
+  query = "Delete from LtiPlatform WHERE platformId = :platformId AND institution = :institution"
+)
 class LtiPlatform {
 
-  /**
-    * Database automatically generated ID used as the primary key.
+  /** Database automatically generated ID used as the primary key.
     */
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Long = _
 
-  /**
-    * ID of the learning platform.
+  /** ID of the learning platform.
     */
   @Column(nullable = false)
   var platformId: String = _
 
-  /**
-    * Name of the learning platform.
+  /** Name of the learning platform.
     */
   @Column(nullable = false)
   var name: String = _
 
-  /**
-    * Client ID provided by the platform.
+  /** Client ID provided by the platform.
     */
   @Column(nullable = false)
   var clientId: String = _
 
-  /**
-    * The platform's authentication request URL
+  /** The platform's authentication request URL
     */
   @Column(nullable = false)
   var authUrl: String = _
 
-  /**
-    * JWKS keyset URL where to get the keys.
+  /** JWKS keyset URL where to get the keys.
     */
   @Column(nullable = false)
   var keysetUrl: String = _
 
-  /**
-    * Prefix added to the user ID from the LTI request
+  /** Prefix added to the user ID from the LTI request
     */
   var usernamePrefix: String = _
 
-  /**
-    * Suffix added to the user ID from the LTI request
+  /** Suffix added to the user ID from the LTI request
     */
   var usernameSuffix: String = _
 
-  /**
-    * The claim which can be used to retrieve username from the LTI request.
+  /** The claim which can be used to retrieve username from the LTI request.
     */
   var usernameClaim: String = _
 
-  /**
-    * How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
+  /** How to handle unknown users by one of the three options - ERROR, GUEST OR CREATE.
     */
   @Column(nullable = false, length = 10)
   var unknownUserHandling: String = _
 
-  /**
-    * The list of groups to be added to the user object If the unknown user handling is CREATE.
+  /** The list of groups to be added to the user object If the unknown user handling is CREATE.
     */
   @ElementCollection
   @CollectionTable(name = "lti_platform_unknown_groups")
   var unknownUserDefaultGroups: java.util.Set[String] = _
 
-  /**
-    * A list of roles to be assigned to a LTI instructor role.
+  /** A list of roles to be assigned to a LTI instructor role.
     */
   @ElementCollection
   @CollectionTable(name = "lti_platform_instructor_roles")
   var instructorRoles: java.util.Set[String] = _
 
-  /**
-    * A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles.
+  /** A list of roles to be assigned to a LTI role that is neither the instructor or in the list of
+    * custom roles.
     */
   @ElementCollection
   @CollectionTable(name = "lti_platform_unknown_roles")
   var unknownRoles: java.util.Set[String] = _
 
-  /**
-    *
-    * Mappings from LTI roles to OEQ roles.
+  /** Mappings from LTI roles to OEQ roles.
     */
   @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
   @JoinColumn(name = "lti_platform_id", nullable = false)
   var customRoles: java.util.Set[LtiPlatformCustomRole] = _
 
-  /**
-    * The ACL Expression to control access from this platform.
+  /** The ACL Expression to control access from this platform.
     */
+  @Lob
   var allowExpression: String = _
 
-  /**
-    * Institution which the key set belongs to.
+  /** Institution which the key set belongs to.
     */
   @JoinColumn(nullable = false)
   @ManyToOne
@@ -163,19 +150,16 @@ class LtiPlatform {
   @XStreamOmitField
   var institution: Institution = _
 
-  /**
-    * Whether the platform is enabled or not.
+  /** Whether the platform is enabled or not.
     */
   @Column(nullable = false)
   var enabled: Boolean = _
 
-  /**
-    * Key pairs used to sign the JWT for LTI platform.
+  /** Key pairs used to sign the JWT for LTI platform.
     *
     * NOTE: A join table has been explicitly used here to ensure that `WebKeySet` is not tightly
     * coupled to LTI Platform, as we can use that for other items in the future - e.g. improved
     * OAuth2 with JWT support.
-    *
     */
   @OneToMany(cascade = Array(CascadeType.ALL), orphanRemoval = true)
   @JoinTable(
@@ -185,25 +169,21 @@ class LtiPlatform {
   )
   var keyPairs: java.util.Set[WebKeySet] = _
 
-  /**
-    * When the platform was created.
+  /** When the platform was created.
     */
   @Column(nullable = false)
   var dateCreated: Instant = _
 
-  /**
-    * ID of the user who created the platform.
+  /** ID of the user who created the platform.
     */
   @Column(nullable = false)
   var createdBy: String = _
 
-  /**
-    * When the platform was last modified.
+  /** When the platform was last modified.
     */
   var dateLastModified: Instant = _
 
-  /**
-    * ID of the user Who last modified the platform.
+  /** ID of the user Who last modified the platform.
     */
   var lastModifiedBy: String = _
 }

@@ -33,7 +33,6 @@ import java.io.InputStream;
 import javax.swing.Action;
 import javax.swing.filechooser.FileFilter;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class ImportAction extends TLEAction {
   public ImportAction() {

@@ -111,6 +111,7 @@ public abstract class AbstractSelectGroupSection<M extends AbstractSelectGroupSe
 
   @Component(name = "t")
   private Link groupFilterTooltip;
+
   // Dynamic @Component
   private MultiSelectionList<GroupBean> groupList;
 

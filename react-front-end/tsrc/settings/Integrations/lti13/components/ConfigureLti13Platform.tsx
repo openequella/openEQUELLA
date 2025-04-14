@@ -19,16 +19,12 @@ import { Card, CardContent, Divider, Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import * as RS from "fp-ts/ReadonlySet";
 import * as R from "fp-ts/Record";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  CustomRolesMapping,
-  transformCustomRoleMapping,
-} from "../../../../components/CustomRoleHelper";
+import { CustomRolesMappings } from "../../../../components/CustomRoleHelper";
 import SettingPageTemplate from "../../../../components/SettingPageTemplate";
 import { AppContext } from "../../../../mainui/App";
 import { routes } from "../../../../mainui/routes";
@@ -38,12 +34,9 @@ import {
 } from "../../../../mainui/Template";
 import { defaultACLEntityResolvers } from "../../../../modules/ACLExpressionModule";
 import { ACLRecipientTypes } from "../../../../modules/ACLRecipientModule";
-import { groupIds } from "../../../../modules/GroupModule";
-import { roleIds } from "../../../../modules/RoleModule";
 import { languageStrings } from "../../../../util/langstrings";
 import { isNonEmptyString, isValidURL } from "../../../../util/validation";
 import AccessControlSection, {
-  checkAclExpressionLength,
   UnknownUserHandlingData,
 } from "./AccessControlSection";
 import GeneralDetailsSection, {
@@ -52,10 +45,7 @@ import GeneralDetailsSection, {
   plainTextFiled,
 } from "../../../../components/GeneralDetailsSection";
 import { validateUsernameClaim } from "./LtiUsernameClaimParser";
-import RoleMappingsSection, {
-  RoleMappingWarnings,
-} from "./RoleMappingsSection";
-import { GroupWarning } from "./UnknownUserHandlingControl";
+import RoleMappingsSection from "./RoleMappingsSection";
 import { UsableByControlProps } from "./UsableByControl";
 import * as S from "fp-ts/string";
 
@@ -74,10 +64,6 @@ const {
 } =
   languageStrings.settings.integration.lti13PlatformsSettings.createPage
     .generalDetails;
-/**
- * Warning messages for group and role selector related controls in ConfigureLti13Platform component.
- */
-export type WarningMessages = RoleMappingWarnings & GroupWarning;
 
 export type LtiGeneralDetails = Omit<
   OEQ.LtiPlatform.LtiPlatformBase,
@@ -101,15 +87,15 @@ export interface ConfigurePlatformValue {
   /**
    * A list of roles to be assigned to a LTI instructor role
    */
-  instructorRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  instructorRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * A list of roles to be assigned to a LTI role that is neither the instructor or in the list of custom roles
    */
-  unknownRoles: ReadonlySet<OEQ.UserQuery.RoleDetails>;
+  unknownRoles: ReadonlySet<OEQ.Common.UuidString>;
   /**
    * Mappings from LTI roles to OEQ roles
    */
-  customRoles: CustomRolesMapping;
+  customRoles: CustomRolesMappings;
   /**
    * The UnknownUserHandling option and list of groups to be added to the user object If the unknown user handling is CREATE
    */
@@ -168,18 +154,6 @@ export interface ConfigureLti13PlatformProps
     platform: OEQ.LtiPlatform.LtiPlatform,
   ) => Promise<void>;
   /**
-   * Show warning message for group and role selector related controls
-   * if the IDs of group/role details fetched form server
-   * doesn't match with the initial group/groups IDs.
-   *
-   * For example:
-   * suppose users select Role A and Role B for UnknownRoles. Later, if Role A gets deleted,
-   * its ID will still be stored in the platform.
-   * When the Edit page tries to get Role A and B, the server will only return Role B.
-   * Consequently, a warning message will be displayed stating that Role A is missing.
-   */
-  warningMessages?: WarningMessages;
-  /**
    * KeyRotationSection for edit platform page.
    */
   KeyRotationSection?: React.ReactNode;
@@ -204,7 +178,6 @@ const ConfigureLti13Platform = ({
   searchRoleProvider,
   configurePlatformProvider,
   aclEntityResolversProvider = defaultACLEntityResolvers,
-  warningMessages,
   KeyRotationSection,
 }: ConfigureLti13PlatformProps) => {
   const { appErrorHandler } = useContext(AppContext);
@@ -240,15 +213,15 @@ const ConfigureLti13Platform = ({
     useState<UnknownUserHandlingData>(value.unknownUserHandlingData);
 
   const [selectedUnknownRoles, setSelectedUnknownRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
+    ReadonlySet<OEQ.Common.UuidString>
   >(value.unknownRoles);
 
   const [selectedInstructorRoles, setSelectedInstructorRoles] = useState<
-    ReadonlySet<OEQ.UserQuery.RoleDetails>
+    ReadonlySet<OEQ.Common.UuidString>
   >(value.instructorRoles);
 
   const [selectedCustomRolesMapping, setSelectedCustomRolesMapping] =
-    useState<CustomRolesMapping>(value.customRoles);
+    useState<CustomRolesMappings>(value.customRoles);
 
   // Update the corresponding value in generalDetailsRenderOptions based on the provided key.
   const onGeneralDetailsChange = (key: string, newValue: unknown) =>
@@ -394,13 +367,10 @@ const ConfigureLti13Platform = ({
       enabled: value.enabled,
       unknownUserHandling: selectedUnknownUserHandling.selection,
       allowExpression: aclExpression,
-      instructorRoles: pipe(roleIds(selectedInstructorRoles), RS.toSet),
-      unknownRoles: pipe(roleIds(selectedUnknownRoles), RS.toSet),
-      customRoles: transformCustomRoleMapping(selectedCustomRolesMapping),
-      unknownUserDefaultGroups: pipe(
-        groupIds(selectedUnknownUserHandling.groups),
-        RS.toSet,
-      ),
+      instructorRoles: selectedInstructorRoles,
+      unknownRoles: selectedUnknownRoles,
+      customRoles: selectedCustomRolesMapping,
+      unknownUserDefaultGroups: selectedUnknownUserHandling.groups,
     };
 
     // Verify the base platform value and save it.
@@ -456,10 +426,7 @@ const ConfigureLti13Platform = ({
   const handleSubmit = async () => {
     // once user try to submit the value, the validation error can be displayed.
     setShowValidationErrors(true);
-    if (
-      checkValidations(ltiGeneralDetailsRenderOptions, ltiGeneralDetails) &&
-      checkAclExpressionLength(aclExpression)
-    ) {
+    if (checkValidations(ltiGeneralDetailsRenderOptions, ltiGeneralDetails)) {
       // change page into saving mode
       setSaving(true);
     } else {
@@ -499,7 +466,6 @@ const ConfigureLti13Platform = ({
               searchGroupProvider={searchGroupProvider}
               searchRoleProvider={searchRoleProvider}
               aclEntityResolversProvider={aclEntityResolversProvider}
-              warningMessageForGroups={warningMessages?.warningMessageForGroups}
               showValidationErrors={showValidationErrors}
             />
           </Grid>
@@ -514,8 +480,6 @@ const ConfigureLti13Platform = ({
               setCustomRolesMapping={setSelectedCustomRolesMapping}
               unknownRoles={selectedUnknownRoles}
               setUnknownRoles={setSelectedUnknownRoles}
-              searchRoleProvider={searchRoleProvider}
-              warningMessages={warningMessages}
             />
           </Grid>
           {KeyRotationSection && (

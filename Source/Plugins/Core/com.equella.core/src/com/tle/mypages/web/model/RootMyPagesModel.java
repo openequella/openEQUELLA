@@ -21,7 +21,6 @@ package com.tle.mypages.web.model;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.List;
 
-/** @author aholland */
 public class RootMyPagesModel {
   protected List<SectionRenderable> sections;
 

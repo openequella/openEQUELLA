@@ -28,7 +28,6 @@ import com.tle.mycontent.web.section.MyContentContributeSection;
 import com.tle.web.sections.SectionInfo;
 import java.util.Set;
 
-/** @author aholland */
 public interface MyContentService {
   boolean isMyContentContributionAllowed();
 

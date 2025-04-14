@@ -320,7 +320,9 @@ public class JStatusBar extends JComponent {
     return spinnerVisible;
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   private class ClearMessageTask extends TimerTask {
     private final int level;
 

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** @author Nicholas Read */
 public interface BaseEntityService extends RemoteBaseEntityService {
   List<Long> getIdsFromUuids(Set<String> uuids);
 

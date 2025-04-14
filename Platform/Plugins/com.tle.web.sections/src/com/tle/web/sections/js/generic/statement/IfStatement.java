@@ -25,7 +25,6 @@ import com.tle.web.sections.js.JSStatements;
 import com.tle.web.sections.js.generic.Js;
 import com.tle.web.sections.js.generic.expression.BooleanExpression;
 
-/** @author aholland */
 public class IfStatement implements JSStatements {
   protected final BooleanExpression condition;
   protected final JSStatements body;

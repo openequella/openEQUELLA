@@ -64,12 +64,14 @@ public class SoapCall {
   protected String soapAction = "";
   protected String reqNamespace = "http://www.dytech.com.au/";
   protected String envelopeTag = "SOAP-ENV";
+
   /** Default is overwritten by SHEX, MEX */
   protected String envelopeTagValue = "http://schemas.xmlsoap.org/soap/envelope/";
 
   protected boolean interpretExceptions = true;
   private boolean dotNetCompatability = false;
   private static final String DEFAULT_CONTENT_TYPE = "text/xml"; // not for
+
   // everyone
   // ...
   static {
@@ -96,13 +98,17 @@ public class SoapCall {
     this.isSecure = isSecure;
   }
 
-  /** @param url relative url of the Soap agent */
+  /**
+   * @param url relative url of the Soap agent
+   */
   public SoapCall(String host, int port, String endpoint, String methodName, String reqNamespace) {
     this(host, port, endpoint, methodName);
     this.reqNamespace = reqNamespace;
   }
 
-  /** @param url relative url of the Soap agent */
+  /**
+   * @param url relative url of the Soap agent
+   */
   public SoapCall(
       String host,
       int port,
@@ -114,12 +120,16 @@ public class SoapCall {
     this.isSecure = isSecure;
   }
 
-  /** @param dotNetCompatability The dotNetCompatability to set. */
+  /**
+   * @param dotNetCompatability The dotNetCompatability to set.
+   */
   public void setDotNetCompatability(boolean dotNetCompatability) {
     this.dotNetCompatability = dotNetCompatability;
   }
 
-  /** @return Returns the dotNetCompatability. */
+  /**
+   * @return Returns the dotNetCompatability.
+   */
   public boolean isDotNetCompatability() {
     return dotNetCompatability;
   }

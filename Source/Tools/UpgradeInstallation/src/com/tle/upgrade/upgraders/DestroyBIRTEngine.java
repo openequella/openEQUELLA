@@ -31,7 +31,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class DestroyBIRTEngine extends AbstractUpgrader {
   public static final String ID = "DestroyBIRTEngine2";

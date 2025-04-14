@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** @author Nicholas Read */
 public final class Main {
   private Main() {
     throw new Error("Do not invoke");

@@ -23,11 +23,12 @@ import com.tle.common.i18n.{CurrentLocale, LangUtils}
 
 object LanguageStringHelper {
 
-  /**
-    * Read language string from a bundle with current locale.
+  /** Read language string from a bundle with current locale.
     *
-    * @param bundle A language string bundle that may have multiple strings for different locale.
-    * @return The string or None.
+    * @param bundle
+    *   A language string bundle that may have multiple strings for different locale.
+    * @return
+    *   The string or None.
     */
   def getStringFromCurrentLocale(bundle: LanguageBundle): Option[String] = {
     Option(LangUtils.getString(bundle, CurrentLocale.getLocale, null))

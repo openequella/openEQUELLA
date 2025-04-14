@@ -76,44 +76,50 @@ case class InternalRedirect(route: String, userUpdated: Boolean)
 
 case class ExternalRedirect(href: String)
 
-case class MenuItem(title: String,
-                    href: Option[String],
-                    systemIcon: Option[String],
-                    route: Option[String],
-                    iconUrl: Option[String],
-                    newWindow: Boolean)
+case class MenuItem(
+    title: String,
+    href: Option[String],
+    systemIcon: Option[String],
+    route: Option[String],
+    iconUrl: Option[String],
+    newWindow: Boolean
+)
 
-case class LegacyContent(html: Map[String, String],
-                         css: Option[Iterable[String]],
-                         js: Iterable[String],
-                         script: String,
-                         state: Map[String, Array[String]],
-                         title: String,
-                         metaTags: String,
-                         menuMode: String,
-                         fullscreenMode: String,
-                         hideAppBar: Boolean,
-                         userUpdated: Boolean,
-                         preventUnload: Boolean,
-                         noForm: Boolean,
-                         accessibilityMode: Boolean)
+case class LegacyContent(
+    html: Map[String, String],
+    css: Option[Iterable[String]],
+    js: Iterable[String],
+    script: String,
+    state: Map[String, Array[String]],
+    title: String,
+    metaTags: String,
+    menuMode: String,
+    fullscreenMode: String,
+    hideAppBar: Boolean,
+    userUpdated: Boolean,
+    preventUnload: Boolean,
+    noForm: Boolean,
+    accessibilityMode: Boolean
+)
 
 case class ItemCounts(tasks: Int, notifications: Int)
 
-case class CurrentUserDetails(id: String,
-                              username: String,
-                              firstName: String,
-                              lastName: String,
-                              emailAddress: String,
-                              accessibilityMode: Boolean,
-                              autoLoggedIn: Boolean,
-                              guest: Boolean,
-                              prefsEditable: Boolean,
-                              menuGroups: Iterable[Iterable[MenuItem]],
-                              counts: Option[ItemCounts],
-                              canDownloadSearchResult: Boolean,
-                              roles: Iterable[String],
-                              scrapbookEnabled: Boolean)
+case class CurrentUserDetails(
+    id: String,
+    username: String,
+    firstName: String,
+    lastName: String,
+    emailAddress: String,
+    accessibilityMode: Boolean,
+    autoLoggedIn: Boolean,
+    guest: Boolean,
+    prefsEditable: Boolean,
+    menuGroups: Iterable[Iterable[MenuItem]],
+    counts: Option[ItemCounts],
+    canDownloadSearchResult: Boolean,
+    roles: Iterable[String],
+    scrapbookEnabled: Boolean
+)
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
 
@@ -196,8 +202,10 @@ object LegacyContentController extends AbstractSectionsController with SectionFi
       new EventAuthoriser {
         override def checkAuthorisation(info: SectionInfo): Unit = {}
 
-        override def addToBookmark(info: SectionInfo,
-                                   bookmarkState: util.Map[String, Array[String]]): Unit =
+        override def addToBookmark(
+            info: SectionInfo,
+            bookmarkState: util.Map[String, Array[String]]
+        ): Unit =
           bookmarkState.put(RenderTemplate.XSRF_PARAM, Array[String](CurrentUser.getSessionID))
       }
     )
@@ -291,20 +299,27 @@ class LegacyContentApi {
       }
     }
 
-    def itemViewer(p: String, f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem)
-      : (String, MutableSectionInfo => MutableSectionInfo) = {
+    def itemViewer(
+        p: String,
+        f: (SectionInfo, NewDefaultViewableItem) => NewDefaultViewableItem
+    ): (String, MutableSectionInfo => MutableSectionInfo) = {
       val (itemId, contentFileName) = parseItemViewerPath(p)
-      (s"/viewitem/viewitem.do", { info: MutableSectionInfo =>
-        for {
-          section <- Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
-          name    <- contentFileName
-          _ = section.getModel(info).setFilename(name)
-        } yield ()
+      (
+        s"/viewitem/viewitem.do",
+        { info: MutableSectionInfo =>
+          for {
+            section <- Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
+            name    <- contentFileName
+            _ = section.getModel(info).setFilename(name)
+          } yield ()
 
-        info.setAttribute(ItemServlet.VIEWABLE_ITEM,
-                          f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId)))
-        info
-      })
+          info.setAttribute(
+            ItemServlet.VIEWABLE_ITEM,
+            f(info, LegacyGuice.viewableItemFactory.createNewViewableItem(itemId))
+          )
+          info
+        }
+      )
     }
 
     path match {
@@ -312,20 +327,24 @@ class LegacyContentApi {
       case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
       case p if p.startsWith("preview/") =>
         val itemId = ItemTaskId.parse(p.substring("preview/".length))
-        ("/viewitem/viewitem.do", { info: MutableSectionInfo =>
-          val previewableItem =
-            LegacyGuice.userSessionService.getAttribute[PreviewableItem](itemId.getUuid)
-          if (previewableItem != null) {
-            val viewableItem = previewableItem.getViewableItem
-            viewableItem.setFromRequest(true)
-            info.setAttribute(ItemServlet.VIEWABLE_ITEM, viewableItem)
+        (
+          "/viewitem/viewitem.do",
+          { info: MutableSectionInfo =>
+            val previewableItem =
+              LegacyGuice.userSessionService.getAttribute[PreviewableItem](itemId.getUuid)
+            if (previewableItem != null) {
+              val viewableItem = previewableItem.getViewableItem
+              viewableItem.setFromRequest(true)
+              info.setAttribute(ItemServlet.VIEWABLE_ITEM, viewableItem)
+            }
+            info
           }
-          info
-        })
+        )
 
       case p if p.startsWith("integ/gen/") =>
         itemViewer(
-          p.substring("integ/gen/".length), { (info, vi) =>
+          p.substring("integ/gen/".length),
+          { (info, vi) =>
             vi.getState.setIntegrationType("gen")
             val decs = Decorations.getDecorations(info)
             decs.setMenuMode(MenuMode.HIDDEN)
@@ -340,12 +359,14 @@ class LegacyContentApi {
 
   private val UserIdKey = "InitialUserId"
 
-  def withTreePath(_path: String,
-                   uriInfo: UriInfo,
-                   req: HttpServletRequest,
-                   resp: HttpServletResponse,
-                   params: util.Map[String, Array[String]],
-                   f: MutableSectionInfo => ResponseBuilder): Response = {
+  def withTreePath(
+      _path: String,
+      uriInfo: UriInfo,
+      req: HttpServletRequest,
+      resp: HttpServletResponse,
+      params: util.Map[String, Array[String]],
+      f: MutableSectionInfo => ResponseBuilder
+  ): Response = {
     val (treePath, setupInfo) = parsePath(_path)
     val path                  = s"/${_path}"
     (Option(LegacyGuice.treeRegistry.getTreeForPath(treePath)) match {
@@ -357,11 +378,13 @@ class LegacyContentApi {
         req.setAttribute(UserIdKey, CurrentUser.getUserID)
         val info =
           setupInfo(LegacyContentController.createInfo(tree, path, req, resp, null, params, null))
-        info.setAttribute(AjaxGenerator.AJAX_BASEURI,
-                          uriInfo.getBaseUriBuilder
-                            .path(classOf[LegacyContentApi])
-                            .path(classOf[LegacyContentApi], "ajaxCall")
-                            .build(""))
+        info.setAttribute(
+          AjaxGenerator.AJAX_BASEURI,
+          uriInfo.getBaseUriBuilder
+            .path(classOf[LegacyContentApi])
+            .path(classOf[LegacyContentApi], "ajaxCall")
+            .build("")
+        )
         f(info)
       }
     }).build()
@@ -374,8 +397,10 @@ class LegacyContentApi {
     notes = "Get details of the user for the current session",
     response = classOf[CurrentUserDetails]
   )
-  def currentuser(@Context req: HttpServletRequest,
-                  @Context resp: HttpServletResponse): Response = {
+  def currentuser(
+      @Context req: HttpServletRequest,
+      @Context resp: HttpServletResponse
+  ): Response = {
     val contributors = LegacyGuice.menuService.getContributors
     val noInst       = CurrentInstitution.get == null
     val (noParam, filterName) =
@@ -406,35 +431,40 @@ class LegacyContentApi {
         .groupBy(_.getGroupPriority)
         .toSeq
         .sortBy(_._1)
-        .map {
-          case (_, links) =>
-            links.sortBy(_.getLinkPriority).map { mc =>
-              val menuLink = mc.getLink
-              val href = Option(menuLink.getBookmark)
-                .getOrElse(
-                  new BookmarkAndModify(context,
-                                        menuLink.getHandlerMap.getHandler("click").getModifier))
-                .getHref
-              val route   = Option(mc.getRoute).orElse(LegacyContentController.internalRoute(href))
-              val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
-              MenuItem(
-                menuLink.getLabelText,
-                if (route.isEmpty) Some(href) else None,
-                Option(mc.getSystemIcon),
-                route,
-                iconUrl,
-                "_blank" == menuLink.getTarget
+        .map { case (_, links) =>
+          links.sortBy(_.getLinkPriority).map { mc =>
+            val menuLink = mc.getLink
+            val href = Option(menuLink.getBookmark)
+              .getOrElse(
+                new BookmarkAndModify(
+                  context,
+                  menuLink.getHandlerMap.getHandler("click").getModifier
+                )
               )
-            }
+              .getHref
+            val route   = Option(mc.getRoute).orElse(LegacyContentController.internalRoute(href))
+            val iconUrl = if (mc.isCustomImage) Some(mc.getBackgroundImagePath) else None
+            MenuItem(
+              menuLink.getLabelText,
+              if (route.isEmpty) Some(href) else None,
+              Option(mc.getSystemIcon),
+              route,
+              iconUrl,
+              "_blank" == menuLink.getTarget
+            )
+          }
         }
     }
     val counts = if (!cu.isGuest) Option {
       val notificationCount = LegacyGuice.freeTextService.countsFromFilters(
-        Collections.singletonList(new NotificationSearch))(0)
+        Collections.singletonList(new NotificationSearch)
+      )(0)
       val taskCount = LegacyGuice.freeTextService.countsFromFilters(
-        Collections.singletonList(new TaskListSearch))(0)
+        Collections.singletonList(new TaskListSearch)
+      )(0)
       ItemCounts(taskCount, notificationCount)
-    } else None
+    }
+    else None
     val ub           = cu.getUserBean
     val cacheControl = new CacheControl()
     cacheControl.setNoCache(true)
@@ -466,17 +496,20 @@ class LegacyContentApi {
   @POST
   @GET
   @Path("/ajax/{path : .+}")
-  def ajaxCall(@PathParam("path") _path: String,
-               @Context uriInfo: UriInfo,
-               @Context req: HttpServletRequest,
-               @Context resp: HttpServletResponse): Response = {
+  def ajaxCall(
+      @PathParam("path") _path: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest,
+      @Context resp: HttpServletResponse
+  ): Response = {
 
     withTreePath(
       _path,
       uriInfo,
       req,
       resp,
-      req.getParameterMap, { info =>
+      req.getParameterMap,
+      { info =>
         info.preventGET()
         LegacyContentController.execute(info)
         renderedResponse(info).getOrElse {
@@ -490,24 +523,29 @@ class LegacyContentApi {
 
   @POST
   @Path("/submit/{path : .+}")
-  def submit(@PathParam("path") _path: String,
-             @Context uriInfo: UriInfo,
-             @Context req: HttpServletRequest,
-             @Context resp: HttpServletResponse,
-             params: mutable.Map[String, Array[String]]): Response = {
+  def submit(
+      @PathParam("path") _path: String,
+      @Context uriInfo: UriInfo,
+      @Context req: HttpServletRequest,
+      @Context resp: HttpServletResponse,
+      params: mutable.Map[String, Array[String]]
+  ): Response = {
     withTreePath(
       _path,
       uriInfo,
       req,
       resp,
-      params.asJava, { info =>
+      params.asJava,
+      { info =>
         info.preventGET()
         info.getRootRenderContext.setRootResultListener(new LegacyResponseListener(info))
         LegacyContentController.execute(info)
         redirectResponse(info)
           .orElse(renderedResponse(info))
-          .orElse(Option(info.getAttributeForClass(classOf[AjaxRenderContext])).map(arc =>
-            ajaxResponse(info, arc)))
+          .orElse(
+            Option(info.getAttributeForClass(classOf[AjaxRenderContext]))
+              .map(arc => ajaxResponse(info, arc))
+          )
           .getOrElse {
             info.setRendered()
             Response.ok(req.getAttribute(LegacyContentKey))
@@ -546,7 +584,8 @@ class LegacyContentApi {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(
             context,
-            wrapBody(context, tr.getNamedResult(context, "body")))
+            wrapBody(context, tr.getNamedResult(context, "body"))
+          )
           val form = context.getForm
           val formString: Option[String] = Option(form.getAction) match {
             case Some(action) => Some(SectionUtils.renderToString(context, form))
@@ -557,11 +596,11 @@ class LegacyContentApi {
           val scrops = renderScreenOptions(context)
           val crumbs = renderCrumbs(context, decs).map(SectionUtils.renderToString(context, _))
           Iterable(
-            Some("body"                                          -> body),
+            Some("body" -> body),
             Option(upperbody).filter(_.nonEmpty).map("upperbody" -> _),
-            formString.map("form"                                -> _),
-            scrops.map("so"                                      -> _),
-            crumbs.map("crumbs"                                  -> _)
+            formString.map("form" -> _),
+            scrops.map("so" -> _),
+            crumbs.map("crumbs" -> _)
           ).flatten.toMap
         case sr: SectionRenderable =>
           Map("body" -> SectionUtils.renderToString(context, wrapBody(context, sr)))
@@ -575,7 +614,9 @@ class LegacyContentApi {
         context.addStatements(
           new FunctionCallStatement(
             JQueryCore.JQUERY,
-            new AnonymousFunction(new StatementBlock(ready).setSeperate(true))))
+            new AnonymousFunction(new StatementBlock(ready).setSeperate(true))
+          )
+        )
 
       val scripts  = preRenderPageScripts(context, context).map(_.getStatements(context))
       val jsFiles  = context.getJsFiles.asScala
@@ -611,8 +652,8 @@ class LegacyContentApi {
 
   def loadCss(context: StandardRenderContext): Option[List[String]] = {
     def getCssFromContext: List[String] =
-      context.getCssFiles.asScala.collect {
-        case css: CssInclude => css.getHref(context)
+      context.getCssFiles.asScala.collect { case css: CssInclude =>
+        css.getHref(context)
       }.toList
 
     val uri = context.getRequest.getRequestURI
@@ -626,15 +667,19 @@ class LegacyContentApi {
 
     // If the context has a boolean attribute saying legacy CSS should be disabled, or the URL matches
     // above pattern, use CSS provided by the context.
-    if (context.getBooleanAttribute(LegacyContentController.DISABLE_LEGACY_CSS) || disableLegacyCss) {
+    if (
+      context.getBooleanAttribute(LegacyContentController.DISABLE_LEGACY_CSS) || disableLegacyCss
+    ) {
       Option(getCssFromContext)
     } else {
       None
     }
   }
 
-  private def preRenderPageScripts(context: RenderContext,
-                                   helper: StandardRenderContext): mutable.Buffer[JSStatements] = {
+  private def preRenderPageScripts(
+      context: RenderContext,
+      helper: StandardRenderContext
+  ): mutable.Buffer[JSStatements] = {
     val renderedStatements                      = mutable.Buffer[JSStatements]()
     var iterations: Int                         = 0
     var origStatements: util.List[JSStatements] = helper.dequeueStatements
@@ -645,10 +690,12 @@ class LegacyContentApi {
       renderedStatements.insertAll(0, statements.asScala)
       context.preRender(statements)
       origStatements = helper.dequeueStatements
-      if ({
-        iterations += 1;
-        iterations
-      } > 10) throw new SectionsRuntimeException("10 looks like infinity")
+      if (
+        {
+          iterations += 1;
+          iterations
+        } > 10
+      ) throw new SectionsRuntimeException("10 looks like infinity")
     }
     renderedStatements
   }
@@ -675,10 +722,15 @@ class LegacyContentApi {
         case ls: HtmlLinkState => new LinkRenderer(ls)
         case o                 => new TagRenderer("span", o)
       } :+ Option(bc.getForcedLastCrumb).getOrElse(d.getTitle)
-      new SpanRenderer(ct,
-                       new DelimitedRenderer(" " + CoreStrings.text("breadcrumb.separator") + " ",
-                                             allCrumbs.toSeq: _*))
-    } else None
+      new SpanRenderer(
+        ct,
+        new DelimitedRenderer(
+          " " + CoreStrings.text("breadcrumb.separator") + " ",
+          allCrumbs.toSeq: _*
+        )
+      )
+    }
+    else None
   }
 
   def renderedResponse(info: MutableSectionInfo) = {
@@ -723,13 +775,14 @@ class LegacyContentApi {
             override def returnResult(result: SectionResult, fromId: String): Unit =
               bodySR = result
           }
-        ))
+        )
+      )
       bodySR
     } match {
       case tr: TemplateResult    => tr.getNamedResult(context, "body")
       case sr: SectionRenderable => sr
       case pr: PreRenderable     => new PreRenderOnly(pr)
-      //Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
+      // Due to many unknowns of what could cause renderedBody being null, return a 500 error at the moment.
       case _ =>
         LOGGER.debug("Unknown error at renderedBody - ajaxResponse");
         return Response.status(Status.NOT_IMPLEMENTED);
@@ -737,7 +790,7 @@ class LegacyContentApi {
     renderAjaxBody(renderedBody)
     val responseCallback = arc.getJSONResponseCallback
     info.setRendered()
-    //removes old ui css that gets included when a sections ajax request is made
+    // removes old ui css that gets included when a sections ajax request is made
     arc.clearCss()
     Response.ok(responseCallback.getResponseObject(arc))
   }

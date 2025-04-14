@@ -351,7 +351,8 @@ public class ConfigLauncherGUI extends JFrame implements ActionListener {
               "conversionService.disableConversion = true");
       optProp =
           optProp.replace(
-              "conversionService.conversionServicePath = ${install.path#t\\/}/conversion/conversion-service.jar",
+              "conversionService.conversionServicePath ="
+                  + " ${install.path#t\\/}/conversion/conversion-service.jar",
               "#conversionService.conversionServicePath =");
       optProp =
           optProp.replace("#pluginPathResolver.wrappedClass", "pluginPathResolver.wrappedClass");

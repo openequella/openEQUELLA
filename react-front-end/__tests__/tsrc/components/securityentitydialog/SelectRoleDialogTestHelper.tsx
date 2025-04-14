@@ -18,12 +18,17 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
-import { listRoles } from "../../../../__mocks__/RoleModule.mock";
+
 import SelectRoleDialog, {
   SelectRoleDialogProps,
 } from "../../../../tsrc/components/securityentitydialog/SelectRoleDialog";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { doSearch, searchAndSelect } from "./SelectEntityDialogTestHelper";
+import {
+  doSearch,
+  searchAndSelect,
+  waitForEntityDialogToRender,
+} from "./SelectEntityDialogTestHelper";
+import { searchRoles } from "../../../../__mocks__/RoleModule.mock";
 
 const { queryFieldLabel } = languageStrings.roleSearchComponent;
 
@@ -31,15 +36,19 @@ export const commonSelectRoleDialogProps: SelectRoleDialogProps = {
   open: true,
   value: new Set<OEQ.UserQuery.RoleDetails>(),
   onClose: jest.fn(),
-  roleListProvider: listRoles,
+  searchRolesProvider: searchRoles,
 };
 
 /**
  * Helper to render SelectRoleDialog.
  */
-export const renderSelectRoleDialog = (
+export const renderSelectRoleDialog = async (
   props: SelectRoleDialogProps = commonSelectRoleDialogProps,
-): RenderResult => render(<SelectRoleDialog {...props} />);
+): Promise<RenderResult> => {
+  const result = render(<SelectRoleDialog {...props} />);
+  await waitForEntityDialogToRender(result);
+  return result;
+};
 
 const searchRole = (dialog: HTMLElement, queryName: string) =>
   doSearch(dialog, queryFieldLabel, queryName);

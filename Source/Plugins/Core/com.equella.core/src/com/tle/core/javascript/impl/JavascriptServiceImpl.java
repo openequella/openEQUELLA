@@ -32,7 +32,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(JavascriptService.class)
 @Singleton
 public class JavascriptServiceImpl implements JavascriptService {

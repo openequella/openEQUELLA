@@ -36,7 +36,6 @@ import com.tle.web.viewable.ViewableItem;
 import com.tle.web.viewable.impl.ViewableItemFactory;
 import java.util.Collections;
 
-/** @author Aaron */
 @NonNullByDefault
 @Bind
 public class ItemListAttachmentDisplaySection

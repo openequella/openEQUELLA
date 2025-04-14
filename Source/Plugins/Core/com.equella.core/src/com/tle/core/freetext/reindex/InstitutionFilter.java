@@ -18,7 +18,6 @@
 
 package com.tle.core.freetext.reindex;
 
-/** @author Nicholas Read */
 public class InstitutionFilter extends ReindexFilter {
   private static final long serialVersionUID = 1L;
 

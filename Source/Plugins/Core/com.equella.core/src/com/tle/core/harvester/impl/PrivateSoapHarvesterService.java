@@ -21,7 +21,6 @@ package com.tle.core.harvester.impl;
 import com.tle.beans.item.Item;
 import java.io.OutputStream;
 
-/** @author will */
 public interface PrivateSoapHarvesterService {
 
   /**

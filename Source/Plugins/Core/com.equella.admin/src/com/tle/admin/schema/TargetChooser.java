@@ -21,7 +21,6 @@ package com.tle.admin.schema;
 import javax.swing.JComponent;
 import javax.swing.event.EventListenerList;
 
-/** @author Nicholas Read */
 public abstract class TargetChooser extends JComponent {
   private SchemaTree tree;
   private SchemaModel model;
@@ -69,12 +68,16 @@ public abstract class TargetChooser extends JComponent {
     return tree;
   }
 
-  /** @return Returns the targetBase. */
+  /**
+   * @return Returns the targetBase.
+   */
   protected String getTargetBase() {
     return targetBase;
   }
 
-  /** @return Returns the model. */
+  /**
+   * @return Returns the model.
+   */
   protected SchemaModel getSchemaModel() {
     return model;
   }

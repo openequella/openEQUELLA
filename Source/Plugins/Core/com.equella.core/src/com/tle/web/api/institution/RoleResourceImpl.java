@@ -47,7 +47,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-/** @author larry */
 @NonNullByDefault
 @Bind(EquellaRoleResource.class)
 @Singleton

@@ -25,3 +25,8 @@ export default {
 } as Meta;
 
 export const Standard: StoryFn = (args) => <HierarchyTreeSkeleton {...args} />;
+
+export const SkeletonNum10: StoryFn = (args) => (
+  <HierarchyTreeSkeleton {...args} />
+);
+SkeletonNum10.args = { skeletonNum: 10 };

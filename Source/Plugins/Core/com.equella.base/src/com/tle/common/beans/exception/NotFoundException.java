@@ -20,7 +20,6 @@ package com.tle.common.beans.exception;
 
 import com.dytech.edge.exceptions.RuntimeApplicationException;
 
-/** @author Nicholas Read */
 public class NotFoundException extends RuntimeApplicationException {
   private static final long serialVersionUID = 1L;
   private boolean fromRequest;

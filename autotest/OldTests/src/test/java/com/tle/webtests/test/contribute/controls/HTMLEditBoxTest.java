@@ -27,9 +27,12 @@ public class HTMLEditBoxTest extends AbstractWizardControlsTest {
     // NB: do not alter 'wung' (see spellchecker below), so long as 'wung'
     // never becomes a word ...
     final String HTML =
-        "<p>'...it wasn't all wung!'</p> <p>- Jolse Maginnis (after being accused of winging his SOAP presentation with Clemens)</p>";
+        "<p>'...it wasn't all wung!'</p> <p>- Jolse Maginnis (after being accused of winging his"
+            + " SOAP presentation with Clemens)</p>";
     final String DISABLED_HTML =
-        "'...it wasn't all wung!'\n- Jolse Maginnis (after being accused of winging his SOAP presentation with Clemens)";
+        "'...it wasn't all wung!'\n"
+            + "- Jolse Maginnis (after being accused of winging his SOAP presentation with"
+            + " Clemens)";
 
     // Load contribution wizard
     ContributePage contribute = new ContributePage(context).load();

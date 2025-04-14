@@ -32,7 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
-/** @author Nicholas Read */
 public class MultiTargetChooser extends TargetChooser implements ActionListener, Changeable {
   private static final long serialVersionUID = 1L;
 

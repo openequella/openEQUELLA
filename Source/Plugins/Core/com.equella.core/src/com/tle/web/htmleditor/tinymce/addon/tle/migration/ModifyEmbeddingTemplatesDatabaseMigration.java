@@ -40,7 +40,6 @@ import javax.persistence.MapKeyColumn;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 
-/** @author Aaron */
 @SuppressWarnings({"deprecation", "nls"})
 @Bind
 @Singleton

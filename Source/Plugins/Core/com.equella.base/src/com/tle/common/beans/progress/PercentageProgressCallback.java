@@ -18,7 +18,6 @@
 
 package com.tle.common.beans.progress;
 
-/** @author Nicholas Read */
 public class PercentageProgressCallback implements ProgressCallback {
   private static final long serialVersionUID = 1L;
 

@@ -26,7 +26,6 @@ import com.tle.core.xstream.mapping.NodeMapping;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author jmaginnis */
 public class IMSMetadata implements XMLData {
   private static final long serialVersionUID = 1L;
 

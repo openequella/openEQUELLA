@@ -23,7 +23,6 @@ import com.tle.core.xstream.XMLData;
 import com.tle.core.xstream.XMLDataMappings;
 import com.tle.core.xstream.mapping.PropBagMapping;
 
-/** @author Aaron */
 public class IMSCustomData implements XMLData {
   private static final long serialVersionUID = 1L;
 

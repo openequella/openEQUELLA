@@ -45,7 +45,6 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/** @author Nicholas Read */
 public class UsersTab extends JChangeDetectorPanel implements ListSelectionListener {
   private static final long serialVersionUID = 1L;
 

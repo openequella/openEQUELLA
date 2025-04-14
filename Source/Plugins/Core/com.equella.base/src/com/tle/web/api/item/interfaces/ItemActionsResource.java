@@ -43,6 +43,7 @@ public interface ItemActionsResource {
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version,
       @ApiParam("An optional submit message") @QueryParam("message") final String submitMessage);
+
   // @formatter:on
 
   @POST
@@ -51,6 +52,7 @@ public interface ItemActionsResource {
   public Response redraft( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on
 
   @POST
@@ -59,6 +61,7 @@ public interface ItemActionsResource {
   public Response archive( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on
 
   @POST
@@ -67,6 +70,7 @@ public interface ItemActionsResource {
   public Response suspend( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on)
 
   @POST
@@ -75,6 +79,7 @@ public interface ItemActionsResource {
   public Response reset( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on)
 
   @POST
@@ -83,6 +88,7 @@ public interface ItemActionsResource {
   public Response reactivate( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on)
 
   @POST
@@ -91,6 +97,7 @@ public interface ItemActionsResource {
   public Response restore( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on)
 
   @POST
@@ -99,6 +106,7 @@ public interface ItemActionsResource {
   public Response resume( // @formatter:off
       @ApiParam(APIDOC_UUID) @PathParam("uuid") String uuid,
       @ApiParam(APIDOC_VERSION) @PathParam("version") int version);
+
   // @formatter:on)
 
   @POST

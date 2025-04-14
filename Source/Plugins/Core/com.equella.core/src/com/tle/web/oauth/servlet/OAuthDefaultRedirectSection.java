@@ -29,7 +29,6 @@ import com.tle.web.sections.render.TextLabel;
 import com.tle.web.template.Decorations;
 import com.tle.web.template.Decorations.MenuMode;
 
-/** @author Aaron */
 @Bind
 public class OAuthDefaultRedirectSection extends AbstractPrototypeSection<Object>
     implements HtmlRenderer {

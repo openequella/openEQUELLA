@@ -51,7 +51,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-/** @author Nicholas Read */
 public class SecurityTree implements TreeSelectionListener {
   private final boolean allowEditing;
 

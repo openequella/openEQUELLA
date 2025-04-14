@@ -43,7 +43,6 @@ import com.tle.web.sections.standard.TextField;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.dialog.model.DialogModel;
 
-/** @author larry */
 @SuppressWarnings("nls")
 @NonNullByDefault
 @Bind

@@ -38,7 +38,6 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.w3c.dom.Node;
 
-/** @author Aaron */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

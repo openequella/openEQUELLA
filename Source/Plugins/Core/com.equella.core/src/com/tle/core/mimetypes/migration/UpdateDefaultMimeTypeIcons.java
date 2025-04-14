@@ -50,7 +50,8 @@ public class UpdateDefaultMimeTypeIcons extends AbstractHibernateDataMigration {
     ScrollableResults results =
         session
             .createQuery(
-                "FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath' ")
+                "FROM MimeEntryAttributes WHERE element LIKE '%.gif' AND mapkey = 'PluginIconPath'"
+                    + " ")
             .scroll();
 
     while (results.next()) {

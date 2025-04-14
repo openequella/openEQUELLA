@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Share from "@mui/icons-material/Share";
 import {
   Accordion,
   AccordionDetails,
@@ -48,7 +49,13 @@ import * as O from "fp-ts/Option";
 import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { SyntheticEvent, useEffect, useState } from "react";
+import {
+  buildEmbedCode,
+  ShareAttachment,
+} from "../../components/embedattachment/EmbeddedAttachmentHelper";
 import ItemAttachmentLink from "../../components/ItemAttachmentLink";
+import { ShareAttachmentDialog } from "../../components/ShareAttachmentDialog";
+import { TooltipIconButton } from "../../components/TooltipIconButton";
 import {
   getSearchPageAttachmentClass,
   isSelectionSessionInSkinny,
@@ -60,6 +67,7 @@ import {
 import {
   AttachmentAndViewerConfig,
   buildViewerConfigForAttachments,
+  determineAttachmentViewUrl,
 } from "../../modules/ViewerModule";
 import { languageStrings } from "../../util/langstrings";
 import { ResourceSelector } from "./ResourceSelector";
@@ -148,6 +156,9 @@ export const SearchResultAttachmentsList = ({
       : displayOptions?.standardOpen) ?? false,
   );
 
+  const [attachmentToShare, setAttachmentToShare] = useState<
+    O.Option<ShareAttachment>
+  >(O.none);
   const [attachmentsAndViewerConfigs, setAttachmentsAndViewerConfigs] =
     useState<AttachmentAndViewerConfig[]>([]);
 
@@ -240,6 +251,30 @@ export const SearchResultAttachmentsList = ({
     setAttachExpanded(!attachExpanded);
   };
 
+  // Handler for sharing an Attachment.
+  const onShare = ({
+    attachmentType,
+    description,
+    mimeType,
+    filePath,
+    links: { view },
+  }: OEQ.Search.Attachment) => {
+    const src: string = determineAttachmentViewUrl(
+      uuid,
+      version,
+      attachmentType,
+      view,
+      filePath,
+    );
+    const embedCode: O.Option<string> = pipe(
+      mimeType,
+      O.fromNullable,
+      O.flatMap((m) => buildEmbedCode(m, src, description)),
+    );
+
+    setAttachmentToShare(O.of({ src, embedCode }));
+  };
+
   const buildIcon = (broken: boolean) => {
     if (broken) {
       return (
@@ -283,9 +318,8 @@ export const SearchResultAttachmentsList = ({
 
   const attachmentsList = attachmentsAndViewerConfigs.map(
     (attachmentAndViewerConfig: AttachmentAndViewerConfig) => {
-      const {
-        attachment: { id, description, brokenAttachment },
-      } = attachmentAndViewerConfig;
+      const { attachment } = attachmentAndViewerConfig;
+      const { id, description, brokenAttachment } = attachment;
 
       return (
         <ListItem
@@ -306,15 +340,24 @@ export const SearchResultAttachmentsList = ({
           <ItemAttachmentLink selectedAttachment={attachmentAndViewerConfig}>
             <ListItemText color="primary" primary={description} />
           </ItemAttachmentLink>
-          {isAttachmentSelectable(brokenAttachment) && (
-            <ListItemSecondaryAction>
+          <ListItemSecondaryAction>
+            {isAttachmentSelectable(brokenAttachment) && (
               <ResourceSelector
                 labelText={selectResourceStrings.attachment}
                 isStopPropagation
                 onClick={() => selectResource(itemKey, [id])}
               />
-            </ListItemSecondaryAction>
-          )}
+            )}
+            <TooltipIconButton
+              title={languageStrings.common.action.share}
+              onClick={(event) => {
+                event.stopPropagation();
+                onShare(attachment);
+              }}
+            >
+              <Share />
+            </TooltipIconButton>
+          </ListItemSecondaryAction>
         </ListItem>
       );
     },
@@ -400,22 +443,38 @@ export const SearchResultAttachmentsList = ({
     </Badge>
   );
 
+  const shareAttachmentDialog = pipe(
+    attachmentToShare,
+    O.map(({ src, embedCode }) => (
+      <ShareAttachmentDialog
+        open
+        onCloseDialog={() => setAttachmentToShare(O.none)}
+        src={src}
+        embedCode={embedCode}
+      />
+    )),
+    O.toUndefined,
+  );
+
   return attachmentCount > 0 ? (
-    <StyledAccordion
-      id={`attachments-list-${uuid}:${version}`}
-      className={classes.attachmentExpander}
-      expanded={attachExpanded}
-      onClick={(event) => handleAttachmentPanelClick(event)}
-    >
-      <AccordionSummary expandIcon={<ExpandMore />}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
-          <Grid item>{accordionSummaryContent}</Grid>
-        </Grid>
-      </AccordionSummary>
-      <AccordionDetails>
-        {attachExpanded && buildAttachmentList()}
-      </AccordionDetails>
-    </StyledAccordion>
+    <>
+      <StyledAccordion
+        id={`attachments-list-${uuid}:${version}`}
+        className={classes.attachmentExpander}
+        expanded={attachExpanded}
+        onClick={(event) => handleAttachmentPanelClick(event)}
+      >
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
+            <Grid item>{accordionSummaryContent}</Grid>
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails>
+          {attachExpanded && buildAttachmentList()}
+        </AccordionDetails>
+      </StyledAccordion>
+      {shareAttachmentDialog}
+    </>
   ) : null;
 };

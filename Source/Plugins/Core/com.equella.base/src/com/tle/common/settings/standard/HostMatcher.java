@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/** @author jmaginnis */
 public class HostMatcher {
   private List<List<String>> matches;
 

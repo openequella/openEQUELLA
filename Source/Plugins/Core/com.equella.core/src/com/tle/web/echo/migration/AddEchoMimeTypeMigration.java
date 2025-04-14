@@ -55,7 +55,8 @@ import org.hibernate.annotations.Type;
 @Singleton
 public class AddEchoMimeTypeMigration extends AbstractHibernateDataMigration {
   private static final String COUNT =
-      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/attachment-echo' and institution = :institution";
+      "SELECT COUNT(*) FROM MimeEntry WHERE type = 'equella/attachment-echo' and institution ="
+          + " :institution";
 
   @Override
   public MigrationInfo createMigrationInfo() {

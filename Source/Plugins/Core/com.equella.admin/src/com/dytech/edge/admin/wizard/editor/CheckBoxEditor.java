@@ -36,7 +36,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 public class CheckBoxEditor extends AbstractPowerSearchControlEditor<CheckBoxGroup> {
   private static final long serialVersionUID = 1L;
   private I18nTextField title;

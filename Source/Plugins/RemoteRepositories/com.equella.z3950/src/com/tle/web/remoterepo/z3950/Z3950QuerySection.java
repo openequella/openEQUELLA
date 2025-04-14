@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class Z3950QuerySection extends RemoteRepoQuerySection<Z3950SearchEvent> {
   private static final PluginResourceHelper resources =

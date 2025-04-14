@@ -22,7 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.installer.Callback;
 import com.dytech.installer.Wizard;
 
-/** @author Nicholas Read */
 public class ProxyBackSkip implements Callback {
   /*
    * (non-Javadoc)

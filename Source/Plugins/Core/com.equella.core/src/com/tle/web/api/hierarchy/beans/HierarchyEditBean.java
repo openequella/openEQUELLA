@@ -25,7 +25,6 @@ import com.tle.web.api.item.interfaces.beans.ItemBean;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/** @author larry */
 @XmlRootElement
 public class HierarchyEditBean extends AbstractExtendableBean {
   private String uuid;

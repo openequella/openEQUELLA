@@ -477,13 +477,12 @@ public class HibernateMigrationHelper {
   }
 
   /**
-   * @param tableName
-   * @param columnName
-   * @param changeNotNull
-   * @param changeType nullable Pass in null to use the annotation on the column. This is not always
-   *     possible (see Redmine #3329).
-   * @param changeType
-   * @return
+   * @param tableName The name of the table to modify.
+   * @param columnName The name of the column to modify.
+   * @param changeNotNull `True` if the column should be changed to `NOT NULL`.
+   * @param changeType `True` if the column type should be changed. nullable Pass in null to use the
+   *     annotation on the column. This is not always possible (see Redmine #3329).
+   * @return A list of SQL strings to modify the column.
    */
   public List<String> getModifyColumnSQL(
       String tableName, String columnName, boolean changeNotNull, boolean changeType) {
@@ -492,13 +491,13 @@ public class HibernateMigrationHelper {
     Table table = findTable(tableName);
     Column column = table.getColumn(new Column(columnName));
 
-    StringBuffer alter =
-        new StringBuffer("alter table ")
-            .append(table.getQualifiedName(sqlStringGenerationContext))
-            .append(' ')
-            .append(extDialect.getModifyColumnSql(mapping, column, changeNotNull, changeType));
+    String alter =
+        "alter table "
+            + table.getQualifiedName(sqlStringGenerationContext)
+            + ' '
+            + extDialect.getModifyColumnSql(mapping, column, changeNotNull, changeType);
 
-    sqlStrings.add(alter.toString());
+    sqlStrings.add(alter);
     return sqlStrings;
   }
 
@@ -819,5 +818,40 @@ public class HibernateMigrationHelper {
       sql.add(extDialect.getDropConstraintsForColumnSql(table, columnName));
     }
     return sql;
+  }
+
+  /**
+   * Update the column. <br>
+   * The difference between this method and {@link #getModifyColumnSQL} is this method will create a
+   * new column to inherit the data from the original column, then drop the original column, and
+   * finally rename the temporary column to the original column. <br>
+   * Examples of using this method:
+   *
+   * <ul>
+   *   <li>Changing the data type of a column with existing data in Oracle</>
+   *   <li>Dropping a constraint for a column however the constraint name is unknown</>
+   * </ul>
+   *
+   * @param tableName The name of the table.
+   * @param columnName The name of the column to change.
+   * @param tempColumnName The name of the temporary column to create to hold the data.
+   */
+  public List<String> getUpdateColumnSQL(
+      String tableName, String columnName, String tempColumnName) {
+    // Create a temporary column.
+    List<String> addTempColumnSQL = getAddColumnsSQL(tableName, tempColumnName);
+    // Copy the data from the original column to the temporary column.
+    String copyDataSQL = "UPDATE " + tableName + " SET " + tempColumnName + "=" + columnName;
+    // Drop the original column.
+    List<String> dropColumnSQL = getDropColumnSQL(tableName, columnName);
+    // Rename the temporary column to the original column.
+    List<String> renameColumnSQL = getRenameColumnSQL(tableName, tempColumnName, columnName);
+
+    List<String> results = new ArrayList<>(addTempColumnSQL);
+    results.add(copyDataSQL);
+    results.addAll(dropColumnSQL);
+    results.addAll(renameColumnSQL);
+
+    return results;
   }
 }

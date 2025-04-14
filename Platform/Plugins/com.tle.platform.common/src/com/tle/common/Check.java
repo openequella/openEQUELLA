@@ -165,13 +165,17 @@ public final class Check {
     }
   }
 
-  /** @deprecated Use Arrays.hashCode() instead. */
+  /**
+   * @deprecated Use Arrays.hashCode() instead.
+   */
   @Deprecated
   public static int getHashCode(Object... fieldValues) {
     return Arrays.hashCode(fieldValues);
   }
 
-  /** @deprecated Use Strings.nullToEmpty() instead. */
+  /**
+   * @deprecated Use Strings.nullToEmpty() instead.
+   */
   @Deprecated
   public static String nullToEmpty(String s) {
     return Strings.nullToEmpty(s);

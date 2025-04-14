@@ -42,7 +42,6 @@ import com.tle.web.wizard.WebWizardService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(RemoteRepoWebService.class)
 @Singleton
 public class RemoteRepoWebServiceImpl implements RemoteRepoWebService {

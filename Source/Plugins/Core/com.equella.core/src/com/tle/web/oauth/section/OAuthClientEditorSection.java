@@ -97,7 +97,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author aholland, Dustin */
 @SuppressWarnings("nls")
 @TreeIndexed
 public class OAuthClientEditorSection

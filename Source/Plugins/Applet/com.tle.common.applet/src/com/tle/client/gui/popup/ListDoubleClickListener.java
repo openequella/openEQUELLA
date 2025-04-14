@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.Action;
 import javax.swing.JList;
 
-/** @author Nicholas Read */
 public class ListDoubleClickListener extends AbstractDoubleClickListener {
   private final JList list;
 

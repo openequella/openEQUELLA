@@ -13,7 +13,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("myresources")
 public class FavouritesInIntegrationTest extends AbstractCleanupTest {
   /** Institution primed and saved with his sharedid & secret */
@@ -21,8 +20,10 @@ public class FavouritesInIntegrationTest extends AbstractCleanupTest {
 
   private static String SECRET = "favininteg";
   private static String ACTION = "selectOrAdd";
+
   /** Institution, and AutoTest user, presumed to contain an item with this title as a favourite. */
   private static String FAVOURITE_PRESUMED_TO_EXIST = "Hal's eying Flickr";
+
   /**
    * Preserved in the exported contributions - tests/myresources/institution.tar.gz being the uuid
    * for the "Generic Testing Collection".

@@ -22,7 +22,6 @@ import com.tle.beans.Institution;
 import com.tle.common.usermanagement.user.UserState;
 import java.util.concurrent.Callable;
 
-/** @author Nicholas Read */
 public interface RunAsInstitution {
   <V> V execute(UserState userState, Callable<V> callable);
 

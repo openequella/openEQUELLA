@@ -33,7 +33,6 @@ import javax.persistence.Lob;
 import org.hibernate.Session;
 import org.hibernate.annotations.AccessType;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind
 @Singleton

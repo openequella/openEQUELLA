@@ -25,7 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.JTextComponent;
 
-/** @author Nicholas Read */
 public class I18nTextArea extends I18nTextField {
   private static final long serialVersionUID = 1L;
   private JTextArea ta;

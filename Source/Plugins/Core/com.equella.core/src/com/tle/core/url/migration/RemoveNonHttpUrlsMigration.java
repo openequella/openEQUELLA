@@ -50,7 +50,8 @@ public class RemoveNonHttpUrlsMigration extends AbstractHibernateDataMigration {
       HibernateMigrationHelper helper, MigrationResult result, Session session) throws Exception {
     session
         .createQuery(
-            "DELETE FROM ItemReferencedUrls WHERE referenced_urls_id IN (FROM ReferencedURL WHERE url NOT LIKE 'http://%' AND url NOT LIKE 'https://%')")
+            "DELETE FROM ItemReferencedUrls WHERE referenced_urls_id IN (FROM ReferencedURL WHERE"
+                + " url NOT LIKE 'http://%' AND url NOT LIKE 'https://%')")
         .executeUpdate();
     session
         .createQuery(
@@ -63,7 +64,8 @@ public class RemoveNonHttpUrlsMigration extends AbstractHibernateDataMigration {
     int ct =
         count(
             session.createQuery(
-                "SELECT COUNT(*) FROM ReferencedURL WHERE url NOT LIKE 'http://%' AND url NOT LIKE 'https://%'"));
+                "SELECT COUNT(*) FROM ReferencedURL WHERE url NOT LIKE 'http://%' AND url NOT LIKE"
+                    + " 'https://%'"));
     return ct;
   }
 

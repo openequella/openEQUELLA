@@ -22,7 +22,6 @@ import com.tle.beans.item.ItemIdKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.UnindexItemListener;
 
-/** @author Nicholas Read */
 public class UnindexItemEvent extends ApplicationEvent<UnindexItemListener> {
   private static final long serialVersionUID = 1L;
   private final ItemIdKey itemId;

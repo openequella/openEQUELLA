@@ -24,10 +24,10 @@ import com.tle.integration.oidc.service.{NonceConfig, OidcNonceService}
 
 import javax.inject.{Inject, Singleton}
 
-/**
-  * Manages the nonce values for LTI 1.3 Authentication processes where a nonce is valid for 10 seconds.
+/** Manages the nonce values for LTI 1.3 Authentication processes where a nonce is valid for 10
+  * seconds.
   */
 @Bind
 @Singleton
-class Lti13NonceService @Inject()(rcs: ReplicatedCacheService)
+class Lti13NonceService @Inject() (rcs: ReplicatedCacheService)
     extends OidcNonceService(rcs, NonceConfig(10, "lti13-nonces"))

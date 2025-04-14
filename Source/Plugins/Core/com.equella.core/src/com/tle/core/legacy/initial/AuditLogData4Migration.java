@@ -101,7 +101,8 @@ public class AuditLogData4Migration extends AbstractHibernateSchemaMigration {
     // incorrectly ENTITY before).
     session
         .createQuery(
-            "UPDATE AuditLogEntry SET eventCategory = 'ITEM' WHERE eventType IN ('CONTENT_VIEWED', 'SUMMARY_VIEWED')")
+            "UPDATE AuditLogEntry SET eventCategory = 'ITEM' WHERE eventType IN ('CONTENT_VIEWED',"
+                + " 'SUMMARY_VIEWED')")
         .executeUpdate();
     result.incrementStatus();
   }

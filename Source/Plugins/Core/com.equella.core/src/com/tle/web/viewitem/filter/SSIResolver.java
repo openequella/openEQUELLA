@@ -32,7 +32,6 @@ import org.apache.catalina.ssi.SSIExternalResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author jmaginnis */
 public class SSIResolver implements SSIExternalResolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(SSIResolver.class);
 

@@ -67,7 +67,6 @@ import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
 
-/** @author Aaron */
 @TestInstitution("rest")
 public abstract class AbstractRestApiTest extends AbstractSessionTest {
   private PoolingClientConnectionManager conMan;
@@ -80,7 +79,9 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
 
   @BeforeClass
   public void setup()
-      throws NoSuchAlgorithmException, KeyManagementException, UnrecoverableKeyException,
+      throws NoSuchAlgorithmException,
+          KeyManagementException,
+          UnrecoverableKeyException,
           KeyStoreException {
     X509TrustManager trustManager =
         new X509TrustManager() {

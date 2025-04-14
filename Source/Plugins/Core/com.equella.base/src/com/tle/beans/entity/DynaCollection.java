@@ -31,7 +31,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-/** @author Nicholas Read */
 @Entity
 @AccessType("field")
 public class DynaCollection extends BaseEntity {

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/** @author jmaginnis */
 public class CRepeater extends GroupsCtrl {
   private static final long serialVersionUID = 1L;
 

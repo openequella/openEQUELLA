@@ -120,7 +120,9 @@ public abstract class AbstractItemlikeListEntry<I extends IItem<?>> extends Abst
     return attachments;
   }
 
-  /** @param item This can be null in the case that the local item no longer exists */
+  /**
+   * @param item This can be null in the case that the local item no longer exists
+   */
   public void setItem(@Nullable I item) {
     this.item = item;
   }

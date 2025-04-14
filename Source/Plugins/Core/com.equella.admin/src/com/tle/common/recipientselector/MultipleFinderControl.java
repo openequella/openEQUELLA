@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.EventListenerList;
 
-/** @author Nicholas Read */
 public class MultipleFinderControl extends JPanel implements ActionListener {
   private static final long serialVersionUID = 1L;
   private final RemoteUserService userService;

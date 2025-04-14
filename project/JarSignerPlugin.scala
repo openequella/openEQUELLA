@@ -86,12 +86,11 @@ object JarSignerPlugin extends AutoPlugin {
       ) ++ kpasswd.map(kp => List("-keypass", kp)).getOrElse(Nil) ++
         tsaUrl.value.map(u => List("-tsa", u._1)).getOrElse(Nil) ++
         List(inJar.absolutePath, alias)
-      tsaUrl.value.foreach {
-        case (_, seconds) =>
-          while (lastSignTime.exists(_.plus(seconds, ChronoUnit.SECONDS).isAfter(Instant.now()))) {
-            log.info(s"Jar signer ran less than $seconds seconds ago - waiting")
-            Thread.sleep(5000L)
-          }
+      tsaUrl.value.foreach { case (_, seconds) =>
+        while (lastSignTime.exists(_.plus(seconds, ChronoUnit.SECONDS).isAfter(Instant.now()))) {
+          log.info(s"Jar signer ran less than $seconds seconds ago - waiting")
+          Thread.sleep(5000L)
+        }
       }
       lastSignTime = Some(Instant.now())
       log.info(s"Signing jar ${inJar.absolutePath} to ${outJar.absolutePath}")

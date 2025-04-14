@@ -40,11 +40,15 @@ public interface SectionId {
   @Nullable
   String getSectionId();
 
-  /** @return */
+  /**
+   * @return
+   */
   @Nullable
   SectionTree getTree();
 
-  /** @return The <code>Section</code> associated with this <code>SectionContext</code>s id. */
+  /**
+   * @return The <code>Section</code> associated with this <code>SectionContext</code>s id.
+   */
   @Nullable
   Section getSectionObject();
 }

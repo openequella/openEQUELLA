@@ -38,30 +38,29 @@ import java.security.interfaces.RSAPrivateKey
 import java.time.Instant
 import javax.inject.Inject
 
-/**
-  * Structure for the profile of a single user returned from Okta.
+/** Structure for the profile of a single user returned from Okta.
   */
-final case class OktaUserProfile(login: String,
-                                 firstName: Option[String],
-                                 lastName: Option[String],
-                                 email: Option[String])
+final case class OktaUserProfile(
+    login: String,
+    firstName: Option[String],
+    lastName: Option[String],
+    email: Option[String]
+)
 
 object OktaUserProfile {
   implicit val decoder: Decoder[OktaUserProfile] = deriveDecoder[OktaUserProfile]
 }
 
-/**
-  * Structure for a single user returned from Okta, including the user ID and user profile.
+/** Structure for a single user returned from Okta, including the user ID and user profile.
   */
 final case class OktaUser(id: String, profile: OktaUserProfile)
 
-/**
-  * The target of this User Directory is Core Okta API.
+/** The target of this User Directory is Core Okta API.
   *
   * Reference link: https://developer.okta.com/docs/reference/core-okta-api/
   */
 @Bind
-class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends ApiUserDirectory {
+class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends ApiUserDirectory {
 
   override protected type IDP = OktaDetails
 
@@ -81,28 +80,29 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
 
   override protected def toUserBean(user: USER): UserBean = {
     val profile = user.profile
-    new DefaultUserBean(user.id,
-                        profile.login,
-                        profile.firstName.getOrElse(""),
-                        profile.lastName.getOrElse(""),
-                        profile.email.orNull)
+    new DefaultUserBean(
+      user.id,
+      profile.login,
+      profile.firstName.getOrElse(""),
+      profile.lastName.getOrElse(""),
+      profile.email.orNull
+    )
   }
 
-  /**
-    * REST endpoint to get a single user with the provided ID.
+  /** REST endpoint to get a single user with the provided ID.
     */
   override protected def userEndpoint(idp: OktaDetails, id: String): URI =
     URI.create(s"${idp.apiUrl.toString}users/$id")
 
-  /**
-    * REST endpoint to list users with the provided query.
+  /** REST endpoint to list users with the provided query.
     *
-    * 1. Use param 'q' to list users whose first name, last name or email match the specified query.
-    * 2. 'q' may not provide the best performance but it is a good starting point. We can consider using
-    * the advanced 'search' param in the future if needed.
-    * 3. Wildcard is not supported so drop the prefix and suffix of the query.
+    *   1. Use param 'q' to list users whose first name, last name or email match the specified
+    *      query. 2. 'q' may not provide the best performance but it is a good starting point. We
+    *      can consider using the advanced 'search' param in the future if needed. 3. Wildcard is
+    *      not supported so drop the prefix and suffix of the query.
     *
-    * Reference: https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers
+    * Reference:
+    * https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers
     */
   override protected def userListEndpoint(idp: OktaDetails, query: String): URI = {
     val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}users")
@@ -114,22 +114,23 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
       .build()
   }
 
-  /**
-    * According to the doco of Core Okta API, the request for a scoped access token through Client Credentials
-    * must include the following parameters:
+  /** According to the doco of Core Okta API, the request for a scoped access token through Client
+    * Credentials must include the following parameters:
     *
     *   - 'scope', in this case, the value is "okta.users.read"
-    *   - 'client_assertion_type' which must be "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+    *   - 'client_assertion_type' which must be
+    *     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
     *   - 'client_assertion' which is a signed JWT
     *   - 'grant_type' which must be "client_credentials"
     *
-    * A JWT will be created with the IdP configuration and signed by the private key generated for the
-    * configuration, and failing to find the key will result in a [[com.auth0.jwt.exceptions.JWTCreationException]]
+    * A JWT will be created with the IdP configuration and signed by the private key generated for
+    * the configuration, and failing to find the key will result in a
+    * [[com.auth0.jwt.exceptions.JWTCreationException]]
     *
-    * The doco also states that only the org authorization server (Okta built-in auth server) can mint access tokens
-    * that contain Okta API scopes. As a result, if user chooses to use the token URL of a different auth server
-    * (e.g. the default custom auth server), a URL transformation is required to make sure the access token request is
-    * sent to the org authorization server.
+    * The doco also states that only the org authorization server (Okta built-in auth server) can
+    * mint access tokens that contain Okta API scopes. As a result, if user chooses to use the token
+    * URL of a different auth server (e.g. the default custom auth server), a URL transformation is
+    * required to make sure the access token request is sent to the org authorization server.
     *
     * Reference links:
     *   - https://developer.okta.com/docs/guides/implement-oauth-for-okta-serviceapp/main/#create-and-sign-the-jwt
@@ -174,7 +175,8 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
         case Right(None) =>
           throw new JWTCreationException(
             s"Failed to request token: key pair with ID $keyId not found",
-            null)
+            null
+          )
         case Left(error) =>
           throw new JWTCreationException("Error occurred while getting key pair", error)
       }
@@ -188,7 +190,8 @@ class OktaUserDirectory @Inject()(webKeySetService: WebKeySetService) extends Ap
       data = Option(
         Map(
           OpenIDConnectParams.SCOPE -> "okta.users.read"
-        ))
+        )
+      )
     )
   }
 }

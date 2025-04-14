@@ -29,7 +29,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate5.HibernateCallback;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public abstract class AbstractAuditLogDaoImpl<T extends AuditLogTable>
     extends GenericDaoImpl<T, Long> implements AuditLogExtensionDao<T> {

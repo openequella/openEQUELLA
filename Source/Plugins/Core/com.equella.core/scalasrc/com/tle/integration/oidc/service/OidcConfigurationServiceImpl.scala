@@ -40,11 +40,11 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 @Bind(classOf[OidcConfigurationService])
-class OidcConfigurationServiceImpl @Inject()(configurationService: ConfigurationService,
-                                             auditLogService: AuditLogService,
-                                             userService: UserService)(
-    implicit val encryptionService: EncryptionService,
-    webKeySetService: WebKeySetService)
+class OidcConfigurationServiceImpl @Inject() (
+    configurationService: ConfigurationService,
+    auditLogService: AuditLogService,
+    userService: UserService
+)(implicit val encryptionService: EncryptionService, webKeySetService: WebKeySetService)
     extends OidcConfigurationService {
   private val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
@@ -84,7 +84,7 @@ class OidcConfigurationServiceImpl @Inject()(configurationService: Configuration
             commonDetails = decryptCommonDetails(commonDetails),
             apiUrl = apiUrl,
             apiClientId = apiClientId,
-            apiClientSecret = encryptionService.decrypt(apiClientSecret),
+            apiClientSecret = encryptionService.decrypt(apiClientSecret)
           )
         case okta: OktaDetails =>
           okta.copy(commonDetails = decryptCommonDetails(okta.commonDetails))

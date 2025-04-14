@@ -25,7 +25,6 @@ import com.tle.web.qti.viewer.questions.renderer.QtiNodeRenderer;
 import com.tle.web.sections.render.SectionRenderable;
 import uk.ac.ed.ph.jqtiplus.node.item.interaction.content.Hottext;
 
-/** @author Aaron */
 public class HottextRenderer extends QtiNodeRenderer {
   @AssistedInject
   public HottextRenderer(@Assisted Hottext model, @Assisted QtiViewerContext context) {

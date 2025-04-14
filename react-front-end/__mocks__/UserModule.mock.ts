@@ -84,9 +84,9 @@ export const tokens: string[] = ["moodle", "token1", "token2"];
  * @param ids A list of user IDs to lookup, should be one of those in `users`
  */
 export const resolveUsers = async (
-  ids: ReadonlyArray<string>,
+  ids: ReadonlySet<string>,
 ): Promise<OEQ.UserQuery.UserDetails[]> =>
-  Promise.resolve(users.filter(({ id }) => ids.includes(id)));
+  Promise.resolve(users.filter(({ id }) => ids.has(id)));
 
 /**
  * Helper function to inject into component for user retrieval by user id.

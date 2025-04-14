@@ -22,7 +22,6 @@ import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemId;
 import com.tle.common.filesystem.handle.FileHandle;
 
-/** @author Aaron */
 public interface CloneFileProcessingExtension {
   void processFiles(ItemId oldId, FileHandle oldHandle, Item newItem, FileHandle newHandle);
 }

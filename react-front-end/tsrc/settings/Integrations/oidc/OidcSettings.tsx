@@ -16,16 +16,10 @@
  * limitations under the License.
  */
 import { Card, CardContent, Divider, Grid } from "@mui/material";
-import { RoleDetails } from "@openequella/rest-api-client/dist/UserQuery";
-import { constVoid, flow, identity, pipe } from "fp-ts/function";
+import { flow, identity, pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
-import { isEqual } from "lodash";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useReducer } from "react";
 import * as React from "react";
-import {
-  CustomRolesMapping,
-  transformCustomRoleMapping,
-} from "../../../components/CustomRoleHelper";
 import CustomRolesMappingControl from "../../../components/CustomRolesMappingControl";
 import GeneralDetailsSection, {
   checkValidations,
@@ -34,7 +28,7 @@ import GeneralDetailsSection, {
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsList from "../../../components/SettingsList";
 import SettingsListControl from "../../../components/SettingsListControl";
-import SettingsListAlert from "../../../components/SettingsListAlert";
+import SpinnerOverlay from "../../../components/SpinnerOverlay";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
@@ -45,31 +39,22 @@ import {
   getOidcSettings,
   updateOidcSettings,
 } from "../../../modules/OidcModule";
-import { resolveRoles, roleIds } from "../../../modules/RoleModule";
 import { languageStrings } from "../../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
 import * as TE from "../../../util/TaskEither.extended";
-import * as RS from "fp-ts/ReadonlySet";
 import * as E from "fp-ts/Either";
+import SelectRoleControl from "../../../components/SelectRoleControl";
+import { isNonEmptyString } from "../../../util/validation";
 import {
-  generateCustomRoles,
-  getRolesTask,
-} from "../lti13/components/EditLti13PlatformHelper";
-import * as S from "fp-ts/string";
-import SelectRoleControl from "../lti13/components/SelectRoleControl";
-import {
-  defaultGeneralDetails,
-  defaultEntraIdApiDetails,
-  defaultApiDetailsMap,
   generateGeneralDetails,
   generateApiDetails,
-  ApiDetails,
   generatePlatform,
   oeqDetailsList,
+  defaultApiDetails,
 } from "./OidcSettingsHelper";
 import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
-import * as A from "fp-ts/Array";
+import { initialState, reducer } from "./OidcSettingsReducer";
 
 const {
   name,
@@ -87,111 +72,16 @@ const {
 const { edit: editLabel } = languageStrings.common.action;
 const { checkForm } = languageStrings.common.result;
 
-// Compare the initial and current details to see if the configuration has changed.
-// In order to handle the secret field,
-// It will consider the configuration is not changed if the current value is an empty string and the initial value is missing.
-const hasConfigurationChanged = (
-  initialDetails: OEQ.Oidc.IdentityProvider,
-  currentDetails: OEQ.Oidc.IdentityProvider,
-): boolean => {
-  // Helper function to check if a field has changed compared to the initial value.
-  const hasKeyChanged = (key: string, currentValue: unknown): boolean =>
-    pipe(
-      Object.entries(initialDetails),
-      R.fromEntries,
-      R.lookup(key),
-      O.fold(
-        // If the key is missing in initialDetails, consider it changed if currentValue is a non-empty string.
-        // For secret values which are absent in the initial details, if the current value is a non-empty string, it's considered changed;
-        // For other values do a normal comparison.
-        // Because there is a case user might input some value and then delete it, then the value will become empty string.
-        () => S.isString(currentValue) && !S.isEmpty(currentValue),
-        // If the key is present in initialDetails, check for equality
-        (initialValue) => !isEqual(initialValue, currentValue),
-      ),
-    );
+export interface OidcSettingsProps extends TemplateUpdateProps {}
 
-  return pipe(
-    Object.entries(currentDetails),
-    // Check if any key-value pair in currentDetails indicates a change
-    A.some(([key, currentValue]) => hasKeyChanged(key, currentValue)),
-  );
-};
-
-export interface OidcSettingsProps extends TemplateUpdateProps {
-  /**
-   * Function used to search oEQ roles.
-   */
-  searchRoleProvider?: (query?: string) => Promise<OEQ.UserQuery.RoleDetails[]>;
-  /**
-   * Function used to search roles from the server by their IDs.
-   */
-  resolveRolesProvider?: (
-    ids: ReadonlyArray<OEQ.Common.UuidString>,
-  ) => Promise<OEQ.UserQuery.RoleDetails[]>;
-}
-
-/**
- * Show warning message for role selector related controls,
- * if the IDs of role details fetched form server doesn't match with the initial group/groups IDs.
- */
-interface RoleWarningMessages {
-  defaultRoles?: string[];
-  customRoles?: string[];
-}
-
-const OidcSettings = ({
-  updateTemplate,
-  searchRoleProvider,
-  resolveRolesProvider = resolveRoles,
-}: OidcSettingsProps) => {
+const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const { appErrorHandler } = useContext(AppContext);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  // States for values displayed in different sections.
-  const [generalDetails, setGeneralDetails] =
-    useState<OEQ.Oidc.IdentityProvider>(defaultGeneralDetails);
-  const [apiDetails, setApiDetails] = useState<ApiDetails>(
-    defaultEntraIdApiDetails,
-  );
-  const [defaultRoles, setDefaultRoles] = useState<ReadonlySet<RoleDetails>>(
-    new Set(),
-  );
-  const [customRoles, setCustomRoles] = useState<CustomRolesMapping>(new Map());
-  // Warning messages if the oeq roles can't be found in the server.
-  const [
-    { defaultRoles: defaultRolesWarnings, customRoles: customRolesWarnings },
-    setWarningMessages,
-  ] = useState<RoleWarningMessages>({
-    defaultRoles: undefined,
-    customRoles: undefined,
-  });
-
-  // Build final submit values for OIDC.
-  const currentOidcValue = {
-    ...generalDetails,
-    ...apiDetails,
-    defaultRoles: pipe(roleIds(defaultRoles), RS.toSet),
-    roleConfig: generalDetails.roleConfig?.roleClaim
-      ? {
-          roleClaim: generalDetails.roleConfig.roleClaim,
-          customRoles: transformCustomRoleMapping(customRoles),
-        }
-      : undefined,
-  };
-
-  // Initial configuration retrieved from server, but before the config is returned, use the defaults values of each state listed above.
-  const [initialIdpDetails, setInitialIdpDetails] =
-    useState<OEQ.Oidc.IdentityProvider>(currentOidcValue);
-
-  // Flag to indicate if there is an existing configuration in server.
-  const [serverHasConfiguration, setServerHasConfiguration] = useState(false);
-
-  const configurationChanged = hasConfigurationChanged(
-    initialIdpDetails,
-    currentOidcValue,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { status, config, initialConfig, serverHasConfig, isConfigChanged } =
+    state;
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -202,6 +92,8 @@ const OidcSettings = ({
 
   // Fetch OIDC settings from the server.
   useEffect(() => {
+    if (status !== "initialising") return;
+
     // Get the OIDC settings from the server and for the 404 error only indicates the settings are not set yet,
     // thus return None, otherwise for other error throw it.
     const getOidcSettingsFromServer = (): Promise<
@@ -220,118 +112,90 @@ const OidcSettings = ({
         ),
       )();
 
-    const getRolesWithMsgTask = (roleIds: ReadonlySet<OEQ.Common.UuidString>) =>
-      pipe(getRolesTask(roleIds, resolveRolesProvider), TE.getOrThrow)();
-
-    const getCustomRolesWithMsgTask = (customRoles: Map<string, Set<string>>) =>
-      pipe(
-        generateCustomRoles(customRoles, resolveRolesProvider),
-        TE.getOrThrow,
-      )();
-
-    // Set the default and custom roles, or their warning messages if any role can't be found in the server.
-    const setRoles = async (idp: OEQ.Oidc.IdentityProvider) => {
-      await Promise.all([
-        getRolesWithMsgTask(idp.defaultRoles),
-        getCustomRolesWithMsgTask(idp.roleConfig?.customRoles ?? new Map()),
-      ])
-        .then(([defaultRolesWithMsg, customRolesWithMsg]) => {
-          setDefaultRoles(defaultRolesWithMsg.entities);
-          setCustomRoles(customRolesWithMsg.mappings);
-          setWarningMessages({
-            defaultRoles: defaultRolesWithMsg.warning,
-            customRoles: customRolesWithMsg.warnings,
-          });
-        })
-        .catch(appErrorHandler);
-    };
-
     pipe(
       TE.tryCatch(() => getOidcSettingsFromServer(), String),
       TE.match(
-        appErrorHandler,
-        flow(
-          O.fold(constVoid, (idp) => {
-            setServerHasConfiguration(true);
-            setInitialIdpDetails(idp);
-            setGeneralDetails(idp);
-
-            if (OEQ.Codec.Oidc.GenericIdentityProviderCodec.is(idp)) {
-              setApiDetails({
-                platform: idp.platform,
-                apiUrl: idp.apiUrl,
-                apiClientId: idp.apiClientId,
-                apiClientSecret: idp.apiClientSecret,
-              });
-            } else if (OEQ.Codec.Oidc.OktaCodec.is(idp)) {
-              setApiDetails({
-                platform: idp.platform,
-                apiUrl: idp.apiUrl,
-                apiClientId: idp.apiClientId,
-              });
-            }
-
-            // process role mappings value to display existing settings
-            setRoles(idp);
-          }),
-        ),
+        (e) => {
+          appErrorHandler(e);
+          dispatch({ type: "init-complete", serverHasConfig: false });
+        },
+        flow(O.toUndefined, (idp) => {
+          dispatch({
+            type: "init-complete",
+            initialConfig: idp,
+            serverHasConfig: idp !== undefined,
+          });
+        }),
       ),
     )();
-  }, [appErrorHandler, resolveRolesProvider]);
+  }, [appErrorHandler, status]);
 
-  // Update the corresponding value in generalDetails state based on the provided key.
-  const onGeneralDetailsChange = (key: string, newValue: unknown) =>
-    setGeneralDetails({
-      ...generalDetails,
-      [key]: newValue,
+  // Update the corresponding value in idpConfigurations state based on the provided key.
+  const onConfigChange = (key: string, newValue: unknown) =>
+    dispatch({
+      type: "configure",
+      config: {
+        ...config,
+        [key]: newValue,
+      },
     });
 
-  const onPlatformChange = (newValue: string) => {
-    // update platform
-    onGeneralDetailsChange("platform", newValue);
-    // Also clear the previous API configurations on platform change.
+  const onPlatformChange = (newValue: string) =>
     pipe(
-      defaultApiDetailsMap,
-      R.lookup(newValue),
-      O.map(setApiDetails),
-      O.getOrElseW(() => {
-        appErrorHandler(`Unsupported platform ${newValue}`);
-      }),
+      newValue,
+      O.fromPredicate(OEQ.Codec.Oidc.IdentityProviderPlatformCodec.is),
+      O.fold(
+        () => appErrorHandler(`Unsupported platform ${newValue}`),
+        (platform) => {
+          // If user switch back to the initial platform, show the initial API details.
+          const apiDetails: OEQ.Oidc.RestApiDetails =
+            platform === initialConfig.platform
+              ? {
+                  apiUrl: initialConfig.apiUrl,
+                  apiClientId: initialConfig.apiClientId,
+                }
+              : defaultApiDetails;
+          dispatch({
+            type: "configure",
+            config: {
+              ...config,
+              platform,
+              ...apiDetails,
+            },
+          });
+        },
+      ),
     );
-  };
-
-  const onApiDetailsChange = (key: string, newValue: unknown) =>
-    setApiDetails({
-      ...apiDetails,
-      [key]: newValue,
-    });
 
   const generalDetailsRenderOptions = generateGeneralDetails(
-    generalDetails,
-    onGeneralDetailsChange,
+    config,
+    onConfigChange,
     showValidationErrors,
-    serverHasConfiguration,
+    serverHasConfig,
   );
 
   const apiDetailsRenderOptions = generateApiDetails(
-    apiDetails,
-    onApiDetailsChange,
+    config,
+    onConfigChange,
     showValidationErrors,
-    serverHasConfiguration,
+    // OKTA platform doesn't have client secret field which means there is no secret configuration in the server.
+    serverHasConfig && initialConfig.platform !== "OKTA",
   );
 
-  const handleOnSave = async () => {
+  useEffect(() => {
+    if (status !== "saving") return;
+
     setShowValidationErrors(true);
 
     const validateEachField = (): TE.TaskEither<string, void> =>
       pipe(
         checkValidations(
           generalDetailsRenderOptions,
-          R.fromEntries(Object.entries(generalDetails)),
+          R.fromEntries(Object.entries(config)),
         ) &&
           checkValidations(
             apiDetailsRenderOptions,
-            R.fromEntries(Object.entries(apiDetails)),
+            R.fromEntries(Object.entries(config)),
           )
           ? TE.right(undefined)
           : TE.left(checkForm),
@@ -340,48 +204,67 @@ const OidcSettings = ({
     const validateStructure = (): TE.TaskEither<
       string,
       OEQ.Oidc.IdentityProvider
-    > => {
-      const codec =
-        currentOidcValue.platform === "OKTA"
-          ? OEQ.Codec.Oidc.OktaCodec
-          : OEQ.Codec.Oidc.GenericIdentityProviderCodec;
-
-      return pipe(
-        currentOidcValue,
+    > =>
+      pipe(
+        config,
         E.fromPredicate(
-          codec.is,
+          OEQ.Codec.Oidc.IdentityProviderCodec.is,
           () => `Validation for the structure of OIDC configuration failed.`,
         ),
         TE.fromEither,
       );
-    };
 
     const submit = (
       oidcValue: OEQ.Oidc.IdentityProvider,
     ): TE.TaskEither<string, void> =>
       TE.tryCatch(() => updateOidcSettings(oidcValue), String);
 
-    await pipe(
+    pipe(
       validateEachField(),
       TE.chain(validateStructure),
       TE.chain(submit),
-      TE.match(appErrorHandler, () => {
-        // Reset the initial values since user has saved the settings.
-        setInitialIdpDetails(currentOidcValue);
-        setShowSnackBar(true);
-      }),
+      TE.match(
+        (e) => {
+          appErrorHandler(e);
+          dispatch({
+            type: "configure",
+            config,
+          });
+        },
+        () => {
+          // Reset the initial values since user has saved the settings.
+          dispatch({
+            type: "reset",
+          });
+          setShowSnackBar(true);
+        },
+      ),
     )();
-  };
+  }, [
+    apiDetailsRenderOptions,
+    appErrorHandler,
+    config,
+    generalDetailsRenderOptions,
+    status,
+  ]);
 
   return (
     <SettingPageTemplate
-      onSave={handleOnSave}
-      preventNavigation={configurationChanged}
-      saveButtonDisabled={!configurationChanged}
+      onSave={() => dispatch({ type: "submit" })}
+      preventNavigation={isConfigChanged}
+      saveButtonDisabled={
+        status === "saving" ||
+        status === "initialising" ||
+        (status === "configuring" && !isConfigChanged)
+      }
       snackBarOnClose={() => setShowSnackBar(false)}
       snackbarOpen={showSnackBar}
     >
-      <Card>
+      <Card sx={{ position: "relative" }}>
+        {/*Display a loading spinner when the page is initialising.*/}
+        {(state.status === "initialising" || status === "saving") && (
+          <SpinnerOverlay />
+        )}
         <CardContent>
           {/* General details section. */}
           <Grid>
@@ -399,7 +282,7 @@ const OidcSettings = ({
               title={apiDetailsTitle}
               desc={apiDetailsDesc}
               fields={{
-                ...generatePlatform(generalDetails.platform, onPlatformChange),
+                ...generatePlatform(config.platform, onPlatformChange),
                 ...apiDetailsRenderOptions,
               }}
             />
@@ -414,53 +297,63 @@ const OidcSettings = ({
                 ariaLabel={`${editLabel} ${defaultRoleTitle}`}
                 primaryText={defaultRoleTitle}
                 secondaryText={defaultRoleDesc}
-                value={defaultRoles}
-                onChange={setDefaultRoles}
-                roleListProvider={searchRoleProvider}
+                value={config.defaultRoles}
+                onChange={(role) => onConfigChange("defaultRoles", role)}
               />
-              {defaultRolesWarnings && (
-                <SettingsListAlert
-                  severity="warning"
-                  messages={defaultRolesWarnings}
-                />
-              )}
 
               <SettingsListControl
                 primaryText={roleClaimTitle}
                 secondaryText={roleClaimDesc}
                 control={plainTextFiled({
                   name: roleClaimTitle,
-                  value: generalDetails.roleConfig?.roleClaim,
+                  value: config.roleConfig?.roleClaim,
                   disabled: false,
                   required: true,
-                  onChange: (value) =>
-                    setGeneralDetails({
-                      ...generalDetails,
-                      roleConfig: {
-                        roleClaim: value,
-                        customRoles:
-                          generalDetails.roleConfig?.customRoles ?? new Map(),
+                  onChange: (value) => {
+                    const roleConfig = isNonEmptyString(value)
+                      ? {
+                          roleClaim: value,
+                          customRoles:
+                            config.roleConfig?.customRoles ?? new Map(),
+                        }
+                      : undefined;
+
+                    dispatch({
+                      type: "configure",
+                      config: {
+                        ...config,
+                        roleConfig,
                       },
-                    }),
+                    });
+                  },
                   showValidationErrors,
                 })}
               />
 
-              {generalDetails.roleConfig?.roleClaim && (
-                <>
+              {pipe(
+                config.roleConfig?.roleClaim,
+                O.fromPredicate(isNonEmptyString),
+                O.map((roleClaim) => (
                   <CustomRolesMappingControl
-                    initialRoleMappings={customRoles}
-                    onChange={setCustomRoles}
-                    searchRoleProvider={searchRoleProvider}
+                    initialMappings={
+                      config.roleConfig?.customRoles ?? new Map()
+                    }
+                    onChange={(value) =>
+                      dispatch({
+                        type: "configure",
+                        config: {
+                          ...config,
+                          roleConfig: {
+                            roleClaim,
+                            customRoles: value,
+                          },
+                        },
+                      })
+                    }
                     strings={customRoleDialogStrings}
                   />
-                  {customRolesWarnings && (
-                    <SettingsListAlert
-                      severity="warning"
-                      messages={customRolesWarnings}
-                    />
-                  )}
-                </>
+                )),
+                O.toUndefined,
               )}
             </SettingsList>
           </Grid>

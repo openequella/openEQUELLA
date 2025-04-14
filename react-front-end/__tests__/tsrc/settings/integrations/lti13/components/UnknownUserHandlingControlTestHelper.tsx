@@ -15,21 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
 import * as React from "react";
-import UnknownUserHandlingControl from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+import { findGroupsByIds } from "../../../../../../__mocks__/GroupModule.mock";
+import UnknownUserHandlingControl, {
+  UnknownUserHandlingControlProps,
+} from "../../../../../../tsrc/settings/Integrations/lti13/components/UnknownUserHandlingControl";
+
+export const commonUnknownUserHandlingControlProps: UnknownUserHandlingControlProps =
+  {
+    selection: "ERROR",
+    onChange: jest.fn(),
+    findGroupsByIdsProvider: findGroupsByIds,
+  };
 
 /***
  * Helper to render UnknownHandlingControl.
  */
 export const renderUnknownUserHandlingControl = (
-  selection: OEQ.LtiPlatform.UnknownUserHandling = "ERROR",
-  onChange: (
-    selection: OEQ.LtiPlatform.UnknownUserHandling,
-    groups: ReadonlySet<OEQ.UserQuery.GroupDetails>,
-  ) => void,
-): RenderResult =>
-  render(
-    <UnknownUserHandlingControl selection={selection} onChange={onChange} />,
-  );
+  props: UnknownUserHandlingControlProps = commonUnknownUserHandlingControlProps,
+): RenderResult => render(<UnknownUserHandlingControl {...props} />);

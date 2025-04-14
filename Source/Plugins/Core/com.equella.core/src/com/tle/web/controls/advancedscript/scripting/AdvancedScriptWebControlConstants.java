@@ -18,7 +18,6 @@
 
 package com.tle.web.controls.advancedscript.scripting;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public final class AdvancedScriptWebControlConstants {
   /**

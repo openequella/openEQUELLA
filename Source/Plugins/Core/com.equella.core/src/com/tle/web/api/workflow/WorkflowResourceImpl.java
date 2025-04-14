@@ -31,7 +31,6 @@ import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind(WorkflowResource.class)
 @Singleton
 public class WorkflowResourceImpl

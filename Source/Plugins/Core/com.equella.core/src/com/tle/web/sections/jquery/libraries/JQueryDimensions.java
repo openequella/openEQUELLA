@@ -23,7 +23,6 @@ import com.tle.core.javascript.JavascriptModule;
 import com.tle.web.sections.jquery.JQueryLibraryInclude;
 import com.tle.web.sections.render.PreRenderable;
 
-/** @author aholland */
 // Included in UI core now
 @Deprecated
 @SuppressWarnings("nls")

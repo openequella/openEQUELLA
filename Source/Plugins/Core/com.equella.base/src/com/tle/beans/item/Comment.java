@@ -52,8 +52,8 @@ import org.hibernate.annotations.NamedQuery;
       cacheable = true,
       readOnly = true,
       query =
-          ""
-              + "SELECT rating FROM Item WHERE uuid = :uuid AND version = :version AND institution = :institution")
+          "SELECT rating FROM Item WHERE uuid = :uuid AND version = :version AND institution ="
+              + " :institution")
 })
 public class Comment implements Serializable, ForeignItemKey {
   private static final long serialVersionUID = 1L;

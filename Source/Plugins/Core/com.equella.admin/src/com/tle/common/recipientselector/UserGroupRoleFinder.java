@@ -20,7 +20,6 @@ package com.tle.common.recipientselector;
 
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface UserGroupRoleFinder {
   RecipientFilter getSelectedFilter();
 

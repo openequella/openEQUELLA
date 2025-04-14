@@ -24,7 +24,6 @@ import com.tle.web.sections.equella.ModalSession;
 import com.tle.web.sections.equella.ModalSessionService;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class ModalSessionExceptionHandler
     extends AbstractModalSessionExceptionHandler<ModalSession> {
   @Inject private ModalSessionService modalService;

@@ -66,7 +66,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author aholland */
 @Singleton
 @SuppressWarnings("nls")
 @Bind(HtmlEditorPluginService.class)

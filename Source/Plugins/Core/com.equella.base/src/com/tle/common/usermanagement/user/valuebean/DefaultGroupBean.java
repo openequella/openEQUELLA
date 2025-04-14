@@ -23,7 +23,6 @@ import com.tle.common.Check.FieldEquality;
 import com.tle.common.Format;
 import java.util.Objects;
 
-/** @author adame */
 @SuppressWarnings("nls")
 public class DefaultGroupBean implements GroupBean, FieldEquality<DefaultGroupBean> {
   private static final long serialVersionUID = 1L;
@@ -39,13 +38,17 @@ public class DefaultGroupBean implements GroupBean, FieldEquality<DefaultGroupBe
     this.name = name;
   }
 
-  /** @return the id */
+  /**
+   * @return the id
+   */
   @Override
   public String getUniqueID() {
     return id;
   }
 
-  /** @return the name */
+  /**
+   * @return the name
+   */
   @Override
   public String getName() {
     return name;

@@ -28,7 +28,6 @@ import com.tle.core.hibernate.equella.service.Property;
 import com.tle.core.institution.convert.TreeNodeConverter;
 import javax.inject.Inject;
 
-/** @author Aaron */
 public abstract class BaseEntityTreeNodeConverter<T extends TreeNodeInterface<T>>
     extends TreeNodeConverter<T> {
   @Inject private EntityRegistry registry;

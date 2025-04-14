@@ -22,7 +22,6 @@ import com.tle.web.sections.annotations.Bookmarked;
 import com.tle.web.sections.render.SectionRenderable;
 import java.util.List;
 
-/** @author aholland */
 public class RootCloneOrMoveModel {
   @Bookmarked(name = "u")
   private String uuid;

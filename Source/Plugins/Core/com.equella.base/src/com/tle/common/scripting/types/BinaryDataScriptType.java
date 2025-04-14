@@ -25,6 +25,8 @@ package com.tle.common.scripting.types;
  * @author aholland
  */
 public interface BinaryDataScriptType {
-  /** @return The length of the data (in bytes) */
+  /**
+   * @return The length of the data (in bytes)
+   */
   long getLength();
 }

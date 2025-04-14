@@ -24,7 +24,6 @@ import com.tle.core.item.operations.AbstractWorkflowOperation;
 import com.tle.core.item.standard.filter.AbstractStandardOperationFilter;
 import java.util.Map;
 
-/** @author jmaginnis */
 @SuppressWarnings("nls")
 @Bind
 public class ReviewFilter extends AbstractStandardOperationFilter {

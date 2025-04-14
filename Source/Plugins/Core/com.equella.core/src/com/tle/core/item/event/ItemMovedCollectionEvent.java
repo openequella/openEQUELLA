@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemKey;
 import com.tle.core.events.ApplicationEvent;
 import com.tle.core.item.event.listener.ItemMovedCollectionEventListener;
 
-/** @author Aaron */
 @NonNullByDefault
 public class ItemMovedCollectionEvent extends ApplicationEvent<ItemMovedCollectionEventListener> {
   private final ItemKey itemId;

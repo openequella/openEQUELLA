@@ -23,21 +23,32 @@ beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
 
 describe('Browse hierarchy', () => {
-  it('should be able to get all hierarchies', async () => {
-    const result = await OEQ.BrowseHierarchy.browseHierarchies(TC.API_PATH);
+  it('should be able to get all root hierarchies', async () => {
+    const result = await OEQ.BrowseHierarchy.browseRootHierarchies(TC.API_PATH);
     expect(result).toHaveLength(8);
+  });
+
+  it('should be able to get all sub hierarchies of a provided hierarchy', async () => {
+    const compoundUuid =
+      '46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==';
+    const result = await OEQ.BrowseHierarchy.browseSubHierarchies(
+      TC.API_PATH,
+      compoundUuid
+    );
+    expect(result).toHaveLength(1);
   });
 
   it('should be able to get a hierarchy', async () => {
     const compoundUuid =
       '46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ0,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==';
-    const result = await OEQ.BrowseHierarchy.browseHierarchy(
+    const result = await OEQ.BrowseHierarchy.browseHierarchyDetails(
       TC.API_PATH,
       compoundUuid
     );
     expect(result.summary.compoundUuid).toEqual(compoundUuid);
     expect(result.keyResources).toHaveLength(2);
     expect(result.parents).toHaveLength(1);
+    expect(result.children).toHaveLength(1);
   });
 
   it('should be able to get hierarchy IDs with given key resource', async () => {

@@ -79,7 +79,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-/** @author larry */
 @Bind
 @Path("browsehierarchy")
 @Api(value = "Hierarchy browsing", description = "hierarchy-browse")
@@ -401,7 +400,8 @@ public class BrowseHierarchyResource {
     bean.setSearchResults(result);
 
     // Key resources, if present, are not paged
-    HierarchyCompoundUuid compoundUuid = HierarchyCompoundUuid.apply(hierarchy.getUuid(), true);
+    HierarchyCompoundUuid compoundUuid =
+        HierarchyCompoundUuid.applyWithLegacyFormat(hierarchy.getUuid());
     List<Item> keyItems = hierarchyService.getKeyResourceItems(compoundUuid);
     if (!Check.isEmpty(keyItems)) {
       // detail keyword from ItemResource.ALL_ALLOWABLE_INFOS

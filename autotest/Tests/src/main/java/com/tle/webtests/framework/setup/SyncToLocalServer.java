@@ -1,7 +1,5 @@
 package com.tle.webtests.framework.setup;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import com.tle.webtests.framework.Assert;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestConfig;
@@ -175,7 +173,6 @@ public class SyncToLocalServer {
     } else {
       binary = new FirefoxBinary();
     }
-    binary.setTimeout(SECONDS.toMillis(120));
     FirefoxProfile profile = new FirefoxProfile();
     // profile.addExtension(getClass(), "firebug-1.7.3-fx.xpi");
     profile.setPreference("extensions.firebug.currentVersion", "999");

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class PageModel extends AbstractPageModel<DefaultWizardPage> {
   private DefaultWizardPage defPage;
 

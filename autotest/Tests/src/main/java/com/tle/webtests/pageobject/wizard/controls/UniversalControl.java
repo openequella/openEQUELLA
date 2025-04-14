@@ -47,7 +47,9 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   public <T extends AttachmentType<T, ?>> T addDefaultResource(T type) {
-    getAddResourceButton().click();
+    WebElement addResourceButton =
+        waiter.until(ExpectedConditions.elementToBeClickable(getAddResourceButton()));
+    forceButtonClickWithJS(addResourceButton);
     return type.get();
   }
 
@@ -57,7 +59,7 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
    * @return
    */
   public <T extends AttachmentType<T, ?>> T addResource(T type) {
-    getAddResourceButton().click();
+    forceButtonClickWithJS(getAddResourceButton());
     PickAttachmentTypeDialog dialog = new PickAttachmentTypeDialog(this).get();
     return dialog.clickType(type);
   }
@@ -94,7 +96,12 @@ public class UniversalControl extends NewAbstractWizardControl<UniversalControl>
   }
 
   private void clickAction(By rowBy, String action) {
-    driver.findElement(getFullBy(new ByChained(rowBy, getActionLink(action)))).click();
+    WebElement button =
+        waiter.until(
+            ExpectedConditions.elementToBeClickable(
+                getFullBy(new ByChained(rowBy, getActionLink(action)))));
+    // button.click() will raise intercepted error in GitHub CI, use JS to click the button.
+    forceButtonClickWithJS(button);
   }
 
   public <P extends AttachmentEditPage, T extends AttachmentType<T, P>> P editResource(

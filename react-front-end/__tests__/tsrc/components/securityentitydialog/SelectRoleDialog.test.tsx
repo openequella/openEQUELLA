@@ -36,7 +36,7 @@ describe("SelectRoleDialog", () => {
   it("Should be able to add a role", async () => {
     const selectedRoleName = LOGGED_IN_USER_ROLE_NAME;
     const onClose = jest.fn();
-    const { getByRole } = renderSelectRoleDialog({
+    const { getByRole } = await renderSelectRoleDialog({
       ...commonSelectRoleDialogProps,
       onClose,
     });
@@ -66,7 +66,7 @@ describe("SelectRoleDialog", () => {
   it("Should be able to cancel the action", async () => {
     const selectedRoleName = "Guest User Role";
     const onClose = jest.fn();
-    const { getByRole } = renderSelectRoleDialog({
+    const { getByRole } = await renderSelectRoleDialog({
       ...commonSelectRoleDialogProps,
       value: SET.singleton(roles[0]),
       onClose,

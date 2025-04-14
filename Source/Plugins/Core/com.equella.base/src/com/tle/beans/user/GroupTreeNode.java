@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-/** @author Nicholas Read */
 public class GroupTreeNode extends DefaultMutableTreeNode implements FieldEquality<GroupTreeNode> {
   private String id;
   private String name;

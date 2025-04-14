@@ -40,7 +40,7 @@ const {
     gallerySearchResult: { ariaLabel, viewItem },
   },
   common: {
-    action: { openInNewTab },
+    action: { openInNewTab, share },
   },
   lightboxComponent: { viewNext, viewPrevious, openSummaryPage },
 } = languageStrings;
@@ -79,6 +79,16 @@ describe("<GallerySearchResult />", () => {
 
     expect(mockUseHistoryPush).toHaveBeenCalled();
     expect(mockUseHistoryPush.mock.calls[0][0].match("/items/")).toBeTruthy();
+  });
+
+  it("displays the Share Attachment dialog when the Share icon is clicked on", async () => {
+    const { getAllByLabelText, getByRole } = renderGallery();
+    await userEvent.click(getAllByLabelText(share)[0]);
+
+    const dialog = getByRole("dialog");
+    const { embedCode, link } = languageStrings.shareAttachment;
+    expect(queryByText(dialog, embedCode)).toBeInTheDocument();
+    expect(queryByText(dialog, link)).toBeInTheDocument();
   });
 
   it("doesn't show the Info icon for Scrapbook", async () => {

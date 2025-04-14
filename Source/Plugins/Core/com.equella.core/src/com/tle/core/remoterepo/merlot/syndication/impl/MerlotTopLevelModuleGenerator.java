@@ -26,7 +26,6 @@ import java.util.Set;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 
-/** @author aholland */
 public class MerlotTopLevelModuleGenerator implements ModuleGenerator {
   private static final Set<Namespace> NAMESPACES =
       Collections.unmodifiableSet(Collections.singleton(MerlotTopLevelModule.NAMESPACE));

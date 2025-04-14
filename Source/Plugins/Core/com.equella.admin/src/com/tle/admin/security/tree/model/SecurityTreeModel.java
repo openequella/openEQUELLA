@@ -47,7 +47,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class SecurityTreeModel implements TreeModel {
   private final DefaultTreeModel model;

@@ -21,7 +21,6 @@ package com.tle.admin.controls.mypages.universal;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 
-/** @author Aaron */
 public class MyPagesSettingsPanel extends UniversalControlSettingPanel {
   @SuppressWarnings("nls")
   @Override

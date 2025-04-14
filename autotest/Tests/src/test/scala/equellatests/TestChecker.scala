@@ -19,9 +19,11 @@ object TestChecker {
     val testConfig = GlobalConfig.testConfig
     withBrowserDriver(name, testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getAdminUrl)
-      val choice = new UndeterminedPage[InstitutionTabInterface](context,
-                                                                 new InstitutionListTab(context),
-                                                                 new ImportTab(context))
+      val choice = new UndeterminedPage[InstitutionTabInterface](
+        context,
+        new InstitutionListTab(context),
+        new ImportTab(context)
+      )
       new ServerAdminLogonPage(context).load.logon(testConfig.getAdminPassword, choice)
       val r = f(context)
       driver.quit()
@@ -33,16 +35,24 @@ object TestChecker {
     val factory = new StandardDriverFactory(testConfig)
     val driver  = factory.getDriver(getClass)
     Try(f(driver))
-      .transform(Success.apply, { t =>
-        ScreenshotTaker.takeScreenshot(driver,
-                                       testConfig.getScreenshotFolder,
-                                       name,
-                                       testConfig.isChromeDriverSet)
-        Failure(t)
-      })
-      .fold(t => {
-        driver.quit()
-        throw t
-      }, identity)
+      .transform(
+        Success.apply,
+        { t =>
+          ScreenshotTaker.takeScreenshot(
+            driver,
+            testConfig.getScreenshotFolder,
+            name,
+            testConfig.isChromeDriverSet
+          )
+          Failure(t)
+        }
+      )
+      .fold(
+        t => {
+          driver.quit()
+          throw t
+        },
+        identity
+      )
   }
 }

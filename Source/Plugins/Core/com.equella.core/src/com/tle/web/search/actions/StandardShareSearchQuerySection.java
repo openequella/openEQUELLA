@@ -49,7 +49,6 @@ import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.annotations.Component;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 
-/** @author Aaron */
 @Bind
 @SuppressWarnings("nls")
 public class StandardShareSearchQuerySection extends AbstractShareSearchQuerySection

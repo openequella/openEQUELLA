@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class JQueryLibrary implements JavascriptLibrary {

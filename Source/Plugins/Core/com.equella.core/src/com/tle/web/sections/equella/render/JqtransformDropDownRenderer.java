@@ -28,7 +28,6 @@ import com.tle.web.sections.standard.model.HtmlListState;
 import com.tle.web.sections.standard.renderers.list.DropDownRenderer;
 import java.util.Set;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class JqtransformDropDownRenderer extends DropDownRenderer {
   private static final String KEY_OPENER_CLASS = "selectOpenerClass";

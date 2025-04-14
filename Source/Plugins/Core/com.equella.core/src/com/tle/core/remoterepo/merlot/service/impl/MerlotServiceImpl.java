@@ -22,8 +22,6 @@ import com.dytech.devlib.PropBagEx;
 import com.dytech.devlib.PropBagEx.PropBagThoroughIterator;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.gdata.util.common.html.HtmlToText;
-import com.google.gdata.util.common.io.Closeables;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.MerlotSettings;
 import com.tle.common.Check;
@@ -56,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +67,7 @@ import org.slf4j.LoggerFactory;
 public class MerlotServiceImpl implements MerlotService {
   private static String KEY_PFX =
       AbstractPluginService.getMyPluginId(MerlotServiceImpl.class) + ".";
+
   /** Returned from the Basic API */
   private static final String STATUS_OK = "ok";
 
@@ -274,8 +274,7 @@ public class MerlotServiceImpl implements MerlotService {
   private void convertXmlToSearchResult(
       MerlotSearchResult searchResult, PropBagEx r, boolean advanced) {
     searchResult.setTitle(r.getNode("title"));
-
-    String description = HtmlToText.htmlToPlainText(r.getNode("description"));
+    String description = Jsoup.parse(r.getNode("description")).text();
     description = description.replaceAll("[\t\n]+", " ");
     searchResult.setDescription(description);
 
@@ -428,13 +427,10 @@ public class MerlotServiceImpl implements MerlotService {
 
   @Override
   public Map<String, Collection<NameValue>> getCategories(FederatedSearch merlotSearch) {
-    Response response = null;
-    try {
-      response =
-          httpService.getWebContent(
-              new Request(serviceUrl(merlotSearch, MERLOT_CATEGORIES_URL)),
-              configService.getProxyDetails());
-
+    try (Response response =
+        httpService.getWebContent(
+            new Request(serviceUrl(merlotSearch, MERLOT_CATEGORIES_URL)),
+            configService.getProxyDetails())) {
       final PropBagEx xml = new PropBagEx(response.getBody());
       final ListMultimap<String, NameValue> nvs = ArrayListMultimap.create();
 
@@ -450,8 +446,6 @@ public class MerlotServiceImpl implements MerlotService {
       String msg = CurrentLocale.get(KEY_PFX + "error.filtervalues");
       LOGGER.error(msg, t);
       throw new RuntimeException(msg);
-    } finally {
-      Closeables.closeQuietly(response);
     }
   }
 

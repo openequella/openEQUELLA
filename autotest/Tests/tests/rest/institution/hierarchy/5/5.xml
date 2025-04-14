@@ -1,8 +1,8 @@
 <com.tle.beans.hierarchy.HierarchyTopic>
-  <id>112680</id>
-  <uuid>8dcb1d04-33cb-4935-9fa3-d753daca0b17</uuid>
+  <id>27848</id>
+  <uuid>363f24f7-d982-4165-b761-b5fb0635e89a</uuid>
   <parent>
-    <id>112677</id>
+    <id>27647</id>
     <uuid>6135b550-ce1c-43c2-b34c-0a3cf793759d</uuid>
     <subTopics/>
     <allParents/>
@@ -11,59 +11,8 @@
     <inheritFreetext>false</inheritFreetext>
     <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
   </parent>
-  <subTopics>
-    <com.tle.beans.hierarchy.HierarchyTopic>
-      <id>112683</id>
-      <uuid>bb9d5fbd-07e9-4e61-8eb6-e0c06ae39dfc</uuid>
-      <institution>
-        <id>111323</id>
-        <uniqueId>0</uniqueId>
-        <quota>0.0</quota>
-        <enabled>true</enabled>
-      </institution>
-      <parent reference="../../.."/>
-      <subTopics/>
-      <allParents>
-        <com.tle.beans.hierarchy.HierarchyTopic>
-          <id>112677</id>
-          <uuid>6135b550-ce1c-43c2-b34c-0a3cf793759d</uuid>
-          <subTopics/>
-          <allParents/>
-          <listPosition>0</listPosition>
-          <showResults>true</showResults>
-          <inheritFreetext>false</inheritFreetext>
-          <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
-        </com.tle.beans.hierarchy.HierarchyTopic>
-        <com.tle.beans.hierarchy.HierarchyTopic reference="../../../.."/>
-      </allParents>
-      <listPosition>0</listPosition>
-      <showResults>true</showResults>
-      <freetext></freetext>
-      <inheritFreetext>true</inheritFreetext>
-      <addIdefs/>
-      <addSchemas/>
-      <inhIdefs/>
-      <inhSchemas/>
-      <name>
-        <id>112690</id>
-        <strings>
-          <entry>
-            <string>en_AU</string>
-            <com.tle.beans.entity.LanguageString>
-              <id>112691</id>
-              <locale>en_AU</locale>
-              <priority>2</priority>
-              <text>Grandchild Topic</text>
-              <bundle reference="../../../.."/>
-            </com.tle.beans.entity.LanguageString>
-          </entry>
-        </strings>
-      </name>
-      <hideSubtopicsWithNoResults>true</hideSubtopicsWithNoResults>
-      <attributes/>
-    </com.tle.beans.hierarchy.HierarchyTopic>
-  </subTopics>
-  <listPosition>0</listPosition>
+  <subTopics/>
+  <listPosition>2</listPosition>
   <showResults>true</showResults>
   <freetext></freetext>
   <inheritFreetext>true</inheritFreetext>
@@ -72,15 +21,15 @@
   <inhIdefs/>
   <inhSchemas/>
   <name>
-    <id>112686</id>
+    <id>27851</id>
     <strings>
       <entry>
         <string>en_AU</string>
         <com.tle.beans.entity.LanguageString>
-          <id>112687</id>
+          <id>27852</id>
           <locale>en_AU</locale>
           <priority>2</priority>
-          <text>Child Topic</text>
+          <text>Child 3 Topic</text>
           <bundle reference="../../../.."/>
         </com.tle.beans.entity.LanguageString>
       </entry>

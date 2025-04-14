@@ -18,7 +18,6 @@
 
 package com.tle.client.harness;
 
-/** @author nread */
 public class ServerProfile {
   private String name;
   private String server;

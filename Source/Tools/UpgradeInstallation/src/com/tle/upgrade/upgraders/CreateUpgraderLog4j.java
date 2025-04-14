@@ -21,7 +21,6 @@ package com.tle.upgrade.upgraders;
 import com.tle.upgrade.UpgradeResult;
 import java.io.File;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 public class CreateUpgraderLog4j extends AbstractUpgrader {
   @Override

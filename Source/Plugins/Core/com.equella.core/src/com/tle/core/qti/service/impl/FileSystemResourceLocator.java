@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.URI;
 import uk.ac.ed.ph.jqtiplus.xmlutils.locators.ResourceLocator;
 
-/** @author Aaron */
 public class FileSystemResourceLocator implements ResourceLocator {
   private final FileSystemService fileSystemService;
   private final FileHandle handle;

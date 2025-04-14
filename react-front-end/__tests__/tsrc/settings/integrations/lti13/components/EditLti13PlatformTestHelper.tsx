@@ -23,9 +23,9 @@ import {
   defaultACLEntityResolversMulti,
   defaultACLEntityResolvers,
 } from "../../../../../../__mocks__/ACLExpressionBuilder.mock";
-import { listGroups } from "../../../../../../__mocks__/GroupModule.mock";
+import { searchGroups } from "../../../../../../__mocks__/GroupModule.mock";
 import { getPlatform } from "../../../../../../__mocks__/Lti13PlatformsModule.mock";
-import { listRoles } from "../../../../../../__mocks__/RoleModule.mock";
+import { searchRoles } from "../../../../../../__mocks__/RoleModule.mock";
 import { listUsers } from "../../../../../../__mocks__/UserModule.mock";
 import EditLti13Platform, {
   EditLti13PlatformProps,
@@ -38,8 +38,8 @@ export const commonEditLti13PlatformProps: EditLti13PlatformProps = {
   updateTemplate: () => {},
   getPlatformProvider: getPlatform,
   searchUserProvider: listUsers,
-  searchGroupProvider: listGroups,
-  searchRoleProvider: listRoles,
+  searchGroupProvider: searchGroups,
+  searchRoleProvider: searchRoles,
   aclEntityResolversProvider: defaultACLEntityResolvers,
   aclEntityResolversMultiProvider: defaultACLEntityResolversMulti,
 };

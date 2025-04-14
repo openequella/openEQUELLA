@@ -29,7 +29,6 @@ import com.tle.core.item.standard.service.MetadataMappingService;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author jmaginnis */
 public class MetadataMapOperation extends AbstractStandardWorkflowOperation {
   @Inject private transient MetadataMappingService metadataService;
 

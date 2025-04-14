@@ -53,7 +53,6 @@ import javax.inject.Singleton;
 import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.Extension.Parameter;
 
-/** @author Nicholas Read */
 @Bind(RemoteAdminService.class)
 @Singleton
 @SuppressWarnings("nls")

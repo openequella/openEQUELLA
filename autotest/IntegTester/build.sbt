@@ -7,9 +7,9 @@ version := "1.0"
 
 val CirceVersion  = "0.12.1"
 val Http4sVersion = "0.21.8"
-val jsoupVersion  = "1.16.2"
+val jsoupVersion  = "1.19.1"
 
-scalaVersion := "2.13.13"
+scalaVersion := "2.13.16"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
@@ -22,16 +22,19 @@ libraryDependencies ++= Seq(
 ).map(_ % CirceVersion)
 
 libraryDependencies ++= Seq(
-  "org.http4s"       %% "http4s-blaze-server" % Http4sVersion,
-  "org.http4s"       %% "http4s-dsl"          % Http4sVersion,
-  "org.http4s"       %% "http4s-circe"        % Http4sVersion,
-  "org.slf4j"        % "slf4j-simple"         % "2.0.13",
-  "org.jsoup"        % "jsoup"                % jsoupVersion,
-  "com.nulab-inc"    %% "scala-oauth2-core"   % "1.6.0",
-  "javax.servlet"    % "javax.servlet-api"    % "4.0.1",
-  "com.google.guava" % "guava"                % "32.1.3-jre",
+  "org.apache.httpcomponents" % "httpclient"          % "4.5.14",
+  "org.http4s"               %% "http4s-blaze-server" % Http4sVersion,
+  "org.http4s"               %% "http4s-dsl"          % Http4sVersion,
+  "org.http4s"               %% "http4s-circe"        % Http4sVersion,
+  "org.slf4j"                 % "slf4j-simple"        % "2.0.17",
+  "org.jsoup"                 % "jsoup"               % jsoupVersion,
+  "com.nulab-inc"            %% "scala-oauth2-core"   % "1.6.0",
+  "javax.servlet"             % "javax.servlet-api"   % "4.0.1",
+  "com.google.guava"          % "guava"               % "32.1.3-jre",
   jacksonDataBind,
-  jacksonModuleScala
+  jacksonModuleScala,
+  "com.auth0" % "jwks-rsa" % "0.22.1",
+  "com.auth0" % "java-jwt" % "4.5.0"
 )
 
 (Compile / resourceGenerators) += Def.task {
@@ -44,5 +47,6 @@ libraryDependencies ++= Seq(
     IO.copy((baseJsTarget ** "*").pair(rebase(baseJsTarget, outDir)))
   }
   cached(
-    ((baseJs / "src" ** "*").get ++ (baseJs / "tsrc" ** "*").get ++ (baseJs / "www" ** "*").get).toSet).toSeq
+    ((baseJs / "src" ** "*").get ++ (baseJs / "tsrc" ** "*").get ++ (baseJs / "www" ** "*").get).toSet
+  ).toSeq
 }.taskValue

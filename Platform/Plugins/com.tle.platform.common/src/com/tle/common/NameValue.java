@@ -20,7 +20,6 @@ package com.tle.common;
 
 import java.util.Objects;
 
-/** @author Nicholas Read */
 public class NameValue extends Pair<String, String> {
   private static final long serialVersionUID = 1;
 

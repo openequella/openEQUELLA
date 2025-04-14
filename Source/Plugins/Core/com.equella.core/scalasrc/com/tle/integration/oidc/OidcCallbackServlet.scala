@@ -28,33 +28,33 @@ import com.tle.integration.util.NO_FURTHER_INFO
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Named, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
 
-/**
-  * This Servlet responds to GET requests sent to endpoint 'oidclogin.do' which is used as
-  * the redirect URI of an OIDC integration.
+/** This Servlet responds to GET requests sent to endpoint 'oidclogin.do' which is used as the
+  * redirect URI of an OIDC integration.
   */
 @Bind
 @Singleton
-class OidcCallbackServlet @Inject()(
+class OidcCallbackServlet @Inject() (
     userService: UserService,
     authService: OidcAuthService
 ) extends HttpServlet {
 
+  @Inject
+  @Named("enable.oidc.token.logging")
+  private var tokenLoggingEnabled: Boolean = _
+
   private val LOGGER = LoggerFactory.getLogger(classOf[OidcCallbackServlet])
 
-  /**
-    * As per sections 3.1.2.7 and 3.1.3 of the OIDC spec, this endpoints is responsible for performing
-    * the following tasks:
+  /** As per sections 3.1.2.7 and 3.1.3 of the OIDC spec, this endpoints is responsible for
+    * performing the following tasks:
     *
-    * 1. Attempt to retrieve an enabled Identity Provider configuration;
-    * 2. Verify the callback request;
-    * 3. Use the callback details and the configured Identity Provider to request an ID token;
-    * 4. Verify the ID token on receiving;
-    * 5. Attempt to log the user in with the verified token and the configuration;
-    * 6. Redirect user to the target page.
+    *   1. Attempt to retrieve an enabled Identity Provider configuration; 2. Verify the callback
+    *      request; 3. Use the callback details and the configured Identity Provider to request an
+    *      ID token; 4. Verify the ID token on receiving; 5. Attempt to log the user in with the
+    *      verified token and the configuration; 6. Redirect user to the target page.
     *
     * Any step that fails will immediately stop the process and redirect user to the login page with
     * an error message.
@@ -68,9 +68,10 @@ class OidcCallbackServlet @Inject()(
       stateDetails = callbackDetails.stateDetails
       code         = callbackDetails.code
 
-      idToken       <- authService.requestIdToken(code, stateDetails, idp)
+      idToken <- authService.requestIdToken(code, stateDetails, idp)
+      _ = if (tokenLoggingEnabled) LOGGER.debug(s"Retrieved ID Token: $idToken")
       verifiedToken <- authService.verifyIdToken(idToken, state, idp)
-      _             <- authService.login(verifiedToken, userService.getWebAuthenticationDetails(req), idp)
+      _ <- authService.login(verifiedToken, userService.getWebAuthenticationDetails(req), idp)
     } yield stateDetails.targetPage
 
     result match {

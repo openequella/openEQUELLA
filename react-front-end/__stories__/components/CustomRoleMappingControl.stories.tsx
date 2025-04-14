@@ -17,27 +17,45 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { listRoles } from "../../__mocks__/RoleModule.mock";
+import { findRolesByIds, searchRoles } from "../../__mocks__/RoleModule.mock";
 import CustomRolesMappingControl, {
   CustomRolesMappingControlProps,
 } from "../../tsrc/components/CustomRolesMappingControl";
+import { GUEST_USER_ROLE_ID } from "../../tsrc/modules/ACLRecipientModule";
 
 export default {
-  title: "component/CustomRoleMappingControl",
+  title: "component/CustomRolesMappingControl",
   component: CustomRolesMappingControl,
   argTypes: { onChange: { action: "On change" } },
 } as Meta<CustomRolesMappingControlProps>;
 
-const defaultProps = {
-  open: true,
-  initialRoleMappings: new Map(),
-  searchRoleProvider: listRoles,
+const defaultProps: CustomRolesMappingControlProps = {
+  initialMappings: new Map(),
+  searchRolesProvider: searchRoles,
+  findRolesByIdsProvider: findRolesByIds,
+  onChange: () => {},
 };
 
 export const Standard: StoryFn<CustomRolesMappingControlProps> = (args) => (
   <CustomRolesMappingControl {...args} />
 );
 Standard.args = defaultProps;
+
+export const WithSelections: StoryFn<CustomRolesMappingControlProps> = (
+  args,
+) => <CustomRolesMappingControl {...args} />;
+WithSelections.args = {
+  ...defaultProps,
+  initialMappings: new Map([["1", new Set([GUEST_USER_ROLE_ID])]]),
+};
+
+export const WithWarningMessage: StoryFn<CustomRolesMappingControlProps> = (
+  args,
+) => <CustomRolesMappingControl {...args} />;
+WithWarningMessage.args = {
+  ...defaultProps,
+  initialMappings: new Map([["1", new Set(["non-existent-role-id"])]]),
+};
 
 export const WithCustomStrings: StoryFn<CustomRolesMappingControlProps> = (
   args,

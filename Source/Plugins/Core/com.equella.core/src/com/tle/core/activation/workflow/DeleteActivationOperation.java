@@ -24,7 +24,6 @@ import com.tle.beans.activation.ActivateRequest;
 import com.tle.core.activation.ActivateRequestDao;
 import com.tle.core.security.impl.SecureOnCall;
 
-/** @author Aaron */
 @SecureOnCall(priv = "DELETE_ACTIVATION_ITEM")
 public class DeleteActivationOperation extends AbstractBulkableActivationOperation {
   @AssistedInject

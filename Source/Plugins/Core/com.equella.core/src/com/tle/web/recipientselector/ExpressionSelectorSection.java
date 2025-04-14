@@ -103,7 +103,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-/** @author Peng */
 @SuppressWarnings("nls")
 @Bind
 public class ExpressionSelectorSection

@@ -20,7 +20,6 @@ package com.tle.beans.hierarchy;
 
 import com.tle.common.LazyTreeNode;
 
-/** @author Nicholas Read */
 public class HierarchyTreeNode extends LazyTreeNode {
   private static final long serialVersionUID = 1L;
 

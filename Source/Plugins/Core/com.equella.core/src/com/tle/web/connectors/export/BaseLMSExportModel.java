@@ -23,7 +23,6 @@ import com.tle.common.connectors.entity.Connector;
 import com.tle.web.sections.render.Label;
 import java.util.List;
 
-/** @author Aaron */
 public class BaseLMSExportModel {
   private List<ConnectorCourse> coursesCache;
   private Connector connector;

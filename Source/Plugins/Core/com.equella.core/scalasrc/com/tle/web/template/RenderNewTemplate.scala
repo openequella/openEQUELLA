@@ -59,7 +59,8 @@ object RenderNewTemplate {
   val bundleJs = new PreRenderable {
     override def preRender(info: PreRenderContext): Unit = {
       new IncludeFile(
-        s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js")
+        s"api/language/bundle/${LocaleLookup.selectLocale.getLocale.toLanguageTag}/bundle.js"
+      )
         .preRender(info)
       new IncludeFile(s"api/theme/theme.js").preRender(info)
     }
@@ -73,11 +74,12 @@ object RenderNewTemplate {
 
     inpStream.close()
 
-    /**
-      * Update URL related attribute of HTML elements specified by tagName
+    /** Update URL related attribute of HTML elements specified by tagName
       *
-      * @param tagName     the name of the tag to search for (e.g., "script", "link")
-      * @param attrKey     the url related attribute to update (e.g., "src", "href")
+      * @param tagName
+      *   the name of the tag to search for (e.g., "script", "link")
+      * @param attrKey
+      *   the url related attribute to update (e.g., "src", "href")
       */
     def updateElementUrl(tagName: String, attrKey: String) = {
       htmlDoc.getElementsByTag(tagName).asScala.foreach { e =>
@@ -114,7 +116,9 @@ object RenderNewTemplate {
         include(
           ResourcesService
             .getResourceHelper(kalturaPluginId)
-            .url("js/UploadControlEntry.css")).priority(Priority.LOWEST).make())
+            .url("js/UploadControlEntry.css")
+        ).priority(Priority.LOWEST).make()
+      )
     }
   }
 
@@ -142,7 +146,8 @@ object RenderNewTemplate {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
       val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
       val sessionOverride = paramOverride.fold(
-        Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))) { newUI =>
+        Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))
+      ) { newUI =>
         LegacyGuice.userSessionService.setAttribute(NewLayoutKey, newUI)
         Some(newUI)
       }
@@ -161,13 +166,8 @@ object RenderNewTemplate {
               writer.endTag("script")
             }
             src.getCssFiles.asScala.foreach { s: CssInclude =>
-              writer.writeTag("link",
-                              "rel",
-                              "stylesheet",
-                              "type",
-                              "text/css",
-                              "href",
-                              s.getHref(src))
+              writer
+                .writeTag("link", "rel", "stylesheet", "type", "text/css", "href", s.getHref(src))
             }
         }
       })
@@ -243,7 +243,7 @@ object RenderNewTemplate {
         "analyticsId",
         AnalyticsSettings.getAnalyticsId.orNull,
         "hasAuthenticated",
-        CurrentUser.getUserState.isAuthenticated,
+        CurrentUser.getUserState.isAuthenticated
       )
     val renderData =
       Option(req.getAttribute(SetupJSKey).asInstanceOf[ObjectExpression => ObjectExpression])
@@ -262,7 +262,8 @@ object RenderNewTemplate {
   def supportIEPolyFills(context: PreRenderContext): Unit = {
     if (isInternetExplorer(context.getRequest)) {
       context.addJs(
-        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes")
+        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes"
+      )
       RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
       RenderTemplate.TINYMCE_CONTENT_MIN_CSS.preRender(context)
       RenderTemplate.TINYMCE_SKIN_CSS.preRender(context)
@@ -273,11 +274,13 @@ object RenderNewTemplate {
   def isInternetExplorer(request: HttpServletRequest): Boolean =
     Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
-  def renderReact(context: RenderEventContext,
-                  viewFactory: FreemarkerFactory,
-                  renderData: ObjectExpression,
-                  head: String,
-                  body: String): SectionResult = {
+  def renderReact(
+      context: RenderEventContext,
+      viewFactory: FreemarkerFactory,
+      renderData: ObjectExpression,
+      head: String,
+      body: String
+  ): SectionResult = {
     if (DebugSettings.isAutoTestMode) {
       context.preRender(RenderTemplate.AUTOTEST_JS)
     }
@@ -287,16 +290,20 @@ object RenderNewTemplate {
       if (isInternetExplorer(context.getRequest)) "layouts/outer/unsupportedbrowser.ftl"
       else "layouts/outer/react.ftl"
 
-    viewFactory.createResultWithModel(template,
-                                      TemplateScript(head, body, renderData, tempResult, ""))
+    viewFactory.createResultWithModel(
+      template,
+      TemplateScript(head, body, renderData, tempResult, "")
+    )
 
   }
 
-  case class TemplateScript(getHead: String,
-                            getBody: String,
-                            getRenderJs: ObjectExpression,
-                            getTemplate: TemplateResult,
-                            htmlAttributes: String) {
+  case class TemplateScript(
+      getHead: String,
+      getBody: String,
+      getRenderJs: ObjectExpression,
+      getTemplate: TemplateResult,
+      htmlAttributes: String
+  ) {
     def getLang = LocaleUtils.toHtmlLang(CurrentLocale.getLocale)
 
     def isRightToLeft = CurrentLocale.isRightToLeft

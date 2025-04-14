@@ -27,7 +27,6 @@ import com.tle.common.security.PrivilegeTree.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-/** @author Nicholas Read */
 public class CourseInfoEditor extends BaseEntityEditor<CourseInfo> {
   /** Constructs a new SchemaManager. */
   public CourseInfoEditor(BaseEntityTool<CourseInfo> tool, boolean readonly) {

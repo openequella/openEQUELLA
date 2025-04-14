@@ -40,21 +40,29 @@ trait SeleniumBrowser {
     verifyOnPage(action.andThen((_, Prop.proved)))
 
   def withTry(tried: Try[(BrowserPage, Prop)]): Prop =
-    tried.fold(t => Prop.exception(t), { p =>
-      page = p._1; p._2
-    })
+    tried.fold(
+      t => Prop.exception(t),
+      { p =>
+        page = p._1; p._2
+      }
+    )
 
   def verify(action: => (BrowserPage, Prop)): Prop = withTry(Try(action))
 
   def verifyOnPage(action: PartialFunction[BrowserPage, (BrowserPage, Prop)]): Prop =
     withTry(Try(action.applyOrElse(page, SimpleSeleniumBrowser.wrongState)))
 
-  def verifyOnPageAndState[S](s: S)(
-      action: PartialFunction[(S, BrowserPage), (BrowserPage, Prop)]): Prop =
+  def verifyOnPageAndState[S](
+      s: S
+  )(action: PartialFunction[(S, BrowserPage), (BrowserPage, Prop)]): Prop =
     withTry(
       Try(
-        action.applyOrElse(s -> page,
-                           (p: (S, BrowserPage)) => p._2 -> SimpleSeleniumBrowser.wrongPageProp)))
+        action.applyOrElse(
+          s -> page,
+          (p: (S, BrowserPage)) => p._2 -> SimpleSeleniumBrowser.wrongPageProp
+        )
+      )
+    )
 }
 
 object SimpleSeleniumBrowser {
@@ -91,10 +99,12 @@ trait SimpleTestCase extends LogonTestCase {
   override def createInital: BrowserPage => Browser = SimpleSeleniumBrowser.apply
 }
 
-case class FailedTestCase(shortName: String,
-                          propertiesClass: String,
-                          failedAfter: Int,
-                          testCase: Json)
+case class FailedTestCase(
+    shortName: String,
+    propertiesClass: String,
+    failedAfter: Int,
+    testCase: Json
+)
 
 object FailedTestCase {
   implicit val ftcEnc: Encoder[FailedTestCase] = deriveEncoder[FailedTestCase]
@@ -135,17 +145,22 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
               val tc       = b.page.ctx.getTestConfig
               val filename = (name + " " + shortName).replace(' ', '_')
               Try(
-                ScreenshotTaker.takeScreenshot(b.page.driver,
-                                               tc.getScreenshotFolder,
-                                               filename,
-                                               tc.isChromeDriverSet))
+                ScreenshotTaker.takeScreenshot(
+                  b.page.driver,
+                  tc.getScreenshotFolder,
+                  filename,
+                  tc.isChromeDriverSet
+                )
+              )
               if (failedAfter.isEmpty) {
                 val testRunFile =
                   Uniqueify.uniqueFile(tc.getResultsFolder.toPath).apply(filename + "_test.json")
-                val failure = FailedTestCase(shortName,
-                                             getClass.getName,
-                                             previousCommands,
-                                             allCommands.asJson).asJson
+                val failure = FailedTestCase(
+                  shortName,
+                  getClass.getName,
+                  previousCommands,
+                  allCommands.asJson
+                ).asJson
                 System.err.println(s"Wrote failed test to ${testRunFile.toAbsolutePath.toString}")
                 Files.write(testRunFile, failure.spaces2.getBytes(StandardCharsets.UTF_8))
               }

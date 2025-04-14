@@ -58,7 +58,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-/** @author Nicholas Read */
 public class DetailsTab extends AbstractPowerSearchTab
     implements ActionListener, AbstractDetailsTab<PowerSearch> {
   private I18nTextField name;

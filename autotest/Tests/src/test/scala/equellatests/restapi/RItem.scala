@@ -23,25 +23,30 @@ case class RUserRef(id: String)
 
 case class RUserRefO(id: Option[String])
 
-case class RCreateItem(collection: RCollectionRef,
-                       metadata: String,
-                       attachments: Seq[BasicAttachment] = Seq.empty)
+case class RCreateItem(
+    collection: RCollectionRef,
+    metadata: String,
+    attachments: Seq[BasicAttachment] = Seq.empty
+)
 
-case class RItem(uuid: UUID,
-                 version: Int,
-                 collection: RCollectionRef,
-                 metadata: String,
-                 name: Option[String],
-                 status: RStatus,
-                 attachments: Seq[BasicAttachment])
+case class RItem(
+    uuid: UUID,
+    version: Int,
+    collection: RCollectionRef,
+    metadata: String,
+    name: Option[String],
+    status: RStatus,
+    attachments: Seq[BasicAttachment]
+)
 
 sealed trait RAttachment
 
-case class BasicAttachment(description: String,
-                           viewer: Option[String],
-                           restricted: Boolean,
-                           thumbnail: Option[String])
-    extends RAttachment {
+case class BasicAttachment(
+    description: String,
+    viewer: Option[String],
+    restricted: Boolean,
+    thumbnail: Option[String]
+) extends RAttachment {
   def viewerO: Option[String] = viewer.filterNot(_.isEmpty)
 }
 
@@ -63,19 +68,21 @@ sealed trait StatusNode {
   def children: Seq[StatusNode]
 }
 
-case class StandardStatus(uuid: UUID,
-                          name: String,
-                          status: RNodeStatus,
-                          children: Seq[StatusNode],
-                          `type`: RStatusNodeType)
-    extends StatusNode
+case class StandardStatus(
+    uuid: UUID,
+    name: String,
+    status: RNodeStatus,
+    children: Seq[StatusNode],
+    `type`: RStatusNodeType
+) extends StatusNode
 
-case class TaskStatus(uuid: UUID,
-                      name: String,
-                      status: RNodeStatus,
-                      children: Seq[StatusNode],
-                      assignedTo: RUserRefO)
-    extends StatusNode
+case class TaskStatus(
+    uuid: UUID,
+    name: String,
+    status: RNodeStatus,
+    children: Seq[StatusNode],
+    assignedTo: RUserRefO
+) extends StatusNode
 
 object StatusNode {
 
@@ -111,11 +118,13 @@ object RHistoryEventType extends Enumeration {
   implicit val dec: Decoder[RHistoryEventType.Value] = Decoder.enumDecoder(RHistoryEventType)
 }
 
-case class RHistoryEvent(`type`: RHistoryEventType,
-                         user: RUserRef,
-                         state: RStatus,
-                         step: Option[UUID],
-                         stepName: Option[String],
-                         comment: Option[String],
-                         toStep: Option[UUID],
-                         toStepName: Option[String])
+case class RHistoryEvent(
+    `type`: RHistoryEventType,
+    user: RUserRef,
+    state: RStatus,
+    step: Option[UUID],
+    stepName: Option[String],
+    comment: Option[String],
+    toStep: Option[UUID],
+    toStepName: Option[String]
+)

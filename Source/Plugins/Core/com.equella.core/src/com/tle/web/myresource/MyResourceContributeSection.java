@@ -383,7 +383,9 @@ public class MyResourceContributeSection
     return false;
   }
 
-  /** @throws IOException */
+  /**
+   * @throws IOException
+   */
   @AjaxMethod
   public boolean contributeDND(SectionInfo info, String stagingId, String filename)
       throws IOException {
@@ -434,7 +436,9 @@ public class MyResourceContributeSection
     return true;
   }
 
-  /** @throws IOException */
+  /**
+   * @throws IOException
+   */
   @AjaxMethod
   public String dndUpload(SectionInfo info) throws IOException {
     final StagingFile staging = stagingService.createStagingArea();

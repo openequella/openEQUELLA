@@ -25,7 +25,6 @@ import com.tle.common.scripting.service.ScriptContextCreationParams;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author aholland */
 public class StandardScriptContextParams implements ScriptContextCreationParams {
   private final ItemPack<Item> itemPack;
   private final FileHandle fileHandle;

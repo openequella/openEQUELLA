@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

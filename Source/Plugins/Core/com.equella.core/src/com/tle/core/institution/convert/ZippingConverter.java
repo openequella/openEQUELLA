@@ -30,7 +30,6 @@ import com.tle.core.util.archive.ArchiveType;
 import java.io.IOException;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind
 @Singleton
 public class ZippingConverter extends AbstractConverter<Object> {

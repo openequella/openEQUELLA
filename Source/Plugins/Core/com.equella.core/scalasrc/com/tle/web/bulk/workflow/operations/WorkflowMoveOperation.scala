@@ -32,16 +32,18 @@ import javax.inject.Inject
 import scala.jdk.CollectionConverters._
 
 @SecureInModeration
-class WorkflowMoveOperation @AssistedInject()(@Assisted("msg") val msg: String,
-                                              @Assisted("toStep") val toStep: String)
-    extends TaskOperation {
+class WorkflowMoveOperation @AssistedInject() (
+    @Assisted("msg") val msg: String,
+    @Assisted("toStep") val toStep: String
+) extends TaskOperation {
 
   @Inject var aclService: TLEAclManager = _
 
   override def execute: Boolean = {
     if (!aclService.hasPrivilege(getWorkflow, Privilege.MANAGE_WORKFLOW)) {
       throw new AccessDeniedException(
-        CurrentLocale.get("com.tle.core.services.item.error.nopriv", "MANAGE_WORKFLOW", getItemId))
+        CurrentLocale.get("com.tle.core.services.item.error.nopriv", "MANAGE_WORKFLOW", getItemId)
+      )
     }
 
     clearAllStatuses()

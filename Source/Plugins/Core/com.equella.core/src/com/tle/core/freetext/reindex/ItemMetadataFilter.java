@@ -22,7 +22,6 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** @author Nicholas Read */
 public class ItemMetadataFilter extends ReindexFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ItemMetadataFilter.class);
 

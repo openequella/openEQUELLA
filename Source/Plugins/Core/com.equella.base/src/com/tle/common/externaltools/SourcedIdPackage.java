@@ -25,7 +25,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
-/** @author larry */
 public class SourcedIdPackage {
   protected static final String LMS_SOURCED_ID = "lmsSourcedId";
   protected static final String LMS_OUTCOME_SERVICE_URL = "lmsOutcomeServiceUrl";

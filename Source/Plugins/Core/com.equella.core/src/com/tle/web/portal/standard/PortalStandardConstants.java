@@ -33,8 +33,10 @@ import javax.inject.Singleton;
 public class PortalStandardConstants {
   public static final String FEED_CACHE_FILE = "rss.xml"; // $NON-NLS-1$
   private static final int FEED_MAX_RESULTS = 30;
+
   /** 10MB should be an AMPLE default */
   private static final int FEED_MAX_BYTE_SIZE = 10 * 1024 * 1024;
+
   /** two hours is a reasonable max session time I'd say */
   private static final long FEED_CACHE_TIMEOUT = TimeUnit.DAYS.toMillis(2);
 

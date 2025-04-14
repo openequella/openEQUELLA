@@ -32,7 +32,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface FreetextIndex {
   void deleteIndexes();
 
@@ -66,7 +65,9 @@ public interface FreetextIndex {
 
   int count(Search searchReq);
 
-  /** @return Collection of value/count pairs */
+  /**
+   * @return Collection of value/count pairs
+   */
   Multimap<String, Pair<String, Integer>> facetCount(Search search, Collection<String> fields);
 
   MatrixResults matrixSearch(

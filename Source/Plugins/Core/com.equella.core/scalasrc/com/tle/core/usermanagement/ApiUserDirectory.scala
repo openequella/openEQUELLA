@@ -30,22 +30,24 @@ import sttp.client.circe.asJson
 import sttp.model.{Header, Uri}
 import java.net.URI
 import java.util
+import javax.inject.{Inject, Named}
 import scala.jdk.CollectionConverters._
 
-/**
-  * On top of [[OidcUserDirectory]], this class provides the abstraction of retrieving user information
-  * through REST APIs and OAuth2 Access Token.
+/** On top of [[OidcUserDirectory]], this class provides the abstraction of retrieving user
+  * information through REST APIs and OAuth2 Access Token.
   */
 abstract class ApiUserDirectory extends OidcUserDirectory {
+  @Inject
+  @Named("enable.oidc.token.logging")
+  private var tokenLoggingEnabled: Boolean = _
+
   private val LOGGER = LoggerFactory.getLogger(classOf[ApiUserDirectory])
 
-  /**
-    * Type alias for the information of a single user returned from the Identity Provider.
+  /** Type alias for the information of a single user returned from the Identity Provider.
     */
   protected type USER
 
-  /**
-    * Type alias for the information of multiple users returned from the Identity Provider.
+  /** Type alias for the information of multiple users returned from the Identity Provider.
     */
   protected type USERS
 
@@ -53,9 +55,8 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
   protected implicit val usersDecoder: Decoder[USERS]
 
-  /**
-    * While the structure of `USERS` may be equal to `List[USER]` in some IdPs' responses, it may not in others. So
-    * override this function to provide the correct type transformation.
+  /** While the structure of `USERS` may be equal to `List[USER]` in some IdPs' responses, it may
+    * not in others. So override this function to provide the correct type transformation.
     */
   protected def toUserList(users: USERS): List[USER]
 
@@ -63,41 +64,49 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
   override protected type AuthResult = OAuthTokenState
 
-  /**
-    * Use the provided Identity Provider details and user ID to build a full URL that
-    * points to the REST Endpoint that returns a single user.
+  /** Use the provided Identity Provider details and user ID to build a full URL that points to the
+    * REST Endpoint that returns a single user.
     */
   protected def userEndpoint(idp: IDP, id: String): URI
 
-  /**
-    * Use the provided Identity Provider details and search query to build a full URL that
-    * points to the REST Endpoint that returns a list of users.
+  /** Use the provided Identity Provider details and search query to build a full URL that points to
+    * the REST Endpoint that returns a list of users.
     */
   protected def userListEndpoint(idp: IDP, query: String): URI
 
-  /**
-    * Build an instance of TokenRequest to be used in the authentication process.
+  /** Build an instance of TokenRequest to be used in the authentication process.
     */
   protected def tokenRequest(idp: IDP): TokenRequest
 
   override protected def authenticate(idp: IDP): Either[Throwable, OAuthTokenState] =
-    Either.catchNonFatal(OAuthClientService.tokenForClient(tokenRequest(idp)))
+    for {
+      result <- Either.catchNonFatal(OAuthClientService.tokenForClient(tokenRequest(idp)))
+      _ = if (tokenLoggingEnabled) LOGGER.debug(s"Retrieved Access Token: ${result.token}")
+    } yield result
 
-  /**
-    * Send a GET request to access resources from the Identity Provider with the provided access token.
+  /** Send a GET request to access resources from the Identity Provider with the provided access
+    * token.
     *
-    * @param endpoint Endpoint of the resources to request.
-    * @param tokenState An OAuth2 access token issued by the Identity Provider.
-    * @param headers Additional headers to include in the request.
-    * @param decoder Circe Decoder that transforms the obtained resource to the target type.
-    * @tparam T Type of the resources to request.
+    * @param endpoint
+    *   Endpoint of the resources to request.
+    * @param tokenState
+    *   An OAuth2 access token issued by the Identity Provider.
+    * @param headers
+    *   Additional headers to include in the request.
+    * @param decoder
+    *   Circe Decoder that transforms the obtained resource to the target type.
+    * @tparam T
+    *   Type of the resources to request.
     *
-    * @return Either an error describing why the request failed or the requested resources in the target type.
+    * @return
+    *   Either an error describing why the request failed or the requested resources in the target
+    *   type.
     */
   protected def requestWithToken[T](
       endpoint: URI,
       tokenState: OAuthTokenState,
-      headers: List[Header] = List.empty)(implicit decoder: Decoder[T]): Either[Throwable, T] = {
+      headers: List[Header] = List.empty
+  )(implicit decoder: Decoder[T]): Either[Throwable, T] = {
     val req = basicRequest
       .get(Uri(endpoint))
       .headers(headers: _*)
@@ -105,19 +114,20 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
     for {
       resp <- Either.catchNonFatal(
-        OAuthClientService.requestWithToken(req, tokenState.token, tokenState.tokenType))
+        OAuthClientService.requestWithToken(req, tokenState.token, tokenState.tokenType)
+      )
       data <- resp.body
     } yield data
   }
 
-  /**
-    * Additional headers to include in the user search request. Override if target IdP's API
+  /** Additional headers to include in the user search request. Override if target IdP's API
     * requires anything additional/different.
     */
   protected val requestHeaders: List[Header] = List.empty
 
   override def searchUsers(
-      query: String): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
+      query: String
+  ): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
     lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, USERS] =
       q =>
         (idp, tokenState) =>
@@ -142,26 +152,26 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     // If the provider user ID is null or empty, return null.
     Option(userId)
       .filter(_.nonEmpty)
-      .flatMap(
-        id =>
-          execute(search(id))
-            .leftMap(LOGGER.error(s"Failed to get information for user $userId", _))
-            .toOption)
+      .flatMap(id =>
+        execute(search(id))
+          .leftMap(LOGGER.error(s"Failed to get information for user $userId", _))
+          .toOption
+      )
       .map(toUserBean)
       .orNull
   }
 
-  /**
-    * Warning: The current implementation does not do a batch operation to return multiple users, and this
-    * is because some IdPs do not have an API to support this. Hence, multiple requests will be made
-    * to retrieve the information of each user, which may hit the API rate limit.
-   **/
+  /** Warning: The current implementation does not do a batch operation to return multiple users,
+    * and this is because some IdPs do not have an API to support this. Hence, multiple requests
+    * will be made to retrieve the information of each user, which may hit the API rate limit.
+    */
   override def getInformationForUsers(
-      userIDs: util.Collection[String]): util.Map[String, UserBean] =
+      userIDs: util.Collection[String]
+  ): util.Map[String, UserBean] =
     userIDs.asScala
       .map(id => id -> Option(getInformationForUser(id)))
-      .collect {
-        case (id, Some(info)) => (id, info)
+      .collect { case (id, Some(info)) =>
+        (id, info)
       }
       .toMap
       .asJava

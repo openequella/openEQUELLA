@@ -33,7 +33,6 @@ import org.hibernate.Session;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends GenericDaoImpl<T, Long>
     implements AbstractTreeDao<T> {
@@ -222,7 +221,8 @@ public class AbstractTreeDaoImpl<T extends TreeNodeInterface<T>> extends Generic
                         session.createQuery(
                             "SELECT id FROM " //$NON-NLS-1$
                                 + getPersistentClass().getName()
-                                + " WHERE institution = :institution ORDER BY allParents.size ASC"); //$NON-NLS-1$
+                                + " WHERE institution = :institution ORDER BY"
+                                + " allParents.size ASC"); //$NON-NLS-1$
                     query.setParameter("institution", CurrentInstitution.get()); // $NON-NLS-1$
                     query.setCacheable(true);
                     query.setReadOnly(true);

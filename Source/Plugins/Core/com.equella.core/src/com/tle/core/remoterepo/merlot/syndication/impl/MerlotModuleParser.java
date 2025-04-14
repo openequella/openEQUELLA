@@ -24,7 +24,6 @@ import com.tle.core.remoterepo.merlot.syndication.MerlotModule;
 import java.util.Locale;
 import org.jdom2.Element;
 
-/** @author aholland */
 public class MerlotModuleParser implements ModuleParser {
   @Override
   public String getNamespaceUri() {

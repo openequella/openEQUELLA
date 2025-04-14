@@ -27,7 +27,6 @@ import java.awt.*;
 import java.io.IOException;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class ImagesScriptWrapper extends AbstractScriptWrapper implements ImagesScriptObject {
   private static final long serialVersionUID = 1L;
 

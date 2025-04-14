@@ -41,7 +41,9 @@ public interface TaxonomyService
    */
   TermResult getTerm(String taxonomyUuid, String fullTermPath);
 
-  /** @param parentFullTermPath use null or empty string to retrieve root terms. */
+  /**
+   * @param parentFullTermPath use null or empty string to retrieve root terms.
+   */
   List<TermResult> getChildTerms(String taxonomyUuid, String parentFullTermPath);
 
   /**

@@ -73,6 +73,7 @@ public abstract class AbstractIntegrationService<T extends IntegrationSessionDat
   @Inject protected ItemResolver itemResolver;
   @Inject protected ViewableItemResolver viewableItemResolver;
   @Inject private PluginTracker<IntegrationSessionExtension> resultsTracker;
+
   /* @LazyNonNull */ @Nullable
   private volatile SetMultimap<String, IntegrationSessionExtension> extensionMap;
 

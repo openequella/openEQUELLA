@@ -195,22 +195,30 @@ public class DiagnosticsUsersListSection
     return Model.class;
   }
 
-  /** @return the selectUserDialog */
+  /**
+   * @return the selectUserDialog
+   */
   public SelectUserDialog getUserGroupsDialog() {
     return userGroupsDialog;
   }
 
-  /** @return the selectGroupDialog */
+  /**
+   * @return the selectGroupDialog
+   */
   public SelectGroupDialog getSelectGroupDialog() {
     return selectGroupDialog;
   }
 
-  /** @return the groupsTable */
+  /**
+   * @return the groupsTable
+   */
   public SelectionsTable getGroupsTable() {
     return groupsTable;
   }
 
-  /** @return the usersTable */
+  /**
+   * @return the usersTable
+   */
   public Table getUsersTable() {
     return usersTable;
   }

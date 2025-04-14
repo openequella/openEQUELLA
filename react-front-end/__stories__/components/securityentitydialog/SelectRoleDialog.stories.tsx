@@ -19,7 +19,7 @@ import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
-import { listRoles, roles } from "../../../__mocks__/RoleModule.mock";
+import { searchRoles, roles } from "../../../__mocks__/RoleModule.mock";
 import { eqRoleById } from "../../../tsrc/modules/RoleModule";
 import SelectRoleDialog, {
   SelectRoleDialogProps,
@@ -31,19 +31,22 @@ export default {
   component: SelectRoleDialog,
 } as Meta<SelectRoleDialogProps>;
 
-const commonParams = {
+const commonParams: SelectRoleDialogProps = {
+  value: RS.empty,
   open: true,
   onClose: action("onClose"),
-  roleListProvider: listRoles,
+  searchRolesProvider: searchRoles,
 };
 
-export const NoSelectedRoles = () => (
-  <SelectRoleDialog value={RS.empty} {...commonParams} />
-);
+export const NoSelectedRoles = () => <SelectRoleDialog {...commonParams} />;
 
 export const SelectedRoles = () => (
   <SelectRoleDialog
     {...commonParams}
     value={pipe(roles, RS.fromReadonlyArray(eqRoleById))}
   />
+);
+
+export const Skeleton = () => (
+  <SelectRoleDialog {...commonParams} value={undefined} />
 );

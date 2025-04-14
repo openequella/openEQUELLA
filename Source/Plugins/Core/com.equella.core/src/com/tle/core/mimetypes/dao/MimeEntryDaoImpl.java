@@ -51,7 +51,8 @@ public class MimeEntryDaoImpl extends GenericInstitionalDaoImpl<MimeEntry, Long>
                   public Object doInHibernate(Session session) {
                     String mime = '%' + mimeType.replace('*', '%') + '%';
                     String queryString =
-                        "FROM MimeEntry m left join m.extensions as e WHERE (LOWER(m.type) LIKE :query OR LOWER(e) LIKE :query) AND m.institution = :institution";
+                        "FROM MimeEntry m left join m.extensions as e WHERE (LOWER(m.type) LIKE"
+                            + " :query OR LOWER(e) LIKE :query) AND m.institution = :institution";
                     Query query =
                         session.createQuery(
                             "select distinct m " + queryString + " ORDER BY m.type");
@@ -86,7 +87,8 @@ public class MimeEntryDaoImpl extends GenericInstitionalDaoImpl<MimeEntry, Long>
                   public Object doInHibernate(Session session) {
                     Query query =
                         session.createQuery(
-                            "select distinct m from MimeEntry m left join m.extensions e where e IN (:extensions) and m.institution = :institution");
+                            "select distinct m from MimeEntry m left join m.extensions e where e IN"
+                                + " (:extensions) and m.institution = :institution");
                     query.setParameterList("extensions", extensions);
                     query.setParameter("institution", CurrentInstitution.get());
                     return query.list();

@@ -61,13 +61,13 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
     usernameClaim = None,
     defaultRoles = Set.empty,
     roleConfig = None,
-    enabled = true,
+    enabled = true
   )
   val auth0: GenericIdentityProviderDetails = GenericIdentityProviderDetails(
     commonDetails = commonDetails,
     apiUrl = new URI("https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users").toURL,
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
-    apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I",
+    apiClientSecret = "JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I"
   )
 
   // Mock of CurrentInstitution
@@ -83,10 +83,12 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: OidcConfigurationService = mock(classOf[OidcConfigurationService])
   val mockStateService: OidcStateService                 = mock(classOf[OidcStateService])
   implicit val mockNonceService: OidcNonceService        = mock(classOf[OidcNonceService])
-  val authService: OidcAuthService = new OidcAuthService(mockStateService,
-                                                         mockUserService,
-                                                         mockConfigurationService,
-                                                         mockJwkProvider)
+  val authService: OidcAuthService = new OidcAuthService(
+    mockStateService,
+    mockUserService,
+    mockConfigurationService,
+    mockJwkProvider
+  )
 
   when(mockConfigurationService.get).thenReturn(Right(auth0))
   val STATE = "5a3f7b2c9d12a4f8"
@@ -97,9 +99,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   describe("Authorisation request URL") {
     it("builds a URL that points to the configured IdP's authorisation endpoint") {
       Given("an OIDC configuration")
-      val result = authService.buildAuthUrl(authUrl = commonDetails.authUrl.toString,
-                                            clientId = commonDetails.authCodeClientId,
-                                            targetPage = "hierarchy.do")
+      val result = authService.buildAuthUrl(
+        authUrl = commonDetails.authUrl.toString,
+        clientId = commonDetails.authCodeClientId,
+        targetPage = "hierarchy.do"
+      )
 
       Then("the URL should consist of correct path and query params")
       // Due to the limitation of mocking a Scala package object, it's pretty hard to mock the function `generatePKCEPair`.
@@ -107,7 +111,9 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       val url: AbsoluteUrl = AbsoluteUrl.parse(result)
       s"${url.scheme}://${url.host}${url.path}" shouldBe commonDetails.authUrl.toString
 
-      val params = url.query.paramMap.map { case (k, v) => k -> v.head } // We do not have any param that has multiple values.
+      val params = url.query.paramMap.map { case (k, v) =>
+        k -> v.head
+      } // We do not have any param that has multiple values.
       params(OpenIDConnectParams.CLIENT_ID) shouldBe commonDetails.authCodeClientId
       params(OpenIDConnectParams.RESPONSE_TYPE) shouldBe "code"
       params(OpenIDConnectParams.REDIRECT_URI) shouldBe "http://localhost:8080/test/oidc/callback"
@@ -115,7 +121,9 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       params(OpenIDConnectParams.STATE) shouldBe STATE
       params(OpenIDConnectParams.NONCE) shouldBe NONCE
       params(OpenIDConnectParams.CODE_CHALLENGE_METHOD) shouldBe "S256"
-      params.get(OpenIDConnectParams.CODE_CHALLENGE) shouldBe a[Some[_]] // Not checking the actual value, but it should exist in the param map.
+      params.get(OpenIDConnectParams.CODE_CHALLENGE) shouldBe a[Some[
+        _
+      ]] // Not checking the actual value, but it should exist in the param map.
     }
   }
 
@@ -126,26 +134,29 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       Given("a callback request with the required params")
       val params = Map(
         OpenIDConnectParams.CODE  -> Array(CODE),
-        OpenIDConnectParams.STATE -> Array(STATE),
+        OpenIDConnectParams.STATE -> Array(STATE)
       )
 
       And("the state details that can be found by the returned state")
       val mockStateDetails =
-        OidcStateDetails(codeVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
-                         codeChallenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
-                         targetPage = None)
+        OidcStateDetails(
+          codeVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
+          codeChallenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+          targetPage = None
+        )
       when(mockStateService.getState(STATE)).thenReturn(Option(mockStateDetails))
 
       Then(
-        "the result should contain the values of param 'code' and 'state', and the state details")
+        "the result should contain the values of param 'code' and 'state', and the state details"
+      )
       val result = authService.verifyCallbackRequest(params)
       result shouldBe Right(OidcCallbackDetails(CODE, STATE, mockStateDetails))
     }
 
     val invalidParams = Table(
       ("params", "missingParam", "error"),
-      (Map(OpenIDConnectParams.CODE  -> Array(CODE)), "state", "Missing required parameter 'state'"),
-      (Map(OpenIDConnectParams.STATE -> Array(STATE)), "code", "Missing required parameter 'code'"),
+      (Map(OpenIDConnectParams.CODE -> Array(CODE)), "state", "Missing required parameter 'state'"),
+      (Map(OpenIDConnectParams.STATE -> Array(STATE)), "code", "Missing required parameter 'code'")
     )
 
     it("returns an error if any required param is missing") {
@@ -163,7 +174,7 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       val invalidState = "abc"
       val params = Map(
         OpenIDConnectParams.CODE  -> Array(CODE),
-        OpenIDConnectParams.STATE -> Array(invalidState),
+        OpenIDConnectParams.STATE -> Array(invalidState)
       )
 
       When("the state details cannot be found by the returned state")
@@ -186,7 +197,8 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       List.empty[String].asJava,
       null,
       List(
-        "MIIDHTCCAgWgAwIBAgIJFstmfjVyZxjhMA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNVBAMTIWRldi1tenhqMzFnaGo2MjZsZGk3LnVzLmF1dGgwLmNvbTAeFw0yNDA1MjcwNTIxMzBaFw0zODAyMDMwNTIxMzBaMCwxKjAoBgNVBAMTIWRldi1tenhqMzFnaGo2MjZsZGk3LnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM5usPSje+Y2rkPRyUG1naR+iq2LSwdfFGD4VP+7/0eYTIW/0ldgcq2HufufcGOHfQacH6YIVAoh6yUHe53bppuGDRnSBZz6QVXEsevPCxKOxuiv3gP8ik8n8vPAJ0HWXKpZOtIT8u04RBymI9qjJQiS3pTCL0aG+PQv8LxM9Jk1HT5n48BhR9YDQchlz7PQQBM/BFa+Gxmy9q8jVZzmRYQCMIWPQqEqX47ey64WIkdrvHC0wWGD5M+f2NbFzuN2gJwvM4dJ2e6Ok751hayx5zbufwcGgvvA/lX2z2nfP6cjQaYLIOwfFSbkOMrH4yACfx4yKYymDQOXLUnIfRpIcncCAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUFfF/X2+Ob2+/aQUScp+mfakxUgkwDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUAA4IBAQAn9OThHCYen397Wp+bFWwzVPMz48+SwptZcYEusRTQHrDFIMEVqhBXaxo2Oo18IiH3eJGhnoSesvru9o1uugRDuYugG498a9oWA0pMoe1CiarEEY0A0xbu90KUu2rZVGZxd2vgbn5wAUisjXA/S8MyY09DQDlb09gOyaryx1Cjmb40CxM1lgxMmRc37vbo9VM2ekNixkby/MKddpOnsadV/pTlIxjycixFAJtFa2C48n3/8aqhOhQY93VhOpQLibhwlwB/bEsfDa7LWtjYdavLTVg2OkPJDidA0MmQy0/KJuzQWbiNtm5cte4kWtjk1FIp0y4VP28Bl7RZmmY6XcqL").asJava,
+        "MIIDHTCCAgWgAwIBAgIJFstmfjVyZxjhMA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNVBAMTIWRldi1tenhqMzFnaGo2MjZsZGk3LnVzLmF1dGgwLmNvbTAeFw0yNDA1MjcwNTIxMzBaFw0zODAyMDMwNTIxMzBaMCwxKjAoBgNVBAMTIWRldi1tenhqMzFnaGo2MjZsZGk3LnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM5usPSje+Y2rkPRyUG1naR+iq2LSwdfFGD4VP+7/0eYTIW/0ldgcq2HufufcGOHfQacH6YIVAoh6yUHe53bppuGDRnSBZz6QVXEsevPCxKOxuiv3gP8ik8n8vPAJ0HWXKpZOtIT8u04RBymI9qjJQiS3pTCL0aG+PQv8LxM9Jk1HT5n48BhR9YDQchlz7PQQBM/BFa+Gxmy9q8jVZzmRYQCMIWPQqEqX47ey64WIkdrvHC0wWGD5M+f2NbFzuN2gJwvM4dJ2e6Ok751hayx5zbufwcGgvvA/lX2z2nfP6cjQaYLIOwfFSbkOMrH4yACfx4yKYymDQOXLUnIfRpIcncCAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUFfF/X2+Ob2+/aQUScp+mfakxUgkwDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUAA4IBAQAn9OThHCYen397Wp+bFWwzVPMz48+SwptZcYEusRTQHrDFIMEVqhBXaxo2Oo18IiH3eJGhnoSesvru9o1uugRDuYugG498a9oWA0pMoe1CiarEEY0A0xbu90KUu2rZVGZxd2vgbn5wAUisjXA/S8MyY09DQDlb09gOyaryx1Cjmb40CxM1lgxMmRc37vbo9VM2ekNixkby/MKddpOnsadV/pTlIxjycixFAJtFa2C48n3/8aqhOhQY93VhOpQLibhwlwB/bEsfDa7LWtjYdavLTVg2OkPJDidA0MmQy0/KJuzQWbiNtm5cte4kWtjk1FIp0y4VP28Bl7RZmmY6XcqL"
+      ).asJava,
       "ahVtSgCswOouANtKH_nlrg3cH8Y",
       Map(
         "e" -> "AQAB".asInstanceOf[Object],
@@ -219,8 +231,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       val okta = auth0.copy(commonDetails = auth0.commonDetails.copy(issuer = "okta"))
 
       Then("The result should be an error of InvalidJWT")
-      authService.verifyIdToken(rawToken, STATE, okta) shouldBe Left(InvalidJWT(
-        "Provided JWT failed signature verification: The Claim 'iss' value doesn't match the required issuer."))
+      authService.verifyIdToken(rawToken, STATE, okta) shouldBe Left(
+        InvalidJWT(
+          "Provided JWT failed signature verification: The Claim 'iss' value doesn't match the required issuer."
+        )
+      )
     }
 
     it("returns an error if the verification of claim 'AUDIENCE' fails") {
@@ -229,8 +244,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
         auth0.copy(commonDetails = auth0.commonDetails.copy(authCodeClientId = "client A"))
 
       Then("The result should be an error of InvalidJWT")
-      authService.verifyIdToken(rawToken, STATE, clientA) shouldBe Left(InvalidJWT(
-        "Provided JWT failed signature verification: The Claim 'aud' value doesn't contain the required audience."))
+      authService.verifyIdToken(rawToken, STATE, clientA) shouldBe Left(
+        InvalidJWT(
+          "Provided JWT failed signature verification: The Claim 'aud' value doesn't contain the required audience."
+        )
+      )
     }
 
     it("returns an error if the verification of claim 'EXPIRES_AT' fails") {
@@ -238,8 +256,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       when(mockedClock.instant()).thenReturn(Instant.parse("2024-12-31T05:00:00Z"))
 
       Then("the result should be an error of InvalidJWT")
-      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(InvalidJWT(
-        "Provided JWT failed signature verification: The Token has expired on 2024-11-11T14:12:17Z."))
+      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(
+        InvalidJWT(
+          "Provided JWT failed signature verification: The Token has expired on 2024-11-11T14:12:17Z."
+        )
+      )
     }
 
     it("returns an error if the verification of claim 'ISSUED_AT' fails") {
@@ -247,8 +268,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       when(mockedClock.instant()).thenReturn(Instant.parse("2024-01-01T05:00:00Z"))
 
       Then("the result should be an error of InvalidJWT")
-      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(InvalidJWT(
-        "Provided JWT failed signature verification: The Token can't be used before 2024-11-11T04:12:17Z."))
+      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(
+        InvalidJWT(
+          "Provided JWT failed signature verification: The Token can't be used before 2024-11-11T04:12:17Z."
+        )
+      )
     }
 
     it("returns an error if the verification of signing signature fails") {
@@ -267,8 +291,11 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
       when(mockRsaAlg.verify(any[DecodedJWT])).thenThrow(error)
 
       Then("the result should be an error of InvalidJWT")
-      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(InvalidJWT(
-        "Provided JWT failed signature verification: The Token's Signature resulted invalid when verified using the Algorithm: SHA256withRSA"))
+      authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(
+        InvalidJWT(
+          "Provided JWT failed signature verification: The Token's Signature resulted invalid when verified using the Algorithm: SHA256withRSA"
+        )
+      )
     }
 
     it("returns an error if no JWK can be found") {
@@ -277,7 +304,8 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("the result should be an error of InvalidJWT")
       authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(
-        InvalidJWT("Failed to retrieve JWK by the obtained ID token's key ID"))
+        InvalidJWT("Failed to retrieve JWK by the obtained ID token's key ID")
+      )
     }
 
     it("returns an error if a JWK Provider cannot be established") {
@@ -297,7 +325,8 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("The result should be an error of InvalidJWT")
       authService.verifyIdToken(rawToken, STATE, auth0) shouldBe Left(
-        InvalidJWT("Failed to decode token: The token is broken"))
+        InvalidJWT("Failed to decode token: The token is broken")
+      )
     }
   }
 }

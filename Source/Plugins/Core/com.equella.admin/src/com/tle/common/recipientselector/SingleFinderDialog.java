@@ -34,7 +34,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-/** @author Nicholas Read */
 @SuppressWarnings("nls")
 public class SingleFinderDialog implements ActionListener, FinderListener {
   private JButton ok;

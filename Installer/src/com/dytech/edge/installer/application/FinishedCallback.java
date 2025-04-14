@@ -57,14 +57,14 @@ public class FinishedCallback implements Callback {
           if (c != null && c.length() > 0) {
             context = c;
           }
-          // Don't break!
+        // Don't break!
 
         case 2:
           String portStr = m.group(2);
           if (portStr != null) {
             port = Integer.parseInt(portStr);
           }
-          // Don't break!
+        // Don't break!
 
         case 1:
           hostname = m.group(1);

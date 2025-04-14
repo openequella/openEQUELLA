@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class ModalSession implements Serializable {
   private static final long serialVersionUID = 1L;

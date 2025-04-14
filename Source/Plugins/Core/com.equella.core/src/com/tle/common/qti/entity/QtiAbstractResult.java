@@ -41,7 +41,6 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 
-/** @author Aaron */
 @Entity
 @AccessType("field")
 @Inheritance(strategy = InheritanceType.JOINED)

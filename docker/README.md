@@ -250,8 +250,8 @@ After that, it's time to start the cluster:
 
 - From the root of your git clone, copy the installer zip from `Installer/target` to the `docker`
   folder with the name `installer.zip`
-- Change into the `docker` folder and run `docker-compose up`
-- (optional) Run `docker-compose logs | grep 'ClusterMessagingServiceImpl'` and you should expect to
+- Change into the `docker` folder and run `docker compose up`
+- (optional) Run `docker compose logs | grep 'ClusterMessagingServiceImpl'` and you should expect to
   see `[ClusterMessagingServiceImpl] Successful connection from NODE: xxxx (a string in UUID format)`
 - Open <http://oeq.localhost/admin/> from a browser where you'll  have to complete the installation.
   (NOTE: the trailing backslash is key.)
@@ -261,11 +261,11 @@ After that, it's time to start the cluster:
 
 ### Updating
 
-If you have a new oEQ installer, you can run `docker-compose up -d --force-recreate --build`
+If you have a new oEQ installer, you can run `docker compose up -d --force-recreate --build`
 
 ### Changing the size of the cluster
 
-You can also specify the number of oEQ instances by running `docker-compose up -d --scale oeq=3`,
+You can also specify the number of oEQ instances by running `docker compose up -d --scale oeq=3`,
 here `oeq` is the service name defined in the `docker-compose.yml` file.
 
 ## Future

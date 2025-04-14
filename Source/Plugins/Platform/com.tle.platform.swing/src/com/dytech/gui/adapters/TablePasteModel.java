@@ -20,7 +20,6 @@ package com.dytech.gui.adapters;
 
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface TablePasteModel {
   int getRowCount();
 

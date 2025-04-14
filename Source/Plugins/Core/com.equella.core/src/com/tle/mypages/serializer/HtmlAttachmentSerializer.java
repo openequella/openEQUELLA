@@ -29,7 +29,6 @@ import com.tle.web.api.item.equella.interfaces.beans.HtmlPageAttachmentBean;
 import java.util.Map;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class HtmlAttachmentSerializer extends AbstractAttachmentSerializer {

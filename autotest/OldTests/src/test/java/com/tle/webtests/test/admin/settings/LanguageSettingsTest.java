@@ -12,7 +12,6 @@ import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
 import org.testng.annotations.Test;
 
-/** @author larry */
 @TestInstitution("fiveo")
 public class LanguageSettingsTest extends AbstractSessionTest {
   /** I'm assuming this is a sufficiently improbable combination. */

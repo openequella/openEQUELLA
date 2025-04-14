@@ -36,7 +36,6 @@ import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** @author Aaron */
 @SuppressWarnings("nls")
 @Bind(QtiItemResultDao.class)
 @Singleton
@@ -49,7 +48,8 @@ public class QtiItemResultDaoImpl extends GenericDaoImpl<QtiItemResult, Long>
   private Query getAllQuery(Session session) {
     final Query query =
         session.createQuery(
-            "SELECT result FROM QtiItemResult result INNER JOIN result.assessmentResult ass WHERE ass.test.institution = :institution");
+            "SELECT result FROM QtiItemResult result INNER JOIN result.assessmentResult ass WHERE"
+                + " ass.test.institution = :institution");
     query.setParameter("institution", CurrentInstitution.get());
     return query;
   }

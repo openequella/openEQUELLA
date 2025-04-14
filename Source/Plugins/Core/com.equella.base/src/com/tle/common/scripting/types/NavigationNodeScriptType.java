@@ -23,10 +23,14 @@ import java.util.List;
 
 /** NavigationNode in script */
 public interface NavigationNodeScriptType extends Serializable {
-  /** @return The display name of the node */
+  /**
+   * @return The display name of the node
+   */
   String getDescription();
 
-  /** @param description The display name of the node */
+  /**
+   * @param description The display name of the node
+   */
   void setDescription(String description);
 
   /**

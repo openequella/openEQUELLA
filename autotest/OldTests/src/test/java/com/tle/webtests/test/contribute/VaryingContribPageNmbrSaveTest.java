@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 @TestInstitution("contribute")
 public class VaryingContribPageNmbrSaveTest extends AbstractCleanupAutoTest {
   private static String COLLECTIONS_NAME = "Basic Items with variable wizard pages";
+
   /**
    * Preserved in the exported contributions - tests/contribute/institution.tar.gz being the uuid
    * for the COLLECTIONS_NAME collection.

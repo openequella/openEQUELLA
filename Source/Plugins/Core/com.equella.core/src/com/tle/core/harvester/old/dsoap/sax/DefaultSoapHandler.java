@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-/** @author adame */
 public abstract class DefaultSoapHandler extends DefaultHandler {
 
   private StringBuffer accumulator;

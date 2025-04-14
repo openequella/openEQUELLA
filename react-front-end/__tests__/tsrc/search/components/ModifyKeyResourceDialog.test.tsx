@@ -19,7 +19,7 @@ import { getByLabelText, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import * as React from "react";
 import {
-  getHierarchies,
+  getRootHierarchies,
   getHierarchyIdsWithKeyResource,
   topicWithShortAndLongDesc,
 } from "../../../../__mocks__/Hierarchy.mock";
@@ -37,7 +37,7 @@ describe("<ModifyKeyResourceDialog />", () => {
     item: mockData.basicSearchObj,
     open: true,
     onClose: () => {},
-    getHierarchiesProvider: getHierarchies,
+    getHierarchiesProvider: getRootHierarchies,
     getHierarchyIdsWithKeyResourceProvider: getHierarchyIdsWithKeyResource,
   };
 

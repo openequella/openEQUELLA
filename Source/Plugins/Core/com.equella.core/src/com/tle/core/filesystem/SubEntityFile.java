@@ -24,7 +24,6 @@ import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileHandleUtils;
 import com.tle.common.filesystem.FileSystemHelper;
 
-/** @author Aaron */
 @NonNullByDefault
 public class SubEntityFile extends EntityFile {
   private static final long serialVersionUID = 1L;

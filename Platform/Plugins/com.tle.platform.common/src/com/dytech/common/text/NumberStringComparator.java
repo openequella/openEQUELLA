@@ -58,6 +58,7 @@ import java.util.WeakHashMap;
 @NonNullByDefault
 public class NumberStringComparator<T> implements Comparator<T>, Serializable {
   private static final long serialVersionUID = 1L;
+
   /** Indicates if comparing alphabetical strings should be case insensitive. */
   private boolean caseInsensitive;
 
@@ -181,12 +182,16 @@ public class NumberStringComparator<T> implements Comparator<T>, Serializable {
     return t.toString();
   }
 
-  /** @return Returns the caseInsensitive. */
+  /**
+   * @return Returns the caseInsensitive.
+   */
   public boolean isCaseInsensitive() {
     return caseInsensitive;
   }
 
-  /** @param caseInsensitive The caseInsensitive to set. */
+  /**
+   * @param caseInsensitive The caseInsensitive to set.
+   */
   public void setCaseInsensitive(boolean caseInsensitive) {
     this.caseInsensitive = caseInsensitive;
   }

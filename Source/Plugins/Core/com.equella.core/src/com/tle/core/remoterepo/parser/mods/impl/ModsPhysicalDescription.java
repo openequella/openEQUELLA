@@ -21,7 +21,6 @@ package com.tle.core.remoterepo.parser.mods.impl;
 import com.tle.core.xml.XmlDocument;
 import org.w3c.dom.Node;
 
-/** @author aholland */
 public class ModsPhysicalDescription extends ModsPart {
   public ModsPhysicalDescription(XmlDocument xml, Node context) {
     super(xml, xml.node("physicalDescription", context));

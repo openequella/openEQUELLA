@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class AbstractOffice2007Extracter extends AbstractTextExtracterExtension {
   public abstract String getFileToIndex();

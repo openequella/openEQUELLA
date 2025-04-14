@@ -23,7 +23,6 @@ import com.tle.beans.item.ItemStatus;
 import com.tle.common.security.ItemStatusTarget;
 import com.tle.common.security.PrivilegeTree.Node;
 
-/** @author Nicholas Read */
 public class ItemStatusLeafNode extends AbstractLeafNode<ItemStatus> {
   private final ItemStatus status;
   private final ItemDefinition itemDefinition;

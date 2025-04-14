@@ -26,19 +26,22 @@ import java.util.Properties
 
 sealed trait Layout
 case class PatternLayout(Pattern: String) extends Layout
-case class HTMLLayout(title: Option[String],
-                      datePattern: Option[String] = None,
-                      locationInfo: Option[Boolean])
-    extends Layout
+case class HTMLLayout(
+    title: Option[String],
+    datePattern: Option[String] = None,
+    locationInfo: Option[Boolean]
+) extends Layout
 
 object Layout {
 
-  /**
-    * Build an Appender layout based on the supplied configuration.
+  /** Build an Appender layout based on the supplied configuration.
     *
-    * @param layoutKey The property key used to define the layout.
-    * @param props Property file which provides details of the layout.
-    * @return `ValidatedNec` where left is a list of error messages and right is the layout.
+    * @param layoutKey
+    *   The property key used to define the layout.
+    * @param props
+    *   Property file which provides details of the layout.
+    * @return
+    *   `ValidatedNec` where left is a list of error messages and right is the layout.
     */
   def getLayout(layoutKey: String, props: Properties): ValidatedNec[String, Layout] = {
     readProperty(layoutKey, props)

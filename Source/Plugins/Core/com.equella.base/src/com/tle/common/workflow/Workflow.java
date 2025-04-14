@@ -133,7 +133,9 @@ public class Workflow extends BaseEntity {
     return results;
   }
 
-  /** @return true if the recursion should stop. */
+  /**
+   * @return true if the recursion should stop.
+   */
   private static <T extends WorkflowNode> boolean recurseWorkflowItems(
       Map<String, T> items, WorkflowNode node, Function<WorkflowNode, Boolean> includeFunc) {
     if (includeFunc.apply(node)) {

@@ -27,7 +27,6 @@ import com.tle.core.item.dao.ItemDaoExtension;
 import com.tle.core.workflow.thumbnail.entity.ThumbnailRequest;
 import java.util.List;
 
-/** @author Aaron */
 @NonNullByDefault
 public interface ThumbnailRequestDao
     extends GenericInstitutionalDao<ThumbnailRequest, Long>, ItemDaoExtension {

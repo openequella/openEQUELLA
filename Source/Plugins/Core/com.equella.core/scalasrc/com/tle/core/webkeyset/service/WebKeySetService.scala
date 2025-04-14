@@ -23,58 +23,58 @@ import java.security.KeyPair
 
 trait WebKeySetService {
 
-  /**
-    * Retrieve a key pair by key ID.
+  /** Retrieve a key pair by key ID.
     *
-    * @param keyId ID of a key pair.
-    * @return KeyPair matching the provided key ID,  or None if no key pair is found.
+    * @param keyId
+    *   ID of a key pair.
+    * @return
+    *   KeyPair matching the provided key ID, or None if no key pair is found.
     */
   def getKeypairByKeyID(keyId: String): Option[KeyPair]
 
-  /**
-    * Retrieve all the key pairs, including those deactivated.
+  /** Retrieve all the key pairs, including those deactivated.
     *
-    * @return A list of WebKeySet
+    * @return
+    *   A list of WebKeySet
     */
   def getAll: List[WebKeySet]
 
-  /**
-    * Generate a new key pair for the current Institution.
+  /** Generate a new key pair for the current Institution.
     *
-    * @return The new key pair.
+    * @return
+    *   The new key pair.
     */
   def generateKeyPair: WebKeySet
 
-  /**
-    * Retrieve all the key pairs of the current Institution and return a JWKS representing the them.
+  /** Retrieve all the key pairs of the current Institution and return a JWKS representing the them.
     *
-    * @return JSON string representing the JWKS.
+    * @return
+    *   JSON string representing the JWKS.
     */
   def generateJWKS: String
 
-  /**
-    * Deactivate the provided key pair and then create a new one.
+  /** Deactivate the provided key pair and then create a new one.
     *
-    * @return The new activated key pair.
+    * @return
+    *   The new activated key pair.
     */
   def rotateKeyPair(activatedKeyPair: WebKeySet): WebKeySet
 
-  /**
-    * Delete an existing key pair by key ID.
+  /** Delete an existing key pair by key ID.
     *
-    * @param keyId ID of a key pair.
+    * @param keyId
+    *   ID of a key pair.
     */
   def delete(keyId: String): Unit
 
-  /**
-    * Delete all the key pairs for the current Institution.
+  /** Delete all the key pairs for the current Institution.
     */
   def deleteAll(): Unit
 
-  /**
-    * Save the provided key pair for the current Institution. If it exists already, then update it.
+  /** Save the provided key pair for the current Institution. If it exists already, then update it.
     *
-    * @param keySet Key pair to be either saved or updated.
+    * @param keySet
+    *   Key pair to be either saved or updated.
     */
   def createOrUpdate(keySet: WebKeySet): Unit
 }

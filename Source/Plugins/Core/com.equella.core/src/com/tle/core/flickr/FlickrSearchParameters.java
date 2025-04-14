@@ -56,7 +56,9 @@ public class FlickrSearchParameters extends SearchParameters {
     return searchRawText;
   }
 
-  /** @param searchRawText the searchRawText to set */
+  /**
+   * @param searchRawText the searchRawText to set
+   */
   public void setSearchRawText(String searchRawText) {
     this.searchRawText = searchRawText;
   }
@@ -71,7 +73,9 @@ public class FlickrSearchParameters extends SearchParameters {
     return tagsNotText;
   }
 
-  /** @param tagsNotText the tagsNotText to set */
+  /**
+   * @param tagsNotText the tagsNotText to set
+   */
   public void setTagsNotText(boolean tagsNotText) {
     this.tagsNotText = tagsNotText;
   }
@@ -80,7 +84,9 @@ public class FlickrSearchParameters extends SearchParameters {
     return tagsAll;
   }
 
-  /** @param tagsAll the tagsAll to set */
+  /**
+   * @param tagsAll the tagsAll to set
+   */
   public void setTagsAll(boolean tagsAll) {
     this.tagsAll = tagsAll;
   }

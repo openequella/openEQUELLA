@@ -20,7 +20,6 @@ package com.dytech.installer;
 
 import java.io.IOException;
 
-/** @author Nicholas Read */
 public class CommandLineProgress implements Progress {
   /*
    * (non-Javadoc)

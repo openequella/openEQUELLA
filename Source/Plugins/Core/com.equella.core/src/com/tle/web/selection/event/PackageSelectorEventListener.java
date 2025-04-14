@@ -21,7 +21,6 @@ package com.tle.web.selection.event;
 import com.tle.web.sections.SectionInfo;
 import java.util.EventListener;
 
-/** @author Aaron */
 public interface PackageSelectorEventListener extends EventListener {
   /**
    * The function you supply must conform to: public void selectPackage(SectionInfo info, ItemId

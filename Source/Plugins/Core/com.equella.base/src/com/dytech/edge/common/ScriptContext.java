@@ -22,7 +22,6 @@ import com.tle.common.util.Logger;
 import java.io.Serializable;
 import java.util.Map;
 
-/** @author aholland */
 public interface ScriptContext extends Serializable {
   PropBagWrapper getXml();
 
@@ -52,9 +51,13 @@ public interface ScriptContext extends Serializable {
    */
   void addUserScriptObject(String moduleName, Object script);
 
-  /** @return A *read-only* map of script objects */
+  /**
+   * @return A *read-only* map of script objects
+   */
   Map<String, Object> getScriptObjects();
 
-  /** @Return A *read-only* map of UserScript objects */
+  /**
+   * @Return A *read-only* map of UserScript objects
+   */
   Map<String, Object> getUserScriptObjects();
 }

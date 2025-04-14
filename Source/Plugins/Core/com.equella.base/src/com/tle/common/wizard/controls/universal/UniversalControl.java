@@ -20,13 +20,14 @@ package com.tle.common.wizard.controls.universal;
 
 import com.dytech.edge.wizard.beans.control.CustomControl;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public class UniversalControl extends CustomControl {
   private static final long serialVersionUID = 1L;
 
+  public static final String UNIVERSAL_CONTROL = "universal";
+
   public UniversalControl() {
-    setClassType("universal");
+    setClassType(UNIVERSAL_CONTROL);
   }
 
   public UniversalControl(CustomControl cloned) {

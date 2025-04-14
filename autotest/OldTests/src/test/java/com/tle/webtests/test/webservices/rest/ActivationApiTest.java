@@ -16,7 +16,6 @@ import java.util.TimeZone;
 import org.apache.http.HttpResponse;
 import org.testng.annotations.Test;
 
-/** @author larry */
 public class ActivationApiTest extends AbstractRestApiTest {
   private static final String API_TASK_PATH = "api/activation";
   private static final String OAUTH_CLIENT_ID = "ActivationApiTest";

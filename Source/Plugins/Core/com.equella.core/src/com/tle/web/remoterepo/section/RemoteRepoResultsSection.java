@@ -45,7 +45,6 @@ import com.tle.web.template.Decorations;
 import java.util.List;
 import javax.inject.Inject;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 @TreeIndexed
 public abstract class RemoteRepoResultsSection<

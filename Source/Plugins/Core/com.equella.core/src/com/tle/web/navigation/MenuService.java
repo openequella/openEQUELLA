@@ -25,7 +25,6 @@ import com.tle.web.template.section.MenuContributor;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author Nicholas Read */
 @Bind
 @Singleton
 @SuppressWarnings("nls")

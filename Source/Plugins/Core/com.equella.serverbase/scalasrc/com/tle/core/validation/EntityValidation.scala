@@ -23,24 +23,30 @@ import cats.implicits._
 import com.tle.core.i18n.LocaleStrings
 import java.util.Locale
 
-/**
-  * Data structure for Entity standard fields.
+/** Data structure for Entity standard fields.
   *
-  * @param name Name of the Entity.
-  * @param nameStrings Name of the Entity including current locale.
-  * @param description Description of the Entity.
-  * @param descriptionStrings Description of the Entity including current locale.
+  * @param name
+  *   Name of the Entity.
+  * @param nameStrings
+  *   Name of the Entity including current locale.
+  * @param description
+  *   Description of the Entity.
+  * @param descriptionStrings
+  *   Description of the Entity including current locale.
   */
-case class EntityStdEdits(name: String,
-                          nameStrings: Option[Map[String, String]] = None,
-                          description: Option[String] = None,
-                          descriptionStrings: Option[Map[String, String]] = None)
+case class EntityStdEdits(
+    name: String,
+    nameStrings: Option[Map[String, String]] = None,
+    description: Option[String] = None,
+    descriptionStrings: Option[Map[String, String]] = None
+)
 
-/**
-  * Data structure representing a failed Entity validation.
+/** Data structure representing a failed Entity validation.
   *
-  * @param field The field being validated.
-  * @param reason Why the validation fails.
+  * @param field
+  *   The field being validated.
+  * @param reason
+  *   Why the validation fails.
   */
 case class EntityValidation(field: String, reason: String) {
   override def toString: String = s"$field: $reason"
@@ -62,9 +68,11 @@ object EntityValidation {
       .getOrElse(EntityValidation(field, FailBlank).invalidNec)
   }
 
-  def nonBlank(field: String,
-               string: String,
-               locale: Locale): ValidatedNec[EntityValidation, (String, LocaleStrings)] =
+  def nonBlank(
+      field: String,
+      string: String,
+      locale: Locale
+  ): ValidatedNec[EntityValidation, (String, LocaleStrings)] =
     nonBlankStrings(field, string, None, locale)
 
   def nonBlankString(field: String, string: String): ValidatedNec[EntityValidation, String] =
@@ -91,13 +99,13 @@ object EntityValidation {
       })
   }
 
-  /**
-    * Given a list of EntityValidation, which typically is wrapped by a NonEmptyChain,
-    * convert each EntityValidation to a more readable error message and put all messages
-    * in one list.
+  /** Given a list of EntityValidation, which typically is wrapped by a NonEmptyChain, convert each
+    * EntityValidation to a more readable error message and put all messages in one list.
     *
-    * @param validations A list of EntityValidation captured during the process of `Entity`
-    * @return A list of error messages transformed from the list of EntityValidation.
+    * @param validations
+    *   A list of EntityValidation captured during the process of `Entity`
+    * @return
+    *   A list of error messages transformed from the list of EntityValidation.
     */
   def collectErrors(validations: NonEmptyChain[EntityValidation]): List[String] =
     validations.toList.map(_.toString)

@@ -47,6 +47,7 @@ public class NotifyBadUrlFilter extends AbstractStandardOperationFilter {
 
   @Override
   public String getWhereClause() {
-    return "i.status IN ('LIVE', 'REVIEW', 'MODERATING', 'ARCHIVED') AND :rurl IN ELEMENTS(i.referencedUrls)";
+    return "i.status IN ('LIVE', 'REVIEW', 'MODERATING', 'ARCHIVED') AND :rurl IN"
+        + " ELEMENTS(i.referencedUrls)";
   }
 }

@@ -22,7 +22,6 @@ import com.tle.beans.mime.MimeEntry;
 import com.tle.common.searching.SimpleSearchResults;
 import java.util.List;
 
-/** @author aholland */
 public class MimeTypesSearchResults extends SimpleSearchResults<MimeEntry> {
   private static final long serialVersionUID = 1L;
 

@@ -27,19 +27,23 @@ import javax.ws.rs.{GET, PUT, Path, Produces}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 case class SettingTypeLinks(web: Option[URI], rest: Option[URI], route: Option[String])
-case class SettingType(id: String,
-                       name: String,
-                       description: String,
-                       group: String,
-                       links: SettingTypeLinks)
+case class SettingType(
+    id: String,
+    name: String,
+    description: String,
+    group: String,
+    links: SettingTypeLinks
+)
 
 object SettingTypeLinks {
   def apply(instUri: URI, ed: EditableSettings): SettingTypeLinks = ed.uriType match {
     case "rest" => SettingTypeLinks(None, Option(instUri.resolve(ed.uri)), None)
     case _ =>
-      SettingTypeLinks(Option(instUri.resolve(ed.uri)),
-                       None,
-                       if (ed.isRoute) Some("/" + ed.uri) else None)
+      SettingTypeLinks(
+        Option(instUri.resolve(ed.uri)),
+        None,
+        if (ed.isRoute) Some("/" + ed.uri) else None
+      )
   }
 }
 @NoCache

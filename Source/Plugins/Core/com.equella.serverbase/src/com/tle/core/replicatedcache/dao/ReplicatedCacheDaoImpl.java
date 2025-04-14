@@ -191,9 +191,9 @@ public class ReplicatedCacheDaoImpl extends GenericDaoImpl<CachedValue, Long>
                   public Object doInHibernate(Session session) throws HibernateException {
                     Query q =
                         session.createQuery(
-                            "FROM CachedValue WHERE cacheId = :cacheId"
-                                + " AND institution = :institution AND id > :startId"
-                                + " AND (:keyPrefixFilter = '' OR key LIKE :keyPrefixFilter) ORDER BY id ASC");
+                            "FROM CachedValue WHERE cacheId = :cacheId AND institution ="
+                                + " :institution AND id > :startId AND (:keyPrefixFilter = '' OR"
+                                + " key LIKE :keyPrefixFilter) ORDER BY id ASC");
                     q.setParameter("cacheId", cacheId);
                     q.setParameter("keyPrefixFilter", keyPrefixFilter + '%');
                     q.setParameter("startId", startId);

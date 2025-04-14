@@ -151,7 +151,9 @@ public abstract class AbstractTopDownParser {
     return offset;
   }
 
-  /** @return true if at the end of the stream. */
+  /**
+   * @return true if at the end of the stream.
+   */
   protected boolean isEOF() {
     return look == (char) -1;
   }

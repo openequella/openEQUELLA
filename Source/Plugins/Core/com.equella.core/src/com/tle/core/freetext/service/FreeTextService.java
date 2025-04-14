@@ -29,7 +29,6 @@ import it.uniroma3.mat.extendedset.wrappers.LongSet;
 import java.util.Collection;
 import java.util.List;
 
-/** @author Nicholas Read */
 public interface FreeTextService {
   void indexAll();
 

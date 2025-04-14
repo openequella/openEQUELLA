@@ -481,7 +481,8 @@ public class TermDaoImpl extends GenericDaoImpl<Term, Long> implements TermDao {
             session -> {
               Query query =
                   session.createQuery(
-                      "delete from TermAttributes ta where ta.term.id in (from Term where taxonomy = :taxonomy)");
+                      "delete from TermAttributes ta where ta.term.id in (from Term where taxonomy"
+                          + " = :taxonomy)");
               query.setParameter("taxonomy", taxonomy);
               query.executeUpdate();
               query = session.createQuery("delete from Term where taxonomy = :taxonomy");

@@ -103,8 +103,10 @@ class SearchFilterResource {
       "This endpoint is used to update a search filter. A JSON object representing the updated filter is returned if operation is successful.",
     response = classOf[SearchFilter]
   )
-  def updateSearchFilter(@ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID,
-                         searchFilter: SearchFilter): Response = {
+  def updateSearchFilter(
+      @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID,
+      searchFilter: SearchFilter
+  ): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
     val filterId       = uuid.toString
@@ -146,18 +148,22 @@ class SearchFilterResource {
             val filterId = UUID.randomUUID().toString
             searchFilter.setId(filterId)
             searchSettings.getFilters.add(searchFilter)
-            ApiBatchOperationResponse(filterId,
-                                      200,
-                                      s"A new filter has been created. ID: $filterId")
+            ApiBatchOperationResponse(
+              filterId,
+              200,
+              s"A new filter has been created. ID: $filterId"
+            )
           } else {
             val filterId = searchFilter.getId
             getFilterById(filterId, searchSettings) match {
               case Some(filter) =>
                 filter.setMimeTypes(searchFilter.getMimeTypes)
                 filter.setName(searchFilter.getName)
-                ApiBatchOperationResponse(filterId,
-                                          200,
-                                          s"MIME type filter $filterId has been updated.")
+                ApiBatchOperationResponse(
+                  filterId,
+                  200,
+                  s"MIME type filter $filterId has been updated."
+                )
               case None =>
                 ApiBatchOperationResponse(filterId, 404, uuidNotFound(filterId))
             }
@@ -173,10 +179,11 @@ class SearchFilterResource {
   @Path("search/filter/{uuid}")
   @ApiOperation(
     value = "Delete a MIME type filter",
-    notes = "This endpoint is used to delete a MIME type filter.",
+    notes = "This endpoint is used to delete a MIME type filter."
   )
   def deleteSearchFilters(
-      @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID): Response = {
+      @ApiParam(value = "filter UUID") @PathParam("uuid") uuid: UUID
+  ): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
     val filterId       = uuid.toString
@@ -198,7 +205,8 @@ class SearchFilterResource {
     responseContainer = "List"
   )
   def batchDelete(
-      @ApiParam(value = "filter UUID") @QueryParam("ids") ids: Array[UUID]): Response = {
+      @ApiParam(value = "filter UUID") @QueryParam("ids") ids: Array[UUID]
+  ): Response = {
     searchPrivProvider.checkAuthorised()
     val searchSettings = loadSettings(new SearchSettings)
     val batchResponses = ListBuffer[ApiBatchOperationResponse]()
@@ -218,8 +226,10 @@ class SearchFilterResource {
     Response.status(207).entity(batchResponses).build()
   }
 
-  private def getFilterById(filterId: String,
-                            searchSettings: SearchSettings): Option[SearchFilter] = {
+  private def getFilterById(
+      filterId: String,
+      searchSettings: SearchSettings
+  ): Option[SearchFilter] = {
     Option(searchSettings.getSearchFilter(filterId))
   }
 
@@ -247,7 +257,8 @@ class SearchFilterResource {
       }
       // Find out MIMETypes of which the values are non-empty but invalid
       val invalidTypes = mimeTypes.asScala.filter(mimeType =>
-        mimeType.nonEmpty && !validMimeTypes.contains(mimeType))
+        mimeType.nonEmpty && !validMimeTypes.contains(mimeType)
+      )
       if (invalidTypes.nonEmpty) {
         errorMessages += s"Invalid MIMETypes found : ${invalidTypes.mkString(",")}"
       }

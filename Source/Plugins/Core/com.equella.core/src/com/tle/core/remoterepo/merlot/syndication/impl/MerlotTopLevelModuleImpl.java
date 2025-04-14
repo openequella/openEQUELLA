@@ -22,7 +22,6 @@ import com.rometools.rome.feed.CopyFrom;
 import com.rometools.rome.feed.module.ModuleImpl;
 import com.tle.core.remoterepo.merlot.syndication.MerlotTopLevelModule;
 
-/** @author aholland */
 @SuppressWarnings("serial")
 public class MerlotTopLevelModuleImpl extends ModuleImpl implements MerlotTopLevelModule {
   private int totalCount;

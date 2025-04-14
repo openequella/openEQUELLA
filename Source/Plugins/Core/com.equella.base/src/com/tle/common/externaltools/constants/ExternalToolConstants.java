@@ -80,6 +80,7 @@ public final class ExternalToolConstants {
   public static final String EXT_PREFIX = "ext_";
 
   public static final String EXT_LMS = EXT_PREFIX + "lms";
+
   /**
    * ******************************************* implementation parameters, will vary between
    * EQUELLA launches & third-party (eg Moodle) launches *******************************************

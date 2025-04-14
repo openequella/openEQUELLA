@@ -22,26 +22,32 @@ package object cloudprovider {
 
   case class RServiceUrl(authenticated: Boolean, url: String)
 
-  case class RCloudProviderRegistration(name: String,
-                                        description: Option[String],
-                                        baseUrl: String,
-                                        iconUrl: Option[String],
-                                        providerAuth: RCloudOAuthCredentials,
-                                        serviceUrls: Map[String, RServiceUrl],
-                                        viewers: Map[String, Map[String, RViewer]])
+  case class RCloudProviderRegistration(
+      name: String,
+      description: Option[String],
+      baseUrl: String,
+      iconUrl: Option[String],
+      providerAuth: RCloudOAuthCredentials,
+      serviceUrls: Map[String, RServiceUrl],
+      viewers: Map[String, Map[String, RViewer]]
+  )
 
-  case class RCloudProviderRegistrationResponse(instance: RCloudProviderInstance,
-                                                forwardUrl: String)
+  case class RCloudProviderRegistrationResponse(
+      instance: RCloudProviderInstance,
+      forwardUrl: String
+  )
 
-  case class RCloudProviderInstance(id: UUID,
-                                    name: String,
-                                    description: Option[String],
-                                    baseUrl: String,
-                                    iconUrl: Option[String],
-                                    providerAuth: RCloudOAuthCredentials,
-                                    oeqAuth: RCloudOAuthCredentials,
-                                    serviceUrls: Map[String, RServiceUrl],
-                                    viewers: Map[String, Map[String, RViewer]])
+  case class RCloudProviderInstance(
+      id: UUID,
+      name: String,
+      description: Option[String],
+      baseUrl: String,
+      iconUrl: Option[String],
+      providerAuth: RCloudOAuthCredentials,
+      oeqAuth: RCloudOAuthCredentials,
+      serviceUrls: Map[String, RServiceUrl],
+      viewers: Map[String, Map[String, RViewer]]
+  )
 
   case class RCloudProviderForward(url: String)
 

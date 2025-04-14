@@ -36,29 +36,31 @@ import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
 import javax.ws.rs.{GET, PUT, Path, Produces}
 
-/**
-  * Structure for the common details of an Identity Provider, which excludes
-  * sensitive values like the client secret.
+/** Structure for the common details of an Identity Provider, which excludes sensitive values like
+  * the client secret.
   */
-final case class CommonDetailsResponse(platform: String,
-                                       issuer: String,
-                                       authCodeClientId: String,
-                                       authUrl: URL,
-                                       keysetUrl: URL,
-                                       tokenUrl: URL,
-                                       usernameClaim: Option[String],
-                                       defaultRoles: Set[String],
-                                       roleConfig: Option[RoleConfiguration],
-                                       enabled: Boolean)
+final case class CommonDetailsResponse(
+    platform: String,
+    issuer: String,
+    authCodeClientId: String,
+    authUrl: URL,
+    keysetUrl: URL,
+    tokenUrl: URL,
+    usernameClaim: Option[String],
+    defaultRoles: Set[String],
+    roleConfig: Option[RoleConfiguration],
+    enabled: Boolean
+)
 
 sealed trait IdentityProviderResponse {
   val commonDetails: CommonDetailsResponse
 }
 
-final case class GenericIdentityProviderResponse(commonDetails: CommonDetailsResponse,
-                                                 apiUrl: URL,
-                                                 apiClientId: String)
-    extends IdentityProviderResponse
+final case class GenericIdentityProviderResponse(
+    commonDetails: CommonDetailsResponse,
+    apiUrl: URL,
+    apiClientId: String
+) extends IdentityProviderResponse
 
 object IdentityProviderResponse {
   def apply(idp: IdentityProviderDetails): Either[Throwable, IdentityProviderResponse] = {
@@ -82,18 +84,22 @@ object IdentityProviderResponse {
             commonDetails = commonDetails,
             apiUrl = generic.apiUrl,
             apiClientId = generic.apiClientId
-          ))
+          )
+        )
       case okta: OktaDetails =>
         Right(
           GenericIdentityProviderResponse(
             commonDetails = commonDetails,
             apiUrl = okta.apiUrl,
             apiClientId = okta.apiClientId
-          ))
+          )
+        )
       case other =>
         Left(
           new RuntimeException(
-            s"Found unsupported OIDC Identity Provider: ${other.commonDetails.platform}"))
+            s"Found unsupported OIDC Identity Provider: ${other.commonDetails.platform}"
+          )
+        )
     }
   }
 }
@@ -103,13 +109,15 @@ object IdentityProviderResponse {
 @Path("oidc/config")
 @Produces(Array("application/json"))
 @Api("OIDC configuration")
-class OidcConfigurationResource @Inject()(oidcConfigurationService: OidcConfigurationService,
-                                          aclProvider: OidcSettingsPrivilegeTreeProvider) {
+class OidcConfigurationResource @Inject() (
+    oidcConfigurationService: OidcConfigurationService,
+    aclProvider: OidcSettingsPrivilegeTreeProvider
+) {
 
   @GET
   @ApiOperation(
     value = "Retrieve OIDC configuration",
-    response = classOf[IdentityProviderResponse],
+    response = classOf[IdentityProviderResponse]
   )
   def getConfiguration: Response = {
     aclProvider.checkAuthorised()
@@ -125,7 +133,7 @@ class OidcConfigurationResource @Inject()(oidcConfigurationService: OidcConfigur
   @PUT
   @ApiOperation(
     value = "Save OIDC configuration",
-    response = classOf[Unit],
+    response = classOf[Unit]
   )
   def saveConfiguration(config: IdentityProvider): Response = {
     aclProvider.checkAuthorised()

@@ -22,7 +22,6 @@ import com.dytech.gui.Changeable;
 import com.dytech.gui.JStatusBar;
 import java.awt.Component;
 
-/** @author Nicholas Read */
 public interface EditorInterface extends Changeable {
   /** Save the document. */
   void save() throws EditorException;
@@ -46,7 +45,9 @@ public interface EditorInterface extends Changeable {
    */
   String getDocumentName();
 
-  /** @return true if the document is read-only. */
+  /**
+   * @return true if the document is read-only.
+   */
   boolean isReadOnly();
 
   /** The parent component */

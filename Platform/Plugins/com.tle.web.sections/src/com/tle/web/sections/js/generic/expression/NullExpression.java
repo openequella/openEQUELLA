@@ -24,7 +24,6 @@ import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.ServerSideValue;
 
-/** @author aholland */
 @NonNullByDefault
 public class NullExpression extends AbstractExpression implements ServerSideValue {
   @Override

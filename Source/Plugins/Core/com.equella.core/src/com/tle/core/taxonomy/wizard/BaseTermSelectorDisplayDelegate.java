@@ -47,7 +47,6 @@ import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.annotations.Component;
 import java.util.List;
 
-/** @author aholland */
 @SuppressWarnings("nls")
 public abstract class BaseTermSelectorDisplayDelegate<M extends BaseTermSelectorWebControlModel>
     extends TermSelectorDisplayDelegate<M> {

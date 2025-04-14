@@ -36,7 +36,6 @@ import com.tle.web.template.Decorations;
 import java.text.MessageFormat;
 import javax.inject.Inject;
 
-/** @author aholland */
 public class FooterSection extends AbstractPrototypeSection<FooterSection.FooterModel>
     implements HtmlRenderer {
   @ViewFactory private FreemarkerFactory viewFactory;

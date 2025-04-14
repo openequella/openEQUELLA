@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import javax.inject.Singleton;
 
-/** @author Aaron */
 @Bind
 @Singleton
 public class RemoveUnusedSystemSettingsPrivilegesAclXmlMigrator

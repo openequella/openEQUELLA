@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** @author jmaginnis */
 public class MyContentFilter {
   private final String name;
   private final String icon;

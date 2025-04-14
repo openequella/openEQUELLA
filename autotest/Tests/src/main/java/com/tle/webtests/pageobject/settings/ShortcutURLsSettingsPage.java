@@ -8,9 +8,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/** @author larry */
 public class ShortcutURLsSettingsPage extends AbstractPage<ShortcutURLsSettingsPage> {
   public static final String SHORTCUT_URLS_TITLE = "Shortcut URLs"; // original
+
   // property
   // key:
   // shortcuturls.title

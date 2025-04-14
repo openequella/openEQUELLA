@@ -23,16 +23,15 @@ import com.tle.core.webkeyset.service.WebKeySetService
 import javax.inject.{Inject, Singleton}
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
-/**
-  * This Servlet responds to GET requests coming from `/.well-known/jwks.json` which is the standard endpoint
-  * for web servers to publish JSON Web Key Sets(JWKS).
+/** This Servlet responds to GET requests coming from `/.well-known/jwks.json` which is the standard
+  * endpoint for web servers to publish JSON Web Key Sets(JWKS).
   *
-  * The response content is a string in JSON format to represent a set of keys containing the public keys
-  * used to verify any JSON Web Token (JWT) issued.
+  * The response content is a string in JSON format to represent a set of keys containing the public
+  * keys used to verify any JSON Web Token (JWT) issued.
   *
   * Reference links:
-  * - https://www.rfc-editor.org/rfc/rfc8414
-  * - https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets
+  *   - https://www.rfc-editor.org/rfc/rfc8414
+  *   - https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets
   */
 @Bind
 @Singleton

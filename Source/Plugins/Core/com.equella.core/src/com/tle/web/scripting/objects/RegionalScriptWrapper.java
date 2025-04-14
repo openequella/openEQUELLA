@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import javax.inject.Singleton;
 
-/** @author aholland */
 @Bind(RegionalScriptObject.class)
 @Singleton
 public class RegionalScriptWrapper extends AbstractScriptWrapper implements RegionalScriptObject {

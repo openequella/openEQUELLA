@@ -30,7 +30,6 @@ import com.tle.core.usermanagement.standard.service.TLEUserService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** @author jmaginnis */
 @Bind
 @Singleton
 public class SoapInterfaceV2Impl extends AbstractSoapService

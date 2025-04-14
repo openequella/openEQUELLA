@@ -23,8 +23,7 @@ import java.util.Base64
 
 package object oauth2 {
 
-  /**
-    * Generate a pair of code challenge and code verifier to be used in the PKCE flow.
+  /** Generate a pair of code challenge and code verifier to be used in the PKCE flow.
     */
   def generatePKCEPair: (String, String) = {
     def encode = Base64.getUrlEncoder.withoutPadding.encodeToString _

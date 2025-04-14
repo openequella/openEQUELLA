@@ -26,7 +26,6 @@ import java.awt.Component;
 import java.io.File;
 import javax.swing.JOptionPane;
 
-/** @author Nicholas Read */
 public class JavaCallback implements Callback {
   /*
    * (non-Javadoc)

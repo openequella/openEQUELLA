@@ -18,32 +18,27 @@
 
 package com.tle.integration.lti13
 
-/**
-  * HTTP Parameters for the various LTI HTTP requests.
+/** HTTP Parameters for the various LTI HTTP requests.
   */
 object Lti13Params {
 
-  /**
-    * The new optional parameter `client_id` specifies the client id for the authorization server
-    * that should be used to authorize the subsequent LTI message request. This allows for a platform
-    * to support multiple registrations from a single issuer, without relying on the
+  /** The new optional parameter `client_id` specifies the client id for the authorization server
+    * that should be used to authorize the subsequent LTI message request. This allows for a
+    * platform to support multiple registrations from a single issuer, without relying on the
     * `initiate_login_uri` as a key.
     */
   val CLIENT_ID = "client_id"
 
-  /**
-    * The issuer identifier identifying the learning platform.
+  /** The issuer identifier identifying the learning platform.
     */
   val ISSUER = "iss"
 
-  /**
-    * Hint to the Authorization Server about the login identifier the End-User might use to log in.
+  /** Hint to the Authorization Server about the login identifier the End-User might use to log in.
     * The permitted values will be defined in the host specification.
     */
   val LOGIN_HINT = "login_hint"
 
-  /**
-    * The new optional parameter `lti_deployment_id` that if included, MUST contain the same
+  /** The new optional parameter `lti_deployment_id` that if included, MUST contain the same
     * deployment id that would be passed in the
     * <https://purl.imsglobal.org/spec/lti/claim/deployment_id> claim for the subsequent LTI message
     * launch.
@@ -55,8 +50,7 @@ object Lti13Params {
     */
   val LTI_DEPLOYMENT_ID = "lti_deployment_id"
 
-  /**
-    * The new optional parameter `lti_message_hint` may be used alongside the `login_hint` to carry
+  /** The new optional parameter `lti_message_hint` may be used alongside the `login_hint` to carry
     * information about the actual LTI message that is being launched.
     *
     * Similarly to the `login_hint` parameter, `lti_message_hint` value is opaque to the tool. If
@@ -65,29 +59,26 @@ object Lti13Params {
     */
   val LTI_MESSAGE_HINT = "lti_message_hint"
 
-  /**
-    * REQUIRED. String value used to associate a Client session with an ID Token, and to mitigate
+  /** REQUIRED. String value used to associate a Client session with an ID Token, and to mitigate
     * replay attacks. The value is passed through unmodified from the Authentication Request to the
     * ID Token.
     */
   val NONCE = "nonce"
 
-  /**
-    * REQUIRED. Since the message launch is meant to be sent from a platform where the user is
+  /** REQUIRED. Since the message launch is meant to be sent from a platform where the user is
     * already logged in. If the user has no session, a platform must just fail the flow rather than
     * ask the user to log in.
     */
   val PROMPT      = "prompt"
   val PROMPT_NONE = "none"
 
-  /**
-    * REQUIRED. The Token can be lengthy and thus should be passed over as a form POST.
+  /** REQUIRED. The Token can be lengthy and thus should be passed over as a form POST.
     */
   val RESPONSE_MODE           = "response_mode"
   val RESPONSE_MODE_FORM_POST = "form_post"
 
-  /**
-    * The actual end-point that should be executed at the end of the OpenID Connect authentication flow.
+  /** The actual end-point that should be executed at the end of the OpenID Connect authentication
+    * flow.
     */
   val TARGET_LINK_URI = "target_link_uri"
 }

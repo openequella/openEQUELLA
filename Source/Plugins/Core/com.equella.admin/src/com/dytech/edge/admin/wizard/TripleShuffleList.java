@@ -268,7 +268,9 @@ public class TripleShuffleList extends JPanel implements ActionListener {
     }
   }
 
-  /** @author Nicholas Read */
+  /**
+   * @author Nicholas Read
+   */
   public class MyTableModel extends AbstractTableModel implements TablePasteModel {
     private static final long serialVersionUID = 1L;
     private final List<WizardControlItem> items = new ArrayList<WizardControlItem>();

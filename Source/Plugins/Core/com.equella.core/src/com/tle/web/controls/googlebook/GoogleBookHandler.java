@@ -18,23 +18,16 @@
 
 package com.tle.web.controls.googlebook;
 
-import com.google.common.base.Function;
+import com.google.api.services.books.v1.model.Volume;
+import com.google.api.services.books.v1.model.Volume.VolumeInfo;
+import com.google.api.services.books.v1.model.Volumes;
 import com.google.common.collect.Lists;
-import com.google.gdata.data.books.VolumeEntry;
-import com.google.gdata.data.books.VolumeFeed;
-import com.google.gdata.data.dublincore.Creator;
-import com.google.gdata.data.dublincore.Date;
-import com.google.gdata.data.dublincore.Description;
-import com.google.gdata.data.dublincore.Format;
-import com.google.gdata.data.dublincore.Publisher;
-import com.google.gdata.data.extensions.Rating;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.beans.item.attachments.Attachment;
 import com.tle.beans.item.attachments.CustomAttachment;
 import com.tle.beans.item.attachments.IAttachment;
 import com.tle.common.Check;
 import com.tle.common.Pair;
-import com.tle.common.Utils;
 import com.tle.core.google.GoogleService;
 import com.tle.core.guice.Bind;
 import com.tle.web.controls.universal.AbstractDetailsAttachmentHandler.AbstractAttachmentHandlerModel;
@@ -74,8 +67,10 @@ import com.tle.web.viewurl.attachments.AttachmentResourceService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
+import org.jsoup.Jsoup;
 
 @SuppressWarnings("nls")
 @Bind
@@ -155,48 +150,43 @@ public class GoogleBookHandler
               return Collections.emptyList();
             }
 
-            VolumeFeed searchBooks =
+            Volumes searchBooks =
                 google.searchBooks(q, (pager.getCurrentPage(info) - 1) * PER_PAGE, PER_PAGE);
-            pager.setup(info, (searchBooks.getTotalResults() - 1) / PER_PAGE + 1, 8);
+            pager.setup(info, (searchBooks.getTotalItems() - 1) / PER_PAGE + 1, 8);
 
             final List<Option<Void>> rv = new ArrayList<Option<Void>>();
-            for (VolumeEntry entry : searchBooks.getEntries()) {
-              StringBuilder description = new StringBuilder();
-              for (Description desc : entry.getDescriptions()) {
-                description.append(desc.getValue());
-              }
+            for (Volume entry : searchBooks.getItems()) {
+              GoogleBookResult result = new GoogleBookResult(entry.getId());
 
-              List<String> authorNames =
-                  Lists.transform(
-                      entry.getCreators(),
-                      new Function<Creator, String>() {
-                        @NonNullByDefault(false)
-                        @Override
-                        public String apply(Creator creator) {
-                          return creator.getValue();
-                        }
-                      });
-              String authors = Utils.join(authorNames.toArray(), ", ");
+              // Description
+              String description = entry.getVolumeInfo().getDescription();
+              result.setDescription(description);
 
-              String title = entry.getTitle().getPlainText();
-              String href = entry.getInfoLink().getHref();
+              // Authors
+              String authors =
+                  Optional.ofNullable(entry.getVolumeInfo().getAuthors())
+                      .map(authorList -> String.join(", ", authorList))
+                      .orElse("");
+              result.setAuthor(authors);
 
+              // Title link
+              String title = entry.getVolumeInfo().getTitle();
+              String href = entry.getVolumeInfo().getInfoLink();
               LinkRenderer titleLink =
                   new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
               titleLink.setLabel(new TextLabel(title));
-
-              LinkRenderer thumbnail = null;
-              if (entry.getThumbnailLink() != null) {
-                thumbnail = new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
-                thumbnail.setNestedRenderable(
-                    new ImageRenderer(entry.getThumbnailLink().getHref(), new TextLabel(title)));
-              }
-
-              GoogleBookResult result = new GoogleBookResult(entry.getId());
-              result.setAuthor(authors);
-              result.setThumbnail(thumbnail);
-              result.setDescription(description.toString());
               result.setLink(titleLink);
+
+              // Thumbnail
+              Optional.ofNullable(entry.getVolumeInfo().getImageLinks().getThumbnail())
+                  .ifPresent(
+                      thumbnail -> {
+                        LinkRenderer thumbnailRenderer =
+                            new PopupLinkRenderer(new HtmlLinkState(new SimpleBookmark(href)));
+                        thumbnailRenderer.setNestedRenderable(
+                            new ImageRenderer(thumbnail, new TextLabel(title)));
+                        result.setThumbnail(thumbnailRenderer);
+                      });
 
               rv.add(result);
             }
@@ -252,30 +242,21 @@ public class GoogleBookHandler
     List<Attachment> attachments = Lists.newArrayList();
     Set<String> bookIds = results.getSelectedValuesAsStrings(info);
     for (String bookId : bookIds) {
-      VolumeEntry bookEntry = google.getBook(bookId);
-
+      VolumeInfo bookInfo = google.getBook(bookId).getVolumeInfo();
       CustomAttachment a = new CustomAttachment();
       a.setType(GoogleBookConstants.ATTACHMENT_TYPE);
       a.setData(GoogleBookConstants.PROPERTY_ID, bookId);
-      a.setData(GoogleBookConstants.PROPERTY_THUMB_URL, bookEntry.getThumbnailLink().getHref());
-      List<Date> bookEntryDates = bookEntry.getDates();
-      if (!Check.isEmpty(bookEntryDates)) {
-        a.setData(GoogleBookConstants.PROPERTY_PUBLISHED, bookEntryDates.get(0).getValue());
-      }
+      Optional.ofNullable(bookInfo.getImageLinks())
+          .flatMap(links -> Optional.ofNullable(links.getThumbnail()))
+          .ifPresent(thumb -> a.setData(GoogleBookConstants.PROPERTY_THUMB_URL, thumb));
+      a.setData(GoogleBookConstants.PROPERTY_PUBLISHED, bookInfo.getPublishedDate());
 
-      // Hax
-      List<Format> formats = bookEntry.getFormats();
-      if (!Check.isEmpty(formats)) {
-        for (Format format : formats) {
-          String infoStr = format.getValue();
-          if (infoStr.contains("pages")) {
-            a.setData(GoogleBookConstants.PROPERTY_FORMATS, infoStr.split(" ")[0]);
-            break;
-          }
-        }
-      }
-      a.setData(GoogleBookConstants.PROPERTY_URL, bookEntry.getInfoLink().getHref());
-      a.setDescription(bookEntry.getTitle().getPlainText());
+      // Page count was designed to be stored with property 'format'.
+      Optional.ofNullable(bookInfo.getPageCount())
+          .ifPresent(count -> a.setData(GoogleBookConstants.PROPERTY_FORMATS, count.toString()));
+
+      a.setData(GoogleBookConstants.PROPERTY_URL, bookInfo.getInfoLink());
+      a.setDescription(bookInfo.getTitle());
       attachments.add(a);
     }
     return attachments;
@@ -295,57 +276,40 @@ public class GoogleBookHandler
     // Dynamic details
     String bookId = (String) a.getData(GoogleBookConstants.PROPERTY_ID);
     if (!Check.isEmpty(bookId)) {
-      VolumeEntry bookEntry = google.getBook(bookId);
-
-      // Description TODO - Perhaps a more link?
-      List<Description> descriptions = bookEntry.getDescriptions();
-      if (!Check.isEmpty(descriptions)) {
-        model.addSpecificDetail(
-            GoogleBookConstants.PROPERTY_DESCRIPTION,
-            new Pair<Label, Object>(
-                DESCRIPTION,
-                new WrappedLabel(
-                    new TextLabel(descriptions.get(0).getValue()), 1250, true, false)));
-      }
+      VolumeInfo bookInfo = google.getBook(bookId).getVolumeInfo();
+      Optional.ofNullable(bookInfo.getDescription())
+          // Description returned from the Google Book API is formatted in HTML and includes simple
+          // formatting elements like <b>.
+          .map(desc -> Jsoup.parse(desc).text())
+          .ifPresent(
+              desc -> {
+                model.addSpecificDetail(
+                    GoogleBookConstants.PROPERTY_DESCRIPTION,
+                    new Pair<>(
+                        DESCRIPTION, new WrappedLabel(new TextLabel(desc), 1250, true, false)));
+              });
 
       // Authors
-      List<String> authors =
-          Lists.transform(
-              bookEntry.getCreators(),
-              new Function<Creator, String>() {
-                @Override
-                public String apply(Creator input) {
-                  return input.getValue();
-                }
-              });
+      List<String> authors = bookInfo.getAuthors();
       if (!Check.isEmpty(authors)) {
         addAttachmentDetail(
             context, authors.size() > 1 ? AUTHORS : AUTHOR, new ListLabel(authors, "<br>"));
       }
 
       // Publisher
-      List<String> pubs =
-          Lists.transform(
-              bookEntry.getPublishers(),
-              new Function<Publisher, String>() {
-                @Override
-                public String apply(Publisher input) {
-                  return input.getValue();
-                }
-              });
-      if (!Check.isEmpty(authors)) {
-        addAttachmentDetail(
-            context, pubs.size() > 1 ? PUBLISHERS : PUBLISHER, new ListLabel(pubs, "<br>"));
+      String publisher = bookInfo.getPublisher();
+      if (!Check.isEmpty(publisher)) {
+        addAttachmentDetail(context, PUBLISHER, new TextLabel(publisher));
       }
 
       // Rating
-      Rating bookEntryRating = bookEntry.getRating();
+      Double bookEntryRating = bookInfo.getAverageRating();
 
       // Depending on a 0 int value mapping to "zero" rating IN
       // RATING_CLASSES
       int rating =
           bookEntryRating != null
-              ? AttachmentHandlerUtils.getRating(bookEntryRating.getAverage())
+              ? AttachmentHandlerUtils.getRating(bookEntryRating.floatValue())
               : 0;
       addAttachmentDetail(
           context,
@@ -353,8 +317,8 @@ public class GoogleBookHandler
           new DivRenderer("rating-stars " + AttachmentHandlerUtils.RATING_CLASSES.get(rating), ""));
 
       // Add a view link
-      String href = bookEntry.getInfoLink().getHref();
-      HtmlLinkState linkState = new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(href));
+      HtmlLinkState linkState =
+          new HtmlLinkState(VIEW_LINK_LABEL, new SimpleBookmark(bookInfo.getInfoLink()));
       linkState.setTarget(HtmlLinkState.TARGET_BLANK);
       model.setViewlink(new LinkRenderer(linkState));
     }

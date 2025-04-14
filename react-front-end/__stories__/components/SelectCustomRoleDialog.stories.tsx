@@ -18,16 +18,16 @@
 import { FormControl, ListItemText, MenuItem, Select } from "@mui/material";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { listRoles, roles } from "../../__mocks__/RoleModule.mock";
+import { searchRoles, roles } from "../../__mocks__/RoleModule.mock";
 import type { CustomRole } from "../../tsrc/components/CustomRoleHelper";
 import {
+  defaultSelectedRoleUrn,
   getRoleNameByUrn,
   ltiRoles,
 } from "../../tsrc/modules/Lti13PlatformsModule";
 import SelectCustomRoleDialog, {
   SelectCustomRoleDialogProps,
 } from "../../tsrc/components/SelectCustomRoleDialog";
-import { defaultLtiRole } from "../../tsrc/settings/Integrations/lti13/components/LtiCustomRolesMapping";
 
 export default {
   title: "component/SelectCustomRoleDialog",
@@ -35,10 +35,11 @@ export default {
   argTypes: { onClose: { action: "On close" } },
 } as Meta<SelectCustomRoleDialogProps>;
 
-const defaultProps = {
+const defaultProps: SelectCustomRoleDialogProps = {
+  initialMappings: new Map(),
   open: true,
-  value: new Map(),
-  roleListProvider: listRoles,
+  searchRolesProvider: searchRoles,
+  onClose: () => {},
 };
 
 export const EmptySelection: StoryFn<SelectCustomRoleDialogProps> = (args) => (
@@ -51,7 +52,7 @@ export const WithSomeSelections: StoryFn<SelectCustomRoleDialogProps> = (
 ) => <SelectCustomRoleDialog {...args} />;
 WithSomeSelections.args = {
   ...defaultProps,
-  initialRoleMappings: new Map([
+  initialMappings: new Map([
     [{ role: "Developer" }, new Set([roles[0], roles[1]])],
     [{ role: "Unknown" }, new Set([roles[2]])],
   ]),
@@ -63,7 +64,7 @@ const selectLtiRole = (
 ) => (
   <FormControl fullWidth>
     <Select
-      value={value?.role ?? defaultLtiRole.role}
+      value={value?.role ?? defaultSelectedRoleUrn}
       onChange={(event) => {
         const claimValue = event.target.value;
         onChange({
