@@ -20,7 +20,6 @@ package com.tle.admin.service
 
 import com.tle.admin.helper.GraphQLQueryHelper.{getAll, getEntity}
 import com.tle.beans.user.GroupTreeNode
-import com.tle.core.remoting.RemoteTLEGroupService
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.{TleGroupApi, TleGroupView}
 import org.slf4j.{Logger, LoggerFactory}
@@ -35,9 +34,7 @@ import scala.jdk.OptionConverters._
   * class is intended for use primarily by the existing Java code, preference is given to Java types
   * over Scala types.
   */
-class AdminTLEGroupServiceImpl @Inject() (
-    val delegate: RemoteTLEGroupService
-)(implicit val cfg: ClientConfiguration)
+class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
     extends AdminTLEGroupService {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
 

@@ -18,7 +18,6 @@
 
 package com.tle.core.usermanagement.standard.service.impl;
 
-import com.tle.beans.user.GroupTreeNode;
 import com.tle.beans.user.TLEGroup;
 import com.tle.common.Check;
 import com.tle.common.beans.exception.InvalidDataException;
@@ -44,10 +43,8 @@ import com.tle.core.usermanagement.standard.service.TLEGroupService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -353,45 +350,6 @@ public class TLEGroupServiceImpl
       eventService.publishApplicationEvent(
           new GroupEditEvent(group.getUuid(), Collections.singleton(fromUserId)));
     }
-  }
-
-  @Override
-  public GroupTreeNode searchTree(String query) {
-    query = prepareQuery(query);
-
-    Map<String, GroupTreeNode> cachedNodes = new HashMap<String, GroupTreeNode>();
-    GroupTreeNode root = new GroupTreeNode();
-
-    for (TLEGroup gb : search(query)) {
-      setupParents(gb, cachedNodes, root);
-      for (TLEGroup sub : dao.getAllSubnodeForNode(gb)) {
-        setupParents(sub, cachedNodes, root);
-      }
-    }
-
-    return root;
-  }
-
-  private GroupTreeNode setupParents(
-      TLEGroup group, Map<String, GroupTreeNode> cachedNodes, GroupTreeNode root) {
-    final String groupID = group.getUuid();
-
-    if (!cachedNodes.containsKey(groupID)) {
-      GroupTreeNode node = new GroupTreeNode();
-      node.setId(groupID);
-      node.setName(group.getName());
-
-      TLEGroup parent = group.getParent();
-      if (parent == null) {
-        root.add(node);
-      } else {
-        GroupTreeNode pnode = setupParents(parent, cachedNodes, root);
-        pnode.add(node);
-      }
-      cachedNodes.put(node.getId(), node);
-    }
-
-    return cachedNodes.get(groupID);
   }
 
   @Override

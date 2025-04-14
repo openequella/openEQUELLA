@@ -19,14 +19,20 @@
 package com.tle.core.usermanagement.standard.service;
 
 import com.tle.beans.user.TLEGroup;
-import com.tle.core.remoting.RemoteTLEGroupService;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public interface TLEGroupService extends RemoteTLEGroupService {
+public interface TLEGroupService {
   String add(TLEGroup group);
 
+  String add(String parentID, String name);
+
   TLEGroup createGroup(String groupID, String name);
+
+  TLEGroup get(String id);
+
+  TLEGroup getByName(String name);
 
   /**
    * Return the list of user IDs in the specified group. These can then be further resolved via the
@@ -73,11 +79,60 @@ public interface TLEGroupService extends RemoteTLEGroupService {
 
   List<TLEGroup> getGroupsContainingUser(String userID, boolean recursive);
 
+  List<TLEGroup> getInformationForGroups(Collection<String> groups);
+
+  /**
+   * Get information for a list of groups.
+   *
+   * @param groupIds The IDs of the groups to get information for
+   * @param limit The maximum number of results to return
+   * @param offset The number of results to skip before returning results
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
+  List<TLEGroup> getInformationForGroups(
+      Collection<String> groupIds, Integer limit, Integer offset);
+
+  String edit(final TLEGroup group);
+
+  /**
+   * Delete a group and optionally all its children. If the children are to be kept, they will be
+   * moved to the parent of the group being deleted.
+   *
+   * @param groupID The ID of the group to delete
+   * @param deleteChildren Whether to delete all children of the group (true) or move them to the
+   *     parent (false)
+   */
+  void delete(String groupID, boolean deleteChildren);
+
   void addUserToGroup(String groupUuid, String userUuid);
 
   void removeUserFromGroup(String groupUuid, String userUuid);
 
   void removeAllUsersFromGroup(String groupUuid);
+
+  /**
+   * Searches for groups (anywhere within the group hierarchy) that match the query. No wildcards
+   * are appended, so should be added as needed. (Asterisks are replaced with % in the query.)
+   *
+   * @param query The query to search for matching groups with
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
+  List<TLEGroup> search(String query);
+
+  /**
+   * Searches for groups (anywhere within the group hierarchy) that match the query. No wildcards
+   * are appended, so should be added as needed. (Asterisks are replaced with % in the query.)
+   *
+   * @param query The query to search for matching groups with
+   * @param limit The maximum number of results to return
+   * @param offset The number of results to skip before returning results
+   * @return The list of groups that match the query - or an empty list if none are found
+   */
+  List<TLEGroup> search(String query, Integer limit, Integer offset);
+
+  List<TLEGroup> search(String query, String parentId);
+
+  List<TLEGroup> search(String query, String userId, boolean allParents);
 
   String prepareQuery(String searchString);
 
