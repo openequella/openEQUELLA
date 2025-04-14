@@ -27,16 +27,14 @@
     "typescript_glob": "{react-front-end,Source/Plugins/Core/com.equella.core/test/javascript}/**/*.{js,ts,tsx}"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "7.27.0",
     "@commitlint/cli": "19.8.0",
     "@commitlint/config-conventional": "19.8.0",
     "@typescript-eslint/eslint-plugin": "8.29.1",
     "@typescript-eslint/parser": "8.29.1",
-    "@babel/eslint-parser": "7.27.0",
     "cross-env": "7.0.3",
     "eslint": "9.24.0",
     "eslint-config-prettier": "10.1.2",
-    "eslint-config-react-app": "7.0.1",
-    "eslint-plugin-flowtype": "8.0.3",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "28.11.0",
     "eslint-plugin-jsx-a11y": "6.10.2",
@@ -73,7 +71,9 @@
         "remark-lint-no-dead-urls",
         {
           "skipLocalhost": true,
-          "skipUrlPatterns":  ["http://oeq.localhost"]
+          "skipUrlPatterns": [
+            "http://oeq.localhost"
+          ]
         }
       ]
     ]
@@ -88,7 +88,8 @@
       "plugin:prettier/recommended"
     ],
     "plugins": [
-      "notice", "unused-imports"
+      "notice",
+      "unused-imports"
     ],
     "env": {
       "jquery": true
@@ -114,10 +115,8 @@
       "no-restricted-syntax": [
         "error",
         {
-          "selector":
-          "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier)",
-          "message":
-          "Use namespace import to import React"
+          "selector": "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier)",
+          "message": "Use namespace import to import React"
         }
       ],
       "react/jsx-boolean-value": "error",
