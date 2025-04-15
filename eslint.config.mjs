@@ -15,16 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { defineConfig } from 'eslint/config';
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import notice from 'eslint-plugin-notice';
-import unusedImports from 'eslint-plugin-unused-imports';
-import globals from 'globals';
-import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
+import { defineConfig } from "eslint/config";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import notice from "eslint-plugin-notice";
+import unusedImports from "eslint-plugin-unused-imports";
+import globals from "globals";
+import tsParser from "@typescript-eslint/parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,30 +37,30 @@ const compat = new FlatCompat({
 export default defineConfig([
   {
     extends: compat.extends(
-      'eslint:recommended',
-      'plugin:@typescript-eslint/eslint-recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:jest/recommended',
-      'plugin:jest/style',
-      'plugin:prettier/recommended'
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:jest/recommended",
+      "plugin:jest/style",
+      "plugin:prettier/recommended",
     ),
 
     plugins: {
-      '@typescript-eslint': typescriptEslint,
+      "@typescript-eslint": typescriptEslint,
       notice,
-      'unused-imports': unusedImports,
+      "unused-imports": unusedImports,
     },
 
     languageOptions: {
       globals: {
         ...globals.node,
         ...globals.browser,
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
+        Atomics: "readonly",
+        SharedArrayBuffer: "readonly",
       },
       parser: tsParser,
       ecmaVersion: 2018,
-      sourceType: 'module',
+      sourceType: "module",
     },
 
     settings: {
@@ -70,9 +70,9 @@ export default defineConfig([
     },
 
     rules: {
-      'unused-imports/no-unused-imports': 'error',
-      'notice/notice': [
-        'error',
+      "unused-imports/no-unused-imports": "error",
+      "notice/notice": [
+        "error",
         {
           templateFile: `${path.resolve(__dirname)}/licenseHeader.js`,
         },
@@ -80,12 +80,24 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.ts'],
+    files: ["**/*.test.ts"],
 
     rules: {
       // It is useful in tests to be able to use non-null-assertions - especially for values
       // which will then be checked with expect matchers.
-      '@typescript-eslint/no-non-null-assertion': 'off',
+      "@typescript-eslint/no-non-null-assertion": "off",
     },
+  },
+  {
+    ignores: [
+      "**/node_modules",
+      "**/target",
+      "**/output",
+      "**/.psc-package",
+      "**/storybook-static",
+      // below is legacy JS code that will only be modified under exceptional circumstances.
+      "**/Source/Plugins/Core/com.equella.core/resources/web/scripts",
+      "**/Source/Plugins/Core/com.equella.core/resources/web/js",
+    ],
   },
 ]);
