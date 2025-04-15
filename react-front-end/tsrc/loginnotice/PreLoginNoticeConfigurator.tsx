@@ -149,7 +149,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleScheduleTypeSelectionChange = (
-    event: ChangeEvent<{}>,
+    event: ChangeEvent<object>,
     value: string,
   ) => {
     this.setState(

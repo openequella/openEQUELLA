@@ -356,7 +356,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       });
   }
 
-  function stdSubmit(validate: boolean) {
+  function stdSubmit(validate: boolean, ...args: string[]) {
     return function (command: string) {
       if (window._trigger) {
         _trigger("presubmit");
@@ -376,7 +376,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           }),
         );
       } else {
-        const vals = collectParams(form, command, [].slice.call(arguments, 1));
+        const vals = collectParams(form, command, args);
         submitCurrentForm(true, false, form.action, vals);
       }
       return false;
@@ -392,7 +392,6 @@ export const LegacyContent = React.memo(function LegacyContent({
         name: string,
         params: string[],
         callback: (response: SubmitResponse) => void,
-        errorcallback: () => void,
       ) {
         submitCurrentForm(
           false,
@@ -408,7 +407,6 @@ export const LegacyContent = React.memo(function LegacyContent({
         cb: () => void,
       ) {
         updateIncludes(includes.js, includes.css).then((_) => {
-          // eslint-disable-next-line no-eval
           window.eval(includes.script);
           cb();
         });
@@ -428,7 +426,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     // `submitCurrentForm`) from the dependency list. However to add that in would require more
     // effort than justified - best to rework with a reducer. Long term we aim to not even have the
     // whole LegacyContent tree, so for now we leave this as is.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   React.useEffect(() => {
@@ -443,7 +440,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     // The below is missing `submitCurrentForm` from the dependency list. However to add that in
     // would require more effort than justified - best to rework with a reducer. Long term we aim
     // to not even have the whole LegacyContent tree, so for now we leave this as is.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, search, locationKey]);
 
   React.useEffect(
@@ -517,11 +513,11 @@ function updateStylesheets(
       newCss.rel = "stylesheet";
       newCss.href = cssUrl;
       head.insertBefore(newCss, insertPoint);
-      const p = new Promise((resolve, reject) => {
+      const p = new Promise((resolve) => {
         newCss.addEventListener("load", resolve, false);
         newCss.addEventListener(
           "error",
-          (err) => {
+          (_) => {
             console.error(`Failed to load css: ${newCss.href}`);
             resolve(undefined);
           },
@@ -543,7 +539,7 @@ function deleteElements(elements: { [url: string]: HTMLElement }) {
 }
 
 function loadMissingScripts(_scripts: string[]) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const scripts = _scripts.map(resolveUrl);
     const doc = window.document;
     const head = doc.getElementsByTagName("head")[0];
