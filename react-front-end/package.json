@@ -95,6 +95,7 @@
     "@storybook/addon-a11y": "8.6.12",
     "@storybook/addon-controls": "8.6.12",
     "@storybook/addon-essentials": "8.6.12",
+    "@storybook/addon-webpack5-compiler-swc": "3.0.0",
     "@storybook/cli": "8.6.12",
     "@storybook/react": "8.6.12",
     "@storybook/react-webpack5": "8.6.12",
