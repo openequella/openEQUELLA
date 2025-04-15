@@ -1,36 +1,24 @@
 package io.github.openequella.oidc
 
-import cats.effect.unsafe.implicits.global
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.generic.page.UserProfilePage
 import com.tle.webtests.pageobject.portal.MenuSection
 import com.tle.webtests.pageobject.viewitem.SummaryPage
 import com.tle.webtests.pageobject.wizard.ContributePage
 import com.tle.webtests.pageobject.{HomePage, LoginPage, SettingsPage}
-import com.tle.webtests.test.AbstractSessionTest
-import integtester.IntegTester
+import com.tle.webtests.test.AbstractIntegrationTest
 import integtester.oidc.OidcIntegration
 import integtester.oidc.OidcUser.TEST_USER
-import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.testng.Assert.{assertEquals, assertTrue}
-import org.testng.annotations.{AfterClass, BeforeClass, DataProvider, Test}
+import org.testng.annotations.{DataProvider, Test}
 
 @TestInstitution("vanilla")
-class OidcIntegrationTest extends AbstractSessionTest {
-  var stopIntegServer: () => Unit = _
+class OidcIntegrationTest extends AbstractIntegrationTest {
 
-  @BeforeClass
-  def runIntegTester(): Unit = {
-    stopIntegServer = IntegTester.start()
-  }
-
-  @AfterClass
-  def stopIntegTester(): Unit = {
-    stopIntegServer()
-  }
+  override protected def isCleanupItems = false
 
   @Test(description =
     "User should be able to login using OIDC and have proper profile and roles set up."

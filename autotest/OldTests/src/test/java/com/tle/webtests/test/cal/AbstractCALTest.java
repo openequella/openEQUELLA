@@ -9,14 +9,14 @@ import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.AbstractWizardControlPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import com.tle.webtests.test.files.Attachments;
 import java.net.URL;
 import java.util.TimeZone;
 import java.util.UUID;
 
 @TestInstitution("cal")
-public class AbstractCALTest extends AbstractCleanupTest {
+public class AbstractCALTest extends AbstractIntegrationTest {
   private static final String JOURNAL_COLLECTION = "CAL Guide Journals Collection";
   private static final String PORTION_COLLECTION = "CAL Guide Portion Collection";
   protected static final String BOOK_COLLECTION = "CAL Guide Books Collection";

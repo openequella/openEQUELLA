@@ -8,13 +8,13 @@ import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.settings.AddShortcutURLPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
-import com.tle.webtests.test.AbstractSessionTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import java.util.List;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 @TestInstitution("fiveo")
-public class ShortcutURLsTest extends AbstractSessionTest {
+public class ShortcutURLsTest extends AbstractIntegrationTest {
   public static final String DISCARDABLE_URL =
       "http://purple-excess.dyndns.ws"; // Larry's sometime personal URL, try :8078
   private final List<String> addedList = Lists.newArrayList();

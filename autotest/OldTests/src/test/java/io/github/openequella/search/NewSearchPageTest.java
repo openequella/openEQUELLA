@@ -8,14 +8,14 @@ import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.SettingsPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import com.tle.webtests.test.AbstractSessionTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import io.github.openequella.pages.search.NewSearchPage;
 import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 import testng.annotation.NewUIOnly;
 
 @TestInstitution("facet")
-public class NewSearchPageTest extends AbstractSessionTest {
+public class NewSearchPageTest extends AbstractIntegrationTest {
   private NewSearchPage searchPage;
 
   @Override
@@ -168,6 +168,10 @@ public class NewSearchPageTest extends AbstractSessionTest {
         "search Page is not loaded");
 
     new SettingsPage(context).load().setNewSearchUI(false);
-    itp.stopIntegServer.apply();
+  }
+
+  @Override
+  protected boolean isCleanupItems() {
+    return false;
   }
 }

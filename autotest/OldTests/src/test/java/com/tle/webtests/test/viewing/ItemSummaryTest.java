@@ -17,14 +17,14 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalControlType;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import com.tle.webtests.test.files.Attachments;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
-public class ItemSummaryTest extends AbstractCleanupTest {
+public class ItemSummaryTest extends AbstractIntegrationTest {
 
   private static String COLLECTION = "Basic Items";
   private static String COLLECTION2 = "Metadata Mapping";

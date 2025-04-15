@@ -9,11 +9,11 @@ import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
-public class CancelWizardTest extends AbstractCleanupTest {
+public class CancelWizardTest extends AbstractIntegrationTest {
   private static String USERNAME = "AutoTest";
   private static String PASSWORD = "automated";
   private static String SHAREDID = "contribute";
