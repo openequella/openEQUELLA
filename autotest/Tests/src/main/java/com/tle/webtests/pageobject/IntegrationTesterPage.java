@@ -5,16 +5,15 @@ import integtester.IntegTester;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import scala.Function0;
+import scala.runtime.BoxedUnit;
 
 public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
   private final String secret;
   private final String shareId;
   private final String signonUrl;
   private final String testerUrl;
-
-  static {
-    IntegTester.start();
-  }
+  public final Function0<BoxedUnit> stopIntegServer;
 
   @FindBy(name = "username")
   private WebElement usernameField;
@@ -58,6 +57,7 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     this.secret = secret;
     this.signonUrl = context.getBaseUrl() + "signon.do";
     this.testerUrl = getUrl(context);
+    stopIntegServer = IntegTester.start();
   }
 
   public static String getUrl(PageContext context) {

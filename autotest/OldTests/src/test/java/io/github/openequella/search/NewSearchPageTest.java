@@ -168,5 +168,6 @@ public class NewSearchPageTest extends AbstractSessionTest {
         "search Page is not loaded");
 
     new SettingsPage(context).load().setNewSearchUI(false);
+    itp.stopIntegServer.apply();
   }
 }
