@@ -36,8 +36,9 @@ import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.item.security.ItemSecurityConstants
-import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
+import com.tle.core.item.serializer.ItemSerializerItemBean
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
@@ -297,9 +298,16 @@ object SearchHelper {
   /** Create a serializer for ItemBean.
     */
   def createSerializer(itemIds: List[ItemIdKey]): ItemSerializerItemBean = {
-    val ids      = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
-    val category = List(ItemSerializerService.CATEGORY_ALL).asJavaCollection
-    LegacyGuice.itemSerializerService.createItemBeanSerializer(ids, category, false, privileges: _*)
+    val ids = itemIds.map(_.getKey.asInstanceOf[java.lang.Long]).asJavaCollection
+    val categories: java.util.Collection[SerialisationCategory] = List(
+      SerialisationCategory.ALL
+    ).asJavaCollection
+    LegacyGuice.itemSerializerService.createItemBeanSerializer(
+      ids,
+      categories,
+      false,
+      privileges: _*
+    )
   }
 
   /** Convert a SearchItem to an instance of SearchResultItem.
@@ -330,7 +338,7 @@ object SearchHelper {
       collectionId = bean.getCollection.getUuid,
       commentCount = getItemCommentCount(key),
       starRatings = bean.getRating,
-      attachmentCount = Option(bean.getAttachments).map(_.size).getOrElse(0),
+      attachmentCount = LegacyGuice.itemService.getAttachmentCountForItem(key),
       attachments =
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,

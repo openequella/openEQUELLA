@@ -124,7 +124,7 @@ public class StandardDriverFactory {
     options.addArguments("no-sandbox");
     options.addArguments("--disable-dev-shm-usage");
     if (chromeHeadless) {
-      options.addArguments("headless");
+      options.addArguments("--headless=new");
       options.addArguments("--lang=en-US");
     }
     options.addArguments("window-size=1200,800");

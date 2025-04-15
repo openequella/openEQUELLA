@@ -22,6 +22,7 @@ import com.tle.beans.item.ItemIdKey
 import com.tle.beans.item.attachments.Attachment
 import com.tle.core.item.service.AttachmentService._
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.item.equella.interfaces.beans.BrokenAttachmentBean
 import com.tle.web.api.item.interfaces.beans.AttachmentBean
 import com.tle.web.api.search.SearchHelper.getLinksFromBean
 import com.tle.web.api.search.model.SearchResultAttachment
@@ -101,7 +102,11 @@ object AttachmentHelper {
     *   The resultant `SearchResultAttachment`.
     */
   def toSearchResultAttachment(itemKey: ItemIdKey, att: AttachmentBean): SearchResultAttachment = {
-    val attachment = recurseBrokenAttachmentCheck(itemKey, att.getUuid)
+    // If the provided Attachment is already of type `BrokenAttachmentBean`, it must be a broken Attachment.
+    // Otherwise, do further checking.
+    val attachment =
+      if (att.isInstanceOf[BrokenAttachmentBean]) None
+      else recurseBrokenAttachmentCheck(itemKey, att.getUuid)
     def ifNotBroken[T](f: Attachment => Option[T], default: Option[T] = None) =
       if (attachment.isDefined) f(attachment.get) else default
 
