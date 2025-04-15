@@ -190,6 +190,8 @@ public class StandardDriverFactory {
               case LogLevel.DEBUG:
                 logger.debug(jsMarker, logEntry.getText());
                 break;
+              default:
+                // Nothing to do
             }
           });
     } catch (IllegalArgumentException e) {
