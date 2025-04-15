@@ -73,7 +73,7 @@ export default defineConfig([
       // Disable this rule since we import a lot of variables and functions from mock file and pass it to the render function.
       "jest/no-mocks-import": "off",
       // Some legacy code uses require() to import modules.
-      "@typescript-eslint/no-require-imports": "warn",
+      "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -83,6 +83,7 @@ export default defineConfig([
         },
       ],
       "@typescript-eslint/no-unused-expressions": "off",
+      "jest/expect-expect": "off",
       "unused-imports/no-unused-imports": "error",
       "notice/notice": [
         "error",
