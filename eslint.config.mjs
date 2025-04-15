@@ -74,7 +74,7 @@ export default defineConfig([
       'notice/notice': [
         'error',
         {
-          templateFile: `${path.resolve(__dirname)}/../licenseHeader.js`,
+          templateFile: `${path.resolve(__dirname)}/licenseHeader.js`,
         },
       ],
     },
