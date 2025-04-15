@@ -1,8 +1,8 @@
 package com.tle.webtests.test;
 
 import integtester.IntegTester;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import scala.Function0;
 import scala.runtime.BoxedUnit;
 
@@ -23,12 +23,12 @@ public abstract class AbstractIntegrationTest extends AbstractCleanupTest {
     super(namePrefix);
   }
 
-  @BeforeClass
+  @BeforeSuite
   public void startIntegServer() {
     stopIntegServer = IntegTester.start();
   }
 
-  @AfterClass
+  @AfterSuite
   public void stopIntegTester() {
     stopIntegServer.apply();
   }
