@@ -8,6 +8,7 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-a11y",
     "@storybook/addon-controls",
+    "@storybook/addon-webpack5-compiler-swc",
   ],
   framework: {
     name: '@storybook/react-webpack5',
