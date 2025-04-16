@@ -64,7 +64,7 @@ export default defineConfig([
 
     settings: {
       jest: {
-        version: 27,
+        version: 29,
       },
     },
 

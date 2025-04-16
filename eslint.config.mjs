@@ -25,6 +25,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import reactHooks from "eslint-plugin-react-hooks";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,8 +42,10 @@ export default defineConfig([
       "eslint:recommended",
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended",
+      "plugin:react/recommended",
       "plugin:jest/recommended",
       "plugin:jest/style",
+      "plugin:jsx-a11y/recommended",
       "plugin:prettier/recommended",
     ),
 
@@ -49,27 +53,35 @@ export default defineConfig([
       "@typescript-eslint": typescriptEslint,
       notice,
       "unused-imports": unusedImports,
+      "react-hooks": reactHooks,
+      "jsx-a11y": jsxA11y,
     },
 
     languageOptions: {
       globals: {
         ...globals.node,
         ...globals.browser,
-        Atomics: "readonly",
-        SharedArrayBuffer: "readonly",
+        ...globals.jquery,
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          tsx: true,
+        },
       },
       parser: tsParser,
-      ecmaVersion: 2018,
-      sourceType: "module",
     },
 
     settings: {
       jest: {
-        version: 27,
+        version: 29,
+      },
+      react: {
+        version: "18",
       },
     },
 
     rules: {
+      "no-eval": "error",
       // Disable this rule since we import a lot of variables and functions from mock file and pass it to the render function.
       "jest/no-mocks-import": "off",
       // Some legacy code uses require() to import modules.
@@ -83,14 +95,62 @@ export default defineConfig([
         },
       ],
       "@typescript-eslint/no-unused-expressions": "off",
-      "jest/expect-expect": "off",
-      "unused-imports/no-unused-imports": "error",
+      "jsx-a11y/no-autofocus": "off",
+      "jest/consistent-test-it": "error",
+      "jest/require-top-level-describe": "error",
+      "jest/expect-expect": [
+        "warn",
+        {
+          assertFunctionNames: ["expect*"],
+        },
+      ],
       "notice/notice": [
         "error",
         {
-          templateFile: `${path.resolve(__dirname)}/licenseHeader.js`,
+          templateFile: "licenseHeader.js",
         },
       ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "ImportDeclaration[source.value='react'] :matches(ImportDefaultSpecifier)",
+          message: "Use namespace import to import React",
+        },
+      ],
+      "react/display-name": "off",
+      "react/jsx-key": "warn",
+      "react/jsx-boolean-value": "error",
+      "react/jsx-curly-brace-presence": "error",
+      "react/jsx-fragments": "error",
+      "react/jsx-no-useless-fragment": "error",
+      "react/prefer-stateless-function": "error",
+      "react-hooks/exhaustive-deps": "error",
+      "unused-imports/no-unused-imports": "error",
+      "react/no-unescaped-entities": "off",
+    },
+  },
+  {
+    files: [
+      "react-front-end/tsrc/**/*.{ts,tsx}",
+      "react-front-end/__test__/**/*.{ts,tsx}",
+      "react-front-end/__stories__/**/*.{ts,tsx}",
+      "react-front-end/__mocks__/**/*.{ts,tsx}",
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: "react-front-end/tsconfig.json",
+      },
+    },
+    rules: {
+      "no-var": "error",
+      "prefer-const": "error",
+      "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-inferrable-types": "error",
+      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      "@typescript-eslint/prefer-optional-chain": "error",
     },
   },
   {
@@ -103,15 +163,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: [
-      "**/node_modules",
-      "**/target",
-      "**/output",
-      "**/.psc-package",
-      "**/storybook-static",
-      // below is legacy JS code that will only be modified under exceptional circumstances.
-      "**/Source/Plugins/Core/com.equella.core/resources/web/scripts",
-      "**/Source/Plugins/Core/com.equella.core/resources/web/js",
-    ],
+    ignores: ["**/node_modules", "**/target", "**/output"],
   },
 ]);
