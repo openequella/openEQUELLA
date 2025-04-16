@@ -65,7 +65,7 @@ export default defineConfig([
       },
       parserOptions: {
         ecmaFeatures: {
-          tsx: true,
+          jsx: true,
         },
       },
       parser: tsParser,
