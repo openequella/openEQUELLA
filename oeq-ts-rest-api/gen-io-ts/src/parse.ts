@@ -181,18 +181,20 @@ const buildInterfaces: (interfaces: InterfaceDeclaration[]) => Interface[] =
     }))
   );
 
-const buildImports: (parsedImports: ImportDeclaration[]) => Import[] = flow(
-  A.chain((i) => i.getNamedImports()),
-  A.filter((i) => i.getParent().getParent().isTypeOnly()),
-  A.map((namedImport) => ({
-    filename: namedImport
-      .getParent()
-      .getParent()
-      .getParent() // Call `getParent` three times to get the full import clause.
-      .getModuleSpecifierValue(),
-    namedImport: namedImport.getName(),
-  }))
-);
+const buildImports = (declarations: ImportDeclaration[]): Import[] =>
+  pipe(
+    declarations,
+    A.filter((d) => d.isTypeOnly()),
+    A.chain((d) =>
+      pipe(
+        d.getNamedImports(),
+        A.map((i) => ({
+          filename: d.getModuleSpecifierValue(),
+          namedImport: i.getName(),
+        }))
+      )
+    )
+  );
 
 const buildTypeAliases: (typeAliases: TypeAliasDeclaration[]) => TypeAlias[] =
   flow(

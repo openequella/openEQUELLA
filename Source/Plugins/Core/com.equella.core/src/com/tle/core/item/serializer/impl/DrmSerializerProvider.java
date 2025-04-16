@@ -25,6 +25,7 @@ import com.tle.common.Pair;
 import com.tle.common.Triple;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerProvider;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.item.serializer.ItemSerializerState;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -42,12 +43,11 @@ import org.hibernate.criterion.Projections;
 @Singleton
 @SuppressWarnings("nls")
 public class DrmSerializerProvider implements ItemSerializerProvider {
-  private static final String CATEGORY_DRM = "drm";
   private static final String ALIAS_DRM = "drm";
 
   @Override
   public void prepareItemQuery(ItemSerializerState state) {
-    if (state.hasCategory(CATEGORY_DRM)) {
+    if (state.hasCategory(SerialisationCategory.DRM)) {
       state.getItemProjection().add(Projections.property("drmSettings"), ALIAS_DRM);
     }
   }
@@ -70,7 +70,7 @@ public class DrmSerializerProvider implements ItemSerializerProvider {
 
   @Override
   public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_DRM)) {
+    if (state.hasCategory(SerialisationCategory.DRM)) {
       throw new UnsupportedOperationException();
     }
   }
@@ -78,7 +78,7 @@ public class DrmSerializerProvider implements ItemSerializerProvider {
   @Override
   public void writeItemBeanResult(
       EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_DRM)) {
+    if (state.hasCategory(SerialisationCategory.DRM)) {
       final DrmSettings drm = (DrmSettings) state.getItemData(itemId).get(ALIAS_DRM);
       final DrmBean equellaDrmBean = new DrmBean();
       if (drm != null) {

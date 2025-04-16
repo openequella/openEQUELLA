@@ -48,6 +48,7 @@ import com.tle.core.item.serializer.ItemDeserializerService;
 import com.tle.core.item.serializer.ItemHistorySerializer;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.item.serializer.where.AllVersionsWhereClause;
 import com.tle.core.item.serializer.where.LatestVersionWhereClause;
 import com.tle.core.item.serializer.where.SingleItemWhereClause;
@@ -145,7 +146,7 @@ public class ItemResourceImpl implements EquellaItemResource {
   /** NB: import|export=true is also an option in the query parameters. */
   @Override
   public EquellaItemBean getItem(UriInfo uriInfo, String uuid, int version, CsvList info) {
-    List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
+    List<String> infos = CsvList.asList(info, SerialisationCategory.ALL.toString());
     ItemId itemId = new ItemId(uuid, version);
     ItemSerializerItemBean serializer =
         itemSerializerService.createItemBeanSerializer(
@@ -327,7 +328,7 @@ public class ItemResourceImpl implements EquellaItemResource {
   /** NB: import|export=true is also an option in the query parameters. */
   @Override
   public List<ItemBean> getAllVersions(UriInfo uriInfo, String uuid, CsvList info) {
-    List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
+    List<String> infos = CsvList.asList(info, SerialisationCategory.ALL.toString());
     ItemSerializerItemBean serializer =
         itemSerializerService.createItemBeanSerializer(
             new AllVersionsWhereClause(uuid),
@@ -347,7 +348,7 @@ public class ItemResourceImpl implements EquellaItemResource {
 
   @Override
   public ItemBean getLatest(UriInfo uriInfo, String uuid, CsvList info) {
-    List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
+    List<String> infos = CsvList.asList(info, SerialisationCategory.ALL.toString());
     ItemSerializerItemBean serializer =
         itemSerializerService.createItemBeanSerializer(
             new LatestVersionWhereClause(uuid, false),
@@ -360,7 +361,7 @@ public class ItemResourceImpl implements EquellaItemResource {
 
   @Override
   public ItemBean getLatestLive(UriInfo uriInfo, String uuid, CsvList info) {
-    List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_ALL);
+    List<String> infos = CsvList.asList(info, SerialisationCategory.ALL.toString());
     ItemSerializerItemBean serializer =
         itemSerializerService.createItemBeanSerializer(
             new LatestVersionWhereClause(uuid, true),
@@ -627,7 +628,7 @@ public class ItemResourceImpl implements EquellaItemResource {
   private void checkViewItem(ItemId itemId) {
     ItemSerializerItemBean serializer =
         itemSerializerService.createItemBeanSerializer(
-            new SingleItemWhereClause(itemId), new HashSet<String>(), false, VIEW_ITEM);
+            new SingleItemWhereClause(itemId), new HashSet<>(), false, VIEW_ITEM);
 
     Iterator<Long> iter = serializer.getItemIds().iterator();
     if (!iter.hasNext()) {

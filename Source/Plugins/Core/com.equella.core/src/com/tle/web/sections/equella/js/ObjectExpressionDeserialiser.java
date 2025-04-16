@@ -37,6 +37,13 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
     super(ObjectExpression.class);
   }
 
+  protected void throwMappingException(
+      DeserializationContext context, JsonToken token, JsonParser parser, String message)
+      throws IOException {
+    context.handleUnexpectedToken(
+        ObjectExpression.class, token, parser, message + " " + where(parser, context));
+  }
+
   @Override
   public ObjectExpression deserialize(JsonParser parser, DeserializationContext context)
       throws IOException, JsonProcessingException {
@@ -49,7 +56,7 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
           // sure
           times++;
           if (times > 1) {
-            throw context.mappingException("Object opened twice??");
+            throwMappingException(context, currentToken, parser, "Object opened twice??");
           }
           break;
 
@@ -58,7 +65,7 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
 
         case FIELD_NAME:
           parser.nextToken();
-          map.put(parser.getCurrentName(), parse(parser, context));
+          map.put(parser.currentName(), parse(parser, context));
           break;
 
         case NOT_AVAILABLE:
@@ -66,12 +73,13 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
           break;
 
         default:
-          throw context.mappingException(
-              "Object can only contain fields " + where(parser, context));
+          throwMappingException(context, currentToken, parser, "Object can only contain fields");
       }
       parser.nextToken();
     }
-    throw context.mappingException("No end object encountered " + where(parser, context));
+    throwMappingException(context, null, parser, "No end object encountered");
+    // Never reached.
+    return null;
   }
 
   private static String where(JsonParser parser, DeserializationContext context) {
@@ -84,8 +92,9 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
     switch (currentToken) {
       case START_OBJECT:
         final ObjectExpression oe = new ObjectExpressionDeserialiser().deserialize(parser, context);
-        if (parser.getCurrentToken() != JsonToken.END_OBJECT) {
-          throw context.mappingException("Should be on end object " + where(parser, context));
+        final JsonToken tokenAfterParseObject = parser.getCurrentToken();
+        if (tokenAfterParseObject != JsonToken.END_OBJECT) {
+          throwMappingException(context, tokenAfterParseObject, parser, "Should be on end object");
         }
         return oe;
 
@@ -107,22 +116,25 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
 
       case START_ARRAY:
         final ArrayExpression ae = parseArray(parser, context);
-        if (parser.getCurrentToken() != JsonToken.END_ARRAY) {
-          throw context.mappingException("Should be on end array " + where(parser, context));
+        final JsonToken tokenAfterParseArray = parser.getCurrentToken();
+        if (tokenAfterParseArray != JsonToken.END_ARRAY) {
+          throwMappingException(context, tokenAfterParseArray, parser, "Should be on end array");
         }
         return ae;
 
       case END_ARRAY:
       case END_OBJECT:
         // whoops
-        throw context.mappingException("Unexpected end object/array " + where(parser, context));
+        throwMappingException(context, currentToken, parser, "Unexpected end object/array");
 
       case FIELD_NAME:
       case NOT_AVAILABLE:
-        throw context.mappingException("How? " + where(parser, context));
+        throwMappingException(context, currentToken, parser, "How?");
 
       default:
-        throw context.mappingException("Unhandled token " + where(parser, context));
+        throwMappingException(context, currentToken, parser, "Unhandled token");
+        // Never reached.
+        return null;
     }
   }
 
@@ -141,21 +153,21 @@ public class ObjectExpressionDeserialiser extends StdDeserializer<ObjectExpressi
           break;
         case END_ARRAY:
           if (!started) {
-            throw context.mappingException(
-                "End array encountered without start " + where(parser, context));
+            throwMappingException(context, null, parser, "End array encountered without start");
           }
           return new ArrayExpression(values.toArray());
         case NOT_AVAILABLE:
           break;
         default:
           if (!started) {
-            throw context.mappingException(
-                "Value encountered without array start " + where(parser, context));
+            throwMappingException(context, null, parser, "Value encountered without array start");
           }
           values.add(parse(parser, context));
       }
       parser.nextToken();
     }
-    throw context.mappingException("No end array found " + where(parser, context));
+    throwMappingException(context, null, parser, "No end array found");
+    // Never reached.
+    return null;
   }
 }

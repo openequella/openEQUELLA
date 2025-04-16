@@ -25,6 +25,7 @@ import com.tle.beans.item.Item;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.remoting.rest.service.UrlLinkService;
@@ -82,7 +83,7 @@ public class ActivationSerializer {
       ItemSerializerItemBean serializer =
           itemSerializerService.createItemBeanSerializer(
               Collections.singletonList(item.getId()),
-              Sets.newHashSet("basic", "attachment"),
+              Sets.newHashSet(SerialisationCategory.BASIC, SerialisationCategory.ATTACHMENT),
               false);
       itemBean.setUuid(item.getUuid());
       itemBean.setVersion(item.getVersion());

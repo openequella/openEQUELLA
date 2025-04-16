@@ -91,7 +91,9 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
 
   @Override
   public ItemSerializerXml createXmlSerializer(
-      Collection<Long> itemIds, Collection<String> categories, String... privileges) {
+      Collection<Long> itemIds,
+      Collection<SerialisationCategory> categories,
+      String... privileges) {
     if (Check.isEmpty(itemIds)) {
       return EMPTY_ITEM_SERIALIZER_XML;
     }
@@ -102,9 +104,16 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
   }
 
   @Override
+  public ItemSerializerXml createXmlSerializer(
+      Collection<Long> itemIds, Set<String> categories, String... privileges) {
+    return createXmlSerializer(
+        itemIds, SerialisationCategory.toCategoryList(categories), privileges);
+  }
+
+  @Override
   public ItemSerializerItemBean createItemBeanSerializer(
       ItemSerializerWhere where,
-      Collection<String> categories,
+      Collection<SerialisationCategory> categories,
       boolean export,
       String... privileges) {
     return new SimpleItemSerializerItemBean(
@@ -113,7 +122,17 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
 
   @Override
   public ItemSerializerItemBean createItemBeanSerializer(
-      Collection<Long> itemIds, Collection<String> categories, boolean ignorePriv, boolean export) {
+      ItemSerializerWhere where, List<String> categories, boolean export, String... privileges) {
+    return createItemBeanSerializer(
+        where, SerialisationCategory.toCategoryList(categories), export, privileges);
+  }
+
+  @Override
+  public ItemSerializerItemBean createItemBeanSerializer(
+      Collection<Long> itemIds,
+      Collection<SerialisationCategory> categories,
+      boolean ignorePriv,
+      boolean export) {
     if (Check.isEmpty(itemIds)) {
       return EMPTY_ITEM_SERIALIZER_ITEM_BEAN;
     }
@@ -125,7 +144,7 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
   @Override
   public ItemSerializerItemBean createItemBeanSerializer(
       Collection<Long> itemIds,
-      Collection<String> categories,
+      Collection<SerialisationCategory> categories,
       boolean export,
       String... privileges) {
     if (Check.isEmpty(itemIds)) {
@@ -134,6 +153,13 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
 
     return new SimpleItemSerializerItemBean(
         createState(new ItemIdsWhereClause(itemIds), categories, privileges, false, export));
+  }
+
+  @Override
+  public ItemSerializerItemBean createItemBeanSerializer(
+      Collection<Long> itemIds, List<String> categories, boolean export, String... privileges) {
+    return createItemBeanSerializer(
+        itemIds, SerialisationCategory.toCategoryList(categories), export, privileges);
   }
 
   @Override
@@ -273,13 +299,13 @@ public class ItemSerializerServiceImpl implements ItemSerializerService {
   @Transactional
   protected ItemSerializerState createState(
       ItemSerializerWhere where,
-      Collection<String> categories,
+      Collection<SerialisationCategory> categories,
       String[] privileges,
       boolean ignorePriv,
       boolean export) {
-    Set<String> setCats;
+    Set<SerialisationCategory> setCats;
     if (categories instanceof Set) {
-      setCats = (Set<String>) categories;
+      setCats = (Set<SerialisationCategory>) categories;
     } else {
       setCats = Sets.newHashSet(categories);
     }

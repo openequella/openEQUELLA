@@ -18,14 +18,13 @@
 
 package com.tle.core.item.serializer.impl;
 
-import static com.tle.core.item.serializer.ItemSerializerService.CATEGORY_DETAIL;
-
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.tle.common.interfaces.BaseEntityReference;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerProvider;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.item.serializer.ItemSerializerState;
 import com.tle.core.item.serializer.XMLStreamer;
 import com.tle.web.api.interfaces.beans.UserBean;
@@ -53,7 +52,7 @@ public class DetailsItemSerializerProvider implements ItemSerializerProvider {
 
   @Override
   public void prepareItemQuery(ItemSerializerState state) {
-    if (state.hasCategory(CATEGORY_DETAIL)) {
+    if (state.hasCategory(SerialisationCategory.DETAIL)) {
       final ProjectionList projection = state.getItemProjection();
       state.addOwnerQuery();
       state.addStatusQuery();
@@ -72,7 +71,7 @@ public class DetailsItemSerializerProvider implements ItemSerializerProvider {
 
   @Override
   public void writeXmlResult(XMLStreamer xml, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_DETAIL)) {
+    if (state.hasCategory(SerialisationCategory.DETAIL)) {
       throw new UnsupportedOperationException();
     }
   }
@@ -80,7 +79,7 @@ public class DetailsItemSerializerProvider implements ItemSerializerProvider {
   @Override
   public void writeItemBeanResult(
       EquellaItemBean equellaItemBean, ItemSerializerState state, long itemId) {
-    if (state.hasCategory(CATEGORY_DETAIL)) {
+    if (state.hasCategory(SerialisationCategory.DETAIL)) {
       equellaItemBean.setOwner(
           new UserBean((String) state.getData(itemId, ItemSerializerState.OWNER_ALIAS)));
       equellaItemBean.setStatus(

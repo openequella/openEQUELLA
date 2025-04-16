@@ -207,4 +207,7 @@ public interface ItemService
    * pages in a Collection.
    */
   Stream<WizardControl> getWizardControlsForItem(Item item);
+
+  /** Return the number of Attachments for a unique Item ID. */
+  int getAttachmentCountForItem(ItemIdKey id);
 }

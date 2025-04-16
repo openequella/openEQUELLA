@@ -1,4 +1,4 @@
-val tikaVersion = "2.9.1"
+val tikaVersion = "2.9.3"
 
 libraryDependencies ++= Seq(
   "org.slf4j"       % "slf4j-api"                     % "2.0.17",

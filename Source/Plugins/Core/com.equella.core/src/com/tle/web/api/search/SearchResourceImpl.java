@@ -51,6 +51,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.i18n.CoreStrings;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.powersearch.PowerSearchService;
 import com.tle.core.remoting.MatrixResults;
 import com.tle.core.remoting.MatrixResults.MatrixEntry;
@@ -118,7 +119,7 @@ public class SearchResourceImpl implements EquellaSearchResource {
     final boolean reverseOrder = (reverse != null && Utils.parseLooseBool(reverse, false));
     final int offset = (start < 0 ? 0 : start);
     final int count = (length < 0 ? 10 : length);
-    final List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_BASIC);
+    final List<String> infos = CsvList.asList(info, SerialisationCategory.BASIC.toString());
     final List<String> statuses = Optional.ofNullable(status).map(CsvList::asList).orElse(null);
 
     // String dynaCollectionCompound =
@@ -169,8 +170,8 @@ public class SearchResourceImpl implements EquellaSearchResource {
 
     // Implied 'all' if export=true
     if (RestImportExportHelper.isExport(uriInfo)
-        && !infos.contains(ItemSerializerService.CATEGORY_ALL)) {
-      infos.add(ItemSerializerService.CATEGORY_ALL);
+        && !infos.contains(SerialisationCategory.ALL.toString())) {
+      infos.add(SerialisationCategory.ALL.toString());
     }
 
     final ItemSerializerItemBean serializer =

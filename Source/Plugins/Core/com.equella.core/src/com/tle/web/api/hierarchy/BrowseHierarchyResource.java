@@ -46,6 +46,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.hierarchy.HierarchyService;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.core.search.VirtualisableAndValue;
 import com.tle.core.security.TLEAclManager;
 import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
@@ -361,7 +362,7 @@ public class BrowseHierarchyResource {
     search.setSchemas(schemas);
 
     // how much info are we extracting for items?
-    final List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_BASIC);
+    final List<String> infos = CsvList.asList(info, SerialisationCategory.BASIC.toString());
 
     final SortType orderType = DefaultSearch.getOrderType(order, null);
     final boolean reverseOrder = (reverse != null && Utils.parseLooseBool(reverse, false));
@@ -415,7 +416,7 @@ public class BrowseHierarchyResource {
    * @param
    * @return
    */
-  protected List<ItemBean> itemBeansFromItemList(List<Item> items, Collection<String> infos) {
+  protected List<ItemBean> itemBeansFromItemList(List<Item> items, List<String> infos) {
     List<ItemBean> returnResults = Lists.newArrayList();
 
     final List<Long> ids =
