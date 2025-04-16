@@ -273,7 +273,7 @@ describe("<SearchResult/>", () => {
   it("displays custom action buttons", async () => {
     const text = "This is a custom action button";
     const actionButtons = [
-      <TooltipIconButton title={text}>
+      <TooltipIconButton key={text} title={text}>
         <CloseIcon />
       </TooltipIconButton>,
     ];

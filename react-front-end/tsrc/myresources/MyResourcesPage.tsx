@@ -273,6 +273,7 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       resourceType === "Scrapbook"
         ? [
             <TooltipIconButton
+              key="addScrapbook"
               title={addScrapbook}
               onClick={({ currentTarget }) => setAnchorEl(currentTarget)}
             >
@@ -402,8 +403,8 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             >
               {pipe(
                 [
-                  ["file", createFile, <CloudUploadIcon />],
-                  ["page", createPage, <PagesIcon />],
+                  ["file", createFile, <CloudUploadIcon key="file" />],
+                  ["page", createPage, <PagesIcon key="page" />],
                 ],
                 A.map<[ScrapbookType, string, JSX.Element], JSX.Element>(
                   ([scrapbookType, text, icon]) => (

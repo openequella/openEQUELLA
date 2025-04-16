@@ -90,7 +90,7 @@ export const CustomActionButtonSearchResult: StoryFn<SearchResultProps> = (
 CustomActionButtonSearchResult.args = {
   ...BasicSearchResult.args,
   customActionButtons: [
-    <IconButton size="small">
+    <IconButton key="custom-button" size="small">
       <InfoIcon />
     </IconButton>,
   ],

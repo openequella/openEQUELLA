@@ -48,6 +48,6 @@ export const WithCustomContent: Story<SelectListProps> = (args) => (
 WithCustomContent.args = {
   options: pipe(
     options,
-    M.map((value) => <p>{value + " extra content"}</p>),
+    M.map((value) => <p key={value}>{value + " extra content"}</p>),
   ),
 };

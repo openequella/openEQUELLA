@@ -146,18 +146,18 @@ export const ShuffleBox = ({
     );
 
   const buttons: [string, () => void, JSX.Element][] = [
-    [strings.addAll, handleAddAll, <AddAllIcon />],
+    [strings.addAll, handleAddAll, <AddAllIcon key="add-all" />],
     [
       strings.addSelected,
       handleAddSelected,
-      <ChevronRightIcon fontSize="large" />,
+      <ChevronRightIcon fontSize="large" key="add-select" />,
     ],
     [
       strings.removeSelected,
       handleRemoveSelected,
-      <ChevronLeftIcon fontSize="large" />,
+      <ChevronLeftIcon fontSize="large" key="remove-selected" />,
     ],
-    [strings.removeAll, handleRemoveAll, <RemoveAllIcon />],
+    [strings.removeAll, handleRemoveAll, <RemoveAllIcon key="remove-all" />],
   ];
 
   return (

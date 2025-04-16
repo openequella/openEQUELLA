@@ -165,6 +165,7 @@ const GallerySearchResult = ({ items }: GallerySearchResultProps) => {
     itemToShare,
     O.map(({ src, embedCode }) => (
       <ShareAttachmentDialog
+        key={src}
         open
         onCloseDialog={() => setItemToShare(O.none)}
         src={src}

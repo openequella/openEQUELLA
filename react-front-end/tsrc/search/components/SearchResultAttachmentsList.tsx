@@ -447,6 +447,7 @@ export const SearchResultAttachmentsList = ({
     attachmentToShare,
     O.map(({ src, embedCode }) => (
       <ShareAttachmentDialog
+        key={src}
         open
         onCloseDialog={() => setAttachmentToShare(O.none)}
         src={src}

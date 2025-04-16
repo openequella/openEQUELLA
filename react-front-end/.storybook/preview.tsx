@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable react/react-in-jsx-scope */
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { MemoryRouter } from "react-router-dom";

@@ -125,7 +125,9 @@ export const ShareAttachmentDialog = ({
   const shareDetails = (title: string, details: O.Option<string>) =>
     pipe(
       details,
-      O.map((d) => <ShareDetails title={title} details={d} />),
+      O.map((d) => (
+        <ShareDetails key="share-details" title={title} details={d} />
+      )),
       O.toUndefined,
     );
 

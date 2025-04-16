@@ -383,64 +383,72 @@ export const LegacyContent = React.memo(function LegacyContent({
     };
   }
 
-  React.useEffect(() => {
-    window["EQ"] = {
-      event: stdSubmit(true),
-      eventnv: stdSubmit(false),
-      postAjax(
-        form: HTMLFormElement,
-        name: string,
-        params: string[],
-        callback: (response: SubmitResponse) => void,
-      ) {
-        submitCurrentForm(
-          false,
-          false,
-          form.action,
-          collectParams(form, name, params),
-          callback,
-        );
-        return false;
-      },
-      updateIncludes(
-        includes: { js: string[]; css?: string[]; script: string },
-        cb: () => void,
-      ) {
-        updateIncludes(includes.js, includes.css).then((_) => {
-          window.eval(includes.script);
-          cb();
-        });
-      },
-      updateForm: function (formUpdate: FormUpdate) {
-        setContent((content) => {
-          if (content) {
-            const newState = formUpdate.partial
-              ? { ...content.state, ...formUpdate.state }
-              : formUpdate.state;
-            return { ...content, state: newState };
-          } else return undefined;
-        });
-      },
-    };
-    // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
-    // `submitCurrentForm`) from the dependency list. However to add that in would require more
-    // effort than justified - best to rework with a reducer. Long term we aim to not even have the
-    // whole LegacyContent tree, so for now we leave this as is.
-  }, [pathname]);
+  React.useEffect(
+    () => {
+      window["EQ"] = {
+        event: stdSubmit(true),
+        eventnv: stdSubmit(false),
+        postAjax(
+          form: HTMLFormElement,
+          name: string,
+          params: string[],
+          callback: (response: SubmitResponse) => void,
+        ) {
+          submitCurrentForm(
+            false,
+            false,
+            form.action,
+            collectParams(form, name, params),
+            callback,
+          );
+          return false;
+        },
+        updateIncludes(
+          includes: { js: string[]; css?: string[]; script: string },
+          cb: () => void,
+        ) {
+          updateIncludes(includes.js, includes.css).then((_) => {
+            // eslint-disable-next-line no-eval
+            window.eval(includes.script);
+            cb();
+          });
+        },
+        updateForm: function (formUpdate: FormUpdate) {
+          setContent((content) => {
+            if (content) {
+              const newState = formUpdate.partial
+                ? { ...content.state, ...formUpdate.state }
+                : formUpdate.state;
+              return { ...content, state: newState };
+            } else return undefined;
+          });
+        },
+      };
+      // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
+      // `submitCurrentForm`) from the dependency list. However to add that in would require more
+      // effort than justified - best to rework with a reducer. Long term we aim to not even have the
+      // whole LegacyContent tree, so for now we leave this as is.
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pathname],
+  );
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(search);
-    const urlValues: { [index: string]: string[] } = {};
-    params.forEach((val, key) => {
-      const exVal = urlValues[key];
-      if (exVal) exVal.push(val);
-      else urlValues[key] = [val];
-    });
-    submitCurrentForm(true, true, undefined, urlValues);
-    // The below is missing `submitCurrentForm` from the dependency list. However to add that in
-    // would require more effort than justified - best to rework with a reducer. Long term we aim
-    // to not even have the whole LegacyContent tree, so for now we leave this as is.
-  }, [pathname, search, locationKey]);
+  React.useEffect(
+    () => {
+      const params = new URLSearchParams(search);
+      const urlValues: { [index: string]: string[] } = {};
+      params.forEach((val, key) => {
+        const exVal = urlValues[key];
+        if (exVal) exVal.push(val);
+        else urlValues[key] = [val];
+      });
+      submitCurrentForm(true, true, undefined, urlValues);
+      // The below is missing `submitCurrentForm` from the dependency list. However to add that in
+      // would require more effort than justified - best to rework with a reducer. Long term we aim
+      // to not even have the whole LegacyContent tree, so for now we leave this as is.
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pathname, search, locationKey],
+  );
 
   React.useEffect(
     () =>
