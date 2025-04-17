@@ -5,7 +5,7 @@ libraryDependencies ++= Seq(
   "com.google.guava"       % "guava"           % "32.1.3-jre",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
   "com.fifesoft"           % "rsyntaxtextarea" % "3.6.0",
-  "com.miglayout"          % "miglayout-swing" % "4.2",
+  "com.miglayout"          % "miglayout-swing" % "11.4.2",
   springWeb,
   springAop,
   springContext
