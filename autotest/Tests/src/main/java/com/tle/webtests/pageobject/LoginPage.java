@@ -80,6 +80,8 @@ public class LoginPage extends AbstractPage<LoginPage> {
           waiter.until(
               ExpectedConditions.elementToBeClickable(driver.findElement(oidcLoginButton)));
       button.click();
+      // Above click triggers a page navigation, which means the button should be stale.
+      waiter.until(ExpectedConditions.stalenessOf(button));
     } else {
       throw new IllegalStateException("OIDC configuration is not available.");
     }
