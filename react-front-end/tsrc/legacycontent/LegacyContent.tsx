@@ -356,7 +356,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       });
   }
 
-  function stdSubmit(validate: boolean, ...args: string[]) {
+  function stdSubmit(validate: boolean) {
     return function (command: string) {
       if (window._trigger) {
         _trigger("presubmit");
@@ -376,7 +376,8 @@ export const LegacyContent = React.memo(function LegacyContent({
           }),
         );
       } else {
-        const vals = collectParams(form, command, args);
+        // eslint-disable-next-line prefer-rest-params
+        const vals = collectParams(form, command, [].slice.call(arguments, 1));
         submitCurrentForm(true, false, form.action, vals);
       }
       return false;
