@@ -9,18 +9,26 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.testng.*;
 
-public class ScreenshotListener implements IInvokedMethodListener {
+public class ScreenshotListener implements ITestListener {
 
   @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    // nothing
+  public void onStart(ITestContext context) {
+    ISuite suite = context.getSuite();
+
+    if (suite.getAttribute("ScreenListenerAdded") == null) {
+      suite.setAttribute("ScreenListenerAdded", true);
+      suite.addListener(new ScreenshotListener());
+    }
   }
 
   @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (testResult.getStatus() != ITestResult.FAILURE) {
-      return;
-    }
+  public void onTestStart(ITestResult result) {}
+
+  @Override
+  public void onTestSuccess(ITestResult result) {}
+
+  @Override
+  public void onTestFailure(ITestResult testResult) {
     Reporter.setCurrentTestResult(testResult);
     try {
       Throwable throwable = testResult.getThrowable();
@@ -132,6 +140,15 @@ public class ScreenshotListener implements IInvokedMethodListener {
       t.printStackTrace();
     }
   }
+
+  @Override
+  public void onTestSkipped(ITestResult result) {}
+
+  @Override
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
+
+  @Override
+  public void onFinish(ITestContext context) {}
 
   public static String takeScreenshot(
       WebDriver driver, File screenshotFolder, ITestResult testResult, boolean chrome) {
