@@ -1,11 +1,13 @@
 package com.tle.webtests.framework;
 
+import static org.testng.internal.Utils.longStackTrace;
+import static org.testng.internal.Utils.shortStackTrace;
+
 import com.tle.common.Check;
 import java.io.File;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.testng.*;
-import org.testng.internal.Utils;
 
 public class ScreenshotListener implements IInvokedMethodListener {
 
@@ -107,7 +109,8 @@ public class ScreenshotListener implements IInvokedMethodListener {
           StringBuffer sb = new StringBuffer();
 
           if (null != tw) {
-            String[] stackTraces = Utils.stackTrace(tw, true);
+            String[] stackTraces =
+                new String[] {shortStackTrace(tw, true), longStackTrace(tw, true)};
             fullStackTrace = stackTraces[1];
             stackTrace = "<div><pre>" + stackTraces[0] + "</pre></div>";
 

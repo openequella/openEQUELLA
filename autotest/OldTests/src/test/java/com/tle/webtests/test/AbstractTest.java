@@ -30,7 +30,7 @@ import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 
 public abstract class AbstractTest implements HasTestConfig {
 
@@ -105,7 +105,7 @@ public abstract class AbstractTest implements HasTestConfig {
     }
   }
 
-  @BeforeSuite
+  @BeforeTest
   public void setupDriverPool(ITestContext testContext) throws IOException {
     ISuite suite = testContext.getSuite();
 
