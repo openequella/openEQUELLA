@@ -98,7 +98,6 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"       % "miglayout-swing"      % "4.2",
   "org.asynchttpclient" % "async-http-client"    % "2.12.4",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
@@ -106,7 +105,7 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "6.3.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.10.1",
   "commons-codec"             % "commons-codec"         % "1.18.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",

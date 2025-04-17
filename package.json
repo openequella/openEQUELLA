@@ -47,12 +47,12 @@
     "husky": "8.0.3",
     "licensee": "10.0.1",
     "lint-staged": "14.0.1",
-    "npm-run-all2": "5.0.2",
+    "npm-run-all2": "7.0.2",
     "prettier": "3.5.3",
     "remark-cli": "11.0.0",
     "remark-lint-no-dead-urls": "1.1.0",
     "remark-validate-links": "12.1.1",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "commitlint": {
     "extends": [

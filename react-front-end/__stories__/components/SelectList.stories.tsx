@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { SelectList, SelectListProps } from "../../tsrc/components/SelectList";
@@ -37,12 +37,14 @@ const options = new Map([
   ["third", "And a third option"],
 ]);
 
-export const Basic: Story<SelectListProps> = (args) => <SelectList {...args} />;
+export const Basic: StoryFn<SelectListProps> = (args) => (
+  <SelectList {...args} />
+);
 Basic.args = {
   options,
 };
 
-export const WithCustomContent: Story<SelectListProps> = (args) => (
+export const WithCustomContent: StoryFn<SelectListProps> = (args) => (
   <SelectList {...args} />
 );
 WithCustomContent.args = {
