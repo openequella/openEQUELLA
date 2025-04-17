@@ -98,7 +98,6 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"       % "miglayout-swing"      % "4.2",
   "org.asynchttpclient" % "async-http-client"    % "2.12.4",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
