@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Proxy;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.bidi.log.LogLevel;
 import org.openqa.selenium.bidi.module.LogInspector;
@@ -119,6 +120,12 @@ public class StandardDriverFactory {
       options.setBinary(chromeBinary);
     }
     options.enableBiDi();
+    // Enabling BIDI results in a known issue where alerts are not properly shown. Currently, a
+    // workaround
+    // is to set "unhandledPromptBehavior" to "ignore.
+    // See https://github.com/SeleniumHQ/selenium/issues/14468 for details.
+    options.setCapability(
+        CapabilityType.UNHANDLED_PROMPT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("test-type");
     options.addArguments("disable-gpu");
     options.addArguments("no-sandbox");
