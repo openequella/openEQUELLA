@@ -44,7 +44,7 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
       int statusCode = makeClientRequest(method);
       assertEquals(statusCode, HttpStatus.SC_OK);
 
-      JsonNode result = mapper.readTree(method.getResponseBody());
+      JsonNode result = mapper.readTree(method.getResponseBodyAsStream());
       count += getResultLength(result);
       token = getTokenFromResponse(result);
     }
@@ -65,7 +65,7 @@ public class BaseEntityAPITest extends AbstractRestApiTest {
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, HttpStatus.SC_OK);
 
-    JsonNode results = getResultList(mapper.readTree(method.getResponseBody()));
+    JsonNode results = getResultList(mapper.readTree(method.getResponseBodyAsStream()));
 
     // There are two Collections named 'Basic xxx'. Full information of the first one
     // is accessible whereas that of the second is not accessible.
