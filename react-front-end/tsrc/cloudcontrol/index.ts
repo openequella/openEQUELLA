@@ -101,8 +101,10 @@ function resetGlobalState() {
   controlValidators = [];
   listeners = [];
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   currentState = null!;
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   latestXml = null!;
 }
 

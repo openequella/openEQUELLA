@@ -158,12 +158,14 @@ export const buildEmbeddedComponent = (
       image: () => <img className={classes} alt={title} src={src} />,
       video: () =>
         isBrowserSupportedVideo(mimeType) ? (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
           <video className={classes} controls src={src} aria-label={title} />
         ) : (
           unsupportedContent
         ),
       audio: () =>
         isBrowserSupportedAudio(mimeType) ? (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
           <audio className={classes} controls src={src} aria-label={title} />
         ) : (
           unsupportedContent

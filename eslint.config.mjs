@@ -119,7 +119,7 @@ export default defineConfig([
         },
       ],
       "react/display-name": "off",
-      "react/jsx-key": "warn",
+      "react/jsx-key": "off",
       "react/jsx-boolean-value": "error",
       "react/jsx-curly-brace-presence": "error",
       "react/jsx-fragments": "error",
