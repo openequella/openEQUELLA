@@ -149,7 +149,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     * before running tests and shut down afterward.
     *
     * A `Deferred` signal is used to ensure the server is started before the test execution
-    * continues. The returned function can be called to cancel the shut down the server.
+    * continues. The returned function can be called to shut down the server.
     *
     * @return
     *   a `() => Unit` function that, when invoked, stops the running server
