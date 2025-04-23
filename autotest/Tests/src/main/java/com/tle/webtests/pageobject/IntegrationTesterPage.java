@@ -53,10 +53,10 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     this.shareId = shareId;
     this.secret = secret;
     this.signonUrl = context.getBaseUrl() + "signon.do";
-    this.testerUrl = getUrl(context);
+    this.testerUrl = getUrl();
   }
 
-  public static String getUrl(PageContext context) {
+  public static String getUrl() {
     return IntegTester.integTesterUrl();
   }
 

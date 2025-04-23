@@ -100,7 +100,7 @@ public class OAuthTest extends AbstractRestApiTest {
    */
   @Test
   public void testOAuthServerSideFlow() throws IllegalStateException, IOException, ParseException {
-    IntegrationTesterPage.getUrl(context);
+    IntegrationTesterPage.getUrl();
 
     logon("AutoTest", "automated");
     OAuthClient client = new OAuthClient();

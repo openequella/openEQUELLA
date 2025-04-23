@@ -32,7 +32,7 @@ public class ShortcutURLsTest extends AbstractIntegrationTest {
   @Test
   public void testServlet() {
     ShortcutURLsSettingsPage susp = logonToShortcutURLsSettingsPage();
-    susp.addShortcutTextAndURL("integtester", IntegrationTesterPage.getUrl(context));
+    susp.addShortcutTextAndURL("integtester", IntegrationTesterPage.getUrl());
     addedList.add("integtester");
     assertTrue(susp.containsShortcut("integtester"), "Expected integtester to be there");
     context.getDriver().get(context.getBaseUrl() + "s/integtester");
