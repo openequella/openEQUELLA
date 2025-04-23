@@ -64,7 +64,9 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
   }
 
   public void editbox(int ctrlNum, String text) {
-    WebElement field = driver.findElement(By.name("c" + getControlNum(ctrlNum)));
+    WebElement field =
+        waiter.until(
+            ExpectedConditions.visibilityOfElementLocated(By.name("c" + getControlNum(ctrlNum))));
     field.clear();
     field.sendKeys(text);
   }
