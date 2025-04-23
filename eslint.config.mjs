@@ -130,6 +130,7 @@ export default defineConfig([
       "react/no-unescaped-entities": "off",
     },
   },
+  // Overrides for files in react-front-end.
   {
     files: [
       "react-front-end/tsrc/**/*.{ts,tsx}",
