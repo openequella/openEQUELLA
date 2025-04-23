@@ -23,8 +23,11 @@ Configuration:
             onMatch: ACCEPT
             onMismatch: DENY
   loggers:
-    Root:
-      level: info
-      appenderRef:
-        - ref: Console
-        - ref: JsErrorAppender
+    - Root:
+        level: info
+        appenderRef:
+          - ref: Console
+          - ref: JsErrorAppender
+    - logger:
+        name: testng.internal.Utils
+        level: off
