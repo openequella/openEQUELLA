@@ -12,14 +12,7 @@ import org.testng.*;
 public class ScreenshotListener implements ITestListener {
 
   @Override
-  public void onStart(ITestContext context) {
-    ISuite suite = context.getSuite();
-
-    if (suite.getAttribute("ScreenListenerAdded") == null) {
-      suite.setAttribute("ScreenListenerAdded", true);
-      suite.addListener(new ScreenshotListener());
-    }
-  }
+  public void onStart(ITestContext context) {}
 
   @Override
   public void onTestStart(ITestResult result) {}
@@ -150,7 +143,7 @@ public class ScreenshotListener implements ITestListener {
   @Override
   public void onFinish(ITestContext context) {}
 
-  public static String takeScreenshot(
+  private String takeScreenshot(
       WebDriver driver, File screenshotFolder, ITestResult testResult, boolean chrome) {
     ITestNGMethod method = testResult.getMethod();
     String filename = testResult.getTestClass().getName() + "_" + method.getMethodName();
