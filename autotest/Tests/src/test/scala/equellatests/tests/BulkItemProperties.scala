@@ -19,8 +19,8 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
   object BulkItemOp extends Enumeration {
     type BulkItemOp = Value
     val removeWorkflow, resetToTask = Value
-    implicit val encJson            = Encoder.enumEncoder(BulkItemOp)
-    implicit val decJson            = Decoder.enumDecoder(BulkItemOp)
+    implicit val encJson            = Encoder.encodeEnumeration(BulkItemOp)
+    implicit val decJson            = Decoder.decodeEnumeration(BulkItemOp)
   }
 
   sealed trait BulkOp {

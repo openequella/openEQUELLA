@@ -229,8 +229,8 @@ object OidcIntegration extends Http4sDsl[IO] {
   // return a signed JWT.
   private def validateClientCredentials(headers: Headers) = {
     def getCredentials =
-      headers.get(Authorization).toRight("Missing Authorization header") map { h =>
-        val credentials = h.toRaw.value.drop("Basic ".length)
+      headers.get[Authorization].toRight("Missing Authorization header") map { h =>
+        val credentials = h.credentials.renderString.drop("Basic ".length)
         new String(Base64.getDecoder.decode(credentials)).split(":")
       }
 

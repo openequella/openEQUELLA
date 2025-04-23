@@ -2,20 +2,19 @@ package equellatests.restapi
 
 import cats.data.{Kleisli, NonEmptyList}
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.free.Free
 import cats.~>
-import com.tle.webtests.framework.{PageContext, TestConfig}
-import io.circe.{Decoder, Encoder, Json}
-import io.circe.syntax._
-import org.asynchttpclient.DefaultAsyncHttpClientConfig
-import org.asynchttpclient.proxy.ProxyServer
-import org.http4s.circe._
-import org.http4s.client.asynchttpclient.AsyncHttpClient
-import org.http4s.headers.Cookie
-import org.http4s.{Headers, Method, Request, RequestCookie, Response, Status, Uri, headers}
-import scala.jdk.CollectionConverters._
-import scala.concurrent.ExecutionContext
+import com.tle.webtests.framework.PageContext
 import io.circe.parser._
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Json}
+import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.circe._
+import org.http4s.client.Client
+import org.http4s.{Headers, Method, Request, RequestCookie, Response, Status, Uri, headers}
+
+import scala.jdk.CollectionConverters._
 
 sealed trait ERestA[A]
 
@@ -29,16 +28,11 @@ case class ERequest[A](
 case class ERelativeUri(fullUri: Uri, base: Uri) extends ERestA[Option[Uri]]
 
 object ERest {
-  implicit val cs = IO.contextShift(ExecutionContext.global)
-
-  val configBuilder = new DefaultAsyncHttpClientConfig.Builder(AsyncHttpClient.defaultConfig)
-  val (client, shutdownClient) = {
-    if (TestConfig.getConfigProps.hasPath("proxy")) {
-      val p = TestConfig.getConfigProps.getConfig("proxy")
-      configBuilder.setProxyServer(new ProxyServer.Builder(p.getString("host"), p.getInt("port")))
-      AsyncHttpClient.allocate[IO](configBuilder.build())
-    } else AsyncHttpClient.allocate[IO]()
-  }.unsafeRunSync()
+  val (client: Client[IO], shutdownClient: IO[Unit]) = {
+    val builder        = BlazeClientBuilder[IO]
+    val clientResource = builder.resource
+    clientResource.allocated.unsafeRunSync()
+  }
 
   case class ReqContext(base: Uri, cookies: NonEmptyList[RequestCookie])
 
@@ -53,14 +47,14 @@ object ERest {
           pageIO { ctx =>
             val reqUri = ctx.base.resolve(uri).setQueryParams(params)
             val _req = Request[IO](method, reqUri).withHeaders(Headers(headers.Cookie(ctx.cookies)))
-            val req  = body.map(j => _req.withBody(j)).getOrElse(IO.pure(_req))
+            val req  = body.map(j => IO.pure(_req.withEntity(j))).getOrElse(IO.pure(_req))
             client.fetch(req)(resp => f(resp))
           }
         case ERelativeUri(uri, base) =>
           pageIO { ctx =>
             IO.pure {
-              val basePath = ctx.base.resolve(base).path
-              val fullPath = uri.path
+              val basePath = ctx.base.resolve(base).path.renderString
+              val fullPath = uri.path.renderString
               if (fullPath.startsWith(basePath)) {
                 Some(Uri.unsafeFromString(fullPath.substring(basePath.length)))
               } else None
