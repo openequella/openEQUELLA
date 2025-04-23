@@ -266,7 +266,7 @@ const HierarchyPage = ({
                 h.keyResources,
                 O.fromPredicate(A.isNonEmpty),
                 O.map((keyResources) => (
-                  <Grid key="resourcePanel" item xs={12}>
+                  <Grid item xs={12}>
                     <KeyResourcePanel
                       keyResources={keyResources}
                       onPinIconClick={

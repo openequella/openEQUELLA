@@ -44,7 +44,6 @@ export function LegacyContentRenderer({
   // Effect responsible for the execution of the legacy scripts etc which were historically
   // added at the end of the server-side rendered HTML.
   React.useEffect(() => {
-    // eslint-disable-next-line no-eval
     if (script) window.eval(script);
   }, [script]);
 

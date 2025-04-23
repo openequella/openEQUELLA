@@ -77,7 +77,6 @@ export const KalturaPlayerEmbed = ({
       }}
     >
       {/*Player will be embedded to the below div.*/}
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
       <div
         id={playerId}
         style={{ width: dimensions.width, height: dimensions.height }}

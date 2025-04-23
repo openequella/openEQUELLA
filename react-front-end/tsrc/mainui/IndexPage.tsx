@@ -218,7 +218,7 @@ export default function IndexPage() {
           path={[OLD_SEARCH_PATH]}
           render={(routeProps) => {
             const newSearchEnabled: boolean =
-              renderData !== undefined ? renderData.newSearch : false;
+              typeof renderData !== "undefined" && renderData?.newSearch;
             const location = window.location;
 
             // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.

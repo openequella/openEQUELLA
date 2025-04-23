@@ -87,7 +87,7 @@ export const DrmTerms = ({
       O.fromNullable,
       O.map(transformer),
       O.map(({ title, terms }) => (
-        <NonStandardDrmTerms key="terms" title={title} terms={terms} />
+        <NonStandardDrmTerms title={title} terms={terms} />
       )),
       O.toUndefined,
     );

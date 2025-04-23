@@ -506,14 +506,12 @@ export const buildRenderScrapbookResult =
         highlights={highlight}
         customActionButtons={[
           <TooltipIconButton
-            key="edit"
             title={languageStrings.common.action.edit}
             onClick={() => onEdit(key)}
           >
             <EditIcon />
           </TooltipIconButton>,
           <TooltipIconButton
-            key="delete"
             title={languageStrings.common.action.delete}
             onClick={() => onDelete(uuid)}
           >

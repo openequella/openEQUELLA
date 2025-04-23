@@ -108,11 +108,7 @@ const SelectItemVersionDialog = ({
               freeSolo
               renderTags={(value: string[], getTagProps) =>
                 value.map((option: string, index: number) => (
-                  <Chip
-                    label={option}
-                    {...getTagProps({ index })}
-                    key={index}
-                  />
+                  <Chip label={option} {...getTagProps({ index })} />
                 ))
               }
               renderInput={(params) => (

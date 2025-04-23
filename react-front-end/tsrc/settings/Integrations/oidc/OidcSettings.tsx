@@ -335,7 +335,6 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                 O.fromPredicate(isNonEmptyString),
                 O.map((roleClaim) => (
                   <CustomRolesMappingControl
-                    key={roleClaim}
                     initialMappings={
                       config.roleConfig?.customRoles ?? new Map()
                     }

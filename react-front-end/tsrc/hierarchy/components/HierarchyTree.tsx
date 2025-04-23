@@ -52,7 +52,6 @@ const HierarchyTree = ({
     hierarchies,
     A.map((topic) => (
       <HierarchyTopic
-        key={topic.compoundUuid}
         topic={topic}
         expandedNodes={expanded}
         onlyShowTitle={onlyShowTitle}

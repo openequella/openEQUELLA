@@ -514,7 +514,6 @@ export const selectResourceForSkinny = (
       if (mainDiv) {
         mainDiv.insertAdjacentHTML("beforeend", response.html["body"]);
 
-        // eslint-disable-next-line no-eval
         window.eval(response.script);
       } else {
         throw new Error("Fail to find oEQ main DIV.");

@@ -120,7 +120,7 @@ describe("<SearchPageBody />", () => {
     const label = "additional Panel";
     const { queryByLabelText } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
-      additionalPanels: [<div key={label} aria-label={label} />],
+      additionalPanels: [<div aria-label={label} />],
     });
 
     expect(queryByLabelText(label)).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe("<SearchPageBody />", () => {
     const text = "additional button";
     const { queryByText } = await renderSearchPageBody({
       ...defaultSearchPageBodyProps,
-      additionalPanels: [<button key={text}>{text}</button>],
+      additionalPanels: [<button>{text}</button>],
     });
 
     expect(queryByText(text, { selector: "button" })).toBeInTheDocument();

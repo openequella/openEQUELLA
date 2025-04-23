@@ -109,7 +109,7 @@ export const AdditionalPanel: StoryFn<SearchPageBodyProps> = (args) => (
 AdditionalPanel.args = {
   ...searchPageBodyProps,
   additionalPanels: [
-    <Card key="additional-panel">
+    <Card>
       <CardHeader title="Additional Panel" />
       <CardContent>This is an addition panel</CardContent>
     </Card>,
@@ -123,11 +123,7 @@ AdditionalHeader.args = {
   ...searchPageBodyProps,
   headerConfig: {
     ...defaultSearchPageHeaderConfig,
-    additionalHeaders: [
-      <Button key="test-button" color="secondary">
-        Test
-      </Button>,
-    ],
+    additionalHeaders: [<Button color="secondary">Test</Button>],
   },
 };
 
