@@ -48,6 +48,7 @@ describe("<CollectionSelector />", () => {
   });
 
   it("uses pre-configured Collections", async () => {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any).configuredCollections = [BASIC_ITEM.uuid];
     const collections = await getAvailableCollections();
     expect(collections.map((s) => s.textContent)).toEqual([BASIC_ITEM.name]);

@@ -25,6 +25,7 @@ import { languageStrings } from "../../util/langstrings";
  * Contain: Match referrers containing this value.
  * Exact: Only match this exact referrer.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ReferrerTypesUnion = t.union([t.literal("Contain"), t.literal("Exact")]);
 export type ReferrerType = t.TypeOf<typeof ReferrerTypesUnion>;
 

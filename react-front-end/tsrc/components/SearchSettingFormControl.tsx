@@ -41,7 +41,7 @@ export interface SearchSettingFormControlProps {
   formHelperText?: string;
   disabled?: boolean;
   control: React.ReactElement;
-  onChange: (event: React.ChangeEvent<{}>, checked: boolean) => void;
+  onChange: (event: React.ChangeEvent<object>, checked: boolean) => void;
 }
 export default function SearchSettingFormControl({
   title,

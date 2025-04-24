@@ -44,7 +44,7 @@ export const selectHierarchy = async (container: HTMLElement, name: string) => {
  */
 export const clickAddKeyResource = async (
   container: HTMLElement,
-  itemUuid: String,
+  itemUuid: string,
   itemVersion: number,
 ) => {
   const item = container.querySelector(

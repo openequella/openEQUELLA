@@ -115,7 +115,7 @@ const ContentIndexSettings = ({ updateTemplate }: TemplateUpdateProps) => {
     });
   };
 
-  const getAriaLabel = (value: number, index: number): string => {
+  const getAriaLabel = (value: number): string => {
     return boostVals[value].label;
   };
 
