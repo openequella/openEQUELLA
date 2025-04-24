@@ -145,7 +145,7 @@ export default function SchemaNodeSelector({
         ) => {
           setExpanded(paths);
         }}
-        onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
+        onNodeSelect={(event: React.ChangeEvent<object>, nodePath: string) => {
           setSelected(nodePath);
           setSelectedNode(nodePath);
         }}

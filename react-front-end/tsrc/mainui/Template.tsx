@@ -62,7 +62,7 @@ export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
 
 export interface TemplateProps {
-  title: String;
+  title: string;
   /* Fix the height of the main content, otherwise use min-height */
   fixedViewPort?: boolean;
   /* Extra part of the App bar (e.g. Search control) */

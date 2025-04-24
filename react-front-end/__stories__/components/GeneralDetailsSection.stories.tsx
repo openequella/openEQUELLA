@@ -83,7 +83,7 @@ const defaultDetails: Record<string, FieldRenderOptions> = {
     label: "Gender",
     required: true,
     desc: "This is a Switch",
-    component: <Switch required checked onChange={(event) => {}} />,
+    component: <Switch required checked onChange={(_) => {}} />,
   },
 };
 

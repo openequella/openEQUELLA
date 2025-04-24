@@ -141,4 +141,16 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
       Prop(!existing).label(providerName + " is deleted")
 
   }
+
+  var stopIntegServer: () => Unit = _
+  override def createBrowser: SimpleSeleniumBrowser = {
+    val browser = super.createBrowser
+    stopIntegServer = IntegTester.start()
+    browser
+  }
+
+  override def destroyBrowser(sut: SimpleSeleniumBrowser): Unit = {
+    super.destroyBrowser(sut)
+    stopIntegServer()
+  }
 }

@@ -29,6 +29,7 @@ const KalturaPlayerVersionCodec = t.union([t.literal("V2"), t.literal("V7")]);
  */
 export type KalturaPlayerVersion = t.TypeOf<typeof KalturaPlayerVersionCodec>;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const KalturaEmbedStyleCodec = t.union([
   t.literal("AUTO"),
   t.literal("IFRAME"),

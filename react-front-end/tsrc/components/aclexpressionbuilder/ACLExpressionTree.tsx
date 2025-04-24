@@ -75,7 +75,7 @@ const ACLExpressionTree = ({
   const [expanded, setExpanded] = useState<string[]>(flattenIds(aclExpression));
   const [selected, setSelected] = useState<string[]>([]);
 
-  const handleTreeToggle = (_: ChangeEvent<{}>, nodeIds: string[]) =>
+  const handleTreeToggle = (_: ChangeEvent<object>, nodeIds: string[]) =>
     setExpanded(nodeIds);
 
   const handleTreeSelect = (_: React.SyntheticEvent, nodeIds: string[]) =>

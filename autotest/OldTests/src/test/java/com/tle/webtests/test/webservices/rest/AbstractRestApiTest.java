@@ -12,7 +12,7 @@ import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.test.AbstractSessionTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,7 +68,7 @@ import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeClass;
 
 @TestInstitution("rest")
-public abstract class AbstractRestApiTest extends AbstractSessionTest {
+public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
   private PoolingClientConnectionManager conMan;
 
   protected ObjectMapper mapper;
@@ -76,6 +76,11 @@ public abstract class AbstractRestApiTest extends AbstractSessionTest {
 
   protected final List<OAuthClient> clients = Lists.newArrayList();
   private String token;
+
+  @Override
+  protected boolean isCleanupItems() {
+    return false;
+  }
 
   @BeforeClass
   public void setup()

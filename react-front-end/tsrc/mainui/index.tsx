@@ -60,7 +60,7 @@ const App = React.lazy(() => import("./App"));
 export default function main(entry: EntryPage) {
   if (process.env.NODE_ENV === "production") {
     const nop = () => {};
-    // eslint-disable-next-line no-native-reassign, no-global-assign
+    // eslint-disable-next-line no-global-assign
     console = {
       ...console,
       debug: nop,

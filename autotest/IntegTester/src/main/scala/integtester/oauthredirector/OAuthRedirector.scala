@@ -97,10 +97,9 @@ object OAuthRedirector extends Http4sDsl[IO] {
       // undertake first OAuth redirect to authenticate to oEQ and register a state value.
       val responseType = params.getOrElse(PARAM_RESPONSE_TYPE, "code")
       val authUrl =
-        Uri.unsafeFromString(
-          s"${equellaUrl}oauth/authorise?response_type=$responseType&client_id=$clientId&redirect_uri=${urlEncode(redirectUri)}&state=${urlEncode(state)}"
-        )
-      Found(authUrl).map(_.putHeaders(Location(authUrl)))
+        s"${equellaUrl}oauth/authorise?response_type=$responseType&client_id=$clientId&redirect_uri=${urlEncode(redirectUri)}&state=${urlEncode(state)}"
+
+      Found(authUrl).map(_.putHeaders(Location(Uri.unsafeFromString(authUrl))))
     case _ => throw WebException(403, "The state does not match. You may be a victim of CSRF.")
   }
 

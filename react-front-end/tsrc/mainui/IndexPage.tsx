@@ -188,7 +188,7 @@ export default function IndexPage() {
     () =>
       Object.keys(routes)
         .map<OEQRouteNewUI | undefined>((name) => {
-          // @ts-ignore:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
+          // @ts-expect-error:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const maybeRoute: any = routes[name];
           return isNewUIRoute(maybeRoute) ? maybeRoute : undefined;
@@ -218,7 +218,7 @@ export default function IndexPage() {
           path={[OLD_SEARCH_PATH]}
           render={(routeProps) => {
             const newSearchEnabled: boolean =
-              typeof renderData !== "undefined" && renderData?.newSearch;
+              renderData !== undefined ? renderData.newSearch : false;
             const location = window.location;
 
             // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.

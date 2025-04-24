@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import LoadingCircle from "../../tsrc/components/LoadingCircle";
 
@@ -24,4 +24,4 @@ export default {
   component: LoadingCircle,
 } as Meta;
 
-export const Standard: Story = () => <LoadingCircle />;
+export const Standard: StoryFn = () => <LoadingCircle />;

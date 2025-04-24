@@ -376,6 +376,7 @@ export const LegacyContent = React.memo(function LegacyContent({
           }),
         );
       } else {
+        // eslint-disable-next-line prefer-rest-params
         const vals = collectParams(form, command, [].slice.call(arguments, 1));
         submitCurrentForm(true, false, form.action, vals);
       }
@@ -383,68 +384,71 @@ export const LegacyContent = React.memo(function LegacyContent({
     };
   }
 
-  React.useEffect(() => {
-    window["EQ"] = {
-      event: stdSubmit(true),
-      eventnv: stdSubmit(false),
-      postAjax(
-        form: HTMLFormElement,
-        name: string,
-        params: string[],
-        callback: (response: SubmitResponse) => void,
-        errorcallback: () => void,
-      ) {
-        submitCurrentForm(
-          false,
-          false,
-          form.action,
-          collectParams(form, name, params),
-          callback,
-        );
-        return false;
-      },
-      updateIncludes(
-        includes: { js: string[]; css?: string[]; script: string },
-        cb: () => void,
-      ) {
-        updateIncludes(includes.js, includes.css).then((_) => {
-          // eslint-disable-next-line no-eval
-          window.eval(includes.script);
-          cb();
-        });
-      },
-      updateForm: function (formUpdate: FormUpdate) {
-        setContent((content) => {
-          if (content) {
-            const newState = formUpdate.partial
-              ? { ...content.state, ...formUpdate.state }
-              : formUpdate.state;
-            return { ...content, state: newState };
-          } else return undefined;
-        });
-      },
-    };
-    // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
-    // `submitCurrentForm`) from the dependency list. However to add that in would require more
-    // effort than justified - best to rework with a reducer. Long term we aim to not even have the
-    // whole LegacyContent tree, so for now we leave this as is.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  React.useEffect(
+    () => {
+      window["EQ"] = {
+        event: stdSubmit(true),
+        eventnv: stdSubmit(false),
+        postAjax(
+          form: HTMLFormElement,
+          name: string,
+          params: string[],
+          callback: (response: SubmitResponse) => void,
+        ) {
+          submitCurrentForm(
+            false,
+            false,
+            form.action,
+            collectParams(form, name, params),
+            callback,
+          );
+          return false;
+        },
+        updateIncludes(
+          includes: { js: string[]; css?: string[]; script: string },
+          cb: () => void,
+        ) {
+          updateIncludes(includes.js, includes.css).then((_) => {
+            // eslint-disable-next-line no-eval
+            window.eval(includes.script);
+            cb();
+          });
+        },
+        updateForm: function (formUpdate: FormUpdate) {
+          setContent((content) => {
+            if (content) {
+              const newState = formUpdate.partial
+                ? { ...content.state, ...formUpdate.state }
+                : formUpdate.state;
+              return { ...content, state: newState };
+            } else return undefined;
+          });
+        },
+      };
+      // The below is missing `submitCurrentForm` and `stdSubmit` (which depends on
+      // `submitCurrentForm`) from the dependency list. However to add that in would require more
+      // effort than justified - best to rework with a reducer. Long term we aim to not even have the
+      // whole LegacyContent tree, so for now we leave this as is.
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pathname],
+  );
 
-  React.useEffect(() => {
-    const params = new URLSearchParams(search);
-    const urlValues: { [index: string]: string[] } = {};
-    params.forEach((val, key) => {
-      const exVal = urlValues[key];
-      if (exVal) exVal.push(val);
-      else urlValues[key] = [val];
-    });
-    submitCurrentForm(true, true, undefined, urlValues);
-    // The below is missing `submitCurrentForm` from the dependency list. However to add that in
-    // would require more effort than justified - best to rework with a reducer. Long term we aim
-    // to not even have the whole LegacyContent tree, so for now we leave this as is.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, search, locationKey]);
+  React.useEffect(
+    () => {
+      const params = new URLSearchParams(search);
+      const urlValues: { [index: string]: string[] } = {};
+      params.forEach((val, key) => {
+        const exVal = urlValues[key];
+        if (exVal) exVal.push(val);
+        else urlValues[key] = [val];
+      });
+      submitCurrentForm(true, true, undefined, urlValues);
+      // The below is missing `submitCurrentForm` from the dependency list. However to add that in
+      // would require more effort than justified - best to rework with a reducer. Long term we aim
+      // to not even have the whole LegacyContent tree, so for now we leave this as is.
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pathname, search, locationKey],
+  );
 
   React.useEffect(
     () =>
@@ -517,11 +521,11 @@ function updateStylesheets(
       newCss.rel = "stylesheet";
       newCss.href = cssUrl;
       head.insertBefore(newCss, insertPoint);
-      const p = new Promise((resolve, reject) => {
+      const p = new Promise((resolve) => {
         newCss.addEventListener("load", resolve, false);
         newCss.addEventListener(
           "error",
-          (err) => {
+          (_) => {
             console.error(`Failed to load css: ${newCss.href}`);
             resolve(undefined);
           },
@@ -543,7 +547,7 @@ function deleteElements(elements: { [url: string]: HTMLElement }) {
 }
 
 function loadMissingScripts(_scripts: string[]) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const scripts = _scripts.map(resolveUrl);
     const doc = window.document;
     const head = doc.getElementsByTagName("head")[0];

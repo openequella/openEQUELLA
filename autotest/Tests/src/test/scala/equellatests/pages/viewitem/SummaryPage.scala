@@ -26,8 +26,8 @@ class SummaryPage(val ctx: PageContext) extends WaitingBrowserPage {
   val ItemsRegex = """items/(.*)/(.*)/""".r
 
   def itemId(): ItemId = {
-    val cu = Uri.unsafeFromString(driver.getCurrentUrl).path
-    val bu = Uri.unsafeFromString(ctx.getBaseUrl).path
+    val cu = Uri.unsafeFromString(driver.getCurrentUrl).path.renderString
+    val bu = Uri.unsafeFromString(ctx.getBaseUrl).path.renderString
     cu.substring(bu.length) match {
       case ItemsRegex(uuidS, ver) => ItemId(UUID.fromString(uuidS), ver.toInt)
     }

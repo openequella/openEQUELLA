@@ -69,7 +69,7 @@ interface EntityListProps {
   resultsRight?: React.ReactNode;
   children: React.ReactNode;
   createOnClick?: () => void;
-  progress: Boolean;
+  progress: boolean;
   id?: string;
 }
 

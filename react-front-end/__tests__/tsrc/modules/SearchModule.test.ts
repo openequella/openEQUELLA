@@ -153,6 +153,7 @@ describe("search with configured Collections", () => {
   });
 
   const configuredCollections = [BASIC_ITEM.uuid, BOOKS.uuid];
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).configuredCollections = configuredCollections;
 
   const expectCollections = (expectedCollections: string[]) => {

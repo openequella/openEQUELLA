@@ -61,7 +61,7 @@ export interface AccessControlSectionProps
   /**
    * `true` to show validation errors.
    */
-  showValidationErrors?: Boolean;
+  showValidationErrors?: boolean;
 }
 
 /**

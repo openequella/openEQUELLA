@@ -7,14 +7,14 @@ import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.IntegrationTesterReturnPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("myresources")
-public class FavouritesInIntegrationTest extends AbstractCleanupTest {
+public class FavouritesInIntegrationTest extends AbstractIntegrationTest {
   /** Institution primed and saved with his sharedid & secret */
   private static String SHAREDID = "favininteg";
 

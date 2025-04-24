@@ -50,7 +50,7 @@ export type LegacyMyResourcesTypes = t.TypeOf<typeof LegacyMyResourcesCodec>;
  */
 export const getLegacyScrapbookCreatingPageRoute = async (
   scrapbookType: ScrapbookType,
-  searchPageOptionsID: String,
+  searchPageOptionsID: string,
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
     event__: [
@@ -68,7 +68,7 @@ export const getLegacyScrapbookCreatingPageRoute = async (
  */
 export const getLegacyScrapbookEditingPageRoute = async (
   itemKey: string,
-  searchOptionID: String,
+  searchOptionID: string,
 ): Promise<string> =>
   Axios.post<ChangeRoute>(legacyMyResourcesUrl, {
     event__: ["mcile.editFromNewUI"],

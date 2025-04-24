@@ -183,7 +183,7 @@ const ACLExpressionBuilder = ({
   const [selectedACLExpression, setSelectedACLExpression] =
     useState<ACLExpression>(currentACLExpression);
 
-  const handleTabChanged = (_: ChangeEvent<{}>, newValue: string) =>
+  const handleTabChanged = (_: ChangeEvent<object>, newValue: string) =>
     setActiveTabValue(newValue);
 
   // Update an ACLExpression when the expression has changes like operator changed and recipient deleted.
