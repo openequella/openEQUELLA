@@ -20,7 +20,7 @@
     "check:ts-types-autotest": "tsc --noEmit --project \"autotest/IntegTester/front-end/tsconfig.json\"",
     "check": "run-s check:*",
     "format": "run-s format:*",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "config": {
     "stylesheet_glob": "Source/Plugins/Core/com.equella.core/{js,resources}/**/*.{css,scss}",
