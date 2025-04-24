@@ -52,7 +52,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     final HttpMethod method = new GetMethod(LTI_PLATFORM_API_ENDPOINT);
 
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
-    JsonNode results = mapper.readTree(method.getResponseBody());
+    JsonNode results = mapper.readTree(method.getResponseBodyAsStream());
     assertTrue(results.size() > 0);
   }
 
@@ -127,7 +127,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     int resp_code = makeClientRequest(method);
     assertEquals(207, resp_code);
 
-    JsonNode results = mapper.readTree(method.getResponseBody());
+    JsonNode results = mapper.readTree(method.getResponseBodyAsStream());
     // The first platform should be updated and second one should fail due to not found (404).
     assertEquals(200, results.get(0).get("status").asInt());
     assertEquals(404, results.get(1).get("status").asInt());
@@ -143,19 +143,21 @@ public class LtiPlatformTest extends AbstractRestApiTest {
   public void rotateKeypair() throws IOException {
     final HttpMethod getOriginalId = new GetMethod(BRIGHTSPACE_URL);
     makeClientRequest(getOriginalId);
-    String originalKeyPairId = mapper.readTree(getOriginalId.getResponseBody()).get("kid").asText();
+    String originalKeyPairId =
+        mapper.readTree(getOriginalId.getResponseBodyAsStream()).get("kid").asText();
 
     final GetMethod getMethod = new GetMethod(BRIGHTSPACE_URL + "/rotated-keys");
     int resp_code = makeClientRequest(getMethod);
-    String keyPairId = new String(getMethod.getResponseBody(), StandardCharsets.UTF_8);
+    String keyPairId =
+        new String(getMethod.getResponseBodyAsStream().readAllBytes(), StandardCharsets.UTF_8);
 
     final HttpMethod getNewId = new GetMethod(BRIGHTSPACE_URL);
     makeClientRequest(getNewId);
-    String newKeyPairId = mapper.readTree(getNewId.getResponseBody()).get("kid").asText();
+    String newKeyPairId = mapper.readTree(getNewId.getResponseBodyAsStream()).get("kid").asText();
 
     final HttpMethod getJWKS = new GetMethod(JWKS_URL);
     makeClientRequest(getJWKS);
-    JsonNode jwks = mapper.readTree(getJWKS.getResponseBody()).get("keys");
+    JsonNode jwks = mapper.readTree(getJWKS.getResponseBodyAsStream()).get("keys");
 
     assertEquals(HttpStatus.SC_OK, resp_code);
     // make sure new key is different from previous key pair
@@ -168,7 +170,9 @@ public class LtiPlatformTest extends AbstractRestApiTest {
             .anyMatch(key -> key.get("kid").asText().equals(keyPairId)));
   }
 
-  @Test(description = "Delete an LTI platform", dependsOnMethods = "rotateKeypair")
+  @Test(
+      description = "Delete an LTI platform",
+      dependsOnMethods = {"rotateKeypair", "updateEnabledStatus", "updatePlatform"})
   public void deletePlatform() throws IOException {
     final DeleteMethod method = new DeleteMethod(BRIGHTSPACE_URL);
 
@@ -192,7 +196,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     int resp_code = makeClientRequest(method);
     assertEquals(207, resp_code);
 
-    JsonNode results = mapper.readTree(method.getResponseBody());
+    JsonNode results = mapper.readTree(method.getResponseBodyAsStream());
     // The first platform should be deleted and second one should result in a 404 error.
     assertEquals(200, results.get(0).get("status").asInt());
     assertEquals(404, results.get(1).get("status").asInt());
@@ -230,7 +234,7 @@ public class LtiPlatformTest extends AbstractRestApiTest {
     final HttpMethod method = new GetMethod(LTI_PLATFORM_API_ENDPOINT + "/" + platformId);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
 
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 
   private ObjectNode buildRequestBody() {

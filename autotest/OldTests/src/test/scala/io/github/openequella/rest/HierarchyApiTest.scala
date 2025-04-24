@@ -131,7 +131,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, expectedCode)
-    mapper.readTree(method.getResponseBody)
+    mapper.readTree(method.getResponseBodyAsStream)
   }
 
   private def assertAcls(hasPermission: Boolean, acls: JsonNode): Unit = {
@@ -151,7 +151,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     val method = new PostMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, expectedCode)
-    mapper.readTree(method.getResponseBody)
+    mapper.readTree(method.getResponseBodyAsStream)
   }
 
   // Delete a key resource
@@ -165,7 +165,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     val method = new DeleteMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, expectedCode)
-    mapper.readTree(method.getResponseBody)
+    mapper.readTree(method.getResponseBodyAsStream)
   }
 
   // Check if the item is in the key resource result
@@ -188,7 +188,7 @@ class HierarchyApiTest extends AbstractRestApiTest {
     val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
-    mapper.readTree(method.getResponseBody)
+    mapper.readTree(method.getResponseBodyAsStream)
   }
 
   private def assertAddKeyResourceIsSucceed(

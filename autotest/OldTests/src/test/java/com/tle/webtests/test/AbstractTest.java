@@ -7,7 +7,6 @@ import com.google.common.collect.ListMultimap;
 import com.tle.webtests.framework.HasTestConfig;
 import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.framework.ScreenshotListener;
 import com.tle.webtests.framework.StandardDriverFactory;
 import com.tle.webtests.framework.TestConfig;
 import com.tle.webtests.pageobject.ClassPrefixedName;
@@ -26,11 +25,9 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
-import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 
 public abstract class AbstractTest implements HasTestConfig {
 
@@ -102,16 +99,6 @@ public abstract class AbstractTest implements HasTestConfig {
     } catch (Throwable t) {
       System.err.println("setupContext failed");
       t.printStackTrace();
-    }
-  }
-
-  @BeforeSuite
-  public void setupDriverPool(ITestContext testContext) throws IOException {
-    ISuite suite = testContext.getSuite();
-
-    if (suite.getAttribute("ScreenListenerAdded") == null) {
-      suite.setAttribute("ScreenListenerAdded", true);
-      suite.addListener(new ScreenshotListener());
     }
   }
 
