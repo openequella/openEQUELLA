@@ -56,7 +56,7 @@
     "@mui/x-date-pickers": "5.0.20",
     "@mui/x-tree-view": "6.17.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
-    "@tinymce/tinymce-react": "4.3.2",
+    "@tinymce/tinymce-react": "6.1.0",
     "axios": "1.8.4",
     "clsx": "2.1.1",
     "es6-object-assign": "1.1.0",
