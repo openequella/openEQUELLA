@@ -22,7 +22,7 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { ChangeEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import type { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import type {
   ACLExpression,
@@ -75,13 +75,11 @@ const ACLExpressionTree = ({
   const [expanded, setExpanded] = useState<string[]>(flattenIds(aclExpression));
   const [selected, setSelected] = useState<string[]>([]);
 
-  const handleTreeToggle = (_: ChangeEvent<{}> | null, nodeIds: string[]) =>
+  const handleTreeToggle = (_: SyntheticEvent | null, nodeIds: string[]) =>
     setExpanded(nodeIds);
 
-  const handleTreeSelect = (
-    _: React.SyntheticEvent | null,
-    nodeIds: string[],
-  ) => setSelected(nodeIds);
+  const handleTreeSelect = (_: SyntheticEvent | null, nodeIds: string[]) =>
+    setSelected(nodeIds);
 
   const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => {
     const { id, operator, children, recipients } = aclExpression;
@@ -89,7 +87,7 @@ const ACLExpressionTree = ({
     const handleRecipientDelete = (recipient: ACLRecipient) => {
       const newRecipients = pipe(
         recipients,
-        A.filter((r) => !recipientEq.equals(r, recipient)),
+        A.filter<ACLRecipient>((r) => !recipientEq.equals(r, recipient)),
       );
 
       onChange({
