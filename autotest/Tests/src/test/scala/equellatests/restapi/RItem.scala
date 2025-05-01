@@ -11,8 +11,8 @@ import io.circe.generic.auto._
 object RStatus extends Enumeration {
   type RStatus = Value
   val live, moderating, rejected, draft     = Value
-  implicit val encRStatus: Encoder[RStatus] = Encoder.enumEncoder(RStatus)
-  implicit val decRStatus: Decoder[RStatus] = Decoder.enumDecoder(RStatus)
+  implicit val encRStatus: Encoder[RStatus] = Encoder.encodeEnumeration(RStatus)
+  implicit val decRStatus: Decoder[RStatus] = Decoder.decodeEnumeration(RStatus)
 }
 
 import RStatus._
@@ -53,15 +53,15 @@ case class BasicAttachment(
 object RNodeStatus extends Enumeration {
   type RNodeStatus = Value
   val incomplete, complete                      = Value
-  implicit val encRStatus: Encoder[RNodeStatus] = Encoder.enumEncoder(RNodeStatus)
-  implicit val decRStatus: Decoder[RNodeStatus] = Decoder.enumDecoder(RNodeStatus)
+  implicit val encRStatus: Encoder[RNodeStatus] = Encoder.encodeEnumeration(RNodeStatus)
+  implicit val decRStatus: Decoder[RNodeStatus] = Decoder.decodeEnumeration(RNodeStatus)
 }
 
 object RStatusNodeType extends Enumeration {
   type RStatusNodeType = Value
   val serial, task                                  = Value
-  implicit val encRStatus: Encoder[RStatusNodeType] = Encoder.enumEncoder(RStatusNodeType)
-  implicit val decRStatus: Decoder[RStatusNodeType] = Decoder.enumDecoder(RStatusNodeType)
+  implicit val encRStatus: Encoder[RStatusNodeType] = Encoder.encodeEnumeration(RStatusNodeType)
+  implicit val decRStatus: Decoder[RStatusNodeType] = Decoder.decodeEnumeration(RStatusNodeType)
 }
 
 sealed trait StatusNode {
@@ -114,8 +114,8 @@ case class RModeration(status: RStatus, nodes: Option[StatusNode]) {
 object RHistoryEventType extends Enumeration {
   type RHistoryEventType = Value
   val taskMove, edit, statechange, resetworkflow     = Value
-  implicit val enc: Encoder[RHistoryEventType.Value] = Encoder.enumEncoder(RHistoryEventType)
-  implicit val dec: Decoder[RHistoryEventType.Value] = Decoder.enumDecoder(RHistoryEventType)
+  implicit val enc: Encoder[RHistoryEventType.Value] = Encoder.encodeEnumeration(RHistoryEventType)
+  implicit val dec: Decoder[RHistoryEventType.Value] = Decoder.decodeEnumeration(RHistoryEventType)
 }
 
 case class RHistoryEvent(

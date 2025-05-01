@@ -1,6 +1,7 @@
 package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
+import integtester.IntegTester;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -52,11 +53,11 @@ public class IntegrationTesterPage extends AbstractPage<IntegrationTesterPage> {
     this.shareId = shareId;
     this.secret = secret;
     this.signonUrl = context.getBaseUrl() + "signon.do";
-    this.testerUrl = getUrl(context);
+    this.testerUrl = getUrl();
   }
 
-  public static String getUrl(PageContext context) {
-    return context.getTestConfig().getIntegTesterUrl();
+  public static String getUrl() {
+    return IntegTester.integTesterUrl();
   }
 
   @Override

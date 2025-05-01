@@ -101,7 +101,7 @@ const ModifyKeyResourceDialog = ({
   >([]);
   // List of hierarchies that already have the provided key resource.
   const [hierarchyIdsWithKeyResource, setHierarchyIdsWithKeyResource] =
-    useState<String[]>([]);
+    useState<string[]>([]);
 
   useEffect(() => {
     const getHierarchiesTask = pipe(

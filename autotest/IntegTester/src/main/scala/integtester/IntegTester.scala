@@ -2,7 +2,9 @@
   */
 package integtester
 
-import cats.effect.{Blocker, ExitCode, IO, IOApp}
+import cats.effect.kernel.Deferred
+import cats.effect.unsafe.implicits.global
+import cats.effect.{ExitCode, IO, IOApp}
 import integtester.oauthredirector.OAuthRedirector
 import integtester.oidc.OidcIntegration
 import integtester.testprovider.TestingCloudProvider
@@ -10,13 +12,12 @@ import io.circe.syntax._
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers._
-import org.http4s.server.blaze.BlazeBuilder
-import org.http4s.server.staticcontent._
+import org.http4s.server.Router
+import org.http4s.blaze.server.BlazeServerBuilder
+import org.http4s.server.staticcontent.ResourceServiceBuilder
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.slf4j.LoggerFactory
-
-import scala.concurrent.ExecutionContext
 
 object IntegTester extends IOApp with Http4sDsl[IO] {
 
@@ -33,7 +34,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     request.decode[UrlForm] { form =>
       val formJson = form.values.view.mapValues(_.toVector) ++ request.uri.query.multiParams ++ Seq(
         "authenticated" ->
-          Seq(request.headers.get(Authorization).isDefined.toString)
+          Seq(request.headers.get[Authorization].isDefined.toString)
       )
 
       val doc = viewItemDocument.clone()
@@ -114,42 +115,63 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
     case request @ (GET | POST) -> Root / "oauthredirector" =>
       OAuthRedirector.oauthRedirector(request)
+    case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }
 
-  def stream(args: List[String]) =
-    BlazeBuilder[IO]
+  def buildServer(args: List[String]) = {
+    val httpApp: HttpApp[IO] = Router(
+      "/"          -> ResourceServiceBuilder[IO](basePath = "/www").toRoutes,
+      "/"          -> appService,
+      "/provider/" -> new TestingCloudProvider().oauthService,
+      "/oidc/"     -> oidcService
+    ).orNotFound
+
+    BlazeServerBuilder[IO]
       .bindHttp(8083, "0.0.0.0")
-      .mountService(
-        resourceService[IO](
-          ResourceService.Config("/www", Blocker.liftExecutionContext(ExecutionContext.global))
-        ),
-        "/"
-      )
-      .mountService(appService, "/")
-      .mountService(new TestingCloudProvider().oauthService, "/provider/")
-      .mountService(oidcService, "/oidc/")
-      .serve
-
-  lazy val embeddedRunning: Boolean = {
-    stream(List.empty).compile.drain.unsafeRunAsync(_ => ())
-    true
+      .withHttpApp(httpApp)
   }
 
-  def integTesterUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/index.html"
-  }
+  def integTesterUrl: String = "http://localhost:8083/index.html"
 
-  def echoServerUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/echo"
-  }
+  def echoServerUrl: String = "http://localhost:8083/echo"
 
-  def providerRegistrationUrl: String = {
-    embeddedRunning
-    "http://localhost:8083/provider.html"
-  }
+  def providerRegistrationUrl: String = "http://localhost:8083/provider.html"
 
+  /** Starts the HTTP server and keeps it running until the JVM is terminated. The stream does not
+    * emit any values and runs indefinitely.
+    */
   override def run(args: List[String]): IO[ExitCode] =
-    stream(args).compile.drain.map(_ => ExitCode.Success)
+    buildServer(args).serve.compile.drain.as(ExitCode.Success)
+
+  /** Starts the HTTP server in the background and returns a function to stop it.
+    *
+    * This method is intended for use in test environments where the server needs to be started
+    * before running tests and shut down afterward.
+    *
+    * A `Deferred` signal is used to ensure the server is started before the test execution
+    * continues. The returned function can be called to shut down the server.
+    *
+    * @return
+    *   a `() => Unit` function that, when invoked, stops the running server
+    */
+  def start(): () => Unit = {
+    // Primitive used to indicate if the server has been started.
+    val started: Deferred[IO, Unit] = Deferred.unsafe[IO, Unit]
+
+    def startServer =
+      for {
+        server <- buildServer(List.empty).resource
+          .evalTap(_ => started.complete(())) // Signal once server is started
+          .useForever // Creates a long-running IO[Unit] that never completes
+          .start      // Runs the IO which returns a Fibre that represents the running computation.
+        _ <- started.get // Wait until a signal is received
+      } yield server
+
+    // Unsafe run the server eventually.
+    val server = startServer.unsafeRunSync()
+
+    // Function to stop the server
+    val stopServer = () => server.cancel.unsafeRunSync()
+    stopServer
+  }
 }

@@ -80,7 +80,7 @@ interface ThemeColors {
   secondaryText: string;
 }
 
-export interface ThemePageProps extends TemplateUpdateProps {}
+export type ThemePageProps = TemplateUpdateProps;
 
 interface LogoSettings {
   logoURL: string;

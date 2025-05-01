@@ -30,7 +30,7 @@ package object testprovider {
 
   object RProviderControlDefinition {
     implicit val typeEnc: Encoder[RCloudControlConfigType.Value] =
-      Encoder.enumEncoder(RCloudControlConfigType)
+      Encoder.encodeEnumeration(RCloudControlConfigType)
     implicit val ccoEnc: Encoder.AsObject[RCloudConfigOption] = deriveEncoder[RCloudConfigOption]
     implicit val enc: Encoder.AsObject[RCloudControlConfig]   = deriveEncoder[RCloudControlConfig]
     implicit val encodeControls: Encoder.AsObject[RProviderControlDefinition] =

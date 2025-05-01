@@ -217,7 +217,7 @@ export const getACLExpressionById = (
         O.chainFirstEitherK(
           E.fromPredicate(
             (a) => A.size(a) <= 1,
-            (error) =>
+            (_) =>
               console.warn(`Find more than one ACLExpression with ID ${id}`),
           ),
         ),
@@ -484,7 +484,7 @@ export const parse = (
    * and the `previousExpressions` are updated to drop those which have been used with result appended to the end.
    */
   const handleKnownExpression = (
-    { result, previousExpressions }: AclExpressionBuildingState,
+    { previousExpressions }: AclExpressionBuildingState,
     currentExpression: ACLExpression,
   ): AclExpressionBuildingState =>
     pipe(

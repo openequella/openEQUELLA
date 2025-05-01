@@ -801,7 +801,6 @@ describe("<SearchPage/>", () => {
 
       expect(mockSearch).toHaveBeenLastCalledWith({
         ...defaultSearchPageOptions,
-        // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
         mimeTypes: filters.flatMap((f) => f.mimeTypes),
         mimeTypeFilters: filters,
       });

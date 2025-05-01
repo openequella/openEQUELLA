@@ -275,7 +275,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   const [showGroupFilterSearch, setShowGroupFilterSearch] = useState(false);
 
   const [hasSearched, setHasSearched] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<String>();
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const { helpTitle, helpDesc, queryFieldLabel, failedToFindMessage } = strings;

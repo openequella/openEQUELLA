@@ -36,7 +36,7 @@ public class FavouriteApiTest extends AbstractRestApiTest {
     method.setRequestEntity(new StringRequestEntity(body.toString(), "application/json", "UTF-8"));
     assertEquals(HttpStatus.SC_CREATED, makeClientRequest(method));
 
-    JsonNode response = mapper.readTree(method.getResponseBody());
+    JsonNode response = mapper.readTree(method.getResponseBodyAsStream());
     ObjectReader stringArrayReader = mapper.readerFor(new TypeReference<String[]>() {});
     String[] keywords = stringArrayReader.readValue((JsonNode) response.withArray("keywords"));
 
@@ -67,7 +67,7 @@ public class FavouriteApiTest extends AbstractRestApiTest {
     method.setRequestEntity(new StringRequestEntity(body.toString(), "application/json", "UTF-8"));
 
     assertEquals(HttpStatus.SC_CREATED, makeClientRequest(method));
-    JsonNode response = mapper.readTree(method.getResponseBody());
+    JsonNode response = mapper.readTree(method.getResponseBodyAsStream());
     assertEquals(searchName, response.get("name").asText());
     assertEquals(searchPath, response.get("url").asText());
   }
