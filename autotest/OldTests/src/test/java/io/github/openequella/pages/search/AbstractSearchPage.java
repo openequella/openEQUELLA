@@ -183,10 +183,8 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
-    startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
-    endTextField.sendKeys(end);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-start-label", start);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-end-label", end);
   }
 
   /**
@@ -417,5 +415,16 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   private void selectFromButtonGroup(WebElement buttonGroup, String buttonText) {
     WebElement button = buttonGroup.findElement(By.xpath(".//button[text()='" + buttonText + "']"));
     button.click();
+  }
+
+  // Since MUI 6, the TextField of Date picker contains 3 parts for year, month and day.
+  // To have a valid value, user must start from the first part. A normal Selenium click cannot
+  // guarantee that, so we have to use Actions to move the mouse to an offset of the input.
+  private void setDatePickerValue(WebElement selector, String label, String value) {
+    WebElement yearSpan =
+        selector.findElement(
+            By.xpath("//div[@aria-labelledby='" + label + "']//span[@aria-label='Year']"));
+    yearSpan.click();
+    yearSpan.sendKeys(value);
   }
 }

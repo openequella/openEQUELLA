@@ -359,12 +359,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
      */
     const filterNotice = (): JSX.Element => (
       <Grid key="filterNotice" container spacing={1}>
-        <Grid item>
+        <Grid>
           <Tooltip title={filterDetails()}>
             <InfoIcon fontSize="small" />
           </Tooltip>
         </Grid>
-        <Grid item>
+        <Grid>
           <Typography variant="caption">{filterActiveNotice}</Typography>
         </Grid>
       </Grid>
@@ -418,9 +418,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
       : groupDetailsNoEdit();
 
     return groupFilterElements ? (
-      <Grid item style={{ padding: "15px" }}>
-        {groupFilterElements}
-      </Grid>
+      <Grid style={{ padding: "15px" }}>{groupFilterElements}</Grid>
     ) : undefined;
   };
 
@@ -478,7 +476,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   const queryBar = (
     <Grid id={genId("QueryBar")} container spacing={1}>
-      <Grid item style={{ flexGrow: 1 }}>
+      <Grid style={{ flexGrow: 1 }}>
         <TextField
           label={queryFieldLabel}
           value={query}
@@ -606,7 +604,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   const spinner = (
     <Grid container justifyContent="center">
-      <Grid item>
+      <Grid>
         <CircularProgress />
       </Grid>
     </Grid>
@@ -646,7 +644,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   ) : (
     <Grid id={genId()} container direction="column" spacing={1}>
       {showHelpText && (
-        <Grid item>
+        <Grid>
           <Typography variant="h6" gutterBottom>
             {helpTitle}
           </Typography>
@@ -654,15 +652,15 @@ const BaseSearch = <T extends BaseSecurityEntity>({
         </Grid>
       )}
 
-      <Grid item>{queryBar}</Grid>
+      <Grid>{queryBar}</Grid>
       {groupFilterContent()}
-      <Grid item>{showSpinner ? spinner : itemList()}</Grid>
-      <Grid container item direction="row">
-        <Grid container item xs={6}>
+      <Grid>{showSpinner ? spinner : itemList()}</Grid>
+      <Grid container direction="row">
+        <Grid container size={6}>
           {isItemFound && selectAllButton()}
           {isItemFound && clearAllButton()}
         </Grid>
-        <Grid container item xs={6} direction="row" justifyContent="flex-end">
+        <Grid container size={6} direction="row" justifyContent="flex-end">
           {selectButtonElement()}
           {cancelButton()}
         </Grid>

@@ -15,14 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createTheme } from "@mui/material/styles";
+import { createTheme, styled } from "@mui/material/styles";
 import { Grid, IconButton, TablePagination } from "@mui/material";
 import FirstPage from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPage from "@mui/icons-material/LastPage";
+import type { TablePaginationProps } from "@mui/material/TablePagination/TablePagination";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
+
+const StyledTablePagination = styled(TablePagination)<TablePaginationProps>({
+  "& .MuiTablePagination-toolbar": {
+    display: "flex",
+    justifyContent: "center",
+  },
+  "& .MuiTablePagination-spacer": {
+    display: "none",
+  },
+});
 
 export interface SearchPaginationProps {
   count: number;
@@ -42,7 +53,7 @@ export const SearchPagination = ({
   const paginationStrings = languageStrings.searchpage.pagination;
 
   return (
-    <TablePagination
+    <StyledTablePagination
       component="div"
       count={count}
       page={currentPage}
@@ -77,7 +88,7 @@ export const SearchPagination = ({
         wrap="nowrap"
         style={{ marginLeft: theme.spacing(2) }}
       >
-        <Grid item>
+        <Grid>
           <IconButton
             onClick={() => onPageChange(0)}
             disabled={isFirstPage}
@@ -88,7 +99,7 @@ export const SearchPagination = ({
             <FirstPage />
           </IconButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <IconButton
             onClick={() => onPageChange(currentPage - 1)}
             aria-label={paginationStrings.previousPageButton}
@@ -99,7 +110,7 @@ export const SearchPagination = ({
             <KeyboardArrowLeft />
           </IconButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <IconButton
             onClick={() => onPageChange(currentPage + 1)}
             aria-label={paginationStrings.nextPageButton}
@@ -110,7 +121,7 @@ export const SearchPagination = ({
             <KeyboardArrowRight />
           </IconButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <IconButton
             onClick={() => onPageChange(lastPage)}
             aria-label={paginationStrings.lastPageButton}

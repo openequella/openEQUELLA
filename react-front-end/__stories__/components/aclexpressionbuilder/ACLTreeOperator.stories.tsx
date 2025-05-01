@@ -32,6 +32,6 @@ export const Basic: StoryFn<ACLTreeOperatorProps> = (args) => (
 );
 
 Basic.args = {
-  nodeId: "example",
+  itemId: "example",
   operator: "OR",
 };

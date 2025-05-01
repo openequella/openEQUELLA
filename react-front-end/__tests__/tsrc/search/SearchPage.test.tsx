@@ -69,7 +69,6 @@ import {
   queryStatusSelector,
   renderSearchPage,
   SORTORDER_SELECT_ID,
-  waitForSearchCompleted,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, so we need a longer timeout.
@@ -776,9 +775,8 @@ describe("<SearchPage/>", () => {
       await _selectUser(page.container, testUser.username);
 
       // Now clear the selection and wait until the search is completed.
-      clearSelection();
+      await clearSelection();
       await waitFor(() => confirmSelectedUserCleared(testUser.username));
-      await waitForSearchCompleted();
 
       expect(SearchModule.searchItems).toHaveBeenCalledWith(
         defaultSearchPageOptions,

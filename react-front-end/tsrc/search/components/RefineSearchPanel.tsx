@@ -146,11 +146,12 @@ export const RefineSearchPanel = ({
           id={`RefineSearchPanel-${control.idSuffix}`}
           container
           direction="column"
+          sx={{ flex: 1 }}
         >
-          <Grid item>
+          <Grid>
             <RefinePanelControlHeading title={control.title} />
           </Grid>
-          <Grid item>{control.component}</Grid>
+          <Grid>{control.component}</Grid>
         </Grid>
       </ListItem>
     );
@@ -159,10 +160,10 @@ export const RefineSearchPanel = ({
     <Card>
       <CardContent>
         <Grid container alignItems="center">
-          <Grid item xs={11}>
+          <Grid size={11}>
             <Typography variant="h5">{title}</Typography>
           </Grid>
-          <Grid item xs={1}>
+          <Grid size={1}>
             {isMdDown && (
               <TooltipIconButton
                 title={languageStrings.common.action.close}

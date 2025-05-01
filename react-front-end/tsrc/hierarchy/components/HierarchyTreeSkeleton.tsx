@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { TreeView } from "@mui/x-tree-view/TreeView";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
@@ -27,12 +27,12 @@ const HierarchyTreeSkeleton = ({
 }: {
   skeletonNum?: number;
 }) => (
-  <TreeView>
+  <SimpleTreeView>
     {pipe(
       NEA.range(1, skeletonNum),
       NEA.map((index) => <HierarchyTopicSkeleton key={index} />),
     )}
-  </TreeView>
+  </SimpleTreeView>
 );
 
 export default HierarchyTreeSkeleton;

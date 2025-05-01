@@ -162,7 +162,7 @@ export const ShuffleBox = ({
 
   return (
     <StyledGrid id={id} container spacing={2}>
-      <Grid item xs>
+      <Grid size="grow">
         <Paper
           className={classes.checkboxListPaper}
           variant="outlined"
@@ -176,7 +176,7 @@ export const ShuffleBox = ({
           />
         </Paper>
       </Grid>
-      <Grid item xs={1}>
+      <Grid size={1}>
         <Grid container direction="column" alignItems="center">
           {buttons.map(([toolTip, handler, icon], idx) => (
             <TooltipIconButton
@@ -189,7 +189,7 @@ export const ShuffleBox = ({
           ))}
         </Grid>
       </Grid>
-      <Grid item xs>
+      <Grid size="grow">
         <Paper
           className={classes.checkboxListPaper}
           variant="outlined"

@@ -124,10 +124,10 @@ const ACLHomePanel = ({
   return (
     <FormControl fullWidth component="fieldset">
       <Grid spacing={4} container direction="row" alignItems="center">
-        <Grid item>
+        <Grid>
           <FormLabel>{typeLabel}</FormLabel>
         </Grid>
-        <Grid item>
+        <Grid>
           <RadioGroup
             row
             name="searchFilterType"

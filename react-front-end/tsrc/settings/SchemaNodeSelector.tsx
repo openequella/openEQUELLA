@@ -17,7 +17,7 @@
  */
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import { TreeView } from "@mui/x-tree-view/TreeView";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
@@ -72,7 +72,7 @@ export const renderTree = (nodes: SchemaNode) => {
   return (
     <TreeItem
       key={nodes.name}
-      nodeId={pathForNode(nodes, false)}
+      itemId={pathForNode(nodes, false)}
       label={nodes.name}
     >
       {Array.isArray(nodes.children)
@@ -110,7 +110,7 @@ export default function SchemaNodeSelector({
     <Root>
       {expandControls && (
         <Grid container direction="row" wrap="nowrap" justifyContent="flex-end">
-          <Grid item>
+          <Grid>
             <Button
               className={classes.button}
               size="small"
@@ -122,7 +122,7 @@ export default function SchemaNodeSelector({
               {strings.expandAll}
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button
               className={classes.button}
               size="small"
@@ -133,25 +133,19 @@ export default function SchemaNodeSelector({
           </Grid>
         </Grid>
       )}
-      <TreeView
+      <SimpleTreeView
         className={classes.treeView}
-        defaultExpandIcon={<Add />}
-        defaultCollapseIcon={<Remove />}
-        selected={selectedNode}
-        expanded={expanded}
-        onNodeToggle={(
-          event: React.SyntheticEvent<Element, Event>,
-          paths: string[],
-        ) => {
-          setExpanded(paths);
-        }}
-        onNodeSelect={(event: React.ChangeEvent<{}>, nodePath: string) => {
+        slots={{ expandIcon: Add, collapseIcon: Remove }}
+        selectedItems={selectedNode}
+        expandedItems={expanded}
+        onExpandedItemsChange={(_, paths) => setExpanded(paths)}
+        onItemSelectionToggle={(_, nodePath) => {
           setSelected(nodePath);
           setSelectedNode(nodePath);
         }}
       >
         {renderedTree}
-      </TreeView>
+      </SimpleTreeView>
     </Root>
   );
 }

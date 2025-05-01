@@ -294,9 +294,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
   const dot = () => <span className={classes.infix}>.</span>;
 
   const wrapGrid = (index: number, children: JSX.Element) => (
-    <Grid item key={index}>
-      {children}
-    </Grid>
+    <Grid key={index}>{children}</Grid>
   );
 
   return (
@@ -306,10 +304,8 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
         A.intersperse(dot()),
         A.mapWithIndex(wrapGrid),
       )}
-      <Grid item className={classes.infix}>
-        /
-      </Grid>
-      <Grid item>
+      <Grid className={classes.infix}>/</Grid>
+      <Grid>
         <TextField
           size="small"
           id="netmask-input"

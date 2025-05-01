@@ -265,9 +265,14 @@ const ACLExpressionBuilder = ({
   } = classes;
 
   return (
-    <StyledGrid spacing={2} container justifyContent="flex-start">
+    <StyledGrid
+      spacing={2}
+      container
+      justifyContent="flex-start"
+      direction="column"
+    >
       <TabContext value={activeTabValue}>
-        <Grid item>
+        <Grid>
           <AppBar position="static" color="default" className={appBarClass}>
             <Tabs value={activeTabValue} onChange={handleTabChanged}>
               <Tab label={homeTabLabel} value={homeTabLabel} />
@@ -276,7 +281,7 @@ const ACLExpressionBuilder = ({
           </AppBar>
         </Grid>
         <Grid container className={mainContentClass}>
-          <Grid item xs={6} className={panelWrapperClass}>
+          <Grid size={6} className={panelWrapperClass}>
             <Paper className={paperClass}>
               <TabPanel className={tabPanelClass} value={homeTabLabel}>
                 <ACLHomePanel
@@ -296,7 +301,7 @@ const ACLExpressionBuilder = ({
               </TabPanel>
             </Paper>
           </Grid>
-          <Grid item xs={6} className={panelWrapperClass}>
+          <Grid size={6} className={panelWrapperClass}>
             <Paper className={paperClass}>
               <ACLExpressionTree
                 aclExpression={currentACLExpression}
@@ -308,7 +313,7 @@ const ACLExpressionBuilder = ({
             </Paper>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
+        <Grid>
           <Button
             variant="contained"
             color="primary"

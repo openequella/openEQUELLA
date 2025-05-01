@@ -229,12 +229,12 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
   const LogoPicker = () => {
     return (
       <Grid container spacing={2} direction="row" justifyContent="flex-end">
-        <Grid item>
+        <Grid>
           <Typography className={classes.fileName} color="textSecondary">
             {logoSettings.fileName ?? ""}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <input
             accept="image/*"
             color="textSecondary"
@@ -249,7 +249,7 @@ export const ThemePage = ({ updateTemplate }: ThemePageProps) => {
             </Button>
           </label>
         </Grid>
-        <Grid item>
+        <Grid>
           <Button variant="outlined" onClick={resetLogo}>
             {commonString.action.resettodefault}
           </Button>
