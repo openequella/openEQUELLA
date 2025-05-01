@@ -978,13 +978,13 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @return
    */
   private <T extends PageObject> T clickAscInput(String text, WaitingPageObject<T> returnTo) {
-    getAscInput(text).click();
+    forceButtonClickWithJS(getAscInput(text));
     return returnTo.get();
   }
 
   // same as above but for <button> instead of <input>
   private <T extends PageObject> T clickAscButton(String text, WaitingPageObject<T> returnTo) {
-    getAscButton(text).click();
+    forceButtonClickWithJS(getAscButton(text));
     return returnTo.get();
   }
 
@@ -1053,9 +1053,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
   }
 
   private void ascEditbox(int ctrlNum, String suffix, String text) {
-    WebElement field = context.getDriver().findElement(By.name("c" + ctrlNum + suffix));
+    By locator = By.name("c" + ctrlNum + suffix);
     WebDriverWait wait = new WebDriverWait(context.getDriver(), Duration.ofSeconds(30));
-    wait.until(ExpectedConditions.visibilityOf(field));
+    WebElement field = wait.until(ExpectedConditions.elementToBeClickable(locator));
     field.clear();
     field.sendKeys(text);
   }

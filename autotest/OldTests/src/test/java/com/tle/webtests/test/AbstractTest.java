@@ -9,6 +9,7 @@ import com.tle.webtests.framework.Name;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.StandardDriverFactory;
 import com.tle.webtests.framework.TestConfig;
+import com.tle.webtests.framework.TestUtils;
 import com.tle.webtests.pageobject.ClassPrefixedName;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.PrefixedName;
@@ -21,10 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -295,5 +298,14 @@ public abstract class AbstractTest implements HasTestConfig {
       sb.append(RANDOM_STRING_CHARS.charAt(charIndex));
     }
     return sb.toString();
+  }
+
+  /**
+   * Force click on a button using JavaScript.
+   *
+   * @param button WebElement to be clicked.
+   */
+  public void forceButtonClickWithJS(WebElement button) {
+    TestUtils.forceButtonClickWithJS((JavascriptExecutor) context.getDriver(), button);
   }
 }
