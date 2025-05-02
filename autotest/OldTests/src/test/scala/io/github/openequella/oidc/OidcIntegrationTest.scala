@@ -10,11 +10,10 @@ import com.tle.webtests.test.AbstractSessionTest
 import integtester.IntegTester
 import integtester.oidc.OidcIntegration
 import integtester.oidc.OidcUser.TEST_USER
-import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.testng.Assert.{assertEquals, assertFalse, assertTrue}
+import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
+import org.testng.Assert.{assertEquals, assertTrue}
 import org.testng.annotations.{BeforeClass, DataProvider, Test}
 
 @TestInstitution("vanilla")
@@ -63,10 +62,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     OidcIntegration.setAuthRespCommand(errorType)
 
     logonOidc()
-    // OEQ Login page should be displayed with an error describing the failure
-    val loginPage = new LoginPage(context).get()
-    assertEquals(loginPage.getLoginErrorDetails, errorMsg)
-
+    checkErrorMessage(errorMsg)
     // Reset the command.
     OidcIntegration.setAuthRespCommand("normal")
   }
@@ -105,10 +101,7 @@ class OidcIntegrationTest extends AbstractSessionTest {
     OidcIntegration.setTokenRespCommand(errorType)
 
     logonOidc()
-
-    val loginPage = new LoginPage(context).get()
-    assertEquals(loginPage.getLoginErrorDetails, errorMsg)
-
+    checkErrorMessage(errorMsg)
     OidcIntegration.setTokenRespCommand("normal")
   }
 
@@ -146,5 +139,15 @@ class OidcIntegrationTest extends AbstractSessionTest {
   private def logonOidc(): Unit = {
     val loginPage = new LoginPage(context).load()
     loginPage.loginWithOidc()
+  }
+
+  // In test cases for checking the OIDC errors, there is test flakyness about stale elements
+  // due to the refresh of the Login page. As a result, use the static method to retrieve login
+  // errors so that we do not need to wait and get an instance of LoginPage.
+  private def checkErrorMessage(
+      expectedErrorMsg: String
+  ): Unit = {
+    val waiter = new WebDriverWait(context.getDriver, context.getTestConfig.getStandardTimeout)
+    assertEquals(LoginPage.getLoginErrorDetails(waiter), expectedErrorMsg)
   }
 }
