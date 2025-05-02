@@ -10,7 +10,7 @@
     "swagger-ui": "4.19.1"
   },
   "devDependencies": {
-    "webpack": "5.98.0",
-    "webpack-cli": "5.1.4"
+    "webpack": "5.99.7",
+    "webpack-cli": "6.0.1"
   }
 }

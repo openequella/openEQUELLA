@@ -44,7 +44,7 @@ const StyledCloudIcon = styled(CloudIcon)({
   height: 40,
 });
 
-interface CloudProviderBasicProps extends TemplateUpdateProps {}
+type CloudProviderBasicProps = TemplateUpdateProps;
 
 type CloudProviderListPageProps = CloudProviderBasicProps & AppContextProps;
 
@@ -80,7 +80,7 @@ class CloudProviderListPage extends React.Component<
   getCloudProviderList = () => {
     getCloudProviders()
       .then((result) => {
-        this.setState((prevState) => ({
+        this.setState((_) => ({
           cloudProviders: result.results,
         }));
       })

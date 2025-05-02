@@ -152,6 +152,6 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
     val method     = new GetMethod(uriBuilder.build().toString)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
-    mapper.readTree(method.getResponseBody).get("results")
+    mapper.readTree(method.getResponseBodyAsStream).get("results")
   }
 }

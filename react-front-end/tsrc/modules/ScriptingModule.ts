@@ -106,7 +106,7 @@ export const buildVisibilityScript =
     const toFunction = (s: string) =>
       pipe(
         // Yes, we know this is dangerous, but this is a key feature...
-        // eslint-disable-next-line no-new-func
+
         new Function(
           "scriptContext",
           `"use strict"; const {xml, user} = scriptContext; ${s}`,

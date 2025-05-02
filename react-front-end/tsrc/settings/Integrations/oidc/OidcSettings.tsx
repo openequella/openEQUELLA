@@ -72,7 +72,7 @@ const {
 const { edit: editLabel } = languageStrings.common.action;
 const { checkForm } = languageStrings.common.result;
 
-export interface OidcSettingsProps extends TemplateUpdateProps {}
+export type OidcSettingsProps = TemplateUpdateProps;
 
 const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const { appErrorHandler } = useContext(AppContext);

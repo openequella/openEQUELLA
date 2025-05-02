@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.externaltools.ShowExternalToolsPage;
+import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage;
 import com.tle.webtests.pageobject.settings.ActiveCachingPage;
 import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
@@ -184,6 +185,10 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   public OidcSettingsPage oidcSettingsPage() {
     return clickSetting(GROUP_INTEGRATIONS, "OpenID Connect (OIDC)", new OidcSettingsPage(context));
+  }
+
+  public OAuthSettingsPage oauthSettingsPage() {
+    return clickSetting(GROUP_INTEGRATIONS, "OAuth", new OAuthSettingsPage(context));
   }
 
   /** Enable or disable new search UI. */

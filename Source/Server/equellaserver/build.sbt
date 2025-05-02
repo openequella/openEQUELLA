@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.15"
-val TomcatVersion     = "9.0.102"
+val TomcatVersion     = "9.0.104"
 val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.8.0"
@@ -76,7 +76,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "2.5.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240514-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.12.1",
+  "com.google.code.gson"  % "gson"                        % "2.13.1",
   "com.google.guava"      % "guava"                       % "32.1.3-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
@@ -90,7 +90,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "73.2",
+  "com.ibm.icu" % "icu4j" % "77.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -98,7 +98,6 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"       % "miglayout-swing"      % "4.2",
   "org.asynchttpclient" % "async-http-client"    % "2.12.4",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
@@ -106,7 +105,7 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "6.3.0" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.10.1",
   "commons-codec"             % "commons-codec"         % "1.18.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -114,7 +113,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.4.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.18.0",
+  "commons-io"                % "commons-io"            % "2.19.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",

@@ -25,7 +25,7 @@ expect.extend({
    *
    * @param received The E.Either to validate
    */
-  toBeLeft: (received: E.Either<any, any>): jest.CustomMatcherResult =>
+  toBeLeft: (received: E.Either<unknown, unknown>): jest.CustomMatcherResult =>
     E.isLeft(received)
       ? {
           pass: true,
@@ -42,7 +42,9 @@ expect.extend({
    *
    * @param received The E.Either to validate
    */
-  toBeRight: (received: E.Either<any, any>): jest.CustomMatcherResult =>
+  toBeRight: (
+    received: E.Either<unknown, unknown>,
+  ): jest.CustomMatcherResult =>
     E.isRight(received)
       ? {
           pass: true,
@@ -58,7 +60,7 @@ expect.extend({
    *
    * @param received The O.Option to validate
    */
-  toBeNone: (received: O.Option<any>): jest.CustomMatcherResult =>
+  toBeNone: (received: O.Option<unknown>): jest.CustomMatcherResult =>
     O.isNone(received)
       ? {
           pass: true,
@@ -74,7 +76,7 @@ expect.extend({
    *
    * @param received The O.Option to validate
    */
-  toBeSome: (received: O.Option<any>): jest.CustomMatcherResult =>
+  toBeSome: (received: O.Option<unknown>): jest.CustomMatcherResult =>
     O.isSome(received)
       ? {
           pass: true,
@@ -87,6 +89,7 @@ expect.extend({
 });
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface Matchers<R> {

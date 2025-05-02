@@ -3,7 +3,7 @@ import scala.jdk.CollectionConverters._
 
 libraryDependencies += "com.opencsv" % "opencsv" % "5.10"
 libraryDependencies ++= Seq(
-  "org.testng" % "testng" % "6.14.3" % Test,
+  "org.testng" % "testng" % "7.11.0" % Test,
   // The older Log4j is required by dependency "oclc-harvester2" at runtime.
   "log4j"                    % "log4j"              % "1.2.17" % Test,
   "commons-httpclient"       % "commons-httpclient" % "3.1"    % Test,

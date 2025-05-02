@@ -32,9 +32,9 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   override type State   = SanityState
 
   override implicit val testCaseDecoder: Decoder[SanityTestProperties.Pages.Value] =
-    Decoder.enumDecoder(Pages)
+    Decoder.decodeEnumeration(Pages)
   override implicit val testCaseEncoder: Encoder[SanityTestProperties.Pages.Value] =
-    Encoder.enumEncoder(Pages)
+    Encoder.encodeEnumeration(Pages)
 
   override def initialState: SanityState = SanityState()
 

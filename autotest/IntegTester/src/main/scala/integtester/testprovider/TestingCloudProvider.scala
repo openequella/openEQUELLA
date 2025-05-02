@@ -1,24 +1,23 @@
 package integtester.testprovider
 
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-
 import cats.data.{Kleisli, OptionT}
-import cats.effect.{Blocker, ContextShift, IO}
+import cats.effect.IO
 import cats.syntax.semigroupk._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.headers.Cookie
 import org.http4s.server.AuthMiddleware
-import org.http4s.util.CaseInsensitiveString
 import scalaoauth2.provider._
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
-import scala.concurrent.{ExecutionContext, Future}
 
 case class TestUser(clientId: String)
 
-class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[IO] {
+class TestingCloudProvider extends Http4sDsl[IO] {
 
   case class OAuthTokenResponse(
       access_token: String,
@@ -81,7 +80,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
   )
 
   def headerMap(request: Request[IO]): Map[String, Seq[String]] =
-    request.headers.toList.groupBy(_.name.value).view.mapValues(_.map(_.value).toSeq).toMap
+    request.headers.headers.groupBy(_.name.toString).view.mapValues(_.map(_.value).toSeq).toMap
 
   val authUser: Kleisli[OptionT[IO, *], Request[IO], TestUser] =
     Kleisli { request =>
@@ -113,7 +112,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       }
     case request @ GET -> Root / "control.js" =>
       StaticFile
-        .fromResource[IO]("/www/control.js", Blocker.liftExecutionContext(ExecutionContext.global))
+        .fromResource[IO]("/www/control.js")
         .getOrElse(Response.notFound)
 
   }
@@ -123,7 +122,7 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
 
   case class ServiceResponse(authenticatedAs: TestUser, payload: String, queryString: String)
 
-  val protectedService = AuthedService[TestUser, IO] {
+  val protectedService: AuthedRoutes[TestUser, IO] = AuthedRoutes.of {
     case GET -> Root / "controls" as user =>
       Ok(
         Map(
@@ -152,11 +151,12 @@ class TestingCloudProvider(implicit val cs: ContextShift[IO]) extends Http4sDsl[
       createResponse(false, authReq.req, user)
   }
   def createResponse(decode: Boolean, req: Request[IO], user: TestUser): IO[Response[IO]] = {
-    val cookies = req.headers.get(CaseInsensitiveString("cookie"))
+    val cookies = req.headers.get[Cookie]
 
     // If header includes cookies then check if JSESSIONID exists; if yes then respond with a bad request.
     if (cookies.isDefined) {
-      val jSessionId = cookies.get.value.split(";").exists(value => value.startsWith("JSESSIONID"))
+      val jSessionId =
+        cookies.get.values.exists(value => value.renderString.startsWith("JSESSIONID"))
       if (jSessionId) {
         return BadRequest("The unexpected cookie name (JSESSIONID) was found.")
       }

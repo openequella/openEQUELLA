@@ -28,7 +28,7 @@ export default {
   component: WizardRawHtml,
 } as Meta<WizardRawHtmlProps>;
 
-export const Standard: StoryFn<WizardRawHtmlProps> = (args) => (
+export const Standard: StoryFn<WizardRawHtmlProps> = (_) => (
   <WizardRawHtml
     id="wizard-rawhtml-story"
     description={mockRawHtmlContent}

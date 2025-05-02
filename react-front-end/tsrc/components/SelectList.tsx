@@ -68,7 +68,7 @@ export const SelectList = ({
               <ListItemSecondaryAction>
                 <TooltipIconButton
                   title={selectLabel}
-                  onClick={(event) => {
+                  onClick={(_) => {
                     onSelect(key);
                   }}
                 >

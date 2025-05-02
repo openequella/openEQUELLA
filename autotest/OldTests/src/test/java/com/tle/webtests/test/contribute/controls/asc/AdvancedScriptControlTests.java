@@ -9,7 +9,6 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.ErrorPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.WaitingPageObject;
@@ -29,7 +28,6 @@ import com.tle.webtests.pageobject.wizard.controls.universal.FileUniversalContro
 import com.tle.webtests.pageobject.wizard.controls.universal.PackageAttachmentEditPage;
 import com.tle.webtests.test.AbstractCleanupTest;
 import com.tle.webtests.test.files.Attachments;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -414,38 +412,6 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
 
     assertEquals("Save Script Worked", xml.nodeValue("/Elements/Element_1"));
     assertEquals("New Version Script Worked", xml.nodeValue("/Elements/Element_2"));
-  }
-
-  /**
-   * Can use POST for information passing
-   * http://dtec.equella.com/DTEC/test/editTest.aspx?testId=14515
-   *
-   * @throws MalformedURLException
-   */
-  @Test(enabled = false)
-  public void testRedirectionServlet() throws MalformedURLException {
-    String itemName = context.getFullName("dtec14515");
-    WizardPageTab wizard =
-        new ContributePage(context)
-            .load()
-            .openWizard("dtec14515 Can use POST for information passing");
-    wizard.editbox(1, itemName);
-
-    String echoServerUrl = context.getTestConfig().getEchoServerUrl() + "/index.do";
-    context.getDriver().findElement(By.id("submitto")).sendKeys(echoServerUrl);
-    final String toEcho = "Echo This!";
-    context.getDriver().findElement(By.id("query")).sendKeys(toEcho);
-
-    clickAscInput("Do it", wizard);
-
-    wizard
-        .getWaiter()
-        .until(
-            ExpectedConditions.presenceOfElementLocated(
-                By.xpath(
-                    "//div[@id='results' and text()=" + AbstractPage.quoteXPath(toEcho) + "]")));
-
-    wizard.save().publish();
   }
 
   /**
@@ -1012,13 +978,13 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
    * @return
    */
   private <T extends PageObject> T clickAscInput(String text, WaitingPageObject<T> returnTo) {
-    getAscInput(text).click();
+    forceButtonClickWithJS(getAscInput(text));
     return returnTo.get();
   }
 
   // same as above but for <button> instead of <input>
   private <T extends PageObject> T clickAscButton(String text, WaitingPageObject<T> returnTo) {
-    getAscButton(text).click();
+    forceButtonClickWithJS(getAscButton(text));
     return returnTo.get();
   }
 
@@ -1087,9 +1053,9 @@ public class AdvancedScriptControlTests extends AbstractCleanupTest {
   }
 
   private void ascEditbox(int ctrlNum, String suffix, String text) {
-    WebElement field = context.getDriver().findElement(By.name("c" + ctrlNum + suffix));
+    By locator = By.name("c" + ctrlNum + suffix);
     WebDriverWait wait = new WebDriverWait(context.getDriver(), Duration.ofSeconds(30));
-    wait.until(ExpectedConditions.visibilityOf(field));
+    WebElement field = wait.until(ExpectedConditions.elementToBeClickable(locator));
     field.clear();
     field.sendKeys(text);
   }

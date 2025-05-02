@@ -42,7 +42,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     val respCode = makeClientRequest(request)
     assertEquals(HttpStatus.SC_OK, respCode)
 
-    mapper.readTree(request.getResponseBody())
+    mapper.readTree(request.getResponseBodyAsStream())
   }
 
   @Test(description = "Create a new OIDC configuration")
@@ -98,7 +98,7 @@ class OidcConfigurationApiTest extends AbstractRestApiTest {
     val respCode = makeClientRequestWithEntity(request, body)
     assertEquals(HttpStatus.SC_BAD_REQUEST, respCode)
 
-    val result = mapper.readTree(request.getResponseBody())
+    val result = mapper.readTree(request.getResponseBodyAsStream())
     val errors = result.get("errors").findValue("message").asText()
     assertEquals(
       "Missing value for required field: Authorisation Code flow Client ID," +
