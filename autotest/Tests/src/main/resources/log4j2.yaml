@@ -1,33 +1,29 @@
 Configuration:
   status: info
 
-  appenders:
+  Appenders:
     Console:
       name: Console
       target: SYSTEM_OUT
       PatternLayout:
-        Pattern: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%c{3}] %m%n"
+        pattern: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%c{3}] %m%n"
     File:
       name: JsErrorAppender
-      fileName: target/testng/js_errors.log
+      fileName: "target/testng/js_errors.log"
       append: true
       PatternLayout:
         pattern: "%d{yyyy-MM-dd HH:mm:ss} %-5p [%c{3}] %m%n"
-      filters:
-        - MarkerFilter:
-            marker: JS_ERROR
-            onMatch: ACCEPT
-            onMismatch: DENY
-        - ThresholdFilter:
-            level: WARN
-            onMatch: ACCEPT
-            onMismatch: DENY
-  loggers:
-    - Root:
-        level: info
-        appenderRef:
-          - ref: Console
-          - ref: JsErrorAppender
-    - logger:
-        name: testng.internal.Utils
-        level: off
+      Filters:
+        MarkerFilter:
+          marker: JS_ERROR
+          onMatch: ACCEPT
+          onMismatch: DENY
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console
+        - ref: JsErrorAppender
+    Logger:
+      - name: org.testng.internal.Utils
+        level: "off"
