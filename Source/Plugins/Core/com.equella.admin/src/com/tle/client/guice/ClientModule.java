@@ -27,11 +27,14 @@ import com.tle.admin.service.AdminKeepAliveService;
 import com.tle.admin.service.AdminKeepAliveServiceImpl;
 import com.tle.admin.service.AdminLoginService;
 import com.tle.admin.service.AdminLoginServiceImpl;
+import com.tle.admin.service.AdminSchemaService;
+import com.tle.admin.service.AdminSchemaServiceImpl;
 import com.tle.admin.service.AdminTLEGroupService;
 import com.tle.admin.service.AdminTLEGroupServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
 import com.tle.common.applet.client.ClientService;
+import com.tle.core.remoting.RemoteSchemaService;
 import io.github.openequella.graphql.ClientConfiguration;
 import java.net.URL;
 import javax.inject.Singleton;
@@ -55,6 +58,7 @@ public class ClientModule extends AbstractModule {
 
     bind(AdminKeepAliveService.class).to(AdminKeepAliveServiceImpl.class);
     bind(AdminLoginService.class).to(AdminLoginServiceImpl.class);
+    bind(AdminSchemaService.class).to(AdminSchemaServiceImpl.class);
     bind(AdminTLEGroupService.class).to(AdminTLEGroupServiceImpl.class);
     bind(AdminTLEUserService.class).to(AdminTLEUserServiceImpl.class);
   }
@@ -76,5 +80,17 @@ public class ClientModule extends AbstractModule {
     RestConfigurationHelper.loadSystemCookies(restConfiguration);
 
     return restConfiguration;
+  }
+
+  /**
+   * A temporary provider while we are transitioning to the new GraphQL library. Once
+   * AdminSchemaService no longer delegates to RemoteSchemaService, this provider can be removed.
+   * (At the same time, RemoteSchemaService can be removed from the codebase.)
+   */
+  @Provides
+  @Singleton
+  RemoteSchemaService provideRemoteSchemaService() {
+    // Make sure to use getInvokerService as getService will also end up calling this method.
+    return clientService.getInvokerService(RemoteSchemaService.class);
   }
 }
