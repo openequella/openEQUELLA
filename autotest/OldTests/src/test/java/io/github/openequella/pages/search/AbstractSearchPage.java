@@ -417,13 +417,20 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     button.click();
   }
 
-  // Since MUI 6, the TextField of Date picker contains 3 parts for year, month and day.
-  // To have a valid value, user must start from the first part. A normal Selenium click cannot
-  // guarantee that, so we have to use Actions to move the mouse to an offset of the input.
-  private void setDatePickerValue(WebElement selector, String label, String value) {
+  // Starting with MUI v7, the Date Picker's TextField is no longer a single input element.
+  // Instead, it is composed of one or more editable <span> elements, depending on the date format.
+  // To input a value, the first span must be clicked before sending any keys.
+  // Once the first part of the date has been set, the remaining keys will automatically populate
+  // the subsequent span elements in sequence.
+  private void setDatePickerValue(WebElement parent, String label, String value) {
+    // Use '@data-sectionindex='0' to locate the first section, and then use '@inputmode='numeric'
+    // to locate the editable span.
     WebElement yearSpan =
-        selector.findElement(
-            By.xpath("//div[@aria-labelledby='" + label + "']//span[@aria-label='Year']"));
+        parent.findElement(
+            By.xpath(
+                "//div[@aria-labelledby='"
+                    + label
+                    + "']//span[@data-sectionindex='0']//span[@inputmode='numeric']"));
     yearSpan.click();
     yearSpan.sendKeys(value);
   }
