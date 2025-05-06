@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.web.remoting.graphql.schema
 
-import com.tle.beans.entity.BaseEntityLabel;
-import com.tle.beans.entity.Schema;
-import java.util.List;
-
-public interface RemoteSchemaService extends RemoteAbstractEntityService<Schema> {
-  List<BaseEntityLabel> getSchemaUses(long id);
-
-  List<String> getImportSchemaTypes(long id);
-}
+/** This package holds all the custom types for the GraphQL API.
+  */
+package object types {}
