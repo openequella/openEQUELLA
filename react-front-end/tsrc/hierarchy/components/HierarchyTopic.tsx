@@ -81,7 +81,7 @@ export const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
   [`& .${treeItemClasses.content} .${treeItemClasses.iconContainer}`]: {
     width: 0,
   },
-  [`& .${treeItemClasses.group}`]: {
+  [`& .${treeItemClasses.groupTransition}`]: {
     marginLeft: theme.spacing(3),
     paddingLeft: theme.spacing(4),
   },
@@ -210,7 +210,7 @@ const HierarchyTopic = ({
           </>
         }
         // Use `div` instead of default tag `p` to avoid HTML semantic error.
-        secondaryTypographyProps={{ component: "div" }}
+        slotProps={{ secondary: { component: "div" } }}
         // The short description field support raw html syntax.
         secondary={
           !onlyShowTitle &&
@@ -229,7 +229,7 @@ const HierarchyTopic = ({
   return (
     <StyledTreeItem
       label={itemLabel()}
-      nodeId={compoundUuid}
+      itemId={compoundUuid}
       onClick={handleExpandTopic}
     >
       <Collapse in={isExpanded} timeout="auto" unmountOnExit>

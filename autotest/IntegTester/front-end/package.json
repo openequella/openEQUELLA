@@ -3,13 +3,13 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf node_modules/ .cache",
-    "build": "parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
-    "dev": "parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
+    "build": "parcel build --no-autoinstall --dist-dir=target/www www/*.html www/*.tsx",
+    "dev": "parcel watch --no-autoinstall --dist-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
-    "@mui/material": "5.17.1",
+    "@mui/material": "7.0.2",
     "axios": "1.9.0",
     "babel-polyfill": "6.26.0",
     "jss": "10.10.0",
@@ -24,7 +24,7 @@
     "@types/react-dom": "18.3.6",
     "@types/md5": "2.3.5",
     "mkdirp": "3.0.1",
-    "parcel-bundler": "1.12.5",
+    "parcel": "2.14.4",
     "typescript": "5.8.3"
   }
 }

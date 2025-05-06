@@ -459,15 +459,15 @@ export default function SearchResult({
       data-itemversion={version}
     >
       {isItemLive && inStructured && (
-        <Grid item>
+        <Grid>
           <IconButton size="large">
             <DragIndicatorIcon />
           </IconButton>
         </Grid>
       )}
-      <Grid item>{itemLink()}</Grid>
+      <Grid>{itemLink()}</Grid>
       {isItemLive && (
-        <Grid item>
+        <Grid>
           <ResourceSelector
             labelText={selectResourceStrings.summaryPage}
             isStopPropagation
