@@ -18,6 +18,7 @@
 
 package com.tle.web.remoting.graphql.schema.types
 
+import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.entity.BaseEntityLabel
 
 /** A reference to a base entity, which is used in various places in the GraphQL API. Includes the
@@ -35,9 +36,13 @@ import com.tle.beans.entity.BaseEntityLabel
   *   the owner of the entity
   */
 final case class BaseEntityReference(
+    @GQLDescription("The database ID of the entity")
     id: Long,
+    @GQLDescription("The UUID of the entity")
     uuid: String,
+    @GQLDescription("The language bundle ID of the entity")
     bundleId: Long,
+    @GQLDescription("The owner of the entity")
     owner: String
 )
 
