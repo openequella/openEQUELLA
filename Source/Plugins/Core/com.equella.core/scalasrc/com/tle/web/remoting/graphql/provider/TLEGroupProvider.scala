@@ -25,13 +25,8 @@ import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEGroupService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.{
-  Group,
-  GroupConnection,
-  Page,
-  StringConnection,
-  paginationOffsetLimit
-}
+import com.tle.web.remoting.graphql.schema.{Page, paginationOffsetLimit}
+import com.tle.web.remoting.graphql.schema.types.{Group, GroupConnection, StringConnection}
 import org.slf4j.LoggerFactory
 
 import javax.inject.{Inject, Singleton}

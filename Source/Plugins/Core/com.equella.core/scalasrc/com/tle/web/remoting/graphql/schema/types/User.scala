@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.web.remoting.graphql.schema
+package com.tle.web.remoting.graphql.schema.types
 
 import caliban.relay.{Base64Cursor, Connection, Edge, PageInfo}
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.user.TLEUser
+import com.tle.web.remoting.graphql.schema.Page
 
 /** A universal representation of users, for which the various user types in oEQ will be mapped to.
   */

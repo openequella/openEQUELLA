@@ -25,6 +25,7 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.TLEGroupProvider
+import com.tle.web.remoting.graphql.schema.types.{Group, GroupConnection, StringConnection}
 import zio.IO
 
 import javax.inject.{Inject, Singleton}

@@ -25,7 +25,8 @@ import com.tle.core.guice.Bind
 import com.tle.core.security.impl.RequiresPrivilege
 import com.tle.core.usermanagement.standard.service.TLEUserService
 import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.{Page, User, UserConnection, paginationOffsetLimit}
+import com.tle.web.remoting.graphql.schema.types.{User, UserConnection}
+import com.tle.web.remoting.graphql.schema.{Page, paginationOffsetLimit}
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._

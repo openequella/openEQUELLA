@@ -25,6 +25,7 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.TLEUserProvider
+import com.tle.web.remoting.graphql.schema.types.{User, UserConnection}
 import zio.IO
 
 import javax.inject.{Inject, Singleton}
