@@ -76,11 +76,6 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
     return object;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.hibernate.equella.service.InitialiserService#initialise(java.lang.Object)
-   */
   @Override
   public <T> T initialise(T object) {
     return initialise(
@@ -98,12 +93,6 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
         });
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.tle.core.hibernate.equella.service.InitialiserService#evictFromSession(java.lang.Object
-   * )
-   */
   private void evictFromSession(Set<Object> os) {
     for (Object o : os) {
       try {
@@ -155,6 +144,23 @@ public class InitialiserServiceImpl extends AbstractHibernateDao implements Init
     }
   }
 
+  /**
+   * Given an object (typically from a Hibernate session), this method will process the object and
+   * all its properties, recursively, and return a new object with the same values. The new object
+   * will be a clone of the original object, but will not be a Hibernate proxy. The new object will
+   * be a new instance of the same class as the original object, and will have the same values for
+   * all its properties. (I think that's what this method does, anyway.)
+   *
+   * @param parent
+   * @param property
+   * @param object the object to process
+   * @param declaredType
+   * @param map
+   * @param evictees a store of objects which need to be evicted from the session
+   * @param callback
+   * @param propsToSet
+   * @return a new object with the same values as the original object
+   */
   private Object processObject(
       Object parent,
       Property property,

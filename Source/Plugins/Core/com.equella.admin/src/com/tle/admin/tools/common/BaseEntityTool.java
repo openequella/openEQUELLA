@@ -568,12 +568,14 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             long id = get();
-            if (id == 0 && !canAddNew) {
+            boolean newEntity = id == 0;
+            if (newEntity && !canAddNew) {
               JOptionPane.showMessageDialog(
                   parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.notallowed"));
               return;
             }
 
+            // Check if they also want to import security details for the entity
             if (JOptionPane.showConfirmDialog(
                     parentFrame,
                     CurrentLocale.get("com.tle.admin.gui.baseentitytool.confirmimport"),
@@ -584,7 +586,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
               pack.setOtherTargetLists(null);
             }
 
-            if (id == 0) {
+            if (newEntity) {
               doNormalAdd(pack);
             } else {
               confirmBeforeOverwrite(pack, id);
