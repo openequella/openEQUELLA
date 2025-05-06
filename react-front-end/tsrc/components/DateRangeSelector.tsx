@@ -79,11 +79,13 @@ export const buildDatePickerCustomProps = (
   transformDate: (d: DateTime) => d,
 });
 
+type DatePickerField = "start" | "end";
+
 interface DatePickerProps {
   /**
    * The field which a date picker controls.
    */
-  field: "start" | "end";
+  field: DatePickerField;
   /**
    * The label of a date picker.
    */
@@ -316,7 +318,22 @@ export const DateRangeSelector = ({
       },
     ];
 
-    return dateRangePickers.map(({ field, label, value }) => {
+    const onDateChange = (newValue: DateTime | null, field: DatePickerField) =>
+      pipe(
+        O.fromNullable(newValue),
+        O.map(flow(transformDate, (d) => d.toJSDate())),
+        O.toUndefined,
+        (d: Date | undefined) => {
+          const newRange = {
+            ...stateDateRange,
+            [field]: d,
+          };
+          setStateDateRange(newRange);
+          handleDateRangeChange(newRange);
+        },
+      );
+
+    return dateRangePickers.map(({ field, label, value }: DatePickerProps) => {
       const isStart = field === "start";
       return (
         <StyledGrid key={field} size={{ xs: 12, lg: 6 }}>
@@ -345,28 +362,12 @@ export const DateRangeSelector = ({
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={(newValue, { validationError }) => {
+            onChange={(newValue, { validationError }) =>
               pipe(
                 O.fromNullable(validationError),
-                O.match(
-                  () =>
-                    pipe(
-                      O.fromNullable(newValue),
-                      O.map(flow(transformDate, (d) => d.toJSDate())),
-                      O.toUndefined,
-                      (d: Date | undefined) => {
-                        const newRange = {
-                          ...stateDateRange,
-                          [field]: d,
-                        };
-                        setStateDateRange(newRange);
-                        handleDateRangeChange(newRange);
-                      },
-                    ),
-                  constVoid,
-                ),
-              );
-            }}
+                O.match(() => onDateChange(newValue, field), constVoid),
+              )
+            }
           />
         </StyledGrid>
       );
