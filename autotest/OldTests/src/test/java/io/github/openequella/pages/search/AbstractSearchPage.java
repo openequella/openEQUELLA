@@ -425,13 +425,13 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   private void setDatePickerValue(WebElement parent, String label, String value) {
     // Use '@data-sectionindex='0' to locate the first section, and then use '@inputmode='numeric'
     // to locate the editable span.
-    WebElement yearSpan =
+    WebElement firstSpan =
         parent.findElement(
             By.xpath(
                 "//div[@aria-labelledby='"
                     + label
                     + "']//span[@data-sectionindex='0']//span[@inputmode='numeric']"));
-    yearSpan.click();
-    yearSpan.sendKeys(value);
+    firstSpan.click();
+    firstSpan.sendKeys(value);
   }
 }
