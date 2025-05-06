@@ -476,7 +476,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
 
   const queryBar = (
     <Grid id={genId("QueryBar")} container spacing={1}>
-      <Grid style={{ flexGrow: 1 }}>
+      <Grid size="grow">
         <TextField
           label={queryFieldLabel}
           value={query}

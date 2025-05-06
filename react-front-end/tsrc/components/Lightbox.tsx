@@ -260,7 +260,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             <CloseIcon />
           </TooltipIconButton>
         </Toolbar>
-        <Grid container alignItems="center" sx={{ flex: 1 }}>
+        <Grid container alignItems="center" size="grow">
           <Grid size={1}>
             {onPrevious && (
               <TooltipIconButton

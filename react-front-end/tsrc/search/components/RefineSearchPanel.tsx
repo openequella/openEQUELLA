@@ -146,7 +146,7 @@ export const RefineSearchPanel = ({
           id={`RefineSearchPanel-${control.idSuffix}`}
           container
           direction="column"
-          sx={{ flex: 1 }}
+          size="grow"
         >
           <Grid>
             <RefinePanelControlHeading title={control.title} />

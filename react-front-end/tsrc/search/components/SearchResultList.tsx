@@ -260,7 +260,7 @@ export const SearchResultList = ({
         {searchResultList}
       </CardContent>
       <CardActions>
-        <Grid container justifyContent="center" sx={{ flex: 1 }}>
+        <Grid container justifyContent="center" size="grow">
           <Grid>
             <SearchPagination
               count={count}
