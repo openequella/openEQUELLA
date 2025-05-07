@@ -94,7 +94,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
 
   return (
     <Grid container direction="column" spacing={0}>
-      <Grid item>
+      <Grid>
         {schemaList && (
           <>
             <Select
@@ -117,7 +117,7 @@ export default function SchemaSelector({ setSchemaNode }: SchemaSelectorProps) {
           </>
         )}
       </Grid>
-      <Grid item>
+      <Grid>
         {schema && (
           <SchemaNodeSelector
             expandControls

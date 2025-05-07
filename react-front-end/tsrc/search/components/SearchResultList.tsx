@@ -195,10 +195,10 @@ export const SearchResultList = ({
         title={(title ?? searchPageStrings.subtitle) + ` (${count})`}
         action={
           <Grid container spacing={1} alignItems="center">
-            <Grid item>
+            <Grid>
               <SearchOrderSelect {...orderSelectProps} />
             </Grid>
-            <Grid item>
+            <Grid>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
                 <Button
                   variant="outlined"
@@ -209,7 +209,7 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid item>
+            <Grid>
               <TooltipIconButton
                 title={searchPageStrings.favouriteSearch.title}
                 onClick={onSaveSearch}
@@ -218,12 +218,12 @@ export const SearchResultList = ({
               </TooltipIconButton>
             </Grid>
             {isExportPermitted && (
-              <Grid item>
+              <Grid>
                 <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
               </Grid>
             )}
             {isMdDown && (
-              <Grid item>
+              <Grid>
                 <TooltipIconButton
                   title={searchPageStrings.refineSearchPanel.title}
                   onClick={showRefinePanel}
@@ -234,7 +234,7 @@ export const SearchResultList = ({
               </Grid>
             )}
             {!inSelectionSession && useShareSearchButton && (
-              <Grid item>
+              <Grid>
                 <TooltipIconButton
                   title={searchPageStrings.shareSearchHelperText}
                   onClick={onCopySearchLink}
@@ -244,9 +244,7 @@ export const SearchResultList = ({
               </Grid>
             )}
             {additionalHeaders?.map((header) => (
-              <Grid item key={header.key}>
-                {header}
-              </Grid>
+              <Grid key={header.key}>{header}</Grid>
             ))}
           </Grid>
         }
@@ -262,8 +260,8 @@ export const SearchResultList = ({
         {searchResultList}
       </CardContent>
       <CardActions>
-        <Grid container justifyContent="center">
-          <Grid item>
+        <Grid container justifyContent="center" size="grow">
+          <Grid>
             <SearchPagination
               count={count}
               currentPage={currentPage}

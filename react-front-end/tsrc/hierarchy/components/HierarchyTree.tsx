@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Divider } from "@mui/material";
-import { TreeView } from "@mui/x-tree-view/TreeView";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -45,7 +45,7 @@ const HierarchyTree = ({
 }: HierarchyTreeProps) => {
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
-  const handleToggle = (event: React.SyntheticEvent, nodeIds: string[]) =>
+  const handleToggle = (_: React.SyntheticEvent | null, nodeIds: string[]) =>
     setExpanded(nodeIds);
 
   const topics = pipe(
@@ -66,13 +66,20 @@ const HierarchyTree = ({
   );
 
   return (
-    <TreeView
+    <SimpleTreeView
       aria-label={viewHierarchyText}
-      expanded={expanded}
-      onNodeToggle={handleToggle}
+      expandedItems={expanded}
+      onExpandedItemsChange={handleToggle}
+      slots={{
+        // Don't use the default icons as we have custom icons on the right hand side. However, there is
+        // not a nice way to remove these icons now. See this open GitHub issue (https://github.com/mui/mui-x/issues/12548)
+        // for details.
+        expandIcon: () => null,
+        collapseIcon: () => null,
+      }}
     >
       {topics}
-    </TreeView>
+    </SimpleTreeView>
   );
 };
 

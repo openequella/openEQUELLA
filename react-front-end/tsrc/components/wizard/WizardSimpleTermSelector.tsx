@@ -181,7 +181,7 @@ export const WizardSimpleTermSelector = ({
         labelFor={id}
       />
       <Grid container direction="column" id={id}>
-        <Grid item>
+        <Grid>
           <Autocomplete
             loading={loading}
             loadingText={loadingText}
@@ -221,7 +221,7 @@ export const WizardSimpleTermSelector = ({
             getOptionLabel={({ fullTerm }) => fullTerm}
           />
         </Grid>
-        <Grid item>
+        <Grid>
           <List id={`${id}-term-list`}>{terms}</List>
         </Grid>
       </Grid>

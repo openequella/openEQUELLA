@@ -85,7 +85,12 @@ export const WizardShuffleList = ({
         labelFor={id}
       />
       <Grid id={id} container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 6,
+          }}
+        >
           <List aria-label={shuffleListStrings.valueList}>
             <ListItem key="input controls">
               <ListItemText>

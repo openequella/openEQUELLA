@@ -102,7 +102,7 @@ const SelectItemVersionDialog = ({
     >
       <Grid container direction="column" spacing={2}>
         {tagDescription && (
-          <Grid item>
+          <Grid>
             <Autocomplete
               multiple
               freeSolo
@@ -123,7 +123,7 @@ const SelectItemVersionDialog = ({
             />
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           {isLatestVersion ? (
             <FormControl>
               <FormLabel>{selectVersion}</FormLabel>

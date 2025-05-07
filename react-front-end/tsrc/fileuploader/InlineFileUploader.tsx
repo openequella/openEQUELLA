@@ -363,7 +363,7 @@ export const InlineFileUploader = ({
       direction="column"
       wrap="nowrap"
     >
-      <Grid item>
+      <Grid>
         <UploadList
           files={[...uploadedFiles, ...uploadingFiles]}
           buildActions={buildActions}
@@ -373,7 +373,7 @@ export const InlineFileUploader = ({
 
       {editable &&
         (maxAttachments === null || attachmentCount < maxAttachments) && (
-          <Grid item>
+          <Grid>
             <AddResourceButton />
             {canUploadFile && (
               <div {...getRootProps({ className: "dropzone" })}>
