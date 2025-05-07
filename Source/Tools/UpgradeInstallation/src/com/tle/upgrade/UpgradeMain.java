@@ -60,6 +60,7 @@ import com.tle.upgrade.upgraders.apachedaemon.UpdateApacheDaemon;
 import com.tle.upgrade.upgraders.ffmpeg.AddFfmpegConfig;
 import com.tle.upgrade.upgraders.java17.UpdateJavaOpts;
 import com.tle.upgrade.upgraders.log4j2.UpdateLog4JConfigFile;
+import com.tle.upgrade.upgraders.v20252.AddKeepaliveAttribute;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -134,7 +135,8 @@ public class UpgradeMain {
         new UpdateLog4JConfigFile(),
         new AddFfmpegConfig(),
         new UpdateApacheDaemon(),
-        new UpdateJavaOpts()
+        new UpdateJavaOpts(),
+        new AddKeepaliveAttribute()
       };
 
   public static void main(String[] args) throws Throwable {

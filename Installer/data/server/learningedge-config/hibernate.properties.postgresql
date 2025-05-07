@@ -3,6 +3,7 @@ hibernate.dialect = com.tle.hibernate.dialect.ExtendedPostgresDialect
 hibernate.connection.url = jdbc:postgresql://${datasource/host}:${datasource/port}/${datasource/database}
 hibernate.connection.username = ${datasource/username}
 hibernate.connection.password = ${datasource/password}
+hibernate.connection.tcpKeepAlive=true
 
 # Needed to align with previous installs and certain database vendors
 hibernate.id.new_generator_mappings=false
