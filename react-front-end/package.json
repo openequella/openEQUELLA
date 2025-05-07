@@ -73,6 +73,8 @@
     "oeq-cloudproviders": "git+https://github.com/apereo/openEQUELLA-cloudprovidersdk.git#0debbd148bb47d0dfc2270bb47db028e70a22f74",
     "react": "18.3.1",
     "react-beautiful-dnd": "13.1.1",
+    "@atlaskit/pragmatic-drag-and-drop": "1.6.0",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.1.0",
     "react-color": "2.19.3",
     "react-dom": "18.3.1",
     "react-dropzone": "14.3.8",
@@ -138,6 +140,7 @@
     "rewire": "7.0.0",
     "storybook": "8.6.12",
     "ts-jest": "29.3.1",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "identity-obj-proxy": "3.0.0"
   }
 }
