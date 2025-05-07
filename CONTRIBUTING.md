@@ -152,6 +152,9 @@ Once you have an instance running, make sure you create a database with a user f
     CREATE USER equellauser WITH PASSWORD 'password';
     GRANT ALL PRIVILEGES ON DATABASE "equella" to equellauser;
 
+And according to the [Hikari's recommendation](https://github.com/brettwooldridge/HikariCP/wiki/Setting-Driver-or-OS-TCP-Keepalive) it's better to set Driver or OS TCP Keepalive.
+The Driver will be set to keepalive by default after setting up the openEquella, but you have to set up the OS TCP Keepalive manually.
+
 ### Install build-essential
 
 https://packages.ubuntu.com/impish/build-essential
