@@ -163,7 +163,7 @@ const ACLExpressionBuilder = ({
   resolveGroupsProvider,
   aclEntityResolversProvider,
   ssoTokensProvider,
-}: ACLExpressionBuilderProps): JSX.Element => {
+}: ACLExpressionBuilderProps): React.JSX.Element => {
   const parseACLExpression = flow(
     parse,
     E.map(compactACLExpressions),

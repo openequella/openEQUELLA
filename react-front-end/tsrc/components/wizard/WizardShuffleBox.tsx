@@ -32,7 +32,7 @@ export const WizardShuffleBox = ({
   options,
   onSelect,
   values,
-}: WizardShuffleBoxProps): JSX.Element => {
+}: WizardShuffleBoxProps): React.JSX.Element => {
   return (
     <>
       <WizardLabel

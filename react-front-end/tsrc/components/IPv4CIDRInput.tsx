@@ -293,7 +293,7 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
 
   const dot = () => <span className={classes.infix}>.</span>;
 
-  const wrapGrid = (index: number, children: JSX.Element) => (
+  const wrapGrid = (index: number, children: React.JSX.Element) => (
     <Grid key={index}>{children}</Grid>
   );
 

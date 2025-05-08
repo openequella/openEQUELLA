@@ -61,7 +61,7 @@ export const WizardShuffleList = ({
   mandatory,
   values,
   onChange,
-}: WizardShuffleListProps): JSX.Element => {
+}: WizardShuffleListProps): React.JSX.Element => {
   const [newEntry, setNewEntry] = useState<string>("");
 
   const handleOnChange = () =>
@@ -118,7 +118,7 @@ export const WizardShuffleList = ({
             {pipe(
               values,
               RSET.toReadonlyArray<string>(S.Ord),
-              RA.map<string, JSX.Element>((s) => (
+              RA.map<string, React.JSX.Element>((s) => (
                 <ListItem key={s}>
                   <ListItemText>{s}</ListItemText>
                   <ListItemSecondaryAction>

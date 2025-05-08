@@ -135,7 +135,7 @@ export interface SearchResultListProps {
   /**
    * Additional components to be displayed in the CardHeader.
    */
-  additionalHeaders?: JSX.Element[];
+  additionalHeaders?: React.JSX.Element[];
 }
 
 const searchPageStrings = languageStrings.searchpage;

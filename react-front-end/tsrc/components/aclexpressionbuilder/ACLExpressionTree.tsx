@@ -70,7 +70,7 @@ const ACLExpressionTree = ({
   onDelete,
   onChange,
   aclEntityResolvers,
-}: ACLExpressionTreeProps): JSX.Element => {
+}: ACLExpressionTreeProps): React.JSX.Element => {
   // expand all nodes by default
   const [expanded, setExpanded] = useState<string[]>(flattenIds(aclExpression));
   const [selected, setSelected] = useState<string[]>([]);

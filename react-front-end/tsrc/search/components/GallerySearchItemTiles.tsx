@@ -103,7 +103,7 @@ export const GallerySearchItemTiles = ({
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<
     (() => void) | undefined
   >();
-  const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
+  const [drmDialog, setDrmDialog] = useState<React.JSX.Element | undefined>(
     undefined,
   );
 
