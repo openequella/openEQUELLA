@@ -31,7 +31,7 @@ module.exports = {
   moduleNameMapper: {
     "^axios$": require.resolve("axios"),
     // Mocking CSS modules as per the Jest documentation: https://jestjs.io/docs/webpack#mocking-css-modules
-    // Required due to the use of programatic-drag-and-drop which has directly imported CSS files.
+    // Required due to the use of pragmatic-drag-and-drop which has directly imported CSS files.
     "\\.(css|less)$": "identity-obj-proxy",
   },
 };
