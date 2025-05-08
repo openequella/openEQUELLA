@@ -23,6 +23,7 @@ import {
 import DropIndicator from "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 import DeleteIcon from "@mui/icons-material/Delete";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import EditIcon from "@mui/icons-material/Edit";
 import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -119,6 +120,11 @@ export const DraggableFacet = ({
 
   return (
     <StyledListItem divider ref={ref}>
+      <ListItemIcon>
+        <TooltipIconButton title={languageStrings.common.action.dragToReorder}>
+          <DragIndicatorIcon />
+        </TooltipIconButton>
+      </ListItemIcon>
       <ListItemText primary={facet.name} />
       <ListItemIcon>
         <TooltipIconButton
