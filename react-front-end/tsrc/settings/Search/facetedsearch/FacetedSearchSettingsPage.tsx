@@ -19,7 +19,7 @@ import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/ad
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Card, CardContent, IconButton, List, Typography } from "@mui/material";
 import * as A from "fp-ts/Array";
-import { constVoid, constTrue, pipe } from "fp-ts/function";
+import { constVoid, constTrue, pipe, flow } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
@@ -47,7 +47,7 @@ import { commonString } from "../../../util/commonstrings";
 import { idExtractor } from "../../../util/idExtractor";
 import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
-import { DraggableFacet, getFacetIndex } from "./DraggableFacet";
+import { DraggableFacet, FacetDndPayloadCodec } from "./DraggableFacet";
 import FacetDialog from "./FacetDialog";
 
 const facetedsearchsettingStrings =
@@ -104,6 +104,12 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [reset, appErrorHandler]);
 
   useEffect(() => {
+    const getFacetIndex: (data: Record<string, unknown>) => O.Option<number> =
+      flow(
+        O.fromPredicate(FacetDndPayloadCodec.is),
+        O.map(({ index }) => index),
+      );
+
     return monitorForElements({
       canMonitor: constTrue,
       onDrop: ({ location, source }) =>

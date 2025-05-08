@@ -15,22 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
+import DropIndicator from "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import DropIndicator from "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box";
-import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import EditIcon from "@mui/icons-material/Edit";
 import { ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { flow, pipe } from "fp-ts/function";
-import * as N from "fp-ts/number";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import * as R from "fp-ts/Record";
+import * as t from "io-ts";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { TooltipIconButton } from "../../../components/TooltipIconButton";
@@ -70,11 +69,18 @@ interface DraggableFacetProps {
 }
 
 /**
- * Retrieve the index of a facet from the data attached to a dragged or dropped item.
+ * Codec for the data attached to a dragged or dropped item in the facet list.
  */
-export const getFacetIndex: (
-  data: Record<string, unknown>,
-) => O.Option<number> = flow(R.lookup("index"), O.filter(N.isNumber));
+export const FacetDndPayloadCodec = t.type({
+  /**
+   * Identifier for where the drag and drop event is triggered.
+   */
+  source: t.literal("facet-dnd"),
+  /**
+   * Index of the facet being dragged or dropped onto.
+   */
+  index: t.number,
+});
 
 /**
  * A `ListItem` that supports drag and drop for a configured facet.
