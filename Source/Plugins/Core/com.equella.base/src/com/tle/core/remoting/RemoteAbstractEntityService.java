@@ -78,6 +78,16 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
 
   byte[] exportEntity(long id, boolean withSecurity);
 
+  /**
+   * Starts the process of importing an entity defined in a zip file, by extracting the zip file and
+   * storing the contents in the staging area. <strong>The entity is not yet imported.</strong>
+   *
+   * <p>It is expected that after this call, the client will typically use startEdit() and
+   * stopEdit() to complete the import process.
+   *
+   * @param zip the zip file to import
+   * @return the entity pack containing the entity preprared for import
+   */
   EntityPack<T> importEntity(byte[] zip);
 
   /**

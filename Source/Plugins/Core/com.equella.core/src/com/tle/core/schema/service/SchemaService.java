@@ -28,6 +28,8 @@ import java.util.Set;
 
 public interface SchemaService
     extends AbstractEntityService<EntityEditingBean, Schema>, RemoteSchemaService {
+  String ENTITY_TYPE = "SCHEMA";
+
   List<String> getExportSchemaTypes();
 
   Set<Schema> getSchemasForExportSchemaType(String type);

@@ -492,6 +492,12 @@ public abstract class AbstractEntityServiceImpl<
     return entityDao.listAllIncludingSystem(privilegeType);
   }
 
+  /**
+   * Lists all entities that are editable by the current user. That is, unlike listAll() it includes
+   * an ACL check to ensure that the user has EDIT privileges on the entity.
+   *
+   * @return a list of all entities that the current user can edit
+   */
   @Override
   @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   public List<BaseEntityLabel> listEditable() {
@@ -945,20 +951,13 @@ public abstract class AbstractEntityServiceImpl<
   @Override
   @SecureOnCall(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   public byte[] exportEntity(T entity, boolean withSecurity) {
-    ImportExportPack<T> pack = new ImportExportPack<T>();
-    pack.setVersion(ApplicationVersion.get().getFull());
-    pack.setEntity(entity);
-    if (withSecurity && privilegeNode != null) {
-      fillTargetLists(pack);
-    }
-
     StagingFile staging = stagingService.createStagingArea();
     prepareExport(
         staging,
         entity,
         new ConverterParams(institutionImportService.getInfoForCurrentInstitution()));
+    String xml = xmlForEntity(entity, withSecurity);
 
-    String xml = getXStream().toXML(pack);
     try {
       fileSystemService.copy(new EntityFile(entity), staging);
       fileSystemService.write(staging, ENTITY_XML, new StringReader(xml), false);
@@ -974,8 +973,29 @@ public abstract class AbstractEntityServiceImpl<
     }
   }
 
+  private String xmlForEntity(T entity, boolean withSecurity) {
+    ImportExportPack<T> pack = new ImportExportPack<>();
+    pack.setVersion(ApplicationVersion.get().getFull());
+    pack.setEntity(entity);
+    if (withSecurity && privilegeNode != null) {
+      fillTargetLists(pack);
+    }
+
+    return getXStream().toXML(pack);
+  }
+
   @Override
   public void prepareExport(TemporaryFileHandle staging, T entity, ConverterParams params) {
+    initialiseBaseEntity(entity);
+  }
+
+  /**
+   * Initialises the entity for export operations, by ensuring any Hibernate proxies and the like
+   * have been fully resolved and removed. This modifies `entity` in place.
+   *
+   * @param entity The entity to be exported.
+   */
+  private void initialiseBaseEntity(T entity) {
     initialiserService.initialise(entity, new EntityInitialiserCallback());
   }
 

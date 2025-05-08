@@ -33,8 +33,9 @@ trait SchemaProvider {
 @Bind
 @Singleton
 class Schema {
-  @Inject private var tleUserSchema: TLEUserSchema   = _
-  @Inject private var tleGroupSchema: TLEGroupSchema = _
+  @Inject private var metadataSchemaSchema: MetadataSchemaSchema = _
+  @Inject private var tleUserSchema: TLEUserSchema               = _
+  @Inject private var tleGroupSchema: TLEGroupSchema             = _
 
   /** Get the full API for the GraphQL interface.
     */
@@ -45,6 +46,6 @@ class Schema {
     // Maybe we should have all API provider classes extend a common trait and then use that trait
     // to combine the APIs - by finding them all with introspection. But then the dependency injection
     // won't work. :thinking:
-    tleUserSchema.getApi |+| tleGroupSchema.getApi
+    tleUserSchema.getApi |+| tleGroupSchema.getApi |+| metadataSchemaSchema.getApi
   }
 }
