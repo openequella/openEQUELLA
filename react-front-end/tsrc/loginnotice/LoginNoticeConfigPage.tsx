@@ -44,8 +44,8 @@ class LoginNoticeConfigPage extends React.Component<
   LoginNoticeConfigPageProps,
   LoginNoticeConfigPageState
 > {
-  private readonly postLoginNoticeConfigurator: React.RefObject<PostLoginNoticeConfigurator>;
-  private readonly preLoginNoticeConfigurator: React.RefObject<PreLoginNoticeConfigurator>;
+  private readonly postLoginNoticeConfigurator: React.RefObject<PostLoginNoticeConfigurator | null>;
+  private readonly preLoginNoticeConfigurator: React.RefObject<PreLoginNoticeConfigurator | null>;
 
   constructor(props: LoginNoticeConfigPageProps) {
     super(props);

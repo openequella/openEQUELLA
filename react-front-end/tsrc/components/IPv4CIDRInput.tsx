@@ -103,13 +103,15 @@ const IPv4CIDRInput = ({ value = "", onChange }: IPv4CIDRInputProps) => {
     pipe(separatedValue, RNEA.last),
   );
 
-  const ipInputRefs = useRef<NEA.NonEmptyArray<RefObject<HTMLInputElement>>>(
+  const ipInputRefs = useRef<
+    NEA.NonEmptyArray<RefObject<HTMLInputElement | null>>
+  >(
     pipe(
       NEA.range(1, ipElements),
       NEA.map((_) => createRef()),
     ),
   );
-  const netmaskInputRef = useRef<HTMLInputElement>();
+  const netmaskInputRef = useRef<HTMLInputElement>(null);
 
   // focus corresponding ip input if index is within 0-3, otherwise focus on netmask input.
   const focusInput = (index: number) =>

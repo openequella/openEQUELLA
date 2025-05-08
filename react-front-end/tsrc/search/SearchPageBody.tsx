@@ -830,11 +830,11 @@ export const SearchPageBody = ({
                     (enableCSVExportButton &&
                       currentUser?.canDownloadSearchResult) ??
                     false,
-                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,
                     alreadyExported: alreadyDownloaded,
+                    linkRef: exportLinkRef,
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}

@@ -129,7 +129,6 @@ export interface SearchResultListProps {
    */
   exportProps: {
     isExportPermitted: boolean;
-    linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
   /**
@@ -162,7 +161,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps: { isExportPermitted, linkRef, exportLinkProps },
+  exportProps: { isExportPermitted, exportLinkProps },
   useShareSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
@@ -219,7 +218,7 @@ export const SearchResultList = ({
             </Grid>
             {isExportPermitted && (
               <Grid>
-                <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
+                <ExportSearchResultLink {...exportLinkProps} />
               </Grid>
             )}
             {isMdDown && (

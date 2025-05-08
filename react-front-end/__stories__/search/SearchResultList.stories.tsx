@@ -68,11 +68,11 @@ EmptyResultListComponent.args = {
   },
   exportProps: {
     isExportPermitted: true,
-    linkRef: createRef<HTMLAnchorElement>(),
     exportLinkProps: {
       url: "http://localhost:8080/export",
       onExport: action("Export search result"),
       alreadyExported: false,
+      linkRef: createRef<HTMLAnchorElement>(),
     },
   },
 };
