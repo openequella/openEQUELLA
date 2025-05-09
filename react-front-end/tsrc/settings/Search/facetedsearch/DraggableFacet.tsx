@@ -82,6 +82,8 @@ export const FacetDndPayloadCodec = t.type({
   index: t.number,
 });
 
+type FacetDndPayload = t.TypeOf<typeof FacetDndPayloadCodec>;
+
 /**
  * A `ListItem` that supports drag and drop for a configured facet.
  */
@@ -97,6 +99,8 @@ export const DraggableFacet = ({
   useEffect(() => {
     const showBottomEdge = () => setClosestEdge("bottom");
     const hideBottomEdge = () => setClosestEdge(null);
+    // Build the data attached to a drag and drop event, and we are only interested in the facet index.
+    const payload = (): FacetDndPayload => ({ index, source: "facet-dnd" });
 
     return pipe(
       ref.current,
@@ -105,14 +109,12 @@ export const DraggableFacet = ({
         combine(
           draggable({
             element,
-            // This is the data to be used when the facet is dragged, and we are only interested in the index.
-            getInitialData: () => ({ index }),
+            getInitialData: payload,
           }),
           dropTargetForElements({
             element,
             canDrop: ({ source }) => source.element !== element,
-            // This is the data to be used when another facet is dropped onto this facet.
-            getData: () => ({ index }),
+            getData: payload,
             onDragStart: showBottomEdge,
             onDragEnter: showBottomEdge,
             onDragLeave: hideBottomEdge,
