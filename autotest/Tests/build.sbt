@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.17"
+val http4sVersion = "0.23.30"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.6"
 
