@@ -7,16 +7,20 @@ import com.tle.webtests.pageobject.portal.MenuSection;
 
 public class OAuthUtils {
   public static OAuthClient createClient(PageContext context, OAuthClient client) {
-    MenuSection menu = new MenuSection(context);
-    SettingsPage settingsPage = menu.clickMenu("Settings", new SettingsPage(context));
-    OAuthSettingsPage oauth = settingsPage.oauthSettingsPage();
+    OAuthSettingsPage oauth = openOAuthSettingsPage(context);
     return oauth.addClient(client);
   }
 
   public static void deleteClient(PageContext context, String name) {
-    OAuthSettingsPage oauth = new OAuthSettingsPage(context).load();
+    OAuthSettingsPage oauth = openOAuthSettingsPage(context);
     oauth.deleteClient(name);
   }
 
   public static void deleteTokens(PageContext context) {}
+
+  private static OAuthSettingsPage openOAuthSettingsPage(PageContext context) {
+    MenuSection menu = new MenuSection(context);
+    SettingsPage settingsPage = menu.clickMenu("Settings", new SettingsPage(context));
+    return settingsPage.oauthSettingsPage();
+  }
 }
