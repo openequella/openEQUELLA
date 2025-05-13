@@ -23,7 +23,7 @@ import { theme as defaultTheme } from "./theme";
 /**
  * Renders a page to be used in an Intergation test.
  *
- * @param pageId Unique identifier for the page. Currently supported: "cloud", "update" and "viewitem" .
+ * @param pageId Unique identifier for the page.
  * @param content Content of the page
  * @param theme MUI theme to be applied to the page.
  */
