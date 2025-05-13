@@ -15,15 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// For a detailed explanation regarding each configuration property, visit:
-// https://jestjs.io/docs/en/configuration.html
-
 module.exports = {
-  clearMocks: true,
-  coverageDirectory: 'coverage',
-  preset: 'ts-jest/presets/js-with-babel',
-  testEnvironment: 'node',
-  transformIgnorePatterns: [
-    'node_modules/(?!axios-cookiejar-support)/', // axios-cookiejar-support only supports ESM from v6.
-  ],
+  presets: ['@babel/preset-env'],
 };
