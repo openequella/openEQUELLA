@@ -115,10 +115,10 @@ export const drmReducer = (state: State, action: Action): State => {
             title,
             content: (
               <Grid container>
-                <Grid item>
+                <Grid>
                   <Typography variant="subtitle1">{subtitle}</Typography>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <DrmTerms {...agreements} />
                 </Grid>
               </Grid>

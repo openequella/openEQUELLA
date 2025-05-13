@@ -19,7 +19,7 @@ import {
   Divider,
   Icon,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Typography,
@@ -51,7 +51,7 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
 
   const history = useHistory();
   const navItem = (item: OEQ.LegacyContent.MenuItem, ind: number) => (
-    <ListItem
+    <ListItemButton
       component="a"
       href={item.href}
       target={item.newWindow ? "_blank" : "_self"}
@@ -63,7 +63,6 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
         }
       }}
       key={ind}
-      button
     >
       <ListItemIcon>
         {item.iconUrl ? (
@@ -86,7 +85,7 @@ const MainMenu = ({ menuGroups, onClickNavItem }: MainMenuProps) => {
           </Typography>
         }
       />
-    </ListItem>
+    </ListItemButton>
   );
 
   return (

@@ -207,11 +207,11 @@ const ACLOtherPanel = ({
     children?: ReactNode;
   }) => (
     <Grid container direction="column" rowSpacing={2}>
-      <Grid item>
+      <Grid>
         <Typography>{title}</Typography>
       </Grid>
 
-      {children && <Grid item>{children}</Grid>}
+      {children && <Grid>{children}</Grid>}
     </Grid>
   );
 
@@ -252,7 +252,7 @@ const ACLOtherPanel = ({
 
   return (
     <Grid container direction="column" spacing={1}>
-      <Grid item>
+      <Grid>
         <FormControl variant="outlined">
           <InputLabel>{typeLabel}</InputLabel>
           <Select
@@ -271,7 +271,7 @@ const ACLOtherPanel = ({
       <Grid container style={{ padding: 25 }}>
         {buildControls()}
       </Grid>
-      <Grid item>
+      <Grid>
         <Button color="primary" onClick={handleAddButtonClicked}>
           {languageStrings.common.action.add}
         </Button>

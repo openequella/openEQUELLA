@@ -15,13 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DateTime } from "luxon";
 import * as React from "react";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { WizardCalendar } from "../../../../tsrc/components/wizard/WizardCalendar";
 import * as OEQ from "@openequella/rest-api-client";
-import { ISODateFormat } from "../../../../tsrc/util/Date";
 
 describe("<WizardCalendar/>", () => {
   const today = "2023-05-16";
@@ -48,21 +46,19 @@ describe("<WizardCalendar/>", () => {
     expect(displayedRange).toEqual(providedDateRange);
   });
 
-  it.each<
-    [string, OEQ.WizardCommonTypes.WizardDateFormat, ISODateFormat, string[]]
-  >([
-    ["year only", "Y", "yyyy", [yearStart, ""]],
-    ["year and month", "MY", "yyyy-MM", [monthStart, ""]],
-    ["year, month and day", "DMY", "yyyy-MM-dd", [today, ""]],
+  it.each<[string, OEQ.WizardCommonTypes.WizardDateFormat, string, string[]]>([
+    ["year only", "Y", "2023", [yearStart, ""]],
+    ["year and month", "MY", "2023-05", [monthStart, ""]],
+    ["year, month and day", "DMY", "2023-05-16", [today, ""]],
   ])(
     "supports date format: %s",
     async (
       _: string,
       wizardControlDateformat: OEQ.WizardCommonTypes.WizardDateFormat,
-      displayFormat: ISODateFormat,
+      inputValue: string,
       dateRange: string[],
     ) => {
-      const { container } = render(
+      const { getAllByLabelText } = render(
         <WizardCalendar
           isRange
           mandatory
@@ -71,11 +67,10 @@ describe("<WizardCalendar/>", () => {
         />,
       );
 
-      const start = container.querySelectorAll<HTMLInputElement>("input")[0]; // The component must have at least one DatePicker.
-      await userEvent.type(start, today);
-      expect(start.value).toEqual(
-        DateTime.fromISO(today).toFormat(displayFormat),
-      );
+      // Since MUI/X v8, the date picker input is hidden so we cannot directly type on it. The value is
+      // represented by 3 sections so we need to start typing from the first section.
+      const yearSection = getAllByLabelText("Year")[0];
+      await userEvent.type(yearSection, inputValue);
 
       // We only set `start` so the
       expect(onChange).toHaveBeenLastCalledWith(dateRange);

@@ -41,13 +41,13 @@ export const SidePanel = ({
   classificationsPanelProps,
 }: SidePanelProps) => (
   <Grid container direction="column" spacing={2}>
-    <Grid item id="refine-panel">
+    <Grid id="refine-panel">
       <RefineSearchPanel {...refinePanelProps} />
     </Grid>
     {classificationsPanelProps?.classifications.some(
       (c) => c.categories.length > 0,
     ) && (
-      <Grid item id="classification-panel">
+      <Grid id="classification-panel">
         <ClassificationsPanel {...classificationsPanelProps} />
       </Grid>
     )}

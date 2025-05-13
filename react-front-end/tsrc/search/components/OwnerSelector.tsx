@@ -63,7 +63,7 @@ const OwnerSelector = ({
     <>
       <Grid container alignItems="center" spacing={1}>
         {value ? (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <List disablePadding>
               <ListItem dense>
                 <ListItemIcon>
@@ -86,7 +86,7 @@ const OwnerSelector = ({
             </List>
           </Grid>
         ) : (
-          <Grid item>
+          <Grid>
             <Button
               variant="outlined"
               onClick={() => setShowFindUserDialog(true)}
