@@ -77,7 +77,7 @@ libraryDependencies ++= Seq(
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240514-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.1",
-  "com.google.guava"      % "guava"                       % "32.1.3-jre",
+  "com.google.guava"      % "guava"                       % "33.4.8-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
@@ -440,6 +440,12 @@ run := {
   // though would still allow them to be detected.
   // Advice: https://docs.oracle.com/en/graalvm/enterprise/21/docs/reference-manual/native-image/BuildConfiguration/#embedding-a-configuration-file
   case PathList("META-INF", "native-image", _*) => MergeStrategy.rename
+  // There are a number of duplicates around the OSGi manifest files.
+  // However, we're not running in an OSGi context, so these can simply be discarded for all.
+  // Following, we have both java version specific handling (META-INF/versions/*/MANIFEST.MF) and non-versioned.
+  case PathList("META-INF", "versions", _, "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
+  // Also handle non-versioned OSGi manifests.
+  case PathList("META-INF", "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
