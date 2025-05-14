@@ -92,7 +92,9 @@ export default function SchemaNodeSelector({
 }: SchemaNodeSelectorProps) {
   const [selectedNode, setSelected] = React.useState("");
   const [expanded, setExpanded] = React.useState<string[]>([]);
-  const [renderedTree, setRenderedTree] = React.useState<JSX.Element>(<div />);
+  const [renderedTree, setRenderedTree] = React.useState<React.JSX.Element>(
+    <div />,
+  );
 
   const strings =
     languageStrings.settings.searching.facetedsearchsetting.schemaSelector

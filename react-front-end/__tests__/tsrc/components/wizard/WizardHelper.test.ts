@@ -32,6 +32,7 @@ import {
 } from "../../../../tsrc/components/wizard/WizardHelper";
 import { guestUser } from "../../../../tsrc/modules/UserModule";
 import { simpleMatch } from "../../../../tsrc/util/match";
+import * as React from "react";
 
 /**
  * Produces a summary of the number of occurrences in an array identified by keys generated
@@ -54,7 +55,7 @@ describe("render()", () => {
   };
 
   it("creates JSX.Elements matching definition", () => {
-    const elements: JSX.Element[] = render(
+    const elements: React.JSX.Element[] = render(
       controls,
       noFieldValues,
       logOnChange,
@@ -84,14 +85,14 @@ describe("render()", () => {
     );
     const componentCount = pipe(
       elements,
-      countBy<JSX.Element>((e) => e.type.name),
+      countBy<React.JSX.Element>((e) => e.type.name),
     );
 
     expect(componentCount).toStrictEqual(expectedComponentCount);
   });
 
   it("creates WizardUnsupported components for unknown/unsupported ones", () => {
-    const elements: JSX.Element[] = render(
+    const elements: React.JSX.Element[] = render(
       controls,
       noFieldValues,
       logOnChange,
@@ -103,7 +104,7 @@ describe("render()", () => {
   });
 
   it("handles `controlType === 'unknown'` - i.e. `UnknownWizardControl`", () => {
-    const elements: JSX.Element[] = render(
+    const elements: React.JSX.Element[] = render(
       [{ controlType: "unknown" }],
       noFieldValues,
       logOnChange,
