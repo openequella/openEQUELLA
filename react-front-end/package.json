@@ -120,7 +120,7 @@
     "@types/react-router-hash-link": "2.4.9",
     "@types/rewire": "2.5.30",
     "@types/sprintf-js": "1.1.4",
-    "@types/uuid": "9.0.8",
+    "@types/uuid": "10.0.0",
     "babel-jest": "29.7.0",
     "buffer": "6.0.3",
     "core-js": "3.42.0",
