@@ -121,7 +121,7 @@ export interface SearchPageBodyProps {
   /**
    * Any panel that will be rendered in between SearchBar and SearchResultList.
    */
-  additionalPanels?: JSX.Element[];
+  additionalPanels?: React.JSX.Element[];
   /**
    * Configuration for Search page headers, including whether to enable some common components(e.g. Share search),
    * custom sorting options and custom components.
@@ -830,11 +830,11 @@ export const SearchPageBody = ({
                     (enableCSVExportButton &&
                       currentUser?.canDownloadSearchResult) ??
                     false,
-                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,
                     alreadyExported: alreadyDownloaded,
+                    linkRef: exportLinkRef,
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}

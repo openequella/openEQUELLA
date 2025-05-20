@@ -48,7 +48,7 @@ export interface WizardCheckBoxGroupTemplateProps
    */
   buildOption: (
     option: OEQ.WizardCommonTypes.WizardControlOption,
-  ) => JSX.Element;
+  ) => React.JSX.Element;
 }
 
 /**

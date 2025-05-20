@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.17"
+val http4sVersion = "0.23.30"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.6"
 
@@ -40,10 +40,10 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j"  % "log4j-core"               % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl"        % log4jVersion,
   "org.scalacheck"           %% "scalacheck"               % "1.18.1" % "test,serial",
-  "org.http4s"               %% "http4s-blaze-client"      % http4sVersion,
-  "org.http4s"               %% "http4s-circe"             % http4sVersion,
-  "org.typelevel"            %% "cats-free"                % catsVersion,
-  "com.unboundid"             % "unboundid-ldapsdk"        % "7.0.2",
+  "org.http4s" %% "http4s-blaze-client" % "0.23.17", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
+  "org.http4s"    %% "http4s-circe"      % http4sVersion,
+  "org.typelevel" %% "cats-free"         % catsVersion,
+  "com.unboundid"  % "unboundid-ldapsdk" % "7.0.2",
   jacksonDataBind,
   jacksonDataFormatYaml,
   "com.auth0" % "jwks-rsa" % "0.22.1"

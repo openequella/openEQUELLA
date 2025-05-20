@@ -6,7 +6,7 @@ name := "IntegTester"
 version := "1.0"
 
 val CirceVersion  = "0.14.12"
-val Http4sVersion = "0.23.17"
+val Http4sVersion = "0.23.30"
 val jsoupVersion  = "1.20.1"
 
 scalaVersion := "2.13.16"
@@ -22,14 +22,14 @@ libraryDependencies ++= Seq(
 ).map(_ % CirceVersion)
 
 libraryDependencies ++= Seq(
-  "org.apache.httpcomponents" % "httpclient"          % "4.5.14",
-  "org.http4s"               %% "http4s-blaze-server" % Http4sVersion,
-  "org.http4s"               %% "http4s-dsl"          % Http4sVersion,
-  "org.http4s"               %% "http4s-circe"        % Http4sVersion,
-  "org.jsoup"                 % "jsoup"               % jsoupVersion,
-  "com.nulab-inc"            %% "scala-oauth2-core"   % "1.6.0",
-  "javax.servlet"             % "javax.servlet-api"   % "4.0.1",
-  "com.google.guava"          % "guava"               % "32.1.3-jre",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.14",
+  "org.http4s" %% "http4s-blaze-server" % "0.23.17", // The latest version of blzae server is still 0.23.17 by 13/05/2025.
+  "org.http4s"      %% "http4s-dsl"        % Http4sVersion,
+  "org.http4s"      %% "http4s-circe"      % Http4sVersion,
+  "org.jsoup"        % "jsoup"             % jsoupVersion,
+  "com.nulab-inc"   %% "scala-oauth2-core" % "1.6.0",
+  "javax.servlet"    % "javax.servlet-api" % "4.0.1",
+  "com.google.guava" % "guava"             % "33.4.8-jre",
   jacksonDataBind,
   jacksonModuleScala,
   "com.auth0" % "jwks-rsa" % "0.22.1",
