@@ -25,7 +25,7 @@ import * as ReactDOM from "react-dom/client";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
 
-/**
+/*
  * Global CSS styles required for the self-hosting Material Icons. More details can be found
  * from the {@link https://fontsource.org/docs/getting-started/migrate-v5} migration guide
  * of fontsource v5.
