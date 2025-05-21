@@ -22,12 +22,12 @@ val axis2Version      = "1.8.2"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.8.0"
 val cxfVersion        = "3.6.6"
-val fs2Version        = "2.5.12"
+val fs2Version        = "3.12.0"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.20.1"
 val prometheusVersion = "0.16.0"
-val sttpVersion       = "2.3.0"
+val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
 val luceneVersion     = "9.12.1"
 val nettyVersion      = "4.2.1.Final"
@@ -54,9 +54,9 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "co.fs2"                        %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client"  %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client"  %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client"  %% "circe"                         % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
   "com.fasterxml.jackson.core"     % "jackson-core"                  % jacksonVersion,
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"       % jacksonVersion,

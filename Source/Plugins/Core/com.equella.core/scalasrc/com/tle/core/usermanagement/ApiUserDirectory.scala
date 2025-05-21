@@ -25,8 +25,8 @@ import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenReque
 import com.tle.plugins.ump.UserDirectory
 import io.circe.Decoder
 import org.slf4j.LoggerFactory
-import sttp.client.basicRequest
-import sttp.client.circe.asJson
+import sttp.client3.basicRequest
+import sttp.client3.circe.asJson
 import sttp.model.{Header, Uri}
 import java.net.URI
 import java.util

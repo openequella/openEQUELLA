@@ -18,14 +18,9 @@
 
 package com.tle.core.cloudproviders
 
-import java.io.{InputStream, OutputStream}
-import java.nio.ByteBuffer
-import java.nio.channels.Channels
-import java.util
-import java.util.Collections
 import cats.data.OptionT
 import cats.effect.IO
-import sttp.client._
+import cats.effect.unsafe.implicits.global
 import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{CustomAttachment, IAttachment}
 import com.tle.common.NameValue
@@ -39,16 +34,16 @@ import com.tle.web.viewable.ViewableItem
 import com.tle.web.viewitem.section.RootItemFileSection
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension
 import com.tle.web.viewurl.resource.AbstractWrappedResource
-import com.tle.web.viewurl.{
-  AttachmentDetail,
-  ResourceViewer,
-  ResourceViewerConfig,
-  ViewAttachmentUrl,
-  ViewableResource
-}
-import fs2.Stream
+import com.tle.web.viewurl._
 import io.circe.Json.Folder
 import io.circe.{Json, JsonNumber, JsonObject}
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3._
+
+import java.io.{InputStream, OutputStream}
+import java.nio.channels.Channels
+import java.util
+import java.util.Collections
 import scala.jdk.CollectionConverters._
 
 class CloudAttachmentResourceExtension extends AttachmentResourceExtension[IAttachment] {
@@ -184,7 +179,7 @@ case class CloudAttachmentViewableResource(
           viewerDetails._2,
           provider,
           uriParameters,
-          uri => basicRequest.get(uri).response(asStream[Stream[IO, Byte]])
+          uri => basicRequest.get(uri).response(asStreamUnsafe(Fs2Streams[IO]))
         )
       )
     } yield response).value map {

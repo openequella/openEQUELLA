@@ -18,22 +18,34 @@
 
 package com.tle.core
 
-import java.util.concurrent.Executors
 import cats.effect.IO
 import com.tle.legacy.LegacyGuice
-import sttp.client.SttpBackendOptions
-import sttp.client.SttpBackendOptions.{Proxy, ProxyType}
-import sttp.client.asynchttpclient.fs2.AsyncHttpClientFs2Backend
-
-import scala.concurrent.ExecutionContext
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3.SttpBackendOptions.{Proxy, ProxyType}
+import sttp.client3.asynchttpclient.fs2.AsyncHttpClientFs2Backend
+import sttp.client3.{Request, Response, SttpBackendOptions}
 
 package object httpclient {
-  val blockingEC            = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(5))
-  implicit val contextShift = IO.contextShift(blockingEC)
 
-  implicit lazy val sttpBackend = {
+  private val sttpBackend = {
     val proxy     = LegacyGuice.configService.getProxyDetails
     val sttpProxy = Option(proxy.getHost).map(h => Proxy(h, proxy.getPort, ProxyType.Http))
-    AsyncHttpClientFs2Backend[IO](SttpBackendOptions.Default.copy(proxy = sttpProxy))
+    AsyncHttpClientFs2Backend.resource[IO](SttpBackendOptions.Default.copy(proxy = sttpProxy))
   }
+
+  /** Sends the given HTTP request using a `sttp` backend based on `AsyncHttpClientFs2Backend`.
+    *
+    * This method delegates to the configured backend to perform the request and return the
+    * response. It uses `Fs2Streams[IO]` as the streaming capability, allowing streamed request or
+    * response bodies.
+    *
+    * @param req
+    *   The HTTP request to send, using `Fs2Streams[IO]` as the streaming implementation.
+    * @tparam T
+    *   The expected type of the response body.
+    * @return
+    *   An `IO` effect producing the HTTP response.
+    */
+  def sendRequest[T](req: Request[T, Fs2Streams[IO]]): IO[Response[T]] =
+    sttpBackend.use(_.send(req))
 }
