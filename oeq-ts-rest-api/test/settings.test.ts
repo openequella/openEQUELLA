@@ -21,7 +21,7 @@ import { UISettings } from '../src/Settings';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 test("That we're able to retrieve general settings", async () => {
   const settings = await OEQ.Settings.getGeneralSettings(TC.API_PATH);

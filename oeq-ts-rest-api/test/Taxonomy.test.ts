@@ -28,7 +28,7 @@ const taxonomyUuid = 'a8475ae1-0382-a258-71c3-673e4597c3d2';
 const API_PATH = TC.API_PATH;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME_SUPER, TC.PASSWORD_SUPER));
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => OEQ.Auth.logout(API_PATH));
 
 describe('getTaxonomyChildTerms', () => {
   it('lists child terms of a taxonomy', async () => {

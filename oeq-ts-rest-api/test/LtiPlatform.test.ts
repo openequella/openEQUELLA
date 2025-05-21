@@ -49,7 +49,7 @@ const mockConvertToRawLtiPlatform = jest.spyOn(
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 describe('getAllPlatforms', () => {
   it('lists all the LTI platforms for the Institution', async () => {

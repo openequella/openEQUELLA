@@ -23,7 +23,7 @@ const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => OEQ.Auth.logout(API_PATH));
 
 describe('listRemoteSearches', () => {
   it('lists the available remote searches in an institution', async () =>

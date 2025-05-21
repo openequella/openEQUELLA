@@ -29,7 +29,7 @@ import * as TC from './TestConfig';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 describe('Check privileges', () => {
   it('returns privileges granted to the current user when given a list of privileges', async () => {

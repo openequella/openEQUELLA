@@ -21,7 +21,7 @@ import { EquellaSchema } from '../src/Schema';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 describe('Retrieving schemas', () => {
   it('should be possible get schemas with no params', () => {

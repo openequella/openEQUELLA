@@ -18,7 +18,7 @@
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 
-beforeEach(() => OEQ.Auth.logout(TC.API_PATH, true));
+beforeEach(() => OEQ.Auth.logout(TC.API_PATH));
 
 test("That we're able to login", async () => {
   const sessionid = await OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD);

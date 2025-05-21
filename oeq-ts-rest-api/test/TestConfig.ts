@@ -23,4 +23,4 @@ export const API_PATH_FIVEO = `${TARGET_HOST}fiveo/api`;
 export const USERNAME = process.env.USERNAME_AUTOTEST ?? 'AutoTest';
 export const PASSWORD = process.env.PASSWORD_AUTOTEST ?? 'automated';
 export const USERNAME_SUPER = process.env.USERNAME_SUPER ?? 'TLE_ADMINISTRATOR';
-export const PASSWORD_SUPER = process.env.PASSWORD_SUPER ?? 'autotestpassword';
+export const PASSWORD_SUPER = process.env.PASSWORD_SUPER ?? 'a123456';

@@ -26,4 +26,5 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!axios-cookiejar-support)/', // axios-cookiejar-support only supports ESM from v6.
   ],
+  setupFiles: ["./jest.setup.ts"]
 };

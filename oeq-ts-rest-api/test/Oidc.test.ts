@@ -43,7 +43,7 @@ const auth0: IdentityProvider = {
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 describe('Identity Provider', () => {
   it('updates the Identity Provider configuration', async () => {

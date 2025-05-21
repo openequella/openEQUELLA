@@ -21,7 +21,7 @@ import { ThemeSettings } from '../src/Theme';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => OEQ.Auth.logout(TC.API_PATH));
 
 describe('Theme settings', () => {
   let settingsAtStart: ThemeSettings;
