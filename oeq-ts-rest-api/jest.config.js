@@ -21,10 +21,7 @@
 module.exports = {
   clearMocks: true,
   coverageDirectory: 'coverage',
-  preset: 'ts-jest/presets/js-with-babel',
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  transformIgnorePatterns: [
-    'node_modules/(?!axios-cookiejar-support)/', // axios-cookiejar-support only supports ESM from v6.
-  ],
-  setupFiles: ["./jest.setup.ts"]
+  setupFiles: ['./jest.setup.ts'],
 };
