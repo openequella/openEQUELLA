@@ -58,13 +58,13 @@ const LeftSideBadge = styled(Badge)({
   },
 });
 
-const AddAllIcon = (): JSX.Element => (
+const AddAllIcon = (): React.JSX.Element => (
   <LeftSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
     <ChevronRightIcon fontSize="large" />
   </LeftSideBadge>
 );
 
-const RemoveAllIcon = (): JSX.Element => (
+const RemoveAllIcon = (): React.JSX.Element => (
   <RightSideBadge badgeContent={<AllInclusiveIcon fontSize="small" />}>
     <ChevronLeftIcon fontSize="large" />
   </RightSideBadge>
@@ -96,7 +96,7 @@ export const ShuffleBox = ({
   options,
   onSelect,
   values,
-}: ShuffleBoxProps): JSX.Element => {
+}: ShuffleBoxProps): React.JSX.Element => {
   const [checkedChoices, setCheckedChoices] = useState<ReadonlySet<string>>(
     RSET.empty,
   );
@@ -145,7 +145,7 @@ export const ShuffleBox = ({
       ({ left, right }) => [left, right],
     );
 
-  const buttons: [string, () => void, JSX.Element][] = [
+  const buttons: [string, () => void, React.JSX.Element][] = [
     [strings.addAll, handleAddAll, <AddAllIcon />],
     [
       strings.addSelected,

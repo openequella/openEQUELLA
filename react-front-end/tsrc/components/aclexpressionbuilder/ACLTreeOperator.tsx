@@ -76,7 +76,7 @@ export const ACLTreeOperator = ({
   onOperatorChange,
   onAddGroup,
   ...other
-}: ACLTreeOperatorProps): JSX.Element => {
+}: ACLTreeOperatorProps): React.JSX.Element => {
   // default selected value is `OR`
   const buildMenuItemForOperator = (operator: ACLOperatorType) => (
     <MenuItem key={operator} selected={operator === "OR"} value={operator}>

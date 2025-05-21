@@ -218,7 +218,7 @@ export interface BaseSearchProps<T> extends CommonEntitySearchProps<T> {
    * Ideally the element will be ListItemText. But other type of elements are still acceptable.
    * The default value will display the id of item in `ListItemText`.
    */
-  itemDetailsToEntry?: (item: T) => JSX.Element;
+  itemDetailsToEntry?: (item: T) => React.JSX.Element;
 }
 
 /**
@@ -357,7 +357,7 @@ const BaseSearch = <T extends BaseSecurityEntity>({
     /**
      * Filter enabled notice for user.
      */
-    const filterNotice = (): JSX.Element => (
+    const filterNotice = (): React.JSX.Element => (
       <Grid key="filterNotice" container spacing={1}>
         <Grid>
           <Tooltip title={filterDetails()}>
@@ -495,11 +495,12 @@ const BaseSearch = <T extends BaseSecurityEntity>({
   /**
    * Convert `ItemDetails` Array to a simple Map which can be used in CheckboxList.
    */
-  const itemDetailsToEntriesMap: (_: T[]) => Map<string, JSX.Element> = flow(
-    A.reduce(new Map<string, JSX.Element>(), (entries, item) =>
-      pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item))),
-    ),
-  );
+  const itemDetailsToEntriesMap: (_: T[]) => Map<string, React.JSX.Element> =
+    flow(
+      A.reduce(new Map<string, React.JSX.Element>(), (entries, item) =>
+        pipe(entries, M.upsertAt(S.Eq)(item.id, itemDetailsToEntry(item))),
+      ),
+    );
 
   const warningMessage = (
     <ListItem>

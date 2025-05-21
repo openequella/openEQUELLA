@@ -15,23 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as ReactDOM from "react-dom";
-import * as React from "react";
+import { AppBar, Button, Toolbar, Typography } from "@mui/material";
 import axios from "axios";
 import "babel-polyfill";
-import { useState } from "react";
-import { parse } from "query-string";
-import {
-  AppBar,
-  Typography,
-  Toolbar,
-  Button,
-  CssBaseline,
-} from "@mui/material";
-import { ThemeProvider } from "@mui/material";
 import { ProviderRegistrationResponse } from "oeq-cloudproviders/registration";
+import { parse } from "query-string";
+import * as React from "react";
+import { useState } from "react";
+import { renderIntegTesterPage } from "./app";
 import { createRegistration } from "./registration";
-import { StyledBody, StyledPaper, StyledRoot, theme } from "./theme";
+import { StyledBody, StyledPaper, StyledRoot } from "./theme";
 
 interface QueryProps {
   register?: string;
@@ -46,8 +39,8 @@ interface TokenResponse {
 }
 
 interface CurrentUserDetails {
-  firstName: String;
-  lastName: String;
+  firstName: string;
+  lastName: string;
 }
 
 interface CloudProviderProps {
@@ -57,10 +50,10 @@ interface CloudProviderProps {
 function CloudProvider({ query }: CloudProviderProps) {
   const [error, setError] = useState<Error | null>(null);
   const [response, setResponse] = useState<ProviderRegistrationResponse | null>(
-    null
+    null,
   );
   const [currentUser, setCurrentUser] = useState<CurrentUserDetails | null>(
-    null
+    null,
   );
 
   async function registerCP(url: string) {
@@ -94,9 +87,9 @@ function CloudProvider({ query }: CloudProviderProps) {
                 "X-Authorization":
                   "access_token=" + tokenResponse.data.access_token,
               },
-            }
+            },
           )
-          .then((resp) => setCurrentUser(resp.data))
+          .then((resp) => setCurrentUser(resp.data)),
       )
       .catch((error: Error) => setError(error));
   }
@@ -168,12 +161,7 @@ function CloudProvider({ query }: CloudProviderProps) {
   );
 }
 
-ReactDOM.render(
-  <>
-    <CssBaseline />
-    <ThemeProvider theme={theme}>
-      <CloudProvider query={parse(window.location.search)} />
-    </ThemeProvider>
-  </>,
-  document.getElementById("app")
+renderIntegTesterPage(
+  "cloud",
+  <CloudProvider query={parse(window.location.search)} />,
 );

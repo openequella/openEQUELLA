@@ -129,13 +129,12 @@ export interface SearchResultListProps {
    */
   exportProps: {
     isExportPermitted: boolean;
-    linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
   /**
    * Additional components to be displayed in the CardHeader.
    */
-  additionalHeaders?: JSX.Element[];
+  additionalHeaders?: React.JSX.Element[];
 }
 
 const searchPageStrings = languageStrings.searchpage;
@@ -162,7 +161,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps: { isExportPermitted, linkRef, exportLinkProps },
+  exportProps: { isExportPermitted, exportLinkProps },
   useShareSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
@@ -219,7 +218,7 @@ export const SearchResultList = ({
             </Grid>
             {isExportPermitted && (
               <Grid>
-                <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
+                <ExportSearchResultLink {...exportLinkProps} />
               </Grid>
             )}
             {isMdDown && (

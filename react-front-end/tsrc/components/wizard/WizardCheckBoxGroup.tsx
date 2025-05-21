@@ -45,7 +45,7 @@ export const WizardCheckBoxGroup = (props: WizardCheckBoxGroupProps) => {
   const buildOption = ({
     text,
     value,
-  }: OEQ.WizardCommonTypes.WizardControlOption): JSX.Element => (
+  }: OEQ.WizardCommonTypes.WizardControlOption): React.JSX.Element => (
     <FormControlLabel
       label={text}
       control={

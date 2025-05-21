@@ -54,7 +54,7 @@ export const KalturaPlayerEmbed = ({
   dimensions = { width: 560, height: 395 }, // default to the standard V7 player dimensions
   playerDetails,
 }: KalturaPlayerEmbedProps) => {
-  const divElem = useRef<HTMLElement>();
+  const divElem = useRef<HTMLElement>(null);
   const [playerId] = useState<string>(`kaltura_player_${Date.now()}`);
 
   useEffect(() => {

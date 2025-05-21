@@ -35,6 +35,10 @@ export interface ExportSearchResultLinkProps {
    * `true` to show a complete indicator and disable additional clicking.
    */
   alreadyExported: boolean;
+  /**
+   * Ref of HTMLAnchorElement to be used in the hidden link for downloading search result.
+   */
+  linkRef: React.Ref<HTMLAnchorElement>;
 }
 
 const exportStrings = languageStrings.searchpage.export;
@@ -43,10 +47,12 @@ const exportStrings = languageStrings.searchpage.export;
  * Build a Download icon button wrapped by a link to export a search result,
  * or a Tick icon to indicate the search result is downloaded already.
  */
-export const ExportSearchResultLink = React.forwardRef<
-  HTMLAnchorElement,
-  ExportSearchResultLinkProps
->(({ alreadyExported, url, onExport }, linkRef) => {
+export const ExportSearchResultLink = ({
+  alreadyExported,
+  url,
+  onExport,
+  linkRef,
+}: ExportSearchResultLinkProps) => {
   return alreadyExported ? (
     // Just need an Icon instead of an Icon button.
     <Tooltip title={exportStrings.exportCompleted}>
@@ -65,4 +71,4 @@ export const ExportSearchResultLink = React.forwardRef<
       <a hidden download href={url} ref={linkRef} />
     </>
   );
-});
+};

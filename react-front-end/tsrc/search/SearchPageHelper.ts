@@ -28,6 +28,7 @@ import { History, Location } from "history";
 import * as t from "io-ts";
 import * as td from "io-ts-types";
 import { pick } from "lodash";
+import * as React from "react";
 import { createContext } from "react";
 import type {
   FieldValueMap,
@@ -200,7 +201,7 @@ export interface SearchPageHeaderConfig {
   /**
    * Additional components displayed in the CardHeader.
    */
-  additionalHeaders?: JSX.Element[];
+  additionalHeaders?: React.JSX.Element[];
   /**
    * Customised options for sorting the search result.
    */

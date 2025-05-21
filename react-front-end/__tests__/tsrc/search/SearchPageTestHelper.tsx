@@ -465,8 +465,8 @@ export const changeQuery = async (
 
   const queryBar = getQueryBar(container);
 
+  await fakeTimerUser.type(queryBar, query);
   await act(async () => {
-    await fakeTimerUser.type(queryBar, query);
     jest.advanceTimersByTime(1000);
   });
 

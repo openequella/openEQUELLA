@@ -297,7 +297,7 @@ export const SearchResultAttachmentsList = ({
   const isAttachmentSelectable = (broken: boolean) =>
     inSelectionSession && isItemLive && !broken;
 
-  const buildSkeletonList = (howMany: number): JSX.Element[] =>
+  const buildSkeletonList = (howMany: number): React.JSX.Element[] =>
     pipe(
       NEA.range(1, howMany),
       NEA.map((id) => (
@@ -374,7 +374,7 @@ export const SearchResultAttachmentsList = ({
     </ListItem>
   );
 
-  const buildAttachmentList = (): JSX.Element => (
+  const buildAttachmentList = (): React.JSX.Element => (
     <List disablePadding className={classes.attachmentListItem}>
       {error
         ? buildErrorListItem(error)

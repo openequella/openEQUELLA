@@ -46,7 +46,7 @@ export const WizardEditBox = ({
   rows,
   value,
   onChange,
-}: WizardEditBoxProps): JSX.Element => (
+}: WizardEditBoxProps): React.JSX.Element => (
   <>
     <WizardLabel
       mandatory={mandatory}

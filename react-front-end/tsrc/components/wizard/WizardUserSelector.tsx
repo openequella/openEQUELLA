@@ -91,7 +91,7 @@ interface ListItemUserProps {
 const ListItemUser = ({
   onDelete,
   userDetails: { firstName, lastName, username },
-}: ListItemUserProps): JSX.Element => (
+}: ListItemUserProps): React.JSX.Element => (
   <ListItem>
     <ListItemIcon>
       <AccountCircleIcon />
@@ -275,7 +275,7 @@ export const WizardUserSelector = ({
             {!RSET.isEmpty(users) && <Divider />}
             {pipe(
               fullUsersArray,
-              RA.map<OEQ.UserQuery.UserDetails, JSX.Element>(
+              RA.map<OEQ.UserQuery.UserDetails, React.JSX.Element>(
                 ({ id, firstName, lastName, username }) => (
                   <ListItemUser
                     key={id}

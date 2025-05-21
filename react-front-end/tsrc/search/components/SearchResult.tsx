@@ -164,7 +164,7 @@ export interface SearchResultProps {
    * Custom action buttons to be displayed. Each button will be separated by a vertical divider,
    * and they are displayed next to the FavoriteIcon.
    */
-  customActionButtons?: JSX.Element[];
+  customActionButtons?: React.JSX.Element[];
   /**
    * Custom handler for clicking the title of each SearchResult.
    */
@@ -237,7 +237,7 @@ export default function SearchResult({
 
   const history = useHistory();
 
-  const [drmDialog, setDrmDialog] = useState<JSX.Element | undefined>(
+  const [drmDialog, setDrmDialog] = useState<React.JSX.Element | undefined>(
     undefined,
   );
   const [drmCheckOnSuccessHandler, setDrmCheckOnSuccessHandler] = useState<

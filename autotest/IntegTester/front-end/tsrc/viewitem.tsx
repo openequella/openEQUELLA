@@ -15,12 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as ReactDOM from "react-dom";
 import * as React from "react";
 import "babel-polyfill";
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material";
-import { StyledRoot, theme } from "./theme";
+import { renderIntegTesterPage } from "./app";
+import { StyledRoot } from "./theme";
 
 interface Props {
   attachment?: string;
@@ -38,12 +36,4 @@ function ViewItem({ query: q }: ViewItemProps) {
   return <StyledRoot id="testCloudProvider">{JSON.stringify(q)}</StyledRoot>;
 }
 
-ReactDOM.render(
-  <>
-    <CssBaseline />
-    <ThemeProvider theme={theme}>
-      <ViewItem query={postValues} />
-    </ThemeProvider>
-  </>,
-  document.getElementById("app")
-);
+renderIntegTesterPage("viewitem", <ViewItem query={postValues} />);
