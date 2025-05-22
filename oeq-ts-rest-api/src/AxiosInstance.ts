@@ -23,8 +23,7 @@ import { validate } from './Utils';
 const axios = Axios.create();
 
 /**
- * Returns an Axios instance. Being a function for the ease of mocking in tests where Cookie Jar
- * is required in the Axios instance.
+ * Provides the AxiosInstance used for all calls in the library.
  */
 export const axiosInstance = (): AxiosInstance => axios;
 
