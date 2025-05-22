@@ -44,7 +44,7 @@ test("That having logged in, we're able to properly log out.", async () => {
   );
   expect(userDetails).toHaveProperty('username', TC.USERNAME);
 
-  await OEQ.Auth.logout(TC.API_PATH);
+  await logout();
   const guestDetails = await OEQ.LegacyContent.getCurrentUserDetails(
     TC.API_PATH
   );

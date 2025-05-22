@@ -21,7 +21,7 @@ import {
   listAdvancedSearches,
 } from '../src/AdvancedSearch';
 import * as TC from './TestConfig';
-import {logout} from "./TestUtils";
+import { logout } from "./TestUtils";
 
 const API_PATH = TC.API_PATH_VANILLA;
 

@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {AxiosInstance} from "axios";
-import type {CookieJar} from "tough-cookie";
+import type { AxiosInstance } from "axios";
+import type { CookieJar } from "tough-cookie";
 import * as OEQ from '../src';
 import { axiosInstance } from "../src/AxiosInstance";
 import * as TC from './TestConfig';
@@ -24,7 +24,7 @@ import * as TC from './TestConfig';
 /**
  * Executes a logout request and then clears all cookies if the request succeeds.
  */
-export const logout = () => {
+export const logout =  (): Promise<void> =>
   OEQ.Auth.logout(TC.API_PATH).then(() => {
     console.log('Clearing all cookies.');
 
@@ -32,4 +32,3 @@ export const logout = () => {
     const defaultConfig: AxiosInstance['defaults'] & { jar?: CookieJar } = mockedAxios.defaults;
     defaultConfig.jar?.removeAllCookiesSync();
   });
-}
