@@ -56,11 +56,9 @@ export const login = (
     });
 
 /**
- * Executes a simple logout on the specified oEQ server, which results in the session (identified by
- * JSESSIONID cookie) be reset to a guest login.
+ * Executes a simple logout on the specified oEQ server.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param clearCookies Typically only for testing or running on NodeJS, but will clear the cookie JAR after logout
  */
 export const logout = (apiBasePath: string): Promise<void> =>
   PUT(apiBasePath + '/auth/logout');
