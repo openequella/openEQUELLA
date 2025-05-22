@@ -18,10 +18,11 @@
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
 import { ThemeSettings } from '../src/Theme';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH));
+afterAll(() => logout());
 
 describe('Theme settings', () => {
   let settingsAtStart: ThemeSettings;

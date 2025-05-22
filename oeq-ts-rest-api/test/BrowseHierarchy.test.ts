@@ -17,10 +17,11 @@
  */
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH));
+afterAll(() => logout());
 
 describe('Browse hierarchy', () => {
   it('should be able to get all root hierarchies', async () => {

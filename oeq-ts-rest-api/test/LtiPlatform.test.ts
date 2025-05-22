@@ -18,6 +18,7 @@
 import * as OEQ from '../src';
 import * as LtiPlatformModule from '../src/LtiPlatform';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 const LTI_ROLE_TEACHER =
   'http://purl.imsglobal.org/vocab/lis/v2/membership#Teacher';
@@ -49,7 +50,7 @@ const mockConvertToRawLtiPlatform = jest.spyOn(
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH));
+afterAll(() => logout());
 
 describe('getAllPlatforms', () => {
   it('lists all the LTI platforms for the Institution', async () => {

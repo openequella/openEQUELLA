@@ -21,12 +21,13 @@ import {
   listAdvancedSearches,
 } from '../src/AdvancedSearch';
 import * as TC from './TestConfig';
+import {logout} from "./TestUtils";
 
 const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(API_PATH));
+afterAll(() => logout());
 
 describe('listAdvancedSearches', () => {
   it('lists the available advanced searches in an institution', async () =>
