@@ -21,7 +21,7 @@ import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 describe('Browse hierarchy', () => {
   it('should be able to get all root hierarchies', async () => {

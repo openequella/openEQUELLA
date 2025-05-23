@@ -25,7 +25,7 @@ const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(API_PATH));
 
 describe('/userquery/search', () => {
   test.each<keyof SearchResult>(['users', 'roles', 'groups'])(

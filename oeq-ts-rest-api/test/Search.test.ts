@@ -24,7 +24,7 @@ import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 const STATUS_LIVE = 'LIVE';
 const STATUS_PERSONAL = 'PERSONAL';

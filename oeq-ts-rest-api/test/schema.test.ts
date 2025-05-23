@@ -22,7 +22,7 @@ import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 describe('Retrieving schemas', () => {
   it('should be possible get schemas with no params', () => {

@@ -22,7 +22,7 @@ import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 describe('listMimeTypes', () => {
   it('lists MIME types for the collection', async () => {

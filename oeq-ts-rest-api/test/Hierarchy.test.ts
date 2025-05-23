@@ -51,7 +51,7 @@ const checkKeyResource = async (keyResourceExists: boolean) => {
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 describe('Hierarchy', () => {
   it('should be able to get ACLs for a hierarchy topic', async () => {

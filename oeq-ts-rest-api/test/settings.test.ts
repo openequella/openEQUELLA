@@ -22,7 +22,7 @@ import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 test("That we're able to retrieve general settings", async () => {
   const settings = await OEQ.Settings.getGeneralSettings(TC.API_PATH);

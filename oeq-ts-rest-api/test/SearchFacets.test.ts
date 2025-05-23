@@ -27,7 +27,7 @@ const API_PATH = TC.API_PATH_FACET;
 const defaultStatus: ItemStatus[] = ['LIVE'];
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => logout());
+afterAll(() => logout(API_PATH));
 
 describe('Search for facets', () => {
   const nodeKeyword = '/item/keywords/keyword';

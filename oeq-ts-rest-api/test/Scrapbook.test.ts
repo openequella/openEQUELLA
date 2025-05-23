@@ -21,7 +21,7 @@ import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => logout());
+afterAll(() => logout(TC.API_PATH));
 
 describe('Scrapbook', () => {
   it('should be possible to delete a Scrapbook Item', async () => {

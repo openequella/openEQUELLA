@@ -19,17 +19,18 @@ import type { AxiosInstance } from 'axios';
 import type { CookieJar } from 'tough-cookie';
 import * as OEQ from '../src';
 import { axiosInstance } from '../src/AxiosInstance';
-import * as TC from './TestConfig';
 
 /**
  * Executes a logout request and then clears all cookies if the request succeeds.
  */
-export const logout = (): Promise<void> =>
-  OEQ.Auth.logout(TC.API_PATH).then(() => {
-    console.log('Clearing all cookies.');
+export const logout = (apiBasePath: string, clearCookies: boolean = true): Promise<void> =>
+  OEQ.Auth.logout(apiBasePath).then(() => {
+    if(clearCookies) {
+      console.log('Clearing all cookies.');
 
-    const mockedAxios = axiosInstance();
-    const defaultConfig: AxiosInstance['defaults'] & { jar?: CookieJar } =
-      mockedAxios.defaults;
-    defaultConfig.jar?.removeAllCookiesSync();
+      const mockedAxios = axiosInstance();
+      const defaultConfig: AxiosInstance['defaults'] & { jar?: CookieJar } =
+        mockedAxios.defaults;
+      defaultConfig.jar?.removeAllCookiesSync();
+    }
   });
