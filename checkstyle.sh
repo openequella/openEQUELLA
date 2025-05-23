@@ -3,7 +3,7 @@
 ## Run Checkstyle for all the Java files in the project.
 ## If the number of errors is either greater or smaller than the threshold, output an error message and exit with status 1.
 
-thresholdNumber=431
+thresholdNumber=430
 
 result=$(checkstyle -c checkstyle-config.xml -o checkstyle-report.txt . 2>&1)
 echo $result
