@@ -23,9 +23,12 @@ import { axiosInstance } from '../src/AxiosInstance';
 /**
  * Executes a logout request and then clears all cookies if the request succeeds.
  */
-export const logout = (apiBasePath: string, clearCookies: boolean = true): Promise<void> =>
+export const logout = (
+  apiBasePath: string,
+  clearCookies: boolean = true
+): Promise<void> =>
   OEQ.Auth.logout(apiBasePath).then(() => {
-    if(clearCookies) {
+    if (clearCookies) {
       console.log('Clearing all cookies.');
 
       const mockedAxios = axiosInstance();
