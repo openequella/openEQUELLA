@@ -134,7 +134,7 @@
     "jest-environment-jsdom": "29.7.0",
     "mkdirp": "3.0.1",
     "npm-run-all2": "8.0.3",
-    "parcel": "2.14.4",
+    "parcel": "2.15.2",
     "punycode": "2.3.1",
     "rewire": "7.0.0",
     "storybook": "8.6.14",
