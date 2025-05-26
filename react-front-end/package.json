@@ -12,8 +12,8 @@
     "tools": "target/tools"
   },
   "engines": {
-    "node": "22.15.0",
-    "npm": "11.3.0"
+    "node": "22.16.0",
+    "npm": "11.4.1"
   },
   "targets": {
     "languageBundle": {
@@ -92,14 +92,14 @@
     "@babel/core": "7.26.10",
     "@babel/preset-react": "7.26.3",
     "@babel/preset-typescript": "7.27.0",
-    "@html-validate/jest-config": "3.12.0",
-    "@storybook/addon-a11y": "8.6.12",
-    "@storybook/addon-controls": "8.6.12",
-    "@storybook/addon-essentials": "8.6.12",
+    "@html-validate/jest-config": "3.12.1",
+    "@storybook/addon-a11y": "8.6.14",
+    "@storybook/addon-controls": "8.6.14",
+    "@storybook/addon-essentials": "8.6.14",
     "@storybook/addon-webpack5-compiler-swc": "3.0.0",
-    "@storybook/cli": "8.6.12",
-    "@storybook/react": "8.6.12",
-    "@storybook/react-webpack5": "8.6.12",
+    "@storybook/cli": "8.6.14",
+    "@storybook/react": "8.6.14",
+    "@storybook/react-webpack5": "8.6.14",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",
@@ -133,12 +133,12 @@
     "jest-config": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
     "mkdirp": "3.0.1",
-    "npm-run-all2": "7.0.2",
+    "npm-run-all2": "8.0.3",
     "parcel": "2.14.4",
     "punycode": "2.3.1",
     "rewire": "7.0.0",
-    "storybook": "8.6.12",
-    "ts-jest": "29.3.1",
+    "storybook": "8.6.14",
+    "ts-jest": "29.3.4",
     "typescript": "5.8.3"
   }
 }
