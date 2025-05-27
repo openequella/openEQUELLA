@@ -20,13 +20,14 @@
 import * as OEQ from '../src';
 import { ItemStatus } from '../src/Common';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 import JestMatchers = jest.JestMatchers;
 
 const API_PATH = TC.API_PATH_FACET;
 const defaultStatus: ItemStatus[] = ['LIVE'];
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => logout(API_PATH));
 
 describe('Search for facets', () => {
   const nodeKeyword = '/item/keywords/keyword';

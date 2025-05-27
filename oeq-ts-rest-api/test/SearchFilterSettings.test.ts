@@ -21,6 +21,7 @@ import * as TC from './TestConfig';
 import { BatchOperationResponse } from '../src/BatchOperationResponse';
 import { MimeTypeFilter } from '../src/SearchFilterSettings';
 import * as A from 'fp-ts/Array';
+import { logout } from './TestUtils';
 
 // Use a different institution for testing, because this test is highly unstable on Postgres 13.
 // It is easily affected by other Search tests(eg. Search, SearchSettings, SearchFacets).
@@ -28,7 +29,7 @@ import * as A from 'fp-ts/Array';
 const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => logout(API_PATH));
 
 describe('SearchFilterSettings', () => {
   let filterSettingsAtStart: MimeTypeFilter[];

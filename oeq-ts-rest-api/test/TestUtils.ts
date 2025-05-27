@@ -15,18 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { AxiosInstance } from 'axios';
+import type { CookieJar } from 'tough-cookie';
 import * as OEQ from '../src';
-import { listRemoteSearches } from '../src/RemoteSearch';
-import * as TC from './TestConfig';
-import { logout } from './TestUtils';
+import { axiosInstance } from '../src/AxiosInstance';
 
-const API_PATH = TC.API_PATH_VANILLA;
+/**
+ * Executes a logout request and then clears all cookies if the request succeeds.
+ */
+export const logout = (
+  apiBasePath: string,
+  clearCookies: boolean = true
+): Promise<void> =>
+  OEQ.Auth.logout(apiBasePath).then(() => {
+    if (clearCookies) {
+      console.log('Clearing all cookies.');
 
-beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
-
-afterAll(() => logout(API_PATH));
-
-describe('listRemoteSearches', () => {
-  it('lists the available remote searches in an institution', async () =>
-    expect((await listRemoteSearches(API_PATH)).length).toBeGreaterThan(0));
-});
+      const mockedAxios = axiosInstance();
+      const defaultConfig: AxiosInstance['defaults'] & { jar?: CookieJar } =
+        mockedAxios.defaults;
+      defaultConfig.jar?.removeAllCookiesSync();
+    }
+  });

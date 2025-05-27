@@ -19,9 +19,10 @@ import * as OEQ from '../src';
 import { BatchOperationResponse } from '../src/BatchOperationResponse';
 import { FacetedSearchClassification } from '../src/FacetedSearchSettings';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 describe('FacetedSearchSettings', () => {
   let facetedSearchClassificationAtStart: FacetedSearchClassification[];

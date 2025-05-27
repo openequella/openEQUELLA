@@ -18,10 +18,11 @@
 import * as OEQ from '../src';
 import { getViewersForMimeType, listMimeTypes } from '../src/MimeType';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 describe('listMimeTypes', () => {
   it('lists MIME types for the collection', async () => {

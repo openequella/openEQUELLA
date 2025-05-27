@@ -15,18 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from '../src';
-import { listRemoteSearches } from '../src/RemoteSearch';
-import * as TC from './TestConfig';
-import { logout } from './TestUtils';
+import Axios from 'axios';
+import { CookieJar } from 'tough-cookie';
+import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
+import * as AI from './src/AxiosInstance';
 
-const API_PATH = TC.API_PATH_VANILLA;
-
-beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
-
-afterAll(() => logout(API_PATH));
-
-describe('listRemoteSearches', () => {
-  it('lists the available remote searches in an institution', async () =>
-    expect((await listRemoteSearches(API_PATH)).length).toBeGreaterThan(0));
-});
+// So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
+// the oEQ security is based on JSESSIONID cookies currently this is key.
+const mockedAxios = axiosCookieJarSupport(
+  Axios.create({ jar: new CookieJar() })
+);
+jest.spyOn(AI, 'axiosInstance').mockImplementation(() => mockedAxios);

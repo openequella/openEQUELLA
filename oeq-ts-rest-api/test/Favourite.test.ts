@@ -23,9 +23,10 @@ import {
   FavouriteItem,
 } from '../src/Favourite';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 describe('FavouriteItem', () => {
   const add = (): Promise<FavouriteItem> => {
