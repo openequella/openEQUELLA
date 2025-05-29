@@ -41,6 +41,12 @@ public interface RemoteAdminService {
 
   void clearStaging(String staging);
 
+  /**
+   * Creates a new staging area for the current user session. This is used to upload files to the
+   * server.
+   *
+   * @return the UUID of the new staging area
+   */
   String createStaging();
 
   SearchResults<Item> searchReducedItems(Search search, int start, int count);

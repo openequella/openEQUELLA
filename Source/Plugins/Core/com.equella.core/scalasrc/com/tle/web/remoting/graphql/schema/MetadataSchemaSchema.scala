@@ -24,7 +24,12 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.MetadataSchemaProvider
-import com.tle.web.remoting.graphql.schema.types.BaseEntityReference
+import com.tle.web.remoting.graphql.schema.types.{
+  BaseEntityReference,
+  EditableEntity,
+  EditableEntitySkeleton,
+  MetadataSchema
+}
 
 import javax.inject.{Inject, Singleton}
 
@@ -51,7 +56,10 @@ class MetadataSchemaSchema extends SchemaProvider {
     metadataSchemaIdForUuid = uuid => schemaProvider.schemaIdForUuid(uuid)
   )
 
-  private val mutations = Mutations()
+  private val mutations = Mutations(
+    metadataSchemaStartEdit = args => schemaProvider.startEdit(args.id),
+    metadataSchemaStartCreate = () => schemaProvider.startCreate()
+  )
 
   case class Queries(
       @GQLDescription("List all metadata schemas")
@@ -69,5 +77,19 @@ class MetadataSchemaSchema extends SchemaProvider {
       withSecurity: Boolean
   )
 
-  case class Mutations()
+  case class Mutations(
+      @GQLDescription(
+        "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+      )
+      metadataSchemaStartEdit: MetadataSchemaStartEditArgs => EditableEntity[MetadataSchema],
+      @GQLDescription(
+        "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+      )
+      metadataSchemaStartCreate: () => EditableEntitySkeleton
+  )
+
+  case class MetadataSchemaStartEditArgs(
+      @GQLDescription("ID of the metadata schema to edit, or none to create a new one")
+      id: Long
+  )
 }

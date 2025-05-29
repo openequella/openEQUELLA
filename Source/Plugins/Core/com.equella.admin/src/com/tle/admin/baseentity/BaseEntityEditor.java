@@ -302,8 +302,10 @@ public abstract class BaseEntityEditor<T extends BaseEntity>
 
     try {
       if (state.isLoaded()) {
+        // If the user is editing ...
         state.setEntity(tool.stopEdit(state.getEntityPack(), false));
       } else {
+        // If the user is adding ...
         T entity = state.getEntity();
         if (Check.isEmpty(entity.getOwner())) {
           entity.setOwner(driver.getLoggedInUserUUID());
