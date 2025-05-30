@@ -209,6 +209,7 @@ export const languageStrings = {
       discard: "Discard",
       dismiss: "Dismiss",
       done: "Done",
+      dragToReorder: "Drag to reorder",
       edit: "Edit",
       enable: "Enable",
       no: "No",

@@ -99,7 +99,7 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
    *
    * @param link a URL to an image thumbnail on the server
    */
-  const buildServerProvidedThumb = (link?: string): JSX.Element =>
+  const buildServerProvidedThumb = (link?: string): React.JSX.Element =>
     link ? (
       <img
         aria-label={thumbLabels.provided}
@@ -116,11 +116,11 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
    *
    * @param mimeType expects values like `image/jpeg` or `video/mpeg` etc.
    */
-  const buildGenericFileThumb = (mimeType?: string): JSX.Element => {
-    const mimeTypeBasedThumb = (type: string): JSX.Element =>
+  const buildGenericFileThumb = (mimeType?: string): React.JSX.Element => {
+    const mimeTypeBasedThumb = (type: string): React.JSX.Element =>
       pipe(
         type,
-        simpleMatch<JSX.Element>({
+        simpleMatch<React.JSX.Element>({
           image: () => (
             <ImageIcon aria-label={thumbLabels.image} {...generalThumbStyles} />
           ),
@@ -141,12 +141,12 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
 
   const buildGenericResourceAttachmentThumb = (
     mimeType?: string,
-  ): JSX.Element =>
+  ): React.JSX.Element =>
     pipe(
       mimeType,
       O.fromNullable,
       O.map(
-        simpleMatch<JSX.Element>({
+        simpleMatch<React.JSX.Element>({
           "equella/item": () => (
             <Web aria-label={thumbLabels.item} {...generalThumbStyles} />
           ),
@@ -165,10 +165,10 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
   const buildGenericThumb = (
     attachmentType: string,
     mimeType?: string,
-  ): JSX.Element =>
+  ): React.JSX.Element =>
     pipe(
       attachmentType,
-      simpleMatch<JSX.Element>({
+      simpleMatch<React.JSX.Element>({
         link: () => (
           <LinkIcon aria-label={thumbLabels.link} {...generalThumbStyles} />
         ),

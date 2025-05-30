@@ -465,7 +465,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, expectedCode);
 
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 
   private int getAvailable(JsonNode result) {

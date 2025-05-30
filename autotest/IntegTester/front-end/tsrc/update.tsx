@@ -15,13 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as ReactDOM from "react-dom";
+import { deepOrange, deepPurple } from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles";
 import * as React from "react";
 import "babel-polyfill";
-import { createTheme } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material";
-import { deepOrange, deepPurple } from "@mui/material/colors";
+import { renderIntegTesterPage } from "./app";
 import { UpdateRegistration } from "./registration";
 
 const theme = createTheme({
@@ -31,12 +29,4 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.render(
-  <>
-    <CssBaseline />
-    <ThemeProvider theme={theme}>
-      <UpdateRegistration />
-    </ThemeProvider>
-  </>,
-  document.getElementById("app")
-);
+renderIntegTesterPage("update", <UpdateRegistration />, theme);

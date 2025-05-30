@@ -38,7 +38,7 @@ export interface CheckboxListProps {
    * program level, and the **values** are used for display purposes.
    * If **value** is react Element it will overwrite the main content which is displayed after checkbox.
    */
-  options: Map<string, string | JSX.Element>;
+  options: Map<string, string | React.JSX.Element>;
   /**
    * The **keys** of the `options` which should be 'checked'/ticked/selected.
    */
@@ -58,7 +58,7 @@ export const CheckboxList = ({
   options,
   checked,
   onChange,
-}: CheckboxListProps): JSX.Element => {
+}: CheckboxListProps): React.JSX.Element => {
   const labelId = (forValue: string): string => `${id}-label-${forValue}`;
 
   const isChecked = (forValue: string): boolean =>
@@ -72,7 +72,10 @@ export const CheckboxList = ({
       {pipe(
         options,
         collectUnOrd(
-          (value: string, content: JSX.Element | string): JSX.Element => (
+          (
+            value: string,
+            content: React.JSX.Element | string,
+          ): React.JSX.Element => (
             <ListItemButton
               key={value}
               dense

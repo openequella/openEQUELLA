@@ -417,7 +417,7 @@ export const defaultSortOrder = (
 export type RenderFunc = (
   item: SearchResultItem,
   highlight: string[],
-) => JSX.Element;
+) => React.JSX.Element;
 
 /**
  * Function to render a standard SearchResult.

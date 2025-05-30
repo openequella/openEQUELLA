@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   jacksonDataFormatYaml,
   // General dependencies
   "com.github.equella.jpf" % "jpf"   % "1.0.7",
-  "com.google.guava"       % "guava" % "32.1.3-jre",
+  "com.google.guava"       % "guava" % "33.4.8-jre",
   springWeb,
   springAop,
   springContext,

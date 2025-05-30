@@ -19,19 +19,21 @@
 package com.tle.core.cloudproviders
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
-import sttp.client._
-import sttp.client.circe._
 import com.tle.beans.cloudproviders.{CloudControlDefinition, ProviderControlDefinition}
 import com.tle.beans.item.attachments.{CustomAttachment, UnmodifiableAttachments}
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService
 import com.tle.legacy.LegacyGuice
-import fs2.Stream
 import org.apache.commons.lang.RandomStringUtils
 import org.slf4j.LoggerFactory
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3._
+import sttp.client3.circe._
 import sttp.model.Uri
+
 import java.util.Collections
 import java.util.concurrent.TimeUnit
 import scala.jdk.CollectionConverters._
@@ -78,7 +80,7 @@ object CloudProviderService {
       serviceUri: ServiceUrl,
       provider: CloudProviderInstance,
       params: Map[String, Any],
-      f: Uri => Request[T, Stream[IO, Byte]]
+      f: Uri => Request[T, Fs2Streams[IO]]
   ): IO[Response[T]] = {
     for {
       uri <- IO.fromEither(
@@ -102,7 +104,7 @@ object CloudProviderService {
             OAuthClientService
               .authorizedRequest(oauthUrl.toString, auth.clientId, auth.clientSecret, req)
           }
-        } else sttpBackend.flatMap(implicit backend => req.send())
+        } else sendRequest(req)
 
     } yield {
       Logger.debug(requestContext + ", response status: " + response.code)

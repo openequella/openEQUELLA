@@ -129,13 +129,12 @@ export interface SearchResultListProps {
    */
   exportProps: {
     isExportPermitted: boolean;
-    linkRef: React.RefObject<HTMLAnchorElement>;
     exportLinkProps: ExportSearchResultLinkProps;
   };
   /**
    * Additional components to be displayed in the CardHeader.
    */
-  additionalHeaders?: JSX.Element[];
+  additionalHeaders?: React.JSX.Element[];
 }
 
 const searchPageStrings = languageStrings.searchpage;
@@ -162,7 +161,7 @@ export const SearchResultList = ({
   onClearSearchOptions,
   onCopySearchLink,
   onSaveSearch,
-  exportProps: { isExportPermitted, linkRef, exportLinkProps },
+  exportProps: { isExportPermitted, exportLinkProps },
   useShareSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
@@ -195,10 +194,10 @@ export const SearchResultList = ({
         title={(title ?? searchPageStrings.subtitle) + ` (${count})`}
         action={
           <Grid container spacing={1} alignItems="center">
-            <Grid item>
+            <Grid>
               <SearchOrderSelect {...orderSelectProps} />
             </Grid>
-            <Grid item>
+            <Grid>
               <Tooltip title={searchPageStrings.newSearchHelperText}>
                 <Button
                   variant="outlined"
@@ -209,7 +208,7 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid item>
+            <Grid>
               <TooltipIconButton
                 title={searchPageStrings.favouriteSearch.title}
                 onClick={onSaveSearch}
@@ -218,12 +217,12 @@ export const SearchResultList = ({
               </TooltipIconButton>
             </Grid>
             {isExportPermitted && (
-              <Grid item>
-                <ExportSearchResultLink {...exportLinkProps} ref={linkRef} />
+              <Grid>
+                <ExportSearchResultLink {...exportLinkProps} />
               </Grid>
             )}
             {isMdDown && (
-              <Grid item>
+              <Grid>
                 <TooltipIconButton
                   title={searchPageStrings.refineSearchPanel.title}
                   onClick={showRefinePanel}
@@ -234,7 +233,7 @@ export const SearchResultList = ({
               </Grid>
             )}
             {!inSelectionSession && useShareSearchButton && (
-              <Grid item>
+              <Grid>
                 <TooltipIconButton
                   title={searchPageStrings.shareSearchHelperText}
                   onClick={onCopySearchLink}
@@ -244,9 +243,7 @@ export const SearchResultList = ({
               </Grid>
             )}
             {additionalHeaders?.map((header) => (
-              <Grid item key={header.key}>
-                {header}
-              </Grid>
+              <Grid key={header.key}>{header}</Grid>
             ))}
           </Grid>
         }
@@ -262,8 +259,8 @@ export const SearchResultList = ({
         {searchResultList}
       </CardContent>
       <CardActions>
-        <Grid container justifyContent="center">
-          <Grid item>
+        <Grid container justifyContent="center" size="grow">
+          <Grid>
             <SearchPagination
               count={count}
               currentPage={currentPage}

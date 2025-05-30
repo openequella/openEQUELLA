@@ -166,7 +166,7 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
-    JsonNode result = mapper.readTree(method.getResponseBody());
+    JsonNode result = mapper.readTree(method.getResponseBodyAsStream());
     assertEquals(result.get(0).asText(), "43e60e9a-a3ed-497d-b79d-386fed23675c");
   }
 
@@ -179,7 +179,7 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     final GetMethod method = new GetMethod(url);
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, httpCode);
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 
   private JsonNode browseHierarchy(String compoundUuid, int httpCode) throws IOException {

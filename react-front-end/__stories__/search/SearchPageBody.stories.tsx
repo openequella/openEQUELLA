@@ -23,7 +23,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryFn, Decorator } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
 import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
@@ -62,10 +62,12 @@ const searchPageBodyProps: SearchPageBodyProps = {
 };
 
 const buildSearchContextDecorator =
-  (searchContextProps: SearchContextProps = defaultSearchContextProps) =>
-  (Story: StoryFn) => (
+  (
+    searchContextProps: SearchContextProps = defaultSearchContextProps,
+  ): Decorator =>
+  (Story) => (
     <SearchContext.Provider value={searchContextProps}>
-      <Story />
+      {Story()}
     </SearchContext.Provider>
   );
 

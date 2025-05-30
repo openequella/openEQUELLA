@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TreeItemProps } from "@mui/x-tree-view/TreeItem";
+import type { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { Typography } from "@mui/material";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
@@ -53,12 +53,12 @@ export interface ACLTreeRecipientProps extends TreeItemProps {
  * Tree item (node) which represents an ACL Recipient.
  */
 export const ACLTreeRecipient = ({
-  nodeId,
+  itemId,
   recipient,
   onDelete,
   aclEntityResolvers = defaultACLEntityResolvers,
   ...other
-}: ACLTreeRecipientProps): JSX.Element => {
+}: ACLTreeRecipientProps): React.JSX.Element => {
   const [expressionName, setExpressionName] = useState(
     recipient.name ?? showRecipient(recipient),
   );
@@ -89,7 +89,7 @@ export const ACLTreeRecipient = ({
 
   return (
     <ACLTreeItem
-      nodeId={nodeId}
+      itemId={itemId}
       label={treeRecipientLabel()}
       classes={{
         root: classes.root,

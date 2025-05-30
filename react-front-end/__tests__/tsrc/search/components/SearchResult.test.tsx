@@ -84,7 +84,7 @@ describe("<SearchResult/>", () => {
     screenWidth = 1280,
   }: {
     itemResult: OEQ.Search.SearchResultItem;
-    customActionButtons?: JSX.Element[];
+    customActionButtons?: React.JSX.Element[];
     customOnClickTitleHandler?: () => void;
     screenWidth?: number;
   }) => {

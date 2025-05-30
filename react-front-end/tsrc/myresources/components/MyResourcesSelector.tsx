@@ -59,7 +59,7 @@ export const MyResourcesSelector = ({
 }: MyResourcesSelectorProps) => {
   const { scrapbookEnabled } = useContext(AppContext).currentUser ?? guestUser;
 
-  const options: JSX.Element[] = pipe(
+  const options: React.JSX.Element[] = pipe(
     defaultOptions,
     // When access to Scrapbook is not enabled, drop the option of Scrapbook.
     M.filter((value) => scrapbookEnabled || value !== scrapbook),
@@ -68,7 +68,7 @@ export const MyResourcesSelector = ({
         {value}
       </MenuItem>
     )),
-    M.values<JSX.Element>(OrdAsIs),
+    M.values<React.JSX.Element>(OrdAsIs),
   );
 
   return (

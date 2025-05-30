@@ -245,7 +245,7 @@ const HierarchyPage = ({
       pageTitle={hierarchyPageTitle}
     >
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           {hierarchy ? (
             <HierarchyPanel hierarchy={hierarchy} />
           ) : (
@@ -257,7 +257,7 @@ const HierarchyPage = ({
           O.fromNullable(hierarchy),
           O.fold(
             () => (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <KeyResourcePanelSkeleton />
               </Grid>
             ),
@@ -266,7 +266,7 @@ const HierarchyPage = ({
                 h.keyResources,
                 O.fromPredicate(A.isNonEmpty),
                 O.map((keyResources) => (
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <KeyResourcePanel
                       keyResources={keyResources}
                       onPinIconClick={
@@ -289,7 +289,7 @@ const HierarchyPage = ({
         )}
 
         {showSearchResult && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <SearchContext.Consumer>
               {(_: SearchContextProps) => (
                 <SearchPageBody

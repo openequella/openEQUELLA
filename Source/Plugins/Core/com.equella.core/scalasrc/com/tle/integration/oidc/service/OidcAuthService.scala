@@ -19,12 +19,13 @@
 package com.tle.integration.oidc.service
 
 import cats.implicits._
+import cats.effect.unsafe.implicits.global
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.valuebean.DefaultUserBean
 import com.tle.common.usermanagement.user.{DefaultUserState, WebAuthenticationDetails}
 import com.tle.core.guice.Bind
-import com.tle.core.httpclient.sttpBackend
+import com.tle.core.httpclient.sendRequest
 import com.tle.core.services.user.UserService
 import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.decodeJwt
@@ -57,8 +58,14 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.parser._
 import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
-import sttp.client.circe.asJson
-import sttp.client.{DeserializationError, HttpError, ResponseError, UriContext, basicRequest}
+import sttp.client3.circe.asJson
+import sttp.client3.{
+  DeserializationException,
+  HttpError,
+  ResponseException,
+  UriContext,
+  basicRequest
+}
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
@@ -227,8 +234,7 @@ class OidcAuthService @Inject() (
 
     // Catch the potential network level errors thrown from sttp backend. Protocol level errors will be handled by 'handleTokenError'.
     Try {
-      sttpBackend
-        .flatMap(implicit backend => tokenRequest.send())
+      sendRequest(tokenRequest)
         .map(_.body)
         .unsafeRunSync()
         .leftMap(handleTokenError)
@@ -379,8 +385,8 @@ class OidcAuthService @Inject() (
     * into two categories: `DeserializationError` and `HttpError`. Depending on the received error
     * type, return either an instance of [[GeneralError]] or [[TokenError]].
     */
-  private def handleTokenError(error: ResponseError[Error]): OAuth2Error = error match {
-    case DeserializationError(_, error) =>
+  private def handleTokenError(error: ResponseException[String, Error]): OAuth2Error = error match {
+    case DeserializationException(_, error) =>
       ServerError(
         s"An ID Token has been issued but can't be retrieved from an unexpected response format: ${error.getMessage}"
       )

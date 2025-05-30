@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.tle.common.NameValue;
 import com.tle.webtests.framework.PageContext;
+import com.tle.webtests.framework.TestUtils;
 import com.tle.webtests.framework.factory.RefreshingFieldDecorator;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -561,13 +562,12 @@ public abstract class AbstractPage<T extends PageObject>
   }
 
   /**
-   * Force click on a button using JavaScript. This is useful when the button can't be clicked by
-   * calling webElement.click() function due to some unknown reasons.
+   * Force click on a button using JavaScript.
    *
    * @param button WebElement to be clicked.
    */
   public void forceButtonClickWithJS(WebElement button) {
-    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+    TestUtils.forceButtonClickWithJS((JavascriptExecutor) driver, button);
   }
 
   /**

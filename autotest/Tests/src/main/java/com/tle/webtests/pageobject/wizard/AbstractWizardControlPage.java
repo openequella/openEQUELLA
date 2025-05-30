@@ -66,7 +66,7 @@ public abstract class AbstractWizardControlPage<T extends AbstractWizardControlP
   public void editbox(int ctrlNum, String text) {
     WebElement field =
         waiter.until(
-            ExpectedConditions.visibilityOfElementLocated(By.name("c" + getControlNum(ctrlNum))));
+            ExpectedConditions.elementToBeClickable(By.name("c" + getControlNum(ctrlNum))));
     field.clear();
     field.sendKeys(text);
   }

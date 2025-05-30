@@ -81,10 +81,10 @@ const schemaDefinition = {
 export const testSchemaNode = buildSchemaTree(schemaDefinition, "xml");
 
 export const jsxOutput = (
-  <TreeItem key="xml" label="xml" nodeId="/xml">
-    <TreeItem label="child1" nodeId="/xml/child1">
-      <TreeItem label="child2" nodeId="/xml/child1/child2">
-        <TreeItem label="child3" nodeId="/xml/child1/child2/child3" />
+  <TreeItem key="xml" label="xml" itemId="/xml">
+    <TreeItem label="child1" itemId="/xml/child1">
+      <TreeItem label="child2" itemId="/xml/child1/child2">
+        <TreeItem label="child3" itemId="/xml/child1/child2/child3" />
       </TreeItem>
     </TreeItem>
   </TreeItem>

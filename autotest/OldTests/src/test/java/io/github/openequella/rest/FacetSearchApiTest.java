@@ -145,7 +145,7 @@ public class FacetSearchApiTest extends AbstractRestApiTest {
     method.setQueryString(params);
     int statusCode = makeClientRequest(method);
     assertEquals(HttpStatus.SC_OK, statusCode);
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 
   private void assertResult(JsonNode result) {

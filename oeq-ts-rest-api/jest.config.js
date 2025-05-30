@@ -18,10 +18,16 @@
 // For a detailed explanation regarding each configuration property, visit:
 // https://jestjs.io/docs/en/configuration.html
 
-// eslint-disable-next-line no-undef
 module.exports = {
   clearMocks: true,
   coverageDirectory: 'coverage',
-  preset: 'ts-jest',
+  // Required (instead of plan 'ts-jest') to support axios-cookiejar-support.
+  preset: 'ts-jest/presets/js-with-babel',
   testEnvironment: 'node',
+  transformIgnorePatterns: [
+    // Using the following negative look-ahead, we're requesting that the transforms only apply to `axios-cookiejar-support`.
+    // This was required because axios-cookiejar-support only supports ESM from v6.
+    'node_modules/(?!axios-cookiejar-support)/',
+  ],
+  setupFiles: ['./jest.setup.ts'],
 };

@@ -3,6 +3,7 @@ hibernate.dialect = com.tle.hibernate.dialect.ExtendedOracle9iDialect
 hibernate.connection.url = jdbc:oracle:thin:@${datasource/host}:${datasource/port}${datasource/idtype}${datasource/database}
 hibernate.connection.username = ${datasource/username}
 hibernate.connection.password = ${datasource/password}
+hibernate.connection.oracle.net.keepAlive=true
 
 # Needed to align with previous installs and certain database vendors
 hibernate.id.new_generator_mappings=false

@@ -112,14 +112,14 @@ export const AppContext = React.createContext<AppContextProps>({
 export const withAppContext =
   <T,>(
     Page: React.ComponentType<T & AppContextProps>,
-  ): ((props: T) => JSX.Element) =>
+  ): ((props: T) => React.JSX.Element) =>
   (props: T) => (
     <AppContext.Consumer>
       {(appContextProps) => <Page {...props} {...appContextProps} />}
     </AppContext.Consumer>
   );
 
-const App = ({ entryPage }: AppProps): JSX.Element => {
+const App = ({ entryPage }: AppProps): React.JSX.Element => {
   console.debug("START: <App!!>");
 
   const [currentUser, setCurrentUser] =

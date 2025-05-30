@@ -63,6 +63,6 @@ public class Search2ApiVariationTest extends AbstractRestApiTest {
       return mapper.createObjectNode();
     }
 
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 }

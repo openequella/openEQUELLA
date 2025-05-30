@@ -201,14 +201,14 @@ export const UniversalFileUploader = ({
 
   return (
     <Grid container id="uploads" direction="column" spacing={1}>
-      <Grid item className="uploadsprogress">
+      <Grid className="uploadsprogress">
         <UploadList
           files={[...uploadedFiles, ...uploadingFiles]}
           buildActions={buildActions}
           noFileSelectedText={noFileSelected}
         />
       </Grid>
-      <Grid item {...getRootProps()}>
+      <Grid {...getRootProps()}>
         <input
           id={`${ctrlId}_fileUpload`}
           {...getInputProps({
@@ -225,7 +225,7 @@ export const UniversalFileUploader = ({
         />
         <div className="filedrop">{strings.drop}</div>
       </Grid>
-      <Grid item>
+      <Grid>
         <AddScrapBookButton />
       </Grid>
     </Grid>

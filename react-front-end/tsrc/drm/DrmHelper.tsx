@@ -58,7 +58,7 @@ export const createDrmDialog = async (
   updateDrmStatus: (status: OEQ.Search.DrmStatus) => void,
   closeDrmDialog: () => void,
   drmProtectedHandler: () => void,
-): Promise<JSX.Element | undefined> => {
+): Promise<React.JSX.Element | undefined> => {
   const { isAuthorised, termsAccepted } = drmStatus;
   if (isAuthorised) {
     if (termsAccepted) {

@@ -31,7 +31,7 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
     for (MimeTypeDetail detail : getMimeTypes()) {
       final HttpMethod method = new GetMethod(buildViewerConfigPath(detail.getMimeType()));
       assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
-      JsonNode viewConfig = mapper.readTree(method.getResponseBodyAsString());
+      JsonNode viewConfig = mapper.readTree(method.getResponseBodyAsStream());
       assertNotNull(viewConfig.findValue("defaultViewer"));
     }
   }
@@ -47,7 +47,7 @@ public class MimeTypeApiTest extends AbstractRestApiTest {
     final HttpMethod method = new GetMethod(MIMETYPE_API_ENDPOINT);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
     return mapper.readValue(
-        method.getResponseBodyAsString(), new TypeReference<List<MimeTypeDetail>>() {});
+        method.getResponseBodyAsStream(), new TypeReference<List<MimeTypeDetail>>() {});
   }
 
   private String buildViewerConfigPath(String mimeType) {

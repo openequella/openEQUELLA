@@ -8,13 +8,13 @@
     "gen": "ts-node src/index.ts --source ../src --dest ../src/gen  && eslint --fix ../src"
   },
   "devDependencies": {
-    "@types/node": "18.19.86",
+    "@types/node": "22.15.23",
     "@types/yargs": "17.0.33",
-    "ts-morph": "25.0.1",
+    "ts-morph": "26.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "yargs": "17.7.2",
-    "fp-ts": "2.16.9",
+    "fp-ts": "2.16.10",
     "io-ts": "2.2.22",
     "newtype-ts": "0.3.5",
     "monocle-ts": "2.3.13",

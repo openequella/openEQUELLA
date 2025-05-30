@@ -121,7 +121,7 @@ export interface SearchPageBodyProps {
   /**
    * Any panel that will be rendered in between SearchBar and SearchResultList.
    */
-  additionalPanels?: JSX.Element[];
+  additionalPanels?: React.JSX.Element[];
   /**
    * Configuration for Search page headers, including whether to enable some common components(e.g. Share search),
    * custom sorting options and custom components.
@@ -775,9 +775,14 @@ export const SearchPageBody = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item sm={12} md={8}>
+        <Grid
+          size={{
+            sm: 12,
+            md: 8,
+          }}
+        >
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <SearchBar
                 ref={searchBarRef}
                 query={searchPageOptions.query ?? ""}
@@ -789,11 +794,11 @@ export const SearchPageBody = ({
               />
             </Grid>
             {additionalPanels?.map((panel, index) => (
-              <Grid item xs={12} key={`additionalPanel-${index}`}>
+              <Grid size={12} key={`additionalPanel-${index}`}>
                 {panel}
               </Grid>
             ))}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <SearchResultList
                 title={searchResultTitle}
                 showSpinner={
@@ -825,11 +830,11 @@ export const SearchPageBody = ({
                     (enableCSVExportButton &&
                       currentUser?.canDownloadSearchResult) ??
                     false,
-                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,
                     alreadyExported: alreadyDownloaded,
+                    linkRef: exportLinkRef,
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}
@@ -843,11 +848,7 @@ export const SearchPageBody = ({
             </Grid>
           </Grid>
         </Grid>
-        {isMdUp && (
-          <Grid item md={4}>
-            {renderSidePanel()}
-          </Grid>
-        )}
+        {isMdUp && <Grid size={{ md: 4 }}>{renderSidePanel()}</Grid>}
       </Grid>
       <MessageInfo
         open={!!snackBar.message}

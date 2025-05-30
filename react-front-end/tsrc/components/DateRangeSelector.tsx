@@ -15,21 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import type { CalendarPickerView } from "@mui/x-date-pickers";
-import { DesktopDatePicker } from "@mui/x-date-pickers";
+import type { DateView } from "@mui/x-date-pickers";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import clsx from "clsx";
-import { flow, pipe } from "fp-ts/function";
+import { flow, pipe, constVoid } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { DateTime } from "luxon";
 import * as React from "react";
@@ -59,9 +52,9 @@ const StyledGrid = styled(Grid)({
  */
 export interface DatePickerCustomProps {
   /**
-   * A list of CalendarPickerView controlling the views of DatePicker.
+   * A list of DateView controlling the views of DatePicker.
    */
-  views: CalendarPickerView[];
+  views: DateView[];
   /**
    * Standard date format used in the DatePicker.
    */
@@ -86,11 +79,13 @@ export const buildDatePickerCustomProps = (
   transformDate: (d: DateTime) => d,
 });
 
+type DatePickerField = "start" | "end";
+
 interface DatePickerProps {
   /**
    * The field which a date picker controls.
    */
-  field: "start" | "end";
+  field: DatePickerField;
   /**
    * The label of a date picker.
    */
@@ -323,51 +318,56 @@ export const DateRangeSelector = ({
       },
     ];
 
-    return dateRangePickers.map(({ field, label, value }) => {
+    const onDateChange = (newValue: DateTime | null, field: DatePickerField) =>
+      pipe(
+        O.fromNullable(newValue),
+        O.map(flow(transformDate, (d) => d.toJSDate())),
+        O.toUndefined,
+        (d: Date | undefined) => {
+          const newRange = {
+            ...stateDateRange,
+            [field]: d,
+          };
+          setStateDateRange(newRange);
+          handleDateRangeChange(newRange);
+        },
+      );
+
+    return dateRangePickers.map(({ field, label, value }: DatePickerProps) => {
       const isStart = field === "start";
       return (
-        <StyledGrid item key={field} xs={12} lg={6}>
+        <StyledGrid key={field} size={{ xs: 12, lg: 6 }}>
           {/*Ideally this would be DatePicker, however the responsive switching between Desktop and
           Mobile was too troublesome culminating in this comment on GitHub:
           https://github.com/mui/mui-x/issues/4644#issuecomment-1343851120*/}
           <DesktopDatePicker
-            renderInput={(props) => (
-              <TextField id={`${id}-${field}`} {...props} />
-            )}
             views={views}
-            className={classes.datePickerWidth} // Ensure the picker still takes full width when calendar icon is hidden.
+            // Ensure the picker still takes full width when calendar icon is hidden.
+            className={classes.datePickerWidth}
             disableFuture
             closeOnSelect
-            componentsProps={{
+            slotProps={{
+              textField: { id: `${id}-${field}` },
               actionBar: {
                 actions: ["clear", "cancel", "accept"],
               },
+              openPickerButton: {
+                className: clsx(!showCalenderIcon && classes.hideCalenderIcon),
+              },
             }}
-            OpenPickerButtonProps={{
-              className: clsx(!showCalenderIcon && classes.hideCalenderIcon),
-            }}
-            inputFormat={format}
-            // Need this due to https://github.com/mui/mui-x/issues/4664
-            disableMaskedInput={false}
+            format={format}
             // The maximum start date is the range's end whereas minimum end date is the range's start.
             minDate={asLuxonDate(!isStart ? stateDateRange?.start : undefined)}
             maxDate={asLuxonDate(isStart ? stateDateRange?.end : undefined)}
             label={label}
             // When value is undefined use null instead so nothing is displayed in the TextField.
             value={value ?? null}
-            onChange={flow(
-              O.fromNullable,
-              O.map(flow(transformDate, (d) => d.toJSDate())),
-              O.toUndefined,
-              (d: Date | undefined) => {
-                const newRange = {
-                  ...stateDateRange,
-                  [field]: d,
-                };
-                setStateDateRange(newRange);
-                handleDateRangeChange(newRange);
-              },
-            )}
+            onChange={(newValue, { validationError }) =>
+              pipe(
+                O.fromNullable(validationError),
+                O.match(() => onDateChange(newValue, field), constVoid),
+              )
+            }
           />
         </StyledGrid>
       );
@@ -400,10 +400,10 @@ export const DateRangeSelector = ({
 
   return (
     <Grid container id={id}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {quickModeEnabled ? quickOptionSelector : customDatePicker}
       </Grid>
-      <Grid item>
+      <Grid>
         {showModeSwitch && (
           <SettingsToggleSwitch
             id="modified_date_selector_mode_switch"

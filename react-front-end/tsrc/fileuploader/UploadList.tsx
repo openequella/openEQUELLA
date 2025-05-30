@@ -82,8 +82,8 @@ export const UploadList = ({
             primaryText
           ) : (
             <Grid container direction="column" spacing={1} wrap="nowrap">
-              <Grid item>{primaryText}</Grid>
-              <Grid item>{secondaryText}</Grid>
+              <Grid>{primaryText}</Grid>
+              <Grid>{secondaryText}</Grid>
             </Grid>
           );
         };
@@ -91,11 +91,23 @@ export const UploadList = ({
         // Use "div" as the ListItem component to avoid EBP styles which apply to "li".
         return (
           <ListItem key={fileId} divider component="div">
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={6} sm={8} lg={9}>
+            <Grid container spacing={2} alignItems="center" size="grow">
+              <Grid
+                size={{
+                  xs: 6,
+                  sm: 8,
+                  lg: 9,
+                }}
+              >
                 <ListItemContent />
               </Grid>
-              <Grid item xs={6} sm={4} lg={3}>
+              <Grid
+                size={{
+                  xs: 6,
+                  sm: 4,
+                  lg: 3,
+                }}
+              >
                 <UploadActions actions={buildActions(file)} />
               </Grid>
             </Grid>

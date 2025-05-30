@@ -25,7 +25,14 @@ import { classes, StyledCard } from "./KeyResource";
 const KeyResourcePanelSkeleton = () => (
   <Grid container spacing={2}>
     {[1, 2, 3].map((number) => (
-      <Grid key={number} item xs={12} lg={6} xl={4}>
+      <Grid
+        key={number}
+        size={{
+          xs: 12,
+          lg: 6,
+          xl: 4,
+        }}
+      >
         <StyledCard>
           <Box className={classes.container}>
             <Skeleton width={100} height={100} />

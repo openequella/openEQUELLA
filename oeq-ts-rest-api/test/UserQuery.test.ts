@@ -18,16 +18,17 @@
 import * as OEQ from '../src';
 import { SearchResult, tokens } from '../src/UserQuery';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 // We use Vanilla for this one so that we also have 'roles' to test with.
 const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => logout(API_PATH));
 
 describe('/userquery/search', () => {
-  test.each<keyof SearchResult>(['users', 'roles', 'groups'])(
+  it.each<keyof SearchResult>(['users', 'roles', 'groups'])(
     'should be possible to list %s',
     async (property: keyof SearchResult) => {
       const result = await OEQ.UserQuery.search(API_PATH, {
@@ -117,7 +118,7 @@ describe('/userquery/lookup', () => {
     expect(result.roles).toHaveLength(0);
   });
 
-  test.each<[keyof SearchResult, string]>([
+  it.each<[keyof SearchResult, string]>([
     ['users', autoTestUser.id],
     ['groups', systemAdministratorGroup.id],
     ['roles', ssoRole.id],

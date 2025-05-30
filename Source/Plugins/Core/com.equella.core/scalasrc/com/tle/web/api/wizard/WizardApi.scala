@@ -18,11 +18,11 @@
 
 package com.tle.web.api.wizard
 
-import cats.effect.{Blocker, IO}
+import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import com.tle.beans.item.{Item, ItemPack}
 import com.tle.common.filesystem.FileEntry
 import com.tle.core.cloudproviders.{CloudProviderHelper, CloudProviderService}
-import com.tle.core.httpclient._
 import com.tle.core.item.operations.{ItemOperationParams, WorkflowOperation}
 import com.tle.core.item.standard.operations.DuringSaveOperation
 import com.tle.legacy.LegacyGuice
@@ -34,8 +34,10 @@ import fs2.Stream
 import fs2.io._
 import io.swagger.annotations.Api
 import org.jboss.resteasy.annotations.cache.NoCache
-import sttp.client._
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3._
 import sttp.model.{HeaderNames, Uri}
+
 import java.io.{InputStream, OutputStream}
 import java.nio.channels.Channels
 import java.util.UUID
@@ -142,7 +144,7 @@ class WizardApi {
   }
 
   def streamedResponse(
-      response: sttp.client.Response[Either[String, Stream[IO, Byte]]]
+      response: sttp.client3.Response[Either[String, Stream[IO, Byte]]]
   ): ResponseBuilder = {
     val statusCode = response.code.code
 
@@ -173,7 +175,7 @@ class WizardApi {
       providerId: UUID,
       serviceId: String,
       uriInfo: UriInfo
-  )(f: Uri => Request[T, Stream[IO, Byte]]): Response = {
+  )(f: Uri => Request[T, Fs2Streams[IO]]): Response = {
     withWizardState(wizid, request, false) { _ =>
       ()
     }
@@ -189,7 +191,7 @@ class WizardApi {
                 serviceUri,
                 cp,
                 queryParams,
-                uri => f(uri).response(asStream[Stream[IO, Byte]])
+                uri => f(uri).response(asStreamUnsafe(Fs2Streams[IO]))
               )
               .unsafeRunSync
           )
@@ -199,11 +201,8 @@ class WizardApi {
       .build()
   }
 
-  private def getStreamedBody(content: InputStream): Stream[IO, Byte] = {
-    Stream
-      .resource(Blocker[IO])
-      .flatMap(blocker => readInputStream(IO(content), 4096, blocker))
-  }
+  private def getStreamedBody(content: InputStream): Stream[IO, Byte] =
+    readInputStream(IO(content), 4096)
 
   private def getRequestHeaders(req: HttpServletRequest): Map[String, String] = {
     val headers = (for {
@@ -257,7 +256,7 @@ class WizardApi {
       basicRequest
         .post(uri)
         .headers(getRequestHeaders(req))
-        .streamBody(getStreamedBody(content))
+        .streamBody(Fs2Streams[IO])(getStreamedBody(content))
     }
   }
 
@@ -275,7 +274,7 @@ class WizardApi {
       basicRequest
         .put(uri)
         .headers(getRequestHeaders(req))
-        .streamBody(getStreamedBody(content))
+        .streamBody(Fs2Streams[IO])(getStreamedBody(content))
     }
   }
 

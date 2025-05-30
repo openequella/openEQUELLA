@@ -15,34 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Card,
-  CardContent,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { Card, CardContent, IconButton, List, Typography } from "@mui/material";
+import * as A from "fp-ts/Array";
+import { constVoid, constTrue, pipe, flow } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as React from "react";
 import { ReactElement, useContext, useEffect, useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-  DropResult,
-} from "react-beautiful-dnd";
 import MessageDialog from "../../../components/MessageDialog";
 import SettingPageTemplate from "../../../components/SettingPageTemplate";
 import SettingsCardActions from "../../../components/SettingsCardActions";
 import SettingsListHeading from "../../../components/SettingsListHeading";
-import { TooltipIconButton } from "../../../components/TooltipIconButton";
 import { AppContext } from "../../../mainui/App";
 import { routes } from "../../../mainui/routes";
 import {
@@ -63,15 +47,16 @@ import { commonString } from "../../../util/commonstrings";
 import { idExtractor } from "../../../util/idExtractor";
 import { addElement, replaceElement } from "../../../util/ImmutableArrayUtil";
 import { languageStrings } from "../../../util/langstrings";
+import { DraggableFacet, FacetDndPayloadCodec } from "./DraggableFacet";
 import FacetDialog from "./FacetDialog";
+
+const facetedsearchsettingStrings =
+  languageStrings.settings.searching.facetedsearchsetting;
 
 /**
  * A page for setting Faceted search facets.
  */
 const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const facetedsearchsettingStrings =
-    languageStrings.settings.searching.facetedsearchsetting;
-
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
   const [showResultDialog, setShowResultDialog] = useState<boolean>(false);
   const [resultMessages, setResultMessagesMessages] = useState<string[]>([]);
@@ -101,7 +86,7 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(facetedsearchsettingStrings.name)(tp),
       backRoute: routes.Settings.to,
     }));
-  }, [updateTemplate, facetedsearchsettingStrings.name]);
+  }, [updateTemplate]);
 
   /**
    * Get facets from the server, sort them by order index, and add flags to them.
@@ -117,6 +102,34 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )
       .catch(appErrorHandler);
   }, [reset, appErrorHandler]);
+
+  useEffect(() => {
+    const getFacetIndex: (data: Record<string, unknown>) => O.Option<number> =
+      flow(
+        O.fromPredicate(FacetDndPayloadCodec.is),
+        O.map(({ index }) => index),
+      );
+
+    return monitorForElements({
+      canMonitor: constTrue,
+      onDrop: ({ location, source }) =>
+        pipe(
+          location.current.dropTargets,
+          A.head,
+          O.chain((target) =>
+            pipe(
+              O.Do,
+              O.apS("startIndex", getFacetIndex(source.data)),
+              O.apS("endIndex", getFacetIndex(target.data)),
+              O.map(({ startIndex, endIndex }) =>
+                reorder(facets, startIndex, endIndex),
+              ),
+            ),
+          ),
+          O.match(constVoid, setFacets),
+        ),
+    });
+  }, [facets]);
 
   /**
    * Save updated/deleted facets to the server.
@@ -185,19 +198,9 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     setFacets(removeFacetFromList(facets, deletedfacet.orderIndex));
   };
 
-  /**
-   * Fired when a dragged facet is dropped.
-   */
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-    const reorderedFacets = reorder(
-      facets,
-      result.source.index,
-      result.destination.index,
-    );
-    setFacets(reorderedFacets);
+  const editFacet = (facet: FacetedSearchClassificationWithFlags) => {
+    setShowEditingDialog(true);
+    setCurrentFacet(facet);
   };
 
   /**
@@ -209,61 +212,20 @@ const FacetedSearchSettingsPage = ({ updateTemplate }: TemplateUpdateProps) => {
     .map((facet, index) => {
       const key = facet.id ?? facet.name + index;
       return (
-        <Draggable
+        <DraggableFacet
           key={key}
-          draggableId={key.toString()}
-          index={facet.orderIndex}
-        >
-          {(draggable: DraggableProvided) => (
-            <ListItem
-              ref={draggable.innerRef}
-              {...draggable.draggableProps}
-              {...draggable.dragHandleProps}
-              divider
-            >
-              <ListItemText primary={facet.name} />
-              <ListItemIcon>
-                <TooltipIconButton
-                  title={facetedsearchsettingStrings.edit}
-                  color="secondary"
-                  onClick={() => {
-                    setShowEditingDialog(true);
-                    setCurrentFacet(facet);
-                  }}
-                >
-                  <EditIcon />
-                </TooltipIconButton>
-              </ListItemIcon>
-              <ListItemIcon>
-                <TooltipIconButton
-                  title={facetedsearchsettingStrings.delete}
-                  color="secondary"
-                  onClick={() => deleteFacet(facet)}
-                >
-                  <DeleteIcon />
-                </TooltipIconButton>
-              </ListItemIcon>
-            </ListItem>
-          )}
-        </Draggable>
+          facet={facet}
+          index={index}
+          onDelete={deleteFacet}
+          onEdit={editFacet}
+        />
       );
     });
 
   /**
    * Render a Droppable area which includes a list of configured facets.
    */
-  const facetList: ReactElement = (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppableFacetList">
-        {(droppable: DroppableProvided) => (
-          <List ref={droppable.innerRef} {...droppable.droppableProps}>
-            {facetListItems}
-            {droppable.placeholder}
-          </List>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
+  const facetList: ReactElement = <List>{facetListItems}</List>;
 
   return (
     <SettingPageTemplate

@@ -20,6 +20,7 @@ import { pipe } from 'fp-ts/function';
 import * as OEQ from '../src';
 import type { KeyResource } from '../src/BrowseHierarchy';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 const NORMAL_TOPIC_UUID = '6135b550-ce1c-43c2-b34c-0a3cf793759d';
 const ITEM_UUID = 'cadcd296-a4d7-4024-bb5d-6c7507e6872a';
@@ -50,7 +51,7 @@ const checkKeyResource = async (keyResourceExists: boolean) => {
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 describe('Hierarchy', () => {
   it('should be able to get ACLs for a hierarchy topic', async () => {

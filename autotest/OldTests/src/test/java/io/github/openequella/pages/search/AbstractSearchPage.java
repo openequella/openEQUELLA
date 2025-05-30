@@ -183,10 +183,8 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
-    startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
-    endTextField.sendKeys(end);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-start-label", start);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-end-label", end);
   }
 
   /**
@@ -417,5 +415,23 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   private void selectFromButtonGroup(WebElement buttonGroup, String buttonText) {
     WebElement button = buttonGroup.findElement(By.xpath(".//button[text()='" + buttonText + "']"));
     button.click();
+  }
+
+  // Starting with MUI v7, the Date Picker's TextField is no longer a single input element.
+  // Instead, it is composed of one or more editable <span> elements, depending on the date format.
+  // To input a value, the first span must be clicked before sending any keys.
+  // Once the first part of the date has been set, the remaining keys will automatically populate
+  // the subsequent span elements in sequence.
+  private void setDatePickerValue(WebElement parent, String label, String value) {
+    // Use '@data-sectionindex='0' to locate the first section, and then use '@inputmode='numeric'
+    // to locate the editable span.
+    WebElement firstSpan =
+        parent.findElement(
+            By.xpath(
+                "//div[@aria-labelledby='"
+                    + label
+                    + "']//span[@data-sectionindex='0']//span[@inputmode='numeric']"));
+    firstSpan.click();
+    firstSpan.sendKeys(value);
   }
 }

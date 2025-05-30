@@ -43,7 +43,7 @@ export default {
 
 const recipient = (recipient: ACLRecipient) => (
   <ACLTreeRecipient
-    nodeId="example"
+    itemId="example"
     recipient={recipient}
     onDelete={() => {}}
     aclEntityResolvers={defaultACLEntityResolvers}

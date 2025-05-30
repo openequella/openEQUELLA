@@ -260,8 +260,8 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
             <CloseIcon />
           </TooltipIconButton>
         </Toolbar>
-        <Grid container alignItems="center">
-          <Grid item xs={1}>
+        <Grid container alignItems="center" size="grow">
+          <Grid size={1}>
             {onPrevious && (
               <TooltipIconButton
                 title={labelViewPrevious}
@@ -274,11 +274,11 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
               </TooltipIconButton>
             )}
           </Grid>
-          <Grid item container justifyContent="center" xs={10}>
-            <Grid item>{content}</Grid>
+          <Grid container justifyContent="center" size={10}>
+            <Grid>{content}</Grid>
           </Grid>
-          <Grid item container justifyContent="flex-end" xs={1}>
-            <Grid item>
+          <Grid container justifyContent="flex-end" size={1}>
+            <Grid>
               {onNext && (
                 <TooltipIconButton
                   title={labelViewNext}

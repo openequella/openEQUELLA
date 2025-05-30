@@ -19,17 +19,18 @@
 package com.tle.core.oauthclient
 
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import com.tle.common.institution.CurrentInstitution
 import com.tle.core.httpclient._
 import com.tle.core.oauthclient.OAuthClientService.{replicatedCache, responseToState}
 import com.tle.core.oauthclient.OAuthTokenCacheHelper.{buildCacheKey, cacheId, requestToken}
 import com.tle.legacy.LegacyGuice
 import com.tle.web.oauth.OAuthWebConstants
-import fs2.Stream
 import io.circe.generic.semiauto._
 import io.circe.{Decoder, Encoder}
-import sttp.client._
-import sttp.client.circe._
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3._
+import sttp.client3.circe._
 import sttp.model.{Header, StatusCode}
 
 import java.net.URI
@@ -140,30 +141,28 @@ object OAuthTokenCacheHelper {
       .getOrElse(Map.empty)
       .toSeq :+ (OAuthWebConstants.PARAM_GRANT_TYPE -> OAuthWebConstants.GRANT_TYPE_CREDENTIALS)
 
-    val postRequest = token match {
-      case req: ClientSecretTokenRequest =>
-        basicRequest.auth
-          .basic(req.clientId, req.clientSecret)
-          .body(body: _*)
-      case req: AssertionTokenRequest =>
-        val assertionParams = Seq(
-          OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE -> req.assertionType.toString,
-          OAuthWebConstants.PARAM_CLIENT_ASSERTION      -> req.assertion
-        )
+    val postRequest = {
+      val req = token match {
+        case req: ClientSecretTokenRequest =>
+          basicRequest.auth
+            .basic(req.clientId, req.clientSecret)
+            .body(body: _*)
+        case req: AssertionTokenRequest =>
+          val assertionParams = Seq(
+            OAuthWebConstants.PARAM_CLIENT_ASSERTION_TYPE -> req.assertionType.toString,
+            OAuthWebConstants.PARAM_CLIENT_ASSERTION      -> req.assertion
+          )
 
-        val fullBody = body :++ assertionParams
-        basicRequest.body(fullBody: _*)
+          val fullBody = body :++ assertionParams
+          basicRequest.body(fullBody: _*)
+      }
+
+      req.response(asJson[OAuthTokenResponse]).post(uri"${token.authTokenUrl}")
     }
 
-    lazy val newOAuthTokenState =
-      sttpBackend
-        .flatMap(implicit backend =>
-          postRequest
-            .response(asJson[OAuthTokenResponse])
-            .post(uri"${token.authTokenUrl}")
-            .send()
-        )
-        .map(r => r.body.fold(de => throw de, responseToState))
+    val newOAuthTokenState =
+      sendRequest(postRequest)
+        .map(res => res.body.fold(de => throw de, responseToState))
         .unsafeRunSync()
 
     // Save the token in both cache and DB.
@@ -203,7 +202,7 @@ object OAuthClientService {
   }
 
   def requestWithToken[T](
-      request: Request[T, Stream[IO, Byte]],
+      request: Request[T, Fs2Streams[IO]],
       token: String,
       tokenType: OAuthTokenType.Value
   ): Response[T] = {
@@ -214,16 +213,14 @@ object OAuthClientService {
         OAuthWebConstants.HEADER_AUTHORIZATION -> s"${OAuthWebConstants.AUTHORIZATION_BEARER} $token"
     }
 
-    sttpBackend
-      .flatMap(implicit backend => request.headers(Header(name, value)).send[IO])
-      .unsafeRunSync()
+    sendRequest(request.headers(Header(name, value))).unsafeRunSync()
   }
 
   def authorizedRequest[T](
       authTokenUrl: String,
       clientId: String,
       clientSecret: String,
-      request: Request[T, Stream[IO, Byte]]
+      request: Request[T, Fs2Streams[IO]]
   ): Response[T] = {
     val tokenRequest = ClientSecretTokenRequest(authTokenUrl, clientId, clientSecret)
     val token        = tokenForClient(tokenRequest)

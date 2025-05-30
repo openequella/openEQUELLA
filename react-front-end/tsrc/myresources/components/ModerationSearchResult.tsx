@@ -76,7 +76,7 @@ export const ModerationSearchResult = ({
     uuid,
     version,
     name,
-  }: OEQ.Search.SearchResultItem): JSX.Element =>
+  }: OEQ.Search.SearchResultItem): React.JSX.Element =>
     pipe(
       buildOpenSummaryPageHandler(uuid, version, history),
       ({ url, onClick }) => (
@@ -96,7 +96,7 @@ export const ModerationSearchResult = ({
   const buildStatus = ({
     status,
     moderationDetails: { rejectionMessage },
-  }: SearchResultItemWithModerationDetails): JSX.Element => (
+  }: SearchResultItemWithModerationDetails): React.JSX.Element => (
     <>
       {
         // Uppercase the status to match the values in the status selector

@@ -18,8 +18,7 @@
 import { AxiosResponse, AxiosError } from 'axios';
 import { repackageError } from './Errors';
 
-import axios, { PUT } from './AxiosInstance';
-import { CookieJar } from 'tough-cookie';
+import { axiosInstance, PUT } from './AxiosInstance';
 
 /**
  * A simple login method which results in the establishment of a session with the oEQ server and
@@ -34,8 +33,8 @@ export const login = (
   apiBasePath: string,
   username: string,
   password: string
-): Promise<string | undefined> => {
-  return axios
+): Promise<string | undefined> =>
+  axiosInstance()
     .post(apiBasePath + '/auth/login', null, {
       params: {
         username: username,
@@ -55,22 +54,11 @@ export const login = (
     .catch((error: AxiosError | Error) => {
       throw repackageError(error);
     });
-};
 
 /**
- * Executes a simple logout on the specified oEQ server, which results in the session (identified by
- * JSESSIONID cookie) be reset to a guest login.
+ * Executes a simple logout on the specified oEQ server.
  *
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param clearCookies Typically only for testing or running on NodeJS, but will clear the cookie JAR after logout
  */
-export const logout = (
-  apiBasePath: string,
-  clearCookies?: boolean
-): Promise<void> =>
-  PUT(apiBasePath + '/auth/logout').then(() => {
-    if (clearCookies) {
-      console.log('Clearing all cookies.');
-      (axios.defaults.jar as CookieJar).removeAllCookiesSync();
-    }
-  });
+export const logout = (apiBasePath: string): Promise<void> =>
+  PUT(apiBasePath + '/auth/logout');

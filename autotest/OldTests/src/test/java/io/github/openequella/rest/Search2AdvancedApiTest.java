@@ -185,6 +185,6 @@ public class Search2AdvancedApiTest extends AbstractRestApiTest {
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, 200);
 
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 }

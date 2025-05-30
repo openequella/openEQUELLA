@@ -5,12 +5,14 @@ hibernate.dialect = com.tle.hibernate.dialect.ExtendedPostgresDialect
 hibernate.connection.url = jdbc:postgresql://localhost/equella
 hibernate.connection.username = equellauser
 hibernate.connection.password = password
+hibernate.connection.tcpKeepAlive=true
 
 #hibernate.connection.driver_class = oracle.jdbc.driver.OracleDriver
 #hibernate.dialect = com.tle.hibernate.dialect.ExtendedOracle9iDialect
 #hibernate.connection.url = jdbc:oracle:thin:@localhost:equella
 #hibernate.connection.username = equellauser
 #hibernate.connection.password = password
+#hibernate.connection.oracle.net.keepAlive=true
 
 #hibernate.connection.driver_class = com.microsoft.sqlserver.jdbc.SQLServerDriver
 #hibernate.dialect = com.tle.hibernate.dialect.SQLServerDialect

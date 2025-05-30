@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Axios, { AxiosError, AxiosResponse } from 'axios';
-import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
+import Axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import * as t from 'io-ts';
-import { CookieJar } from 'tough-cookie';
 import { repackageError } from './Errors';
 import { validate } from './Utils';
 
-// So that cookies work when used in non-browser (i.e. Node/Jest) type environments. And seeing
-// the oEQ security is based on JSESSIONID cookies currently this is key.
-const axios = axiosCookieJarSupport(Axios.create({ jar: new CookieJar() }));
+const axios = Axios.create();
+
+/**
+ * Provides the AxiosInstance used for all calls in the library.
+ */
+export const axiosInstance = (): AxiosInstance => axios;
 
 const catchHandler = (error: AxiosError | Error): never => {
   throw repackageError(error);
@@ -42,7 +43,7 @@ export const GET = <T>(
   validator: (data: unknown) => data is T,
   queryParams?: object
 ): Promise<T> =>
-  axios
+  axiosInstance()
     .get(path, {
       params: queryParams,
       paramsSerializer: {
@@ -68,7 +69,7 @@ export const GET = <T>(
  * @param queryParams The query parameters to send with the HEAD request
  */
 export const HEAD = (path: string, queryParams?: object): Promise<boolean> =>
-  axios
+  axiosInstance()
     .head(path, {
       params: queryParams,
       paramsSerializer: {
@@ -85,7 +86,7 @@ export const HEAD = (path: string, queryParams?: object): Promise<boolean> =>
  * @param data The data to be sent in POST request
  */
 export const PUT = <T, R>(path: string, data?: T): Promise<R> =>
-  axios
+  axiosInstance()
     .put(path, data)
     .then((response: AxiosResponse<R>) => response.data)
     .catch(catchHandler);
@@ -104,7 +105,7 @@ export const POST = <T, R>(
   data?: T,
   queryParams?: object
 ): Promise<R> =>
-  axios
+  axiosInstance()
     .post(path, data, {
       params: queryParams,
       paramsSerializer: {
@@ -135,7 +136,7 @@ const validateEmptyResponse = validate(
  * @param data The data to be sent in POST request
  */
 export const POST_void = <T>(path: string, data?: T): Promise<void> =>
-  axios
+  axiosInstance()
     .post(path, data)
     .then(({ data }: AxiosResponse<unknown>) => {
       if (!validateEmptyResponse(data)) {
@@ -154,7 +155,7 @@ export const POST_void = <T>(path: string, data?: T): Promise<void> =>
  * @param queryParams  The query parameters to send with the DELETE request
  */
 export const DELETE = <R>(path: string, queryParams?: object): Promise<R> =>
-  axios
+  axiosInstance()
     .delete(path, {
       params: queryParams,
       paramsSerializer: {
@@ -163,5 +164,3 @@ export const DELETE = <R>(path: string, queryParams?: object): Promise<R> =>
     })
     .then(({ data }: AxiosResponse<R>) => data)
     .catch(catchHandler);
-
-export default axios;
