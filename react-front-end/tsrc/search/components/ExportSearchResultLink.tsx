@@ -67,7 +67,7 @@ export const ExportSearchResultLink = ({
       >
         <GetAppIcon />
       </TooltipIconButton>
-      {}
+      {/* eslint-disable-next-line jsx-a11y/anchor-has-content */}
       <a hidden download href={url} ref={linkRef} />
     </>
   );
