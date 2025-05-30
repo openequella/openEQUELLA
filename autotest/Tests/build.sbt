@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.14.12"
 val http4sVersion = "0.23.30"
 val catsVersion   = "2.13.0"
-val cxfVersion    = "3.6.6"
+val cxfVersion    = "3.6.7"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
 
