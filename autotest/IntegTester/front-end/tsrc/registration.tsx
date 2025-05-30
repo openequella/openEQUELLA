@@ -27,10 +27,10 @@ export const baseUrl = serverBase + "provider/";
 
 export function UpdateRegistration() {
   const [institutionUrl, setInstitutionUrl] = useState(
-    "http://doolse-sabre:8080/workflow/"
+    "http://doolse-sabre:8080/workflow/",
   );
   const [providerId, setProviderId] = useState(
-    "ba87a9bb-0281-4c0d-9397-772ba036e85b"
+    "ba87a9bb-0281-4c0d-9397-772ba036e85b",
   );
   const [token, setToken] = useState("a63b07f9-204b-4507-87d0-d220d7aade8a");
   const [name, setName] = useState("Updated provider");
@@ -45,7 +45,7 @@ export function UpdateRegistration() {
         headers: {
           "X-Authorization": "access_token=" + token,
         },
-      }
+      },
     );
   }
 
