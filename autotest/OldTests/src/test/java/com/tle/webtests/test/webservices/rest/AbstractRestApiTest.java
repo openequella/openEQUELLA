@@ -33,6 +33,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
@@ -41,7 +42,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -143,18 +143,13 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
   @BeforeClass
   public void registerClients() throws Exception {
     // Create OAuth client-credentials clients
-    try {
-      logonOnly("AutoTest", "automated");
-      final List<OAuthClient> oauthClients = getOAuthClients();
-      for (OAuthClient clientInfo : oauthClients) {
-        OAuthUtils.createClient(context, clientInfo);
-        clients.add(clientInfo);
-      }
-      logout();
-    } catch (Exception e) {
-      e.printStackTrace();
-      // Avoid skipping
+    logonOnly("AutoTest", "automated");
+    final List<OAuthClient> oauthClients = getOAuthClients();
+    for (OAuthClient clientInfo : oauthClients) {
+      OAuthUtils.createClient(context, clientInfo);
+      clients.add(clientInfo);
     }
+    logout();
   }
 
   @Override
@@ -167,9 +162,16 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
 
   protected String getToken() throws IOException {
     if (token == null) {
-      token = requestToken(clients.get(0));
+      token = requestToken(getAnyClient());
     }
     return token;
+  }
+
+  private OAuthClient getAnyClient() {
+    if (clients.isEmpty()) {
+      throw new IllegalStateException("No OAuth clients registered");
+    }
+    return clients.getFirst();
   }
 
   protected String requestToken(OAuthClient client) throws IOException {
@@ -177,24 +179,46 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
   }
 
   protected String requestToken(OAuthClient client, PageContext contextToUse) throws IOException {
-    final String tokenGetUrl =
-        contextToUse.getBaseUrl()
-            + "oauth/access_token?grant_type=client_credentials&client_id="
-            + client.getClientId()
-            + "&redirect_uri=default&client_secret="
-            + client.getSecret();
-    final HttpResponse response = execute(new HttpGet(tokenGetUrl), false);
+    final String url = buildTokenRequestUrl(client);
+    final HttpResponse response = execute(new HttpGet(url), false);
+
+    var result = response.getStatusLine();
+    if (result.getStatusCode() != 200) {
+      Assert.fail(
+          "Failed to get token for client "
+              + client.getClientId()
+              + ": "
+              + result.getReasonPhrase());
+    }
+
     final JsonNode tokenNode = readJson(mapper, response);
     return tokenNode.get("access_token").asText();
   }
 
+  private String buildTokenRequestUrl(OAuthClient client) {
+    return context.getBaseUrl()
+        + "oauth/access_token?grant_type=client_credentials&client_id="
+        + client.getClientId()
+        + "&redirect_uri=default&client_secret="
+        + client.getSecret();
+  }
+
   protected String requestToken(String id) throws IOException {
-    for (OAuthClient client : clients) {
-      if (client.getClientId().equals(id)) {
-        return requestToken(client);
-      }
+    var client = getClientById(id);
+    if (client.isPresent()) {
+      return requestToken(client.get());
     }
+
+    Assert.fail("No OAuth client registered with id: " + id);
     return null;
+  }
+
+  private Optional<OAuthClient> getClientById(String id) {
+    if (clients.isEmpty()) {
+      throw new IllegalStateException("No OAuth clients registered");
+    }
+
+    return clients.stream().filter(client -> client.getClientId().equals(id)).findFirst();
   }
 
   protected List<OAuthClient> getOAuthClients() {
@@ -306,13 +330,12 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
     AssertJUnit.assertEquals(message, status, response.getStatusLine().getStatusCode());
   }
 
-  protected HttpResponse execute(HttpUriRequest request, boolean consume)
-      throws ClientProtocolException, IOException {
+  protected HttpResponse execute(HttpUriRequest request, boolean consume) throws IOException {
     return execute(request, consume, null);
   }
 
   protected HttpResponse execute(HttpUriRequest request, boolean consume, String token)
-      throws ClientProtocolException, IOException {
+      throws IOException {
     if (token != null) {
       final Header tokenHeader = new BasicHeader("X-Authorization", "access_token=" + token);
       request.setHeader(tokenHeader);
@@ -331,14 +354,8 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
   }
 
   protected ObjectNode readJson(ObjectMapper mapper, HttpResponse response) throws IOException {
-    InputStream content = null;
-    try {
-      content = response.getEntity().getContent();
+    try (InputStream content = response.getEntity().getContent()) {
       return (ObjectNode) mapper.readTree(content);
-    } finally {
-      if (content != null) {
-        content.close();
-      }
     }
   }
 
