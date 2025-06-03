@@ -10,7 +10,6 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.tle.annotation.Nullable;
 import com.tle.common.Pair;
-import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.test.AbstractIntegrationTest;
 import java.io.BufferedOutputStream;
@@ -174,11 +173,17 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
     return clients.getFirst();
   }
 
-  protected String requestToken(OAuthClient client) throws IOException {
-    return requestToken(client, context);
+  protected String requestToken(String id) throws IOException {
+    var client = getClientById(id);
+    if (client.isPresent()) {
+      return requestToken(client.get());
+    }
+
+    Assert.fail("No OAuth client registered with id: " + id);
+    return null;
   }
 
-  protected String requestToken(OAuthClient client, PageContext contextToUse) throws IOException {
+  protected String requestToken(OAuthClient client) throws IOException {
     final String url = buildTokenRequestUrl(client);
     final HttpResponse response = execute(new HttpGet(url), false);
 
@@ -201,16 +206,6 @@ public abstract class AbstractRestApiTest extends AbstractIntegrationTest {
         + client.getClientId()
         + "&redirect_uri=default&client_secret="
         + client.getSecret();
-  }
-
-  protected String requestToken(String id) throws IOException {
-    var client = getClientById(id);
-    if (client.isPresent()) {
-      return requestToken(client.get());
-    }
-
-    Assert.fail("No OAuth client registered with id: " + id);
-    return null;
   }
 
   private Optional<OAuthClient> getClientById(String id) {
