@@ -3,8 +3,6 @@ package com.tle.webtests.test;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.HomePage;
 import com.tle.webtests.pageobject.LoginPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class AbstractSessionTest extends AbstractTest {
   public static String GENERIC_TESTING_COLLECTION = "Generic Testing Collection";
@@ -36,13 +34,14 @@ public class AbstractSessionTest extends AbstractTest {
     return logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
   }
 
+  /**
+   * Logs in with the specified username and password but does not update the internal username and
+   * password. (Thereby it _only_ does a logon.)
+   *
+   * <p>Expects to arrive at the Home Page / Dashboard.
+   */
   public void logonOnly(String username, String password) {
-    LoginPage loginPage = new LoginPage(context).load();
-    loginPage.loginWithRedirect(username, password);
-    // If using new UI, ensure the home page is completed loaded.
-    context
-        .createWaiter()
-        .until(ExpectedConditions.visibilityOfElementLocated(By.id("eqpageForm")));
+    new LoginPage(context).load().login(username, password);
   }
 
   public void logonWithNotice(String username, String password) {

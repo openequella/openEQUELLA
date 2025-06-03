@@ -4,10 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class PageContext {
-  private WebDriver driver;
+  private final WebDriver driver;
   private final String baseUrl;
   private String integUrl;
   private String namePrefix;
@@ -96,15 +95,5 @@ public class PageContext {
 
   public WebDriver getCurrentDriver() {
     return driver;
-  }
-
-  /**
-   * Creates a new {@link WebDriverWait} instance using the current driver and the standard timeout
-   * defined in the test configuration.
-   *
-   * @return a new {@link WebDriverWait} instance
-   */
-  public WebDriverWait createWaiter() {
-    return new WebDriverWait(driver, testConfig.getStandardTimeout());
   }
 }
