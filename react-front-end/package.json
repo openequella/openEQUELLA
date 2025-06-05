@@ -94,8 +94,6 @@
     "@babel/preset-typescript": "7.27.1",
     "@html-validate/jest-config": "3.12.1",
     "@storybook/addon-a11y": "9.0.4",
-    "@storybook/addon-controls": "9.0.4",
-    "@storybook/addon-essentials": "8.6.14",
     "@storybook/addon-webpack5-compiler-swc": "3.0.0",
     "@storybook/cli": "9.0.4",
     "@storybook/react": "9.0.4",
