@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { action } from "@storybook/addon-actions";
+import { action } from "storybook/actions";
 import { Meta, StoryFn } from "@storybook/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
