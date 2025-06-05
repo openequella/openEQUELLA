@@ -18,11 +18,14 @@
 
 package com.tle.web.remoting.graphql.provider
 
+import com.tle.common.EntityPack
 import com.tle.common.security.SecurityConstants
+import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.schema.service.SchemaService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
-import com.tle.web.remoting.graphql.schema.types.BaseEntityReference
+import com.tle.web.remoting.graphql.schema.types._
 import org.slf4j.LoggerFactory
 
 import java.util.Base64
@@ -43,7 +46,10 @@ import scala.jdk.CollectionConverters._
 @Bind
 @Singleton
 @SecureEntity(SchemaService.ENTITY_TYPE)
-class MetadataSchemaProvider @Inject() (schemaService: SchemaService) {
+class MetadataSchemaProvider @Inject() (
+    schemaService: SchemaService,
+    stagingService: StagingService
+) {
   private val LOGGER = LoggerFactory.getLogger(classOf[MetadataSchemaProvider])
 
   /** List all metadata schemas.
@@ -87,5 +93,36 @@ class MetadataSchemaProvider @Inject() (schemaService: SchemaService) {
   def schemaIdForUuid(uuid: String): Long = {
     LOGGER.debug(s"Getting metadata schema ID for UUID $uuid")
     schemaService.identifyByUuid(uuid)
+  }
+
+  /** Start editing an existing metadata schema. This method returns an `EditableBaseEntity` that
+    * contains the metadata schema and its associated staging area. It is expected that it will be
+    * followed with a cancel or stop edit operation.
+    *
+    * @param id
+    *   the ID of the metadata schema to edit.
+    * @return
+    *   an `EditableBaseEntity` containing the metadata schema and staging information.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def startEdit(id: Long): EditableEntity[MetadataSchema] = {
+    LOGGER.debug(s"Editing metadata schema with id $id")
+    EditableEntity(schemaService.startEdit(id), MetadataSchema.apply)
+  }
+
+  /** Start creating a new metadata schema. This method returns an `EditableBaseEntitySkeleton` that
+    * contains the necessary information to start creating a new metadata schema. It is expected
+    * that it will be followed by further stop or cancel edit operation.
+    *
+    * @return
+    *   an `EditableBaseEntitySkeleton` ready for editing.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def startCreate(): EditableEntitySkeleton = {
+    LOGGER.debug("Creating new metadata schema, ready for editing")
+    EditableEntitySkeleton(
+      owner = CurrentUser.getUserID,
+      stagingId = stagingService.createStagingArea().getUuid
+    )
   }
 }

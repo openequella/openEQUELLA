@@ -18,6 +18,23 @@
 
 package com.tle.web.remoting.graphql.schema
 
+import com.tle.beans.entity.LanguageBundle
+
+import java.time.LocalDateTime
+import java.util.Date
+
 /** This package holds all the custom types for the GraphQL API.
   */
-package object types {}
+package object types {
+
+  /** Converts a Java `Date` to a Scala `LocalDateTime`. This is useful for converting Dates from
+    * the Java world (e.g. from the database) to the Scala world; keeping in mind they may be null.
+    */
+  def toLocalDateTime(date: Date): Option[LocalDateTime] =
+    Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
+
+  /** Converts a `LanguageBundle` to an `Option[Long]` representing the bundle ID. This is useful
+    * for cases where the bundle may be null, and we want to safely extract the ID if it exists.
+    */
+  def languageBundleId(bundle: LanguageBundle): Option[Long] = Option(bundle).map(_.getId)
+}
