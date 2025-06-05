@@ -68,17 +68,6 @@ final case class EntityDetails(
     disabled: Boolean
 )
 object EntityDetails {
-  def apply(uuid: String, owner: String): EntityDetails = EntityDetails(
-    id = 0L,
-    uuid = uuid,
-    owner = owner,
-    dateCreated = null,
-    dateModified = null,
-    nameBundleId = None,
-    descriptionBundleId = None,
-    attributes = Map.empty,
-    disabled = false
-  )
 
   /** Converts a BaseEntity into EntityDetails, extracting relevant fields and converting types as
     * necessary. This is typically used when fetching entity details from the database.
