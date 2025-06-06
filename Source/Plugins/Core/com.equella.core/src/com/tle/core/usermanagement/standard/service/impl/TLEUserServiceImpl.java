@@ -285,9 +285,7 @@ public class TLEUserServiceImpl
         && !emailService.isValidAddress(user.getEmailAddress())) {
       errors.add(
           new ValidationError(
-              "email",
-              CurrentLocale.get(
-                  "com.tle.core.usermanagement.internal.userdetailspanel.invalidemail")));
+              "email", CurrentLocale.get("com.tle.web.userdetails.common.invalidemail")));
     }
 
     validatePassword(user.getPassword(), passwordNotHashed, errors);
@@ -318,9 +316,7 @@ public class TLEUserServiceImpl
       if (len < PASSWORD_MIN_LENGTH) {
         errors.add(
             new ValidationError(
-                "password",
-                CurrentLocale.get(
-                    "com.tle.core.usermanagement.internal.userdetailspanel.passwordtooshort")));
+                "password", CurrentLocale.get("com.tle.web.userdetails.common.passwordtooshort")));
       }
     }
   }
