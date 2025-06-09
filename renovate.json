@@ -134,6 +134,13 @@
       ]
     },
     {
+      "groupName": "TinyMCE",
+      "matchPackageNames": [
+        "@tinymce/tinymce-react",
+        "tinymce"
+      ]
+    },
+    {
       "groupName": "Typelevel Cats",
       "matchPackageNames": [
         "/^org.typelevel:cats/"
