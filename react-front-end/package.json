@@ -58,6 +58,7 @@
     "@mui/x-date-pickers": "8.1.0",
     "@mui/x-tree-view": "8.1.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
+    "@storybook/addon-docs": "9.0.4",
     "@tinymce/tinymce-react": "6.1.0",
     "axios": "1.9.0",
     "clsx": "2.1.1",
