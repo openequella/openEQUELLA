@@ -96,8 +96,6 @@ export default defineConfig([
       ],
       "@typescript-eslint/no-unused-expressions": "off",
       "jsx-a11y/no-autofocus": "off",
-      "jest/consistent-test-it": "error",
-      "jest/require-top-level-describe": "error",
       "jest/expect-expect": [
         "warn",
         {
