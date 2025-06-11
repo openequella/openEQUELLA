@@ -18,14 +18,12 @@
 
 package com.tle.client;
 
-import com.tle.common.Check;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,31 +34,14 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("nls")
 public class ListCookieHandler extends CookieHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(ListCookieHandler.class.getName());
 
-  private List<Cookie> cache = new LinkedList<Cookie>();
+  private final List<Cookie> cache = new LinkedList<>();
   private boolean ignoreCookieOverrideAttempts;
 
   public void setIgnoreCookieOverrideAttempts(boolean ignoreCookieOverrideAttempts) {
     this.ignoreCookieOverrideAttempts = ignoreCookieOverrideAttempts;
-  }
-
-  public void clearCookies() {
-    cache.clear();
-  }
-
-  public List<String> splitCookieString(String cookie) {
-    if (Check.isEmpty(cookie)) {
-      return Collections.emptyList();
-    }
-
-    final String[] cookies = cookie.split(";");
-    for (int i = 0, count = cookies.length; i < count; i++) {
-      cookies[i] = cookies[i].trim();
-    }
-    return Arrays.asList(cookies);
   }
 
   @Override
@@ -79,57 +60,40 @@ public class ListCookieHandler extends CookieHandler {
           && (cookie.getName().equals(existingCookie.getName()))) {
         if (ignoreCookieOverrideAttempts) {
           LOGGER.info(
-              "Ignoring attempt to change cookie "
-                  + cookie.getName()
-                  + " from "
-                  + existingCookie.getValue()
-                  + " to "
-                  + cookie.getValue());
+              "Ignoring attempt to change cookie {} from {} to {}",
+              cookie.getName(),
+              existingCookie.getValue(),
+              cookie.getValue());
         } else {
           LOGGER.info(
-              "Changing cookie "
-                  + cookie.getName()
-                  + " from "
-                  + existingCookie.getValue()
-                  + " to "
-                  + cookie.getValue());
+              "Changing cookie {} from {} to {}",
+              cookie.getName(),
+              existingCookie.getValue(),
+              cookie.getValue());
           cache.remove(existingCookie);
           cache.add(cookie);
         }
         return;
       }
     }
-    LOGGER.info("Adding cookie " + cookie.getName() + " with value " + cookie.getValue());
+    LOGGER.info("Adding cookie {} with value {}", cookie.getName(), cookie.getValue());
     cache.add(cookie);
   }
 
   @Override
   public Map<String, List<String>> get(URI uri, Map<String, List<String>> requestHeaders)
       throws IOException {
-    // Retrieve all the cookies for matching URI
-    // Put in comma-separated list
-    StringBuilder cookies = new StringBuilder();
-    for (Cookie cookie : cache) {
-      // Remove cookies that have expired
-      if (cookie.hasExpired()) {
-        cache.remove(cookie);
-      } else if (cookie.matches(uri)) {
-        if (cookies.length() > 0) {
-          cookies.append("; ");
-        }
-        cookies.append(cookie.toString());
-      }
-    }
+    var cookies =
+        cache.stream()
+            .filter(cookie -> !cookie.hasExpired())
+            .filter(cookie -> cookie.matches(uri))
+            .map(Cookie::toString)
+            .toList();
 
-    // Map to return
-    Map<String, List<String>> cookieMap = new HashMap<String, List<String>>(requestHeaders);
+    Map<String, List<String>> result = new HashMap<>(requestHeaders);
+    result.put("Cookie", cookies);
 
-    // Convert StringBuilder to List, store in map
-    if (cookies.length() > 0) {
-      List<String> list = Collections.singletonList(cookies.toString());
-      cookieMap.put("Cookie", list);
-    }
-    return Collections.unmodifiableMap(cookieMap);
+    return Collections.unmodifiableMap(result);
   }
 }
 
