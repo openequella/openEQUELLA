@@ -21,10 +21,11 @@ import * as O from 'fp-ts/Option';
 import * as fs from 'fs';
 import * as path from 'path';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import { CodecDefinition, generate } from './generate';
 import { parseFile } from './parse';
 
-const args = yargs
+const args = yargs(hideBin(process.argv))
   .options({
     source: {
       type: 'string',
