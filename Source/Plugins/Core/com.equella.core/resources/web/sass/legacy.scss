@@ -5892,3 +5892,38 @@ button:focus {
     }
   }
 }
+
+/*****************************************************************************
+  Styles applied to select thumbnail dialog
+*****************************************************************************/
+
+.thumbcontainer {
+  max-height: 275px;
+  overflow-y: auto;
+
+  .thumbs {
+    border: 1px solid #8f8b7f;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .thumbrow {
+    padding: 4px;
+
+    img {
+      display: block;
+      border: 1px solid #8f8b7f;
+      cursor: pointer;
+    }
+
+    &.selected {
+      background-color: #007bff;
+
+      img {
+        border-color: #fff;
+      }
+    }
+  }
+}
