@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { Divider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
@@ -26,6 +27,14 @@ import { languageStrings } from "../../util/langstrings";
 import HierarchyTopic, { HierarchyTopicBasicProps } from "./HierarchyTopic";
 
 const viewHierarchyText = languageStrings.hierarchy.viewHierarchy;
+
+export const StyledTreeItem = styled(SimpleTreeView)({
+  "& .MuiSimpleTreeView-root": {
+    display: "inline-block",
+    whiteSpace: "nowrap",
+    minWidth: "100%", // Be at least as wide as the parent component, but get wider to fit more tree items.
+  },
+});
 
 export interface HierarchyTreeProps extends HierarchyTopicBasicProps {
   /**
@@ -66,7 +75,7 @@ const HierarchyTree = ({
   );
 
   return (
-    <SimpleTreeView
+    <StyledTreeItem
       aria-label={viewHierarchyText}
       expandedItems={expanded}
       onExpandedItemsChange={handleToggle}
@@ -79,7 +88,7 @@ const HierarchyTree = ({
       }}
     >
       {topics}
-    </SimpleTreeView>
+    </StyledTreeItem>
   );
 };
 
