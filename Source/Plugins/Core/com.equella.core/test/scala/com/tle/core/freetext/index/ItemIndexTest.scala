@@ -319,6 +319,30 @@ class ItemIndexTest
       Then("indexes of the Institution should be deleted")
       verifyDocumentNumber(itemIndex, 0)
     }
+
+    it("skips indexing immerse terms") { f =>
+      val (itemIndex, _) = f
+
+      Given("An document that has immerse terms")
+      def immerseTerm: Field = {
+        val sb = new StringBuilder
+        for (i <- 1 to 100000) {
+          sb.append(s"hello world $i")
+        }
+        val fieldType = new FieldType()
+        fieldType.setTokenized(false)
+        fieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+        new Field("bigvalue", sb.toString(), fieldType)
+      }
+      val indexedItems = generateIndexedItems()
+      indexedItems.head.getItemdoc.add(immerseTerm)
+
+      When("ItemIndex.indexBatch is invoked")
+      itemIndex.indexBatch(indexedItems.asJava)
+
+      Then("indexes should be created without immerse terms")
+      verifyDocumentNumber(itemIndex, 1)
+    }
   }
 
   describe("document searching") {
