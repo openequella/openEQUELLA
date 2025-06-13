@@ -19,12 +19,23 @@
 package io.github.openequella.graphql
 
 package object client {
+  type LocalDateTime = String
+
+  type BaseEntityReference
+  type Citation
+  type EditableEntityMetadataSchema
+  type EditableEntitySkeleton
+  type EntityDetails
   type Group
   type GroupConnection
   type GroupEdge
+  type KVStringString
+  type MetadataSchema
+  type MetadataSchemaTransform
   type PageInfo
   type StringConnection
   type StringEdge
+  type TargetListEntry
   type User
   type UserConnection
   type UserEdge

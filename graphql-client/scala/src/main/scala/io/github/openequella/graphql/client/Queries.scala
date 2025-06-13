@@ -202,4 +202,37 @@ object Queries {
         Argument("after", after, "String")(encoder4)
       )
     )
+
+  /** List all metadata schemas
+    */
+  def metadataSchemas[A](
+      innerSelection: SelectionBuilder[BaseEntityReference, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("metadataSchemas", ListOf(Obj(innerSelection)))
+
+  /** Export a metadata schema, returning a base64 encoded zip file
+    */
+  def metadataSchemaExport(id: Long, withSecurity: Boolean)(implicit
+      encoder0: ArgEncoder[Long],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, String] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaExport",
+      Scalar(),
+      arguments = List(
+        Argument("id", id, "Long!")(encoder0),
+        Argument("withSecurity", withSecurity, "Boolean!")(encoder1)
+      )
+    )
+
+  /** Get the metadata schema ID for a given UUID
+    */
+  def metadataSchemaIdForUuid(value: String)(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, Long] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaIdForUuid",
+      Scalar(),
+      arguments = List(Argument("value", value, "String!")(encoder0))
+    )
 }

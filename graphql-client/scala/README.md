@@ -34,16 +34,12 @@ Lastly, run the following command in SBT to generate the client classes:
 ```
 calibanGenClient
   src/main/resources/schema.graphql
-  src/main/scala/io/github/openequella/graphql/client/ignore/
+  src/main/scala/io/github/openequella/graphql/client/
   --splitFiles true
   --packageName io.github.openequella.graphql.client
 ```
 
 **NOTE:** Important to include the trailing slash for the output path.
-
-**WARNING:** There is a [bug in the Caliban codegen plugin](https://github.com/ghostdogpr/caliban/issues/2563)
-which means it drops the last part of the `outputPath`. That is why `ignore/` has been added above.
-Once the above bug is fixed, this doco should be updated.
 
 ### Storage of generated files
 
