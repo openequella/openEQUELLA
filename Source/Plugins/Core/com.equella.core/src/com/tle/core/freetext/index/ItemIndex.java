@@ -271,9 +271,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             continue;
           }
           try {
-            boolean isDocValid = originalDoc.getFields().stream().noneMatch(this::isImmerseTerm);
-            Document doc =
-                isDocValid ? originalDoc : copyDocument(originalDoc, item.getItemIdKey());
+            boolean isDocValid = originalDoc.getFields().stream().noneMatch(this::isOversizedTerm);
+            Document doc = isDocValid ? originalDoc : dropOversizedFields(originalDoc);
             long g = writer.addDocument(doc);
             if (item.isNewSearcherRequired()) {
               generation = g;
@@ -287,10 +286,12 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     return generation;
   }
 
-  // Check if the value of an IndexableField is too big to be indexed.
-  // Always `false` if the field is tokenized.
-  private boolean isImmerseTerm(IndexableField field) {
+  // Check if the value of an IndexableField is oversized.
+  private boolean isOversizedTerm(IndexableField field) {
     if (field.fieldType().tokenized()) {
+      // Always `false` if the field is tokenized, because:
+      // 1. Although the value is quite big, it is split into individual terms;
+      // 2. The term length limit only applies to individual terms, not the entire value.
       return false;
     }
 
@@ -308,23 +309,24 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   }
 
   // Makes a copy of the supplied document without the fields that are too big to be indexed.
-  private Document copyDocument(Document original, ItemIdKey id) {
+  private Document dropOversizedFields(Document original) {
     Document copy = new Document();
-    original
-        .getFields()
-        .forEach(
+    original.getFields().stream()
+        .filter(
             f -> {
-              if (!isImmerseTerm(f)) {
-                copy.add(f);
-              } else {
+              if (isOversizedTerm(f)) {
+                String itemId = original.get(FreeTextQuery.FIELD_UNIQUE);
                 LOGGER.warn(
-                    "Skip indexing field "
-                        + f.name()
-                        + " for Item "
-                        + id
-                        + " because the value exceeds the maximum length");
+                    "Skip indexing field {} for Item {} because the value exceeds the maximum"
+                        + " length",
+                    f.name(),
+                    itemId);
+                return false;
               }
-            });
+
+              return true;
+            })
+        .forEach(copy::add);
 
     return copy;
   }
