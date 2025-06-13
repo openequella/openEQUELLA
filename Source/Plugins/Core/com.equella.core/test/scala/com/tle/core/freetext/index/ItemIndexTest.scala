@@ -237,7 +237,10 @@ class ItemIndexTest
 
         def sorter = itemIndex.getSorter(searchConfig)
 
-        searcher.search(query, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
+        searcher
+          .search(query, 10, sorter)
+          .scoreDocs
+          .map(d => searcher.storedFields().document(d.doc))
       }
     }
 
@@ -320,11 +323,13 @@ class ItemIndexTest
       verifyDocumentNumber(itemIndex, 0)
     }
 
-    it("skips indexing immerse terms") { f =>
-      val (itemIndex, _) = f
+    it("skips indexing oversized terms") { f =>
+      val (itemIndex, searchConfig) = f
+      val oversizedField            = "bigvalue"
+      val oversizedItemName         = "Oversized Item"
 
-      Given("An document that has immerse terms")
-      def immerseTerm: Field = {
+      Given("An document that has oversized terms")
+      def oversizedTerm: Field = {
         val sb = new StringBuilder
         for (i <- 1 to 100000) {
           sb.append(s"hello world $i")
@@ -332,16 +337,21 @@ class ItemIndexTest
         val fieldType = new FieldType()
         fieldType.setTokenized(false)
         fieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
-        new Field("bigvalue", sb.toString(), fieldType)
+        new Field(oversizedField, sb.toString(), fieldType)
       }
-      val indexedItems = generateIndexedItems()
-      indexedItems.head.getItemdoc.add(immerseTerm)
+
+      val normalItem    = generateIndexedItems()
+      val oversizedItem = generateIndexedItems(itemName = oversizedItemName)
+      oversizedItem.head.getItemdoc.add(oversizedTerm)
 
       When("ItemIndex.indexBatch is invoked")
-      itemIndex.indexBatch(indexedItems.asJava)
+      itemIndex.indexBatch((normalItem ++ oversizedItem).asJava)
 
-      Then("indexes should be created without immerse terms")
-      verifyDocumentNumber(itemIndex, 1)
+      Then("indexes should be created without oversized terms")
+      searchConfig.setQuery(oversizedItemName)
+      val result: SearchResult = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+      result.length shouldBe 1
+      result.head.get(oversizedField) shouldBe null
     }
   }
 
