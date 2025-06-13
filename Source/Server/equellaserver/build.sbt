@@ -18,7 +18,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
 val TomcatVersion     = "9.0.105"
-val axis2Version      = "1.8.2"
+val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.8.0"
 val cxfVersion        = "3.6.7"
@@ -363,19 +363,23 @@ run := {
         "Log4j2Plugins.dat"
       ) =>
     MergeStrategy.last
-  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
-  case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
-  case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
-  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
-  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
-  case PathList("javax", "jws", _*)                         => MergeStrategy.first
-  case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
-  case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
-  case PathList("javax", "servlet", _*)                     => MergeStrategy.last
-  case PathList("javax", "annotation", _*)                  => MergeStrategy.first
-  case PathList("org", "w3c", "dom", _*)                    => MergeStrategy.first
-  case PathList("META-INF", "mailcap")                      => MergeStrategy.first
+  case PathList("META-INF", "jdom-info.xml")   => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml")       => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)           => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)    => MergeStrategy.first
+  case PathList("javax", "transaction", _*)    => MergeStrategy.first
+  case PathList("javax", "jws", _*)            => MergeStrategy.first
+  case PathList("com", "ibm", "wsdl", _*)      => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
+  case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
+  case PathList("javax", "servlet", _*)        => MergeStrategy.last
+  case PathList("javax", "annotation", _*)     => MergeStrategy.first
+  case PathList("org", "w3c", "dom", _*)       => MergeStrategy.first
+  case PathList("META-INF", "mailcap")         => MergeStrategy.first
+  // Keep the new one. Due to the error: Deduplicate found different file contents in the following:
+  // [error]   Jar name = jakarta.activation-1.2.2.jar, jar org = com.sun.activation, entry target = META-INF/mailcap.default
+  // [error]   Jar name = jakarta.activation-api-2.1.3.jar, jar org = jakarta.activation, entry target = META-INF/mailcap.default
+  case PathList("META-INF", "mailcap.default")              => MergeStrategy.last
   case PathList("META-INF", "mimetypes.default")            => MergeStrategy.first
   case PathList("META-INF", "javamail.charset.map")         => MergeStrategy.first
   case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
