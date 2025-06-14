@@ -92,7 +92,7 @@
     "@babel/core": "7.27.4",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
-    "@html-validate/jest-config": "3.12.1",
+    "@html-validate/jest-config": "3.13.0",
     "@storybook/addon-a11y": "9.0.6",
     "@storybook/addon-docs": "9.0.6",
     "@storybook/addon-webpack5-compiler-swc": "3.0.0",
