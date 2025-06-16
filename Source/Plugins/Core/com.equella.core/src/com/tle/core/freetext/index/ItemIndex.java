@@ -67,6 +67,7 @@ import it.uniroma3.mat.extendedset.intset.FastSet;
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,6 +96,7 @@ import org.apache.lucene.index.AutomatonTermsEnum;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.PostingsEnum;
@@ -263,12 +265,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
         synchronized (item) {
-          Document doc = item.getItemdoc();
-          if (doc.getFields().isEmpty()) {
+          Document originalDoc = item.getItemdoc();
+          if (originalDoc.getFields().isEmpty()) {
             LOGGER.error("Trying to add an empty document for item:" + item.getId());
             continue;
           }
           try {
+            boolean isDocValid = originalDoc.getFields().stream().noneMatch(this::isOversizedTerm);
+            Document doc = isDocValid ? originalDoc : dropOversizedFields(originalDoc);
             long g = writer.addDocument(doc);
             if (item.isNewSearcherRequired()) {
               generation = g;
@@ -280,6 +284,51 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
     }
     return generation;
+  }
+
+  // Check if the value of an IndexableField is oversized.
+  private boolean isOversizedTerm(IndexableField field) {
+    if (field.fieldType().tokenized()) {
+      // Always `false` if the field is tokenized, because:
+      // 1. Although the value is quite big, it is split into individual terms;
+      // 2. The term length limit only applies to individual terms, not the entire value.
+      return false;
+    }
+
+    String strVal = field.stringValue();
+    if (strVal != null) {
+      return strVal.getBytes(StandardCharsets.UTF_8).length > IndexWriter.MAX_TERM_LENGTH;
+    }
+
+    BytesRef binVal = field.binaryValue();
+    if (binVal != null) {
+      return binVal.length > IndexWriter.MAX_TERM_LENGTH;
+    }
+
+    return false;
+  }
+
+  // Makes a copy of the supplied document without the fields that are too big to be indexed.
+  private Document dropOversizedFields(Document original) {
+    Document copy = new Document();
+    original.getFields().stream()
+        .filter(
+            f -> {
+              if (isOversizedTerm(f)) {
+                String itemId = original.get(FreeTextQuery.FIELD_UNIQUE);
+                LOGGER.warn(
+                    "Skip indexing field {} for Item {} because the value exceeds the maximum"
+                        + " length",
+                    f.name(),
+                    itemId);
+                return false;
+              }
+
+              return true;
+            })
+        .forEach(copy::add);
+
+    return copy;
   }
 
   /**
