@@ -70,21 +70,6 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     */
   protected def userEndpoint(idp: IDP, id: String): URI
 
-  /** Helper function to create common user endpoint. ID is encoded since it may contain special
-    * characters.
-    *
-    * @param apiUrl
-    *   The API URL of the Identity Provider.
-    * @param id
-    *   The user ID to be searched.
-    */
-  protected def buildCommonUserEndpoint(apiUrl: String, id: String): URI = {
-    val builder         = new URIBuilder(apiUrl.stripSuffix("/"))
-    val newPathSegments = (builder.getPathSegments.asScala :+ "users" :+ id).asJava
-    builder.setPathSegments(newPathSegments)
-    builder.build()
-  }
-
   /** Use the provided Identity Provider details and search query to build a full URL that points to
     * the REST Endpoint that returns a list of users.
     */
@@ -191,4 +176,35 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       }
       .toMap
       .asJava
+}
+
+object ApiUserDirectory {
+
+  /** Helper function to create common user endpoint. Automatically handles path joining and segment
+    * encoding, since user ID may contain special characters.
+    *
+    * Example:
+    * {{{
+    *   val uri = buildCommonUserEndpoint(
+    *     apiUrl = "https://idp.example.com/api",
+    *     userPath = "account/users",
+    *     id = "google-oauth2|123456789"
+    *   )
+    *   // Result: https://idp.example.com/api/account/users/google-oauth2%7C123456789
+    * }}}
+    *
+    * @param apiUrl
+    *   The base URL of the Identity Provider’s API (e.g. "https://idp.example.com/api/v2/").
+    * @param userPath
+    *   The relative path to the users endpoint (e.g. "users", "account/users").
+    * @param id
+    *   The user ID to be searched.
+    */
+  def buildCommonUserEndpoint(apiUrl: String, userPath: String, id: String): URI = {
+    val builder          = new URIBuilder(apiUrl.stripSuffix("/"))
+    val userPathSegments = userPath.split("/").filterNot(_.isEmpty).toSeq
+    val newPathSegments  = (builder.getPathSegments.asScala ++ userPathSegments :+ id).asJava
+    builder.setPathSegments(newPathSegments)
+    builder.build()
+  }
 }

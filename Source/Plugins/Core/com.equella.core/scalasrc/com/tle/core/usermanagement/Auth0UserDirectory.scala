@@ -85,7 +85,7 @@ class Auth0UserDirectory extends ApiUserDirectory {
   }
 
   override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
-    buildCommonUserEndpoint(idp.apiUrl.toString, id)
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl.toString, "users", id)
 
   override protected def userListEndpoint(idp: GenericIdentityProviderDetails, query: String): URI =
     new URIBuilder(s"${idp.apiUrl.toString}users").addParameter("q", query).build()

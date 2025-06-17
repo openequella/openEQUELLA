@@ -92,7 +92,7 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
   /** REST endpoint to get a single user with the provided ID.
     */
   override protected def userEndpoint(idp: OktaDetails, id: String): URI =
-    buildCommonUserEndpoint(idp.apiUrl.toString, id)
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl.toString, "users", id)
 
   /** REST endpoint to list users with the provided query.
     *
