@@ -78,7 +78,7 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   }
 
   override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
-    URI.create(s"${idp.apiUrl.toString}/users/$id")
+    buildCommonUserEndpoint(idp.apiUrl.toString, id)
 
   /** There are three important things to determine the user listing endpoint in Microsoft Graph:
     *

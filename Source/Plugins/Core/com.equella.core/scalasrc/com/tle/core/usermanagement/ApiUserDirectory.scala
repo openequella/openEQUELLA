@@ -24,6 +24,7 @@ import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
 import com.tle.plugins.ump.UserDirectory
 import io.circe.Decoder
+import org.apache.http.client.utils.URIBuilder
 import org.slf4j.LoggerFactory
 import sttp.client3.basicRequest
 import sttp.client3.circe.asJson
@@ -68,6 +69,21 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     * REST Endpoint that returns a single user.
     */
   protected def userEndpoint(idp: IDP, id: String): URI
+
+  /** Helper function to create common user endpoint. ID is encoded since it may contain special
+    * characters.
+    *
+    * @param apiUrl
+    *   The API URL of the Identity Provider.
+    * @param id
+    *   The user ID to be searched.
+    */
+  protected def buildCommonUserEndpoint(apiUrl: String, id: String): URI = {
+    val builder         = new URIBuilder(apiUrl.stripSuffix("/"))
+    val newPathSegments = (builder.getPathSegments.asScala :+ "users" :+ id).asJava
+    builder.setPathSegments(newPathSegments)
+    builder.build()
+  }
 
   /** Use the provided Identity Provider details and search query to build a full URL that points to
     * the REST Endpoint that returns a list of users.
