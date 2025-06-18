@@ -5903,28 +5903,22 @@ button:focus {
   overflow-y: auto;
 
   .thumbs {
-    border: 1px solid #8f8b7f;
-    padding: 8px;
+    padding: $singleMargin;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: $singleMargin;
   }
 
   .thumbrow {
-    padding: 4px;
+    padding: $minimalMargin;
 
     img {
       display: block;
-      border: 1px solid #8f8b7f;
       cursor: pointer;
     }
 
     &.selected {
-      background-color: #007bff;
-
-      img {
-        border-color: #fff;
-      }
+      background-color: $secondaryColor;
     }
   }
 }
