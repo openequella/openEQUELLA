@@ -31,7 +31,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser"  % circeVersion
 )
 
-val axis2Version = "1.8.2"
+val axis2Version = "2.0.0"
 libraryDependencies ++= Seq(
   "org.apache.axis2" % "axis2-kernel"      % axis2Version,
   "org.apache.axis2" % "axis2-java2wsdl"   % axis2Version,

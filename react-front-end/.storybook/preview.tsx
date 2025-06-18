@@ -32,6 +32,7 @@ const preview: Preview = {
       </MemoryRouter>
     ),
   ],
+  tags: ["autodocs"],
 };
 
 export default preview;

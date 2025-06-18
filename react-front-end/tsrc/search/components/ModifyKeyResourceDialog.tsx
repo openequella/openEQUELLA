@@ -228,6 +228,7 @@ const ModifyKeyResourceDialog = ({
       aria-labelledby={LABELLED_BY}
       aria-describedby={DESCRIBE_BY}
       fullWidth
+      maxWidth="md"
     >
       <DialogTitle id={LABELLED_BY}>{dialogTitle}</DialogTitle>
       <DialogContent>
