@@ -30,9 +30,8 @@ const viewHierarchyText = languageStrings.hierarchy.viewHierarchy;
 
 export const StyledTreeItem = styled(SimpleTreeView)({
   "& .MuiSimpleTreeView-root": {
-    display: "inline-block",
+    display: "grid",
     whiteSpace: "nowrap",
-    minWidth: "100%", // Be at least as wide as the parent component, but get wider to fit more tree items.
   },
 });
 
