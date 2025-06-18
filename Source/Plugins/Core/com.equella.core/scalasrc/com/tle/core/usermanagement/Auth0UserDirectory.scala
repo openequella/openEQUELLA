@@ -24,7 +24,7 @@ import com.tle.core.oauthclient.ClientSecretTokenRequest
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
-import org.apache.http.client.utils.URIBuilder
+import sttp.model.Uri
 
 import java.net.URI
 
@@ -84,11 +84,13 @@ class Auth0UserDirectory extends ApiUserDirectory {
     )
   }
 
-  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
-    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl.toString, "users", id)
+  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): Uri =
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)
 
-  override protected def userListEndpoint(idp: GenericIdentityProviderDetails, query: String): URI =
-    new URIBuilder(s"${idp.apiUrl.toString}users").addParameter("q", query).build()
+  override protected def userListEndpoint(idp: GenericIdentityProviderDetails, query: String): Uri =
+    Uri(idp.apiUrl.toURI)
+      .addPath("users")
+      .addParam("q", query)
 
   /** According to the doco of Auth0, 'audience' is required in the request and the value should be
     * the API URL.

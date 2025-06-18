@@ -23,30 +23,32 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.prop.TableFor4
 
+import java.net.{URI, URL}
+
 class ApiUserDirectoryTest extends AnyFunSpec with Matchers {
-  val data: TableFor4[String, String, String, String] = Table(
+  val data: TableFor4[URL, Seq[String], String, String] = Table(
     ("apiUrl", "userPath", "id", "expected"),
     (
-      "https://idp.example.com/api",
-      "account/users",
+      new URI("https://idp.example.com/api").toURL,
+      Seq("account", "users"),
       "google-oauth2|123456",
       "https://idp.example.com/api/account/users/google-oauth2%7C123456"
     ),
     (
-      "https://idp.example.com/api/",
-      "/account/users/",
+      new URI("https://idp.example.com/api/").toURL,
+      Seq("account", "users"),
       "john doe",
       "https://idp.example.com/api/account/users/john%20doe"
     ),
     (
-      "https://idp.example.com",
-      "users",
+      new URI("https://idp.example.com").toURL,
+      Seq("users"),
       "a/b@c",
       "https://idp.example.com/users/a%2Fb@c"
     ),
     (
-      "https://idp.example.com/base",
-      "api/v1/users",
+      new URI("https://idp.example.com/base").toURL,
+      Seq("api", "v1", "users"),
       "accountId",
       "https://idp.example.com/base/api/v1/users/accountId"
     )

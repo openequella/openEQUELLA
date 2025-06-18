@@ -31,9 +31,8 @@ import com.tle.integration.oidc.idp.{IdentityProviderPlatform, OktaDetails}
 import com.tle.web.oauth.OAuthWebConstants
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
-import org.apache.http.client.utils.URIBuilder
+import sttp.model.Uri
 
-import java.net.URI
 import java.security.interfaces.RSAPrivateKey
 import java.time.Instant
 import javax.inject.Inject
@@ -91,8 +90,8 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
 
   /** REST endpoint to get a single user with the provided ID.
     */
-  override protected def userEndpoint(idp: OktaDetails, id: String): URI =
-    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl.toString, "users", id)
+  override protected def userEndpoint(idp: OktaDetails, id: String): Uri =
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)
 
   /** REST endpoint to list users with the provided query.
     *
@@ -104,14 +103,13 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
     * Reference:
     * https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers
     */
-  override protected def userListEndpoint(idp: OktaDetails, query: String): URI = {
-    val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}users")
+  override protected def userListEndpoint(idp: OktaDetails, query: String): Uri = {
+    val baseEndpoint = Uri(idp.apiUrl.toURI).addPath("users")
     Option(query)
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
       .filter(_.trim.nonEmpty)
-      .map(baseEndpoint.addParameter("q", _))
+      .map(baseEndpoint.addParam("q", _))
       .getOrElse(baseEndpoint)
-      .build()
   }
 
   /** According to the doco of Core Okta API, the request for a scoped access token through Client
