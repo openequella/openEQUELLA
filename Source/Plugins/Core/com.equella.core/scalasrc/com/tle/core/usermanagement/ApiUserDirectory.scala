@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory
 import sttp.client3.basicRequest
 import sttp.client3.circe.asJson
 import sttp.model.{Header, Uri}
-import java.net.URI
+import java.net.{URI, URL}
 import java.util
 import javax.inject.{Inject, Named}
 import scala.jdk.CollectionConverters._
@@ -67,12 +67,12 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   /** Use the provided Identity Provider details and user ID to build a full URL that points to the
     * REST Endpoint that returns a single user.
     */
-  protected def userEndpoint(idp: IDP, id: String): URI
+  protected def userEndpoint(idp: IDP, id: String): Uri
 
   /** Use the provided Identity Provider details and search query to build a full URL that points to
     * the REST Endpoint that returns a list of users.
     */
-  protected def userListEndpoint(idp: IDP, query: String): URI
+  protected def userListEndpoint(idp: IDP, query: String): Uri
 
   /** Build an instance of TokenRequest to be used in the authentication process.
     */
@@ -103,12 +103,12 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     *   type.
     */
   protected def requestWithToken[T](
-      endpoint: URI,
+      endpoint: Uri,
       tokenState: OAuthTokenState,
       headers: List[Header] = List.empty
   )(implicit decoder: Decoder[T]): Either[Throwable, T] = {
     val req = basicRequest
-      .get(Uri(endpoint))
+      .get(endpoint)
       .headers(headers: _*)
       .response(asJson[T])
 
@@ -175,4 +175,31 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       }
       .toMap
       .asJava
+}
+
+object ApiUserDirectory {
+
+  /** Helper function to create common user endpoint. Automatically handles path joining and segment
+    * encoding, since user ID may contain special characters.
+    *
+    * Example:
+    * {{{
+    *   val uri = buildCommonUserEndpoint(
+    *     apiUrl = new URI("https://idp.example.com/api".toURL,
+    *     userPath = Seq("account", "users"),
+    *     id = "google-oauth2|123456789"
+    *   )
+    *   // Result: https://idp.example.com/api/account/users/google-oauth2%7C123456789
+    * }}}
+    *
+    * @param apiUrl
+    *   The base URL of the Identity Provider’s API.
+    * @param userPath
+    *   A sequence of relative path to the user endpoint.
+    * @param id
+    *   The user ID to be searched.
+    */
+  def buildCommonUserEndpoint(apiUrl: URL, userPath: Seq[String], id: String): Uri =
+    Uri(apiUrl.toURI)
+      .addPath(userPath :+ id)
 }
