@@ -22,7 +22,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.tle.upgrademanager.handlers.HttpExchangeUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.fileupload.RequestContext;
+import org.apache.commons.fileupload2.core.RequestContext;
 
 /** */
 public class ExchangeRequestContext implements RequestContext {
@@ -38,7 +38,7 @@ public class ExchangeRequestContext implements RequestContext {
   }
 
   @Override
-  public int getContentLength() {
+  public long getContentLength() {
     String contentLength = exchange.getRequestHeaders().getFirst("Content-Length");
     if (contentLength != null && contentLength.length() > 0) {
       try {
@@ -58,5 +58,10 @@ public class ExchangeRequestContext implements RequestContext {
   @Override
   public InputStream getInputStream() throws IOException {
     return exchange.getRequestBody();
+  }
+
+  @Override
+  public boolean isMultipartRelated() {
+    return true;
   }
 }

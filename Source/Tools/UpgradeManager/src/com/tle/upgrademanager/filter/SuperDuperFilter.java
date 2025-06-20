@@ -35,15 +35,16 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.fileupload.util.Streams;
+import org.apache.commons.fileupload2.core.FileItemInput;
+import org.apache.commons.fileupload2.core.FileItemInputIterator;
+import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 public class SuperDuperFilter extends Filter {
   public static final String PARAMS_KEY = "parameters"; // $NON-NLS-1$
@@ -68,12 +69,12 @@ public class SuperDuperFilter extends Filter {
         streams = new HashMap<String, Pair<String, File>>();
 
         try {
-          FileItemIterator ii =
-              new FileUpload().getItemIterator(new ExchangeRequestContext(exchange));
+          FileItemInputIterator ii =
+              new JakartaServletFileUpload().getItemIterator(new ExchangeRequestContext(exchange));
           while (ii.hasNext()) {
-            final FileItemStream is = ii.next();
+            final FileItemInput is = ii.next();
             final String name = is.getFieldName();
-            try (InputStream stream = is.openStream()) {
+            try (InputStream stream = is.getInputStream()) {
               if (!is.isFormField()) {
                 // IE passes through the full path of the file,
                 // where as Firefox only passes through the
@@ -90,7 +91,7 @@ public class SuperDuperFilter extends Filter {
                   ByteStreams.copy(stream, out);
                 }
               } else {
-                addParam(params, name, Streams.asString(stream));
+                addParam(params, name, IOUtils.toString(stream, StandardCharsets.UTF_8));
               }
             }
           }
