@@ -1549,6 +1549,12 @@ div[class*="fancy-bg"] {
   z-index: 9999;
 }
 
+.modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .modal-title h3 {
   -moz-background-clip: border;
   -moz-background-inline-policy: continuous;
@@ -1586,9 +1592,6 @@ div[class*="fancy-bg"] {
 }
 
 .modal img.modal_close {
-  position: absolute;
-  right: 28px;
-  top: 28px;
   cursor: pointer;
 }
 
