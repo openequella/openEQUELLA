@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.fileupload2.core.FileItemInput;
 import org.apache.commons.fileupload2.core.FileItemInputIterator;
-import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
+import org.apache.commons.fileupload2.javax.JavaxServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
 public class SuperDuperFilter extends Filter {
@@ -70,7 +70,7 @@ public class SuperDuperFilter extends Filter {
 
         try {
           FileItemInputIterator ii =
-              new JakartaServletFileUpload().getItemIterator(new ExchangeRequestContext(exchange));
+              new JavaxServletFileUpload().getItemIterator(new ExchangeRequestContext(exchange));
           while (ii.hasNext()) {
             final FileItemInput is = ii.next();
             final String name = is.getFieldName();
