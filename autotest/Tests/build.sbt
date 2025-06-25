@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "com.unboundid"  % "unboundid-ldapsdk" % "7.0.2",
   jacksonDataBind,
   jacksonDataFormatYaml,
-  "com.auth0" % "jwks-rsa" % "0.22.1"
+  "com.auth0" % "jwks-rsa" % "0.22.2"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"
