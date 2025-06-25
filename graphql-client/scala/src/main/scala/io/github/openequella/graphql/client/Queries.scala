@@ -215,10 +215,10 @@ object Queries {
   def metadataSchemaExport(id: Long, withSecurity: Boolean)(implicit
       encoder0: ArgEncoder[Long],
       encoder1: ArgEncoder[Boolean]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, String] =
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[String]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "metadataSchemaExport",
-      Scalar(),
+      OptionOf(Scalar()),
       arguments = List(
         Argument("id", id, "Long!")(encoder0),
         Argument("withSecurity", withSecurity, "Boolean!")(encoder1)
@@ -229,10 +229,10 @@ object Queries {
     */
   def metadataSchemaIdForUuid(value: String)(implicit
       encoder0: ArgEncoder[String]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, Long] =
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[Long]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "metadataSchemaIdForUuid",
-      Scalar(),
+      OptionOf(Scalar()),
       arguments = List(Argument("value", value, "String!")(encoder0))
     )
 }

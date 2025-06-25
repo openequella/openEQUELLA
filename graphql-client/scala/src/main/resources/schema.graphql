@@ -179,9 +179,9 @@ type Queries {
   "List all metadata schemas"
   metadataSchemas: [BaseEntityReference!]!
   "Export a metadata schema, returning a base64 encoded zip file"
-  metadataSchemaExport("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String!
+  metadataSchemaExport("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the metadata schema ID for a given UUID"
-  metadataSchemaIdForUuid(value: String!): Long!
+  metadataSchemaIdForUuid(value: String!): Long
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"
