@@ -43,7 +43,7 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-client" % "0.23.17", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
   "org.http4s"    %% "http4s-circe"      % http4sVersion,
   "org.typelevel" %% "cats-free"         % catsVersion,
-  "com.unboundid"  % "unboundid-ldapsdk" % "7.0.2",
+  "com.unboundid"  % "unboundid-ldapsdk" % "7.0.3",
   jacksonDataBind,
   jacksonDataFormatYaml,
   "com.auth0" % "jwks-rsa" % "0.22.1"
