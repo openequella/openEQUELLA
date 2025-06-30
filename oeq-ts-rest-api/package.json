@@ -41,7 +41,7 @@
   "devDependencies": {
     "@babel/core": "7.27.4",
     "@babel/preset-env": "7.27.2",
-    "@types/jest": "29.5.14",
+    "@types/jest": "30.0.0",
     "@types/lodash": "4.17.17",
     "@types/node": "22.15.32",
     "@types/tough-cookie": "^4.0.0",
@@ -61,7 +61,7 @@
     "rollup": "4.41.1",
     "rollup-plugin-typescript2": "0.36.0",
     "tough-cookie": "5.1.2",
-    "ts-jest": "29.3.4",
+    "ts-jest": "29.4.0",
     "tslib": "2.8.1",
     "typescript": "5.8.3"
   }
