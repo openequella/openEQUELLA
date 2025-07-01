@@ -1,0 +1,173 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.github.openequella.graphql.api
+
+import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.test.TestHelper
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableDrivenPropertyChecks._
+import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
+
+import java.io.{BufferedReader, InputStreamReader}
+import java.util.zip.ZipInputStream
+
+class MetadataSchemaApiTest
+    extends AnyFunSpec
+    with Matchers
+    with GivenWhenThen
+    with EitherValues
+    with OptionValues {
+  private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
+
+  describe("listSchemas") {
+    it("should return a list of metadata schemas") {
+      When("listSchemas is called")
+      val result = MetadataSchemaApi.listSchemas()
+
+      Then("it should return a list of BaseEntityReferenceView")
+      result.isRight shouldBe true
+      result.value.length should be > 1
+      result.value.head.uuid should not be empty
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to list schemas")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.listSchemas()(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("getIdByUuid") {
+    it("should return the ID for a valid schema UUID") {
+      Given("A valid schema UUID")
+      val schema = MetadataSchemaApi.listSchemas().value.head
+
+      When("getIdByUuid is called with the schema UUID")
+      val result = MetadataSchemaApi.getIdByUuid(schema.uuid)
+
+      Then("it should return the schema ID")
+      result.isRight shouldBe true
+      result.value.get shouldBe schema.id
+    }
+
+    it("should return None for an invalid schema UUID") {
+      Given("An invalid schema UUID")
+      val invalidUuid = "invalid-uuid"
+
+      When("getIdByUuid is called with the invalid UUID")
+      val result = MetadataSchemaApi.getIdByUuid(invalidUuid)
+
+      Then("it should return None")
+      result.isRight shouldBe true
+      result.value shouldBe None
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to get a schema ID by UUID")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.getIdByUuid("some-uuid")(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("exportSchema") {
+    it("should export a metadata schema as a ZIP file") {
+      val withSecurityOptions = Table(
+        "withSecurity",
+        true,
+        false
+      )
+      forAll(withSecurityOptions) { withSecurity =>
+        Given(s"A valid metadata schema ID and withSecurity set to $withSecurity")
+        val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+        When("exportSchema is called with the schema ID and withSecurity")
+        val result = MetadataSchemaApi.exportSchema(schemaId, withSecurity)
+
+        Then("it should return a ZipInputStream")
+        result.isRight shouldBe true
+        val zis = result.value.get
+        zis shouldBe a[ZipInputStream]
+
+        And("the zip file should include a valid _entity.xml")
+        val entityXml = extractEntityXml(zis).value
+        entityXml should (startWith("<com.tle.common.ImportExportPack>") and include(
+          """<entity class="com.tle.beans.entity.Schema">"""
+        ))
+
+        And("the _entity.xml should contain the security information depending on withSecurity")
+        val securityElement = "<targetList>"
+        if (withSecurity) {
+          entityXml should include(securityElement)
+        } else {
+          entityXml should not include securityElement
+        }
+
+        // Ensure we close the stream to free resources
+        zis.close()
+      }
+    }
+
+    it("should return a not found error for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("exportSchema is called with the invalid schema ID")
+      val result = MetadataSchemaApi.exportSchema(invalidSchemaId, withSecurity = false)
+
+      Then("it should return None")
+      result shouldBe Right(None)
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to export a schema")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.exportSchema(1, withSecurity = false)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+
+    def extractEntityXml(zis: ZipInputStream): Option[String] =
+      Iterator
+        .continually(zis.getNextEntry)
+        .takeWhile(_ != null)
+        .find(_.getName == "_entity.xml")
+        .map { _ =>
+          readXmlFile(zis)
+        }
+
+    def readXmlFile(zis: ZipInputStream): String = {
+      val reader = new BufferedReader(new InputStreamReader(zis, "UTF-8"))
+      Iterator
+        .continually(reader.readLine())
+        .takeWhile(_ != null)
+        .mkString("\n")
+    }
+  }
+}

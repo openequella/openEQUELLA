@@ -16,29 +16,7 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.api
 
-package object client {
-  type LocalDateTime = String
-
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
-}
+/** This package contains the common views used in various APIs. */
+package object views {}

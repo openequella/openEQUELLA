@@ -65,9 +65,9 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription("List all metadata schemas")
       metadataSchemas: () => List[BaseEntityReference],
       @GQLDescription("Export a metadata schema, returning a base64 encoded zip file")
-      metadataSchemaExport: SchemaExportArgs => String,
+      metadataSchemaExport: SchemaExportArgs => Option[String],
       @GQLDescription("Get the metadata schema ID for a given UUID")
-      metadataSchemaIdForUuid: String => Long
+      metadataSchemaIdForUuid: String => Option[Long]
   )
 
   case class SchemaExportArgs(

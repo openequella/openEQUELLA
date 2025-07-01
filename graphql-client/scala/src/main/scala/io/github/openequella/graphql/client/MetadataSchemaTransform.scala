@@ -16,29 +16,20 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.client
 
-package object client {
-  type LocalDateTime = String
+import caliban.client.FieldBuilder._
+import caliban.client._
 
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+object MetadataSchemaTransform {
+
+  /** Filename of the schema transform stored on the server - managed via staging area
+    */
+  def filename: SelectionBuilder[MetadataSchemaTransform, String] =
+    _root_.caliban.client.SelectionBuilder.Field("filename", Scalar())
+
+  /** Type of the schema transform, e.g., OAI_Identity, HARVESTER, OAI_DC
+    */
+  def schemaType: SelectionBuilder[MetadataSchemaTransform, String] =
+    _root_.caliban.client.SelectionBuilder.Field("schemaType", Scalar())
 }

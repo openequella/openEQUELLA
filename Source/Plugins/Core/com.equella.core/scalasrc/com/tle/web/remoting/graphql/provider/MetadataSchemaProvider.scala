@@ -18,7 +18,6 @@
 
 package com.tle.web.remoting.graphql.provider
 
-import com.tle.common.EntityPack
 import com.tle.common.security.SecurityConstants
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.filesystem.staging.service.StagingService
@@ -75,11 +74,11 @@ class MetadataSchemaProvider @Inject() (
     *   a base64 encoded string representing the exported zip file.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
-  def exportSchema(id: Long, withSecurity: Boolean): String = {
+  def exportSchema(id: Long, withSecurity: Boolean): Option[String] = {
     LOGGER.debug(s"Exporting metadata schema with id $id")
-    val zipFile = schemaService.exportEntity(id, withSecurity)
-    // base 64 encode zipFile
-    Base64.getEncoder.encodeToString(zipFile)
+    noneIfNotFound {
+      schemaService.exportEntity(id, withSecurity)
+    }.map(zipFile => Base64.getEncoder.encodeToString(zipFile))
   }
 
   /** Get the metadata schema ID for a given UUID.
@@ -90,9 +89,9 @@ class MetadataSchemaProvider @Inject() (
     *   the ID of the metadata schema.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
-  def schemaIdForUuid(uuid: String): Long = {
+  def schemaIdForUuid(uuid: String): Option[Long] = {
     LOGGER.debug(s"Getting metadata schema ID for UUID $uuid")
-    schemaService.identifyByUuid(uuid)
+    Option(schemaService.identifyByUuid(uuid)).filterNot(_ == 0L)
   }
 
   /** Start editing an existing metadata schema. This method returns an `EditableBaseEntity` that

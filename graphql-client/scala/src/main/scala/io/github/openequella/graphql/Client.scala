@@ -18,6 +18,7 @@
 
 package io.github.openequella.graphql
 
+import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
@@ -110,17 +111,23 @@ object Client {
         ServerResponse(a, errors)
       }
     }
-    // If the response is a success, we need to check if there are any errors in the response. (As
-    // that's just success at the HTTP level, not the business logic and GraphQL/Caliban level.)
+
+    // The response handling is nuanced; and not all Rights are successes, and there's various Left
+    // error states.
+    // There are three main error scenarios:
+    // 1. Left(ServerError): The server responded with GraphQL errors.
+    // 2. Left(other CalibanClientError): A client-side error occurred (e.g. parsing failure).
+    // 3. Right(ServerResponse) with non-empty responseErrors: The server responded successfully (as
+    //    far as HTTP and parsing are concerned), but the GraphQL response contains errors provided
+    //    by the server.
+    // Only when we have Right(ServerResponse) with an empty responseErrors list do we have a true
+    // success.
     response match {
-      // First, there could be an error from Caliban - which most like is something at the GraphQL layer
-      case Left(error) => Left(List(GraphQlError(error.getMessage())))
-      // Next, there could be business logic level errors in the response
+      case Left(ServerError(errors)) => Left(errors.map(convertError))
+      case Left(error)               => Left(List(GraphQlError(error.getMessage())))
       case Right(serverResponse) if serverResponse.responseErrors.nonEmpty =>
         Left(serverResponse.responseErrors.map(convertError))
-      // But otherwise there's no errors and we can use the data
-      case Right(serverResponse) =>
-        Right(serverResponse.data)
+      case Right(serverResponse) => Right(serverResponse.data)
     }
   }
 
