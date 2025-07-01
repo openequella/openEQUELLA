@@ -41,6 +41,7 @@
     "clean": "rm -rf target/ node_modules/ .parcel-cache/",
     "compile:langbundle-tool": "cross-env-shell tsc --types \"node\" --outDir ${npm_package_config_languageBundle} build-tools/BuildLanguageBundle.ts",
     "dev": "npm run build && cross-env-shell parcel watch --public-url=. --target mainappdev ${npm_package_config_parcelEntryFiles}",
+    "explain:patches": "echo 'This project uses patch-package to apply critical modifications to dependencies. See the patches/README.md file for a detailed explanation.'",
     "install": "cross-env-shell \"mkdirp ${npm_package_config_devlang} ${npm_package_config_buildlang}\"",
     "postinstall": "patch-package",
     "storybook": "storybook dev  -p 6006",
