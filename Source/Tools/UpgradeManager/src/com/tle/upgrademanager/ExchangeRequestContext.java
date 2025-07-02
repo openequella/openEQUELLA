@@ -22,7 +22,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.tle.upgrademanager.handlers.HttpExchangeUtils;
 import java.io.IOException;
 import java.io.InputStream;
-// import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload2.core.RequestContext;
 
 /** */
@@ -63,6 +62,6 @@ public class ExchangeRequestContext implements RequestContext {
 
   @Override
   public boolean isMultipartRelated() {
-    return false;
+    return true;
   }
 }
