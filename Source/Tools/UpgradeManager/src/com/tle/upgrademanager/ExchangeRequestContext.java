@@ -62,6 +62,6 @@ public class ExchangeRequestContext implements RequestContext {
 
   @Override
   public boolean isMultipartRelated() {
-    return true;
+    return false;
   }
 }
