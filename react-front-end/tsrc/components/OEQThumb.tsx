@@ -192,7 +192,7 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
         ),
         O.getOrElse(() => (
           <div
-            className={`MuiPaper-elevation1 MuiPaper-rounded ${classes.thumbnail}`}
+            className={classes.thumbnail}
             aria-label={thumbLabels.emptyThumbnail}
           />
         )),
