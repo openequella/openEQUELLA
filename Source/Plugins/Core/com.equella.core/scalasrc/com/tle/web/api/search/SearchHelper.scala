@@ -343,7 +343,13 @@ object SearchHelper {
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
       thumbnailDetails =
-        getThumbnailDetails(Option(bean.getAttachments).map(_.asScala.toList), key),
+        if (bean.getThumbnail != "none")
+          getThumbnailDetails(
+            Option(bean.getAttachments).map(_.asScala.toList),
+            bean.getThumbnail,
+            key
+          )
+        else None,
       displayFields = getDisplayFields(bean),
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
@@ -432,6 +438,7 @@ object SearchHelper {
 
   def getThumbnailDetails(
       attachmentBeans: Option[List[AttachmentBean]],
+      thumbnail: String,
       itemKey: ItemIdKey
   ): Option[ThumbnailDetails] = {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
@@ -463,9 +470,22 @@ object SearchHelper {
         .flatMap(_.links.asScala.get(ItemLinkServiceImpl.REL_THUMB))
 
     attachmentBeans
-      .flatMap(
-        _.find(isViewable(hasRestrictedAttachmentPrivileges))
-      )
+      .flatMap { list =>
+        val resultFromCustomLookup: Option[AttachmentBean] = {
+          if (thumbnail.startsWith("custom:")) {
+            list
+              .find(_.getUuid == thumbnail.stripPrefix("custom:"))
+              .filter(isViewable(hasRestrictedAttachmentPrivileges))
+          } else {
+            None
+          }
+        }
+
+        // fallback to the first viewable attachment (default case) if the custom lookup returns None
+        resultFromCustomLookup.orElse {
+          list.find(isViewable(hasRestrictedAttachmentPrivileges))
+        }
+      }
       .map(sanitiseAttachmentBean)
       .map(toSearchResultAttachment(itemKey, _))
       .map(a =>
