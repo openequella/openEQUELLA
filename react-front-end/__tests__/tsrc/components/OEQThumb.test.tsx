@@ -36,9 +36,9 @@ describe("<OEQThumb/>", () => {
 
   it.each<[string, OEQ.Search.ThumbnailDetails | undefined, string]>([
     [
-      "shows the placeholder icon when no details are provided",
+      "shows empty white space when no details are provided",
       undefined,
-      thumbLabels.placeholder,
+      thumbLabels.emptyThumbnail,
     ],
     ["shows thumbnail image when available", fileDetails, thumbLabels.provided],
     [

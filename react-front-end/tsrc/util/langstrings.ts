@@ -664,7 +664,7 @@ export const languageStrings = {
     },
     thumbnails: {
       html: "HTML Icon",
-      placeholder: "Placeholder Icon",
+      emptyThumbnail: "Empty Thumbnail",
       provided: "Provided Icon",
       file: "Default File Icon",
       image: "Image Icon",
