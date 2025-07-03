@@ -49,18 +49,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * To debug this 1. Create a version.properties file in src/com/tle/upgrademanager (you would get
- * this from the root level build: ant generate-version-properties) 2. VM arguments:
- * -Dequella.install.directory=c:/svn/tle/trunk -DDEBUG=true Classpath: wherever the
- * config.properties file lives
+ * To debug this:
+ *
+ * <ul>
+ *   <li>Create a <code>version.properties</code> file in <code>src/com/tle/upgrademanager</code>.
+ *   <li>Set program arguments: <code>start</code>.
+ *   <li>Set VM arguments: <code>-Dequella.install.directory=C:/svn/tle/trunk -DDEBUG=true</code>.
+ *       Please note that the directory should have an oeq installed.
+ * </ul>
  */
 public class Main {
   private static final Log LOGGER = LogFactory.getLog(Main.class);
   // Flag to stop the manager.
   private static volatile boolean stop;
 
-  public static final String EQUELLA_INSTALL_DIRECTORY_KEY =
-      "equella.install.directory"; //$NON-NLS-1$
+  public static final String EQUELLA_INSTALL_DIRECTORY_KEY = "equella.install.directory";
 
   private final List<Filter> filters;
   private final ManagerConfig config;
@@ -72,8 +75,7 @@ public class Main {
    * method should not return until the stop method has been called in JVM mode.
    */
   public static void main(String[] args) throws Exception {
-    if (Check.isEmpty(args) || Check.isEmpty(args[0]) || args[0].equals("start")) // $NON-NLS-1$
-    {
+    if (Check.isEmpty(args) || Check.isEmpty(args[0]) || args[0].equals("start")) {
       Main m = new Main();
       m.startServer();
       while (!stop) {
