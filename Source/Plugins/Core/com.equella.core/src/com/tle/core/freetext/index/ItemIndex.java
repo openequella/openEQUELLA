@@ -460,7 +460,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       FreeTextBooleanQuery bquery = new FreeTextBooleanQuery(false, true);
       bquery.add(new FreeTextFieldQuery(FreeTextQuery.FIELD_UNIQUE, uniqueId));
       BooleanClause clause = convertToBooleanClause(bquery, reader);
-      freeTextBuilder.add(clause.getQuery(), Occur.SHOULD);
+      freeTextBuilder.add(clause.query(), Occur.SHOULD);
     }
 
     Builder fullQueryBuilder = new Builder();
@@ -508,7 +508,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             while (iterator.hasNext()) {
               long doc = iterator.next();
               Document document =
-                  indexReader.document((int) doc, Collections.singleton(FreeTextQuery.FIELD_ID));
+                  indexReader
+                      .storedFields()
+                      .document((int) doc, Collections.singleton(FreeTextQuery.FIELD_ID));
               long key = Long.parseLong(document.get(FreeTextQuery.FIELD_ID));
               longSet.add(key);
             }
@@ -554,7 +556,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     if (firstHit < results.length) {
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
-        Document doc = searcher.doc(docId, getKeyFields());
+        Document doc = searcher.storedFields().document(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         longSet.add(key.getKey());
       }
@@ -572,7 +574,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
         float relevance = results[i].score;
-        Document doc = searcher.doc(docId, getKeyFields());
+        Document doc = searcher.storedFields().document(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         T result = createResult(key, doc, relevance, sortByRelevance);
         retrievedResults.add(result);
@@ -583,7 +585,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     // total number of hits which is less than 2B since Lucene indexes are still bound to at most
     // 2B documents, so it can safely be cast to an int in that case.
     return new SimpleSearchResults<T>(
-        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value);
+        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value());
   }
 
   protected abstract T createResult(
@@ -886,7 +888,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
       Document doc;
       try {
-        doc = reader.document(docid);
+        doc = reader.storedFields().document(docid);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -1134,11 +1136,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return null;
     }
     BooleanClause clause = convertToBooleanClause(fullftQuery, reader);
-    Occur occur = clause.getOccur();
+    Occur occur = clause.occur();
     if (!clause.isProhibited() && !clause.isRequired()) {
       occur = Occur.MUST;
     }
-    extraQueryBuilder.add(clause.getQuery(), occur);
+    extraQueryBuilder.add(clause.query(), occur);
 
     return extraQueryBuilder.build();
   }
@@ -1207,8 +1209,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             convertDate(query.getStart(), query),
             convertDate(query.getEnd(), query),
             query.isIncludeStart(),
-            query.isIncludeEnd());
-    termQuery.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_REWRITE);
+            query.isIncludeEnd(),
+            MultiTermQuery.CONSTANT_SCORE_REWRITE);
     return new BooleanClause(termQuery, Occur.SHOULD);
   }
 
@@ -1261,17 +1263,17 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       if (!not) {
         return first;
       } else if (!(first.isRequired() || first.isProhibited())) {
-        return new BooleanClause(first.getQuery(), Occur.MUST_NOT);
+        return new BooleanClause(first.query(), Occur.MUST_NOT);
       }
     }
 
     for (BooleanClause bclause : lclauses) {
-      Occur clauseOccur = bclause.getOccur();
+      Occur clauseOccur = bclause.occur();
       if (addplus && !(bclause.isRequired() || bclause.isProhibited())) {
         clauseOccur = Occur.MUST;
       }
       allnot &= bclause.isProhibited();
-      queryBuilder.add(bclause.getQuery(), clauseOccur);
+      queryBuilder.add(bclause.query(), clauseOccur);
     }
 
     // When `allnot` is true, it means all the BooleanClause are prohibited, so their occurrences

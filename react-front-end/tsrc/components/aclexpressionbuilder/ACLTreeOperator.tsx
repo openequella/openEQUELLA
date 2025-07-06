@@ -91,9 +91,7 @@ export const ACLTreeOperator = ({
       </InputLabel>
       <Select
         value={operator}
-        onChange={(event) =>
-          onOperatorChange(event.target.value as ACLOperatorType)
-        }
+        onChange={(event) => onOperatorChange(event.target.value)}
         // prevent toggling tree item
         onClick={(event) => event.stopPropagation()}
         className={classes.labelSelect}

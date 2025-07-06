@@ -58,7 +58,7 @@
     "jest": "30.0.3",
     "jest-config": "30.0.3",
     "prettier": "3.5.3",
-    "rollup": "4.41.1",
+    "rollup": "4.44.0",
     "rollup-plugin-typescript2": "0.36.0",
     "tough-cookie": "5.1.2",
     "ts-jest": "29.4.0",

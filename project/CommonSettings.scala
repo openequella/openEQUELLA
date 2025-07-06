@@ -43,7 +43,7 @@ object CommonSettings extends AutoPlugin {
     lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.3"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "12.10.0.jre11"
 
-    lazy val log4jVersion   = "2.24.3"
+    lazy val log4jVersion   = "2.25.0"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core"        % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
@@ -56,7 +56,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion  = "2.19.0"
+    lazy val jacksonVersion  = "2.19.1"
     lazy val jacksonDataBind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
     lazy val jacksonDataFormatYaml =
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
