@@ -1,7 +1,7 @@
 import de.johoop.testngplugin.TestNGPlugin
 import scala.jdk.CollectionConverters._
 
-libraryDependencies += "com.opencsv" % "opencsv" % "5.11.1"
+libraryDependencies += "com.opencsv" % "opencsv" % "5.11.2"
 libraryDependencies ++= Seq(
   "org.testng" % "testng" % "7.11.0" % Test,
   // The older Log4j is required by dependency "oclc-harvester2" at runtime.
