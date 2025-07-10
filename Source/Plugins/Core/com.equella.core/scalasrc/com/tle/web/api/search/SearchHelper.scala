@@ -133,12 +133,7 @@ object SearchHelper {
         search.setItemStatuses(itemStatus.orNull)
     }
 
-    // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
-    val modifiedAfter  = handleModifiedDate(payload.modifiedAfter, LocalTime.MIN)
-    val modifiedBefore = handleModifiedDate(payload.modifiedBefore, LocalTime.MAX)
-    if (modifiedBefore.isDefined || modifiedAfter.isDefined) {
-      search.setDateRange(Array(modifiedAfter.orNull, modifiedBefore.orNull))
-    }
+    setDateRange(search, payload.modifiedAfter, payload.modifiedBefore)
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
       payload.dynaCollection
     )
@@ -158,6 +153,30 @@ object SearchHelper {
     }
 
     search
+  }
+
+  /** Set the date range to the search. If either start or end date is defined, sets the search’s
+    * dateRange to [startDateTime, endDateTime].
+    *
+    * @param search
+    *   An instance of DefaultSearch which the supplied date range is applied to.
+    * @param start
+    *   An optional string representing the start date in ISO format (yyyy-MM-dd).
+    * @param end
+    *   An optional string representing the end date in ISO format (yyyy-MM-dd).
+    */
+  def setDateRange(
+      search: DefaultSearch,
+      start: Option[String],
+      end: Option[String]
+  ): Unit = {
+    // The time of start should be '00:00:00' whereas the time of end should be '23:59:59'.
+    val startDate = parseDateString(start, LocalTime.MIN)
+    val endDate   = parseDateString(end, LocalTime.MAX)
+
+    if (startDate.isDefined || endDate.isDefined) {
+      search.setDateRange(Array(startDate.orNull, endDate.orNull))
+    }
   }
 
   /** Using a number of the fields from `params` determines what is the requested sort order and
@@ -211,7 +230,7 @@ object SearchHelper {
     *   An Option which wraps an instance of Date, combining the successfully parsed dateString and
     *   provided time (based on the system's default timezone).
     */
-  def handleModifiedDate(dateString: Option[String], time: LocalTime): Option[Date] = {
+  def parseDateString(dateString: Option[String], time: LocalTime): Option[Date] = {
     dateString
       .filter(_.nonEmpty)
       .map(date =>
@@ -493,4 +512,12 @@ object SearchHelper {
 
     standardDisplayFields ++ customDisplayFields
   }
+
+  /** Get a list highlighted text from the provided query.
+    *
+    * @param query
+    *   An optional query string to parse and extract highlighted text from.
+    */
+  def getHighlightedList(query: Option[String]): List[String] =
+    new DefaultSearch.QueryParser(query.orNull).getHilightedList.asScala.toList
 }

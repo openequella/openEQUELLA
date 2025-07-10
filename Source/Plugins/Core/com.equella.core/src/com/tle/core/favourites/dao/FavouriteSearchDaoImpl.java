@@ -144,7 +144,7 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     public String getOrderBy() {
       if (orderby != null) {
         String orderByString = orderby;
-        if (!reverse) {
+        if (reverse) {
           orderByString += " DESC";
         } else {
           orderByString += " ASC";
