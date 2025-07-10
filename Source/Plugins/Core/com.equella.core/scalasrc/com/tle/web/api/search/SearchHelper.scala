@@ -342,14 +342,7 @@ object SearchHelper {
       attachments =
         if (includeAttachments) convertToAttachment(sanitisedAttachmentBeans, key) else None,
       thumbnail = bean.getThumbnail,
-      thumbnailDetails =
-        if (bean.getThumbnail != "none")
-          getThumbnailDetails(
-            Option(bean.getAttachments).map(_.asScala.toList),
-            bean.getThumbnail,
-            key
-          )
-        else None,
+      thumbnailDetails = getThumbnailDetails(key, bean),
       displayFields = getDisplayFields(bean),
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
@@ -437,12 +430,21 @@ object SearchHelper {
     itemID.getVersion == LegacyGuice.itemService.getLatestVersion(itemID.getUuid)
 
   def getThumbnailDetails(
-      attachmentBeans: Option[List[AttachmentBean]],
-      thumbnail: String,
-      itemKey: ItemIdKey
+      itemKey: ItemIdKey,
+      itemBean: EquellaItemBean
   ): Option[ThumbnailDetails] = {
+    if (itemBean.getThumbnail == "none") {
+      return None
+    }
+
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
+
+    def determineThumbnailAttachment(
+        attachmentBeans: List[AttachmentBean]
+    ): Option[AttachmentBean] =
+      prioritizeAttachments(attachmentBeans, getConfiguredThumbnailUuid(itemBean.getThumbnail))
+        .find(isViewable(hasRestrictedAttachmentPrivileges))
 
     def determineThumbnailLink(searchResultAttachment: SearchResultAttachment): Option[String] =
       Option(searchResultAttachment)
@@ -469,23 +471,9 @@ object SearchHelper {
         )
         .flatMap(_.links.asScala.get(ItemLinkServiceImpl.REL_THUMB))
 
-    attachmentBeans
-      .flatMap { list =>
-        val resultFromCustomLookup: Option[AttachmentBean] = {
-          if (thumbnail.startsWith("custom:")) {
-            list
-              .find(_.getUuid == thumbnail.stripPrefix("custom:"))
-              .filter(isViewable(hasRestrictedAttachmentPrivileges))
-          } else {
-            None
-          }
-        }
-
-        // fallback to the first viewable attachment (default case) if the custom lookup returns None
-        resultFromCustomLookup.orElse {
-          list.find(isViewable(hasRestrictedAttachmentPrivileges))
-        }
-      }
+    Option(itemBean.getAttachments)
+      .map(_.asScala.toList)
+      .flatMap(determineThumbnailAttachment)
       .map(sanitiseAttachmentBean)
       .map(toSearchResultAttachment(itemKey, _))
       .map(a =>
@@ -495,6 +483,24 @@ object SearchHelper {
           link = determineThumbnailLink(a)
         )
       )
+  }
+
+  def getConfiguredThumbnailUuid(thumbnail: String): Option[String] = {
+    val configuredThumbnailPrefix = "custom:"
+    Option(thumbnail)
+      .filter(_.startsWith(configuredThumbnailPrefix))
+      .map(_.stripPrefix(configuredThumbnailPrefix))
+  }
+
+  private def prioritizeAttachments(
+      attachments: List[AttachmentBean],
+      preferredUuid: Option[String]
+  ): List[AttachmentBean] = preferredUuid match {
+    case Some(uuid) =>
+      val (preferred, others) = attachments.partition(_.getUuid == uuid)
+      preferred ++ others
+    case None =>
+      attachments
   }
 
   def getDisplayFields(bean: EquellaItemBean): List[DisplayField] = {
