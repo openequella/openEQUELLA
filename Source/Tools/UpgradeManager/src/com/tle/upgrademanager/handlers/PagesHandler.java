@@ -73,33 +73,33 @@ public class PagesHandler extends PostDispatchHandler {
         if (lock.lastModified() + config.getManagerDetails().getLoadingTimeout()
             > new Date().getTime()) {
           statusText = "Loading...";
-          statusClass = "statusLoading"; // $NON-NLS-1$
+          statusClass = "statusLoading";
           buttonText = null;
           buttonAction = null;
         } else {
           statusText = "Error starting server";
-          statusClass = "statusError"; // $NON-NLS-1$
+          statusClass = "statusError";
           buttonText = "Stop";
-          buttonAction = "/server/stop"; // $NON-NLS-1$
+          buttonAction = "/server/stop";
         }
       } else {
         statusText = "Running";
-        statusClass = "statusStarted"; // $NON-NLS-1$
+        statusClass = "statusStarted";
         buttonText = "Stop";
-        buttonAction = "/server/stop"; // $NON-NLS-1$
+        buttonAction = "/server/stop";
       }
     } else {
       statusText = "Stopped";
-      statusClass = "statusStopped"; // $NON-NLS-1$
+      statusClass = "statusStopped";
       buttonText = "Start";
-      buttonAction = "/server/start"; // $NON-NLS-1$
+      buttonAction = "/server/start";
     }
 
-    ST st = templates.getInstanceOf("templates/ajaxstatus"); // $NON-NLS-1$
-    st.add("statusText", statusText); // $NON-NLS-1$
-    st.add("statusClass", statusClass); // $NON-NLS-1$
-    st.add("buttonText", buttonText); // $NON-NLS-1$
-    st.add("buttonAction", buttonAction); // $NON-NLS-1$
+    ST st = templates.getInstanceOf("templates/ajaxstatus");
+    st.add("statusText", statusText);
+    st.add("statusClass", statusClass);
+    st.add("buttonText", buttonText);
+    st.add("buttonAction", buttonAction);
     HttpExchangeUtils.respondJSONMessage(exchange, 200, new String[] {st.toString(), buttonAction});
   }
 
