@@ -1,8 +1,8 @@
 package io.github.openequella.rest
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.github.openequella.Utils
 import org.apache.commons.httpclient.methods.GetMethod
-import org.apache.http.client.utils.URIBuilder
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
@@ -147,9 +147,8 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   /** Get the facet search result.
     */
   private def getFacetSearch(queryParams: Seq[(String, String)] = Seq()): JsonNode = {
-    val uriBuilder = new URIBuilder(FACET_SEARCH_API_ENDPOINT)
-    queryParams.foreach { case (key, value) => uriBuilder.addParameter(key, value) }
-    val method     = new GetMethod(uriBuilder.build().toString)
+    val url        = Utils.buildUrl(FACET_SEARCH_API_ENDPOINT, queryParams)
+    val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
     mapper.readTree(method.getResponseBodyAsStream).get("results")

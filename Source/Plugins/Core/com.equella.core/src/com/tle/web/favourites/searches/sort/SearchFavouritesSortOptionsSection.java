@@ -39,8 +39,8 @@ public class SearchFavouritesSortOptionsSection
 
   @Override
   protected void addSortOptions(List<SortOption> sorts) {
-    sorts.add(new SortOption(LABEL_NAME, NAME_VALUE, NAME_VALUE, true));
-    sorts.add(new SortOption(LABEL_DATE, DATE_VALUE, "date_modified", false)); // $NON-NLS-1$
+    sorts.add(new SortOption(LABEL_NAME, NAME_VALUE, NAME_VALUE, false));
+    sorts.add(new SortOption(LABEL_DATE, DATE_VALUE, "date_modified", true)); // $NON-NLS-1$
   }
 
   @Override

@@ -30,7 +30,7 @@ object TaskSortOrder {
   val ID_SUBMITTED: String  = "task_submitted"
 
   /** Give an ID of an expected Task sort order, will create a `SortField` that can be used with
-    * DefaultSearch to achieve that order. However if not one of the Task orders, then will simply
+    * DefaultSearch to achieve that order. However, if not one of the Task orders, then will simply
     * return None.
     *
     * @param id
