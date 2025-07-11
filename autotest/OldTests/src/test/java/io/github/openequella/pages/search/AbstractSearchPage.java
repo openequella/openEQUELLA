@@ -434,4 +434,13 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     firstSpan.click();
     firstSpan.sendKeys(value);
   }
+
+  /**
+   * Returns all item thumbnail elements on the page.
+   *
+   * @return List of thumbnail elements with class "OEQThumb-thumbnail".
+   */
+  public List<WebElement> getItemThumbnail() {
+    return driver.findElements(By.cssSelector(".OEQThumb-thumbnail"));
+  }
 }
