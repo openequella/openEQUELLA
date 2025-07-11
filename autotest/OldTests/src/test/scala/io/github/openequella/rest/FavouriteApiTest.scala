@@ -73,10 +73,18 @@ class FavouriteApiTest extends AbstractRestApiTest {
   }
 
   @Test(dependsOnMethods = Array("testAddFavouriteItem"))
+  def testRemoveFavouriteItemNoPermission(): Unit = {
+    loginAsLowPrivilegeUser()
+    val method = new DeleteMethod(s"$FAVOURITE_ITEM_API_ENDPOINT/$bookmarkId")
+    assertEquals(makeClientRequest(method), HttpStatus.SC_FORBIDDEN)
+    login()
+  }
+
+  @Test(dependsOnMethods = Array("testRemoveFavouriteItemNoPermission"))
   def testRemoveFavouriteItem(): Unit = {
     val method = new DeleteMethod(s"$FAVOURITE_ITEM_API_ENDPOINT/$bookmarkId")
     assertEquals(makeClientRequest(method), HttpStatus.SC_NO_CONTENT)
-    // Try to delete again and the response code should be 404 as the bookmark is already deleted.
+    // Try to delete again and the response code should be 404 as the favourite item is already deleted.
     assertEquals(makeClientRequest(method), HttpStatus.SC_NOT_FOUND)
   }
 
