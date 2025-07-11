@@ -19,12 +19,14 @@
 package com.tle.web.api.favourite
 
 import com.tle.beans.item.ItemId
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.favourites.bean.{FavouriteSearch => FavouriteSearchBean}
 import com.tle.core.favourites.service.{BookmarkService, FavouriteSearchService}
 import com.tle.core.guice.Bind
 import com.tle.core.item.service.ItemService
+import com.tle.exceptions.AccessDeniedException
 
 import java.util.Date
 import com.tle.web.api.ApiErrorResponse
@@ -43,6 +45,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{BeanParam, DELETE, GET, POST, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 /** Model class for Items to be saved to user's favourites.
   * @param keywords
@@ -111,17 +114,20 @@ class FavouriteResource @Inject() (
   @DELETE
   @Path("/item/{id}")
   @ApiOperation(
-    value = "Delete one Item from user's favourites",
-    notes = "This operation is essentially deleting a bookmark."
+    value = "Delete user's favourite item (bookmark)"
   )
   def deleteFavouriteItem(@ApiParam("Bookmark ID") @PathParam("id") id: Long): Response = {
-    Option(bookmarkService.getById(id)) match {
-      case Some(_) =>
-        bookmarkService.delete(id)
+    Try(bookmarkService.deleteIfOwned(id)) match {
+      case Success(_) =>
         Response.status(Status.NO_CONTENT).build()
-      case None =>
-        ApiErrorResponse
-          .resourceNotFound(s"No Bookmark matching ID: ${id}")
+      case Failure(e: NotFoundException) =>
+        ApiErrorResponse.resourceNotFound(s"No favourite item matching ID: ${id}")
+      case Failure(e: AccessDeniedException) =>
+        ApiErrorResponse.forbiddenRequest(
+          s"You are not the owner of the favourite item with ID: ${id}"
+        )
+      case Failure(otherException) =>
+        ApiErrorResponse.serverError(s"An unexpected error occurred: ${otherException.getMessage}")
     }
   }
 
