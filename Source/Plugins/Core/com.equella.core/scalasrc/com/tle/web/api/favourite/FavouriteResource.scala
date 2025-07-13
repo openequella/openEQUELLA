@@ -19,12 +19,14 @@
 package com.tle.web.api.favourite
 
 import com.tle.beans.item.ItemId
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.institution.CurrentInstitution
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.favourites.bean.{FavouriteSearch => FavouriteSearchBean}
 import com.tle.core.favourites.service.{BookmarkService, FavouriteSearchService}
 import com.tle.core.guice.Bind
 import com.tle.core.item.service.ItemService
+import com.tle.exceptions.AccessDeniedException
 
 import java.util.Date
 import com.tle.web.api.ApiErrorResponse
@@ -43,6 +45,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
 import javax.ws.rs.{BeanParam, DELETE, GET, POST, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 /** Model class for Items to be saved to user's favourites.
   * @param keywords
@@ -161,5 +164,25 @@ class FavouriteResource @Inject() (
         FavouriteSearch(newFavouriteSearchBean)
       )
       .build()
+  }
+
+  @DELETE
+  @Path("/search/{id}")
+  @ApiOperation(
+    value = "Delete a search from user's favourites"
+  )
+  def deleteFavouriteSearch(@ApiParam("Search ID") @PathParam("id") id: Long): Response = {
+    Try(favouritesSearchService.deleteIfOwned(id)) match {
+      case Success(_) =>
+        Response.status(Status.NO_CONTENT).build()
+      case Failure(e: NotFoundException) =>
+        ApiErrorResponse.resourceNotFound(s"No favourite search matching ID: ${id}")
+      case Failure(e: AccessDeniedException) =>
+        ApiErrorResponse.forbiddenRequest(
+          s"You are not the owner of the favourite search with ID: ${id}"
+        )
+      case Failure(otherException) =>
+        ApiErrorResponse.serverError(s"An unexpected error occurred: ${otherException.getMessage}")
+    }
   }
 }

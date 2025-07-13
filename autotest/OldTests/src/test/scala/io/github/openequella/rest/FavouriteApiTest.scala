@@ -46,6 +46,7 @@ class FavouriteApiTest extends AbstractRestApiTest {
   private val SEARCH_D = "Search D"
 
   private var bookmarkId: Long = 0L
+  private var searchId: Long   = 0L
 
   @Test
   def testAddFavouriteItem(): Unit = {
@@ -99,20 +100,45 @@ class FavouriteApiTest extends AbstractRestApiTest {
     val response: JsonNode = mapper.readTree(method.getResponseBodyAsStream)
     assertEquals(response.get("name").asText(), searchName)
     assertEquals(response.get("url").asText(), searchPath)
+    searchId = response.get("id").asLong()
   }
 
-  // TODO: OEQ-2605 change the dependency and test data since there will be a test to remove the new added search.
-  @Test(description = "Get all favourite searches")
+  @Test(
+    description = "Delete Favourite search without permission",
+    dependsOnMethods = Array("testAddFavouriteSearch")
+  )
+  def testDeleteFavouriteSearchWithoutPermission(): Unit = {
+    loginAsLowPrivilegeUser()
+    val method = new DeleteMethod(s"$FAVOURITE_SEARCH_API_ENDPOINT/$searchId")
+    assertEquals(makeClientRequest(method), HttpStatus.SC_FORBIDDEN)
+    login()
+  }
+
+  @Test(
+    description = "Delete Favourite search ",
+    dependsOnMethods = Array("testDeleteFavouriteSearchWithoutPermission")
+  )
+  def testDeleteFavouriteSearch(): Unit = {
+    val method = new DeleteMethod(s"$FAVOURITE_SEARCH_API_ENDPOINT/$searchId")
+    assertEquals(makeClientRequest(method), HttpStatus.SC_NO_CONTENT)
+    // Try to delete again and the response code should be 404 as the search is already deleted.
+    assertEquals(makeClientRequest(method), HttpStatus.SC_NOT_FOUND)
+  }
+
+  @Test(
+    description = "Get all favourite searches",
+    dependsOnMethods = Array("testDeleteFavouriteSearch")
+  )
   def testGetFavouriteSearch(): Unit = {
     val response: JsonNode = getFavouriteSearchResults()
-    assertEquals(response.get("results").elements().asScala.size, 4)
+    assertEquals(response.get("results").elements().asScala.size, 3)
     // Should be ordered by added time by default.
-    assertEquals(getFirstFavouriteSearchName(response), SEARCH_D)
+    assertEquals(getFirstFavouriteSearchName(response), SEARCH_C)
   }
 
   @Test(
     description = "Get all favourite searches ordered by name",
-    dependsOnMethods = Array("testAddFavouriteSearch")
+    dependsOnMethods = Array("testGetFavouriteSearch")
   )
   def testGetFavouriteSearchWithOrder(): Unit = {
     val response: JsonNode = getFavouriteSearchResults(Seq("order" -> "name"))
@@ -121,7 +147,7 @@ class FavouriteApiTest extends AbstractRestApiTest {
 
   @Test(
     description = "Get all favourite searches within a date range",
-    dependsOnMethods = Array("testAddFavouriteSearch")
+    dependsOnMethods = Array("testGetFavouriteSearch")
   )
   def testGetFavouriteSearchWithDate(): Unit = {
     val response: JsonNode = getFavouriteSearchResults(
@@ -132,11 +158,11 @@ class FavouriteApiTest extends AbstractRestApiTest {
 
   @Test(
     description = "Get all favourite searches with start and length queries",
-    dependsOnMethods = Array("testAddFavouriteSearch")
+    dependsOnMethods = Array("testGetFavouriteSearch")
   )
   def testStartAndLength(): Unit = {
     val response: JsonNode = getFavouriteSearchResults(Seq("start" -> "1", "length" -> "1"))
-    assertEquals(getFirstFavouriteSearchName(response), SEARCH_C)
+    assertEquals(getFirstFavouriteSearchName(response), SEARCH_B)
   }
 
   private def getFavouriteSearchResults(queryParams: Seq[(String, String)] = Seq()): JsonNode = {
