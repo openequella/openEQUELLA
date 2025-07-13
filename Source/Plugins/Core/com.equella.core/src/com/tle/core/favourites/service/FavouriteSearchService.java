@@ -25,6 +25,17 @@ import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
 public interface FavouriteSearchService {
+  FavouriteSearch getById(long id);
+
+  /**
+   * Checks if the current user is the owner of the given favourite search.
+   *
+   * @param favouriteSearch the favourite search to check.
+   */
+  boolean isOwner(FavouriteSearch favouriteSearch);
+
+  /** Delete the favourite search if the current user is the owner. */
+  void deleteIfOwned(long id);
 
   /**
    * Save a search definition to user's search favourites.

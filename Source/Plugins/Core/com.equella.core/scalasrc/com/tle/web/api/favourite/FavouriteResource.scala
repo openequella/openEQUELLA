@@ -168,4 +168,24 @@ class FavouriteResource @Inject() (
       )
       .build()
   }
+
+  @DELETE
+  @Path("/search/{id}")
+  @ApiOperation(
+    value = "Delete a search from user's favourites"
+  )
+  def deleteFavouriteSearch(@ApiParam("Search ID") @PathParam("id") id: Long): Response = {
+    Try(favouritesSearchService.deleteIfOwned(id)) match {
+      case Success(_) =>
+        Response.status(Status.NO_CONTENT).build()
+      case Failure(e: NotFoundException) =>
+        ApiErrorResponse.resourceNotFound(s"No favourite search matching ID: ${id}")
+      case Failure(e: AccessDeniedException) =>
+        ApiErrorResponse.forbiddenRequest(
+          s"You are not the owner of the favourite search with ID: ${id}"
+        )
+      case Failure(otherException) =>
+        ApiErrorResponse.serverError(s"An unexpected error occurred: ${otherException.getMessage}")
+    }
+  }
 }

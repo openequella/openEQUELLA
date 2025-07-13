@@ -21,6 +21,7 @@ package com.tle.core.favourites.service;
 import com.dytech.edge.web.WebConstants;
 import com.google.common.base.Strings;
 import com.tle.beans.Institution;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.searching.Search;
 import com.tle.common.searching.SortField;
@@ -34,6 +35,7 @@ import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
+import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.integration.IntegrationSection;
 import com.tle.web.sections.SectionInfo;
@@ -64,6 +66,17 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   @Inject private FavouriteSearchDao dao;
 
   @Override
+  public FavouriteSearch getById(long id) {
+    return dao.findById(id);
+  }
+
+  @Override
+  public boolean isOwner(FavouriteSearch favouriteSearch) {
+    String userId = CurrentUser.getUserID();
+    return favouriteSearch.getOwner().equals(userId);
+  }
+
+  @Override
   @Transactional
   public FavouriteSearch save(FavouriteSearch search) {
     Long id = dao.save(search);
@@ -77,6 +90,21 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     if (favouriteSearch != null) {
       dao.delete(favouriteSearch);
     }
+  }
+
+  @Override
+  @Transactional
+  public void deleteIfOwned(long id) {
+    FavouriteSearch favouriteSearch =
+        Optional.ofNullable(getById(id))
+            .orElseThrow(() -> new NotFoundException("No favourite search matching ID: " + id));
+
+    if (!isOwner(favouriteSearch)) {
+      throw new AccessDeniedException(
+          "You are not the owner of the favourite search with ID: " + id);
+    }
+
+    dao.delete(favouriteSearch);
   }
 
   /**
