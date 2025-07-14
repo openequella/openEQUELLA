@@ -440,7 +440,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    *
    * @return List of thumbnail elements with class "OEQThumb-thumbnail".
    */
-  public List<WebElement> getItemThumbnail() {
+  public List<WebElement> getAllItemThumbnails() {
     return driver.findElements(By.cssSelector(".OEQThumb-thumbnail"));
   }
 }

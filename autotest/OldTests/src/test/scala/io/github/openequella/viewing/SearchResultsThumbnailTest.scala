@@ -3,9 +3,11 @@ package io.github.openequella.viewing
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.test.AbstractSessionTest
 import io.github.openequella.pages.search.NewSearchPage
+import org.openqa.selenium.WebElement
 import org.testng.annotations.Test
 import org.testng.Assert.{assertEquals, assertTrue}
 import testng.annotation.NewUIOnly
+import java.util
 
 @TestInstitution("fiveo")
 class SearchResultsThumbnailTest extends AbstractSessionTest {
@@ -14,9 +16,10 @@ class SearchResultsThumbnailTest extends AbstractSessionTest {
     val searchPage: NewSearchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
-    val thumbnailUrl: String       = searchPage.getItemThumbnail.get(0).getAttribute("src")
-    val thumbnailAriaLabel: String = searchPage.getItemThumbnail.get(0).getAttribute("aria-label")
-    val expectedAriaLabel: String  = "Provided Icon"
+    val thumbList: util.List[WebElement] = searchPage.getAllItemThumbnails
+    val thumbnailUrl: String             = thumbList.get(0).getAttribute("src")
+    val thumbnailAriaLabel: String       = thumbList.get(0).getAttribute("aria-label")
+    val expectedAriaLabel: String        = "Provided Icon"
     assertTrue(
       thumbnailUrl.contains(expectedThumbnailAttUuid),
       s"Thumbnail URL should contain $expectedThumbnailAttUuid"
@@ -84,7 +87,8 @@ class SearchResultsThumbnailTest extends AbstractSessionTest {
     val searchPage: NewSearchPage = new NewSearchPage(context).load()
     searchPage.changeQuery("Testing Thumbnail with None thumbnail")
     searchPage.waitForSearchCompleted(1)
-    val thumbnailAriaLabel: String = searchPage.getItemThumbnail.get(0).getAttribute("aria-label")
+    val thumbnailAriaLabel: String =
+      searchPage.getAllItemThumbnails.get(0).getAttribute("aria-label")
     assertEquals(thumbnailAriaLabel, "Empty Thumbnail")
     logout
   }
