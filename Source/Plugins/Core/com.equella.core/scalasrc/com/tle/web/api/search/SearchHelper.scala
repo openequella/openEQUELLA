@@ -440,18 +440,22 @@ object SearchHelper {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
-    def getConfiguredThumbnailUuid(thumbnail: String): Option[String] = {
-      val configuredThumbnailPrefix = "custom:"
-      Option(thumbnail)
-        .filter(_.startsWith(configuredThumbnailPrefix))
-        .map(_.stripPrefix(configuredThumbnailPrefix))
-    }
-
     def determineThumbnailAttachment(
         attachmentBeans: List[AttachmentBean]
     ): Option[AttachmentBean] =
       prioritizeAttachments(attachmentBeans, getConfiguredThumbnailUuid(itemBean.getThumbnail))
         .find(isViewable(hasRestrictedAttachmentPrivileges))
+
+    def prioritizeAttachments(
+        attachments: List[AttachmentBean],
+        preferredUuid: Option[String]
+    ): List[AttachmentBean] = preferredUuid match {
+      case Some(uuid) =>
+        val (preferred, others) = attachments.partition(_.getUuid == uuid)
+        preferred ++ others
+      case None =>
+        attachments
+    }
 
     def determineThumbnailLink(searchResultAttachment: SearchResultAttachment): Option[String] =
       Option(searchResultAttachment)
@@ -492,15 +496,11 @@ object SearchHelper {
       )
   }
 
-  private def prioritizeAttachments(
-      attachments: List[AttachmentBean],
-      preferredUuid: Option[String]
-  ): List[AttachmentBean] = preferredUuid match {
-    case Some(uuid) =>
-      val (preferred, others) = attachments.partition(_.getUuid == uuid)
-      preferred ++ others
-    case None =>
-      attachments
+  def getConfiguredThumbnailUuid(thumbnail: String): Option[String] = {
+    val configuredThumbnailPrefix = "custom:"
+    Option(thumbnail)
+      .filter(_.startsWith(configuredThumbnailPrefix))
+      .map(_.stripPrefix(configuredThumbnailPrefix))
   }
 
   def getDisplayFields(bean: EquellaItemBean): List[DisplayField] = {
