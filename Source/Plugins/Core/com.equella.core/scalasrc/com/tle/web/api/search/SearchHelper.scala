@@ -440,6 +440,13 @@ object SearchHelper {
     lazy val hasRestrictedAttachmentPrivileges: Boolean =
       hasAcl(AttachmentConfigConstants.VIEW_RESTRICTED_ATTACHMENTS)
 
+    def getConfiguredThumbnailUuid(thumbnail: String): Option[String] = {
+      val configuredThumbnailPrefix = "custom:"
+      Option(thumbnail)
+        .filter(_.startsWith(configuredThumbnailPrefix))
+        .map(_.stripPrefix(configuredThumbnailPrefix))
+    }
+
     def determineThumbnailAttachment(
         attachmentBeans: List[AttachmentBean]
     ): Option[AttachmentBean] =
@@ -483,13 +490,6 @@ object SearchHelper {
           link = determineThumbnailLink(a)
         )
       )
-  }
-
-  def getConfiguredThumbnailUuid(thumbnail: String): Option[String] = {
-    val configuredThumbnailPrefix = "custom:"
-    Option(thumbnail)
-      .filter(_.startsWith(configuredThumbnailPrefix))
-      .map(_.stripPrefix(configuredThumbnailPrefix))
   }
 
   private def prioritizeAttachments(
