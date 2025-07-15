@@ -319,6 +319,10 @@ export const LegacyContent = React.memo(function LegacyContent({
     preUpdateFullscreenMode(submitValues);
 
     // Before a request is submitted to update the legacy page content, show a backdrop with a spinner.
+    // - If the response is resolved and an external callback is provided, the callback handles page content update, so remove the spinner.
+    // - If the response is a `LegacyContentResponse`, the updated content is available in the response body, so remove the spinner.
+    // - If the response is a `ChangeRoute`, which usually triggers another Legacy content API request, keep the spinner visible until the next request completes.
+    // - In all other cases, remove the spinner.
     setUpdatingContent(true);
     submitRequest(toRelativeUrl(formAction || pathname), submitValues)
       .then(async (content) => {
@@ -340,6 +344,8 @@ export const LegacyContent = React.memo(function LegacyContent({
           redirected(content.route, false);
         } else if (isExternalRedirect(content)) {
           redirected(content.href, true);
+        } else {
+          setUpdatingContent(false);
         }
       })
       .catch((error) => {
