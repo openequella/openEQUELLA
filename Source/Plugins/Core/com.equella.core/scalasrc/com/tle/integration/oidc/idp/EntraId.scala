@@ -24,6 +24,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 /** Configuration for Microsoft Entra ID including the common details for OIDC and the details
   * required to interact the Graph REST API.
+  *
+  * @param userIdAttribute
+  *   The attribute configured on Entra ID can be either a flat string (e.g. "user_id") or a
+  *   hierarchical string delimited by "/" (e.g.
+  *   "onPremisesExtensionAttributes/extensionAttribute5").
   */
 final case class EntraId(
     issuer: String,
@@ -35,6 +40,7 @@ final case class EntraId(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean,
     apiClientId: String,
     apiClientSecret: Option[String]

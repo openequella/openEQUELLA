@@ -43,7 +43,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   )
 
   val auth0EncryptedStringRepr =
-    """{"commonDetails":{"platform":"AUTH0","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
+    """{"commonDetails":{"platform":"AUTH0","issuer":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com","authCodeClientId":"C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ","authCodeClientSecret":"0RnV+1iXrd3qJDnTjjgaoU4i5/1Vxz1i6myVJh6X/yN2aerAXLdBd/E8fq9yLT8DhX5PR0ekjYk7BB10Bzy4fqQJO0TLKkZXTFopUTHZdh0=","authUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/authorize","keysetUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/.well-known/jwks.json","tokenUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/oauth/token","usernameClaim":null,"defaultRoles":[],"roleConfig":null,"userIdAttribute":null,"enabled":true},"apiUrl":"https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users","apiClientId":"1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps","apiClientSecret":"UytNdbUEE44SRQg/Tz40tQ7sNXa1ufZKCeHJOlfIH/rIdBvz8W+XhseTAsIA0tWUZ4wm8dcKClWmaubj2J9UB035i0sWOmwUiQxWPlFmRD8="}"""
   val PROPERTY_NAME = "OIDC_IDENTITY_PROVIDER"
 
   mockStatic(classOf[CurrentUser])
@@ -204,6 +204,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
           usernameClaim = auth0.usernameClaim,
           defaultRoles = auth0.defaultRoles,
           roleConfig = auth0.roleConfig,
+          userIdAttribute = auth0.userIdAttribute,
           enabled = auth0.enabled
         ),
         apiUrl = URI.create(auth0.apiUrl).toURL,

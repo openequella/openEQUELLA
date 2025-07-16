@@ -105,6 +105,10 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def roleConfig: Option[RoleConfiguration]
 
+  /** Attribute configured on an IdP to provide the correct ID for a user
+    */
+  def userIdAttribute: Option[String]
+
   /** Whether the Identity Provider configuration is enabled
     */
   def enabled: Boolean

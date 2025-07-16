@@ -49,6 +49,8 @@ import java.net.{URI, URL}
   * @param roleConfig
   *   Optional configuration for custom roles assigned to the user's session. If None, use the
   *   default roles.
+  * @param userIdAttribute
+  *   Attribute configured on an IdP to provide the correct ID for a user
   */
 final case class CommonDetails(
     platform: IdentityProviderPlatform.Value,
@@ -61,6 +63,7 @@ final case class CommonDetails(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean
 )
 
@@ -154,6 +157,7 @@ object IdentityProviderDetails {
       usernameClaim = idp.usernameClaim,
       defaultRoles = idp.defaultRoles,
       roleConfig = idp.roleConfig,
+      userIdAttribute = idp.userIdAttribute,
       enabled = idp.enabled
     )
 

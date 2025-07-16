@@ -42,6 +42,9 @@ final case class Auth0(
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.AUTH0
 
+  // todo: move to the case class parameter list when the work for Auth0 starts
+  override def userIdAttribute: Option[String] = None
+
   /** In additional to the validations for common fields (see [[IdentityProvider.validate]]), also
     * validate the additional fields configured for a GenericIdentityProvider.
     */
