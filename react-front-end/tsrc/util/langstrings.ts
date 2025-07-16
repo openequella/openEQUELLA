@@ -858,8 +858,8 @@ export const languageStrings = {
               "Client secret provided by your identity provider to use with the above Client ID when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
           },
         },
-        roleMappings: {
-          title: "Role Mappings",
+        mappings: {
+          title: "Mappings",
           defaultRole: "Default roles",
           defaultRoleDesc:
             "Select the default openEQUELLA roles to be applied to users logging in via the Identity Provider. NOTE: These defaults apply only if no Role claim is defined.",
@@ -871,6 +871,9 @@ export const languageStrings = {
             customRoleLabel: "Enter IdP role",
             customRoleColumnName: "IdP Role Name",
           },
+          userIdAttributeLabel: "User ID attribute",
+          userIdAttributeDesc:
+            "By default, openEQUELLA uses the standard user ID provided by your chosen IdP as the user identifier (e.g. Entra ID 'oid'). To use a different value, specify the attribute from your IdP that stores the desired user ID.",
         },
         oeqDetails: {
           title: "openEQUELLA (RP) details",
