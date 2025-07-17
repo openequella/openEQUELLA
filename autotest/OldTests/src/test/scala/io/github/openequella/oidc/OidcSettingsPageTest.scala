@@ -26,7 +26,7 @@ import org.testng.annotations.{DataProvider, Test}
 import com.tle.webtests.pageobject.LoginPage
 
 /** New UI tests for OIDC settings page. */
-@TestInstitution("fiveo2") class OidcSettingsPageTest extends AbstractSessionTest {
+@TestInstitution("fiveo") class OidcSettingsPageTest extends AbstractSessionTest {
   val issuerLabel                = "Issuer *"
   val clientIdLabel              = "Client ID *"
   val clientSecretLabel          = "Client secret *"
