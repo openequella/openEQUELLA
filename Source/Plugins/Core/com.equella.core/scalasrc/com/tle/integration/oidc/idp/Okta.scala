@@ -20,6 +20,7 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /** Configuration for Okta including the common details for OIDC and the details required to
   * interact the Core Okta API.
@@ -42,7 +43,8 @@ case class Okta(
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.OKTA
 
   // todo: move to the case class parameter list when the work for Okta starts
-  override def userIdAttribute: Option[String] = None
+  @JsonIgnore
+  override val userIdAttribute: Option[String] = None
 
   /** Okta doesn't support the request of a scoped access token through client secret. Instead, the
     * 'private_key_jwt' client authentication method is the only supported method. As a result, set

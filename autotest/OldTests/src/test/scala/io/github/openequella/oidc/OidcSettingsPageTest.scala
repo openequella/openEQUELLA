@@ -26,7 +26,20 @@ import org.testng.annotations.{DataProvider, Test}
 import com.tle.webtests.pageobject.LoginPage
 
 /** New UI tests for OIDC settings page. */
-@TestInstitution("fiveo") class OidcSettingsPageTest extends AbstractSessionTest {
+@TestInstitution("fiveo2") class OidcSettingsPageTest extends AbstractSessionTest {
+  val issuerLabel                = "Issuer *"
+  val clientIdLabel              = "Client ID *"
+  val clientSecretLabel          = "Client secret *"
+  val loginUrlLabel              = "Identity Provider Login URL *"
+  val keyUrlLabel                = "Public Key Endpoint URL *"
+  val tokenUrlLabel              = "Token URL *"
+  val usernameClaimLabel         = "Username claim"
+  val apiEndpointLabel           = "API endpoint *"
+  val apiClientIdLabel           = "API Client ID *"
+  val apiClientSecretLabel       = "API Client Secret *"
+  val roleClaimLabel             = "Role claim"
+  val userIdAttributeLabel       = "User ID attribute"
+  val defaultRoles: List[String] = List("Admin", "Student")
   val customRoles: Map[String, List[String]] = Map(
     "TestRole" -> List("Admin")
   )
@@ -35,20 +48,21 @@ import com.tle.webtests.pageobject.LoginPage
   def createOidcSettings(): Unit = {
     val entraId = "Entra ID"
     val textFieldValues: Map[String, String] = Map(
-      "Issuer *"                      -> "https://example.com",
-      "Client ID *"                   -> "123456",
-      "Identity Provider Login URL *" -> "https://example.com/login",
-      "Public Key Endpoint URL *"     -> "https://example.com/key",
-      "Token URL *"                   -> "https://example.com/token",
-      "Username claim"                -> "email",
-      "Client secret *"               -> "secret value",
-      "API Client Secret *"           -> "entra id client secret",
-      "API Client ID *"               -> "entra id client ID",
-      "Role claim"                    -> "role"
+      issuerLabel          -> "https://example.com",
+      clientIdLabel        -> "123456",
+      clientSecretLabel    -> "secret value",
+      loginUrlLabel        -> "https://example.com/login",
+      keyUrlLabel          -> "https://example.com/key",
+      tokenUrlLabel        -> "https://example.com/token",
+      usernameClaimLabel   -> "email",
+      apiClientIdLabel     -> "entra id client ID",
+      apiClientSecretLabel -> "entra id client secret",
+      roleClaimLabel       -> "role",
+      userIdAttributeLabel -> "my_id"
     )
     // Secret values should be empty.
     val expectedValues =
-      textFieldValues.updated("API Client Secret *", "").updated("Client secret *", "")
+      textFieldValues.updated(clientSecretLabel, "").updated(apiClientSecretLabel, "")
 
     logon()
     val oidcSettingsPage = new OidcSettingsPage(context).load()
@@ -60,7 +74,7 @@ import com.tle.webtests.pageobject.LoginPage
       oidcSettingsPage.inputTextField(label, value)
     }
 
-    oidcSettingsPage.selectDefaultRoles(List("Admin", "Student"))
+    oidcSettingsPage.selectDefaultRoles(defaultRoles)
     oidcSettingsPage.selectCustomRoles(customRoles)
     oidcSettingsPage.save()
 
@@ -139,15 +153,15 @@ import com.tle.webtests.pageobject.LoginPage
       Array(
         "Auth0",
         Map(
-          "API endpoint *"  -> "https://auth0.com/api",
-          "API Client ID *" -> "Auth0 client ID"
+          apiEndpointLabel -> "https://auth0.com/api",
+          apiClientIdLabel -> "Auth0 client ID"
         )
       ),
       Array(
         "Okta",
         Map(
-          "API endpoint *"  -> "https://okta.com/api",
-          "API Client ID *" -> "okta client ID"
+          apiEndpointLabel -> "https://okta.com/api",
+          apiClientIdLabel -> "okta client ID"
         )
       )
     )
@@ -176,15 +190,17 @@ import com.tle.webtests.pageobject.LoginPage
   }
 
   @Test(
-    description = "User should be able to update the role details",
+    description = "User should be able to update the mapping details",
     dependsOnMethods = Array("updateGeneralDetails")
   )
-  def updateRoleDetails(): Unit = {
+  def updateMappingDetails(): Unit = {
+    val newRoleClaim     = "new role"
     val oidcSettingsPage = new OidcSettingsPage(context).get()
 
     oidcSettingsPage.selectDefaultRoles(List("Developer"))
-    oidcSettingsPage.inputTextField("Role claim", "new role")
+    oidcSettingsPage.inputTextField(roleClaimLabel, newRoleClaim)
     oidcSettingsPage.selectCustomRoles(customRoles)
+    // todo: update user ID attribute after the support for all the three platforms are implemented.
     oidcSettingsPage.save()
 
     // Reload page and check the value.
@@ -192,5 +208,6 @@ import com.tle.webtests.pageobject.LoginPage
     // 2 original roles + 1 new role.
     assertEquals(newOidcSettingsPage.getDefaultRolesNumber, 3)
     assertEquals(newOidcSettingsPage.getCustomRolesNumber, 1)
+    assertEquals(newOidcSettingsPage.getTextFieldValue(roleClaimLabel), newRoleClaim)
   }
 }
