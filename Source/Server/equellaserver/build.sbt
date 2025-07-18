@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.106"
+val TomcatVersion     = "9.0.107"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.8.0"
@@ -25,7 +25,7 @@ val cxfVersion        = "3.6.7"
 val fs2Version        = "3.12.0"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.20.1"
+val jsoupVersion      = "1.21.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
   "com.auth0" % "java-jwt" % "4.5.0",
-  "com.auth0" % "jwks-rsa" % "0.22.1"
+  "com.auth0" % "jwks-rsa" % "0.22.2"
 )
 
 libraryDependencies ++= Seq(
@@ -244,7 +244,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.179",
+  "io.github.classgraph"          % "classgraph"               % "4.8.180",
   "com.fasterxml"                 % "classmate"                % "1.7.0",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",

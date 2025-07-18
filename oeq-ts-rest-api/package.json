@@ -11,7 +11,7 @@
   ],
   "engines": {
     "node": "22.16.0",
-    "npm": "11.4.1"
+    "npm": "11.4.2"
   },
   "scripts": {
     "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
@@ -29,7 +29,7 @@
     "trailingComma": "es5"
   },
   "dependencies": {
-    "axios": "1.9.0",
+    "axios": "1.10.0",
     "fp-ts": "2.16.10",
     "io-ts": "2.2.22",
     "io-ts-types": "0.5.19",
@@ -42,19 +42,19 @@
     "@babel/core": "7.27.4",
     "@babel/preset-env": "7.27.2",
     "@types/jest": "30.0.0",
-    "@types/lodash": "4.17.17",
-    "@types/node": "22.15.32",
+    "@types/lodash": "4.17.20",
+    "@types/node": "22.16.3",
     "@types/tough-cookie": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "8.33.0",
-    "@typescript-eslint/parser": "8.33.0",
-    "axios-cookiejar-support": "6.0.2",
+    "@typescript-eslint/eslint-plugin": "8.36.0",
+    "@typescript-eslint/parser": "8.36.0",
+    "axios-cookiejar-support": "6.0.4",
     "core-js": "3.42.0",
-    "eslint": "9.27.0",
+    "eslint": "9.31.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint-config-prettier": "10.1.5",
-    "eslint-plugin-jest": "28.11.1",
+    "eslint-plugin-jest": "28.14.0",
     "eslint-plugin-notice": "1.0.0",
-    "eslint-plugin-prettier": "5.4.0",
+    "eslint-plugin-prettier": "5.5.1",
     "jest": "30.0.3",
     "jest-config": "30.0.3",
     "prettier": "3.5.3",

@@ -22,8 +22,8 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.17.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "4.33.0",
+  "org.apache.commons"        % "commons-lang3"            % "3.18.0",
+  "org.seleniumhq.selenium"   % "selenium-java"            % "4.34.0",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
   "xalan"                     % "xalan"                    % "2.7.3",
@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
   "com.unboundid"  % "unboundid-ldapsdk" % "7.0.3",
   jacksonDataBind,
   jacksonDataFormatYaml,
-  "com.auth0" % "jwks-rsa" % "0.22.1"
+  "com.auth0" % "jwks-rsa" % "0.22.2"
 )
 
 (Compile / unmanagedBase) := baseDirectory.value / "lib/adminjars"

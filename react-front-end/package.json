@@ -13,7 +13,7 @@
   },
   "engines": {
     "node": "22.16.0",
-    "npm": "11.4.1"
+    "npm": "11.4.2"
   },
   "targets": {
     "languageBundle": {
@@ -54,14 +54,14 @@
     "@emotion/styled": "11.14.0",
     "@fontsource/material-icons": "5.2.5",
     "@fontsource/roboto": "5.2.5",
-    "@mui/icons-material": "7.1.2",
+    "@mui/icons-material": "7.2.0",
     "@mui/lab": "7.0.0-beta.14",
-    "@mui/material": "7.1.2",
-    "@mui/x-date-pickers": "8.5.3",
-    "@mui/x-tree-view": "8.5.3",
+    "@mui/material": "7.2.0",
+    "@mui/x-date-pickers": "8.7.0",
+    "@mui/x-tree-view": "8.7.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
     "@tinymce/tinymce-react": "6.2.1",
-    "axios": "1.9.0",
+    "axios": "1.10.0",
     "clsx": "2.1.1",
     "es6-object-assign": "1.1.0",
     "fp-ts": "2.16.10",
@@ -108,9 +108,9 @@
     "@types/css-mediaquery": "0.1.4",
     "@types/jest": "30.0.0",
     "@types/jquery": "3.5.32",
-    "@types/lodash": "4.17.17",
+    "@types/lodash": "4.17.20",
     "@types/luxon": "3.6.2",
-    "@types/node": "22.15.32",
+    "@types/node": "22.16.3",
     "@types/object-hash": "3.0.6",
     "@types/react": "19.1.8",
     "@types/react-autosuggest": "10.1.11",
