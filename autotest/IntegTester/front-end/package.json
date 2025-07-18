@@ -24,7 +24,7 @@
     "@types/react-dom": "19.1.6",
     "@types/md5": "2.3.5",
     "mkdirp": "3.0.1",
-    "parcel": "2.15.2",
+    "parcel": "2.15.4",
     "typescript": "5.8.3"
   }
 }
