@@ -151,9 +151,41 @@ export function isExternalRedirect(
   return (response as ExternalRedirect).href !== undefined;
 }
 
+/**
+ * Encode a relative URL path and its query string, skipping re-encoding of the `token` param.
+ *
+ * Used to avoid double-encoding issues in the new UI where `token` is already encoded.
+ *
+ * @param path Relative URL with optional query string.
+ * @returns Encoded path with safe query encoding.
+ */
+function encodeRelativeUrlSkipToken(path: string): string {
+  const [pathname, query] = path.split("?", 2);
+  const encodedPathname = encodeURI(pathname);
+
+  if (!query) return encodedPathname;
+
+  try {
+    const params = new URLSearchParams(query);
+    const encodedQuery = new URLSearchParams();
+
+    params.forEach((value, key) => {
+      encodedQuery.append(
+        key,
+        key === "token" ? value : encodeURIComponent(value),
+      );
+    });
+
+    return `${encodedPathname}?${encodedQuery}`;
+  } catch (e) {
+    console.error(`Error in query string: "${query}"`, e);
+    return encodedPathname;
+  }
+}
+
 function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
   return Axios.post<SubmitResponse>(
-    "api/content/submit" + encodeURI(path),
+    "api/content/submit" + encodeRelativeUrlSkipToken(path),
     vals,
   ).then((res) => res.data);
 }
