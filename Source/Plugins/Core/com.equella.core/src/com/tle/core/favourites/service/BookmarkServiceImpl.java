@@ -28,6 +28,7 @@ import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.favourites.FavouritesConstant;
 import com.tle.core.favourites.dao.BookmarkDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
@@ -71,7 +72,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
     bookmark.setKeywords(tags);
     bookmark.setOwner(CurrentUser.getUserID());
     bookmark.setInstitution(CurrentInstitution.get());
-    bookmark.setDateModified(new Date());
+    bookmark.setAddedAt(new Date());
     bookmark.setAlwaysLatest(latest);
     dao.save(bookmark);
 
@@ -115,7 +116,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
   @Override
   public List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults) {
     return dao.findAllByCriteria(
-        Order.desc("dateModified"),
+        Order.desc(FavouritesConstant.ADDED_AT),
         maxResults,
         Restrictions.eq("owner", ownerUuid),
         Restrictions.eq("institution", CurrentInstitution.get()));

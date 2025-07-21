@@ -24,13 +24,14 @@ import com.tle.beans.Institution;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.searching.Search;
+import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SortField;
-import com.tle.common.searching.SortField.Type;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.favourites.FavouritesConstant;
 import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
@@ -61,8 +62,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(FavouriteSearchService.class)
 @Singleton
 public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserChangeListener {
-  private static final String DEFAULT_ORDER = "dateModified";
-
   @Inject private FavouriteSearchDao dao;
 
   @Override
@@ -228,7 +227,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   @Override
   public List<FavouriteSearch> getSearchesForOwner(String userID, int maxResults) {
     return dao.findAllByCriteria(
-        Order.desc("dateModified"),
+        Order.desc(FavouritesConstant.ADDED_AT),
         maxResults,
         Restrictions.eq("owner", userID),
         Restrictions.eq("institution", CurrentInstitution.get()));
@@ -305,7 +304,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
         Optional.ofNullable(sortFields)
             .filter(arr -> arr.length > 0)
             .map(arr -> arr[0])
-            .orElseGet(() -> new SortField(DEFAULT_ORDER, true, Type.STRING));
+            .orElseGet(SortType.ADDEDAT::getSortField);
 
     // Determine final order by XOR-ing the field’s default with the global flag.
     boolean reversed = sortField.isReverse() ^ isSortReversed;

@@ -185,14 +185,14 @@ public class FavouritesPortletRenderer
       linkLabel.setHtml(false);
       this.label = linkLabel;
       this.link = new HtmlLinkState(events.getNamedHandler("execSearch", search.getId()));
-      this.dateModified = search.getDateModified();
+      this.dateModified = search.getAddedAt();
     }
 
     public FavouriteRow(Bookmark bookmark, SectionInfo info) {
       this.label =
           new BundleLabel(bookmark.getItem().getName(), bookmark.getItem().getUuid(), bundleCache);
       this.link = new HtmlLinkState(itemUrls.createItemUrl(info, bookmark.getItem().getItemId()));
-      this.dateModified = bookmark.getDateModified();
+      this.dateModified = bookmark.getAddedAt();
     }
 
     public Label getLabel() {

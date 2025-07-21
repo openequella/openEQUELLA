@@ -49,6 +49,6 @@ object FavouriteSearch {
       id = favouriteSearchBean.getId,
       name = favouriteSearchBean.getName,
       url = favouriteSearchBean.getUrl,
-      addedAt = favouriteSearchBean.getDateModified
+      addedAt = favouriteSearchBean.getAddedAt
     )
 }

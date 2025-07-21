@@ -48,7 +48,7 @@ public class FavouritesIndexer extends AbstractIndexingExtension {
       Map<String, String> bookmarkFields = new HashMap<>();
       for (Bookmark b : bookmarks) {
         doc.add(indexed(FreeTextQuery.FIELD_BOOKMARK_OWNER, b.getOwner()));
-        UtcDate date = new UtcDate(b.getDateModified());
+        UtcDate date = new UtcDate(b.getAddedAt());
 
         String bookmarkDateField = FreeTextQuery.FIELD_BOOKMARK_DATE + b.getOwner();
         String bookmarkDateValue = date.format(Dates.ISO);
