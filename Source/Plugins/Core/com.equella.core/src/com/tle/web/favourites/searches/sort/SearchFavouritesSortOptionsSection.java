@@ -18,6 +18,7 @@
 
 package com.tle.web.favourites.searches.sort;
 
+import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.web.search.event.FreetextSearchEvent;
 import com.tle.web.search.sort.AbstractSortOptionsSection;
 import com.tle.web.search.sort.SortOption;
@@ -40,7 +41,8 @@ public class SearchFavouritesSortOptionsSection
   @Override
   protected void addSortOptions(List<SortOption> sorts) {
     sorts.add(new SortOption(LABEL_NAME, NAME_VALUE, NAME_VALUE, false));
-    sorts.add(new SortOption(LABEL_DATE, DATE_VALUE, "date_modified", true)); // $NON-NLS-1$
+    sorts.add(
+        new SortOption(LABEL_DATE, DATE_VALUE, FreeTextQuery.FIELD_ADDED_AT, true)); // $NON-NLS-1$
   }
 
   @Override

@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1724,6 +1725,39 @@ public class PropBagEx implements Serializable {
     if (builder != null && builders.size() < MAX_BUILDERS) {
       builder.reset();
       builders.offer(builder);
+    }
+  }
+
+  /**
+   * Rename a node if the node exists. Note that this method may raise an exception.
+   *
+   * @param oldNodePath The path of the node to rename.
+   * @param newNodePath The new path for the node.
+   * @throws IllegalArgumentException if the new node path is invalid.
+   */
+  public void renameNode(String oldNodePath, String newNodePath) {
+    Node oldNode = getNodeHelper(oldNodePath, false, false);
+
+    Optional.ofNullable(oldNode)
+        .ifPresentOrElse(
+            node -> {
+              String nodeValue = getNode(oldNodePath);
+              createNode(newNodePath, nodeValue);
+
+              // Copy attributes from old node to new node.
+              Optional.ofNullable(node.getAttributes())
+                  .ifPresent(attrs -> setAttributes(newNodePath, attrs));
+
+              deleteNode(oldNodePath);
+            },
+            () -> log.warn("Node to rename does not exist: {}", oldNodePath));
+  }
+
+  /** Set attributes for a node. */
+  private void setAttributes(String nodeName, NamedNodeMap attrs) {
+    for (int i = 0; i < attrs.getLength(); i++) {
+      Node attr = attrs.item(i);
+      setAttribute(nodeName, attr.getNodeName(), attr.getNodeValue());
     }
   }
 }

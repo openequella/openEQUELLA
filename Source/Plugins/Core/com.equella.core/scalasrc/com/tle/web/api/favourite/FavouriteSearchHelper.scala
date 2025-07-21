@@ -34,9 +34,6 @@ import scala.jdk.CollectionConverters._
   */
 object FavouriteSearchHelper {
   private final val ORDER_NAME = "name"
-  // The `date_modified` is the column name in the favourite search table.
-  // And it represents the date the search was added to favourites.
-  private final val FIELD_ADDED = "date_modified"
 
   /** Convert [[SearchFavouritesSearchResults]] to SearchResult[FavouriteSearch].
     *
@@ -64,7 +61,7 @@ object FavouriteSearchHelper {
     setDateRange(search, payload.addedAfter, payload.addedBefore)
     val sort = payload.order.map(_.toLowerCase) match {
       case Some(ORDER_NAME) => SortType.NAME.getSortField()
-      case _                => new SortField(FIELD_ADDED, true, Type.STRING)
+      case _                => SortType.ADDEDAT.getSortField()
     }
     search.setSortFields(sort)
     search

@@ -157,7 +157,7 @@ class FavouriteResource @Inject() (
     favSearchBean.setName(searchInfo.name)
     favSearchBean.setUrl(searchInfo.url)
     favSearchBean.setInstitution(CurrentInstitution.get())
-    favSearchBean.setDateModified(new Date())
+    favSearchBean.setAddedAt(new Date())
     favSearchBean.setOwner(CurrentUser.getUserID)
     val newFavouriteSearchBean = favouritesSearchService.save(favSearchBean)
 

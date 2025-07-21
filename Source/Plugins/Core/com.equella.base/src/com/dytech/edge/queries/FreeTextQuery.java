@@ -30,6 +30,7 @@ import java.util.Map;
 public abstract class FreeTextQuery implements Serializable {
   private static final long serialVersionUID = 1L;
 
+  public static final String FIELD_ADDED_AT = "added_at";
   public static final String FIELD_UUID = "uuid";
   public static final String FIELD_VERSION = "version";
   public static final String FIELD_UNIQUE = "unique";
