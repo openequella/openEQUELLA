@@ -48,7 +48,7 @@
     "test": "jest test --maxWorkers 50%"
   },
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "1.7.2",
+    "@atlaskit/pragmatic-drag-and-drop": "1.7.4",
     "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.2.1",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
