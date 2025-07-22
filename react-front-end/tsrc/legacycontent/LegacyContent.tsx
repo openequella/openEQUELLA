@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Backdrop } from "@mui/material";
-import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
@@ -29,7 +28,7 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { LEGACY_CSS_URL } from "../AppConfig";
+import { getBaseUrl, LEGACY_CSS_URL } from "../AppConfig";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
@@ -38,7 +37,9 @@ import {
   templateDefaults,
   templatePropsForLegacy,
 } from "../mainui/Template";
+import { submitRequest } from "../modules/LegacyContentModule";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
+import { getRelativeUrl } from "../util/TextUtils";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
@@ -60,7 +61,7 @@ export interface ChangeRoute {
   userUpdated: boolean;
 }
 
-interface StateData {
+export interface StateData {
   [key: string]: string[];
 }
 
@@ -151,45 +152,6 @@ export function isExternalRedirect(
   return (response as ExternalRedirect).href !== undefined;
 }
 
-/**
- * Encode a relative URL path and its query string, skipping re-encoding of the `token` param.
- *
- * Used to avoid double-encoding issues in the new UI where `token` is already encoded.
- *
- * @param path Relative URL with optional query string.
- * @returns Encoded path with safe query encoding.
- */
-function encodeRelativeUrlSkipToken(path: string): string {
-  const [pathname, query] = path.split("?", 2);
-  const encodedPathname = encodeURI(pathname);
-
-  if (!query) return encodedPathname;
-
-  try {
-    const params = new URLSearchParams(query);
-    const encodedQuery = new URLSearchParams();
-
-    params.forEach((value, key) => {
-      encodedQuery.append(
-        key,
-        key === "token" ? value : encodeURIComponent(value),
-      );
-    });
-
-    return `${encodedPathname}?${encodedQuery}`;
-  } catch (e) {
-    console.error(`Error in query string: "${query}"`, e);
-    return encodedPathname;
-  }
-}
-
-function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
-  return Axios.post<SubmitResponse>(
-    "api/content/submit" + encodeRelativeUrlSkipToken(path),
-    vals,
-  ).then((res) => res.data);
-}
-
 export const LegacyContent = React.memo(function LegacyContent({
   locationKey,
   onError,
@@ -216,8 +178,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     submitting: false,
   });
   const { appErrorHandler, refreshUser } = useContext(AppContext);
-
-  const baseUrl = document.getElementsByTagName("base")[0].href;
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -254,12 +214,6 @@ export const LegacyContent = React.memo(function LegacyContent({
       redirect(redirloc);
     }
   };
-
-  function toRelativeUrl(url: string) {
-    const relUrl =
-      url.indexOf(baseUrl) === 0 ? url.substring(baseUrl.length) : url;
-    return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
-  }
 
   function updatePageContent(
     content: LegacyContentResponse,
@@ -356,7 +310,10 @@ export const LegacyContent = React.memo(function LegacyContent({
     // - If the response is a `ChangeRoute`, which usually triggers another Legacy content API request, keep the spinner visible until the next request completes.
     // - In all other cases, remove the spinner.
     setUpdatingContent(true);
-    submitRequest(toRelativeUrl(formAction || pathname), submitValues)
+    submitRequest(
+      getRelativeUrl(formAction || pathname, getBaseUrl()),
+      submitValues,
+    )
       .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
         if (pathname.indexOf("logon.do") > 0) {

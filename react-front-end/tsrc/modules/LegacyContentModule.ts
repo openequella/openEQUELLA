@@ -18,10 +18,15 @@
 import * as t from "io-ts";
 import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
-import type { ChangeRoute } from "../legacycontent/LegacyContent";
+import type {
+  ChangeRoute,
+  StateData,
+  SubmitResponse,
+} from "../legacycontent/LegacyContent";
 import type { ScrapbookType } from "./ScrapbookModule";
 
-const legacyMyResourcesUrl = `${API_BASE_URL}/content/submit/access/myresources.do`;
+const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
+const legacyMyResourcesUrl = `${legacyContentSubmitBaseUrl}/access/myresources.do`;
 
 export const ScrapbookLiteral = t.literal("scrapbook");
 export const ModQueueLiteral = t.literal("modqueue");
@@ -75,3 +80,51 @@ export const getLegacyScrapbookEditingPageRoute = async (
     eventp__0: [itemKey],
     eventp__1: [searchOptionID],
   }).then(({ data: { route } }) => `/${route}`);
+
+/**
+ * Encode a relative URL path and its query string, skipping re-encoding of the `token` param.
+ *
+ * Used to avoid double-encoding issues in the new UI where `token` is already encoded.
+ *
+ * @param path Relative URL with optional query string.
+ * @returns Encoded path with safe query encoding.
+ */
+const encodeRelativeUrlSkipToken = (path: string): string => {
+  const [pathname, query] = path.split("?", 2);
+  const encodedPathname = encodeURI(pathname);
+
+  if (!query) return encodedPathname;
+
+  try {
+    const params = new URLSearchParams(query);
+    const encodedQuery = new URLSearchParams();
+
+    params.forEach((value, key) => {
+      encodedQuery.append(
+        key,
+        key === "token" ? value : encodeURIComponent(value),
+      );
+    });
+
+    return `${encodedPathname}?${encodedQuery}`;
+  } catch (e) {
+    console.error(`Error in query string: "${query}"`, e);
+    return encodedPathname;
+  }
+};
+
+/**
+ * Send a request to the legacy content submit API.
+ *
+ * @param path - A relative path that may include query parameters (e.g., tokens).
+ * @param vals - StateData to be submitted.
+ * @returns A Promise resolving to a SubmitResponse.
+ */
+export const submitRequest = (
+  path: string,
+  vals: StateData,
+): Promise<SubmitResponse> =>
+  Axios.post<SubmitResponse>(
+    legacyContentSubmitBaseUrl + encodeRelativeUrlSkipToken(path),
+    vals,
+  ).then((res) => res.data);
