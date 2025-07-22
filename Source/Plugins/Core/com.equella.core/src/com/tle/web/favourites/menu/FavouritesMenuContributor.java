@@ -26,6 +26,7 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.NewUiRoutes;
 import com.tle.web.template.section.MenuContributor;
 import java.util.Collections;
 import java.util.List;
@@ -54,11 +55,10 @@ public class FavouritesMenuContributor implements MenuContributor {
       return Collections.emptyList();
     }
 
-    // TODO: We should be generating a bookmark to the section rather than
-    // hard-coding the URL
+    String newUiRoute = "/" + NewUiRoutes.PATH_FAVOURITES();
     HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("access/favourites.do"));
     hls.setLabel(LABEL_KEY);
-    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate");
+    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate", newUiRoute);
     return Collections.singletonList(mc);
   }
 }

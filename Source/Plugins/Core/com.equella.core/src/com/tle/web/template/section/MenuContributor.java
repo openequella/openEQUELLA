@@ -38,6 +38,9 @@ public interface MenuContributor {
     private final String route;
     private boolean customImage;
 
+    /**
+     * @param route The default menu path to use in the new UI.
+     */
     public MenuContribution(
         HtmlLinkState link,
         String backgroundImage,

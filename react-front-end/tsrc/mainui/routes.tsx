@@ -70,6 +70,7 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
+const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -114,6 +115,7 @@ interface Routes {
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
   OidcSettings: OEQRouteNewUI;
+  Favourites: OEQRouteNewUI;
   MyResources: OEQRouteNewUI;
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
@@ -156,7 +158,11 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
 // So only export their paths.
 export const OLD_SEARCH_PATH = "/searching.do";
 export const NEW_SEARCH_PATH = "/page/search";
+
 export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+
+export const NEW_FAVOURITES_PATH = "/page/favourites";
+
 export const NEW_MY_RESOURCES_PATH = "/page/myresources";
 export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
@@ -223,6 +229,10 @@ export const routes: Routes = {
     path: "/page/oidc",
     component: OidcSettingsPage,
     permissionChecks: [isEditSystemSettingsGranted("oidc")],
+  },
+  Favourites: {
+    path: NEW_FAVOURITES_PATH,
+    component: FavouritesPage,
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
