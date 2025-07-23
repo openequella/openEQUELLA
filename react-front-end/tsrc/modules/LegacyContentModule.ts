@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
@@ -130,38 +132,6 @@ export const getLegacyScrapbookEditingPageRoute = async (
   }).then(({ data: { route } }) => `/${route}`);
 
 /**
- * Encode a relative URL path and its query string, skipping re-encoding of the `token` param.
- *
- * Used to avoid double-encoding issues in the new UI where `token` is already encoded.
- *
- * @param path Relative URL with optional query string.
- * @returns Encoded path with safe query encoding.
- */
-const encodeRelativeUrlSkipToken = (path: string): string => {
-  const [pathname, query] = path.split("?", 2);
-  const encodedPathname = encodeURI(pathname);
-
-  if (!query) return encodedPathname;
-
-  try {
-    const params = new URLSearchParams(query);
-    const encodedQuery = new URLSearchParams();
-
-    params.forEach((value, key) => {
-      encodedQuery.append(
-        key,
-        key === "token" ? value : encodeURIComponent(value),
-      );
-    });
-
-    return `${encodedPathname}?${encodedQuery}`;
-  } catch (e) {
-    console.error(`Error in query string: "${query}"`, e);
-    return encodedPathname;
-  }
-};
-
-/**
  * Send a request to the legacy content submit API.
  *
  * @param path - A relative path that may include query parameters (e.g., tokens).
@@ -173,6 +143,65 @@ export const submitRequest = (
   vals: StateData,
 ): Promise<SubmitResponse> =>
   Axios.post<SubmitResponse>(
-    legacyContentSubmitBaseUrl + encodeRelativeUrlSkipToken(path),
+    legacyContentSubmitBaseUrl + encodeRelativeUrl(path),
     vals,
   ).then((res) => res.data);
+
+/**
+ * Splits a relative URL into pathname and optional query string.
+ * @param url - The relative URL string (e.g., "/path?param=value").
+ * @returns A tuple: [pathname, queryString | undefined]
+ */
+const splitRelativeUrl = (url: string): [string, string | undefined] =>
+  url.split("?", 2) as [string, string | undefined];
+
+/**
+ * Encodes all query parameter values except the "token" parameter.
+ * @param query - A raw query string
+ * @returns Encoded query string
+ */
+const encodeQueryValuesExceptToken = (query: string): string => {
+  const params = new URLSearchParams(query);
+  const encodedQuery = new URLSearchParams();
+
+  params.forEach((value, key) => {
+    encodedQuery.append(
+      key,
+      key === "token" ? value : encodeURIComponent(value),
+    );
+  });
+  return encodedQuery.toString();
+};
+
+/**
+ * Combines encoded pathname with encoded query string (if present and valid).
+ * Falls back to just the encoded pathname if query is missing or malformed.
+ * @param parts - A tuple containing [pathname, query].
+ * @returns Encoded URL string.
+ */
+const encodePathWithOptionalQuery = ([pathname, query]: [
+  string,
+  string | undefined,
+]): string => {
+  const encodedPathname = encodeURI(pathname);
+  return pipe(
+    query,
+    E.fromNullable(undefined),
+    E.chain((q) =>
+      E.tryCatch(
+        () => `${encodedPathname}?${encodeQueryValuesExceptToken(q)}`,
+        () => undefined,
+      ),
+    ),
+    E.getOrElse(() => encodedPathname),
+  );
+};
+
+/**
+ * Encodes a relative URL by URI-encoding the path and query string,
+ * skipping encoding for the "token" parameter.
+ * @param url - A relative URL.
+ * @returns A safe, encoded URL string.
+ */
+const encodeRelativeUrl = (url: string): string =>
+  pipe(url, splitRelativeUrl, encodePathWithOptionalQuery);
