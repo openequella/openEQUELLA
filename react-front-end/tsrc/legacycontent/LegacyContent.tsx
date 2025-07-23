@@ -37,7 +37,15 @@ import {
   templateDefaults,
   templatePropsForLegacy,
 } from "../mainui/Template";
-import { submitRequest } from "../modules/LegacyContentModule";
+import {
+  isChangeRoute,
+  isExternalRedirect,
+  isPageContent,
+  LegacyContentResponse,
+  StateData,
+  submitRequest,
+  SubmitResponse,
+} from "../modules/LegacyContentModule";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { getRelativeUrl } from "../util/TextUtils";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
@@ -52,38 +60,9 @@ declare global {
   const _trigger: (value: string) => boolean;
 }
 
-export interface ExternalRedirect {
-  href: string;
-}
-
-export interface ChangeRoute {
-  route: string;
-  userUpdated: boolean;
-}
-
-export interface StateData {
-  [key: string]: string[];
-}
-
 interface FormUpdate {
   state: StateData;
   partial: boolean;
-}
-
-export interface LegacyContentResponse {
-  html: { [key: string]: string };
-  state: StateData;
-  css?: string[];
-  js: string[];
-  script: string;
-  noForm: boolean;
-  title: string;
-  metaTags: string;
-  fullscreenMode: string;
-  menuMode: string;
-  hideAppBar: boolean;
-  preventUnload: boolean;
-  userUpdated: boolean;
 }
 
 export interface PageContent {
@@ -127,29 +106,6 @@ interface LegacyContentSubmission {
    * Payload of the submission.
    */
   payload?: StateData;
-}
-
-export type SubmitResponse =
-  | ExternalRedirect
-  | LegacyContentResponse
-  | ChangeRoute;
-
-export function isPageContent(
-  response: SubmitResponse,
-): response is LegacyContentResponse {
-  return (response as LegacyContentResponse).html !== undefined;
-}
-
-export function isChangeRoute(
-  response: SubmitResponse,
-): response is ChangeRoute {
-  return (response as ChangeRoute).route !== undefined;
-}
-
-export function isExternalRedirect(
-  response: SubmitResponse,
-): response is ExternalRedirect {
-  return (response as ExternalRedirect).href !== undefined;
 }
 
 export const LegacyContent = React.memo(function LegacyContent({

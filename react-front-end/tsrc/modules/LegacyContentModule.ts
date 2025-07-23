@@ -18,11 +18,6 @@
 import * as t from "io-ts";
 import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
-import type {
-  ChangeRoute,
-  StateData,
-  SubmitResponse,
-} from "../legacycontent/LegacyContent";
 import type { ScrapbookType } from "./ScrapbookModule";
 
 const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
@@ -44,6 +39,59 @@ export const LegacyMyResourcesCodec = t.union([
 ]);
 
 export type LegacyMyResourcesTypes = t.TypeOf<typeof LegacyMyResourcesCodec>;
+
+export interface ExternalRedirect {
+  href: string;
+}
+
+export interface ChangeRoute {
+  route: string;
+  userUpdated: boolean;
+}
+
+export interface StateData {
+  [key: string]: string[];
+}
+
+export interface LegacyContentResponse {
+  html: { [key: string]: string };
+  state: StateData;
+  css?: string[];
+  js: string[];
+  script: string;
+  noForm: boolean;
+  title: string;
+  metaTags: string;
+  fullscreenMode: string;
+  menuMode: string;
+  hideAppBar: boolean;
+  preventUnload: boolean;
+  userUpdated: boolean;
+}
+
+export type SubmitResponse =
+  | ExternalRedirect
+  | LegacyContentResponse
+  | ChangeRoute;
+
+export function isPageContent(
+  response: SubmitResponse,
+): response is LegacyContentResponse {
+  return (response as LegacyContentResponse).html !== undefined;
+}
+
+export function isChangeRoute(
+  response: SubmitResponse,
+): response is ChangeRoute {
+  return (response as ChangeRoute).route !== undefined;
+}
+
+export function isExternalRedirect(
+  response: SubmitResponse,
+): response is ExternalRedirect {
+  return (response as ExternalRedirect).href !== undefined;
+}
+
 /**
  * Send a Legacy content request to trigger server side event 'contributeFromNewUI', which will
  * return a route for accessing the Legacy Scrapbook creating page. To support the requirement
