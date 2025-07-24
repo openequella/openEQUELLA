@@ -110,15 +110,15 @@ interface Routes {
   CreateLti13Platform: OEQRouteNewUI;
   EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
+  Favourites: OEQRouteNewUI;
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
-  OidcSettings: OEQRouteNewUI;
-  Favourites: OEQRouteNewUI;
   MyResources: OEQRouteNewUI;
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
+  OidcSettings: OEQRouteNewUI;
   OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
   OldHierarchy: OEQRouteTo<ToFunc>;
   RemoteSearch: OEQRouteTo<ToFunc>;
