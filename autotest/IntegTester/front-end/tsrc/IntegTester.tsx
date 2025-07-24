@@ -385,7 +385,7 @@ const IntegTester = (props: IntegTesterProps) => {
       <form method="POST" action={fullUrl}>
         <input type="hidden" name="itemXml" value={configuration.itemXml} />
         <input type="hidden" name="powerXml" value={configuration.powerXml} />
-        <a href={fullUrl}></a>
+        <a href={fullUrl} title="Full URL" />
         <Button type="submit" variant="outlined">
           Submit
         </Button>

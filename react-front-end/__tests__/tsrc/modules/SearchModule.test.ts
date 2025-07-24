@@ -21,7 +21,7 @@ import {
   BOOKS,
   VIDEOS,
 } from "../../../__mocks__/getCollectionsResp";
-import { getSearchResult } from ".. /../../__mocks__/SearchResult.mock";
+import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";

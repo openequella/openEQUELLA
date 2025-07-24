@@ -22,9 +22,8 @@ const config: StorybookConfig = {
   staticDirs: ["../node_modules", "../__stories__/static-files"],
   stories: ["../__stories__/**/*.tsx"],
   addons: [
-    "@storybook/addon-essentials",
     "@storybook/addon-a11y",
-    "@storybook/addon-controls",
+    "@storybook/addon-docs",
     "@storybook/addon-webpack5-compiler-swc",
   ],
   framework: {

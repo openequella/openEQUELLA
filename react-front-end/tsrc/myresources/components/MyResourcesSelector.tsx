@@ -76,7 +76,7 @@ export const MyResourcesSelector = ({
       fullWidth
       value={value}
       onChange={({ target: { value } }) => {
-        onChange(value as MyResourcesType);
+        onChange(value);
       }}
       variant="outlined"
     >

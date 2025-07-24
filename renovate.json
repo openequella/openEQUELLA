@@ -99,6 +99,12 @@
       ]
     },
     {
+      "groupName": "Pragmatic DnD",
+      "matchPackageNames": [
+        "@atlaskit/pragmatic-drag-and-drop*"
+      ]
+    },
+    {
       "groupName": "Scala",
       "matchPackageNames": [
         "scala",
@@ -125,6 +131,13 @@
       "groupName": "Scala HTTP packages",
       "matchPackageNames": [
         "/^com.softwaremill.sttp/"
+      ]
+    },
+    {
+      "groupName": "TinyMCE",
+      "matchPackageNames": [
+        "@tinymce/tinymce-react",
+        "tinymce"
       ]
     },
     {

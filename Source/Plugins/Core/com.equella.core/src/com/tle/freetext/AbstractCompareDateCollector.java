@@ -55,13 +55,15 @@ public abstract class AbstractCompareDateCollector extends SimpleCollector {
   @Override
   public void collect(int docNum) throws IOException {
     Document doc =
-        reader.document(
-            docNum,
-            ImmutableSet.of(
-                FreeTextQuery.FIELD_UNIQUE,
-                FreeTextQuery.FIELD_ID,
-                FreeTextQuery.FIELD_INDEXEDTIME,
-                FreeTextQuery.FIELD_INSTITUTION));
+        reader
+            .storedFields()
+            .document(
+                docNum,
+                ImmutableSet.of(
+                    FreeTextQuery.FIELD_UNIQUE,
+                    FreeTextQuery.FIELD_ID,
+                    FreeTextQuery.FIELD_INDEXEDTIME,
+                    FreeTextQuery.FIELD_INSTITUTION));
     String unique = doc.get(FreeTextQuery.FIELD_UNIQUE);
     long itemId = Long.parseLong(doc.get(FreeTextQuery.FIELD_ID));
     long instId = Long.parseLong(doc.get(FreeTextQuery.FIELD_INSTITUTION));

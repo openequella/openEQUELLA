@@ -1,0 +1,122 @@
+<com.tle.beans.item.Item>
+  <id>400099</id>
+  <uuid>37d988ac-4936-47fd-bdf7-6dbbb6a5c06b</uuid>
+  <version>1</version>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2025-07-11 13:20:52.209</dateModified>
+  <dateCreated class="sql-timestamp">2025-07-11 10:37:20.154</dateCreated>
+  <dateForIndex class="sql-timestamp">2025-07-11 13:20:52.209</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>400105</id>
+      <uuid>22c848a5-07f9-4c28-9fd4-b75f40c4ecac</uuid>
+      <url>RainforestTree1.jpg</url>
+      <description>RainforestTree1.jpg</description>
+      <value1>13655</value1>
+      <thumbnail>_THUMBS/RainforestTree1.jpg.jpeg</thumbnail>
+      <md5sum>84b26d433540f20ba5780f9c4c007bde</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="c115da19-e5f6-43c8-86a9-fe2819952274"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>400101</id>
+    <liveApprovalDate class="sql-timestamp">2025-07-11 10:37:20.151</liveApprovalDate>
+    <lastAction class="sql-timestamp">2025-07-11 10:37:20.151</lastAction>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400107</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2025-07-11 10:37:20.151</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400108</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2025-07-11 10:37:20.151</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400109</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2025-07-11 10:37:20.151</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400115</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 10:40:26.99</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400126</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 10:41:10.148</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400295</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2025-07-11 13:13:22.076</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400321</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2025-07-11 13:20:52.209</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>400102</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>400103</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Testing Thumbnail with Custom selected</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>custom:22c848a5-07f9-4c28-9fd4-b75f40c4ecac</thumb>
+</com.tle.beans.item.Item>

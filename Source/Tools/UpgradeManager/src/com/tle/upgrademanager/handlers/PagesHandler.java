@@ -30,39 +30,39 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.SortedSet;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroupDir;
 
 @SuppressWarnings("nls")
 public class PagesHandler extends PostDispatchHandler {
-  private final StringTemplateGroup templates;
+  private final STGroupDir templates;
   private final ManagerConfig config;
 
   public PagesHandler(ManagerConfig config) {
     this.config = config;
-    templates = new StringTemplateGroup("templates");
-    if (Boolean.getBoolean(Utils.DEBUG_FLAG)) {
-      templates.setRefreshInterval(0);
-    }
+    templates = new STGroupDir("templates");
   }
 
   @Override
-  public String getDefaultActionName(HttpExchange exchange) throws IOException {
+  public String getDefaultActionName(HttpExchange exchange) {
     return "main";
   }
 
   public void main(HttpExchange exchange) throws Exception {
-    StringTemplate st = templates.getInstanceOf("templates/main");
-    st.setAttribute("version", new Version(config).getDeployedVersion());
-    st.setAttribute("managerversion", config.getManagerDetails().getFullVersion());
-    st.setAttribute("timeout", (Boolean.getBoolean(Utils.DEBUG_FLAG) ? 9999999 : 5000));
-    st.setAttribute("tab_index", getIntParameterValue(exchange, "tab_index", 0));
+    ST st = templates.getInstanceOf("templates/main");
+    st.add("version", new Version(config).getDeployedVersion());
+    st.add("managerversion", config.getManagerDetails().getFullVersion());
+    st.add("timeout", (Boolean.getBoolean(Utils.DEBUG_FLAG) ? 9999999 : 5000));
+    st.add("tab_index", getIntParameterValue(exchange, "tab_index", 0));
 
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
   }
 
   public void ajaxstatus(HttpExchange exchange) throws Exception {
-    String statusText, statusClass, buttonText, buttonAction;
+    String statusText;
+    String statusClass;
+    String buttonText;
+    String buttonAction;
 
     final boolean serviceStarted = new ServiceWrapper(config).status();
 
@@ -73,33 +73,33 @@ public class PagesHandler extends PostDispatchHandler {
         if (lock.lastModified() + config.getManagerDetails().getLoadingTimeout()
             > new Date().getTime()) {
           statusText = "Loading...";
-          statusClass = "statusLoading"; // $NON-NLS-1$
+          statusClass = "statusLoading";
           buttonText = null;
           buttonAction = null;
         } else {
           statusText = "Error starting server";
-          statusClass = "statusError"; // $NON-NLS-1$
+          statusClass = "statusError";
           buttonText = "Stop";
-          buttonAction = "/server/stop"; // $NON-NLS-1$
+          buttonAction = "/server/stop";
         }
       } else {
         statusText = "Running";
-        statusClass = "statusStarted"; // $NON-NLS-1$
+        statusClass = "statusStarted";
         buttonText = "Stop";
-        buttonAction = "/server/stop"; // $NON-NLS-1$
+        buttonAction = "/server/stop";
       }
     } else {
       statusText = "Stopped";
-      statusClass = "statusStopped"; // $NON-NLS-1$
+      statusClass = "statusStopped";
       buttonText = "Start";
-      buttonAction = "/server/start"; // $NON-NLS-1$
+      buttonAction = "/server/start";
     }
 
-    StringTemplate st = templates.getInstanceOf("templates/ajaxstatus"); // $NON-NLS-1$
-    st.setAttribute("statusText", statusText); // $NON-NLS-1$
-    st.setAttribute("statusClass", statusClass); // $NON-NLS-1$
-    st.setAttribute("buttonText", buttonText); // $NON-NLS-1$
-    st.setAttribute("buttonAction", buttonAction); // $NON-NLS-1$
+    ST st = templates.getInstanceOf("templates/ajaxstatus");
+    st.add("statusText", statusText);
+    st.add("statusClass", statusClass);
+    st.add("buttonText", buttonText);
+    st.add("buttonAction", buttonAction);
     HttpExchangeUtils.respondJSONMessage(exchange, 200, new String[] {st.toString(), buttonAction});
   }
 
@@ -111,20 +111,20 @@ public class PagesHandler extends PostDispatchHandler {
     Set<WebVersion> older = allVersions.tailSet(deployedVersion);
     older.remove(deployedVersion);
 
-    StringTemplate st = templates.getInstanceOf("templates/versions");
-    st.setAttribute("newer", newer);
-    st.setAttribute("older", older);
-    st.setAttribute("current", Collections.singleton(deployedVersion));
+    ST st = templates.getInstanceOf("templates/versions");
+    st.add("newer", newer);
+    st.add("older", older);
+    st.add("current", Collections.singleton(deployedVersion));
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
   }
 
   public void other(HttpExchange exchange) throws Exception {
-    StringTemplate st = templates.getInstanceOf("templates/other");
+    ST st = templates.getInstanceOf("templates/other");
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
   }
 
   public void troubleshooting(HttpExchange exchange) throws IOException {
-    StringTemplate st = templates.getInstanceOf("templates/troubleshoot");
+    ST st = templates.getInstanceOf("templates/troubleshoot");
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
   }
 
@@ -132,13 +132,13 @@ public class PagesHandler extends PostDispatchHandler {
     final String URI = "/pages/progress/";
     final String ajaxId = exchange.getRequestURI().toString().substring(URI.length());
 
-    StringTemplate st = templates.getInstanceOf("templates/progress");
-    st.setAttribute("ajaxId", ajaxId);
+    ST st = templates.getInstanceOf("templates/progress");
+    st.add("ajaxId", ajaxId);
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
   }
 
   public void restartmanager(HttpExchange exchange) throws IOException {
-    StringTemplate st = templates.getInstanceOf("templates/restartingmanager");
+    ST st = templates.getInstanceOf("templates/restartingmanager");
     HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
 
     // Restart manager in a new thread after a 500ms wait to ensure that the

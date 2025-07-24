@@ -25,9 +25,7 @@ import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
-import org.apache.http.client.utils.URIBuilder
-import sttp.model.Header
-import java.net.URI
+import sttp.model.{Header, Uri}
 
 /** Structure for the information of a single user returned from Entra ID.
   */
@@ -77,8 +75,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     )
   }
 
-  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
-    URI.create(s"${idp.apiUrl.toString}/users/$id")
+  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): Uri =
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)
 
   /** There are three important things to determine the user listing endpoint in Microsoft Graph:
     *
@@ -100,8 +98,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   override protected def userListEndpoint(
       idp: GenericIdentityProviderDetails,
       query: String
-  ): URI = {
-    val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}/users")
+  ): Uri = {
+    val baseEndpoint = Uri(idp.apiUrl.toURI).addPath("users")
 
     def buildSearchCriteria(q: String) =
       List("displayName", "mail", "userPrincipalName")
@@ -115,9 +113,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
       .filter(_.trim.nonEmpty)     // If the remaining are spaces only, do not use it
       .map(buildSearchCriteria)
-      .map(baseEndpoint.addParameter("$search", _))
+      .map(baseEndpoint.addParam("$search", _))
       .getOrElse(baseEndpoint)
-      .build()
   }
 
   /** According to the doco of OIDC scope, the scope `https://graph.microsoft.com/.default` must be

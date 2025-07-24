@@ -188,7 +188,7 @@ const Lightbox = ({ open, onClose, config }: LightboxProps) => {
     pipe(
       splitMimeType(mimeType)[0],
       simpleMatch({
-        image: () => classes.lightboxImage,
+        image: () => `${classes.lightboxImage} ${classes.lightboxContent}`,
         video: () => classes.lightboxContent,
         audio: () => classes.lightboxAudio,
         _: () => undefined,
