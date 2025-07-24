@@ -50,7 +50,11 @@ import java.net.{URI, URL}
   *   Optional configuration for custom roles assigned to the user's session. If None, use the
   *   default roles.
   * @param userIdAttribute
-  *   Attribute configured on an IdP to provide the correct ID for a user
+  *   Since the standard IdP user ID may differ from the OEQ user ID, a mapping between the two IDs
+  *   is required to help maintain the relationship between IdP users and OEQ resources. To support
+  *   this mapping, a custom attribute must be configured in the IdP to store the OEQ user ID. This
+  *   attribute should then be used, along with the standard ID, in an API call to retrieve the OEQ
+  *   user ID. If the standard ID is the same as the OEQ user ID, this attribute can be left empty.
   */
 final case class CommonDetails(
     platform: IdentityProviderPlatform.Value,
