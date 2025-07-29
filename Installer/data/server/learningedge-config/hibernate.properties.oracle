@@ -1,4 +1,4 @@
-hibernate.connection.driver_class = oracle.jdbc.driver.OracleDriver
+hibernate.connection.driver_class = oracle.jdbc.OracleDriver
 hibernate.dialect = com.tle.hibernate.dialect.ExtendedOracle9iDialect
 hibernate.connection.url = jdbc:oracle:thin:@${datasource/host}:${datasource/port}${datasource/idtype}${datasource/database}
 hibernate.connection.username = ${datasource/username}
