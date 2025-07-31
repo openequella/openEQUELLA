@@ -19,7 +19,7 @@
     "babel-jest": "30.0.5",
     "jest": "30.0.5",
     "jest-config": "30.0.5",
-    "rewire": "8.0.0",
+    "rewire": "9.0.0",
     "ts-jest": "29.4.0",
     "typescript": "5.8.3"
   }
