@@ -61,7 +61,7 @@ public class FavouritesMenuContributor implements MenuContributor {
     String bookmarkPath = newUIEnabled ? NewUiRoutes.PATH_FAVOURITES() : "access/favourites.do";
     HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(bookmarkPath));
     hls.setLabel(LABEL_KEY);
-    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "star_rate", newUiRoute);
+    MenuContribution mc = new MenuContribution(hls, ICON_PATH, 1, 2, "favorite", newUiRoute);
     return Collections.singletonList(mc);
   }
 }
