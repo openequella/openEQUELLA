@@ -35,16 +35,13 @@ case class Okta(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean,
     apiUrl: String,
     apiClientId: String
 ) extends IdentityProvider
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.OKTA
-
-  // todo: move to the case class parameter list when the work for Okta starts
-  @JsonIgnore
-  override val userIdAttribute: Option[String] = None
 
   /** Okta doesn't support the request of a scoped access token through client secret. Instead, the
     * 'private_key_jwt' client authentication method is the only supported method. As a result, set

@@ -35,6 +35,7 @@ final case class Auth0(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean,
     apiUrl: String,
     apiClientId: String,
@@ -42,10 +43,6 @@ final case class Auth0(
 ) extends IdentityProvider
     with RestApi {
   override def platform: IdentityProviderPlatform.Value = IdentityProviderPlatform.AUTH0
-
-  // todo: move to the case class parameter list when the work for Auth0 starts
-  @JsonIgnore
-  override val userIdAttribute: Option[String] = None
 
   /** In additional to the validations for common fields (see [[IdentityProvider.validate]]), also
     * validate the additional fields configured for a GenericIdentityProvider.

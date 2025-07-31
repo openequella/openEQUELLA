@@ -36,6 +36,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     usernameClaim = None,
     defaultRoles = Set.empty,
     roleConfig = None,
+    userIdAttribute = None,
     enabled = true,
     apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
