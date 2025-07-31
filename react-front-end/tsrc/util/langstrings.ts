@@ -379,6 +379,9 @@ export const languageStrings = {
   errorpage: {
     title: "Error",
   },
+  favourites: {
+    title: "Favourites",
+  },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
