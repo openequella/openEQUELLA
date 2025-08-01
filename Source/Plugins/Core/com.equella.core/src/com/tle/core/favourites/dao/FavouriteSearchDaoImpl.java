@@ -115,7 +115,8 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     public String getAdditionalWhere() {
       StringBuilder additional = new StringBuilder();
       if (freetext != null) {
-        addClause(additional, "be.name LIKE :freetext");
+        // Since the freetext is lowercased, lowercase the name as well.
+        addClause(additional, "LOWER(be.name) LIKE :freetext");
       }
       if (dates != null) {
         Date start = dates[0];
