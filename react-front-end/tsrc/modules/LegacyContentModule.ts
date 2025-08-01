@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { pipe } from "fp-ts/function";
-import * as E from "fp-ts/Either";
+import * as O from "fp-ts/Option";
 import * as t from "io-ts";
 import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
@@ -134,16 +134,16 @@ export const getLegacyScrapbookEditingPageRoute = async (
 /**
  * Send a request to the legacy content submit API.
  *
- * @param path - A relative path that may include query parameters (e.g., tokens).
+ * @param relativeUrl - A relative URL which may include query parameters (e.g., tokens).
  * @param vals - StateData to be submitted.
  * @returns A Promise resolving to a SubmitResponse.
  */
 export const submitRequest = (
-  path: string,
+  relativeUrl: string,
   vals: StateData,
 ): Promise<SubmitResponse> =>
   Axios.post<SubmitResponse>(
-    legacyContentSubmitBaseUrl + encodeRelativeUrl(path),
+    legacyContentSubmitBaseUrl + encodeRelativeUrl(relativeUrl),
     vals,
   ).then((res) => res.data);
 
@@ -160,18 +160,20 @@ const splitRelativeUrl = (url: string): [string, string | undefined] =>
  * @param query - A raw query string
  * @returns Encoded query string
  */
-const encodeQueryValuesExceptToken = (query: string): string => {
-  const params = new URLSearchParams(query);
-  const encodedQuery = new URLSearchParams();
+const encodeQueryValuesExceptToken = (query: string): O.Option<string> =>
+  O.tryCatch(() => {
+    const params = new URLSearchParams(query);
+    const encodedQuery = new URLSearchParams();
 
-  params.forEach((value, key) => {
-    encodedQuery.append(
-      key,
-      key === "token" ? value : encodeURIComponent(value),
-    );
+    params.forEach((value, key) => {
+      encodedQuery.append(
+        key,
+        key === "token" ? value : encodeURIComponent(value),
+      );
+    });
+
+    return encodedQuery.toString();
   });
-  return encodedQuery.toString();
-};
 
 /**
  * Combines encoded pathname with encoded query string (if present and valid).
@@ -186,14 +188,12 @@ const encodePathWithOptionalQuery = ([pathname, query]: [
   const encodedPathname = encodeURI(pathname);
   return pipe(
     query,
-    E.fromNullable(undefined),
-    E.chain((q) =>
-      E.tryCatch(
-        () => `${encodedPathname}?${encodeQueryValuesExceptToken(q)}`,
-        () => undefined,
-      ),
+    O.fromNullable,
+    O.flatMap(encodeQueryValuesExceptToken),
+    O.match(
+      () => encodedPathname,
+      (qs) => `${encodedPathname}?${qs}`,
     ),
-    E.getOrElse(() => encodedPathname),
   );
 };
 

@@ -17,7 +17,8 @@
  */
 // MUST end in /
 //export const INST_URL = 'http://localhost:8080/reports/';
-
+import * as O from "fp-ts/Option";
+import { flow } from "fp-ts/function";
 interface Config {
   baseUrl: string;
 }
@@ -114,3 +115,21 @@ export const API_BASE_URL = `${AppConfig.baseUrl}api`;
  * URL of 'legacy.css'
  */
 export const LEGACY_CSS_URL = `${API_BASE_URL}/theme/legacy.css`;
+
+/**
+ * Returns a relative URL by stripping the base URL (if present) from the given absolute URL.
+ *
+ * @param url - Absolute url
+ * @returns Relative URL starting with "/".
+ */
+export const getRelativeUrl = (url: string): string => {
+  const baseUrl = getBaseUrl();
+  return flow(
+    O.fromPredicate((u: string) => u.startsWith(baseUrl)),
+    O.match(
+      () => url,
+      (u) => u.slice(baseUrl.length),
+    ),
+    (u) => (u.startsWith("/") ? u : `/${u}`),
+  )(url);
+};

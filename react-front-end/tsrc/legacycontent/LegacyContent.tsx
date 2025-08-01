@@ -28,7 +28,7 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { getBaseUrl, LEGACY_CSS_URL } from "../AppConfig";
+import { getRelativeUrl, LEGACY_CSS_URL } from "../AppConfig";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
@@ -47,7 +47,6 @@ import {
   SubmitResponse,
 } from "../modules/LegacyContentModule";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
-import { getRelativeUrl } from "../util/TextUtils";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
 
@@ -266,10 +265,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     // - If the response is a `ChangeRoute`, which usually triggers another Legacy content API request, keep the spinner visible until the next request completes.
     // - In all other cases, remove the spinner.
     setUpdatingContent(true);
-    submitRequest(
-      getRelativeUrl(formAction || pathname, getBaseUrl()),
-      submitValues,
-    )
+    submitRequest(getRelativeUrl(formAction || pathname), submitValues)
       .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
         if (pathname.indexOf("logon.do") > 0) {

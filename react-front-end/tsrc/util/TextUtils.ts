@@ -240,17 +240,3 @@ export const validateGrouping = (input: string): boolean => {
     O.getOrElse(constFalse),
   );
 };
-
-/**
- * Strips the baseUrl from the given url and returns a relative path.
- *
- * @param url - target url.
- * @param baseUrl - Base URL to remove if present.
- * @returns Relative URL starting with "/".
- */
-export const getRelativeUrl = (url: string, baseUrl: string): string => {
-  if (url.startsWith(baseUrl)) {
-    url = url.slice(baseUrl.length);
-  }
-  return url.startsWith("/") ? url : `/${url}`;
-};
