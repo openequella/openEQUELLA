@@ -29,7 +29,7 @@ import org.apache.commons.httpclient.methods.{
 }
 import org.testng.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.apache.commons.httpclient.HttpStatus
-import org.testng.annotations.Test
+import org.testng.annotations.{DataProvider, Test}
 
 import scala.jdk.CollectionConverters._
 
@@ -144,6 +144,24 @@ class FavouriteApiTest extends AbstractRestApiTest {
     assertEquals(getFirstFavouriteSearchName(response), SEARCH_C)
   }
 
+  @DataProvider(name = "favouriteSearchQueries")
+  def favouriteSearchQueries: Array[Array[Any]] = Array(
+    Array("SEARCH A", SEARCH_A),
+    Array("search b", SEARCH_B)
+  )
+
+  @Test(
+    dataProvider = "favouriteSearchQueries",
+    description = "Get all favourite searches by query string",
+    dependsOnMethods = Array("testGetFavouriteSearch")
+  )
+  def testGetFavouriteSearchWithQuery(query: String, expectedName: String): Unit = {
+    val response: JsonNode = getFavouriteSearchResults(Seq("query" -> query))
+
+    assertEquals(getResultsSize(response), 1)
+    assertEquals(getFirstFavouriteSearchName(response), expectedName)
+  }
+
   @Test(
     description = "Get all favourite searches ordered by name",
     dependsOnMethods = Array("testGetFavouriteSearch")
@@ -182,4 +200,7 @@ class FavouriteApiTest extends AbstractRestApiTest {
 
   private def getFirstFavouriteSearchName(response: JsonNode): String =
     response.get("results").get(0).get("name").asText()
+
+  private def getResultsSize(response: JsonNode): Int =
+    response.get("results").size()
 }
