@@ -104,4 +104,17 @@ class Auth0UserDirectory extends ApiUserDirectory {
       idp.apiClientSecret,
       Option(Map("audience" -> idp.apiUrl.toString))
     )
+
+  /** Auth0 always returns a full set of attributes by default, including 'user_metadata' and
+    * 'app_metadata' where custom attributes are typically defined. Therefore, adding the
+    * 'include_fields' and 'fields' parameters to exclude unnecessary data in the response.
+    *
+    * Regardless of whether the attribute is defined under 'user_metadata', 'app_metadata' or
+    * another field, if the attribute path is hierarchical (e.g. 'user_metadata.custom_attr'), only
+    * the top level attribute, namely 'user_metadata', can be specified in the 'fields' parameter.
+    */
+  override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
+    userEndpoint(idp, stdId).addParam("include_fields", "true").addParam("fields", attrs.head)
+
+  override protected val customAttributeDelimiter: String = "\\."
 }

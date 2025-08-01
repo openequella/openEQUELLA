@@ -192,4 +192,14 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
       )
     )
   }
+
+  /** Custom attributes are typically defined under field 'profile' in Okta. However, Okta does not
+    * support specifying what fields to be included in the response through query parameters, so use
+    * the default implementation to retrieve the full set of attributes which always includes
+    * 'profile'.
+    */
+  override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
+    super.customUserIdUrl(idp, stdId, attrs)
+
+  override protected val customAttributeDelimiter: String = "\\."
 }
