@@ -317,6 +317,44 @@ const buildAdvancedSearchParams = ({
 });
 
 /**
+ * Adds a must clause to filter results by bookmark owner.
+ *
+ * @param userID - ID of the user who owns the favourites.
+ * @param existingMusts - Optional existing must clauses.
+ */
+const addBookmarkOwnerToMusts = (
+  userID: string,
+  existingMusts?: OEQ.Search.Must[],
+): OEQ.Search.Must[] => {
+  const ownerMust: OEQ.Search.Must = ["bookmark_owner", [userID]];
+  return pipe(
+    O.fromNullable(existingMusts),
+    O.match(
+      () => [ownerMust],
+      (ms) => [...ms, ownerMust],
+    ),
+  );
+};
+
+/**
+ * Appends bookmark tag search to the user's query if provided.
+ * e.g. "apple" → "apple OR bookmark_tags:(apple)"
+ *
+ * @param query original query string
+ * @returns Modified query string including bookmark tag search
+ */
+const buildFavouriteItemQuery = (query?: string | null): string =>
+  pipe(
+    O.fromNullable(query),
+    O.map((q) => q.trim()),
+    O.filter((q) => q.length > 0),
+    O.match(
+      () => "",
+      (q) => `${q} OR bookmark_tags:(${q})`,
+    ),
+  );
+
+/**
  * A function that executes a search with provided search options. If Advanced search criteria exists
  * in the search options, do the search with normal params and additional params through a POST request.
  * Otherwise, do the search through a GET request with normal params.
@@ -432,3 +470,20 @@ export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
 export const itemEq: EQ.Eq<OEQ.Search.SearchResultItem> = EQ.contramap(
   (item: OEQ.Search.SearchResultItem) => item.uuid + item.version,
 )(S.Eq);
+
+/**
+ * Searches for items favourited by the current user.
+ * Adds a `must` clause for the bookmark owner and extends the query to include bookmark tags.
+ *
+ * @param searchOptions Base search options
+ * @param userID Id of the current user
+ */
+export const searchFavouritedItems = (
+  searchOptions: SearchOptions,
+  userID: string,
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+  searchItems({
+    ...searchOptions,
+    query: buildFavouriteItemQuery(searchOptions.query),
+    musts: addBookmarkOwnerToMusts(userID, searchOptions.musts),
+  });
