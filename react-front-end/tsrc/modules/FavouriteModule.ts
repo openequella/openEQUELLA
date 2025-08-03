@@ -16,12 +16,44 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
+import { getISODateString } from "../util/Date";
+import { formatQuery, SearchOptions } from "./SearchModule";
 
 /**
- * Type for the two version options.
+ * A function that converts search options to FavouriteSearchParams.
+ *
+ * @param searchOptions Search options to be converted to search params.
  */
-export type FavouriteItemVersionOption = "latest" | "this";
+const buildFavouriteSearchParams = ({
+  query,
+  rowsPerPage,
+  currentPage,
+  sortOrder,
+  rawMode,
+  lastModifiedDateRange,
+}: SearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
+  query: pipe(
+    O.fromNullable(query),
+    O.map((q) => formatQuery(q, !rawMode)),
+    O.toUndefined,
+  ),
+  start: currentPage * rowsPerPage,
+  length: rowsPerPage,
+  order: sortOrder,
+  addedBefore: pipe(
+    O.fromNullable(lastModifiedDateRange?.end),
+    O.map(getISODateString),
+    O.toUndefined,
+  ),
+  addedAfter: pipe(
+    O.fromNullable(lastModifiedDateRange?.start),
+    O.map(getISODateString),
+    O.toUndefined,
+  ),
+});
 
 export type FavouritesType = "resources" | "searches";
 
@@ -67,8 +99,26 @@ export interface FavouriteURL {
 export const addFavouriteSearch = (
   name: string,
   { path, params }: FavouriteURL,
-): Promise<OEQ.Favourite.FavouriteSearchModel> =>
+): Promise<OEQ.Favourite.FavouriteSearch> =>
   OEQ.Favourite.addFavouriteSearch(API_BASE_URL, {
     name,
     url: `${path}?${params.toString()}`,
   });
+
+/**
+ * Delete a favourite search by favourite search ID
+ * @param searchID Favourite search ID
+ */
+export const deleteFavouriteSearch = (searchID: number): Promise<void> =>
+  OEQ.Favourite.deleteFavouriteSearch(API_BASE_URL, searchID);
+
+/**
+ * A function that executes a search with provided search options to get the favourite searches for the current user.
+ * @param searchOptions Search options selected on Search page.
+ */
+export const getFavouriteSearches = (
+  searchOptions: SearchOptions,
+): Promise<OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>> =>
+  flow(buildFavouriteSearchParams, (params) =>
+    OEQ.Favourite.getFavouriteSearches(API_BASE_URL, params),
+  )(searchOptions);
