@@ -16,9 +16,10 @@
  * limitations under the License.
  */
 import { DELETE, GET, POST } from './AxiosInstance';
-import { FavouriteItemCodec, FavouriteSearchCodec } from './gen/Favourite';
+import { FavouriteItemCodec, FavouriteSearchRawCodec } from './gen/Favourite';
 import { SearchResultCodec } from './gen/Search';
-import { SearchResult, SortOrder } from './Search';
+import { SearchResult } from './Search';
+import type { SortOrder } from './Search';
 import { convertDateFields, validate } from './Utils';
 
 /**
@@ -121,7 +122,7 @@ const FAVOURITE_ITEM_PATH = '/favourite/item';
 const FAVOURITE_SEARCH_PATH = '/favourite/search';
 
 const favouriteSearchResultValidator = validate(
-  SearchResultCodec(FavouriteSearchCodec)
+  SearchResultCodec(FavouriteSearchRawCodec)
 );
 
 export const STANDARD_DATE_FIELD = ['addedAt'];
@@ -165,7 +166,7 @@ export const addFavouriteSearch = (
 ): Promise<FavouriteSearch> =>
   POST<FavouriteSearchSaveParam, FavouriteSearchRaw>(
     apiBasePath + FAVOURITE_SEARCH_PATH,
-    validate(FavouriteSearchCodec),
+    validate(FavouriteSearchRawCodec),
     searchInfo
   ).then(processRawFavouriteSearch<FavouriteSearchRaw, FavouriteSearch>);
 
