@@ -53,15 +53,6 @@ public interface StagingService {
   StagingFile getStagingFile(String stagingUuid);
 
   /**
-   * Ensures that a staging area exists for the given UUID. If it does not exist, it will throw an
-   * exception.
-   *
-   * @param stagingUuid The UUID of the staging area to ensure
-   * @throws NotFoundException if no staging area with the given UUID exists
-   */
-  void ensureStaging(String stagingUuid);
-
-  /**
    * Ensures that a file exists in the staging area. If the file does not exist, it will throw an
    * exception.
    *

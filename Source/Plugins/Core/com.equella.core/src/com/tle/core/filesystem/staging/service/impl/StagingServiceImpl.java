@@ -128,14 +128,6 @@ public class StagingServiceImpl implements StagingService {
   }
 
   @Override
-  public void ensureStaging(String stagingUuid) {
-    if (!stagingExists(stagingUuid)
-        || !fileSystemService.fileExists(new StagingFile(stagingUuid), null)) {
-      throw new NotFoundException("Staging area does not exist: " + stagingUuid);
-    }
-  }
-
-  @Override
   public void ensureFileExists(String stagingUuid, String filepath) {
     final StagingFile stagingFile = getStagingFile(stagingUuid);
     if (!fileSystemService.fileExists(stagingFile, filepath)) {
@@ -147,6 +139,13 @@ public class StagingServiceImpl implements StagingService {
   public void ensureFileExists(StagingFile staging, String filepath) {
     if (!fileSystemService.fileExists(staging, filepath)) {
       throw new NotFoundException("File does not exist in staging area: " + filepath);
+    }
+  }
+
+  private void ensureStaging(String stagingUuid) {
+    if (!stagingExists(stagingUuid)
+        || !fileSystemService.fileExists(new StagingFile(stagingUuid), null)) {
+      throw new NotFoundException("Staging area does not exist: " + stagingUuid);
     }
   }
 }
