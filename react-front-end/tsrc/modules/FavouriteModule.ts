@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { flow, pipe } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
@@ -37,6 +37,7 @@ const buildFavouriteSearchParams = ({
 }: SearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
   query: pipe(
     O.fromNullable(query),
+    O.chain(O.fromPredicate((s) => s.trim() !== "")),
     O.map((q) => formatQuery(q, !rawMode)),
     O.toUndefined,
   ),
@@ -119,6 +120,6 @@ export const deleteFavouriteSearch = (searchID: number): Promise<void> =>
 export const getFavouriteSearches = (
   searchOptions: SearchOptions,
 ): Promise<OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>> =>
-  flow(buildFavouriteSearchParams, (params) =>
+  pipe(searchOptions, buildFavouriteSearchParams, (params) =>
     OEQ.Favourite.getFavouriteSearches(API_BASE_URL, params),
-  )(searchOptions);
+  );
