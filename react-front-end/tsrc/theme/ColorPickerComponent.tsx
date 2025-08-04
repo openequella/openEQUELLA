@@ -56,17 +56,30 @@ interface ColorProps {
 
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+  const [tempColor, setTempColor] = useState<string | undefined>(currentColor);
 
   const strings = languageStrings.newuisettings.colorPicker;
 
-  const changeHandler = (color: ColorResult) => onColorChange(color.hex);
+  const handleOpenDialog = () => {
+    setTempColor(currentColor); // Reset temp colour to current colour when opening
+    setDisplayColorPicker(true);
+  };
+
+  const handleColorChange = (color: ColorResult) => {
+    setTempColor(color.hex);
+  };
+
+  const handleDone = () => {
+    // Only call onColorChange if the colour has actually changed
+    if (tempColor && tempColor !== currentColor) {
+      onColorChange(tempColor);
+    }
+    setDisplayColorPicker(false);
+  };
 
   return (
     <>
-      <StyledDiv
-        className={classes.swatch}
-        onClick={() => setDisplayColorPicker(true)}
-      >
+      <StyledDiv className={classes.swatch} onClick={handleOpenDialog}>
         <div style={{ background: currentColor }} className={classes.color} />
       </StyledDiv>
       {displayColorPicker && (
@@ -80,16 +93,13 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
           <DialogContent>
             <SketchPicker
               disableAlpha
-              color={currentColor}
-              onChange={changeHandler}
-              onChangeComplete={changeHandler}
+              color={tempColor || currentColor}
+              onChange={handleColorChange}
+              onChangeComplete={handleColorChange}
             />
           </DialogContent>
           <DialogActions>
-            <Button
-              color="primary"
-              onClick={() => setDisplayColorPicker(false)}
-            >
+            <Button color="primary" onClick={handleDone}>
               {languageStrings.common.action.done}
             </Button>
           </DialogActions>
