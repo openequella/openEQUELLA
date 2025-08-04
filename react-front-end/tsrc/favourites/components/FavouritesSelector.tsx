@@ -16,23 +16,16 @@
  * limitations under the License.
  */
 import SearchIcon from "@mui/icons-material/Search";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Button, ButtonGroup, Tooltip } from "@mui/material";
-import * as t from "io-ts";
+
 import * as React from "react";
 import { ReactElement } from "react";
+import { FavouritesType } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
 
 const { resources: resourcesLabel, searches: searchesLabel } =
   languageStrings.favourites.favouritesSelector;
-
-// TODO: move to FavouritesModule.ts
-export const FavouritesTypeCodec = t.union([
-  t.literal("resources"),
-  t.literal("searches"),
-]);
-// TODO: move to FavouritesModule.ts
-export type FavouritesType = t.TypeOf<typeof FavouritesTypeCodec>;
 
 export interface FavouritesSelectorProps {
   /**
@@ -58,7 +51,7 @@ const FavouritesSelector = ({ value, onChange }: FavouritesSelectorProps) => {
   }[] = [
     {
       favouritesType: "resources",
-      icon: <BookmarkIcon />,
+      icon: <FavoriteIcon />,
       label: resourcesLabel,
     },
     {
