@@ -40,7 +40,7 @@ public class PagesHandler extends PostDispatchHandler {
 
   public PagesHandler(ManagerConfig config) {
     this.config = config;
-    templates = new STGroupDir("templates");
+    templates = new STGroupDir("templates", '$', '$');
   }
 
   @Override
@@ -49,13 +49,13 @@ public class PagesHandler extends PostDispatchHandler {
   }
 
   public void main(HttpExchange exchange) throws Exception {
-    ST st = templates.getInstanceOf("templates/main");
+    ST st = templates.getInstanceOf("main");
     st.add("version", new Version(config).getDeployedVersion());
-    st.add("managerversion", config.getManagerDetails().getFullVersion());
+    st.add("managerVersion", config.getManagerDetails().getFullVersion());
     st.add("timeout", (Boolean.getBoolean(Utils.DEBUG_FLAG) ? 9999999 : 5000));
-    st.add("tab_index", getIntParameterValue(exchange, "tab_index", 0));
+    st.add("tabIndex", getIntParameterValue(exchange, "tab_index", 0));
 
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
   }
 
   public void ajaxstatus(HttpExchange exchange) throws Exception {
@@ -95,12 +95,11 @@ public class PagesHandler extends PostDispatchHandler {
       buttonAction = "/server/start";
     }
 
-    ST st = templates.getInstanceOf("templates/ajaxstatus");
+    ST st = templates.getInstanceOf("ajaxstatus");
     st.add("statusText", statusText);
     st.add("statusClass", statusClass);
     st.add("buttonText", buttonText);
-    st.add("buttonAction", buttonAction);
-    HttpExchangeUtils.respondJSONMessage(exchange, 200, new String[] {st.toString(), buttonAction});
+    HttpExchangeUtils.respondJSONMessage(exchange, 200, new String[] {st.render(), buttonAction});
   }
 
   public void versions(HttpExchange exchange) throws Exception {
@@ -111,35 +110,35 @@ public class PagesHandler extends PostDispatchHandler {
     Set<WebVersion> older = allVersions.tailSet(deployedVersion);
     older.remove(deployedVersion);
 
-    ST st = templates.getInstanceOf("templates/versions");
+    ST st = templates.getInstanceOf("versions");
     st.add("newer", newer);
     st.add("older", older);
     st.add("current", Collections.singleton(deployedVersion));
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
   }
 
   public void other(HttpExchange exchange) throws Exception {
-    ST st = templates.getInstanceOf("templates/other");
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    ST st = templates.getInstanceOf("other");
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
   }
 
   public void troubleshooting(HttpExchange exchange) throws IOException {
-    ST st = templates.getInstanceOf("templates/troubleshoot");
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    ST st = templates.getInstanceOf("troubleshoot");
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
   }
 
   public void progress(HttpExchange exchange) throws IOException {
     final String URI = "/pages/progress/";
     final String ajaxId = exchange.getRequestURI().toString().substring(URI.length());
 
-    ST st = templates.getInstanceOf("templates/progress");
+    ST st = templates.getInstanceOf("progress");
     st.add("ajaxId", ajaxId);
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
   }
 
   public void restartmanager(HttpExchange exchange) throws IOException {
-    ST st = templates.getInstanceOf("templates/restartingmanager");
-    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.toString());
+    ST st = templates.getInstanceOf("restartingmanager");
+    HttpExchangeUtils.respondHtmlMessage(exchange, 200, st.render());
 
     // Restart manager in a new thread after a 500ms wait to ensure that the
     // response has been sent and flushed properly.
