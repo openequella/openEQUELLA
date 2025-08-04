@@ -56,10 +56,15 @@ interface ColorProps {
   onColorChange(color: string): void;
 }
 
+type ColorPickerType = "simple" | "swatch";
+
+const DEFAULT_PICKER_TYPE: ColorPickerType = "simple";
+
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
   const [tempColor, setTempColor] = useState<string | undefined>(currentColor);
-  const [pickerType, setPickerType] = useState<"simple" | "swatch">("simple");
+  const [pickerType, setPickerType] =
+    useState<ColorPickerType>(DEFAULT_PICKER_TYPE);
 
   const strings = languageStrings.newuisettings.colorPicker;
 
@@ -80,9 +85,15 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
     setDisplayColorPicker(false);
   };
 
+  const handleCancel = () => {
+    setTempColor(currentColor); // Reset temp color to original
+    setPickerType(DEFAULT_PICKER_TYPE); // Reset picker type to default
+    setDisplayColorPicker(false);
+  };
+
   const handlePickerTypeChange = (
     _: React.MouseEvent<HTMLElement>,
-    newPickerType: "simple" | "swatch",
+    newPickerType: ColorPickerType,
   ) => {
     if (newPickerType !== null) {
       setPickerType(newPickerType);
@@ -140,6 +151,9 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
             )}
           </DialogContent>
           <DialogActions>
+            <Button color="secondary" onClick={handleCancel}>
+              {languageStrings.common.action.cancel}
+            </Button>
             <Button color="primary" onClick={handleDone}>
               {languageStrings.common.action.done}
             </Button>
