@@ -28,7 +28,6 @@ import {
 import { SearchResult } from '../src/Search';
 import * as TC from './TestConfig';
 import { logout } from './TestUtils';
-import { getISODateString } from '../../react-front-end/tsrc/util/Date';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(TC.API_PATH));
@@ -118,13 +117,14 @@ describe('FavouriteSearch', () => {
 
     it('Get favourite searches within a date range', async () => {
       const fs = await add('getWithDateRangeParams');
-      const { oneDayBefore: addedAfter, oneDayAfter: addedBefore } =
-        getDayBeforeAndAfter(fs.addedAt);
+
+      const toIsoDate = (d: Date) => d.toISOString().slice(0, 10);
+      const MS_DAY = 24 * 60 * 60 * 1_000;
 
       const res = await getFavouriteSearches(TC.API_PATH, {
         query: fs.name,
-        addedAfter,
-        addedBefore,
+        addedAfter: toIsoDate(new Date(fs.addedAt.getTime() - MS_DAY)),
+        addedBefore: toIsoDate(new Date(fs.addedAt.getTime() + MS_DAY)),
       });
 
       expect(res.results).toHaveLength(1);
@@ -132,11 +132,3 @@ describe('FavouriteSearch', () => {
     });
   });
 });
-
-const getDayBeforeAndAfter = (date: Date) => {
-  const MS_DAY = 24 * 60 * 60 * 1000;
-  return {
-    oneDayBefore: getISODateString(new Date(date.getTime() - MS_DAY)),
-    oneDayAfter: getISODateString(new Date(date.getTime() + MS_DAY)),
-  };
-};
