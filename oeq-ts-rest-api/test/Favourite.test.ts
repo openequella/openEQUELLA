@@ -81,15 +81,12 @@ describe('FavouriteSearch', () => {
     it('no filters', async () => {
       await add('getWithNoFilters');
       const res = await getFavouriteSearches(TC.API_PATH);
-      console.log(res);
       expect(res.results.length).toBeGreaterThan(0);
     });
 
     it('filters by query', async () => {
       const fs: FavouriteSearch = await add('getWithQueryParam');
-      console.log(fs);
       const res = await getFavouriteSearches(TC.API_PATH, { query: fs.name });
-      console.log(res);
       expect(res.results.map((r) => r.name)).toContain(fs.name);
     });
 
