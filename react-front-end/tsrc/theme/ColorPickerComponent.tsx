@@ -21,11 +21,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
-import { ColorResult, SketchPicker } from "react-color";
+import { ColorResult, SketchPicker, SwatchesPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
 const PREFIX = "ColorPickerComponent";
@@ -36,16 +38,16 @@ const classes = {
 };
 
 const StyledDiv = styled("div")({
-  padding: "5px",
+  padding: "4px",
   background: "#fff",
-  borderRadius: "1px",
+  borderRadius: "4px",
   boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
   display: "inline-block",
   cursor: "pointer",
   div: {
     width: "36px",
-    height: "14px",
-    borderRadius: "2px",
+    height: "16px",
+    borderRadius: "4px",
   },
 });
 
@@ -57,6 +59,7 @@ interface ColorProps {
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
   const [tempColor, setTempColor] = useState<string | undefined>(currentColor);
+  const [pickerType, setPickerType] = useState<"simple" | "swatch">("simple");
 
   const strings = languageStrings.newuisettings.colorPicker;
 
@@ -77,6 +80,15 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
     setDisplayColorPicker(false);
   };
 
+  const handlePickerTypeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newPickerType: "simple" | "swatch",
+  ) => {
+    if (newPickerType !== null) {
+      setPickerType(newPickerType);
+    }
+  };
+
   return (
     <>
       <StyledDiv className={classes.swatch} onClick={handleOpenDialog}>
@@ -91,12 +103,41 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
             {strings.dialogTitle}
           </DialogTitle>
           <DialogContent>
-            <SketchPicker
-              disableAlpha
-              color={tempColor || currentColor}
-              onChange={handleColorChange}
-              onChangeComplete={handleColorChange}
-            />
+            <ToggleButtonGroup
+              value={pickerType}
+              exclusive
+              onChange={handlePickerTypeChange}
+              aria-label="color picker type"
+              fullWidth
+              sx={{ mb: 2 }}
+            >
+              <ToggleButton value="simple" aria-label="simple picker">
+                Simple
+              </ToggleButton>
+              <ToggleButton value="swatches" aria-label="swatches picker">
+                Swatches
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {pickerType === "simple" ? (
+              <SketchPicker
+                disableAlpha
+                color={tempColor || currentColor}
+                onChange={handleColorChange}
+                onChangeComplete={handleColorChange}
+                // This width attempts to match the SwatchPicker width default
+                width="320px"
+              />
+            ) : (
+              <SwatchesPicker
+                color={tempColor || currentColor}
+                onChange={handleColorChange}
+                onChangeComplete={handleColorChange}
+                width={320}
+                // This height attempts to match the SketchPicker height
+                height={373}
+              />
+            )}
           </DialogContent>
           <DialogActions>
             <Button color="primary" onClick={handleDone}>
