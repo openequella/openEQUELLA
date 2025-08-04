@@ -21,6 +21,7 @@ package com.tle.core.filesystem.staging.service.impl;
 import com.dytech.common.io.FileUtils;
 import com.dytech.common.io.FileUtils.GrepFunctor;
 import com.tle.beans.Staging;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.AllStagingFile;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.usermanagement.user.CurrentUser;
@@ -110,5 +111,41 @@ public class StagingServiceImpl implements StagingService {
             }
           }
         });
+  }
+
+  @Override
+  public boolean deleteFile(String stagingUuid, String filepath) {
+    final StagingFile stagingFile = getStagingFile(stagingUuid);
+    ensureFileExists(stagingFile, filepath);
+
+    return fileSystemService.removeFile(stagingFile, filepath);
+  }
+
+  @Override
+  public StagingFile getStagingFile(String stagingUuid) {
+    ensureStaging(stagingUuid);
+    return new StagingFile(stagingUuid);
+  }
+
+  @Override
+  public void ensureFileExists(String stagingUuid, String filepath) {
+    final StagingFile stagingFile = getStagingFile(stagingUuid);
+    if (!fileSystemService.fileExists(stagingFile, filepath)) {
+      throw new NotFoundException("File does not exist in staging area: " + filepath);
+    }
+  }
+
+  @Override
+  public void ensureFileExists(StagingFile staging, String filepath) {
+    if (!fileSystemService.fileExists(staging, filepath)) {
+      throw new NotFoundException("File does not exist in staging area: " + filepath);
+    }
+  }
+
+  private void ensureStaging(String stagingUuid) {
+    if (!stagingExists(stagingUuid)
+        || !fileSystemService.fileExists(new StagingFile(stagingUuid), null)) {
+      throw new NotFoundException("Staging area does not exist: " + stagingUuid);
+    }
   }
 }
