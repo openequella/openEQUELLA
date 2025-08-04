@@ -18,7 +18,7 @@
 // MUST end in /
 //export const INST_URL = 'http://localhost:8080/reports/';
 import * as O from "fp-ts/Option";
-import { flow } from "fp-ts/function";
+import { pipe } from "fp-ts/function";
 interface Config {
   baseUrl: string;
 }
@@ -124,12 +124,12 @@ export const LEGACY_CSS_URL = `${API_BASE_URL}/theme/legacy.css`;
  */
 export const getRelativeUrl = (url: string): string => {
   const baseUrl = getBaseUrl();
-  return flow(
-    O.fromPredicate((u: string) => u.startsWith(baseUrl)),
-    O.match(
-      () => url,
-      (u) => u.slice(baseUrl.length),
-    ),
-    (u) => (u.startsWith("/") ? u : `/${u}`),
-  )(url);
+  return pipe(
+    url,
+    O.fromPredicate((u) => u.startsWith(baseUrl)),
+    O.map((fullUrl) => fullUrl.slice(baseUrl.length)),
+    O.getOrElse(() => url),
+    (relativeUrl) =>
+      relativeUrl.startsWith("/") ? relativeUrl : `/${relativeUrl}`,
+  );
 };
