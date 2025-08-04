@@ -52,7 +52,15 @@ const StyledDiv = styled("div")({
 });
 
 interface ColorProps {
+  /**
+   * The current colour selected in the colour picker.
+   * This is used to initialise the picker and reset temp colour on cancel.
+   */
   currentColor?: string;
+  /**
+   * Callback function that is called when the colour is changed.
+   * It receives the new colour as a string.
+   */
   onColorChange(color: string): void;
 }
 
@@ -60,6 +68,12 @@ type ColorPickerType = "simple" | "swatch";
 
 const DEFAULT_PICKER_TYPE: ColorPickerType = "simple";
 
+/**
+ * ColorPickerComponent is a React component that provides a colour picker dialog.
+ * It allows users to select a colour using either a simple colour picker or a swatches picker.
+ * The selected colour can be confirmed or cancelled, and the component handles state management
+ * for the current colour and temporary selections.
+ */
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
   const [tempColor, setTempColor] = useState<string | undefined>(currentColor);
