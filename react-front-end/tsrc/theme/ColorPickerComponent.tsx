@@ -64,9 +64,9 @@ interface ColorProps {
   onColorChange(color: string): void;
 }
 
-type ColorPickerType = "simple" | "swatch";
+type ColorPickerType = "custom" | "swatch";
 
-const DEFAULT_PICKER_TYPE: ColorPickerType = "simple";
+const DEFAULT_PICKER_TYPE: ColorPickerType = "custom";
 
 /**
  * ColorPickerComponent is a React component that provides a colour picker dialog.
@@ -87,9 +87,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
     setDisplayColorPicker(true);
   };
 
-  const handleColorChange = (color: ColorResult) => {
-    setTempColor(color.hex);
-  };
+  const handleColorChange = (color: ColorResult) => setTempColor(color.hex);
 
   const handleDone = () => {
     // Only call onColorChange if the colour has actually changed
@@ -136,15 +134,15 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
               fullWidth
               sx={{ mb: 2 }}
             >
-              <ToggleButton value="simple" aria-label="simple picker">
-                Simple
+              <ToggleButton value="custom" aria-label="custom picker">
+                Custom
               </ToggleButton>
               <ToggleButton value="swatches" aria-label="swatches picker">
                 Swatches
               </ToggleButton>
             </ToggleButtonGroup>
 
-            {pickerType === "simple" ? (
+            {pickerType === "custom" ? (
               <SketchPicker
                 disableAlpha
                 color={tempColor || currentColor}
