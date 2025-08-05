@@ -17,19 +17,13 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { API_BASE_URL } from "../AppConfig";
-import * as t from "io-ts";
 
 /**
  * Type for the two version options.
  */
 export type FavouriteItemVersionOption = "latest" | "this";
 
-export const FavouritesTypeCodec = t.union([
-  t.literal("resources"),
-  t.literal("searches"),
-]);
-
-export type FavouritesType = t.TypeOf<typeof FavouritesTypeCodec>;
+export type FavouritesType = "resources" | "searches";
 
 /**
  * Add an Item to user's favourites.
