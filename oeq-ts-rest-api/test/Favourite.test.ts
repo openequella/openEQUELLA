@@ -66,21 +66,28 @@ describe('FavouriteSearch', () => {
       name,
       url: '/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D',
     });
+
   it('should be able to add a favourite search', async () => {
     const newFavouriteSearch = await add('addFavSearch');
     expect(newFavouriteSearch).toBeTruthy();
   });
 
   it('should be able to delete a favourite search', async () => {
-    const { id } = await add('deleteFavSearch');
-    await expect(deleteFavouriteSearch(TC.API_PATH, id)).resolves.not.toThrow();
+    const { id, name } = await add('deleteFavSearch');
+    await deleteFavouriteSearch(TC.API_PATH, id);
+    const res = await getFavouriteSearches(TC.API_PATH, { query: name });
+    expect(res.results.map((s) => s.id)).not.toContain(id);
   });
 
   describe('Favourite Search with GET:', () => {
     it('no filters', async () => {
+      const initialRes = await getFavouriteSearches(TC.API_PATH);
+      const initialResLength = initialRes.results.length;
+
       await add('getWithNoFilters');
+
       const res = await getFavouriteSearches(TC.API_PATH);
-      expect(res.results.length).toBeGreaterThan(0);
+      expect(res.results).toHaveLength(initialResLength + 1);
     });
 
     it('filters by query', async () => {
@@ -90,45 +97,54 @@ describe('FavouriteSearch', () => {
     });
 
     it('supports paging (start / length)', async () => {
-      const fs: FavouriteSearch = await add(`getWithPagingParams`);
+      const { name }: FavouriteSearch = await add(`getWithPagingParams`);
 
       const page: SearchResult<FavouriteSearch> = await getFavouriteSearches(
         TC.API_PATH,
-        { query: fs.name, start: 0, length: 1 }
+        { query: name, start: 0, length: 1 }
       );
 
       expect(page.start).toBe(0);
       expect(page).toHaveLength(1);
-      expect(page.results.length).toBeLessThanOrEqual(1);
+      expect(page.results).toHaveLength(1);
+      expect(getNameFromResults(page, 0)).toBe(name);
     });
 
     it('sorts alphabetically when order="name"', async () => {
-      const a = await add('aa-getWithOrderParam');
-      const z = await add('zz-getWithOrderParam');
+      const searchARes = await add('searchA-getWithOrderParam');
+      const searchZRes = await add('searchZ-getWithOrderParam');
 
       const res = await getFavouriteSearches(TC.API_PATH, {
         query: 'getWithOrderParam',
         order: 'name',
       });
 
-      expect(res.results[0].name).toBe(a.name);
-      expect(res.results[1].name).toBe(z.name);
+      expect(getNameFromResults(res, 0)).toBe(searchARes.name);
+      expect(getNameFromResults(res, 1)).toBe(searchZRes.name);
     });
 
     it('Get favourite searches within a date range', async () => {
-      const fs = await add('getWithDateRangeParams');
+      const { id, name, addedAt } = await add('getWithDateRangeParams');
 
+      // Helper function to format a Date as 'yyyy-MM-dd' (ISO date without time)
       const toIsoDate = (d: Date) => d.toISOString().slice(0, 10);
+
+      // Number of milliseconds in one day
       const MS_DAY = 24 * 60 * 60 * 1_000;
 
       const res = await getFavouriteSearches(TC.API_PATH, {
-        query: fs.name,
-        addedAfter: toIsoDate(new Date(fs.addedAt.getTime() - MS_DAY)),
-        addedBefore: toIsoDate(new Date(fs.addedAt.getTime() + MS_DAY)),
+        query: name,
+        addedAfter: toIsoDate(new Date(addedAt.getTime() - MS_DAY)),
+        addedBefore: toIsoDate(new Date(addedAt.getTime() + MS_DAY)),
       });
 
       expect(res.results).toHaveLength(1);
-      expect(res.results[0].id).toBe(fs.id);
+      expect(res.results[0].id).toBe(id);
     });
   });
 });
+
+const getNameFromResults = (
+  res: SearchResult<FavouriteSearch>,
+  index: number
+): string | undefined => res.results[index]?.name;
