@@ -98,7 +98,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   };
 
   const handleCancel = () => {
-    setTempColor(currentColor); // Reset temp color to original
+    setTempColor(currentColor); // Reset temp colour to original
     setPickerType(DEFAULT_PICKER_TYPE); // Reset picker type to default
     setDisplayColorPicker(false);
   };
@@ -148,7 +148,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
             {pickerType === "custom" ? (
               <SketchPicker
                 disableAlpha
-                color={tempColor || currentColor}
+                color={tempColor}
                 onChange={handleColorChange}
                 onChangeComplete={handleColorChange}
                 // This width attempts to match the SwatchPicker width default
@@ -156,7 +156,7 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
               />
             ) : (
               <SwatchesPicker
-                color={tempColor || currentColor}
+                color={tempColor}
                 onChange={handleColorChange}
                 onChangeComplete={handleColorChange}
                 width={320}
