@@ -130,15 +130,18 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
               value={pickerType}
               exclusive
               onChange={handlePickerTypeChange}
-              aria-label="color picker type"
+              aria-label={strings.toggleGroupAriaLabel}
               fullWidth
               sx={{ mb: 2 }}
             >
-              <ToggleButton value="custom" aria-label="custom picker">
-                Custom
+              <ToggleButton value="custom" aria-label={strings.customAriaLabel}>
+                {strings.customLabel}
               </ToggleButton>
-              <ToggleButton value="swatches" aria-label="swatches picker">
-                Swatches
+              <ToggleButton
+                value="swatches"
+                aria-label={strings.swatchesAriaLabel}
+              >
+                {strings.swatchesLabel}
               </ToggleButton>
             </ToggleButtonGroup>
 
