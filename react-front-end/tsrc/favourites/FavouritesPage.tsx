@@ -20,6 +20,7 @@ import { useMemo, useState } from "react";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
+import { FavouritesType } from "../modules/FavouriteModule";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
@@ -31,9 +32,7 @@ import {
   defaultSearchPageRefinePanelConfig,
 } from "../search/SearchPageHelper";
 import { languageStrings } from "../util/langstrings";
-import FavouritesSelector, {
-  FavouritesType,
-} from "./components/FavouritesSelector";
+import FavouritesSelector from "./components/FavouritesSelector";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
