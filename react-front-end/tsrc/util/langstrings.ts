@@ -511,6 +511,11 @@ export const languageStrings = {
     },
     colorPicker: {
       dialogTitle: "Select a Color",
+      customLabel: "Custom",
+      customAriaLabel: "Custom picker",
+      swatchesLabel: "Swatches",
+      swatchesAriaLabel: "Swatches picker",
+      toggleGroupAriaLabel: "Color Picker Type",
     },
   },
   screenoptions: {
