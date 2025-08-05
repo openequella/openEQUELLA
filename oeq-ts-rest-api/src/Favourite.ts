@@ -50,9 +50,13 @@ export interface FavouriteItem {
 export interface FavouriteSearchBase {
   /** Server‑generated ID for this favourite search. */
   id: number;
-  /** User‑supplied label. */
+  /** Name of the favourite search */
   name: string;
-  /** The URL of the favourite search, which includes all query strings. */
+  /**
+   * Relative path to the new Search UI including query strings
+   * If the search is added from new Search UI, the URL will be `/page/search?searchOptions=xxxxx`.
+   * If it's added from old UI, the URL will be `searching.do?xxx=yyy`.
+   */
   url: string;
 }
 
@@ -77,7 +81,7 @@ export interface FavouriteSearch extends FavouriteSearchBase {
  */
 export interface FavouriteSearchSaveParam {
   /**
-   * Name of a search definition
+   * Name of the search
    */
   name: string;
   /**
@@ -125,10 +129,8 @@ const favouriteSearchResultValidator = validate(
   SearchResultCodec(FavouriteSearchRawCodec)
 );
 
-export const STANDARD_DATE_FIELD = ['addedAt'];
-
 const processRawFavouriteSearch = <R, D>(data: R) =>
-  convertDateFields<D>(data, STANDARD_DATE_FIELD);
+  convertDateFields<D>(data, ['addedAt']);
 /**
  * Add an Item to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
@@ -158,16 +160,16 @@ export const deleteFavouriteItem = (
 /**
  * Add a search to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param searchInfo required information for adding a favourite search
+ * @param searchParams required search params for adding a favourite search
  */
 export const addFavouriteSearch = (
   apiBasePath: string,
-  searchInfo: FavouriteSearchSaveParam
+  searchParams: FavouriteSearchSaveParam
 ): Promise<FavouriteSearch> =>
   POST<FavouriteSearchSaveParam, FavouriteSearchRaw>(
     apiBasePath + FAVOURITE_SEARCH_PATH,
     validate(FavouriteSearchRawCodec),
-    searchInfo
+    searchParams
   ).then(processRawFavouriteSearch<FavouriteSearchRaw, FavouriteSearch>);
 
 /**

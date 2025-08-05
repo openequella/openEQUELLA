@@ -478,7 +478,7 @@ export const itemEq: EQ.Eq<OEQ.Search.SearchResultItem> = EQ.contramap(
  * @param searchOptions Base search options
  * @param userID Id of the current user
  */
-export const searchFavouritedItems = (
+export const searchFavouriteItems = (
   searchOptions: SearchOptions,
   userID: string,
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
