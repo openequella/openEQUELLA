@@ -43,6 +43,9 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   }
 
   override def listEditable(): util.List[BaseEntityLabel] =
+    listAll()
+
+  override def listAll(): util.List[BaseEntityLabel] =
     MetadataSchemaApi.listSchemas() match {
       case Right(schemas) =>
         schemas
