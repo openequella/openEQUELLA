@@ -40,7 +40,7 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.3"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.7"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "12.10.0.jre11"
 
     lazy val log4jVersion   = "2.25.1"
@@ -56,7 +56,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion  = "2.19.1"
+    lazy val jacksonVersion  = "2.19.2"
     lazy val jacksonDataBind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
     lazy val jacksonDataFormatYaml =
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion

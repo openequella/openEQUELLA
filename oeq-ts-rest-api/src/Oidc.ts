@@ -70,6 +70,10 @@ interface CommonDetailsBase {
    */
   usernameClaim?: string;
   /**
+   * Attribute configured on an IdP to provide the correct ID for a user
+   */
+  userIdAttribute?: string;
+  /**
    * Whether the Identity Provider configuration is enabled
    */
   enabled: boolean;

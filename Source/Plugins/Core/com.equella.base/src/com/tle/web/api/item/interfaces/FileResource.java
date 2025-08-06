@@ -41,28 +41,34 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.annotations.cache.Cache;
 
+/**
+ * @deprecated Use {@link com.tle.web.api.staging.interfaces.StagingResource} instead.
+ *     <p>Note that this interface is deprecated and will be removed in a future release. Please
+ *     migrate to the Staging API.
+ */
+@Deprecated
 @Produces({"application/json"})
 @Path("file/")
-@Api(value = "Files (deprecated)", description = "file")
+@Api(value = "Files (deprecated - use Staging)")
 @SuppressWarnings("nls")
 public interface FileResource {
-  static final String APIDOC_UNZIPTO = "If a zip file is uploaded, unzip it to this location";
+  String APIDOC_UNZIPTO = "If a zip file is uploaded, unzip it to this location";
 
   @POST
   @ApiOperation(value = "Create a file area")
-  public Response createStaging();
+  Response createStaging();
 
   @POST
   @Path("/copy")
   @ApiOperation(value = "Copy an item's files to a new file area")
-  public Response createStagingFromItem(
+  Response createStagingFromItem(
       @QueryParam("uuid") String itemUuid, @QueryParam("version") int itemVersion)
       throws IOException;
 
   @GET
   @Path("/{uuid}/dir{filename:(/.*)?}")
   @ApiOperation(value = "Get file metadata")
-  public GenericFileBean getFileMetadata(
+  GenericFileBean getFileMetadata(
       // @formatter:off
       @PathParam("uuid") String stagingUuid,
       @PathParam("filename") @ApiParam(value = "The folder path, or '/' for root") String filename,
@@ -82,7 +88,7 @@ public interface FileResource {
   @Path("/{uuid}/dir{parentFolder:(/.*)?}")
   @Consumes(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Create a folder")
-  public Response createFolderPost( // @formatter:off
+  Response createFolderPost( // @formatter:off
       @PathParam("uuid") String stagingUuid,
       @PathParam("parentFolder") @ApiParam(value = "The parent folder, or '/' for root")
           String parentFolder,
@@ -94,7 +100,7 @@ public interface FileResource {
   @Path("/{uuid}/dir{parentFolder:(/.*)?}/{foldername}")
   @Consumes(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Create or rename a folder")
-  public Response createOrRenameFolderPut(
+  Response createOrRenameFolderPut(
       // @formatter:off
       @PathParam("uuid") String stagingUuid,
       @ApiParam(required = false, value = "The parent folder, or '/' for root")
@@ -108,7 +114,7 @@ public interface FileResource {
   @PUT
   @Path("/{uuid}/dir{parentFolder:(/.*)?}/{foldername}")
   @Consumes(MediaType.WILDCARD)
-  public Response createFolderPut(
+  Response createFolderPut(
       // @formatter:off
       @PathParam("uuid") String stagingUuid,
       @PathParam("parentFolder") String parentFolder,
@@ -119,7 +125,7 @@ public interface FileResource {
   @DELETE
   @Path("/{uuid}/dir{folder:(/.*)?}")
   @ApiOperation(value = "Delete a folder")
-  public Response deleteFolder(
+  Response deleteFolder(
       @PathParam("uuid") String stagingUuid,
       @ApiParam(required = false, value = "The folder to delete, or '/' for root")
           @PathParam("folder")
@@ -131,7 +137,7 @@ public interface FileResource {
   @Produces(MediaType.WILDCARD)
   @ApiOperation(value = "Download a file")
   @Cache(maxAge = 86400, sMaxAge = 0, mustRevalidate = true)
-  public Response downloadFile(
+  Response downloadFile(
       @Context HttpHeaders headers,
       @PathParam("uuid") String stagingUuid,
       @PathParam("filepath") String filepath)
@@ -142,7 +148,7 @@ public interface FileResource {
   @Consumes(MediaType.WILDCARD)
   @Produces(MediaType.APPLICATION_JSON)
   @ApiOperation(value = "Upload or replace a file")
-  public Response uploadOrReplaceFile(
+  Response uploadOrReplaceFile(
       // @formatter:off
       @PathParam("uuid") String stagingUuid,
       @PathParam("filepath") String filepath,
@@ -157,7 +163,7 @@ public interface FileResource {
   @DELETE
   @Path("/{uuid}/content/{filepath:(.*)}")
   @ApiOperation(value = "Delete a file")
-  public Response deleteFile( // @formatter:off
+  Response deleteFile( // @formatter:off
       @PathParam("uuid") String stagingUuid, @PathParam("filepath") String filepath
       // @formatter:on
       ) throws IOException;

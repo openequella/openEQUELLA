@@ -20,7 +20,7 @@ val SwaggerVersion    = "1.6.16"
 val TomcatVersion     = "9.0.107"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
-val curatorVersion    = "5.8.0"
+val curatorVersion    = "5.9.0"
 val cxfVersion        = "3.6.7"
 val fs2Version        = "3.12.0"
 val guiceVersion      = "6.0.0"
@@ -80,7 +80,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250422-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.1",
   "com.google.guava"      % "guava"                       % "33.4.8-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -110,7 +110,7 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "6.3.0" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "6.3.2" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
   "commons-codec"             % "commons-codec"         % "1.18.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -118,7 +118,7 @@ libraryDependencies ++= Seq(
   "commons-daemon"            % "commons-daemon"        % "1.4.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.19.0",
+  "commons-io"                % "commons-io"            % "2.20.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -249,7 +249,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.180",
+  "io.github.classgraph"          % "classgraph"               % "4.8.181",
   "com.fasterxml"                 % "classmate"                % "1.7.0",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",

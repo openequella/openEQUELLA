@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { Backdrop } from "@mui/material";
-import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
@@ -29,7 +28,7 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { LEGACY_CSS_URL } from "../AppConfig";
+import { getRelativeUrl, LEGACY_CSS_URL } from "../AppConfig";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
 import { BaseOEQRouteComponentProps } from "../mainui/routes";
@@ -38,6 +37,15 @@ import {
   templateDefaults,
   templatePropsForLegacy,
 } from "../mainui/Template";
+import {
+  isChangeRoute,
+  isExternalRedirect,
+  isPageContent,
+  LegacyContentResponse,
+  StateData,
+  submitRequest,
+  SubmitResponse,
+} from "../modules/LegacyContentModule";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "./LegacyForm";
@@ -51,38 +59,9 @@ declare global {
   const _trigger: (value: string) => boolean;
 }
 
-export interface ExternalRedirect {
-  href: string;
-}
-
-export interface ChangeRoute {
-  route: string;
-  userUpdated: boolean;
-}
-
-interface StateData {
-  [key: string]: string[];
-}
-
 interface FormUpdate {
   state: StateData;
   partial: boolean;
-}
-
-export interface LegacyContentResponse {
-  html: { [key: string]: string };
-  state: StateData;
-  css?: string[];
-  js: string[];
-  script: string;
-  noForm: boolean;
-  title: string;
-  metaTags: string;
-  fullscreenMode: string;
-  menuMode: string;
-  hideAppBar: boolean;
-  preventUnload: boolean;
-  userUpdated: boolean;
 }
 
 export interface PageContent {
@@ -128,36 +107,6 @@ interface LegacyContentSubmission {
   payload?: StateData;
 }
 
-export type SubmitResponse =
-  | ExternalRedirect
-  | LegacyContentResponse
-  | ChangeRoute;
-
-export function isPageContent(
-  response: SubmitResponse,
-): response is LegacyContentResponse {
-  return (response as LegacyContentResponse).html !== undefined;
-}
-
-export function isChangeRoute(
-  response: SubmitResponse,
-): response is ChangeRoute {
-  return (response as ChangeRoute).route !== undefined;
-}
-
-export function isExternalRedirect(
-  response: SubmitResponse,
-): response is ExternalRedirect {
-  return (response as ExternalRedirect).href !== undefined;
-}
-
-function submitRequest(path: string, vals: StateData): Promise<SubmitResponse> {
-  return Axios.post<SubmitResponse>(
-    "api/content/submit" + encodeURI(path),
-    vals,
-  ).then((res) => res.data);
-}
-
 export const LegacyContent = React.memo(function LegacyContent({
   locationKey,
   onError,
@@ -184,8 +133,6 @@ export const LegacyContent = React.memo(function LegacyContent({
     submitting: false,
   });
   const { appErrorHandler, refreshUser } = useContext(AppContext);
-
-  const baseUrl = document.getElementsByTagName("base")[0].href;
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -222,12 +169,6 @@ export const LegacyContent = React.memo(function LegacyContent({
       redirect(redirloc);
     }
   };
-
-  function toRelativeUrl(url: string) {
-    const relUrl =
-      url.indexOf(baseUrl) === 0 ? url.substring(baseUrl.length) : url;
-    return relUrl.indexOf("/") === 0 ? relUrl : "/" + relUrl;
-  }
 
   function updatePageContent(
     content: LegacyContentResponse,
@@ -324,7 +265,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     // - If the response is a `ChangeRoute`, which usually triggers another Legacy content API request, keep the spinner visible until the next request completes.
     // - In all other cases, remove the spinner.
     setUpdatingContent(true);
-    submitRequest(toRelativeUrl(formAction || pathname), submitValues)
+    submitRequest(getRelativeUrl(formAction || pathname), submitValues)
       .then(async (content) => {
         // Clear raw mode saved in local storage after a login request is resolved.
         if (pathname.indexOf("logon.do") > 0) {
