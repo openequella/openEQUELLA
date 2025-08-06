@@ -102,7 +102,8 @@ export interface SearchPageOptions extends SearchOptions {
    */
   legacyAdvSearchCriteria?: PathValueMap;
   /**
-   * Open/closed state of refine expansion panel
+   * Open/closed state of refine expansion panel.
+   * 'False' means the panel is expanded.
    */
   filterExpansion?: boolean;
 }
@@ -199,6 +200,10 @@ export interface SearchPageHeaderConfig {
    */
   enableShareSearchButton?: boolean;
   /**
+   * `true` to enable the Favourite Search button.
+   */
+  enableFavouriteSearchButton?: boolean;
+  /**
    * Additional components displayed in the CardHeader.
    */
   additionalHeaders?: React.JSX.Element[];
@@ -229,6 +234,7 @@ export interface SearchPageHeaderConfig {
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: true,
   enableShareSearchButton: true,
+  enableFavouriteSearchButton: true,
 };
 
 /**

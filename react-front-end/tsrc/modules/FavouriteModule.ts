@@ -23,6 +23,8 @@ import { API_BASE_URL } from "../AppConfig";
  */
 export type FavouriteItemVersionOption = "latest" | "this";
 
+export type FavouritesType = "resources" | "searches";
+
 /**
  * Add an Item to user's favourites.
  * @param itemID Item's unique ID

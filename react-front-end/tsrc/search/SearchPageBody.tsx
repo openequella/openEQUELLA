@@ -194,6 +194,7 @@ export const SearchPageBody = ({
   const {
     enableCSVExportButton,
     enableShareSearchButton,
+    enableFavouriteSearchButton,
     additionalHeaders,
     customSortingOptions,
     newSearchConfig,
@@ -838,6 +839,7 @@ export const SearchPageBody = ({
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}
+                useFavouriteSearchButton={enableFavouriteSearchButton}
                 additionalHeaders={additionalHeaders}
               >
                 {pipe(

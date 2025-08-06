@@ -381,6 +381,11 @@ export const languageStrings = {
   },
   favourites: {
     title: "Favourites",
+    favouritesSelector: {
+      title: "Favourites type",
+      resources: "Resources",
+      searches: "Searches",
+    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",
