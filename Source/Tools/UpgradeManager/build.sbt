@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   log4jCore,
   log4jSlf4jImpl,
   "commons-daemon" % "commons-daemon" % "1.4.1",
-  "commons-codec"  % "commons-codec"  % "1.18.0",
+  "commons-codec"  % "commons-codec"  % "1.19.0",
   jacksonDataBind,
   jacksonDataFormatYaml
 )
