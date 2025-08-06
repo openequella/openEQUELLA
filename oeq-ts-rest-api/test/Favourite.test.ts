@@ -91,9 +91,9 @@ describe('FavouriteSearch', () => {
     });
 
     it('filters by query', async () => {
-      const fs: FavouriteSearch = await add('getWithQueryParam');
-      const res = await getFavouriteSearches(TC.API_PATH, { query: fs.name });
-      expect(res.results.map((r) => r.name)).toContain(fs.name);
+      const { name }: FavouriteSearch = await add('getWithQueryParam');
+      const res = await getFavouriteSearches(TC.API_PATH, { query: name });
+      expect(res.results.map((r) => r.name)).toContain(name);
     });
 
     it('supports paging (start / length)', async () => {
