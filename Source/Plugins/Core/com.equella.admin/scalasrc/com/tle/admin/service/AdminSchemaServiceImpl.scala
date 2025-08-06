@@ -55,6 +55,13 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
         throw new ClientRequestException(s"Error listing schemas.", errors)
     }
 
+  override def identifyByUuid(uuid: String): Long = MetadataSchemaApi.getIdByUuid(uuid) match {
+    case Right(Some(id)) => id
+    case Right(None)     => 0
+    case Left(errors) =>
+      throw new ClientRequestException(s"Error identifying schema by UUID: $uuid", errors)
+  }
+
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
     // TODO: Can this logging be centralise in the abstract class? As it will be the same
     //       for all the overrides.
