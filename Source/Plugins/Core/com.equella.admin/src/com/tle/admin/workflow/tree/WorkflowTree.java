@@ -19,6 +19,7 @@
 package com.tle.admin.workflow.tree;
 
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.admin.workflow.StepDialog;
 import com.tle.admin.workflow.WorkflowCellRenderer;
 import com.tle.admin.workflow.editor.DecisionEditor;
@@ -29,7 +30,6 @@ import com.tle.beans.entity.LanguageBundle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,12 +48,12 @@ public class WorkflowTree extends JTree {
   private static final long serialVersionUID = 1L;
   private final WorkflowTreeModel model;
   private final RemoteUserService userService;
-  private final RemoteSchemaService schemaService;
+  private final AdminSchemaService schemaService;
 
   public WorkflowTree(
       final WorkflowTreeModel model,
       final RemoteUserService userService,
-      final RemoteSchemaService schemaService) {
+      final AdminSchemaService schemaService) {
     super(model);
 
     this.model = model;

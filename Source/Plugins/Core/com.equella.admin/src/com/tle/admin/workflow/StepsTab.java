@@ -34,6 +34,7 @@ import com.tle.admin.gui.common.actions.RemoveAction;
 import com.tle.admin.gui.common.actions.TLEAction;
 import com.tle.admin.gui.common.actions.UpAction;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.admin.workflow.tree.WorkflowTree;
 import com.tle.admin.workflow.tree.WorkflowTreeModel;
 import com.tle.beans.entity.LanguageBundle;
@@ -47,7 +48,6 @@ import com.tle.common.workflow.node.ScriptNode;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
 import com.tle.common.workflow.node.WorkflowTreeNode;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
@@ -226,7 +226,7 @@ public class StepsTab extends BaseEntityTab<Workflow> implements AbstractDetails
         new WorkflowTree(
             model,
             clientService.getService(RemoteUserService.class),
-            clientService.getService(RemoteSchemaService.class));
+            clientService.getService(AdminSchemaService.class));
     tree.addTreeSelectionListener(
         new TreeSelectionListener() {
           @Override
