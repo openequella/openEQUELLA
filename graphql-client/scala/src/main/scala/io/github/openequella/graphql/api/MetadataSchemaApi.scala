@@ -22,9 +22,7 @@ import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.client.Queries
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
-import java.io.ByteArrayInputStream
 import java.util.Base64
-import java.util.zip.ZipInputStream
 
 /** Provides access to the openEQUELLA metadata schema API.
   */
@@ -75,22 +73,19 @@ object MetadataSchemaApi {
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of errors or a ZipInputStream containing the exported schema. **Make sure to
-    *   close the ZipInputStream after use to free resources.**
+    *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
     */
   def exportSchema(id: Long, withSecurity: Boolean)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[ZipInputStream]] = {
+  ): Either[List[ApiError], Option[Array[Byte]]] = {
     val query = Queries.metadataSchemaExport(id, withSecurity)
 
     // The query returns a base64 encoded string (representing a zip file), which we need to decode
-    // into a ZipInputStream. Returning a ZipInputStream removes the need for the client to be aware
+    // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
     // of the base64 encoding and decoding process.
-    Client.query(query).map(_.map(base64ToZipInputStream))
+    Client.query(query).map(_.map(base64ToBytes))
   }
 
-  private def base64ToZipInputStream(base64Zip: String): ZipInputStream = {
-    val bytes = Base64.getDecoder.decode(base64Zip)
-    new ZipInputStream(new ByteArrayInputStream(bytes))
-  }
+  private def base64ToBytes(base64Zip: String): Array[Byte] =
+    Base64.getDecoder.decode(base64Zip)
 }
