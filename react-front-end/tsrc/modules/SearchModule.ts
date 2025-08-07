@@ -197,11 +197,33 @@ export const defaultSearchOptions: SearchOptions = {
  * @param query the intended search query to be sent to the API
  * @param addWildcard whether a wildcard should be appended
  */
-export const formatQuery = (query: string, addWildcard: boolean): string => {
-  const trimmedQuery = query ? query.trim() : "";
-  const appendWildcard = addWildcard && trimmedQuery.length > 0;
-  return trimmedQuery + (appendWildcard ? "*" : "");
-};
+export const formatQuery = (query: string, addWildcard: boolean): string =>
+  pipe(
+    query,
+    S.trim,
+    O.fromPredicate(isNonEmptyString),
+    O.match(
+      () => "",
+      (q) => (addWildcard ? `${q}*` : q),
+    ),
+  );
+
+/**
+ * Format a raw search query, or return `undefined` when it’s empty or undefined.
+ *
+ * @param addWildCard  flag for wild-card formatting.
+ * @param query the intended search query to be sent to the API.
+ */
+export const processQuery = (
+  addWildCard: boolean,
+  query?: string,
+): string | undefined =>
+  pipe(
+    query,
+    O.fromPredicate(isNonEmptyString),
+    O.map((q) => formatQuery(q, addWildCard)),
+    O.toUndefined,
+  );
 
 /**
  * Generates a Where clause through Classifications.
