@@ -153,6 +153,7 @@ export const AdvancedSearchPage = ({ updateTemplate }: TemplateUpdateProps) => {
     options: SearchPageOptions,
   ): SearchPageHeaderConfig => ({
     ...defaultSearchPageHeaderConfig,
+    enableCSVExportButton: false,
     newSearchConfig: {
       navigationTo: buildSearchPageNavigationConfig(options),
     },
