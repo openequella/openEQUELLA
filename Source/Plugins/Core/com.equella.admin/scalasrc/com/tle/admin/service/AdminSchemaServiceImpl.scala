@@ -19,6 +19,7 @@
 package com.tle.admin.service
 
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteSchemaService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.MetadataSchemaApi
@@ -61,6 +62,17 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
     case Left(errors) =>
       throw new ClientRequestException(s"Error identifying schema by UUID: $uuid", errors)
   }
+
+  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
+    MetadataSchemaApi.exportSchema(id, withSecurity) match {
+      case Right(Some(bytes)) => bytes
+      case Right(None) =>
+        throw new NotFoundException(
+          s"Schema with ID: $id not found or export failed."
+        )
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error exporting schema with ID: $id", errors)
+    }
 
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
     // TODO: Can this logging be centralise in the abstract class? As it will be the same
