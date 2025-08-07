@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
 import { DELETE, GET, POST } from './AxiosInstance';
 import { FavouriteItemCodec, FavouriteSearchRawCodec } from './gen/Favourite';
 import { SearchResultCodec } from './gen/Search';
@@ -125,8 +126,10 @@ export interface FavouriteSearchParams {
 const FAVOURITE_ITEM_PATH = '/favourite/item';
 const FAVOURITE_SEARCH_PATH = '/favourite/search';
 
-const favouriteSearchResultValidator = validate(
-  SearchResultCodec(FavouriteSearchRawCodec)
+const favouriteSearchResultValidator = pipe(
+  FavouriteSearchRawCodec,
+  SearchResultCodec,
+  validate
 );
 
 const processRawFavouriteSearch = <R, D>(data: R) =>

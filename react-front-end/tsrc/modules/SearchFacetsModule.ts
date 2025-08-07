@@ -21,7 +21,7 @@ import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
 import {
-  formatQuery,
+  processQuery,
   generateCategoryWhereQuery,
   SearchOptions,
 } from "./SearchModule";
@@ -100,7 +100,7 @@ const convertSearchOptions: (
     } = options;
     const searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
-      query: query ? formatQuery(query, !rawMode) : undefined,
+      query: processQuery(!rawMode, query),
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
       modifiedBefore: getISODateString(lastModifiedDateRange?.end),
       owner: owner?.id,

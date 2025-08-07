@@ -28,6 +28,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
+import { isNonEmptyString } from "../util/validation";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 
@@ -269,27 +270,41 @@ declare const configuredCollections: string[] | undefined;
  * A function that converts search options to search params.
  *
  * @param searchOptions Search options to be converted to search params.
+ * @param isFavItemSearch A boolean value with default set to 'false', If `true` transform the query for fetch favourite items.
  */
-const buildSearchParams = ({
-  query,
-  rowsPerPage,
-  currentPage,
-  sortOrder,
-  collections,
-  rawMode,
-  lastModifiedDateRange,
-  owner,
-  status = liveStatuses,
-  includeAttachments,
-  searchAttachments,
-  selectedCategories,
-  mimeTypes,
-  mimeTypeFilters,
-  externalMimeTypes,
-  musts,
-  hierarchy,
-}: SearchOptions): OEQ.Search.SearchParams => {
-  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
+export const buildSearchParams = (
+  {
+    query,
+    rowsPerPage,
+    currentPage,
+    sortOrder,
+    collections,
+    rawMode,
+    lastModifiedDateRange,
+    owner,
+    status = liveStatuses,
+    includeAttachments,
+    searchAttachments,
+    selectedCategories,
+    mimeTypes,
+    mimeTypeFilters,
+    externalMimeTypes,
+    musts,
+    hierarchy,
+  }: SearchOptions,
+  isFavItemSearch = false,
+): OEQ.Search.SearchParams => {
+  const processedQuery = pipe(
+    processQuery(!rawMode, query),
+    O.fromNullable,
+    // If this is a “favourite items” search, extend the query to include bookmark tags.
+    O.map((q) =>
+      isFavItemSearch && isNonEmptyString(q)
+        ? `${q} OR bookmark_tags:(${q})`
+        : q,
+    ),
+    O.toUndefined,
+  );
   // We use selected filters to generate MIME types. However, in Image Gallery,
   // image MIME types are applied before any filter gets selected.
   // So the logic is, we use MIME type filters if any are selected, or specific MIME types
@@ -337,44 +352,6 @@ const buildAdvancedSearchParams = ({
 }: SearchOptions): OEQ.Search.AdvancedSearchParams => ({
   advancedSearchCriteria,
 });
-
-/**
- * Adds a must clause to filter results by bookmark owner.
- *
- * @param userID - ID of the user who owns the favourites.
- * @param existingMusts - Optional existing must clauses.
- */
-const addBookmarkOwnerToMusts = (
-  userID: string,
-  existingMusts?: OEQ.Search.Must[],
-): OEQ.Search.Must[] => {
-  const ownerMust: OEQ.Search.Must = ["bookmark_owner", [userID]];
-  return pipe(
-    O.fromNullable(existingMusts),
-    O.match(
-      () => [ownerMust],
-      (ms) => [...ms, ownerMust],
-    ),
-  );
-};
-
-/**
- * Appends bookmark tag search to the user's query if provided.
- * e.g. "apple" → "apple OR bookmark_tags:(apple)"
- *
- * @param query original query string
- * @returns Modified query string including bookmark tag search
- */
-const buildFavouriteItemQuery = (query?: string | null): string =>
-  pipe(
-    O.fromNullable(query),
-    O.map((q) => q.trim()),
-    O.filter((q) => q.length > 0),
-    O.match(
-      () => "",
-      (q) => `${q} OR bookmark_tags:(${q})`,
-    ),
-  );
 
 /**
  * A function that executes a search with provided search options. If Advanced search criteria exists
@@ -492,20 +469,3 @@ export const confirmExport = (searchOptions: SearchOptions): Promise<boolean> =>
 export const itemEq: EQ.Eq<OEQ.Search.SearchResultItem> = EQ.contramap(
   (item: OEQ.Search.SearchResultItem) => item.uuid + item.version,
 )(S.Eq);
-
-/**
- * Searches for items favourited by the current user.
- * Adds a `must` clause for the bookmark owner and extends the query to include bookmark tags.
- *
- * @param searchOptions Base search options
- * @param userID Id of the current user
- */
-export const searchFavouriteItems = (
-  searchOptions: SearchOptions,
-  userID: string,
-): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
-  searchItems({
-    ...searchOptions,
-    query: buildFavouriteItemQuery(searchOptions.query),
-    musts: addBookmarkOwnerToMusts(userID, searchOptions.musts),
-  });
