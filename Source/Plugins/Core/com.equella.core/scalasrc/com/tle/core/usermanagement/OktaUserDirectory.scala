@@ -198,8 +198,12 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
     * the default implementation to retrieve the full set of attributes which always includes
     * 'profile'.
     */
-  override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
-    super.customUserIdUrl(idp, stdId, attrs)
+  override protected def customUserIdUrl(
+      idp: IDP,
+      stdId: String,
+      attributePathSegments: Array[String]
+  ): Uri =
+    super.customUserIdUrl(idp, stdId, attributePathSegments)
 
   override protected val customAttributeDelimiter: Char = '.'
 }

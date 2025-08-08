@@ -113,8 +113,14 @@ class Auth0UserDirectory extends ApiUserDirectory {
     * another field, if the attribute path is hierarchical (e.g. 'user_metadata.custom_attr'), only
     * the top level attribute, namely 'user_metadata', can be specified in the 'fields' parameter.
     */
-  override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
-    userEndpoint(idp, stdId).addParam("include_fields", "true").addParam("fields", attrs.head)
+  override protected def customUserIdUrl(
+      idp: IDP,
+      stdId: String,
+      attributePathSegments: Array[String]
+  ): Uri =
+    userEndpoint(idp, stdId)
+      .addParam("include_fields", "true")
+      .addParam("fields", attributePathSegments.head)
 
   override protected val customAttributeDelimiter: Char = '.'
 }

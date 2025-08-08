@@ -184,10 +184,14 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     *   Target Identity Provider
     * @param stdId
     *   IdP standard user ID (e.g. Entrd ID 'oid')
-    * @param attrs
-    *   A non-empty array containing segments of the configured custom user ID attribute
+    * @param attributePathSegments
+    *   A non-empty array of strings representing the segments of the attribute path
     */
-  protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
+  protected def customUserIdUrl(
+      idp: IDP,
+      stdId: String,
+      attributePathSegments: Array[String]
+  ): Uri =
     userEndpoint(idp, stdId)
 
   /** Most Identity Providers support defining custom attributes, but their APIs do not allow

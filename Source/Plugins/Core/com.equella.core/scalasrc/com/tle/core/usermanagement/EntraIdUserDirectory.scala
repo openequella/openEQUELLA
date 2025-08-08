@@ -146,8 +146,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     * 'onPremisesExtensionAttributes/extensionAttribute5'), only the top level attribute, namely
     * 'onPremisesExtensionAttributes', can be specified in the '$select' parameter.
     */
-  override def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
-    userEndpoint(idp, stdId).addParam("$select", attrs.head)
+  override def customUserIdUrl(idp: IDP, stdId: String, attributePathSegments: Array[String]): Uri =
+    userEndpoint(idp, stdId).addParam("$select", attributePathSegments.head)
 
   override val customAttributeDelimiter: Char = '/'
 }
