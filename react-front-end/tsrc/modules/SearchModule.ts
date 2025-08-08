@@ -192,38 +192,24 @@ export const defaultSearchOptions: SearchOptions = {
 };
 
 /**
- * Helper function, to support formatting of query in raw mode. When _not_ raw mode
- * we append a wildcard to support the idea of a simple (typeahead) search.
- *
- * @param query the intended search query to be sent to the API
- * @param addWildcard whether a wildcard should be appended
- */
-export const formatQuery = (query: string, addWildcard: boolean): string =>
-  pipe(
-    query,
-    S.trim,
-    O.fromPredicate(isNonEmptyString),
-    O.match(
-      () => "",
-      (q) => (addWildcard ? `${q}*` : q),
-    ),
-  );
-
-/**
  * Format a raw search query, or return `undefined` when it’s empty or undefined.
  *
  * @param addWildCard  flag for wild-card formatting.
  * @param query the intended search query to be sent to the API.
  */
-export const processQuery = (
+export const formatQuery = (
   addWildCard: boolean,
   query?: string,
 ): string | undefined =>
   pipe(
     query,
-    O.fromPredicate(isNonEmptyString),
-    O.map((q) => formatQuery(q, addWildCard)),
-    O.toUndefined,
+    O.fromNullable,
+    O.map(S.trim),
+    O.filter(isNonEmptyString),
+    O.match(
+      () => undefined,
+      (q) => (addWildCard ? `${q}*` : q),
+    ),
   );
 
 /**
@@ -270,41 +256,26 @@ declare const configuredCollections: string[] | undefined;
  * A function that converts search options to search params.
  *
  * @param searchOptions Search options to be converted to search params.
- * @param isFavItemSearch A boolean value with default set to 'false', If `true` transform the query for fetch favourite items.
  */
-export const buildSearchParams = (
-  {
-    query,
-    rowsPerPage,
-    currentPage,
-    sortOrder,
-    collections,
-    rawMode,
-    lastModifiedDateRange,
-    owner,
-    status = liveStatuses,
-    includeAttachments,
-    searchAttachments,
-    selectedCategories,
-    mimeTypes,
-    mimeTypeFilters,
-    externalMimeTypes,
-    musts,
-    hierarchy,
-  }: SearchOptions,
-  isFavItemSearch = false,
-): OEQ.Search.SearchParams => {
-  const processedQuery = pipe(
-    processQuery(!rawMode, query),
-    O.fromNullable,
-    // If this is a “favourite items” search, extend the query to include bookmark tags.
-    O.map((q) =>
-      isFavItemSearch && isNonEmptyString(q)
-        ? `${q} OR bookmark_tags:(${q})`
-        : q,
-    ),
-    O.toUndefined,
-  );
+export const buildSearchParams = ({
+  query,
+  rowsPerPage,
+  currentPage,
+  sortOrder,
+  collections,
+  rawMode,
+  lastModifiedDateRange,
+  owner,
+  status = liveStatuses,
+  includeAttachments,
+  searchAttachments,
+  selectedCategories,
+  mimeTypes,
+  mimeTypeFilters,
+  externalMimeTypes,
+  musts,
+  hierarchy,
+}: SearchOptions): OEQ.Search.SearchParams => {
   // We use selected filters to generate MIME types. However, in Image Gallery,
   // image MIME types are applied before any filter gets selected.
   // So the logic is, we use MIME type filters if any are selected, or specific MIME types
@@ -321,7 +292,7 @@ export const buildSearchParams = (
       : restrictions;
 
   return {
-    query: processedQuery,
+    query: formatQuery(!rawMode, query),
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
     status,

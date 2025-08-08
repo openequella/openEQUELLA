@@ -55,8 +55,7 @@ export type ISODateFormat = "yyyy-MM-dd" | "yyyy-MM" | "yyyy";
 export const getISODateString = (date?: Date) =>
   pipe(
     O.fromNullable(date),
-    O.map((d) => DateTime.fromJSDate(d).toISODate()),
     // If the result of toISODate is null then return undefined.
-    O.chain(O.fromNullable),
+    O.chainNullableK((d) => DateTime.fromJSDate(d).toISODate()),
     O.toUndefined,
   );

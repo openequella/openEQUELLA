@@ -73,6 +73,16 @@ describe('FavouriteSearch', () => {
     return favAdded;
   };
 
+  const validateResultHasSearch = async (name: string) => {
+    const res = await getFavouriteSearches(TC.API_PATH, { query: name });
+    expect(res.results.map((r) => r.name)).toContain(name);
+  };
+
+  const getSearchName = (
+    res: SearchResult<FavouriteSearch>,
+    index: number
+  ): string | undefined => res.results[index]?.name;
+
   afterEach(async () => {
     await Promise.all(
       favSearchIds.map((id) => deleteFavouriteSearch(TC.API_PATH, id))
@@ -80,14 +90,15 @@ describe('FavouriteSearch', () => {
     favSearchIds = [];
   });
 
+  // eslint-disable-next-line jest/expect-expect
   it('should be able to add a favourite search', async () => {
-    const newFavouriteSearch = await addFavSearch('addFavSearch');
-    expect(newFavouriteSearch).toBeTruthy();
-    expect(newFavouriteSearch).toHaveProperty('id');
+    const { name } = await addFavSearch('addFavSearch');
+    await validateResultHasSearch(name);
   });
 
   it('should be able to delete a favourite search', async () => {
     const { id, name } = await addFavSearch('deleteFavSearch');
+    await validateResultHasSearch(name);
     await deleteFavouriteSearch(TC.API_PATH, id);
     // Filter out this fav. search id from favSearchIds as it has already been deleted
     favSearchIds = favSearchIds.filter((i) => i !== id);
@@ -102,15 +113,14 @@ describe('FavouriteSearch', () => {
       expect(res.results).toHaveLength(3);
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('filters by query', async () => {
-      const { name }: FavouriteSearch = await addFavSearch('getWithQueryParam');
-      const res = await getFavouriteSearches(TC.API_PATH, { query: name });
-      expect(res.results.map((r) => r.name)).toContain(name);
+      const { name } = await addFavSearch('getWithQueryParam');
+      await validateResultHasSearch(name);
     });
 
     it('supports paging (start / length)', async () => {
-      const { name }: FavouriteSearch =
-        await addFavSearch(`getWithPagingParams`);
+      const { name } = await addFavSearch(`getWithPagingParams`);
 
       const page: SearchResult<FavouriteSearch> = await getFavouriteSearches(
         TC.API_PATH,
@@ -157,8 +167,3 @@ describe('FavouriteSearch', () => {
     });
   });
 });
-
-const getSearchName = (
-  res: SearchResult<FavouriteSearch>,
-  index: number
-): string | undefined => res.results[index]?.name;

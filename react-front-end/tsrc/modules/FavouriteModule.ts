@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
-import { buildSearchParams, processQuery, SearchOptions } from "./SearchModule";
+import { buildSearchParams, formatQuery, SearchOptions } from "./SearchModule";
 import { getCurrentUserDetails } from "./UserModule";
 
 /**
@@ -38,10 +39,41 @@ export interface FavouriteURL {
  */
 const addBookmarkOwnerMust =
   (userId: string) =>
-  (opts: SearchOptions): SearchOptions => ({
-    ...opts,
-    musts: [["bookmark_owner", [userId]] as OEQ.Search.Must],
-  });
+  (opts: SearchOptions): SearchOptions => {
+    const bookmarkOwnerMust: OEQ.Search.Must = ["bookmark_owner", [userId]];
+
+    return {
+      ...opts,
+      musts: pipe(
+        O.fromNullable(opts.musts),
+        O.match(
+          () => [bookmarkOwnerMust],
+          (existingMusts) => [...existingMusts, bookmarkOwnerMust],
+        ),
+      ),
+    };
+  };
+
+/**
+ *  Appends bookmark tag search to the user's query if provided.
+ *  e.g. "apple" → "apple OR bookmark_tags:(apple)"
+ *
+ * @param opts OEQ.Search.SearchParams to be sent to the API request
+ * @returns OEQ.Search.SearchParams with query attribute modified to include bookmark tag search
+ */
+const addFavouriteItemQuery = (
+  opts: OEQ.Search.SearchParams,
+): OEQ.Search.SearchParams => ({
+  ...opts,
+  query: pipe(
+    opts.query,
+    O.fromNullable,
+    O.match(
+      () => undefined,
+      (q) => `${q} OR bookmark_tags:(${q})`,
+    ),
+  ),
+});
 
 /**
  * A function that converts search options to FavouriteSearchParams.
@@ -56,7 +88,7 @@ const buildFavouriteSearchParams = ({
   rawMode,
   lastModifiedDateRange,
 }: SearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
-  query: processQuery(!rawMode, query),
+  query: formatQuery(!rawMode, query),
   start: currentPage * rowsPerPage,
   length: rowsPerPage,
   order: sortOrder,
@@ -101,13 +133,16 @@ export const searchFavouriteItems = async (
   searchOptions: SearchOptions,
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
   const { id } = await getCurrentUserDetails();
-  const searchParams = pipe(
-    searchOptions,
+  const getFavItemsSearchParams = flow(
     addBookmarkOwnerMust(id),
-    (options) => buildSearchParams(options, true),
+    buildSearchParams,
+    addFavouriteItemQuery,
   );
 
-  return OEQ.Search.search(API_BASE_URL, searchParams);
+  return OEQ.Search.search(
+    API_BASE_URL,
+    getFavItemsSearchParams(searchOptions),
+  );
 };
 
 /**
