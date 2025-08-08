@@ -31,6 +31,7 @@ import com.tle.admin.helper.GroupBox;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SingleTargetChooser;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
@@ -39,7 +40,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
 import com.tle.common.recipientselector.MultipleFinderControl;
 import com.tle.common.workflow.node.WorkflowItem;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.GridLayout;
@@ -63,7 +63,7 @@ import javax.swing.JPanel;
 public class ModeratorsTab extends JPanel implements ActionListener, ItemListener {
 
   private final SchemaModel schemaModel = new SchemaModel();
-  private final RemoteSchemaService schemaService;
+  private final AdminSchemaService schemaService;
 
   private static final long serialVersionUID = 1L;
   private GroupBox staticGroup;
@@ -82,7 +82,7 @@ public class ModeratorsTab extends JPanel implements ActionListener, ItemListene
   public ModeratorsTab(
       ChangeDetector changeDetector,
       RemoteUserService userService,
-      RemoteSchemaService schemaService) {
+      AdminSchemaService schemaService) {
     this.schemaService = schemaService;
     setupGui(userService);
     setupChangeDetector(changeDetector);

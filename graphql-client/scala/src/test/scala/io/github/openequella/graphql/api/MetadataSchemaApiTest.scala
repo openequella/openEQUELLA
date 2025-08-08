@@ -25,7 +25,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 
-import java.io.{BufferedReader, InputStreamReader}
+import java.io.{BufferedReader, ByteArrayInputStream, InputStreamReader}
 import java.util.zip.ZipInputStream
 
 class MetadataSchemaApiTest
@@ -108,9 +108,12 @@ class MetadataSchemaApiTest
         When("exportSchema is called with the schema ID and withSecurity")
         val result = MetadataSchemaApi.exportSchema(schemaId, withSecurity)
 
-        Then("it should return a ZipInputStream")
+        // We convert the result to a ZipInputStream for easier testing.
+        // Most often in actual application the bytes are simply saved to a file.
+        // Here we just want to ensure that the bytes can be interpreted as a zip file.
+        Then("it should return a Array[Byte] convertable to a ZipInputStream")
         result.isRight shouldBe true
-        val zis = result.value.get
+        val zis = result.value.map(bytesToZipInputStream).get
         zis shouldBe a[ZipInputStream]
 
         And("the zip file should include a valid _entity.xml")
@@ -152,6 +155,9 @@ class MetadataSchemaApiTest
       Then("it should return an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
+
+    def bytesToZipInputStream(bytes: Array[Byte]): ZipInputStream =
+      new ZipInputStream(new ByteArrayInputStream(bytes))
 
     def extractEntityXml(zis: ZipInputStream): Option[String] =
       Iterator

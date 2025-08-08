@@ -19,10 +19,10 @@
 package com.tle.admin.workflow.editor;
 
 import com.dytech.gui.TableLayout;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.WorkflowItem;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -32,7 +32,7 @@ import javax.swing.JTabbedPane;
 public class StepEditor extends NodeEditor {
   private static final long serialVersionUID = 1L;
 
-  public StepEditor(final RemoteUserService userService, final RemoteSchemaService schemaService) {
+  public StepEditor(final RemoteUserService userService, final AdminSchemaService schemaService) {
     super(
         userService,
         schemaService,

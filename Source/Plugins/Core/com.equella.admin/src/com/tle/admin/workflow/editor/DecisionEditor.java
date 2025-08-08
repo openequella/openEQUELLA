@@ -22,10 +22,10 @@ import com.dytech.edge.admin.script.ScriptEditor;
 import com.dytech.edge.admin.script.workflowmodel.WorkflowModel;
 import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.workflow.node.DecisionNode;
 import com.tle.common.workflow.node.WorkflowNode;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -44,7 +44,7 @@ public class DecisionEditor extends NodeEditor {
   public DecisionEditor(final Driver driver) {
     super(
         driver.getClientService().getService(RemoteUserService.class),
-        driver.getClientService().getService(RemoteSchemaService.class),
+        driver.getClientService().getService(AdminSchemaService.class),
         "com.tle.admin.workflow.editor.decisioneditor.title"); //$NON-NLS-1$
     this.driver = driver;
   }
