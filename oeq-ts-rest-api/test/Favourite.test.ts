@@ -98,10 +98,6 @@ describe('FavouriteSearch', () => {
 
   describe('Favourite Search with GET:', () => {
     it('no filters', async () => {
-      await addFavSearch('getWithNoFilters1');
-      await addFavSearch('getWithNoFilters2');
-      await addFavSearch('getWithNoFilters3');
-
       const res = await getFavouriteSearches(TC.API_PATH);
       expect(res.results).toHaveLength(3);
     });
