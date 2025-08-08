@@ -201,5 +201,5 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
   override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
     super.customUserIdUrl(idp, stdId, attrs)
 
-  override protected val customAttributeDelimiter: String = "\\."
+  override protected val customAttributeDelimiter: Char = '.'
 }

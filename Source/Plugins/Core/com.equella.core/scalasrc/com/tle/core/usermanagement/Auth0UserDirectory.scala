@@ -116,5 +116,5 @@ class Auth0UserDirectory extends ApiUserDirectory {
   override protected def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
     userEndpoint(idp, stdId).addParam("include_fields", "true").addParam("fields", attrs.head)
 
-  override protected val customAttributeDelimiter: String = "\\."
+  override protected val customAttributeDelimiter: Char = '.'
 }

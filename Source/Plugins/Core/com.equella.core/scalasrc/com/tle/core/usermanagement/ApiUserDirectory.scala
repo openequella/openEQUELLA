@@ -197,7 +197,7 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     * the delimiter used by an IdP must be specified to help transform the full attribute path into
     * an array.
     */
-  protected val customAttributeDelimiter: String
+  protected val customAttributeDelimiter: Char
 
   /** Retrieve the custom user ID for an IdP user via an API request, using the configured custom
     * user ID attribute. On success, extract the value from the response body by traversing the

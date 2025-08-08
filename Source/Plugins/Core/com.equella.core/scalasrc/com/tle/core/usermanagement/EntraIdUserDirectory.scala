@@ -149,5 +149,5 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   override def customUserIdUrl(idp: IDP, stdId: String, attrs: Array[String]): Uri =
     userEndpoint(idp, stdId).addParam("$select", attrs.head)
 
-  override val customAttributeDelimiter: String = "/"
+  override val customAttributeDelimiter: Char = '/'
 }
