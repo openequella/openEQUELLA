@@ -124,4 +124,45 @@ class MetadataSchemaProvider @Inject() (
       stagingId = stagingService.createStagingArea().getUuid
     )
   }
+
+  /** Get a metadata schema by ID.
+    *
+    * @param id
+    *   the ID of the metadata schema.
+    * @return
+    *   the metadata schema, if found.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def schemaById(id: Long): Option[MetadataSchema] = {
+    LOGGER.debug(s"Getting metadata schema by ID: $id")
+    noneIfNotFound {
+      schemaService.get(id)
+    }.map(MetadataSchema.apply)
+  }
+
+  /** Get the uses of a metadata schema by ID.
+    *
+    * @param id
+    *   the ID of the metadata schema.
+    * @return
+    *   a list of uses for the schema.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def getUses(id: Long): List[BaseEntityReference] = {
+    LOGGER.debug(s"Getting uses of metadata schema with ID: $id")
+    schemaService.getSchemaUses(id).asScala.map(BaseEntityReference(_)).toList
+  }
+
+  /** Get the types of schema import transformations for a metadata schema by ID.
+    *
+    * @param id
+    *   the ID of the metadata schema.
+    * @return
+    *   a list of import transformation types.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def getImportTypes(id: Long): List[String] = {
+    LOGGER.debug(s"Getting import types for metadata schema with ID: $id")
+    schemaService.getImportSchemaTypes(id).asScala.toList
+  }
 }

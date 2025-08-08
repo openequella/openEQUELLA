@@ -53,7 +53,10 @@ class MetadataSchemaSchema extends SchemaProvider {
   private val queries = Queries(
     metadataSchemas = () => schemaProvider.listSchemas(),
     metadataSchemaExport = args => schemaProvider.exportSchema(args.id, args.withSecurity),
-    metadataSchemaIdForUuid = uuid => schemaProvider.schemaIdForUuid(uuid)
+    metadataSchemaIdForUuid = uuid => schemaProvider.schemaIdForUuid(uuid),
+    metadataSchema = args => schemaProvider.schemaById(args.id),
+    metadataSchemaUses = args => schemaProvider.getUses(args.id),
+    metadataSchemaImportTypes = args => schemaProvider.getImportTypes(args.id)
   )
 
   private val mutations = Mutations(
@@ -67,7 +70,13 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription("Export a metadata schema, returning a base64 encoded zip file")
       metadataSchemaExport: SchemaExportArgs => Option[String],
       @GQLDescription("Get the metadata schema ID for a given UUID")
-      metadataSchemaIdForUuid: String => Option[Long]
+      metadataSchemaIdForUuid: String => Option[Long],
+      @GQLDescription("Get a metadata schema by ID")
+      metadataSchema: SchemaByIdArgs => Option[MetadataSchema],
+      @GQLDescription("Get the uses of a metadata schema by ID")
+      metadataSchemaUses: SchemaByIdArgs => List[BaseEntityReference],
+      @GQLDescription("Get the types of schema import transformations for a metadata schema by ID")
+      metadataSchemaImportTypes: SchemaByIdArgs => List[String]
   )
 
   case class SchemaExportArgs(
@@ -75,6 +84,11 @@ class MetadataSchemaSchema extends SchemaProvider {
       id: Long,
       @GQLDescription("Whether to include security information in the export")
       withSecurity: Boolean
+  )
+
+  case class SchemaByIdArgs(
+      @GQLDescription("ID of the metadata schema")
+      id: Long
   )
 
   case class Mutations(
