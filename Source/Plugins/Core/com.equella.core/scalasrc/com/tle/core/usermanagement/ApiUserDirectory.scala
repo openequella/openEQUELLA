@@ -23,12 +23,13 @@ import com.tle.common.Pair
 import com.tle.common.usermanagement.user.valuebean.UserBean
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
 import com.tle.plugins.ump.UserDirectory
-import io.circe.Decoder
+import io.circe.{ACursor, Decoder, Json}
 import org.slf4j.LoggerFactory
 import sttp.client3.basicRequest
 import sttp.client3.circe.asJson
 import sttp.model.{Header, Uri}
-import java.net.{URI, URL}
+
+import java.net.URL
 import java.util
 import javax.inject.{Inject, Named}
 import scala.jdk.CollectionConverters._
@@ -175,6 +176,74 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       }
       .toMap
       .asJava
+
+  /** Constructs a URL used to retrieve the custom user identifier for a user. Default to the
+    * standard single-user endpoint without any query parameters.
+    *
+    * @param idp
+    *   Target Identity Provider
+    * @param stdId
+    *   IdP standard user ID (e.g. Entrd ID 'oid')
+    * @param attributePathSegments
+    *   A non-empty array of strings representing the segments of the attribute path
+    */
+  protected def customUserIdUrl(
+      idp: IDP,
+      stdId: String,
+      attributePathSegments: Array[String]
+  ): Uri =
+    userEndpoint(idp, stdId)
+
+  /** Most Identity Providers support defining custom attributes, but their APIs do not allow
+    * retrieving the value of a nested attribute by specifying its full path in a query parameter.
+    * Instead,the request must use only the first segment of the path, and the response will include
+    * the entire nested structure, which can be traversed to extract the desired value. As a result,
+    * the delimiter used by an IdP must be specified to help transform the full attribute path into
+    * an array.
+    */
+  protected val customAttributeDelimiter: Char
+
+  /** Retrieve the custom user ID for an IdP user via an API request, using the configured custom
+    * user ID attribute. On success, extract the value from the response body by traversing the
+    * response structure with each level of the attribute.
+    *
+    * Example for Entra ID:
+    *   - Configured attribute: `onPremisesExtensionAttributes/extensionAttribute2`,
+    *   - Request URL:
+    *     https://graph.microsoft.com/v1.0/users/11815cb1-4bcf-4ded-94cc-989117c1383f?$select=onPremisesExtensionAttributes
+    *   - Response body (assuming there are 3 nested attributes under
+    *     `onPremisesExtensionAttributes`):
+    *     {{{
+    *  {
+    *    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users(displayName,onPremisesExtensionAttributes)/$entity",
+    *    "onPremisesExtensionAttributes": {
+    *       "extensionAttribute1":null,
+    *       "extensionAttribute2":"adfcaf58-241b-4eca-9740-6a26d1c3dd58",
+    *       "extensionAttribute3": null
+    *     }
+    *   }
+    *     }}}
+    */
+  override def getCustomUserId(
+      stdId: String,
+      userIdAttribute: String
+  ): Either[Throwable, String] = {
+    lazy val search: (IDP, OAuthTokenState) => Either[Throwable, String] = (idp, tokenState) => {
+      val attrs = userIdAttribute.split(customAttributeDelimiter)
+      val url   = customUserIdUrl(idp, stdId, attrs)
+
+      requestWithToken[Json](url, tokenState, requestHeaders)
+        .flatMap(json =>
+          attrs
+            .foldLeft[ACursor](json.hcursor) { (cursor, attr) =>
+              cursor.downField(attr)
+            }
+            .as[String]
+        )
+    }
+
+    execute(search)
+  }
 }
 
 object ApiUserDirectory {

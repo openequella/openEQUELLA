@@ -88,7 +88,8 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
     mockStateService,
     mockUserService,
     mockConfigurationService,
-    mockJwkProvider
+    mockJwkProvider,
+    java.util.Collections.emptyMap()
   )
 
   when(mockConfigurationService.get).thenReturn(Right(auth0))

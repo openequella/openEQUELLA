@@ -218,8 +218,12 @@ object OidcIntegration extends Http4sDsl[IO] {
     Ok(resp, `Content-Type`(MediaType.application.json))
   }
 
-  def user: IO[Response[IO]] = {
-    Ok(TEST_USER.asJson.noSpaces, `Content-Type`(MediaType.application.json))
+  def user(id: String): IO[Response[IO]] = {
+    if (id == TEST_USER.user_id) {
+      Ok(TEST_USER.asJson.noSpaces, `Content-Type`(MediaType.application.json))
+    } else {
+      NotFound(s"No user found by ID $id")
+    }
   }
 
   private def getRequiredParam(params: Map[String, String]): String => Either[String, String] =

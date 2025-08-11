@@ -138,4 +138,16 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     * Reference link: https://learn.microsoft.com/en-us/graph/aad-advanced-queries
     */
   override protected val requestHeaders: List[Header] = List(Header("ConsistencyLevel", "eventual"))
+
+  /** Entra ID may not return certain custom attributes by default, so explicitly request the
+    * configured attribute to be included by using the '$select' query parameter.
+    *
+    * If the attribute path is hierarchical (e.g.
+    * 'onPremisesExtensionAttributes/extensionAttribute5'), only the top level attribute, namely
+    * 'onPremisesExtensionAttributes', can be specified in the '$select' parameter.
+    */
+  override def customUserIdUrl(idp: IDP, stdId: String, attributePathSegments: Array[String]): Uri =
+    userEndpoint(idp, stdId).addParam("$select", attributePathSegments.head)
+
+  override val customAttributeDelimiter: Char = '/'
 }

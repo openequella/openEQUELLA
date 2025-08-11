@@ -27,6 +27,7 @@ import com.tle.common.usermanagement.user.{DefaultUserState, WebAuthenticationDe
 import com.tle.core.guice.Bind
 import com.tle.core.httpclient.sendRequest
 import com.tle.core.services.user.UserService
+import com.tle.core.usermanagement.OidcUserDirectory
 import com.tle.integration.jwk.JwkProvider
 import com.tle.integration.jwt.decodeJwt
 import com.tle.integration.oauth2.error.OAuth2Error
@@ -107,7 +108,8 @@ class OidcAuthService @Inject() (
     stateService: OidcStateService,
     userService: UserService,
     oidcConfigurationService: OidcConfigurationService,
-    jwkProvider: JwkProvider
+    jwkProvider: JwkProvider,
+    userDirectories: java.util.Map[IdentityProviderPlatform.Value, OidcUserDirectory]
 )(implicit val nonceService: OidcNonceService) {
   private val RESPONSE_TYPE         = "code"
   private val GRANT_TYPE            = "authorization_code"
@@ -308,7 +310,7 @@ class OidcAuthService @Inject() (
     def claim: String => Option[String] = getClaim(idToken)
 
     for {
-      userId <- getUserId(idp.commonDetails.platform, idToken)
+      userId <- getUserId(idp, idToken)
       username <- idp.commonDetails.usernameClaim
         .filter(_.nonEmpty)
         .map(c =>
@@ -336,22 +338,41 @@ class OidcAuthService @Inject() (
     } yield userService.login(userState, true)
   }
 
-  /** Confirm User ID from the ID token.
+  /** Confirm User ID in two steps:
     *
-    * For Entra ID, According to the their claim reference, claim 'oid' is the unique identifier for
-    * the user across applications.
-    *
-    * For other platforms, use claim 'sub' as the unique identifier.
-    *
-    * Reference:
-    *   - https://learn.microsoft.com/en-us/entra/identity-platform/id-token-claims-reference
+    *   1. Extracts the platform standard user ID from the ID token:
+    *      - For Entra ID, this is the `oid` claim.
+    *      - For other platforms, this defaults to the `sub` claim.
+    *   2. If a custom user ID attribute is configured for the platform, a user search is performed
+    *      using the standard ID and the attribute to retrieve the custom user ID. Otherwise, return
+    *      the standard user ID.
     */
   private def getUserId(
-      platform: IdentityProviderPlatform.Value,
+      idp: IdentityProviderDetails,
       token: DecodedJWT
-  ): Either[InvalidJWT, String] = platform match {
-    case IdentityProviderPlatform.ENTRA_ID => getRequiredClaim(token, "oid")
-    case _                                 => Right(token.getSubject)
+  ): Either[GeneralError, String] = {
+    val platform           = idp.commonDetails.platform
+    lazy val userDirectory = userDirectories.get(platform)
+
+    val stdId = platform match {
+      case IdentityProviderPlatform.ENTRA_ID => getRequiredClaim(token, "oid")
+      case _                                 => Right(token.getSubject)
+    }
+
+    idp.commonDetails.userIdAttribute
+      .filter(_.trim.nonEmpty) match {
+      case Some(attr) =>
+        stdId.flatMap { id =>
+          userDirectory
+            .getCustomUserId(id, attr)
+            .leftMap(e =>
+              ServerError(
+                s"Failed to retrieve custom user ID using the configured attribute '$attr': ${e.getMessage}"
+              )
+            )
+        }
+      case None => stdId
+    }
   }
 
   // If there is a role configuration, use the configured role claim and role mappings to determine the OEQ roles.
