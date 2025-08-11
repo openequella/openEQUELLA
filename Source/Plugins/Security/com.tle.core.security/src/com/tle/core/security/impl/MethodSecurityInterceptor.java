@@ -33,33 +33,56 @@ import javax.inject.Singleton;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+/**
+ * Interceptor that checks the security attributes of a method which has been annotated with one of
+ * the security annotations, such as those in the package com.tle.core.security.annotations.
+ */
 @Bind
 @Singleton
-public class MethodSecurityInteceptor implements MethodInterceptor {
+public class MethodSecurityInterceptor implements MethodInterceptor {
   @Inject private SecurityAttributeSource attributeSource;
   @Inject private TLEAclManager tleAclManager;
 
-  // Sonar may not like 'throws Throwable' declarations, but we're bound by
-  // the external jar's interface
   @Override
-  public Object invoke(MethodInvocation invocation) throws Throwable // NOSONAR
-      {
-    Class<?> targetClass = (invocation.getThis() != null ? invocation.getThis().getClass() : null);
+  public Object invoke(MethodInvocation invocation) throws Throwable {
+    final SecurityAttribute secAttr = getSecurityAttribute(invocation);
 
-    final SecurityAttribute secAttr =
-        attributeSource.getAttribute(invocation.getMethod(), targetClass);
     if (CurrentUser.getUserState().isSystem()) {
       return invocation.proceed();
     }
     if (secAttr.isSystemOnly()) {
-      throw new AccessDeniedException("You must be the system administrator"); // $NON-NLS-1$
+      throw new AccessDeniedException("You must be the system administrator");
     }
+
+    enforceOnCallSecurity(invocation, secAttr);
+    // Now enforce post call security
+    if (secAttr.isFilterMatching()) {
+      return filterResult(invocation, secAttr);
+    }
+
+    return invocation.proceed();
+  }
+
+  private SecurityAttribute getSecurityAttribute(MethodInvocation invocation) {
+    Class<?> targetClass = (invocation.getThis() != null ? invocation.getThis().getClass() : null);
+
+    return attributeSource.getAttribute(invocation.getMethod(), targetClass);
+  }
+
+  /**
+   * Enforces the security attributes for on-call methods, checking if the user has the required
+   * privileges based on the mode specified in the security attribute.
+   *
+   * @param invocation The method invocation context.
+   * @param secAttr The security attribute containing the required privileges and mode.
+   */
+  private void enforceOnCallSecurity(MethodInvocation invocation, SecurityAttribute secAttr) {
     Object domainObj = null;
     Set<String> onCallPrivs = secAttr.getOnCallPrivileges();
-    if (!Check.isEmpty(onCallPrivs) && secAttr.getOnCallmode() != null) {
-      switch (secAttr.getOnCallmode()) {
+    if (!Check.isEmpty(onCallPrivs) && secAttr.getOnCallMode() != null) {
+      switch (secAttr.getOnCallMode()) {
         case DOMAIN:
-          domainObj = invocation.getArguments()[secAttr.getDomainArg()]; // NOSONAR
+          domainObj = invocation.getArguments()[secAttr.getDomainArg()];
         // Let it fall through
         case TOPLEVEL:
           if (tleAclManager.filterNonGrantedPrivileges(domainObj, onCallPrivs).isEmpty()) {
@@ -73,10 +96,6 @@ public class MethodSecurityInteceptor implements MethodInterceptor {
           break;
       }
     }
-    if (secAttr.isFilterMatching()) {
-      return filterResult(invocation, secAttr);
-    }
-    return invocation.proceed();
   }
 
   private void checkSingleObject(Set<String> privs, Object domainObj) {
@@ -87,35 +106,35 @@ public class MethodSecurityInteceptor implements MethodInterceptor {
 
   @SuppressWarnings("unchecked")
   private Object filterResult(MethodInvocation invocation, final SecurityAttribute secAttr)
-      throws Throwable // NOSONAR
-      {
+      throws Throwable {
     Object returnedObject = invocation.proceed();
-    if (returnedObject == null) {
-      return null;
-    }
-
-    if (returnedObject instanceof Collection) {
-      return filterCollection(secAttr, (Collection<Object>) returnedObject);
-    } else if (returnedObject instanceof Map) {
-      return filterMap(secAttr, (Map<Object, Object>) returnedObject);
-    } else {
-      checkSingleObject(secAttr.getFilterPrivileges(), returnedObject);
-      return returnedObject;
+    switch (returnedObject) {
+      case null -> {
+        return null;
+      }
+      case Collection ignored -> {
+        return filterCollection(secAttr, (Collection<Object>) returnedObject);
+      }
+      case Map ignored -> {
+        return filterMap(secAttr, (Map<Object, Object>) returnedObject);
+      }
+      default -> {
+        checkSingleObject(secAttr.getFilterPrivileges(), returnedObject);
+        return returnedObject;
+      }
     }
   }
 
   private void throwAccessDenied(Set<String> privsList) {
     StringBuilder privs = new StringBuilder();
     for (String priv : privsList) {
-      if (privs.length() > 0) {
-        privs.append(", "); // $NON-NLS-1$
+      if (!privs.isEmpty()) {
+        privs.append(", ");
       }
       privs.append(priv);
     }
     throw new AccessDeniedException(
-        "You do not have the required privileges to access this object [" //$NON-NLS-1$
-            + privs.toString()
-            + "]"); //$NON-NLS-1$
+        "You do not have the required privileges to access this object [" + privs + "]");
   }
 
   private Collection<Object> filterCollection(
@@ -134,7 +153,7 @@ public class MethodSecurityInteceptor implements MethodInterceptor {
 
   private Map<Object, Object> filterMap(SecurityAttribute config, Map<Object, Object> map) {
     Collection<Object> c = filterCollection(config, map.values());
-    Map<Object, Object> newMap = new HashMap<Object, Object>();
+    Map<Object, Object> newMap = new HashMap<>();
     for (Map.Entry<Object, Object> entry : map.entrySet()) {
       Object val = entry.getValue();
       if (c.contains(val)) {

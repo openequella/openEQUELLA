@@ -22,7 +22,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.matcher.AbstractMatcher;
 import com.tle.core.plugins.AbstractPluginService;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.security.impl.MethodSecurityInteceptor;
+import com.tle.core.security.impl.MethodSecurityInterceptor;
 import com.tle.core.security.impl.SecurityAttributeSource;
 import java.lang.reflect.Method;
 
@@ -31,10 +31,10 @@ public class SecurityModule extends AbstractModule {
   @Override
   protected void configure() {
     PluginService pluginService = AbstractPluginService.get();
-    MethodSecurityInteceptor interceptor =
+    MethodSecurityInterceptor interceptor =
         pluginService
             .getBeanLocator(pluginService.getPluginIdForObject(getClass()))
-            .getBeanForType(MethodSecurityInteceptor.class);
+            .getBeanForType(MethodSecurityInterceptor.class);
     final SecurityAttributeSource source = interceptor.getAttributeSource();
     final TargetClassMatcher targetClassMatcher = new TargetClassMatcher();
     bindInterceptor(
