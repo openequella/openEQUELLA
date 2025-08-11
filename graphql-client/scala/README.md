@@ -29,6 +29,12 @@ the GraphQL schema endpoint. To do this set the `graphql.schema` property to `tr
 Now place the `schema` file you downloaded in the `src/main/resources` directory. And rename it to
 `schema.graphql` so that the following instructions work.
 
+Alternatively, you can use the SBT task:
+
+```
+sbt downloadSchema
+```
+
 Lastly, run the following command in SBT to generate the client classes:
 
 ```
