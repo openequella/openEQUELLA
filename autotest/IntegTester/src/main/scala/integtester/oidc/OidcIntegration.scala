@@ -58,7 +58,8 @@ final case class OidcUser(
     username: String,
     family_name: String,
     given_name: String,
-    email: String
+    email: String,
+    legacy_id: String
 )
 
 object OidcUser {
@@ -68,7 +69,8 @@ object OidcUser {
     username = "test_user",
     family_name = "User",
     given_name = "Test",
-    email = "test@user"
+    email = "test@user",
+    legacy_id = "b09a4042-b091-87ed-eba9-6fb3c0fbe9a6"
   )
 }
 
