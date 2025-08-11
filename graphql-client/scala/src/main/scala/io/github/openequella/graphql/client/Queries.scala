@@ -235,4 +235,37 @@ object Queries {
       OptionOf(Scalar()),
       arguments = List(Argument("value", value, "String!")(encoder0))
     )
+
+  /** Get a metadata schema by ID
+    */
+  def metadataSchema[A](id: Long)(innerSelection: SelectionBuilder[MetadataSchema, A])(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchema",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("id", id, "Long!")(encoder0))
+    )
+
+  /** Get the uses of a metadata schema by ID
+    */
+  def metadataSchemaUses[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(
+      implicit encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaUses",
+      ListOf(Obj(innerSelection)),
+      arguments = List(Argument("id", id, "Long!")(encoder0))
+    )
+
+  /** Get the types of schema import transformations for a metadata schema by ID
+    */
+  def metadataSchemaImportTypes(id: Long)(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[String]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaImportTypes",
+      ListOf(Scalar()),
+      arguments = List(Argument("id", id, "Long!")(encoder0))
+    )
 }

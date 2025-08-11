@@ -64,6 +64,43 @@ object MetadataSchemaApi {
     Client.query(query)
   }
 
+  /** Get the uses of a Metadata Schema
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of BaseEntityReferenceView representing the uses of the
+    *   metadata schema.
+    */
+  def getUses(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
+    val query = Queries.metadataSchemaUses(id) {
+      BaseEntityReferenceView.selector
+    }
+
+    Client.query(query)
+  }
+
+  /** Retrieves the import schema types for a metadata schema.
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of strings representing the import types for the
+    *   metadata schema.
+    */
+  def getImportTypes(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[String]] = {
+    val query = Queries.metadataSchemaImportTypes(id)
+    Client.query(query)
+  }
+
   /** Exports a metadata schema as a ZIP file.
     *
     * @param id
