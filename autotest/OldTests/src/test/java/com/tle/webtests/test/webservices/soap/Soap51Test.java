@@ -484,16 +484,20 @@ public class Soap51Test extends AbstractCleanupTest {
     attachmentNode.setNode("description", "Image2");
 
     Base64 b64 = new Base64(-1);
-    String base64Data = b64.encodeToString(getAttachmentData(filename));
+
+    // Reusing this for "_IMS/test" and "_test" uploads, since the test only verifies filenames not
+    // content
+    String base64DataZip = b64.encodeToString(getAttachmentData(filename));
+
     String stagingUuid = item.getNode("/item/staging");
-    soapService.uploadFile(stagingUuid, filename, base64Data, false);
-    soapService.uploadFile(stagingUuid, "_IMS/test", base64Data, false);
+    soapService.uploadFile(stagingUuid, filename, base64DataZip, false);
+    soapService.uploadFile(stagingUuid, "_IMS/test", base64DataZip, false);
 
-    base64Data = b64.encodeToString(getAttachmentData(imageFilename));
-    soapService.uploadFile(stagingUuid, imageFilename, base64Data, false);
+    String base64DataImage = b64.encodeToString(getAttachmentData(imageFilename));
+    soapService.uploadFile(stagingUuid, imageFilename, base64DataImage, false);
 
-    base64Data = b64.encodeToString(getAttachmentData(image2Filename));
-    soapService.uploadFile(stagingUuid, image2Filename, base64Data, false);
+    String base64DataImage2 = b64.encodeToString(getAttachmentData(image2Filename));
+    soapService.uploadFile(stagingUuid, image2Filename, base64DataImage2, false);
 
     item = new PropBagEx(soapService.saveItem(item.toString(), true));
 
@@ -525,7 +529,7 @@ public class Soap51Test extends AbstractCleanupTest {
     }
     item.setNode("/item/thumbnail", "custom:" + imageAttachmentUuid);
 
-    soapService.uploadFile(stagingUuid, filename, base64Data, true);
+    soapService.uploadFile(stagingUuid, filename, base64DataZip, true);
     soapService.unzipFile(stagingUuid, filename, "");
     item = new PropBagEx(soapService.saveItem(item.toString(), true));
 
@@ -555,7 +559,7 @@ public class Soap51Test extends AbstractCleanupTest {
 
     item = new PropBagEx(soapService.editItem(uuid, 1, true));
     stagingUuid = item.getNode("/item/staging");
-    soapService.uploadFile(stagingUuid, "_test", base64Data, false);
+    soapService.uploadFile(stagingUuid, "_test", base64DataZip, false);
     soapService.saveItem(item.toString(), true);
 
     filenames = soapService.getItemFilenames(uuid, 1, "", false);
