@@ -58,15 +58,15 @@ const addBookmarkOwnerMust =
  *  Appends bookmark tag search to the user's query if provided.
  *  e.g. "apple" → "apple OR bookmark_tags:(apple)"
  *
- * @param opts OEQ.Search.SearchParams to be sent to the API request
+ * @param params OEQ.Search.SearchParams to be sent to the API request
  * @returns OEQ.Search.SearchParams with query attribute modified to include bookmark tag search
  */
 const addFavouriteItemQuery = (
-  opts: OEQ.Search.SearchParams,
+  params: OEQ.Search.SearchParams,
 ): OEQ.Search.SearchParams => ({
-  ...opts,
+  ...params,
   query: pipe(
-    opts.query,
+    params.query,
     O.fromNullable,
     O.match(
       () => undefined,
@@ -135,6 +135,7 @@ export const searchFavouriteItems = async (
   const { id } = await getCurrentUserDetails();
   const getFavItemsSearchParams = flow(
     addBookmarkOwnerMust(id),
+    // Ensure formatQuery runs (via buildSearchParams) before we extend the query with bookmark-tags clause.
     buildSearchParams,
     addFavouriteItemQuery,
   );

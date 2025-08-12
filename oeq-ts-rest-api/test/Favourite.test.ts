@@ -73,9 +73,12 @@ describe('FavouriteSearch', () => {
     return favAdded;
   };
 
-  const validateResultHasSearch = async (name: string) => {
+  const validateResultHasSearch = async (
+    name: string
+  ): Promise<SearchResult<FavouriteSearch>> => {
     const res = await getFavouriteSearches(TC.API_PATH, { query: name });
     expect(res.results.map((r) => r.name)).toContain(name);
+    return res;
   };
 
   const getSearchName = (
@@ -113,10 +116,11 @@ describe('FavouriteSearch', () => {
       expect(res.results).toHaveLength(3);
     });
 
-    // eslint-disable-next-line jest/expect-expect
     it('filters by query', async () => {
       const { name } = await addFavSearch('getWithQueryParam');
-      await validateResultHasSearch(name);
+      const res: SearchResult<FavouriteSearch> =
+        await validateResultHasSearch(name);
+      expect(res.results).toHaveLength(1);
     });
 
     it('supports paging (start / length)', async () => {

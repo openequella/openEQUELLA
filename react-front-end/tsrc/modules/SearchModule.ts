@@ -192,7 +192,10 @@ export const defaultSearchOptions: SearchOptions = {
 };
 
 /**
- * Format a raw search query, or return `undefined` when it’s empty or undefined.
+ * Helper function, to support formatting of search query in raw mode. When _not_ raw mode
+ * we append a wildcard to support the idea of a simple (typeahead) search.
+ *
+ * The function returns `undefined` if the search query is empty (after trimming) or undefined.
  *
  * @param addWildCard  flag for wild-card formatting.
  * @param query the intended search query to be sent to the API.

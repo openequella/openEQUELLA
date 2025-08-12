@@ -52,7 +52,7 @@ export type ISODateFormat = "yyyy-MM-dd" | "yyyy-MM" | "yyyy";
  * One should call 'toISOString()' to get the UTC date in ISO format.
  * @param date The date to be converted to a string in ISO format.
  */
-export const getISODateString = (date?: Date) =>
+export const getISODateString = (date?: Date): string | undefined =>
   pipe(
     O.fromNullable(date),
     // If the result of toISODate is null then return undefined.
