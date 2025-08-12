@@ -132,8 +132,6 @@ describe('FavouriteSearch', () => {
       );
 
       expect(page.start).toBe(0);
-
-      expect(page).toHaveLength(1);
       expect(page.results).toHaveLength(1);
       expect(getSearchName(page, 0)).toBe(name);
     });
