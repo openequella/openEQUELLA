@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
   )
 
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr"         %% "caliban-client" % "2.10.0",
+  "com.github.ghostdogpr"         %% "caliban-client" % "2.11.1",
   "com.softwaremill.sttp.client3" %% "zio"            % "3.11.0",
   // Add Scala Test
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,

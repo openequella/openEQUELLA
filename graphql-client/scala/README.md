@@ -43,6 +43,7 @@ calibanGenClient
   src/main/scala/io/github/openequella/graphql/client/
   --splitFiles true
   --packageName io.github.openequella.graphql.client
+  --scalarMappings LocalDateTime:java.time.LocalDateTime
 ```
 
 **NOTE:** Important to include the trailing slash for the output path.

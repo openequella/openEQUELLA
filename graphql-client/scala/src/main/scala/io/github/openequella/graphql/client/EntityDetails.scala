@@ -41,13 +41,13 @@ object EntityDetails {
   /** Timestamp for when this entity was created - only valid when starting an edit on an existing
     * entity.
     */
-  def dateCreated: SelectionBuilder[EntityDetails, scala.Option[LocalDateTime]] =
+  def dateCreated: SelectionBuilder[EntityDetails, scala.Option[java.time.LocalDateTime]] =
     _root_.caliban.client.SelectionBuilder.Field("dateCreated", OptionOf(Scalar()))
 
   /** Timestamp for when this entity was last modified - only valid when starting an edit on an
     * existing entity.
     */
-  def dateModified: SelectionBuilder[EntityDetails, scala.Option[LocalDateTime]] =
+  def dateModified: SelectionBuilder[EntityDetails, scala.Option[java.time.LocalDateTime]] =
     _root_.caliban.client.SelectionBuilder.Field("dateModified", OptionOf(Scalar()))
 
   /** Language bundle ID for the _name_ of this entity, used for internationalization.

@@ -249,4 +249,42 @@ class MetadataSchemaApiTest
         .mkString("\n")
     }
   }
+
+  describe("getById") {
+    it("should return the schema for a valid schema ID") {
+      Given("A valid schema ID")
+      val schema = MetadataSchemaApi.listSchemas().value.head
+
+      When("getById is called with the schema ID")
+      val result = MetadataSchemaApi.getById(schema.id)
+
+      Then("it should return the schema")
+      result.isRight shouldBe true
+      val fetchedSchema = result.value.value
+      fetchedSchema.details.id shouldBe schema.id
+      fetchedSchema.details.uuid shouldBe schema.uuid
+    }
+
+    it("should return None for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("getById is called with the invalid schema ID")
+      val result = MetadataSchemaApi.getById(invalidSchemaId)
+
+      Then("it should return None")
+      result.isRight shouldBe true
+      result.value shouldBe None
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to get a schema by ID")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.getById(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
 }
