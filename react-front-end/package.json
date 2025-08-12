@@ -128,7 +128,7 @@
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
     "css-mediaquery": "0.1.2",
-    "html-validate": "9.7.0",
+    "html-validate": "9.7.1",
     "identity-obj-proxy": "3.0.0",
     "jest": "30.0.5",
     "jest-config": "30.0.5",
