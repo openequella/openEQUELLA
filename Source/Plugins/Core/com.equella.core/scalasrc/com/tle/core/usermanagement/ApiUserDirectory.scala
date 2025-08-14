@@ -83,8 +83,15 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
   private val LOGGER = LoggerFactory.getLogger(classOf[ApiUserDirectory])
 
+  /** Each IdP's API returns the user details in a proprietary structure, therefore each IdP
+    * UserDirectory needs to provide a custom Circe decoder to map from those structures to the
+    * common IdPUser structure.
+    */
   protected implicit val userDecoder: Decoder[IdPUser]
 
+  /** Circe decoder for mapping a list of IdP-specific user structures to a list of the common
+    * IdPUser structure.
+    */
   protected implicit val usersDecoder: Decoder[List[IdPUser]]
 
   override protected type AuthResult = OAuthTokenState
