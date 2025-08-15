@@ -65,7 +65,7 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
   override protected val targetPlatform: IdentityProviderPlatform.Value =
     IdentityProviderPlatform.OKTA
 
-  override protected implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
     for {
       id <- cursor.downField("id").as[String]
       profile = cursor.downField("profile")
@@ -73,10 +73,10 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
       firstName <- profile.downField("given_name").as[Option[String]]
       lastName  <- profile.downField("family_name").as[Option[String]]
       email     <- profile.downField("email").as[Option[String]]
-    } yield IdPUser(id, username, lastName, firstName, email, cursor.value)
+    } yield IdPUser(id, username, firstName, lastName, email, cursor.value)
   }
 
-  override protected implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
 
   /** REST endpoint to get a single user with the provided ID.
     */

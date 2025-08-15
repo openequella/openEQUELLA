@@ -48,7 +48,7 @@ class Auth0UserDirectory extends ApiUserDirectory {
     * name. With this set up, those pages which use family name and given name will not end up
     * showing a blank string.
     */
-  override protected implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
     for {
       id          <- cursor.downField("user_id").as[String]
       accountName <- cursor.downField("name").as[Option[String]]
@@ -59,7 +59,7 @@ class Auth0UserDirectory extends ApiUserDirectory {
     } yield IdPUser(id, username.orElse(accountName), firstName, lastName, email, cursor.value)
   }
 
-  override protected implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
 
   override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): Uri =
     ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)

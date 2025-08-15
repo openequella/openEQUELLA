@@ -37,7 +37,7 @@ class EntraIdUserDirectory extends ApiUserDirectory {
 
   override type IDP = GenericIdentityProviderDetails
 
-  override protected implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
     for {
       id        <- cursor.downField("id").as[String]
       username  <- cursor.downField("displayName").as[Option[String]]
@@ -47,11 +47,10 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     } yield IdPUser(id, username, firstName, lastName, email, cursor.value)
   }
 
-  override protected implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.instance {
-    cursor =>
-      // Users are nested under the "value" field in the response from Microsoft Graph API.
-      val values: ACursor = cursor.downField("value")
-      Decoder.decodeList[IdPUser].tryDecode(values)
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.instance { cursor =>
+    // Users are nested under the "value" field in the response from Microsoft Graph API.
+    val values: ACursor = cursor.downField("value")
+    Decoder.decodeList[IdPUser].tryDecode(values)
   }
 
   override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): Uri =

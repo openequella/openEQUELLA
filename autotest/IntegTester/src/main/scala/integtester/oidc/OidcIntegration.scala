@@ -70,7 +70,7 @@ object OidcUser {
     family_name = "User",
     given_name = "Test",
     email = "test@user",
-    legacy_id = "b09a4042-b091-87ed-eba9-6fb3c0fbe9a6"
+    legacy_id = "b09a4042-b091-87ed-eba9-6fb3c0fbe9a6" // UUID of user 'autotest'
   )
 }
 

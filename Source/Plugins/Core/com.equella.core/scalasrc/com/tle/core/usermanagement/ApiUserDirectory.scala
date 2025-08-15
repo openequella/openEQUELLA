@@ -87,12 +87,12 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     * UserDirectory needs to provide a custom Circe decoder to map from those structures to the
     * common IdPUser structure.
     */
-  protected implicit val userDecoder: Decoder[IdPUser]
+  implicit val userDecoder: Decoder[IdPUser]
 
   /** Circe decoder for mapping a list of IdP-specific user structures to a list of the common
     * IdPUser structure.
     */
-  protected implicit val usersDecoder: Decoder[List[IdPUser]]
+  implicit val usersDecoder: Decoder[List[IdPUser]]
 
   override protected type AuthResult = OAuthTokenState
 
