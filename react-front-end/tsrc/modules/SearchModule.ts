@@ -209,10 +209,8 @@ export const formatQuery = (
     O.fromNullable,
     O.map(S.trim),
     O.filter(isNonEmptyString),
-    O.match(
-      () => undefined,
-      (q) => (addWildCard ? `${q}*` : q),
-    ),
+    O.map((q) => (addWildCard ? `${q}*` : q)),
+    O.toUndefined,
   );
 
 /**

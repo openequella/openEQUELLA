@@ -21,7 +21,6 @@ import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { buildSearchParams, formatQuery, SearchOptions } from "./SearchModule";
-import { getCurrentUserDetails } from "./UserModule";
 
 /**
  * URLs stored for favourites are only partial URLs in that they _only_ contain the path (no host
@@ -33,19 +32,33 @@ export interface FavouriteURL {
 }
 
 /**
- * Adds a must clause to filter item results by bookmark owner.
+ * Represents the search options specific to searching for favourite searches.
+ */
+type FavSearchesSearchOptions = Pick<
+  SearchOptions,
+  | "query"
+  | "rowsPerPage"
+  | "currentPage"
+  | "sortOrder"
+  | "lastModifiedDateRange"
+>;
+
+/**
+ * Returns a function which manipulates SearchOptions to a must to limit results
+ * to those which have the bookmark_owner of the specified user.
+ * This will result in a SearchOptions which limits search results to favourites for the specified user.
  *
- * @param userId user id of the current user
+ * @param userId user id to limit the returned favourites to
  */
 const addBookmarkOwnerMust =
   (userId: string) =>
-  (opts: SearchOptions): SearchOptions => {
+  (options: SearchOptions): SearchOptions => {
     const bookmarkOwnerMust: OEQ.Search.Must = ["bookmark_owner", [userId]];
 
     return {
-      ...opts,
+      ...options,
       musts: pipe(
-        O.fromNullable(opts.musts),
+        O.fromNullable(options.musts),
         O.match(
           () => [bookmarkOwnerMust],
           (existingMusts) => [...existingMusts, bookmarkOwnerMust],
@@ -55,25 +68,40 @@ const addBookmarkOwnerMust =
   };
 
 /**
+ * Expands a query string to include searching within `bookmark_tags`.
+ *
+ * @param query The base query string.
+ * @returns A new query string that also searches in `bookmark_tags`.
+ */
+export const expandQueryWithBookmarkTags = (query: string): string =>
+  `${query} OR bookmark_tags:(${query})`;
+
+/**
  *  Appends bookmark tag search to the user's query if provided.
  *  e.g. "apple" → "apple OR bookmark_tags:(apple)"
  *
- * @param params OEQ.Search.SearchParams to be sent to the API request
- * @returns OEQ.Search.SearchParams with query attribute modified to include bookmark tag search
+ * @param params The search parameters to be sent to the API.
+ * @returns Search parameters where the `query` has been updated to include `bookmark_tags`.
  */
-const addFavouriteItemQuery = (
+const buildFavouriteItemsQuery = (
   params: OEQ.Search.SearchParams,
 ): OEQ.Search.SearchParams => ({
   ...params,
   query: pipe(
     params.query,
     O.fromNullable,
-    O.match(
-      () => undefined,
-      (q) => `${q} OR bookmark_tags:(${q})`,
-    ),
+    O.map(expandQueryWithBookmarkTags),
+    O.toUndefined,
   ),
 });
+
+export const defaultFavSearchesSearchOptions: FavSearchesSearchOptions = {
+  rowsPerPage: 10,
+  currentPage: 0,
+  sortOrder: undefined,
+  query: "",
+  lastModifiedDateRange: { start: undefined, end: undefined },
+};
 
 /**
  * A function that converts search options to FavouriteSearchParams.
@@ -85,10 +113,9 @@ const buildFavouriteSearchParams = ({
   rowsPerPage,
   currentPage,
   sortOrder,
-  rawMode,
   lastModifiedDateRange,
-}: SearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
-  query: formatQuery(!rawMode, query),
+}: FavSearchesSearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
+  query: formatQuery(false, query),
   start: currentPage * rowsPerPage,
   length: rowsPerPage,
   order: sortOrder,
@@ -128,21 +155,22 @@ export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
  * Adds a `must` clause for the bookmark owner and extends the query to include bookmark tags.
  *
  * @param searchOptions Base search options
+ * @param currentUserDetails object containing `id` of the user whose favourites should be returned
  */
 export const searchFavouriteItems = async (
   searchOptions: SearchOptions,
+  currentUserDetails: { id: string },
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
-  const { id } = await getCurrentUserDetails();
-  const getFavItemsSearchParams = flow(
-    addBookmarkOwnerMust(id),
+  const buildFavItemsSearchParams = flow(
+    addBookmarkOwnerMust(currentUserDetails.id),
     // Ensure formatQuery runs (via buildSearchParams) before we extend the query with bookmark-tags clause.
     buildSearchParams,
-    addFavouriteItemQuery,
+    buildFavouriteItemsQuery,
   );
 
   return OEQ.Search.search(
     API_BASE_URL,
-    getFavItemsSearchParams(searchOptions),
+    buildFavItemsSearchParams(searchOptions),
   );
 };
 
@@ -169,11 +197,11 @@ export const deleteFavouriteSearch = (searchID: number): Promise<void> =>
 
 /**
  * A function that executes a search with provided search options to get the favourite searches for the current user.
- * @param searchOptions Search options selected on Favourites page.
+ * @param searchOptions options to search for favourite searches
  */
-export const getFavouriteSearches = (
-  searchOptions: SearchOptions,
+export const searchFavouriteSearches = (
+  searchOptions: FavSearchesSearchOptions,
 ): Promise<OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>> =>
   pipe(searchOptions, buildFavouriteSearchParams, (params) =>
-    OEQ.Favourite.getFavouriteSearches(API_BASE_URL, params),
+    OEQ.Favourite.searchFavouriteSearches(API_BASE_URL, params),
   );
