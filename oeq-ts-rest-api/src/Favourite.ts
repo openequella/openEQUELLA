@@ -46,10 +46,10 @@ export interface FavouriteItem {
 }
 
 /**
- * Type matching server-side FavouriteSearch model
+ * Shared properties of raw and transformed Favourite Searches.
  */
-export interface FavouriteSearchBase {
-  /** Server‑generated ID for this favourite search. */
+interface FavouriteSearchBase {
+  /** Unique ID of a favourite search. */
   id: number;
   /** Name of the favourite search */
   name: string;
@@ -64,31 +64,17 @@ export interface FavouriteSearchBase {
 /**
  * Favourite Search as it is returned by API
  */
-export interface FavouriteSearchRaw extends FavouriteSearchBase {
+interface FavouriteSearchRaw extends FavouriteSearchBase {
   /** The date when favourite was created. */
   addedAt: string;
 }
 
 /**
- * Type of Favourite Search
+ * Full details of a Favourite search.
  */
 export interface FavouriteSearch extends FavouriteSearchBase {
-  /** Local `Date` object produced from the raw `addedAt` string. */
+  /** The date when favourite was created. */
   addedAt: Date;
-}
-
-/**
- * Data structure for adding a search definition to user's favourite search
- */
-export interface FavouriteSearchSaveParam {
-  /**
-   * Name of the search
-   */
-  name: string;
-  /**
-   * Relative path to the new Search UI, including all query params.
-   */
-  url: string;
 }
 
 /**
@@ -134,6 +120,7 @@ const favouriteSearchResultValidator = pipe(
 
 const processRawFavouriteSearch = <R, D>(data: R) =>
   convertDateFields<D>(data, ['addedAt']);
+
 /**
  * Add an Item to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
@@ -158,21 +145,21 @@ export const deleteFavouriteItem = (
   apiBasePath: string,
   bookmarkID: number
 ): Promise<void> =>
-  DELETE<void>(`${apiBasePath}${FAVOURITE_ITEM_PATH}/${bookmarkID}`);
+  DELETE(`${apiBasePath}${FAVOURITE_ITEM_PATH}/${bookmarkID}`);
 
 /**
  * Add a search to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param searchParams required search params for adding a favourite search
+ * @param searchDetails details of the new favourite search
  */
 export const addFavouriteSearch = (
   apiBasePath: string,
-  searchParams: FavouriteSearchSaveParam
+  searchDetails: Omit<FavouriteSearchBase, 'id'>
 ): Promise<FavouriteSearch> =>
-  POST<FavouriteSearchSaveParam, FavouriteSearchRaw>(
+  POST(
     apiBasePath + FAVOURITE_SEARCH_PATH,
     validate(FavouriteSearchRawCodec),
-    searchParams
+    searchDetails
   ).then(processRawFavouriteSearch<FavouriteSearchRaw, FavouriteSearch>);
 
 /**
@@ -184,14 +171,14 @@ export const deleteFavouriteSearch = (
   apiBasePath: string,
   searchID: number
 ): Promise<void> =>
-  DELETE<void>(`${apiBasePath}${FAVOURITE_SEARCH_PATH}/${searchID}`);
+  DELETE(`${apiBasePath}${FAVOURITE_SEARCH_PATH}/${searchID}`);
 
 /**
- * Get all the favourite searches with specified search criteria
+ * Search for all favourite searches with specified search criteria.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param params Query parameters
+ * @param params Query parameters as search criteria.
  */
-export const getFavouriteSearches = (
+export const searchFavouriteSearches = (
   apiBasePath: string,
   params?: FavouriteSearchParams
 ): Promise<SearchResult<FavouriteSearch>> =>

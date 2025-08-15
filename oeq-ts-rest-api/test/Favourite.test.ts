@@ -15,17 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
+import * as O from 'fp-ts/Option';
 import * as OEQ from '../src';
 import {
   addFavouriteItem,
   addFavouriteSearch,
   deleteFavouriteItem,
-  getFavouriteSearches,
+  searchFavouriteSearches,
   FavouriteItem,
   FavouriteSearch,
   deleteFavouriteSearch,
 } from '../src/Favourite';
 import { SearchResult } from '../src/Search';
+import { buildISODate, modifyDateByDays } from './DateHelper';
 import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
@@ -61,22 +64,34 @@ describe('FavouriteItem', () => {
 });
 
 describe('FavouriteSearch', () => {
-  // Keep track of the ids of the favourite search added in each test
-  let favSearchIds: number[] = [];
-
-  const addFavSearch = async (name: string): Promise<FavouriteSearch> => {
-    const favAdded = await addFavouriteSearch(TC.API_PATH, {
-      name,
-      url: '/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D',
-    });
-    favSearchIds.push(favAdded.id);
-    return favAdded;
+  const favSearches = {
+    ids: [] as number[],
+    async add(name: string): Promise<FavouriteSearch> {
+      const favSearch = await addFavouriteSearch(TC.API_PATH, {
+        name,
+        url: '/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D',
+      });
+      this.ids.push(favSearch.id);
+      return favSearch;
+    },
+    async del(id: number): Promise<void> {
+      await deleteFavouriteSearch(TC.API_PATH, id);
+      pipe(
+        O.some(this.ids.indexOf(id)),
+        O.filter((i) => i > -1),
+        // Remove the search id from the ids array
+        O.map((i) => this.ids.splice(i, 1))
+      );
+    },
+    async cleanup(): Promise<void> {
+      await Promise.all(this.ids.map((id: number) => this.del(id)));
+    },
   };
 
-  const validateResultHasSearch = async (
+  const expectResultHasSearch = async (
     name: string
   ): Promise<SearchResult<FavouriteSearch>> => {
-    const res = await getFavouriteSearches(TC.API_PATH, { query: name });
+    const res = await searchFavouriteSearches(TC.API_PATH, { query: name });
     expect(res.results.map((r) => r.name)).toContain(name);
     return res;
   };
@@ -86,47 +101,44 @@ describe('FavouriteSearch', () => {
     index: number
   ): string | undefined => res.results[index]?.name;
 
+  const calculateRelativeISODate = (baseDate: Date, days: number): string =>
+    pipe(baseDate, modifyDateByDays(days), buildISODate);
+
   afterEach(async () => {
-    await Promise.all(
-      favSearchIds.map((id) => deleteFavouriteSearch(TC.API_PATH, id))
-    );
-    favSearchIds = [];
+    await favSearches.cleanup();
   });
 
-  // eslint-disable-next-line jest/expect-expect
   it('should be able to add a favourite search', async () => {
-    const { name } = await addFavSearch('addFavSearch');
-    await validateResultHasSearch(name);
+    const { name } = await favSearches.add('addFavSearch');
+    await expectResultHasSearch(name);
   });
 
   it('should be able to delete a favourite search', async () => {
-    const { id, name } = await addFavSearch('deleteFavSearch');
-    await validateResultHasSearch(name);
-    await deleteFavouriteSearch(TC.API_PATH, id);
-    // Filter out this fav. search id from favSearchIds as it has already been deleted
-    favSearchIds = favSearchIds.filter((i) => i !== id);
+    const { id, name } = await favSearches.add('deleteFavSearch');
+    await expectResultHasSearch(name);
+    await favSearches.del(id);
 
-    const res = await getFavouriteSearches(TC.API_PATH, { query: name });
+    const res = await searchFavouriteSearches(TC.API_PATH, { query: name });
     expect(res.results.map((s) => s.id)).not.toContain(id);
   });
 
-  describe('Favourite Search with GET:', () => {
-    it('no filters', async () => {
-      const res = await getFavouriteSearches(TC.API_PATH);
+  describe('searchFavouriteSearches', () => {
+    it('returns all favourite searches when no filters are applied', async () => {
+      const res = await searchFavouriteSearches(TC.API_PATH);
       expect(res.results).toHaveLength(3);
     });
 
     it('filters by query', async () => {
-      const { name } = await addFavSearch('getWithQueryParam');
+      const { name } = await favSearches.add('searchByQuery');
       const res: SearchResult<FavouriteSearch> =
-        await validateResultHasSearch(name);
+        await expectResultHasSearch(name);
       expect(res.results).toHaveLength(1);
     });
 
     it('supports paging (start / length)', async () => {
-      const { name } = await addFavSearch(`getWithPagingParams`);
+      const { name } = await favSearches.add(`searchWithPagingParams`);
 
-      const page: SearchResult<FavouriteSearch> = await getFavouriteSearches(
+      const page: SearchResult<FavouriteSearch> = await searchFavouriteSearches(
         TC.API_PATH,
         { query: name, start: 0, length: 1 }
       );
@@ -139,36 +151,62 @@ describe('FavouriteSearch', () => {
     });
 
     it('sorts alphabetically when order="name"', async () => {
-      const searchARes = await addFavSearch('searchA-getWithOrderParam');
-      const searchZRes = await addFavSearch('searchZ-getWithOrderParam');
+      const searchZ = await favSearches.add('searchZ-byOrder');
+      const searchB = await favSearches.add('searchB-byOrder');
+      const searchY = await favSearches.add('searchY-byOrder');
+      const searchA = await favSearches.add('searchA-byOrder');
 
-      const res = await getFavouriteSearches(TC.API_PATH, {
-        query: 'getWithOrderParam',
+      const res = await searchFavouriteSearches(TC.API_PATH, {
+        query: 'byOrder',
         order: 'name',
       });
 
-      expect(getSearchName(res, 0)).toBe(searchARes.name);
-      expect(getSearchName(res, 1)).toBe(searchZRes.name);
+      expect(getSearchName(res, 0)).toBe(searchA.name);
+      expect(getSearchName(res, 1)).toBe(searchB.name);
+      expect(getSearchName(res, 2)).toBe(searchY.name);
+      expect(getSearchName(res, 3)).toBe(searchZ.name);
     });
 
-    it('Get favourite searches within a date range', async () => {
-      const { id, name, addedAt } = await addFavSearch(
-        'getWithDateRangeParams'
+    it('sorts by date added when order="date"', async () => {
+      const search1 = await favSearches.add('search1-byDate');
+      const search2 = await favSearches.add('search2-byDate');
+      const search3 = await favSearches.add('search3-byDate');
+
+      const res = await searchFavouriteSearches(TC.API_PATH, {
+        query: 'byDate',
+        order: 'added',
+      });
+
+      expect(getSearchName(res, 0)).toBe(search3.name);
+      expect(getSearchName(res, 1)).toBe(search2.name);
+      expect(getSearchName(res, 2)).toBe(search1.name);
+    });
+
+    it('returns favourite searches within a date range', async () => {
+      const { id, name, addedAt } = await favSearches.add(
+        'searchWithinDateRange'
       );
 
-      // Helper function to format a Date as 'yyyy-MM-dd' (ISO date without time)
-      const toIsoDate = (d: Date) => d.toISOString().slice(0, 10);
-      // Number of milliseconds in one day
-      const MS_DAY = 24 * 60 * 60 * 1_000;
-
-      const res = await getFavouriteSearches(TC.API_PATH, {
+      const res = await searchFavouriteSearches(TC.API_PATH, {
         query: name,
-        addedAfter: toIsoDate(new Date(addedAt.getTime() - MS_DAY)),
-        addedBefore: toIsoDate(new Date(addedAt.getTime() + MS_DAY)),
+        addedAfter: calculateRelativeISODate(addedAt, -1),
+        addedBefore: calculateRelativeISODate(addedAt, 1),
       });
 
       expect(res.results).toHaveLength(1);
       expect(res.results[0].id).toBe(id);
+    });
+
+    it('does not return favourite searches outside date range', async () => {
+      const { name, addedAt } = await favSearches.add('searchWithinDateRange');
+
+      const res = await searchFavouriteSearches(TC.API_PATH, {
+        query: name,
+        addedAfter: calculateRelativeISODate(addedAt, 1),
+        addedBefore: calculateRelativeISODate(addedAt, -1),
+      });
+
+      expect(res.results).toHaveLength(0);
     });
   });
 });
