@@ -189,20 +189,31 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
   }
 
   override def getInformationForUser(userId: String): UserBean = {
+
+    // Searching users by an attribute may return multiple users. In that case, only use the first user and log a warning.
+    def getFirstUserByAttr(
+        attr: String,
+        value: String,
+        tokenState: OAuthTokenState,
+        idp: IDP
+    ): Either[Throwable, UserBean] = {
+      val endpoint = userListByAttrsEndpoint(idp, value, List(attr))
+      for {
+        users <- searchUsers(endpoint, tokenState, idp)
+        _ = if (users.size > 1)
+          LOGGER.warn(s"More than one user found by attribute {}: {}", attr, value)
+        user <- users.headOption.toRight(
+          new NotFoundException(s"No users found by $attr: $userId")
+        )
+      } yield user
+    }
+
     lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, UserBean] =
       id =>
         (idp, tokenState) =>
           idp.commonDetails.userIdAttribute match {
             case Some(attr) =>
-              val endpoint = userListByAttrsEndpoint(idp, id, List(attr))
-
-              for {
-                users <- searchUsers(endpoint, tokenState, idp)
-                _ = if (users.size > 1) LOGGER.warn(s"More than one user found by $attr: $userId")
-                user <- users.headOption.toRight(
-                  new NotFoundException(s"No users found by $attr: $userId")
-                )
-              } yield user
+              getFirstUserByAttr(attr, id, tokenState, idp)
             case None =>
               val endpoint = userEndpoint(idp, id)
               val result   = requestWithToken[IdPUser](endpoint, tokenState, requestHeaders)
