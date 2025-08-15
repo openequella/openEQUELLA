@@ -58,7 +58,7 @@ final case class EntityDetailsView(
 object EntityDetailsView {
 
   private val attributesSelector: SelectionBuilder[KVStringString, (String, String)] =
-    (KVStringString.key ~ KVStringString.value).mapN((key: String, value: String) => (key, value))
+    KVStringString.key ~ KVStringString.value
 
   val selector: SelectionBuilder[EntityDetails, EntityDetailsView] = (
     EntityDetails.id ~
@@ -68,7 +68,7 @@ object EntityDetailsView {
       EntityDetails.dateModified ~
       EntityDetails.nameBundleId ~
       EntityDetails.descriptionBundleId ~
-      EntityDetails.attributes { attributesSelector }.map(_.toMap) ~
+      EntityDetails.attributes(attributesSelector).map(_.toMap) ~
       EntityDetails.disabled
   ).mapN(
     EntityDetailsView.apply _

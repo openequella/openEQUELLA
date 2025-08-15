@@ -50,9 +50,9 @@ final case class MetadataSchemaView(
 object MetadataSchemaView {
   val selector: SelectionBuilder[MetadataSchema, MetadataSchemaView] =
     (
-      MetadataSchema.details { EntityDetailsView.selector } ~
-        MetadataSchema.exportTransforms { MetadataSchemaTransformView.selector } ~
-        MetadataSchema.importTransforms { MetadataSchemaTransformView.selector } ~
+      MetadataSchema.details(EntityDetailsView.selector) ~
+        MetadataSchema.exportTransforms(MetadataSchemaTransformView.selector) ~
+        MetadataSchema.importTransforms(MetadataSchemaTransformView.selector) ~
         MetadataSchema.itemNamePath ~
         MetadataSchema.itemDescriptionPath ~
         MetadataSchema.definition ~
