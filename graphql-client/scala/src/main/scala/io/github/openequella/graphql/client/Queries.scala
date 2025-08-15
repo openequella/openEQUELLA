@@ -33,20 +33,17 @@ object Queries {
       after: scala.Option[String] = None
   )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
       encoder0: ArgEncoder[scala.Option[String]],
-      encoder1: ArgEncoder[scala.Option[Int]],
-      encoder2: ArgEncoder[scala.Option[Int]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]]
+      encoder1: ArgEncoder[scala.Option[Int]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUsers",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("query", query, "String")(encoder0),
-        Argument("first", first, "Int")(encoder1),
-        Argument("last", last, "Int")(encoder2),
-        Argument("before", before, "String")(encoder3),
-        Argument("after", after, "String")(encoder4)
+        Argument("query", query, "String"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
@@ -58,7 +55,7 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserByUsername",
       OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("username", username, "String!")(encoder0))
+      arguments = List(Argument("username", username, "String!"))
     )
 
   /** Retrieve details of a user based on unique ID
@@ -69,7 +66,7 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserById",
       OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("id", id, "String!")(encoder0))
+      arguments = List(Argument("id", id, "String!"))
     )
 
   /** Retrieve a group by its unique ID
@@ -80,7 +77,7 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupById",
       OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("uniqueId", uniqueId, "String!")(encoder0))
+      arguments = List(Argument("uniqueId", uniqueId, "String!"))
     )
 
   /** Retrieve a group by its name
@@ -91,7 +88,7 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupByName",
       OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("name", name, "String!")(encoder0))
+      arguments = List(Argument("name", name, "String!"))
     )
 
   /** List all groups at a specific level in the hierarchy determined by the parent ID - or none for
@@ -105,20 +102,17 @@ object Queries {
       after: scala.Option[String] = None
   )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
       encoder0: ArgEncoder[scala.Option[String]],
-      encoder1: ArgEncoder[scala.Option[Int]],
-      encoder2: ArgEncoder[scala.Option[Int]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]]
+      encoder1: ArgEncoder[scala.Option[Int]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroups",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("parentId", parentId, "String")(encoder0),
-        Argument("first", first, "Int")(encoder1),
-        Argument("last", last, "Int")(encoder2),
-        Argument("before", before, "String")(encoder3),
-        Argument("after", after, "String")(encoder4)
+        Argument("parentId", parentId, "String"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
@@ -133,19 +127,17 @@ object Queries {
   )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
       encoder0: ArgEncoder[List[String]],
       encoder1: ArgEncoder[scala.Option[Int]],
-      encoder2: ArgEncoder[scala.Option[Int]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]]
+      encoder2: ArgEncoder[scala.Option[String]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupsByIds",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("uniqueIds", uniqueIds, "[String!]!")(encoder0),
-        Argument("first", first, "Int")(encoder1),
-        Argument("last", last, "Int")(encoder2),
-        Argument("before", before, "String")(encoder3),
-        Argument("after", after, "String")(encoder4)
+        Argument("uniqueIds", uniqueIds, "[String!]!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
@@ -160,19 +152,17 @@ object Queries {
   )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[Int]],
-      encoder2: ArgEncoder[scala.Option[Int]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]]
+      encoder2: ArgEncoder[scala.Option[String]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupSearch",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("query", query, "String!")(encoder0),
-        Argument("first", first, "Int")(encoder1),
-        Argument("last", last, "Int")(encoder2),
-        Argument("before", before, "String")(encoder3),
-        Argument("after", after, "String")(encoder4)
+        Argument("query", query, "String!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
@@ -187,19 +177,17 @@ object Queries {
   )(innerSelection: SelectionBuilder[StringConnection, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[Int]],
-      encoder2: ArgEncoder[scala.Option[Int]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]]
+      encoder2: ArgEncoder[scala.Option[String]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupUsers",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("uniqueId", uniqueId, "String!")(encoder0),
-        Argument("first", first, "Int")(encoder1),
-        Argument("last", last, "Int")(encoder2),
-        Argument("before", before, "String")(encoder3),
-        Argument("after", after, "String")(encoder4)
+        Argument("uniqueId", uniqueId, "String!"),
+        Argument("first", first, "Int"),
+        Argument("last", last, "Int"),
+        Argument("before", before, "String"),
+        Argument("after", after, "String")
       )
     )
 
@@ -219,10 +207,8 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "metadataSchemaExport",
       OptionOf(Scalar()),
-      arguments = List(
-        Argument("id", id, "Long!")(encoder0),
-        Argument("withSecurity", withSecurity, "Boolean!")(encoder1)
-      )
+      arguments =
+        List(Argument("id", id, "Long!"), Argument("withSecurity", withSecurity, "Boolean!"))
     )
 
   /** Get the metadata schema ID for a given UUID
@@ -233,6 +219,39 @@ object Queries {
     _root_.caliban.client.SelectionBuilder.Field(
       "metadataSchemaIdForUuid",
       OptionOf(Scalar()),
-      arguments = List(Argument("value", value, "String!")(encoder0))
+      arguments = List(Argument("value", value, "String!"))
+    )
+
+  /** Get a metadata schema by ID
+    */
+  def metadataSchema[A](id: Long)(innerSelection: SelectionBuilder[MetadataSchema, A])(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchema",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("id", id, "Long!"))
+    )
+
+  /** Get the uses of a metadata schema by ID
+    */
+  def metadataSchemaUses[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(
+      implicit encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaUses",
+      ListOf(Obj(innerSelection)),
+      arguments = List(Argument("id", id, "Long!"))
+    )
+
+  /** Get the types of schema import transformations for a metadata schema by ID
+    */
+  def metadataSchemaImportTypes(id: Long)(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[String]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "metadataSchemaImportTypes",
+      ListOf(Scalar()),
+      arguments = List(Argument("id", id, "Long!"))
     )
 }

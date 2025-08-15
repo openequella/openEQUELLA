@@ -16,27 +16,20 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.api.views
 
-package object client {
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.client.Citation
+
+/** Represents a citation configuration, including its name and the associated XSLT transformation.
+  *
+  * @param name
+  *   Name for the citation.
+  * @param transformation
+  *   Name of the XSLT file for citation transformation.
+  */
+final case class CitationView(name: String, transformation: String)
+object CitationView {
+  val selector: SelectionBuilder[Citation, CitationView] = (Citation.name ~ Citation.transformation)
+    .mapN(CitationView.apply _)
 }

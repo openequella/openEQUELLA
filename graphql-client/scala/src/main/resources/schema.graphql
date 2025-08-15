@@ -182,6 +182,12 @@ type Queries {
   metadataSchemaExport("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
   "Get the metadata schema ID for a given UUID"
   metadataSchemaIdForUuid(value: String!): Long
+  "Get a metadata schema by ID"
+  metadataSchema("ID of the metadata schema" id: Long!): MetadataSchema
+  "Get the uses of a metadata schema by ID"
+  metadataSchemaUses("ID of the metadata schema" id: Long!): [BaseEntityReference!]!
+  "Get the types of schema import transformations for a metadata schema by ID"
+  metadataSchemaImportTypes("ID of the metadata schema" id: Long!): [String!]!
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"

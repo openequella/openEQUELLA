@@ -33,20 +33,17 @@ object Mutations {
       password: String
   )(innerSelection: SelectionBuilder[User, A])(implicit
       encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]],
-      encoder2: ArgEncoder[String],
-      encoder3: ArgEncoder[String],
-      encoder4: ArgEncoder[String]
+      encoder1: ArgEncoder[scala.Option[String]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserCreate",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("username", username, "String!")(encoder0),
-        Argument("email", email, "String")(encoder1),
-        Argument("firstName", firstName, "String!")(encoder2),
-        Argument("lastName", lastName, "String!")(encoder3),
-        Argument("password", password, "String!")(encoder4)
+        Argument("username", username, "String!"),
+        Argument("email", email, "String"),
+        Argument("firstName", firstName, "String!"),
+        Argument("lastName", lastName, "String!"),
+        Argument("password", password, "String!")
       )
     )
 
@@ -61,22 +58,18 @@ object Mutations {
       password: scala.Option[String] = None
   )(innerSelection: SelectionBuilder[User, A])(implicit
       encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]],
-      encoder2: ArgEncoder[scala.Option[String]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[String]],
-      encoder5: ArgEncoder[scala.Option[String]]
+      encoder1: ArgEncoder[scala.Option[String]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserUpdate",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("id", id, "String!")(encoder0),
-        Argument("username", username, "String")(encoder1),
-        Argument("email", email, "String")(encoder2),
-        Argument("firstName", firstName, "String")(encoder3),
-        Argument("lastName", lastName, "String")(encoder4),
-        Argument("password", password, "String")(encoder5)
+        Argument("id", id, "String!"),
+        Argument("username", username, "String"),
+        Argument("email", email, "String"),
+        Argument("firstName", firstName, "String"),
+        Argument("lastName", lastName, "String"),
+        Argument("password", password, "String")
       )
     )
 
@@ -88,7 +81,7 @@ object Mutations {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalUserDelete",
       OptionOf(Scalar()),
-      arguments = List(Argument("id", id, "String!")(encoder0))
+      arguments = List(Argument("id", id, "String!"))
     )
 
   /** Create a new group
@@ -102,10 +95,7 @@ object Mutations {
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupCreate",
       OptionOf(Obj(innerSelection)),
-      arguments = List(
-        Argument("name", name, "String!")(encoder0),
-        Argument("parentId", parentId, "String")(encoder1)
-      )
+      arguments = List(Argument("name", name, "String!"), Argument("parentId", parentId, "String"))
     )
 
   /** Delete a group by its unique ID
@@ -118,8 +108,8 @@ object Mutations {
       "internalGroupDelete",
       OptionOf(Scalar()),
       arguments = List(
-        Argument("uniqueId", uniqueId, "String!")(encoder0),
-        Argument("deleteChildren", deleteChildren, "Boolean!")(encoder1)
+        Argument("uniqueId", uniqueId, "String!"),
+        Argument("deleteChildren", deleteChildren, "Boolean!")
       )
     )
 
@@ -135,19 +125,17 @@ object Mutations {
   )(innerSelection: SelectionBuilder[Group, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[String]],
-      encoder2: ArgEncoder[scala.Option[String]],
-      encoder3: ArgEncoder[scala.Option[String]],
-      encoder4: ArgEncoder[scala.Option[List[String]]]
+      encoder2: ArgEncoder[scala.Option[List[String]]]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "internalGroupUpdate",
       OptionOf(Obj(innerSelection)),
       arguments = List(
-        Argument("uniqueId", uniqueId, "String!")(encoder0),
-        Argument("name", name, "String")(encoder1),
-        Argument("description", description, "String")(encoder2),
-        Argument("parentId", parentId, "String")(encoder3),
-        Argument("users", users, "[String!]")(encoder4)
+        Argument("uniqueId", uniqueId, "String!"),
+        Argument("name", name, "String"),
+        Argument("description", description, "String"),
+        Argument("parentId", parentId, "String"),
+        Argument("users", users, "[String!]")
       )
     )
 
@@ -162,7 +150,7 @@ object Mutations {
     _root_.caliban.client.SelectionBuilder.Field(
       "metadataSchemaStartEdit",
       Obj(innerSelection),
-      arguments = List(Argument("id", id, "Long!")(encoder0))
+      arguments = List(Argument("id", id, "Long!"))
     )
 
   /** Start creating a new metadata schema. Expected that it will be followed by a

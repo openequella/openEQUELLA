@@ -19,6 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -87,6 +88,78 @@ class MetadataSchemaApiTest
       When("an unauthenticated user tries to get a schema ID by UUID")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getIdByUuid("some-uuid")(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("getUses") {
+    it("should return a list of uses for a valid schema ID") {
+      Given("A valid metadata schema ID")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("getUses is called with the schema ID")
+      val result = MetadataSchemaApi.getUses(schemaId)
+
+      Then("it should return a list of BaseEntityReferenceView")
+      result.isRight shouldBe true
+      result.value shouldBe a[List[_]]
+      all(result.value) shouldBe a[BaseEntityReferenceView]
+    }
+
+    it("should return an empty list for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("getUses is called with the invalid schema ID")
+      val result = MetadataSchemaApi.getUses(invalidSchemaId)
+
+      Then("it should return an empty list")
+      result.value shouldBe empty
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to get uses")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.getUses(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("getImportTypes") {
+    it("should return a list of import types for a valid schema ID") {
+      Given("A valid metadata schema ID")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("getImportTypes is called with the schema ID")
+      val result = MetadataSchemaApi.getImportTypes(schemaId)
+
+      Then("it should return a list of strings")
+      result.isRight shouldBe true
+      result.value shouldBe a[List[_]]
+      all(result.value) shouldBe a[String]
+    }
+
+    it("should return an empty list for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("getImportTypes is called with the invalid schema ID")
+      val result = MetadataSchemaApi.getImportTypes(invalidSchemaId)
+
+      Then("it should return an empty list")
+      result.value shouldBe empty
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to get import types")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.getImportTypes(1)(unauthenticated)
       }
 
       Then("it should return an AccessDeniedError")
@@ -174,6 +247,44 @@ class MetadataSchemaApiTest
         .continually(reader.readLine())
         .takeWhile(_ != null)
         .mkString("\n")
+    }
+  }
+
+  describe("getById") {
+    it("should return the schema for a valid schema ID") {
+      Given("A valid schema ID")
+      val schema = MetadataSchemaApi.listSchemas().value.head
+
+      When("getById is called with the schema ID")
+      val result = MetadataSchemaApi.getById(schema.id)
+
+      Then("it should return the schema")
+      result.isRight shouldBe true
+      val fetchedSchema = result.value.value
+      fetchedSchema.details.id shouldBe schema.id
+      fetchedSchema.details.uuid shouldBe schema.uuid
+    }
+
+    it("should return None for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("getById is called with the invalid schema ID")
+      val result = MetadataSchemaApi.getById(invalidSchemaId)
+
+      Then("it should return None")
+      result.isRight shouldBe true
+      result.value shouldBe None
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to get a schema by ID")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.getById(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 }

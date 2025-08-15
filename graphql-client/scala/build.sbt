@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
   )
 
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr"         %% "caliban-client" % "2.10.0",
+  "com.github.ghostdogpr"         %% "caliban-client" % "2.11.1",
   "com.softwaremill.sttp.client3" %% "zio"            % "3.11.0",
   // Add Scala Test
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
@@ -49,3 +49,41 @@ headerLicense := Some(
 // Scapegoat Configuration
 // - Ignore the code generated files
 scapegoatIgnoredFiles := Seq(".*/src/main/scala/io/github/openequella/graphql/client/.*")
+
+// SBT task to download the latest GraphQL schema from local server
+lazy val downloadSchema =
+  taskKey[Unit]("Download the latest GraphQL schema from the local openEQUELLA server")
+
+downloadSchema := {
+  import java.net.URI
+  import java.net.http.{HttpClient, HttpRequest, HttpResponse}
+  import java.nio.file.{Files, Paths, StandardOpenOption}
+
+  val url        = "http://localhost:8080/vanilla/graphql/schema"
+  val targetDir  = "src/main/resources"
+  val targetFile = s"$targetDir/schema.graphql"
+
+  // Ensure the target directory exists
+  Files.createDirectories(Paths.get(targetDir))
+
+  val client = HttpClient.newHttpClient()
+  val request = HttpRequest
+    .newBuilder()
+    .uri(URI.create(url))
+    .GET()
+    .build()
+
+  val response = client.send(request, HttpResponse.BodyHandlers.ofByteArray())
+  val log      = streams.value.log
+  if (response.statusCode() == 200) {
+    Files.write(
+      Paths.get(targetFile),
+      response.body(),
+      StandardOpenOption.CREATE,
+      StandardOpenOption.TRUNCATE_EXISTING
+    )
+    log.info(s"Downloaded schema from $url to $targetFile")
+  } else {
+    sys.error(s"Failed to download schema from $url. Status: ${response.statusCode()}")
+  }
+}

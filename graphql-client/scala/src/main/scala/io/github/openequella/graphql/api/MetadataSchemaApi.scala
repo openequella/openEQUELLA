@@ -18,7 +18,7 @@
 
 package io.github.openequella.graphql.api
 
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, MetadataSchemaView}
 import io.github.openequella.graphql.client.Queries
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
@@ -46,6 +46,26 @@ object MetadataSchemaApi {
     Client.query(query)
   }
 
+  /** Retrieves a metadata schema by its ID.
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or an Option containing the MetadataSchemaView if found, None if
+    *   not found.
+    */
+  def getById(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[MetadataSchemaView]] = {
+    val query = Queries.metadataSchema(id) {
+      MetadataSchemaView.selector
+    }
+
+    Client.query(query)
+  }
+
   /** Retrieves the ID of a metadata schema by its UUID.
     *
     * @param uuid
@@ -61,6 +81,43 @@ object MetadataSchemaApi {
   ): Either[List[ApiError], Option[Long]] = {
     val query = Queries.metadataSchemaIdForUuid(uuid)
 
+    Client.query(query)
+  }
+
+  /** Get the uses of a Metadata Schema
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of BaseEntityReferenceView representing the uses of the
+    *   metadata schema.
+    */
+  def getUses(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
+    val query = Queries.metadataSchemaUses(id) {
+      BaseEntityReferenceView.selector
+    }
+
+    Client.query(query)
+  }
+
+  /** Retrieves the import schema types for a metadata schema.
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a list of strings representing the import types for the
+    *   metadata schema.
+    */
+  def getImportTypes(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], List[String]] = {
+    val query = Queries.metadataSchemaImportTypes(id)
     Client.query(query)
   }
 
