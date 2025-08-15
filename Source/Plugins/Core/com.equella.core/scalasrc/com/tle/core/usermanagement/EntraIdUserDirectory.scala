@@ -156,11 +156,14 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   // Always includes the standard fields: `id`, `displayName`, `surname`, `givenName`, and `mail`. If a custom
   // user ID attribute is configured, includes its first segment as well.
   private def includeFields(idp: GenericIdentityProviderDetails): Map[String, String] = {
-    val idAttrFirstSegment = idp.commonDetails.userIdAttribute
+    val standardFields = List("id", "displayName", "surname", "givenName", "mail")
+    val fields = idp.commonDetails.userIdAttribute
       .map(_.split(customAttributeDelimiter))
       .flatMap(_.headOption)
-      .getOrElse("")
+      .map(standardFields :+ _)
+      .getOrElse(standardFields)
+      .mkString(",")
 
-    Map("$select" -> s"id,displayName,surname,givenName,mail,$idAttrFirstSegment")
+    Map("$select" -> fields)
   }
 }
