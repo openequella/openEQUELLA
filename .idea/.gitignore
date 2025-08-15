@@ -5,11 +5,16 @@
 /httpRequests/
 
 # User-specific stuff:
-/workspace.xml
-/tasks.xml
 /dictionaries
-/vcs.xml
 /jsLibraryMappings.xml
+/shelf/
+/tasks.xml
+/vcs.xml
+/workspace.xml
+GrepConsole.xml
+copilot*.xml
+data_source_mapping.xml
+prettier.xml
 
 # Sensitive or high-churn files:
 /dataSources.ids
