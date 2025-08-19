@@ -139,8 +139,8 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     _.stopEdit(pack, unlock)
   }
 
-  override def getReferencingClasses(id: Long): util.List[Class[_]] = implementMe {
-    _.getReferencingClasses(id)
+  override def hasReferencingClasses(id: Long): Boolean = implementMe {
+    _.hasReferencingClasses(id)
   }
 
   override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] = implementMe {

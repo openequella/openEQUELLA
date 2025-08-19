@@ -55,8 +55,12 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EditorTab extends BaseEntityTab<Schema> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EditorTab.class);
+
   private final SchemaModel schemaModel;
 
   private AbstractSchemaEditor editor;
@@ -183,14 +187,13 @@ public class EditorTab extends BaseEntityTab<Schema> {
     updateLockedHeight();
     if (state.isLoaded()) {
       GlassSwingWorker<?> worker =
-          new GlassSwingWorker<Object>() {
+          new GlassSwingWorker<>() {
             @Override
-            public Object construct() throws Exception {
+            public Object construct() {
               locked =
-                  !Check.isEmpty(
-                      clientService
-                          .getService(RemoteSchemaService.class)
-                          .getReferencingClasses(state.getEntity().getId()));
+                  clientService
+                      .getService(RemoteSchemaService.class)
+                      .hasReferencingClasses(state.getEntity().getId());
               return null;
             }
 
@@ -200,6 +203,11 @@ public class EditorTab extends BaseEntityTab<Schema> {
                 lockNodeTree(editor.getModel().getRoot());
                 updateLockedHeight();
               }
+            }
+
+            @Override
+            public void exception() {
+              LOGGER.error("Error confirming usages of Schema", getException());
             }
           };
       worker.setComponent(getComponent());
