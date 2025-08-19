@@ -44,7 +44,7 @@ type FavSearchesSearchOptions = Pick<
 >;
 
 /**
- * Returns a function which manipulates SearchOptions to a must to limit results
+ * Returns a function which manipulates SearchOptions to include a must to limit results
  * to those which have the bookmark_owner of the specified user.
  * This will result in a SearchOptions which limits search results to favourites for the specified user.
  *
@@ -98,7 +98,7 @@ const buildFavouriteItemsQuery = (
 export const defaultFavSearchesSearchOptions: FavSearchesSearchOptions = {
   rowsPerPage: 10,
   currentPage: 0,
-  sortOrder: undefined,
+  sortOrder: "added",
   query: "",
   lastModifiedDateRange: { start: undefined, end: undefined },
 };
@@ -159,10 +159,10 @@ export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
  */
 export const searchFavouriteItems = async (
   searchOptions: SearchOptions,
-  currentUserDetails: { id: string },
+  { id: userId }: OEQ.LegacyContent.CurrentUserDetails,
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
   const buildFavItemsSearchParams = flow(
-    addBookmarkOwnerMust(currentUserDetails.id),
+    addBookmarkOwnerMust(userId),
     // Ensure formatQuery runs (via buildSearchParams) before we extend the query with bookmark-tags clause.
     buildSearchParams,
     buildFavouriteItemsQuery,

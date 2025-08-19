@@ -84,7 +84,11 @@ describe('FavouriteSearch', () => {
       );
     },
     async cleanup(): Promise<void> {
-      await Promise.all(this.ids.map((id: number) => this.del(id)));
+      const deletionPromises = this.ids.map((id: number) =>
+        deleteFavouriteSearch(TC.API_PATH, id)
+      );
+      await Promise.all(deletionPromises);
+      this.ids = [];
     },
   };
 
@@ -202,7 +206,7 @@ describe('FavouriteSearch', () => {
 
       const res = await searchFavouriteSearches(TC.API_PATH, {
         query: name,
-        addedAfter: calculateRelativeISODate(addedAt, 1),
+        addedAfter: calculateRelativeISODate(addedAt, -2),
         addedBefore: calculateRelativeISODate(addedAt, -1),
       });
 
