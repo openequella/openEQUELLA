@@ -21,31 +21,51 @@ package com.tle.common.applet.client;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClientProxy implements InvocationHandler {
+  public static final Logger LOGGER = LoggerFactory.getLogger(ClientProxy.class);
+
   private final Object iface;
 
   public ClientProxy(Object iface) {
     this.iface = iface;
   }
 
-  // SOnar objects to 'throws Throwable' but here we're bound by external
-  // invocations in CgLibProxy
+  // SonarQube flags 'throws Throwable' as a code smell, but this is required for compatibility
+  // with external proxy frameworks (e.g., CgLibProxy) that expect this signature
   @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable // NOSONAR
-      {
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     return invoke(proxy, method, args, true);
   }
 
   private Object invoke(Object proxy, Method method, Object[] args, boolean retry)
-      throws Throwable // NOSONAR
-      {
+      throws Throwable {
+    logInvocationDetails(method);
+
     String methodName = method.getName();
     Method pMethod = iface.getClass().getMethod(methodName, method.getParameterTypes());
     try {
       return pMethod.invoke(iface, args);
     } catch (InvocationTargetException e) {
       throw e.getCause();
+    }
+  }
+
+  private static void logInvocationDetails(Method method) {
+    if (LOGGER.isDebugEnabled()) {
+      String argTypes =
+          Arrays.stream(method.getParameterTypes())
+              .map(Class::getName)
+              .collect(Collectors.joining(", "));
+      LOGGER.debug(
+          "Remote call: {}.{}({})",
+          method.getDeclaringClass().getName(),
+          method.getName(),
+          argTypes);
     }
   }
 }
