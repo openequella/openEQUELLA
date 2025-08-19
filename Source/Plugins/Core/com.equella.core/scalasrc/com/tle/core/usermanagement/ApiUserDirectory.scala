@@ -208,6 +208,17 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
       } yield user
     }
 
+    // Use the standard single-user endpoint to retrieve the user details.
+    def getUserById(
+        id: String,
+        tokenState: OAuthTokenState,
+        idp: IDP
+    ): Either[Throwable, UserBean] = {
+      val endpoint = userEndpoint(idp, id)
+      val result   = requestWithToken[IdPUser](endpoint, tokenState, requestHeaders)
+      result.map(toUserBean(_, None))
+    }
+
     lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, UserBean] =
       id =>
         (idp, tokenState) =>
@@ -215,12 +226,10 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
             case Some(attr) =>
               getFirstUserByAttr(attr, id, tokenState, idp)
             case None =>
-              val endpoint = userEndpoint(idp, id)
-              val result   = requestWithToken[IdPUser](endpoint, tokenState, requestHeaders)
-              result.map(toUserBean(_, None))
+              getUserById(id, tokenState, idp)
           }
 
-    // If the provider user ID is null or empty, return null.
+    // If the provided user ID is null or empty, return null.
     Option(userId)
       .filter(_.nonEmpty)
       .flatMap(id =>
