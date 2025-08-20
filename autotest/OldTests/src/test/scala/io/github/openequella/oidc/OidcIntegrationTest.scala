@@ -154,8 +154,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     // Login again using the testing user and My resources page should show four items.
     logout()
     logonOidc()
-    val myResourcesPage =
-      new MenuSection(context).get().clickMenu("My resources", new MyResourcesPage(context))
+    val myResourcesPage = new MyResourcesPage(context).load()
     myResourcesPage.waitForSearchCompleted(4)
   }
 

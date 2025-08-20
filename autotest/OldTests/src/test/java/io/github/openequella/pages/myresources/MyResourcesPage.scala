@@ -6,4 +6,8 @@ import org.openqa.selenium.By
 
 class MyResourcesPage(context: PageContext) extends AbstractSearchPage[MyResourcesPage](context) {
   loadedBy = By.xpath("//h5[text()='My Resources']")
+
+  override protected def loadUrl(): Unit = {
+    driver.get(context.getBaseUrl + "page/myresources")
+  }
 }
