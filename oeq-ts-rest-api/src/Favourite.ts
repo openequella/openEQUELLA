@@ -15,9 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DELETE, POST } from './AxiosInstance';
-import { FavouriteItemCodec, FavouriteSearchModelCodec } from './gen/Favourite';
-import { validate } from './Utils';
+import { pipe } from 'fp-ts/function';
+import { DELETE, GET, POST } from './AxiosInstance';
+import { FavouriteItemCodec, FavouriteSearchRawCodec } from './gen/Favourite';
+import { SearchResultCodec } from './gen/Search';
+import { SearchResult } from './Search';
+import type { SortOrder } from './Search';
+import { convertDateFields, validate } from './Utils';
 
 /**
  * Type matching server-side Favourite Item model
@@ -42,16 +46,12 @@ export interface FavouriteItem {
 }
 
 /**
- * Type matching server-side model FavouriteSearch
+ * Shared properties of raw and transformed Favourite Searches.
  */
-export interface FavouriteSearch {
-  /**
-   * Unique ID of a favourite search
-   */
+interface FavouriteSearchBase {
+  /** Unique ID of a favourite search. */
   id: number;
-  /**
-   * Name of a favourite search
-   */
+  /** Name of the favourite search */
   name: string;
   /**
    * Relative path to the new Search UI including query strings
@@ -59,48 +59,67 @@ export interface FavouriteSearch {
    * If it's added from old UI, the URL will be `searching.do?xxx=yyy`.
    */
   url: string;
-  /**
-   * Owner of a favourite search
-   */
-  owner: string;
-  /**
-   * Last modified date
-   */
-  dateModified: string;
-  /**
-   * Name of selected Collection
-   */
-  within?: string;
+}
+
+/**
+ * Favourite Search as it is returned by API
+ */
+interface FavouriteSearchRaw extends FavouriteSearchBase {
+  /** The date when favourite was created. */
+  addedAt: string;
+}
+
+/**
+ * Full details of a Favourite search.
+ */
+export interface FavouriteSearch extends FavouriteSearchBase {
+  /** The date when favourite was created. */
+  addedAt: Date;
+}
+
+/**
+ * Query parameters accepted to fetch favourite Searches
+ */
+export interface FavouriteSearchParams {
   /**
    * Search query
    */
   query?: string;
   /**
-   * Advanced search criteria
+   * The first record of the results to return.
    */
-  criteria?: string;
-}
-
-/**
- * Data structure for adding a search definition to user's favourite search
- */
-export interface FavouriteSearchModel {
+  start?: number;
   /**
-   * ID of a favourite search. The value is null when the search doesn't persist to DB.
+   * The number of results to return.
    */
-  id?: number;
+  length?: number;
   /**
-   * Name of a search definition
+   * Return only favourite searches **added on or before** this date
+   * (`yyyy‑MM‑dd`).
    */
-  name: string;
+  addedBefore?: string;
   /**
-   * Relative path to the new Search UI, including all query params.
+   * Return only favourite searches **added on or after** this date
+   * (`yyyy‑MM‑dd`).
    */
-  url: string;
+  addedAfter?: string;
+  /**
+   * Field used to sort the results.
+   */
+  order?: SortOrder;
 }
 
 const FAVOURITE_ITEM_PATH = '/favourite/item';
 const FAVOURITE_SEARCH_PATH = '/favourite/search';
+
+const favouriteSearchResultValidator = pipe(
+  FavouriteSearchRawCodec,
+  SearchResultCodec,
+  validate
+);
+
+const processRawFavouriteSearch = <R, D>(data: R) =>
+  convertDateFields<D>(data, ['addedAt']);
 
 /**
  * Add an Item to user's favourites.
@@ -126,19 +145,50 @@ export const deleteFavouriteItem = (
   apiBasePath: string,
   bookmarkID: number
 ): Promise<void> =>
-  DELETE<void>(`${apiBasePath}${FAVOURITE_ITEM_PATH}/${bookmarkID}`);
+  DELETE(`${apiBasePath}${FAVOURITE_ITEM_PATH}/${bookmarkID}`);
 
 /**
  * Add a search to user's favourites.
  * @param apiBasePath Base URI to the oEQ institution and API
- * @param searchInfo required information for adding a favourite search
+ * @param searchDetails details of the new favourite search
  */
 export const addFavouriteSearch = (
   apiBasePath: string,
-  searchInfo: FavouriteSearchModel
-): Promise<FavouriteSearchModel> =>
+  searchDetails: Omit<FavouriteSearchBase, 'id'>
+): Promise<FavouriteSearch> =>
   POST(
     apiBasePath + FAVOURITE_SEARCH_PATH,
-    validate(FavouriteSearchModelCodec),
-    searchInfo
+    validate(FavouriteSearchRawCodec),
+    searchDetails
+  ).then(processRawFavouriteSearch<FavouriteSearchRaw, FavouriteSearch>);
+
+/**
+ * Delete a search from user's favourites.
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param searchID ID of the favourite search
+ */
+export const deleteFavouriteSearch = (
+  apiBasePath: string,
+  searchID: number
+): Promise<void> =>
+  DELETE(`${apiBasePath}${FAVOURITE_SEARCH_PATH}/${searchID}`);
+
+/**
+ * Search for all favourite searches with specified search criteria.
+ * @param apiBasePath Base URI to the oEQ institution and API
+ * @param params Query parameters as search criteria.
+ */
+export const searchFavouriteSearches = (
+  apiBasePath: string,
+  params?: FavouriteSearchParams
+): Promise<SearchResult<FavouriteSearch>> =>
+  GET<SearchResult<FavouriteSearchRaw>>(
+    apiBasePath + FAVOURITE_SEARCH_PATH,
+    favouriteSearchResultValidator,
+    params
+  ).then(
+    processRawFavouriteSearch<
+      SearchResult<FavouriteSearchRaw>,
+      SearchResult<FavouriteSearch>
+    >
   );

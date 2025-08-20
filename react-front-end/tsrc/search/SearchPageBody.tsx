@@ -448,7 +448,7 @@ export const SearchPageBody = ({
       },
       customFavouriteUrl,
       (url) => TO.tryCatch(() => addFavouriteSearch(name, url)),
-      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearchModel>(
+      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearch>(
         constant({
           message: searchStrings.favouriteSearch.saveSearchFailedText,
           variant: "error",

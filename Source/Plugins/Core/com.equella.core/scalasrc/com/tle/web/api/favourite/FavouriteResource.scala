@@ -150,7 +150,7 @@ class FavouriteResource @Inject() (
   @Path("/search")
   @ApiOperation(
     value = "Add a search definition to user's search favourites",
-    response = classOf[FavouriteSearchSaveParam]
+    response = classOf[FavouriteSearch]
   )
   def addFavouriteSearch(searchInfo: FavouriteSearchSaveParam): Response = {
     val favSearchBean = new FavouriteSearchBean
