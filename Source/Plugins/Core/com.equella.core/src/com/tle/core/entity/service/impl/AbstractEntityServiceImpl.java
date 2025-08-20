@@ -437,10 +437,14 @@ public abstract class AbstractEntityServiceImpl<
     deleteReferences(entity);
   }
 
-  @Override
   public List<Class<?>> getReferencingClasses(long id) {
     // None by default
-    return new ArrayList<Class<?>>();
+    return new ArrayList<>();
+  }
+
+  @Override
+  public boolean hasReferencingClasses(long id) {
+    return !getReferencingClasses(id).isEmpty();
   }
 
   protected void deleteReferences(T entity) {

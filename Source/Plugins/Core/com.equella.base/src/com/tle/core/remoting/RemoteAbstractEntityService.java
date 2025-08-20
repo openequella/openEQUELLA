@@ -74,7 +74,15 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
 
   T stopEdit(EntityPack<T> pack, boolean unlock);
 
-  List<Class<?>> getReferencingClasses(long id);
+  /**
+   * Checks if the entity with the given ID has any classes that reference it. Useful for
+   * determining if an entity can be deleted, as well as for displaying a warning to the user before
+   * editing.
+   *
+   * @param id the ID of the entity to check
+   * @return true if there are classes that reference the entity, false otherwise
+   */
+  boolean hasReferencingClasses(long id);
 
   byte[] exportEntity(long id, boolean withSecurity);
 
@@ -86,7 +94,7 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
    * stopEdit() to complete the import process.
    *
    * @param zip the zip file to import
-   * @return the entity pack containing the entity preprared for import
+   * @return the entity pack containing the entity prepared for import
    */
   EntityPack<T> importEntity(byte[] zip);
 
