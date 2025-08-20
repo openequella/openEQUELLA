@@ -22,7 +22,6 @@ import cats.implicits._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
-import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
 import com.tle.core.oauthclient.AssertionTokenRequest
 import com.tle.core.webkeyset.service.WebKeySetService
@@ -66,27 +65,18 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
   override protected val targetPlatform: IdentityProviderPlatform.Value =
     IdentityProviderPlatform.OKTA
 
-  override protected type USER = OktaUser
-
-  override protected type USERS = List[OktaUser]
-
-  override protected implicit val userDecoder: Decoder[OktaUser] = deriveDecoder[OktaUser]
-
-  override protected implicit val usersDecoder: Decoder[List[OktaUser]] =
-    Decoder.decodeList[OktaUser]
-
-  override protected def toUserList(users: USERS): List[USER] = users
-
-  override protected def toUserBean(user: USER): UserBean = {
-    val profile = user.profile
-    new DefaultUserBean(
-      user.id,
-      profile.login,
-      profile.firstName.getOrElse(""),
-      profile.lastName.getOrElse(""),
-      profile.email.orNull
-    )
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+    for {
+      id <- cursor.downField("id").as[String]
+      profile = cursor.downField("profile")
+      username  <- profile.downField("username").as[Option[String]]
+      firstName <- profile.downField("given_name").as[Option[String]]
+      lastName  <- profile.downField("family_name").as[Option[String]]
+      email     <- profile.downField("email").as[Option[String]]
+    } yield IdPUser(id, username, firstName, lastName, email, cursor.value)
   }
+
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
 
   /** REST endpoint to get a single user with the provided ID.
     */
@@ -110,6 +100,25 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
       .filter(_.trim.nonEmpty)
       .map(baseEndpoint.addParam("q", _))
       .getOrElse(baseEndpoint)
+  }
+
+  /** Okta recommends using query parameter `search` to filter users based on custom attributes.
+    * Each filter must be in the format of `attr eq "value"`, and multiple filters can be combined
+    * using `OR` or `And`. Wildcard searches are not supported for custom attributes, which is why
+    * the operator `eq` (equals) is used instead of `co` (contains).
+    *
+    * Reference:
+    * https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!in=query&path=search&t=request
+    */
+  override protected def userListByAttrsEndpoint(
+      idp: OktaDetails,
+      value: String,
+      attrs: List[String]
+  ): Uri = {
+    val filters = attrs.map(attr => s"$attr eq \"$value\"").mkString(" OR ")
+    Uri(idp.apiUrl.toURI)
+      .addPath("users")
+      .addParam("search", filters)
   }
 
   /** According to the doco of Core Okta API, the request for a scoped access token through Client

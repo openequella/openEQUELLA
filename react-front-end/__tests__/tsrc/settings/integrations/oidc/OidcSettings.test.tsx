@@ -167,19 +167,12 @@ describe("Mapping section", () => {
     expect(queryByText(customRolesTitle)).toBeInTheDocument();
   });
 
-  it("renders a user ID text field for Entra ID only", async () => {
+  it("renders a user ID text field", async () => {
     const { container, queryByText } = await renderOidcSettings();
     await selectPlatform(container, "ENTRA_ID");
     const textField = queryByText(userIdAttributeLabel);
 
     expect(textField).toBeInTheDocument();
-
-    // todo: remove the below assertions when the work for AUTH0 and OKTA starts
-    await selectPlatform(container, "AUTH0");
-    expect(queryByText(userIdAttributeLabel)).not.toBeInTheDocument();
-
-    await selectPlatform(container, "OKTA");
-    expect(queryByText(userIdAttributeLabel)).not.toBeInTheDocument();
   });
 });
 

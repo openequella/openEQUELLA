@@ -20,7 +20,7 @@ package com.tle.core.usermanagement
 
 import cats.implicits._
 import com.tle.common.Pair
-import com.tle.common.usermanagement.user.valuebean.UserBean
+import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.oauthclient.{OAuthClientService, OAuthTokenState, TokenRequest}
 import com.tle.plugins.ump.UserDirectory
 import io.circe.{ACursor, Decoder, Json}
@@ -32,7 +32,46 @@ import sttp.model.{Header, Uri}
 import java.net.URL
 import java.util
 import javax.inject.{Inject, Named}
+import javax.ws.rs.NotFoundException
 import scala.jdk.CollectionConverters._
+
+/** Represents a single user returned from an IdP.
+  *
+  * @param id
+  *   Unique identifier of the user which may be the IdP's standard user ID or a custom user ID.
+  * @param username
+  *   Username of the user
+  * @param firstName
+  *   First name of the user
+  * @param lastName
+  *   Last name of the user
+  * @param email
+  *   Email address of the user
+  * @param raw
+  *   Raw JSON object containing the full user data.
+  */
+final case class IdPUser(
+    id: String,
+    username: Option[String],
+    firstName: Option[String],
+    lastName: Option[String],
+    email: Option[String],
+    private val raw: Json
+) {
+
+  /** Attempt to retrieve an attribute from the raw JSON object.
+    *
+    * @param attrPathSegments
+    *   Segments of the attribute path to traverse in the JSON object.
+    */
+  def getAttribute(attrPathSegments: Array[String]): Either[Throwable, String] = {
+    attrPathSegments
+      .foldLeft[ACursor](raw.hcursor) { (cursor, attr) =>
+        cursor.downField(attr)
+      }
+      .as[String]
+  }
+}
 
 /** On top of [[OidcUserDirectory]], this class provides the abstraction of retrieving user
   * information through REST APIs and OAuth2 Access Token.
@@ -44,24 +83,16 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
   private val LOGGER = LoggerFactory.getLogger(classOf[ApiUserDirectory])
 
-  /** Type alias for the information of a single user returned from the Identity Provider.
+  /** Each IdP's API returns the user details in a proprietary structure, therefore each IdP
+    * UserDirectory needs to provide a custom Circe decoder to map from those structures to the
+    * common IdPUser structure.
     */
-  protected type USER
+  implicit val userDecoder: Decoder[IdPUser]
 
-  /** Type alias for the information of multiple users returned from the Identity Provider.
+  /** Circe decoder for mapping a list of IdP-specific user structures to a list of the common
+    * IdPUser structure.
     */
-  protected type USERS
-
-  protected implicit val userDecoder: Decoder[USER]
-
-  protected implicit val usersDecoder: Decoder[USERS]
-
-  /** While the structure of `USERS` may be equal to `List[USER]` in some IdPs' responses, it may
-    * not in others. So override this function to provide the correct type transformation.
-    */
-  protected def toUserList(users: USERS): List[USER]
-
-  protected def toUserBean(user: USER): UserBean
+  implicit val usersDecoder: Decoder[List[IdPUser]]
 
   override protected type AuthResult = OAuthTokenState
 
@@ -74,6 +105,16 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     * the REST Endpoint that returns a list of users.
     */
   protected def userListEndpoint(idp: IDP, query: String): Uri
+
+  /** A variation of [[userListEndpoint]] that supports searching for users using a list of specific
+    * attributes.
+    *
+    * This method is needed because many Identity Providers have limitations when searching by
+    * custom attributes. Examples include:
+    *   - Requiring a different query parameter with a different syntax.
+    *   - Not supporting wildcard searches.
+    */
+  protected def userListByAttrsEndpoint(idp: IDP, value: String, attrs: List[String]): Uri
 
   /** Build an instance of TokenRequest to be used in the authentication process.
     */
@@ -126,31 +167,69 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
     */
   protected val requestHeaders: List[Header] = List.empty
 
+  /** Search for users using a free-text query against standard user fields defined by each
+    * platform. The fields searched and whether the search is an exact match or allows wildcard are
+    * determined by each platform.
+    *
+    * @param query
+    *   a string representing the free-text query.
+    */
   override def searchUsers(
       query: String
   ): Pair[UserDirectory.ChainResult, util.Collection[UserBean]] = {
-    lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, USERS] =
-      q =>
-        (idp, tokenState) =>
-          requestWithToken[USERS](userListEndpoint(idp, q), tokenState, requestHeaders)
-
-    val users = execute(search(query))
+    val users = execute { (idp, tokenState) =>
+      val endpoint = userListEndpoint(idp, query)
+      searchUsers(endpoint, tokenState, idp)
+    }
       .leftMap(LOGGER.error(s"Failed to search users", _))
-      .map(toUserList)
       .getOrElse(List.empty)
-      .map(toUserBean)
       .asJavaCollection
 
     new Pair(UserDirectory.ChainResult.CONTINUE, users)
   }
 
   override def getInformationForUser(userId: String): UserBean = {
-    lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, USER] =
+
+    // Searching users by an attribute may return multiple users. In that case, only use the first user and log a warning.
+    def getFirstUserByAttr(
+        attr: String,
+        value: String,
+        tokenState: OAuthTokenState,
+        idp: IDP
+    ): Either[Throwable, UserBean] = {
+      val endpoint = userListByAttrsEndpoint(idp, value, List(attr))
+      for {
+        users <- searchUsers(endpoint, tokenState, idp)
+        _ = if (users.size > 1)
+          LOGGER.warn(s"More than one user found by attribute {}: {}", attr, value)
+        user <- users.headOption.toRight(
+          new NotFoundException(s"No users found by $attr: $userId")
+        )
+      } yield user
+    }
+
+    // Use the standard single-user endpoint to retrieve the user details.
+    def getUserById(
+        id: String,
+        tokenState: OAuthTokenState,
+        idp: IDP
+    ): Either[Throwable, UserBean] = {
+      val endpoint = userEndpoint(idp, id)
+      val result   = requestWithToken[IdPUser](endpoint, tokenState, requestHeaders)
+      result.map(toUserBean(_, None))
+    }
+
+    lazy val search: String => (IDP, OAuthTokenState) => Either[Throwable, UserBean] =
       id =>
         (idp, tokenState) =>
-          requestWithToken[USER](userEndpoint(idp, id), tokenState, requestHeaders)
+          idp.commonDetails.userIdAttribute match {
+            case Some(attr) =>
+              getFirstUserByAttr(attr, id, tokenState, idp)
+            case None =>
+              getUserById(id, tokenState, idp)
+          }
 
-    // If the provider user ID is null or empty, return null.
+    // If the provided user ID is null or empty, return null.
     Option(userId)
       .filter(_.nonEmpty)
       .flatMap(id =>
@@ -158,7 +237,6 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
           .leftMap(LOGGER.error(s"Failed to get information for user $userId", _))
           .toOption
       )
-      .map(toUserBean)
       .orNull
   }
 
@@ -244,6 +322,44 @@ abstract class ApiUserDirectory extends OidcUserDirectory {
 
     execute(search)
   }
+
+  /** Converts an IdPUser to a UserBean.
+    *
+    * If a user ID attribute is provided, attempts to retrieve the custom user ID from this
+    * attribute. If the retrieval fails, falls back to the IdP's standard user ID.
+    *
+    * Username defaults to the user ID if absent. First and last names default to empty strings if
+    * absent. Email defaults to `null` if absent.
+    */
+  private def toUserBean(user: IdPUser, userIdAttribute: Option[String]): UserBean = {
+    val customId: Option[String] = for {
+      attr <- userIdAttribute
+      attrSegments = attr.split(customAttributeDelimiter)
+      value <- user
+        .getAttribute(attrSegments)
+        .leftMap(LOGGER.warn(s"Failed to get custom user ID from $attr for user ${user.id}", _))
+        .toOption
+    } yield value
+
+    val id = customId.getOrElse(user.id)
+    new DefaultUserBean(
+      id,
+      user.username.getOrElse(id),
+      user.firstName.getOrElse(""),
+      user.lastName.getOrElse(""),
+      user.email.orNull
+    )
+  }
+
+  // Execute a GET request to the specified endpoint using the provided Access token, and the result is converted
+  // into a list of UserBean.
+  private def searchUsers(
+      endpoint: Uri,
+      token: OAuthTokenState,
+      idp: IDP
+  ): Either[Throwable, List[UserBean]] =
+    requestWithToken[List[IdPUser]](endpoint, token, requestHeaders)
+      .map(users => users.map(toUserBean(_, idp.commonDetails.userIdAttribute)))
 }
 
 object ApiUserDirectory {
