@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
-import { constFalse, flow, pipe } from "fp-ts/function";
+import { constFalse, flow, identity, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
@@ -192,26 +192,34 @@ export const defaultSearchOptions: SearchOptions = {
 };
 
 /**
- * Helper function, to support formatting of search query in raw mode. When _not_ raw mode
- * we append a wildcard to support the idea of a simple (typeahead) search.
+ * Formats a search query by trimming whitespace, filtering out empty values,
+ * and applying an optional transformation.
  *
- * The function returns `undefined` if the search query is empty (after trimming) or undefined.
- *
- * @param addWildCard  flag for wild-card formatting.
- * @param query the intended search query to be sent to the API.
+ * @param query The raw search query string.
+ * @param mutator Function to transform the query. Defaults to `identity` (no change).
+ * @returns The trimmed and transformed formatted string, or `undefined` if the search queryis empty/whitespaces/undefined.
  */
 export const formatQuery = (
-  addWildCard: boolean,
   query?: string,
+  mutator: (q: string) => string = identity,
 ): string | undefined =>
   pipe(
     query,
     O.fromNullable,
     O.map(S.trim),
     O.filter(isNonEmptyString),
-    O.map((q) => (addWildCard ? `${q}*` : q)),
+    O.map(mutator),
     O.toUndefined,
   );
+
+/**
+ * Formats a search query and appends a trailing '*' wildcard to support the idea of a simple (typeahead) search
+ *
+ * @param query The raw search query string.
+ * @returns The formatted query with a trailing '*', or `undefined` if the search query is empty/whitespaces/undefined.
+ */
+export const formatWildcardQuery = (query?: string): string | undefined =>
+  formatQuery(query, (q) => `${q}*`);
 
 /**
  * Generates a Where clause through Classifications.
@@ -293,7 +301,7 @@ export const buildSearchParams = ({
       : restrictions;
 
   return {
-    query: formatQuery(!rawMode, query),
+    query: rawMode ? formatQuery(query) : formatWildcardQuery(query),
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
     status,

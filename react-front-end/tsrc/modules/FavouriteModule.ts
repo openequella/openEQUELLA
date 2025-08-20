@@ -115,7 +115,7 @@ const buildFavouriteSearchParams = ({
   sortOrder,
   lastModifiedDateRange,
 }: FavSearchesSearchOptions): OEQ.Favourite.FavouriteSearchParams => ({
-  query: formatQuery(false, query),
+  query: formatQuery(query),
   start: currentPage * rowsPerPage,
   length: rowsPerPage,
   order: sortOrder,
