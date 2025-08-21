@@ -229,13 +229,13 @@ const submitSelection = <T>(
   callback: (result: T) => void,
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
-const buildSelectionSessionLink = (
+export const buildSelectionSessionLink = (
   routerPath: string,
   includeLayout = false,
   externalMimeTypes: string[] = [],
 ) => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
-  const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
+  const url = new URL(routerPath.slice(1), getBaseUrl()); // Drop routerPath's first '/'.
   url.searchParams.append("_sl.stateId", stateId);
 
   if (integId) {

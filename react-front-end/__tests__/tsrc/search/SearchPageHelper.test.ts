@@ -31,7 +31,7 @@ import {
   buildOpenSummaryPageHandler,
   defaultSearchPageOptions,
   generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
+  generateSearchPageOptionsFromLocation,
   legacyQueryStringToSearchPageOptions,
   newSearchQueryToSearchPageOptions,
   processLegacyAdvSearchCriteria,
@@ -147,7 +147,7 @@ describe("convertParamsToSearchOptions", () => {
   };
   it("should return undefined if no query string parameters are defined", async () => {
     const convertedParamsPromise =
-      await generateSearchPageOptionsFromQueryString(mockLocation);
+      await generateSearchPageOptionsFromLocation(mockLocation);
     expect(convertedParamsPromise).toBeUndefined();
   });
 });
