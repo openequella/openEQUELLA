@@ -382,16 +382,13 @@ export type DehydratedSearchPageOptions = t.TypeOf<
 /**
  * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.
  *
- * @param location representing a Location which includes search query params - such as from the <SearchPage>
+ * @param queryString representing the query string from the URL - for example: `?searchOptions=options&page=1`
  * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
  */
-export const generateSearchPageOptionsFromQueryString = async (
-  location: Location,
+const generateSearchPageOptionsFromQueryString = async (
+  queryString: string,
 ): Promise<SearchPageOptions | undefined> => {
-  if (!location.search) {
-    return undefined;
-  }
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(queryString);
   const searchPageOptions = params.get("searchOptions");
 
   // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
@@ -407,7 +404,35 @@ export const generateSearchPageOptionsFromQueryString = async (
 };
 
 /**
- * A function that takes search options and converts it to to a JSON representation.
+ * A function that takes a Location object and extracts the search options from the query string.
+ *
+ * @param location representing a Location which includes search query params - such as from the <SearchPage>
+ * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
+ */
+export const generateSearchPageOptionsFromLocation = async (
+  location: Location,
+): Promise<SearchPageOptions | undefined> =>
+  pipe(
+    location.search,
+    O.fromNullable,
+    O.map(generateSearchPageOptionsFromQueryString),
+    O.toUndefined,
+  );
+
+/**
+ * A function that takes a URL and extracts the search options from the query string.
+ *
+ * @throws {TypeError} if the URL is invalid.
+ */
+export const generateSearchPageOptionsFromUrl = async (
+  url: string,
+): Promise<SearchPageOptions | undefined> => {
+  const urlObj = new URL(url);
+  return generateSearchPageOptionsFromQueryString(urlObj.search);
+};
+
+/**
+ * A function that takes search options and converts it to a JSON representation.
  * Collections and owner properties are both reduced down to their uuid and id properties respectively.
  * Undefined properties are excluded.
  * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions

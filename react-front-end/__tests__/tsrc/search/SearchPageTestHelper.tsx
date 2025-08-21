@@ -135,7 +135,7 @@ export const mockCollaborators = () => {
     ),
     mockConvertParamsToSearchOptions: jest.spyOn(
       SearchPageHelper,
-      "generateSearchPageOptionsFromQueryString",
+      "generateSearchPageOptionsFromLocation",
     ),
     mockMimeTypeFilters: jest
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")

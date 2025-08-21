@@ -57,7 +57,7 @@ import {
   defaultGeneralSearchSettings,
   defaultSearchPageOptions,
   GeneralSearchSettings,
-  generateSearchPageOptionsFromQueryString,
+  generateSearchPageOptionsFromLocation,
   getRawModeFromStorage,
   SearchContext,
   SearchPageOptions,
@@ -217,7 +217,7 @@ export const Search = ({
       // If the search options are available from browser history, ignore those in the query string.
       searchPageHistoryState
         ? Promise.resolve(undefined)
-        : generateSearchPageOptionsFromQueryString(history.location),
+        : generateSearchPageOptionsFromLocation(history.location),
       getAdvancedSearchesFromServer(),
     ])
       .then(
