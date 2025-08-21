@@ -38,7 +38,7 @@ import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
-import { routes } from "../mainui/routes";
+import { NEW_FAVOURITES_PATH, routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -166,11 +166,6 @@ export interface SearchPageBodyProps {
    * The title of the search result list.
    */
   searchResultTitle?: string;
-  /**
-   * If `true`, refresh search results after a favourite is removed.
-   * Useful for the Favourites page to keep the list synchronised.
-   */
-  refreshOnFavouriteRemoved?: boolean;
 }
 
 /**
@@ -195,7 +190,6 @@ export const SearchPageBody = ({
   customShowSpinner = false,
   getRemoteSearchesProvider = getRemoteSearchesFromServer,
   searchResultTitle,
-  refreshOnFavouriteRemoved = false,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -772,7 +766,9 @@ export const SearchPageBody = ({
       return mapSearchResultItems(
         searchResults,
         highlights,
-        refreshOnFavouriteRemoved ? handleFavouriteRemoved : undefined,
+        pathname.includes(NEW_FAVOURITES_PATH)
+          ? handleFavouriteRemoved
+          : undefined,
       );
     } else if (isGalleryItems(from, searchResults)) {
       return <GallerySearchResult items={searchResults} />;
