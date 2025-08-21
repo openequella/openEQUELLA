@@ -16,11 +16,18 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from "react";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { AppContext } from "../mainui/App";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
-import { FavouritesType } from "../modules/FavouriteModule";
+import {
+  FavouritesType,
+  searchFavouriteItems,
+} from "../modules/FavouriteModule";
+import { SearchOptions } from "../modules/SearchModule";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
@@ -30,15 +37,19 @@ import {
   SearchPageOptions,
   SearchPageRefinePanelConfig,
   defaultSearchPageRefinePanelConfig,
+  defaultPagedSearchResult,
 } from "../search/SearchPageHelper";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSelector from "./components/FavouritesSelector";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
   languageStrings.favourites.favouritesSelector;
 
 const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
+  const { currentUser } = useContext(AppContext);
+
   const [favouritesType, setFavouritesType] =
     useState<FavouritesType>("resources");
 
@@ -95,11 +106,28 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
   };
 
+  const doListSearchForFavItems = useCallback(
+    async (
+      searchOptions: SearchOptions,
+    ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+      pipe(
+        O.fromNullable(currentUser),
+        O.match(
+          () =>
+            // fallback when currentUser is undefined
+            Promise.resolve(defaultPagedSearchResult),
+          (user) => searchFavouriteItems(searchOptions, user),
+        ),
+      ),
+    [currentUser],
+  );
+
   return (
     <Search
       updateTemplate={updateTemplate}
       initialSearchConfig={initialSearchConfig}
       pageTitle={title}
+      doListSearch={doListSearchForFavItems}
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (
