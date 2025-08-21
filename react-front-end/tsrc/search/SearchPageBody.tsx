@@ -766,6 +766,7 @@ export const SearchPageBody = ({
       return mapSearchResultItems(
         searchResults,
         highlights,
+        undefined,
         pathname.includes(NEW_FAVOURITES_PATH)
           ? handleFavouriteRemoved
           : undefined,

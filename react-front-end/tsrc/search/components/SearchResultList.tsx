@@ -292,16 +292,16 @@ export const SearchResultList = ({
  *
  * @param items the search result items to map over
  * @param highlights a list of highlight terms
- * @param onFavouriteRemoved Optional callback passed to each `SearchResult` which is fired after a favourite is successfully removed.
  * @param getViewerDetails optional function to override retrieval of viewer details
+ * @param onFavouriteRemoved optional callback passed to each `SearchResult` which is fired after a favourite is successfully removed.
  */
 export const mapSearchResultItems = (
   items: OEQ.Search.SearchResultItem[],
   highlights: string[],
-  onFavouriteRemoved?: () => void,
   getViewerDetails?: (
     mimeType: string,
   ) => Promise<OEQ.MimeType.MimeTypeViewerDetail>,
+  onFavouriteRemoved?: () => void,
 ): React.ReactNode[] =>
   items.map((item) => (
     <SearchResult
