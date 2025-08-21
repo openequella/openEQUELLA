@@ -166,6 +166,11 @@ export interface SearchPageBodyProps {
    * The title of the search result list.
    */
   searchResultTitle?: string;
+  /**
+   * If `true`, refresh search results after a favourite is removed.
+   * Useful for the Favourites page to keep the list synchronised.
+   */
+  refreshOnFavouriteRemoved?: boolean;
 }
 
 /**
@@ -190,6 +195,7 @@ export const SearchPageBody = ({
   customShowSpinner = false,
   getRemoteSearchesProvider = getRemoteSearchesFromServer,
   searchResultTitle,
+  refreshOnFavouriteRemoved = false,
 }: SearchPageBodyProps) => {
   const {
     enableCSVExportButton,
@@ -504,6 +510,8 @@ export const SearchPageBody = ({
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
 
+  const handleFavouriteRemoved = () => doSearch(searchPageOptions);
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -761,7 +769,11 @@ export const SearchPageBody = ({
     }
 
     if (isListItems(from, searchResults)) {
-      return mapSearchResultItems(searchResults, highlights);
+      return mapSearchResultItems(
+        searchResults,
+        highlights,
+        refreshOnFavouriteRemoved ? handleFavouriteRemoved : undefined,
+      );
     } else if (isGalleryItems(from, searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }

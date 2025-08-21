@@ -137,6 +137,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             refinePanelConfig={favouritesPageRefinePanelConfig(
               searchContextProps,
             )}
+            refreshOnFavouriteRemoved
           />
         )}
       </SearchContext.Consumer>

@@ -173,6 +173,11 @@ export interface SearchResultProps {
    * Props for display or hide the action buttons.
    */
   actionButtonConfig?: SearchResultActionButtonConfig;
+  /**
+   * This function is called after a successful 'Remove from favourites' action.
+   * Intended for refreshing the result list on the Favourites page.
+   */
+  onFavouriteRemoved?: () => void;
 }
 
 /**
@@ -198,6 +203,7 @@ export default function SearchResult({
   customActionButtons,
   customOnClickTitleHandler,
   actionButtonConfig = defaultActionButtonProps,
+  onFavouriteRemoved,
 }: SearchResultProps) {
   const { showAddToHierarchy, showAddToFavourite } = actionButtonConfig;
   const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
@@ -293,7 +299,10 @@ export default function SearchResult({
     if (!bookmarkId) {
       throw new Error("Bookmark ID can't be falsy.");
     }
-    return deleteFavouriteItem(bookmarkId).then(() => setBookmarkId(undefined));
+    return deleteFavouriteItem(bookmarkId).then(() => {
+      setBookmarkId(undefined);
+      onFavouriteRemoved?.();
+    });
   };
 
   const generateItemMetadata = () => {
