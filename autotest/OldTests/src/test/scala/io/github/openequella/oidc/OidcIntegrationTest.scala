@@ -131,7 +131,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     // Because the intent of this test is checking user search result, whether to use New UI or Legacy UI
     // does not really matter. So only run this test in New UI.
     logon()
-    val searchPage = new MenuSection(context).get().clickMenu("Search", new NewSearchPage(context))
+    val searchPage = new NewSearchPage(context).load()
 
     searchPage.expandRefineControlPanel()
     searchPage.selectOwner(TEST_USER.username)
@@ -153,7 +153,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
 
     // Since the testing user is now associated to the existing user 'autotest' who has four items,
     // an item search filtered by this testing user should return four.
-    val searchPage = new MenuSection(context).get().clickMenu("Search", new NewSearchPage(context))
+    val searchPage = new NewSearchPage(context).load()
     searchPage.expandRefineControlPanel()
     searchPage.selectOwner(TEST_USER.username)
     searchPage.waitForSearchCompleted(4)
