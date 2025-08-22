@@ -304,7 +304,7 @@ describe("<SearchResult/>", () => {
     updateMockGlobalCourseList();
     const item = mockData.basicSearchObj;
     const checkItemTitleLink = (page: RenderResult, url: string) => {
-      expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
+      expect(page.getByRole("link", { name: item.name! })).toHaveAttribute(
         "href",
         url,
       );
@@ -335,7 +335,7 @@ describe("<SearchResult/>", () => {
       customOnClickTitleHandler: customHandler,
     });
 
-    const title = getByText(`${item.name}`, { selector: "a" });
+    const title = getByText(`${item.name}`, { selector: "span" });
     await userEvent.click(title);
 
     expect(customHandler).toHaveBeenCalledTimes(1);

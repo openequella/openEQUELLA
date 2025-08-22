@@ -369,7 +369,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   public void addToKeyResource(String itemName, String hierarchyName) {
     By addToKeyResourceButtonXpath =
         By.xpath(
-            "//div[h6[a[text()='"
+            "//div[h6[a[string(.)='"
                 + itemName
                 + "']]]//button[@aria-label='Add as key resource to a hierarchy']");
 
