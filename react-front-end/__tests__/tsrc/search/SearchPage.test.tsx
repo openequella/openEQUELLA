@@ -133,7 +133,7 @@ describe("<SearchPage/>", () => {
       "shows FavouriteItemDialog to %s",
       async (defaultIcon, updatedIcon, itemName: string) => {
         const searchResultItem = page
-          .getByText(itemName, { selector: "a" })
+          .getByText(itemName, { selector: "span" })
           .closest("li");
         if (!searchResultItem) {
           throw new Error("Failed to find the mocked search result Item.");

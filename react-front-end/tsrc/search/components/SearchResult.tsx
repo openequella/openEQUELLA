@@ -20,7 +20,6 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import {
-  Divider,
   Grid,
   IconButton,
   List,
@@ -29,8 +28,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import type { Theme } from "@mui/material/styles";
-import { styled } from "@mui/material/styles";
+import { styled, Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -41,6 +39,8 @@ import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
 import { Date as DateDisplay } from "../../components/Date";
+import HighlightField from "../../components/HighlightField";
+import MetadataRow from "../../components/MetadataRow";
 import { OEQLink } from "../../components/OEQLink";
 import OEQThumb from "../../components/OEQThumb";
 import { StarRating } from "../../components/StarRating";
@@ -62,26 +62,33 @@ import {
 import { getMimeTypeDefaultViewerDetails } from "../../modules/MimeTypesModule";
 import { isLiveItem, searchItemAttachments } from "../../modules/SearchModule";
 import { formatSize, languageStrings } from "../../util/langstrings";
-import { highlight } from "../../util/TextUtils";
 import { buildOpenSummaryPageHandler } from "../SearchPageHelper";
 import FavouriteItemDialog from "./FavouriteItemDialog";
 import { SearchResultAttachmentsList } from "./SearchResultAttachmentsList";
 import ModifyKeyResourceDialog from "./ModifyKeyResourceDialog";
 import { ResourceSelector } from "./ResourceSelector";
 
-const PREFIX = "ItemDrmContext";
+const {
+  searchResult: searchResultStrings,
+  comments: commentStrings,
+  starRatings: ratingStrings,
+  selectResource: selectResourceStrings,
+  favouriteItem: favouriteItemStrings,
+  addToHierarchy: { title: addToHierarchyTitle },
+} = languageStrings.searchpage;
 
-export const classes = {
+const PREFIX = "SearchResult";
+
+const classes = {
   inline: `${PREFIX}-inline`,
   heading: `${PREFIX}-heading`,
   itemDescription: `${PREFIX}-itemDescription`,
   additionalDetails: `${PREFIX}-additionalDetails`,
   status: `${PREFIX}-status`,
-  highlight: `${PREFIX}-highlight`,
   divider: `${PREFIX}-divider`,
 };
 
-export const Root = styled("div")(({ theme }) => {
+const StyledDiv = styled("div")(({ theme }) => {
   return {
     [`& .${classes.inline}`]: {
       display: "inline",
@@ -102,23 +109,11 @@ export const Root = styled("div")(({ theme }) => {
     [`& .${classes.status}`]: {
       textTransform: "capitalize",
     },
-    [`& .${classes.highlight}`]: {
-      color: theme.palette.secondary.main,
-    },
     [`& .${classes.divider}`]: {
       margin: "0px 16px",
     },
   };
 });
-
-const {
-  searchResult: searchResultStrings,
-  comments: commentStrings,
-  starRatings: ratingStrings,
-  selectResource: selectResourceStrings,
-  favouriteItem: favouriteItemStrings,
-  addToHierarchy: { title: addToHierarchyTitle },
-} = languageStrings.searchpage;
 
 /**
  * Props for controlling the visibility of action buttons for each SearchResult.
@@ -246,6 +241,10 @@ export default function SearchResult({
   const [drmStatus, setDrmStatus] =
     useState<OEQ.Search.DrmStatus>(initialDrmStatus);
 
+  const highlight = (content: string) => (
+    <HighlightField content={content} highlights={highlights} />
+  );
+
   const checkDrmPermission = (onSuccess: () => void) =>
     setDrmCheckOnSuccessHandler(() => onSuccess);
 
@@ -296,90 +295,61 @@ export default function SearchResult({
     return deleteFavouriteItem(bookmarkId).then(() => setBookmarkId(undefined));
   };
 
-  const generateItemMetadata = () => {
-    const metaDataDivider = (
-      <Divider
-        flexItem
-        component="span"
-        variant="middle"
-        orientation="vertical"
-        className={classes.divider}
-      />
-    );
+  const generateItemMetadata = () => (
+    <MetadataRow>
+      <Typography component="span" className={classes.status}>
+        {status}
+      </Typography>
 
-    return (
-      <div className={classes.additionalDetails}>
-        <Typography component="span" className={classes.status}>
-          {status}
-        </Typography>
+      <Typography component="span">
+        {searchResultStrings.dateModified}&nbsp;
+        <DateDisplay displayRelative date={modifiedDate} />
+      </Typography>
 
-        {metaDataDivider}
+      {showAddToFavourite && (
+        <TooltipIconButton
+          title={
+            bookmarkId ? favouriteItemStrings.remove : favouriteItemStrings.add
+          }
+          onClick={() => setShowFavouriteItemDialog(true)}
+          size="small"
+        >
+          {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </TooltipIconButton>
+      )}
+
+      {showAddToHierarchy && (
+        <TooltipIconButton
+          title={addToHierarchyTitle}
+          onClick={() => setShowAddHierarchyDialog(true)}
+          size="small"
+        >
+          <BookmarkAddOutlinedIcon />
+        </TooltipIconButton>
+      )}
+
+      {customActionButtons?.map((button, index) => (
+        <Fragment key={index}>{button}</Fragment>
+      ))}
+
+      {commentCount > 0 && isMdUp && (
         <Typography component="span">
-          {searchResultStrings.dateModified}&nbsp;
-          <DateDisplay displayRelative date={modifiedDate} />
+          <HashLink
+            to={`${routes.ViewItem.to(uuid, version)}#comments-list`}
+            smooth
+          >
+            {formatSize(commentCount, commentStrings)}
+          </HashLink>
         </Typography>
+      )}
 
-        {showAddToFavourite && (
-          <>
-            {metaDataDivider}
-            <TooltipIconButton
-              title={
-                bookmarkId
-                  ? favouriteItemStrings.remove
-                  : favouriteItemStrings.add
-              }
-              onClick={() => setShowFavouriteItemDialog(true)}
-              size="small"
-            >
-              {bookmarkId ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </TooltipIconButton>
-          </>
-        )}
-
-        {showAddToHierarchy && (
-          <>
-            {metaDataDivider}
-            <TooltipIconButton
-              title={addToHierarchyTitle}
-              onClick={() => setShowAddHierarchyDialog(true)}
-              size="small"
-            >
-              <BookmarkAddOutlinedIcon />
-            </TooltipIconButton>
-          </>
-        )}
-
-        {customActionButtons?.map((button, index) => (
-          <Fragment key={index}>
-            {metaDataDivider} {button}
-          </Fragment>
-        ))}
-
-        {commentCount > 0 && isMdUp && (
-          <>
-            {metaDataDivider}
-            <Typography component="span">
-              <HashLink
-                to={`${routes.ViewItem.to(uuid, version)}#comments-list`}
-                smooth
-              >
-                {formatSize(commentCount, commentStrings)}
-              </HashLink>
-            </Typography>
-          </>
-        )}
-
-        {starRatings >= 0 && isMdUp && (
-          <>
-            {metaDataDivider}
-            <div aria-label={sprintf(ratingStrings.label, starRatings)}>
-              <StarRating numberOfStars={5} rating={starRatings} />
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
+      {starRatings >= 0 && isMdUp && (
+        <div aria-label={sprintf(ratingStrings.label, starRatings)}>
+          <StarRating numberOfStars={5} rating={starRatings} />
+        </div>
+      )}
+    </MetadataRow>
+  );
 
   const customDisplayMetadata = displayFields.map(
     (element: OEQ.Search.DisplayFields, index: number) => {
@@ -410,11 +380,8 @@ export default function SearchResult({
     },
   );
 
-  const highlightField = (fieldValue: string) =>
-    HTMLReactParser(highlight(fieldValue, highlights, classes.highlight));
-
   const itemLink = () => {
-    const itemTitle = name ? highlightField(name) : uuid;
+    const itemTitle = name ? highlight(name) : uuid;
     const { url, onClick } = buildOpenSummaryPageHandler(
       uuid,
       version,
@@ -484,7 +451,7 @@ export default function SearchResult({
       : itemLink();
 
   return (
-    <Root>
+    <StyledDiv>
       <ListItem
         alignItems="flex-start"
         divider
@@ -502,7 +469,7 @@ export default function SearchResult({
           secondary={
             <>
               <Typography className={classes.itemDescription}>
-                {highlightField(description ?? "")}
+                {highlight(description ?? "")}
               </Typography>
               <List disablePadding>{customDisplayMetadata}</List>
               <ItemDrmContext.Provider
@@ -520,8 +487,10 @@ export default function SearchResult({
               {generateItemMetadata()}
             </>
           }
-          primaryTypographyProps={{ color: "primary", variant: "h6" }}
-          secondaryTypographyProps={{ component: "section" }}
+          slotProps={{
+            primary: { color: "primary", variant: "h6" },
+            secondary: { component: "section" },
+          }}
         />
       </ListItem>
 
@@ -544,6 +513,6 @@ export default function SearchResult({
       )}
 
       {drmDialog}
-    </Root>
+    </StyledDiv>
   );
 }

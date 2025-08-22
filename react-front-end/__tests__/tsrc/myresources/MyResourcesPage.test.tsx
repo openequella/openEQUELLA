@@ -364,7 +364,7 @@ describe("<MyResourcesPage/>", () => {
           },
         });
 
-      await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
+      await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "span" }));
       // Confirm that the image is displayed in the Lightbox now.
       const image = container.querySelector(".Lightbox-lightboxImage");
       expect(image).toBeInTheDocument();
@@ -394,7 +394,7 @@ describe("<MyResourcesPage/>", () => {
           url,
         });
 
-        await user.click(getByText(scrapbookTitle, { selector: "a" }));
+        await user.click(getByText(scrapbookTitle, { selector: "span" }));
 
         expect(mockWindowOpen).toHaveBeenLastCalledWith(url, "_blank");
       },
