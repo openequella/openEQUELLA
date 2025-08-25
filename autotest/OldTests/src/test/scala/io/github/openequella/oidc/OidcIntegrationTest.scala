@@ -9,13 +9,14 @@ import com.tle.webtests.pageobject.{HomePage, LoginPage, SettingsPage}
 import com.tle.webtests.test.AbstractIntegrationTest
 import integtester.oidc.OidcIntegration
 import integtester.oidc.OidcUser.TEST_USER
-import io.github.openequella.pages.myresources.MyResourcesPage
+import io.github.openequella.pages.myresources.NewMyResourcesPage
 import io.github.openequella.pages.oidc.OidcSettingsPage
 import io.github.openequella.pages.search.NewSearchPage
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.{ExpectedConditions, WebDriverWait}
 import org.testng.Assert.{assertEquals, assertTrue}
 import org.testng.annotations.{DataProvider, Test}
+import testng.annotation.NewUIOnly
 
 @TestInstitution("vanilla")
 class OidcIntegrationTest extends AbstractIntegrationTest {
@@ -121,11 +122,14 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     assertEquals(owner, s"${TEST_USER.given_name} ${TEST_USER.family_name}")
   }
 
+  @NewUIOnly
   @Test(
     description = "OIDC users should be included in the user search result",
     dependsOnMethods = Array("contribute")
   )
   def searchUser(): Unit = {
+    // Because the intent of this test is checking user search result, whether to use New UI or Legacy UI
+    // does not really matter. So only run this test in New UI.
     logon()
     val searchPage = new NewSearchPage(context).load()
 
@@ -134,11 +138,14 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     searchPage.waitForSearchCompleted(1)
   }
 
+  @NewUIOnly
   @Test(
     description = "Using custom User ID attribute to retrieve the correct user ID",
     dependsOnMethods = Array("searchUser")
   )
   def userIdAttribute(): Unit = {
+    // Similar to the previous test case, run this one only in New UI because the intent is to
+    // check whether the correct user ID is retrieved using the configured user ID attribute.
     logon()
     val page = new OidcSettingsPage(context).load()
     page.inputTextField("User ID attribute", "legacy_id")
@@ -155,7 +162,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
     logout()
     logonOidc()
     val myResourcesPage =
-      new MenuSection(context).get().clickMenu("My resources", new MyResourcesPage(context))
+      new MenuSection(context).get().clickMenu("My resources", new NewMyResourcesPage(context))
     myResourcesPage.waitForSearchCompleted(4)
   }
 
