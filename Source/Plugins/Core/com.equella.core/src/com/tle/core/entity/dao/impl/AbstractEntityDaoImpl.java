@@ -70,7 +70,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                           hql.append("DISTINCT ");
                         }
                         hql.append("NEW com.tle.beans.entity.BaseEntityLabel");
-                        hql.append("(be.id, be.uuid, be.name.id, be.owner, be.systemType) FROM ");
+                        hql.append("(be.id, be.uuid, be.name.id, be.owner) FROM ");
                         hql.append(getPersistentClass().getName());
                         hql.append(" be ");
                         if (callback != null && !Check.isEmpty(callback.getAdditionalJoins())) {

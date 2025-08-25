@@ -111,13 +111,9 @@ public class FilterByWorkflowSection
                       workflowForCollection.getId(),
                       workflowForCollection.getUuid(),
                       workflowForCollection.getName().getId(),
-                      workflowForCollection.getOwner(),
-                      workflowForCollection.isSystemType()));
-
+                      workflowForCollection.getOwner()));
             } else {
-              for (BaseEntityLabel bel : listManagable) {
-                workflowOptions.add(bel);
-              }
+              workflowOptions.addAll(listManagable);
             }
 
             return workflowOptions;

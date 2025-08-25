@@ -50,7 +50,7 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
     MetadataSchemaApi.listSchemas() match {
       case Right(schemas) =>
         schemas
-          .map(view => new BaseEntityLabel(view.id, view.uuid, view.bundleId, view.owner, false))
+          .map(view => new BaseEntityLabel(view.id, view.uuid, view.bundleId, view.owner))
           .asJava
       case Left(errors) =>
         throw new ClientRequestException(s"Error listing schemas.", errors)

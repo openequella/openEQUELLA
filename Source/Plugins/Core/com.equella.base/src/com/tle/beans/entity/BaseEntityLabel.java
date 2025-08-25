@@ -32,16 +32,14 @@ public class BaseEntityLabel
   private final long bundleId;
   private final String uuid;
   private final String owner;
-  private final boolean systemType;
 
   private boolean forCollection;
 
-  public BaseEntityLabel(long id, String uuid, long bundleId, String owner, boolean systemType) {
+  public BaseEntityLabel(long id, String uuid, long bundleId, String owner) {
     this.id = id;
     this.uuid = uuid;
     this.bundleId = bundleId;
     this.owner = owner;
-    this.systemType = systemType;
   }
 
   public long getId() {
@@ -59,10 +57,6 @@ public class BaseEntityLabel
 
   public String getOwner() {
     return owner;
-  }
-
-  public boolean isSystemType() {
-    return systemType;
   }
 
   /**
