@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
   "com.auth0" % "java-jwt" % "4.5.0",
-  "com.auth0" % "jwks-rsa" % "0.22.2"
+  "com.auth0" % "jwks-rsa" % "0.23.0"
 )
 
 libraryDependencies ++= Seq(
