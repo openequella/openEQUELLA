@@ -60,7 +60,7 @@
     "prettier": "3.6.2",
     "rollup": "4.46.2",
     "rollup-plugin-typescript2": "0.36.0",
-    "tough-cookie": "5.1.2",
+    "tough-cookie": "6.0.0",
     "ts-jest": "29.4.0",
     "tslib": "2.8.1",
     "typescript": "5.8.3"
