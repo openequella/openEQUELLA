@@ -54,29 +54,9 @@ public class PartiallyLockedDialog implements ActionListener {
   }
 
   private void setup(Collection<BaseEntityLabel> usages) {
-    StringBuilder msg =
-        new StringBuilder(
-            CurrentLocale.get(
-                "com.tle.admin.schema.manager.partiallylockeddialog.beingused")); //$NON-NLS-1$
+    String msg = buildLockedReasonMessage(usages);
 
-    for (BaseEntityLabel entity : usages) {
-      msg.append(" - "); // $NON-NLS-1$
-      msg.append(BundleCache.getString(entity));
-      msg.append(" ["); // $NON-NLS-1$
-      msg.append(
-          CurrentLocale.get(
-              "com.tle.admin.schema.manager.partiallylockeddialog." //$NON-NLS-1$
-                  + (entity.getPrivType().equals("COLLECTION")
-                      ? "collection"
-                      : "search"))); //$NON-NLS-1$ //$NON-NLS-2$
-      msg.append("]\n"); // $NON-NLS-1$
-    }
-
-    msg.append(
-        CurrentLocale.get(
-            "com.tle.admin.schema.manager.partiallylockeddialog.info")); //$NON-NLS-1$
-
-    JTextArea message = new JTextArea(msg.toString());
+    JTextArea message = new JTextArea(msg);
     message.setEditable(false);
     message.setWrapStyleWord(true);
     message.setLineWrap(true);
@@ -85,7 +65,7 @@ public class PartiallyLockedDialog implements ActionListener {
     scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-    unlock = new JButton(CurrentLocale.get("schema.unlock")); // $NON-NLS-1$
+    unlock = new JButton(CurrentLocale.get("schema.unlock"));
     close = new JButton(EditorHelper.DEFAULT_CLOSE_TEXT);
 
     unlock.addActionListener(this);
@@ -105,13 +85,27 @@ public class PartiallyLockedDialog implements ActionListener {
     content.add(close, new Rectangle(2, 1, 1, 1));
   }
 
+  private static String buildLockedReasonMessage(Collection<BaseEntityLabel> usages) {
+    StringBuilder msg = new StringBuilder(s("beingused"));
+
+    for (BaseEntityLabel entity : usages) {
+      msg.append(" - ");
+      msg.append(BundleCache.getString(entity));
+      msg.append(" [");
+      msg.append(s(entity.isForCollection() ? "collection" : "search"));
+      msg.append("]\n");
+    }
+
+    msg.append(s("info"));
+
+    return msg.toString();
+  }
+
   public boolean askToUnlock(Component parent) {
     dialog = ComponentHelper.createJDialog(parent);
     dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     dialog.getRootPane().setDefaultButton(close);
-    dialog.setTitle(
-        CurrentLocale.get(
-            "com.tle.admin.schema.manager.partiallylockeddialog.title")); //$NON-NLS-1$
+    dialog.setTitle(s("title"));
     dialog.setContentPane(content);
     dialog.setModal(true);
 
@@ -138,7 +132,7 @@ public class PartiallyLockedDialog implements ActionListener {
           JOptionPane.showConfirmDialog(
               dialog,
               CurrentLocale.get("schema.prompt.unlock.body"),
-              CurrentLocale.get("schema.prompt.unlock.title"), // $NON-NLS-1$ //$NON-NLS-2$
+              CurrentLocale.get("schema.prompt.unlock.title"),
               JOptionPane.YES_NO_OPTION);
 
       if (result == JOptionPane.YES_OPTION) {
@@ -146,5 +140,9 @@ public class PartiallyLockedDialog implements ActionListener {
         dialog.dispose();
       }
     }
+  }
+
+  private static String s(String key) {
+    return CurrentLocale.get("com.tle.admin.schema.manager.partiallylockeddialog." + key);
   }
 }

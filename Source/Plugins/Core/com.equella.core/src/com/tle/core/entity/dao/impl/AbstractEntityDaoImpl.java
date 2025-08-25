@@ -102,9 +102,9 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                     });
 
     if (resolveVirtualTo != null) {
-      String privType = resolveVirtualTo;
-      for (BaseEntityLabel result : results) {
-        result.setPrivType(privType);
+      boolean isCollectionType = BaseEntityLabel.isCollectionType(resolveVirtualTo);
+      if (results != null) {
+        results.forEach(result -> result.setForCollection(isCollectionType));
       }
     }
 

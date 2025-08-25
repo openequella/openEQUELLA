@@ -21,11 +21,12 @@ package com.tle.beans.entity;
 import com.tle.common.Check;
 import com.tle.common.Check.FieldEquality;
 import com.tle.common.i18n.BundleReference;
+import java.io.Serial;
 import java.io.Serializable;
 
 public class BaseEntityLabel
     implements Serializable, FieldEquality<BaseEntityLabel>, BundleReference {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final long id;
   private final long bundleId;
@@ -33,7 +34,7 @@ public class BaseEntityLabel
   private final String owner;
   private final boolean systemType;
 
-  private String privType;
+  private boolean forCollection;
 
   public BaseEntityLabel(long id, String uuid, long bundleId, String owner, boolean systemType) {
     this.id = id;
@@ -64,12 +65,25 @@ public class BaseEntityLabel
     return systemType;
   }
 
-  public void setPrivType(String privType) {
-    this.privType = privType;
+  /**
+   * @return true if this entity is associated with a collection, false otherwise.
+   */
+  public boolean isForCollection() {
+    return forCollection;
   }
 
-  public String getPrivType() {
-    return privType;
+  public void setForCollection(boolean forCollection) {
+    this.forCollection = forCollection;
+  }
+
+  /**
+   * Static helper to determine if forCollection should be true based on a String value.
+   *
+   * @param type the type string to check
+   * @return true if type equals "COLLECTION", false otherwise
+   */
+  public static boolean isCollectionType(String type) {
+    return "COLLECTION".equals(type);
   }
 
   @Override

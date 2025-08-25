@@ -307,7 +307,8 @@ public abstract class AbstractEntityServiceImpl<
             entity.getName().getId(),
             entity.getOwner(),
             entity.isSystemType());
-    label.setPrivType(privilegeType);
+    label.setForCollection(BaseEntityLabel.isCollectionType(privilegeType));
+
     return label;
   }
 
