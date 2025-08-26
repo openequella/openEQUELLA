@@ -55,7 +55,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
 
   protected List<BaseEntityLabel> listAll(
       String resolveVirtualTo, final ListCallback callback, final boolean includeSystem) {
-    List<BaseEntityLabel> results =
+    List<BaseEntityLabel> labels =
         (List<BaseEntityLabel>)
             getHibernateTemplate()
                 .execute(
@@ -101,14 +101,12 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                       }
                     });
 
-    if (resolveVirtualTo != null) {
+    if (resolveVirtualTo != null && labels != null) {
       boolean isCollectionType = BaseEntityLabel.isCollectionType(resolveVirtualTo);
-      if (results != null) {
-        results.forEach(result -> result.setForCollection(isCollectionType));
-      }
+      labels.forEach(label -> label.setForCollection(isCollectionType));
     }
 
-    return results;
+    return labels;
   }
 
   @Override
