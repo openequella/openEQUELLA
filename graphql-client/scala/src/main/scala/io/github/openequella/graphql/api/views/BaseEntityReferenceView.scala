@@ -34,18 +34,21 @@ import io.github.openequella.graphql.client.BaseEntityReference
   *   the language bundle ID of the entity
   * @param owner
   *   the owner of the entity
+  * @param forCollection
+  *   Whether this entity is a collection
   */
 case class BaseEntityReferenceView(
     id: Long,
     uuid: String,
     bundleId: Long,
-    owner: String
+    owner: String,
+    forCollection: Boolean
 )
 object BaseEntityReferenceView {
 
   /** The selection builder for BaseEntityReferenceView.
     */
   val selector: SelectionBuilder[BaseEntityReference, BaseEntityReferenceView] =
-    (BaseEntityReference.id ~ BaseEntityReference.uuid ~ BaseEntityReference.bundleId ~ BaseEntityReference.owner)
-      .mapN(BaseEntityReferenceView(_, _, _, _))
+    (BaseEntityReference.id ~ BaseEntityReference.uuid ~ BaseEntityReference.bundleId ~ BaseEntityReference.owner ~ BaseEntityReference.forCollection)
+      .mapN(BaseEntityReferenceView(_, _, _, _, _))
 }

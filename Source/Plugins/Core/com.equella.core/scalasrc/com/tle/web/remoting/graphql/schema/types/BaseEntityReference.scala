@@ -43,7 +43,9 @@ final case class BaseEntityReference(
     @GQLDescription("The language bundle ID of the entity")
     bundleId: Long,
     @GQLDescription("The owner of the entity")
-    owner: String
+    owner: String,
+    @GQLDescription("Whether this entity is a collection")
+    forCollection: Boolean
 )
 
 object BaseEntityReference {
@@ -51,6 +53,7 @@ object BaseEntityReference {
     id = label.getId,
     uuid = label.getUuid,
     bundleId = label.getBundleId,
-    owner = label.getOwner
+    owner = label.getOwner,
+    forCollection = label.isForCollection
   )
 }

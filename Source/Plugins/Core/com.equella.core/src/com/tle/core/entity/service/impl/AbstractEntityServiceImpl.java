@@ -301,13 +301,9 @@ public abstract class AbstractEntityServiceImpl<
     auditLogService.logEntityCreated(id);
 
     BaseEntityLabel label =
-        new BaseEntityLabel(
-            id,
-            entity.getUuid(),
-            entity.getName().getId(),
-            entity.getOwner(),
-            entity.isSystemType());
-    label.setPrivType(privilegeType);
+        new BaseEntityLabel(id, entity.getUuid(), entity.getName().getId(), entity.getOwner());
+    label.setForCollection(BaseEntityLabel.isCollectionType(privilegeType));
+
     return label;
   }
 

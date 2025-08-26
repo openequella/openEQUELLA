@@ -42,4 +42,9 @@ object BaseEntityReference {
     */
   def owner: SelectionBuilder[BaseEntityReference, String] =
     _root_.caliban.client.SelectionBuilder.Field("owner", Scalar())
+
+  /** Whether this entity is a collection
+    */
+  def forCollection: SelectionBuilder[BaseEntityReference, Boolean] =
+    _root_.caliban.client.SelectionBuilder.Field("forCollection", Scalar())
 }

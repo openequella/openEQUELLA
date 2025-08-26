@@ -55,7 +55,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
 
   protected List<BaseEntityLabel> listAll(
       String resolveVirtualTo, final ListCallback callback, final boolean includeSystem) {
-    List<BaseEntityLabel> results =
+    List<BaseEntityLabel> labels =
         (List<BaseEntityLabel>)
             getHibernateTemplate()
                 .execute(
@@ -70,7 +70,7 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                           hql.append("DISTINCT ");
                         }
                         hql.append("NEW com.tle.beans.entity.BaseEntityLabel");
-                        hql.append("(be.id, be.uuid, be.name.id, be.owner, be.systemType) FROM ");
+                        hql.append("(be.id, be.uuid, be.name.id, be.owner) FROM ");
                         hql.append(getPersistentClass().getName());
                         hql.append(" be ");
                         if (callback != null && !Check.isEmpty(callback.getAdditionalJoins())) {
@@ -101,14 +101,12 @@ public abstract class AbstractEntityDaoImpl<T extends BaseEntity>
                       }
                     });
 
-    if (resolveVirtualTo != null) {
-      String privType = resolveVirtualTo;
-      for (BaseEntityLabel result : results) {
-        result.setPrivType(privType);
-      }
+    if (resolveVirtualTo != null && labels != null) {
+      boolean isCollectionType = BaseEntityLabel.isCollectionType(resolveVirtualTo);
+      labels.forEach(label -> label.setForCollection(isCollectionType));
     }
 
-    return results;
+    return labels;
   }
 
   @Override
