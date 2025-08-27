@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava"             % "33.4.8-jre",
   jacksonDataBind,
   jacksonModuleScala,
-  "com.auth0" % "jwks-rsa" % "0.22.2",
+  "com.auth0" % "jwks-rsa" % "0.23.0",
   "com.auth0" % "java-jwt" % "4.5.0"
 )
 
