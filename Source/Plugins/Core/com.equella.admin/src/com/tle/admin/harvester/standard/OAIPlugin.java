@@ -24,8 +24,6 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.i18n.Lookup;
-import com.tle.beans.entity.Schema;
-import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.applet.client.ClientService;
@@ -33,8 +31,6 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.OAIHarvesterSettings;
 import com.tle.common.harvester.RemoteOAIHarvesterService;
 import com.tle.common.i18n.StringLookup;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -225,17 +221,7 @@ public class OAIPlugin extends HarvesterPlugin<OAIHarvesterSettings> implements 
 
   @Override
   public void validateSchema(JComboBox<NameValue> collections) throws EditorException {
-    String collection = ((NameValue) collections.getSelectedItem()).getValue();
-    ItemDefinition itemDef =
-        driver
-            .getClientService()
-            .getService(RemoteItemDefinitionService.class)
-            .getByUuid(collection);
-
-    RemoteSchemaService schemaService =
-        driver.getClientService().getService(RemoteSchemaService.class);
-    Schema schema = schemaService.get(itemDef.getSchema().getId());
-    PropBagEx definition = schema.getDefinitionNonThreadSafe();
+    PropBagEx definition = getSchemaDefinition(collections);
 
     boolean nodeExists = false;
     String nodeLoc = "item/oai/id";
