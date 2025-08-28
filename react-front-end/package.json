@@ -60,7 +60,7 @@
     "@mui/x-date-pickers": "8.10.0",
     "@mui/x-tree-view": "8.10.0",
     "@openequella/rest-api-client": "file:../oeq-ts-rest-api",
-    "@tinymce/tinymce-react": "6.2.1",
+    "@tinymce/tinymce-react": "6.3.0",
     "axios": "1.11.0",
     "clsx": "2.1.1",
     "es6-object-assign": "1.1.0",
