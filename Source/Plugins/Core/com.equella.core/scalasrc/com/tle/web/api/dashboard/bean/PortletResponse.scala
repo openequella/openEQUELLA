@@ -30,21 +30,21 @@ import com.tle.core.dashboard.model.{
   */
 sealed trait PortletResponse {
   def commonDetails: PortletBase
-  def `type`: String
+  def portletType: String
 }
 
 /** DTO for portlets that do not have any additional configurations.
   */
 final case class BasicPortletBean(
     commonDetails: PortletBase,
-    `type`: String
+    portletType: String
 ) extends PortletResponse
 
 /** DTO for Formatted Text portlets, including the raw HTML content.
   */
 final case class FormattedTextPortletBean(
     commonDetails: PortletBase,
-    `type`: String,
+    portletType: String,
     rawHtml: String
 ) extends PortletResponse
 
@@ -52,7 +52,7 @@ final case class FormattedTextPortletBean(
   */
 final case class RecentContributionsPortletBean(
     commonDetails: PortletBase,
-    `type`: String,
+    portletType: String,
     collectionUuids: Option[List[String]],
     query: Option[String],
     maxAge: Option[Int],
@@ -64,7 +64,7 @@ final case class RecentContributionsPortletBean(
   */
 final case class TaskStatisticsPortletBean(
     commonDetails: PortletBase,
-    `type`: String,
+    portletType: String,
     trend: String
 ) extends PortletResponse
 
@@ -80,7 +80,7 @@ object PortletResponse {
         ) =>
       RecentContributionsPortletBean(
         commonDetails = commonDetails,
-        `type` = p.portletType.toString,
+        portletType = p.portletType.toString,
         collectionUuids = collectionUuids,
         query = query,
         maxAge = maxAge,
@@ -90,19 +90,19 @@ object PortletResponse {
     case p @ TaskStatisticsPortlet(commonDetails, trend) =>
       TaskStatisticsPortletBean(
         commonDetails = commonDetails,
-        `type` = p.portletType.toString,
+        portletType = p.portletType.toString,
         trend = trend.toString
       )
     case p @ FormattedTextPortlet(commonDetails, rawHtml) =>
       FormattedTextPortletBean(
         commonDetails = commonDetails,
-        `type` = p.portletType.toString,
+        portletType = p.portletType.toString,
         rawHtml = rawHtml
       )
     case other =>
       BasicPortletBean(
         commonDetails = other.commonDetails,
-        `type` = other.portletType.toString
+        portletType = other.portletType.toString
       )
   }
 }
