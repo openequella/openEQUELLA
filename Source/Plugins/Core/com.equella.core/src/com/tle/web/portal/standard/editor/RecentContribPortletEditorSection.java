@@ -73,6 +73,7 @@ public class RecentContribPortletEditorSection
 
   private static final String TYPE = "recent";
   public static final String KEY_TITLEONLY = "titleOnly";
+  public static final String ITEM_STATUS = "status";
 
   @PlugKey("editor.rss.label.titleonly")
   private static String titleOnly;
@@ -224,7 +225,7 @@ public class RecentContribPortletEditorSection
     } else {
       age.setValue(info, Integer.toString(extra.getAgeDays()));
     }
-    itemStatus.setSelectedStringValue(info, portlet.getAttribute("status"));
+    itemStatus.setSelectedStringValue(info, portlet.getAttribute(ITEM_STATUS));
     displayTypeList.setSelectedStringValue(info, portlet.getAttribute(KEY_TITLEONLY));
   }
 
@@ -257,7 +258,7 @@ public class RecentContribPortletEditorSection
       extra.setCollections(collectionService.getByIds(ids));
     }
     extra.setQuery(query.getValue(info));
-    portlet.setAttribute("status", itemStatus.getSelectedValueAsString(info));
+    portlet.setAttribute(ITEM_STATUS, itemStatus.getSelectedValueAsString(info));
     final String ageStr = age.getValue(info);
     if (!Check.isEmpty(ageStr)) {
       try {

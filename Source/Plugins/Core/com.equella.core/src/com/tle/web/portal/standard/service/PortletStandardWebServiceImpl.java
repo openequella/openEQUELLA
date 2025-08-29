@@ -18,7 +18,7 @@
 
 package com.tle.web.portal.standard.service;
 
-import static com.tle.core.item.serializer.ItemSerializerState.STATUS_ALIAS;
+import static com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.ITEM_STATUS;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -67,7 +67,7 @@ public class PortletStandardWebServiceImpl implements PortletStandardWebService 
       search.setOwner(portlet.getUserId());
       search.setSortType(SortType.DATEMODIFIED);
 
-      String status = portlet.getPortlet().getAttribute(STATUS_ALIAS);
+      String status = portlet.getPortlet().getAttribute(ITEM_STATUS);
       if (!Check.isEmpty(status)) {
         search.setItemStatuses(ItemStatus.valueOf(status.toUpperCase()));
       }

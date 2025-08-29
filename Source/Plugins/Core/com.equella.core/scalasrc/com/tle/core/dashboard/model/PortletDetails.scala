@@ -23,8 +23,10 @@ import com.tle.beans.item.ItemStatus
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.workflow.Trend
-import com.tle.core.item.serializer.ItemSerializerState.STATUS_ALIAS
-import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.KEY_TITLEONLY
+import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.{
+  KEY_TITLEONLY,
+  ITEM_STATUS
+}
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 
 import scala.jdk.CollectionConverters._
@@ -178,7 +180,7 @@ object RecentContributionsPortlet {
     }
 
   private def getItemStatus(portlet: Portlet): Either[String, Option[ItemStatus]] = {
-    Option(portlet.getAttribute(STATUS_ALIAS))
+    Option(portlet.getAttribute(ITEM_STATUS))
       .filter(_.nonEmpty)
       .map(_.toUpperCase) match {
       case Some(status) =>
