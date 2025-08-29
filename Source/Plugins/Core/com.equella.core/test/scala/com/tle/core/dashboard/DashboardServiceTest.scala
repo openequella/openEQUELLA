@@ -2,7 +2,7 @@ package com.tle.core.dashboard
 
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.item.ItemStatus
-import com.tle.common.i18n.{CurrentLocale, LangUtils}
+import com.tle.common.i18n.LangUtils
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.portal.entity.{Portlet, PortletPreference}
 import com.tle.common.usermanagement.user.CurrentUser
@@ -12,21 +12,21 @@ import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.dashboard.service.DashboardServiceImpl
 import com.tle.core.portal.service.PortletService
 import com.tle.core.settings.service.ConfigurationService
-import com.tle.web.resources.{PluginResourceHelper, ResourcesService}
+import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, mockStatic, when}
-import org.scalatest.GivenWhenThen
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks.forAll
 import org.scalatest.prop.TableFor2
 import org.scalatest.prop.Tables.Table
+import org.scalatest.{EitherValues, GivenWhenThen}
 
 import java.util.UUID
 import scala.jdk.CollectionConverters._
 
-class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
+class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen with EitherValues {
   val mockPortletService: PortletService             = mock(classOf[PortletService])
   val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
   val dashboardService = new DashboardServiceImpl(mockPortletService, mockConfigurationService)
@@ -36,11 +36,6 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   when(CurrentUser.wasAutoLoggedIn).thenReturn(false)
   when(CurrentUser.isGuest).thenReturn(false)
   when(CurrentUser.getUserID).thenReturn(userId)
-
-  // A mock of ResourcesService.getResourceHelper is required due to the use of `CoreStrings` in Recent Contributions portlet.
-  val mockResourceHelper = mock(classOf[PluginResourceHelper])
-  mockStatic(classOf[ResourcesService])
-  when(ResourcesService.getResourceHelper(any[Object])).thenReturn(mockResourceHelper)
 
   val portletName = "testing portlet"
   mockStatic(classOf[LangUtils])
@@ -75,9 +70,8 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("the common details should contain both the general configurations and user preference")
       val result = dashboardService.buildPortletDetails(searchPortlet)
-      result shouldBe a[Right[_, SearchPortlet]]
-      inside(result) { case Right(SearchPortlet(details)) =>
-        details shouldBe PortletBase(
+      result.value shouldBe SearchPortlet(
+        commonDetails = PortletBase(
           uuid = uuid,
           name = portletName,
           isInstitutionWide = false,
@@ -90,7 +84,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
           column = 1,
           order = 1
         )
-      }
+      )
     }
 
     it("collects additional details for Formatted text portlet") {
@@ -101,10 +95,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("the configured raw HTML content should be included")
       val result = dashboardService.buildPortletDetails(formattedTextPortlet)
-      result shouldBe a[Right[_, FormattedTextPortlet]]
-      inside(result) { case Right(FormattedTextPortlet(_, html)) =>
-        html shouldBe rawHtml
-      }
+      result.value.asInstanceOf[FormattedTextPortlet].rawHtml shouldBe rawHtml
     }
 
     it("collects additional details for Recent contribution portlet") {
@@ -120,7 +111,6 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("the configured contribution search criteria should be included")
       val result = dashboardService.buildPortletDetails(recentContributionsPortlet)
-      result shouldBe a[Right[_, RecentContributionsPortlet]]
       inside(result) {
         case Right(
               RecentContributionsPortlet(
@@ -143,14 +133,11 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
     it("collects additional details for Task statistics portlet") {
       Given("a Task statistics portlet")
       val taskStatisticsPortlet = new Portlet("taskstatistics")
-      taskStatisticsPortlet.setAttribute("trend", "WEEK")
+      taskStatisticsPortlet.setAttribute(KEY_DEFAULT_TREND, "WEEK")
 
       Then("the configured trend should be included")
       val result = dashboardService.buildPortletDetails(taskStatisticsPortlet)
-      result shouldBe a[Right[_, TaskStatisticsPortlet]]
-      inside(result) { case Right(TaskStatisticsPortlet(_, trend)) =>
-        trend shouldBe Trend.WEEK
-      }
+      result.value.asInstanceOf[TaskStatisticsPortlet].trend shouldBe Trend.WEEK
     }
 
     it("returns an error if the portlet type is unknown") {
@@ -159,7 +146,6 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("an error should be returned")
       val result = dashboardService.buildPortletDetails(unknownPortlet)
-      result shouldBe a[Left[String, _]]
       inside(result) { case Left(errorMessage) =>
         errorMessage should startWith(s"Invalid portlet type 'unknownType' configured for Portlet")
       }
@@ -185,7 +171,6 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
         Then("an error should be returned")
         val result = dashboardService.buildPortletDetails(recentContributionsPortlet)
-        result shouldBe a[Left[String, _]]
         inside(result) { case Left(errorMessage) =>
           errorMessage should startWith(errorMessageStart)
         }
@@ -199,7 +184,6 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
 
       Then("an error should be returned")
       val result = dashboardService.buildPortletDetails(portlet)
-      result shouldBe a[Left[String, _]]
       inside(result) { case Left(errorMessage) =>
         errorMessage should startWith("Unknown trend 'YEAR' configured for Portlet")
       }
