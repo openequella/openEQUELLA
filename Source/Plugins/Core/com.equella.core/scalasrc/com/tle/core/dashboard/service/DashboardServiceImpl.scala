@@ -22,30 +22,16 @@ import cats.implicits._
 import com.tle.common.i18n.LangUtils
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.usermanagement.user.CurrentUser
-import com.tle.core.dashboard.model.{
-  BrowsePortlet,
-  FavouritesPortlet,
-  FormattedTextPortlet,
-  MyResourcesPortlet,
-  PortletBase,
-  PortletDetails,
-  PortletType,
-  RecentContributionsPortlet,
-  RssPortlet,
-  ScriptedPortlet,
-  SearchPortlet,
-  TaskStatisticsPortlet,
-  TasksPortlet,
-  WebPagePortlet
-}
+import com.tle.core.dashboard.model._
 import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.guice.Bind
 import com.tle.core.portal.service.PortletService
 import com.tle.core.settings.service.ConfigurationService
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.jdk.CollectionConverters._
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
+import scala.util.{Failure, Success, Try}
 
 @Singleton
 @Bind(classOf[DashboardService])
@@ -69,10 +55,9 @@ class DashboardServiceImpl @Inject() (
 
   override def getDashboardLayout: Option[DashboardLayout.Value] = {
     val layout: String = configurationService.getProperty(DASHBOARD_LAYOUT)
-    try {
-      Option(layout).map(DashboardLayout.withName)
-    } catch {
-      case _: NoSuchElementException =>
+    Try(Option(layout).map(DashboardLayout.withName)) match {
+      case Success(value) => value
+      case Failure(_: NoSuchElementException) =>
         LOGGER.error(
           "Invalid dashboard layout '{}' found. Default to the single-column layout.",
           layout
@@ -105,10 +90,8 @@ class DashboardServiceImpl @Inject() (
       )
     }
 
-    val portletType: String = portlet.getType
-
-    try {
-      PortletType.withName(portletType) match {
+    def buildPortlet(portletType: PortletType.Value): Either[String, PortletDetails] =
+      portletType match {
         case PortletType.recent         => RecentContributionsPortlet(portlet, commonDetails)
         case PortletType.taskstatistics => TaskStatisticsPortlet(portlet, commonDetails)
         case PortletType.html =>
@@ -116,14 +99,18 @@ class DashboardServiceImpl @Inject() (
         case PortletType.browse      => Right(BrowsePortlet(commonDetails))
         case PortletType.favourites  => Right(FavouritesPortlet(commonDetails))
         case PortletType.freemarker  => Right(ScriptedPortlet(commonDetails))
-        case PortletType.iframe      => Right(WebPagePortlet(commonDetails))
         case PortletType.myresources => Right(MyResourcesPortlet(commonDetails))
-        case PortletType.rss         => Right(RssPortlet(commonDetails))
         case PortletType.search      => Right(SearchPortlet(commonDetails))
         case PortletType.tasks       => Right(TasksPortlet(commonDetails))
+        case PortletType.iframe      => Left("Web page portlet has been deprecated since 2025.2")
+        case PortletType.rss         => Left("RSS portlet has been deprecated since 2025.2")
       }
-    } catch {
-      case _: NoSuchElementException =>
+
+    val portletType: String = portlet.getType
+
+    Try(PortletType.withName(portletType)) match {
+      case Success(t) => buildPortlet(t)
+      case Failure(_: NoSuchElementException) =>
         Left(s"Invalid portlet type '$portletType' configured for Portlet ${portlet.getUuid}")
     }
   }

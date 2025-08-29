@@ -103,15 +103,63 @@ final case class FormattedTextPortlet(commonDetails: PortletBase, rawHtml: Strin
   override val portletType: PortletType.Value = PortletType.html
 }
 
-@Deprecated(since = "2025.2")
-final case class WebPagePortlet(commonDetails: PortletBase) extends PortletDetails {
-  override val portletType: PortletType.Value = PortletType.iframe
-}
-
 final case class MyResourcesPortlet(commonDetails: PortletBase) extends PortletDetails {
   override val portletType: PortletType.Value = PortletType.myresources
 }
 
+final case class SearchPortlet(commonDetails: PortletBase) extends PortletDetails {
+  override val portletType: PortletType.Value = PortletType.search
+}
+
+final case class TasksPortlet(commonDetails: PortletBase) extends PortletDetails {
+  override val portletType: PortletType.Value = PortletType.tasks
+}
+
+/** Details for Task Statistics Portlet, including the common details and the configured trend
+  * period.
+  *
+  * @param commonDetails
+  *   Common details of the portlet.
+  * @param trend
+  *   Trend period used to calculate task statistics.
+  */
+final case class TaskStatisticsPortlet(commonDetails: PortletBase, trend: Trend)
+    extends PortletDetails {
+  override val portletType: PortletType.Value = PortletType.taskstatistics
+}
+
+object TaskStatisticsPortlet {
+  private def getTrend(portlet: Portlet): Either[String, Trend] =
+    Option(portlet.getAttribute("trend")).filter(_.nonEmpty) match {
+      case Some(trend) =>
+        Either
+          .catchNonFatal(Trend.valueOf(trend))
+          .leftMap(_ => s"Unknown trend '$trend' configured for Portlet ${portlet.getUuid}")
+      case None =>
+        Left(s"No trend configured for Portlet ${portlet.getUuid}.")
+    }
+
+  def apply(portlet: Portlet, commonConfig: PortletBase): Either[String, TaskStatisticsPortlet] = {
+    getTrend(portlet).map(TaskStatisticsPortlet(commonConfig, _))
+  }
+}
+
+/** Details for Recent Contributions Portlet, including the common details and the configured Item
+  * search criteria.
+  *
+  * @param commonDetails
+  *   Common details of the portlet.
+  * @param collectionUuids
+  *   Optional list of Collection UUIDs used to filter the Items.
+  * @param query
+  *   Optional query string used to filter Items.
+  * @param maxAge
+  *   Optional maximum age (in days) used to restrict Items by their last modified date.
+  * @param itemStatus
+  *   Optional Item status value used to filter Items.
+  * @param isShowTitleOnly
+  *   Whether to show title only or both title and description for each Item in the portlet.
+  */
 final case class RecentContributionsPortlet(
     commonDetails: PortletBase,
     collectionUuids: Option[List[String]],
@@ -158,8 +206,7 @@ object RecentContributionsPortlet {
   }
 
   private def showTitleOnly(portlet: Portlet): Boolean =
-    Option(portlet.getAttribute(KEY_TITLEONLY))
-      .contains(CoreStrings.text("editor.rss.label.titleonly"))
+    Option(portlet.getAttribute(KEY_TITLEONLY)).contains(KEY_TITLEONLY)
 
   def apply(
       portlet: Portlet,
@@ -176,40 +223,5 @@ object RecentContributionsPortlet {
       itemStatus = itemStatus,
       isShowTitleOnly = showTitleOnly(portlet)
     )
-  }
-}
-
-@Deprecated(since = "2025.2")
-final case class RssPortlet(commonDetails: PortletBase) extends PortletDetails {
-  override val portletType: PortletType.Value = PortletType.rss
-}
-
-final case class SearchPortlet(commonDetails: PortletBase) extends PortletDetails {
-  override val portletType: PortletType.Value = PortletType.search
-}
-
-final case class TasksPortlet(commonDetails: PortletBase) extends PortletDetails {
-  override val portletType: PortletType.Value = PortletType.tasks
-}
-
-final case class TaskStatisticsPortlet(commonDetails: PortletBase, trend: Trend)
-    extends PortletDetails {
-  override val portletType: PortletType.Value = PortletType.taskstatistics
-
-}
-
-object TaskStatisticsPortlet {
-  private def getTrend(portlet: Portlet): Either[String, Trend] =
-    Option(portlet.getAttribute("trend")).filter(_.nonEmpty) match {
-      case Some(trend) =>
-        Either
-          .catchNonFatal(Trend.valueOf(trend))
-          .leftMap(_ => s"Unknown trend '$trend' configured for Portlet ${portlet.getUuid}")
-      case None =>
-        Left(s"No trend configured for Portlet ${portlet.getUuid}.")
-    }
-
-  def apply(portlet: Portlet, commonConfig: PortletBase): Either[String, TaskStatisticsPortlet] = {
-    getTrend(portlet).map(TaskStatisticsPortlet(commonConfig, _))
   }
 }
