@@ -20,12 +20,12 @@ package com.tle.core.dashboard.model
 
 import cats.implicits._
 import com.tle.beans.item.ItemStatus
-import com.tle.common.i18n.StringLookup
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.workflow.Trend
-import com.tle.core.i18n.CoreStrings
+import com.tle.core.item.serializer.ItemSerializerState.STATUS_ALIAS
 import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.KEY_TITLEONLY
+import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 
 import scala.jdk.CollectionConverters._
 
@@ -130,7 +130,7 @@ final case class TaskStatisticsPortlet(commonDetails: PortletBase, trend: Trend)
 
 object TaskStatisticsPortlet {
   private def getTrend(portlet: Portlet): Either[String, Trend] =
-    Option(portlet.getAttribute("trend")).filter(_.nonEmpty) match {
+    Option(portlet.getAttribute(KEY_DEFAULT_TREND)).filter(_.nonEmpty) match {
       case Some(trend) =>
         Either
           .catchNonFatal(Trend.valueOf(trend))
@@ -178,7 +178,7 @@ object RecentContributionsPortlet {
     }
 
   private def getItemStatus(portlet: Portlet): Either[String, Option[ItemStatus]] = {
-    Option(portlet.getAttribute("status"))
+    Option(portlet.getAttribute(STATUS_ALIAS))
       .filter(_.nonEmpty)
       .map(_.toUpperCase) match {
       case Some(status) =>

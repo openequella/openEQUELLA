@@ -18,6 +18,8 @@
 
 package com.tle.web.workflow.portal;
 
+import static com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND;
+
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.common.security.SettingsTarget;
@@ -70,7 +72,6 @@ import javax.inject.Inject;
 public class TaskStatisticsPortletRenderer
     extends PortletContentRenderer<
         TaskStatisticsPortletRenderer.TaskStatisticsPortletRendererModel> {
-  private static final String KEY_DEFAULT_TREND = "trend";
   private static final String KEY_DEFAULT_WORKFLOW = "default.workflow";
 
   @PlugKey("portal.taskstats.trend.")
