@@ -57,7 +57,7 @@ class DashboardServiceImpl @Inject() (
     val layout: String = configurationService.getProperty(DASHBOARD_LAYOUT)
     Try(Option(layout).map(DashboardLayout.withName)) match {
       case Success(value) => value
-      case Failure(_: NoSuchElementException) =>
+      case Failure(_) =>
         LOGGER.error(
           "Invalid dashboard layout '{}' found. Default to the single-column layout.",
           layout
@@ -110,7 +110,7 @@ class DashboardServiceImpl @Inject() (
 
     Try(PortletType.withName(portletType)) match {
       case Success(t) => buildPortlet(t)
-      case Failure(_: NoSuchElementException) =>
+      case Failure(_) =>
         Left(s"Invalid portlet type '$portletType' configured for Portlet ${portlet.getUuid}")
     }
   }
