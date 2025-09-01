@@ -451,4 +451,8 @@
     <string>user.quota.quotas.0.size</string>
     <string>698351616</string>
   </entry>
+  <entry>
+    <string>dashboard.layout</string>
+    <string>SingleColumn</string>
+  </entry>
 </map>
