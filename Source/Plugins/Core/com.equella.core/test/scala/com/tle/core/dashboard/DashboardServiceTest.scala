@@ -9,12 +9,13 @@ import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.common.workflow.Trend
 import com.tle.core.dashboard.model._
 import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
-import com.tle.core.dashboard.service.DashboardServiceImpl
+import com.tle.core.dashboard.service.{DashboardLayout, DashboardServiceImpl}
 import com.tle.core.portal.service.PortletService
 import com.tle.core.settings.service.ConfigurationService
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, mockStatic, when}
+import org.mockito.Mockito.{mock, mockStatic, verify, when}
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -47,7 +48,30 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       dashboardService.getDashboardLayout shouldBe None
     }
 
-    // todo: add more tests here after the support for configuring layout is implemented
+    it("supports updating the layout via ConfigurationService") {
+      When("a layout update succeeds")
+      val newLayout = DashboardLayout.SingleColumn
+      val result    = dashboardService.updateDashboardLayout(newLayout)
+      result shouldBe a[Right[_, _]]
+
+      Then("the layout is stored under the correct property name")
+      val propertyName  = ArgumentCaptor.forClass(classOf[String])
+      val propertyValue = ArgumentCaptor.forClass(classOf[String])
+      verify(mockConfigurationService).setProperty(propertyName.capture(), propertyValue.capture())
+      propertyName.getValue shouldBe DASHBOARD_LAYOUT
+      propertyValue.getValue shouldBe newLayout.toString
+    }
+
+    it("returns an error if the layout update fails") {
+      val errorMsg = "java.sql.SQLException: Connection refused"
+      When("ConfigurationService throws an exception")
+      when(mockConfigurationService.setProperty(any[String](), any[String]()))
+        .thenThrow(new RuntimeException(errorMsg))
+
+      Then("the failure is captured and returned as an error message")
+      val result = dashboardService.updateDashboardLayout(DashboardLayout.SingleColumn)
+      result shouldBe Left(s"Failed to update Dashboard layout: $errorMsg")
+    }
   }
 
   describe("Portlet details") {

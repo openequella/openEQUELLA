@@ -66,6 +66,14 @@ class DashboardServiceImpl @Inject() (
     }
   }
 
+  override def updateDashboardLayout(layout: DashboardLayout.Value): Either[String, Unit] = {
+    Either
+      .catchNonFatal {
+        configurationService.setProperty(DASHBOARD_LAYOUT, layout.toString)
+      }
+      .leftMap(e => s"Failed to update Dashboard layout: ${e.getMessage}")
+  }
+
   def buildPortletDetails(portlet: Portlet): Either[String, PortletDetails] = {
 
     def commonDetails: PortletBase = {
