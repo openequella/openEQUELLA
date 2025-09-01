@@ -11,7 +11,7 @@ import com.tle.core.dashboard.model._
 import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardServiceImpl}
 import com.tle.core.portal.service.PortletService
-import com.tle.core.settings.service.ConfigurationService
+import com.tle.core.services.user.UserPreferenceService
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -28,9 +28,9 @@ import java.util.UUID
 import scala.jdk.CollectionConverters._
 
 class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen with EitherValues {
-  val mockPortletService: PortletService             = mock(classOf[PortletService])
-  val mockConfigurationService: ConfigurationService = mock(classOf[ConfigurationService])
-  val dashboardService = new DashboardServiceImpl(mockPortletService, mockConfigurationService)
+  val mockPortletService: PortletService               = mock(classOf[PortletService])
+  val mockUserPreferenceService: UserPreferenceService = mock(classOf[UserPreferenceService])
+  val dashboardService = new DashboardServiceImpl(mockPortletService, mockUserPreferenceService)
 
   val userId = UUID.randomUUID().toString
   mockStatic(classOf[CurrentUser])
@@ -44,28 +44,28 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
 
   describe("Dashboard layout") {
     it("should return None when no layout is configured") {
-      when(mockConfigurationService.getProperty(DASHBOARD_LAYOUT)).thenReturn(null)
+      when(mockUserPreferenceService.getPreference(DASHBOARD_LAYOUT)).thenReturn(null)
       dashboardService.getDashboardLayout shouldBe None
     }
 
-    it("supports updating the layout via ConfigurationService") {
+    it("supports updating the layout via UserPreferenceService") {
       When("a layout update succeeds")
       val newLayout = DashboardLayout.SingleColumn
       val result    = dashboardService.updateDashboardLayout(newLayout)
       result shouldBe a[Right[_, _]]
 
-      Then("the layout is stored under the correct property name")
-      val propertyName  = ArgumentCaptor.forClass(classOf[String])
-      val propertyValue = ArgumentCaptor.forClass(classOf[String])
-      verify(mockConfigurationService).setProperty(propertyName.capture(), propertyValue.capture())
-      propertyName.getValue shouldBe DASHBOARD_LAYOUT
-      propertyValue.getValue shouldBe newLayout.toString
+      Then("the layout is stored as a user preference")
+      val preference = ArgumentCaptor.forClass(classOf[String])
+      val data       = ArgumentCaptor.forClass(classOf[String])
+      verify(mockUserPreferenceService).setPreference(preference.capture(), data.capture())
+      preference.getValue shouldBe DASHBOARD_LAYOUT
+      data.getValue shouldBe newLayout.toString
     }
 
     it("returns an error if the layout update fails") {
       val errorMsg = "java.sql.SQLException: Connection refused"
-      When("ConfigurationService throws an exception")
-      when(mockConfigurationService.setProperty(any[String](), any[String]()))
+      When("UserPreferenceService throws an exception")
+      when(mockUserPreferenceService.setPreference(any[String](), any[String]()))
         .thenThrow(new RuntimeException(errorMsg))
 
       Then("the failure is captured and returned as an error message")
