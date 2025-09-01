@@ -1,0 +1,31 @@
+<com.tle.common.portal.entity.Portlet>
+  <id>13315</id>
+  <uuid>a0f206f0-41b3-498c-bf92-e72833f63e59</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2025-08-25 16:13:44.759</dateModified>
+  <dateCreated class="sql-timestamp">2025-08-25 16:13:34.115</dateCreated>
+  <name>
+    <id>13320</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13321</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Private formatted text</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>html</type>
+  <closeable>true</closeable>
+  <minimisable>true</minimisable>
+  <enabled>true</enabled>
+  <institutional>false</institutional>
+  <config>&lt;p&gt;&lt;em&gt;hellp&lt;/em&gt;&lt;/p&gt;</config>
+</com.tle.common.portal.entity.Portlet>

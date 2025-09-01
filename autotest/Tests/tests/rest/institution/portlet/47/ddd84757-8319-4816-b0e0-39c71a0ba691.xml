@@ -1,0 +1,30 @@
+<com.tle.common.portal.entity.Portlet>
+  <id>13292</id>
+  <uuid>ddd84757-8319-4816-b0e0-39c71a0ba691</uuid>
+  <owner>TLE_ADMINISTRATOR</owner>
+  <dateModified class="sql-timestamp">2025-08-25 16:12:10.78</dateModified>
+  <dateCreated class="sql-timestamp">2025-08-25 16:12:10.78</dateCreated>
+  <name>
+    <id>13293</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13294</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Admin search</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>search</type>
+  <closeable>true</closeable>
+  <minimisable>true</minimisable>
+  <enabled>true</enabled>
+  <institutional>true</institutional>
+</com.tle.common.portal.entity.Portlet>

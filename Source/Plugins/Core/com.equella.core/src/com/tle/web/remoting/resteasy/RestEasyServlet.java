@@ -41,6 +41,7 @@ import com.tle.web.api.LegacyContentApi;
 import com.tle.web.api.auth.Auth;
 import com.tle.web.api.browsehierarchy.BrowseHierarchyResource;
 import com.tle.web.api.cloudprovider.CloudProviderApi;
+import com.tle.web.api.dashboard.DashboardResource;
 import com.tle.web.api.drm.DrmResource;
 import com.tle.web.api.favourite.FavouriteResource;
 import com.tle.web.api.hierarchy.HierarchyResource;
@@ -139,6 +140,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   private static final List<Class> apiClasses =
       Arrays.asList(
           BrowseHierarchyResource.class,
+          DashboardResource.class,
           HierarchyResource.class,
           NewUIThemeResource.class,
           OidcConfigurationResource.class,
