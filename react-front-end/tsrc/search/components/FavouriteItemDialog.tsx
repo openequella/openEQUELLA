@@ -43,6 +43,26 @@ export interface FavouriteItemDialogProps
   ) => Promise<void>;
 }
 
+interface RemoveFromFavouritesConfirmDialogProps {
+  open: boolean;
+  onConfirm: () => void | Promise<void>;
+  onCancel: () => void;
+}
+
+export const RemoveFromFavouritesConfirmDialog: React.FC<
+  RemoveFromFavouritesConfirmDialogProps
+> = ({ open, onConfirm, onCancel }) => (
+  <ConfirmDialog
+    open={open}
+    title={remove}
+    onConfirm={onConfirm}
+    onCancel={onCancel}
+    confirmButtonText={languageStrings.common.action.ok}
+  >
+    {removeAlert}
+  </ConfirmDialog>
+);
+
 /**
  * Dialog for selecting the version of an item to add to the hierarchy key resource.
  * And its also display a confirmation dialog for removing a key resource.
@@ -52,18 +72,14 @@ const FavouriteItemDialog = (props: FavouriteItemDialogProps) => {
     props;
 
   return isAdded ? (
-    <ConfirmDialog
+    <RemoveFromFavouritesConfirmDialog
       open={open}
-      title={remove}
       onConfirm={async () => {
         await updateFavouriteItem(true, isLatestVersion);
         closeDialog();
       }}
       onCancel={closeDialog}
-      confirmButtonText={languageStrings.common.action.ok}
-    >
-      {removeAlert}
-    </ConfirmDialog>
+    />
   ) : (
     <SelectItemVersionDialog
       {...props}
