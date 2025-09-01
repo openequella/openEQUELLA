@@ -386,6 +386,10 @@ export const languageStrings = {
       resources: "Resources",
       searches: "Searches",
     },
+    error: {
+      noLoggedInUserFound:
+        "Unable to fetch favourite items: no logged-in user.",
+    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",

@@ -38,7 +38,7 @@ import { getBaseUrl } from "../AppConfig";
 import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
-import { NEW_FAVOURITES_PATH, routes } from "../mainui/routes";
+import { routes } from "../mainui/routes";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -504,8 +504,6 @@ export const SearchPageBody = ({
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
 
-  const handleFavouriteRemoved = () => doSearch(searchPageOptions);
-
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -763,14 +761,7 @@ export const SearchPageBody = ({
     }
 
     if (isListItems(from, searchResults)) {
-      return mapSearchResultItems(
-        searchResults,
-        highlights,
-        undefined,
-        pathname.includes(NEW_FAVOURITES_PATH)
-          ? handleFavouriteRemoved
-          : undefined,
-      );
+      return mapSearchResultItems(searchResults, highlights);
     } else if (isGalleryItems(from, searchResults)) {
       return <GallerySearchResult items={searchResults} />;
     }

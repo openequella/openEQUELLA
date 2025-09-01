@@ -136,7 +136,7 @@ interface SearchProps extends TemplateUpdateProps {
    * @param searchOptions The options for the search.
    * @returns A promise of a search result.
    */
-  doListSearch?: (
+  searchItemsProvider?: (
     searchOptions: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
 }
@@ -151,7 +151,7 @@ export const Search = ({
   children,
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
-  doListSearch = searchItems,
+  searchItemsProvider = searchItems,
 }: SearchProps) => {
   const history = useHistory<SearchPageHistoryState>();
   const searchPageHistoryState: SearchPageHistoryState | undefined =
@@ -318,7 +318,7 @@ export const Search = ({
           case "list":
             return {
               from: "item-search",
-              content: await doListSearch({
+              content: await searchItemsProvider({
                 ...searchPageOptions,
                 includeAttachments: false,
               }),
@@ -387,7 +387,7 @@ export const Search = ({
     history,
     searchState,
     searchPageHistoryState,
-    doListSearch,
+    searchItemsProvider,
   ]);
 
   // In Selection Session, once a new search result is returned, make each

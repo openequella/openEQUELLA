@@ -18,16 +18,18 @@
 
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
 import {
+  deleteFavouriteItem,
   FavouritesType,
   searchFavouriteItems,
 } from "../modules/FavouriteModule";
 import { SearchOptions } from "../modules/SearchModule";
+import { RemoveFromFavouritesConfirmDialog } from "../search/components/FavouriteItemDialog";
 import { InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
@@ -38,17 +40,25 @@ import {
   SearchPageRefinePanelConfig,
   defaultSearchPageRefinePanelConfig,
   defaultPagedSearchResult,
+  isListItems,
+  isGalleryItems,
 } from "../search/SearchPageHelper";
+import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSelector from "./components/FavouritesSelector";
 import * as OEQ from "@openequella/rest-api-client";
+import { renderFavouriteItemsResult } from "./FavouritesItemHelper";
 
-const { title } = languageStrings.favourites;
+const { title, error } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
   languageStrings.favourites.favouritesSelector;
 
 const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const { currentUser } = useContext(AppContext);
+  const { currentUser, appErrorHandler } = useContext(AppContext);
+  const [bookmarkIdToRemove, setBookmarkIdToRemove] = useState<
+    number | undefined
+  >(undefined);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState<boolean>(false);
 
   const [favouritesType, setFavouritesType] =
     useState<FavouritesType>("resources");
@@ -62,11 +72,11 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     });
 
     return {
-      ready: true,
+      ready: currentUser !== undefined,
       listInitialClassifications: false,
       customiseInitialSearchOptions,
     };
-  }, []);
+  }, [currentUser]);
 
   const onFavouritesTypeChangeBuilder =
     (_: SearchContextProps) => (value: FavouritesType) => {
@@ -106,38 +116,100 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
   };
 
-  const doListSearchForFavItems = useCallback(
+  /**
+   * Provider used by Search to fetch favourite items.
+   *
+   * Dependency notes:
+   * - currentUser: triggers refetch when user changes.
+   * - appErrorHandler: sourced from context and may change if the provider updates;
+   *   include it to avoid stale closures and satisfy exhaustive-deps.
+   *   If your AppContext guarantees it is stable, it's still safe to keep here.
+   */
+  const favouriteItemsSearchProvider = useCallback(
     async (
       searchOptions: SearchOptions,
     ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
       pipe(
         O.fromNullable(currentUser),
         O.match(
-          () =>
+          () => {
             // fallback when currentUser is undefined
-            Promise.resolve(defaultPagedSearchResult),
+            appErrorHandler(error.noLoggedInUserFound);
+            return Promise.resolve(defaultPagedSearchResult);
+          },
           (user) => searchFavouriteItems(searchOptions, user),
         ),
       ),
-    [currentUser],
+    [currentUser, appErrorHandler],
   );
+
+  const handleRemoveItemFromFavourites = useCallback((bookmarkId: number) => {
+    setBookmarkIdToRemove(bookmarkId);
+    setIsRemoveDialogOpen(true);
+  }, []);
+
+  const removeItemFromFavourites = useCallback(
+    async ({ search, searchState }: SearchContextProps) => {
+      if (bookmarkIdToRemove === undefined) {
+        return;
+      }
+      await deleteFavouriteItem(bookmarkIdToRemove);
+      search(searchState.options);
+      setIsRemoveDialogOpen(false);
+      setBookmarkIdToRemove(undefined);
+    },
+    [bookmarkIdToRemove],
+  );
+
+  const renderCustomSearchResult = (
+    searchResult: SearchPageSearchResult,
+  ): ReactNode => {
+    if (
+      isListItems(searchResult.from, searchResult.content) ||
+      isGalleryItems(searchResult.from, searchResult.content)
+    ) {
+      return renderFavouriteItemsResult(
+        searchResult,
+        handleRemoveItemFromFavourites,
+      );
+    }
+    // TODO: renderFavouriteSearchesResult
+    return null;
+  };
 
   return (
     <Search
       updateTemplate={updateTemplate}
       initialSearchConfig={initialSearchConfig}
       pageTitle={title}
-      doListSearch={doListSearchForFavItems}
+      searchItemsProvider={
+        favouritesType === "resources"
+          ? favouriteItemsSearchProvider
+          : undefined
+      }
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (
-          <SearchPageBody
-            pathname={NEW_FAVOURITES_PATH}
-            headerConfig={favouritesPageHeaderConfig}
-            refinePanelConfig={favouritesPageRefinePanelConfig(
-              searchContextProps,
+          <>
+            <SearchPageBody
+              pathname={NEW_FAVOURITES_PATH}
+              headerConfig={favouritesPageHeaderConfig}
+              refinePanelConfig={favouritesPageRefinePanelConfig(
+                searchContextProps,
+              )}
+              customRenderSearchResults={renderCustomSearchResult}
+            />
+            {isRemoveDialogOpen && (
+              <RemoveFromFavouritesConfirmDialog
+                open={isRemoveDialogOpen}
+                onConfirm={() => removeItemFromFavourites(searchContextProps)}
+                onCancel={() => {
+                  setBookmarkIdToRemove(undefined);
+                  setIsRemoveDialogOpen(false);
+                }}
+              />
             )}
-          />
+          </>
         )}
       </SearchContext.Consumer>
     </Search>
