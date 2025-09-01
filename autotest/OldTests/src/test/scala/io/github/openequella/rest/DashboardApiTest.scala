@@ -6,8 +6,9 @@ import org.junit.Assert.assertEquals
 import org.testng.annotations.Test
 
 class DashboardApiTest extends AbstractRestApiTest {
-  private val DASHBOARD_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/dashboard"
-  private val LAYOUT                 = "layout"
+  private val DASHBOARD_API_ENDPOINT    = getTestConfig.getInstitutionUrl + "api/dashboard"
+  private val DASHBOARD_LAYOUT_ENDPOINT = DASHBOARD_API_ENDPOINT + "/layout"
+  private val LAYOUT                    = "layout"
 
   @Test(description = "Retrieve dashboard details")
   def dashboardDetails(): Unit = {
@@ -28,7 +29,7 @@ class DashboardApiTest extends AbstractRestApiTest {
   def dashboardLayoutUpdate(): Unit = {
     val newLayout = "TwoEqualColumns"
 
-    val updateRequest = new PutMethod(DASHBOARD_API_ENDPOINT)
+    val updateRequest = new PutMethod(DASHBOARD_LAYOUT_ENDPOINT)
     val body          = mapper.createObjectNode
     body.put(LAYOUT, newLayout)
     val updateResultCode = makeClientRequestWithEntity(updateRequest, body)
@@ -45,7 +46,7 @@ class DashboardApiTest extends AbstractRestApiTest {
     description = "Update dashboard layout using an invalid value"
   )
   def dashboardLayoutUpdateFailed(): Unit = {
-    val updateRequest = new PutMethod(DASHBOARD_API_ENDPOINT)
+    val updateRequest = new PutMethod(DASHBOARD_LAYOUT_ENDPOINT)
     val body          = mapper.createObjectNode
     body.put(LAYOUT, "ThreeColumns")
     val updateResultCode = makeClientRequestWithEntity(updateRequest, body)

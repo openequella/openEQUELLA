@@ -64,6 +64,7 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
   }
 
   @PUT
+  @Path("layout")
   @ApiOperation(value = "Update Dashboard layout")
   def layout(payload: DashboardLayoutUpdate): Response = {
     def update(layout: DashboardLayout.Value): Response =
