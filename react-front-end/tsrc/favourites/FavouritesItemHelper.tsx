@@ -17,16 +17,23 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import * as React from "react";
 import { TooltipIconButton } from "../components/TooltipIconButton";
-import { RenderFunc } from "../myresources/MyResourcesPageHelper";
 import GallerySearchResult from "../search/components/GallerySearchResult";
 import SearchResult, {
   defaultActionButtonProps,
 } from "../search/components/SearchResult";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
+
+type FavouriteResultItem = OEQ.Search.SearchResultItem & { bookmarkId: number };
+
+type FavouriteRenderFunc = (
+  item: FavouriteResultItem,
+  highlight: string[],
+) => React.JSX.Element;
+
 const { favouriteItem: favouriteItemStrings } = languageStrings.searchpage;
 
 /**
@@ -38,8 +45,8 @@ const { favouriteItem: favouriteItemStrings } = languageStrings.searchpage;
  * @returns A RenderFunc that takes an item and highlight terms and returns a React node.
  */
 const buildFavouriteItemRenderer =
-  (onRemoveFavouriteItem: (bookmarkId: number) => void): RenderFunc =>
-  (item: OEQ.Search.SearchResultItem, highlight: string[]) => {
+  (onRemoveFavouriteItem: (bookmarkId: number) => void): FavouriteRenderFunc =>
+  (item: FavouriteResultItem, highlight: string[]) => {
     const { uuid, version, bookmarkId } = item;
     return (
       <SearchResult
@@ -49,7 +56,7 @@ const buildFavouriteItemRenderer =
         customActionButtons={[
           <TooltipIconButton
             title={favouriteItemStrings.remove}
-            onClick={() => bookmarkId && onRemoveFavouriteItem(bookmarkId)}
+            onClick={() => onRemoveFavouriteItem(bookmarkId)}
             size="small"
           >
             <FavoriteIcon />
@@ -80,8 +87,18 @@ export const renderFavouriteItemsResult = (
   return searchResult.from === "gallery-search" ? (
     <GallerySearchResult items={searchResult.content.results} />
   ) : (
-    searchResult.content.results.map((item) =>
-      renderFavouriteItem(item, searchResult.content.highlight),
-    )
+    searchResult.content.results
+      .filter(hasBookmarkId)
+      .map((item) => renderFavouriteItem(item, searchResult.content.highlight))
   );
 };
+
+/**
+ * Type guard to narrow a generic SearchResultItem to a FavouriteResultItem.
+ *
+ * @param item - A search result item potentially containing a bookmarkId.
+ * @returns True when bookmarkId is present, narrowing `item` to FavouriteResultItem.
+ */
+const hasBookmarkId = (
+  item: OEQ.Search.SearchResultItem,
+): item is FavouriteResultItem => item.bookmarkId !== undefined;

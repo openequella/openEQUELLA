@@ -293,9 +293,7 @@ export default function SearchResult({
     if (!bookmarkId) {
       throw new Error("Bookmark ID can't be falsy.");
     }
-    return deleteFavouriteItem(bookmarkId).then(() => {
-      setBookmarkId(undefined);
-    });
+    return deleteFavouriteItem(bookmarkId).then(() => setBookmarkId(undefined));
   };
 
   const generateItemMetadata = () => {

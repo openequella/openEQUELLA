@@ -18,30 +18,36 @@
 
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { AppContext } from "../mainui/App";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
-import { TemplateUpdateProps } from "../mainui/Template";
+import type { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
 import {
   deleteFavouriteItem,
   FavouritesType,
   searchFavouriteItems,
 } from "../modules/FavouriteModule";
-import { SearchOptions } from "../modules/SearchModule";
-import { RemoveFromFavouritesConfirmDialog } from "../search/components/FavouriteItemDialog";
-import { InitialSearchConfig, Search } from "../search/Search";
+import type { SearchOptions } from "../modules/SearchModule";
+import { type InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
   SearchContext,
-  SearchContextProps,
-  SearchPageHeaderConfig,
-  SearchPageOptions,
-  SearchPageRefinePanelConfig,
+  type SearchContextProps,
+  type SearchPageHeaderConfig,
+  type SearchPageOptions,
+  type SearchPageRefinePanelConfig,
   defaultSearchPageRefinePanelConfig,
-  defaultPagedSearchResult,
   isListItems,
   isGalleryItems,
+  defaultPagedSearchResult,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
@@ -49,16 +55,16 @@ import FavouritesSelector from "./components/FavouritesSelector";
 import * as OEQ from "@openequella/rest-api-client";
 import { renderFavouriteItemsResult } from "./FavouritesItemHelper";
 
-const { title, error } = languageStrings.favourites;
+const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
   languageStrings.favourites.favouritesSelector;
+const { remove, removeAlert } = languageStrings.searchpage.favouriteItem;
 
 const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const { currentUser, appErrorHandler } = useContext(AppContext);
+  const { currentUser } = useContext(AppContext);
   const [bookmarkIdToRemove, setBookmarkIdToRemove] = useState<
     number | undefined
   >(undefined);
-  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState<boolean>(false);
 
   const [favouritesType, setFavouritesType] =
     useState<FavouritesType>("resources");
@@ -118,12 +124,6 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   /**
    * Provider used by Search to fetch favourite items.
-   *
-   * Dependency notes:
-   * - currentUser: triggers refetch when user changes.
-   * - appErrorHandler: sourced from context and may change if the provider updates;
-   *   include it to avoid stale closures and satisfy exhaustive-deps.
-   *   If your AppContext guarantees it is stable, it's still safe to keep here.
    */
   const favouriteItemsSearchProvider = useCallback(
     async (
@@ -132,34 +132,21 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         O.fromNullable(currentUser),
         O.match(
-          () => {
-            // fallback when currentUser is undefined
-            appErrorHandler(error.noLoggedInUserFound);
-            return Promise.resolve(defaultPagedSearchResult);
-          },
+          () => Promise.resolve(defaultPagedSearchResult),
           (user) => searchFavouriteItems(searchOptions, user),
         ),
       ),
-    [currentUser, appErrorHandler],
+    [currentUser],
   );
 
-  const handleRemoveItemFromFavourites = useCallback((bookmarkId: number) => {
-    setBookmarkIdToRemove(bookmarkId);
-    setIsRemoveDialogOpen(true);
-  }, []);
-
-  const removeItemFromFavourites = useCallback(
-    async ({ search, searchState }: SearchContextProps) => {
-      if (bookmarkIdToRemove === undefined) {
-        return;
-      }
-      await deleteFavouriteItem(bookmarkIdToRemove);
-      search(searchState.options);
-      setIsRemoveDialogOpen(false);
-      setBookmarkIdToRemove(undefined);
-    },
-    [bookmarkIdToRemove],
-  );
+  const onRemoveItemFromFav = async (
+    { search, searchState }: SearchContextProps,
+    bookmarkId: number,
+  ) => {
+    await deleteFavouriteItem(bookmarkId);
+    search(searchState.options);
+    setBookmarkIdToRemove(undefined);
+  };
 
   const renderCustomSearchResult = (
     searchResult: SearchPageSearchResult,
@@ -168,10 +155,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       isListItems(searchResult.from, searchResult.content) ||
       isGalleryItems(searchResult.from, searchResult.content)
     ) {
-      return renderFavouriteItemsResult(
-        searchResult,
-        handleRemoveItemFromFavourites,
-      );
+      return renderFavouriteItemsResult(searchResult, setBookmarkIdToRemove);
     }
     // TODO: renderFavouriteSearchesResult
     return null;
@@ -199,15 +183,18 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
               )}
               customRenderSearchResults={renderCustomSearchResult}
             />
-            {isRemoveDialogOpen && (
-              <RemoveFromFavouritesConfirmDialog
-                open={isRemoveDialogOpen}
-                onConfirm={() => removeItemFromFavourites(searchContextProps)}
-                onCancel={() => {
-                  setBookmarkIdToRemove(undefined);
-                  setIsRemoveDialogOpen(false);
-                }}
-              />
+            {bookmarkIdToRemove && (
+              <ConfirmDialog
+                open={Boolean(bookmarkIdToRemove)}
+                onConfirm={() =>
+                  onRemoveItemFromFav(searchContextProps, bookmarkIdToRemove)
+                }
+                onCancel={() => setBookmarkIdToRemove(undefined)}
+                title={remove}
+                confirmButtonText={languageStrings.common.action.ok}
+              >
+                {removeAlert}
+              </ConfirmDialog>
             )}
           </>
         )}

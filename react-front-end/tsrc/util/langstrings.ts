@@ -386,10 +386,6 @@ export const languageStrings = {
       resources: "Resources",
       searches: "Searches",
     },
-    error: {
-      noLoggedInUserFound:
-        "Unable to fetch favourite items: no logged-in user.",
-    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",
@@ -587,7 +583,8 @@ export const languageStrings = {
     favouriteItem: {
       add: "Add to favourites",
       remove: "Remove from favourites",
-      removeAlert: "Are you sure you want to remove from your favourites?",
+      removeAlert:
+        "Are you sure you want to remove this resource from your favourites?",
       tagDescription: "Tags to help when searching (optional).",
     },
     addToHierarchy: {
