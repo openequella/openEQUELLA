@@ -41,6 +41,15 @@ trait DashboardService {
     *   Some(layout) if a layout has been configured, or None otherwise.
     */
   def getDashboardLayout: Option[DashboardLayout.Value]
+
+  /** Updates the dashboard layout configuration with the provided layout name.
+    *
+    * @param layout
+    *   One of the supported layouts defined in [[DashboardLayout]].
+    * @return
+    *   Either an error message describing why the update failed, or Unit on success.
+    */
+  def updateDashboardLayout(layout: DashboardLayout.Value): Either[String, Unit]
 }
 
 object DashboardService {

@@ -18,20 +18,30 @@
 
 package com.tle.web.api.dashboard
 
-import com.tle.core.dashboard.service.DashboardService
+import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
+import com.tle.web.api.ApiErrorResponse.{badRequest, serverError}
 import com.tle.web.api.dashboard.bean.PortletResponse
-import io.swagger.annotations.{Api, ApiOperation}
+import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, Produces}
+import javax.ws.rs.{GET, PUT, Path, Produces}
+import scala.util.{Failure, Success, Try}
 
 final case class DashboardResponse(
     portlets: List[PortletResponse],
     layout: Option[String]
 )
+
+final case class DashboardLayoutUpdate(
+    @ApiModelProperty(
+      allowableValues = "SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2"
+    )
+    layout: String
+)
+
 @Bind
 @Singleton
 @NoCache
@@ -51,5 +61,22 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
     val portlets = dashboardService.getViewablePortlets.map(PortletResponse(_))
 
     Response.ok(DashboardResponse(portlets, layout)).build()
+  }
+
+  @PUT
+  @Path("layout")
+  @ApiOperation(value = "Update Dashboard layout")
+  def layout(payload: DashboardLayoutUpdate): Response = {
+    def update(layout: DashboardLayout.Value): Response =
+      dashboardService.updateDashboardLayout(layout) match {
+        case Right(_)       => Response.noContent().build()
+        case Left(errorMsg) => serverError(errorMsg)
+      }
+
+    val newLayout = payload.layout
+    Try(DashboardLayout.withName(newLayout)) match {
+      case Success(layout) => update(layout)
+      case Failure(_)      => badRequest(s"Invalid Dashboard layout: $newLayout")
+    }
   }
 }

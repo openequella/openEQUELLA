@@ -26,7 +26,7 @@ import com.tle.core.dashboard.model._
 import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.guice.Bind
 import com.tle.core.portal.service.PortletService
-import com.tle.core.settings.service.ConfigurationService
+import com.tle.core.services.user.UserPreferenceService
 import org.slf4j.{Logger, LoggerFactory}
 
 import javax.inject.{Inject, Singleton}
@@ -37,7 +37,7 @@ import scala.util.{Failure, Success, Try}
 @Bind(classOf[DashboardService])
 class DashboardServiceImpl @Inject() (
     portletService: PortletService,
-    configurationService: ConfigurationService
+    userPreferenceService: UserPreferenceService
 ) extends DashboardService {
 
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[DashboardServiceImpl])
@@ -54,7 +54,7 @@ class DashboardServiceImpl @Inject() (
   }
 
   override def getDashboardLayout: Option[DashboardLayout.Value] = {
-    val layout: String = configurationService.getProperty(DASHBOARD_LAYOUT)
+    val layout: String = userPreferenceService.getPreference(DASHBOARD_LAYOUT)
     Try(Option(layout).map(DashboardLayout.withName)) match {
       case Success(value) => value
       case Failure(_) =>
@@ -64,6 +64,14 @@ class DashboardServiceImpl @Inject() (
         )
         Some(DashboardLayout.SingleColumn)
     }
+  }
+
+  override def updateDashboardLayout(layout: DashboardLayout.Value): Either[String, Unit] = {
+    Either
+      .catchNonFatal {
+        userPreferenceService.setPreference(DASHBOARD_LAYOUT, layout.toString)
+      }
+      .leftMap(e => s"Failed to update Dashboard layout: ${e.getMessage}")
   }
 
   def buildPortletDetails(portlet: Portlet): Either[String, PortletDetails] = {

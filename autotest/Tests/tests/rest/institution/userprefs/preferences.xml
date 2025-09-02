@@ -103,4 +103,12 @@
     </key>
     <data>&lt;list/&gt;</data>
   </com.tle.beans.UserPreference>
+  <com.tle.beans.UserPreference>
+    <key>
+      <institution>22136</institution>
+      <userID>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userID>
+      <preferenceID>dashboard.layout</preferenceID>
+    </key>
+    <data>SingleColumn</data>
+  </com.tle.beans.UserPreference>
 </list>
