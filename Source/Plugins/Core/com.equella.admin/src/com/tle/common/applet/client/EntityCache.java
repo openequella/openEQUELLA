@@ -18,57 +18,67 @@
 
 package com.tle.common.applet.client;
 
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.NameId;
 import com.tle.common.Format;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/** Provides cached access to common entities - item definitions, schemas and power searches. */
 public class EntityCache {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EntityCache.class);
+
   private final Map<Long, NameId> schemas;
   private final Map<Long, NameId> itemDefinitions;
   private final Map<Long, NameId> powerSearches;
 
+  /**
+   * Construct the cache, loading all entities from the server.
+   *
+   * @param clientService the client service
+   */
   public EntityCache(ClientService clientService) {
-    itemDefinitions = transform(clientService.getService(RemoteItemDefinitionService.class), true);
-    powerSearches = transform(clientService.getService(RemotePowerSearchService.class), true);
-    schemas = transform(clientService.getService(RemoteSchemaService.class), true);
+    LOGGER.debug("Loading entity cache ⌛");
+
+    itemDefinitions = transform(clientService.getService(RemoteItemDefinitionService.class));
+    powerSearches = transform(clientService.getService(RemotePowerSearchService.class));
+    schemas = transform(clientService.getService(AdminSchemaService.class));
+
+    LOGGER.debug("Entity cache loaded ✅");
   }
 
   public Map<Long, NameId> getItemDefinitionMap() {
+    LOGGER.debug("Retrieving item definition map from entity cache");
+
     return itemDefinitions;
   }
 
   public Map<Long, NameId> getSchemaMap() {
+    LOGGER.debug("Retrieving schema map from entity cache");
+
     return schemas;
   }
 
-  public Collection<NameId> getItemDefinitions() {
-    return itemDefinitions.values();
-  }
-
   public Collection<NameId> getPowerSearches() {
+    LOGGER.debug("Retrieving power searches from entity cache");
+
     return powerSearches.values();
   }
 
-  public Collection<NameId> getSchemas() {
-    return schemas.values();
-  }
+  private Map<Long, NameId> transform(RemoteAbstractEntityService<?> service) {
+    List<NameId> nis = BundleCache.getNameIds(service.listAll());
+    nis.sort(Format.NAME_ID_COMPARATOR);
 
-  private Map<Long, NameId> transform(
-      RemoteAbstractEntityService<?> service, boolean showArchived) {
-    List<NameId> nis =
-        BundleCache.getNameIds(showArchived ? service.listAll() : service.listEnabled());
-    Collections.sort(nis, Format.NAME_ID_COMPARATOR);
-
-    Map<Long, NameId> results = new LinkedHashMap<Long, NameId>(nis.size());
+    Map<Long, NameId> results = new LinkedHashMap<>(nis.size());
     for (NameId ni : nis) {
       results.put(ni.getId(), ni);
     }
