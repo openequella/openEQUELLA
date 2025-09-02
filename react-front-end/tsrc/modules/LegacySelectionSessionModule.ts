@@ -27,6 +27,7 @@ import {
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
+import { getTopicIdFromUrl } from "./HierarchyModule";
 import {
   ExternalRedirect,
   isChangeRoute,
@@ -233,7 +234,7 @@ export const buildSelectionSessionLink = (
   routerPath: string,
   includeLayout = false,
   externalMimeTypes: string[] = [],
-) => {
+): string => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
   const url = new URL(routerPath.slice(1), getBaseUrl()); // Drop routerPath's first '/'.
   url.searchParams.append("_sl.stateId", stateId);
@@ -299,6 +300,25 @@ export const buildSelectionSessionAdvancedSearchLink = (
  */
 export const buildSelectionSessionHierarchyLink = (uuid: string): string =>
   buildSelectionSessionLink(routes.OldHierarchy.to(uuid), false, []);
+
+/**
+ * Build a Selection Session specific Favourite search Link.
+ * If the current path contains a topicID parameter,
+ * then build a Hierarchy search link, otherwise build a normal Selection Session search link.
+ *
+ * @param path URL of the favourite search. For example: "/favourites/search.do"
+ */
+export const buildFavouritesSearchSelectionSessionLink = (
+  path: string,
+): string =>
+  pipe(
+    O.tryCatch(() => new URL(path, getBaseUrl())),
+    O.chainNullableK(getTopicIdFromUrl),
+    O.match(
+      () => buildSelectionSessionLink(path, false),
+      (topicID) => buildSelectionSessionHierarchyLink(topicID),
+    ),
+  );
 
 /**
  * Given a URL used to access Scrapbook legacy pages in normal New UI mode, convert the URL into a Selection Session specific one.

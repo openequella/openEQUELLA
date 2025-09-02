@@ -15,18 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const getTopicIDFromRoute = (location: Location): string | undefined => {
-  const newHierarchyPagePath = /(\/page\/hierarchy\/)(.+)/;
-  const matches: string[] | null =
-    location.pathname.match(newHierarchyPagePath);
 
-  return matches?.pop();
+import { Grid, Skeleton } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import * as React from "react";
+
+import * as RNA from "fp-ts/ReadonlyNonEmptyArray";
+
+/**
+ * A skeleton component for displaying search options in the {@link FavouritesSearch}.
+ */
+const SearchOptionSkeleton = () => {
+  const skeleton = (key: number) => (
+    <Skeleton animation="wave" key={key} width={110} height={40} />
+  );
+
+  return (
+    <Grid container spacing={2}>
+      {pipe(
+        RNA.range(1, 3),
+        RNA.map((value) => skeleton(value)),
+      )}
+    </Grid>
+  );
 };
 
-const getTopicIDFromQueryParam = (location: Location): string | null =>
-  new URLSearchParams(location.search).get("topic");
-
-export const getTopicIDFromURL = (): string | null => {
-  const location = window.location;
-  return getTopicIDFromRoute(location) ?? getTopicIDFromQueryParam(location);
-};
+export default SearchOptionSkeleton;

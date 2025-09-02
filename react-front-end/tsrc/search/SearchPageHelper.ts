@@ -420,16 +420,14 @@ export const generateSearchPageOptionsFromLocation = async (
   );
 
 /**
- * A function that takes a URL and extracts the search options from the query string.
+ * Extracts the search options from URL.
  *
- * @throws {TypeError} if the URL is invalid.
+ * @param url A URL object which includes search query params.
  */
 export const generateSearchPageOptionsFromUrl = async (
-  url: string,
-): Promise<SearchPageOptions | undefined> => {
-  const urlObj = new URL(url);
-  return generateSearchPageOptionsFromQueryString(urlObj.search);
-};
+  url: URL,
+): Promise<SearchPageOptions | undefined> =>
+  generateSearchPageOptionsFromQueryString(url.search);
 
 /**
  * A function that takes search options and converts it to a JSON representation.

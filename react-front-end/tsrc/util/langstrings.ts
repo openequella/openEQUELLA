@@ -381,6 +381,25 @@ export const languageStrings = {
   },
   favourites: {
     title: "Favourites",
+    favouritesSearch: {
+      searchCriteria: "Search criteria",
+      addedAt: "Added at",
+      remove: "Remove from favourites",
+      showMoreSearchCriteria: "Show more search criteria",
+      hideMoreSearchCriteria: "Hide more search criteria",
+      searchCriteriaLabels: {
+        query: "Query",
+        collection: "Collection",
+        advancedSearch: "Advanced search",
+        hierarchy: "Hierarchy",
+        lastModifiedDateRange: "Last modified date range",
+        owner: "Owner",
+        mimeTypes: "Mime types",
+        classification: "Classification",
+        end: "End",
+        start: "Start",
+      },
+    },
     favouritesSelector: {
       title: "Favourites type",
       resources: "Resources",
