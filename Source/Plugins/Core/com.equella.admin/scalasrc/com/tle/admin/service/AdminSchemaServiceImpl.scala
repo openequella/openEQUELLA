@@ -55,6 +55,13 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def listEditable(): util.List[BaseEntityLabel] =
     listAll()
 
+  override def listAllIncludingSystem(): util.List[BaseEntityLabel] = {
+    // For schemas there doesn't seem value in including system ones, so just delegate to listAll.
+    // The only system scheme is the "My Content" schema used for Scrapbook items via MyContentService.
+    // There's also some ID constants for it in com.tle.mycontent.MyContentConstants.
+    listAll()
+  }
+
   override def listAll(): util.List[BaseEntityLabel] =
     MetadataSchemaApi.listSchemas() match {
       case Right(schemas) =>
