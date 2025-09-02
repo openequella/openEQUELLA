@@ -22,7 +22,7 @@ import * as IO from "fp-ts/IO";
 import { API_BASE_URL, getRenderData } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { getTopicIDFromURL } from "../hierarchy/HierarchyHelper";
+import { getTopicIDFromLocation } from "./HierarchyModule";
 
 /**
  * Represents a TaskEither for permission check where the right side is `true` to indicate the permission
@@ -84,7 +84,7 @@ const hasHierarchyAcl = (acl: string): PermissionCheck => {
     );
 
   return pipe(
-    IO.of(getTopicIDFromURL), // Must use IO to ensure the execution of getTopicIDFromURL happens when the Task is executed
+    IO.of(getTopicIDFromLocation), // Must use IO to ensure the execution of getTopicIDFromURL happens when the Task is executed
     TE.fromIO,
     TE.map((f) => f()),
     TE.chain(check),

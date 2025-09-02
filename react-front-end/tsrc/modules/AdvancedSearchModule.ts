@@ -107,16 +107,13 @@ const getAdvancedSearchIdFromOldUI = (
  * If the URL is the new Advanced Search path, get ID from the path.
  * If it's the old one, get ID from query param.
  *
- * @param url Provided URL to check.
+ * @param url The URL to extract the Advanced Search ID from.
  */
-export const getAdvancedSearchIdFromUrl = (url: string): string | undefined =>
+export const getAdvancedSearchIdFromUrl = (url: URL): string | undefined =>
   pipe(
-    O.tryCatch(() => new URL(url)),
-    O.chain((u) =>
-      isLegacyAdvancedSearchUrl(u)
-        ? getAdvancedSearchIdFromOldUI(u.searchParams)
-        : getAdvancedSearchIdFromNewUI(u.pathname),
-    ),
+    isLegacyAdvancedSearchUrl(url)
+      ? getAdvancedSearchIdFromOldUI(url.searchParams)
+      : getAdvancedSearchIdFromNewUI(url.pathname),
     O.toUndefined,
   );
 

@@ -41,30 +41,27 @@ describe("getAdvancedSearchIdFromLocation", function () {
 
 describe("getAdvancedSearchIdFromUrl", () => {
   const UUID = "f439c445-fc3e-40ac-b0cd-c733d9164835";
+  const origin = "http://localhost:8080";
 
   it.each([
     [
       "return UUID from the new UI advanced search URL",
-      `http://localhost:8080/demonstration/page/advancedsearch/${UUID}?searchOptions=test`,
+      `/page/advancedsearch/${UUID}?searchOptions=test`,
       UUID,
     ],
     [
       "return UUID from the old UI advanced search URL",
-      `http://localhost:8080/demonstration/searching.do?doc=%3Cxml%2F%3E&in=P${UUID}&q=&type=standard&sort=rank&dr=AFTER`,
+      `/searching.do?doc=%3Cxml%2F%3E&in=P${UUID}&q=&type=standard&sort=rank&dr=AFTER`,
       UUID,
     ],
     [
       "return undefined if the url is not advanced search URL",
-      `http://localhost:8080/demonstration/page/notadvancedsearch/${UUID}?searchOptions=test`,
-      undefined,
-    ],
-    [
-      "return undefined if the url is not valid",
-      `htt://localhost:8080/demonstration/page/notadvancedsearch/${UUID}`,
+      `/page/notadvancedsearch/${UUID}?searchOptions=test`,
       undefined,
     ],
   ])("%s", async (_, url, expectedResult) => {
-    const uuid = getAdvancedSearchIdFromUrl(url);
+    const urlObj = new URL(url, origin);
+    const uuid = getAdvancedSearchIdFromUrl(urlObj);
 
     expect(uuid).toBe(expectedResult);
   });

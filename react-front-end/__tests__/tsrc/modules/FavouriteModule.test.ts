@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { pipe } from "fp-ts/function";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import {
@@ -100,7 +99,8 @@ describe("searchFavouriteItems", () => {
       getCurrentUserMock,
     );
 
-    pipe(queryTerm, expandQueryWithBookmarkTags, expectSearchQueryToBe);
+    const query = expandQueryWithBookmarkTags(queryTerm);
+    expectSearchQueryToBe(query);
   });
 
   it("appends a wildcard and a bookmark_tags query for a non-empty, non-raw mode search term", async () => {
@@ -112,8 +112,8 @@ describe("searchFavouriteItems", () => {
       },
       getCurrentUserMock,
     );
-
-    pipe(`${queryTerm}*`, expandQueryWithBookmarkTags, expectSearchQueryToBe);
+    const query = expandQueryWithBookmarkTags(`${queryTerm}*`);
+    expectSearchQueryToBe(query);
   });
 
   it("adds a bookmark_owner must to the musts property", async () => {
