@@ -130,6 +130,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       searchOptions: SearchOptions,
     ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
       pipe(
+        // TODO: Remove once new GET API is available; current Search2 API needs `currentUser` for bookmark_owner must.
         O.fromNullable(currentUser),
         O.match(
           () => Promise.resolve(defaultPagedSearchResult),
