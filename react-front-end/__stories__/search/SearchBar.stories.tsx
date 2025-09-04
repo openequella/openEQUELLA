@@ -29,7 +29,6 @@ export default {
     onQueryChange: {
       action: "onQueryChange called",
     },
-    onWildcardModeChange: { action: "onWildcardModeChange called" },
     doSearch: { action: "doSearch called" },
   },
 } as Meta<SearchBarProps>;
@@ -37,9 +36,13 @@ export default {
 export const NonWildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );
+const wildcardSearch = {
+  wildcardMode: false,
+  onWildcardModeChange: action("onWildcardModeChange called"),
+};
 NonWildcardMode.args = {
   query: "",
-  wildcardMode: false,
+  wildcardSearch: { ...wildcardSearch },
 };
 
 export const WildcardMode: StoryFn<SearchBarProps> = (args) => (
@@ -47,7 +50,10 @@ export const WildcardMode: StoryFn<SearchBarProps> = (args) => (
 );
 WildcardMode.args = {
   ...NonWildcardMode.args,
-  wildcardMode: true,
+  wildcardSearch: {
+    ...wildcardSearch,
+    wildcardMode: true,
+  },
 };
 
 export const AdvancedSearchMode: StoryFn<SearchBarProps> = (args) => (
@@ -78,5 +84,8 @@ export const AdvancedSearchModeAccentedAndWildcardMode: StoryFn<
 > = (args) => <SearchBar {...args} />;
 AdvancedSearchModeAccentedAndWildcardMode.args = {
   ...AdvancedSearchModeAccented.args,
-  wildcardMode: true,
+  wildcardSearch: {
+    ...wildcardSearch,
+    wildcardMode: true,
+  },
 };

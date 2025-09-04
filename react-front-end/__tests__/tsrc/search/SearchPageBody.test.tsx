@@ -293,4 +293,66 @@ describe("<SearchPageBody />", () => {
       languageStrings.searchpage.noResultsFound,
     );
   });
+
+  describe("configuring search bar components using searchBarConfig prop", () => {
+    const {
+      showAdvancedSearchFilter: filterButtonLabel,
+      wildcardSearch: wildcardSearchText,
+    } = languageStrings.searchpage;
+
+    const advancedSearchFilter = {
+      onClick: jest.fn(),
+      accent: false,
+    };
+
+    it("shows wildcard toggle and hides advanced search filter button by default", async () => {
+      const { queryByLabelText, queryByText } = await renderSearchPageBody({
+        ...defaultSearchPageBodyProps,
+      });
+
+      expect(
+        queryByLabelText(filterButtonLabel, { selector: "button" }),
+      ).not.toBeInTheDocument();
+      expect(queryByText(wildcardSearchText)).toBeInTheDocument();
+    });
+
+    it("shows advanced search filter when configured", async () => {
+      const { queryByLabelText } = await renderSearchPageBody({
+        ...defaultSearchPageBodyProps,
+        searchBarConfig: {
+          advancedSearchFilter: { ...advancedSearchFilter },
+        },
+      });
+
+      expect(
+        queryByLabelText(filterButtonLabel, { selector: "button" }),
+      ).toBeInTheDocument();
+    });
+
+    it("hides wildcard search toggle when configured", async () => {
+      const { queryByText } = await renderSearchPageBody({
+        ...defaultSearchPageBodyProps,
+        searchBarConfig: {
+          enableWildcardToggle: false,
+        },
+      });
+
+      expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+    });
+
+    it("hides wildcard toggle and shows advanced search filter button", async () => {
+      const { queryByLabelText, queryByText } = await renderSearchPageBody({
+        ...defaultSearchPageBodyProps,
+        searchBarConfig: {
+          advancedSearchFilter: { ...advancedSearchFilter },
+          enableWildcardToggle: false,
+        },
+      });
+
+      expect(
+        queryByLabelText(filterButtonLabel, { selector: "button" }),
+      ).toBeInTheDocument();
+      expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+    });
+  });
 });
