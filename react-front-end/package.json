@@ -64,7 +64,7 @@
     "axios": "1.11.0",
     "clsx": "2.1.1",
     "es6-object-assign": "1.1.0",
-    "fp-ts": "2.16.10",
+    "fp-ts": "2.16.11",
     "fp-ts-contrib": "0.1.29",
     "history": "4.10.1",
     "html-react-parser": "5.2.6",
