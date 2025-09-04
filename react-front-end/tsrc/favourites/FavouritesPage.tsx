@@ -109,6 +109,11 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             refinePanelConfig={favouritesPageRefinePanelConfig(
               searchContextProps,
             )}
+            searchBarConfig={
+              favouritesType === "searches"
+                ? { enableWildcardToggle: false }
+                : undefined
+            }
           />
         )}
       </SearchContext.Consumer>
