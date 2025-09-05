@@ -128,6 +128,17 @@ interface SearchProps extends TemplateUpdateProps {
    * Title of the page where this component is used.
    */
   pageTitle?: string;
+
+  /**
+   * A function that will be called to get a list of items.
+   * This is used when the `displayMode` is `list`.
+   * The default function is `searchItems` from `SearchModule`.
+   * @param searchOptions The options for the search.
+   * @returns A promise of a search result.
+   */
+  searchItemsProvider?: (
+    searchOptions: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
 }
 
 /**
@@ -140,6 +151,7 @@ export const Search = ({
   children,
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
+  searchItemsProvider = searchItems,
 }: SearchProps) => {
   const history = useHistory<SearchPageHistoryState>();
   const searchPageHistoryState: SearchPageHistoryState | undefined =
@@ -306,7 +318,7 @@ export const Search = ({
           case "list":
             return {
               from: "item-search",
-              content: await searchItems({
+              content: await searchItemsProvider({
                 ...searchPageOptions,
                 includeAttachments: false,
               }),
@@ -375,6 +387,7 @@ export const Search = ({
     history,
     searchState,
     searchPageHistoryState,
+    searchItemsProvider,
   ]);
 
   // In Selection Session, once a new search result is returned, make each

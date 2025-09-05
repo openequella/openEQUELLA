@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { act, render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
@@ -46,23 +46,34 @@ initialiseEssentialMocks({
   mockListClassification,
   mockSearchSettings,
 });
-const searchPromise = mockSearch.mockResolvedValue(getSearchResult);
+mockSearch.mockResolvedValue(getSearchResult);
 
-const renderSearch = async (queryString?: string) => {
+type RenderSearchOptions = {
+  queryString?: string;
+  searchItemsProvider?: jest.Mock;
+};
+
+const renderSearch = async ({
+  queryString,
+  searchItemsProvider,
+}: RenderSearchOptions = {}) => {
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
 
   const page = render(
     <Router history={history}>
-      <Search updateTemplate={jest.fn()}>
+      <Search
+        updateTemplate={jest.fn()}
+        searchItemsProvider={searchItemsProvider}
+      >
         <div />
       </Search>
     </Router>,
   );
 
-  await act(async () => {
-    await searchPromise;
-  });
+  await waitFor(() =>
+    expect(searchItemsProvider ?? mockSearch).toHaveBeenCalled(),
+  );
 
   return page;
 };
@@ -94,6 +105,10 @@ describe("performing general tasks", () => {
 });
 
 describe("conversion of parameters to SearchPageOptions", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const searchPageOptions: SearchPageOptions = {
     ...defaultSearchPageOptions,
     dateRangeQuickModeEnabled: false,
@@ -102,7 +117,26 @@ describe("conversion of parameters to SearchPageOptions", () => {
   it("converts query strings to SearchPageOptions", async () => {
     mockConvertParamsToSearchOptions.mockResolvedValueOnce(searchPageOptions);
 
-    await renderSearch("?q=test");
+    await renderSearch({ queryString: "?q=test" });
     expect(mockConvertParamsToSearchOptions).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("custom searchItemsProvider", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("uses custom searchItemsProvider when provided", async () => {
+    const customSearch = jest.fn().mockResolvedValue(getSearchResult);
+
+    await renderSearch({ searchItemsProvider: customSearch });
+    expect(customSearch).toHaveBeenCalledTimes(1);
+    expect(mockSearch).not.toHaveBeenCalled();
+  });
+
+  it("falls back to default search when no searchItemsProvider is passed", async () => {
+    await renderSearch();
+    expect(mockSearch).toHaveBeenCalledTimes(1);
   });
 });
