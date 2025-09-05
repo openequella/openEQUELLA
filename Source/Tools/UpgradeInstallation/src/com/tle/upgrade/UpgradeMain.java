@@ -71,10 +71,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,7 +100,6 @@ public class UpgradeMain {
   private final XStream xstream;
 
   private final File upgradeLogFile;
-  private static boolean offline;
 
   public static Upgrader[] upgraders =
       new Upgrader[] {
@@ -139,27 +140,14 @@ public class UpgradeMain {
         new AddKeepaliveAttribute()
       };
 
-  public static void main(String[] args) throws Throwable {
+  public static void main(String[] args) {
+    LOGGER.info("Starting Upgrader");
+
     try {
-      LOGGER.info("Upgrader started");
-      InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
-      if (verStream != null) {
-        Properties props = new Properties();
-        props.load(verStream);
-        commit = props.getProperty("version.commit");
-      }
-      offline = Boolean.getBoolean("equella.offline");
-      String installDir = System.getProperty("equella.install.directory");
-      if (installDir == null) {
-        File folder = ExecUtils.findJarFolder(UpgradeMain.class);
-        installDir = folder.getParent();
-      }
-      boolean install = false;
-      for (String arg : args) {
-        if (arg.equals("--install")) {
-          install = true;
-        }
-      }
+      initVersionDetails();
+      String installDir = determineInstallDir();
+      boolean install = Arrays.asList(args).contains("--install");
+
       UpgradeMain upgrader = new UpgradeMain(new File(installDir));
       if (install) {
         upgrader.install();
@@ -167,13 +155,29 @@ public class UpgradeMain {
         upgrader.upgrade();
       }
     } catch (Exception t) {
-      LOGGER.error("Error running database-upgrader.jar", t);
+      LOGGER.error("Error running Upgrader", t);
       System.exit(1);
     }
+
+    LOGGER.info("Upgrader finished successfully");
   }
 
-  public static boolean isOffline() {
-    return offline;
+  private static String determineInstallDir() {
+    return Optional.ofNullable(System.getProperty("equella.install.directory"))
+        .orElseGet(
+            () -> {
+              File folder = ExecUtils.findJarFolder(UpgradeMain.class);
+              return folder.getParent();
+            });
+  }
+
+  private static void initVersionDetails() throws IOException {
+    InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
+    if (verStream != null) {
+      Properties props = new Properties();
+      props.load(verStream);
+      commit = props.getProperty("version.commit");
+    }
   }
 
   public UpgradeMain(File path) {
