@@ -87,7 +87,7 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
   }
 
   @GET
-  @Path("creatable")
+  @Path("portlet/creatable")
   @ApiOperation(
     value = "List of creatable portlets",
     notes = "Retrieve a list of portlet types that can be added to the dashboard",
