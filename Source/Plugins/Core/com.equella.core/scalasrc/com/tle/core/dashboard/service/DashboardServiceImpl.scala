@@ -20,7 +20,6 @@ package com.tle.core.dashboard.service
 
 import cats.implicits._
 import com.tle.common.i18n.LangUtils
-import com.tle.common.portal.PortletTypeDescriptor
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.dashboard.model._
