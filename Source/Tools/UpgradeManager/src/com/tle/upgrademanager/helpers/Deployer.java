@@ -24,7 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.Closeables;
 import com.google.common.io.Files;
 import com.tle.upgrademanager.ManagerConfig;
-import com.tle.upgrademanager.deploy.DatabaseUpgraderInvoker;
+import com.tle.upgrademanager.deploy.UpgraderLauncher;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class Deployer {
 
       try {
         ajax.addHeading(ajaxId, "Migrating installation files");
-        getDatabaseUpgrader().migrateSchema();
+        getUpgraderLauncher().upgrade();
         ajax.addHeading(ajaxId, "Migrating complete");
       } catch (Exception ex) {
         throw new DeployException(
@@ -101,8 +101,8 @@ public class Deployer {
     }
   }
 
-  public DatabaseUpgraderInvoker getDatabaseUpgrader() throws Exception {
-    return new DatabaseUpgraderInvoker(config, ajaxId, ajax);
+  public UpgraderLauncher getUpgraderLauncher() {
+    return new UpgraderLauncher(config, ajaxId, ajax);
   }
 
   public void unzipUpgrade(File upgradeZip) throws IOException {

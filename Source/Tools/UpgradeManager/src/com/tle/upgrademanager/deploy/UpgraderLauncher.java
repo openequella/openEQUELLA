@@ -30,29 +30,32 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("nls")
-public final class DatabaseUpgraderInvoker {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseUpgraderInvoker.class);
+/**
+ * Runs the upgrader jar as a separate process, capturing the output and sending it to the AjaxState
+ * object for display in the browser.
+ */
+public final class UpgraderLauncher {
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpgraderLauncher.class);
 
   private final ManagerConfig config;
   private final AjaxState ajax;
   private final String ajaxId;
 
-  public DatabaseUpgraderInvoker(ManagerConfig config, String ajaxId, AjaxState ajax) {
+  public UpgraderLauncher(ManagerConfig config, String ajaxId, AjaxState ajax) {
     this.config = config;
     this.ajax = ajax;
     this.ajaxId = ajaxId;
   }
 
-  public void migrateSchema() throws Exception {
-    runMigrator(false);
+  public void upgrade() throws Exception {
+    runUpgrader(false);
   }
 
   public void install() throws Exception {
-    runMigrator(true);
+    runUpgrader(true);
   }
 
-  public void runMigrator(boolean install) throws Exception {
+  public void runUpgrader(boolean install) throws Exception {
     try {
       LOGGER.debug("Launching {}", Deployer.UPGRADER_JAR);
 
