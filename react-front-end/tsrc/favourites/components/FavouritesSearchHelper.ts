@@ -15,10 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { sequenceT } from "fp-ts/Apply";
 import * as E from "fp-ts/Either";
 import { identity, pipe } from "fp-ts/function";
 import { getBaseUrl } from "../../AppConfig";
+import { getTopicIdFromUrl } from "../../modules/HierarchyModule";
 import { DateRange } from "../../util/Date";
 import { languageStrings } from "../../util/langstrings";
 import * as TE from "../../util/TaskEither.extended";
@@ -33,7 +33,7 @@ import {
 } from "../../modules/LegacySelectionSessionModule";
 import * as O from "fp-ts/Option";
 import type { SelectedCategories } from "../../modules/SearchFacetsModule";
-import { SearchOptions } from "../../modules/SearchModule";
+import { formatQuery, SearchOptions } from "../../modules/SearchModule";
 import { generateSearchPageOptionsFromUrl } from "../../search/SearchPageHelper";
 import * as A from "fp-ts/Array";
 import * as T from "fp-ts/Task";
@@ -64,7 +64,7 @@ export interface FavouriteSearchOptionsSummary {
   /**
    * The last modified date range, with each date prefixed by "Start: " or "End: ".
    */
-  lastModifiedDateRange?: [string, string];
+  lastModifiedDateRange?: string[];
   /**
    * The owner's username.
    */
@@ -170,7 +170,7 @@ const processCategories = (
 // Convert the date range to a tuple of strings, or return undefined if date is undefined.
 const processLastModifiedDateRange = (
   lastModifiedDateRange?: DateRange,
-): [string, string] | undefined => {
+): string[] | undefined => {
   // Convert a date to a string with a label, or return undefined if the date is undefined.
   const processDate = (label: string, date?: Date) =>
     pipe(
@@ -181,12 +181,12 @@ const processLastModifiedDateRange = (
   return pipe(
     lastModifiedDateRange,
     O.fromNullable,
-    O.chain((range) =>
-      sequenceT(O.Apply)(
-        processDate(startLabel, range.start),
-        processDate(endLabel, range.end),
-      ),
-    ),
+    O.map((range) => [
+      processDate(startLabel, range.start),
+      processDate(endLabel, range.end),
+    ]),
+    O.map(A.compact),
+    O.chain(O.fromPredicate(A.isNonEmpty)),
     O.toUndefined,
   );
 };
@@ -195,14 +195,16 @@ const processLastModifiedDateRange = (
  * Converts SearchOptions to a map of strings for display in the favourites search.
  *
  * @param searchOption The search options.
+ * @param hierarchy The compound UUID of the hierarchy.
  * @param advancedSearch The UUID of the advanced search.
  */
 export const stringifySearchOptions = (
   searchOption?: SearchOptions,
+  hierarchy?: string,
   advancedSearch?: string,
 ): T.Task<FavouriteSearchOptionsSummary> => {
-  const hierarchyNameTask: T.Task<string | undefined> = searchOption?.hierarchy
-    ? getHierarchyName(searchOption.hierarchy)
+  const hierarchyNameTask: T.Task<string | undefined> = hierarchy
+    ? getHierarchyName(hierarchy)
     : T.of(undefined);
 
   const advancedSearchNameTask: T.Task<string | undefined> = advancedSearch
@@ -226,7 +228,7 @@ export const stringifySearchOptions = (
     } = opts;
 
     return {
-      query,
+      query: formatQuery(query),
       collections: pipe(
         collections,
         nullableArrayToStringArray((c) => c.name),
@@ -266,10 +268,7 @@ export const buildSearchOptionsSummary = (
     E.tryCatch(() => new URL(path, getBaseUrl()), buildErrorMessage);
 
   const generateSearchPageOptionsTask = (url: URL) =>
-    TE.tryCatch(
-      () => generateSearchPageOptionsFromUrl(url), // Promise<SearchPageOptions>
-      buildErrorMessage,
-    );
+    TE.tryCatch(() => generateSearchPageOptionsFromUrl(url), buildErrorMessage);
 
   return pipe(
     parseUrl(path),
@@ -278,7 +277,8 @@ export const buildSearchOptionsSummary = (
     TE.bind("options", ({ url }) => generateSearchPageOptionsTask(url)),
     TE.flatMapTask(({ url, options }) => {
       const advSearchUuid = getAdvancedSearchIdFromUrl(url);
-      return stringifySearchOptions(options, advSearchUuid);
+      const hierarchyUuid = getTopicIdFromUrl(url);
+      return stringifySearchOptions(options, hierarchyUuid, advSearchUuid);
     }),
     TE.getOrThrow,
   )();

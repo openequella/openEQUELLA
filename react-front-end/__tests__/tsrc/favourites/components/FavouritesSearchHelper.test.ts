@@ -48,11 +48,7 @@ describe("stringifySearchOptions", () => {
   const { compoundUuid: hierarchyUuid, name: hierarchyName } =
     topicWithShortAndLongDesc;
 
-  const searchOptions = {
-    ...allSearchPageOptions,
-    hierarchy: hierarchyUuid,
-  };
-  const { query, collections, owner, mimeTypes } = searchOptions;
+  const { query, collections, owner, mimeTypes } = allSearchPageOptions;
 
   const expectedResult: FavouriteSearchOptionsSummary = {
     query,
@@ -73,7 +69,8 @@ describe("stringifySearchOptions", () => {
 
   it("generates human readable strings for search options", async () => {
     const result = await stringifySearchOptions(
-      searchOptions,
+      allSearchPageOptions,
+      hierarchyUuid,
       "369c92fa-ae59-4845-957d-8fcaa22c15e3",
     )();
     expect(result).toStrictEqual(expectedResult);
