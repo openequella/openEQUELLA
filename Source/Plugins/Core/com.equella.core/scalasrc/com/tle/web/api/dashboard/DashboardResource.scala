@@ -42,6 +42,12 @@ final case class DashboardLayoutUpdate(
     layout: String
 )
 
+final case class PortletCreatableBean(
+    portletType: String,
+    name: String,
+    desc: String
+)
+
 @Bind
 @Singleton
 @NoCache
@@ -78,5 +84,26 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
       case Success(layout) => update(layout)
       case Failure(_)      => badRequest(s"Invalid Dashboard layout: $newLayout")
     }
+  }
+
+  @GET
+  @Path("creatable")
+  @ApiOperation(
+    value = "List of creatable portlets",
+    notes = "Retrieve a list of portlet types that can be added to the dashboard",
+    response = classOf[PortletCreatableBean],
+    responseContainer = "List"
+  )
+  def creatable(): Response = {
+    val portlets: List[PortletCreatableBean] =
+      dashboardService.getCreatablePortlets
+        .map(p =>
+          PortletCreatableBean(
+            portletType = p.portletType.toString,
+            name = p.name,
+            desc = p.desc
+          )
+        )
+    Response.ok(portlets).build()
   }
 }

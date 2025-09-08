@@ -22,6 +22,18 @@ class DashboardApiTest extends AbstractRestApiTest {
     assertEquals("SingleColumn", resp.get(LAYOUT).asText)
   }
 
+  @Test(description = "Retrieve a list portlet types that the user can create")
+  def creatablePortlet(): Unit = {
+    val request = new GetMethod(s"$DASHBOARD_API_ENDPOINT/creatable")
+
+    val respCode = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_OK, respCode)
+
+    val resp = mapper.readTree(request.getResponseBodyAsStream)
+    // There are 11 portlet types defined but two are deprecated so result should contain 9 types.
+    assertEquals(9, resp.size())
+  }
+
   @Test(
     description = "Update dashboard layout using a valid value",
     dependsOnMethods = Array("dashboardDetails")

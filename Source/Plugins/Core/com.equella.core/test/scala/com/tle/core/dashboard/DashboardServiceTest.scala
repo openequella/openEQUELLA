@@ -2,7 +2,8 @@ package com.tle.core.dashboard
 
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.item.ItemStatus
-import com.tle.common.i18n.LangUtils
+import com.tle.common.i18n.{CurrentLocale, LangUtils}
+import com.tle.common.portal.PortletTypeDescriptor
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.portal.entity.{Portlet, PortletPreference}
 import com.tle.common.usermanagement.user.CurrentUser
@@ -234,6 +235,46 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       val result = dashboardService.getViewablePortlets
       result should have size 1
       result.head.commonDetails.uuid shouldBe uuid
+    }
+  }
+
+  describe("Creatable portlets") {
+    // These names and descriptions should be language string keys but defined here as the actual strings, and then mock `CurrentLocale`
+    // to return them to simplify testing.
+    val searchPortletName = "Quick search"
+    val searchPortletDesc = "Quick search description"
+    val browsePortletName = "Browse"
+    val browsePortletDesc = "Browse portlet description"
+    val mockCurrentLocale = mockStatic(classOf[CurrentLocale])
+    mockCurrentLocale
+      .when(() => CurrentLocale.get(any[String]()))
+      .thenAnswer(invocation => invocation.getArgument(0))
+
+    val searchPortlet =
+      new PortletTypeDescriptor("search", searchPortletName, searchPortletDesc, null)
+    val browsePortlet =
+      new PortletTypeDescriptor("browse", browsePortletName, browsePortletDesc, null)
+    val rssPortlet     = new PortletTypeDescriptor("rss", "Rss", "Rss portlet description", null)
+    val unknownPortlet = new PortletTypeDescriptor("unknown", "Unknown", "Unknown portlet", null)
+
+    it("should return a list of creatable portlet types") {
+      Given("a list of valid, invalid and deprecated portlet types")
+      when(mockPortletService.listContributableTypes(false))
+        .thenReturn(
+          List(
+            searchPortlet,
+            browsePortlet,
+            rssPortlet,
+            unknownPortlet
+          ).asJava
+        )
+
+      Then("only the valid portlet types are returned and ordered by name")
+      val result = dashboardService.getCreatablePortlets
+      result shouldBe List(
+        PortletCreatable(PortletType.browse, browsePortletName, browsePortletDesc),
+        PortletCreatable(PortletType.search, searchPortletName, searchPortletDesc)
+      )
     }
   }
 }

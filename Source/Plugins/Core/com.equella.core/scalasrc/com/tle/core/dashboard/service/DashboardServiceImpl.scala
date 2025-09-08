@@ -20,6 +20,7 @@ package com.tle.core.dashboard.service
 
 import cats.implicits._
 import com.tle.common.i18n.LangUtils
+import com.tle.common.portal.PortletTypeDescriptor
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.dashboard.model._
@@ -121,5 +122,25 @@ class DashboardServiceImpl @Inject() (
       case Failure(_) =>
         Left(s"Invalid portlet type '$portletType' configured for Portlet ${portlet.getUuid}")
     }
+  }
+
+  override def getCreatablePortlets: List[PortletCreatable] = {
+    // portletService.listContributableTypes requires a flag to know whether the request comes from the Portlet
+    // Management page or Dashboard. Since this method is implemented for Dashboard, set that flag to false.
+    val result: List[Either[String, PortletCreatable]] =
+      portletService
+        .listContributableTypes(false)
+        .asScala
+        .toList
+        .map(PortletCreatable(_))
+
+    // Log errors for portlet types that cannot be created, exclude the deprecated types, and return the rest.
+    val (errors, creatables) = result.separate
+    errors.foreach(LOGGER.error)
+
+    val deprecated = Set(PortletType.iframe, PortletType.rss)
+    creatables
+      .filterNot(p => deprecated.contains(p.portletType))
+      .sortBy(_.name)
   }
 }
