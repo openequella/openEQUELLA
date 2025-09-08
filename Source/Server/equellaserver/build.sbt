@@ -482,12 +482,18 @@ upgradeZip := {
   val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
-  val plugVer = ver.fullVersion
+  val plugVer     = ver.fullVersion
+  val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
   val zipFiles = Seq(
-    assembly.value                                         -> "equella-server.jar",
-    (LocalProject("UpgradeInstallation") / assembly).value -> "database-upgrader.jar",
-    (LocalProject("conversion") / assembly).value          -> "conversion-service.jar",
-    (LocalProject("equella") / versionProperties).value    -> "version.properties"
+    assembly.value -> "equella-server.jar",
+    // This new JAR filename for UpgradeInstallation, must match the string at:
+    // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
+    upgraderJar -> "installation-upgrader.jar",
+    // Temporary, for upgrades from before 2025.2 - remove as part of OEQ-????
+    // This is it's OLD name, which was misleading as it implied it was only for DB upgrades.
+    upgraderJar                                         -> "database-upgrader.jar",
+    (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
+    (LocalProject("equella") / versionProperties).value -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))

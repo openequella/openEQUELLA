@@ -81,7 +81,25 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
+/**
+ * Main class for the upgrade tool. This is a command line tool that will upgrade an openEQUELLA
+ * installation to the latest version.
+ *
+ * <p>To run the tool, use the following command:
+ *
+ * <pre>
+ * java -Dequella.install.directory=&lt;path to openEQUELLA install&gt; -jar upgrade.jar [--install]
+ * </pre>
+ *
+ * The --install flag is used when installing openEQUELLA for the first time. It will run all the
+ * upgraders that are marked as runOnInstall.
+ *
+ * <p>The equella.install.directory system property is optional. If it is not set, the tool will
+ * assume that it is being run from the tools/upgrade folder of an openEQUELLA installation.
+ *
+ * <p><strong>Note:</strong> This tool is primarily run from the UpgradeManager application, but it
+ * can be run standalone if required (mainly for testing purposes).
+ */
 public class UpgradeMain {
   static {
     URL log4jConfigFile =

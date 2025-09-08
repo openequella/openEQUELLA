@@ -33,10 +33,10 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
 public class Deployer {
+  public static final String UPGRADER_JAR = "installation-upgrader.jar";
+
   private static final String CONVERSION_SERVICE_JAR = "conversion-service.jar";
-  private static final String DATABASE_UPGRADER_JAR = "database-upgrader.jar";
   private static final String EQUELLA_JAR_NAME = "equella-server.jar";
   private static final String PLUGINS_SOURCE_DIR = "plugins";
   private static final String PLUGIN_DEST_DIR = "Standard";
@@ -125,7 +125,7 @@ public class Deployer {
       deployPlugins(new File(tempDir, PLUGINS_SOURCE_DIR));
 
       ajax.addBasic(ajaxId, "Upgrading Installation Upgrader...");
-      deployDatabaseUpgrader(new File(tempDir, DATABASE_UPGRADER_JAR));
+      deployDatabaseUpgrader(new File(tempDir, UPGRADER_JAR));
 
       ajax.addBasic(ajaxId, "Upgrading Conversion Service...");
       deployConversionService(new File(tempDir, CONVERSION_SERVICE_JAR));
@@ -154,7 +154,7 @@ public class Deployer {
   }
 
   private void deployDatabaseUpgrader(File dbUpgraderJar) throws IOException {
-    moveToInstall(dbUpgraderJar, "manager/" + DATABASE_UPGRADER_JAR);
+    moveToInstall(dbUpgraderJar, "manager/" + UPGRADER_JAR);
   }
 
   private void deployPlugins(File pluginsDir) throws IOException {
