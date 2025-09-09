@@ -27,7 +27,7 @@ import com.tle.common.harvester.MEXHarvesterSettings;
  * learning resources. Unlike LORAX, which was tied specifically to TLF content, MEX was designed
  * for a broader range of free content providers. It standardizes how content providers can make
  * their metadata available to a central system or network, enabling the discovery of diverse
- * educational resources from different sources across the country. *
+ * educational resources from different sources across the country.
  *
  * <p>Virtually identical to SHEX & LORAXPlugin, differing only in string identifiers
  */

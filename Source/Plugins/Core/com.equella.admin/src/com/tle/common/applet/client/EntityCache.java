@@ -75,11 +75,11 @@ public class EntityCache {
   }
 
   private Map<Long, NameId> transform(RemoteAbstractEntityService<?> service) {
-    List<NameId> nis = BundleCache.getNameIds(service.listAll());
-    nis.sort(Format.NAME_ID_COMPARATOR);
+    List<NameId> ids = BundleCache.getNameIds(service.listAll());
+    ids.sort(Format.NAME_ID_COMPARATOR);
 
-    Map<Long, NameId> results = new LinkedHashMap<>(nis.size());
-    for (NameId ni : nis) {
+    Map<Long, NameId> results = new LinkedHashMap<>(ids.size());
+    for (NameId ni : ids) {
       results.put(ni.getId(), ni);
     }
 

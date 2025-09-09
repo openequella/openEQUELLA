@@ -147,7 +147,7 @@ public class WorkflowModel extends BasicModel {
         clearScript();
       }
     } catch (Exception ex) {
-      Driver.displayError(null, "itemEditor/loading", ex); // $NON-NLS-1$
+      Driver.displayError(null, "itemEditor/loading", ex);
       LOGGER.error("Error loading collection {}", uuid, ex);
     }
   }

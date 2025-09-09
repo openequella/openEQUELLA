@@ -28,7 +28,6 @@ import com.tle.common.harvester.LORAXHarvesterSettings;
  *
  * <p>Virtually identical to SHEX & MEXPlugin, differing only in string identifiers
  */
-@SuppressWarnings("nls")
 public class LORAXPlugin extends AbstractTLFPlugin<LORAXHarvesterSettings> {
   public LORAXPlugin() {
     super(LORAXHarvesterSettings.class);

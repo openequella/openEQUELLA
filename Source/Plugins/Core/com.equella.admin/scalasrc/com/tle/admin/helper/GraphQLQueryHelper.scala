@@ -140,6 +140,8 @@ object GraphQLQueryHelper {
     *   the identifier of the entity to use with the getter
     * @param getter
     *   the function to get all items by their identifier
+    * @param logger
+    *   the logger to use for logging
     * @tparam A
     *   the type of the identifier
     * @tparam E
