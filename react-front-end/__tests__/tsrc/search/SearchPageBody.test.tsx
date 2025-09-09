@@ -72,6 +72,19 @@ const mockSearch = jest.fn();
 const mockHistory = createMemoryHistory();
 
 describe("<SearchPageBody />", () => {
+  const {
+    showAdvancedSearchFilter: advancedSearchButtonLabel,
+    wildcardSearch: wildcardSearchText,
+  } = languageStrings.searchpage;
+
+  const advancedSearchFilter = {
+    onClick: jest.fn(),
+    accent: false,
+  };
+
+  const queryAdvancedSearchButton = () =>
+    screen.queryByRole("button", { name: advancedSearchButtonLabel });
+
   const renderSearchPageBodyWithContext = async (
     props: SearchPageBodyProps,
     state: State = {
@@ -294,65 +307,47 @@ describe("<SearchPageBody />", () => {
     );
   });
 
-  describe("configuring search bar components using searchBarConfig prop", () => {
-    const {
-      showAdvancedSearchFilter: filterButtonLabel,
-      wildcardSearch: wildcardSearchText,
-    } = languageStrings.searchpage;
-
-    const advancedSearchFilter = {
-      onClick: jest.fn(),
-      accent: false,
-    };
-
-    it("shows wildcard toggle and hides advanced search filter button by default", async () => {
-      const { queryByLabelText, queryByText } = await renderSearchPageBody({
-        ...defaultSearchPageBodyProps,
-      });
-
-      expect(
-        queryByLabelText(filterButtonLabel, { selector: "button" }),
-      ).not.toBeInTheDocument();
-      expect(queryByText(wildcardSearchText)).toBeInTheDocument();
+  it("shows wildcard search toggle and hides advanced search filter button by default", async () => {
+    const { queryByText } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
     });
 
-    it("shows advanced search filter when configured", async () => {
-      const { queryByLabelText } = await renderSearchPageBody({
-        ...defaultSearchPageBodyProps,
-        searchBarConfig: {
-          advancedSearchFilter: { ...advancedSearchFilter },
-        },
-      });
+    expect(queryAdvancedSearchButton()).not.toBeInTheDocument();
+    expect(queryByText(wildcardSearchText)).toBeInTheDocument();
+  });
 
-      expect(
-        queryByLabelText(filterButtonLabel, { selector: "button" }),
-      ).toBeInTheDocument();
+  it("shows advanced search filter button when configured", async () => {
+    await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        advancedSearchFilter: { ...advancedSearchFilter },
+      },
     });
 
-    it("hides wildcard search toggle when configured", async () => {
-      const { queryByText } = await renderSearchPageBody({
-        ...defaultSearchPageBodyProps,
-        searchBarConfig: {
-          enableWildcardToggle: false,
-        },
-      });
+    expect(queryAdvancedSearchButton()).toBeInTheDocument();
+  });
 
-      expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+  it("can hide the wildcard search toggle when specified", async () => {
+    const { queryByText } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        enableWildcardToggle: false,
+      },
     });
 
-    it("hides wildcard toggle and shows advanced search filter button", async () => {
-      const { queryByLabelText, queryByText } = await renderSearchPageBody({
-        ...defaultSearchPageBodyProps,
-        searchBarConfig: {
-          advancedSearchFilter: { ...advancedSearchFilter },
-          enableWildcardToggle: false,
-        },
-      });
+    expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+  });
 
-      expect(
-        queryByLabelText(filterButtonLabel, { selector: "button" }),
-      ).toBeInTheDocument();
-      expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+  it("can hide the wildcard search toggle while still showing the advanced search filter button", async () => {
+    const { queryByText } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        advancedSearchFilter: { ...advancedSearchFilter },
+        enableWildcardToggle: false,
+      },
     });
+
+    expect(queryAdvancedSearchButton()).toBeInTheDocument();
+    expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
   });
 });

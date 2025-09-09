@@ -33,6 +33,10 @@ export default {
   },
 } as Meta<SearchBarProps>;
 
+export const NoWildcardToggle: StoryFn<SearchBarProps> = (args) => (
+  <SearchBar {...args} />
+);
+
 export const NonWildcardMode: StoryFn<SearchBarProps> = (args) => (
   <SearchBar {...args} />
 );

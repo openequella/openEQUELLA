@@ -192,11 +192,6 @@ export const SearchPageBody = ({
   getRemoteSearchesProvider = getRemoteSearchesFromServer,
   searchResultTitle,
 }: SearchPageBodyProps) => {
-  const mergedSearchBarConfig = {
-    ...defaultSearchPageSearchBarConfig,
-    ...searchBarConfig,
-  };
-
   const {
     enableCSVExportButton,
     enableShareSearchButton,
@@ -510,6 +505,17 @@ export const SearchPageBody = ({
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
 
+  const mergedSearchBarConfig = {
+    ...defaultSearchPageSearchBarConfig,
+    ...searchBarConfig,
+  };
+  const wildcardSearch = mergedSearchBarConfig?.enableWildcardToggle
+    ? {
+        wildcardMode: !searchPageOptions.rawMode,
+        onWildcardModeChange: handleWildcardModeChanged,
+      }
+    : undefined;
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -798,14 +804,7 @@ export const SearchPageBody = ({
                 advancedSearchFilter={
                   mergedSearchBarConfig?.advancedSearchFilter
                 }
-                wildcardSearch={
-                  mergedSearchBarConfig?.enableWildcardToggle
-                    ? {
-                        wildcardMode: !searchPageOptions.rawMode,
-                        onWildcardModeChange: handleWildcardModeChanged,
-                      }
-                    : undefined
-                }
+                wildcardSearch={wildcardSearch}
               />
             </Grid>
             {additionalPanels?.map((panel, index) => (
