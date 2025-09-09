@@ -21,6 +21,6 @@
     "jest-config": "30.0.5",
     "rewire": "9.0.0",
     "ts-jest": "29.4.1",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   }
 }
