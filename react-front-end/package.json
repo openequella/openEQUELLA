@@ -91,7 +91,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@babel/core": "7.28.3",
+    "@babel/core": "7.28.4",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@html-validate/jest-config": "3.13.0",
