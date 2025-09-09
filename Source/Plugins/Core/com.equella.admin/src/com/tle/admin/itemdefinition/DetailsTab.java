@@ -25,6 +25,7 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.SchemaTransform;
@@ -40,7 +41,6 @@ import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
 import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
@@ -373,7 +373,7 @@ public class DetailsTab extends AbstractItemdefTab
 
   protected List<NameValue> getSchemaList() {
     try {
-      List<BaseEntityLabel> schemas = clientService.getService(RemoteSchemaService.class).listAll();
+      List<BaseEntityLabel> schemas = clientService.getService(AdminSchemaService.class).listAll();
       List<NameValue> nameValues = BundleCache.getNameValues(schemas);
       Collections.sort(nameValues, Format.NAME_VALUE_COMPARATOR);
       return nameValues;
@@ -533,7 +533,7 @@ public class DetailsTab extends AbstractItemdefTab
     if (schemaPair != null) {
       Schema schemaBean =
           clientService
-              .getService(RemoteSchemaService.class)
+              .getService(AdminSchemaService.class)
               .get(Long.parseLong(schemaPair.getValue()));
       schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
 

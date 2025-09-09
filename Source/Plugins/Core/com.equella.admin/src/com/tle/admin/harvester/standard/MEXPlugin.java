@@ -20,7 +20,17 @@ package com.tle.admin.harvester.standard;
 
 import com.tle.common.harvester.MEXHarvesterSettings;
 
-@SuppressWarnings("nls")
+/**
+ * Metadata Exchange (MEX) is a protocol developed in Australia to facilitate the harvesting of free
+ * digital content, particularly within the context of the National Digital Learning Resource
+ * Network (NDLRN). The NDLRN was a national initiative aimed at providing a network of digital
+ * learning resources. Unlike LORAX, which was tied specifically to TLF content, MEX was designed
+ * for a broader range of free content providers. It standardizes how content providers can make
+ * their metadata available to a central system or network, enabling the discovery of diverse
+ * educational resources from different sources across the country.
+ *
+ * <p>Virtually identical to SHEX & LORAXPlugin, differing only in string identifiers
+ */
 public class MEXPlugin extends AbstractTLFPlugin<MEXHarvesterSettings> {
   public MEXPlugin() {
     super(MEXHarvesterSettings.class);

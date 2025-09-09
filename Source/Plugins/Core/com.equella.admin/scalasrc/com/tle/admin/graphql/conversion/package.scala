@@ -16,25 +16,19 @@
  * limitations under the License.
  */
 
-package com.tle.admin.harvester.standard;
+package com.tle.admin.graphql
 
-import com.tle.common.harvester.SHEXHarvesterSettings;
+/** This package contains support for converting types between the GraphQL schema and internal
+  * classes used in the AdminConsole.
+  */
+package object conversion {
 
-/**
- * SHEX was a metadata harvesting protocol used to collect free digital content from the National
- * Digital Learning Resource Network (NDLRN). While the long-form of the acronym is not widely
- * documented, it served a similar purpose to MEX and LORAX, acting as a legacy standard for data
- * exchange within that specific ecosystem.
- *
- * <p>Virtually identical to MEX & LORAXPlugin, differing only in string identifiers
- */
-public class SHEXPlugin extends AbstractTLFPlugin<SHEXHarvesterSettings> {
-  public SHEXPlugin() {
-    super(SHEXHarvesterSettings.class);
-  }
-
-  @Override
-  protected String getPluginsFieldString() {
-    return strings.key("shexplugin.settings");
+  /** Extension method to allow functional conversion with infix notation.
+    *
+    * @param a
+    *   The value to convert
+    */
+  implicit class Converter[A](val a: A) extends AnyVal {
+    def convert[B](f: A => B): B = f(a)
   }
 }

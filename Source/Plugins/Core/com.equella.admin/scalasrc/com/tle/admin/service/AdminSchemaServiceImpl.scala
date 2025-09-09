@@ -18,6 +18,10 @@
 
 package com.tle.admin.service
 
+import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
+import com.tle.admin.graphql.conversion.Converter
+import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
+import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteSchemaService}
@@ -33,18 +37,30 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
     val cfg: ClientConfiguration
 ) extends AdminEntityService[Schema]
     with AdminSchemaService {
-  private val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminSchemaServiceImpl])
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminSchemaServiceImpl])
 
-  override def getSchemaUses(id: Long): util.List[BaseEntityLabel] = withDelegate {
-    _.getSchemaUses(id)
-  }
+  override def get(id: Long): Schema =
+    getEntityOrNotFound("Schema [by id]", id, MetadataSchemaApi.getById) convert toSchema
 
-  override def getImportSchemaTypes(id: Long): util.List[String] = withDelegate {
-    _.getImportSchemaTypes(id)
-  }
+  override def getSchemaUses(id: Long): util.List[BaseEntityLabel] =
+    getAllUnpaginated("Schema uses", id, MetadataSchemaApi.getUses).map(toBaseEntityLabel).asJava
+
+  override def getImportSchemaTypes(id: Long): util.List[String] =
+    new util.ArrayList[
+      String
+    ]( // to provide a mutable collection for the Java side to do List.addFirst
+      getAllUnpaginated("Schema import types", id, MetadataSchemaApi.getImportTypes).asJava
+    )
 
   override def listEditable(): util.List[BaseEntityLabel] =
     listAll()
+
+  override def listAllIncludingSystem(): util.List[BaseEntityLabel] = {
+    // For schemas there doesn't seem value in including system ones, so just delegate to listAll.
+    // The only system scheme is the "My Content" schema used for Scrapbook items via MyContentService.
+    // There's also some ID constants for it in com.tle.mycontent.MyContentConstants.
+    listAll()
+  }
 
   override def listAll(): util.List[BaseEntityLabel] =
     MetadataSchemaApi.listSchemas() match {
@@ -80,14 +96,6 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
     LOGGER.warn(
       "Missing implementation of [{}] for RemoteAbstractEntityService, will try delegate.",
       getCallerMethodName,
-      new NotImplementedError()
-    )
-    f(delegate)
-  }
-
-  private def withDelegate[T](f: RemoteSchemaService => T): T = {
-    LOGGER.warn(
-      "Still waiting on GraphQL implementation, will try delegate.",
       new NotImplementedError()
     )
     f(delegate)

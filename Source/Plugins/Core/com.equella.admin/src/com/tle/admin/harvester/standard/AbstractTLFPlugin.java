@@ -21,13 +21,9 @@ package com.tle.admin.harvester.standard;
 import com.dytech.devlib.PropBagEx;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.i18n.Lookup;
-import com.tle.beans.entity.Schema;
-import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.NameValue;
 import com.tle.common.harvester.AbstractTLFHarvesterSettings;
 import com.tle.common.i18n.StringLookup;
-import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -36,7 +32,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-@SuppressWarnings("nls")
+/**
+ * The Le@rning Federation (TLF) was a collaborative initiative between Australian state, territory,
+ * and New Zealand governments to create high-quality, online educational resources for schools. The
+ * TLF produced a vast collection of digital learning objects, all of which were tagged with
+ * metadata to make them discoverable. The content created under this initiative is known as TLF
+ * content. The LORAX protocol was developed specifically to allow libraries, schools, and other
+ * educational platforms to access and integrate this content into their own systems.
+ */
 public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
     extends HarvesterPlugin<T> {
   protected static final StringLookup loraxPluginStrings = Lookup.withPrefix("loraxplugin");
@@ -105,31 +108,26 @@ public abstract class AbstractTLFPlugin<T extends AbstractTLFHarvesterSettings>
   }
 
   @Override
-  public void validateSchema(JComboBox<NameValue> collections) throws EditorException {
-    String collection = ((NameValue) collections.getSelectedItem()).getValue();
-    ItemDefinition itemDef =
-        driver
-            .getClientService()
-            .getService(RemoteItemDefinitionService.class)
-            .getByUuid(collection);
+  public void validateSchema(JComboBox<NameValue> collections) {
+    PropBagEx definition = getSchemaDefinition(collections);
 
-    RemoteSchemaService schemaService =
-        driver.getClientService().getService(RemoteSchemaService.class);
-    Schema schema = schemaService.get(itemDef.getSchema().getId());
-    PropBagEx definition = schema.getDefinitionNonThreadSafe();
+    if (!hasTLFNode(definition)) {
+      JOptionPane.showMessageDialog(panel.getComponent(), loraxPluginStrings.text("schema"));
+    }
+  }
 
-    boolean nodeExists = false;
+  private static boolean hasTLFNode(PropBagEx definition) {
     String nodeLoc = "item/itembody/tlfid";
     if (definition.nodeExists(nodeLoc)) {
       Map<String, String> attributesForNode = definition.getAttributesForNode(nodeLoc);
 
-      if (attributesForNode != null && "true".equalsIgnoreCase(attributesForNode.get("field"))) {
-        nodeExists = true;
-      }
+      return attributesForNode != null && isIndexedForAdvancedSearch(attributesForNode);
     }
 
-    if (!nodeExists) {
-      JOptionPane.showMessageDialog(panel.getComponent(), loraxPluginStrings.text("schema"));
-    }
+    return false;
+  }
+
+  private static boolean isIndexedForAdvancedSearch(Map<String, String> attributesForNode) {
+    return "true".equalsIgnoreCase(attributesForNode.get("field"));
   }
 }

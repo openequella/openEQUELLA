@@ -29,6 +29,7 @@ import com.tle.admin.gui.common.TreeWithViewInterface;
 import com.tle.admin.schema.AbstractSchemaEditor;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SchemaNode;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
@@ -47,6 +48,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -105,9 +107,7 @@ public class EditorTab extends BaseEntityTab<Schema> {
   }
 
   private JComponent createLockedArea() {
-    JLabel label =
-        new JLabel(
-            CurrentLocale.get("com.tle.admin.schema.manager.editortab.locked")); // $NON-NLS-1$
+    JLabel label = new JLabel(CurrentLocale.get("com.tle.admin.schema.manager.editortab.locked"));
 
     lockedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     lockedPanel.setBorder(new LineBorder(Color.BLACK, 1, 0, 1, 0));
@@ -117,12 +117,12 @@ public class EditorTab extends BaseEntityTab<Schema> {
           @Override
           public void mouseClicked(MouseEvent e) {
             GlassSwingWorker<PartiallyLockedDialog> worker =
-                new GlassSwingWorker<PartiallyLockedDialog>() {
+                new GlassSwingWorker<>() {
                   @Override
-                  public PartiallyLockedDialog construct() throws Exception {
+                  public PartiallyLockedDialog construct() {
                     Collection<BaseEntityLabel> usages =
                         clientService
-                            .getService(RemoteSchemaService.class)
+                            .getService(AdminSchemaService.class)
                             .getSchemaUses(state.getEntity().getId());
                     BundleCache.ensureCached(usages);
                     return new PartiallyLockedDialog(usages);
@@ -143,7 +143,10 @@ public class EditorTab extends BaseEntityTab<Schema> {
 
                   @Override
                   public void exception() {
-                    getException().printStackTrace();
+                    LOGGER.error(
+                        "Error while trying to unlock schema: {}",
+                        state.getEntity().getUuid(),
+                        getException());
                   }
                 };
 
@@ -207,9 +210,13 @@ public class EditorTab extends BaseEntityTab<Schema> {
 
             @Override
             public void exception() {
-              LOGGER.error("Error confirming usages of Schema", getException());
+              LOGGER.error(
+                  "Error while determining schema locked state: {}",
+                  state.getEntity().getUuid(),
+                  getException());
             }
           };
+
       worker.setComponent(getComponent());
       worker.start();
     }
@@ -272,11 +279,8 @@ public class EditorTab extends BaseEntityTab<Schema> {
     }
   }
 
-  /**
-   * @author Nicholas Read
-   */
   class Editor extends JPanel implements TreeWithViewInterface<SchemaNode> {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
     private SchemaNode current;
 

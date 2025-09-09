@@ -29,6 +29,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.controls.scripting.BasicModel;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -38,7 +39,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -46,23 +46,25 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.Reader;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkflowModel extends BasicModel {
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-  private static final Log LOGGER = LogFactory.getLog(WorkflowModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowModel.class);
 
   private int currentItemDefIndex;
   private TargetValueMap targetMap;
@@ -71,7 +73,7 @@ public class WorkflowModel extends BasicModel {
   private JComboBox<NameValue> itemdefSelection;
 
   private RemoteItemDefinitionService itemdefService;
-  private RemoteSchemaService schemaService;
+  private AdminSchemaService schemaService;
 
   public WorkflowModel(Driver driver, String idStr) {
     super(
@@ -121,7 +123,7 @@ public class WorkflowModel extends BasicModel {
   private void setup(Driver driver) {
     setup();
     itemdefService = driver.getClientService().getService(RemoteItemDefinitionService.class);
-    schemaService = driver.getClientService().getService(RemoteSchemaService.class);
+    schemaService = driver.getClientService().getService(AdminSchemaService.class);
   }
 
   @Override
@@ -133,16 +135,10 @@ public class WorkflowModel extends BasicModel {
     return ((NameValue) itemdefSelection.getSelectedItem()).getValue();
   }
 
-  public void loadItemDef(String uuid, boolean clear) {
+  private void loadItemDef(String uuid, boolean clear) {
     try {
       ItemDefinition itemdef = itemdefService.getByUuid(uuid);
-      if (itemdef.getSchema() != null) {
-        long schemaId = itemdef.getSchema().getId();
-        if (schemaId != 0) {
-          Schema schemaBean = schemaService.get(schemaId);
-          xpathField.loadSchema(schemaBean.getDefinitionNonThreadSafe());
-        }
-      }
+      loadSchema(itemdef);
 
       targetMap = new TargetValueMap();
       targetMap.addPages(itemdef.getWizard().getPages());
@@ -151,9 +147,18 @@ public class WorkflowModel extends BasicModel {
         clearScript();
       }
     } catch (Exception ex) {
-      Driver.displayError(null, "itemEditor/loading", ex); // $NON-NLS-1$
-      LOGGER.error("Error loading collection " + uuid, ex);
+      Driver.displayError(null, "itemEditor/loading", ex);
+      LOGGER.error("Error loading collection {}", uuid, ex);
     }
+  }
+
+  private void loadSchema(ItemDefinition itemdef) {
+    Optional.ofNullable(itemdef.getSchema())
+        .map(Schema::getId)
+        .filter(id -> id != 0)
+        .map(schemaService::get)
+        .map(Schema::getDefinitionNonThreadSafe)
+        .ifPresent(xpathField::loadSchema);
   }
 
   @Override

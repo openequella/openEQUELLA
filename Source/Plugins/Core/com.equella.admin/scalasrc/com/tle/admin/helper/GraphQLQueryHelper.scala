@@ -19,6 +19,7 @@
 package com.tle.admin.helper
 
 import com.tle.admin.service.ClientRequestException
+import com.tle.common.beans.exception.NotFoundException
 import io.github.openequella.graphql.api.{ApiError, ForwardPagination, PaginationResult}
 import org.slf4j.Logger
 
@@ -65,6 +66,40 @@ object GraphQLQueryHelper {
       throw new ClientRequestException(s"Error getting $label: $identifier", errors)
   }
 
+  /** Get an entity by its identifier and throwing a NotFoundException if it does not exist. This is
+    * an alternative to `getEntity` that is useful when providing implementations to match
+    * `com.tle.core.entity.service.impl.AbstractEntityServiceImpl#get(long)`.
+    *
+    * @param label
+    *   the label for the entity type - useful for logging
+    * @param identifier
+    *   the identifier of the entity to use with the getter
+    * @param getter
+    *   the function to get the entity by its identifier
+    * @param logger
+    *   the logger to use for logging
+    * @tparam A
+    *   the type of the identifier
+    * @tparam E
+    *   the type of the entity optionally returned by the getter
+    * @return
+    *   the entity if it exists, or throws NotFoundException if it does not exist
+    * @throws NotFoundException
+    *   if the entity does not exist for the given identifier
+    * @throws ClientRequestException
+    *   if there are errors getting the entity - i.e. if the getter returns `Left`
+    */
+  def getEntityOrNotFound[A, E](
+      label: String,
+      identifier: A,
+      getter: A => Either[List[ApiError], Option[E]]
+  )(implicit
+      logger: Logger
+  ): E =
+    getEntity(label, identifier, getter).getOrElse {
+      throw new NotFoundException(s"$label not found for identifier: $identifier")
+    }
+
   /** Get all items from a paginated query, logging the result and throwing an exception if there
     * are errors.
     *
@@ -95,4 +130,42 @@ object GraphQLQueryHelper {
 
     retrieveItems(ForwardPagination(pageSize))
   }
+
+  /** Get all items for a given identifier without pagination, logging the result and throwing an
+    * exception if there are errors.
+    *
+    * @param label
+    *   the label for the entity type - useful for logging
+    * @param identifier
+    *   the identifier of the entity to use with the getter
+    * @param getter
+    *   the function to get all items by their identifier
+    * @param logger
+    *   the logger to use for logging
+    * @tparam A
+    *   the type of the identifier
+    * @tparam E
+    *   the type of the entity returned by the getter
+    * @return
+    *   a list of items retrieved for the given identifier
+    * @throws ClientRequestException
+    *   if there are errors getting the items - i.e. if the getter returns `Left`
+    */
+  def getAllUnpaginated[A, E](
+      label: String,
+      identifier: A,
+      getter: A => Either[List[ApiError], List[E]]
+  )(implicit
+      logger: Logger
+  ): List[E] =
+    getter(identifier) match {
+      case Right(items) =>
+        logger.debug("Successfully retrieved all {} for identifier: {}", label, identifier)
+        items
+      case Left(errors) =>
+        throw new ClientRequestException(
+          s"Error getting all $label for identifier: $identifier",
+          errors
+        )
+    }
 }

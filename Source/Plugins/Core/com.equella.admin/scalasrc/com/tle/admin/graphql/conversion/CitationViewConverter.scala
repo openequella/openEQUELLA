@@ -16,25 +16,18 @@
  * limitations under the License.
  */
 
-package com.tle.admin.harvester.standard;
+package com.tle.admin.graphql.conversion
 
-import com.tle.common.harvester.SHEXHarvesterSettings;
+import com.tle.beans.entity.schema.Citation
+import io.github.openequella.graphql.api.views.CitationView
 
-/**
- * SHEX was a metadata harvesting protocol used to collect free digital content from the National
- * Digital Learning Resource Network (NDLRN). While the long-form of the acronym is not widely
- * documented, it served a similar purpose to MEX and LORAX, acting as a legacy standard for data
- * exchange within that specific ecosystem.
- *
- * <p>Virtually identical to MEX & LORAXPlugin, differing only in string identifiers
- */
-public class SHEXPlugin extends AbstractTLFPlugin<SHEXHarvesterSettings> {
-  public SHEXPlugin() {
-    super(SHEXHarvesterSettings.class);
+object CitationViewConverter {
+  def toCitation(view: CitationView): Citation = {
+    val c = new Citation
+    c.setName(view.name)
+    c.setTransformation(view.transformation)
+
+    c
   }
 
-  @Override
-  protected String getPluginsFieldString() {
-    return strings.key("shexplugin.settings");
-  }
 }

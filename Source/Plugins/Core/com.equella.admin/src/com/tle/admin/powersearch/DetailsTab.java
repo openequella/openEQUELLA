@@ -27,6 +27,7 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
 import com.tle.beans.entity.Schema;
@@ -37,7 +38,6 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
@@ -65,7 +65,7 @@ public class DetailsTab extends AbstractPowerSearchTab
   private SingleUserSelector owner;
 
   private JShuffleBox<NameValue> itemdefs;
-  private RemoteSchemaService schemaService;
+  private AdminSchemaService schemaService;
 
   private JComboBox schemaList;
   int lastSelectedIndex;
@@ -73,7 +73,7 @@ public class DetailsTab extends AbstractPowerSearchTab
   @Override
   public void setDriver(Driver driver) {
     super.setDriver(driver);
-    this.schemaService = clientService.getService(RemoteSchemaService.class);
+    this.schemaService = clientService.getService(AdminSchemaService.class);
   }
 
   @Override
@@ -111,7 +111,7 @@ public class DetailsTab extends AbstractPowerSearchTab
 
     schemaList = new JComboBox();
     try {
-      List<BaseEntityLabel> schemas = clientService.getService(RemoteSchemaService.class).listAll();
+      List<BaseEntityLabel> schemas = schemaService.listAll();
       List<NameValue> nameValues = BundleCache.getNameValues(schemas);
       Collections.sort(nameValues, Format.NAME_VALUE_COMPARATOR);
       AppletGuiUtils.addItemsToJCombo(schemaList, nameValues);

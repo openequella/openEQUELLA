@@ -25,6 +25,7 @@ import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.baseentity.JEntityFileUpload;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
 import com.tle.beans.search.SearchSettings;
@@ -36,7 +37,6 @@ import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.core.remoting.RemoteItemDefinitionService;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
@@ -238,7 +238,7 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<List<String>>() {
           @Override
-          public List<String> construct() throws Exception {
+          public List<String> construct() {
             List<String> tpc = transformsPerCollection.get(selcol);
             if (tpc == null) {
               long schemaId =
@@ -246,9 +246,7 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
                       .getService(RemoteItemDefinitionService.class)
                       .getSchemaIdForCollectionUuid(selcol.getValue());
               tpc =
-                  clientService
-                      .getService(RemoteSchemaService.class)
-                      .getImportSchemaTypes(schemaId);
+                  clientService.getService(AdminSchemaService.class).getImportSchemaTypes(schemaId);
               transformsPerCollection.put(selcol, tpc);
             }
             return tpc;
@@ -274,7 +272,6 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
   }
 
   private void clearChanges() {
-    // Slightly ghetto? JFakePanel crap
     super.panel.clearChanges();
   }
 

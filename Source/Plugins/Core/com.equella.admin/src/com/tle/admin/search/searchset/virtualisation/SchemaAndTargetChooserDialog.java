@@ -27,6 +27,7 @@ import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.SchemaNode;
 import com.tle.admin.schema.SchemaTree;
+import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.client.gui.popup.TreeDoubleClickListener;
@@ -36,11 +37,9 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.StringLookup;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,9 +51,13 @@ import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import net.miginfocom.swing.MigLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("nls")
 public class SchemaAndTargetChooserDialog {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaAndTargetChooserDialog.class);
+
   private static final StringLookup strings =
       Lookup.withPrefix("searchset.virtualisation.xpathchooser");
 
@@ -157,11 +160,11 @@ public class SchemaAndTargetChooserDialog {
   private final GlassSwingWorker<?> populateSchemasWorker =
       new GlassSwingWorker<List<NameValue>>() {
         @Override
-        public List<NameValue> construct() throws Exception {
+        public List<NameValue> construct() {
           List<BaseEntityLabel> schemas =
-              clientService.getService(RemoteSchemaService.class).listAll();
+              clientService.getService(AdminSchemaService.class).listAll();
           List<NameValue> nvs = BundleCache.getNameValues(schemas);
-          Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
+          nvs.sort(Format.NAME_VALUE_COMPARATOR);
           return nvs;
         }
 
@@ -171,6 +174,11 @@ public class SchemaAndTargetChooserDialog {
           AppletGuiUtils.addItemsToJCombo(chooser, get());
 
           chooser.addActionListener(schemaChoiceListener);
+        }
+
+        @Override
+        public void exception() {
+          LOGGER.error("Error populating schema chooser", getException());
         }
       };
 
@@ -188,14 +196,19 @@ public class SchemaAndTargetChooserDialog {
           GlassSwingWorker<?> worker =
               new GlassSwingWorker<Schema>() {
                 @Override
-                public Schema construct() throws Exception {
-                  return clientService.getService(RemoteSchemaService.class).get(schemaId);
+                public Schema construct() {
+                  return clientService.getService(AdminSchemaService.class).get(schemaId);
                 }
 
                 @Override
                 public void finished() {
                   model.loadSchema(get().getDefinitionNonThreadSafe());
                   tree.setEnabled(true);
+                }
+
+                @Override
+                public void exception() {
+                  LOGGER.error("Error loading schema {}", schemaId, getException());
                 }
               };
           worker.setComponent(panel);
