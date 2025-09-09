@@ -228,7 +228,7 @@ public class UpgradeMain {
       if (!upgrader.isRunOnInstall()) {
         String id = upgrader.getId();
         UpgradeLog entry = new UpgradeLog();
-        entry.setMustExist(!upgrader.isBackwardsCompatible());
+        entry.setMustExist(!upgrader.canBeRemoved());
         entry.setStatus(LogStatus.SKIPPED);
         entry.setExecuted(new Date(now.getTime()));
         entry.setMigrationId(id);
@@ -369,7 +369,7 @@ public class UpgradeMain {
       }
 
       log.setExecuted(new Date());
-      log.setMustExist(!upgrader.isBackwardsCompatible());
+      log.setMustExist(!upgrader.canBeRemoved());
       if (upgradeOperation.isSkip()) {
         log.setStatus(LogStatus.SKIPPED);
       } else {

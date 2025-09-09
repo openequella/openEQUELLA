@@ -26,7 +26,14 @@ public interface Upgrader {
 
   boolean isRunOnInstall();
 
-  boolean isBackwardsCompatible();
+  /**
+   * Whether this upgrader can be removed from the code base in future releases. If true, the
+   * upgrader will be marked as not having to exist (mustExist = false) in the upgrade log.
+   *
+   * <p>If this is set to true, ideally the author should add a note in the javadoc as to when it
+   * can be removed.
+   */
+  boolean canBeRemoved();
 
   List<UpgradeDepends> getDepends();
 

@@ -42,7 +42,7 @@ public class HashManagerPassword extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return true;
   }
 

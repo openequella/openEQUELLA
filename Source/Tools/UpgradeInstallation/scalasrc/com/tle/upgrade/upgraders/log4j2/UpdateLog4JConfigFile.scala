@@ -68,7 +68,7 @@ class UpdateLog4JConfigFile extends AbstractUpgrader {
 
   override def getId: String = "UpdateLog4JConfigFile"
 
-  override def isBackwardsCompatible: Boolean = false
+  override def canBeRemoved: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
     val oldDefaultConfigFileName = "log4j.properties"
