@@ -20,6 +20,7 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /** Configuration for Auth0 including the common details for OIDC and the details required to
   * interact the Auth0 Management API V2.
@@ -34,6 +35,7 @@ final case class Auth0(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean,
     apiUrl: String,
     apiClientId: String,

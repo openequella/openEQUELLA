@@ -35,7 +35,7 @@ import {
   isPageContent,
   LegacyContentResponse,
   SubmitResponse,
-} from "../legacycontent/LegacyContent";
+} from "./LegacyContentModule";
 import { routes } from "../mainui/routes";
 import { simpleMatch } from "../util/match";
 

@@ -2,7 +2,7 @@
   <configuration default="false" name="EQUELLAServer (autotest mode)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.tle.core.equella.runner.EQUELLAServer" />
     <module name="Equella.equellaserver" />
-    <option name="VM_PARAMETERS" value="-Dequella.autotest=true --add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.naming/javax.naming.directory=ALL-UNNAMED --add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED" />
+    <option name="VM_PARAMETERS" value="-Dequella.autotest=true --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.naming/javax.naming.directory=ALL-UNNAMED --add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.tle.core.equella.runner.*" />

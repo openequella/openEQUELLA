@@ -218,7 +218,7 @@
     <parameter id="class" value="com.tle.web.workflow.guice.StaticServices" />
     <parameter id="class" value="com.tle.web.workflow.guice.TaskSearchModule" />
     <parameter id="class" value="com.tle.web.workflow.portal.TaskListModule" />
-    <parameter id="class" value="com.tle.integration.oidc.OidcTokenLoggingModule" />
+    <parameter id="class" value="com.tle.integration.oidc.OidcModule" />
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="equella">
     <parameter id="type" value="equella" />

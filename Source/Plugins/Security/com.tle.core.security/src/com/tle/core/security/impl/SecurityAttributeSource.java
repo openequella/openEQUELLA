@@ -113,6 +113,20 @@ public class SecurityAttributeSource {
     return null;
   }
 
+  /**
+   * Finds the security attribute for a given method and target class.
+   *
+   * <p>This method checks the annotations on the method to determine the security attributes
+   * associated with it. If no relevant annotations are found, it returns null.
+   *
+   * <p>When building the security attribute, if the target method has been annotated with an
+   * annotation that requires a domain object, it will determine which parameter of the method is
+   * the domain object.
+   *
+   * @param method The method to check for security attributes.
+   * @param targetClass The class that contains the method.
+   * @return A SecurityAttribute object containing the security attributes, or null if none found.
+   */
   private SecurityAttribute findSecurityAttribute(Method method, Class<?> targetClass) {
     SecurityAttribute attr = new SecurityAttribute();
     Annotation[] annotations = method.getAnnotations();
@@ -122,16 +136,29 @@ public class SecurityAttributeSource {
       return null;
     }
     if (DebugSettings.isDebuggingMode() && method.getDeclaringClass().isInterface()) {
-      LOGGER.error("**************************************************"); // $NON-NLS-1$
-      LOGGER.error("Please move these to the implementation:" + method); // $NON-NLS-1$
-      LOGGER.error("**************************************************"); // $NON-NLS-1$
+      LOGGER.error("**************************************************");
+      LOGGER.error("Please move these to the implementation:" + method);
+      LOGGER.error("**************************************************");
     }
-    if (attr.getOnCallmode() == OnCallMode.DOMAIN) {
+    if (attr.getOnCallMode() == OnCallMode.DOMAIN) {
       attr.setDomainArg(getDomainObjectParameter(method));
     }
     return attr;
   }
 
+  /**
+   * Adds security attributes based on the annotations present on the method.
+   *
+   * <p>This method iterates through the annotations and sets the appropriate security attributes
+   * based on the type of annotation found. It supports various security annotations such as {@link
+   * SecureOnCallSystem}, {@link SecureOnCall}, {@link SecureAllOnCall}, {@link SecureAllOnReturn},
+   * {@link RequiresPrivilege}, {@link RequiresPrivilegeWithNoTarget}, and {@link SecureOnReturn}.
+   *
+   * @param annotations The array of annotations present on the method.
+   * @param attr The SecurityAttribute object to populate with security attributes.
+   * @param targetClass The class that contains the method.
+   * @return true if any relevant security attributes were added, false otherwise.
+   */
   private boolean addAnnotationAttrs(
       Annotation[] annotations, SecurityAttribute attr, Class<?> targetClass) {
     boolean have = false;
@@ -141,8 +168,9 @@ public class SecurityAttributeSource {
         attr.setSystemOnly(true);
         have = true;
       } else if (anType == SecureOnCall.class) {
-        setOnCallmode(attr, OnCallMode.DOMAIN);
-        attr.addOnCallPrivilege(resolvePrivilege(((SecureOnCall) annotation).priv(), targetClass));
+        setOnCallMode(attr, OnCallMode.DOMAIN);
+        attr.addOnCallPrivilege(
+            resolveVirtualBaseEntityPrivilege(((SecureOnCall) annotation).priv(), targetClass));
         have = true;
       } else if (anType == SecureAllOnCall.class) {
         addAnnotationAttrs(((SecureAllOnCall) annotation).value(), attr, targetClass);
@@ -151,18 +179,20 @@ public class SecurityAttributeSource {
         addAnnotationAttrs(((SecureAllOnReturn) annotation).value(), attr, targetClass);
         have = true;
       } else if (anType == RequiresPrivilege.class) {
-        setOnCallmode(attr, OnCallMode.ANY);
+        setOnCallMode(attr, OnCallMode.ANY);
         attr.addOnCallPrivilege(
-            resolvePrivilege(((RequiresPrivilege) annotation).priv(), targetClass));
+            resolveVirtualBaseEntityPrivilege(
+                ((RequiresPrivilege) annotation).priv(), targetClass));
         have = true;
       } else if (anType == RequiresPrivilegeWithNoTarget.class) {
         attr.addOnCallPrivilege(
-            resolvePrivilege(((RequiresPrivilegeWithNoTarget) annotation).priv(), targetClass));
-        setOnCallmode(attr, OnCallMode.TOPLEVEL);
+            resolveVirtualBaseEntityPrivilege(
+                ((RequiresPrivilegeWithNoTarget) annotation).priv(), targetClass));
+        setOnCallMode(attr, OnCallMode.TOPLEVEL);
         have = true;
       } else if (anType == SecureOnReturn.class) {
         attr.addFilterPrivilege(
-            resolvePrivilege(((SecureOnReturn) annotation).priv(), targetClass));
+            resolveVirtualBaseEntityPrivilege(((SecureOnReturn) annotation).priv(), targetClass));
         attr.setFilterMatching(true);
         have = true;
       }
@@ -170,17 +200,26 @@ public class SecurityAttributeSource {
     return have;
   }
 
-  private void setOnCallmode(SecurityAttribute attr, OnCallMode mode) {
-    if (attr.getOnCallmode() == null) {
-      attr.setOnCallmode(mode);
-    } else if (attr.getOnCallmode() != mode) {
+  private void setOnCallMode(SecurityAttribute attr, OnCallMode mode) {
+    if (attr.getOnCallMode() == null) {
+      attr.setOnCallMode(mode);
+    } else if (attr.getOnCallMode() != mode) {
       throw new Error(
           "Can't mix RequiresPrivilege, RequiresPrivilegeWithNoTarget and"
               + " SecureOnCall"); //$NON-NLS-1$
     }
   }
 
-  private String resolvePrivilege(String priv, Class<?> targetClass) {
+  /**
+   * Resolves the virtual base entity privilege by checking if the privilege ends with {@code
+   * SecurityConstants.VIRTUAL_BASE_ENTITY}. If it does, it replaces it with the value specified in
+   * the {@code SecureEntity} annotation of the target class.
+   *
+   * @param priv The privilege string to resolve.
+   * @param targetClass The class that contains the SecureEntity annotation.
+   * @return The resolved privilege string or the original privilege if no resolution is needed.
+   */
+  private String resolveVirtualBaseEntityPrivilege(String priv, Class<?> targetClass) {
     if (priv.endsWith(SecurityConstants.VIRTUAL_BASE_ENTITY)) {
       SecureEntity annotation = targetClass.getAnnotation(SecureEntity.class);
       if (annotation == null) {
@@ -193,6 +232,17 @@ public class SecurityAttributeSource {
     return priv;
   }
 
+  /**
+   * Returns the index of the parameter that is a domain object. This is used to determine which
+   * parameter to use for the domain object when checking privileges.
+   *
+   * <p>The determination as to which parameter is the domain object is based on the parameter types
+   * of the method. It checks against a set of classes that are considered domain objects, which can
+   * be extended via plugins.
+   *
+   * @param method The method to check.
+   * @return The index of the parameter that is a domain object.
+   */
   private int getDomainObjectParameter(Method method) {
     Class<?> params[] = method.getParameterTypes();
     for (int i = 0; i < params.length; i++) {
@@ -205,6 +255,14 @@ public class SecurityAttributeSource {
     throw new Error("Could not find a domain object for:" + method); // $NON-NLS-1$
   }
 
+  /**
+   * Returns a collection of classes that are considered domain objects. This includes static
+   * classes defined in the code and any additional classes defined by plugins.
+   *
+   * <p>This method is synchronized to ensure thread safety when building the collection of classes.
+   *
+   * @return A collection of classes that are domain objects.
+   */
   private synchronized Collection<Class<?>> getClassesToCheck() {
     if (classesToCheck == null) {
       Builder<Class<?>> builder = ImmutableSet.builder();

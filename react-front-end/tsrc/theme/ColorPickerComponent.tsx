@@ -21,11 +21,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { useState } from "react";
-import { ColorResult, SketchPicker } from "react-color";
+import { ColorResult, SketchPicker, SwatchesPicker } from "react-color";
 import { languageStrings } from "../util/langstrings";
 
 const PREFIX = "ColorPickerComponent";
@@ -36,37 +38,83 @@ const classes = {
 };
 
 const StyledDiv = styled("div")({
-  padding: "5px",
+  padding: "4px",
   background: "#fff",
-  borderRadius: "1px",
+  borderRadius: "4px",
   boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
   display: "inline-block",
   cursor: "pointer",
   div: {
     width: "36px",
-    height: "14px",
-    borderRadius: "2px",
+    height: "16px",
+    borderRadius: "4px",
   },
 });
 
 interface ColorProps {
+  /**
+   * The current colour selected in the colour picker.
+   * This is used to initialise the picker and reset temp colour on cancel.
+   */
   currentColor?: string;
+  /**
+   * Callback function that is called when the colour is changed.
+   * It receives the new colour as a string.
+   */
   onColorChange(color: string): void;
 }
 
+type ColorPickerType = "custom" | "swatch";
+
+const DEFAULT_PICKER_TYPE: ColorPickerType = "custom";
+
+/**
+ * ColorPickerComponent is a React component that provides a colour picker dialog.
+ * It allows users to select a colour using either a simple colour picker or a swatches picker.
+ * The selected colour can be confirmed or cancelled, and the component handles state management
+ * for the current colour and temporary selections.
+ */
 const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
   const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+  const [tempColor, setTempColor] = useState<string | undefined>(currentColor);
+  const [pickerType, setPickerType] =
+    useState<ColorPickerType>(DEFAULT_PICKER_TYPE);
 
   const strings = languageStrings.newuisettings.colorPicker;
 
-  const changeHandler = (color: ColorResult) => onColorChange(color.hex);
+  const handleOpenDialog = () => {
+    setTempColor(currentColor); // Reset temp colour to current colour when opening
+    setDisplayColorPicker(true);
+  };
+
+  const handleColorChange = (color: ColorResult) => setTempColor(color.hex);
+
+  const handleDone = () => {
+    // Only call onColorChange if the colour has actually changed
+    if (tempColor && tempColor !== currentColor) {
+      onColorChange(tempColor);
+    }
+    setDisplayColorPicker(false);
+  };
+
+  const handleCancel = () => {
+    setTempColor(currentColor); // Reset temp colour to original
+    setPickerType(DEFAULT_PICKER_TYPE); // Reset picker type to default
+    setDisplayColorPicker(false);
+  };
+
+  const handlePickerTypeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newPickerType: ColorPickerType,
+  ) => {
+    if (newPickerType !== null) {
+      setPickerType(newPickerType);
+    }
+  };
 
   return (
     <>
-      <StyledDiv
-        className={classes.swatch}
-        onClick={() => setDisplayColorPicker(true)}
-      >
+      <StyledDiv className={classes.swatch} onClick={handleOpenDialog}>
         <div style={{ background: currentColor }} className={classes.color} />
       </StyledDiv>
       {displayColorPicker && (
@@ -78,18 +126,50 @@ const ColorPickerComponent = ({ currentColor, onColorChange }: ColorProps) => {
             {strings.dialogTitle}
           </DialogTitle>
           <DialogContent>
-            <SketchPicker
-              disableAlpha
-              color={currentColor}
-              onChange={changeHandler}
-              onChangeComplete={changeHandler}
-            />
+            <ToggleButtonGroup
+              value={pickerType}
+              exclusive
+              onChange={handlePickerTypeChange}
+              aria-label={strings.toggleGroupAriaLabel}
+              fullWidth
+              sx={{ mb: 2 }}
+            >
+              <ToggleButton value="custom" aria-label={strings.customAriaLabel}>
+                {strings.customLabel}
+              </ToggleButton>
+              <ToggleButton
+                value="swatches"
+                aria-label={strings.swatchesAriaLabel}
+              >
+                {strings.swatchesLabel}
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {pickerType === "custom" ? (
+              <SketchPicker
+                disableAlpha
+                color={tempColor}
+                onChange={handleColorChange}
+                onChangeComplete={handleColorChange}
+                // This width attempts to match the SwatchPicker width default
+                width="320px"
+              />
+            ) : (
+              <SwatchesPicker
+                color={tempColor}
+                onChange={handleColorChange}
+                onChangeComplete={handleColorChange}
+                width={320}
+                // This height attempts to match the SketchPicker height
+                height={373}
+              />
+            )}
           </DialogContent>
           <DialogActions>
-            <Button
-              color="primary"
-              onClick={() => setDisplayColorPicker(false)}
-            >
+            <Button color="secondary" onClick={handleCancel}>
+              {languageStrings.common.action.cancel}
+            </Button>
+            <Button color="primary" onClick={handleDone}>
               {languageStrings.common.action.done}
             </Button>
           </DialogActions>
