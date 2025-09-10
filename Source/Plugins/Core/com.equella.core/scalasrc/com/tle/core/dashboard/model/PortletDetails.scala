@@ -20,8 +20,6 @@ package com.tle.core.dashboard.model
 
 import cats.implicits._
 import com.tle.beans.item.ItemStatus
-import com.tle.common.i18n.{CurrentLocale, LangUtils}
-import com.tle.common.portal.PortletTypeDescriptor
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.workflow.Trend
@@ -32,7 +30,6 @@ import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.{
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 
 import scala.jdk.CollectionConverters._
-import scala.util.{Failure, Success, Try}
 
 /** Enum for all the Portlet types defined in Legacy Portlet Sections.
   *
