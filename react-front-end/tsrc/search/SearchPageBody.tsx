@@ -86,6 +86,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  defaultSearchPageSearchBarConfig,
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
@@ -136,8 +137,8 @@ export interface SearchPageBodyProps {
    */
   enableClassification?: boolean;
   /**
-   * Configuration for any custom components in Search bar. Currently, only support enabling/disabling the
-   * Advanced search filter.
+   * Configuration for any custom components in Search bar.
+   * Supports enabling/disabling Advanced search filter and wildcard toggle.
    */
   searchBarConfig?: SearchPageSearchBarConfig;
   /**
@@ -504,6 +505,17 @@ export const SearchPageBody = ({
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
 
+  const mergedSearchBarConfig = {
+    ...defaultSearchPageSearchBarConfig,
+    ...searchBarConfig,
+  };
+  const wildcardSearch = mergedSearchBarConfig?.enableWildcardToggle
+    ? {
+        wildcardMode: !searchPageOptions.rawMode,
+        onWildcardModeChange: handleWildcardModeChanged,
+      }
+    : undefined;
+
   /**
    * Determines if any collapsible filters have been modified from their defaults
    */
@@ -787,11 +799,12 @@ export const SearchPageBody = ({
               <SearchBar
                 ref={searchBarRef}
                 query={searchPageOptions.query ?? ""}
-                wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
-                onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => doSearch(searchPageOptions)}
-                advancedSearchFilter={searchBarConfig?.advancedSearchFilter}
+                advancedSearchFilter={
+                  mergedSearchBarConfig?.advancedSearchFilter
+                }
+                wildcardSearch={wildcardSearch}
               />
             </Grid>
             {additionalPanels?.map((panel, index) => (

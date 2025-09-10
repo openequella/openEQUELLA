@@ -183,6 +183,11 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 searchContextProps,
               )}
               customRenderSearchResults={renderCustomSearchResult}
+              searchBarConfig={
+                favouritesType === "searches"
+                  ? { enableWildcardToggle: false }
+                  : undefined
+              }
             />
             {bookmarkIdToRemove && (
               <ConfirmDialog

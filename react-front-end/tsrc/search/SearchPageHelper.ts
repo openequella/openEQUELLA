@@ -316,13 +316,22 @@ export interface SearchPageSearchBarConfig {
   /**
    * Configuration for the Advanced Search filter.
    */
-  advancedSearchFilter: {
+  advancedSearchFilter?: {
     /** Called when the filter button is clicked */
     onClick: () => void;
     /** If true the button wil be highlighted by the Secondary colour. */
     accent: boolean;
   };
+
+  /**
+   * Controls whether the wildcard toggle switch is displayed in the search bar.
+   */
+  enableWildcardToggle?: boolean;
 }
+
+export const defaultSearchPageSearchBarConfig: SearchPageSearchBarConfig = {
+  enableWildcardToggle: true,
+};
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
