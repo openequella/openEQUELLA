@@ -124,6 +124,24 @@ public class Search2ApiTest extends AbstractRestApiTest {
         0);
   }
 
+  @Test(description = "Search for items and order them by their favourite date.")
+  public void orderFavouriteDateTest() throws IOException {
+    final String BOOK_A = "Book A v2";
+    final String BOOK_B = "Book B";
+
+    // Search for items favourite by user 'AutoTest' and order by the favourite date.
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("order", "favourite_date"),
+            new NameValuePair("musts", "bookmark_owner:" + USER_UUID));
+
+    assertEquals(getAvailable(result), 2);
+    assertEquals(getItemName(result, 0), BOOK_B);
+    assertEquals(getItemName(result, 1), BOOK_A);
+  }
+
   @Test(description = "Search by items' modified date and the order of results is reversed.")
   public void reverseOrderTest() throws IOException {
     doSearch(
@@ -470,6 +488,10 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   private int getAvailable(JsonNode result) {
     return result.get("available").asInt();
+  }
+
+  private String getItemName(JsonNode result, int index) {
+    return result.get("results").get(index).get("name").asText();
   }
 
   private Stream<JsonNode> buildResultsStream(JsonNode result) {

@@ -87,7 +87,8 @@ class SearchParam extends BaseSearchParam {
 
   @ApiParam(
     value = "The order of the search results",
-    allowableValues = "relevance,modified,name,rating,created,task_submitted,task_lastaction"
+    allowableValues =
+      "relevance,modified,name,rating,created,task_submitted,task_lastaction,favourite_date"
   )
   @QueryParam("order")
   var order: String = _

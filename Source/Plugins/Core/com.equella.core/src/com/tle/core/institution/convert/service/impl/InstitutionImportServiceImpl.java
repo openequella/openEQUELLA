@@ -86,6 +86,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings({"deprecation", "nls"})
 public class InstitutionImportServiceImpl implements InstitutionImportService {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstitutionImportServiceImpl.class);
+
   @Deprecated private static final String OLD_INSTITUTION_FILE = "institutionData.xml";
   private static final String INSTITUTION_FILE = "institutionInfo.xml";
 
@@ -306,8 +307,7 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
             }
 
           } catch (IOException t) {
-            doErrorCleanup(staging, tasksDone, newCloneInstitution, params);
-            throw new RuntimeException(t);
+            throw withSafeErrorCleanup(t, staging, tasksDone, newCloneInstitution, params);
           }
         });
     instService.setEnabled(newCloneInstitution.getUniqueId(), true);
@@ -518,9 +518,8 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
         getConverter(value).importIt(staging, createdInst, params, value);
         params.getCallback().incrementCurrent();
       }
-    } catch (Exception t) {
-      doErrorCleanup(staging, tasksDone, createdInst, params);
-      throw (t instanceof RuntimeException) ? (RuntimeException) t : new RuntimeException(t);
+    } catch (Exception exception) {
+      throw withSafeErrorCleanup(exception, staging, tasksDone, createdInst, params);
     } finally {
       fileSystemService.removeFile(staging, "");
     }
@@ -549,7 +548,8 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
       final TemporaryFileHandle staging,
       final List<String> tasksDone,
       final Institution institution,
-      final ConverterParams params) {
+      final ConverterParams params)
+      throws Exception {
     runAs.executeAsSystem(
         institution,
         new Runnable() {
@@ -565,6 +565,38 @@ public class InstitutionImportServiceImpl implements InstitutionImportService {
             instService.deleteInstitution(institution);
           }
         });
+  }
+
+  /**
+   * Runs cleanup code, ensuring that any exceptions thrown are added as suppressed exceptions.
+   *
+   * @param originalError The original error that caused the cleanup to be run.
+   * @param staging The staging area to clean up.
+   * @param tasksDone A list of string that represent the tasks that were completed before the
+   *     error.
+   * @param institution The institution that was being created/imported.
+   * @param params The converter parameters.
+   * @return The original error, possibly with suppressed exceptions added.
+   */
+  private RuntimeException withSafeErrorCleanup(
+      Throwable originalError,
+      final TemporaryFileHandle staging,
+      final List<String> tasksDone,
+      final Institution institution,
+      final ConverterParams params) {
+    RuntimeException toThrow =
+        (originalError instanceof RuntimeException)
+            ? (RuntimeException) originalError
+            : new RuntimeException(originalError);
+
+    try {
+      doErrorCleanup(staging, tasksDone, institution, params);
+    } catch (Exception ex) {
+      toThrow.addSuppressed(ex);
+      return toThrow;
+    }
+
+    return toThrow;
   }
 
   @Override
