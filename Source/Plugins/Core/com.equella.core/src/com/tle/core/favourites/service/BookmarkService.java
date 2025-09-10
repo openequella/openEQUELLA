@@ -34,6 +34,7 @@ public interface BookmarkService {
   /** Delete the favourite item if the current user is the owner. */
   void deleteIfOwned(long id);
 
+  /** Get the current user's bookmark for the given item. */
   Bookmark getByItem(ItemKey itemId);
 
   Bookmark getById(long id);
