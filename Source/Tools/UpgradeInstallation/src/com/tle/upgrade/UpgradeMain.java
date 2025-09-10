@@ -76,8 +76,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
+import java.util.function.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -225,7 +228,7 @@ public class UpgradeMain {
       if (!upgrader.isRunOnInstall()) {
         String id = upgrader.getId();
         UpgradeLog entry = new UpgradeLog();
-        entry.setMustExist(!upgrader.isBackwardsCompatible());
+        entry.setMustExist(!upgrader.canBeRemoved());
         entry.setStatus(LogStatus.SKIPPED);
         entry.setExecuted(new Date(now.getTime()));
         entry.setMigrationId(id);
@@ -236,48 +239,100 @@ public class UpgradeMain {
     upgrade();
   }
 
-  @SuppressWarnings({"unchecked"})
   private void upgrade() throws Exception {
+    List<UpgradeLog> upgradeLog = readUpgradeLog();
+    Map<String, UpgradeLog> previousUpgrades =
+        upgradeLog.stream()
+            .collect(HashMap::new, (m, log) -> m.put(log.getMigrationId(), log), HashMap::putAll);
+
+    Map<String, UpgradeOperation> plannedUpgrades = buildUpgradeOperations(previousUpgrades);
+    validateRequiredUpgradesPresent(plannedUpgrades.keySet(), previousUpgrades);
+
+    List<UpgradeOperation> orderedUpgrades = determineOrderOfUpgrades(plannedUpgrades);
+    executeUpgrades(orderedUpgrades, upgradeLog);
+    saveUpgradeLog(upgradeLog);
+  }
+
+  private List<UpgradeOperation> determineOrderOfUpgrades(
+      Map<String, UpgradeOperation> upgradeOperationsMap) {
+    List<UpgradeOperation> orderedUpgrades = new ArrayList<>();
+    for (String migrationId : upgradeOperationsMap.keySet()) {
+      orderUpgradesByDependencies(migrationId, orderedUpgrades, upgradeOperationsMap);
+    }
+
+    return orderedUpgrades;
+  }
+
+  /**
+   * If a previously installed upgrade was logged as 'must exist' (i.e. it was not backwards
+   * compatible), then we need to ensure that it is still present in the list of planned upgrades.
+   * If it is not, then we cannot proceed with the upgrade as we may be missing a required upgrader.
+   *
+   * @param plannedUpgradesIds the list ids of the planned upgrades
+   * @param previousUpgrades the map of previous upgrade logs
+   * @throws RuntimeException if a required upgrade is missing
+   */
+  private static void validateRequiredUpgradesPresent(
+      Set<String> plannedUpgradesIds, Map<String, UpgradeLog> previousUpgrades) {
+    List<UpgradeLog> additionalPreviousUpgrades =
+        determineAdditionalPreviousUpgrades(plannedUpgradesIds, previousUpgrades);
+
+    for (UpgradeLog log : additionalPreviousUpgrades) {
+      if (log.isMustExist()) {
+        throw new RuntimeException(
+            "Can not upgrade to this version, due to missing required upgrader in this version: "
+                + log.getMigrationId());
+      }
+    }
+  }
+
+  private static List<UpgradeLog> determineAdditionalPreviousUpgrades(
+      Set<String> plannedUpgradesIds, Map<String, UpgradeLog> previousUpgrades) {
+    Predicate<Entry<String, UpgradeLog>> notInPlannedUpgrades =
+        entry -> !plannedUpgradesIds.contains(entry.getKey());
+
+    return previousUpgrades.entrySet().stream()
+        .filter(notInPlannedUpgrades)
+        .map(Entry::getValue)
+        .toList();
+  }
+
+  private static Map<String, UpgradeOperation> buildUpgradeOperations(
+      Map<String, UpgradeLog> previousUpgradesById) {
+    Map<String, UpgradeOperation> upgradeOperationsMap = new HashMap<>();
+    for (Upgrader upgrader : upgraders) {
+      var op = initUpgradeOperation(upgrader, previousUpgradesById);
+      upgradeOperationsMap.put(op.getId(), op);
+    }
+
+    return upgradeOperationsMap;
+  }
+
+  private static UpgradeOperation initUpgradeOperation(
+      Upgrader upgrader, Map<String, UpgradeLog> previousUpgradesById) {
+    String id = upgrader.getId();
+    UpgradeOperation upgradeOperation = new UpgradeOperation(id, upgrader);
+    Optional.ofNullable(previousUpgradesById.get(id)).ifPresent(upgradeOperation::setLogEntry);
+
+    return upgradeOperation;
+  }
+
+  /**
+   * @return list of upgrade log entries if the log file exists, otherwise an empty list
+   * @throws IOException if there is a problem reading the log file
+   * @throws ClassCastException if the log file is not the expected format
+   */
+  @SuppressWarnings("unchecked")
+  private List<UpgradeLog> readUpgradeLog() throws IOException, ClassCastException {
     List<UpgradeLog> logEntries;
     if (upgradeLogFile.exists()) {
-      UnicodeReader reader = new UnicodeReader(new FileInputStream(upgradeLogFile), "UTF-8");
-      try {
+      try (UnicodeReader reader = new UnicodeReader(new FileInputStream(upgradeLogFile), "UTF-8")) {
         logEntries = (List<UpgradeLog>) xstream.fromXML(reader);
-      } finally {
-        reader.close();
       }
     } else {
       logEntries = Lists.newArrayList();
     }
-
-    Map<String, UpgradeLog> statuses = new HashMap<String, UpgradeLog>();
-    for (UpgradeLog logEntry : logEntries) {
-      statuses.put(logEntry.getMigrationId(), logEntry);
-    }
-    Map<String, UpgradeOperation> extensionMap = new HashMap<String, UpgradeOperation>();
-    for (Upgrader upgrader : upgraders) {
-      String id = upgrader.getId();
-      UpgradeOperation migrateExtension = new UpgradeOperation(id);
-      migrateExtension.setUpgrader(upgrader);
-      UpgradeLog entry = statuses.remove(id);
-      if (entry != null) {
-        migrateExtension.setLogEntry(entry);
-      }
-      extensionMap.put(id, migrateExtension);
-    }
-    for (UpgradeLog log : statuses.values()) {
-      if (log.isMustExist()) {
-        throw new RuntimeException(
-            "Can not upgrade to this version, missing required backwards incompatible migration: "
-                + log.getMigrationId());
-      }
-    }
-    List<UpgradeOperation> toProcess = new ArrayList<UpgradeOperation>();
-    for (String migrationId : extensionMap.keySet()) {
-      processMigration(migrationId, toProcess, extensionMap);
-    }
-    executeUpgrades(toProcess, logEntries);
-    saveUpgradeLog(logEntries);
+    return logEntries;
   }
 
   private void saveUpgradeLog(List<UpgradeLog> entries) throws IOException {
@@ -314,7 +369,7 @@ public class UpgradeMain {
       }
 
       log.setExecuted(new Date());
-      log.setMustExist(!upgrader.isBackwardsCompatible());
+      log.setMustExist(!upgrader.canBeRemoved());
       if (upgradeOperation.isSkip()) {
         log.setStatus(LogStatus.SKIPPED);
       } else {
@@ -351,24 +406,37 @@ public class UpgradeMain {
     }
   }
 
-  private void processMigration(
-      String id, List<UpgradeOperation> toProcess, Map<String, UpgradeOperation> extensionMap) {
-    UpgradeOperation extension = extensionMap.get(id);
-    if (!extension.isProcessed()) {
-      extension.setProcessed(true);
-      if (extension.getStatus() == null || (extension.getStatus() == LogStatus.ERRORED)) {
-        List<UpgradeDepends> depends = extension.getUpgrader().getDepends();
+  /**
+   * Orders the upgrades by their dependencies. This is a depth-first search algorithm.
+   *
+   * <p>It marks each upgrade as processed when it is added to the ordered list. If an upgrade has
+   * already been processed, it is skipped.
+   *
+   * @param id the id of the upgrade to process
+   * @param orderedUpgrades the list of ordered upgrades to add to - acting as an accumulator
+   * @param plannedUpgrades the map of all planned upgrades
+   */
+  private void orderUpgradesByDependencies(
+      String id,
+      List<UpgradeOperation> orderedUpgrades,
+      Map<String, UpgradeOperation> plannedUpgrades) {
+    UpgradeOperation upgradeOperation = plannedUpgrades.get(id);
+    if (!upgradeOperation.isProcessed()) {
+      upgradeOperation.setProcessed(true);
+      if (upgradeOperation.getStatus() == null
+          || (upgradeOperation.getStatus() == LogStatus.ERRORED)) {
+        List<UpgradeDepends> depends = upgradeOperation.getUpgrader().getDepends();
         for (UpgradeDepends depend : depends) {
-          UpgradeOperation dependency = extensionMap.get(depend.getId());
+          UpgradeOperation dependency = plannedUpgrades.get(depend.getId());
           if (depend.isObsoletes() && dependency.getStatus() == null) {
             dependency.setSkip(true);
           }
           if (depend.isFixes() && dependency.getStatus() != LogStatus.EXECUTED) {
-            extension.setSkip(true);
+            upgradeOperation.setSkip(true);
           }
-          processMigration(depend.getId(), toProcess, extensionMap);
+          orderUpgradesByDependencies(depend.getId(), orderedUpgrades, plannedUpgrades);
         }
-        toProcess.add(extension);
+        orderedUpgrades.add(upgradeOperation);
       }
     }
   }
@@ -380,8 +448,9 @@ public class UpgradeMain {
     private boolean skip;
     private boolean processed;
 
-    public UpgradeOperation(String id) {
+    public UpgradeOperation(String id, Upgrader upgrader) {
       this.id = id;
+      this.upgrader = upgrader;
     }
 
     public boolean isCanRetry() {

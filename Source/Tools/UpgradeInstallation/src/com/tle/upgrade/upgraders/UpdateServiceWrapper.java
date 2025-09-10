@@ -28,7 +28,7 @@ public class UpdateServiceWrapper extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 

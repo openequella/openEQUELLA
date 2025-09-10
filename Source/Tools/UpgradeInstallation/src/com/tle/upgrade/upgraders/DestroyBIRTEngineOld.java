@@ -42,7 +42,7 @@ public class DestroyBIRTEngineOld extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 }

@@ -39,8 +39,8 @@ class AddKeepaliveAttribute extends AbstractUpgrader {
   private final val ORACLE_10_DIALECT = "com.tle.hibernate.dialect.ExtendedOracle10iDialect"
   private final val MSSQL_DIALECT     = "com.tle.hibernate.dialect.SQLServerDialect"
 
-  override def getId: String                  = "AddKeepaliveAttribute"
-  override def isBackwardsCompatible: Boolean = true
+  override def getId: String         = "AddKeepaliveAttribute"
+  override def canBeRemoved: Boolean = true
 
   @throws[Exception]
   override def upgrade(result: UpgradeResult, tleInstallDir: File): Unit = {
