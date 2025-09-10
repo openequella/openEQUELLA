@@ -71,15 +71,35 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
+/**
+ * Main class for the upgrade tool. This is a command line tool that will upgrade an openEQUELLA
+ * installation to the latest version.
+ *
+ * <p>To run the tool, use the following command:
+ *
+ * <pre>
+ * java -Dequella.install.directory=&lt;path to openEQUELLA install&gt; -jar upgrade.jar [--install]
+ * </pre>
+ *
+ * The --install flag is used when installing openEQUELLA for the first time. It will run all the
+ * upgraders that are marked as runOnInstall.
+ *
+ * <p>The equella.install.directory system property is optional. If it is not set, the tool will
+ * assume that it is being run from the tools/upgrade folder of an openEQUELLA installation.
+ *
+ * <p><strong>Note:</strong> This tool is primarily run from the UpgradeManager application, but it
+ * can be run standalone if required (mainly for testing purposes).
+ */
 public class UpgradeMain {
   static {
     URL log4jConfigFile =
@@ -98,7 +118,6 @@ public class UpgradeMain {
   private final XStream xstream;
 
   private final File upgradeLogFile;
-  private static boolean offline;
 
   public static Upgrader[] upgraders =
       new Upgrader[] {
@@ -139,27 +158,14 @@ public class UpgradeMain {
         new AddKeepaliveAttribute()
       };
 
-  public static void main(String[] args) throws Throwable {
+  public static void main(String[] args) {
+    LOGGER.info("Starting Upgrader");
+
     try {
-      LOGGER.info("Upgrader started");
-      InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
-      if (verStream != null) {
-        Properties props = new Properties();
-        props.load(verStream);
-        commit = props.getProperty("version.commit");
-      }
-      offline = Boolean.getBoolean("equella.offline");
-      String installDir = System.getProperty("equella.install.directory");
-      if (installDir == null) {
-        File folder = ExecUtils.findJarFolder(UpgradeMain.class);
-        installDir = folder.getParent();
-      }
-      boolean install = false;
-      for (String arg : args) {
-        if (arg.equals("--install")) {
-          install = true;
-        }
-      }
+      initVersionDetails();
+      String installDir = determineInstallDir();
+      boolean install = Arrays.asList(args).contains("--install");
+
       UpgradeMain upgrader = new UpgradeMain(new File(installDir));
       if (install) {
         upgrader.install();
@@ -167,13 +173,29 @@ public class UpgradeMain {
         upgrader.upgrade();
       }
     } catch (Exception t) {
-      LOGGER.error("Error running database-upgrader.jar", t);
+      LOGGER.error("Error running Upgrader", t);
       System.exit(1);
     }
+
+    LOGGER.info("Upgrader finished successfully");
   }
 
-  public static boolean isOffline() {
-    return offline;
+  private static String determineInstallDir() {
+    return Optional.ofNullable(System.getProperty("equella.install.directory"))
+        .orElseGet(
+            () -> {
+              File folder = ExecUtils.findJarFolder(UpgradeMain.class);
+              return folder.getParent();
+            });
+  }
+
+  private static void initVersionDetails() throws IOException {
+    InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
+    if (verStream != null) {
+      Properties props = new Properties();
+      props.load(verStream);
+      commit = props.getProperty("version.commit");
+    }
   }
 
   public UpgradeMain(File path) {
