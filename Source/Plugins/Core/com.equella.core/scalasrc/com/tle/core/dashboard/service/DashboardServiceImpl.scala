@@ -22,6 +22,7 @@ import cats.implicits._
 import com.tle.common.i18n.LangUtils
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.usermanagement.user.CurrentUser
+import com.tle.core.dashboard.model.PortletCreatable.fromDescriptor
 import com.tle.core.dashboard.model._
 import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.guice.Bind
@@ -131,13 +132,13 @@ class DashboardServiceImpl @Inject() (
         .listContributableTypes(false)
         .asScala
         .toList
-        .map(PortletCreatable(_))
+        .map(fromDescriptor)
 
     // Log errors for portlet types that cannot be created, exclude the deprecated types, and return the rest.
     val (errors, creatables) = result.separate
-    errors.foreach(LOGGER.error)
+    val deprecated           = Set(PortletType.iframe, PortletType.rss)
 
-    val deprecated = Set(PortletType.iframe, PortletType.rss)
+    errors.foreach(LOGGER.error)
     creatables
       .filterNot(p => deprecated.contains(p.portletType))
       .sortBy(_.name)

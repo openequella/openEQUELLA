@@ -21,7 +21,7 @@ package com.tle.web.api.dashboard
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
 import com.tle.web.api.ApiErrorResponse.{badRequest, serverError}
-import com.tle.web.api.dashboard.bean.PortletResponse
+import com.tle.web.api.dashboard.bean.{PortletCreatableBean, PortletResponse}
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
 
@@ -40,12 +40,6 @@ final case class DashboardLayoutUpdate(
       allowableValues = "SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2"
     )
     layout: String
-)
-
-final case class PortletCreatableBean(
-    portletType: String,
-    name: String,
-    desc: String
 )
 
 @Bind
@@ -96,14 +90,7 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
   )
   def creatable(): Response = {
     val portlets: List[PortletCreatableBean] =
-      dashboardService.getCreatablePortlets
-        .map(p =>
-          PortletCreatableBean(
-            portletType = p.portletType.toString,
-            name = p.name,
-            desc = p.desc
-          )
-        )
+      dashboardService.getCreatablePortlets.map(PortletCreatableBean(_))
     Response.ok(portlets).build()
   }
 }
