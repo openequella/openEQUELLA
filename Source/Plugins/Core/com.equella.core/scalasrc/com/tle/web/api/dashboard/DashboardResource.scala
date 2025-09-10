@@ -21,7 +21,7 @@ package com.tle.web.api.dashboard
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
 import com.tle.web.api.ApiErrorResponse.{badRequest, serverError}
-import com.tle.web.api.dashboard.bean.PortletResponse
+import com.tle.web.api.dashboard.bean.{PortletCreatableBean, PortletResponse}
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
 
@@ -78,5 +78,19 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
       case Success(layout) => update(layout)
       case Failure(_)      => badRequest(s"Invalid Dashboard layout: $newLayout")
     }
+  }
+
+  @GET
+  @Path("portlet/creatable")
+  @ApiOperation(
+    value = "List of creatable portlets",
+    notes = "Retrieve a list of portlet types that can be added to the dashboard",
+    response = classOf[PortletCreatableBean],
+    responseContainer = "List"
+  )
+  def creatable(): Response = {
+    val portlets: List[PortletCreatableBean] =
+      dashboardService.getCreatablePortlets.map(PortletCreatableBean(_))
+    Response.ok(portlets).build()
   }
 }

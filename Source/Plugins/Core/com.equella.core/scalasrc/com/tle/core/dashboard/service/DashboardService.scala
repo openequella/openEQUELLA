@@ -18,7 +18,7 @@
 
 package com.tle.core.dashboard.service
 
-import com.tle.core.dashboard.model.PortletDetails
+import com.tle.core.dashboard.model.{PortletCreatable, PortletDetails}
 
 object DashboardLayout extends Enumeration {
   val SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2 = Value
@@ -50,6 +50,10 @@ trait DashboardService {
     *   Either an error message describing why the update failed, or Unit on success.
     */
   def updateDashboardLayout(layout: DashboardLayout.Value): Either[String, Unit]
+
+  /** Returns a list of portlet types that the current user can add to their dashboard.
+    */
+  def getCreatablePortlets: List[PortletCreatable]
 }
 
 object DashboardService {

@@ -24,8 +24,8 @@ import com.tle.common.portal.entity.Portlet
 import com.tle.common.portal.entity.impl.PortletRecentContrib
 import com.tle.common.workflow.Trend
 import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.{
-  KEY_TITLEONLY,
-  ITEM_STATUS
+  ITEM_STATUS,
+  KEY_TITLEONLY
 }
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 
