@@ -277,4 +277,28 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       )
     }
   }
+
+  describe("Closed portlets") {
+    it("should return the basic information of closed portlets") {
+      Given("two closed portlets")
+      val searchPortlet     = new Portlet
+      val searchPortletUuid = UUID.randomUUID().toString
+      // Set UUID, but do not need to set name due to the mocking of LangUtils in this suite.
+      searchPortlet.setUuid(searchPortletUuid)
+
+      val browsePortlet     = new Portlet
+      val browsePortletUuid = UUID.randomUUID().toString
+      browsePortlet.setUuid(browsePortletUuid)
+
+      when(mockPortletService.getViewableButClosedPortlets)
+        .thenReturn(List(searchPortlet, browsePortlet).asJava)
+
+      Then("their UUIDs and names should be returned")
+      val result = dashboardService.getClosedPortlet
+      result shouldBe List(
+        PortletClosed(searchPortletUuid, portletName),
+        PortletClosed(browsePortletUuid, portletName)
+      )
+    }
+  }
 }

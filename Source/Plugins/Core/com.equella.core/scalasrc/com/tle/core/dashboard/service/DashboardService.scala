@@ -18,7 +18,7 @@
 
 package com.tle.core.dashboard.service
 
-import com.tle.core.dashboard.model.{PortletCreatable, PortletDetails}
+import com.tle.core.dashboard.model.{PortletClosed, PortletCreatable, PortletDetails}
 
 object DashboardLayout extends Enumeration {
   val SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2 = Value
@@ -54,6 +54,10 @@ trait DashboardService {
   /** Returns a list of portlet types that the current user can add to their dashboard.
     */
   def getCreatablePortlets: List[PortletCreatable]
+
+  /** Returns the basic information of portlets that the current user has closed on their dashboard.
+    */
+  def getClosedPortlet: List[PortletClosed]
 }
 
 object DashboardService {
