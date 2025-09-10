@@ -36,9 +36,9 @@ import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.searching.SortField
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.freetext.queries.FreeTextBooleanQuery
-import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.item.security.ItemSecurityConstants
 import com.tle.core.item.serializer.ItemSerializerItemBean
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
@@ -56,6 +56,7 @@ import com.tle.web.api.search.model._
 
 import java.time.format.DateTimeParseException
 import java.time.{LocalDate, LocalDateTime, LocalTime, ZoneId}
+import java.util
 import java.util.Date
 import scala.jdk.CollectionConverters._
 
@@ -191,9 +192,17 @@ object SearchHelper {
     */
   def handleOrder(params: SearchPayload): SortField = {
     val providedOrder = params.order.map(_.toLowerCase)
-    val order: SortField = providedOrder.flatMap(TaskSortOrder.apply) getOrElse DefaultSearch
+
+    def getDefaultSortField = DefaultSearch
       .getOrderType(providedOrder.orNull, params.query.orNull)
       .getSortField
+
+    // Get sort field for extension sort orders (i.e. Task or Bookmark).
+    def getExtensionSortField(id: String) =
+      TaskSortOrder(id) orElse BookmarkSortOrder(id)
+
+    val order: SortField =
+      providedOrder.flatMap(getExtensionSortField).getOrElse(getDefaultSortField)
 
     if (params.reverseOrder) order.reversed() else order
   }
@@ -427,7 +436,7 @@ object SearchHelper {
 
   /** Extract the value of 'links' from the 'extras' of AbstractExtendableBean.
     */
-  def getLinksFromBean[T <: AbstractExtendableBean](bean: T) =
+  def getLinksFromBean[T <: AbstractExtendableBean](bean: T): util.Map[String, String] =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
 
   /** Find the Bookmark linking to the Item and return the Bookmark's ID.
