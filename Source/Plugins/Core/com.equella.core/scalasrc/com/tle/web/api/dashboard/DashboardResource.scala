@@ -104,7 +104,7 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
   )
   def closed(): Response = {
     val closedPortlets: List[PortletClosedBean] =
-      dashboardService.getClosedPortlet.map(PortletClosedBean(_))
+      dashboardService.getClosedPortlets.map(PortletClosedBean(_))
     Response.ok(closedPortlets).build()
   }
 }

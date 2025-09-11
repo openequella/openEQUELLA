@@ -144,7 +144,7 @@ class DashboardServiceImpl @Inject() (
       .sortBy(_.name)
   }
 
-  override def getClosedPortlet: List[PortletClosed] = {
+  override def getClosedPortlets: List[PortletClosed] = {
     portletService.getViewableButClosedPortlets.asScala.toList.map(PortletClosed(_))
   }
 }

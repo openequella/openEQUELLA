@@ -294,7 +294,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
         .thenReturn(List(searchPortlet, browsePortlet).asJava)
 
       Then("their UUIDs and names should be returned")
-      val result = dashboardService.getClosedPortlet
+      val result = dashboardService.getClosedPortlets
       result shouldBe List(
         PortletClosed(searchPortletUuid, portletName),
         PortletClosed(browsePortletUuid, portletName)

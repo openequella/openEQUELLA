@@ -57,7 +57,7 @@ trait DashboardService {
 
   /** Returns the basic information of portlets that the current user has closed on their dashboard.
     */
-  def getClosedPortlet: List[PortletClosed]
+  def getClosedPortlets: List[PortletClosed]
 }
 
 object DashboardService {
