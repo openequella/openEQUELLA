@@ -20,7 +20,7 @@ package com.tle.web.api.dashboard.bean
 
 import com.tle.core.dashboard.model.PortletClosed
 
-/** DTO for basic information about a portlet type that can be created by the user.
+/** DTO for basic information about a portlet that has been closed by the user.
   */
 final case class PortletClosedBean(uuid: String, name: String)
 
