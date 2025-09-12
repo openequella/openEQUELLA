@@ -21,7 +21,7 @@ package com.tle.web.api.dashboard
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
 import com.tle.web.api.ApiErrorResponse.{badRequest, serverError}
-import com.tle.web.api.dashboard.bean.{PortletCreatableBean, PortletResponse}
+import com.tle.web.api.dashboard.bean.{PortletClosedBean, PortletCreatableBean, PortletResponse}
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
 
@@ -92,5 +92,19 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
     val portlets: List[PortletCreatableBean] =
       dashboardService.getCreatablePortlets.map(PortletCreatableBean(_))
     Response.ok(portlets).build()
+  }
+
+  @GET
+  @Path("portlet/closed")
+  @ApiOperation(
+    value = "List of closed portlets",
+    notes = "Retrieve the IDs and names of portlets that have been closed on the dashboard",
+    response = classOf[PortletClosedBean],
+    responseContainer = "List"
+  )
+  def closed(): Response = {
+    val closedPortlets: List[PortletClosedBean] =
+      dashboardService.getClosedPortlets.map(PortletClosedBean(_))
+    Response.ok(closedPortlets).build()
   }
 }

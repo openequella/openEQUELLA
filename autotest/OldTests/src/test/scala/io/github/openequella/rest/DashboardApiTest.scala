@@ -35,6 +35,21 @@ class DashboardApiTest extends AbstractRestApiTest {
     assertEquals(9, resp.size())
   }
 
+  @Test(description = "Retrieve a list of closed portlets")
+  def closedPortlet(): Unit = {
+    val request = new GetMethod(s"$DASHBOARD_PORTLET_ENDPOINT/closed")
+
+    val respCode = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_OK, respCode)
+
+    val resp = mapper.readTree(request.getResponseBodyAsStream)
+    assertEquals(1, resp.size())
+
+    val closedPortlet = resp.get(0)
+    assertEquals("Admin search", closedPortlet.get("name").asText)
+    assertEquals("ddd84757-8319-4816-b0e0-39c71a0ba691", closedPortlet.get("uuid").asText)
+  }
+
   @Test(
     description = "Update dashboard layout using a valid value",
     dependsOnMethods = Array("dashboardDetails")

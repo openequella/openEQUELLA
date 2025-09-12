@@ -143,4 +143,8 @@ class DashboardServiceImpl @Inject() (
       .filterNot(p => deprecated.contains(p.portletType))
       .sortBy(_.name)
   }
+
+  override def getClosedPortlets: List[PortletClosed] = {
+    portletService.getViewableButClosedPortlets.asScala.toList.map(PortletClosed(_))
+  }
 }
