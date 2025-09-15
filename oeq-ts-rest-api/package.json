@@ -11,7 +11,7 @@
   ],
   "engines": {
     "node": "22.19.0",
-    "npm": "11.4.2"
+    "npm": "11.6.0"
   },
   "scripts": {
     "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
