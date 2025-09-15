@@ -18,7 +18,12 @@
 
 package com.tle.core.dashboard.service
 
-import com.tle.core.dashboard.model.{PortletClosed, PortletCreatable, PortletDetails}
+import com.tle.core.dashboard.model.{
+  PortletClosed,
+  PortletCreatable,
+  PortletDetails,
+  PortletPreferenceUpdate
+}
 
 object DashboardLayout extends Enumeration {
   val SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2 = Value
@@ -58,6 +63,20 @@ trait DashboardService {
   /** Returns the basic information of portlets that the current user has closed on their dashboard.
     */
   def getClosedPortlets: List[PortletClosed]
+
+  /** Updates the UI preferences for a portlet identified by its UUID.
+    *
+    * @param uuid
+    *   The unique identifier of the portlet to update.
+    * @param updates
+    *   Preference updates to be applied to the target portlet.
+    * @return
+    *   Either the exception captured during the update, or Unit on Success.
+    */
+  def updatePortletPreference(
+      uuid: String,
+      updates: PortletPreferenceUpdate
+  ): Either[Throwable, Unit]
 }
 
 object DashboardService {

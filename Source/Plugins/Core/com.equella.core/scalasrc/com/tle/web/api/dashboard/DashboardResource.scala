@@ -18,16 +18,24 @@
 
 package com.tle.web.api.dashboard
 
+import com.tle.common.beans.exception.NotFoundException
+import com.tle.core.dashboard.model.PortletPreferenceUpdate
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
-import com.tle.web.api.ApiErrorResponse.{badRequest, serverError}
-import com.tle.web.api.dashboard.bean.{PortletClosedBean, PortletCreatableBean, PortletResponse}
+import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound, serverError}
+import com.tle.web.api.dashboard.bean.PortletPreferenceBean.toPreference
+import com.tle.web.api.dashboard.bean.{
+  PortletClosedBean,
+  PortletCreatableBean,
+  PortletPreferenceBean,
+  PortletResponse
+}
 import io.swagger.annotations.{Api, ApiModelProperty, ApiOperation}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, PUT, Path, Produces}
+import javax.ws.rs.{GET, PUT, Path, PathParam, Produces}
 import scala.util.{Failure, Success, Try}
 
 final case class DashboardResponse(
@@ -106,5 +114,21 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
     val closedPortlets: List[PortletClosedBean] =
       dashboardService.getClosedPortlets.map(PortletClosedBean(_))
     Response.ok(closedPortlets).build()
+  }
+
+  @PUT
+  @Path("portlet/{uuid}/preference")
+  @ApiOperation(value = "Update portlet preference")
+  def portletPreference(@PathParam("uuid") uuid: String, bean: PortletPreferenceBean): Response = {
+    def errorMsg(err: Throwable) =
+      s"Failed to update portlet preference for portlet $uuid: ${err.getMessage}"
+
+    val update: PortletPreferenceUpdate = toPreference(bean)
+
+    dashboardService.updatePortletPreference(uuid, update) match {
+      case Right(_)                   => Response.noContent().build()
+      case Left(e: NotFoundException) => resourceNotFound(errorMsg(e))
+      case Left(e)                    => serverError(errorMsg(e))
+    }
   }
 }

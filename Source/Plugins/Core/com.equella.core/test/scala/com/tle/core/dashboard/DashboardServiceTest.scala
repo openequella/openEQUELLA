@@ -2,6 +2,7 @@ package com.tle.core.dashboard
 
 import com.tle.beans.entity.LanguageBundle
 import com.tle.beans.item.ItemStatus
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.i18n.{CurrentLocale, LangUtils}
 import com.tle.common.portal.PortletTypeDescriptor
 import com.tle.common.portal.entity.impl.PortletRecentContrib
@@ -43,6 +44,8 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
   mockStatic(classOf[LangUtils])
   when(LangUtils.getString(any[LanguageBundle]())).thenReturn(portletName)
 
+  val runtimeError = "java.sql.SQLException: Connection refused"
+
   describe("Dashboard layout") {
     it("should return None when no layout is configured") {
       when(mockUserPreferenceService.getPreference(DASHBOARD_LAYOUT)).thenReturn(null)
@@ -64,14 +67,14 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
     }
 
     it("returns an error if the layout update fails") {
-      val errorMsg = "java.sql.SQLException: Connection refused"
+
       When("UserPreferenceService throws an exception")
       when(mockUserPreferenceService.setPreference(any[String](), any[String]()))
-        .thenThrow(new RuntimeException(errorMsg))
+        .thenThrow(new RuntimeException(runtimeError))
 
       Then("the failure is captured and returned as an error message")
       val result = dashboardService.updateDashboardLayout(DashboardLayout.SingleColumn)
-      result shouldBe Left(s"Failed to update Dashboard layout: $errorMsg")
+      result shouldBe Left(s"Failed to update Dashboard layout: $runtimeError")
     }
   }
 
@@ -299,6 +302,58 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
         PortletClosed(searchPortletUuid, portletName),
         PortletClosed(browsePortletUuid, portletName)
       )
+    }
+  }
+
+  describe("Update portlet preference") {
+    val uuid          = UUID.randomUUID().toString
+    val searchPortlet = new Portlet("search")
+    searchPortlet.setUuid(uuid)
+    when(mockPortletService.getByUuid(uuid)).thenReturn(searchPortlet)
+
+    val updates = PortletPreferenceUpdate(
+      isClosed = true,
+      isMinimised = false,
+      column = 0,
+      order = 1
+    )
+
+    it("should update the preference for a portlet") {
+      Given("a portlet that can be identified by the given UUID and new preference updates")
+      val result = dashboardService.updatePortletPreference(uuid, updates)
+
+      Then("the update should be successfully applied to the correct portlet")
+      result shouldBe a[Right[_, _]]
+
+      val targetPortlet = ArgumentCaptor.forClass(classOf[Portlet])
+      val preference    = ArgumentCaptor.forClass(classOf[PortletPreferenceUpdate])
+      verify(mockPortletService).updatePreference(targetPortlet.capture(), preference.capture())
+      preference.getValue shouldBe updates
+      targetPortlet.getValue shouldBe searchPortlet
+    }
+
+    it("should return NotFoundException if the portlet does not exist") {
+      Given("a non-existing portlet UUID")
+      when(mockPortletService.getByUuid(uuid)).thenReturn(null)
+
+      Then("a NotFoundException is returned")
+      val result = dashboardService.updatePortletPreference(uuid, updates)
+      result.left.value
+        .asInstanceOf[NotFoundException]
+        .getMessage shouldBe s"Portlet with UUID $uuid not found"
+    }
+
+    it("should capture other exception thrown from the update") {
+      Given("an existing portlet")
+      when(mockPortletService.getByUuid(uuid)).thenReturn(searchPortlet)
+
+      When("the preference update throws an exception")
+      when(mockPortletService.updatePreference(any[Portlet](), any[PortletPreferenceUpdate]()))
+        .thenThrow(new RuntimeException(runtimeError))
+
+      Then("the exception is captured and returned")
+      val result = dashboardService.updatePortletPreference(uuid, updates)
+      result.left.value.asInstanceOf[RuntimeException].getMessage shouldBe runtimeError
     }
   }
 }
