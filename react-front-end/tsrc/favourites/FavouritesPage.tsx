@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-import * as O from "fp-ts/Option";
 import { type ReactNode, useContext, useMemo, useState } from "react";
 import { AppContext } from "../mainui/App";
-import { pipe } from "fp-ts/function";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import type { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
@@ -45,15 +43,16 @@ import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSelector from "./components/FavouritesSelector";
 import {
-  defaultFavouritesPageOptions,
+  defaultFavouritesSearchesOptions,
   listFavouriteSearches,
   favouritesItemsResult,
   favouritesPageHeaderConfig,
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
   isFavouritesTypeResources,
+  getDefaultFavouritesItemsOptions,
+  buildBookmarkOwnerMusts,
 } from "./FavouritesPageHelper";
-import * as OEQ from "@openequella/rest-api-client";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
@@ -71,11 +70,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): SearchPageOptions => ({
       ...searchPageOptions,
       filterExpansion: false,
-      musts: pipe(
-        O.fromNullable(currentUser),
-        O.map((user) => [["bookmark_owner", [user.id]]] as OEQ.Search.Must[]),
-        O.toUndefined,
-      ),
+      musts: buildBookmarkOwnerMusts(currentUser),
     });
 
     return {
@@ -89,7 +84,10 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ({ search }: SearchContextProps) =>
     (value: FavouritesType) => {
       setFavouritesType(value);
-      search(defaultFavouritesPageOptions);
+      const searchOptions = isFavouritesTypeResources(value)
+        ? getDefaultFavouritesItemsOptions(currentUser)
+        : defaultFavouritesSearchesOptions;
+      search(searchOptions);
     };
 
   const favouritesPageRefinePanelConfig = (
