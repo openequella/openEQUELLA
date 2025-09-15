@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import {
   type ReactNode,
@@ -25,46 +24,48 @@ import {
   useMemo,
   useState,
 } from "react";
-import ConfirmDialog from "../components/ConfirmDialog";
 import { AppContext } from "../mainui/App";
+import { pipe } from "fp-ts/function";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import type { TemplateUpdateProps } from "../mainui/Template";
 import * as React from "react";
 import {
-  deleteFavouriteItem,
   FavouritesType,
   searchFavouriteItems,
 } from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
+import GallerySearchResult from "../search/components/GallerySearchResult";
 import { type InitialSearchConfig, Search } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
   SearchContext,
   type SearchContextProps,
-  type SearchPageHeaderConfig,
   type SearchPageOptions,
   type SearchPageRefinePanelConfig,
   defaultSearchPageRefinePanelConfig,
   isListItems,
   isGalleryItems,
   defaultPagedSearchResult,
+  isFavouriteSearches,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSelector from "./components/FavouritesSelector";
-import * as OEQ from "@openequella/rest-api-client";
-import { renderFavouriteItemsResult } from "./FavouritesItemHelper";
+import {
+  defaultFavouritesPageOptions,
+  listFavouriteSearches,
+  favouritesItemsResult,
+  favouritesPageHeaderConfig,
+  favouritesSearchesResult,
+  favouritesSearchRefinePanelConfig,
+} from "./FavouritesPageHelper";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
   languageStrings.favourites.favouritesSelector;
-const { remove, removeAlert } = languageStrings.searchpage.favouriteItem;
 
 const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { currentUser } = useContext(AppContext);
-  const [bookmarkIdToRemove, setBookmarkIdToRemove] = useState<
-    number | undefined
-  >(undefined);
 
   const [favouritesType, setFavouritesType] =
     useState<FavouritesType>("resources");
@@ -85,22 +86,19 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [currentUser]);
 
   const onFavouritesTypeChangeBuilder =
-    (_: SearchContextProps) => (value: FavouritesType) => {
+    ({ search }: SearchContextProps) =>
+    (value: FavouritesType) => {
       setFavouritesType(value);
-      //TODO: trigger a new search.
+      search(defaultFavouritesPageOptions);
     };
-
-  const favouritesPageHeaderConfig: SearchPageHeaderConfig = {
-    enableCSVExportButton: false,
-    enableShareSearchButton: false,
-    enableFavouriteSearchButton: false,
-  };
 
   const favouritesPageRefinePanelConfig = (
     searchContextProps: SearchContextProps,
   ): SearchPageRefinePanelConfig => {
     const defaultSearchConfig =
-      favouritesType === "resources" ? defaultSearchPageRefinePanelConfig : {};
+      favouritesType === "resources"
+        ? defaultSearchPageRefinePanelConfig
+        : favouritesSearchRefinePanelConfig;
 
     return {
       ...defaultSearchConfig,
@@ -122,87 +120,81 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
   };
 
-  /**
-   * Provider used by Search to fetch favourite items.
-   */
+  // Provider used by Search to fetch favourite items.
   const favouriteItemsSearchProvider = useCallback(
-    async (
-      searchOptions: SearchOptions,
-    ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+    async (searchOptions: SearchOptions): Promise<SearchPageSearchResult> =>
       pipe(
-        // TODO: Remove once new GET API is available; current Search2 API needs `currentUser` for bookmark_owner must.
         O.fromNullable(currentUser),
         O.match(
           () => Promise.resolve(defaultPagedSearchResult),
           (user) => searchFavouriteItems(searchOptions, user),
         ),
+        async (result) => ({
+          from: "item-search",
+          content: await result,
+        }),
       ),
     [currentUser],
   );
 
-  const onRemoveItemFromFav = async (
-    { search, searchState }: SearchContextProps,
-    bookmarkId: number,
-  ) => {
-    await deleteFavouriteItem(bookmarkId);
-    search(searchState.options);
-    setBookmarkIdToRemove(undefined);
-  };
+  // Refresh the search results when an item is removed from favourites.
+  const buildOnFavouriteItemRemoved =
+    ({ search, searchState }: SearchContextProps) =>
+    () =>
+      search(searchState.options);
 
-  const renderCustomSearchResult = (
-    searchResult: SearchPageSearchResult,
-  ): ReactNode => {
-    if (
-      isListItems(searchResult.from, searchResult.content) ||
-      isGalleryItems(searchResult.from, searchResult.content)
-    ) {
-      return renderFavouriteItemsResult(searchResult, setBookmarkIdToRemove);
-    }
-    // TODO: renderFavouriteSearchesResult
-    return null;
-  };
+  const renderCustomSearchResult =
+    (searchContextProps: SearchContextProps) =>
+    (pageResult: SearchPageSearchResult): ReactNode => {
+      const {
+        from,
+        content: { results: searchResults, highlight },
+      } = pageResult;
+
+      if (isListItems(from, searchResults)) {
+        return favouritesItemsResult(
+          searchResults,
+          highlight,
+          buildOnFavouriteItemRemoved(searchContextProps),
+        );
+      } else if (isGalleryItems(from, searchResults)) {
+        return <GallerySearchResult items={searchResults} />;
+      } else if (isFavouriteSearches(from, searchResults)) {
+        return favouritesSearchesResult(searchResults, highlight);
+      }
+
+      throw new TypeError("Unexpected display mode for favourites result");
+    };
 
   return (
     <Search
       updateTemplate={updateTemplate}
       initialSearchConfig={initialSearchConfig}
       pageTitle={title}
-      searchItemsProvider={
+      listModeSearchProvider={
         favouritesType === "resources"
           ? favouriteItemsSearchProvider
-          : undefined
+          : listFavouriteSearches
       }
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (
-          <>
-            <SearchPageBody
-              pathname={NEW_FAVOURITES_PATH}
-              headerConfig={favouritesPageHeaderConfig}
-              refinePanelConfig={favouritesPageRefinePanelConfig(
-                searchContextProps,
-              )}
-              customRenderSearchResults={renderCustomSearchResult}
-              searchBarConfig={
-                favouritesType === "searches"
-                  ? { enableWildcardToggle: false }
-                  : undefined
-              }
-            />
-            {bookmarkIdToRemove && (
-              <ConfirmDialog
-                open={Boolean(bookmarkIdToRemove)}
-                onConfirm={() =>
-                  onRemoveItemFromFav(searchContextProps, bookmarkIdToRemove)
-                }
-                onCancel={() => setBookmarkIdToRemove(undefined)}
-                title={remove}
-                confirmButtonText={languageStrings.common.action.ok}
-              >
-                {removeAlert}
-              </ConfirmDialog>
+          <SearchPageBody
+            pathname={NEW_FAVOURITES_PATH}
+            headerConfig={favouritesPageHeaderConfig}
+            refinePanelConfig={favouritesPageRefinePanelConfig(
+              searchContextProps,
             )}
-          </>
+            customRenderSearchResults={renderCustomSearchResult(
+              searchContextProps,
+            )}
+            enableClassification={false}
+            searchBarConfig={
+              favouritesType === "searches"
+                ? { enableWildcardToggle: false }
+                : undefined
+            }
+          />
         )}
       </SearchContext.Consumer>
     </Search>

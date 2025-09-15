@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Chip } from "@mui/material";
+import { Chip, Tooltip } from "@mui/material";
 import * as S from "fp-ts/string";
 import * as React from "react";
 
@@ -30,8 +30,46 @@ export interface SearchOptionsChipsProps {
   prefix?: string;
 }
 
+// The maximum length of a label before it gets truncated with ellipsis.
+const MAX_LABEL_LENGTH = 50;
+// Determine if the label is too long and needs to be truncated with ellipsis.
+const isLabelTooLong = (label: string) => label.length > MAX_LABEL_LENGTH;
+
+// Build a chip component for the given content and index. If the content is too long, it will be truncated
+// with ellipsis and the full content will be shown in a tooltip on hover.
+const buildChip = (content: string, index: number) => {
+  if (isLabelTooLong(content)) {
+    const shortContent = content.slice(0, MAX_LABEL_LENGTH) + "...";
+
+    return (
+      <Tooltip title={content} key={index}>
+        <Chip
+          component="span"
+          sx={{ margin: 0.5 }}
+          key={index}
+          label={shortContent}
+          color="secondary"
+          size="small"
+        />
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Chip
+      component="span"
+      sx={{ margin: 0.5 }}
+      key={index}
+      label={content}
+      color="secondary"
+      size="small"
+    />
+  );
+};
+
 /**
  * A component that displays search options as chips in the {@link SearchOptions}.
+ * It will truncate long labels with ellipsis and show the full label in a tooltip on hover.
  */
 const SearchOptionsChips = ({ options, prefix }: SearchOptionsChipsProps) => {
   const formatChipLabel = prefix
@@ -40,18 +78,7 @@ const SearchOptionsChips = ({ options, prefix }: SearchOptionsChipsProps) => {
 
   const chipLabels = S.isString(options) ? [options] : options;
 
-  return chipLabels
-    .map(formatChipLabel)
-    .map((content, index) => (
-      <Chip
-        component="span"
-        sx={{ margin: 0.5 }}
-        key={index}
-        label={content}
-        color="secondary"
-        size="small"
-      />
-    ));
+  return chipLabels.map(formatChipLabel).map(buildChip);
 };
 
 export default SearchOptionsChips;

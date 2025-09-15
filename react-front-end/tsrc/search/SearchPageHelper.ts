@@ -886,3 +886,15 @@ export const isGalleryItems = (
   from: string,
   items: unknown,
 ): items is GallerySearchResultItem[] => from === "gallery-search";
+
+/**
+ * Type guard for favourite-search results.
+ *
+ * @param from - The `from` attribute in `SearchPageSearchResult` context,
+ *               expected be "favourite-search" for a positive check.
+ * @param searches - The data to be checked, expected to come from a search operation.
+ */
+export const isFavouriteSearches = (
+  from: string,
+  searches: unknown,
+): searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";

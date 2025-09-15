@@ -877,7 +877,7 @@ export const SearchPageBody = ({
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
-          PaperProps={{ style: { width: "50%" } }}
+          slotProps={{ paper: { style: { width: "50%" } } }}
         >
           {renderSidePanel()}
         </Drawer>

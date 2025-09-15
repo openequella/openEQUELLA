@@ -50,12 +50,12 @@ mockSearch.mockResolvedValue(getSearchResult);
 
 type RenderSearchOptions = {
   queryString?: string;
-  searchItemsProvider?: jest.Mock;
+  listModeSearchProvider?: jest.Mock;
 };
 
 const renderSearch = async ({
   queryString,
-  searchItemsProvider,
+  listModeSearchProvider,
 }: RenderSearchOptions = {}) => {
   const history = createMemoryHistory();
   if (queryString) history.push(queryString);
@@ -64,7 +64,7 @@ const renderSearch = async ({
     <Router history={history}>
       <Search
         updateTemplate={jest.fn()}
-        searchItemsProvider={searchItemsProvider}
+        listModeSearchProvider={listModeSearchProvider}
       >
         <div />
       </Search>
@@ -72,7 +72,7 @@ const renderSearch = async ({
   );
 
   await waitFor(() =>
-    expect(searchItemsProvider ?? mockSearch).toHaveBeenCalled(),
+    expect(listModeSearchProvider ?? mockSearch).toHaveBeenCalled(),
   );
 
   return page;
@@ -130,7 +130,7 @@ describe("custom searchItemsProvider", () => {
   it("uses custom searchItemsProvider when provided", async () => {
     const customSearch = jest.fn().mockResolvedValue(getSearchResult);
 
-    await renderSearch({ searchItemsProvider: customSearch });
+    await renderSearch({ listModeSearchProvider: customSearch });
     expect(customSearch).toHaveBeenCalledTimes(1);
     expect(mockSearch).not.toHaveBeenCalled();
   });

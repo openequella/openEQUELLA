@@ -128,18 +128,27 @@ interface SearchProps extends TemplateUpdateProps {
    * Title of the page where this component is used.
    */
   pageTitle?: string;
-
   /**
-   * A function that will be called to get a list of items.
+   * A function that will be called to get a list of results with its search type.
    * This is used when the `displayMode` is `list`.
-   * The default function is `searchItems` from `SearchModule`.
+   * The default search type is "item-search" and the search function is `searchItems` from `SearchModule`.
+   *
    * @param searchOptions The options for the search.
-   * @returns A promise of a search result.
    */
-  searchItemsProvider?: (
+  listModeSearchProvider?: (
     searchOptions: SearchOptions,
-  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
+  ) => Promise<SearchPageSearchResult>;
 }
+
+const defaultListModeSearch = async (
+  options: SearchOptions,
+): Promise<SearchPageSearchResult> => ({
+  from: "item-search",
+  content: await searchItems({
+    ...options,
+    includeAttachments: false,
+  }),
+});
 
 /**
  * This component is responsible for managing the state of search and performing general initialisation tasks.
@@ -151,7 +160,7 @@ export const Search = ({
   children,
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
-  searchItemsProvider = searchItems,
+  listModeSearchProvider = defaultListModeSearch,
 }: SearchProps) => {
   const history = useHistory<SearchPageHistoryState>();
   const searchPageHistoryState: SearchPageHistoryState | undefined =
@@ -316,13 +325,7 @@ export const Search = ({
           case "gallery-video":
             return gallerySearch(videoGallerySearch, searchPageOptions);
           case "list":
-            return {
-              from: "item-search",
-              content: await searchItemsProvider({
-                ...searchPageOptions,
-                includeAttachments: false,
-              }),
-            };
+            return listModeSearchProvider(searchPageOptions);
           default:
             throw new TypeError("Unexpected `displayMode` for searching");
         }
@@ -387,7 +390,7 @@ export const Search = ({
     history,
     searchState,
     searchPageHistoryState,
-    searchItemsProvider,
+    listModeSearchProvider,
   ]);
 
   // In Selection Session, once a new search result is returned, make each

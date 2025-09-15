@@ -18,7 +18,7 @@
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { ListItem, Typography } from "@mui/material";
+import { Box, ListItem, Typography } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import { JSX, useState } from "react";
 import * as React from "react";
@@ -98,10 +98,10 @@ const SearchOptions = ({ searchOptionsSummary }: SearchOptionsProps) => {
   } = searchOptionsSummary;
 
   const baseOptions: SearchOptionsWithLabel = [
-    [queryLabel, query],
+    [advancedSearchLabel, advancedSearch],
     [collectionLabel, collections],
     [hierarchyLabel, hierarchy],
-    [advancedSearchLabel, advancedSearch],
+    [queryLabel, query],
   ];
 
   const allOptions: SearchOptionsWithLabel = [
@@ -125,9 +125,19 @@ const SearchOptions = ({ searchOptionsSummary }: SearchOptionsProps) => {
   return (
     <>
       <ListItem sx={{ paddingLeft: 0 }}>
-        <Typography>{searchOptionsLabel}&nbsp;</Typography>
+        <Typography
+          sx={{
+            // Make sure the label can wrap properly if there are too many chips to fit in one line.
+            overflowWrap: "break-word",
+          }}
+        >
+          {searchOptionsLabel}&nbsp;
+        </Typography>
 
-        {showAllSearchOptions ? undefined : baseOptionsChips()}
+        {showAllSearchOptions ? undefined : (
+          // Make chips responsive wrap to new line if necessary.
+          <Box sx={{ flexWrap: "wrap" }}>{baseOptionsChips()}</Box>
+        )}
 
         <TooltipIconButton
           open={openSearchOptionTooltip}

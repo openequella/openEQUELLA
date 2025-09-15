@@ -51,3 +51,10 @@ export const invalidFavouriteSearch: OEQ.Favourite.FavouriteSearch = {
   url: "/page/search?searchOptions=invalid",
   addedAt,
 };
+
+export const emptyOptionsFavouriteSearch: OEQ.Favourite.FavouriteSearch = {
+  id: 5,
+  name: "Favourite Search",
+  url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%7D",
+  addedAt,
+};

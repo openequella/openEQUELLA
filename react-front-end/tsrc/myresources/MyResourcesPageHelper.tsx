@@ -572,12 +572,22 @@ export const customUIForMyResources = (
   renderList: (
     searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
   ) => ReactNode,
-): ReactNode =>
-  searchPageSearchResult.from === "gallery-search" ? (
-    <GallerySearchResult items={searchPageSearchResult.content.results} />
-  ) : (
-    renderList(searchPageSearchResult.content)
-  );
+): ReactNode => {
+  const from = searchPageSearchResult.from;
+
+  switch (from) {
+    case "gallery-search":
+      return (
+        <GallerySearchResult items={searchPageSearchResult.content.results} />
+      );
+    case "item-search":
+      return renderList(searchPageSearchResult.content);
+    case "favourite-search":
+      return undefined;
+    default:
+      return absurd(from);
+  }
+};
 
 /**
  * Return a SearchPageOptions saved in browser session storage by steps listed below.
