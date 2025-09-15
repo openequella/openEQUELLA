@@ -15,6 +15,8 @@ libraryDependencies ++= Seq(
   jacksonModuleScala
 )
 
+libraryDependencies += "org.mockito" % "mockito-core" % "5.19.0" % Test
+
 excludeDependencies ++= Seq(
   "commons-logging" % "commons-logging"
 )
