@@ -86,9 +86,12 @@ class DashboardApiTest extends AbstractRestApiTest {
     description = "Update portlet preference"
   )
   def preferenceUpdate(): Unit = {
+
+    // The Admin search portlet is returned as the first portlet in the list.
+    def getAdminPortlet = getPortletDetails.get(0).get("commonDetails")
+
     val adminSearchPortletUuid = "ddd84757-8319-4816-b0e0-39c71a0ba691"
-    val portletDetails         = getPortletDetails
-    val adminPortlet           = portletDetails.get(0).get("commonDetails")
+    val adminPortlet           = getAdminPortlet
     // Verify the initial state of the Admin search portlet.
     assertEquals(adminSearchPortletUuid, adminPortlet.get("uuid").asText)
     assertEquals(true, adminPortlet.get("isClosed").asBoolean)
@@ -110,17 +113,14 @@ class DashboardApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_NO_CONTENT, updateResultCode)
 
     // Get the portlet details again to verify the preference update.
-    val updatedAdminPortlet = getPortletDetails.get(0).get("commonDetails")
+    val updatedAdminPortlet = getAdminPortlet
     assertEquals(false, updatedAdminPortlet.get("isClosed").asBoolean)
     assertEquals(true, updatedAdminPortlet.get("isMinimised").asBoolean)
     assertEquals(1, updatedAdminPortlet.get("column").asInt)
     assertEquals(2, updatedAdminPortlet.get("order").asInt)
   }
 
-  @Test(
-    description = "Update should fail with a unknown portlet UUID",
-    dependsOnMethods = Array("preferenceUpdate")
-  )
+  @Test(description = "Update should fail with a unknown portlet UUID")
   def preferenceUpdateFailed(): Unit = {
     val updateRequest    = new PutMethod(s"$DASHBOARD_API_ENDPOINT/portlet/unknown/preference")
     val updateResultCode = makeClientRequestWithEntity(updateRequest, mapper.createObjectNode)
