@@ -14,6 +14,7 @@ import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardServiceImpl}
 import com.tle.core.portal.service.PortletService
 import com.tle.core.services.user.UserPreferenceService
+import com.tle.exceptions.AccessDeniedException
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -353,6 +354,67 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
 
       Then("the exception is captured and returned")
       val result = dashboardService.updatePortletPreference(uuid, updates)
+      result.left.value.asInstanceOf[RuntimeException].getMessage shouldBe runtimeError
+    }
+  }
+
+  describe("Delete portlet") {
+    val uuid          = UUID.randomUUID().toString
+    val searchPortlet = new Portlet("search")
+    searchPortlet.setUuid(uuid)
+
+    it("only allows the owner to delete a portlet by UUID") {
+      Given("a portlet that belongs to the current user")
+      searchPortlet.setOwner(userId)
+      when(mockPortletService.getByUuid(uuid)).thenReturn(searchPortlet)
+
+      Then("the portlet should be deleted")
+      val result = dashboardService.deletePortlet(uuid)
+      result shouldBe a[Right[_, _]]
+
+      val target                = ArgumentCaptor.forClass(classOf[Portlet])
+      val checkPortletReference = ArgumentCaptor.forClass(classOf[Boolean])
+      verify(mockPortletService).delete(target.capture(), checkPortletReference.capture())
+      target.getValue shouldBe searchPortlet
+      checkPortletReference.getValue shouldBe true
+    }
+
+    it("should return AccessDeniedException if the portlet belongs to another user") {
+      Given("a portlet belonging to another user")
+      val anotherPortlet = new Portlet("search")
+      anotherPortlet.setUuid(uuid)
+      anotherPortlet.setOwner("anotherUser")
+      when(mockPortletService.getByUuid(uuid)).thenReturn(anotherPortlet)
+
+      Then("an AccessDeniedException is returned")
+      val result = dashboardService.deletePortlet(uuid)
+      result.left.value
+        .asInstanceOf[AccessDeniedException]
+        .getMessage shouldBe s"No permission to delete portlet $uuid."
+    }
+
+    it("should return NotFoundException if the portlet does not exist") {
+      Given("a non-existing portlet UUID")
+      when(mockPortletService.getByUuid(uuid)).thenReturn(null)
+
+      Then("a NotFoundException is returned")
+      val result = dashboardService.deletePortlet(uuid)
+      result.left.value
+        .asInstanceOf[NotFoundException]
+        .getMessage shouldBe s"Portlet with UUID $uuid not found"
+    }
+
+    it("should capture other exception thrown from the delete operation") {
+      Given("a portlet belonging to the current user")
+      searchPortlet.setOwner(userId)
+      when(mockPortletService.getByUuid(uuid)).thenReturn(searchPortlet)
+
+      When("the deletion causes an exception")
+      when(mockPortletService.delete(any[Portlet](), any[Boolean]()))
+        .thenThrow(new RuntimeException(runtimeError))
+
+      Then("the exception is captured and returned")
+      val result = dashboardService.deletePortlet(uuid)
       result.left.value.asInstanceOf[RuntimeException].getMessage shouldBe runtimeError
     }
   }

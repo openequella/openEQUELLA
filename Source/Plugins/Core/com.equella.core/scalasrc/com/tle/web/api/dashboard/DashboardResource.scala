@@ -18,11 +18,10 @@
 
 package com.tle.web.api.dashboard
 
-import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.dashboard.model.PortletPreferenceUpdate
 import com.tle.core.dashboard.service.{DashboardLayout, DashboardService}
 import com.tle.core.guice.Bind
-import com.tle.web.api.ApiErrorResponse.{badRequest, resourceNotFound, serverError}
+import com.tle.web.api.ApiErrorResponse.{apiErrorHandler, badRequest, serverError}
 import com.tle.web.api.dashboard.bean.PortletPreferenceBean.toPreference
 import com.tle.web.api.dashboard.bean.{
   PortletClosedBean,
@@ -35,7 +34,7 @@ import org.jboss.resteasy.annotations.cache.NoCache
 
 import javax.inject.{Inject, Singleton}
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, PUT, Path, PathParam, Produces}
+import javax.ws.rs._
 import scala.util.{Failure, Success, Try}
 
 final case class DashboardResponse(
@@ -120,15 +119,20 @@ class DashboardResource @Inject() (dashboardService: DashboardService) {
   @Path("portlet/{uuid}/preference")
   @ApiOperation(value = "Update portlet preference")
   def portletPreference(@PathParam("uuid") uuid: String, bean: PortletPreferenceBean): Response = {
-    def errorMsg(err: Throwable) =
-      s"Failed to update portlet preference for portlet $uuid: ${err.getMessage}"
-
     val update: PortletPreferenceUpdate = toPreference(bean)
-
     dashboardService.updatePortletPreference(uuid, update) match {
-      case Right(_)                   => Response.noContent().build()
-      case Left(e: NotFoundException) => resourceNotFound(errorMsg(e))
-      case Left(e)                    => serverError(errorMsg(e))
+      case Right(_) => Response.noContent().build()
+      case Left(e)  => apiErrorHandler(e)
+    }
+  }
+
+  @DELETE
+  @Path("portlet/{uuid}")
+  @ApiOperation(value = "Delete a portlet from Dashboard")
+  def portlet(@PathParam("uuid") uuid: String): Response = {
+    dashboardService.deletePortlet(uuid) match {
+      case Right(_) => Response.noContent().build()
+      case Left(e)  => apiErrorHandler(e)
     }
   }
 }

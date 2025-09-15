@@ -24,6 +24,7 @@ import com.tle.core.dashboard.model.{
   PortletDetails,
   PortletPreferenceUpdate
 }
+import com.tle.exceptions.AccessDeniedException
 
 object DashboardLayout extends Enumeration {
   val SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2 = Value
@@ -71,12 +72,26 @@ trait DashboardService {
     * @param updates
     *   Preference updates to be applied to the target portlet.
     * @return
-    *   Either the exception captured during the update, or Unit on Success.
+    *   - `Right(())` if the portlet exists and the preference update is successful.
+    *   - `Left(NotFoundException)` if no portlet with the given UUID exists.
+    *   - `Left(Throwable)` if an unexpected error occurs during the update.
     */
   def updatePortletPreference(
       uuid: String,
       updates: PortletPreferenceUpdate
   ): Either[Throwable, Unit]
+
+  /** Deletes a portlet by UUID from the current user's dashboard.
+    *
+    * @param uuid
+    *   The unique identifier of the portlet to delete.
+    * @return
+    *   - `Right(())` if the portlet exists and is successfully deleted.
+    *   - `Left(NotFoundException)` if no portlet with the given UUID exists.
+    *   - `Left(AccessDeniedException)` if the portlet does not belong to the current user.
+    *   - `Left(Throwable)` if an unexpected error occurs during deletion.
+    */
+  def deletePortlet(uuid: String): Either[Throwable, Unit]
 }
 
 object DashboardService {

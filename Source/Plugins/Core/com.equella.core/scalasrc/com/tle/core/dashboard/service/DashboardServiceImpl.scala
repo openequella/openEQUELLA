@@ -29,6 +29,7 @@ import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
 import com.tle.core.guice.Bind
 import com.tle.core.portal.service.PortletService
 import com.tle.core.services.user.UserPreferenceService
+import com.tle.exceptions.AccessDeniedException
 import org.slf4j.{Logger, LoggerFactory}
 
 import javax.inject.{Inject, Singleton}
@@ -160,6 +161,17 @@ class DashboardServiceImpl @Inject() (
         }
       case None =>
         Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
+    }
+  }
+
+  override def deletePortlet(uuid: String): Either[Throwable, Unit] = {
+    Option(portletService.getByUuid(uuid)) match {
+      case Some(portlet) if portlet.getOwner == CurrentUser.getUserID =>
+        Either.catchNonFatal {
+          portletService.delete(portlet, true)
+        }
+      case Some(_) => Left(new AccessDeniedException(s"No permission to delete portlet $uuid."))
+      case None    => Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
     }
   }
 }
