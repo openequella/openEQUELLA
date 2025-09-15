@@ -18,7 +18,13 @@
 
 package com.tle.upgrade;
 
-public interface ApplicationFiles {
-  String EQUELLA_SERVER_CONFIG_LINUX = "equellaserver-config.sh";
-  String EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat";
+/** Constants for application files used in the upgrade process. */
+public final class ApplicationFiles {
+  private ApplicationFiles() {
+    // This constructor is intentionally empty.
+    throw new IllegalStateException("Utility class");
+  }
+
+  public static final String EQUELLA_SERVER_CONFIG_LINUX = "equellaserver-config.sh";
+  public static final String EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat";
 }
