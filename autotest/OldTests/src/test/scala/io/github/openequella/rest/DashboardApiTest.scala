@@ -100,13 +100,13 @@ class DashboardApiTest extends AbstractRestApiTest {
     val updateRequest = new PutMethod(
       s"$DASHBOARD_API_ENDPOINT/portlet/$adminSearchPortletUuid/preference"
     )
-    val body = mapper.createObjectNode
-    body.put("isClosed", false)
-    body.put("isMinimised", true)
-    body.put("column", 1)
-    body.put("order", 2)
+    val preferenceUpdate = mapper.createObjectNode
+    preferenceUpdate.put("isClosed", false)
+    preferenceUpdate.put("isMinimised", true)
+    preferenceUpdate.put("column", 1)
+    preferenceUpdate.put("order", 2)
 
-    val updateResultCode = makeClientRequestWithEntity(updateRequest, body)
+    val updateResultCode = makeClientRequestWithEntity(updateRequest, preferenceUpdate)
     assertEquals(HttpStatus.SC_NO_CONTENT, updateResultCode)
 
     // Get the portlet details again to verify the preference update.
