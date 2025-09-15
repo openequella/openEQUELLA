@@ -22,7 +22,7 @@ describe("buildBookmarkOwnerMusts", () => {
   it("returns a bookmark_owner must array when user exists", () => {
     const currentUserMock = getCurrentUserMock;
     const result = buildBookmarkOwnerMusts(currentUserMock);
-    expect(result).toBe([["bookmark_owner", [currentUserMock.id]]]);
+    expect(result).toEqual([["bookmark_owner", [currentUserMock.id]]]);
   });
 
   it("returns undefined when user is undefined", () => {
