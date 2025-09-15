@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 import * as E from "fp-ts/Either";
-import { identity, pipe } from "fp-ts/function";
+import { constUndefined, identity, pipe } from "fp-ts/function";
 import { getBaseUrl } from "../../AppConfig";
 import { getTopicIdFromUrl } from "../../modules/HierarchyModule";
 import { DateRange } from "../../util/Date";
 import { languageStrings } from "../../util/langstrings";
+import { pfTernary } from "../../util/pointfree";
 import * as TE from "../../util/TaskEither.extended";
 import {
   getAdvancedSearchByUuid,
@@ -253,6 +254,16 @@ export const stringifySearchOptions = (
   );
 };
 
+// Check if the favourite search summary does include certain search criteria.
+// The summary could have no criteria configured when those pre-selected criteria are not set in the search options(in the URL).
+const isSummaryNonEmpty = (
+  searchOptionsSummary: FavouriteSearchOptionsSummary,
+) =>
+  pipe(
+    Object.entries(searchOptionsSummary),
+    A.some(([_, v]) => v !== undefined),
+  );
+
 /**
  * Build search options summary from the relative URL of a favourite search.
  *
@@ -280,6 +291,7 @@ export const buildSearchOptionsSummary = (
       const hierarchyUuid = getTopicIdFromUrl(url);
       return stringifySearchOptions(options, hierarchyUuid, advSearchUuid);
     }),
+    TE.map(pfTernary(isSummaryNonEmpty, identity, constUndefined)),
     TE.getOrThrow,
   )();
 };

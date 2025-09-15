@@ -16,11 +16,13 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import { waitFor } from "@testing-library/react";
 import { pipe } from "fp-ts/function";
 import { DateTime } from "luxon";
 import { getAdvancedSearchDefinition } from "../../../../__mocks__/AdvancedSearchModule.mock";
 import {
   advancedSearchFavouriteSearch,
+  emptyOptionsFavouriteSearch,
   hierarchyFavouriteSearch,
   invalidFavouriteSearch,
 } from "../../../../__mocks__/Favourites.mock";
@@ -40,6 +42,7 @@ import {
 } from "./FavouritesSearchTestHelper";
 
 const {
+  searchCriteria: searchCriteriaLabel,
   searchCriteriaLabels: {
     query: queryLabel,
     collection: collectionLabel,
@@ -171,6 +174,21 @@ describe("<FavouriteSearch />", () => {
       expect(queryByText(expectedLabel!)).toBeInTheDocument();
     },
   );
+
+  it("should not display search options if search options are empty", async () => {
+    const { queryByText, container } = renderFavouriteSearch({
+      ...defaultProps,
+      favouriteSearch: emptyOptionsFavouriteSearch,
+    });
+
+    // Skeleton should disappear first.
+    await waitFor(() =>
+      expect(
+        container.querySelector("span.MuiSkeleton-root"),
+      ).not.toBeInTheDocument(),
+    );
+    expect(queryByText(searchCriteriaLabel)).not.toBeInTheDocument();
+  });
 
   it("should display an error message if it failed to generate search options", async () => {
     const error =
