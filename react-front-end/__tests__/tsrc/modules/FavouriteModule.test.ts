@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
-import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import {
   defaultFavSearchesSearchOptions,
   expandQueryWithBookmarkTags,
@@ -71,33 +70,23 @@ describe("searchFavouriteItems", () => {
     expect(getMockedItemsSearchParams().query).toEqual(expected);
   };
 
-  const expectSearchMustsToBe = (expected: OEQ.Search.Must[]) => {
-    expect(getMockedItemsSearchParams().musts).toEqual(expected);
-  };
-
   it("does not contain a query when the search term is whitespace only", async () => {
-    await searchFavouriteItems(
-      {
-        ...defaultSearchOptions,
-        query: "   ",
-        rawMode: true,
-      },
-      getCurrentUserMock,
-    );
+    await searchFavouriteItems({
+      ...defaultSearchOptions,
+      query: "   ",
+      rawMode: true,
+    });
 
     expectSearchQueryToBe(undefined);
   });
 
   it("appends a bookmark_tags query for a non-empty, raw mode search term", async () => {
     const queryTerm = "favItem";
-    await searchFavouriteItems(
-      {
-        ...defaultSearchOptions,
-        query: queryTerm,
-        rawMode: true,
-      },
-      getCurrentUserMock,
-    );
+    await searchFavouriteItems({
+      ...defaultSearchOptions,
+      query: queryTerm,
+      rawMode: true,
+    });
 
     const query = expandQueryWithBookmarkTags(queryTerm);
     expectSearchQueryToBe(query);
@@ -105,27 +94,12 @@ describe("searchFavouriteItems", () => {
 
   it("appends a wildcard and a bookmark_tags query for a non-empty, non-raw mode search term", async () => {
     const queryTerm = "non RAW";
-    await searchFavouriteItems(
-      {
-        ...defaultSearchOptions,
-        query: queryTerm,
-      },
-      getCurrentUserMock,
-    );
+    await searchFavouriteItems({
+      ...defaultSearchOptions,
+      query: queryTerm,
+    });
     const query = expandQueryWithBookmarkTags(`${queryTerm}*`);
     expectSearchQueryToBe(query);
-  });
-
-  it("adds a bookmark_owner must to the musts property", async () => {
-    const currentUserDetails = getCurrentUserMock;
-    await searchFavouriteItems(
-      {
-        ...defaultSearchOptions,
-      },
-      currentUserDetails,
-    );
-
-    expectSearchMustsToBe([["bookmark_owner", [currentUserDetails.id]]]);
   });
 });
 

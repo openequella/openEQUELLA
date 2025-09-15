@@ -17,13 +17,7 @@
  */
 
 import * as O from "fp-ts/Option";
-import {
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, useContext, useMemo, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { pipe } from "fp-ts/function";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
@@ -45,7 +39,6 @@ import {
   defaultSearchPageRefinePanelConfig,
   isListItems,
   isGalleryItems,
-  defaultPagedSearchResult,
   isFavouriteSearches,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
@@ -58,7 +51,9 @@ import {
   favouritesPageHeaderConfig,
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
+  isFavouritesTypeResources,
 } from "./FavouritesPageHelper";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
@@ -76,6 +71,11 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): SearchPageOptions => ({
       ...searchPageOptions,
       filterExpansion: false,
+      musts: pipe(
+        O.fromNullable(currentUser),
+        O.map((user) => [["bookmark_owner", [user.id]]] as OEQ.Search.Must[]),
+        O.toUndefined,
+      ),
     });
 
     return {
@@ -95,10 +95,9 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const favouritesPageRefinePanelConfig = (
     searchContextProps: SearchContextProps,
   ): SearchPageRefinePanelConfig => {
-    const defaultSearchConfig =
-      favouritesType === "resources"
-        ? defaultSearchPageRefinePanelConfig
-        : favouritesSearchRefinePanelConfig;
+    const defaultSearchConfig = isFavouritesTypeResources(favouritesType)
+      ? defaultSearchPageRefinePanelConfig
+      : favouritesSearchRefinePanelConfig;
 
     return {
       ...defaultSearchConfig,
@@ -121,21 +120,12 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   // Provider used by Search to fetch favourite items.
-  const favouriteItemsSearchProvider = useCallback(
-    async (searchOptions: SearchOptions): Promise<SearchPageSearchResult> =>
-      pipe(
-        O.fromNullable(currentUser),
-        O.match(
-          () => Promise.resolve(defaultPagedSearchResult),
-          (user) => searchFavouriteItems(searchOptions, user),
-        ),
-        async (result) => ({
-          from: "item-search",
-          content: await result,
-        }),
-      ),
-    [currentUser],
-  );
+  const favouriteItemsSearchProvider = async (
+    searchOptions: SearchOptions,
+  ): Promise<SearchPageSearchResult> => ({
+    from: "item-search",
+    content: await searchFavouriteItems(searchOptions),
+  });
 
   // Refresh the search results when an item is removed from favourites.
   const buildOnFavouriteItemRemoved =
@@ -172,9 +162,14 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       initialSearchConfig={initialSearchConfig}
       pageTitle={title}
       listModeSearchProvider={
-        favouritesType === "resources"
+        isFavouritesTypeResources(favouritesType)
           ? favouriteItemsSearchProvider
           : listFavouriteSearches
+      }
+      galleryModeSearchProvider={
+        isFavouritesTypeResources(favouritesType)
+          ? searchFavouriteItems
+          : undefined
       }
     >
       <SearchContext.Consumer>
@@ -190,7 +185,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             )}
             enableClassification={false}
             searchBarConfig={
-              favouritesType === "searches"
+              !isFavouritesTypeResources(favouritesType)
                 ? { enableWildcardToggle: false }
                 : undefined
             }

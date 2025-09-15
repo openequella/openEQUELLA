@@ -30,8 +30,8 @@ import {
 } from "./AttachmentsModule";
 import * as kaltura from "./KalturaModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
-import { Classification, listClassifications } from "./SearchFacetsModule";
-import { searchItems, SearchOptions } from "./SearchModule";
+import { type Classification, listClassifications } from "./SearchFacetsModule";
+import type { SearchOptions } from "./SearchModule";
 import * as yt from "./YouTubeModule";
 
 /**
@@ -470,15 +470,15 @@ export const buildGallerySearchResultItem =
       }));
 
 /**
- * Undertakes an `searchItems` based on the supplied `options` filtering out all attachments with
+ * Based on the supplied `searchResults`, filter out all attachments with
  * `attachmentFilter`. And most importantly, converts the output from `itemSearch` to
  * a collection of `GallerySearchResultItem`s.
  *
- * @param options Search options to be passed to `searchItems`.
+ * @param searchResults Search results fetched from the API
  * @param attachmentFilter The filter to filter all items attachment's by.
  */
 const gallerySearch = async (
-  options: SearchOptions,
+  searchResults: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
   attachmentFilter: AttachmentFilter,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
   const processSearchResultItem = (
@@ -494,7 +494,6 @@ const gallerySearch = async (
       }),
     );
 
-  const searchResults = await searchItems(options);
   const items: GallerySearchResultItem[] = pipe(
     searchResults.results,
     A.map(processSearchResultItem),
@@ -506,35 +505,59 @@ const gallerySearch = async (
 };
 
 /**
- * Perform a search as per `options` and also request filtering to all (institution) known image
+ * Perform a search as per `options` and the `searchCallback`, also request filtering to all (institution) known image
  * MIME types. The output ideally used to display a gallery of all available images at an institution
  * with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
+ * @param searchCallback A callback function for executing the search
  */
 export const imageGallerySearch = async (
   options: SearchOptions,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
-  gallerySearch(
-    { ...options, mimeTypes: await getImageMimeTypes() },
-    filterAttachmentsByMimeType("image"),
-  );
+  searchCallback: (
+    options: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
+): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
+  const results = await searchCallback({
+    ...options,
+    mimeTypes: await getImageMimeTypes(),
+  });
+
+  return gallerySearch(results, filterAttachmentsByMimeType("image"));
+};
 
 const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
 /**
- * Perform a search as per `options` and also request filtering to any items which potentially are
+ * Perform a search as per `options` and the `searchCallback` and also request filtering to any items which potentially
  * have video attachments. The output ideally used to display a gallery of all available videos at
  * an institution with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
+ * @param searchCallback A callback function for executing the search
  */
 export const videoGallerySearch = async (
   options: SearchOptions,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
-  gallerySearch(
-    { ...options, musts: videoGalleryMusts, mimeTypes: undefined },
-    filterAttachmentsByVideo,
-  );
+  searchCallback: (
+    options: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
+): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
+  const results = await searchCallback({
+    ...options,
+    musts: pipe(
+      O.fromNullable(options.musts),
+      O.match(
+        () => videoGalleryMusts,
+        (existingMusts: OEQ.Search.Must[]) => [
+          ...existingMusts,
+          ...videoGalleryMusts,
+        ],
+      ),
+    ),
+    mimeTypes: undefined,
+  });
+
+  return gallerySearch(results, filterAttachmentsByVideo);
+};
 
 /**
  * Perform a facet search as per `options` and also request facets to only be generated for items

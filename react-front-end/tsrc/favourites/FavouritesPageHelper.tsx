@@ -111,3 +111,12 @@ export const favouritesSearchesResult = (
       />
     )),
   );
+
+/**
+ * Returns true when the supplied favourites type represents favourite resources
+ * (as opposed to favourite searches).
+ *
+ * @param favouritesType A string indicating the current favourites type.
+ */
+export const isFavouritesTypeResources = (favouritesType: string) =>
+  favouritesType === "resources";
