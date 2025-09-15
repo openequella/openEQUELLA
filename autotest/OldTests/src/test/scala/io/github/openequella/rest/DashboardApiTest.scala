@@ -1,5 +1,6 @@
 package io.github.openequella.rest
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.{GetMethod, PutMethod}
 import org.junit.Assert.assertEquals
@@ -18,9 +19,9 @@ class DashboardApiTest extends AbstractRestApiTest {
     val respCode = makeClientRequest(request)
     assertEquals(HttpStatus.SC_OK, respCode)
 
-    val resp = mapper.readTree(request.getResponseBodyAsStream)
-    assertEquals(4, resp.get("portlets").size()) // User 'autotest' has 4 viewable portlets.
-    assertEquals("SingleColumn", resp.get(LAYOUT).asText)
+    val details = getDashboardDetails
+    assertEquals(4, details.get("portlets").size()) // User 'autotest' has 4 viewable portlets.
+    assertEquals("SingleColumn", details.get(LAYOUT).asText)
   }
 
   @Test(description = "Retrieve a list portlet types that the user can create")
@@ -80,4 +81,62 @@ class DashboardApiTest extends AbstractRestApiTest {
     val updateResultCode = makeClientRequestWithEntity(updateRequest, body)
     assertEquals(HttpStatus.SC_BAD_REQUEST, updateResultCode)
   }
+
+  @Test(
+    description = "Update portlet preference"
+  )
+  def preferenceUpdate(): Unit = {
+
+    // The Admin search portlet is returned as the first portlet in the list.
+    def getAdminPortlet = getPortletDetails.get(0).get("commonDetails")
+
+    val adminSearchPortletUuid = "ddd84757-8319-4816-b0e0-39c71a0ba691"
+    val adminPortlet           = getAdminPortlet
+    // Verify the initial state of the Admin search portlet.
+    assertEquals(adminSearchPortletUuid, adminPortlet.get("uuid").asText)
+    assertEquals(true, adminPortlet.get("isClosed").asBoolean)
+    assertEquals(false, adminPortlet.get("isMinimised").asBoolean)
+    assertEquals(0, adminPortlet.get("column").asInt)
+    assertEquals(0, adminPortlet.get("order").asInt)
+
+    // Update the Admin portlet preference now.
+    val updateRequest = new PutMethod(
+      s"$DASHBOARD_API_ENDPOINT/portlet/$adminSearchPortletUuid/preference"
+    )
+    val preferenceUpdate = mapper.createObjectNode
+    preferenceUpdate.put("isClosed", false)
+    preferenceUpdate.put("isMinimised", true)
+    preferenceUpdate.put("column", 1)
+    preferenceUpdate.put("order", 2)
+
+    val updateResultCode = makeClientRequestWithEntity(updateRequest, preferenceUpdate)
+    assertEquals(HttpStatus.SC_NO_CONTENT, updateResultCode)
+
+    // Get the portlet details again to verify the preference update.
+    val updatedAdminPortlet = getAdminPortlet
+    assertEquals(false, updatedAdminPortlet.get("isClosed").asBoolean)
+    assertEquals(true, updatedAdminPortlet.get("isMinimised").asBoolean)
+    assertEquals(1, updatedAdminPortlet.get("column").asInt)
+    assertEquals(2, updatedAdminPortlet.get("order").asInt)
+  }
+
+  @Test(description = "Update should fail with a unknown portlet UUID")
+  def preferenceUpdateFailed(): Unit = {
+    val updateRequest    = new PutMethod(s"$DASHBOARD_API_ENDPOINT/portlet/unknown/preference")
+    val updateResultCode = makeClientRequestWithEntity(updateRequest, mapper.createObjectNode)
+    assertEquals(HttpStatus.SC_NOT_FOUND, updateResultCode)
+  }
+
+  private def getDashboardDetails: JsonNode = {
+    val request  = new GetMethod(DASHBOARD_API_ENDPOINT)
+    val respCode = makeClientRequest(request)
+    assertEquals(HttpStatus.SC_OK, respCode)
+
+    mapper.readTree(request.getResponseBodyAsStream)
+  }
+
+  private def getPortletDetails: JsonNode = {
+    getDashboardDetails.get("portlets")
+  }
+
 }

@@ -19,6 +19,7 @@
 package com.tle.core.dashboard.service
 
 import cats.implicits._
+import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.i18n.LangUtils
 import com.tle.common.portal.entity.Portlet
 import com.tle.common.usermanagement.user.CurrentUser
@@ -146,5 +147,19 @@ class DashboardServiceImpl @Inject() (
 
   override def getClosedPortlets: List[PortletClosed] = {
     portletService.getViewableButClosedPortlets.asScala.toList.map(PortletClosed(_))
+  }
+
+  override def updatePortletPreference(
+      uuid: String,
+      updates: PortletPreferenceUpdate
+  ): Either[Throwable, Unit] = {
+    Option(portletService.getByUuid(uuid)) match {
+      case Some(portlet) =>
+        Either.catchNonFatal {
+          portletService.updatePreference(portlet, updates)
+        }
+      case None =>
+        Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
+    }
   }
 }

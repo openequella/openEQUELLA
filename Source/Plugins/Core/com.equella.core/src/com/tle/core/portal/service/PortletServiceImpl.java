@@ -41,6 +41,7 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.dashboard.model.PortletPreferenceUpdate;
 import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.events.UserDeletedEvent;
@@ -71,6 +72,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -455,6 +457,21 @@ public class PortletServiceImpl
   @Override
   public void savePreference(PortletPreference preference) {
     prefDao.save(preference);
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  @Override
+  public void updatePreference(Portlet target, PortletPreferenceUpdate update) {
+    PortletPreference preference =
+        Optional.ofNullable(getPreference(target))
+            .orElse(new PortletPreference(target, CurrentUser.getUserID()));
+
+    preference.setClosed(update.isClosed());
+    preference.setMinimised(update.isMinimised());
+    preference.setPosition(update.column());
+    preference.setOrder(update.order());
+
+    prefDao.saveOrUpdate(preference);
   }
 
   @Transactional(propagation = Propagation.REQUIRED)
