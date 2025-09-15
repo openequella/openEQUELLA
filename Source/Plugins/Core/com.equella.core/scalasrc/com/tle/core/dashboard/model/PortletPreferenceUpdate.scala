@@ -25,13 +25,13 @@ package com.tle.core.dashboard.model
   * @param isMinimised
   *   Whether the portlet is minimised
   * @param column
-  *   The column the portlet is in
+  *   The column the portlet is in which starts from 0
   * @param order
-  *   The order of the portlet in the column
+  *   The order of the portlet in the column which starts from 0
   */
 final case class PortletPreferenceUpdate(
     isClosed: Boolean,
     isMinimised: Boolean,
     column: Int,
     order: Int
-) {}
+)
