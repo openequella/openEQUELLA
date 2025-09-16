@@ -22,11 +22,13 @@ import { identity, pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import { useEffect } from "react";
 import * as React from "react";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import HighlightField from "../../components/HighlightField";
 import MetadataRow from "../../components/MetadataRow";
 import { OEQLink } from "../../components/OEQLink";
 import SettingsListAlert from "../../components/SettingsListAlert";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { deleteFavouriteSearch } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
 import { Date as DateDisplay } from "../../components/Date";
 import { pfTernary } from "../../util/pointfree";
@@ -41,8 +43,11 @@ import SearchOptionSkeleton from "./SearchOptionsSkeleton";
 import * as OEQ from "@openequella/rest-api-client";
 import * as T from "fp-ts/Task";
 
-const { addedAt: addedAtLabel, remove: removeLabel } =
-  languageStrings.favourites.favouritesSearch;
+const {
+  addedAt: addedAtLabel,
+  remove: removeLabel,
+  removeAlert,
+} = languageStrings.favourites.favouritesSearch;
 
 export interface FavouritesSearchProps {
   /**
@@ -59,6 +64,10 @@ export interface FavouritesSearchProps {
   favouriteSearchOptionsSummaryProvider?: (
     url: string,
   ) => Promise<FavouriteSearchOptionsSummary | undefined>;
+  /**
+   * Callback invoked when the favourite search is removed.
+   */
+  onFavouriteRemoved: () => void;
 }
 
 /**
@@ -66,9 +75,10 @@ export interface FavouritesSearchProps {
  * It shows the title, a list of search options and added date.
  */
 const FavouritesSearch = ({
-  favouriteSearch: { name, url, addedAt },
+  favouriteSearch: { name, url, addedAt, id: searchId },
   highlights,
   favouriteSearchOptionsSummaryProvider = buildSearchOptionsSummary,
+  onFavouriteRemoved,
 }: FavouritesSearchProps) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
@@ -77,6 +87,7 @@ const FavouritesSearch = ({
   const [searchOptionsSummary, setSearchOptionsSummary] = React.useState<
     FavouriteSearchOptionsSummary | undefined
   >(undefined);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = React.useState(false);
 
   useEffect(() => {
     pipe(
@@ -114,45 +125,62 @@ const FavouritesSearch = ({
       <SearchOptions searchOptionsSummary={searchOptionsSummary} />
     );
 
+  const onRemoveFavouriteSearch = () => {
+    deleteFavouriteSearch(searchId).then(() => {
+      setIsRemoveDialogOpen(false);
+      onFavouriteRemoved();
+    });
+  };
+
   return (
-    <ListItem alignItems="flex-start" divider aria-label={name}>
-      <ListItemText
-        primary={titleLink()}
-        secondary={
-          <>
-            {pipe(
-              isLoading,
-              pfTernary(
-                identity<boolean>,
-                () => <SearchOptionSkeleton />,
-                () => renderSearchOptions(),
-              ),
-            )}
+    <>
+      <ListItem alignItems="flex-start" divider aria-label={name}>
+        <ListItemText
+          primary={titleLink()}
+          secondary={
+            <>
+              {pipe(
+                isLoading,
+                pfTernary(
+                  identity<boolean>,
+                  () => <SearchOptionSkeleton />,
+                  () => renderSearchOptions(),
+                ),
+              )}
 
-            <MetadataRow>
-              <Typography>
-                {addedAtLabel}&nbsp;
-                <DateDisplay displayRelative date={addedAt} />
-              </Typography>
+              <MetadataRow>
+                <Typography>
+                  {addedAtLabel}&nbsp;
+                  <DateDisplay displayRelative date={addedAt} />
+                </Typography>
 
-              <TooltipIconButton
-                title={removeLabel}
-                // TODO: OEQ-2603 SHOW DIALOG TO CONFIRM REMOVAL
-                onClick={() => {}}
-                size="small"
-              >
-                <FavoriteIcon />
-              </TooltipIconButton>
-            </MetadataRow>
-          </>
-        }
-        // Make it consistent with the SearchResult component
-        slotProps={{
-          primary: { color: "primary", variant: "h6" },
-          secondary: { component: "section" },
-        }}
-      />
-    </ListItem>
+                <TooltipIconButton
+                  title={removeLabel}
+                  onClick={() => setIsRemoveDialogOpen(true)}
+                  size="small"
+                >
+                  <FavoriteIcon />
+                </TooltipIconButton>
+              </MetadataRow>
+            </>
+          }
+          // Make it consistent with the SearchResult component
+          slotProps={{
+            primary: { color: "primary", variant: "h6" },
+            secondary: { component: "section" },
+          }}
+        />
+      </ListItem>
+      <ConfirmDialog
+        open={isRemoveDialogOpen}
+        title={removeLabel}
+        onConfirm={onRemoveFavouriteSearch}
+        onCancel={() => setIsRemoveDialogOpen(false)}
+        confirmButtonText={languageStrings.common.action.ok}
+      >
+        {removeAlert}
+      </ConfirmDialog>
+    </>
   );
 };
 

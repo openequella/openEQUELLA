@@ -137,8 +137,8 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [currentUser],
   );
 
-  // Refresh the search results when an item is removed from favourites.
-  const buildOnFavouriteItemRemoved =
+  // Refresh the search results when an item or search is removed from favourites.
+  const buildOnFavouriteRemoved =
     ({ search, searchState }: SearchContextProps) =>
     () =>
       search(searchState.options);
@@ -155,12 +155,16 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         return favouritesItemsResult(
           searchResults,
           highlight,
-          buildOnFavouriteItemRemoved(searchContextProps),
+          buildOnFavouriteRemoved(searchContextProps),
         );
       } else if (isGalleryItems(from, searchResults)) {
         return <GallerySearchResult items={searchResults} />;
       } else if (isFavouriteSearches(from, searchResults)) {
-        return favouritesSearchesResult(searchResults, highlight);
+        return favouritesSearchesResult(
+          searchResults,
+          highlight,
+          buildOnFavouriteRemoved(searchContextProps),
+        );
       }
 
       throw new TypeError("Unexpected display mode for favourites result");

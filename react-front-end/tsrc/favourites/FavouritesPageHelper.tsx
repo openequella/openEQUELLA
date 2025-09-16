@@ -96,10 +96,12 @@ export const favouritesItemsResult = (
  *
  * @param searchResults - The search results to render.
  * @param highlight - The list of highlight terms.
+ * @param onFavouriteRemoved - Callback invoked when a favourite search is removed.
  */
 export const favouritesSearchesResult = (
   searchResults: OEQ.Favourite.FavouriteSearch[],
   highlight: string[],
+  onFavouriteRemoved: () => void,
 ): ReactNode =>
   pipe(
     searchResults,
@@ -108,6 +110,7 @@ export const favouritesSearchesResult = (
         key={search.id}
         favouriteSearch={search}
         highlights={highlight}
+        onFavouriteRemoved={onFavouriteRemoved}
       />
     )),
   );

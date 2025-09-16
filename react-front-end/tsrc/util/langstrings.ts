@@ -385,6 +385,8 @@ export const languageStrings = {
       searchCriteria: "Search criteria",
       addedAt: "Added at",
       remove: "Remove from favourites",
+      removeAlert:
+        "Are you sure you want to remove this search from your favourites?",
       showMoreSearchCriteria: "Show more search criteria",
       hideMoreSearchCriteria: "Hide more search criteria",
       searchCriteriaLabels: {
