@@ -10,7 +10,7 @@
   "devDependencies": {
     "@types/node": "22.16.3",
     "@types/yargs": "17.0.33",
-    "ts-morph": "26.0.0",
+    "ts-morph": "27.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.9.2",
     "yargs": "18.0.0",
