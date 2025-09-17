@@ -311,6 +311,36 @@ export interface ThumbnailDetails {
 }
 
 /**
+ * Shared properties of raw and transformed Bookmark.
+ */
+export interface BookmarkBase {
+  /**
+   * Unique ID of the bookmark.
+   */
+  id: number;
+  /**
+   * Tags associated with this bookmark.
+   */
+  tags: string[];
+}
+
+/**
+ * Bookmark as it is returned in the API
+ */
+interface BookmarkRaw extends BookmarkBase {
+  /** The date when bookmark was added. */
+  addedAt: string;
+}
+
+/**
+ * Full details of a Bookmark.
+ */
+export interface Bookmark extends BookmarkBase {
+  /** The date when bookmark was added. */
+  addedAt: Date;
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -390,10 +420,6 @@ interface SearchResultItemBase {
     self: string;
   };
   /**
-   * ID of Bookmark linking to this Item.
-   */
-  bookmarkId?: number;
-  /**
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
@@ -432,6 +458,10 @@ export interface SearchResultItemRaw extends SearchResultItemBase {
      */
     rejectionMessage?: string;
   };
+  /**
+   * Bookmark linking to this Item.
+   */
+  bookmark?: BookmarkRaw;
 }
 
 /**
@@ -463,6 +493,10 @@ export interface SearchResultItem extends SearchResultItemBase {
      */
     rejectionMessage?: string;
   };
+  /**
+   * Bookmark linking to this Item.
+   */
+  bookmark?: Bookmark;
 }
 
 /**

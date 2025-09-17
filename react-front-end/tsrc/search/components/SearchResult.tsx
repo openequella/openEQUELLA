@@ -203,7 +203,7 @@ export default function SearchResult({
   const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
 
   const {
-    bookmarkId: bookmarkDefaultId,
+    bookmark,
     commentCount = 0,
     description,
     displayFields,
@@ -232,7 +232,7 @@ export default function SearchResult({
     React.useState<boolean>(false);
 
   const [bookmarkId, setBookmarkId] = useState<number | undefined>(
-    bookmarkDefaultId,
+    bookmark?.id,
   );
 
   const history = useHistory();

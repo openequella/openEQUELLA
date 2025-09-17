@@ -42,6 +42,7 @@ import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
+import com.tle.web.api.favourite.model.Bookmark
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, EquellaItemBean}
 import com.tle.web.api.item.impl.ItemLinkServiceImpl
@@ -375,7 +376,7 @@ object SearchHelper {
       displayOptions = Option(bean.getDisplayOptions),
       keywordFoundInAttachment = item.keywordFound,
       links = getLinksFromBean(bean),
-      bookmarkId = getBookmarkId(key),
+      bookmark = getBookmark(key),
       isLatestVersion = isLatestVersion(key),
       drmStatus = getItemDrmStatus(rawItem),
       moderationDetails = getModerationDetails(rawItem)
@@ -439,14 +440,12 @@ object SearchHelper {
   def getLinksFromBean[T <: AbstractExtendableBean](bean: T): util.Map[String, String] =
     bean.get("links").asInstanceOf[java.util.Map[String, String]]
 
-  /** Find the Bookmark linking to the Item and return the Bookmark's ID.
+  /** Get the Bookmark linking to the Item.
     * @param itemID
     *   Unique Item ID
-    * @return
-    *   Unique Bookmark ID
     */
-  def getBookmarkId(itemID: ItemIdKey): Option[Long] =
-    Option(LegacyGuice.bookmarkService.getByItem(itemID)).map(_.getId)
+  def getBookmark(itemID: ItemIdKey): Option[Bookmark] =
+    Option(LegacyGuice.bookmarkService.getByItem(itemID)).map(Bookmark(_))
 
   /** Check whether a specific version is the latest version
     * @param itemID

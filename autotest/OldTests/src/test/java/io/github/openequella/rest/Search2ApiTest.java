@@ -124,7 +124,22 @@ public class Search2ApiTest extends AbstractRestApiTest {
         0);
   }
 
-  @Test(description = "Search for items and order them by their favourite date.")
+  @Test(description = "Search for favourite items")
+  public void favouriteItemTest() throws IOException {
+    // Search for items favourite by user 'AutoTest'.
+    JsonNode result =
+        doSearch(200, null, new NameValuePair("musts", "bookmark_owner:" + USER_UUID));
+
+    // It should return bookmark details.
+    Optional<JsonNode> bookmarkNode = getBookmark(result, 0);
+    assertTrue(bookmarkNode.isPresent());
+
+    JsonNode bookmark = bookmarkNode.get();
+    assertEquals(bookmark.get("addedAt").asText(), "2025-09-04T20:51:58.807-05:00");
+    assertEquals(bookmark.get("tags").size(), 2);
+  }
+
+  @Test(description = "Search for favourite items and order them by their favourite date.")
   public void orderFavouriteDateTest() throws IOException {
     final String BOOK_A = "Book A v2";
     final String BOOK_B = "Book B";
@@ -492,6 +507,13 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   private String getItemName(JsonNode result, int index) {
     return result.get("results").get(index).get("name").asText();
+  }
+
+  private static Optional<JsonNode> getBookmark(JsonNode result, int index) {
+    return Optional.ofNullable(result)
+        .flatMap(r -> Optional.ofNullable(r.get("results")))
+        .flatMap(items -> Optional.ofNullable(items.get(index)))
+        .flatMap(item -> Optional.ofNullable(item.get("bookmark")));
   }
 
   private Stream<JsonNode> buildResultsStream(JsonNode result) {
