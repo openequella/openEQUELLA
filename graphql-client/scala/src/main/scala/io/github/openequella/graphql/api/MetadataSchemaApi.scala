@@ -104,6 +104,23 @@ object MetadataSchemaApi {
     Client.query(query)
   }
 
+  /** Checks if a metadata schema has any referencing entities.
+    *
+    * @param id
+    *   The ID of the metadata schema.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a Boolean indicating whether the metadata schema has
+    *   references.
+    */
+  def hasReferences(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Boolean] = {
+    val query = Queries.metadataSchemaHasReferences(id)
+    Client.query(query)
+  }
+
   /** Retrieves the import schema types for a metadata schema.
     *
     * @param id

@@ -131,6 +131,41 @@ class MetadataSchemaApiTest
     }
   }
 
+  describe("hasReferences") {
+    it("should return true or false for a valid schema ID") {
+      Given("A valid metadata schema ID")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("hasReferences is called with the schema ID")
+      val result = MetadataSchemaApi.hasReferences(schemaId)
+
+      Then("it should return true or false")
+      result.isRight shouldBe true
+      result.value should (be(true) or be(false))
+    }
+
+    it("should return false for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("hasReferences is called with the invalid schema ID")
+      val result = MetadataSchemaApi.hasReferences(invalidSchemaId)
+
+      Then("it should return a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to check for references")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.hasReferences(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
   describe("getImportTypes") {
     it("should return a list of import types for a valid schema ID") {
       Given("A valid metadata schema ID")
