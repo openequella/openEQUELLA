@@ -510,7 +510,7 @@ const gallerySearch = async (
  * with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
- * @param searchCallback A callback function for executing the search
+ * @param searchCallback A callback for executing the search
  */
 export const imageGallerySearch = async (
   options: SearchOptions,
@@ -533,7 +533,7 @@ const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
  * an institution with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
- * @param searchCallback A callback function for executing the search
+ * @param searchCallback A callback for executing the search
  */
 export const videoGallerySearch = async (
   options: SearchOptions,

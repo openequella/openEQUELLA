@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
 import type { ReactNode } from "react";
 import * as React from "react";
 import { searchFavouriteSearches } from "../modules/FavouriteModule";
@@ -31,29 +30,7 @@ import {
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import FavouritesSearch from "./components/FavouritesSearch";
 
-export const defaultFavouritesSearchesOptions = {
-  ...defaultSearchPageOptions,
-};
-
-/**
- * Build the bookmark_owner musts clause for the supplied user.
- * Returns undefined when no user is provided.
- */
-export const buildBookmarkOwnerMusts = (
-  user?: OEQ.LegacyContent.CurrentUserDetails,
-): OEQ.Search.Must[] | undefined =>
-  pipe(
-    O.fromNullable(user),
-    O.map((user) => [["bookmark_owner", [user.id]]] as OEQ.Search.Must[]),
-    O.toUndefined,
-  );
-
-export const getDefaultFavouritesItemsOptions = (
-  user?: OEQ.LegacyContent.CurrentUserDetails,
-) => ({
-  ...defaultSearchPageOptions,
-  musts: buildBookmarkOwnerMusts(user),
-});
+export const defaultFavouritesPageOptions = { ...defaultSearchPageOptions };
 
 export const favouritesPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: false,
@@ -139,5 +116,5 @@ export const favouritesSearchesResult = (
  *
  * @param favouritesType A string indicating the current favourites type.
  */
-export const isFavouritesTypeResources = (favouritesType: string) =>
+export const isFavouritesResources = (favouritesType: string) =>
   favouritesType === "resources";

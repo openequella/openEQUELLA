@@ -44,6 +44,30 @@ type FavSearchesSearchOptions = Pick<
 >;
 
 /**
+ * Returns a function which manipulates SearchOptions to include a must to limit results
+ * to those which have the bookmark_owner of the specified user.
+ * This will result in a SearchOptions which limits search results to favourites for the specified user.
+ *
+ * @param userId user id to limit the returned favourites to
+ */
+const addBookmarkOwnerMust =
+  (userId: string) =>
+  (options: SearchOptions): SearchOptions => {
+    const bookmarkOwnerMust: OEQ.Search.Must = ["bookmark_owner", [userId]];
+
+    return {
+      ...options,
+      musts: pipe(
+        O.fromNullable(options.musts),
+        O.match(
+          () => [bookmarkOwnerMust],
+          (existingMusts) => [...existingMusts, bookmarkOwnerMust],
+        ),
+      ),
+    };
+  };
+
+/**
  * Expands a query string to include searching within `bookmark_tags`.
  *
  * @param query The base query string.
@@ -128,14 +152,18 @@ export const deleteFavouriteItem = (bookmarkID: number): Promise<void> =>
 
 /**
  * Searches favourite items for the current user.
- * Extends the query to include bookmark tags
+ * Adds a `must` clause for the bookmark owner and extends the query to include bookmark tags.
  *
  * @param searchOptions Base search options
+ * @param currentUserDetails object containing `id` of the user whose favourites should be returned
  */
 export const searchFavouriteItems = async (
   searchOptions: SearchOptions,
+  { id: userId }: OEQ.LegacyContent.CurrentUserDetails,
 ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> => {
   const buildFavItemsSearchParams = flow(
+    addBookmarkOwnerMust(userId),
+    // Ensure formatQuery runs (via buildSearchParams) before we extend the query with bookmark-tags clause.
     buildSearchParams,
     buildFavouriteItemsQuery,
   );
