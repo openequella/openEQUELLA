@@ -53,31 +53,31 @@ goto :eof
 
 :start
 if %INSTALLED%==false goto :End
-echo Starting EQUELLA
+echo Starting openEQUELLA Manager
 call :update>NUL
 NET START %SERVICE_NAME%
 goto :eof
 
 :stop
 if %INSTALLED%==false goto :End
-echo Stopping EQUELLA
+echo Stopping openEQUELLA Manager
 NET STOP %SERVICE_NAME%
 goto :eof
 
 :install
-echo Installing EQUELLA as a service
+echo Installing openEQUELLA Manager as a service
 "%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :update
-echo Updating the EQUELLA service
+echo Updating the openEQUELLA Manager service
 "%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StopTimeout=5 --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartParams=start --StopClass=%MAIN_CLASS% --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="manager" --PidFile="manager.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :remove
-echo Removing the EQUELLA service
+echo Removing the openEQUELLA Manager service
 "%_WRAPPER_EXE%" "//DS//%SERVICE_NAME%"
 goto :eof
 
@@ -95,7 +95,7 @@ goto :eof
 
 :restart
 if %INSTALLED%==false goto :End
-echo Restarting EQUELLA
+echo Restarting openEQUELLA Manager
 call :stop
 call :start
 goto :eof
@@ -111,4 +111,4 @@ goto :eof
 goto :eof
 
 :End
-echo Please install the EQUELLA service using the "install" command
+echo Please install the openEQUELLA Manager service using the "install" command

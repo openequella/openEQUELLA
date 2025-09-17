@@ -21,10 +21,7 @@ package com.tle.upgrade.upgraders.apachedaemon
 import com.dytech.edge.common.Constants
 import com.tle.common.util.ExecUtils
 import com.tle.upgrade.upgraders.AbstractUpgrader
-import com.tle.upgrade.upgraders.AbstractUpgrader.{
-  EQUELLA_SERVER_CONFIG_LINUX,
-  EQUELLA_SERVER_CONFIG_WINDOWS
-}
+import com.tle.upgrade.ApplicationFiles.{EQUELLA_SERVER_CONFIG_LINUX, EQUELLA_SERVER_CONFIG_WINDOWS}
 import com.tle.upgrade.{LineFileModifier, UpgradeResult}
 import java.io.File
 import scala.util.{Failure, Success, Try}
