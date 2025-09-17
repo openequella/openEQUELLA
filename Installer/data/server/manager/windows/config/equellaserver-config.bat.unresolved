@@ -1,6 +1,6 @@
 rem === Java Configuration ===
 rem NOTE: The variables defined in here are used by the Windows service wrapper, which requires mult-values
-rem       to be separated by semicolons (;). This is different from plan java which will except spaces.
+rem       to be separated by semicolons (;). This is different from plain java which will accept spaces.
 rem       DO NOT USE SPACES.
 
 rem Path to Java installation
