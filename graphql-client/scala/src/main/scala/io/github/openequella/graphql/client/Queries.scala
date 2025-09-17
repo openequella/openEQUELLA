@@ -254,4 +254,12 @@ object Queries {
       ListOf(Scalar()),
       arguments = List(Argument("id", id, "Long!"))
     )
+
+  /** Check if a metadata schema has an referencing entities
+    */
+  def metadataSchemaHasReferences(id: Long)(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, Boolean] =
+    _root_.caliban.client.SelectionBuilder
+      .Field("metadataSchemaHasReferences", Scalar(), arguments = List(Argument("id", id, "Long!")))
 }
