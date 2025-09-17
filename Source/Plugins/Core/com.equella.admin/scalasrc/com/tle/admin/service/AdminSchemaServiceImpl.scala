@@ -45,6 +45,16 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def getSchemaUses(id: Long): util.List[BaseEntityLabel] =
     getAllUnpaginated("Schema uses", id, MetadataSchemaApi.getUses).map(toBaseEntityLabel).asJava
 
+  override def hasReferencingClasses(id: Long): Boolean =
+    MetadataSchemaApi.hasReferences(id) match {
+      case Right(hasRefs) => hasRefs
+      case Left(errors) =>
+        throw new ClientRequestException(
+          s"Error checking references for schema with ID: $id",
+          errors
+        )
+    }
+
   override def getImportSchemaTypes(id: Long): util.List[String] =
     new util.ArrayList[
       String
