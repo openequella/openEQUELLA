@@ -97,6 +97,7 @@ const SearchOptions = ({ searchOptionsSummary }: SearchOptionsProps) => {
     owner,
   } = searchOptionsSummary;
 
+  // Options shown by default.
   const baseOptions: SearchOptionsWithLabel = [
     [advancedSearchLabel, advancedSearch],
     [collectionLabel, collections],
@@ -104,12 +105,22 @@ const SearchOptions = ({ searchOptionsSummary }: SearchOptionsProps) => {
     [queryLabel, query],
   ];
 
-  const allOptions: SearchOptionsWithLabel = [
-    ...baseOptions,
+  const additionalOptions: SearchOptionsWithLabel = [
     [classificationLabel, classifications],
     [lastModifiedDateRangeLabel, lastModifiedDateRange],
     [mimeTypesLabel, mimeTypes],
     [ownerLabel, owner],
+  ];
+
+  const hasAdditionalOptions = pipe(
+    additionalOptions,
+    A.some(([_, v]) => v !== undefined),
+  );
+
+  // Options shown when users click the expand icon.
+  const allOptions: SearchOptionsWithLabel = [
+    ...baseOptions,
+    ...additionalOptions,
   ];
 
   const baseOptionsChips = () =>
@@ -139,23 +150,25 @@ const SearchOptions = ({ searchOptionsSummary }: SearchOptionsProps) => {
           <Box sx={{ flexWrap: "wrap" }}>{baseOptionsChips()}</Box>
         )}
 
-        <TooltipIconButton
-          open={openSearchOptionTooltip}
-          onClose={() => setOpenSearchOptionTooltip(false)}
-          onOpen={() => setOpenSearchOptionTooltip(true)}
-          title={
-            showAllSearchOptions
-              ? hideMoreSearchOptionsLabel
-              : showMoreSearchOptionsLabel
-          }
-          onClick={() => {
-            setOpenSearchOptionTooltip(false);
-            setShowAllSearchOptions(!showAllSearchOptions);
-          }}
-          size="small"
-        >
-          {showAllSearchOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </TooltipIconButton>
+        {hasAdditionalOptions && (
+          <TooltipIconButton
+            open={openSearchOptionTooltip}
+            onClose={() => setOpenSearchOptionTooltip(false)}
+            onOpen={() => setOpenSearchOptionTooltip(true)}
+            title={
+              showAllSearchOptions
+                ? hideMoreSearchOptionsLabel
+                : showMoreSearchOptionsLabel
+            }
+            onClick={() => {
+              setOpenSearchOptionTooltip(false);
+              setShowAllSearchOptions(!showAllSearchOptions);
+            }}
+            size="small"
+          >
+            {showAllSearchOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </TooltipIconButton>
+        )}
       </ListItem>
 
       {showAllSearchOptions ? allOptionsChipsWithLabels() : undefined}

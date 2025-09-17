@@ -58,3 +58,10 @@ export const emptyOptionsFavouriteSearch: OEQ.Favourite.FavouriteSearch = {
   url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%7D",
   addedAt,
 };
+
+export const basicOptionsFavouriteSearch: OEQ.Favourite.FavouriteSearch = {
+  id: 6,
+  name: "Basic Favourite Search",
+  url: "/page/search?searchOptions=%7B%22query%22%3A%22apple%22%7D",
+  addedAt,
+};
