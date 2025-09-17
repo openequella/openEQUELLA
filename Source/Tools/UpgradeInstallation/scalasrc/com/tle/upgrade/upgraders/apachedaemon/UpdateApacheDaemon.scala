@@ -58,7 +58,7 @@ class UpdateApacheDaemon extends AbstractUpgrader {
   // tagged by '2023.1' as the ID.
   override def getId: String = s"UpdateApacheDaemon-g448a8ab"
 
-  override def isBackwardsCompatible: Boolean = false
+  override def canBeRemoved: Boolean = false
 
   override def upgrade(result: UpgradeResult, installDir: File): Unit = {
     val managerDir = new File(installDir, Constants.MANAGER_FOLDER)

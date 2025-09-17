@@ -23,8 +23,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Ensures the current user possesses a specific privilege before allowing method execution.
+ *
+ * <p>This annotation performs a security check that is not tied to a specific domain object. It
+ * verifies that the user has the required privilege granted at <strong>any</strong> level within
+ * the system, whether on a specific entity or at the institutional level. This is ideal for
+ * securing functionality that is not context-dependent.
+ *
+ * <p>Use this for:
+ *
+ * <ul>
+ *   <li>Securing access to system-wide administrative functions.
+ *   <li>Restricting use of tools or APIs that are not tied to a particular item.
+ *   <li>Verifying a user's general capability before allowing an action.
+ * </ul>
+ *
+ * @see SecureOnCall
+ */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiresPrivilege {
+  /**
+   * The privilege required to execute the annotated method. The method will only be invoked if the
+   * current user has been granted this privilege at any scope within the application.
+   *
+   * @return the privilege string identifier
+   */
   String priv() default "";
 }

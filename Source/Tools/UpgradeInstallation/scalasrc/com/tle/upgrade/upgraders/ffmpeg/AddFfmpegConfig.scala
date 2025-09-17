@@ -39,7 +39,7 @@ class AddFfmpegConfig extends AbstractUpgrader {
 
   override def getId: String = "AddFfmpegConfig"
 
-  override def isBackwardsCompatible: Boolean = true
+  override def canBeRemoved: Boolean = true
 
   @throws[Exception]
   override def upgrade(result: UpgradeResult, tleInstallDir: File): Unit = {

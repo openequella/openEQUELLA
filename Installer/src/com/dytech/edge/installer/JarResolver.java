@@ -84,7 +84,7 @@ public class JarResolver extends ForeignCommand {
         throw new InstallerException("Error while trying to deploy JAR file", ex);
       }
       try {
-        deployer.getDatabaseUpgrader().install();
+        deployer.getUpgraderLauncher().install();
       } catch (Exception ex) {
         throw new InstallerException("Error while attempting to migrate the installation", ex);
       }

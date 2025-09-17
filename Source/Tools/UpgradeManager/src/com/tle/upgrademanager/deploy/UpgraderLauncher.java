@@ -21,56 +21,45 @@ package com.tle.upgrademanager.deploy;
 import com.google.common.collect.Lists;
 import com.tle.upgrademanager.ManagerConfig;
 import com.tle.upgrademanager.helpers.AjaxState;
+import com.tle.upgrademanager.helpers.Deployer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("nls")
-public final class DatabaseUpgraderInvoker {
-  private static final Log LOGGER = LogFactory.getLog(DatabaseUpgraderInvoker.class);
+/**
+ * Runs the upgrader jar as a separate process, capturing the output and sending it to the AjaxState
+ * object for display in the browser.
+ */
+public final class UpgraderLauncher {
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpgraderLauncher.class);
 
   private final ManagerConfig config;
   private final AjaxState ajax;
   private final String ajaxId;
 
-  public DatabaseUpgraderInvoker(ManagerConfig config, String ajaxId, AjaxState ajax) {
+  public UpgraderLauncher(ManagerConfig config, String ajaxId, AjaxState ajax) {
     this.config = config;
     this.ajax = ajax;
     this.ajaxId = ajaxId;
   }
 
-  public void migrateSchema() throws Exception {
-    runMigrator(false);
+  public void upgrade() throws Exception {
+    runUpgrader(false);
   }
 
   public void install() throws Exception {
-    runMigrator(true);
+    runUpgrader(true);
   }
 
-  public void runMigrator(boolean install) throws Exception {
+  public void runUpgrader(boolean install) throws Exception {
     try {
-      LOGGER.debug("Launching database-upgrader.jar");
+      LOGGER.debug("Launching {}", Deployer.UPGRADER_JAR);
 
-      final File managerDir = config.getManagerDir();
-      List<String> args = Lists.newArrayList();
-      args.add(config.getJavaBin().getAbsolutePath());
-      args.add("-classpath");
-      args.add(managerDir.getAbsolutePath());
-      args.add("-jar");
-      args.add(new File(managerDir, "database-upgrader.jar").getAbsolutePath());
-      if (install) {
-        args.add("--install");
-      }
-
-      final ProcessBuilder pbuilder = new ProcessBuilder(args);
-      pbuilder.directory(config.getManagerDir());
-
-      final Process proc = pbuilder.start();
-      int exitStatus;
+      final Process proc = launchUpgrader(install);
 
       final InputStreamReader inErr = new InputStreamReader(proc.getErrorStream());
       final InputStreamReader inStd = new InputStreamReader(proc.getInputStream());
@@ -78,7 +67,7 @@ public final class DatabaseUpgraderInvoker {
       new UpdateThread(inStd).start();
       new UpdateThread(inErr).start();
 
-      exitStatus = proc.waitFor();
+      int exitStatus = proc.waitFor();
       if (exitStatus != 0) {
         throw new RuntimeException("Exec process returned " + exitStatus + ".");
       }
@@ -86,6 +75,24 @@ public final class DatabaseUpgraderInvoker {
       throw new Exception("Error migrating the database", ex);
     }
     ajax.addHeading(ajaxId, "Installation appears to have migrated successfully");
+  }
+
+  private Process launchUpgrader(boolean install) throws IOException {
+    final File managerDir = config.getManagerDir();
+    List<String> args = Lists.newArrayList();
+    args.add(config.getJavaBin().getAbsolutePath());
+    args.add("-classpath");
+    args.add(managerDir.getAbsolutePath());
+    args.add("-jar");
+    args.add(new File(managerDir, Deployer.UPGRADER_JAR).getAbsolutePath());
+    if (install) {
+      args.add("--install");
+    }
+
+    final ProcessBuilder builder = new ProcessBuilder(args);
+    builder.directory(config.getManagerDir());
+
+    return builder.start();
   }
 
   public class UpdateThread extends Thread {

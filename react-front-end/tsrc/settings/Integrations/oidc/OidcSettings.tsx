@@ -357,24 +357,19 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                 )),
                 O.toUndefined,
               )}
-              {
-                // todo: remove this platform check when the work for Okta and Auth0 starts.
-                config.platform === "ENTRA_ID" && (
-                  <SettingsListControl
-                    primaryText={userIdAttributeLabel}
-                    secondaryText={userIdAttributeDesc}
-                    control={plainTextFiled({
-                      name: userIdAttributeLabel,
-                      value: config.userIdAttribute,
-                      disabled: false,
-                      required: false,
-                      onChange: (value) =>
-                        onConfigChange("userIdAttribute", value),
-                      showValidationErrors,
-                    })}
-                  />
-                )
-              }
+
+              <SettingsListControl
+                primaryText={userIdAttributeLabel}
+                secondaryText={userIdAttributeDesc}
+                control={plainTextFiled({
+                  name: userIdAttributeLabel,
+                  value: config.userIdAttribute,
+                  disabled: false,
+                  required: false,
+                  onChange: (value) => onConfigChange("userIdAttribute", value),
+                  showValidationErrors,
+                })}
+              />
             </SettingsList>
           </Grid>
         </CardContent>

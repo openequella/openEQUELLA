@@ -4,6 +4,7 @@
 .parcel-cache/
 .idea/.name
 
+.bsp/
 target/
 build.conf
 generated.keystore

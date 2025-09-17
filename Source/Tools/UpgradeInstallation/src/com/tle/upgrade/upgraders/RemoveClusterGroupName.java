@@ -33,7 +33,7 @@ public class RemoveClusterGroupName extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 

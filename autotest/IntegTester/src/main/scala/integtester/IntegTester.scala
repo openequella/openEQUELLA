@@ -103,7 +103,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case _ @GET -> Root / ".well-known" / "jwks.json" =>
       OidcIntegration.jwks
     case req @ GET -> Root / "api" / "users" / uuid =>
-      OidcIntegration.user
+      OidcIntegration.user(uuid)
     case req @ GET -> Root / "api" / "users" =>
       OidcIntegration.users
     case _ => NotFound("Unknown OIDC Integration endpoint")

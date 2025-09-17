@@ -30,7 +30,7 @@ public class ConvertC3P0ToBoneCP extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return true;
   }
 

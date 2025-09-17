@@ -36,17 +36,18 @@ import com.tle.upgrademanager.handlers.UploadHandler;
 import com.tle.upgrademanager.handlers.WebRootHandler;
 import com.tle.upgrademanager.helpers.AjaxState;
 import com.tle.upgrademanager.helpers.AjaxStateImpl;
+import com.tle.upgrademanager.helpers.Deployer;
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * To debug this:
@@ -59,7 +60,7 @@ import org.apache.commons.logging.LogFactory;
  * </ul>
  */
 public class Main {
-  private static final Log LOGGER = LogFactory.getLog(Main.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
   // Flag to stop the manager.
   private static volatile boolean stop;
 
@@ -89,8 +90,6 @@ public class Main {
     }
   }
 
-  public void init(String[] arguments) {}
-
   public void start() throws Exception {
     startServer();
   }
@@ -101,10 +100,14 @@ public class Main {
     }
   }
 
+  // Expected by jsvc when running in daemon mode
+  public void init(String[] arguments) {}
+
+  // Expected by jsvc when running in daemon mode
   public void destroy() {}
 
   public Main() throws Exception {
-    filters = new ArrayList<Filter>();
+    filters = new ArrayList<>();
     filters.add(new SuperDuperFilter());
 
     try (InputStream in = Main.class.getResourceAsStream("/version.properties")) // $NON-NLS-1$
@@ -114,7 +117,10 @@ public class Main {
   }
 
   public void startServer() throws Exception {
-    executeUpgrader();
+    if (isRunOffline()) {
+      LOGGER.info("Starting offline upgrade");
+      executeUpgrader();
+    }
 
     Authenticator auth = new MyAuthenticator(config);
     server =
@@ -147,54 +153,55 @@ public class Main {
     context.getFilters().addAll(filters);
   }
 
-  @SuppressWarnings("nls")
   private void executeUpgrader() {
     File managerDir = config.getManagerDir();
-    if (new File(managerDir, "runoffline").exists()) {
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-      LOGGER.info("Executing upgrader");
-      final String[] args =
-          new String[] {
-            config.getJavaBin().getAbsolutePath(),
-            "-Dequella.offline=true",
-            "-Dlog4j2.configurationFile=file:upgrader-log4j.yaml",
-            "-classpath",
-            managerDir.getAbsolutePath(),
-            "-jar",
-            new File(managerDir, "database-upgrader.jar").getAbsolutePath()
-          };
-      LOGGER.info(
-          "Executing " + Arrays.asList(args) + " with working dir " + managerDir.getAbsolutePath());
-      ExecResult result = ExecUtils.exec(args, null, managerDir);
-      if (result.getExitStatus() != 0) {
-        LOGGER.error("Error running upgrader");
-        LOGGER.error("Out:" + result.getStdout());
-        LOGGER.error("Err:" + result.getStderr());
-      }
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
+    LOGGER.info("Executing upgrader");
+    final String[] args =
+        new String[] {
+          config.getJavaBin().getAbsolutePath(),
+          "-Dequella.offline=true",
+          "-Dlog4j2.configurationFile=file:upgrader-log4j.yaml",
+          "-classpath",
+          managerDir.getAbsolutePath(),
+          "-jar",
+          new File(managerDir, Deployer.UPGRADER_JAR).getAbsolutePath()
+        };
+    LOGGER.info(
+        "Executing {} with working dir {}", Arrays.asList(args), managerDir.getAbsolutePath());
+    ExecResult result = ExecUtils.exec(args, null, managerDir);
+    if (result.getExitStatus() != 0) {
+      LOGGER.error("Error running upgrader");
+      LOGGER.error("Out:{}", result.getStdout());
+      LOGGER.error("Err:{}", result.getStderr());
     }
   }
 
-  @SuppressWarnings("nls")
+  private boolean isRunOffline() {
+    return new File(config.getManagerDir(), "runoffline").exists();
+  }
+
   private String findInstall() {
-    String equellaInstall = System.getProperty(EQUELLA_INSTALL_DIRECTORY_KEY);
-    if (equellaInstall == null) {
-      URL resource = Main.class.getClassLoader().getResource("config.properties");
-      if (resource.getProtocol().equals("file")) {
-        File configFile;
-        try {
-          configFile = new File(URLDecoder.decode(resource.getFile(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
-        equellaInstall = configFile.getParentFile().getParentFile().getAbsolutePath();
-      } else {
-        throw new RuntimeException("Missing config.properties from classpath");
-      }
-    }
-    return equellaInstall;
+    return Optional.ofNullable(System.getProperty(EQUELLA_INSTALL_DIRECTORY_KEY))
+        .orElseGet(Main::getEquellaInstallPath);
+  }
+
+  /**
+   * Attempts to find the install path by looking for a known file on the classpath. This will only
+   * work if the classpath is set up correctly, which it is when running from the service wrapper.
+   */
+  private static String getEquellaInstallPath() {
+    final String knownFile = "config.properties";
+
+    return Optional.ofNullable(Main.class.getClassLoader().getResource(knownFile))
+        .filter(r -> r.getProtocol().equals("file"))
+        .map(r -> new File(URLDecoder.decode(r.getFile(), StandardCharsets.UTF_8)))
+        .map(f -> f.getParentFile().getParentFile().getAbsolutePath())
+        .orElseThrow(() -> new RuntimeException("Missing " + knownFile + " from classpath"));
   }
 }
