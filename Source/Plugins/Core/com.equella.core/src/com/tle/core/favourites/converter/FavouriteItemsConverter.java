@@ -100,7 +100,7 @@ public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
 
       Map<Long, Long> itemMap = params.getItems();
       Long newItemId = itemMap.get(bookmark.getItem().getId());
-      bookmark.getItem().setId(newItemId.longValue());
+      bookmark.getItem().setId(newItemId);
 
       bookmarkDao.save(bookmark);
       bookmarkDao.flush();
