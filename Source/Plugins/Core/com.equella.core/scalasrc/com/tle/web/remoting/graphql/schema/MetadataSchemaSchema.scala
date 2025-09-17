@@ -56,7 +56,8 @@ class MetadataSchemaSchema extends SchemaProvider {
     metadataSchemaIdForUuid = uuid => schemaProvider.schemaIdForUuid(uuid),
     metadataSchema = args => schemaProvider.schemaById(args.id),
     metadataSchemaUses = args => schemaProvider.getUses(args.id),
-    metadataSchemaImportTypes = args => schemaProvider.getImportTypes(args.id)
+    metadataSchemaImportTypes = args => schemaProvider.getImportTypes(args.id),
+    metadataSchemaHasReferences = args => schemaProvider.hasReferences(args.id)
   )
 
   private val mutations = Mutations(
@@ -76,7 +77,9 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription("Get the uses of a metadata schema by ID")
       metadataSchemaUses: SchemaByIdArgs => List[BaseEntityReference],
       @GQLDescription("Get the types of schema import transformations for a metadata schema by ID")
-      metadataSchemaImportTypes: SchemaByIdArgs => List[String]
+      metadataSchemaImportTypes: SchemaByIdArgs => List[String],
+      @GQLDescription("Check if a metadata schema has an referencing entities")
+      metadataSchemaHasReferences: SchemaByIdArgs => Boolean
   )
 
   case class SchemaExportArgs(
