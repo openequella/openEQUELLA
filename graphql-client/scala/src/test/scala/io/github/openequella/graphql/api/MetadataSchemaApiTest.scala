@@ -144,7 +144,7 @@ class MetadataSchemaApiTest
       result.value should (be(true) or be(false))
     }
 
-    it("should return false for an invalid schema ID") {
+    it("should return NotFoundError for an invalid schema ID") {
       Given("An invalid schema ID")
       val invalidSchemaId = -1L
 
