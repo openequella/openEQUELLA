@@ -151,6 +151,10 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         content: { results: searchResults, highlight },
       } = pageResult;
 
+      if (searchResults.length < 1) {
+        return undefined;
+      }
+
       if (isListItems(from, searchResults)) {
         return favouritesItemsResult(
           searchResults,
