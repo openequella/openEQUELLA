@@ -28,6 +28,7 @@ import MetadataRow from "../../components/MetadataRow";
 import { OEQLink } from "../../components/OEQLink";
 import SettingsListAlert from "../../components/SettingsListAlert";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { AppContext } from "../../mainui/App";
 import { deleteFavouriteSearch } from "../../modules/FavouriteModule";
 import { languageStrings } from "../../util/langstrings";
 import { Date as DateDisplay } from "../../components/Date";
@@ -88,6 +89,7 @@ const FavouritesSearch = ({
     FavouriteSearchOptionsSummary | undefined
   >(undefined);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = React.useState(false);
+  const { appErrorHandler } = React.useContext(AppContext);
 
   useEffect(() => {
     pipe(
@@ -125,12 +127,15 @@ const FavouritesSearch = ({
       <SearchOptions searchOptionsSummary={searchOptionsSummary} />
     );
 
-  const onRemoveFavouriteSearch = () => {
-    deleteFavouriteSearch(searchId).then(() => {
-      setIsRemoveDialogOpen(false);
-      onFavouriteRemoved();
-    });
-  };
+  const onRemoveFavouriteSearch = () =>
+    pipe(
+      TE.tryCatch(() => deleteFavouriteSearch(searchId), String),
+      TE.match(
+        (err) => appErrorHandler(err),
+        () => onFavouriteRemoved(),
+      ),
+      T.tapIO(() => () => setIsRemoveDialogOpen(false)),
+    )();
 
   return (
     <>
@@ -171,6 +176,7 @@ const FavouritesSearch = ({
           }}
         />
       </ListItem>
+
       <ConfirmDialog
         open={isRemoveDialogOpen}
         title={removeLabel}

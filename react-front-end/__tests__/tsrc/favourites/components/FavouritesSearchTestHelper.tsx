@@ -46,7 +46,10 @@ import * as FavouriteModule from "../../../../tsrc/modules/FavouriteModule";
 const {
   searchCriteria: searchCriteriaLabels,
   showMoreSearchCriteria: showMoreSearchCriteriaLabel,
+  remove: removeLabel,
 } = languageStrings.favourites.favouritesSearch;
+const { ok: okButtonLabel, cancel: cancelButtonLabel } =
+  languageStrings.common.action;
 
 /**
  * Mock the APIs called within the FavouriteSearch component.
@@ -120,3 +123,38 @@ export const showAllSearchCriteria = async (
 
 export const dateString = (date: string): string =>
   new Date(date).toDateString();
+
+/**
+ * Open the `Remove from favourites` confirmation dialog and return the dialog element.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const openRemoveDialog = async (page: RenderResult) => {
+  const removeButton = page.getByRole("button", { name: removeLabel });
+  await userEvent.click(removeButton);
+  return page.findByRole("dialog");
+};
+
+/**
+ * Clicks the 'OK' button in the `Remove from favourites` confirmation dialog.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const clickOkInRemoveDialog = async (page: RenderResult) => {
+  const confirmButton = page.getByRole("button", {
+    name: okButtonLabel,
+  });
+  await userEvent.click(confirmButton);
+};
+
+/**
+ * Clicks the 'Cancel' button in the `Remove from favourites` confirmation dialog.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const clickCancelInRemoveDialog = async (page: RenderResult) => {
+  const cancelButton = page.getByRole("button", {
+    name: cancelButtonLabel,
+  });
+  await userEvent.click(cancelButton);
+};
