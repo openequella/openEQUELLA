@@ -2,7 +2,7 @@ package io.github.openequella.rest
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.apache.commons.httpclient.HttpStatus
-import org.apache.commons.httpclient.methods.{GetMethod, PutMethod}
+import org.apache.commons.httpclient.methods.{DeleteMethod, GetMethod, PutMethod}
 import org.junit.Assert.assertEquals
 import org.testng.annotations.Test
 
@@ -11,6 +11,7 @@ class DashboardApiTest extends AbstractRestApiTest {
   private val DASHBOARD_LAYOUT_ENDPOINT  = DASHBOARD_API_ENDPOINT + "/layout"
   private val DASHBOARD_PORTLET_ENDPOINT = DASHBOARD_API_ENDPOINT + "/portlet"
   private val LAYOUT                     = "layout"
+  private val ADMIN_PORTLET_UUID         = "ddd84757-8319-4816-b0e0-39c71a0ba691"
 
   @Test(description = "Retrieve dashboard details")
   def dashboardDetails(): Unit = {
@@ -90,10 +91,9 @@ class DashboardApiTest extends AbstractRestApiTest {
     // The Admin search portlet is returned as the first portlet in the list.
     def getAdminPortlet = getPortletDetails.get(0).get("commonDetails")
 
-    val adminSearchPortletUuid = "ddd84757-8319-4816-b0e0-39c71a0ba691"
-    val adminPortlet           = getAdminPortlet
+    val adminPortlet = getAdminPortlet
     // Verify the initial state of the Admin search portlet.
-    assertEquals(adminSearchPortletUuid, adminPortlet.get("uuid").asText)
+    assertEquals(ADMIN_PORTLET_UUID, adminPortlet.get("uuid").asText)
     assertEquals(true, adminPortlet.get("isClosed").asBoolean)
     assertEquals(false, adminPortlet.get("isMinimised").asBoolean)
     assertEquals(0, adminPortlet.get("column").asInt)
@@ -101,7 +101,7 @@ class DashboardApiTest extends AbstractRestApiTest {
 
     // Update the Admin portlet preference now.
     val updateRequest = new PutMethod(
-      s"$DASHBOARD_API_ENDPOINT/portlet/$adminSearchPortletUuid/preference"
+      s"$DASHBOARD_API_ENDPOINT/portlet/$ADMIN_PORTLET_UUID/preference"
     )
     val preferenceUpdate = mapper.createObjectNode
     preferenceUpdate.put("isClosed", false)
@@ -125,6 +125,29 @@ class DashboardApiTest extends AbstractRestApiTest {
     val updateRequest    = new PutMethod(s"$DASHBOARD_API_ENDPOINT/portlet/unknown/preference")
     val updateResultCode = makeClientRequestWithEntity(updateRequest, mapper.createObjectNode)
     assertEquals(HttpStatus.SC_NOT_FOUND, updateResultCode)
+  }
+
+  @Test(description = "Delete a private portlet", dependsOnMethods = Array("dashboardDetails"))
+  def deletePortlet(): Unit = {
+    val deleteRequest = new DeleteMethod(
+      s"$DASHBOARD_API_ENDPOINT/portlet/6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
+    )
+    val statusCode = makeClientRequestWithEntity(deleteRequest, mapper.createObjectNode)
+    assertEquals(HttpStatus.SC_NO_CONTENT, statusCode)
+  }
+
+  @Test(description = "Delete a portlet belonging to another user")
+  def deleteOtherUserPortlet(): Unit = {
+    val deleteRequest = new DeleteMethod(s"$DASHBOARD_API_ENDPOINT/portlet/$ADMIN_PORTLET_UUID")
+    val statusCode    = makeClientRequestWithEntity(deleteRequest, mapper.createObjectNode)
+    assertEquals(HttpStatus.SC_FORBIDDEN, statusCode)
+  }
+
+  @Test(description = "Delete a portlet by a unknown UUID")
+  def deleteNonExistingPortlet(): Unit = {
+    val deleteRequest = new DeleteMethod(s"$DASHBOARD_API_ENDPOINT/portlet/unknown")
+    val statusCode    = makeClientRequestWithEntity(deleteRequest, mapper.createObjectNode)
+    assertEquals(HttpStatus.SC_NOT_FOUND, statusCode)
   }
 
   private def getDashboardDetails: JsonNode = {
