@@ -77,7 +77,7 @@ libraryDependencies ++= Seq(
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
-  "com.google.guava"      % "guava"                       % "33.4.8-jre",
+  "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
