@@ -34,7 +34,6 @@ import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.common.Check;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteSchemaService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -195,7 +194,7 @@ public class EditorTab extends BaseEntityTab<Schema> {
             public Object construct() {
               locked =
                   clientService
-                      .getService(RemoteSchemaService.class)
+                      .getService(AdminSchemaService.class)
                       .hasReferencingClasses(state.getEntity().getId());
               return null;
             }

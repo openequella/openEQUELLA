@@ -165,4 +165,18 @@ class MetadataSchemaProvider @Inject() (
     LOGGER.debug(s"Getting import types for metadata schema with ID: $id")
     schemaService.getImportSchemaTypes(id).asScala.toList
   }
+
+  /** Check if a metadata schema has any references (i.e., is being used by any items or other
+    * entities).
+    *
+    * @param id
+    *   the ID of the metadata schema.
+    * @return
+    *   true if the schema has references, false otherwise.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def hasReferences(id: Long): Boolean = {
+    LOGGER.debug(s"Checking for references to metadata schema with ID: $id")
+    schemaService.hasReferencingClasses(id)
+  }
 }

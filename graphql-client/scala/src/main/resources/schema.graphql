@@ -190,6 +190,8 @@ type Queries {
   metadataSchemaUses("ID of the metadata schema" id: Long!): [BaseEntityReference!]!
   "Get the types of schema import transformations for a metadata schema by ID"
   metadataSchemaImportTypes("ID of the metadata schema" id: Long!): [String!]!
+  "Check if a metadata schema has an referencing entities"
+  metadataSchemaHasReferences("ID of the metadata schema" id: Long!): Boolean!
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"
