@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import { waitFor } from "@testing-library/react";
+import { RenderResult, waitFor } from "@testing-library/react";
 import { pipe } from "fp-ts/function";
 import { DateTime } from "luxon";
 import { getAdvancedSearchDefinition } from "../../../../__mocks__/AdvancedSearchModule.mock";
@@ -40,6 +40,8 @@ import {
   renderFavouriteSearch,
   waitForSearchOptions,
 } from "./FavouritesSearchTestHelper";
+import userEvent from "@testing-library/user-event";
+import { commonString } from "../../../../tsrc/util/commonstrings";
 
 const {
   searchCriteria: searchCriteriaLabel,
@@ -54,9 +56,22 @@ const {
   remove: removeLabel,
 } = languageStrings.favourites.favouritesSearch;
 
-mockApis();
+const { mockDeleteFavouriteSearch } = mockApis();
 
 describe("<FavouriteSearch />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const waitForConfirmDialogToOpen = async (
+    getByRole: RenderResult["getByRole"],
+    findByRole: RenderResult["findByRole"],
+  ) => {
+    const removeButton = getByRole("button", { name: removeLabel });
+    await userEvent.click(removeButton);
+    return findByRole("dialog");
+  };
+
   it("should display title", () => {
     const { queryByText } = renderFavouriteSearch();
 
@@ -200,5 +215,55 @@ describe("<FavouriteSearch />", () => {
 
     const errorMessage = await findByText(error);
     expect(errorMessage).toBeInTheDocument();
+  });
+
+  it("should open a confirmation dialog when the remove from favourites is clicked", async () => {
+    const { getByRole, findByRole } = renderFavouriteSearch();
+
+    // Open the Confirm dialog
+    const dialog = await waitForConfirmDialogToOpen(getByRole, findByRole);
+
+    expect(dialog).toBeInTheDocument();
+  });
+
+  it("should call the onFavouriteRemoved callback when removal is confirmed", async () => {
+    const { getByRole, findByRole } = renderFavouriteSearch({
+      ...defaultProps,
+    });
+
+    // Open the Confirm dialog
+    await waitForConfirmDialogToOpen(getByRole, findByRole);
+
+    // Confirm remove from favourites
+    const confirmButton = getByRole("button", {
+      name: languageStrings.common.action.ok,
+    });
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mockDeleteFavouriteSearch).toHaveBeenCalledWith(
+        defaultProps.favouriteSearch.id,
+      );
+      expect(defaultProps.onFavouriteRemoved).toHaveBeenCalled();
+    });
+  });
+
+  it("should not call onFavouriteRemoved when removal is cancelled", async () => {
+    const { getByRole, findByRole } = renderFavouriteSearch();
+
+    // Open the dialog
+    const dialog = await waitForConfirmDialogToOpen(getByRole, findByRole);
+
+    // Cancel remove from favourites
+    const cancelButton = getByRole("button", {
+      name: commonString.action.cancel,
+    });
+    await userEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+    expect(mockDeleteFavouriteSearch).not.toHaveBeenCalled();
+    expect(defaultProps.onFavouriteRemoved).not.toHaveBeenCalled();
   });
 });

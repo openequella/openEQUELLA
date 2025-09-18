@@ -41,6 +41,7 @@ import * as CollectionsModule from "../../../../tsrc/modules/CollectionsModule";
 import * as HierarchyModule from "../../../../tsrc/modules/HierarchyModule";
 import * as SearchFilterSettingsModule from "../../../../tsrc/modules/SearchFilterSettingsModule";
 import * as UserModule from "../../../../tsrc/modules/UserModule";
+import * as FavouriteModule from "../../../../tsrc/modules/FavouriteModule";
 
 const {
   searchCriteria: searchCriteriaLabels,
@@ -50,7 +51,7 @@ const {
 /**
  * Mock the APIs called within the FavouriteSearch component.
  */
-export const mockApis = (): void => {
+export const mockApis = () => {
   jest
     .spyOn(HierarchyModule, "getHierarchyDetails")
     .mockImplementation(getHierarchyDetails);
@@ -67,6 +68,12 @@ export const mockApis = (): void => {
     .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
     .mockResolvedValue(getMimeTypeFilters);
   jest.spyOn(AppConfig, "getBaseUrl").mockReturnValue("http://localhost:8080");
+
+  const mockDeleteFavouriteSearch = jest
+    .spyOn(FavouriteModule, "deleteFavouriteSearch")
+    .mockResolvedValue(undefined);
+
+  return { mockDeleteFavouriteSearch };
 };
 
 export const renderFavouriteSearch = (
@@ -84,6 +91,7 @@ export const renderFavouriteSearch = (
 export const defaultProps: FavouritesSearchProps = {
   favouriteSearch: fullOptionsFavouriteSearch,
   highlights: [],
+  onFavouriteRemoved: jest.fn(),
 };
 
 /**
