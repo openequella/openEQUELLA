@@ -141,12 +141,12 @@ interface SearchProps extends TemplateUpdateProps {
 
   /**
    * Optional provider used only for gallery mode search.
-   * This is used when the `displayMode` is `gallery-search`
+   * This is used when the `displayMode` is `gallery-search`.
    * Defaults to `searchItems`.
    *
    * @param searchOptions The options for the search.
    */
-  galleryModeSearchProvider?: (
+  galleryModeSearchItemsProvider?: (
     searchOptions: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
 }
@@ -172,7 +172,7 @@ export const Search = ({
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
   listModeSearchProvider = defaultListModeSearch,
-  galleryModeSearchProvider = searchItems,
+  galleryModeSearchItemsProvider = searchItems,
 }: SearchProps) => {
   const history = useHistory<SearchPageHistoryState>();
   const searchPageHistoryState: SearchPageHistoryState | undefined =
@@ -327,7 +327,7 @@ export const Search = ({
             // `mimeTypeFilters` should be ignored in gallery modes
             mimeTypeFilters: undefined,
           },
-          galleryModeSearchProvider,
+          galleryModeSearchItemsProvider,
         ),
       });
 
@@ -406,7 +406,7 @@ export const Search = ({
     searchState,
     searchPageHistoryState,
     listModeSearchProvider,
-    galleryModeSearchProvider,
+    galleryModeSearchItemsProvider,
   ]);
 
   // In Selection Session, once a new search result is returned, make each

@@ -474,74 +474,78 @@ export const buildGallerySearchResultItem =
  * `attachmentFilter`. And most importantly, converts the output from `itemSearch` to
  * a collection of `GallerySearchResultItem`s.
  *
- * @param searchResults Search results fetched from the API
+ * This is a higher-order function: provide an `attachmentFilter` and receive back a
+ * function that transforms raw `SearchResult<SearchResultItem>` into
+ * `SearchResult<GallerySearchResultItem>`.
+ *
  * @param attachmentFilter The filter to filter all items attachment's by.
  */
-const gallerySearch = async (
-  searchResults: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
-  attachmentFilter: AttachmentFilter,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const processSearchResultItem = (
-    sri: OEQ.Search.SearchResultItem,
-  ): E.Either<string, GallerySearchResultItem> =>
-    pipe(
-      sri,
-      buildGallerySearchResultItem(attachmentFilter),
-      E.mapLeft((error) => {
-        const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
-        console.error(msg);
-        return msg;
-      }),
+const toGallerySearch =
+  (attachmentFilter: AttachmentFilter) =>
+  (
+    searchResults: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
+  ): OEQ.Search.SearchResult<GallerySearchResultItem> => {
+    const processSearchResultItem = (
+      sri: OEQ.Search.SearchResultItem,
+    ): E.Either<string, GallerySearchResultItem> =>
+      pipe(
+        sri,
+        buildGallerySearchResultItem(attachmentFilter),
+        E.mapLeft((error) => {
+          const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
+          console.error(msg);
+          return msg;
+        }),
+      );
+
+    const items: GallerySearchResultItem[] = pipe(
+      searchResults.results,
+      A.map(processSearchResultItem),
+      A.filter(E.isRight),
+      A.map((a) => a.right),
     );
 
-  const items: GallerySearchResultItem[] = pipe(
-    searchResults.results,
-    A.map(processSearchResultItem),
-    A.filter(E.isRight),
-    A.map((a) => a.right),
-  );
-
-  return { ...searchResults, length: items.length, results: items };
-};
+    return { ...searchResults, length: items.length, results: items };
+  };
 
 /**
- * Perform a search as per `options` and the `searchCallback`, also request filtering to all (institution) known image
+ * Perform a search as per `options` and the `searchProvider`, also request filtering to all (institution) known image
  * MIME types. The output ideally used to display a gallery of all available images at an institution
  * with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
- * @param searchCallback A callback for executing the search
+ * @param searchProvider A callback for executing the search
  */
 export const imageGallerySearch = async (
   options: SearchOptions,
-  searchCallback: (
+  searchProvider: (
     options: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const results = await searchCallback({
+  const results = await searchProvider({
     ...options,
     mimeTypes: await getImageMimeTypes(),
   });
 
-  return gallerySearch(results, filterAttachmentsByMimeType("image"));
+  return toGallerySearch(filterAttachmentsByMimeType("image"))(results);
 };
 
 const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
 /**
- * Perform a search as per `options` and the `searchCallback` and also request filtering to any items which potentially
+ * Perform a search as per `options` and the `searchProvider` and also request filtering to any items which potentially
  * have video attachments. The output ideally used to display a gallery of all available videos at
  * an institution with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
- * @param searchCallback A callback for executing the search
+ * @param searchProvider A callback for executing the search
  */
 export const videoGallerySearch = async (
   options: SearchOptions,
-  searchCallback: (
+  searchProvider: (
     options: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const results = await searchCallback({
+  const results = await searchProvider({
     ...options,
     musts: pipe(
       O.fromNullable(options.musts),
@@ -556,7 +560,7 @@ export const videoGallerySearch = async (
     mimeTypes: undefined,
   });
 
-  return gallerySearch(results, filterAttachmentsByVideo);
+  return toGallerySearch(filterAttachmentsByVideo)(results);
 };
 
 /**

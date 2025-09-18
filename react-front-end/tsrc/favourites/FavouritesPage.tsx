@@ -192,7 +192,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           ? listFavouriteResources
           : listFavouriteSearches
       }
-      galleryModeSearchProvider={gallerySearchFavouriteResources}
+      galleryModeSearchItemsProvider={gallerySearchFavouriteResources}
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (

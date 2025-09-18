@@ -20,7 +20,10 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import type { ReactNode } from "react";
 import * as React from "react";
-import { searchFavouriteSearches } from "../modules/FavouriteModule";
+import {
+  type FavouritesType,
+  searchFavouriteSearches,
+} from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
 import SearchResult from "../search/components/SearchResult";
 import {
@@ -116,5 +119,5 @@ export const favouritesSearchesResult = (
  *
  * @param favouritesType A string indicating the current favourites type.
  */
-export const isFavouritesResources = (favouritesType: string) =>
+export const isFavouritesResources = (favouritesType: FavouritesType) =>
   favouritesType === "resources";
