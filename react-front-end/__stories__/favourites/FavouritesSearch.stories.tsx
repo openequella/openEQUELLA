@@ -41,6 +41,7 @@ const defaultSearch: OEQ.Favourite.FavouriteSearch = {
 const defaultArgs: FavouritesSearchProps = {
   favouriteSearch: defaultSearch,
   highlights: ["Title"],
+  onFavouriteRemoved: () => {},
 };
 
 const defaultSearchOptionLabels: FavouriteSearchOptionsSummary = {
