@@ -480,7 +480,7 @@ export const buildGallerySearchResultItem =
  *
  * @param attachmentFilter The filter to filter all items attachment's by.
  */
-const toGallerySearch =
+const toGallerySearchResult =
   (attachmentFilter: AttachmentFilter) =>
   (
     searchResults: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
@@ -522,12 +522,15 @@ export const imageGallerySearch = async (
     options: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const results = await searchProvider({
+  const searchOptions = {
     ...options,
     mimeTypes: await getImageMimeTypes(),
-  });
+  };
 
-  return toGallerySearch(filterAttachmentsByMimeType("image"))(results);
+  return pipe(
+    await searchProvider(searchOptions),
+    toGallerySearchResult(filterAttachmentsByMimeType("image")),
+  );
 };
 
 const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
@@ -545,7 +548,7 @@ export const videoGallerySearch = async (
     options: SearchOptions,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
 ): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const results = await searchProvider({
+  const searchOptions = {
     ...options,
     musts: pipe(
       O.fromNullable(options.musts),
@@ -558,9 +561,12 @@ export const videoGallerySearch = async (
       ),
     ),
     mimeTypes: undefined,
-  });
+  };
 
-  return toGallerySearch(filterAttachmentsByVideo)(results);
+  return pipe(
+    await searchProvider(searchOptions),
+    toGallerySearchResult(filterAttachmentsByVideo),
+  );
 };
 
 /**
