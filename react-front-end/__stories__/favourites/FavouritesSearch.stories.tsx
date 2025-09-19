@@ -27,7 +27,7 @@ export default {
   title: "Favourites/FavouritesSearch",
   component: FavouritesSearch,
   argTypes: {
-    onChange: { action: "onChange" },
+    onFavouriteRemoved: { action: "onFavouriteRemoved" },
   },
 } as Meta<FavouritesSearchProps>;
 

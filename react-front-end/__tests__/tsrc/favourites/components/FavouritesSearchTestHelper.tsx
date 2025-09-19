@@ -52,9 +52,11 @@ const { ok: okButtonLabel, cancel: cancelButtonLabel } =
   languageStrings.common.action;
 
 /**
- * Mock the APIs called within the FavouriteSearch component.
+ * Mocks all API modules used by the `FavouritesSearch` component.
+ *
+ * @returns an object containing spy for `deleteFavouriteSearch` for use in tests.
  */
-export const mockApis = () => {
+export const mockApis = (): { mockDeleteFavouriteSearch: jest.SpyInstance } => {
   jest
     .spyOn(HierarchyModule, "getHierarchyDetails")
     .mockImplementation(getHierarchyDetails);
@@ -79,6 +81,13 @@ export const mockApis = () => {
   return { mockDeleteFavouriteSearch };
 };
 
+/**
+ * Renders the `FavouritesSearch` component with a `Router`, using default props
+ * if none are supplied.
+ *
+ * @param props Optional props to pass to the component.
+ * @returns The `RenderResult` from React Testing Library.
+ */
 export const renderFavouriteSearch = (
   props: FavouritesSearchProps = defaultProps,
 ): RenderResult => {
@@ -121,6 +130,9 @@ export const showAllSearchCriteria = async (
   return userEvent.click(moreOptions);
 };
 
+/**
+ * Helper to format a date string.
+ */
 export const dateString = (date: string): string =>
   new Date(date).toDateString();
 

@@ -209,7 +209,7 @@ describe("<FavouriteSearch />", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
-  it("should open a confirmation dialog when the remove from favourites is clicked", async () => {
+  it("should open a confirmation dialog when the `Remove from favourites` icon is clicked", async () => {
     const page = renderFavouriteSearch();
     const dialog = await openRemoveDialog(page);
 

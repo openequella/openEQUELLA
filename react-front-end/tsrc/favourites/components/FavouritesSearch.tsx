@@ -20,7 +20,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { ListItem, ListItemText, Typography } from "@mui/material";
 import { identity, pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
-import { useEffect } from "react";
 import * as React from "react";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import HighlightField from "../../components/HighlightField";
@@ -43,6 +42,8 @@ import SearchOptions from "./SearchOptions";
 import SearchOptionSkeleton from "./SearchOptionsSkeleton";
 import * as OEQ from "@openequella/rest-api-client";
 import * as T from "fp-ts/Task";
+
+const { useEffect, useState, useContext } = React;
 
 const {
   addedAt: addedAtLabel,
@@ -81,15 +82,15 @@ const FavouritesSearch = ({
   favouriteSearchOptionsSummaryProvider = buildSearchOptionsSummary,
   onFavouriteRemoved,
 }: FavouritesSearchProps) => {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined,
   );
-  const [searchOptionsSummary, setSearchOptionsSummary] = React.useState<
+  const [searchOptionsSummary, setSearchOptionsSummary] = useState<
     FavouriteSearchOptionsSummary | undefined
   >(undefined);
-  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = React.useState(false);
-  const { appErrorHandler } = React.useContext(AppContext);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+  const { appErrorHandler } = useContext(AppContext);
 
   useEffect(() => {
     pipe(
@@ -130,10 +131,7 @@ const FavouritesSearch = ({
   const onRemoveFavouriteSearch = () =>
     pipe(
       TE.tryCatch(() => deleteFavouriteSearch(searchId), String),
-      TE.match(
-        (err) => appErrorHandler(err),
-        () => onFavouriteRemoved(),
-      ),
+      TE.match(appErrorHandler, () => onFavouriteRemoved()),
       T.tapIO(() => () => setIsRemoveDialogOpen(false)),
     )();
 
