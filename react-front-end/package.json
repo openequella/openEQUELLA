@@ -138,7 +138,7 @@
     "parcel": "2.15.4",
     "patch-package": "8.0.0",
     "punycode": "2.3.1",
-    "rewire": "9.0.0",
+    "rewire": "9.0.1",
     "storybook": "9.1.7",
     "ts-jest": "29.4.1",
     "typescript": "5.9.2"
