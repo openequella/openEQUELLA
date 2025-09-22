@@ -122,7 +122,7 @@ describe("conversion of parameters to SearchPageOptions", () => {
   });
 });
 
-describe("custom searchItemsProvider", () => {
+describe("custom listModeSearchProvider", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });

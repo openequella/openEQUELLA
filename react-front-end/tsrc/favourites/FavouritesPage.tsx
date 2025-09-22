@@ -58,7 +58,9 @@ import {
   favouritesPageHeaderConfig,
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
+  isFavouritesResources,
 } from "./FavouritesPageHelper";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
@@ -95,10 +97,9 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const favouritesPageRefinePanelConfig = (
     searchContextProps: SearchContextProps,
   ): SearchPageRefinePanelConfig => {
-    const defaultSearchConfig =
-      favouritesType === "resources"
-        ? defaultSearchPageRefinePanelConfig
-        : favouritesSearchRefinePanelConfig;
+    const defaultSearchConfig = isFavouritesResources(favouritesType)
+      ? defaultSearchPageRefinePanelConfig
+      : favouritesSearchRefinePanelConfig;
 
     return {
       ...defaultSearchConfig,
@@ -120,8 +121,8 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     };
   };
 
-  // Provider used by Search to fetch favourite items.
-  const favouriteItemsSearchProvider = useCallback(
+  // Provider used by Search when in list mode to fetch favourite items.
+  const listFavouriteResources = useCallback(
     async (searchOptions: SearchOptions): Promise<SearchPageSearchResult> =>
       pipe(
         O.fromNullable(currentUser),
@@ -133,6 +134,21 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
           from: "item-search",
           content: await result,
         }),
+      ),
+    [currentUser],
+  );
+
+  // Provider used by Search when in gallery mode to fetch favourite items.
+  const gallerySearchFavouriteResources = useCallback(
+    async (
+      searchOptions: SearchOptions,
+    ): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+      pipe(
+        O.fromNullable(currentUser),
+        O.match(
+          () => Promise.resolve(defaultPagedSearchResult),
+          (user) => searchFavouriteItems(searchOptions, user),
+        ),
       ),
     [currentUser],
   );
@@ -180,10 +196,11 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       initialSearchConfig={initialSearchConfig}
       pageTitle={title}
       listModeSearchProvider={
-        favouritesType === "resources"
-          ? favouriteItemsSearchProvider
+        isFavouritesResources(favouritesType)
+          ? listFavouriteResources
           : listFavouriteSearches
       }
+      galleryModeSearchItemsProvider={gallerySearchFavouriteResources}
     >
       <SearchContext.Consumer>
         {(searchContextProps: SearchContextProps) => (
@@ -198,7 +215,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
             )}
             enableClassification={false}
             searchBarConfig={
-              favouritesType === "searches"
+              !isFavouritesResources(favouritesType)
                 ? { enableWildcardToggle: false }
                 : undefined
             }

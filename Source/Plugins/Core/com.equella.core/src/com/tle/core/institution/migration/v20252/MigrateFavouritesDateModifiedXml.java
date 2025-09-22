@@ -49,29 +49,28 @@ public class MigrateFavouritesDateModifiedXml extends XmlMigrator {
   @Override
   public void execute(
       TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
-    TemporaryFileHandle oldFavouriteItemFolder =
-        new SubTemporaryFile(staging, OLD_FAVOURITE_ITEMS_FOLDER);
     TemporaryFileHandle newFavouriteItemFolder =
         new SubTemporaryFile(staging, NEW_FAVOURITE_ITEMS_FOLDER);
     TemporaryFileHandle favouriteSearchFolder =
         new SubTemporaryFile(staging, FAVOURITE_SEARCH_FOLDER);
 
-    migrateFavourites(oldFavouriteItemFolder, newFavouriteItemFolder);
-    migrateFavourites(favouriteSearchFolder, favouriteSearchFolder);
+    // Rename the folder.
+    fileSystemService.move(staging, OLD_FAVOURITE_ITEMS_FOLDER, NEW_FAVOURITE_ITEMS_FOLDER);
+
+    migrateFavourites(newFavouriteItemFolder);
+    migrateFavourites(favouriteSearchFolder);
   }
 
-  // Read XML files from the original folder, rename the node "dateModified" to "addedAt", and write
-  // it to new folder.
-  private void migrateFavourites(
-      TemporaryFileHandle originalXmlFolder, TemporaryFileHandle newXmlFolder) {
+  // Read XML files from the provided folder, rename the node "dateModified" to "addedAt", and write
+  // it back to XML files.
+  private void migrateFavourites(TemporaryFileHandle xmlFolder) {
     xmlHelper
-        .getXmlFileList(originalXmlFolder)
+        .getXmlFileList(xmlFolder)
         .forEach(
             relativeXmlFilePath -> {
-              final PropBagEx xml =
-                  xmlHelper.readToPropBagEx(originalXmlFolder, relativeXmlFilePath);
+              final PropBagEx xml = xmlHelper.readToPropBagEx(xmlFolder, relativeXmlFilePath);
               xml.renameNode(DATE_MODIFIED_NODE, ADDED_AT_NODE);
-              xmlHelper.writeFromPropBagEx(newXmlFolder, relativeXmlFilePath, xml);
+              xmlHelper.writeFromPropBagEx(xmlFolder, relativeXmlFilePath, xml);
             });
   }
 }

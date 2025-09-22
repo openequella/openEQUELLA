@@ -22,6 +22,7 @@ import { DateTime } from "luxon";
 import { getAdvancedSearchDefinition } from "../../../../__mocks__/AdvancedSearchModule.mock";
 import {
   advancedSearchFavouriteSearch,
+  basicOptionsFavouriteSearch,
   emptyOptionsFavouriteSearch,
   hierarchyFavouriteSearch,
   invalidFavouriteSearch,
@@ -45,6 +46,7 @@ import {
 } from "./FavouritesSearchTestHelper";
 
 const {
+  showMoreSearchCriteria: showMoreSearchCriteriaLabel,
   searchCriteria: searchCriteriaLabel,
   searchCriteriaLabels: {
     query: queryLabel,
@@ -181,6 +183,16 @@ describe("<FavouriteSearch />", () => {
       expect(queryByText(expectedLabel!)).toBeInTheDocument();
     },
   );
+
+  it("should not display the expand icon if search options only contains the basic options", async () => {
+    const { queryByText, container } = renderFavouriteSearch({
+      ...defaultProps,
+      favouriteSearch: basicOptionsFavouriteSearch,
+    });
+
+    await waitForSearchOptions(container);
+    expect(queryByText(showMoreSearchCriteriaLabel)).not.toBeInTheDocument();
+  });
 
   it("should not display search options if search options are empty", async () => {
     const { queryByText, container } = renderFavouriteSearch({

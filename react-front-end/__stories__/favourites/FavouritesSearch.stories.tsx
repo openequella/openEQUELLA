@@ -64,6 +64,16 @@ Standard.args = {
   favouriteSearchOptionsSummaryProvider: async () => defaultSearchOptionLabels,
 };
 
+export const BasicOptionsWithoutExpandIcon: StoryFn<FavouritesSearchProps> = (
+  args,
+) => <FavouritesSearch {...args} />;
+BasicOptionsWithoutExpandIcon.args = {
+  ...defaultArgs,
+  favouriteSearchOptionsSummaryProvider: async () => ({
+    query: "Apple",
+  }),
+};
+
 export const AdvancedSearch: StoryFn<FavouritesSearchProps> = (args) => (
   <FavouritesSearch {...args} />
 );
