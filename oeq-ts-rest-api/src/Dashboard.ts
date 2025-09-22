@@ -81,11 +81,11 @@ interface PortletBase {
    */
   canMinimise: boolean;
   /**
-   * The column the portlet is in
+   * The column the portlet is in (starting from 0)
    */
   column: number;
   /**
-   * The order of the portlet in the column
+   * The order of the portlet in the column (starting from 0)
    */
   order: number;
 }
