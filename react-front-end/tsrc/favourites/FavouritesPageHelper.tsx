@@ -20,7 +20,10 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import type { ReactNode } from "react";
 import * as React from "react";
-import { searchFavouriteSearches } from "../modules/FavouriteModule";
+import {
+  type FavouritesType,
+  searchFavouriteSearches,
+} from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
 import SearchResult from "../search/components/SearchResult";
 import {
@@ -30,9 +33,7 @@ import {
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import FavouritesSearch from "./components/FavouritesSearch";
 
-export const defaultFavouritesPageOptions = {
-  ...defaultSearchPageOptions,
-};
+export const defaultFavouritesPageOptions = { ...defaultSearchPageOptions };
 
 export const favouritesPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: false,
@@ -111,3 +112,12 @@ export const favouritesSearchesResult = (
       />
     )),
   );
+
+/**
+ * Returns true when the supplied favourites type represents favourite resources
+ * (as opposed to favourite searches).
+ *
+ * @param favouritesType A string indicating the current favourites type.
+ */
+export const isFavouritesResources = (favouritesType: FavouritesType) =>
+  favouritesType === "resources";
