@@ -40,6 +40,9 @@ import {
   mockApis,
   renderFavouriteSearch,
   waitForSearchOptions,
+  openRemoveDialog,
+  clickCancelInRemoveDialog,
+  clickOkInRemoveDialog,
 } from "./FavouritesSearchTestHelper";
 
 const {
@@ -56,9 +59,13 @@ const {
   remove: removeLabel,
 } = languageStrings.favourites.favouritesSearch;
 
-mockApis();
+const { mockDeleteFavouriteSearch } = mockApis();
 
 describe("<FavouriteSearch />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should display title", () => {
     const { queryByText } = renderFavouriteSearch();
 
@@ -212,5 +219,35 @@ describe("<FavouriteSearch />", () => {
 
     const errorMessage = await findByText(error);
     expect(errorMessage).toBeInTheDocument();
+  });
+
+  it("should open a confirmation dialog when the `Remove from favourites` icon is clicked", async () => {
+    const page = renderFavouriteSearch();
+    const dialog = await openRemoveDialog(page);
+
+    expect(dialog).toBeInTheDocument();
+  });
+
+  it("should call the onFavouriteRemoved callback when removal is confirmed", async () => {
+    const page = renderFavouriteSearch();
+    await openRemoveDialog(page);
+    await clickOkInRemoveDialog(page);
+
+    expect(mockDeleteFavouriteSearch).toHaveBeenCalledWith(
+      defaultProps.favouriteSearch.id,
+    );
+    expect(defaultProps.onFavouriteRemoved).toHaveBeenCalled();
+  });
+
+  it("should not call onFavouriteRemoved when removal is cancelled", async () => {
+    const page = renderFavouriteSearch();
+    const dialog = await openRemoveDialog(page);
+    await clickCancelInRemoveDialog(page);
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+    expect(mockDeleteFavouriteSearch).not.toHaveBeenCalled();
+    expect(defaultProps.onFavouriteRemoved).not.toHaveBeenCalled();
   });
 });

@@ -41,16 +41,22 @@ import * as CollectionsModule from "../../../../tsrc/modules/CollectionsModule";
 import * as HierarchyModule from "../../../../tsrc/modules/HierarchyModule";
 import * as SearchFilterSettingsModule from "../../../../tsrc/modules/SearchFilterSettingsModule";
 import * as UserModule from "../../../../tsrc/modules/UserModule";
+import * as FavouriteModule from "../../../../tsrc/modules/FavouriteModule";
 
 const {
   searchCriteria: searchCriteriaLabels,
   showMoreSearchCriteria: showMoreSearchCriteriaLabel,
+  remove: removeLabel,
 } = languageStrings.favourites.favouritesSearch;
+const { ok: okButtonLabel, cancel: cancelButtonLabel } =
+  languageStrings.common.action;
 
 /**
- * Mock the APIs called within the FavouriteSearch component.
+ * Mocks all API modules used by the `FavouritesSearch` component.
+ *
+ * @returns an object containing spy for `deleteFavouriteSearch` for use in tests.
  */
-export const mockApis = (): void => {
+export const mockApis = (): { mockDeleteFavouriteSearch: jest.SpyInstance } => {
   jest
     .spyOn(HierarchyModule, "getHierarchyDetails")
     .mockImplementation(getHierarchyDetails);
@@ -67,8 +73,21 @@ export const mockApis = (): void => {
     .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
     .mockResolvedValue(getMimeTypeFilters);
   jest.spyOn(AppConfig, "getBaseUrl").mockReturnValue("http://localhost:8080");
+
+  const mockDeleteFavouriteSearch = jest
+    .spyOn(FavouriteModule, "deleteFavouriteSearch")
+    .mockResolvedValue(undefined);
+
+  return { mockDeleteFavouriteSearch };
 };
 
+/**
+ * Renders the `FavouritesSearch` component with a `Router`, using default props
+ * if none are supplied.
+ *
+ * @param props Optional props to pass to the component.
+ * @returns The `RenderResult` from React Testing Library.
+ */
 export const renderFavouriteSearch = (
   props: FavouritesSearchProps = defaultProps,
 ): RenderResult => {
@@ -84,6 +103,7 @@ export const renderFavouriteSearch = (
 export const defaultProps: FavouritesSearchProps = {
   favouriteSearch: fullOptionsFavouriteSearch,
   highlights: [],
+  onFavouriteRemoved: jest.fn(),
 };
 
 /**
@@ -110,5 +130,43 @@ export const showAllSearchCriteria = async (
   return userEvent.click(moreOptions);
 };
 
+/**
+ * Helper to format a date string.
+ */
 export const dateString = (date: string): string =>
   new Date(date).toDateString();
+
+/**
+ * Open the `Remove from favourites` confirmation dialog and return the dialog element.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const openRemoveDialog = async (page: RenderResult) => {
+  const removeButton = page.getByRole("button", { name: removeLabel });
+  await userEvent.click(removeButton);
+  return page.findByRole("dialog");
+};
+
+/**
+ * Clicks the 'OK' button in the `Remove from favourites` confirmation dialog.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const clickOkInRemoveDialog = async (page: RenderResult) => {
+  const confirmButton = page.getByRole("button", {
+    name: okButtonLabel,
+  });
+  await userEvent.click(confirmButton);
+};
+
+/**
+ * Clicks the 'Cancel' button in the `Remove from favourites` confirmation dialog.
+ *
+ * @param page The RenderResult returned from rendering the component.
+ */
+export const clickCancelInRemoveDialog = async (page: RenderResult) => {
+  const cancelButton = page.getByRole("button", {
+    name: cancelButtonLabel,
+  });
+  await userEvent.click(cancelButton);
+};

@@ -27,7 +27,7 @@ export default {
   title: "Favourites/FavouritesSearch",
   component: FavouritesSearch,
   argTypes: {
-    onChange: { action: "onChange" },
+    onFavouriteRemoved: { action: "onFavouriteRemoved" },
   },
 } as Meta<FavouritesSearchProps>;
 
@@ -41,6 +41,7 @@ const defaultSearch: OEQ.Favourite.FavouriteSearch = {
 const defaultArgs: FavouritesSearchProps = {
   favouriteSearch: defaultSearch,
   highlights: ["Title"],
+  onFavouriteRemoved: () => {},
 };
 
 const defaultSearchOptionLabels: FavouriteSearchOptionsSummary = {
