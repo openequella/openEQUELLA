@@ -18,8 +18,12 @@
 
 package io.github.openequella.graphql.api
 
-import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, MetadataSchemaView}
-import io.github.openequella.graphql.client.Queries
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  MetadataSchemaEditView,
+  MetadataSchemaView
+}
+import io.github.openequella.graphql.client.{Mutations, Queries}
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
 import java.util.Base64
@@ -158,6 +162,25 @@ object MetadataSchemaApi {
     // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
     // of the base64 encoding and decoding process.
     Client.query(query).map(_.map(base64ToBytes))
+  }
+
+  /** Start editing a metadata schema by its ID.
+    *
+    * @param id
+    *   The ID of the metadata schema to start editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaEditView representing the editable schema.
+    */
+  def startEdit(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], MetadataSchemaEditView] = {
+    val mutation = Mutations.metadataSchemaStartEdit(id) {
+      MetadataSchemaEditView.selector
+    }
+
+    Client.mutate(mutation)
   }
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
