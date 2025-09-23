@@ -73,6 +73,9 @@ import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
 import type { State } from "./SearchPageReducer";
 
+const { relevance, lastModified, dateCreated, title, userRating } =
+  languageStrings.settings.searching.searchPageSettings;
+
 const nop = () => {};
 
 /**
@@ -387,6 +390,14 @@ export const DehydratedSearchPageOptionsCodec = t.partial({
 export type DehydratedSearchPageOptions = t.TypeOf<
   typeof DehydratedSearchPageOptionsCodec
 >;
+
+export const defaultSortingOptions: [OEQ.Search.SortOrder, string][] = [
+  ["rank", relevance],
+  ["datemodified", lastModified],
+  ["datecreated", dateCreated],
+  ["name", title],
+  ["rating", userRating],
+];
 
 /**
  * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.

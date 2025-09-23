@@ -35,7 +35,7 @@ export type SortOrder =
   | 'rating'
   | 'task_lastaction'
   | 'task_submitted'
-  | 'added';
+  | 'added_at';
 
 interface SearchParamsBase {
   /**

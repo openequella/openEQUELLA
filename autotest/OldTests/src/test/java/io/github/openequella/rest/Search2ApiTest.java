@@ -149,7 +149,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
         doSearch(
             200,
             null,
-            new NameValuePair("order", "favourite_date"),
+            new NameValuePair("order", "added_at"),
             new NameValuePair("musts", "bookmark_owner:" + USER_UUID));
 
     assertEquals(getAvailable(result), 2);

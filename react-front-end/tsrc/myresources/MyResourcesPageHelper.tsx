@@ -57,6 +57,7 @@ import SearchResult, {
   defaultActionButtonProps,
 } from "../search/components/SearchResult";
 import {
+  defaultSortingOptions,
   DehydratedSearchPageOptions,
   DehydratedSearchPageOptionsCodec,
   SearchPageOptions,
@@ -367,15 +368,8 @@ export const getSortOrderFromQueryParam = (
 export const sortOrderOptions = (
   resourceType: MyResourcesType,
 ): SortOrderOptions => {
-  const {
-    dateCreated,
-    lastAction,
-    lastModified,
-    relevance,
-    submitted,
-    title,
-    userRating,
-  } = languageStrings.myResources.sortOptions;
+  const { dateCreated, lastAction, lastModified, submitted, title } =
+    languageStrings.myResources.sortOptions;
 
   switch (resourceType) {
     case "Moderation queue":
@@ -393,13 +387,7 @@ export const sortOrderOptions = (
         ["name", title],
       ]);
     default:
-      return new Map<OEQ.Search.SortOrder, string>([
-        ["rank", relevance],
-        ["datemodified", lastModified],
-        ["datecreated", dateCreated],
-        ["name", title],
-        ["rating", userRating],
-      ]);
+      return new Map<OEQ.Search.SortOrder, string>(defaultSortingOptions);
   }
 };
 

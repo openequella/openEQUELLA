@@ -407,6 +407,9 @@ export const languageStrings = {
       resources: "Resources",
       searches: "Searches",
     },
+    sortOptions: {
+      dateFavourited: "Date favourited",
+    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",
