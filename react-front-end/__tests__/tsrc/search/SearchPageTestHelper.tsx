@@ -21,6 +21,7 @@ import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import {
   act,
+  queryAllByLabelText,
   render,
   RenderResult,
   screen,
@@ -57,6 +58,11 @@ import SearchPage from "../../../tsrc/search/SearchPage";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
+
+const {
+  searchResult: { ariaLabel: listItemAriaLabel },
+  gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
+} = languageStrings.searchpage;
 
 export const SORTORDER_SELECT_ID = "#sort-order-select";
 
@@ -475,3 +481,19 @@ export const changeQuery = async (
     expect(queryBar).toHaveDisplayValue(query);
   });
 };
+
+/**
+ * Helper function to find all list items in a search result.
+ *
+ * @param container The root container to search within.
+ */
+export const queryListItems = (container: HTMLElement) =>
+  queryAllByLabelText(container, listItemAriaLabel);
+
+/**
+ * Helper function to find all gallery items in a search result.
+ *
+ * @param container The root container to search within.
+ */
+export const queryGalleryItems = (container: HTMLElement) =>
+  queryAllByLabelText(container, galleryItemAriaLabel);

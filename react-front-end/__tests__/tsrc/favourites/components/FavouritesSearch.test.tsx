@@ -37,7 +37,7 @@ import {
   showAllSearchCriteria,
   dateString,
   defaultProps,
-  mockApis,
+  mockApisForFavouriteSearches,
   renderFavouriteSearch,
   waitForSearchOptions,
   openRemoveDialog,
@@ -59,7 +59,7 @@ const {
   remove: removeLabel,
 } = languageStrings.favourites.favouritesSearch;
 
-const { mockDeleteFavouriteSearch } = mockApis();
+const { mockDeleteFavouriteSearch } = mockApisForFavouriteSearches();
 
 describe("<FavouriteSearch />", () => {
   beforeEach(() => {
