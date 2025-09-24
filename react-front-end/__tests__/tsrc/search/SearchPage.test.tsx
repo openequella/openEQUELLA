@@ -48,13 +48,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import {
-  clickSelect,
-  getSelectOption,
-  isToggleButtonChecked,
-  selectOption,
-  selectToggleButton,
-} from "../MuiTestHelpers";
+import { clickSelect, getSelectOption, selectOption } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
   clearSelection,
@@ -62,6 +56,7 @@ import {
 } from "./components/OwnerSelectTestHelpers";
 import {
   addSearchToFavourites,
+  changeQuery,
   getRefineSearchComponent,
   getRefineSearchPanel,
   initialiseEssentialMocks,
@@ -74,9 +69,6 @@ import {
   queryStatusSelector,
   renderSearchPage,
   SORTORDER_SELECT_ID,
-  changeQuery,
-  queryListItems,
-  queryGalleryItems,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, so we need a longer timeout.
@@ -186,8 +178,31 @@ describe("<SearchPage/>", () => {
   describe("Changing display mode", () => {
     const { modeGalleryImage, modeGalleryVideo, modeItemList } =
       languageStrings.searchpage.displayModeSelector;
+    const {
+      searchResult: { ariaLabel: listItemAriaLabel },
+      gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
+    } = languageStrings.searchpage;
 
     let page: RenderResult;
+
+    const queryListItems = () => page.queryAllByLabelText(listItemAriaLabel);
+
+    const queryGalleryItems = () =>
+      page.queryAllByLabelText(galleryItemAriaLabel);
+
+    const isChecked = (label: string): boolean => {
+      const button = page.getByLabelText(label);
+      const checkedState = button.getAttribute("aria-checked");
+      return (
+        checkedState === "true" &&
+        button.classList.contains("MuiButton-contained")
+      );
+    };
+
+    const changeMode = async (mode: string) => {
+      await userEvent.click(page.getByLabelText(mode));
+      expect(isChecked(mode)).toBeTruthy();
+    };
 
     beforeEach(async () => {
       page = await renderSearchPage();
@@ -195,13 +210,13 @@ describe("<SearchPage/>", () => {
 
     it("has a default of item list mode", async () => {
       // Check that the button is visually correct
-      expect(isToggleButtonChecked(page.container, modeItemList)).toBeTruthy();
+      expect(isChecked(modeItemList)).toBeTruthy();
 
       // Check that it's all wired up correctly - i.e. no mime types were passed to the search
       expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
 
       // And lastly check that it was a item list display - not a gallery
-      expect(queryListItems(page.container).length).toBeGreaterThan(0);
+      expect(queryListItems().length).toBeGreaterThan(0);
     });
 
     it.each([
@@ -225,8 +240,8 @@ describe("<SearchPage/>", () => {
         listClassifications,
         mockResponse,
       ) => {
-        expect(queryListItems(page.container).length).toBeGreaterThan(0);
-        expect(queryGalleryItems(page.container)).toHaveLength(0);
+        expect(queryListItems().length).toBeGreaterThan(0);
+        expect(queryGalleryItems()).toHaveLength(0);
 
         // Monitor the search and classifications functions, and change the mode
         await Promise.all([
@@ -234,7 +249,7 @@ describe("<SearchPage/>", () => {
           listClassifications.mockResolvedValue(
             CategorySelectorMock.classifications,
           ),
-          selectToggleButton(page.container, mode),
+          changeMode(mode),
         ]);
 
         // Make sure the search has been triggered
@@ -242,8 +257,8 @@ describe("<SearchPage/>", () => {
         expect(listClassifications).toHaveBeenCalledTimes(1);
 
         // And now check the visual change
-        expect(queryGalleryItems(page.container).length).toBeGreaterThan(0);
-        expect(queryListItems(page.container)).toHaveLength(0);
+        expect(queryGalleryItems().length).toBeGreaterThan(0);
+        expect(queryListItems()).toHaveLength(0);
         expect(queryMimeTypesSelector(page.container)).not.toBeInTheDocument();
       },
     );
