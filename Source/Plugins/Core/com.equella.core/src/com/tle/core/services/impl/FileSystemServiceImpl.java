@@ -542,11 +542,11 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
    * .FileHandle, java.lang.String, java.lang.String)
    */
   @Override
-  public boolean rename(FileHandle handle, String filename, String newname) {
-    ensureNotBanned(newname);
+  public boolean rename(FileHandle handle, String filename, String newName) {
+    ensureNotBanned(newName);
 
     File from = getFile(handle, filename);
-    File to = getFile(handle, newname);
+    File to = getFile(handle, newName);
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("rename: from " + from + " to " + to);
     }
@@ -554,20 +554,19 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   }
 
   @Override
-  public boolean move(FileHandle handle, String filename, FileHandle newHandle, String newname) {
-    ensureNotBanned(newname);
-
-    File from = getFile(handle, filename);
-    File to = getFile(newHandle, newname);
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("move: from " + from + " to " + to);
-    }
-    return FileSystemHelper.rename(from, to, false);
+  public boolean move(FileHandle handle, String filename, FileHandle newHandle, String newName) {
+    ensureNotBanned(newName);
+    return moveUnsafe(handle, filename, newHandle, newName);
   }
 
   @Override
-  public boolean move(FileHandle handle, String filename, String newname) {
-    return move(handle, filename, handle, newname);
+  public boolean move(FileHandle handle, String filename, String newName) {
+    return move(handle, filename, handle, newName);
+  }
+
+  @Override
+  public boolean moveUnsafe(FileHandle handle, String filename, String newName) {
+    return moveUnsafe(handle, filename, handle, newName);
   }
 
   /*
@@ -1199,5 +1198,16 @@ public class FileSystemServiceImpl implements FileSystemService, ServiceCheckReq
   @Override
   public boolean isAdvancedFilestore() {
     return advancedFilestore;
+  }
+
+  // Moves a file or folder without checking for banned extensions.
+  private boolean moveUnsafe(
+      FileHandle handle, String filename, FileHandle newHandle, String newName) {
+    File from = getFile(handle, filename);
+    File to = getFile(newHandle, newName);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("move: from " + from + " to " + to);
+    }
+    return FileSystemHelper.rename(from, to, false);
   }
 }

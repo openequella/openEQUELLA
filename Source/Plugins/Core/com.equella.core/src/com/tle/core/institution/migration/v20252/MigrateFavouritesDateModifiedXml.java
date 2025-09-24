@@ -55,7 +55,7 @@ public class MigrateFavouritesDateModifiedXml extends XmlMigrator {
         new SubTemporaryFile(staging, FAVOURITE_SEARCH_FOLDER);
 
     // Rename the folder.
-    fileSystemService.move(staging, OLD_FAVOURITE_ITEMS_FOLDER, NEW_FAVOURITE_ITEMS_FOLDER);
+    fileSystemService.moveUnsafe(staging, OLD_FAVOURITE_ITEMS_FOLDER, NEW_FAVOURITE_ITEMS_FOLDER);
 
     migrateFavourites(newFavouriteItemFolder);
     migrateFavourites(favouriteSearchFolder);
