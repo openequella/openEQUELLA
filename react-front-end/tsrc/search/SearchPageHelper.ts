@@ -74,7 +74,7 @@ import type { StatusSelectorProps } from "./components/StatusSelector";
 import type { State } from "./SearchPageReducer";
 
 const { relevance, lastModified, dateCreated, title, userRating } =
-  languageStrings.settings.searching.searchPageSettings;
+  languageStrings.searchpage.sortOptions;
 
 const nop = () => {};
 

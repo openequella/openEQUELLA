@@ -18,16 +18,13 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
+import { defaultFavouritesPageOptions } from "../../../tsrc/favourites/FavouritesPageHelper";
 import {
-  defaultFavSearchesSearchOptions,
   expandQueryWithBookmarkTags,
   searchFavouriteItems,
   searchFavouriteSearches,
 } from "../../../tsrc/modules/FavouriteModule";
-import {
-  defaultSearchOptions,
-  SearchOptions,
-} from "../../../tsrc/modules/SearchModule";
+import { SearchOptions } from "../../../tsrc/modules/SearchModule";
 import { getFavouriteSearchesResp } from "../../../__mocks__/getFavouriteSearchesResp";
 
 jest.mock("@openequella/rest-api-client", () => {
@@ -78,7 +75,7 @@ describe("searchFavouriteItems", () => {
   it("does not contain a query when the search term is whitespace only", async () => {
     await searchFavouriteItems(
       {
-        ...defaultSearchOptions,
+        ...defaultFavouritesPageOptions,
         query: "   ",
         rawMode: true,
       },
@@ -92,7 +89,7 @@ describe("searchFavouriteItems", () => {
     const queryTerm = "favItem";
     await searchFavouriteItems(
       {
-        ...defaultSearchOptions,
+        ...defaultFavouritesPageOptions,
         query: queryTerm,
         rawMode: true,
       },
@@ -107,7 +104,7 @@ describe("searchFavouriteItems", () => {
     const queryTerm = "non RAW";
     await searchFavouriteItems(
       {
-        ...defaultSearchOptions,
+        ...defaultFavouritesPageOptions,
         query: queryTerm,
       },
       getCurrentUserMock,
@@ -120,7 +117,7 @@ describe("searchFavouriteItems", () => {
     const currentUserDetails = getCurrentUserMock;
     await searchFavouriteItems(
       {
-        ...defaultSearchOptions,
+        ...defaultFavouritesPageOptions,
       },
       currentUserDetails,
     );
@@ -142,7 +139,7 @@ describe("searchFavouriteSearches", () => {
 
   it("provides a list of favourite searches", async () => {
     const searchResult = await searchFavouriteSearches(
-      defaultFavSearchesSearchOptions,
+      defaultFavouritesPageOptions,
     );
     expect(searchResult.available).toBe(10);
     expect(searchResult.results).toHaveLength(10);
@@ -150,7 +147,7 @@ describe("searchFavouriteSearches", () => {
 
   it("does not contain a query when the search term is whitespace only", async () => {
     await searchFavouriteSearches({
-      ...defaultFavSearchesSearchOptions,
+      ...defaultFavouritesPageOptions,
       query: "   ",
     });
     expectSearchQueryToBe(undefined);
@@ -158,7 +155,7 @@ describe("searchFavouriteSearches", () => {
 
   it("removes leading and trailing whitespace from query string", async () => {
     await searchFavouriteSearches({
-      ...defaultFavSearchesSearchOptions,
+      ...defaultFavouritesPageOptions,
       query: " fav search   ",
     });
     expectSearchQueryToBe("fav search");

@@ -95,14 +95,6 @@ const buildFavouriteItemsQuery = (
   ),
 });
 
-export const defaultFavSearchesSearchOptions: FavSearchesSearchOptions = {
-  rowsPerPage: 10,
-  currentPage: 0,
-  sortOrder: "added",
-  query: "",
-  lastModifiedDateRange: { start: undefined, end: undefined },
-};
-
 /**
  * A function that converts search options to FavouriteSearchParams.
  *

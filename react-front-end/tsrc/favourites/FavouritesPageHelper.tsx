@@ -17,6 +17,7 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import type { ReactNode } from "react";
 import * as React from "react";
@@ -37,7 +38,7 @@ import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSearch from "./components/FavouritesSearch";
 
-const { title } = languageStrings.myResources.sortOptions;
+const { title } = languageStrings.searchpage.sortOptions;
 const { dateFavourited } = languageStrings.favourites.sortOptions;
 
 export const defaultFavouritesPageOptions: SearchPageOptions = {
@@ -143,16 +144,21 @@ export const isFavouritesResources = (favouritesType: FavouritesType) =>
  */
 export const sortOrderOptions = (
   favouritesType: FavouritesType,
-): SortOrderOptions => {
-  if (isFavouritesResources(favouritesType)) {
-    return new Map<OEQ.Search.SortOrder, string>([
-      ...defaultSortingOptions,
-      ["added_at", dateFavourited],
-    ]);
-  } else {
-    return new Map<OEQ.Search.SortOrder, string>([
-      ["name", title],
-      ["added_at", dateFavourited],
-    ]);
-  }
-};
+): SortOrderOptions =>
+  pipe(
+    O.fromPredicate(isFavouritesResources)(favouritesType),
+    O.match(
+      // Sort options for Favourite Searches
+      () =>
+        new Map<OEQ.Search.SortOrder, string>([
+          ["name", title],
+          ["added_at", dateFavourited],
+        ]),
+      // Sort options for Favourite Resources
+      () =>
+        new Map<OEQ.Search.SortOrder, string>([
+          ...defaultSortingOptions,
+          ["added_at", dateFavourited],
+        ]),
+    ),
+  );
