@@ -17,8 +17,11 @@
  */
 
 import * as OEQ from "@openequella/rest-api-client";
+import type { GallerySearchResultItem } from "../tsrc/modules/GallerySearchModule";
 import { getAdvancedSearchesFromServerResult } from "./AdvancedSearchModule.mock";
 import { topicWithShortAndLongDesc } from "./Hierarchy.mock";
+import { itemWithBookmark } from "./SearchResult.mock";
+import { basicSearchObj } from "./searchresult_mock_data";
 
 const searchOptions =
   "?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22rank%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22apple%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222025-07-31T14%3A00%3A00.000Z%22%2C%22end%22%3A%222025-08-22T14%3A00%3A00.000Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22test%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D";
@@ -65,3 +68,35 @@ export const basicOptionsFavouriteSearch: OEQ.Favourite.FavouriteSearch = {
   url: "/page/search?searchOptions=%7B%22query%22%3A%22apple%22%7D",
   addedAt,
 };
+
+export const getFavouriteResourcesResp: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
+  {
+    start: 0,
+    length: 2,
+    available: 2,
+    results: [basicSearchObj, itemWithBookmark],
+    highlight: [],
+  };
+
+export const getEmptyTransformedGallerySearchResp: OEQ.Search.SearchResult<GallerySearchResultItem> =
+  {
+    start: 0,
+    length: 0,
+    available: 0,
+    results: [],
+    highlight: [],
+  };
+
+export const getFavouriteSearchesResp: OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch> =
+  {
+    start: 0,
+    length: 4,
+    available: 4,
+    results: [
+      fullOptionsFavouriteSearch,
+      hierarchyFavouriteSearch,
+      advancedSearchFavouriteSearch,
+      invalidFavouriteSearch,
+    ],
+    highlight: [],
+  };
