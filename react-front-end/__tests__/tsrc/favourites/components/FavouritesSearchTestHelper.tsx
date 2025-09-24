@@ -35,13 +35,13 @@ import { getCollectionMap } from "../../../../__mocks__/getCollectionsResp";
 import { getHierarchyDetails } from "../../../../__mocks__/Hierarchy.mock";
 import { getMimeTypeFilters } from "../../../../__mocks__/MimeTypeFilter.mock";
 import * as UserModuleMock from "../../../../__mocks__/UserModule.mock";
-import * as AppConfig from "../../../../tsrc/AppConfig";
 import * as AdvancedSearchModule from "../../../../tsrc/modules/AdvancedSearchModule";
 import * as CollectionsModule from "../../../../tsrc/modules/CollectionsModule";
 import * as HierarchyModule from "../../../../tsrc/modules/HierarchyModule";
 import * as SearchFilterSettingsModule from "../../../../tsrc/modules/SearchFilterSettingsModule";
 import * as UserModule from "../../../../tsrc/modules/UserModule";
 import * as FavouriteModule from "../../../../tsrc/modules/FavouriteModule";
+import { updateMockGetBaseUrl } from "../../BaseUrlHelper";
 
 const {
   searchCriteria: searchCriteriaLabels,
@@ -72,7 +72,7 @@ export const mockApis = (): { mockDeleteFavouriteSearch: jest.SpyInstance } => {
   jest
     .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
     .mockResolvedValue(getMimeTypeFilters);
-  jest.spyOn(AppConfig, "getBaseUrl").mockReturnValue("http://localhost:8080");
+  updateMockGetBaseUrl();
 
   const mockDeleteFavouriteSearch = jest
     .spyOn(FavouriteModule, "deleteFavouriteSearch")

@@ -20,9 +20,12 @@ package com.tle.web.favourites;
 
 import com.tle.core.guice.Bind;
 import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionResult;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.equella.layout.ContentLayout;
+import com.tle.web.sections.events.RenderEventContext;
 import com.tle.web.sections.render.TextUtils;
+import com.tle.web.template.RenderNewSearchPage;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -57,6 +60,14 @@ public class RootFavouritesSection extends AbstractRootFavouritesSection {
     return selectionService.getCurrentSession(info) != null
         ? super.getDefaultLayout(info)
         : ContentLayout.ONE_COLUMN;
+  }
+
+  @Override
+  public SectionResult renderHtml(RenderEventContext context) {
+    if (isNewUIInSelectionSession(context)) {
+      getModel(context).setNewUIContent(RenderNewSearchPage.renderNewFavouritesPage(context));
+    }
+    return super.renderHtml(context);
   }
 
   /**
