@@ -17,7 +17,6 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import type { ReactNode } from "react";
 import * as React from "react";
@@ -41,16 +40,29 @@ import FavouritesSearch from "./components/FavouritesSearch";
 const { title } = languageStrings.searchpage.sortOptions;
 const { dateFavourited } = languageStrings.favourites.sortOptions;
 
+export const SORT_ORDER_ADDED_AT = "added_at";
+
 export const defaultFavouritesPageOptions: SearchPageOptions = {
   ...defaultSearchPageOptions,
-  sortOrder: "added_at",
+  sortOrder: SORT_ORDER_ADDED_AT,
 };
 
-export const favouritesPageHeaderConfig: SearchPageHeaderConfig = {
+/**
+ * Build the configuration for the SearchPageHeader.
+ *
+ * @param favouritesType The type of Favourites.
+ */
+export const favouritesPageHeaderConfig = (
+  favouritesType: FavouritesType,
+): SearchPageHeaderConfig => ({
   enableCSVExportButton: false,
   enableShareSearchButton: false,
   enableFavouriteSearchButton: false,
-};
+  newSearchConfig: {
+    criteria: defaultFavouritesPageOptions,
+  },
+  customSortingOptions: sortOrderOptions(favouritesType),
+});
 
 export const favouritesSearchRefinePanelConfig = {
   enableDisplayModeSelector: false,
@@ -145,20 +157,12 @@ export const isFavouritesResources = (favouritesType: FavouritesType) =>
 export const sortOrderOptions = (
   favouritesType: FavouritesType,
 ): SortOrderOptions =>
-  pipe(
-    O.fromPredicate(isFavouritesResources)(favouritesType),
-    O.match(
-      // Sort options for Favourite Searches
-      () =>
-        new Map<OEQ.Search.SortOrder, string>([
-          ["name", title],
-          ["added_at", dateFavourited],
-        ]),
-      // Sort options for Favourite Resources
-      () =>
-        new Map<OEQ.Search.SortOrder, string>([
-          ...defaultSortingOptions,
-          ["added_at", dateFavourited],
-        ]),
-    ),
-  );
+  isFavouritesResources(favouritesType)
+    ? new Map<OEQ.Search.SortOrder, string>([
+        ...defaultSortingOptions,
+        [SORT_ORDER_ADDED_AT, dateFavourited],
+      ])
+    : new Map<OEQ.Search.SortOrder, string>([
+        ["name", title],
+        [SORT_ORDER_ADDED_AT, dateFavourited],
+      ]);

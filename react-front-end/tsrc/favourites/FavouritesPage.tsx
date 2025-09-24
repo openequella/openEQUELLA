@@ -47,7 +47,6 @@ import {
   isGalleryItems,
   defaultPagedSearchResult,
   isFavouriteSearches,
-  SearchPageHeaderConfig,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
@@ -60,7 +59,7 @@ import {
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
   isFavouritesResources,
-  sortOrderOptions,
+  SORT_ORDER_ADDED_AT,
 } from "./FavouritesPageHelper";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -80,7 +79,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): SearchPageOptions => ({
       ...searchPageOptions,
       filterExpansion: false,
-      sortOrder: "added_at",
+      sortOrder: SORT_ORDER_ADDED_AT,
     });
 
     return {
@@ -89,14 +88,6 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
       customiseInitialSearchOptions,
     };
   }, [currentUser]);
-
-  const searchPageHeaderConfig: SearchPageHeaderConfig = {
-    ...favouritesPageHeaderConfig,
-    customSortingOptions: sortOrderOptions(favouritesType),
-    newSearchConfig: {
-      criteria: defaultFavouritesPageOptions,
-    },
-  };
 
   const onFavouritesTypeChangeBuilder =
     ({ search }: SearchContextProps) =>
@@ -217,7 +208,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         {(searchContextProps: SearchContextProps) => (
           <SearchPageBody
             pathname={NEW_FAVOURITES_PATH}
-            headerConfig={searchPageHeaderConfig}
+            headerConfig={favouritesPageHeaderConfig(favouritesType)}
             refinePanelConfig={favouritesPageRefinePanelConfig(
               searchContextProps,
             )}
