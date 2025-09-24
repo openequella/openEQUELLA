@@ -140,7 +140,7 @@
     "punycode": "2.3.1",
     "rewire": "9.0.1",
     "storybook": "9.1.7",
-    "ts-jest": "29.4.1",
+    "ts-jest": "29.4.4",
     "typescript": "5.9.2"
   }
 }
