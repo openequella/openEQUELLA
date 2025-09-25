@@ -407,6 +407,9 @@ export const languageStrings = {
       resources: "Resources",
       searches: "Searches",
     },
+    sortOptions: {
+      dateFavourited: "Date favourited",
+    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",
@@ -648,12 +651,12 @@ export const languageStrings = {
       title: "Filter by Attachment type",
       helperText: "Attachment types",
     },
-    order: {
+    sortOptions: {
       relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
+      title: "Title",
+      lastModified: "Date last modified",
+      dateCreated: "Date created",
+      userRating: "User Rating",
     },
     pagination: {
       firstPageButton: "First page",

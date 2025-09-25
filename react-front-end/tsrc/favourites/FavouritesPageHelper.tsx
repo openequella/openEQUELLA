@@ -25,21 +25,44 @@ import {
   searchFavouriteSearches,
 } from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
+import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
 import {
   defaultSearchPageOptions,
+  defaultSortingOptions,
   SearchPageHeaderConfig,
+  SearchPageOptions,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
+import { languageStrings } from "../util/langstrings";
 import FavouritesSearch from "./components/FavouritesSearch";
 
-export const defaultFavouritesPageOptions = { ...defaultSearchPageOptions };
+const { title } = languageStrings.searchpage.sortOptions;
+const { dateFavourited } = languageStrings.favourites.sortOptions;
 
-export const favouritesPageHeaderConfig: SearchPageHeaderConfig = {
+export const SORT_ORDER_ADDED_AT = "added_at";
+
+export const defaultFavouritesPageOptions: SearchPageOptions = {
+  ...defaultSearchPageOptions,
+  sortOrder: SORT_ORDER_ADDED_AT,
+};
+
+/**
+ * Build the configuration for the SearchPageHeader.
+ *
+ * @param favouritesType The type of Favourites.
+ */
+export const favouritesPageHeaderConfig = (
+  favouritesType: FavouritesType,
+): SearchPageHeaderConfig => ({
   enableCSVExportButton: false,
   enableShareSearchButton: false,
   enableFavouriteSearchButton: false,
-};
+  newSearchConfig: {
+    criteria: defaultFavouritesPageOptions,
+  },
+  customSortingOptions: sortOrderOptions(favouritesType),
+});
 
 export const favouritesSearchRefinePanelConfig = {
   enableDisplayModeSelector: false,
@@ -124,3 +147,22 @@ export const favouritesSearchesResult = (
  */
 export const isFavouritesResources = (favouritesType: FavouritesType) =>
   favouritesType === "resources";
+
+/**
+ * Given a specific `FavouritesType` build the SortOrderOptions representing the options used in
+ * UI for sorting in the related view.
+ *
+ * @param favouritesType the type of favourites to generate the options for
+ */
+export const sortOrderOptions = (
+  favouritesType: FavouritesType,
+): SortOrderOptions =>
+  isFavouritesResources(favouritesType)
+    ? new Map<OEQ.Search.SortOrder, string>([
+        ...defaultSortingOptions,
+        [SORT_ORDER_ADDED_AT, dateFavourited],
+      ])
+    : new Map<OEQ.Search.SortOrder, string>([
+        ["name", title],
+        [SORT_ORDER_ADDED_AT, dateFavourited],
+      ]);

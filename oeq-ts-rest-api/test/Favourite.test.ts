@@ -171,14 +171,14 @@ describe('FavouriteSearch', () => {
       expect(getSearchName(res, 3)).toBe(searchZ.name);
     });
 
-    it('sorts by date added when order="date"', async () => {
+    it('sorts by date added when order="added_at"', async () => {
       const search1 = await favSearches.add('search1-byDate');
       const search2 = await favSearches.add('search2-byDate');
       const search3 = await favSearches.add('search3-byDate');
 
       const res = await searchFavouriteSearches(TC.API_PATH, {
         query: 'byDate',
-        order: 'added',
+        order: 'added_at',
       });
 
       expect(getSearchName(res, 0)).toBe(search3.name);

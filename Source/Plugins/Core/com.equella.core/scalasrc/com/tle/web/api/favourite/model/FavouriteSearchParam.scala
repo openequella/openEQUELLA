@@ -46,7 +46,7 @@ class FavouriteSearchParam {
 
   @ApiParam(
     value = "The order of the search results",
-    allowableValues = "name,added"
+    allowableValues = "name,added_at"
   )
   @QueryParam("order")
   var order: String = _

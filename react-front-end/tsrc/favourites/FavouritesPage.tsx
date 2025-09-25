@@ -59,6 +59,7 @@ import {
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
   isFavouritesResources,
+  SORT_ORDER_ADDED_AT,
 } from "./FavouritesPageHelper";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -78,6 +79,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ): SearchPageOptions => ({
       ...searchPageOptions,
       filterExpansion: false,
+      sortOrder: SORT_ORDER_ADDED_AT,
     });
 
     return {
@@ -206,7 +208,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
         {(searchContextProps: SearchContextProps) => (
           <SearchPageBody
             pathname={NEW_FAVOURITES_PATH}
-            headerConfig={favouritesPageHeaderConfig}
+            headerConfig={favouritesPageHeaderConfig(favouritesType)}
             refinePanelConfig={favouritesPageRefinePanelConfig(
               searchContextProps,
             )}

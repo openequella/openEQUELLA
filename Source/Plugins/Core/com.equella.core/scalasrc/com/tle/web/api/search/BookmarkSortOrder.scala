@@ -26,7 +26,7 @@ import com.tle.common.usermanagement.user.CurrentUser
   * items).
   */
 object BookmarkSortOrder {
-  val ID_FAVOURITE_DATE: String = "favourite_date"
+  val ID_FAVOURITE_DATE: String = "added_at"
 
   /** Give an ID of an expected bookmark sort order, will create a `SortField` that can be used with
     * DefaultSearch to achieve that order. However, if not one of the bookmark orders, then will
