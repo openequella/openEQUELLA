@@ -6,7 +6,7 @@ libraryDependencies ++= Seq(
   "org.apache.commons"   % "commons-fileupload2-core"  % "2.0.0-M4",
   "org.apache.commons"   % "commons-fileupload2-javax" % "2.0.0-M4",
   "commons-io"           % "commons-io"                % "2.20.0",
-  "com.google.guava"     % "guava"                     % "33.4.8-jre",
+  "com.google.guava"     % "guava"                     % "33.5.0-jre",
   "org.antlr"            % "ST4"                       % "4.3.4",
   "com.google.code.gson" % "gson"                      % "2.13.2",
   "org.slf4j"            % "jcl-over-slf4j"            % "2.0.17",
