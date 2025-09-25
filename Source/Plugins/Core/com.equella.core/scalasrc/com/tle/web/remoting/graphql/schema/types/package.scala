@@ -32,9 +32,4 @@ package object types {
     */
   def toLocalDateTime(date: Date): Option[LocalDateTime] =
     Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
-
-  /** Converts a `LanguageBundle` to an `Option[Long]` representing the bundle ID. This is useful
-    * for cases where the bundle may be null, and we want to safely extract the ID if it exists.
-    */
-  def languageBundleId(bundle: LanguageBundle): Option[Long] = Option(bundle).map(_.getId)
 }
