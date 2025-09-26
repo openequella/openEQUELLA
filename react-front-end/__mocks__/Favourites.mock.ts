@@ -78,7 +78,7 @@ export const getFavouriteResourcesResp: OEQ.Search.SearchResult<OEQ.Search.Searc
     highlight: [],
   };
 
-export const getEmptyTransformedGallerySearchResp: OEQ.Search.SearchResult<GallerySearchResultItem> =
+export const getEmptyGallerySearchResp: OEQ.Search.SearchResult<GallerySearchResultItem> =
   {
     start: 0,
     length: 0,

@@ -23,7 +23,7 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
 import {
-  getEmptyTransformedGallerySearchResp,
+  getEmptyGallerySearchResp,
   getFavouriteResourcesResp,
 } from "../../../__mocks__/Favourites.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
@@ -41,11 +41,12 @@ import {
 } from "../MuiTestHelpers";
 import {
   mockCollaborators,
+  queryClassificationPanel,
   queryListItems,
+  queryRefineSearchComponent,
   SORTORDER_SELECT_ID,
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
-import * as OEQ from "@openequella/rest-api-client";
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { mockApisForFavouriteSearches } from "./components/FavouritesSearchTestHelper";
 
@@ -65,86 +66,73 @@ const {
   mockSearch,
   mockImageGallerySearch,
   mockVideoGallerySearch,
+  mockListClassification,
 } = mockCollaborators();
-
 mockCollections.mockResolvedValue(getCollectionMap);
 mockCurrentUser.mockResolvedValue(getCurrentUserMock);
-mockSearchSettings.mockResolvedValue(
-  SearchSettingsModule.defaultSearchSettings,
-);
+mockSearchSettings.mockResolvedValue({
+  ...SearchSettingsModule.defaultSearchSettings,
+  searchingShowNonLiveCheckbox: true,
+});
 
 const mockFavResourcesSearch = jest
   .spyOn(FavouriteModule, "searchFavouriteItems")
   .mockResolvedValue(getFavouriteResourcesResp);
 const { mockFavSearchesSearch } = mockApisForFavouriteSearches();
 
+const renderFavouritesPage = async (): Promise<RenderResult> => {
+  window.matchMedia = createMatchMedia(1280);
+
+  const history = createMemoryHistory();
+
+  const page = render(
+    <ThemeProvider theme={createTheme()}>
+      <Router history={history}>
+        <AppContext.Provider
+          value={{
+            appErrorHandler: jest.fn(),
+            refreshUser: jest.fn(),
+            currentUser: getCurrentUserMock,
+          }}
+        >
+          <FavouritesPage updateTemplate={jest.fn()} />
+        </AppContext.Provider>
+      </Router>
+    </ThemeProvider>,
+  );
+  // Wait for the first completion of initial search
+  await waitForSearchCompleted();
+
+  return page;
+};
+
 describe("<FavouritesPage/>", () => {
-  const renderFavouritesPage = async (
-    screenWidth: number = 1280,
-    currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock,
-  ): Promise<RenderResult> => {
-    window.matchMedia = createMatchMedia(screenWidth);
-
-    const history = createMemoryHistory();
-
-    const page = render(
-      <ThemeProvider theme={createTheme()}>
-        <Router history={history}>
-          <AppContext.Provider
-            value={{
-              appErrorHandler: jest.fn(),
-              refreshUser: jest.fn(),
-              currentUser,
-            }}
-          >
-            <FavouritesPage updateTemplate={jest.fn()} />
-          </AppContext.Provider>
-        </Router>
-      </ThemeProvider>,
-    );
-    // Wait for the first completion of initial search
-    await waitForSearchCompleted();
-
-    return page;
-  };
-
-  let page: RenderResult;
-  beforeEach(async () => {
-    page = await renderFavouritesPage();
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("shows Favourites resources in list mode when we first land on the page", async () => {
-    const listSearchResults = queryListItems(page.container);
+    const { container } = await renderFavouritesPage();
+    const listSearchResults = queryListItems(container);
 
     expect(mockFavResourcesSearch).toHaveBeenCalled();
     expect(mockSearch).not.toHaveBeenCalled();
-    expect(isToggleButtonChecked(page.container, resourcesLabel)).toBeTruthy();
-    expect(isToggleButtonChecked(page.container, modeItemList)).toBeTruthy();
+    expect(isToggleButtonChecked(container, resourcesLabel)).toBeTruthy();
+    expect(isToggleButtonChecked(container, modeItemList)).toBeTruthy();
     expect(listSearchResults).toHaveLength(2);
   });
 
   it.each([
-    [
-      modeGalleryImage,
-      mockImageGallerySearch,
-      getEmptyTransformedGallerySearchResp,
-    ],
-    [
-      modeGalleryVideo,
-      mockVideoGallerySearch,
-      getEmptyTransformedGallerySearchResp,
-    ],
+    [modeGalleryImage, mockImageGallerySearch, getEmptyGallerySearchResp],
+    [modeGalleryVideo, mockVideoGallerySearch, getEmptyGallerySearchResp],
   ])(
     "shows favourite resources's %s",
     async (mode, gallerySearch, mockResponse) => {
+      const { container } = await renderFavouritesPage();
       gallerySearch.mockResolvedValue(mockResponse);
-      await selectToggleButton(page.container, mode);
+      await selectToggleButton(container, mode);
 
-      expect(isToggleButtonChecked(page.container, mode)).toBeTruthy();
+      expect(isToggleButtonChecked(container, mode)).toBeTruthy();
       expect(gallerySearch).toHaveBeenCalledTimes(1);
       expect(mockFavResourcesSearch).toHaveBeenCalled();
       expect(mockSearch).not.toHaveBeenCalled();
@@ -152,9 +140,10 @@ describe("<FavouritesPage/>", () => {
   );
 
   it("supports changing Favourites Type to 'Searches' using Favourites Selector", async () => {
-    await selectToggleButton(page.container, searchesLabel);
+    const { container } = await renderFavouritesPage();
+    await selectToggleButton(container, searchesLabel);
 
-    expect(isToggleButtonChecked(page.container, searchesLabel)).toBeTruthy();
+    expect(isToggleButtonChecked(container, searchesLabel)).toBeTruthy();
     expect(mockFavSearchesSearch).toHaveBeenCalled();
   });
 
@@ -172,15 +161,12 @@ describe("<FavouritesPage/>", () => {
         expect(wildcardToggle).not.toBeInTheDocument(),
     ],
   ])(
-    "%s the wildcard search toggle for Favourite Type: %s",
-    async (_, favouriteType, assertion) => {
-      const isFavouriteSearches = favouriteType === searchesLabel;
-      if (isFavouriteSearches) {
-        await selectToggleButton(page.container, searchesLabel);
-      }
-      const wildcardToggle = page.queryByRole("switch", {
-        name: wildcardSearch,
-      });
+    "%s the wildcard search toggle for Favourite %s",
+    async (_, typeLabel, assertion) => {
+      const { container, queryByRole } = await renderFavouritesPage();
+      await selectToggleButton(container, typeLabel);
+      const wildcardToggle = queryByRole("switch", { name: wildcardSearch });
+
       assertion(wildcardToggle);
     },
   );
@@ -198,18 +184,60 @@ describe("<FavouritesPage/>", () => {
       ],
     ],
     [searchesLabel, [sortOptions.title, dateFavourited]],
-  ])(
-    "shows custom sort order for Favourite Type: %s",
-    async (favouriteType, options) => {
-      if (favouriteType === searchesLabel) {
-        await selectToggleButton(page.container, searchesLabel);
-      }
-      // Click the menu
-      await clickSelect(page.container, SORTORDER_SELECT_ID);
-      // Check how many of the expected options are now on screen
-      const foundOptions = countPresentSelectOptions(options);
+  ])("shows custom sort order for Favourite %s", async (typeLabel, options) => {
+    const { container } = await renderFavouritesPage();
+    await selectToggleButton(container, typeLabel);
+    await clickSelect(container, SORTORDER_SELECT_ID);
+    const foundOptions = countPresentSelectOptions(options);
 
-      expect(foundOptions).toBe(options.length);
-    },
-  );
+    expect(foundOptions).toBe(options.length);
+  });
+
+  describe("Side panel", () => {
+    it("shows all expected refine panel controls for Favourite Resources", async () => {
+      const { container } = await renderFavouritesPage();
+
+      [
+        "FavouritesSelector",
+        "DisplayModeSelector",
+        "CollectionSelector",
+        "RemoteSearchSelector",
+        "DateRangeSelector",
+        "MIMETypeSelector",
+        "OwnerSelector",
+        "StatusSelector",
+        "SearchAttachmentsSelector",
+      ].forEach((componentSuffix) =>
+        expect(
+          queryRefineSearchComponent(container, componentSuffix),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it("hides Advanced search refine panel control for Favourite Resources", async () => {
+      const { container } = await renderFavouritesPage();
+
+      expect(
+        queryRefineSearchComponent(container, "AdvancedSearchSelector"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not list Classifications and show Classification panel for Favourite Resources", async () => {
+      const { container } = await renderFavouritesPage();
+
+      expect(mockListClassification).not.toHaveBeenCalled();
+      expect(queryClassificationPanel(container)).not.toBeInTheDocument();
+    });
+
+    it("shows only Favourites Selector and Date Range Selector refine panel controls for Favourite Searches", async () => {
+      const { container } = await renderFavouritesPage();
+      await selectToggleButton(container, searchesLabel);
+
+      ["FavouritesSelector", "DateRangeSelector"].forEach((componentSuffix) =>
+        expect(
+          queryRefineSearchComponent(container, componentSuffix),
+        ).toBeInTheDocument(),
+      );
+    });
+  });
 });
