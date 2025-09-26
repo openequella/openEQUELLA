@@ -123,21 +123,18 @@ describe("<FavouritesPage/>", () => {
   });
 
   it.each([
-    [modeGalleryImage, mockImageGallerySearch, getEmptyGallerySearchResp],
-    [modeGalleryVideo, mockVideoGallerySearch, getEmptyGallerySearchResp],
-  ])(
-    "shows favourite resources's %s",
-    async (mode, gallerySearch, mockResponse) => {
-      const { container } = await renderFavouritesPage();
-      gallerySearch.mockResolvedValue(mockResponse);
-      await selectToggleButton(container, mode);
+    [modeGalleryImage, mockImageGallerySearch],
+    [modeGalleryVideo, mockVideoGallerySearch],
+  ])("shows Favourite Resources's %s", async (mode, gallerySearch) => {
+    const { container } = await renderFavouritesPage();
+    gallerySearch.mockResolvedValue(getEmptyGallerySearchResp);
+    await selectToggleButton(container, mode);
 
-      expect(isToggleButtonChecked(container, mode)).toBeTruthy();
-      expect(gallerySearch).toHaveBeenCalledTimes(1);
-      expect(mockFavResourcesSearch).toHaveBeenCalled();
-      expect(mockSearch).not.toHaveBeenCalled();
-    },
-  );
+    expect(isToggleButtonChecked(container, mode)).toBeTruthy();
+    expect(gallerySearch).toHaveBeenCalledTimes(1);
+    expect(mockFavResourcesSearch).toHaveBeenCalled();
+    expect(mockSearch).not.toHaveBeenCalled();
+  });
 
   it("supports changing Favourites Type to 'Searches' using Favourites Selector", async () => {
     const { container } = await renderFavouritesPage();
