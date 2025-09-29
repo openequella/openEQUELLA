@@ -28,6 +28,7 @@ import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.{
   KEY_TITLEONLY
 }
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.jdk.CollectionConverters._
 
@@ -40,6 +41,13 @@ import scala.jdk.CollectionConverters._
 object PortletType extends Enumeration {
   val browse, favourites, freemarker, html, iframe, myresources, recent, rss, search, tasks,
       taskstatistics = Value
+}
+
+/** Enum for the column where a portlet is displayed in the dashboard. If the layout is not
+  * configured, or it's single column, use 'left'.
+  */
+object PortletColumn extends Enumeration {
+  val left, right = Value
 }
 
 /** Common details shared by all portlet types.
@@ -77,7 +85,7 @@ final case class PortletBase(
     canDelete: Boolean,
     canEdit: Boolean,
     canMinimise: Boolean,
-    column: Int,
+    column: PortletColumn.Value,
     order: Int
 )
 

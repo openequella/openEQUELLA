@@ -21,29 +21,69 @@ package com.tle.web.api.dashboard.bean
 import com.tle.core.dashboard.model.{
   FormattedTextPortlet,
   PortletBase,
+  PortletColumn,
   PortletDetails,
   RecentContributionsPortlet,
   TaskStatisticsPortlet
 }
 
+/** DTO for the common details shared by all portlet types.
+  */
+final case class PortletBaseBean(
+    uuid: String,
+    name: String,
+    isInstitutionWide: Boolean,
+    isClosed: Boolean,
+    isMinimised: Boolean,
+    canClose: Boolean,
+    canDelete: Boolean,
+    canEdit: Boolean,
+    canMinimise: Boolean,
+    column: Int,
+    order: Int
+)
+
+object PortletBaseBean {
+  // Convert the portlet column to its integer representation.
+  private def column(col: PortletColumn.Value) = col match {
+    case PortletColumn.left  => 0
+    case PortletColumn.right => 1
+  }
+
+  def apply(details: PortletBase): PortletBaseBean =
+    PortletBaseBean(
+      uuid = details.uuid,
+      name = details.name,
+      isInstitutionWide = details.isInstitutionWide,
+      isClosed = details.isClosed,
+      isMinimised = details.isMinimised,
+      canClose = details.canClose,
+      canDelete = details.canDelete,
+      canEdit = details.canEdit,
+      canMinimise = details.canMinimise,
+      column = column(details.column),
+      order = details.order
+    )
+}
+
 /** Basic DTO structure for all portlets, including common details and type.
   */
 sealed trait PortletResponse {
-  def commonDetails: PortletBase
+  def commonDetails: PortletBaseBean
   def portletType: String
 }
 
 /** DTO for portlets that do not have any additional configurations.
   */
 final case class BasicPortletBean(
-    commonDetails: PortletBase,
+    commonDetails: PortletBaseBean,
     portletType: String
 ) extends PortletResponse
 
 /** DTO for Formatted Text portlets, including the raw HTML content.
   */
 final case class FormattedTextPortletBean(
-    commonDetails: PortletBase,
+    commonDetails: PortletBaseBean,
     portletType: String,
     rawHtml: String
 ) extends PortletResponse
@@ -51,7 +91,7 @@ final case class FormattedTextPortletBean(
 /** DTO for Recent Contributions portlets, including all the configured Item search criteria.
   */
 final case class RecentContributionsPortletBean(
-    commonDetails: PortletBase,
+    commonDetails: PortletBaseBean,
     portletType: String,
     collectionUuids: Option[List[String]],
     query: Option[String],
@@ -63,7 +103,7 @@ final case class RecentContributionsPortletBean(
 /** DTO for Task Statistics portlets, including the configured trend period.
   */
 final case class TaskStatisticsPortletBean(
-    commonDetails: PortletBase,
+    commonDetails: PortletBaseBean,
     portletType: String,
     trend: String
 ) extends PortletResponse
@@ -79,7 +119,7 @@ object PortletResponse {
           isShowTitleOnly
         ) =>
       RecentContributionsPortletBean(
-        commonDetails = commonDetails,
+        commonDetails = PortletBaseBean(commonDetails),
         portletType = p.portletType.toString,
         collectionUuids = collectionUuids,
         query = query,
@@ -89,19 +129,19 @@ object PortletResponse {
       )
     case p @ TaskStatisticsPortlet(commonDetails, trend) =>
       TaskStatisticsPortletBean(
-        commonDetails = commonDetails,
+        commonDetails = PortletBaseBean(commonDetails),
         portletType = p.portletType.toString,
         trend = trend.toString
       )
     case p @ FormattedTextPortlet(commonDetails, rawHtml) =>
       FormattedTextPortletBean(
-        commonDetails = commonDetails,
+        commonDetails = PortletBaseBean(commonDetails),
         portletType = p.portletType.toString,
         rawHtml = rawHtml
       )
     case other =>
       BasicPortletBean(
-        commonDetails = other.commonDetails,
+        commonDetails = PortletBaseBean(other.commonDetails),
         portletType = other.portletType.toString
       )
   }

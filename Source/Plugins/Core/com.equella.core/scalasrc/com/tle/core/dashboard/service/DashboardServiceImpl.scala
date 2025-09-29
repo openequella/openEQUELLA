@@ -21,7 +21,7 @@ package com.tle.core.dashboard.service
 import cats.implicits._
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.i18n.LangUtils
-import com.tle.common.portal.entity.Portlet
+import com.tle.common.portal.entity.{Portlet, PortletPreference}
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.dashboard.model.PortletCreatable.fromDescriptor
 import com.tle.core.dashboard.model._
@@ -96,7 +96,7 @@ class DashboardServiceImpl @Inject() (
         canDelete = isOwner && !portlet.isInstitutional && portletService.canDelete(portlet),
         canEdit = isOwner && !portlet.isInstitutional && portletService.canEdit(portlet),
         canMinimise = nonGuestUser && portlet.isMinimisable,
-        column = preference.map(_.getPosition).getOrElse(0),
+        column = preference.map(getColumn).getOrElse(PortletColumn.left),
         order = preference.map(_.getOrder).getOrElse(0)
       )
     }
@@ -172,6 +172,28 @@ class DashboardServiceImpl @Inject() (
         }
       case Some(_) => Left(new AccessDeniedException(s"No permission to delete portlet $uuid."))
       case None    => Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
+    }
+  }
+
+  /** Convert the legacy portlet position to the columns supported in the new Dashboard.
+    *
+    * If the legacy position is 0 or 1, which means the portlet is in the top area, it should be
+    * displayed in the left column. If the legacy position is 2, which means the portlet is in the
+    * bottom-left area, it should also be displayed in the left column. If the legacy position is 3,
+    * which means the portlet is in the bottom-right area, it should be displayed in the right
+    * column.
+    */
+  private def getColumn(legacyPref: PortletPreference): PortletColumn.Value = {
+    legacyPref.getPosition match {
+      case 0 | 1 | 2 => PortletColumn.left
+      case 3         => PortletColumn.right
+      case invalidPos =>
+        LOGGER.error(
+          s"Invalid legacy portlet position {} found for portlet {}. Default to the left column.",
+          invalidPos,
+          legacyPref.getPortlet.getUuid
+        )
+        PortletColumn.left
     }
   }
 }
