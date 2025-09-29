@@ -41,6 +41,11 @@ export type PortletType =
   | 'taskstatistics';
 
 /**
+ * Supported Portlet column positions where 'left' is represented by 0 and 'right' is represented by 1.
+ */
+export type PortletColumn = 0 | 1;
+
+/**
  * Common details shared by all portlet types.
  */
 interface PortletBase {
@@ -81,9 +86,9 @@ interface PortletBase {
    */
   canMinimise: boolean;
   /**
-   * The column the portlet is in (starting from 0)
+   * The column the portlet is in
    */
-  column: number;
+  column: PortletColumn;
   /**
    * The order of the portlet in the column (starting from 0)
    */
