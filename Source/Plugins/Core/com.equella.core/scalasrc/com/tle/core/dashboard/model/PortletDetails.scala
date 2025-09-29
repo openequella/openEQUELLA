@@ -28,7 +28,6 @@ import com.tle.web.portal.standard.editor.RecentContribPortletEditorSection.{
   KEY_TITLEONLY
 }
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.jdk.CollectionConverters._
 
