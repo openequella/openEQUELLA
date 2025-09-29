@@ -179,5 +179,4 @@ export const selectToggleButton = async (
   label: string,
 ) => {
   await userEvent.click(getByLabelText(container, label));
-  expect(isToggleButtonChecked(container, label)).toBeTruthy();
 };

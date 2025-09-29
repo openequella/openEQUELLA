@@ -126,8 +126,7 @@ describe("<FavouritesPage/>", () => {
     [modeGalleryImage, mockImageGallerySearch],
     [modeGalleryVideo, mockVideoGallerySearch],
   ])("shows Favourite Resources's %s", async (mode, gallerySearch) => {
-    gallerySearch.mockResolvedValue(getEmptyGallerySearchResp);
-
+    gallerySearch.mockResolvedValueOnce(getEmptyGallerySearchResp);
     const { container } = await renderFavouritesPage();
     await selectToggleButton(container, mode);
 
