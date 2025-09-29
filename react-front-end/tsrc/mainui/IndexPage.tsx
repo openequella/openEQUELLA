@@ -48,6 +48,7 @@ import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
   OEQRouteNewUI,
+  OLD_DASHBOARD_PATH,
   OLD_HIERARCHY_PATH,
   OLD_MY_RESOURCES_PATH,
   OLD_SEARCH_PATH,
@@ -68,6 +69,7 @@ const BrowseHierarchyPage = React.lazy(
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
+const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
 
 const renderData = getRenderData();
 
@@ -271,6 +273,14 @@ export default function IndexPage() {
 
             return page;
           }}
+        />
+        <Route
+          path={OLD_DASHBOARD_PATH}
+          render={(routeProps) =>
+            isSelectionSessionOpen()
+              ? renderLegacyContent(routeProps)
+              : renderProtectedPage(routeProps, DashboardPage)
+          }
         />
         <Route render={renderLegacyContent} />
       </Switch>

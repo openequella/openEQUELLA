@@ -351,6 +351,9 @@ export const languageStrings = {
       thisYear: "This year",
     },
   },
+  dashboard: {
+    title: "Dashboard",
+  },
   drm: {
     getTerms: {
       error: "Failed to retrieve DRM terms",
