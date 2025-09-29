@@ -169,7 +169,7 @@ export const isToggleButtonChecked = (
 };
 
 /**
- * Select a MUI Toggle Button by clicking it and assert that it becomes checked.
+ * Select a MUI Toggle Button by clicking it.
  *
  * @param container The container element to search within.
  * @param label The accessible name of the toggle button to click.
@@ -177,6 +177,4 @@ export const isToggleButtonChecked = (
 export const selectToggleButton = async (
   container: HTMLElement,
   label: string,
-) => {
-  await userEvent.click(getByLabelText(container, label));
-};
+) => await userEvent.click(getByLabelText(container, label));
