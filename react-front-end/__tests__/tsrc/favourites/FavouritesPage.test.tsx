@@ -44,6 +44,7 @@ import {
   queryClassificationPanel,
   queryListItems,
   queryRefineSearchComponent,
+  queryWildcardSearchSwitch,
   SORTORDER_SELECT_ID,
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
@@ -53,7 +54,6 @@ import { mockApisForFavouriteSearches } from "./components/FavouritesSearchTestH
 const { resources: resourcesLabel, searches: searchesLabel } =
   languageStrings.favourites.favouritesSelector;
 const {
-  wildcardSearch,
   displayModeSelector: { modeItemList, modeGalleryImage, modeGalleryVideo },
   sortOptions,
 } = languageStrings.searchpage;
@@ -126,8 +126,9 @@ describe("<FavouritesPage/>", () => {
     [modeGalleryImage, mockImageGallerySearch],
     [modeGalleryVideo, mockVideoGallerySearch],
   ])("shows Favourite Resources's %s", async (mode, gallerySearch) => {
-    const { container } = await renderFavouritesPage();
     gallerySearch.mockResolvedValue(getEmptyGallerySearchResp);
+
+    const { container } = await renderFavouritesPage();
     await selectToggleButton(container, mode);
 
     expect(isToggleButtonChecked(container, mode)).toBeTruthy();
@@ -144,29 +145,16 @@ describe("<FavouritesPage/>", () => {
     expect(mockFavSearchesSearch).toHaveBeenCalled();
   });
 
-  it.each([
-    [
-      "shows",
-      resourcesLabel,
-      (wildcardToggle: HTMLElement | null) =>
-        expect(wildcardToggle).toBeInTheDocument(),
-    ],
-    [
-      "hides",
-      searchesLabel,
-      (wildcardToggle: HTMLElement | null) =>
-        expect(wildcardToggle).not.toBeInTheDocument(),
-    ],
-  ])(
-    "%s the wildcard search toggle for Favourite %s",
-    async (_, typeLabel, assertion) => {
-      const { container, queryByRole } = await renderFavouritesPage();
-      await selectToggleButton(container, typeLabel);
-      const wildcardToggle = queryByRole("switch", { name: wildcardSearch });
+  it("shows wildcard toggle for Favourite Resources and hides it for Favourite Searches", async () => {
+    const { container } = await renderFavouritesPage();
 
-      assertion(wildcardToggle);
-    },
-  );
+    // Initially on Favourite Resources
+    expect(queryWildcardSearchSwitch(container)).toBeInTheDocument();
+
+    // Switch to Favourite Searches
+    await selectToggleButton(container, searchesLabel);
+    expect(queryWildcardSearchSwitch(container)).not.toBeInTheDocument();
+  });
 
   it.each([
     [
@@ -193,8 +181,7 @@ describe("<FavouritesPage/>", () => {
   describe("Side panel", () => {
     it("shows all expected refine panel controls for Favourite Resources", async () => {
       const { container } = await renderFavouritesPage();
-
-      [
+      const options: string[] = [
         "FavouritesSelector",
         "DisplayModeSelector",
         "CollectionSelector",
@@ -204,11 +191,14 @@ describe("<FavouritesPage/>", () => {
         "OwnerSelector",
         "StatusSelector",
         "SearchAttachmentsSelector",
-      ].forEach((componentSuffix) =>
+      ];
+
+      options.forEach((componentSuffix: string) =>
         expect(
           queryRefineSearchComponent(container, componentSuffix),
         ).toBeInTheDocument(),
       );
+      expect.assertions(options.length);
     });
 
     it("hides Advanced search refine panel control for Favourite Resources", async () => {
@@ -229,12 +219,14 @@ describe("<FavouritesPage/>", () => {
     it("shows only Favourites Selector and Date Range Selector refine panel controls for Favourite Searches", async () => {
       const { container } = await renderFavouritesPage();
       await selectToggleButton(container, searchesLabel);
+      const options: string[] = ["FavouritesSelector", "DateRangeSelector"];
 
-      ["FavouritesSelector", "DateRangeSelector"].forEach((componentSuffix) =>
+      options.forEach((componentSuffix) =>
         expect(
           queryRefineSearchComponent(container, componentSuffix),
         ).toBeInTheDocument(),
       );
+      expect.assertions(options.length);
     });
   });
 });

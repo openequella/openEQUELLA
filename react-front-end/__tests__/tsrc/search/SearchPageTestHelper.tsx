@@ -444,6 +444,13 @@ export const getQueryBar = (container: Element): HTMLElement => {
 };
 
 /**
+ * Find the wildcard (asterisk) search mode toggle switch, or return null if it is not rendered.
+ * @param container Root element containing the Search Bar.
+ */
+export const queryWildcardSearchSwitch = (container: HTMLElement) =>
+  container.querySelector<HTMLElement>("#wildcardSearch");
+
+/**
  * Interact with the Search Bar to type the provided query. The wildcard mode is enabled by default.
  * In order to test the debouncing properly, this function will set up a testing environment to use the fake timer.
  * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer`
@@ -454,7 +461,7 @@ export const getQueryBar = (container: Element): HTMLElement => {
  * @param wildcardMode `true` to enable wildcard mode.
  */
 export const changeQuery = async (
-  container: Element,
+  container: HTMLElement,
   query: string,
   wildcardMode: boolean = true,
 ) => {
@@ -463,7 +470,7 @@ export const changeQuery = async (
   });
 
   if (!wildcardMode) {
-    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    const wildcardModeSwitch = queryWildcardSearchSwitch(container);
     if (!wildcardModeSwitch) {
       throw new Error("Failed to find the raw mode switch!");
     }

@@ -77,6 +77,7 @@ import {
   changeQuery,
   queryListItems,
   queryGalleryItems,
+  queryWildcardSearchSwitch,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, so we need a longer timeout.
@@ -187,21 +188,17 @@ describe("<SearchPage/>", () => {
     const { modeGalleryImage, modeGalleryVideo, modeItemList } =
       languageStrings.searchpage.displayModeSelector;
 
-    let page: RenderResult;
-
-    beforeEach(async () => {
-      page = await renderSearchPage();
-    });
-
     it("has a default of item list mode", async () => {
+      const { container } = await renderSearchPage();
+
       // Check that the button is visually correct
-      expect(isToggleButtonChecked(page.container, modeItemList)).toBeTruthy();
+      expect(isToggleButtonChecked(container, modeItemList)).toBeTruthy();
 
       // Check that it's all wired up correctly - i.e. no mime types were passed to the search
       expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
 
       // And lastly check that it was a item list display - not a gallery
-      expect(queryListItems(page.container).length).toBeGreaterThan(0);
+      expect(queryListItems(container).length).toBeGreaterThan(0);
     });
 
     it.each([
@@ -225,8 +222,10 @@ describe("<SearchPage/>", () => {
         listClassifications,
         mockResponse,
       ) => {
-        expect(queryListItems(page.container).length).toBeGreaterThan(0);
-        expect(queryGalleryItems(page.container)).toHaveLength(0);
+        const { container } = await renderSearchPage();
+
+        expect(queryListItems(container).length).toBeGreaterThan(0);
+        expect(queryGalleryItems(container)).toHaveLength(0);
 
         // Monitor the search and classifications functions, and change the mode
         await Promise.all([
@@ -234,7 +233,7 @@ describe("<SearchPage/>", () => {
           listClassifications.mockResolvedValue(
             CategorySelectorMock.classifications,
           ),
-          selectToggleButton(page.container, mode),
+          selectToggleButton(container, mode),
         ]);
 
         // Make sure the search has been triggered
@@ -242,9 +241,9 @@ describe("<SearchPage/>", () => {
         expect(listClassifications).toHaveBeenCalledTimes(1);
 
         // And now check the visual change
-        expect(queryGalleryItems(page.container).length).toBeGreaterThan(0);
-        expect(queryListItems(page.container)).toHaveLength(0);
-        expect(queryMimeTypesSelector(page.container)).not.toBeInTheDocument();
+        expect(queryGalleryItems(container).length).toBeGreaterThan(0);
+        expect(queryListItems(container)).toHaveLength(0);
+        expect(queryMimeTypesSelector(container)).not.toBeInTheDocument();
       },
     );
   });
@@ -909,7 +908,7 @@ describe("<SearchPage/>", () => {
       mockReadDataFromLocalStorage.mockReturnValueOnce(true);
       const { container } = await renderSearchPage();
       expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
-      const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+      const wildcardModeSwitch = queryWildcardSearchSwitch(container);
 
       // Since rawMode is true, the checkbox should not be checked.
       expect(wildcardModeSwitch).not.toBeChecked();
