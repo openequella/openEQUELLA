@@ -59,7 +59,9 @@ class ImportInsts(allowed: String => Boolean) {
           )
           if (testConfig.isNewUI) {
             val instCtx = new PageContext(context, instutionUrl)
-            new LoginPage(instCtx).load.login("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
+            // Currently the homepage is still in old UI, set newUI to false.
+            new LoginPage(instCtx).load
+              .login("TLE_ADMINISTRATOR", testConfig.getAdminPassword, false)
             val sp = new SettingsPage(instCtx).load()
             sp.setNewUI(true)
           }

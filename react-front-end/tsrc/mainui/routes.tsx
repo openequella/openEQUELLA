@@ -70,6 +70,7 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
+const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -107,6 +108,7 @@ interface Routes {
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   CreateLti13Platform: OEQRouteNewUI;
+  Dashboard: OEQRouteNewUI;
   EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
@@ -163,6 +165,9 @@ export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 export const NEW_HIERARCHY_PATH = "/page/hierarchy";
 export const OLD_HIERARCHY_PATH = "/hierarchy.do";
 
+export const NEW_DASHBOARD_PATH = "/page/home";
+export const OLD_DASHBOARD_PATH = "/home.do";
+
 export const routes: Routes = {
   BrowseHierarchy: {
     path: "/page/hierarchies",
@@ -183,6 +188,10 @@ export const routes: Routes = {
     path: "/page/createLti13Platform",
     component: CreateLti13PlatformPage,
     permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
+  },
+  Dashboard: {
+    path: NEW_DASHBOARD_PATH,
+    component: DashboardPage,
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first

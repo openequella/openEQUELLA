@@ -27,6 +27,18 @@ public class LoginPage extends AbstractPage<LoginPage> {
     return new HomePage(context).get();
   }
 
+  /**
+   * Logs in and returns the HomePage, specifying whether the new UI is expected.
+   *
+   * @param username The username to log in with.
+   * @param password The password to log in with.
+   * @param isNewUI True if the new UI is expected, false otherwise.
+   */
+  public HomePage login(String username, String password, boolean isNewUI) {
+    loginWithRedirect(username, password);
+    return new HomePage(context, isNewUI).get();
+  }
+
   public LoginNoticePage loginWithNotice(String username, String password) {
     loginWithRedirect(username, password);
     return new LoginNoticePage(context).get();
