@@ -20,7 +20,10 @@ import { createMemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
 import { getAdvancedSearchDefinition } from "../../../../__mocks__/AdvancedSearchModule.mock";
-import { fullOptionsFavouriteSearch } from "../../../../__mocks__/Favourites.mock";
+import {
+  fullOptionsFavouriteSearch,
+  getFavouriteSearchesResp,
+} from "../../../../__mocks__/Favourites.mock";
 import FavouritesSearch, {
   FavouritesSearchProps,
 } from "../../../../tsrc/favourites/components/FavouritesSearch";
@@ -56,7 +59,10 @@ const { ok: okButtonLabel, cancel: cancelButtonLabel } =
  *
  * @returns an object containing spy for `deleteFavouriteSearch` for use in tests.
  */
-export const mockApis = (): { mockDeleteFavouriteSearch: jest.SpyInstance } => {
+export const mockApisForFavouriteSearches = (): {
+  mockFavSearchesSearch: jest.SpyInstance;
+  mockDeleteFavouriteSearch: jest.SpyInstance;
+} => {
   jest
     .spyOn(HierarchyModule, "getHierarchyDetails")
     .mockImplementation(getHierarchyDetails);
@@ -74,11 +80,14 @@ export const mockApis = (): { mockDeleteFavouriteSearch: jest.SpyInstance } => {
     .mockResolvedValue(getMimeTypeFilters);
   updateMockGetBaseUrl();
 
-  const mockDeleteFavouriteSearch = jest
-    .spyOn(FavouriteModule, "deleteFavouriteSearch")
-    .mockResolvedValue(undefined);
-
-  return { mockDeleteFavouriteSearch };
+  return {
+    mockFavSearchesSearch: jest
+      .spyOn(FavouriteModule, "searchFavouriteSearches")
+      .mockResolvedValue(getFavouriteSearchesResp),
+    mockDeleteFavouriteSearch: jest
+      .spyOn(FavouriteModule, "deleteFavouriteSearch")
+      .mockResolvedValue(undefined),
+  };
 };
 
 /**

@@ -68,7 +68,7 @@ import {
 } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import { clickSelect, querySelectOption } from "../MuiTestHelpers";
+import { clickSelect, countPresentSelectOptions } from "../MuiTestHelpers";
 import {
   addSearchToFavourites,
   initialiseEssentialMocks,
@@ -460,14 +460,6 @@ describe("<MyResourcesPage/>", () => {
   describe("Custom sort orders", () => {
     const sortOptions = languageStrings.myResources.sortOptions;
 
-    const countOptions = (options: string[]) =>
-      pipe(
-        options,
-        A.map(querySelectOption),
-        A.filter((r) => r !== null),
-        A.size,
-      );
-
     it.each<[MyResourcesType, string[]]>([
       [
         "Scrapbook",
@@ -490,7 +482,7 @@ describe("<MyResourcesPage/>", () => {
       await clickSelect(container, SORTORDER_SELECT_ID);
 
       // Check how many of the expected options are now on screen
-      const foundOptions = countOptions(options);
+      const foundOptions = countPresentSelectOptions(options);
 
       expect(foundOptions).toBe(options.length);
     });
@@ -514,7 +506,7 @@ describe("<MyResourcesPage/>", () => {
 
           const { container } = await renderMyResourcesPage(type);
           await clickSelect(container, SORTORDER_SELECT_ID);
-          return countOptions(moderationSortOptions);
+          return countPresentSelectOptions(moderationSortOptions);
         };
 
         expect(await countModOptions(nonModerationType)).toBe(0);
