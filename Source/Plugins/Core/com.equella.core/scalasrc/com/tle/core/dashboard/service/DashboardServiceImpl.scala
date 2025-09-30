@@ -175,24 +175,25 @@ class DashboardServiceImpl @Inject() (
     }
   }
 
-  /** Convert the legacy portlet position to the columns supported in the new Dashboard.
+  /** Determine which column the portlet should be displayed, based on its preference.
     *
-    *   - If the legacy position is 0 or 1, which means the portlet is in the top area, it should be
-    *     displayed in the left column.
-    *   - If the legacy position is 2, which means the portlet is in the bottom-left area, it should
-    *     also be displayed in the left column.
-    *   - If the legacy position is 3, which means the portlet is in the bottom-right area, it
-    *     should be displayed in the right column.
+    * Since the legacy portlet positions are represented by integers, ranging from 0 to 3, the new
+    * layout also uses integers 0 and 1 to represent the two columns 'left' and 'right',
+    * respectively. Therefore, if the portlet position is 1, it should be displayed in the right
+    * column. For all other cases, the portlet should be displayed in the left column.
+    *
+    * This logic will break how portlets are displayed after OEQ is upgraded to 2025.2, but this is
+    * expected, and users can easily re-configure portlet positions in the new layout.
     */
-  private def getPortletColumn(legacyPref: PortletPreference): PortletColumn.Value = {
-    legacyPref.getPosition match {
-      case 0 | 1 | 2 => PortletColumn.left
-      case 3         => PortletColumn.right
+  private def getPortletColumn(pref: PortletPreference): PortletColumn.Value = {
+    pref.getPosition match {
+      case 1         => PortletColumn.right
+      case 0 | 2 | 3 => PortletColumn.left
       case invalidPos =>
         LOGGER.warn(
-          s"Invalid legacy portlet position {} found for portlet {}. Default to the left column.",
+          s"Invalid portlet position {} found for portlet {}. Default to the left column.",
           invalidPos,
-          legacyPref.getPortlet.getUuid
+          pref.getPortlet.getUuid
         )
         PortletColumn.left
     }
