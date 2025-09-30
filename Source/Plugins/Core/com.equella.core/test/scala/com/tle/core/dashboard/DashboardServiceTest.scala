@@ -110,7 +110,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
           canDelete = true,
           canEdit = true,
           canMinimise = true,
-          column = 1,
+          column = PortletColumn.right,
           order = 1
         )
       )

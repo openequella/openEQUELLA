@@ -42,6 +42,13 @@ object PortletType extends Enumeration {
       taskstatistics = Value
 }
 
+/** Enum for the column where a portlet is displayed in the dashboard. If the layout is not
+  * configured, or it's single column, use 'left'.
+  */
+object PortletColumn extends Enumeration {
+  val left, right = Value
+}
+
 /** Common details shared by all portlet types.
   *
   * @param uuid
@@ -77,7 +84,7 @@ final case class PortletBase(
     canDelete: Boolean,
     canEdit: Boolean,
     canMinimise: Boolean,
-    column: Int,
+    column: PortletColumn.Value,
     order: Int
 )
 

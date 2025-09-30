@@ -21,7 +21,7 @@ package com.tle.core.dashboard.service
 import cats.implicits._
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.i18n.LangUtils
-import com.tle.common.portal.entity.Portlet
+import com.tle.common.portal.entity.{Portlet, PortletPreference}
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.dashboard.model.PortletCreatable.fromDescriptor
 import com.tle.core.dashboard.model._
@@ -96,7 +96,7 @@ class DashboardServiceImpl @Inject() (
         canDelete = isOwner && !portlet.isInstitutional && portletService.canDelete(portlet),
         canEdit = isOwner && !portlet.isInstitutional && portletService.canEdit(portlet),
         canMinimise = nonGuestUser && portlet.isMinimisable,
-        column = preference.map(_.getPosition).getOrElse(0),
+        column = preference.map(getPortletColumn).getOrElse(PortletColumn.left),
         order = preference.map(_.getOrder).getOrElse(0)
       )
     }
@@ -172,6 +172,30 @@ class DashboardServiceImpl @Inject() (
         }
       case Some(_) => Left(new AccessDeniedException(s"No permission to delete portlet $uuid."))
       case None    => Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
+    }
+  }
+
+  /** Determine which column the portlet should be displayed, based on its preference.
+    *
+    * Since the legacy portlet positions are represented by integers, ranging from 0 to 3, the new
+    * layout also uses integers 0 and 1 to represent the two columns 'left' and 'right',
+    * respectively. Therefore, if the portlet position is 1, it should be displayed in the right
+    * column. For all other cases, the portlet should be displayed in the left column.
+    *
+    * This logic will break how portlets are displayed after OEQ is upgraded to 2025.2, but this is
+    * expected, and users can easily re-configure portlet positions in the new layout.
+    */
+  private def getPortletColumn(pref: PortletPreference): PortletColumn.Value = {
+    pref.getPosition match {
+      case 1         => PortletColumn.right
+      case 0 | 2 | 3 => PortletColumn.left
+      case invalidPos =>
+        LOGGER.warn(
+          s"Invalid portlet position {} found for portlet {}. Default to the left column.",
+          invalidPos,
+          pref.getPortlet.getUuid
+        )
+        PortletColumn.left
     }
   }
 }
