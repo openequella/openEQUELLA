@@ -16,21 +16,67 @@
  * limitations under the License.
  */
 
-import { useEffect } from "react";
+import { Skeleton } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import { useContext, useEffect, useState } from "react";
 import * as React from "react";
+import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
+import { getDashboardDetails } from "../modules/DashboardModule";
 import { languageStrings } from "../util/langstrings";
+import WelcomeBoard from "./components/WelcomeBoard";
+import * as TE from "fp-ts/TaskEither";
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
 
 const { title } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
+  const { appErrorHandler } = useContext(AppContext);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [dashboardDetails, setDashboardDetails] =
+    useState<OEQ.Dashboard.DashboardDetails>();
+
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(title)(tp),
     }));
   }, [updateTemplate]);
 
-  return <div>Dashboard Page</div>;
+  useEffect(() => {
+    pipe(
+      TE.tryCatch(
+        () => getDashboardDetails(),
+        (e) => `Failed to get dashboard details: ${e}`,
+      ),
+      TE.match(appErrorHandler, setDashboardDetails),
+      T.tapIO(() => () => setIsLoading(false)),
+    )();
+  }, [appErrorHandler]);
+
+  const renderPortlets = () => {
+    return <div id="dashboard-portlet-container">portlets</div>;
+  };
+
+  const renderDashboard = () =>
+    pipe(
+      O.fromNullable(dashboardDetails),
+      O.map(({ portlets }) => portlets),
+      O.chain(O.fromPredicate(A.isNonEmpty)),
+      O.fold(
+        () => <WelcomeBoard />,
+        () => renderPortlets(),
+      ),
+    );
+
+  return isLoading ? (
+    <Skeleton variant="rounded" height="100%" />
+  ) : (
+    renderDashboard()
+  );
 };
 
 export default DashboardPage;

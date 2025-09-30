@@ -353,6 +353,17 @@ export const languageStrings = {
   },
   dashboard: {
     title: "Dashboard",
+    welcomeTitle: "Welcome to openEQUELLA",
+    welcomeDesc: {
+      systemUser: {
+        howToModify:
+          "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users, select <b>Settings</b> from the navigation menu then <b>General > Dashboard</b>.",
+      },
+      nonSystemUser: {
+        hintForOeq:
+          "Select an option from the navigation menu to the left to use openEQUELLA features.",
+      },
+    },
   },
   drm: {
     getTerms: {
