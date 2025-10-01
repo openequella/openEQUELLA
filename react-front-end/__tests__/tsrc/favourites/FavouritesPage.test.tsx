@@ -233,10 +233,10 @@ describe("<FavouritesPage/>", () => {
   });
 
   it("should display bookmark tags if the tags are available for a Favourite Resource", async () => {
-    const { getByLabelText } = await renderFavouritesPage();
+    const { getByText } = await renderFavouritesPage();
 
     itemWithBookmark.bookmark?.tags.forEach((tag) => {
-      expect(getByLabelText(tag)).toBeInTheDocument();
+      expect(getByText(tag)).toBeInTheDocument();
     });
     expect.assertions(2);
   });
@@ -249,8 +249,8 @@ describe("<FavouritesPage/>", () => {
       available: 1,
     });
 
-    const { queryByLabelText } = await renderFavouritesPage();
+    const { queryByText } = await renderFavouritesPage();
 
-    expect(queryByLabelText(tagsLabel)).not.toBeInTheDocument();
+    expect(queryByText(tagsLabel)).not.toBeInTheDocument();
   });
 });
