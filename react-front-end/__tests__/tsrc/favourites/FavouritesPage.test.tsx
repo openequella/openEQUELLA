@@ -40,6 +40,7 @@ import {
   selectToggleButton,
 } from "../MuiTestHelpers";
 import {
+  getRefineSearchComponent,
   mockCollaborators,
   queryClassificationPanel,
   queryListItems,
@@ -184,7 +185,6 @@ describe("<FavouritesPage/>", () => {
         "FavouritesSelector",
         "DisplayModeSelector",
         "CollectionSelector",
-        "RemoteSearchSelector",
         "DateRangeSelector",
         "MIMETypeSelector",
         "OwnerSelector",
@@ -194,18 +194,25 @@ describe("<FavouritesPage/>", () => {
 
       options.forEach((componentSuffix: string) =>
         expect(
-          queryRefineSearchComponent(container, componentSuffix),
+          getRefineSearchComponent(container, componentSuffix),
         ).toBeInTheDocument(),
       );
       expect.assertions(options.length);
     });
 
-    it("hides Advanced search refine panel control for Favourite Resources", async () => {
+    it("hides all expected refine panel control for Favourite Resources", async () => {
       const { container } = await renderFavouritesPage();
+      const options: string[] = [
+        "AdvancedSearchSelector",
+        "RemoteSearchSelector",
+      ];
 
-      expect(
-        queryRefineSearchComponent(container, "AdvancedSearchSelector"),
-      ).not.toBeInTheDocument();
+      options.forEach((componentSuffix: string) =>
+        expect(
+          queryRefineSearchComponent(container, componentSuffix),
+        ).not.toBeInTheDocument(),
+      );
+      expect.assertions(options.length);
     });
 
     it("does not list Classifications and show Classification panel for Favourite Resources", async () => {
@@ -222,7 +229,7 @@ describe("<FavouritesPage/>", () => {
 
       options.forEach((componentSuffix) =>
         expect(
-          queryRefineSearchComponent(container, componentSuffix),
+          getRefineSearchComponent(container, componentSuffix),
         ).toBeInTheDocument(),
       );
       expect.assertions(options.length);

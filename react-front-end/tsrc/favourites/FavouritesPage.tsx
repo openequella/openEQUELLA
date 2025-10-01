@@ -106,6 +106,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     return {
       ...defaultSearchConfig,
       enableAdvancedSearchSelector: false,
+      enableRemoteSearchSelector: false,
       enableDateRangeSelector: true,
       customRefinePanelControl: [
         {
