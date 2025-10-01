@@ -110,6 +110,7 @@ export const favouritesItemsResult = (
           item={item}
           highlights={highlight}
           onFavouriteRemoved={onRemoveFavouriteItem}
+          showBookmarkTags
         />
       );
     }),

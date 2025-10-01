@@ -24,6 +24,7 @@ import SearchResult, {
   defaultActionButtonProps,
   SearchResultProps,
 } from "../../tsrc/search/components/SearchResult";
+import { itemWithBookmark } from "../../__mocks__/SearchResult.mock";
 
 export default {
   title: "Search/SearchResult",
@@ -125,6 +126,16 @@ HideHierarchySearchResult.args = {
   ...BasicSearchResult.args,
   actionButtonConfig: {
     ...defaultActionButtonProps,
-    showAddToFavourite: false,
+    showAddToHierarchy: false,
   },
+};
+
+export const ShowBookmarkTagsSearchResult: StoryFn<SearchResultProps> = (
+  args,
+) => <SearchResult {...args} />;
+
+ShowBookmarkTagsSearchResult.args = {
+  ...BasicSearchResult.args,
+  item: itemWithBookmark,
+  showBookmarkTags: true,
 };

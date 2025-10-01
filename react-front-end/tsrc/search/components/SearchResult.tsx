@@ -27,14 +27,17 @@ import {
   ListItemText,
   Typography,
   useMediaQuery,
+  Box,
+  Chip,
 } from "@mui/material";
 import { styled, Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as A from "fp-ts/Array";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { useHistory } from "react-router";
 import { HashLink } from "react-router-hash-link";
 import { sprintf } from "sprintf-js";
@@ -76,6 +79,7 @@ const {
   favouriteItem: favouriteItemStrings,
   addToHierarchy: { title: addToHierarchyTitle },
 } = languageStrings.searchpage;
+const { tags: tagsLabel } = languageStrings.favourites.favouritesItem;
 
 const PREFIX = "SearchResult";
 
@@ -172,6 +176,10 @@ export interface SearchResultProps {
    * Callback function when an item is removed from favourites.
    */
   onFavouriteRemoved?: () => void;
+  /**
+   * If `true`, displays bookmark tags for the item.
+   */
+  showBookmarkTags?: boolean;
 }
 
 /**
@@ -198,6 +206,7 @@ export default function SearchResult({
   customOnClickTitleHandler,
   actionButtonConfig = defaultActionButtonProps,
   onFavouriteRemoved,
+  showBookmarkTags,
 }: SearchResultProps) {
   const { showAddToHierarchy, showAddToFavourite } = actionButtonConfig;
   const isMdUp = useMediaQuery<Theme>((theme) => theme.breakpoints.up("md"));
@@ -458,6 +467,32 @@ export default function SearchResult({
       ? selectSessionItemContent
       : itemLink();
 
+  const customDisplayBookmarkTags: ReactNode = pipe(
+    O.fromNullable(bookmark?.tags),
+    O.filter(A.isNonEmpty),
+    O.map((tagList) => (
+      <ListItem dense disableGutters>
+        <Typography component="span" aria-label={tagsLabel}>
+          {tagsLabel}&nbsp;
+        </Typography>
+        <Box>
+          {tagList.map((tag, index) => (
+            <Chip
+              component="span"
+              sx={{ m: 0.5 }}
+              key={index}
+              label={tag}
+              aria-label={tag}
+              color="secondary"
+              size="small"
+            />
+          ))}
+        </Box>
+      </ListItem>
+    )),
+    O.toUndefined,
+  );
+
   return (
     <StyledDiv>
       <ListItem
@@ -480,6 +515,7 @@ export default function SearchResult({
                 {highlight(description ?? "")}
               </Typography>
               <List disablePadding>{customDisplayMetadata}</List>
+              {showBookmarkTags && customDisplayBookmarkTags}
               <ItemDrmContext.Provider
                 value={{
                   checkDrmPermission,

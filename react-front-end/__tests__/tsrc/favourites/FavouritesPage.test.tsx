@@ -28,6 +28,8 @@ import {
 } from "../../../__mocks__/Favourites.mock";
 import { getCollectionMap } from "../../../__mocks__/getCollectionsResp";
 import { createMatchMedia } from "../../../__mocks__/MockUseMediaQuery";
+import { itemWithBookmark } from "../../../__mocks__/SearchResult.mock";
+import { basicSearchObj } from "../../../__mocks__/searchresult_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import FavouritesPage from "../../../tsrc/favourites/FavouritesPage";
 import { AppContext } from "../../../tsrc/mainui/App";
@@ -53,6 +55,7 @@ import { mockApisForFavouriteSearches } from "./components/FavouritesSearchTestH
 
 const { resources: resourcesLabel, searches: searchesLabel } =
   languageStrings.favourites.favouritesSelector;
+const { tags: tagsLabel } = languageStrings.favourites.favouritesItem;
 const {
   displayModeSelector: { modeItemList, modeGalleryImage, modeGalleryVideo },
   sortOptions,
@@ -227,5 +230,27 @@ describe("<FavouritesPage/>", () => {
       );
       expect.assertions(options.length);
     });
+  });
+
+  it("should display bookmark tags if the tags are available for a Favourite Resource", async () => {
+    const { getByLabelText } = await renderFavouritesPage();
+
+    itemWithBookmark.bookmark?.tags.forEach((tag) => {
+      expect(getByLabelText(tag)).toBeInTheDocument();
+    });
+    expect.assertions(2);
+  });
+
+  it("should not show bookmark tags if the tags are not available for a Favourite Resource", async () => {
+    mockFavResourcesSearch.mockResolvedValueOnce({
+      ...getFavouriteResourcesResp,
+      results: [basicSearchObj],
+      length: 1,
+      available: 1,
+    });
+
+    const { queryByLabelText } = await renderFavouritesPage();
+
+    expect(queryByLabelText(tagsLabel)).not.toBeInTheDocument();
   });
 });
