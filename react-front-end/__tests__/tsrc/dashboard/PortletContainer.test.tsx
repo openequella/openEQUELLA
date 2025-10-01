@@ -34,20 +34,25 @@ import { PortletContainer } from "../../../tsrc/dashboard/portlet/PortletContain
 import { TwoColumnLayout } from "../../../tsrc/dashboard/portlet/PortletHelper";
 
 describe("<PortletContainer />", () => {
+  /**
+   * Helper function to get the portlets displayed in a specific column of the container.
+   *
+   * @param container - The container element housing the portlets.
+   * @param columnId - ID of
+   * the target column.
+   * @param portlets - A list of portlets that should be displayed in the specified column.
+   * @returns An array of HTMLElements representing the displayed portlets.
+   */
   const getDisplayedPortlets = (
     container: HTMLElement,
     columnId: string,
-    columnIndex: O.Option<OEQ.Dashboard.PortletColumn>,
+    portlets: OEQ.Dashboard.BasicPortlet[],
   ) => {
     const targetColumn = container.querySelector<HTMLDivElement>(columnId);
     expect(targetColumn).toBeInTheDocument();
 
     return pipe(
-      columnIndex,
-      O.match(
-        () => mockPortlets,
-        (col) => mockPortlets.filter((p) => p.commonDetails.column === col),
-      ),
+      portlets,
       A.map((p) =>
         targetColumn!.querySelector(`#portlet-${p.commonDetails.uuid}`),
       ),
@@ -60,11 +65,10 @@ describe("<PortletContainer />", () => {
 
   it("displays all the portlets in the single-column layout", () => {
     const { container } = renderPortletContainer("SingleColumn");
-
     const displayedPortlets = getDisplayedPortlets(
       container,
       "#portlet-container-single-column",
-      O.none,
+      mockPortlets,
     );
     expect(displayedPortlets).toHaveLength(5);
   });
@@ -81,14 +85,14 @@ describe("<PortletContainer />", () => {
       const leftColumnPortlets = getDisplayedPortlets(
         container,
         "#portlet-container-left-column",
-        O.some(0),
+        mockPortlets.filter((p) => p.commonDetails.column === 0),
       );
       expect(leftColumnPortlets).toHaveLength(3);
 
       const rightColumnPortlets = getDisplayedPortlets(
         container,
         "#portlet-container-right-column",
-        O.some(1),
+        mockPortlets.filter((p) => p.commonDetails.column === 1),
       );
       expect(rightColumnPortlets).toHaveLength(2);
     },
