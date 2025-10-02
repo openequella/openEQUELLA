@@ -402,6 +402,9 @@ export const languageStrings = {
         start: "Start",
       },
     },
+    favouritesItem: {
+      tags: "Tags",
+    },
     favouritesSelector: {
       title: "Favourites type",
       resources: "Resources",

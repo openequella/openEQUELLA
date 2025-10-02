@@ -123,8 +123,8 @@ export const itemWithBookmark: OEQ.Search.SearchResultItem = {
   isLatestVersion: true,
   bookmark: {
     id: 123,
-    addAt: new Date("2023-01-01T12:00:00Z"),
-    tags: [],
+    addedAt: new Date("2023-01-01T12:00:00Z"),
+    tags: ["custom", "tags"],
   },
 };
 
