@@ -674,12 +674,13 @@ describe("<SearchResult/>", () => {
   it("should hide bookmark tags by default", async () => {
     const item = itemWithBookmark;
     const { queryByText } = await renderSearchResult(item);
+    const tags = item.bookmark!.tags;
 
     expect(queryByText(tagsLabel)).not.toBeInTheDocument();
-    item.bookmark?.tags.forEach((tag) => {
+    tags.forEach((tag) => {
       expect(queryByText(tag)).not.toBeInTheDocument();
     });
-    expect.assertions(3);
+    expect.assertions(tags.length + 1);
   });
 
   it("should display bookmark tags when the 'showBookmarkTags' prop is true", async () => {
@@ -688,12 +689,13 @@ describe("<SearchResult/>", () => {
       itemResult: item,
       showBookmarkTags: true,
     });
+    const tags = item.bookmark!.tags;
 
     expect(getByText(tagsLabel)).toBeInTheDocument();
-    item.bookmark?.tags.forEach((tag) => {
+    tags.forEach((tag) => {
       expect(getByText(tag)).toBeInTheDocument();
     });
-    expect.assertions(3);
+    expect.assertions(tags.length + 1);
   });
 
   it("should hide bookmark tags when 'showBookmarkTags' is true but the item has no tags", async () => {

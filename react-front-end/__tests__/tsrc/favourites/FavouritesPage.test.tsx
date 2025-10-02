@@ -234,11 +234,12 @@ describe("<FavouritesPage/>", () => {
 
   it("should display bookmark tags if the tags are available for a Favourite Resource", async () => {
     const { getByText } = await renderFavouritesPage();
+    const tags = itemWithBookmark.bookmark!.tags;
 
-    itemWithBookmark.bookmark?.tags.forEach((tag) => {
+    tags.forEach((tag) => {
       expect(getByText(tag)).toBeInTheDocument();
     });
-    expect.assertions(2);
+    expect.assertions(tags.length);
   });
 
   it("should not show bookmark tags if the tags are not available for a Favourite Resource", async () => {
