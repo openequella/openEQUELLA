@@ -467,19 +467,25 @@ export default function SearchResult({
       ? selectSessionItemContent
       : itemLink();
 
-  const customDisplayBookmarkTags: ReactNode = pipe(
+  const displayBookmarkTags: ReactNode = pipe(
     O.fromNullable(bookmark?.tags),
     O.filter(A.isNonEmpty),
     O.map((tagList) => (
       <ListItem dense disableGutters>
-        <Typography component="span" aria-label={tagsLabel}>
+        <Typography
+          component="span"
+          variant="body2"
+          className={classes.heading}
+          color="textPrimary"
+          aria-label={tagsLabel}
+        >
           {tagsLabel}&nbsp;
         </Typography>
         <Box>
           {tagList.map((tag, index) => (
             <Chip
               component="span"
-              sx={{ m: 0.5 }}
+              sx={{ mr: 0.5 }}
               key={index}
               label={tag}
               aria-label={tag}
@@ -515,7 +521,7 @@ export default function SearchResult({
                 {highlight(description ?? "")}
               </Typography>
               <List disablePadding>{customDisplayMetadata}</List>
-              {showBookmarkTags && customDisplayBookmarkTags}
+              {showBookmarkTags && displayBookmarkTags}
               <ItemDrmContext.Provider
                 value={{
                   checkDrmPermission,
