@@ -38,8 +38,7 @@ describe("<PortletContainer />", () => {
    * Helper function to get the portlets displayed in a specific column of the container.
    *
    * @param container - The container element housing the portlets.
-   * @param columnId - ID of
-   * the target column.
+   * @param columnId - ID of the target column.
    * @param portlets - A list of portlets that should be displayed in the specified column.
    * @returns An array of HTMLElements representing the displayed portlets.
    */
@@ -70,7 +69,7 @@ describe("<PortletContainer />", () => {
       "#portlet-container-single-column",
       mockPortlets,
     );
-    expect(displayedPortlets).toHaveLength(5);
+    expect(displayedPortlets).toHaveLength(mockPortlets.length);
   });
 
   it.each<[TwoColumnLayout]>([
