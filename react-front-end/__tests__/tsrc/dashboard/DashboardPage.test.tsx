@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import { emptyDashboardDetails } from "../../../__mocks__/Dashboard.mock";
+import {
+  emptyDashboardDetails,
+  mockPortlets,
+} from "../../../__mocks__/Dashboard.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { renderDashboardPage } from "./DashboardPageTestHelper";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
@@ -36,5 +39,15 @@ describe("<DashboardPage/>", () => {
 
     const { getByText } = await renderDashboardPage();
     expect(getByText(hintForOeqText)).toBeInTheDocument();
+  });
+
+  it("displays portlet container when portlets are configured", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({ portlets: mockPortlets });
+    const { container } = await renderDashboardPage();
+
+    const portletContainer = container.querySelector(
+      "#dashboard-portlet-container",
+    );
+    expect(portletContainer).toBeInTheDocument();
   });
 });

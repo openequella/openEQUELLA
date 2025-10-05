@@ -30,6 +30,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
+import { PortletContainer } from "./portlet/PortletContainer";
 
 const { title } = languageStrings.dashboard;
 
@@ -57,18 +58,19 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     )();
   }, [appErrorHandler]);
 
-  const renderPortlets = () => {
-    return <div id="dashboard-portlet-container">portlets</div>;
-  };
-
   const renderDashboard = () =>
     pipe(
-      O.fromNullable(dashboardDetails),
-      O.map(({ portlets }) => portlets),
-      O.chain(O.fromPredicate(A.isNonEmpty)),
+      O.Do,
+      O.apS("details", O.fromNullable(dashboardDetails)),
+      O.bind("portlets", ({ details: { portlets } }) =>
+        pipe(portlets, O.fromPredicate(A.isNonEmpty)),
+      ),
+      O.bind("layout", ({ details: { layout } }) => O.some(layout)),
       O.fold(
         () => <WelcomeBoard />,
-        () => renderPortlets(),
+        ({ layout, portlets }) => (
+          <PortletContainer portlets={portlets} layout={layout} />
+        ),
       ),
     );
 
