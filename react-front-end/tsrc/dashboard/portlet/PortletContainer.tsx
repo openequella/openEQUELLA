@@ -95,12 +95,12 @@ export const PortletContainer = ({
     // Renders two columns on medium screens and up, based on the specified two-column layout.
     // On extra-small and small screens, the two columns stack vertically.
     const renderTwoColumns = (twoColumnLayout: TwoColumnLayout) => {
-      const [col1Width, col2Width] = getTwoColumnWidths(twoColumnLayout);
+      const [leftColWidth, rightColWidth] = getTwoColumnWidths(twoColumnLayout);
       return (
         <>
           <Grid
             container
-            size={{ xs: 12, md: col1Width }}
+            size={{ xs: 12, md: leftColWidth }}
             spacing={2}
             id="portlet-container-left-column"
           >
@@ -108,7 +108,7 @@ export const PortletContainer = ({
           </Grid>
           <Grid
             container
-            size={{ xs: 12, md: col2Width }}
+            size={{ xs: 12, md: rightColWidth }}
             spacing={2}
             id="portlet-container-right-column"
           >
