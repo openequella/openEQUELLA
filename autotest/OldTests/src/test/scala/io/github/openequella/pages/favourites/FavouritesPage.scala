@@ -19,11 +19,54 @@
 package io.github.openequella.pages.favourites
 
 import com.tle.webtests.framework.PageContext
-import io.github.openequella.pages.search.AbstractSearchPage
+import com.tle.webtests.pageobject.viewitem.SummaryPage
+import io.github.openequella.pages.search.{AbstractSearchPage, NewSearchPage}
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.{By, WebElement}
 
 class FavouritesPage(
     context: PageContext
 ) extends AbstractSearchPage[FavouritesPage](context) {
   override def loadUrl(): Unit =
     driver.get(context.getBaseUrl + "page/favourites")
+
+  /** Selects the 'Resources' type of favourites to display.
+    */
+  def selectFavouritesResourcesType(): Unit = selectFavouritesType("Resources")
+
+  /** Selects the 'Searches' type of favourites to display.
+    */
+  def selectFavouritesSearchesType(): Unit = selectFavouritesType("Searches")
+
+  /** Checks if a search with the given name exists in favourites.
+    */
+  def hasSearch(name: String): Boolean = hasItem(name)
+
+  /** Selects a search with the given name from favourites.
+    */
+  def selectSearch(name: String): Unit = selectLink(name)
+
+  /** Remove a favourite search with the given name from favourites.
+    */
+  def removeSearch(name: String): Unit = {
+    val searchLink = findLink(name)
+    val removeButton =
+      searchLink.findElement(By.xpath("./../..//button[@aria-label='Remove from favourites']"))
+
+    removeButton.click()
+    confirmDialog()
+
+    waitForSearchCompleted()
+  }
+
+  private def selectFavouritesType(favouriteType: String): Unit = {
+    // Make sure the current page is finishing loading before switching the type to fix some flaky test issues.
+    waitForSearchCompleted()
+
+    val searchesTypeButton = By.xpath("//button[@aria-label='" + favouriteType + "']")
+
+    driver.findElement(searchesTypeButton).click()
+
+    waitForSearchCompleted()
+  }
 }

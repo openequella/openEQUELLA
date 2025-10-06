@@ -216,9 +216,17 @@ public class SelectionSessionTest extends AbstractIntegrationTest {
         context.getBaseUrl()
             + "searching.do?in=all&q=BasicViewerImage&type=standard&sort=rank&dr=AFTER");
 
-    FavouriteSearchesPage searches = new FavouritesPage(context).load().searches();
-    assertTrue(searches.results().doesResultExist(searchName));
-    searches.delete(searchName);
+    if (testConfig.isNewUI()) {
+      io.github.openequella.pages.favourites.FavouritesPage page =
+          new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+      page.selectFavouritesSearchesType();
+      assertTrue(page.hasSearch(searchName));
+      page.removeSearch(searchName);
+    } else {
+      FavouriteSearchesPage searches = new FavouritesPage(context).load().searches();
+      assertTrue(searches.results().doesResultExist(searchName));
+      searches.delete(searchName);
+    }
   }
 
   @Test
