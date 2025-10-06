@@ -76,9 +76,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    * @param itemTitle The title of an Item.
    */
   public SummaryPage selectItem(String itemTitle) {
-    By title = By.linkText(itemTitle);
-    WebElement titleLink = waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
-    titleLink.click();
+    selectLink(itemTitle);
     return new SummaryPage(context).get();
   }
 
@@ -442,5 +440,24 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    */
   public List<WebElement> getAllItemThumbnails() {
     return driver.findElements(By.cssSelector(".OEQThumb-thumbnail"));
+  }
+
+  /**
+   * Find a link by its title, waiting until it is visible.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public WebElement findLink(String linkTitle) {
+    By title = By.linkText(linkTitle);
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
+  }
+
+  /**
+   * Click a link by its title.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public void selectLink(String linkTitle) {
+    findLink(linkTitle).click();
   }
 }

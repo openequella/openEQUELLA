@@ -64,7 +64,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 @NonNullByDefault
-@SuppressWarnings("nls")
 @Bind
 public class FavouritesPortletRenderer
     extends PortletContentRenderer<FavouritesPortletRenderer.Model> {

@@ -21,9 +21,9 @@ package io.github.openequella.hierarchy
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.HomePage
 import com.tle.webtests.pageobject.portal.MenuSection
-import com.tle.webtests.pageobject.searching.FavouritesPage
 import com.tle.webtests.pageobject.wizard.ContributePage
 import com.tle.webtests.test.AbstractCleanupAutoTest
+import io.github.openequella.pages.favourites.FavouritesPage
 import io.github.openequella.pages.hierarchy.{BrowseHierarchiesPage, HierarchyPage}
 import io.github.openequella.pages.search.NewSearchPage
 import org.testng.Assert.{assertEquals, assertFalse, assertTrue}
@@ -176,18 +176,18 @@ import testng.annotation.NewUIOnly
 
     // Check the saved search on favourites page
     val favouritesPage = new FavouritesPage(context).load
-    val searches       = favouritesPage.searches.results
-    searches.doesResultExist(searchName, 1)
-    searches.getResultForTitle(searchName, 1).clickTitle()
+    favouritesPage.selectFavouritesSearchesType()
+    favouritesPage.hasSearch(searchName)
+    favouritesPage.selectSearch(searchName)
 
     // Make sure current hierarchy is A_TOPIC hierarchy and is loaded.
     val currentHierarchyPage = new HierarchyPage(context, A_TOPIC_NAME, A_TOPIC_UUID).get
     assertTrue(currentHierarchyPage.isLoaded)
 
     // Remove the saved search
-    new FavouritesPage(context).load.searches.results
-      .getResultForTitle(searchName, 1)
-      .clickActionConfirm("Remove", true, new FavouritesPage(context).load)
+    val newFavouritesPage = new FavouritesPage(context).load
+    newFavouritesPage.selectFavouritesSearchesType()
+    newFavouritesPage.removeSearch(searchName)
   }
 
   @NewUIOnly

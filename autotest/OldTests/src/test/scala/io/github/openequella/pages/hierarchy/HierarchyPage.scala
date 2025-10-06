@@ -92,14 +92,6 @@ class HierarchyPage(
     selectVersionDialog.findElement(versionLabelXpath).click()
   }
 
-  // Confirm the select version dialog.
-  private def confirmDialog(): Unit = {
-    val selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"))
-    val confirmButton = selectVersionDialog.findElement(By.id("confirm-dialog-confirm-button"))
-    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton))
-    confirmButton.click()
-  }
-
   /** When the pin icon is highlighted click to remove this item from key resource.
     *
     * @param itemName
