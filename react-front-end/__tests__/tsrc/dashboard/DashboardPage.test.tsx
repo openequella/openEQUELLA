@@ -34,6 +34,10 @@ const mockGetDashboardDetails = jest.spyOn(
 );
 
 describe("<DashboardPage/>", () => {
+  beforeEach(() => {
+    mockGetDashboardDetails.mockClear();
+  });
+
   it("shows welcome message if no portlets is configured", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);
 
@@ -50,4 +54,13 @@ describe("<DashboardPage/>", () => {
     );
     expect(portletContainer).toBeInTheDocument();
   });
+
+  it("performs the initial API request", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({ portlets: mockPortlets });
+    await renderDashboardPage();
+
+    expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
+  });
+
+  // TODO: perform API request again when refresh is set to true
 });

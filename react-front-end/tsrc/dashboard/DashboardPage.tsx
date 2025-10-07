@@ -18,7 +18,7 @@
 
 import { Skeleton } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import * as React from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
@@ -30,6 +30,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
+import { DashboardPageContext } from "./DashboardPageContext";
 import { PortletContainer } from "./portlet/PortletContainer";
 
 const { title } = languageStrings.dashboard;
@@ -41,6 +42,21 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [dashboardDetails, setDashboardDetails] =
     useState<OEQ.Dashboard.DashboardDetails>();
 
+  const getPortlets = useCallback(() => {
+    setIsLoading(true);
+
+    pipe(
+      TE.tryCatch(
+        () => getDashboardDetails(),
+        (e) => `Failed to get dashboard details: ${e}`,
+      ),
+      TE.match(appErrorHandler, setDashboardDetails),
+      T.tapIO(() => () => {
+        setIsLoading(false);
+      }),
+    )();
+  }, [appErrorHandler]);
+
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(title)(tp),
@@ -48,15 +64,8 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   }, [updateTemplate]);
 
   useEffect(() => {
-    pipe(
-      TE.tryCatch(
-        () => getDashboardDetails(),
-        (e) => `Failed to get dashboard details: ${e}`,
-      ),
-      TE.match(appErrorHandler, setDashboardDetails),
-      T.tapIO(() => () => setIsLoading(false)),
-    )();
-  }, [appErrorHandler]);
+    getPortlets();
+  }, [getPortlets]);
 
   const renderDashboard = () =>
     pipe(
@@ -77,7 +86,9 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return isLoading ? (
     <Skeleton variant="rounded" height="100%" />
   ) : (
-    renderDashboard()
+    <DashboardPageContext.Provider value={{ refreshPortlets: getPortlets }}>
+      {renderDashboard()}
+    </DashboardPageContext.Provider>
   );
 };
 
