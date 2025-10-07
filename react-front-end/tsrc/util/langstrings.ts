@@ -212,6 +212,8 @@ export const languageStrings = {
       dragToReorder: "Drag to reorder",
       edit: "Edit",
       enable: "Enable",
+      maximise: "Maximise",
+      minimise: "Minimise",
       no: "No",
       ok: "OK",
       openInNewWindow: "Open in new window",

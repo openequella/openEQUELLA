@@ -98,3 +98,80 @@ export const mockPortlets: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet> = [
   publicHtmlPortlet,
   publicRecentContributionsPortlet,
 ];
+
+export const basicPortlet: OEQ.Dashboard.BasicPortlet = {
+  portletType: "html",
+  commonDetails: {
+    uuid: "123e4567-e89b-12d3-a456-426614174000",
+    name: "Sample Portlet",
+    isInstitutionWide: true,
+    isClosed: false,
+    isMinimised: false,
+    canClose: true,
+    canDelete: true,
+    canEdit: true,
+    canMinimise: true,
+    column: 0,
+    order: 0,
+  },
+};
+
+export const privatePortlet: OEQ.Dashboard.BasicPortlet = {
+  portletType: "html",
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174101",
+    name: "Sample Private Portlet",
+    isInstitutionWide: false,
+  },
+};
+
+export const minimisedPortlet: OEQ.Dashboard.BasicPortlet = {
+  ...basicPortlet,
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174001",
+    name: "Sample Portlet Minimised",
+    isMinimised: true,
+  },
+};
+
+export const noEditPortlet: OEQ.Dashboard.BasicPortlet = {
+  ...basicPortlet,
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174002",
+    name: "Sample Portlet No Edit",
+    canEdit: false,
+  },
+};
+
+export const noDeletePortlet: OEQ.Dashboard.BasicPortlet = {
+  ...basicPortlet,
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174003",
+    name: "Sample Portlet No Delete",
+    canDelete: false,
+  },
+};
+
+export const noClosePortlet: OEQ.Dashboard.BasicPortlet = {
+  ...basicPortlet,
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174004",
+    name: "Sample Portlet No Close",
+    canClose: false,
+  },
+};
+
+export const noMinimisePortlet: OEQ.Dashboard.BasicPortlet = {
+  ...basicPortlet,
+  commonDetails: {
+    ...basicPortlet.commonDetails,
+    uuid: "123e4567-e89b-12d3-a456-426614174005",
+    name: "Sample Portlet No Minimise",
+    canMinimise: false,
+  },
+};
