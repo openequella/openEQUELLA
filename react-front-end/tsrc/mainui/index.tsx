@@ -63,6 +63,7 @@ declare global {
       myResourcesPage: () => void;
       hierarchyBrowsePage: () => void;
       hierarchyPage: () => void;
+      favouritesPage: () => void;
     };
   }
 }
@@ -72,10 +73,12 @@ window["oEQRender"] = {
   myResourcesPage: () => main("myResourcesPage"),
   hierarchyBrowsePage: () => main("hierarchyBrowsePage"),
   hierarchyPage: () => main("hierarchyPage"),
+  favouritesPage: () => main("favouritesPage"),
 };
 
 export type EntryPage =
   | "advancedSearchPage"
+  | "favouritesPage"
   | "hierarchyBrowsePage"
   | "hierarchyPage"
   | "mainDiv"

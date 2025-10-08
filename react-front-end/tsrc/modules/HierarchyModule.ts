@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
 
 /**
@@ -112,4 +114,36 @@ export const defaultHierarchyAcl: OEQ.Hierarchy.HierarchyTopicAcl = {
   VIEW_HIERARCHY_TOPIC: false,
   EDIT_HIERARCHY_TOPIC: false,
   MODIFY_KEY_RESOURCE: false,
+};
+
+// Extract topic ID from the new UI hierarchy page path.
+const getTopicIDFromPath = (path: string): string | undefined => {
+  const newHierarchyPagePath = /(\/page\/hierarchy\/)(.+)/;
+  const matches: string[] | null = path.match(newHierarchyPagePath);
+
+  return matches?.pop();
+};
+
+// Extract topic ID from the old UI hierarchy page query parameter.
+const getTopicIDFromQueryParam = (queryParam: string) =>
+  new URLSearchParams(queryParam).get("topic");
+
+/**
+ * Extract topic ID from a given URL.
+ *
+ * @param url The URL object to extract the topic ID from.
+ */
+export const getTopicIdFromUrl = (url: URL): string | undefined =>
+  pipe(
+    getTopicIDFromPath(url.pathname) ?? getTopicIDFromQueryParam(url.search),
+    O.fromNullable,
+    O.toUndefined,
+  );
+
+export const getTopicIDFromLocation = (): string | null => {
+  const location = window.location;
+  return (
+    getTopicIDFromPath(location.pathname) ??
+    getTopicIDFromQueryParam(location.search)
+  );
 };

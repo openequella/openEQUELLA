@@ -31,6 +31,10 @@ public interface BookmarkService {
 
   void delete(long id);
 
+  /** Delete the favourite item if the current user is the owner. */
+  void deleteIfOwned(long id);
+
+  /** Get the current user's bookmark for the given item. */
   Bookmark getByItem(ItemKey itemId);
 
   Bookmark getById(long id);
@@ -41,4 +45,11 @@ public interface BookmarkService {
   Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items);
 
   List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults);
+
+  /**
+   * Checks if the current user is the owner of the given bookmark.
+   *
+   * @param favouriteItem the favourite item to check.
+   */
+  boolean isOwner(Bookmark favouriteItem);
 }

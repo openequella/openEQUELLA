@@ -33,8 +33,9 @@ export const allSearchPageOptions: SearchPageOptions = {
   query: "test machine",
   collections: getCollectionMap,
   selectedCategories: [
-    { id: 766943, categories: ["Hobart"] },
-    { id: 766944, categories: ["Some cool things"] },
+    { id: 766943, schemaNode: "/item/place", categories: ["Hobart"] },
+    { id: 766944, schemaNode: "/item/other", categories: ["Some cool things"] },
+    { id: 766945, categories: ["Without schema node"] },
   ],
   lastModifiedDateRange: {
     start: new Date("2020-05-26T13:24:00.889+10:00"),

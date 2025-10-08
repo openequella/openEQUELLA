@@ -172,23 +172,47 @@ public interface FileSystemService extends RemoteFileSystemService {
 
   void mkdir(FileHandle handle, String filename);
 
-  boolean rename(FileHandle handle, String filename, String newname);
+  boolean rename(FileHandle handle, String filename, String newName);
 
   /**
-   * Similar to rename, but will build the folder structure of the newname if necessary
+   * Similar to rename, but will build the folder structure of the new name if necessary. It is
+   * primarily used in the context of an institution, where it blocks modifications to blacklisted
+   * content based on the banned list configured by the institution.
    *
-   * @param handle
-   * @param filename
-   * @param newname
-   * @return
+   * @param parentFileHandle The parent folder of the file or folder to be moved.
+   * @param filename The relative path under the parent folder of the file or folder to be moved.
+   * @param newName The new relative path under the parent folder for the file or folder being
+   *     moved.
    */
-  boolean move(FileHandle handle, String filename, String newname);
+  boolean move(FileHandle parentFileHandle, String filename, String newName);
 
-  boolean move(FileHandle handle, String filename, FileHandle newHandle, String newname);
+  /**
+   * Moves a file or folder without checking for banned extensions. Typically used when the
+   * operation occurs outside the context of the institution, such as during institution import
+   * tasks.
+   *
+   * @param parentFileHandle The parent folder of the file or folder to be moved.
+   * @param filename The relative path under the parent folder of the file or folder to be moved.
+   * @param newName The new relative path under the parent folder for the file or folder being
+   *     moved.
+   */
+  boolean moveUnsafe(FileHandle parentFileHandle, String filename, String newName);
 
-  FileInfo copy(FileHandle handle, String filename, String newname);
+  /**
+   * It is primarily used in the context of an institution, where it blocks modifications to
+   * blacklisted content based on the banned list configured by the institution.
+   *
+   * @param parentFileHandle The parent folder of the file or folder to be moved.
+   * @param filename The relative path under the parent folder of the file or folder to be moved.
+   * @param newHandle The target parent folder where the file or folder will be moved.
+   * @param newName The new relative path under the target parent folder for the file or folder
+   *     being moved.
+   */
+  boolean move(FileHandle parentFileHandle, String filename, FileHandle newHandle, String newName);
 
-  FileInfo copy(FileHandle handle, String filename, FileHandle toHandle, String newname);
+  FileInfo copy(FileHandle handle, String filename, String newName);
+
+  FileInfo copy(FileHandle handle, String filename, FileHandle toHandle, String newName);
 
   FileInfo copy(FileHandle source, FileHandle destination);
 

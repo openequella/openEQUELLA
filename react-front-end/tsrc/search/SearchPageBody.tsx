@@ -86,6 +86,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  defaultSearchPageSearchBarConfig,
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
@@ -136,8 +137,8 @@ export interface SearchPageBodyProps {
    */
   enableClassification?: boolean;
   /**
-   * Configuration for any custom components in Search bar. Currently, only support enabling/disabling the
-   * Advanced search filter.
+   * Configuration for any custom components in Search bar.
+   * Supports enabling/disabling Advanced search filter and wildcard toggle.
    */
   searchBarConfig?: SearchPageSearchBarConfig;
   /**
@@ -194,6 +195,7 @@ export const SearchPageBody = ({
   const {
     enableCSVExportButton,
     enableShareSearchButton,
+    enableFavouriteSearchButton,
     additionalHeaders,
     customSortingOptions,
     newSearchConfig,
@@ -447,7 +449,7 @@ export const SearchPageBody = ({
       },
       customFavouriteUrl,
       (url) => TO.tryCatch(() => addFavouriteSearch(name, url)),
-      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearchModel>(
+      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearch>(
         constant({
           message: searchStrings.favouriteSearch.saveSearchFailedText,
           variant: "error",
@@ -502,6 +504,17 @@ export const SearchPageBody = ({
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
+
+  const mergedSearchBarConfig = {
+    ...defaultSearchPageSearchBarConfig,
+    ...searchBarConfig,
+  };
+  const wildcardSearch = mergedSearchBarConfig?.enableWildcardToggle
+    ? {
+        wildcardMode: !searchPageOptions.rawMode,
+        onWildcardModeChange: handleWildcardModeChanged,
+      }
+    : undefined;
 
   /**
    * Determines if any collapsible filters have been modified from their defaults
@@ -786,11 +799,12 @@ export const SearchPageBody = ({
               <SearchBar
                 ref={searchBarRef}
                 query={searchPageOptions.query ?? ""}
-                wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
-                onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => doSearch(searchPageOptions)}
-                advancedSearchFilter={searchBarConfig?.advancedSearchFilter}
+                advancedSearchFilter={
+                  mergedSearchBarConfig?.advancedSearchFilter
+                }
+                wildcardSearch={wildcardSearch}
               />
             </Grid>
             {additionalPanels?.map((panel, index) => (
@@ -838,6 +852,7 @@ export const SearchPageBody = ({
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}
+                useFavouriteSearchButton={enableFavouriteSearchButton}
                 additionalHeaders={additionalHeaders}
               >
                 {pipe(
@@ -862,7 +877,7 @@ export const SearchPageBody = ({
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
-          PaperProps={{ style: { width: "50%" } }}
+          slotProps={{ paper: { style: { width: "50%" } } }}
         >
           {renderSidePanel()}
         </Drawer>

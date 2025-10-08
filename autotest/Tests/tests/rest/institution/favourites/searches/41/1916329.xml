@@ -1,0 +1,8 @@
+<com.tle.core.favourites.bean.FavouriteSearch>
+  <id>1916329</id>
+  <name>Search A</name>
+  <url>/searching.do?in=all&amp;q=Search+A&amp;type=standard&amp;sort=rank&amp;dr=AFTER</url>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <addedAt class="sql-timestamp">2000-01-01 14:54:17.395</addedAt>
+  <query>Search A</query>
+</com.tle.core.favourites.bean.FavouriteSearch>

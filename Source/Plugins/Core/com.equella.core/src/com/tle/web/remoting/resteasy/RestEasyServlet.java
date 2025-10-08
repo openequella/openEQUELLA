@@ -121,7 +121,6 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
           CloudProviderApi.class,
           DrmResource.class,
           FacetedSearchClassificationResource.class,
-          FavouriteResource.class,
           GdprResource.class,
           LanguageResource.class,
           LegacyContentApi.class,
@@ -139,6 +138,7 @@ public class RestEasyServlet extends HttpServletDispatcher implements MapperExte
   private static final List<Class> apiClasses =
       Arrays.asList(
           BrowseHierarchyResource.class,
+          FavouriteResource.class,
           HierarchyResource.class,
           NewUIThemeResource.class,
           OidcConfigurationResource.class,

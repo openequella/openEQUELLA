@@ -18,6 +18,7 @@
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import type { RenderData, SelectionSessionInfo } from "../../../tsrc/AppConfig";
 import {
+  buildFavouritesSearchSelectionSessionLink,
   buildPostDataForSelectOrAdd,
   buildPostDataForStructured,
   buildSelectionSessionAdvancedSearchLink,
@@ -273,11 +274,44 @@ describe("buildSelectionSessionSearchPageLink", () => {
     (layout: string, selectionSessionInfo: SelectionSessionInfo, path) => {
       updateMockGetRenderData({ ...basicRenderData, selectionSessionInfo });
       updateMockGetBaseUrl();
-      const link = buildSelectionSessionSearchPageLink(["image/gif"]);
+      const link = buildSelectionSessionSearchPageLink(
+        new URLSearchParams("?query=apple"),
+        ["image/gif"],
+      );
 
       expect(link).toBe(
-        `http://localhost:8080/vanilla/${path}/searching.do?_sl.stateId=1&_int.mimeTypes=image%2Fgif`,
+        `http://localhost:8080/vanilla/${path}/searching.do?query=apple&_sl.stateId=1&_int.mimeTypes=image%2Fgif`,
       );
     },
   );
+});
+
+describe("buildFavouritesSearchSelectionSessionLink", () => {
+  it.each<[string, string, string]>([
+    [
+      "hierarchy",
+      "/page/hierarchy/hierarchy-uuid",
+      "http://localhost:8080/vanilla/hierarchy.do?topic=hierarchy-uuid&_sl.stateId=1",
+    ],
+    [
+      "advanced search",
+      "/page/advancedsearch/advanced-uuid?searchOptions=test",
+      "http://localhost:8080/vanilla/advanced/searching.do?in=Padvanced-uuid&editquery=true&_sl.stateId=1",
+    ],
+    [
+      "normal search",
+      "/page/search?searchOptions=%7B%22query%22%3A%22apple%22%7D",
+      "http://localhost:8080/vanilla/access/course/searching.do?searchOptions=%7B%22query%22%3A%22apple%22%7D&_sl.stateId=1",
+    ],
+  ])("builds a link for accessing %s page", (_: string, path, exceptResult) => {
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: basicSelectionSessionInfo,
+    });
+    updateMockGetBaseUrl();
+
+    const link = buildFavouritesSearchSelectionSessionLink(path);
+
+    expect(link).toBe(exceptResult);
+  });
 });

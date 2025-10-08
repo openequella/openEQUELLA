@@ -21,20 +21,24 @@ package com.tle.core.favourites.service;
 import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.favourites.FavouritesConstant;
 import com.tle.core.favourites.dao.BookmarkDao;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.service.ItemService;
 import com.tle.core.item.standard.ItemOperationFactory;
+import com.tle.exceptions.AccessDeniedException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -68,7 +72,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
     bookmark.setKeywords(tags);
     bookmark.setOwner(CurrentUser.getUserID());
     bookmark.setInstitution(CurrentInstitution.get());
-    bookmark.setDateModified(new Date());
+    bookmark.setAddedAt(new Date());
     bookmark.setAlwaysLatest(latest);
     dao.save(bookmark);
 
@@ -80,8 +84,21 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
   @Transactional
   public void delete(long id) {
     Bookmark bookmark = dao.findById(id);
-    dao.delete(bookmark);
-    itemService.operation(bookmark.getItem().getItemId(), workflowFactory.reindexOnly(true));
+    delete(bookmark);
+  }
+
+  @Override
+  @Transactional
+  public void deleteIfOwned(long id) {
+    Bookmark bookmark =
+        Optional.ofNullable(getById(id))
+            .orElseThrow(() -> new NotFoundException("No Bookmark matching ID: " + id));
+
+    if (!isOwner(bookmark)) {
+      throw new AccessDeniedException("You are not the owner of the favourite item with ID: " + id);
+    }
+
+    delete(bookmark);
   }
 
   @Override
@@ -99,7 +116,7 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
   @Override
   public List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults) {
     return dao.findAllByCriteria(
-        Order.desc("dateModified"),
+        Order.desc(FavouritesConstant.ADDED_AT),
         maxResults,
         Restrictions.eq("owner", ownerUuid),
         Restrictions.eq("institution", CurrentInstitution.get()));
@@ -120,5 +137,16 @@ public class BookmarkServiceImpl implements BookmarkService, UserChangeListener 
   @Override
   public void userEditedEvent(UserEditEvent event) {
     // Nothing to do here
+  }
+
+  @Override
+  public boolean isOwner(Bookmark favouriteItem) {
+    String userId = CurrentUser.getUserID();
+    return favouriteItem.getOwner().equals(userId);
+  }
+
+  private void delete(Bookmark favouriteItem) {
+    dao.delete(favouriteItem);
+    itemService.operation(favouriteItem.getItem().getItemId(), workflowFactory.reindexOnly(true));
   }
 }
