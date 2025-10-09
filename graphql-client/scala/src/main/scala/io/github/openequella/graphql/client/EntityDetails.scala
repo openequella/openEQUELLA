@@ -50,15 +50,19 @@ object EntityDetails {
   def dateModified: SelectionBuilder[EntityDetails, scala.Option[java.time.LocalDateTime]] =
     _root_.caliban.client.SelectionBuilder.Field("dateModified", OptionOf(Scalar()))
 
-  /** Language bundle ID for the _name_ of this entity, used for internationalization.
+  /** Language bundle for the _name_ of this entity, used for internationalization.
     */
-  def nameBundleId: SelectionBuilder[EntityDetails, scala.Option[Long]] =
-    _root_.caliban.client.SelectionBuilder.Field("nameBundleId", OptionOf(Scalar()))
+  def nameBundle[A](
+      innerSelection: SelectionBuilder[LanguageBundle, A]
+  ): SelectionBuilder[EntityDetails, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("nameBundle", OptionOf(Obj(innerSelection)))
 
-  /** Language bundle ID for the _description_ of this entity, used for internationalization.
+  /** Language bundle for the _description_ of this entity, used for internationalization.
     */
-  def descriptionBundleId: SelectionBuilder[EntityDetails, scala.Option[Long]] =
-    _root_.caliban.client.SelectionBuilder.Field("descriptionBundleId", OptionOf(Scalar()))
+  def descriptionBundle[A](
+      innerSelection: SelectionBuilder[LanguageBundle, A]
+  ): SelectionBuilder[EntityDetails, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("descriptionBundle", OptionOf(Obj(innerSelection)))
 
   /** A map of additional attributes for this entity, allowing for flexible metadata storage.
     */
