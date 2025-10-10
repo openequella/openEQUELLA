@@ -14,13 +14,9 @@ import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.pageobject.wizard.controls.UniversalControl;
 import com.tle.webtests.pageobject.wizard.controls.universal.ResourceUniversalControlType;
 import com.tle.webtests.test.AbstractCleanupAutoTest;
+import io.github.openequella.pages.favourites.FavouritesPage;
 import org.testng.annotations.Test;
 
-/**
- * Test Reference: http://time/DTEC/test/editTest.aspx?testId=14841
- *
- * @author larry
- */
 @TestInstitution("myresources")
 public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest {
   private static String COLLECTIONS_NAME = "Generic Testing with EQUELLA resources";
@@ -39,11 +35,10 @@ public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest {
         control.addDefaultResource(new ResourceUniversalControlType(control));
     WaitingPageObject<UniversalControl> newAttachWaiter =
         control.attachNameWaiter(ITEM_TITLE, false);
-    ItemListPage favourites = resource.getSelectionSession().getShowAllFavourites();
 
-    ItemSearchResult aFavourite = favourites.getResultForTitle(ITEM_TITLE);
-    favourites.scrollToElement(aFavourite.getLoadedElement());
-    aFavourite.clickTitle();
+    resource.getSelectionSession().clickShowAllFavourites();
+    clickFavouriteItem(ITEM_TITLE);
+
     SummaryPage stp = new SummaryPage(context).get();
     assertTrue(stp.selectItemPresent(), "Expected summary page to be selectable");
 
@@ -64,6 +59,19 @@ public class ResourceSelectorFavouritesTest extends AbstractCleanupAutoTest {
           "expecting One or Attachments in final summary result");
       finalAttachmentsSection.viewAttachment(
           finalAttachmentsSection.attachmentOrder().get(0), postWrapUp);
+    }
+  }
+
+  // Click item in favourites page.
+  private void clickFavouriteItem(String itemTitle) {
+    if (testConfig.isNewUI()) {
+      FavouritesPage favourites = new FavouritesPage(context).get();
+      favourites.selectItem(itemTitle);
+    } else {
+      ItemListPage favourites = new ItemListPage(context).get();
+      ItemSearchResult aFavourite = favourites.getResultForTitle(itemTitle);
+      favourites.scrollToElement(aFavourite.getLoadedElement());
+      aFavourite.clickTitle();
     }
   }
 }

@@ -1,0 +1,19 @@
+<com.tle.beans.item.Bookmark>
+  <id>2379065</id>
+  <item>
+    <id>172399</id>
+  </item>
+  <keywords class="list">
+    <string>apple</string>
+    <string>book</string>
+  </keywords>
+  <addedAt class="sql-timestamp">2025-09-04 11:51:48.13</addedAt>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <institution>
+    <id>2077158</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <alwaysLatest>true</alwaysLatest>
+</com.tle.beans.item.Bookmark>

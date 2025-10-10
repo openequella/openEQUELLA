@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.0",
+    "@emotion/styled": "11.14.1",
     "@mui/material": "7.3.1",
-    "axios": "1.11.0",
+    "axios": "1.12.2",
     "babel-polyfill": "6.26.0",
     "jss": "10.10.0",
     "md5": "2.3.0",
@@ -25,6 +25,6 @@
     "@types/md5": "2.3.5",
     "mkdirp": "3.0.1",
     "parcel": "2.15.4",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   }
 }

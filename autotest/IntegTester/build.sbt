@@ -7,7 +7,7 @@ version := "1.0"
 
 val CirceVersion  = "0.14.12"
 val Http4sVersion = "0.23.30"
-val jsoupVersion  = "1.21.1"
+val jsoupVersion  = "1.21.2"
 
 scalaVersion := "2.13.16"
 
@@ -29,7 +29,7 @@ libraryDependencies ++= Seq(
   "org.jsoup"        % "jsoup"             % jsoupVersion,
   "com.nulab-inc"   %% "scala-oauth2-core" % "1.6.0",
   "javax.servlet"    % "javax.servlet-api" % "4.0.1",
-  "com.google.guava" % "guava"             % "33.4.8-jre",
+  "com.google.guava" % "guava"             % "33.5.0-jre",
   jacksonDataBind,
   jacksonModuleScala,
   "com.auth0" % "jwks-rsa" % "0.23.0",

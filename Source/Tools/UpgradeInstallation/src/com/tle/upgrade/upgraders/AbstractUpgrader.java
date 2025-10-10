@@ -34,8 +34,6 @@ import java.util.Properties;
 @SuppressWarnings("nls")
 public abstract class AbstractUpgrader implements Upgrader {
   protected static final String CONFIG_FOLDER = "learningedge-config";
-  protected static final String EQUELLA_SERVER_CONFIG_LINUX = "equellaserver-config.sh";
-  protected static final String EQUELLA_SERVER_CONFIG_WINDOWS = "equellaserver-config.bat";
 
   @Override
   public List<UpgradeDepends> getDepends() {

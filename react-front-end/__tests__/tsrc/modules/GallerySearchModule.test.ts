@@ -310,7 +310,10 @@ describe("imageGallerySearch", () => {
   it("returns a list of GallerySearchItems containing only images", async () => {
     mockSearchItems.mockResolvedValue(basicImageSearchResponse);
 
-    const result = await imageGallerySearch(defaultSearchOptions);
+    const result = await imageGallerySearch(
+      defaultSearchOptions,
+      mockSearchItems,
+    );
     expectValidGalleryResult(result, basicImageSearchResponse.length, (s) =>
       s.startsWith("image"),
     );
@@ -323,7 +326,10 @@ describe("imageGallerySearch", () => {
 
     const consoleSpy = jest.spyOn(global.console, "error");
 
-    const result = await imageGallerySearch(defaultSearchOptions);
+    const result = await imageGallerySearch(
+      defaultSearchOptions,
+      mockSearchItems,
+    );
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(result.results).toHaveLength(2);
     expect(result).toHaveLength(2);
@@ -334,7 +340,10 @@ describe("videoGallerySearch", () => {
   it("returns a list of GallerySearchItems containing only videos", async () => {
     mockSearchItems.mockResolvedValue(basicVideoSearchResponse);
 
-    const result = await videoGallerySearch(defaultSearchOptions);
+    const result = await videoGallerySearch(
+      defaultSearchOptions,
+      mockSearchItems,
+    );
     expectValidGalleryResult(
       result,
       basicVideoSearchResponse.length,

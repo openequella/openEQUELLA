@@ -49,7 +49,7 @@ public abstract class AbstractTomcatUpgrader extends AbstractUpgrader {
   protected abstract String getDefaultUpgradeUrl();
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 

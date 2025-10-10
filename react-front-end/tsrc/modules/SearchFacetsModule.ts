@@ -22,6 +22,7 @@ import { getISODateString } from "../util/Date";
 import { getFacetsFromServer } from "./FacetedSearchSettingsModule";
 import {
   formatQuery,
+  formatWildcardQuery,
   generateCategoryWhereQuery,
   SearchOptions,
 } from "./SearchModule";
@@ -100,7 +101,7 @@ const convertSearchOptions: (
     } = options;
     const searchFacetsParams: OEQ.SearchFacets.SearchFacetsParams = {
       nodes: [],
-      query: query ? formatQuery(query, !rawMode) : undefined,
+      query: rawMode ? formatQuery(query) : formatWildcardQuery(query),
       modifiedAfter: getISODateString(lastModifiedDateRange?.start),
       modifiedBefore: getISODateString(lastModifiedDateRange?.end),
       owner: owner?.id,

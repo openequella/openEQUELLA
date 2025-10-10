@@ -32,6 +32,10 @@ export type SearchPageSearchResult =
   | {
       from: "gallery-search";
       content: OEQ.Search.SearchResult<GallerySearchResultItem>;
+    }
+  | {
+      from: "favourite-search";
+      content: OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>;
     };
 
 export type Action =

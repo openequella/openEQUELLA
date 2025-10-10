@@ -30,6 +30,7 @@ import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { isLegacyAdvancedSearchLocation } from "../modules/AdvancedSearchModule";
 import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 import {
@@ -39,7 +40,6 @@ import {
   isViewHierarchyTopicACLGranted,
   PermissionCheck,
 } from "../modules/SecurityModule";
-import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
@@ -232,7 +232,7 @@ export default function IndexPage() {
 
             return renderProtectedPage(
               routeProps,
-              isLegacyAdvancedSearchUrl(location)
+              isLegacyAdvancedSearchLocation(location)
                 ? AdvancedSearchPage
                 : SearchPage,
               [isSearchPageACLGranted],

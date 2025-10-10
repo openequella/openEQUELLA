@@ -228,8 +228,7 @@ class SearchResource {
       val itemIds                 = freetextResults.map(_.getItemIdKey)
       val serializer              = createSerializer(itemIds)
       val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
-      val highlight =
-        new DefaultSearch.QueryParser(payload.query.orNull).getHilightedList.asScala.toList
+      val highlight               = getHighlightedList(payload.query)
 
       SearchResult(
         searchResults.getOffset,

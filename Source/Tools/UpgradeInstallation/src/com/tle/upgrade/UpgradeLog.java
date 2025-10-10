@@ -60,6 +60,10 @@ public class UpgradeLog {
     return mustExist;
   }
 
+  /**
+   * Indicates that this upgrader must exist in future upgrades. If it does not, an error will be
+   * raised.
+   */
   public void setMustExist(boolean mustExist) {
     this.mustExist = mustExist;
   }

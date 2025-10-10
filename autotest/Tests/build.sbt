@@ -35,11 +35,11 @@ libraryDependencies ++= Seq(
   "com.jcraft"                % "jsch"                     % "0.1.55",
   "org.jacoco"                % "org.jacoco.report"        % "0.8.13",
   "org.dspace"                % "oclc-harvester2"          % "1.0.0",
-  "com.typesafe"              % "config"                   % "1.4.4",
+  "com.typesafe"              % "config"                   % "1.4.5",
   "org.apache.logging.log4j"  % "log4j"                    % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-core"               % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl"        % log4jVersion,
-  "org.scalacheck"           %% "scalacheck"               % "1.18.1" % "test,serial",
+  "org.scalacheck"           %% "scalacheck"               % "1.19.0" % "test,serial",
   "org.http4s" %% "http4s-blaze-client" % "0.23.17", // The latest version of blzae client is still 0.23.17 by 13/05/2025.
   "org.http4s"    %% "http4s-circe"      % http4sVersion,
   "org.typelevel" %% "cats-free"         % catsVersion,

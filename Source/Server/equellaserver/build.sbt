@@ -17,20 +17,20 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.108"
+val TomcatVersion     = "9.0.109"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
 val cxfVersion        = "3.6.8"
-val fs2Version        = "3.12.0"
+val fs2Version        = "3.12.2"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.21.1"
+val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
-val luceneVersion     = "10.2.2"
-val nettyVersion      = "4.2.4.Final"
+val luceneVersion     = "10.3.0"
+val nettyVersion      = "4.2.6.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -73,11 +73,11 @@ libraryDependencies ++= Seq(
   "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.8.0",
+  "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.13.1",
-  "com.google.guava"      % "guava"                       % "33.4.8-jre",
+  "com.google.code.gson"  % "gson"                        % "2.13.2",
+  "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
@@ -105,7 +105,7 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "7.0.1" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "com.zaxxer" % "HikariCP" % "7.0.2" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
   "commons-codec"             % "commons-codec"         % "1.19.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
@@ -204,7 +204,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.81",
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.82",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -482,12 +482,18 @@ upgradeZip := {
   val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
-  val plugVer = ver.fullVersion
+  val plugVer     = ver.fullVersion
+  val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
   val zipFiles = Seq(
-    assembly.value                                         -> "equella-server.jar",
-    (LocalProject("UpgradeInstallation") / assembly).value -> "database-upgrader.jar",
-    (LocalProject("conversion") / assembly).value          -> "conversion-service.jar",
-    (LocalProject("equella") / versionProperties).value    -> "version.properties"
+    assembly.value -> "equella-server.jar",
+    // This new JAR filename for UpgradeInstallation, must match the string at:
+    // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
+    upgraderJar -> "installation-upgrader.jar",
+    // Temporary, for upgrades from before 2025.2 - remove as part of OEQ-2761
+    // This is it's OLD name, which was misleading as it implied it was only for DB upgrades.
+    upgraderJar                                         -> "database-upgrader.jar",
+    (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
+    (LocalProject("equella") / versionProperties).value -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))

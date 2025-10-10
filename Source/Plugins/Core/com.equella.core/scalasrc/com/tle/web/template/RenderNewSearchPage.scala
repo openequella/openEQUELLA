@@ -60,4 +60,7 @@ object RenderNewSearchPage {
 
   def renderNewHierarchyBrowsePage(context: RenderEventContext): SimpleSectionResult =
     buildSection(context, "HierarchyBrowsePage.html")
+
+  def renderNewFavouritesPage(context: RenderEventContext): SimpleSectionResult =
+    buildSection(context, "FavouritesPage.html")
 }

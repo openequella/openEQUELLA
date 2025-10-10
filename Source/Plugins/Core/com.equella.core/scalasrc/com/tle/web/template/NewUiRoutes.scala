@@ -25,6 +25,7 @@ import io.lemonlabs.uri.{QueryString, RelativeUrl}
   */
 object NewUiRoutes {
   val PATH_DASHBOARD: String          = "page/home"
+  val PATH_FAVOURITES: String         = "page/favourites"
   val PATH_MYRESOURCES: String        = "page/myresources"
   val PATH_BROWSE_HIERARCHIES: String = "page/hierarchies"
   val PATH_HIERARCHY: String          = "page/hierarchy"

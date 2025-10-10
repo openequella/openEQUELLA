@@ -70,7 +70,12 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
-const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
+const DashboardPage = React.lazy(
+  () => import("../dashboard/DashboardPage")
+);
+const FavouritesPage = React.lazy(
+  () => import("../favourites/FavouritesPage")
+);
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
@@ -111,14 +116,15 @@ interface Routes {
   Dashboard: OEQRouteNewUI;
   EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
+  Favourites: OEQRouteNewUI;
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
-  OidcSettings: OEQRouteNewUI;
   MyResources: OEQRouteNewUI;
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
+  OidcSettings: OEQRouteNewUI;
   OldAdvancedSearch: OEQRouteTo<ToFunc>; // Need this route to support using Advanced Search in Selection Session.
   OldHierarchy: OEQRouteTo<ToFunc>;
   RemoteSearch: OEQRouteTo<ToFunc>;
@@ -158,7 +164,11 @@ export const legacyPageUrl = (to?: string | ToFunc | ToVersionFunc): string => {
 // So only export their paths.
 export const OLD_SEARCH_PATH = "/searching.do";
 export const NEW_SEARCH_PATH = "/page/search";
+
 export const NEW_ADVANCED_SEARCH_PATH = "/page/advancedsearch";
+
+export const NEW_FAVOURITES_PATH = "/page/favourites";
+
 export const NEW_MY_RESOURCES_PATH = "/page/myresources";
 export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 
@@ -232,6 +242,10 @@ export const routes: Routes = {
     path: "/page/oidc",
     component: OidcSettingsPage,
     permissionChecks: [isEditSystemSettingsGranted("oidc")],
+  },
+  Favourites: {
+    path: NEW_FAVOURITES_PATH,
+    component: FavouritesPage,
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,

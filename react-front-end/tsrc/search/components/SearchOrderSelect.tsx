@@ -19,8 +19,8 @@ import { InputLabel, MenuItem, Select } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "../../util/Either.extended";
 import * as React from "react";
-import { languageStrings } from "../../util/langstrings";
 import * as OEQ from "@openequella/rest-api-client";
+import { defaultSortingOptions } from "../SearchPageHelper";
 
 export type SortOrderOptions = Map<OEQ.Search.SortOrder, string>;
 
@@ -48,21 +48,12 @@ export const SearchOrderSelect = ({
   onChange,
   customSortingOptions,
 }: SearchOrderSelectProps) => {
-  const { relevance, lastModified, dateCreated, title, userRating } =
-    languageStrings.settings.searching.searchPageSettings;
-
   /**
    * Provide a data source for search sorting control.
    */
   const sortOptions: SortOrderOptions =
     customSortingOptions ??
-    new Map<OEQ.Search.SortOrder, string>([
-      ["rank", relevance],
-      ["datemodified", lastModified],
-      ["datecreated", dateCreated],
-      ["name", title],
-      ["rating", userRating],
-    ]);
+    new Map<OEQ.Search.SortOrder, string>(defaultSortingOptions);
 
   const baseId = "sort-order-select";
   const labelId = baseId + "-label";
