@@ -7,6 +7,7 @@
     "dev": "webpack watch --mode development"
   },
   "dependencies": {
+    "react-dom": "^18",
     "swagger-ui": "5.29.4"
   },
   "devDependencies": {
