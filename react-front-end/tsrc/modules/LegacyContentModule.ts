@@ -15,11 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pipe } from "fp-ts/function";
+import { identity, pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
+import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import * as t from "io-ts";
 import Axios from "axios";
-import { API_BASE_URL } from "../AppConfig";
+import { API_BASE_URL, LEGACY_CSS_URL } from "../AppConfig";
 import type { ScrapbookType } from "./ScrapbookModule";
 
 const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
@@ -53,6 +56,11 @@ export interface ChangeRoute {
 
 export interface StateData {
   [key: string]: string[];
+}
+
+export interface FormUpdate {
+  state: StateData;
+  partial: boolean;
 }
 
 export interface LegacyContentResponse {
@@ -205,3 +213,169 @@ const encodePathWithOptionalQuery = ([pathname, query]: [
  */
 const encodeRelativeUrl = (url: string): string =>
   pipe(url, splitRelativeUrl, encodePathWithOptionalQuery);
+
+const resolveUrl = (url: string) => new URL(url, $("base").attr("href")).href;
+
+// Registry to track legacy JS files that have been loaded, preventing duplicates.
+// This Map is needed to handle cases where multiple Legacy API responses arrive almost simultaneously,
+// and each response may reference the same JS files. Without this registry, a JS file could be
+// loaded multiple times, potentially causing race conditions that make script execution fail.
+const scriptRegistry: Map<string, Promise<void>> = new Map();
+
+// Use the registry to check whether a script has been loaded. If no, create a new script tag
+// and load the file, and then update script registry.
+const loadSingleScript = async (url: string): Promise<void> => {
+  const load = (): Promise<void> =>
+    new Promise((resolve, reject) =>
+      pipe(
+        document.querySelector<HTMLScriptElement>(`script[src="${url}"]`),
+        O.fromNullable,
+        O.fold(
+          () => {
+            const script = document.createElement("script");
+            script.src = url;
+            script.async = false;
+            script.onload = () => resolve();
+            script.onerror = () =>
+              reject(new Error(`Failed to load script: ${url}`));
+
+            document.head.appendChild(script);
+          },
+          (script) => {
+            script.addEventListener("load", () => resolve(), { once: true });
+            script.addEventListener("error", () =>
+              reject(new Error(`Failed to load ${url}`)),
+            );
+          },
+        ),
+      ),
+    );
+
+  await pipe(
+    scriptRegistry,
+    M.lookup(S.Eq)(url),
+    O.fold(async () => {
+      const promise = load();
+      scriptRegistry.set(url, promise);
+      return promise;
+    }, identity),
+  );
+};
+
+const loadMissingScripts = async (scripts: string[]): Promise<void[]> =>
+  pipe(scripts, A.map(resolveUrl), A.map(loadSingleScript), (promises) =>
+    Promise.all(promises),
+  );
+
+const updateStylesheets = async (
+  _sheets?: string[],
+): Promise<{ [url: string]: HTMLLinkElement }> => {
+  const sheets = _sheets
+    ? _sheets.map(resolveUrl)
+    : [resolveUrl(LEGACY_CSS_URL)];
+  const doc = window.document;
+  const insertPoint = doc.getElementById("_dynamicInsert");
+  const head = doc.getElementsByTagName("head")[0];
+  let current = insertPoint?.previousElementSibling ?? null;
+  const existingSheets: { [index: string]: HTMLLinkElement } = {};
+
+  while (
+    current != null &&
+    current.tagName === "LINK" &&
+    current instanceof HTMLLinkElement
+  ) {
+    existingSheets[current.href] = current;
+    current = current.previousElementSibling;
+  }
+  const cssPromises = sheets.reduce((lastLink, cssUrl) => {
+    if (existingSheets[cssUrl]) {
+      delete existingSheets[cssUrl];
+      return lastLink;
+    } else {
+      const newCss = doc.createElement("link");
+      newCss.rel = "stylesheet";
+      newCss.href = cssUrl;
+      head.insertBefore(newCss, insertPoint);
+      const p = new Promise((resolve) => {
+        newCss.addEventListener("load", resolve, false);
+        newCss.addEventListener(
+          "error",
+          (_) => {
+            console.error(`Failed to load css: ${newCss.href}`);
+            resolve(undefined);
+          },
+          false,
+        );
+      });
+      lastLink.push(p);
+      return lastLink;
+    }
+  }, [] as Promise<unknown>[]);
+  return Promise.all(cssPromises).then((_) => existingSheets);
+};
+
+/**
+ * Update external resources (JS and CSS), typically called after a new LegacyContentResponse
+ * is received.
+ *
+ * @param jsFiles A list of JS files to be loaded (if not already present).
+ * @param cssFiles A list of CSS files to be loaded (if not already present).
+ */
+export const updateIncludes = async (
+  jsFiles: string[],
+  cssFiles?: string[],
+): Promise<{ [url: string]: HTMLLinkElement }> => {
+  const extraCss = await updateStylesheets(cssFiles);
+  await loadMissingScripts(jsFiles);
+  return extraCss;
+};
+
+export const collectParams = (
+  form: HTMLFormElement,
+  command: string | null,
+  args: string[],
+): StateData => {
+  const vals: { [index: string]: string[] } = {};
+  if (command) {
+    vals["event__"] = [command];
+  }
+  args.forEach((c, i) => {
+    let outval = c;
+    switch (typeof c) {
+      case "object":
+        if (c != null) {
+          outval = JSON.stringify(c);
+        }
+    }
+    vals["eventp__" + i] = [outval];
+  });
+  form
+    .querySelectorAll<HTMLInputElement>("input,textarea")
+    .forEach((v: HTMLInputElement) => {
+      if (v.type) {
+        switch (v.type) {
+          case "button":
+            return;
+          case "checkbox":
+          case "radio":
+            if (!v.checked || v.disabled) return;
+        }
+      }
+      const ex = vals[v.name];
+      if (ex) {
+        ex.push(v.value);
+      } else vals[v.name] = [v.value];
+    });
+  form.querySelectorAll("select").forEach((v: HTMLSelectElement) => {
+    for (let i = 0; i < v.length; i++) {
+      const o = v[i] as HTMLOptionElement;
+      if (o.selected) {
+        const ex = vals[v.name];
+        if (ex) {
+          ex.push(o.value);
+        } else vals[v.name] = [o.value];
+      }
+    }
+  });
+  return vals;
+};

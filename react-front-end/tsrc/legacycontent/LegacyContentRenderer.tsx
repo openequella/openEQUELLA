@@ -40,6 +40,7 @@ export function LegacyContentRenderer({
   noForm,
   script,
   state,
+  formId,
 }: PageContent) {
   // Effect responsible for the execution of the legacy scripts etc which were historically
   // added at the end of the server-side rendered HTML.
@@ -67,7 +68,9 @@ export function LegacyContentRenderer({
     mainContent
   ) : (
     <>
-      <LegacyForm state={state}>{mainContent}</LegacyForm>
+      <LegacyForm state={state} formId={formId}>
+        {mainContent}
+      </LegacyForm>
       {form && HTMLReactParser(form)}
     </>
   );
