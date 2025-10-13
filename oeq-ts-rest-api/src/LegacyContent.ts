@@ -34,17 +34,43 @@ export interface MenuItem {
 }
 
 export interface CurrentUserDetails {
+  /** User ID */
   id: string;
+  /** Username */
   username: string;
+  /** First name */
   firstName: string;
+  /** Last name */
   lastName: string;
+  /** Email address */
   emailAddress?: string;
+  /**
+   * `true` if the user has enabled accessibility mode.
+   */
   accessibilityMode: boolean;
+  /**
+   * `true` if the user was automatically logged in.
+   */
   autoLoggedIn: boolean;
+  /**
+   * `true` if the user is a guest user.
+   */
   guest: boolean;
+  /**
+   * `true` if the user can edit their preferences.
+   */
   prefsEditable: boolean;
+  /**
+   * A list of menu groups the user has access to.
+   */
   menuGroups: MenuItem[][];
+  /**
+   * Counts of items (tasks and notifications).
+   */
   counts?: ItemCounts;
+  /**
+   * `true` if the user can download the results of a search.
+   */
   canDownloadSearchResult: boolean;
   /**
    * UUIDs of the roles assigned to the user - as well as `TLE_LOGGED_IN_USER_ROLE` where applicable.
@@ -54,6 +80,10 @@ export interface CurrentUserDetails {
    * `true` if access to Scrapbook is enabled.
    */
   scrapbookEnabled: boolean;
+  /**
+   * `true` if the user is a system user (mainly TLE_ADMINISTRATOR).
+   */
+  isSystem: boolean;
 }
 
 /**

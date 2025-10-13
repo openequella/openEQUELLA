@@ -104,6 +104,41 @@ case class LegacyContent(
 
 case class ItemCounts(tasks: Int, notifications: Int)
 
+/** Details about the current user.
+  *
+  * @param id
+  *   Identifier of the user.
+  * @param username
+  *   Username.
+  * @param firstName
+  *   First name.
+  * @param lastName
+  *   Last name.
+  * @param emailAddress
+  *   Email address.
+  * @param accessibilityMode
+  *   `true` if the user has accessibility mode enabled (some controls will be rendered in a more
+  *   screen-reader friendly manner)
+  * @param autoLoggedIn
+  *   `true` if the user was automatically logged in.
+  * @param guest
+  *   `true` if the user is a guest user.
+  * @param prefsEditable
+  *   `true` if the user can edit their preferences.
+  * @param menuGroups
+  *   A list of menu groups available that the user have permission to access.
+  * @param counts
+  *   The user's item counts (tasks, notifications), or `None` if the user is a guest.
+  * @param canDownloadSearchResult
+  *   `true` if the user can download search results.
+  * @param roles
+  *   UUIDs of the roles assigned to the user - as well as `TLE_LOGGED_IN_USER_ROLE` where
+  *   applicable.
+  * @param scrapbookEnabled
+  *   `true` if access to Scrapbook is enabled.
+  * @param isSystem
+  *   `true` if the user is a system user (mainly TLE_ADMINISTRATOR).
+  */
 case class CurrentUserDetails(
     id: String,
     username: String,
@@ -118,7 +153,8 @@ case class CurrentUserDetails(
     counts: Option[ItemCounts],
     canDownloadSearchResult: Boolean,
     roles: Iterable[String],
-    scrapbookEnabled: Boolean
+    scrapbookEnabled: Boolean,
+    isSystem: Boolean
 )
 
 object LegacyContentController extends AbstractSectionsController with SectionFilter {
@@ -486,7 +522,8 @@ class LegacyContentApi {
           accessibilityMode = accessibilityMode,
           canDownloadSearchResult = canDownloadSearchResult,
           roles = cu.getUsersRoles.asScala,
-          scrapbookEnabled = scrapbookEnabled
+          scrapbookEnabled = scrapbookEnabled,
+          isSystem = cu.isSystem
         )
       )
       .cacheControl(cacheControl)

@@ -36,7 +36,7 @@ import { PortletContainer } from "./portlet/PortletContainer";
 const { title } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const { appErrorHandler } = useContext(AppContext);
+  const { appErrorHandler, currentUser } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
@@ -67,7 +67,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     getPortlets();
   }, [getPortlets]);
 
-  const renderDashboard = () =>
+  const renderDashboardForNonSystemUser = () =>
     pipe(
       O.Do,
       O.apS("details", O.fromNullable(dashboardDetails)),
@@ -81,6 +81,13 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <PortletContainer portlets={portlets} layout={layout} />
         ),
       ),
+    );
+
+  const renderDashboard = () =>
+    currentUser?.isSystem ? (
+      <WelcomeBoard isSystemUser />
+    ) : (
+      renderDashboardForNonSystemUser()
     );
 
   return isLoading ? (

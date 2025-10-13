@@ -20,6 +20,7 @@ import {
   emptyDashboardDetails,
   mockPortlets,
 } from "../../../__mocks__/Dashboard.mock";
+import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { renderDashboardPage } from "./DashboardPageTestHelper";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
@@ -37,6 +38,23 @@ describe("<DashboardPage/>", () => {
   beforeEach(() => {
     mockGetDashboardDetails.mockClear();
   });
+
+  it.each([
+    ["when portlets are empty", []],
+    ["when portlets are not empty", mockPortlets],
+  ])(
+    "shows a special welcome message for system user %s",
+    async (_, portlets) => {
+      const partOfWelcomeMessage =
+        "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users";
+      mockGetDashboardDetails.mockResolvedValueOnce({ portlets });
+
+      const { getByText } = await renderDashboardPage(systemUser);
+      expect(
+        getByText(partOfWelcomeMessage, { exact: false }),
+      ).toBeInTheDocument();
+    },
+  );
 
   it("shows welcome message if no portlets is configured", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);
