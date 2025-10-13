@@ -70,12 +70,8 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
-const DashboardPage = React.lazy(
-  () => import("../dashboard/DashboardPage")
-);
-const FavouritesPage = React.lazy(
-  () => import("../favourites/FavouritesPage")
-);
+const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
+const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 export interface BaseOEQRouteComponentProps {
   updateTemplate: (edit: TemplateUpdate) => void;
