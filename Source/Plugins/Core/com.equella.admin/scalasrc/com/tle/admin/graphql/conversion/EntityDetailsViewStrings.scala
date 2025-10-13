@@ -35,6 +35,7 @@ final case class EntityDetailsViewStrings(
     description: Option[LanguageBundle]
 )
 object EntityDetailsViewStrings {
+
   /** EntityDetailsView contain two fundamental language bundles - name and description. This method
     * is a convenience method to convert these two bundles into LanguageBundle instances. Although
     * simple to do, this conversion is frequently needed for many entity types. Thereby centralising
