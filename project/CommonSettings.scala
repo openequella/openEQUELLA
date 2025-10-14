@@ -40,8 +40,8 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.7"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "12.10.0.jre11"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.8"
+    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.0.jre11"
 
     lazy val log4jVersion   = "2.25.2"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion

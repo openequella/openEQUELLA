@@ -245,7 +245,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.181",
-  "com.fasterxml"                 % "classmate"                % "1.7.0",
+  "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
