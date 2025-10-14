@@ -24,6 +24,7 @@ import SearchResult, {
   defaultActionButtonProps,
   SearchResultProps,
 } from "../../tsrc/search/components/SearchResult";
+import { itemWithBookmark } from "../../__mocks__/SearchResult.mock";
 
 export default {
   title: "Search/SearchResult",
@@ -86,7 +87,6 @@ HighlightedSearchResult.args = {
 export const CustomActionButtonSearchResult: StoryFn<SearchResultProps> = (
   args,
 ) => <SearchResult {...args} />;
-
 CustomActionButtonSearchResult.args = {
   ...BasicSearchResult.args,
   customActionButtons: [
@@ -99,7 +99,6 @@ CustomActionButtonSearchResult.args = {
 export const CustomTitleHandlerSearchResult: StoryFn<SearchResultProps> = (
   args,
 ) => <SearchResult {...args} />;
-
 CustomTitleHandlerSearchResult.args = {
   ...BasicSearchResult.args,
   customOnClickTitleHandler: () => console.log("The is a custom handler"),
@@ -108,7 +107,6 @@ CustomTitleHandlerSearchResult.args = {
 export const HideFavSearchResult: StoryFn<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
-
 HideFavSearchResult.args = {
   ...BasicSearchResult.args,
   actionButtonConfig: {
@@ -120,11 +118,19 @@ HideFavSearchResult.args = {
 export const HideHierarchySearchResult: StoryFn<SearchResultProps> = (args) => (
   <SearchResult {...args} />
 );
-
 HideHierarchySearchResult.args = {
   ...BasicSearchResult.args,
   actionButtonConfig: {
     ...defaultActionButtonProps,
-    showAddToFavourite: false,
+    showAddToHierarchy: false,
   },
+};
+
+export const ShowBookmarkTagsSearchResult: StoryFn<SearchResultProps> = (
+  args,
+) => <SearchResult {...args} />;
+ShowBookmarkTagsSearchResult.args = {
+  ...BasicSearchResult.args,
+  item: itemWithBookmark,
+  showBookmarkTags: true,
 };

@@ -30,6 +30,7 @@ class HierarchyPage(
     val hierarchyCompoundUuid: String
 ) extends AbstractSearchPage[HierarchyPage](context) {
   loadedBy = By.xpath("//h4[text()='" + hierarchyName + "']")
+
   val hierarchyPanel = new HierarchyPanel(context)
 
   val addKeyResourceLabel    = "Add as a key resource"
@@ -79,7 +80,7 @@ class HierarchyPage(
   // By XPath to find the pin icon button on search result list.
   private def pinIconXpath(itemName: String, pinLabel: String): By =
     By.xpath(
-      searchResultListXpath + "//a[text()='" + itemName + "']/../following-sibling::section//button[@aria-label='" + pinLabel + "']"
+      searchResultListXpath + "//a[string(.)='" + itemName + "']/../following-sibling::section//button[@aria-label='" + pinLabel + "']"
     )
 
   // Select the version of the key resource in the dialog
@@ -89,14 +90,6 @@ class HierarchyPage(
       if (isLatest) By.xpath("//span[contains(text(), 'Always use latest version')]")
       else By.xpath("//span[contains(text(), 'This version')]");
     selectVersionDialog.findElement(versionLabelXpath).click()
-  }
-
-  // Confirm the select version dialog.
-  private def confirmDialog(): Unit = {
-    val selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"))
-    val confirmButton = selectVersionDialog.findElement(By.id("confirm-dialog-confirm-button"))
-    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton))
-    confirmButton.click()
   }
 
   /** When the pin icon is highlighted click to remove this item from key resource.
@@ -179,10 +172,8 @@ class HierarchyPage(
     *   The name of the item to check.
     */
   def isItemPinIconHighlighted(itemName: String): Boolean = {
-    val removePinIconXpath = By.xpath(
-      ".//a[text()='" + itemName + "']/../following-sibling::section//button[@aria-label='" + removeKeyResourceLabel + "']"
-    )
-    val removePinIcon = getSearchList.findElements(removePinIconXpath)
+    val removePinIconXpath = pinIconXpath(itemName, removeKeyResourceLabel)
+    val removePinIcon      = getSearchList.findElements(removePinIconXpath)
 
     !removePinIcon.isEmpty
   }

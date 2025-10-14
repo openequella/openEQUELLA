@@ -26,6 +26,7 @@ export const STANDARD_DATE_FIELDS = [
   'modifiedDate',
   'lastActionDate',
   'submittedDate',
+  'addedAt',
 ];
 
 /**

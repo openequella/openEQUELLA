@@ -16,8 +16,8 @@ import org.testng.annotations.BeforeClass;
 
 @TestInstitution("rest")
 public class AbstractRestApiTest {
-
   protected static final String USERNAME = "AutoTest";
+  protected static final String USER_UUID = "adfcaf58-241b-4eca-9740-6a26d1c3dd58";
   // LOW_PRIVILEGE uses same password with AutoTest
   protected static final String LOW_PRIVILEGE_USERNAME = "AutoTest_Low_Privileged";
   protected static final String PASSWORD = "automated";

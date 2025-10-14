@@ -81,8 +81,8 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.13.1",
-  "com.google.guava"      % "guava"                       % "33.4.8-jre",
+  "com.google.code.gson"  % "gson"                        % "2.13.2",
+  "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
@@ -209,7 +209,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.81",
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.82",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -250,7 +250,7 @@ libraryDependencies ++= Seq(
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.181",
-  "com.fasterxml"                 % "classmate"                % "1.7.0",
+  "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",

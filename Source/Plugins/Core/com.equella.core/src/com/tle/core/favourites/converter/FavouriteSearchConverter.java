@@ -36,8 +36,8 @@ import javax.inject.Singleton;
 @Bind
 @Singleton
 public class FavouriteSearchConverter extends AbstractMigratableConverter<FavouriteSearch> {
-  public static final String FAVOURITESEARCHES_ID = "FAVOURITESEARCHES";
-  private static final String FAVSEARCHES_FOLDER = "favourites/searches";
+  public static final String FAVOURITE_SEARCHES_ID = "FAVOURITESEARCHES";
+  private static final String FAVOURITE_SEARCHES_FOLDER = "favourites/searches";
 
   @Inject private FavouriteSearchDao favSearchDao;
 
@@ -45,7 +45,7 @@ public class FavouriteSearchConverter extends AbstractMigratableConverter<Favour
   public void doExport(
       TemporaryFileHandle staging, Institution institution, ConverterParams callback)
       throws IOException {
-    SubTemporaryFile exportFolder = new SubTemporaryFile(staging, FAVSEARCHES_FOLDER);
+    SubTemporaryFile exportFolder = new SubTemporaryFile(staging, FAVOURITE_SEARCHES_FOLDER);
     // write out the format details
     xmlHelper.writeExportFormatXmlFile(exportFolder, true);
 
@@ -66,7 +66,7 @@ public class FavouriteSearchConverter extends AbstractMigratableConverter<Favour
   @Override
   public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
       throws IOException {
-    final SubTemporaryFile importFolder = new SubTemporaryFile(staging, FAVSEARCHES_FOLDER);
+    final SubTemporaryFile importFolder = new SubTemporaryFile(staging, FAVOURITE_SEARCHES_FOLDER);
     final List<String> entries = xmlHelper.getXmlFileList(importFolder);
 
     for (String entry : entries) {
@@ -82,6 +82,6 @@ public class FavouriteSearchConverter extends AbstractMigratableConverter<Favour
 
   @Override
   public String getStringId() {
-    return FAVOURITESEARCHES_ID;
+    return FAVOURITE_SEARCHES_ID;
   }
 }

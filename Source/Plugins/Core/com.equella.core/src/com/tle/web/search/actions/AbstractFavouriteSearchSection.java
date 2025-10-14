@@ -121,7 +121,7 @@ public abstract class AbstractFavouriteSearchSection extends AbstractPrototypeSe
     if (!Check.isEmpty(name)) {
       final FavouriteSearch fs = new FavouriteSearch();
       fs.setName(name);
-      fs.setDateModified(new Date());
+      fs.setAddedAt(new Date());
       fs.setOwner(CurrentUser.getUserID());
       final InfoBookmark bookmark = rootSearchSection.getPermanentUrl(info);
       final String url =

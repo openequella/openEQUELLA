@@ -31,7 +31,7 @@ import {
   buildOpenSummaryPageHandler,
   defaultSearchPageOptions,
   generateQueryStringFromSearchPageOptions,
-  generateSearchPageOptionsFromQueryString,
+  generateSearchPageOptionsFromLocation,
   legacyQueryStringToSearchPageOptions,
   newSearchQueryToSearchPageOptions,
   processLegacyAdvSearchCriteria,
@@ -64,7 +64,7 @@ describe("newSearchQueryToSearchOptions", () => {
 
   it("should convert query string to searchOptions", async () => {
     const longSearch =
-      '{"rowsPerPage":10,"currentPage":0,"sortOrder":"name","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943,"categories":["Hobart"]},{"id":766944,"categories":["Some cool things"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}],"advFieldValue": [[{"schemaNode": ["/controls/editbox"], "type": "editbox", "isValueTokenised": true}, ["hello world"]]] }';
+      '{"rowsPerPage":10,"currentPage":0,"sortOrder":"name","query":"test machine","rawMode":true,"status":["LIVE","REVIEW"],"searchAttachments":true,"selectedCategories":[{"id":766943, "schemaNode": "/item/place", "categories":["Hobart"]},{"id":766944, "schemaNode": "/item/other", "categories":["Some cool things"]}, {"id": 766945, "categories": ["Without schema node"]}],"collections":[{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545fff"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffe"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffg"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffa"},{"uuid":"8e3caf16-f3cb-b3dd-d403-e5eb8d545ffb"}],"lastModifiedDateRange":{"start":"2020-05-26T03:24:00.889Z","end":"2020-05-27T03:24:00.889Z"},"owner":{"id":"680f5eb7-22e2-4ab6-bcea-25205165e36e"}, "mimeTypeFilters": [{"id":"fe79c485-a6dd-4743-81e8-52de66494632"},{"id":"fe79c485-a6dd-4743-81e8-52de66494631"}],"advFieldValue": [[{"schemaNode": ["/controls/editbox"], "type": "editbox", "isValueTokenised": true}, ["hello world"]]] }';
     const convertedParamsPromise =
       await newSearchQueryToSearchPageOptions(longSearch);
     expect(convertedParamsPromise).toEqual(allSearchPageOptions);
@@ -147,7 +147,7 @@ describe("convertParamsToSearchOptions", () => {
   };
   it("should return undefined if no query string parameters are defined", async () => {
     const convertedParamsPromise =
-      await generateSearchPageOptionsFromQueryString(mockLocation);
+      await generateSearchPageOptionsFromLocation(mockLocation);
     expect(convertedParamsPromise).toBeUndefined();
   });
 });
@@ -276,7 +276,7 @@ describe("legacyQueryStringToSearchOptions", () => {
 describe("generateQueryStringFromSearchPageOptions", () => {
   it("converts all searchOptions to a url encoded json string", () => {
     expect(generateQueryStringFromSearchPageOptions(allSearchPageOptions)).toBe(
-      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22name%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22advFieldValue%22%3A%5B%5B%7B%22schemaNode%22%3A%5B%22%2Fcontrols%2Feditbox%22%5D%2C%22type%22%3A%22editbox%22%2C%22isValueTokenised%22%3Atrue%7D%2C%5B%22hello+world%22%5D%5D%5D%7D",
+      "searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22name%22%2C%22rawMode%22%3Atrue%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22test+machine%22%2C%22collections%22%3A%5B%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffg%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffa%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545fff%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffe%22%7D%2C%7B%22uuid%22%3A%228e3caf16-f3cb-b3dd-d403-e5eb8d545ffb%22%7D%5D%2C%22selectedCategories%22%3A%5B%7B%22id%22%3A766943%2C%22schemaNode%22%3A%22%2Fitem%2Fplace%22%2C%22categories%22%3A%5B%22Hobart%22%5D%7D%2C%7B%22id%22%3A766944%2C%22schemaNode%22%3A%22%2Fitem%2Fother%22%2C%22categories%22%3A%5B%22Some+cool+things%22%5D%7D%2C%7B%22id%22%3A766945%2C%22categories%22%3A%5B%22Without+schema+node%22%5D%7D%5D%2C%22lastModifiedDateRange%22%3A%7B%22start%22%3A%222020-05-26T03%3A24%3A00.889Z%22%2C%22end%22%3A%222020-05-27T03%3A24%3A00.889Z%22%7D%2C%22owner%22%3A%7B%22id%22%3A%22f9ec8b09-cf64-44ff-8a0a-08a8f2f9272a%22%7D%2C%22mimeTypeFilters%22%3A%5B%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494632%22%7D%2C%7B%22id%22%3A%22fe79c485-a6dd-4743-81e8-52de66494631%22%7D%5D%2C%22displayMode%22%3A%22list%22%2C%22dateRangeQuickModeEnabled%22%3Atrue%2C%22advFieldValue%22%3A%5B%5B%7B%22schemaNode%22%3A%5B%22%2Fcontrols%2Feditbox%22%5D%2C%22type%22%3A%22editbox%22%2C%22isValueTokenised%22%3Atrue%7D%2C%5B%22hello+world%22%5D%5D%5D%7D",
     );
   });
 

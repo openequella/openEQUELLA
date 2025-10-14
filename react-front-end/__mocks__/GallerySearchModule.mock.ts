@@ -349,7 +349,11 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           view: "http://localhost:8080/ian/items/59139c45-788b-4200-a9cb-e4a39e76ad35/1/",
           self: "http://localhost:8080/ian/api/item/59139c45-788b-4200-a9cb-e4a39e76ad35/1/",
         },
-        bookmarkId: 89567,
+        bookmark: {
+          id: 89567,
+          addedAt: new Date("2021-04-01T14:22:31.123+10:00"),
+          tags: [],
+        },
         isLatestVersion: true,
       },
       {
@@ -442,7 +446,11 @@ export const basicVideoSearchResponse: OEQ.Search.SearchResult<OEQ.Search.Search
           view: "http://localhost:8080/ian/items/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/",
           self: "http://localhost:8080/ian/api/item/9d5112d4-87b6-4ac1-b773-ceaa4a6c5205/1/",
         },
-        bookmarkId: 89568,
+        bookmark: {
+          id: 89568,
+          addedAt: new Date("2025-09-12T14:22:31.123+10:00"),
+          tags: [],
+        },
         isLatestVersion: true,
       },
       {

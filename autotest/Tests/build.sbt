@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.30"
+val http4sVersion = "0.23.32"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.8"
 
@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
   "com.jcraft"                % "jsch"                     % "0.1.55",
   "org.jacoco"                % "org.jacoco.report"        % "0.8.13",
   "org.dspace"                % "oclc-harvester2"          % "1.0.0",
-  "com.typesafe"              % "config"                   % "1.4.4",
+  "com.typesafe"              % "config"                   % "1.4.5",
   "org.apache.logging.log4j"  % "log4j"                    % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-core"               % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl"        % log4jVersion,

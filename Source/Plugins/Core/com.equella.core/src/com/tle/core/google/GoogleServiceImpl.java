@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -92,6 +94,10 @@ public class GoogleServiceImpl implements GoogleService {
 
       SearchListResponse searchListResponse = search.execute();
 
+      // Although type of 'video' is specified above, this is only a 'suggestion' to the API.
+      // So we need to filter out any non-video results.
+      videosOnly(searchListResponse);
+
       return searchListResponse;
     } catch (GoogleJsonResponseException gjre) {
       /*
@@ -114,6 +120,18 @@ public class GoogleServiceImpl implements GoogleService {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static void videosOnly(SearchListResponse searchListResponse) {
+    Optional.ofNullable(searchListResponse.getItems())
+        .map(List::stream)
+        .map(
+            items ->
+                items
+                    .filter(Objects::nonNull)
+                    .filter(item -> "youtube#video".equals(item.getId().getKind()))
+                    .toList())
+        .ifPresent(searchListResponse::setItems);
   }
 
   @Override

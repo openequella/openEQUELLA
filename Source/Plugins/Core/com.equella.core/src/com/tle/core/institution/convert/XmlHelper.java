@@ -177,8 +177,15 @@ public class XmlHelper {
   }
 
   /**
-   * @param folder
-   * @param bucketed
+   * Writes out a format file to the specified folder which indicates whether the exported entity
+   * are stored in a bucket folder or not.
+   *
+   * <p>For example, the exported favourite item XML file is stored in a bucket folder
+   * `favourites/items/<bucket-id>/item-id.xml`, thus the format XML file should be placed in
+   * `favourites/items`, and the bucketed parameter should be set to true.
+   *
+   * @param folder The folder in which to write the format file.
+   * @param bucketed True if the exported entity XML file are stored in a bucket folder.
    */
   public void writeExportFormatXmlFile(final TemporaryFileHandle folder, boolean bucketed) {
     FormatFile ff = new FormatFile();

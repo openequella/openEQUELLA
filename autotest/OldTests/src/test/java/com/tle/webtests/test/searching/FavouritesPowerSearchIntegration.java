@@ -34,9 +34,17 @@ public class FavouritesPowerSearchIntegration extends AbstractCleanupTest {
     searchPage.saveSearch(POWER_SEARCH_NAME);
 
     // Access Favorites Search Page
-    FavouritesPage favouritePage = new FavouritesPage(context).load();
-    Assert.assertTrue(favouritePage.searches().results().doesResultExist(POWER_SEARCH_NAME));
-    favouritePage.accessSavedSearches(POWER_SEARCH_NAME);
+    if (testConfig.isNewUI()) {
+      io.github.openequella.pages.favourites.FavouritesPage favouritePage =
+          new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+      favouritePage.selectFavouritesSearchesType();
+      Assert.assertTrue(favouritePage.hasSearch(POWER_SEARCH_NAME));
+      favouritePage.selectSearch(POWER_SEARCH_NAME);
+    } else {
+      FavouritesPage favouritePage = new FavouritesPage(context).load();
+      Assert.assertTrue(favouritePage.searches().results().doesResultExist(POWER_SEARCH_NAME));
+      favouritePage.accessSavedSearches(POWER_SEARCH_NAME);
+    }
 
     // Check Power Search after Accessing from Favorites
     Assert.assertTrue(searchPage.hasResults());

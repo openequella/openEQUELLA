@@ -103,6 +103,31 @@ export const itemNotInKeyResource: OEQ.Search.SearchResultItem = {
   isLatestVersion: true,
 };
 
+export const itemWithBookmark: OEQ.Search.SearchResultItem = {
+  uuid: "266bb0ff-a730-4658-aec0-c68bbefc2272",
+  name: "b",
+  version: 1,
+  status: "live",
+  createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
+  modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
+  collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
+  commentCount: 0,
+  attachments: [],
+  thumbnail: "initial",
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
+    self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
+  },
+  isLatestVersion: true,
+  bookmark: {
+    id: 123,
+    addedAt: new Date("2023-01-01T12:00:00Z"),
+    tags: ["custom", "tags"],
+  },
+};
+
 export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
     start: 0,
@@ -112,6 +137,7 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
       itemWithAttachment,
       normalItemWithoutName,
       itemNotInKeyResource,
+      itemWithBookmark,
       {
         uuid: "925f5dd2-66eb-4b68-85be-93837af785d0",
         version: 1,
@@ -167,26 +193,6 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
           self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2271/1/",
         },
         isLatestVersion: true,
-      },
-      {
-        uuid: "266bb0ff-a730-4658-aec0-c68bbefc2272",
-        name: "b",
-        version: 1,
-        status: "live",
-        createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
-        modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
-        collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
-        commentCount: 0,
-        attachments: [],
-        thumbnail: "initial",
-        displayFields: [],
-        keywordFoundInAttachment: false,
-        links: {
-          view: "http://localhost:8080/rest/items/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
-          self: "http://localhost:8080/rest/api/item/266bb0ff-a730-4658-aec0-c68bbefc2272/1/",
-        },
-        isLatestVersion: true,
-        bookmarkId: 123,
       },
       {
         uuid: "266bb0ff-a730-4658-aec0-c68bbefc2273",

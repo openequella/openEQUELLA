@@ -118,8 +118,14 @@ export interface SearchResultListProps {
   onSaveSearch: () => void;
   /**
    * True to enable the Share search button.
+   * Defaults to `true`.
    */
   useShareSearchButton?: boolean;
+  /**
+   * True to enable the Favourite search button.
+   * Defaults to `true`.
+   */
+  useFavouriteSearchButton?: boolean;
   /**
    * Props for the Icon button that controls whether show Refine panel in small screens
    */
@@ -163,6 +169,7 @@ export const SearchResultList = ({
   onSaveSearch,
   exportProps: { isExportPermitted, exportLinkProps },
   useShareSearchButton = true,
+  useFavouriteSearchButton = true,
   additionalHeaders,
 }: SearchResultListProps) => {
   const inSelectionSession: boolean = isSelectionSessionOpen();
@@ -208,14 +215,16 @@ export const SearchResultList = ({
                 </Button>
               </Tooltip>
             </Grid>
-            <Grid>
-              <TooltipIconButton
-                title={searchPageStrings.favouriteSearch.title}
-                onClick={onSaveSearch}
-              >
-                <FavoriteBorderIcon />
-              </TooltipIconButton>
-            </Grid>
+            {useFavouriteSearchButton && (
+              <Grid>
+                <TooltipIconButton
+                  title={searchPageStrings.favouriteSearch.title}
+                  onClick={onSaveSearch}
+                >
+                  <FavoriteBorderIcon />
+                </TooltipIconButton>
+              </Grid>
+            )}
             {isExportPermitted && (
               <Grid>
                 <ExportSearchResultLink {...exportLinkProps} />

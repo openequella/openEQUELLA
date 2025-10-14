@@ -379,6 +379,41 @@ export const languageStrings = {
   errorpage: {
     title: "Error",
   },
+  favourites: {
+    title: "Favourites",
+    favouritesSearch: {
+      searchCriteria: "Search criteria",
+      addedAt: "Added at",
+      remove: "Remove from favourites",
+      removeAlert:
+        "Are you sure you want to remove this search from your favourites?",
+      showMoreSearchCriteria: "Show more search criteria",
+      hideMoreSearchCriteria: "Hide more search criteria",
+      searchCriteriaLabels: {
+        query: "Query",
+        collection: "Collection",
+        advancedSearch: "Advanced search",
+        hierarchy: "Hierarchy",
+        lastModifiedDateRange: "Last modified date range",
+        owner: "Owner",
+        mimeTypes: "Mime types",
+        classification: "Classification",
+        end: "End",
+        start: "Start",
+      },
+    },
+    favouritesItem: {
+      tags: "Tags",
+    },
+    favouritesSelector: {
+      title: "Favourites type",
+      resources: "Resources",
+      searches: "Searches",
+    },
+    sortOptions: {
+      dateFavourited: "Date favourited",
+    },
+  },
   fileUploader: {
     noFileSelected: "No attached resources",
     failedToDelete: "Failed to delete '%s' due to error: %s",
@@ -580,7 +615,8 @@ export const languageStrings = {
     favouriteItem: {
       add: "Add to favourites",
       remove: "Remove from favourites",
-      removeAlert: "Are you sure you want to remove from your favourites?",
+      removeAlert:
+        "Are you sure you want to remove this resource from your favourites?",
       tagDescription: "Tags to help when searching (optional).",
     },
     addToHierarchy: {
@@ -618,12 +654,12 @@ export const languageStrings = {
       title: "Filter by Attachment type",
       helperText: "Attachment types",
     },
-    order: {
+    sortOptions: {
       relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
+      title: "Title",
+      lastModified: "Date last modified",
+      dateCreated: "Date created",
+      userRating: "User Rating",
     },
     pagination: {
       firstPageButton: "First page",

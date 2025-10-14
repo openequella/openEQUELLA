@@ -46,6 +46,7 @@ const RootHierarchyPage = React.lazy(
 const HierarchyBrowsePage = React.lazy(
   () => import("../hierarchy/BrowseHierarchyPage"),
 );
+const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 interface NewPageProps {
   /**
@@ -182,6 +183,11 @@ const App = ({ entryPage }: AppProps): React.JSX.Element => {
         hierarchyBrowsePage: () => (
           <NewPage>
             <HierarchyBrowsePage updateTemplate={nop} />
+          </NewPage>
+        ),
+        favouritesPage: () => (
+          <NewPage>
+            <FavouritesPage updateTemplate={nop} />
           </NewPage>
         ),
         _: (s: string | number) => {

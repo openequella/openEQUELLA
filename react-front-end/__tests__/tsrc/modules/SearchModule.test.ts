@@ -66,7 +66,7 @@ describe("searchItems", () => {
     expect(searchResult.results).toHaveLength(12);
   });
 
-  const expectSearchQueryToBeValid = (expectedQuery: string) => {
+  const expectSearchQueryToBeValid = (expectedQuery?: string) => {
     const calls = mockedSearch.mock.calls;
     const params = calls[0][1]; // Second parameter of the call is the 'params'
     expect(params.query).toEqual(expectedQuery);
@@ -77,7 +77,7 @@ describe("searchItems", () => {
       ...SearchModule.defaultSearchOptions,
       query: "   ",
     });
-    expectSearchQueryToBeValid("");
+    expectSearchQueryToBeValid(undefined);
   });
 
   it("should append a wildcard for a search non-rawMode, non-empty query", async () => {

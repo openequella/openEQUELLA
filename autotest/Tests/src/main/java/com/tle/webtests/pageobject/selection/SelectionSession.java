@@ -114,10 +114,9 @@ public class SelectionSession extends AbstractPage<SelectionSession> {
         .isEmpty();
   }
 
-  public ItemListPage getShowAllFavourites() {
+  public void clickShowAllFavourites() {
     setRecentTab("Favourites");
     recentBox.findElement(By.id("fav_showAll")).click();
-    return new ItemListPage(context).get();
   }
 
   public boolean recentContributionExists(String fullName) {

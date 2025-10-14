@@ -15,8 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { screen, SelectorMatcherOptions } from "@testing-library/react";
+import {
+  getByLabelText,
+  getByRole,
+  screen,
+  SelectorMatcherOptions,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { pipe } from "fp-ts/function";
+import * as A from "fp-ts/Array";
 
 /**
  * Provides the method to click on a MUI select element, where it is not suitable to simply click
@@ -80,6 +87,21 @@ export const selectOption = async (
 };
 
 /**
+ * Given a list of potential option texts, count how many are actually present in the DOM.
+ * Useful for checking which options of a MUI Select are currently available.
+ *
+ * @param options An array of strings, where each string is the text of an option to check for.
+ * @returns The number of options from the provided list that were found in the DOM.
+ */
+export const countPresentSelectOptions = (options: string[]) =>
+  pipe(
+    options,
+    A.map(querySelectOption),
+    A.filter((r) => r !== null),
+    A.size,
+  );
+
+/**
  * Helper to get Mui text field by aria label.
  *
  * @param container The container element.
@@ -127,3 +149,30 @@ export const inputMuiTextFieldByAriaLabel = async (
     await userEvent.type(input, value);
   }
 };
+
+/**
+ * Check if a MUI Toggle Button is currently in a 'checked' state.
+ *
+ * @param container The container element to search within.
+ * @param label The accessible name of the toggle button.
+ * @returns `true` if the button is checked.
+ */
+export const isToggleButtonChecked = (
+  container: HTMLElement,
+  label: string,
+): boolean => {
+  const button = getByRole(container, "button", { name: label });
+  const checkedState = button.getAttribute("aria-checked");
+  return (
+    checkedState === "true" && button.classList.contains("MuiButton-contained")
+  );
+};
+
+/**
+ * Select a MUI Toggle Button by clicking it.
+ *
+ * @param container The container element to search within.
+ * @param label The accessible name of the toggle button to click.
+ */
+export const selectToggleButton = (container: HTMLElement, label: string) =>
+  userEvent.click(getByLabelText(container, label));

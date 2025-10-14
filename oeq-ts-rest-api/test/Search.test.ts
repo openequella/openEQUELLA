@@ -248,6 +248,28 @@ describe('Search with GET:', () => {
   });
 });
 
+describe('Details for bookmark', () => {
+  it('provides no bookmark details for items which have not been favourited', async () => {
+    const searchResult = await doSearch({
+      query: 'Search2 API test - Image',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const bookmarkDetails = searchResult.results.pop()!.bookmark;
+    expect(bookmarkDetails).toBeUndefined();
+  });
+
+  it('includes bookmark details for favourite items', async () => {
+    const searchResult = await doSearch({
+      query: 'Book A v2',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const bookmarkDetails = searchResult.results.pop()!.bookmark;
+    expect(bookmarkDetails).toBeDefined();
+  });
+});
+
 describe('Search with POST:', () => {
   it('should return results which large number of parameters', async () => {
     // create a large number of mime types

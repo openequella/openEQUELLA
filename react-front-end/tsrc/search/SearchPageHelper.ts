@@ -73,6 +73,9 @@ import type { SortOrderOptions } from "./components/SearchOrderSelect";
 import type { StatusSelectorProps } from "./components/StatusSelector";
 import type { State } from "./SearchPageReducer";
 
+const { relevance, lastModified, dateCreated, title, userRating } =
+  languageStrings.searchpage.sortOptions;
+
 const nop = () => {};
 
 /**
@@ -102,7 +105,8 @@ export interface SearchPageOptions extends SearchOptions {
    */
   legacyAdvSearchCriteria?: PathValueMap;
   /**
-   * Open/closed state of refine expansion panel
+   * Open/closed state of refine expansion panel.
+   * 'False' means the panel is expanded.
    */
   filterExpansion?: boolean;
 }
@@ -199,6 +203,10 @@ export interface SearchPageHeaderConfig {
    */
   enableShareSearchButton?: boolean;
   /**
+   * `true` to enable the Favourite Search button.
+   */
+  enableFavouriteSearchButton?: boolean;
+  /**
    * Additional components displayed in the CardHeader.
    */
   additionalHeaders?: React.JSX.Element[];
@@ -229,6 +237,7 @@ export interface SearchPageHeaderConfig {
 export const defaultSearchPageHeaderConfig: SearchPageHeaderConfig = {
   enableCSVExportButton: true,
   enableShareSearchButton: true,
+  enableFavouriteSearchButton: true,
 };
 
 /**
@@ -310,13 +319,22 @@ export interface SearchPageSearchBarConfig {
   /**
    * Configuration for the Advanced Search filter.
    */
-  advancedSearchFilter: {
+  advancedSearchFilter?: {
     /** Called when the filter button is clicked */
     onClick: () => void;
     /** If true the button wil be highlighted by the Secondary colour. */
     accent: boolean;
   };
+
+  /**
+   * Controls whether the wildcard toggle switch is displayed in the search bar.
+   */
+  enableWildcardToggle?: boolean;
 }
+
+export const defaultSearchPageSearchBarConfig: SearchPageSearchBarConfig = {
+  enableWildcardToggle: true,
+};
 
 export const defaultPagedSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
@@ -373,19 +391,24 @@ export type DehydratedSearchPageOptions = t.TypeOf<
   typeof DehydratedSearchPageOptionsCodec
 >;
 
+export const defaultSortingOptions: [OEQ.Search.SortOrder, string][] = [
+  ["rank", relevance],
+  ["datemodified", lastModified],
+  ["datecreated", dateCreated],
+  ["name", title],
+  ["rating", userRating],
+];
+
 /**
  * A function that takes and parses a saved search query string from a shared legacy searching.do or /page/search URL, and converts it into a SearchPageOptions object.
  *
- * @param location representing a Location which includes search query params - such as from the <SearchPage>
+ * @param queryString representing the query string from the URL - for example: `?searchOptions=options&page=1`
  * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
  */
-export const generateSearchPageOptionsFromQueryString = async (
-  location: Location,
+const generateSearchPageOptionsFromQueryString = async (
+  queryString: string,
 ): Promise<SearchPageOptions | undefined> => {
-  if (!location.search) {
-    return undefined;
-  }
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(queryString);
   const searchPageOptions = params.get("searchOptions");
 
   // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
@@ -401,7 +424,33 @@ export const generateSearchPageOptionsFromQueryString = async (
 };
 
 /**
- * A function that takes search options and converts it to to a JSON representation.
+ * A function that takes a Location object and extracts the search options from the query string.
+ *
+ * @param location representing a Location which includes search query params - such as from the <SearchPage>
+ * @return SearchPageOptions containing the options encoded in the query string params, or undefined if there were none.
+ */
+export const generateSearchPageOptionsFromLocation = async (
+  location: Location,
+): Promise<SearchPageOptions | undefined> =>
+  pipe(
+    location.search,
+    O.fromNullable,
+    O.map(generateSearchPageOptionsFromQueryString),
+    O.toUndefined,
+  );
+
+/**
+ * Extracts the search options from URL.
+ *
+ * @param url A URL object which includes search query params.
+ */
+export const generateSearchPageOptionsFromUrl = async (
+  url: URL,
+): Promise<SearchPageOptions | undefined> =>
+  generateSearchPageOptionsFromQueryString(url.search);
+
+/**
+ * A function that takes search options and converts it to a JSON representation.
  * Collections and owner properties are both reduced down to their uuid and id properties respectively.
  * Undefined properties are excluded.
  * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
@@ -822,7 +871,10 @@ export const buildSearchPageNavigationConfig = (
 ): SearchPageNavigationConfig => ({
   path: NEW_SEARCH_PATH,
   selectionSessionPathBuilder: () =>
-    buildSelectionSessionSearchPageLink(searchPageOptions.externalMimeTypes),
+    buildSelectionSessionSearchPageLink(
+      undefined,
+      searchPageOptions.externalMimeTypes,
+    ),
 });
 
 /**
@@ -848,3 +900,15 @@ export const isGalleryItems = (
   from: string,
   items: unknown,
 ): items is GallerySearchResultItem[] => from === "gallery-search";
+
+/**
+ * Type guard for favourite-search results.
+ *
+ * @param from - The `from` attribute in `SearchPageSearchResult` context,
+ *               expected be "favourite-search" for a positive check.
+ * @param searches - The data to be checked, expected to come from a search operation.
+ */
+export const isFavouriteSearches = (
+  from: string,
+  searches: unknown,
+): searches is OEQ.Favourite.FavouriteSearch[] => from === "favourite-search";

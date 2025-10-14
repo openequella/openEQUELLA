@@ -19,14 +19,12 @@
 package com.tle.core.institution.migration.v20242;
 
 import com.dytech.devlib.PropBagEx;
-import com.google.inject.Inject;
 import com.tle.common.filesystem.handle.SubTemporaryFile;
 import com.tle.common.filesystem.handle.TemporaryFileHandle;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.convert.ConverterParams;
 import com.tle.core.institution.convert.InstitutionInfo;
 import com.tle.core.institution.convert.XmlMigrator;
-import com.tle.core.services.FileSystemService;
 import javax.inject.Singleton;
 
 /**
@@ -64,13 +62,6 @@ public class MigrateDynamicKeyResourceXml extends XmlMigrator {
   private static final String LEGACY_FOLDER = "dynakeyresources";
   private static final String NEW_FOLDER = "keyresources";
 
-  private final FileSystemService fileSystemService;
-
-  @Inject
-  public MigrateDynamicKeyResourceXml(FileSystemService fileSystemService) {
-    this.fileSystemService = fileSystemService;
-  }
-
   @Override
   public void execute(
       TemporaryFileHandle staging, InstitutionInfo instInfo, ConverterParams params) {
@@ -89,18 +80,11 @@ public class MigrateDynamicKeyResourceXml extends XmlMigrator {
             });
   }
 
-  // Update node name.
-  private void updateNodeName(PropBagEx xml, String oldNodeName, String newNodeName) {
-    String value = xml.getNode(oldNodeName);
-    xml.createNode(newNodeName, value);
-    xml.deleteNode(oldNodeName);
-  }
-
   // Update attributes in dynamic key resource XML.
   private void migrateDynamicKeyResourceXml(PropBagEx dynamicKeyResourceXml) {
     dynamicKeyResourceXml.setNodeName("com.tle.beans.hierarchy.HierarchyTopicKeyResource");
-    updateNodeName(dynamicKeyResourceXml, "dynamicHierarchyId", "hierarchyCompoundUuid");
-    updateNodeName(dynamicKeyResourceXml, "uuid", "itemUuid");
-    updateNodeName(dynamicKeyResourceXml, "version", "itemVersion");
+    dynamicKeyResourceXml.renameNode("dynamicHierarchyId", "hierarchyCompoundUuid");
+    dynamicKeyResourceXml.renameNode("uuid", "itemUuid");
+    dynamicKeyResourceXml.renameNode("version", "itemVersion");
   }
 }

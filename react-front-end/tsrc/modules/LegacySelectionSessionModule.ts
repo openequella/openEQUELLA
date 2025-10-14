@@ -27,6 +27,8 @@ import {
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
+import { getAdvancedSearchIdFromUrl } from "./AdvancedSearchModule";
+import { getTopicIdFromUrl } from "./HierarchyModule";
 import {
   ExternalRedirect,
   isChangeRoute,
@@ -229,13 +231,13 @@ const submitSelection = <T>(
   callback: (result: T) => void,
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
-const buildSelectionSessionLink = (
+export const buildSelectionSessionLink = (
   routerPath: string,
   includeLayout = false,
   externalMimeTypes: string[] = [],
-) => {
+): string => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
-  const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
+  const url = new URL(routerPath.slice(1), getBaseUrl()); // Drop routerPath's first '/'.
   url.searchParams.append("_sl.stateId", stateId);
 
   if (integId) {
@@ -313,9 +315,11 @@ export const buildSelectionSessionScrapbookLink = (url: string): string =>
  * The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
+ * @param searchParams The search parameters to be appended to the search URL
  * @param externalMimeTypes A list of MIME types provided by LMS.
  */
 export const buildSelectionSessionSearchPageLink = (
+  searchParams?: URLSearchParams,
   externalMimeTypes?: string[],
 ) => {
   const { layout } = getSelectionSessionInfo();
@@ -331,10 +335,52 @@ export const buildSelectionSessionSearchPageLink = (
     }),
   );
 
-  return buildSelectionSessionLink(
-    `/${legacySelectionSessionPath}/searching.do`,
-    false,
-    externalMimeTypes,
+  const searchingPath = `/${legacySelectionSessionPath}/searching.do`;
+  const routePath = searchParams
+    ? `${searchingPath}?${searchParams.toString()}`
+    : searchingPath;
+
+  return buildSelectionSessionLink(routePath, false, externalMimeTypes);
+};
+
+/**
+ * Build a Selection Session specific Favourite search Link for different search pages:
+ * 1. Hierarchy page
+ * 2. Advanced search page
+ * 3. Normal search page
+ *
+ * @param path URL of the favourite search. For example: "/favourites/search.do"
+ */
+export const buildFavouritesSearchSelectionSessionLink = (
+  path: string,
+): string => {
+  const url = O.tryCatch(() => new URL(path, getBaseUrl()));
+
+  const hierarchyLink = pipe(
+    url,
+    O.chainNullableK(getTopicIdFromUrl),
+    O.map(buildSelectionSessionHierarchyLink),
+  );
+
+  const buildAdvancedSearchLink = () =>
+    pipe(
+      url,
+      O.chainNullableK(getAdvancedSearchIdFromUrl),
+      O.map(buildSelectionSessionAdvancedSearchLink),
+    );
+
+  const buildDefaultLink = () =>
+    pipe(
+      url,
+      O.map((u) => u.searchParams),
+      O.toUndefined,
+      buildSelectionSessionSearchPageLink,
+    );
+
+  return pipe(
+    hierarchyLink,
+    O.alt(buildAdvancedSearchLink),
+    O.getOrElse(buildDefaultLink),
   );
 };
 

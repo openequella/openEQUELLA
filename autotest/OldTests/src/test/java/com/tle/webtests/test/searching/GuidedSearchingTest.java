@@ -4,7 +4,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
 import com.tle.webtests.framework.TestInstitution;
-import com.tle.webtests.pageobject.searching.FavouriteSearchesPage;
 import com.tle.webtests.pageobject.searching.FavouritesPage;
 import com.tle.webtests.pageobject.searching.ItemListPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
@@ -135,19 +134,53 @@ public class GuidedSearchingTest extends AbstractCleanupTest {
     // Login as the SimpleModerator to do some searching.
     logon("SimpleModerator", "``````");
 
-    // Click the My Searches
-    FavouriteSearchesPage mySearches = new FavouritesPage(context).load().searches();
-    mySearches.open("save search");
+    selectSearch("save search");
     assertItems(new SearchPage(context).load().results(), true, true, false);
 
-    mySearches = new FavouritesPage(context).load().searches();
-    mySearches.open("live item search");
+    selectSearch("live item search");
     SearchPage guidedSearchPage = new SearchPage(context).get();
     assertFalse(guidedSearchPage.hasResults());
     assertItems(guidedSearchPage.setIncludeNonLive(true).results(), false, false, true);
 
-    mySearches = new FavouritesPage(context).load().searches();
-    mySearches.delete("save search");
-    mySearches.delete("live item search");
+    deleteSearch("save search");
+    deleteSearch("live item search");
+  }
+
+  private void selectSearchInOldUi(String searchName) {
+    new FavouritesPage(context).load().searches().open(searchName);
+  }
+
+  private void selectSearchInNewUi(String searchName) {
+    io.github.openequella.pages.favourites.FavouritesPage favouritePage =
+        new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+    favouritePage.selectFavouritesSearchesType();
+    favouritePage.selectSearch(searchName);
+  }
+
+  private void selectSearch(String searchName) {
+    if (testConfig.isNewUI()) {
+      selectSearchInNewUi(searchName);
+    } else {
+      selectSearchInOldUi(searchName);
+    }
+  }
+
+  private void deleteSearchInOldUi(String searchName) {
+    new FavouritesPage(context).load().searches().delete(searchName);
+  }
+
+  private void deleteSearchInNewUi(String searchName) {
+    io.github.openequella.pages.favourites.FavouritesPage favouritePage =
+        new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+    favouritePage.selectFavouritesSearchesType();
+    favouritePage.removeSearch(searchName);
+  }
+
+  private void deleteSearch(String searchName) {
+    if (testConfig.isNewUI()) {
+      deleteSearchInNewUi(searchName);
+    } else {
+      deleteSearchInOldUi(searchName);
+    }
   }
 }

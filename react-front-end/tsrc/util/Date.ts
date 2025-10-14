@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as t from "io-ts";
 import { DateTime } from "luxon";
 
@@ -50,10 +52,10 @@ export type ISODateFormat = "yyyy-MM-dd" | "yyyy-MM" | "yyyy";
  * One should call 'toISOString()' to get the UTC date in ISO format.
  * @param date The date to be converted to a string in ISO format.
  */
-export const getISODateString = (date?: Date) => {
-  if (date) {
+export const getISODateString = (date?: Date): string | undefined =>
+  pipe(
+    O.fromNullable(date),
     // If the result of toISODate is null then return undefined.
-    return DateTime.fromJSDate(date).toISODate() ?? undefined;
-  }
-  return undefined;
-};
+    O.chainNullableK((d) => DateTime.fromJSDate(d).toISODate()),
+    O.toUndefined,
+  );

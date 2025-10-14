@@ -582,4 +582,13 @@ public abstract class AbstractPage<T extends PageObject>
     textField.sendKeys(Keys.CONTROL + "a");
     textField.sendKeys(Keys.BACK_SPACE);
   }
+
+  /** Click the confirm button in a confirmation dialog. */
+  public void confirmDialog() {
+    WebElement selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"));
+    WebElement confirmButton =
+        selectVersionDialog.findElement(By.id("confirm-dialog-confirm-button"));
+    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
+    confirmButton.click();
+  }
 }

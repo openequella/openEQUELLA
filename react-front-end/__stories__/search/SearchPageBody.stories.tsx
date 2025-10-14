@@ -154,6 +154,16 @@ CustomSortingOptions.args = {
   },
 };
 
+export const HideWilcardSearchToggle: StoryFn<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+HideWilcardSearchToggle.args = {
+  ...searchPageBodyProps,
+  searchBarConfig: {
+    enableWildcardToggle: false,
+  },
+};
+
 export const ShowAdvancedSearchFilter: StoryFn<SearchPageBodyProps> = (
   args,
 ) => <SearchPageBody {...args} />;
@@ -186,10 +196,8 @@ CustomSearchResult.args = {
   ...searchPageBodyProps,
   customRenderSearchResults: (searchResult: SearchPageSearchResult) => (
     <List>
-      {searchResult.content.results.map(({ name, uuid, version }) => (
-        <ListItem key={uuid}>
-          name: {name} | uuid: {uuid} | version: {version}
-        </ListItem>
+      {searchResult.content.results.map(({ name }) => (
+        <ListItem key={name}>name: {name}</ListItem>
       ))}
     </List>
   ),

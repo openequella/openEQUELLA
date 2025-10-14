@@ -15,14 +15,17 @@ import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
 /*
- * Alot of this test could be refactored into methods
+ * A lot of this test could be refactored into methods
  */
 @TestInstitution("vanilla")
 public class FavouriteItemsTest extends AbstractCleanupTest {
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void addRemoveFavouriteFromItemSummary() {
     logon("AutoTest", "automated");
     String name = "testfromsummary";
@@ -61,7 +64,9 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     assertFalse(itemSummary.isFavouriteItem());
   }
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void addRemoveFavouriteFromSearchResults() {
     logon("AutoTest", "automated");
     String name = "testfromsearchresult";
@@ -104,7 +109,9 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     assertFalse(resultForTitle.isFavouriteItem());
   }
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void testFavouriteTagSearch() {
     logon("AutoTest", "automated");
     String name1 = "testtagsearch1";
@@ -175,7 +182,9 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     results.getResultForTitle(itemName2, 1).removeFavourite();
   }
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void testVersionFavourites() {
     logon("AutoTest", "automated");
     String name = "testversion";
@@ -241,7 +250,9 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     favresults.getResultForTitle(itemName, 1).removeFavourite();
   }
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void testNoResults() {
     logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
@@ -249,7 +260,9 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     assertFalse(favs.hasResults());
   }
 
+  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
+  @OldUIOnly
   public void testAutoLoggedIn() {
     logout().autoLogin(); // Ensure logged out
 
