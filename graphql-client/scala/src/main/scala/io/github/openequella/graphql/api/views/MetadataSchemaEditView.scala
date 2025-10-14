@@ -16,29 +16,24 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.api.views
 
-package object client {
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type LanguageBundle
-  type LanguageString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.client.EditableEntityMetadataSchema
+
+final case class MetadataSchemaEditView(
+    schema: MetadataSchemaView,
+    stagingId: String,
+    version: Option[String],
+    targetList: List[TargetListEntryView]
+)
+
+object MetadataSchemaEditView {
+  val selector: SelectionBuilder[EditableEntityMetadataSchema, MetadataSchemaEditView] =
+    (
+      EditableEntityMetadataSchema.entity(MetadataSchemaView.selector) ~
+        EditableEntityMetadataSchema.stagingId ~
+        EditableEntityMetadataSchema.version ~
+        EditableEntityMetadataSchema.targetList(TargetListEntryView.selector)
+    ).mapN(MetadataSchemaEditView.apply _)
 }

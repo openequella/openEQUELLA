@@ -35,10 +35,10 @@ import java.time.LocalDateTime
   *   Creation timestamp.
   * @param dateModified
   *   Last modification timestamp.
-  * @param nameBundleId
-  *   Language bundle ID for the entity's name.
-  * @param descriptionBundleId
-  *   Language bundle ID for the entity's description.
+  * @param nameBundle
+  *   Language bundle for the entity's name.
+  * @param descriptionBundle
+  *   Language bundle for the entity's description.
   * @param attributes
   *   Additional attributes as a map of key-value pairs.
   * @param disabled
@@ -50,8 +50,8 @@ final case class EntityDetailsView(
     owner: String,
     dateCreated: Option[LocalDateTime],
     dateModified: Option[LocalDateTime],
-    nameBundleId: Option[Long],
-    descriptionBundleId: Option[Long],
+    nameBundle: Option[LanguageBundleView],
+    descriptionBundle: Option[LanguageBundleView],
     attributes: Map[String, String],
     disabled: Boolean
 )
@@ -66,8 +66,8 @@ object EntityDetailsView {
       EntityDetails.owner ~
       EntityDetails.dateCreated ~
       EntityDetails.dateModified ~
-      EntityDetails.nameBundleId ~
-      EntityDetails.descriptionBundleId ~
+      EntityDetails.nameBundle(LanguageBundleView.selector) ~
+      EntityDetails.descriptionBundle(LanguageBundleView.selector) ~
       EntityDetails.attributes(attributesSelector).map(_.toMap) ~
       EntityDetails.disabled
   ).mapN(

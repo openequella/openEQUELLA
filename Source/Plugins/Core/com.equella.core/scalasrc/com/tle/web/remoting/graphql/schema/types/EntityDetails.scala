@@ -51,13 +51,13 @@ final case class EntityDetails(
     )
     dateModified: Option[LocalDateTime],
     @GQLDescription(
-      "Language bundle ID for the _name_ of this entity, used for internationalization."
+      "Language bundle for the _name_ of this entity, used for internationalization."
     )
-    nameBundleId: Option[Long],
+    nameBundle: Option[LanguageBundle],
     @GQLDescription(
-      "Language bundle ID for the _description_ of this entity, used for internationalization."
+      "Language bundle for the _description_ of this entity, used for internationalization."
     )
-    descriptionBundleId: Option[Long],
+    descriptionBundle: Option[LanguageBundle],
     @GQLDescription(
       "A map of additional attributes for this entity, allowing for flexible metadata storage."
     )
@@ -83,8 +83,8 @@ object EntityDetails {
     owner = entity.getOwner,
     dateCreated = toLocalDateTime(entity.getDateCreated),
     dateModified = toLocalDateTime(entity.getDateModified),
-    nameBundleId = languageBundleId(entity.getName),
-    descriptionBundleId = languageBundleId(entity.getDescription),
+    nameBundle = Option(entity.getName).map(LanguageBundle.apply),
+    descriptionBundle = Option(entity.getDescription).map(LanguageBundle.apply),
     attributes = entity.getAttributes.asScala.toMap,
     disabled = entity.isDisabled
   )

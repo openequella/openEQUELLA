@@ -62,10 +62,10 @@ type EntityDetails {
   dateCreated: LocalDateTime
   "Timestamp for when this entity was last modified - only valid when starting an edit on an existing entity."
   dateModified: LocalDateTime
-  "Language bundle ID for the _name_ of this entity, used for internationalization."
-  nameBundleId: Long
-  "Language bundle ID for the _description_ of this entity, used for internationalization."
-  descriptionBundleId: Long
+  "Language bundle for the _name_ of this entity, used for internationalization."
+  nameBundle: LanguageBundle
+  "Language bundle for the _description_ of this entity, used for internationalization."
+  descriptionBundle: LanguageBundle
   "A map of additional attributes for this entity, allowing for flexible metadata storage."
   attributes: [KVStringString!]!
   "Indicates whether this entity is disabled, affecting its visibility and usability."
@@ -105,6 +105,26 @@ type KVStringString {
   key: String!
   "Value"
   value: String!
+}
+
+"A bundle of language strings, each representing a translation for a specific locale."
+type LanguageBundle {
+  "Unique identifier for this language bundle."
+  id: Long!
+  "List of language strings in this bundle."
+  strings: [LanguageString!]!
+}
+
+"A single translation of a piece of text for a specific locale."
+type LanguageString {
+  "Unique identifier for this language string."
+  id: Long!
+  "Priority of this language string, with lower numbers indicating higher priority."
+  priority: Int!
+  "Locale code for this language string, e.g., 'en' for English."
+  locale: String!
+  "The translated text for this locale."
+  text: String!
 }
 
 "A metadata schema, which defines the structure and transforms for metadata items in openEQUELLA."

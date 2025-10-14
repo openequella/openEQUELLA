@@ -27,8 +27,8 @@ import scala.jdk.CollectionConverters._
 object MetadataSchemaViewConverter {
   def toSchema(view: MetadataSchemaView): Schema = {
     val s = new Schema(view.details.id)
+
     s.setUuid(view.details.uuid)
-    // We only have the bundleId, so skipping trying to set the Language Bundle
     s.setOwner(view.details.owner)
     s.setItemNamePath(view.itemNamePath)
     s.setItemDescriptionPath(view.itemDescriptionPath)
@@ -36,6 +36,8 @@ object MetadataSchemaViewConverter {
     s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asJava)
     s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asJava)
     s.setCitations(view.citations.map(toCitation).asJava)
+
+    resolveLanguageStrings(view, s)
 
     s
   }
@@ -46,5 +48,12 @@ object MetadataSchemaViewConverter {
     st.setType(view.schemaType)
 
     st
+  }
+
+  private def resolveLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
+    val EntityDetailsViewStrings(name, description) = EntityDetailsViewStrings(view.details)
+
+    s.setName(name.orNull)
+    s.setDescription(description.orNull)
   }
 }

@@ -20,9 +20,11 @@ package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
 import com.tle.admin.graphql.conversion.Converter
+import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.toEntityPack
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
 import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
+import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteSchemaService}
 import io.github.openequella.graphql.ClientConfiguration
@@ -98,6 +100,13 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
         )
       case Left(errors) =>
         throw new ClientRequestException(s"Error exporting schema with ID: $id", errors)
+    }
+
+  override def startEdit(id: Long): EntityPack[Schema] =
+    MetadataSchemaApi.startEdit(id) match {
+      case Right(schemaEditView) => schemaEditView convert toEntityPack
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error starting edit of schema with ID: $id", errors)
     }
 
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {

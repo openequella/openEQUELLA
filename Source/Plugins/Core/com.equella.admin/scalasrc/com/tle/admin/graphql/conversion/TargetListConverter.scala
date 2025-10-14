@@ -16,29 +16,29 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package com.tle.admin.graphql.conversion
 
-package object client {
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type LanguageBundle
-  type LanguageString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import com.tle.common.security.{TargetList, TargetListEntry}
+import io.github.openequella.graphql.api.views.TargetListEntryView
+
+import scala.jdk.CollectionConverters._
+
+object TargetListConverter {
+  def toTargetList(views: List[TargetListEntryView]): TargetList = {
+    val entries = views.map(TargetListEntryViewConverter.toTargetListEntry).asJava
+    new TargetList(entries)
+  }
+}
+
+object TargetListEntryViewConverter {
+  def toTargetListEntry(view: TargetListEntryView): TargetListEntry = {
+    val entry = new TargetListEntry
+    entry.setGranted(view.granted)
+    entry.setOverride(view.overridden)
+    entry.setPrivilege(view.privilege)
+    entry.setWho(view.who)
+    entry.setPostfix(view.postfix)
+
+    entry
+  }
 }

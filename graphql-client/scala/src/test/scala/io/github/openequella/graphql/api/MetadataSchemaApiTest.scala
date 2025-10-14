@@ -19,7 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, MetadataSchemaEditView}
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -316,6 +316,45 @@ class MetadataSchemaApiTest
       When("an unauthenticated user tries to get a schema by ID")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getById(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("startEdit") {
+    it("should start editing a metadata schema for a valid schema ID") {
+      Given("A valid metadata schema ID")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("startEdit is called with the schema ID")
+      val result = MetadataSchemaApi.startEdit(schemaId)
+
+      Then("it should return a MetadataSchemaEditView")
+      result.isRight shouldBe true
+      val editView = result.value
+      editView shouldBe a[MetadataSchemaEditView]
+      editView.schema.details.id shouldBe schemaId
+      editView.stagingId should not be empty
+      editView.targetList shouldBe a[List[_]]
+    }
+
+    it("should return a NotFoundError for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("startEdit is called with the invalid schema ID")
+      val result = MetadataSchemaApi.startEdit(invalidSchemaId)
+
+      Then("it should return a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to start editing a schema")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.startEdit(1)(unauthenticated)
       }
 
       Then("it should return an AccessDeniedError")

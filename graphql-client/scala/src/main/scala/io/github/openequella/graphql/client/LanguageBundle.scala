@@ -16,29 +16,22 @@
  * limitations under the License.
  */
 
-package io.github.openequella.graphql
+package io.github.openequella.graphql.client
 
-package object client {
-  type BaseEntityReference
-  type Citation
-  type EditableEntityMetadataSchema
-  type EditableEntitySkeleton
-  type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
-  type KVStringString
-  type LanguageBundle
-  type LanguageString
-  type MetadataSchema
-  type MetadataSchemaTransform
-  type PageInfo
-  type StringConnection
-  type StringEdge
-  type TargetListEntry
-  type User
-  type UserConnection
-  type UserEdge
-  type Queries   = _root_.caliban.client.Operations.RootQuery
-  type Mutations = _root_.caliban.client.Operations.RootMutation
+import caliban.client.FieldBuilder._
+import caliban.client._
+
+object LanguageBundle {
+
+  /** Unique identifier for this language bundle.
+    */
+  def id: SelectionBuilder[LanguageBundle, Long] =
+    _root_.caliban.client.SelectionBuilder.Field("id", Scalar())
+
+  /** List of language strings in this bundle.
+    */
+  def strings[A](
+      innerSelection: SelectionBuilder[LanguageString, A]
+  ): SelectionBuilder[LanguageBundle, List[A]] =
+    _root_.caliban.client.SelectionBuilder.Field("strings", ListOf(Obj(innerSelection)))
 }
