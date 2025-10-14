@@ -123,6 +123,18 @@ public class AjaxGeneratorImpl implements AjaxGenerator {
   }
 
   @Override
+  public UpdateDomFunction getAjaxUpdateDomFunction(
+      String customEQ,
+      SectionTree tree,
+      SectionId modalId,
+      ParameterizedEvent event,
+      JSCallable effectFunction,
+      String... ajaxIds) {
+    UpdateDomEvent domEvent = UpdateDomEvent.register(tree, modalId, event, ajaxIds);
+    return new UpdateDomFunction(domEvent, ajaxIds[0], effectFunction, null, customEQ);
+  }
+
+  @Override
   public UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(
       SectionTree tree,
       @Nullable SectionId modalId,
