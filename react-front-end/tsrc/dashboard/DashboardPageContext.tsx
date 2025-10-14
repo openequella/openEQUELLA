@@ -20,11 +20,29 @@ import { createContext } from "react";
 
 interface DashboardPageContextProps {
   /**
-   * Function to trigger a refresh of portlet details in the Dashboard.
+   * Function to close a portlet.
+   *
+   * @param uuid UUID of the portlet to be closed.
    */
-  refreshPortlets: () => void;
+  closePortlet: (uuid: string) => void;
+  /**
+   * Function to delete a portlet.
+   *
+   * @param uuid UUID of the portlet to be deleted.
+   */
+  deletePortlet: (uuid: string) => void;
+  /**
+   * Function to minimise/expand a portlet.
+   *
+   * @param uuid UUID of the portlet to be minimised/expanded.
+   *
+   * @param isMinimised `true` to minimise the portlet, `false` to expand it.
+   */
+  minimisePortlet: (uuid: string, isMinimised: boolean) => void;
 }
 
 export const DashboardPageContext = createContext<DashboardPageContextProps>({
-  refreshPortlets: () => {},
+  closePortlet: () => {},
+  deletePortlet: () => {},
+  minimisePortlet: () => {},
 });

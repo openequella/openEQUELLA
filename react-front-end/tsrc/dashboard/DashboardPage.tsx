@@ -43,8 +43,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     useState<OEQ.Dashboard.DashboardDetails>();
 
   const getPortlets = useCallback(() => {
-    setIsLoading(true);
-
     pipe(
       TE.tryCatch(
         () => getDashboardDetails(),
@@ -62,6 +60,27 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ...templateDefaults(title)(tp),
     }));
   }, [updateTemplate]);
+
+  const closePortlet = (uuid: string) => {
+    // TODO: REMOVE ME.
+    console.debug(uuid);
+    // TODO: update dashboardDetails to remove the closed one.
+    // TODO: add API call to update preference and get portlets again.
+  };
+
+  const deletePortlet = (uuid: string) => {
+    // TODO: REMOVE ME.
+    console.debug(uuid);
+    // TODO: update dashboardDetails to remove the deleted one.
+    // TODO: add API call to update preference and get portlets again.
+  };
+
+  const minimisePortlet = (uuid: string, isMinimised: boolean) => {
+    // TODO: REMOVE ME.
+    console.debug(uuid, isMinimised);
+    // TODO: update dashboardDetails to update the minimised one.
+    // TODO: add API call to update preference and get portlets again.
+  };
 
   useEffect(() => {
     getPortlets();
@@ -93,7 +112,9 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   return isLoading ? (
     <Skeleton variant="rounded" height="100%" />
   ) : (
-    <DashboardPageContext.Provider value={{ refreshPortlets: getPortlets }}>
+    <DashboardPageContext.Provider
+      value={{ closePortlet, deletePortlet, minimisePortlet }}
+    >
       {renderDashboard()}
     </DashboardPageContext.Provider>
   );

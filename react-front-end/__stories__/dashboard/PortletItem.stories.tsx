@@ -83,3 +83,11 @@ noMinimise.args = {
   ...commonProps,
   portlet: noMinimisePortlet,
 };
+
+export const loading: StoryFn<PortletItemProps> = (args) => (
+  <PortletItem {...args} />
+);
+loading.args = {
+  ...commonProps,
+  isLoading: true,
+};

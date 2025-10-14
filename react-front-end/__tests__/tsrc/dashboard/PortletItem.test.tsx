@@ -42,6 +42,15 @@ const {
 } = languageStrings.common.action;
 
 describe("<PortletItem/>", () => {
+  it("displays a skeleton when loading", () => {
+    const { getByTestId } = renderPortletItem({
+      ...defaultProps,
+      isLoading: true,
+    });
+
+    expect(getByTestId("portlet-item-skeleton")).toBeInTheDocument();
+  });
+
   it("displays portlet name", async () => {
     const { getByText } = renderPortletItem();
 

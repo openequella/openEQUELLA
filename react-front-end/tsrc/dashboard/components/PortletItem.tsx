@@ -28,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DashboardPageContext } from "../DashboardPageContext";
+import PortletItemSkeleton from "./PortletItemSkeleton";
 
 const {
   edit: editText,
@@ -42,6 +43,20 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * Basic information about the portlet to be displayed.
    */
   portlet: OEQ.Dashboard.BasicPortlet;
+  /**
+   * `true` if the portlet is in the process of being loaded,
+   * and show a loading skeleton instead of the actual content.
+   */
+  isLoading?: boolean;
+  /*
+   * An optional render function that returns the portlet content when `isLoading` is false.
+   *
+   * This function provides a more expressive and readable alternative
+   * to the `children` prop. Use it when the portlet's content involves
+   * lazily/conditional rendering logic. Functionally equivalent
+   * to providing `children` directly.
+   */
+  renderChildren?: () => React.ReactNode;
 }
 
 /**
@@ -51,6 +66,8 @@ export interface PortletItemProps extends React.PropsWithChildren {
 const PortletItem = ({
   portlet: { commonDetails },
   children,
+  isLoading,
+  renderChildren,
 }: PortletItemProps) => {
   const {
     name,
@@ -59,30 +76,23 @@ const PortletItem = ({
     canClose,
     canDelete,
     canMinimise,
-    isMinimised,
     isInstitutionWide,
+    isMinimised,
   } = commonDetails;
 
-  const { refreshPortlets } = useContext(DashboardPageContext);
+  const { closePortlet, deletePortlet, minimisePortlet } =
+    useContext(DashboardPageContext);
 
   const handleEdit = () => {
     // TODO: redirect to edit page.
   };
 
-  const handleDelete = () => {
-    // TODO: add API call
-    refreshPortlets();
-  };
+  const handleDelete = () => deletePortlet(uuid);
 
-  const handleClose = () => {
-    // TODO: add API call
-    refreshPortlets();
-  };
+  const handleClose = () => closePortlet(uuid);
 
-  const handleMinimise = (_: boolean) => {
-    // TODO: add API call.
-    refreshPortlets();
-  };
+  const handleMinimise = (isMinimised: boolean) =>
+    minimisePortlet(uuid, isMinimised);
 
   const minimiseIcon = () =>
     isMinimised ? (
@@ -131,12 +141,16 @@ const PortletItem = ({
     </>
   );
 
-  return (
-    <Card>
+  return isLoading ? (
+    <PortletItemSkeleton />
+  ) : (
+    <Card sx={{ position: "relative" }}>
       <CardHeader title={name} action={actions()} />
 
       {!isMinimised && (
-        <CardContent id={`portlet-content-${uuid}`}>{children}</CardContent>
+        <CardContent id={`portlet-content-${uuid}`}>
+          {renderChildren ? renderChildren() : children}
+        </CardContent>
       )}
     </Card>
   );
