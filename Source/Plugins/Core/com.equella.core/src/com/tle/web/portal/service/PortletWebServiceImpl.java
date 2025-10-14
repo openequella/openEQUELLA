@@ -75,7 +75,7 @@ import org.java.plugin.registry.Extension;
 @Singleton
 public class PortletWebServiceImpl
     implements PortletWebService, PortletsUpdatedEventListener, UserSessionLogoutListener {
-  private static final String UUID_SECTIONID_MAP_KEY = "$UUID_SECTIONID_MAP$"; // $NON-NLS-1$
+  public static final String UUID_SECTIONID_MAP_KEY = "$UUID_SECTIONID_MAP$"; // $NON-NLS-1$
   private static final String TOP_PORTLETS_KEY = "$TOP_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
   private static final String LEFT_PORTLETS_KEY = "$LEFT_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
   private static final String RIGHT_PORTLETS_KEY = "$RIGHT_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
