@@ -21,7 +21,10 @@ class DashboardApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_OK, respCode)
 
     val details = getDashboardDetails
-    assertEquals(4, details.get("portlets").size()) // User 'autotest' has 4 viewable portlets.
+    assertEquals(
+      3,
+      details.get("portlets").size()
+    ) // User 'autotest' has 4 portlets but 1 is closed.
     assertEquals("SingleColumn", details.get(LAYOUT).asText)
   }
 
@@ -87,24 +90,24 @@ class DashboardApiTest extends AbstractRestApiTest {
     description = "Update portlet preference"
   )
   def preferenceUpdate(): Unit = {
+    val recentContributionUuid = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
 
-    // The Admin search portlet is returned as the first portlet in the list.
-    def getAdminPortlet = getPortletDetails.get(0).get("commonDetails")
+    // The Recent contribution portlet is returned as the first portlet in the list.
+    def getRecentContributionPortlet = getPortletDetails.get(0).get("commonDetails")
 
-    val adminPortlet = getAdminPortlet
-    // Verify the initial state of the Admin search portlet.
-    assertEquals(ADMIN_PORTLET_UUID, adminPortlet.get("uuid").asText)
-    assertEquals(true, adminPortlet.get("isClosed").asBoolean)
-    assertEquals(false, adminPortlet.get("isMinimised").asBoolean)
-    assertEquals(0, adminPortlet.get("column").asInt)
-    assertEquals(0, adminPortlet.get("order").asInt)
+    val portlet = getRecentContributionPortlet
+    // Verify the initial state of the Recent contribution portlet.
+    assertEquals(recentContributionUuid, portlet.get("uuid").asText)
+    assertEquals(false, portlet.get("isClosed").asBoolean)
+    assertEquals(false, portlet.get("isMinimised").asBoolean)
+    assertEquals(0, portlet.get("column").asInt)
+    assertEquals(0, portlet.get("order").asInt)
 
-    // Update the Admin portlet preference now.
+    // Update the portlet preference now.
     val updateRequest = new PutMethod(
-      s"$DASHBOARD_API_ENDPOINT/portlet/$ADMIN_PORTLET_UUID/preference"
+      s"$DASHBOARD_API_ENDPOINT/portlet/$recentContributionUuid/preference"
     )
     val preferenceUpdate = mapper.createObjectNode
-    preferenceUpdate.put("isClosed", false)
     preferenceUpdate.put("isMinimised", true)
     preferenceUpdate.put("column", 1)
     preferenceUpdate.put("order", 2)
@@ -113,11 +116,10 @@ class DashboardApiTest extends AbstractRestApiTest {
     assertEquals(HttpStatus.SC_NO_CONTENT, updateResultCode)
 
     // Get the portlet details again to verify the preference update.
-    val updatedAdminPortlet = getAdminPortlet
-    assertEquals(false, updatedAdminPortlet.get("isClosed").asBoolean)
-    assertEquals(true, updatedAdminPortlet.get("isMinimised").asBoolean)
-    assertEquals(1, updatedAdminPortlet.get("column").asInt)
-    assertEquals(2, updatedAdminPortlet.get("order").asInt)
+    val updatedPortlet = getRecentContributionPortlet
+    assertEquals(true, updatedPortlet.get("isMinimised").asBoolean)
+    assertEquals(1, updatedPortlet.get("column").asInt)
+    assertEquals(2, updatedPortlet.get("order").asInt)
   }
 
   @Test(description = "Update should fail with a unknown portlet UUID")
