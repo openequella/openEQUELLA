@@ -17,26 +17,31 @@
  */
 import "@testing-library/jest-dom";
 import {
+  basicPortlet,
   emptyDashboardDetails,
+  minimisedPortlet,
   mockPortlets,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import { renderDashboardPage } from "./DashboardPageTestHelper";
-import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
+import {
+  mockDashboardPageApis,
+  renderDashboardPage,
+} from "./DashboardPageTestHelper";
+import userEvent from "@testing-library/user-event";
 
 const {
   nonSystemUser: { hintForOeq: hintForOeqText },
 } = languageStrings.dashboard.welcomeDesc;
+const { maximise: maximiseText, minimise: minimiseText } =
+  languageStrings.common.action;
 
-const mockGetDashboardDetails = jest.spyOn(
-  DashboardModule,
-  "getDashboardDetails",
-);
+const { mockGetDashboardDetails, mockUpdatePortletPreference } =
+  mockDashboardPageApis();
 
 describe("<DashboardPage/>", () => {
   beforeEach(() => {
-    mockGetDashboardDetails.mockClear();
+    jest.clearAllMocks();
   });
 
   it.each([
@@ -80,5 +85,28 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
   });
 
-  // TODO: perform API request again when refresh is set to true
+  it.each([
+    [
+      "maximize",
+      [minimisedPortlet],
+      maximiseText,
+      [minimisedPortlet.commonDetails.uuid, { isMinimised: false }],
+    ],
+    [
+      "minimize",
+      [basicPortlet],
+      minimiseText,
+      [basicPortlet.commonDetails.uuid, { isMinimised: true }],
+    ],
+  ])(
+    "performs %s operation and updates portlet preference",
+    async (_, mockPortlets, label, params) => {
+      mockGetDashboardDetails.mockResolvedValueOnce({ portlets: mockPortlets });
+      const { getByRole } = await renderDashboardPage();
+      await userEvent.click(getByRole("button", { name: label }));
+
+      expect(mockUpdatePortletPreference).toHaveBeenCalledWith(...params);
+      expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
+    },
+  );
 });

@@ -22,6 +22,7 @@ import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
 import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { AppContext } from "../../../tsrc/mainui/App";
+import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const { welcomeTitle } = languageStrings.dashboard;
@@ -55,4 +56,28 @@ export const renderDashboardPage = async (
   });
 
   return page;
+};
+
+/**
+ * The spies for the mocked Dashboard APIs.
+ */
+export interface MockDashboardApis {
+  /** Spy for the `getDashboardDetails` API. */
+  mockGetDashboardDetails: jest.SpyInstance;
+  /** Spy for the `updatePortletPreference` API. */
+  mockUpdatePortletPreference: jest.SpyInstance;
+}
+
+/**
+ * Mocks the APIs used by the Dashboard page and returns spies for them.
+ *
+ * @returns An object containing spies for the mocked APIs.
+ */
+export const mockDashboardPageApis = (): MockDashboardApis => {
+  return {
+    mockGetDashboardDetails: jest.spyOn(DashboardModule, "getDashboardDetails"),
+    mockUpdatePortletPreference: jest
+      .spyOn(DashboardModule, "updatePortletPreference")
+      .mockResolvedValue(undefined),
+  };
 };

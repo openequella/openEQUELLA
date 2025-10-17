@@ -17,12 +17,15 @@
  */
 
 import { Skeleton } from "@mui/material";
-import { pipe } from "fp-ts/function";
+import { pipe, constVoid } from "fp-ts/function";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as React from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { getDashboardDetails } from "../modules/DashboardModule";
+import {
+  getDashboardDetails,
+  updatePortletPreference,
+} from "../modules/DashboardModule";
 import { languageStrings } from "../util/langstrings";
 import WelcomeBoard from "./components/WelcomeBoard";
 import * as TE from "fp-ts/TaskEither";
@@ -31,6 +34,10 @@ import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
+import {
+  createPortletPreferenceUpdater,
+  updateDashboardDetails,
+} from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
 
 const { title } = languageStrings.dashboard;
@@ -67,7 +74,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // TODO: update dashboardDetails to remove the closed one.
     // TODO: add API call to update preference and get portlets again.
   };
-
   const deletePortlet = (uuid: string) => {
     // TODO: REMOVE ME.
     console.debug(uuid);
@@ -76,10 +82,22 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const minimisePortlet = (uuid: string, isMinimised: boolean) => {
-    // TODO: REMOVE ME.
-    console.debug(uuid, isMinimised);
-    // TODO: update dashboardDetails to update the minimised one.
-    // TODO: add API call to update preference and get portlets again.
+    setDashboardDetails(
+      updateDashboardDetails(
+        dashboardDetails as OEQ.Dashboard.DashboardDetails,
+        createPortletPreferenceUpdater(uuid, { isMinimised }),
+      ),
+    );
+
+    setIsLoading(true);
+    pipe(
+      TE.tryCatch(
+        () => updatePortletPreference(uuid, { isMinimised }),
+        (e) => `Failed to update portlet preference: ${e}`,
+      ),
+      TE.match(appErrorHandler, constVoid),
+      T.tap(() => T.of(getPortlets())),
+    )();
   };
 
   useEffect(() => {

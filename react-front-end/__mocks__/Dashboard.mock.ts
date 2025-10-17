@@ -100,7 +100,7 @@ export const mockPortlets: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet> = [
 ];
 
 export const basicPortlet: OEQ.Dashboard.BasicPortlet = {
-  portletType: "html",
+  portletType: "search",
   commonDetails: {
     uuid: "123e4567-e89b-12d3-a456-426614174000",
     name: "Sample Portlet",

@@ -48,7 +48,7 @@ export type PortletColumn = 0 | 1;
 /**
  * Common details shared by all portlet types.
  */
-interface PortletBase {
+export interface PortletBase {
   /**
    * UUID of the portlet
    */
@@ -206,19 +206,19 @@ export interface PortletPreference {
   /**
    * Whether the portlet is closed
    */
-  isClosed: boolean;
+  isClosed?: boolean;
   /**
    * Whether the portlet is minimised
    */
-  isMinimised: boolean;
+  isMinimised?: boolean;
   /**
    * The column the portlet is in
    */
-  column: number;
+  column?: number;
   /**
    * The order of the portlet in the column
    */
-  order: number;
+  order?: number;
 }
 
 const DASHBOARD_PATH = '/dashboard';
