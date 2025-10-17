@@ -42,10 +42,13 @@ const strings = {
 };
 
 export interface PortletFavouritesProps {
+  /** The portlet configuration */
   cfg: OEQ.Dashboard.BasicPortlet;
+  /** Optional provider for favourite resources - primarily for testing. */
   favouriteResourcesProvider?: (
     user: OEQ.LegacyContent.CurrentUserDetails,
   ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
+  /** Optional provider for favourite searches - primarily for testing. */
   favouriteSearchesProvider?: () => Promise<
     OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>
   >;
@@ -59,6 +62,9 @@ const favouriteSearchOptions: SearchOptions = {
   rawMode: true,
 };
 
+/**
+ * Portlet component that displays the user's favourite resources and searches.
+ */
 export const PortletFavourites = ({
   cfg,
   favouriteResourcesProvider = (user) =>
