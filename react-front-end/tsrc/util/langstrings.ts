@@ -366,6 +366,13 @@ export const languageStrings = {
           "Select an option from the navigation menu to the left to use openEQUELLA features.",
       },
     },
+    portlets: {
+      unsupported: {
+        title: "Unsupported portlet configured",
+        description:
+          "An unsupported portlet has been detected, please contact your system administrator.",
+      },
+    },
   },
   drm: {
     getTerms: {

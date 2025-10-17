@@ -19,12 +19,12 @@ import { Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as NEA from "fp-ts/NonEmptyArray";
-import { flow } from "fp-ts/function";
 import * as React from "react";
 import { useCallback } from "react";
 import {
   getTwoColumnWidths,
   portletFilterByColumn,
+  renderPortlet,
   TwoColumnLayout,
 } from "./PortletHelper";
 
@@ -57,24 +57,15 @@ export const PortletContainer = ({
 
   const renderPortlets: (
     portletList: OEQ.Dashboard.BasicPortlet[],
-  ) => React.JSX.Element[] = flow(
-    A.map(({ commonDetails }) => (
-      // todo: Replace this placeholder with actual portlet components
-      <Grid
-        size={12}
-        id={`portlet-${commonDetails.uuid}`}
-        key={commonDetails.uuid}
-        sx={{
-          border: "1px dashed grey",
-          padding: 2,
-          textAlign: "center",
-          minHeight: "100px",
-        }}
-      >
-        {commonDetails.name}
-      </Grid>
-    )),
-  );
+  ) => React.JSX.Element[] = A.map((portlet) => (
+    <Grid
+      size={12}
+      id={`portlet-${portlet.commonDetails.uuid}`}
+      key={portlet.commonDetails.uuid}
+    >
+      {renderPortlet(portlet)}
+    </Grid>
+  ));
 
   const renderLayout = () => {
     // Renders a single column by appending the right column's portlets after the left column's.

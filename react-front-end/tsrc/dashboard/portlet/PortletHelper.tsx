@@ -22,6 +22,9 @@ import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
+import { PortletFormattedText } from "./PortletFormattedText";
+import * as React from "react";
+import { PortletUnsupported } from "./PortletUnsupported";
 
 /**
  * Type definition for Supported two-column layouts.
@@ -74,3 +77,42 @@ export const portletFilterByColumn =
       A.filter((p) => p.commonDetails.column === col),
       A.sortBy([ordByOrder, ordByName]),
     );
+
+/**
+ * Given a portlet, returns the appropriate component to render it.
+ *
+ * @param portlet The portlet to be rendered.
+ */
+export const renderPortlet = (
+  portlet: OEQ.Dashboard.BasicPortlet,
+): React.JSX.Element => {
+  const { portletType } = portlet;
+
+  // TODO: Update portlet component when they are implemented.
+  switch (portletType) {
+    case "search":
+      return <PortletUnsupported cfg={portlet} />;
+    case "browse":
+      return <PortletUnsupported cfg={portlet} />;
+    case "favourites":
+      return <PortletUnsupported cfg={portlet} />;
+    case "freemarker":
+      return <PortletUnsupported cfg={portlet} />;
+    case "html":
+      return (
+        <PortletFormattedText
+          cfg={portlet as OEQ.Dashboard.FormattedTextPortlet}
+        />
+      );
+    case "myresources":
+      return <PortletUnsupported cfg={portlet} />;
+    case "recent":
+      return <PortletUnsupported cfg={portlet} />;
+    case "tasks":
+      return <PortletUnsupported cfg={portlet} />;
+    case "taskstatistics":
+      return <PortletUnsupported cfg={portlet} />;
+    default:
+      return absurd(portletType);
+  }
+};

@@ -59,8 +59,10 @@ describe("<PortletContainer />", () => {
     );
   };
 
-  const renderPortletContainer = (layout: OEQ.Dashboard.DashboardLayout) =>
-    render(<PortletContainer portlets={mockPortlets} layout={layout} />);
+  const renderPortletContainer = (
+    layout: OEQ.Dashboard.DashboardLayout = "SingleColumn",
+    portlets = mockPortlets,
+  ) => render(<PortletContainer portlets={portlets} layout={layout} />);
 
   it("displays all the portlets in the single-column layout", () => {
     const { container } = renderPortletContainer("SingleColumn");
@@ -102,8 +104,11 @@ describe("<PortletContainer />", () => {
     const singleColumn = container.querySelector<HTMLDivElement>(
       "#portlet-container-single-column",
     );
+
     const portlets = pipe(
-      singleColumn?.querySelectorAll("div"),
+      singleColumn?.querySelectorAll<HTMLDivElement>(
+        "div.MuiCardHeader-content",
+      ),
       O.fromNullable,
       O.map(Array.from<HTMLDivElement>),
       O.match(
@@ -124,4 +129,23 @@ describe("<PortletContainer />", () => {
 
     expect(portlets).toStrictEqual(expectedOrder);
   });
+
+  // TODO: Add tests for more portlet types when they are implemented.
+  it.each([["formatted text", publicHtmlPortlet, "This is a", false]])(
+    "displays %s portlet",
+    (_, portlet: OEQ.Dashboard.BasicPortlet, expectedContent, exactMode) => {
+      const { container, getByText } = renderPortletContainer("SingleColumn", [
+        portlet,
+      ]);
+
+      expect(
+        container.querySelector(
+          `#portlet-content-${portlet.commonDetails.uuid}`,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        getByText(expectedContent, { exact: exactMode }),
+      ).toBeInTheDocument();
+    },
+  );
 });
