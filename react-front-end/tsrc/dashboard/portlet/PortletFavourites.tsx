@@ -41,17 +41,20 @@ const strings = {
   actionShowAll: languageStrings.common.action.showAll,
 };
 
+type ResourcesProvider = (
+  user: OEQ.LegacyContent.CurrentUserDetails,
+) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
+type SearchesProvider = () => Promise<
+  OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>
+>;
+
 export interface PortletFavouritesProps {
   /** The portlet configuration */
   cfg: OEQ.Dashboard.BasicPortlet;
   /** Optional provider for favourite resources - primarily for testing. */
-  favouriteResourcesProvider?: (
-    user: OEQ.LegacyContent.CurrentUserDetails,
-  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
+  favouriteResourcesProvider?: ResourcesProvider;
   /** Optional provider for favourite searches - primarily for testing. */
-  favouriteSearchesProvider?: () => Promise<
-    OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>
-  >;
+  favouriteSearchesProvider?: SearchesProvider;
 }
 
 const favouriteSearchOptions: SearchOptions = {
@@ -62,15 +65,18 @@ const favouriteSearchOptions: SearchOptions = {
   rawMode: true,
 };
 
+const defaultResourcesProvider: ResourcesProvider = (user) =>
+  searchFavouriteItems(favouriteSearchOptions, user);
+const defaultSearchesProvider: SearchesProvider = () =>
+  searchFavouriteSearches(favouriteSearchOptions);
+
 /**
  * Portlet component that displays the user's favourite resources and searches.
  */
 export const PortletFavourites = ({
   cfg,
-  favouriteResourcesProvider = (user) =>
-    searchFavouriteItems(favouriteSearchOptions, user),
-  favouriteSearchesProvider = () =>
-    searchFavouriteSearches(favouriteSearchOptions),
+  favouriteResourcesProvider = defaultResourcesProvider,
+  favouriteSearchesProvider = defaultSearchesProvider,
 }: PortletFavouritesProps): React.JSX.Element => {
   const { currentUser } = useContext(AppContext);
 
