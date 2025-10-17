@@ -54,19 +54,20 @@ public class AjaxFunction implements JSCallable {
 
   @Override
   public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    // Js expression for custom EQ name. If not provided, use `null`.
+    AbstractExpression eqExp =
+        Optional.ofNullable(customEQ)
+            .<AbstractExpression>map(StringExpression::new)
+            .orElse(new NullExpression());
+
     JSExpression[] newparams =
         JSUtils.convertExpressions(
             CurrentForm.EXPR,
             ajaxMethod,
             new ArrayExpression((Object[]) Arrays.copyOfRange(params, 1, params.length)),
             params[0],
-            new NullExpression(), // This param was never provided so use `null` should be OK for
-                                  // now.
-            Optional.ofNullable(
-                    customEQ) // The last param is the name of custom EQ object. Use `null` if not
-                              // provided.
-                .<AbstractExpression>map(StringExpression::new)
-                .orElse(new NullExpression()));
+            new NullExpression(), // This param was never provided so use `null` should be OK.
+            eqExp);
     return JSUtils.createFunctionCall(info, "postAjaxJSON", newparams); // $NON-NLS-1$
   }
 
