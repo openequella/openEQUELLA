@@ -43,12 +43,13 @@ public abstract class PortletContentRenderer<M> extends AbstractPrototypeSection
 
   /**
    * Sets up the context required to support correctly rendering a Legacy portlet Section in the new
-   * Dashboard, including: - Setting a unique form ID for the target portlet; - Preparing the
-   * JavaScript function used to access the form;; - Preparing the JavaScript functions used to
-   * submit the form;
+   * Dashboard, including:
+   * <li>Setting a unique form ID for the target portlet;
+   * <li>Preparing the JavaScript function used to access the form;
+   * <li>Preparing the JavaScript functions used to submit the form;
    *
-   * <p>IMPORTANT: This method must be called whenever a Legacy portlet Section is used in the new
-   * Dashboard. This includes two use cases:
+   *     <p>IMPORTANT: This method must be called whenever a Legacy portlet Section is used in the
+   *     new Dashboard. This includes two use cases:
    * <li>Retrieving the content of a portlet;
    * <li>Triggering an event defined in any portlet;
    *
