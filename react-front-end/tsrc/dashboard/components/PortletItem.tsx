@@ -144,7 +144,7 @@ const PortletItem = ({
   return isLoading ? (
     <PortletItemSkeleton />
   ) : (
-    <Card sx={{ position: "relative" }}>
+    <Card>
       <CardHeader title={name} action={actions()} />
 
       {!isMinimised && (
