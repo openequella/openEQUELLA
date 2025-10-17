@@ -146,11 +146,11 @@ export const getLegacyScrapbookEditingPageRoute = async (
  * @param vals - StateData to be submitted.
  * @returns A Promise resolving to a SubmitResponse.
  */
-export const submitRequest = (
+export const submitRequest = <T extends SubmitResponse = SubmitResponse>(
   relativeUrl: string,
   vals: StateData,
-): Promise<SubmitResponse> =>
-  Axios.post<SubmitResponse>(
+): Promise<T> =>
+  Axios.post<T>(
     legacyContentSubmitBaseUrl + encodeRelativeUrl(relativeUrl),
     vals,
   ).then((res) => res.data);

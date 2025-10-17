@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Backdrop } from "@mui/material";
-import { pipe } from "fp-ts/function";
+import { constFalse, pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -335,7 +335,7 @@ export const LegacyContent = React.memo(function LegacyContent({
             submitCurrentForm(true, false, form.action, vals);
           },
         ),
-        (_) => false,
+        constFalse,
       );
     };
 
