@@ -107,3 +107,17 @@ SlowLoading.args = {
       setTimeout(() => resolve(getFavouriteSearchesResp), 3000);
     }),
 };
+
+export const ErrorResources = Template.bind({});
+ErrorResources.args = {
+  ...Simple.args,
+  favouriteResourcesProvider: (_) =>
+    Promise.reject(new Error("Failed to load favourite resources")),
+};
+
+export const ErrorSearches = Template.bind({});
+ErrorSearches.args = {
+  ...Simple.args,
+  favouriteSearchesProvider: () =>
+    Promise.reject(new Error("Failed to load favourite searches")),
+};
