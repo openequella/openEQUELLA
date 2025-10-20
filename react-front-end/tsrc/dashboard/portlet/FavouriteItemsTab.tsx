@@ -15,15 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Article, Search } from "@mui/icons-material";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { Article, InfoOutlined, Search } from "@mui/icons-material";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { absurd } from "fp-ts/function";
 import * as React from "react";
@@ -55,7 +48,16 @@ export const FavouriteItemsTab = ({
       type === "resources" ? strings.resourcesTabName : strings.searchesTabName;
     const noneFound = sprintf(strings.noneFound, tabName);
 
-    return <Typography>{noneFound}</Typography>;
+    return (
+      <List>
+        <ListItem>
+          <ListItemIcon>
+            <InfoOutlined />
+          </ListItemIcon>
+          <ListItemText primary={noneFound} />
+        </ListItem>
+      </List>
+    );
   }
 
   const icon = () => (type === "resources" ? <Article /> : <Search />);
@@ -88,9 +90,5 @@ export const FavouriteItemsTab = ({
     }
   };
 
-  return (
-    <Box>
-      <List>{items.map(listItem)}</List>
-    </Box>
-  );
+  return <List>{items.map(listItem)}</List>;
 };
