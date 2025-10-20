@@ -22,7 +22,7 @@ import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import type { ScrapbookType } from "./ScrapbookModule";
 
-const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
+export const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
 const legacyMyResourcesUrl = `${legacyContentSubmitBaseUrl}/access/myresources.do`;
 
 export const ScrapbookLiteral = t.literal("scrapbook");

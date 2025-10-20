@@ -18,12 +18,15 @@
 
 package com.tle.web.portal.section.enduser;
 
+import static com.tle.web.portal.service.PortletWebServiceImpl.UUID_SECTIONID_MAP_KEY;
+
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.portal.service.PortletService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
+import com.tle.web.portal.renderer.PortletRendererWrapper;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -34,12 +37,15 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
+import com.tle.web.sections.annotations.EventFactory;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.layout.CombinedLayout;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.AfterParametersListener;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.ParametersEventListener;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
 import com.tle.web.sections.jquery.libraries.JQuerySortable;
@@ -51,6 +57,8 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
+import java.util.Map;
+import java.util.Optional;
 import javax.inject.Inject;
 
 public class ShowPortletsSection
@@ -75,6 +83,7 @@ public class ShowPortletsSection
 
   @ViewFactory private FreemarkerFactory view;
   @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory private EventGenerator events; // Add this line
 
   @Override
   public Object instantiateModel(SectionInfo info) {
@@ -132,6 +141,15 @@ public class ShowPortletsSection
   @Override
   public void afterParameters(SectionInfo info, ParametersEvent event) {
     getModel(info).getTree(true);
+  }
+
+  @EventHandlerMethod
+  public void editPortletFromNewUi(SectionInfo info, String portletUuid) {
+    SectionTree tree = getModel(info).getTree(false);
+    Map<String, PortletRendererWrapper> portletMapping = tree.getAttribute(UUID_SECTIONID_MAP_KEY);
+
+    Optional.ofNullable(portletMapping.get(portletUuid))
+        .ifPresent(w -> w.editPortletFromNewUi(info));
   }
 
   @AjaxMethod

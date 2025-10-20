@@ -56,6 +56,8 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.DefaultSectionTree;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +77,7 @@ import org.java.plugin.registry.Extension;
 @Singleton
 public class PortletWebServiceImpl
     implements PortletWebService, PortletsUpdatedEventListener, UserSessionLogoutListener {
-  private static final String UUID_SECTIONID_MAP_KEY = "$UUID_SECTIONID_MAP$"; // $NON-NLS-1$
+  public static final String UUID_SECTIONID_MAP_KEY = "$UUID_SECTIONID_MAP$"; // $NON-NLS-1$
   private static final String TOP_PORTLETS_KEY = "$TOP_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
   private static final String LEFT_PORTLETS_KEY = "$LEFT_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
   private static final String RIGHT_PORTLETS_KEY = "$RIGHT_PORTLET_SECTION_IDS$"; // $NON-NLS-1$
@@ -163,6 +165,15 @@ public class PortletWebServiceImpl
   }
 
   @Override
+  public void editPortletFromNewUi(SectionInfo info, String portletUuid, boolean admin) {
+    SectionInfo forward = info.createForward("/home.do");
+    PortletContributionSection con = forward.lookupSection(PortletContributionSection.class);
+    Portlet portlet = portletService.getForEdit(portletUuid);
+    con.startEdit(forward, portletUuid, portlet.getType(), admin);
+    info.forward(forward);
+  }
+
+  @Override
   public void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional) {
     PortletContributionSection con = info.lookupSection(PortletContributionSection.class);
@@ -175,6 +186,10 @@ public class PortletWebServiceImpl
           portletUuid,
           institutional,
           portletUuid == null ? PortletUpdateEventType.CREATED : PortletUpdateEventType.EDITED);
+    }
+
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      info.forwardToUrl(NewUiRoutes.PATH_DASHBOARD());
     }
   }
 

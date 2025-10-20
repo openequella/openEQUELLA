@@ -18,10 +18,13 @@
 
 import EditIcon from "@mui/icons-material/Edit";
 import { Card, CardContent, CardHeader } from "@mui/material";
+import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
+import { AppContext } from "../../mainui/App";
+import { editPortlet } from "../../modules/DashboardModule";
 import { languageStrings } from "../../util/langstrings";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,6 +32,8 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DashboardPageContext } from "../DashboardPageContext";
 import PortletItemSkeleton from "./PortletItemSkeleton";
+import { useHistory } from "react-router";
+import * as TE from "fp-ts/TaskEither";
 
 const {
   edit: editText,
@@ -82,9 +87,17 @@ const PortletItem = ({
 
   const { closePortlet, deletePortlet, minimisePortlet } =
     useContext(DashboardPageContext);
+  const history = useHistory();
+  const { appErrorHandler } = useContext(AppContext);
 
   const handleEdit = () => {
-    // TODO: redirect to edit page.
+    pipe(
+      TE.tryCatch(
+        () => editPortlet(uuid),
+        (e) => `Failed to edit ${name} portlet: ${e}`,
+      ),
+      TE.match(appErrorHandler, (path) => history.push(path)),
+    )();
   };
 
   const handleDelete = () => deletePortlet(uuid);

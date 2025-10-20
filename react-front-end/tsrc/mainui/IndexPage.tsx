@@ -47,6 +47,7 @@ import ProtectedPage from "./ProtectedPage";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
+  NEW_DASHBOARD_PATH,
   OEQRouteNewUI,
   OLD_DASHBOARD_PATH,
   OLD_HIERARCHY_PATH,
@@ -276,11 +277,18 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_DASHBOARD_PATH}
-          render={(routeProps) =>
-            isSelectionSessionOpen()
+          render={(routeProps) => {
+            const searchParams = new URLSearchParams(
+              routeProps.location.search,
+            );
+
+            // When editing any type of portlet in legacy Dashboard page route, the URL will always include 'pcn.t'.
+            // In this case, we must render the LegacyContent page.
+            return isSelectionSessionOpen() ||
+              searchParams.toString().includes("pcn.t")
               ? renderLegacyContent(routeProps)
-              : renderProtectedPage(routeProps, DashboardPage)
-          }
+              : renderProtectedPage(routeProps, DashboardPage);
+          }}
         />
         <Route render={renderLegacyContent} />
       </Switch>
@@ -326,7 +334,7 @@ export default function IndexPage() {
               </Route>
             )}
             <Route path="/" exact>
-              <Redirect to="/home.do" />
+              <Redirect to={NEW_DASHBOARD_PATH} />
             </Route>
             {newPageRoutes}
             {legacyPageRoutes}

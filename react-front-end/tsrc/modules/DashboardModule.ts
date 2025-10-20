@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import Axios from "axios";
 import { API_BASE_URL } from "../AppConfig";
+import { legacyContentSubmitBaseUrl } from "./LegacyContentModule";
 
 /**
  * Retrieve Dashboard details, including the list of viewable Portlets and the layout.
@@ -66,3 +68,16 @@ export const updatePortletPreference = (
  */
 export const deletePortlet = (uuid: string): Promise<void> =>
   OEQ.Dashboard.deletePortlet(API_BASE_URL, uuid);
+
+/**
+ * Initiate an editing session for a portlet.
+ * This will return a URL path to the legacy editing page for the specified portlet.
+ *
+ * @param uuid UUID of the portlet to be edited.
+ * @returns A promise which resolves to the URL path for the legacy editing page.
+ */
+export const editPortlet = (uuid: string) =>
+  Axios.post(legacyContentSubmitBaseUrl + "/home.do", {
+    event__: ["psh.editPortletFromNewUi"],
+    eventp__0: [uuid],
+  }).then(({ data: { route } }) => `/${route}`);

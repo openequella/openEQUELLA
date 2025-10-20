@@ -35,6 +35,8 @@ public interface PortletWebService {
 
   void editPortlet(SectionInfo info, String portletUuid, boolean admin);
 
+  void editPortletFromNewUi(SectionInfo info, String portletUuid, boolean admin);
+
   void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
 

@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 import {
   emptyDashboardDetails,
   mockPortlets,
+  privateSearchPortlet,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -28,15 +30,20 @@ import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 const {
   nonSystemUser: { hintForOeq: hintForOeqText },
 } = languageStrings.dashboard.welcomeDesc;
+const { edit: editText } = languageStrings.common.action;
 
 const mockGetDashboardDetails = jest.spyOn(
   DashboardModule,
   "getDashboardDetails",
 );
 
+const mockEditPortlet = jest
+  .spyOn(DashboardModule, "editPortlet")
+  .mockResolvedValue("");
+
 describe("<DashboardPage/>", () => {
   beforeEach(() => {
-    mockGetDashboardDetails.mockClear();
+    jest.clearAllMocks();
   });
 
   it.each([
@@ -80,5 +87,15 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
   });
 
-  // TODO: perform API request again when refresh is set to true
+  it("supports editing the private portlets", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({
+      portlets: [privateSearchPortlet],
+    });
+    const { getByRole } = await renderDashboardPage();
+    await userEvent.click(getByRole("button", { name: editText }));
+
+    expect(mockEditPortlet).toHaveBeenCalledWith(
+      privateSearchPortlet.commonDetails.uuid,
+    );
+  });
 });
