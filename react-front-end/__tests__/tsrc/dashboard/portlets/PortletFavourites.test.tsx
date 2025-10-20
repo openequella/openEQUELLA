@@ -48,6 +48,7 @@ const setup = async (element: React.ReactElement) => {
   const user = userEvent.setup();
   const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
 
+  // Check that Show All button is present to ensure component has loaded
   await renderResult.findByRole("link", { name: strings.actionShowAll });
 
   const clickResourcesTab = async () => {
@@ -66,9 +67,9 @@ const setup = async (element: React.ReactElement) => {
 
 describe("<PortletFavourites />", () => {
   it("renders without crashing", async () => {
-    const { findByText } = await setup(<Simple />);
+    const { getByText } = await setup(<Simple />);
 
-    await findByText(basicSearchObj.name!);
+    expect(getByText(basicSearchObj.name!)).toBeInTheDocument();
   });
 
   it("changes between tabs when clicked", async () => {
