@@ -35,13 +35,15 @@ import {
   getFavouriteResourcesResp,
   getFavouriteSearchesResp,
 } from "../../../__mocks__/Favourites.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import { PortletItemSkeletonTestId } from "../../../tsrc/dashboard/components/PortletItemSkeleton";
 import { PortletContainer } from "../../../tsrc/dashboard/portlet/PortletContainer";
 import { TwoColumnLayout } from "../../../tsrc/dashboard/portlet/PortletHelper";
+import { AppContext } from "../../../tsrc/mainui/App";
 
 import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 
-// Mock the getFavouriteSearches and getFavouriteResources functions used by PortletFavourites
+// Mock the Favourite Module functions used by PortletFavourites
 jest
   .spyOn(FavouriteModule, "searchFavouriteItems")
   .mockResolvedValue(getFavouriteResourcesResp);
@@ -80,9 +82,17 @@ describe("<PortletContainer />", () => {
     portlets = mockPortlets,
   ) => {
     const result = render(
-      <MemoryRouter>
-        <PortletContainer portlets={portlets} layout={layout} />
-      </MemoryRouter>,
+      <AppContext.Provider
+        value={{
+          appErrorHandler: () => {},
+          currentUser: getCurrentUserMock,
+          refreshUser: () => Promise.resolve(undefined),
+        }}
+      >
+        <MemoryRouter>
+          <PortletContainer portlets={portlets} layout={layout} />
+        </MemoryRouter>
+      </AppContext.Provider>,
     );
 
     // Wait for all skeletons to disappear, indicating portlets have finished loading
@@ -163,7 +173,15 @@ describe("<PortletContainer />", () => {
   });
 
   // TODO: Add tests for more portlet types when they are implemented.
-  it.each([["formatted text", publicHtmlPortlet, "This is a", false]])(
+  it.each([
+    ["formatted text", publicHtmlPortlet, "This is a", false],
+    [
+      "favourites",
+      privateFavouritePortlet,
+      getFavouriteResourcesResp.results[0].name!,
+      false,
+    ],
+  ])(
     "displays %s portlet",
     async (
       _,
