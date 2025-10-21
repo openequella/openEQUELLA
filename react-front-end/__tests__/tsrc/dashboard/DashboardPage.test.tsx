@@ -24,11 +24,13 @@ import {
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { clickButton } from "../MuiTestHelpers";
 import {
+  getPortletContent,
   mockDashboardPageApis,
+  queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
-import userEvent from "@testing-library/user-event";
 
 const {
   nonSystemUser: { hintForOeq: hintForOeqText },
@@ -85,28 +87,44 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
   });
 
-  it.each([
-    [
-      "maximize",
-      [minimisedPortlet],
-      maximiseText,
-      [minimisedPortlet.commonDetails.uuid, { isMinimised: false }],
-    ],
-    [
-      "minimize",
-      [basicPortlet],
-      minimiseText,
-      [basicPortlet.commonDetails.uuid, { isMinimised: true }],
-    ],
-  ])(
-    "performs %s operation and updates portlet preference",
-    async (_, mockPortlets, label, params) => {
-      mockGetDashboardDetails.mockResolvedValueOnce({ portlets: mockPortlets });
-      const { getByRole } = await renderDashboardPage();
-      await userEvent.click(getByRole("button", { name: label }));
+  it("updates portlet preference when a user maximizes a portlet", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({
+      portlets: [minimisedPortlet],
+    });
 
-      expect(mockUpdatePortletPreference).toHaveBeenCalledWith(...params);
-      expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
-    },
-  );
+    const { container } = await renderDashboardPage();
+    const { uuid } = minimisedPortlet.commonDetails;
+
+    // A minimised portlet's content is not initially visible.
+    expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
+
+    await clickButton(container, maximiseText);
+
+    expect(mockUpdatePortletPreference).toHaveBeenCalledWith(uuid, {
+      isMinimised: false,
+    });
+    expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
+    // After maximising, the content becomes visible.
+    expect(getPortletContent(container, uuid)).toBeInTheDocument();
+  });
+
+  it("updates portlet preference when a user minimizes a portlet", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({ portlets: [basicPortlet] });
+
+    const { container } = await renderDashboardPage();
+    const { uuid } = basicPortlet.commonDetails;
+
+    // A maximised portlet's content is initially visible.
+    expect(getPortletContent(container, uuid)).toBeInTheDocument();
+
+    await clickButton(container, minimiseText);
+
+    expect(mockUpdatePortletPreference).toHaveBeenCalledWith(
+      basicPortlet.commonDetails.uuid,
+      { isMinimised: true },
+    );
+    expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
+    // After minimising, the content becomes hidden.
+    expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
+  });
 });

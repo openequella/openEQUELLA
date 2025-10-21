@@ -48,7 +48,7 @@ export type PortletColumn = 0 | 1;
 /**
  * Common details shared by all portlet types.
  */
-export interface PortletBase {
+interface PortletBase {
   /**
    * UUID of the portlet
    */

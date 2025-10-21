@@ -15,45 +15,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pipe } from "fp-ts/function";
-import * as A from "fp-ts/Array";
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+
+interface PortletPreference {
+  isMinimised?: boolean;
+  isClosed?: boolean;
+}
 
 /**
- * A factory that produces a function to update a specific portlet's preference.
+ * A factory that produces a function to update a single portlet if it matches the provided UUID.
  *
  * @param uuid The UUID of the portlet to be updated.
  * @param updates An object containing the fields of the portlet to be updated.
- * @returns A function that takes an array of portlets and returns a new array with the specified portlet updated.
+ * @returns A function that takes a portlet and returns an updated portlet if the UUID matches, otherwise the original portlet.
  */
-export const createPortletPreferenceUpdater =
-  (uuid: string, updates: Partial<OEQ.Dashboard.PortletBase>) =>
-  (portlets: OEQ.Dashboard.BasicPortlet[]): OEQ.Dashboard.BasicPortlet[] =>
-    pipe(
-      portlets,
-      A.map((portlet) =>
-        portlet.commonDetails.uuid === uuid
-          ? {
-              ...portlet,
-              commonDetails: { ...portlet.commonDetails, ...updates },
-            }
-          : portlet,
-      ),
-    );
+export const updatePortlet =
+  (uuid: string, updates: PortletPreference) =>
+  (portlet: OEQ.Dashboard.BasicPortlet): OEQ.Dashboard.BasicPortlet =>
+    portlet.commonDetails.uuid === uuid
+      ? {
+          ...portlet,
+          commonDetails: { ...portlet.commonDetails, ...updates },
+        }
+      : portlet;
 
 /**
- * Update the `portlets` within a `DashboardDetails` object.
+ * Updates dashboard’s portlets by applying a portlet update for the given UUID.
+ * Safe to pass directly to a React state setter.
  *
- * @param dashboard The original dashboard details object.
- * @param portletsUpdateFn A function that transforms the array of portlets.
- * @returns A new dashboard details object with the updated portlets.
+ * @param uuid - UUID of the target portlet.
+ * @param pref - Preference field to update in the targeted portlet.
+ * @returns A function that takes dashboard details and returns the updated version.
  */
-export const updateDashboardDetails = (
-  dashboard: OEQ.Dashboard.DashboardDetails,
-  portletsUpdateFn: (
-    _: OEQ.Dashboard.BasicPortlet[],
-  ) => OEQ.Dashboard.BasicPortlet[],
-): OEQ.Dashboard.DashboardDetails => ({
-  ...dashboard,
-  portlets: portletsUpdateFn(dashboard.portlets),
-});
+export const buildNewDashboardDetails =
+  (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
+  (dashboard?: OEQ.Dashboard.DashboardDetails) =>
+    pipe(
+      O.fromNullable(dashboard),
+      O.map((db) => ({
+        ...db,
+        portlets: pipe(db.portlets, A.map(updatePortlet(uuid, pref))),
+      })),
+      O.getOrElse(() => dashboard),
+    );
