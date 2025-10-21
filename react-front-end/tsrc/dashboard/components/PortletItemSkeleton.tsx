@@ -18,8 +18,13 @@
 
 import { Box, Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import * as React from "react";
 import * as NEA from "fp-ts/NonEmptyArray";
+import * as React from "react";
+
+/** Test ID for the portlet item skeleton component. Can be used
+ *  in tests to find the portlet item skeleton element.
+ */
+export const PortletItemSkeletonTestId = "portlet-item-skeleton";
 
 /**
  * A skeleton for a portlet item, to be shown when the actual portlet content is loading.
@@ -44,7 +49,7 @@ const PortletItemSkeleton = () => {
   );
 
   return (
-    <Card data-testid="portlet-item-skeleton">
+    <Card data-testid={PortletItemSkeletonTestId}>
       <CardHeader title={<Skeleton variant="text" />} action={actions()} />
 
       <CardContent>
