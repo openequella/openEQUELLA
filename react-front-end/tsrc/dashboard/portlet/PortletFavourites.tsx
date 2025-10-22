@@ -119,9 +119,8 @@ export const PortletFavourites = ({
     )();
   }, [currentUser, favouriteResourcesProvider, favouriteSearchesProvider]);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) =>
     setActiveTab(newValue);
-  };
 
   const tabContent = pipe(
     activeTab,
