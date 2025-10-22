@@ -20,11 +20,12 @@ import { GET } from './AxiosInstance';
 import { validate } from './Utils';
 
 export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
-export const SEARCH_PAGE = 'SEARCH_PAGE';
-export const HIERARCHY_PAGE = 'HIERARCHY_PAGE';
-export const EDIT_SYSTEM_SETTINGS = 'EDIT_SYSTEM_SETTINGS';
-export const MANAGE_CLOUD_PROVIDER = 'MANAGE_CLOUD_PROVIDER';
-export const VIEW_HIERARCHY_TOPIC = 'VIEW_HIERARCHY_TOPIC';
+export const ACL_CREATE_PORTLET = 'CREATE_PORTLET';
+export const ACL_SEARCH_PAGE = 'SEARCH_PAGE';
+export const ACL_HIERARCHY_PAGE = 'HIERARCHY_PAGE';
+export const ACL_EDIT_SYSTEM_SETTINGS = 'EDIT_SYSTEM_SETTINGS';
+export const ACL_MANAGE_CLOUD_PROVIDER = 'MANAGE_CLOUD_PROVIDER';
+export const ACL_VIEW_HIERARCHY_TOPIC = 'VIEW_HIERARCHY_TOPIC';
 
 /**
  * The unique ID of each system setting.
