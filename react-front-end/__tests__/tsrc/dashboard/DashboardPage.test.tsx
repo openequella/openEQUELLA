@@ -31,15 +31,23 @@ import {
   queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
+import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
+import * as E from "fp-ts/Either";
 
 const {
-  nonSystemUser: { hintForOeq: hintForOeqText },
+  nonSystemUser: { hintForOeq: hintForOeqText, imageAlt: imageAltText },
 } = languageStrings.dashboard.welcomeDesc;
 const { maximise: maximiseText, minimise: minimiseText } =
   languageStrings.common.action;
 
 const { mockGetDashboardDetails, mockUpdatePortletPreference } =
   mockDashboardPageApis();
+
+const mockGetCreatePortletAcl = jest.spyOn(
+  SecurityModule,
+  "hasCreatePortletACL",
+);
+mockGetCreatePortletAcl.mockResolvedValue(E.right(true));
 
 describe("<DashboardPage/>", () => {
   beforeEach(() => {
@@ -63,11 +71,22 @@ describe("<DashboardPage/>", () => {
     },
   );
 
-  it("shows welcome message if no portlets is configured", async () => {
+  it("shows welcome message if no portlets are configured for non-system users", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);
+    mockGetCreatePortletAcl.mockResolvedValueOnce(E.right(false));
 
     const { getByText } = await renderDashboardPage();
     expect(getByText(hintForOeqText)).toBeInTheDocument();
+  });
+
+  it("shows an enhanced welcome message if no portlets are configured for non-system users with CREATE_PORTLET permission", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);
+
+    const { getByText, getByAltText } = await renderDashboardPage();
+    expect(
+      getByText("as shown in the example below", { exact: false }),
+    ).toBeInTheDocument();
+    expect(getByAltText(imageAltText)).toBeInTheDocument();
   });
 
   it("displays portlet container when portlets are configured", async () => {

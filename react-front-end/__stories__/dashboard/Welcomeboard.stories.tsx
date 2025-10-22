@@ -27,11 +27,19 @@ export default {
   component: WelcomeBoard,
 } as Meta<WelcomeBoardProps>;
 
-export const Standard: StoryFn<WelcomeBoardProps> = (args) => (
+export const ForNonSystemUser: StoryFn<WelcomeBoardProps> = (args) => (
   <WelcomeBoard {...args} />
 );
-Standard.args = {
+ForNonSystemUser.args = {
   isSystemUser: false,
+};
+
+export const ForNonSystemUserWithCreatePortletACL: StoryFn<
+  WelcomeBoardProps
+> = (args) => <WelcomeBoard {...args} />;
+ForNonSystemUserWithCreatePortletACL.args = {
+  isSystemUser: false,
+  hasCreatePortletAcl: true,
 };
 
 export const ForSystemUser: StoryFn<WelcomeBoardProps> = (args) => (

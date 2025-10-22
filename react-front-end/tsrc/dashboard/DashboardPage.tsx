@@ -26,6 +26,7 @@ import {
   getDashboardDetails,
   updatePortletPreference,
 } from "../modules/DashboardModule";
+import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
 import WelcomeBoard from "./components/WelcomeBoard";
 import * as TE from "fp-ts/TaskEither";
@@ -36,6 +37,7 @@ import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
 import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
+import * as Apply from "fp-ts/Apply";
 
 const { title } = languageStrings.dashboard;
 
@@ -45,25 +47,33 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
     useState<OEQ.Dashboard.DashboardDetails>();
-
-  const getPortlets = useCallback(() => {
-    pipe(
-      TE.tryCatch(
-        () => getDashboardDetails(),
-        (e) => `Failed to get dashboard details: ${e}`,
-      ),
-      TE.match(appErrorHandler, setDashboardDetails),
-      T.tapIO(() => () => {
-        setIsLoading(false);
-      }),
-    )();
-  }, [appErrorHandler]);
+  const [hasCreatePortletAcl, setHasCreatePortletAcl] = useState<boolean>();
 
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(title)(tp),
     }));
   }, [updateTemplate]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const getDashboardDetailsTask = TE.tryCatch(
+      () => getDashboardDetails(),
+      (e) => `Failed to get dashboard details: ${e}`,
+    );
+
+    pipe(
+      { details: getDashboardDetailsTask, hasAcl: hasCreatePortletACL },
+      Apply.sequenceS(TE.ApplyPar),
+      TE.match(appErrorHandler, ({ details, hasAcl }) => {
+        setDashboardDetails(details);
+        setHasCreatePortletAcl(hasAcl);
+      }),
+      T.tapIO(() => () => {
+        setIsLoading(false);
+      }),
+    )();
+  }, [appErrorHandler]);
 
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
@@ -73,9 +83,9 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
           (e) => `Failed to update portlet preference: ${e}`,
         ),
         TE.match(appErrorHandler, constVoid),
-        T.tapIO(() => getPortlets), // ensures it’s invoked
+        // T.tapIO(() => getPortlets()), // ensures it’s invoked
       )(),
-    [appErrorHandler, getPortlets],
+    [appErrorHandler],
   );
 
   const closePortlet = (uuid: string) => {
@@ -101,10 +111,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [updatePortletPreferenceAndRefresh],
   );
 
-  useEffect(() => {
-    getPortlets();
-  }, [getPortlets]);
-
   const renderDashboardForNonSystemUser = () =>
     pipe(
       O.Do,
@@ -114,7 +120,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
       O.bind("layout", ({ details: { layout } }) => O.some(layout)),
       O.fold(
-        () => <WelcomeBoard />,
+        () => <WelcomeBoard hasCreatePortletAcl={hasCreatePortletAcl} />,
         ({ layout, portlets }) => (
           <PortletContainer portlets={portlets} layout={layout} />
         ),

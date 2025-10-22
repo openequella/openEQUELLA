@@ -23,7 +23,7 @@ import {
   isManageCloudProviderACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
-  PermissionCheck,
+  RequiredPermissionCheck,
 } from "../modules/SecurityModule";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import { TemplateUpdate } from "./Template";
@@ -97,7 +97,7 @@ export interface OEQRouteNewUI {
    * route points to. When none, authentication is required for the access. To make this route
    * publicly available, make this function always return a Promise of `true`.
    */
-  permissionChecks?: PermissionCheck[];
+  permissionChecks?: RequiredPermissionCheck[];
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {

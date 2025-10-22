@@ -27,7 +27,7 @@ import * as TE from "fp-ts/TaskEither";
 import { sprintf } from "sprintf-js";
 import { generateNewErrorID } from "../api/errors";
 import LoadingCircle from "../components/LoadingCircle";
-import type { PermissionCheck } from "../modules/SecurityModule";
+import type { RequiredPermissionCheck } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
 import ErrorPage from "./ErrorPage";
 import { BaseOEQRouteComponentProps } from "./routes";
@@ -44,7 +44,7 @@ export interface ProtectedPageProps {
   /**
    * A list of required permission checks to determine if the user has permissions to access the page.
    */
-  permissionChecks?: PermissionCheck[];
+  permissionChecks?: RequiredPermissionCheck[];
   /**
    * The page component to be rendered.
    */
