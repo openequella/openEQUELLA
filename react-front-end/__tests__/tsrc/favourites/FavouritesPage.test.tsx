@@ -39,7 +39,7 @@ import {
   clickSelect,
   countPresentSelectOptions,
   isToggleButtonChecked,
-  selectToggleButton,
+  clickButton,
 } from "../MuiTestHelpers";
 import {
   getRefineSearchComponent,
@@ -132,7 +132,7 @@ describe("<FavouritesPage/>", () => {
   ])("shows Favourite Resources's %s", async (mode, gallerySearch) => {
     gallerySearch.mockResolvedValueOnce(getEmptyGallerySearchResp);
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, mode);
+    await clickButton(container, mode);
 
     expect(isToggleButtonChecked(container, mode)).toBeTruthy();
     expect(gallerySearch).toHaveBeenCalledTimes(1);
@@ -142,7 +142,7 @@ describe("<FavouritesPage/>", () => {
 
   it("supports changing Favourites Type to 'Searches' using Favourites Selector", async () => {
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
 
     expect(isToggleButtonChecked(container, searchesLabel)).toBeTruthy();
     expect(mockFavSearchesSearch).toHaveBeenCalled();
@@ -155,7 +155,7 @@ describe("<FavouritesPage/>", () => {
     expect(queryWildcardSearchSwitch(container)).toBeInTheDocument();
 
     // Switch to Favourite Searches
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
     expect(queryWildcardSearchSwitch(container)).not.toBeInTheDocument();
   });
 
@@ -174,7 +174,7 @@ describe("<FavouritesPage/>", () => {
     [searchesLabel, [sortOptions.title, dateFavourited]],
   ])("shows custom sort order for Favourite %s", async (typeLabel, options) => {
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, typeLabel);
+    await clickButton(container, typeLabel);
     await clickSelect(container, SORTORDER_SELECT_ID);
     const foundOptions = countPresentSelectOptions(options);
 
@@ -227,7 +227,7 @@ describe("<FavouritesPage/>", () => {
 
     it("shows only Favourites Selector and Date Range Selector refine panel controls for Favourite Searches", async () => {
       const { container } = await renderFavouritesPage();
-      await selectToggleButton(container, searchesLabel);
+      await clickButton(container, searchesLabel);
       const options: string[] = ["FavouritesSelector", "DateRangeSelector"];
 
       options.forEach((componentSuffix) =>

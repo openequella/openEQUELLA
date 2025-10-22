@@ -17,6 +17,7 @@
  */
 import type { StorybookConfig } from "@storybook/react-webpack5";
 import * as path from "path";
+import { NormalModuleReplacementPlugin } from "webpack";
 
 const config: StorybookConfig = {
   staticDirs: ["../node_modules", "../__stories__/static-files"],
@@ -34,5 +35,16 @@ const config: StorybookConfig = {
     ...options,
     configFile: path.resolve(__dirname, ".babelrc.json"),
   }),
+  webpackFinal: async (cfg) => {
+    cfg.plugins = [
+      ...cfg.plugins,
+      // Remove "url:" prefix from asset imports (it's a syntax of Parcel not supported by Webpack)
+      new NormalModuleReplacementPlugin(/^url:(.*)$/, (resource) => {
+        resource.request = resource.request.replace(/^url:/, "");
+      }),
+    ];
+
+    return cfg;
+  },
 };
 export default config;

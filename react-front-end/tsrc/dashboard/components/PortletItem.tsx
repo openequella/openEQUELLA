@@ -83,6 +83,9 @@ const PortletItem = ({
     canMinimise,
     isInstitutionWide,
     isMinimised,
+    isClosed,
+    order,
+    column,
   } = commonDetails;
 
   const { closePortlet, deletePortlet, minimisePortlet } =
@@ -104,8 +107,13 @@ const PortletItem = ({
 
   const handleClose = () => closePortlet(uuid);
 
-  const handleMinimise = (isMinimised: boolean) =>
-    minimisePortlet(uuid, isMinimised);
+  const handleMinimise = (newIsMinimised: boolean) =>
+    minimisePortlet(uuid, {
+      order,
+      column,
+      isClosed,
+      isMinimised: newIsMinimised,
+    });
 
   const minimiseIcon = () =>
     isMinimised ? (
