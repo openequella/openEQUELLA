@@ -34,7 +34,6 @@ import {
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
-import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import * as E from "fp-ts/Either";
 
 const {
@@ -46,14 +45,11 @@ const {
   edit: editText,
 } = languageStrings.common.action;
 
-const { mockGetDashboardDetails, mockUpdatePortletPreference } =
-  mockDashboardPageApis();
-
-const mockGetCreatePortletAcl = jest.spyOn(
-  SecurityModule,
-  "hasCreatePortletACL",
-);
-mockGetCreatePortletAcl.mockResolvedValue(E.right(true));
+const {
+  mockGetDashboardDetails,
+  mockUpdatePortletPreference,
+  mockGetCreatePortletAcl,
+} = mockDashboardPageApis();
 
 const mockEditPortlet = jest
   .spyOn(DashboardModule, "editPortlet")

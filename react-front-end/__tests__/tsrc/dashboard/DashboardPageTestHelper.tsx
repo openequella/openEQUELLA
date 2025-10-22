@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { render, RenderResult, waitFor } from "@testing-library/react";
+import * as E from "fp-ts/Either";
 import { createMemoryHistory } from "history";
 import * as React from "react";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
@@ -24,6 +25,7 @@ import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
+import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { Router } from "react-router-dom";
 
@@ -70,6 +72,8 @@ export interface MockDashboardApis {
   mockGetDashboardDetails: jest.SpyInstance;
   /** Spy for the `updatePortletPreference` API. */
   mockUpdatePortletPreference: jest.SpyInstance;
+  /** Spy for the `hasCreatePortletACL` API. */
+  mockGetCreatePortletAcl: jest.SpyInstance;
 }
 
 /**
@@ -83,6 +87,9 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockUpdatePortletPreference: jest
       .spyOn(DashboardModule, "updatePortletPreference")
       .mockResolvedValue(undefined),
+    mockGetCreatePortletAcl: jest
+      .spyOn(SecurityModule, "hasCreatePortletACL")
+      .mockResolvedValue(E.right(true)),
   };
 };
 
