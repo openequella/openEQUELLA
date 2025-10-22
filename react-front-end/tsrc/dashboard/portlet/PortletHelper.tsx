@@ -22,6 +22,7 @@ import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
+import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
 import * as React from "react";
 import { PortletUnsupported } from "./PortletUnsupported";
@@ -95,7 +96,7 @@ export const renderPortlet = (
     case "browse":
       return <PortletUnsupported cfg={portlet} />;
     case "favourites":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletFavourites cfg={portlet} />;
     case "freemarker":
       return <PortletUnsupported cfg={portlet} />;
     case "html":

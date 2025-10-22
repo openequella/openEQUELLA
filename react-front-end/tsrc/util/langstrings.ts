@@ -230,6 +230,7 @@ export const languageStrings = {
       selectAll: "Select all",
       selectNone: "Select none",
       share: "Share",
+      showAll: "Show all",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",
@@ -370,6 +371,11 @@ export const languageStrings = {
       },
     },
     portlets: {
+      favourites: {
+        noneFound: "No favourite %s found.",
+        resourcesTabName: "Resources",
+        searchesTabName: "Searches",
+      },
       unsupported: {
         title: "Unsupported portlet configured",
         description:

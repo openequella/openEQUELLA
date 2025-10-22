@@ -17,11 +17,12 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
+import { MemoryRouter } from "react-router-dom";
 import {
   mockPortlets,
   privateFavouritePortlet,
@@ -30,8 +31,25 @@ import {
   publicHtmlPortlet,
   publicRecentContributionsPortlet,
 } from "../../../__mocks__/Dashboard.mock";
+import {
+  getFavouriteResourcesResp,
+  getFavouriteSearchesResp,
+} from "../../../__mocks__/Favourites.mock";
+import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
+import { PortletItemSkeletonTestId } from "../../../tsrc/dashboard/components/PortletItemSkeleton";
 import { PortletContainer } from "../../../tsrc/dashboard/portlet/PortletContainer";
 import { TwoColumnLayout } from "../../../tsrc/dashboard/portlet/PortletHelper";
+import { AppContext } from "../../../tsrc/mainui/App";
+
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
+
+// Mock the Favourite Module functions used by PortletFavourites
+jest
+  .spyOn(FavouriteModule, "searchFavouriteItems")
+  .mockResolvedValue(getFavouriteResourcesResp);
+jest
+  .spyOn(FavouriteModule, "searchFavouriteSearches")
+  .mockResolvedValue(getFavouriteSearchesResp);
 
 describe("<PortletContainer />", () => {
   /**
@@ -59,13 +77,37 @@ describe("<PortletContainer />", () => {
     );
   };
 
-  const renderPortletContainer = (
+  const renderPortletContainer = async (
     layout: OEQ.Dashboard.DashboardLayout = "SingleColumn",
     portlets = mockPortlets,
-  ) => render(<PortletContainer portlets={portlets} layout={layout} />);
+  ) => {
+    const result = render(
+      <AppContext.Provider
+        value={{
+          appErrorHandler: () => {},
+          currentUser: getCurrentUserMock,
+          refreshUser: () => Promise.resolve(undefined),
+        }}
+      >
+        <MemoryRouter>
+          <PortletContainer portlets={portlets} layout={layout} />
+        </MemoryRouter>
+      </AppContext.Provider>,
+    );
 
-  it("displays all the portlets in the single-column layout", () => {
-    const { container } = renderPortletContainer("SingleColumn");
+    // Wait for all skeletons to disappear, indicating portlets have finished loading
+    await waitFor(() => {
+      const skeletons = result.container.querySelectorAll(
+        `[data-testid="${PortletItemSkeletonTestId}"]`,
+      );
+      expect(skeletons).toHaveLength(0);
+    });
+
+    return result;
+  };
+
+  it("displays all the portlets in the single-column layout", async () => {
+    const { container } = await renderPortletContainer("SingleColumn");
     const displayedPortlets = getDisplayedPortlets(
       container,
       "#portlet-container-single-column",
@@ -80,8 +122,8 @@ describe("<PortletContainer />", () => {
     ["TwoColumnsRatio2to1"],
   ])(
     "displays all the portlets in two-column layout %s",
-    (layout: TwoColumnLayout) => {
-      const { container } = renderPortletContainer(layout);
+    async (layout: TwoColumnLayout) => {
+      const { container } = await renderPortletContainer(layout);
 
       const leftColumnPortlets = getDisplayedPortlets(
         container,
@@ -99,8 +141,8 @@ describe("<PortletContainer />", () => {
     },
   );
 
-  it("sorts portlets by order first and then by name", () => {
-    const { container } = renderPortletContainer("SingleColumn");
+  it("sorts portlets by order first and then by name", async () => {
+    const { container } = await renderPortletContainer("SingleColumn");
     const singleColumn = container.querySelector<HTMLDivElement>(
       "#portlet-container-single-column",
     );
@@ -131,12 +173,26 @@ describe("<PortletContainer />", () => {
   });
 
   // TODO: Add tests for more portlet types when they are implemented.
-  it.each([["formatted text", publicHtmlPortlet, "This is a", false]])(
+  it.each([
+    ["formatted text", publicHtmlPortlet, "This is a", false],
+    [
+      "favourites",
+      privateFavouritePortlet,
+      getFavouriteResourcesResp.results[0].name!,
+      false,
+    ],
+  ])(
     "displays %s portlet",
-    (_, portlet: OEQ.Dashboard.BasicPortlet, expectedContent, exactMode) => {
-      const { container, getByText } = renderPortletContainer("SingleColumn", [
-        portlet,
-      ]);
+    async (
+      _,
+      portlet: OEQ.Dashboard.BasicPortlet,
+      expectedContent,
+      exactMode,
+    ) => {
+      const { container, getByText } = await renderPortletContainer(
+        "SingleColumn",
+        [portlet],
+      );
 
       expect(
         container.querySelector(
