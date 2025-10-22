@@ -31,6 +31,7 @@ import { Router } from "react-router-dom";
 
 const { welcomeTitle } = languageStrings.dashboard;
 const history = createMemoryHistory();
+
 /**
  * Helper to render DashboardPage and wait for it to load (i.e. the skeleton to disappear).
  *
@@ -74,6 +75,8 @@ export interface MockDashboardApis {
   mockUpdatePortletPreference: jest.SpyInstance;
   /** Spy for the `hasCreatePortletACL` API. */
   mockGetCreatePortletAcl: jest.SpyInstance;
+  /** Spy for the `hasCreatePortletACL` API. */
+  mockEditPortlet: jest.SpyInstance;
 }
 
 /**
@@ -90,6 +93,9 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockGetCreatePortletAcl: jest
       .spyOn(SecurityModule, "hasCreatePortletACL")
       .mockResolvedValue(E.right(true)),
+    mockEditPortlet: jest
+      .spyOn(DashboardModule, "editPortlet")
+      .mockResolvedValue(""),
   };
 };
 

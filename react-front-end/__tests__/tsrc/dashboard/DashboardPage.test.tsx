@@ -32,7 +32,6 @@ import {
   queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
-import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import * as E from "fp-ts/Either";
 
 const {
@@ -48,11 +47,8 @@ const {
   mockGetDashboardDetails,
   mockUpdatePortletPreference,
   mockGetCreatePortletAcl,
+  mockEditPortlet,
 } = mockDashboardPageApis();
-
-const mockEditPortlet = jest
-  .spyOn(DashboardModule, "editPortlet")
-  .mockResolvedValue("");
 
 describe("<DashboardPage/>", () => {
   beforeEach(() => {
