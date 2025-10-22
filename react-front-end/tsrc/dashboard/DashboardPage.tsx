@@ -37,7 +37,6 @@ import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
 import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import * as Apply from "fp-ts/Apply";
 
 const { title } = languageStrings.dashboard;
 
@@ -55,25 +54,34 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
   }, [updateTemplate]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const getDashboardDetailsTask = TE.tryCatch(
-      () => getDashboardDetails(),
-      (e) => `Failed to get dashboard details: ${e}`,
-    );
+  const loadDashboard = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        TE.tryCatch(
+          () => getDashboardDetails(),
+          (e) => `Failed to get dashboard details: ${e}`,
+        ),
+        TE.match(appErrorHandler, setDashboardDetails),
+      ),
+    [appErrorHandler],
+  );
 
+  const checkCreatePortletAcl = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        hasCreatePortletACL,
+        TE.match(appErrorHandler, setHasCreatePortletAcl),
+      ),
+    [appErrorHandler],
+  );
+
+  const initialLoad = useCallback((): void => {
+    setIsLoading(true);
     pipe(
-      { details: getDashboardDetailsTask, hasAcl: hasCreatePortletACL },
-      Apply.sequenceS(TE.ApplyPar),
-      TE.match(appErrorHandler, ({ details, hasAcl }) => {
-        setDashboardDetails(details);
-        setHasCreatePortletAcl(hasAcl);
-      }),
-      T.tapIO(() => () => {
-        setIsLoading(false);
-      }),
+      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.tapIO(() => () => setIsLoading(false)),
     )();
-  }, [appErrorHandler]);
+  }, [loadDashboard, checkCreatePortletAcl]);
 
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
@@ -83,10 +91,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
           (e) => `Failed to update portlet preference: ${e}`,
         ),
         TE.match(appErrorHandler, constVoid),
-        // T.tapIO(() => getPortlets()), // ensures it’s invoked
+        T.tapIO(() => loadDashboard()),
       )(),
-    [appErrorHandler],
+    [appErrorHandler, loadDashboard],
   );
+
+  useEffect(() => {
+    initialLoad();
+  }, [initialLoad]);
 
   const closePortlet = (uuid: string) => {
     // TODO: REMOVE ME.
