@@ -22,6 +22,7 @@ import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
 import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { AppContext } from "../../../tsrc/mainui/App";
+import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const { welcomeTitle } = languageStrings.dashboard;
@@ -55,4 +56,61 @@ export const renderDashboardPage = async (
   });
 
   return page;
+};
+
+/**
+ * The spies for the mocked Dashboard APIs.
+ */
+export interface MockDashboardApis {
+  /** Spy for the `getDashboardDetails` API. */
+  mockGetDashboardDetails: jest.SpyInstance;
+  /** Spy for the `updatePortletPreference` API. */
+  mockUpdatePortletPreference: jest.SpyInstance;
+}
+
+/**
+ * Mocks the APIs used by the Dashboard page and returns spies for them.
+ *
+ * @returns An object containing spies for the mocked APIs.
+ */
+export const mockDashboardPageApis = (): MockDashboardApis => {
+  return {
+    mockGetDashboardDetails: jest.spyOn(DashboardModule, "getDashboardDetails"),
+    mockUpdatePortletPreference: jest
+      .spyOn(DashboardModule, "updatePortletPreference")
+      .mockResolvedValue(undefined),
+  };
+};
+
+/**
+ * Queries for a portlet's content element by its UUID.
+ *
+ * @param container The root container to search within.
+ * @param uuid The UUID of the portlet.
+ * @returns The portlet's content element, or `null` if not found.
+ */
+export const queryPortletContent = (
+  container: Element,
+  uuid: string,
+): HTMLDivElement | null =>
+  container.querySelector<HTMLDivElement>(`#portlet-content-${uuid}`);
+
+/**
+ * Gets a portlet's content element by its UUID, throwing an error if not found.
+ *
+ * @param container The root container to search within.
+ * @param uuid The UUID of the portlet.
+ * @returns The portlet's content element.
+ * @throws An error if the portlet content cannot be found.
+ */
+export const getPortletContent = (
+  container: Element,
+  uuid: string,
+): HTMLDivElement => {
+  const portletContent = queryPortletContent(container, uuid);
+  if (!portletContent) {
+    throw new Error(`Unable to Portlet content with uuid: ${uuid}`);
+  }
+
+  return portletContent;
 };

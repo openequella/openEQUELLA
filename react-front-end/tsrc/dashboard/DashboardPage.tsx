@@ -17,12 +17,15 @@
  */
 
 import { Skeleton } from "@mui/material";
-import { pipe } from "fp-ts/function";
-import { useContext, useEffect, useState } from "react";
+import { pipe, constVoid } from "fp-ts/function";
+import { useCallback, useContext, useEffect, useState } from "react";
 import * as React from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
-import { getDashboardDetails } from "../modules/DashboardModule";
+import {
+  getDashboardDetails,
+  updatePortletPreference,
+} from "../modules/DashboardModule";
 import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
 import WelcomeBoard from "./components/WelcomeBoard";
@@ -32,8 +35,8 @@ import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
+import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import * as Apply from "fp-ts/Apply";
 
 const { title } = languageStrings.dashboard;
 
@@ -51,26 +54,47 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     }));
   }, [updateTemplate]);
 
+  const loadDashboard = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        TE.tryCatch(
+          () => getDashboardDetails(),
+          (e) => `Failed to get dashboard details: ${e}`,
+        ),
+        TE.match(appErrorHandler, setDashboardDetails),
+      ),
+    [appErrorHandler],
+  );
+
+  const checkCreatePortletAcl = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        hasCreatePortletACL,
+        TE.match(appErrorHandler, setHasCreatePortletAcl),
+      ),
+    [appErrorHandler],
+  );
+
+  const updatePortletPreferenceAndRefresh = useCallback(
+    (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
+      pipe(
+        TE.tryCatch(
+          () => updatePortletPreference(uuid, pref),
+          (e) => `Failed to update portlet preference: ${e}`,
+        ),
+        TE.match(appErrorHandler, constVoid),
+        T.tapIO(() => loadDashboard()),
+      )(),
+    [appErrorHandler, loadDashboard],
+  );
+
   useEffect(() => {
     setIsLoading(true);
-
-    const getDashboardDetailsTask = TE.tryCatch(
-      () => getDashboardDetails(),
-      (e) => `Failed to get dashboard details: ${e}`,
-    );
-
     pipe(
-      { details: getDashboardDetailsTask, hasAcl: hasCreatePortletACL },
-      Apply.sequenceS(TE.ApplyPar),
-      TE.match(appErrorHandler, ({ details, hasAcl }) => {
-        setDashboardDetails(details);
-        setHasCreatePortletAcl(hasAcl);
-      }),
-      T.tapIO(() => () => {
-        setIsLoading(false);
-      }),
+      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.tapIO(() => () => setIsLoading(false)),
     )();
-  }, [appErrorHandler]);
+  }, [loadDashboard, checkCreatePortletAcl]);
 
   const closePortlet = (uuid: string) => {
     // TODO: REMOVE ME.
@@ -86,12 +110,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     // TODO: add API call to update preference and get portlets again.
   };
 
-  const minimisePortlet = (uuid: string, isMinimised: boolean) => {
-    // TODO: REMOVE ME.
-    console.debug(uuid, isMinimised);
-    // TODO: update dashboardDetails to update the minimised one.
-    // TODO: add API call to update preference and get portlets again.
-  };
+  const minimisePortlet = useCallback(
+    (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {
+      setDashboardDetails(updateDashboardDetails(uuid, portletPref));
+
+      return updatePortletPreferenceAndRefresh(uuid, portletPref);
+    },
+    [updatePortletPreferenceAndRefresh],
+  );
 
   const renderDashboardForNonSystemUser = () =>
     pipe(

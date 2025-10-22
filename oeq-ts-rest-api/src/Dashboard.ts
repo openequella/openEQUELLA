@@ -214,7 +214,7 @@ export interface PortletPreference {
   /**
    * The column the portlet is in
    */
-  column: number;
+  column: PortletColumn;
   /**
    * The order of the portlet in the column
    */

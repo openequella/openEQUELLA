@@ -53,7 +53,7 @@ import {
   getSelectOption,
   isToggleButtonChecked,
   selectOption,
-  selectToggleButton,
+  clickButton,
 } from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
@@ -233,7 +233,7 @@ describe("<SearchPage/>", () => {
           listClassifications.mockResolvedValue(
             CategorySelectorMock.classifications,
           ),
-          selectToggleButton(container, mode),
+          clickButton(container, mode),
         ]);
 
         // Make sure the search has been triggered
