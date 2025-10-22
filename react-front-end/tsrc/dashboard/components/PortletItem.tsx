@@ -99,7 +99,10 @@ const PortletItem = ({
         () => editPortlet(uuid),
         (e) => `Failed to edit ${name} portlet: ${e}`,
       ),
-      TE.match(appErrorHandler, (path) => history.push(path)),
+      TE.match(appErrorHandler, (path) => {
+        const sep = path.includes("?") ? "&" : "?";
+        history.push(`${path}${sep}portletEditor=true`);
+      }),
     )();
   };
 

@@ -282,10 +282,8 @@ export default function IndexPage() {
               routeProps.location.search,
             );
 
-            // When editing any type of portlet in legacy Dashboard page route, the URL will always include 'pcn.t'.
-            // In this case, we must render the LegacyContent page.
             return isSelectionSessionOpen() ||
-              searchParams.toString().includes("pcn.t")
+              searchParams.get("portletEditor") === "true"
               ? renderLegacyContent(routeProps)
               : renderProtectedPage(routeProps, DashboardPage);
           }}

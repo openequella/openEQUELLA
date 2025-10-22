@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import userEvent from "@testing-library/user-event";
 import {
   basicPortlet,
   emptyDashboardDetails,
@@ -112,17 +111,6 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
   });
 
-  it("supports editing the private portlets", async () => {
-    mockGetDashboardDetails.mockResolvedValueOnce({
-      portlets: [privateSearchPortlet],
-    });
-    const { getByRole } = await renderDashboardPage();
-    await userEvent.click(getByRole("button", { name: editText }));
-
-    expect(mockEditPortlet).toHaveBeenCalledWith(
-      privateSearchPortlet.commonDetails.uuid,
-    );
-  });
   it("updates portlet preference when a user maximizes a portlet", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce({
       portlets: [minimisedPortlet],
@@ -165,5 +153,18 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
     // After minimising, the content becomes hidden.
     expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
+  });
+
+  it("supports editing the private portlets", async () => {
+    mockGetDashboardDetails.mockResolvedValueOnce({
+      portlets: [privateSearchPortlet],
+    });
+
+    const { container } = await renderDashboardPage();
+    await clickButton(container, editText);
+
+    expect(mockEditPortlet).toHaveBeenCalledWith(
+      privateSearchPortlet.commonDetails.uuid,
+    );
   });
 });
