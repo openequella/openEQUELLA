@@ -94,8 +94,13 @@ const PortletItem = ({
 
   const handleClose = () => closePortlet(uuid);
 
-  const handleMinimise = (isMinimised: boolean) =>
-    minimisePortlet(uuid, { order, column, isMinimised, isClosed });
+  const handleMinimise = (newIsMinimised: boolean) =>
+    minimisePortlet(uuid, {
+      order,
+      column,
+      isClosed,
+      isMinimised: newIsMinimised,
+    });
 
   const minimiseIcon = () =>
     isMinimised ? (

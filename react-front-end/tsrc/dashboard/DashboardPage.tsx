@@ -75,14 +75,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler],
   );
 
-  const initialLoad = useCallback((): void => {
-    setIsLoading(true);
-    pipe(
-      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
-      T.tapIO(() => () => setIsLoading(false)),
-    )();
-  }, [loadDashboard, checkCreatePortletAcl]);
-
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
       pipe(
@@ -97,8 +89,12 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   useEffect(() => {
-    initialLoad();
-  }, [initialLoad]);
+    setIsLoading(true);
+    pipe(
+      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.tapIO(() => () => setIsLoading(false)),
+    )();
+  }, [loadDashboard, checkCreatePortletAcl]);
 
   const closePortlet = (uuid: string) => {
     // TODO: REMOVE ME.
