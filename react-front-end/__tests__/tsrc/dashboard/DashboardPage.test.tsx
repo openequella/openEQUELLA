@@ -112,7 +112,7 @@ describe("<DashboardPage/>", () => {
     });
 
     const { container } = await renderDashboardPage();
-    const { uuid } = minimisedPortlet.commonDetails;
+    const { uuid, isClosed, order, column } = minimisedPortlet.commonDetails;
 
     // A minimised portlet's content is not initially visible.
     expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
@@ -121,6 +121,9 @@ describe("<DashboardPage/>", () => {
 
     expect(mockUpdatePortletPreference).toHaveBeenCalledWith(uuid, {
       isMinimised: false,
+      isClosed,
+      order,
+      column,
     });
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
     // After maximising, the content becomes visible.
@@ -131,7 +134,7 @@ describe("<DashboardPage/>", () => {
     mockGetDashboardDetails.mockResolvedValueOnce({ portlets: [basicPortlet] });
 
     const { container } = await renderDashboardPage();
-    const { uuid } = basicPortlet.commonDetails;
+    const { uuid, isClosed, order, column } = basicPortlet.commonDetails;
 
     // A maximised portlet's content is initially visible.
     expect(getPortletContent(container, uuid)).toBeInTheDocument();
@@ -140,7 +143,7 @@ describe("<DashboardPage/>", () => {
 
     expect(mockUpdatePortletPreference).toHaveBeenCalledWith(
       basicPortlet.commonDetails.uuid,
-      { isMinimised: true },
+      { isMinimised: true, isClosed, order, column },
     );
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
     // After minimising, the content becomes hidden.
