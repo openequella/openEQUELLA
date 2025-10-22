@@ -17,6 +17,7 @@
  */
 
 import { createContext } from "react";
+import * as OEQ from "@openequella/rest-api-client";
 
 interface DashboardPageContextProps {
   /**
@@ -38,7 +39,10 @@ interface DashboardPageContextProps {
    *
    * @param isMinimised `true` to minimise the portlet, `false` to expand it.
    */
-  minimisePortlet: (uuid: string, isMinimised: boolean) => void;
+  minimisePortlet: (
+    uuid: string,
+    portletPref: OEQ.Dashboard.PortletPreference,
+  ) => void;
 }
 
 export const DashboardPageContext = createContext<DashboardPageContextProps>({

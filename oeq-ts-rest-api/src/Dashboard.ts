@@ -206,19 +206,19 @@ export interface PortletPreference {
   /**
    * Whether the portlet is closed
    */
-  isClosed?: boolean;
+  isClosed: boolean;
   /**
    * Whether the portlet is minimised
    */
-  isMinimised?: boolean;
+  isMinimised: boolean;
   /**
    * The column the portlet is in
    */
-  column?: number;
+  column: PortletColumn;
   /**
    * The order of the portlet in the column
    */
-  order?: number;
+  order: number;
 }
 
 const DASHBOARD_PATH = '/dashboard';

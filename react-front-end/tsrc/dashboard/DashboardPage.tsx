@@ -34,7 +34,7 @@ import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
-import { buildNewDashboardDetails } from "./DashboardPageHelper";
+import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
 
 const { title } = languageStrings.dashboard;
@@ -93,10 +93,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   };
 
   const minimisePortlet = useCallback(
-    async (uuid: string, isMinimised: boolean) => {
-      setDashboardDetails(buildNewDashboardDetails(uuid, { isMinimised }));
+    (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {
+      setDashboardDetails(updateDashboardDetails(uuid, portletPref));
 
-      await updatePortletPreferenceAndRefresh(uuid, { isMinimised });
+      return updatePortletPreferenceAndRefresh(uuid, portletPref);
     },
     [updatePortletPreferenceAndRefresh],
   );
