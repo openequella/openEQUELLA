@@ -25,23 +25,36 @@ import * as A from "fp-ts/Array";
 import { getTopicIDFromLocation } from "./HierarchyModule";
 
 /**
+ * Represents a TaskEither for permission check. The right side is a boolean indicating whether the
+ * permission is granted, and the left side is an error message if the check operation fails.
+ */
+export type PermissionCheck = TE.TaskEither<string, boolean>;
+/**
  * Represents a TaskEither for permission check where the right side is `true` to indicate the permission
  * is granted and the left side is the string representation of the targeted ACL. However, the left side
  * can be an error message if that is more suitable.
  */
-export type PermissionCheck = TE.TaskEither<string, true>;
+export type RequiredPermissionCheck = TE.TaskEither<string, true>;
 
 const buildAclCheckTask = (
   check: () => Promise<boolean>,
   acl: string,
 ): PermissionCheck =>
+  TE.tryCatch(
+    check,
+    (err) =>
+      `Failed to check if ACL ${acl} has been granted to the current user: ${String(err)}`,
+  );
+
+const buildRequiredAclCheckTask = (
+  check: () => Promise<boolean>,
+  acl: string,
+): RequiredPermissionCheck =>
   pipe(
-    TE.tryCatch(
-      check,
-      (err) =>
-        `Failed to check if ACL ${acl} has been granted to the current user: ${err}`,
+    buildAclCheckTask(check, acl),
+    TE.chain((has) =>
+      has ? TE.right(true) : TE.left(`Current user does not have ACL: ${acl}`),
     ),
-    TE.chain((has) => (has ? TE.right(true) : TE.left(acl))),
   );
 
 /**
@@ -54,13 +67,23 @@ const hasAcl = (acl: string): PermissionCheck =>
   );
 
 /**
+ * Checks if the current user has the specified non-entity ACL granted. Unlike `hasAcl`, it only returns TE.right(true)
+ * when the ACL is granted, otherwise TE.left(acl)/TE.left(error).
+ */
+const hasRequiredAcl = (acl: string): RequiredPermissionCheck =>
+  buildRequiredAclCheckTask(
+    () => OEQ.Acl.checkPrivilege(API_BASE_URL, [acl]).then(A.isNonEmpty),
+    acl,
+  );
+
+/**
  * Check if the current user has the specified ACL granted for a setting.
  */
-const hasSettingAcl = (
+const hasRequiredSettingAcl = (
   setting: OEQ.Acl.SETTING,
   acl: string,
-): PermissionCheck =>
-  buildAclCheckTask(
+): RequiredPermissionCheck =>
+  buildRequiredAclCheckTask(
     () => OEQ.Acl.checkSettingPrivilege(API_BASE_URL, setting, acl),
     acl,
   );
@@ -68,7 +91,7 @@ const hasSettingAcl = (
 /**
  * Check if the current user has the specified ACL granted for a Hierarchy topic.
  */
-const hasHierarchyAcl = (acl: string): PermissionCheck => {
+const hasRequiredHierarchyAcl = (acl: string): RequiredPermissionCheck => {
   const check: (topicID: string | null) => TE.TaskEither<string, boolean> =
     flow(
       O.fromNullable,
@@ -95,31 +118,28 @@ const hasHierarchyAcl = (acl: string): PermissionCheck => {
 /**
  * Return a TaskEither to check whether ACL HIERARCHY_PAGE is granted to the current user.
  */
-export const isHierarchyPageACLGranted: PermissionCheck = hasAcl(
-  OEQ.Acl.HIERARCHY_PAGE,
-);
+export const isHierarchyPageACLGranted: RequiredPermissionCheck =
+  hasRequiredAcl(OEQ.Acl.ACL_HIERARCHY_PAGE);
 
 /**
  * Return a TaskEither to check whether ACL SEARCH_PAGE is granted to the current user.
  */
-export const isSearchPageACLGranted: PermissionCheck = hasAcl(
-  OEQ.Acl.SEARCH_PAGE,
+export const isSearchPageACLGranted: RequiredPermissionCheck = hasRequiredAcl(
+  OEQ.Acl.ACL_SEARCH_PAGE,
 );
 
 /**
  * Return a TaskEither to check whether ACL MANAGE_CLOUD_PROVIDER is granted to the current user.
  */
-export const isManageCloudProviderACLGranted: PermissionCheck = hasAcl(
-  OEQ.Acl.MANAGE_CLOUD_PROVIDER,
-);
+export const isManageCloudProviderACLGranted: RequiredPermissionCheck =
+  hasRequiredAcl(OEQ.Acl.ACL_MANAGE_CLOUD_PROVIDER);
 
 /**
  * Return a TaskEither to check whether ACL VIEW_HIERARCHY_TOPIC is granted to the current user for
  * the target topic.
  */
-export const isViewHierarchyTopicACLGranted: PermissionCheck = hasHierarchyAcl(
-  OEQ.Acl.VIEW_HIERARCHY_TOPIC,
-);
+export const isViewHierarchyTopicACLGranted: RequiredPermissionCheck =
+  hasRequiredHierarchyAcl(OEQ.Acl.ACL_VIEW_HIERARCHY_TOPIC);
 
 /**
  * Return a TaskEither to check whether ACL EDIT_SYSTEM_SETTINGS is granted to the current user
@@ -127,10 +147,17 @@ export const isViewHierarchyTopicACLGranted: PermissionCheck = hasHierarchyAcl(
  */
 export const isEditSystemSettingsGranted: (
   setting: OEQ.Acl.SETTING,
-) => PermissionCheck = (setting: OEQ.Acl.SETTING) =>
-  hasSettingAcl(setting, OEQ.Acl.EDIT_SYSTEM_SETTINGS);
+) => RequiredPermissionCheck = (setting: OEQ.Acl.SETTING) =>
+  hasRequiredSettingAcl(setting, OEQ.Acl.ACL_EDIT_SYSTEM_SETTINGS);
 
 /**
  * True if the user has authenticated before the initial rendering of New UI.
  */
 export const hasAuthenticated = getRenderData()?.hasAuthenticated ?? false;
+
+/**
+ * Return a TaskEither to check whether ACL CREATE_PORTLET is granted to the current user.
+ */
+export const hasCreatePortletACL: PermissionCheck = hasAcl(
+  OEQ.Acl.ACL_CREATE_PORTLET,
+);

@@ -17,17 +17,23 @@
  */
 
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
 import HTMLReactParser from "html-react-parser";
 import * as A from "fp-ts/Array";
+import exampleImage from "url:../../assets/dashboard-example.png";
 
 const {
   welcomeTitle,
   welcomeDesc: {
     systemUser: { howToModify: howToModifyText },
-    nonSystemUser: { hintForOeq: hintForOeqText },
+    nonSystemUser: {
+      hintForOeq: hintForOeqText,
+      selectAddButton: selectAddButtonText,
+      imageAlt: imageAltText,
+    },
   },
 } = languageStrings.dashboard;
 
@@ -36,12 +42,28 @@ export interface WelcomeBoardProps {
    * `true` if the current user is a system user.
    */
   isSystemUser?: boolean;
+  /**
+   * `true` if the current user has the permission to create portlets.
+   */
+  hasCreatePortletAcl?: boolean;
 }
+
+const DashboardExampleImage = styled("img")(({ theme }) => {
+  return {
+    [`&`]: {
+      maxWidth: "100%",
+      padding: theme.spacing(1),
+    },
+  };
+});
 
 /**
  * A welcome board component to be shown on the dashboard page if there is no portlet configured.
  */
-const WelcomeBoard = ({ isSystemUser }: WelcomeBoardProps) => {
+const WelcomeBoard = ({
+  isSystemUser,
+  hasCreatePortletAcl,
+}: WelcomeBoardProps) => {
   const welcomeMessages = (paragraphs: string[]) =>
     pipe(
       paragraphs,
@@ -51,6 +73,17 @@ const WelcomeBoard = ({ isSystemUser }: WelcomeBoardProps) => {
         </Typography>
       )),
     );
+
+  const welcomeMessageWithExampleImage = (
+    <>
+      {welcomeMessages([hintForOeqText, selectAddButtonText])}
+      <DashboardExampleImage src={exampleImage} alt={imageAltText} />
+    </>
+  );
+
+  const welcomeMessagesForNonSystemUser = hasCreatePortletAcl
+    ? welcomeMessageWithExampleImage
+    : welcomeMessages([hintForOeqText]);
 
   return (
     <Card>
@@ -70,7 +103,7 @@ const WelcomeBoard = ({ isSystemUser }: WelcomeBoardProps) => {
       >
         {isSystemUser
           ? welcomeMessages([howToModifyText])
-          : welcomeMessages([hintForOeqText])}
+          : welcomeMessagesForNonSystemUser}
       </CardContent>
     </Card>
   );

@@ -38,7 +38,7 @@ import {
   isHierarchyPageACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
-  PermissionCheck,
+  RequiredPermissionCheck,
 } from "../modules/SecurityModule";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
@@ -158,7 +158,7 @@ export default function IndexPage() {
     (
       routeProps: RouteComponentProps,
       component: React.ComponentType<BaseOEQRouteComponentProps>,
-      permissionChecks?: PermissionCheck[],
+      permissionChecks?: RequiredPermissionCheck[],
     ) => {
       return (
         <ProtectedPage
