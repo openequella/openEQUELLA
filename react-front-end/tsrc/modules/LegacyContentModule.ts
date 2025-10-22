@@ -15,13 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { identity, pipe } from "fp-ts/function";
-import * as A from "fp-ts/Array";
-import * as M from "fp-ts/Map";
-import * as O from "fp-ts/Option";
-import * as S from "fp-ts/string";
-import * as t from "io-ts";
 import Axios from "axios";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as t from "io-ts";
 import { API_BASE_URL, LEGACY_CSS_URL } from "../AppConfig";
 import type { ScrapbookType } from "./ScrapbookModule";
 
@@ -214,60 +211,60 @@ const encodePathWithOptionalQuery = ([pathname, query]: [
 const encodeRelativeUrl = (url: string): string =>
   pipe(url, splitRelativeUrl, encodePathWithOptionalQuery);
 
-const resolveUrl = (url: string) => new URL(url, $("base").attr("href")).href;
+export const resolveUrl = (url: string) =>
+  new URL(url, $("base").attr("href")).href;
 
-// Registry to track legacy JS files that have been loaded, preventing duplicates.
-// This Map is needed to handle cases where multiple Legacy API responses arrive almost simultaneously,
-// and each response may reference the same JS files. Without this registry, a JS file could be
-// loaded multiple times, potentially causing race conditions that make script execution fail.
-const scriptRegistry: Map<string, Promise<void>> = new Map();
-
-// Use the registry to check whether a script has been loaded. If no, create a new script tag
-// and load the file, and then update script registry.
-const loadSingleScript = async (url: string): Promise<void> => {
-  const load = (): Promise<void> =>
-    new Promise((resolve, reject) =>
-      pipe(
-        document.querySelector<HTMLScriptElement>(`script[src="${url}"]`),
-        O.fromNullable,
-        O.fold(
-          () => {
-            const script = document.createElement("script");
-            script.src = url;
-            script.async = false;
-            script.onload = () => resolve();
-            script.onerror = () =>
-              reject(new Error(`Failed to load script: ${url}`));
-
-            document.head.appendChild(script);
-          },
-          (script) => {
-            script.addEventListener("load", () => resolve(), { once: true });
-            script.addEventListener("error", () =>
-              reject(new Error(`Failed to load ${url}`)),
-            );
-          },
-        ),
-      ),
+/**
+ * Dynamically add script tags to the document head for legacy JS files, and return a promise
+ * which resolves when the last new script is loaded.
+ */
+const loadMissingScripts = (_scripts: string[]) => {
+  return new Promise((resolve) => {
+    const scripts = _scripts.map(resolveUrl);
+    const doc = window.document;
+    const head = doc.getElementsByTagName("head")[0];
+    const scriptTags = doc.getElementsByTagName("script");
+    const scriptSrcs: { [index: string]: boolean } = {};
+    for (let i = 0; i < scriptTags.length; i++) {
+      const scriptTag = scriptTags[i];
+      if (scriptTag.src) {
+        scriptSrcs[scriptTag.src] = true;
+      }
+    }
+    const lastScript = scripts.reduce(
+      (lastScript: HTMLScriptElement | null, scriptUrl) => {
+        if (scriptSrcs[scriptUrl]) {
+          return lastScript;
+        } else {
+          const newScript = doc.createElement("script");
+          newScript.src = scriptUrl;
+          newScript.async = false;
+          head.appendChild(newScript);
+          return newScript;
+        }
+      },
+      null,
     );
-
-  await pipe(
-    scriptRegistry,
-    M.lookup(S.Eq)(url),
-    O.fold(async () => {
-      const promise = load();
-      scriptRegistry.set(url, promise);
-      return promise;
-    }, identity),
-  );
+    if (!lastScript) resolve(undefined);
+    else {
+      lastScript.addEventListener("load", resolve, false);
+      lastScript.addEventListener(
+        "error",
+        () => {
+          console.error(`Failed to load script: ${lastScript.src}`);
+          resolve(undefined);
+        },
+        false,
+      );
+    }
+  });
 };
 
-const loadMissingScripts = async (scripts: string[]): Promise<void[]> =>
-  pipe(scripts, A.map(resolveUrl), A.map(loadSingleScript), (promises) =>
-    Promise.all(promises),
-  );
-
-const updateStylesheets = async (
+/**
+ * Update stylesheets by dynamically adding link tags to the document head for CSS files, and
+ * return a promise which resolves when all the new CSS files are loaded.
+ */
+export const updateStylesheets = async (
   _sheets?: string[],
 ): Promise<{ [url: string]: HTMLLinkElement }> => {
   const sheets = _sheets
@@ -318,8 +315,8 @@ const updateStylesheets = async (
  * Update external resources (JS and CSS), typically called after a new LegacyContentResponse
  * is received.
  *
- * @param jsFiles A list of JS files to be loaded (if not already present).
- * @param cssFiles A list of CSS files to be loaded (if not already present).
+ * @param jsFiles A list of JS files to be loaded.
+ * @param cssFiles A list of CSS files to be loaded.
  */
 export const updateIncludes = async (
   jsFiles: string[],
@@ -330,6 +327,14 @@ export const updateIncludes = async (
   return extraCss;
 };
 
+/**
+ * Collect a variety of values that should be sent to a Legacy event handler from a form
+ * along with an optional command and arguments.
+ *
+ * @param form Typically a Legacy form where the id starts with "eqpageForm".
+ * @param command Name of the Legacy event handler.
+ * @param args Arguments to be passed to the Legacy event handler.
+ */
 export const collectParams = (
   form: HTMLFormElement,
   command: string | null,

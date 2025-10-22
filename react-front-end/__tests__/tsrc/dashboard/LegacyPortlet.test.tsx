@@ -22,6 +22,7 @@ import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
 import type { JQueryDivProps } from "../../../tsrc/legacycontent/JQueryDiv";
 import { legacyFormId } from "../../../tsrc/legacycontent/LegacyForm";
 import * as LegacyContentModule from "../../../tsrc/modules/LegacyContentModule";
+import * as LegacyPortletHelper from "../../../tsrc/dashboard/portlet/LegacyPortletHelper";
 
 const portletContent = "This is a testing portlet";
 const legacyContentResponse: LegacyContentModule.LegacyContentResponse = {
@@ -47,9 +48,11 @@ jest.mock(
     ),
 );
 
-const mockUpdateIncludes = jest
-  .spyOn(LegacyContentModule, "updateIncludes")
-  .mockResolvedValue({});
+jest.spyOn(LegacyContentModule, "updateStylesheets").mockResolvedValue({});
+
+jest
+  .spyOn(LegacyContentModule, "resolveUrl")
+  .mockImplementation((url: string) => url);
 
 const mockSubmitResponse = jest.spyOn(LegacyContentModule, "submitRequest");
 mockSubmitResponse.mockResolvedValue(legacyContentResponse);
@@ -83,7 +86,9 @@ describe("<LegacyPortlet />", () => {
   });
 
   it("loads additional JS and CSS files after portlet content is retrieved", async () => {
-    mockUpdateIncludes.mockClear();
+    const mockUpdateExtraFiles = jest
+      .spyOn(LegacyPortletHelper, "updateExtraFiles")
+      .mockResolvedValue();
     const jsFiles = ["file1.js", "file2.js"];
     const cssFiles = ["file1.css"];
     mockSubmitResponse.mockResolvedValueOnce({
@@ -94,10 +99,7 @@ describe("<LegacyPortlet />", () => {
 
     await renderLegacyPortlet();
 
-    expect(mockUpdateIncludes).toHaveBeenCalledTimes(1);
-    expect(LegacyContentModule.updateIncludes).toHaveBeenCalledWith(
-      jsFiles,
-      cssFiles,
-    );
+    expect(mockUpdateExtraFiles).toHaveBeenCalledTimes(1);
+    expect(mockUpdateExtraFiles).toHaveBeenCalledWith(jsFiles, cssFiles);
   });
 });

@@ -35,8 +35,11 @@ import {
   StateData,
   submitRequest,
   SubmitResponse,
-  updateIncludes as updateExtraFiles,
 } from "../../modules/LegacyContentModule";
+import {
+  getPortletLegacyContent,
+  updateExtraFiles,
+} from "./LegacyPortletHelper";
 
 /**
  * Type definitions for four most commonly used legacy JS functions invoked by legacy scripts. Other
@@ -103,22 +106,6 @@ export interface LegacyPortletProps {
 }
 
 /**
- * Submit a Legacy content API request to `home.do` to retrieve the legacy content of a portlet.
- * The endpoint is `psh.getPortletContent` where `psh` is the name of Section `ShowPortletsSection`
- * and `getPortletContent` is the event handler defined in this Section for this request.
- *
- * @param portletId UUID of a portlet which must be supplied to `getPortletContent` as the first
- * parameter.
- */
-const getPortletLegacyContent = async (
-  portletId: string,
-): Promise<LegacyContentResponse> =>
-  await submitRequest<LegacyContentResponse>(OLD_DASHBOARD_PATH, {
-    event__: ["psh.getPortletContent"],
-    eventp__0: [portletId],
-  });
-
-/**
  * Component dedicate to rendering the legacy content of a portlet:
  *
  * - Using Legacy content API to retrieve the legacy content
@@ -150,7 +137,7 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
 
   // A simplified version of submitting a Legacy content API request and handling the response where
   // the request is always sent to the Legacy endpoint `/home.do`.
-  const sendLegacyContentRequest = useCallback(
+  const submitLegacyContentRequest = useCallback(
     (payload: StateData, callback?: (response: SubmitResponse) => void) => {
       submitRequest(OLD_DASHBOARD_PATH, payload)
         .then(async (resp) => {
@@ -202,12 +189,12 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
           },
           (form) => {
             const payload = collectParams(form, cmd, args);
-            sendLegacyContentRequest(payload);
+            submitLegacyContentRequest(payload);
           },
         ),
         constFalse,
       ),
-    [formId, sendLegacyContentRequest],
+    [formId, submitLegacyContentRequest],
   );
 
   // Function that handles `window[EQ-{portletId}].postAjax(...)` calls from legacy scripts.
@@ -219,10 +206,10 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
       callback: (response: SubmitResponse) => void,
     ): boolean => {
       const payload = collectParams(form, cmd, args);
-      sendLegacyContentRequest(payload, callback);
+      submitLegacyContentRequest(payload, callback);
       return false;
     },
-    [sendLegacyContentRequest],
+    [submitLegacyContentRequest],
   );
 
   // Function that handles `window[EQ-{portletId}].updateForm(...)` calls from legacy scripts.
