@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -188,7 +189,10 @@ public class PortletWebServiceImpl
           portletUuid == null ? PortletUpdateEventType.CREATED : PortletUpdateEventType.EDITED);
     }
 
-    if (RenderNewTemplate.isNewUIEnabled()) {
+    // If the new UI is enabled and the user is returning from an edit session that was
+    // initiated from the dashboard page, forward them back to the new UI dashboard.
+    if (RenderNewTemplate.isNewUIEnabled()
+        && Objects.equals(info.getAttribute(SectionInfo.KEY_PATH), "/home.do")) {
       info.forwardToUrl(NewUiRoutes.PATH_DASHBOARD());
     }
   }
