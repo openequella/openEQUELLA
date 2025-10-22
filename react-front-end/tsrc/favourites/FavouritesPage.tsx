@@ -24,6 +24,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
 import { pipe } from "fp-ts/function";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
@@ -35,7 +36,11 @@ import {
 } from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
 import GallerySearchResult from "../search/components/GallerySearchResult";
-import { type InitialSearchConfig, Search } from "../search/Search";
+import {
+  type InitialSearchConfig,
+  Search,
+  SearchPageHistoryState,
+} from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
   SearchContext,
@@ -60,6 +65,8 @@ import {
   favouritesSearchRefinePanelConfig,
   isFavouritesResources,
   SORT_ORDER_ADDED_AT,
+  getFavouritesTypeFromHistory,
+  writeFavouritesTypeToHistory,
 } from "./FavouritesPageHelper";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -70,8 +77,10 @@ const { title: favouritesSelectorTitle } =
 const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { currentUser } = useContext(AppContext);
 
-  const [favouritesType, setFavouritesType] =
-    useState<FavouritesType>("resources");
+  const history = useHistory<SearchPageHistoryState<FavouritesType>>();
+  const [favouritesType, setFavouritesType] = useState<FavouritesType>(
+    getFavouritesTypeFromHistory(history) ?? "resources",
+  );
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
     const customiseInitialSearchOptions = (
@@ -93,6 +102,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
     ({ search }: SearchContextProps) =>
     (value: FavouritesType) => {
       setFavouritesType(value);
+      writeFavouritesTypeToHistory(value, history);
       search(defaultFavouritesPageOptions);
     };
 
