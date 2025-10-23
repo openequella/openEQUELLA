@@ -83,7 +83,7 @@ public class ShowPortletsSection
 
   @ViewFactory private FreemarkerFactory view;
   @AjaxFactory private AjaxGenerator ajax;
-  @EventFactory private EventGenerator events; // Add this line
+  @EventFactory private EventGenerator events;
 
   @Override
   public Object instantiateModel(SectionInfo info) {
