@@ -25,7 +25,10 @@ interface DashboardPageContextProps {
    *
    * @param uuid UUID of the portlet to be closed.
    */
-  closePortlet: (uuid: string) => void;
+  closePortlet: (
+    uuid: string,
+    portletPref: OEQ.Dashboard.PortletPreference,
+  ) => void;
   /**
    * Function to delete a portlet.
    *

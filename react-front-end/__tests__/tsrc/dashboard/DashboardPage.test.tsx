@@ -16,11 +16,15 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import { waitForElementToBeRemoved } from "@testing-library/react";
+import { sprintf } from "sprintf-js";
 import {
   basicPortlet,
   emptyDashboardDetails,
   minimisedPortlet,
   mockPortlets,
+  privateSearchPortlet,
+  publicHtmlPortlet,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -28,20 +32,37 @@ import { clickButton } from "../MuiTestHelpers";
 import {
   getPortletContent,
   mockDashboardPageApis,
+  openConfirmDialog,
   queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
 import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import * as E from "fp-ts/Either";
+import * as OEQ from "@openequella/rest-api-client";
 
 const {
   nonSystemUser: { hintForOeq: hintForOeqText, imageAlt: imageAltText },
 } = languageStrings.dashboard.welcomeDesc;
-const { maximise: maximiseText, minimise: minimiseText } =
-  languageStrings.common.action;
+const {
+  maximise: maximiseText,
+  minimise: minimiseText,
+  close: closeText,
+  delete: deleteText,
+  cancel: cancelText,
+  ok: okText,
+} = languageStrings.common.action;
+const {
+  close: closeAlertTitle,
+  delete: deleteAlertTitle,
+  closeAlert,
+  deleteAlert,
+} = languageStrings.dashboard.portlets.dialog;
 
-const { mockGetDashboardDetails, mockUpdatePortletPreference } =
-  mockDashboardPageApis();
+const {
+  mockGetDashboardDetails,
+  mockUpdatePortletPreference,
+  mockDeletePortlet,
+} = mockDashboardPageApis();
 
 const mockGetCreatePortletAcl = jest.spyOn(
   SecurityModule,
@@ -149,4 +170,90 @@ describe("<DashboardPage/>", () => {
     // After minimising, the content becomes hidden.
     expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
   });
+
+  it.each([
+    [
+      closeText,
+      publicHtmlPortlet,
+      { title: closeAlertTitle, desc: closeAlert },
+    ],
+    [
+      deleteText,
+      privateSearchPortlet,
+      { title: deleteAlertTitle, desc: deleteAlert },
+    ],
+  ])(
+    "should open a confirmation dialog with expected title and description when user click on '%s' button",
+    async (buttonText, mockportlet, dialogDetails) => {
+      mockGetDashboardDetails.mockResolvedValueOnce({
+        portlets: [mockportlet],
+      });
+
+      const page = await renderDashboardPage();
+      const { name } = mockportlet.commonDetails;
+      const { title, desc } = dialogDetails;
+
+      const dialog = await openConfirmDialog(page, buttonText);
+      const dialogTitle = dialog.querySelector("#alert-dialog-title");
+      const dialogDesc = dialog.querySelector("#alert-dialog-description");
+
+      expect(dialog).toBeInTheDocument();
+      expect(dialogTitle).toHaveTextContent(title);
+      expect(dialogDesc).toHaveTextContent(sprintf(desc, name));
+    },
+  );
+
+  it.each([
+    [closeText, publicHtmlPortlet, mockUpdatePortletPreference],
+    [deleteText, privateSearchPortlet, mockDeletePortlet],
+  ])(
+    "should dismiss the %s portlet confirmation dialog when a user clicks on 'Cancel' button",
+    async (buttonText, mockportlet, mockApi) => {
+      mockGetDashboardDetails.mockResolvedValueOnce({
+        portlets: [mockportlet],
+      });
+
+      const page = await renderDashboardPage();
+
+      const dialog = await openConfirmDialog(page, buttonText);
+      await clickButton(dialog, cancelText);
+      await waitForElementToBeRemoved(() => page.getByRole("dialog"));
+
+      expect(page.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(mockApi).not.toHaveBeenCalled();
+      expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  const { uuid, order, column, isMinimised } = publicHtmlPortlet.commonDetails;
+  const closeArgs: [string, OEQ.Dashboard.PortletPreference] = [
+    uuid,
+    {
+      order,
+      column,
+      isMinimised,
+      isClosed: true,
+    },
+  ];
+  const deleteArgs: [string] = [privateSearchPortlet.commonDetails.uuid];
+
+  it.each([
+    [closeText, mockUpdatePortletPreference, publicHtmlPortlet, closeArgs],
+    [deleteText, mockDeletePortlet, privateSearchPortlet, deleteArgs],
+  ])(
+    "should execute the '%s' action with correct arguments and refresh the dashboard when 'Ok' is clicked",
+    async (buttonText, mockApi, mockportlet, expectedArgs) => {
+      mockGetDashboardDetails.mockResolvedValueOnce({
+        portlets: [mockportlet],
+      });
+
+      const page = await renderDashboardPage();
+
+      const dialog = await openConfirmDialog(page, buttonText);
+      await clickButton(dialog, okText);
+
+      expect(mockApi).toHaveBeenCalledWith(...expectedArgs);
+      expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
+    },
+  );
 });

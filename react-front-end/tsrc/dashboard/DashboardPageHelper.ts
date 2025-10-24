@@ -28,8 +28,12 @@ import { pipe } from "fp-ts/function";
  * @returns A function that takes dashboard details and returns the updated version.
  */
 export const updateDashboardDetails =
-  (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
+  (uuid: string, pref?: OEQ.Dashboard.PortletPreference) =>
   (dashboard?: OEQ.Dashboard.DashboardDetails) => {
+    if (!dashboard) {
+      return dashboard;
+    }
+
     const updateTargetPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
       portlet.commonDetails.uuid === uuid
         ? {
@@ -38,10 +42,14 @@ export const updateDashboardDetails =
           }
         : portlet;
 
-    return dashboard
-      ? {
-          ...dashboard,
-          portlets: pipe(dashboard.portlets, A.map(updateTargetPortlet)),
-        }
-      : dashboard;
+    const filterOutTargetPortlet = (
+      portlet: OEQ.Dashboard.BasicPortlet,
+    ): boolean => portlet.commonDetails.uuid !== uuid;
+
+    // Choose the operation based on whether pref is provided
+    const updatedPortlets = pref
+      ? pipe(dashboard.portlets, A.map(updateTargetPortlet)) // Update if pref exists
+      : pipe(dashboard.portlets, A.filter(filterOutTargetPortlet)); // Filter if pref is missing
+
+    return { ...dashboard, portlets: updatedPortlets };
   };

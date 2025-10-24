@@ -381,6 +381,12 @@ export const languageStrings = {
         description:
           "An unsupported portlet has been detected, please contact your system administrator.",
       },
+      dialog: {
+        close: "Close Portlet",
+        delete: "Delete Portlet",
+        closeAlert: "Are you sure you want to close %s portlet?",
+        deleteAlert: "Are you sure you want to delete %s portlet?",
+      },
     },
   },
   drm: {
