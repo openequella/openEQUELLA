@@ -13,7 +13,7 @@ class DashboardApiTest extends AbstractRestApiTest {
   private val LAYOUT                           = "layout"
   private val ADMIN_PORTLET_UUID               = "ddd84757-8319-4816-b0e0-39c71a0ba691"
   private val RECENT_CONTRIBUTION_PORTLET_UUID = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
-  private val FORMATTED_TEXT_PORTLET_UUID      = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
+  private val FORMATTED_TEXT_PORTLET_UUID      = "a0f206f0-41b3-498c-bf92-e72833f63e59"
 
   @Test(description = "Retrieve dashboard details")
   def dashboardDetails(): Unit = {
