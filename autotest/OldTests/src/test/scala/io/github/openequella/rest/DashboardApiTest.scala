@@ -7,11 +7,13 @@ import org.junit.Assert.assertEquals
 import org.testng.annotations.Test
 
 class DashboardApiTest extends AbstractRestApiTest {
-  private val DASHBOARD_API_ENDPOINT     = getTestConfig.getInstitutionUrl + "api/dashboard"
-  private val DASHBOARD_LAYOUT_ENDPOINT  = DASHBOARD_API_ENDPOINT + "/layout"
-  private val DASHBOARD_PORTLET_ENDPOINT = DASHBOARD_API_ENDPOINT + "/portlet"
-  private val LAYOUT                     = "layout"
-  private val ADMIN_PORTLET_UUID         = "ddd84757-8319-4816-b0e0-39c71a0ba691"
+  private val DASHBOARD_API_ENDPOINT           = getTestConfig.getInstitutionUrl + "api/dashboard"
+  private val DASHBOARD_LAYOUT_ENDPOINT        = DASHBOARD_API_ENDPOINT + "/layout"
+  private val DASHBOARD_PORTLET_ENDPOINT       = DASHBOARD_API_ENDPOINT + "/portlet"
+  private val LAYOUT                           = "layout"
+  private val ADMIN_PORTLET_UUID               = "ddd84757-8319-4816-b0e0-39c71a0ba691"
+  private val RECENT_CONTRIBUTION_PORTLET_UUID = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
+  private val FORMATTED_TEXT_PORTLET_UUID      = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
 
   @Test(description = "Retrieve dashboard details")
   def dashboardDetails(): Unit = {
@@ -90,14 +92,12 @@ class DashboardApiTest extends AbstractRestApiTest {
     description = "Update portlet preference"
   )
   def preferenceUpdate(): Unit = {
-    val recentContributionUuid = "6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
-
     // The Recent contribution portlet is returned as the first portlet in the list.
     def getRecentContributionPortlet = getPortletDetails.get(0).get("commonDetails")
 
     val portlet = getRecentContributionPortlet
     // Verify the initial state of the Recent contribution portlet.
-    assertEquals(recentContributionUuid, portlet.get("uuid").asText)
+    assertEquals(RECENT_CONTRIBUTION_PORTLET_UUID, portlet.get("uuid").asText)
     assertEquals(false, portlet.get("isClosed").asBoolean)
     assertEquals(false, portlet.get("isMinimised").asBoolean)
     assertEquals(0, portlet.get("column").asInt)
@@ -105,7 +105,7 @@ class DashboardApiTest extends AbstractRestApiTest {
 
     // Update the portlet preference now.
     val updateRequest = new PutMethod(
-      s"$DASHBOARD_API_ENDPOINT/portlet/$recentContributionUuid/preference"
+      s"$DASHBOARD_API_ENDPOINT/portlet/$RECENT_CONTRIBUTION_PORTLET_UUID/preference"
     )
     val preferenceUpdate = mapper.createObjectNode
     preferenceUpdate.put("isMinimised", true)
@@ -132,7 +132,7 @@ class DashboardApiTest extends AbstractRestApiTest {
   @Test(description = "Delete a private portlet", dependsOnMethods = Array("dashboardDetails"))
   def deletePortlet(): Unit = {
     val deleteRequest = new DeleteMethod(
-      s"$DASHBOARD_API_ENDPOINT/portlet/6e34ab70-a8b2-4e7b-84b9-4dcff91470b7"
+      s"$DASHBOARD_API_ENDPOINT/portlet/$FORMATTED_TEXT_PORTLET_UUID"
     )
     val statusCode = makeClientRequestWithEntity(deleteRequest, mapper.createObjectNode)
     assertEquals(HttpStatus.SC_NO_CONTENT, statusCode)
