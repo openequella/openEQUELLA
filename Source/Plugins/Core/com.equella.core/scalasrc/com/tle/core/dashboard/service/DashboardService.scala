@@ -36,8 +36,8 @@ trait DashboardService {
 
   /** Returns all portlets that the current user can see on their dashboard.
     *
-    * A portlet is considered "viewable" even if it is closed since it is still partially displayed
-    * on the dashboard.
+    * A portlet is considered "viewable" even if it is minimised since it is still partially
+    * displayed on the dashboard.
     */
   def getViewablePortlets: List[PortletDetails]
 

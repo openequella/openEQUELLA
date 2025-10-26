@@ -17,7 +17,7 @@ import com.tle.core.services.user.UserPreferenceService
 import com.tle.exceptions.AccessDeniedException
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito.{mock, mockStatic, verify, when}
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
@@ -98,7 +98,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       when(mockPortletService.getPreference(searchPortlet)).thenReturn(preference)
 
       Then("the common details should contain both the general configurations and user preference")
-      val result = dashboardService.buildPortletDetails(searchPortlet)
+      val result = dashboardService.buildPortletDetails(searchPortlet, Option(preference))
       result.value shouldBe SearchPortlet(
         commonDetails = PortletBase(
           uuid = uuid,
@@ -123,7 +123,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       formattedTextPortlet.setConfig(rawHtml)
 
       Then("the configured raw HTML content should be included")
-      val result = dashboardService.buildPortletDetails(formattedTextPortlet)
+      val result = dashboardService.buildPortletDetails(formattedTextPortlet, None)
       result.value.asInstanceOf[FormattedTextPortlet].rawHtml shouldBe rawHtml
     }
 
@@ -139,7 +139,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       recentContributionsPortlet.setAttribute("status", "live")
 
       Then("the configured contribution search criteria should be included")
-      val result = dashboardService.buildPortletDetails(recentContributionsPortlet)
+      val result = dashboardService.buildPortletDetails(recentContributionsPortlet, None)
       inside(result) {
         case Right(
               RecentContributionsPortlet(
@@ -165,7 +165,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       taskStatisticsPortlet.setAttribute(KEY_DEFAULT_TREND, "WEEK")
 
       Then("the configured trend should be included")
-      val result = dashboardService.buildPortletDetails(taskStatisticsPortlet)
+      val result = dashboardService.buildPortletDetails(taskStatisticsPortlet, None)
       result.value.asInstanceOf[TaskStatisticsPortlet].trend shouldBe Trend.WEEK
     }
 
@@ -174,7 +174,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       val unknownPortlet = new Portlet("unknownType")
 
       Then("an error should be returned")
-      val result = dashboardService.buildPortletDetails(unknownPortlet)
+      val result = dashboardService.buildPortletDetails(unknownPortlet, None)
       inside(result) { case Left(errorMessage) =>
         errorMessage should startWith(s"Invalid portlet type 'unknownType' configured for Portlet")
       }
@@ -199,7 +199,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
         recentContributionsPortlet.setExtraData(invalidConfig)
 
         Then("an error should be returned")
-        val result = dashboardService.buildPortletDetails(recentContributionsPortlet)
+        val result = dashboardService.buildPortletDetails(recentContributionsPortlet, None)
         inside(result) { case Left(errorMessage) =>
           errorMessage should startWith(errorMessageStart)
         }
@@ -212,33 +212,43 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       portlet.setAttribute("trend", "YEAR")
 
       Then("an error should be returned")
-      val result = dashboardService.buildPortletDetails(portlet)
+      val result = dashboardService.buildPortletDetails(portlet, None)
       inside(result) { case Left(errorMessage) =>
         errorMessage should startWith("Unknown trend 'YEAR' configured for Portlet")
       }
     }
 
     it("should return a list of viewable portlets") {
-      Given("a valid portlet and an invalid portlet")
-      val validPortlet = new Portlet
-      validPortlet.setType("search")
-      val uuid = UUID.randomUUID().toString
-      validPortlet.setUuid(uuid)
+      Given("a viewable portlet, a closed portlet and an invalid portlet")
+      val viewableSearchPortlet = new Portlet
+      viewableSearchPortlet.setType("search")
+      val viewableSearchPortletUuid = UUID.randomUUID().toString
+      viewableSearchPortlet.setUuid(viewableSearchPortletUuid)
+
+      val closedBrowsePortlet = new Portlet
+      closedBrowsePortlet.setType("browse")
+      val closedBrowsePortletUuid = UUID.randomUUID().toString
+      closedBrowsePortlet.setUuid(closedBrowsePortletUuid)
+      val pref = new PortletPreference(closedBrowsePortlet, userId)
+      pref.setClosed(true)
+      when(mockPortletService.getPreference(argThat[Portlet](_.getUuid == closedBrowsePortletUuid)))
+        .thenReturn(pref)
 
       val invalidPortlet = new Portlet("unknownType")
 
       when(mockPortletService.getViewablePortletsForDisplay)
         .thenReturn(
           List(
-            validPortlet,
+            viewableSearchPortlet,
+            closedBrowsePortlet,
             invalidPortlet
           ).asJava
         )
 
-      Then("only the valid portlet should be returned")
+      Then("only the viewable portlet should be returned")
       val result = dashboardService.getViewablePortlets
       result should have size 1
-      result.head.commonDetails.uuid shouldBe uuid
+      result.head.commonDetails.uuid shouldBe viewableSearchPortletUuid
     }
   }
 

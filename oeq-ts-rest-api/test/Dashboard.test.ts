@@ -35,7 +35,7 @@ afterAll(() => logout(TC.API_PATH));
 describe('Dashboard', () => {
   it('retrieves Dashboard details including a list of Portlets and Dashboard layout', async () => {
     const { portlets, layout } = await getDashboardDetails(TC.API_PATH);
-    expect(portlets).toHaveLength(4); // User autotest has 4 portlets on their dashboard.
+    expect(portlets).toHaveLength(3); // User autotest has 4 portlets but 1 is closed so only 3 are returned.
     expect(layout).toBe('SingleColumn'); // And the layout is SingleColumn.
   });
 
