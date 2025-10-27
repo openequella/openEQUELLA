@@ -269,7 +269,7 @@ describe("<FavouritesPage/>", () => {
     const history = createMemoryHistory();
     const { container } = await renderFavouritesPage(history);
 
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
     expect(history.location.state).toEqual({
       searchPageOptions: {
         ...defaultSearchPageOptions,
