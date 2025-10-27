@@ -151,7 +151,6 @@ public class RenderTemplate extends AbstractPrototypeSection<RenderTemplate.Rend
 
   @Override
   public SectionResult renderHtml(RenderEventContext context) throws Exception {
-    RenderNewTemplate.supportIEPolyFills(context.getPreRenderContext());
     boolean oldLayout = !RenderNewTemplate.isNewLayout(context) || isNewUIDisabled(context);
     setupHeaderHelper(context);
     if (checkForResponse(context)) {

@@ -11,7 +11,7 @@ val http4sVersion = "0.23.32"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.8"
 
-addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.3" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.4" cross CrossVersion.full)
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.18.0",
+  "org.apache.commons"        % "commons-lang3"            % "3.19.0",
   "org.seleniumhq.selenium"   % "selenium-java"            % "4.34.0",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
