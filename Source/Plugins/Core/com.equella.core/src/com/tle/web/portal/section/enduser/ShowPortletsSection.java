@@ -152,7 +152,7 @@ public class ShowPortletsSection
 
   /**
    * Event handler that should ONLY be used together with `LegacyContentApi` to retrieve the content
-   * of a Legacy portlet in raw HTML format for the new Dashboard.
+   * of a Legacy portlet in raw HTML format for the New UI Dashboard.
    */
   @EventHandlerMethod
   public void getPortletContent(SectionInfo info, String uuid) {

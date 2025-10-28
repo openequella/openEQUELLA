@@ -55,7 +55,7 @@ public abstract class PortletContentRenderer<M> extends AbstractPrototypeSection
    *
    *     <p>Note: It might be possible to use a certain Legacy event listener to do this
    *     automatically, but this approach has many unknowns and caused incorrect set up during the
-   *     investigation stage. Also, explicitly calling this method where necessary will help void
+   *     investigation stage. Also, explicitly calling this method where necessary will help avoid
    *     potential confusion in the future.
    */
   public void setupForNewDashboard(RenderContext ctx) {
