@@ -17,7 +17,7 @@
  */
 
 import EditIcon from "@mui/icons-material/Edit";
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { useContext } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
@@ -45,6 +45,7 @@ const {
   delete: deleteAlertTitle,
   closeAlert,
   deleteAlert,
+  closeAlertInfo,
 } = languageStrings.dashboard.portlets.dialog;
 
 export interface PortletItemProps extends React.PropsWithChildren {
@@ -209,7 +210,16 @@ const PortletItem = ({
         onCancel={() => closeDialog()}
         confirmButtonText={languageStrings.common.action.ok}
       >
-        {isCloseAction ? sprintf(closeAlert, name) : sprintf(deleteAlert, name)}
+        {isCloseAction ? (
+          <>
+            <Typography>{sprintf(closeAlert, name)}</Typography>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              {closeAlertInfo}
+            </Typography>
+          </>
+        ) : (
+          sprintf(deleteAlert, name)
+        )}
       </ConfirmDialog>
     </>
   );

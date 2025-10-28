@@ -125,7 +125,7 @@ export const openConfirmDialog = async (
   page: RenderResult,
   buttonText: string,
 ) => {
-  const closeButton = page.getByRole("button", { name: buttonText });
-  await userEvent.click(closeButton);
+  const button = page.getByRole("button", { name: buttonText });
+  await userEvent.click(button);
   return page.findByRole("dialog");
 };

@@ -24,7 +24,7 @@ import { pipe } from "fp-ts/function";
  * Safe to pass directly to a React state setter.
  *
  * @param uuid - UUID of the target portlet.
- * @param pref - Preferences to update in the targeted portlet.
+ * @param pref - Optional preferences to update in the targeted portlet. If not provided, the portlet will be removed.
  * @returns A function that takes dashboard details and returns the updated version.
  */
 export const updateDashboardDetails =

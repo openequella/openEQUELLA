@@ -385,6 +385,8 @@ export const languageStrings = {
         close: "Close portlet",
         delete: "Delete portlet",
         closeAlert: "Are you sure you want to close %s portlet?",
+        closeAlertInfo:
+          "You can restore it later in the Dashboard Editor. To access it, click the Edit icon in the bottom-right corner.",
         deleteAlert: "Are you sure you want to delete %s portlet?",
       },
     },

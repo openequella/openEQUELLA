@@ -24,6 +24,7 @@ interface DashboardPageContextProps {
    * Function to close a portlet.
    *
    * @param uuid UUID of the portlet to be closed.
+   * @param portletPref The portlet's preference where `isClosed` is updated to the new value and other properties remain unchanged.
    */
   closePortlet: (
     uuid: string,
@@ -39,8 +40,7 @@ interface DashboardPageContextProps {
    * Function to minimise/expand a portlet.
    *
    * @param uuid UUID of the portlet to be minimised/expanded.
-   *
-   * @param isMinimised `true` to minimise the portlet, `false` to expand it.
+   * @param portletPref The portlet's preference where `isMinimised` is updated to the new value and other properties remain unchanged.
    */
   minimisePortlet: (
     uuid: string,

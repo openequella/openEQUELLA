@@ -183,7 +183,7 @@ describe("<DashboardPage/>", () => {
       { title: deleteAlertTitle, desc: deleteAlert },
     ],
   ])(
-    "should open a confirmation dialog with expected title and description when user click on '%s' button",
+    "should open a confirmation dialog with expected title and description when user clicks on '%s' portlet button",
     async (buttonText, mockportlet, dialogDetails) => {
       mockGetDashboardDetails.mockResolvedValueOnce({
         portlets: [mockportlet],
