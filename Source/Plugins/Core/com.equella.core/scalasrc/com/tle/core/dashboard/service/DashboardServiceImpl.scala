@@ -48,7 +48,13 @@ class DashboardServiceImpl @Inject() (
   override def getViewablePortlets: List[PortletDetails] = {
     val result: List[Either[String, PortletDetails]] =
       portletService.getViewablePortletsForDisplay.asScala.toList
-        .map(buildPortletDetails)
+        .map(p => (p, Option(portletService.getPreference(p))))
+        .filter { case (_, preference) =>
+          preference.isEmpty || preference.exists(_.isClosed == false)
+        }
+        .map { case (portlet, preference) =>
+          buildPortletDetails(portlet, preference)
+        }
 
     val (errors, portlets) = result.separate
     errors.foreach(LOGGER.error)
@@ -77,12 +83,14 @@ class DashboardServiceImpl @Inject() (
       .leftMap(e => s"Failed to update Dashboard layout: ${e.getMessage}")
   }
 
-  def buildPortletDetails(portlet: Portlet): Either[String, PortletDetails] = {
+  def buildPortletDetails(
+      portlet: Portlet,
+      preference: Option[PortletPreference]
+  ): Either[String, PortletDetails] = {
 
     def commonDetails: PortletBase = {
       val nonGuestUser: Boolean = !CurrentUser.wasAutoLoggedIn && !CurrentUser.isGuest
       val isOwner               = portlet.getOwner == CurrentUser.getUserID
-      val preference            = Option(portletService.getPreference(portlet))
 
       PortletBase(
         uuid = portlet.getUuid,

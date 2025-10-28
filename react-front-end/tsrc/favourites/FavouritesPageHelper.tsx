@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as H from "history";
 import type { ReactNode } from "react";
 import * as React from "react";
 import {
@@ -27,6 +28,7 @@ import {
 import type { SearchOptions } from "../modules/SearchModule";
 import { SortOrderOptions } from "../search/components/SearchOrderSelect";
 import SearchResult from "../search/components/SearchResult";
+import { SearchPageHistoryState } from "../search/Search";
 import {
   defaultSearchPageOptions,
   defaultSortingOptions,
@@ -167,3 +169,31 @@ export const sortOrderOptions = (
         ["name", title],
         [SORT_ORDER_ADDED_AT, dateFavourited],
       ]);
+
+/**
+ * Read the value of favourites type from History.
+ */
+export const getFavouritesTypeFromHistory = (
+  history: H.History<SearchPageHistoryState<FavouritesType>>,
+): FavouritesType | undefined =>
+  history.location.state?.customData?.["favouritesType"];
+
+/**
+ * Write the value of favourites type to History custom data.
+ *
+ * @param favouritesType The type of Favourites.
+ * @param history The history to write to.
+ */
+export const writeFavouritesTypeToHistory = (
+  favouritesType: FavouritesType,
+  history: H.History<SearchPageHistoryState<FavouritesType>>,
+) =>
+  history.replace({
+    ...history.location,
+    state: {
+      ...history.location.state,
+      customData: {
+        favouritesType,
+      },
+    },
+  });

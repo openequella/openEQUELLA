@@ -19,7 +19,7 @@ import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import "@testing-library/jest-dom";
 import { render, type RenderResult } from "@testing-library/react";
-import { createMemoryHistory } from "history";
+import { createMemoryHistory, MemoryHistory } from "history";
 import * as React from "react";
 import { Router } from "react-router-dom";
 import {
@@ -34,6 +34,7 @@ import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import FavouritesPage from "../../../tsrc/favourites/FavouritesPage";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
+import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
   clickSelect,
@@ -84,14 +85,16 @@ const mockFavResourcesSearch = jest
   .mockResolvedValue(getFavouriteResourcesResp);
 const { mockFavSearchesSearch } = mockApisForFavouriteSearches();
 
-const renderFavouritesPage = async (): Promise<RenderResult> => {
+const renderFavouritesPage = async (
+  history?: MemoryHistory,
+): Promise<RenderResult> => {
   window.matchMedia = createMatchMedia(1280);
 
-  const history = createMemoryHistory();
+  const memoryHistory = history ?? createMemoryHistory();
 
   const page = render(
     <ThemeProvider theme={createTheme()}>
-      <Router history={history}>
+      <Router history={memoryHistory}>
         <AppContext.Provider
           value={{
             appErrorHandler: jest.fn(),
@@ -260,5 +263,22 @@ describe("<FavouritesPage/>", () => {
     const { queryByText } = await renderFavouritesPage();
 
     expect(queryByText(tagsLabel)).not.toBeInTheDocument();
+  });
+
+  it("should save favourites type in the History", async () => {
+    const history = createMemoryHistory();
+    const { container } = await renderFavouritesPage(history);
+
+    await clickButton(container, searchesLabel);
+    expect(history.location.state).toEqual({
+      searchPageOptions: {
+        ...defaultSearchPageOptions,
+        sortOrder: "added_at",
+        filterExpansion: false,
+      },
+      customData: {
+        favouritesType: "searches",
+      },
+    });
   });
 });
