@@ -21,7 +21,6 @@ import {
   emptyDashboardDetails,
   minimisedPortlet,
   mockPortlets,
-  privateSearchPortlet,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
 import { languageStrings } from "../../../tsrc/util/langstrings";
@@ -37,17 +36,13 @@ import * as E from "fp-ts/Either";
 const {
   nonSystemUser: { hintForOeq: hintForOeqText, imageAlt: imageAltText },
 } = languageStrings.dashboard.welcomeDesc;
-const {
-  maximise: maximiseText,
-  minimise: minimiseText,
-  edit: editText,
-} = languageStrings.common.action;
+const { maximise: maximiseText, minimise: minimiseText } =
+  languageStrings.common.action;
 
 const {
   mockGetDashboardDetails,
   mockUpdatePortletPreference,
   mockGetCreatePortletAcl,
-  mockEditPortlet,
 } = mockDashboardPageApis();
 
 describe("<DashboardPage/>", () => {
@@ -149,18 +144,5 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
     // After minimising, the content becomes hidden.
     expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
-  });
-
-  it("supports editing the private portlets", async () => {
-    mockGetDashboardDetails.mockResolvedValueOnce({
-      portlets: [privateSearchPortlet],
-    });
-
-    const { container } = await renderDashboardPage();
-    await clickButton(container, editText);
-
-    expect(mockEditPortlet).toHaveBeenCalledWith(
-      privateSearchPortlet.commonDetails.uuid,
-    );
   });
 });

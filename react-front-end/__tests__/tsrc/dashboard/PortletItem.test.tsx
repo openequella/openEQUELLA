@@ -24,8 +24,11 @@ import {
   noEditPortlet,
   noMinimisePortlet,
   privatePortlet,
+  privateSearchPortlet,
 } from "../../../__mocks__/Dashboard.mock";
+import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { clickButton } from "../MuiTestHelpers";
 import {
   defaultProps,
   portletContent,
@@ -40,6 +43,10 @@ const {
   minimise: minimiseText,
   maximise: maximiseText,
 } = languageStrings.common.action;
+
+const mockEditPortlet = jest
+  .spyOn(DashboardModule, "editPortlet")
+  .mockResolvedValue("");
 
 describe("<PortletItem/>", () => {
   it("displays a skeleton when loading", () => {
@@ -111,4 +118,17 @@ describe("<PortletItem/>", () => {
       expect(queryByLabelText(actionLabel)).not.toBeInTheDocument();
     },
   );
+
+  it("supports editing the private portlets", async () => {
+    const { container } = renderPortletItem({
+      ...defaultProps,
+      portlet: privateSearchPortlet,
+    });
+
+    await clickButton(container, editText);
+
+    expect(mockEditPortlet).toHaveBeenCalledWith(
+      privateSearchPortlet.commonDetails.uuid,
+    );
+  });
 });

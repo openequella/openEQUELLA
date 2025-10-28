@@ -18,15 +18,12 @@
 
 package com.tle.web.portal.section.enduser;
 
-import static com.tle.web.portal.service.PortletWebServiceImpl.UUID_SECTIONID_MAP_KEY;
-
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.portal.service.PortletService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
-import com.tle.web.portal.renderer.PortletRendererWrapper;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -57,8 +54,6 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
-import java.util.Map;
-import java.util.Optional;
 import javax.inject.Inject;
 
 public class ShowPortletsSection
@@ -144,12 +139,8 @@ public class ShowPortletsSection
   }
 
   @EventHandlerMethod
-  public void editPortletFromNewUi(SectionInfo info, String portletUuid) {
-    SectionTree tree = getModel(info).getTree(false);
-    Map<String, PortletRendererWrapper> portletMapping = tree.getAttribute(UUID_SECTIONID_MAP_KEY);
-
-    Optional.ofNullable(portletMapping.get(portletUuid))
-        .ifPresent(w -> w.editPortletFromNewUi(info));
+  public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
+    portletWebService.editPortletFromNewDashboard(info, portletUuid);
   }
 
   @AjaxMethod

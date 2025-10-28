@@ -22,6 +22,11 @@ import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import {
+  type ErrorResponse,
+  fromAxiosResponse,
+  generateFromError,
+} from "../../api/errors";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { AppContext } from "../../mainui/App";
 import { editPortlet } from "../../modules/DashboardModule";
@@ -97,12 +102,18 @@ const PortletItem = ({
     pipe(
       TE.tryCatch(
         () => editPortlet(uuid),
-        (e) => `Failed to edit ${name} portlet: ${e}`,
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (e: any) => {
+          console.error(e);
+          const errorResponse: ErrorResponse =
+            e.response !== undefined
+              ? fromAxiosResponse(e.response)
+              : generateFromError(e);
+          const { error: errorTitle, error_description } = errorResponse;
+          return error_description ?? errorTitle;
+        },
       ),
-      TE.match(appErrorHandler, (path) => {
-        const sep = path.includes("?") ? "&" : "?";
-        history.push(`${path}${sep}portletEditor=true`);
-      }),
+      TE.match(appErrorHandler, (path) => history.push(path)),
     )();
   };
 

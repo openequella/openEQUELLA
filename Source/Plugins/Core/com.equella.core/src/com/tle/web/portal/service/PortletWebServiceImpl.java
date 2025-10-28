@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 import com.tle.beans.Institution;
 import com.tle.common.Triple;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.PortletConstants;
 import com.tle.common.portal.entity.Portlet;
@@ -47,6 +48,7 @@ import com.tle.web.portal.events.PortletsUpdatedEventListener;
 import com.tle.web.portal.renderer.PortletContentRenderer;
 import com.tle.web.portal.renderer.PortletRendererWrapper;
 import com.tle.web.portal.section.common.PortletContributionSection;
+import com.tle.web.portal.section.enduser.ShowPortletsSection;
 import com.tle.web.sections.RegistrationController;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
@@ -67,7 +69,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -166,12 +167,18 @@ public class PortletWebServiceImpl
   }
 
   @Override
-  public void editPortletFromNewUi(SectionInfo info, String portletUuid, boolean admin) {
-    SectionInfo forward = info.createForward("/home.do");
-    PortletContributionSection con = forward.lookupSection(PortletContributionSection.class);
-    Portlet portlet = portletService.getForEdit(portletUuid);
-    con.startEdit(forward, portletUuid, portlet.getType(), admin);
-    info.forward(forward);
+  public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
+    try {
+      SectionInfo forward = info.createForward("/home.do");
+      PortletContributionSection con = forward.lookupSection(PortletContributionSection.class);
+      Portlet portlet = portletService.getForEdit(portletUuid);
+      con.startEdit(forward, portletUuid, portlet.getType(), false);
+      info.forward(forward);
+    } catch (NotFoundException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -192,7 +199,7 @@ public class PortletWebServiceImpl
     // If the new UI is enabled and the user is returning from an edit session that was
     // initiated from the dashboard page, forward them back to the new UI dashboard.
     if (RenderNewTemplate.isNewUIEnabled()
-        && Objects.equals(info.getAttribute(SectionInfo.KEY_PATH), "/home.do")) {
+        && info.lookupSection(ShowPortletsSection.class) != null) {
       info.forwardToUrl(NewUiRoutes.PATH_DASHBOARD());
     }
   }

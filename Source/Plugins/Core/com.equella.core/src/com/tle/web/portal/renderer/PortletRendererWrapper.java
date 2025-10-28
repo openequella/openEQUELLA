@@ -171,11 +171,6 @@ public class PortletRendererWrapper
   }
 
   @EventHandlerMethod
-  public void editPortletFromNewUi(SectionInfo info) {
-    portletWebService.editPortletFromNewUi(info, portletUuid, false);
-  }
-
-  @EventHandlerMethod
   public void closePortlet(SectionInfo info) {
     portletWebService.close(info, portletUuid);
   }

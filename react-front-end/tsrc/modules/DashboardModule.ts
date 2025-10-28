@@ -71,13 +71,17 @@ export const deletePortlet = (uuid: string): Promise<void> =>
 
 /**
  * Initiate an editing session for a portlet.
- * This will return a URL path to the legacy editing page for the specified portlet.
+ *
+ * This is achieved by submitting a form to the legacy UI's `/home.do` endpoint,
+ * which triggers the `psh.editPortletFromNewDashboard` event handler. `psh` is the ID
+ * for the `ShowPortletsSection` which then initiates the editing session and
+ * returns the URL of the specific portlet editing page.
  *
  * @param uuid UUID of the portlet to be edited.
  * @returns A promise which resolves to the URL path for the legacy editing page.
  */
-export const editPortlet = (uuid: string) =>
+export const editPortlet = (uuid: string): Promise<string> =>
   Axios.post(legacyContentSubmitBaseUrl + "/home.do", {
-    event__: ["psh.editPortletFromNewUi"],
-    eventp__0: [uuid],
+    event__: ["psh.editPortletFromNewDashboard"],
+    eventp__0: [uuid + "2"],
   }).then(({ data: { route } }) => `/${route}`);

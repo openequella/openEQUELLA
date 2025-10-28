@@ -17,7 +17,6 @@
  */
 import { render, RenderResult, waitFor } from "@testing-library/react";
 import * as E from "fp-ts/Either";
-import { createMemoryHistory } from "history";
 import * as React from "react";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
@@ -27,10 +26,8 @@ import { AppContext } from "../../../tsrc/mainui/App";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import { Router } from "react-router-dom";
 
 const { welcomeTitle } = languageStrings.dashboard;
-const history = createMemoryHistory();
 
 /**
  * Helper to render DashboardPage and wait for it to load (i.e. the skeleton to disappear).
@@ -41,17 +38,15 @@ export const renderDashboardPage = async (
   currentUser: OEQ.LegacyContent.CurrentUserDetails = getCurrentUserMock,
 ): Promise<RenderResult> => {
   const page = render(
-    <Router history={history}>
-      <AppContext.Provider
-        value={{
-          appErrorHandler: jest.fn(),
-          refreshUser: jest.fn(),
-          currentUser,
-        }}
-      >
-        <DashboardPage updateTemplate={jest.fn()} />
-      </AppContext.Provider>
-    </Router>,
+    <AppContext.Provider
+      value={{
+        appErrorHandler: jest.fn(),
+        refreshUser: jest.fn(),
+        currentUser,
+      }}
+    >
+      <DashboardPage updateTemplate={jest.fn()} />
+    </AppContext.Provider>,
   );
 
   const { container, queryByText } = page;
@@ -75,8 +70,6 @@ export interface MockDashboardApis {
   mockUpdatePortletPreference: jest.SpyInstance;
   /** Spy for the `hasCreatePortletACL` API. */
   mockGetCreatePortletAcl: jest.SpyInstance;
-  /** Spy for the `hasCreatePortletACL` API. */
-  mockEditPortlet: jest.SpyInstance;
 }
 
 /**
@@ -93,9 +86,6 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockGetCreatePortletAcl: jest
       .spyOn(SecurityModule, "hasCreatePortletACL")
       .mockResolvedValue(E.right(true)),
-    mockEditPortlet: jest
-      .spyOn(DashboardModule, "editPortlet")
-      .mockResolvedValue(""),
   };
 };
 

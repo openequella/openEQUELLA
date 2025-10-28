@@ -56,6 +56,7 @@ import {
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
+import { isEmpty } from "fp-ts/string";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
@@ -277,17 +278,17 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_DASHBOARD_PATH}
+          exact
           render={(routeProps) => {
-            const searchParams = new URLSearchParams(
-              routeProps.location.search,
-            );
-
-            return isSelectionSessionOpen() ||
-              searchParams.get("portletEditor") === "true"
-              ? renderLegacyContent(routeProps)
-              : renderProtectedPage(routeProps, DashboardPage);
+            if (
+              !isEmpty(routeProps.location.search) ||
+              isSelectionSessionOpen()
+            )
+              return renderLegacyContent(routeProps);
+            else return renderProtectedPage(routeProps, DashboardPage);
           }}
         />
+        <Route path={OLD_DASHBOARD_PATH} render={renderLegacyContent} />
         <Route render={renderLegacyContent} />
       </Switch>
     ),
