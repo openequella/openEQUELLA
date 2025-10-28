@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 /**
- * Helper file dedicate for legacy portlet related functionalities.
+ * Helper file dedicate to legacy portlet related functionalities.
  */
 import * as A from "fp-ts/Array";
 import { identity, pipe } from "fp-ts/function";
@@ -100,7 +100,9 @@ const loadSingleScript = async (url: string): Promise<void> => {
  * Note: the original implementation defined in `LegacyContentModule`  returns a Promise that is
  * resolved after only the last newly inserted script was loaded. While this works in `LegacyContent`
  * which always deals with only one Legacy content API request, it could cause race conditions in
- * the New Dashboard because multiple Legacy content API requests can occur concurrently.
+ * the New Dashboard because multiple Legacy content API requests can occur concurrently.Therefore,
+ * the new implementation instead waits for **all** scripts to be loaded, ensuring consistent script
+ * execution order and availability of dependencies.
  *
  * @param scripts - Array of script URLs to load.
  * @returns Promise<void[]> resolving when all scripts are done.
@@ -113,8 +115,10 @@ const loadMissingScripts = async (scripts: string[]): Promise<void[]> =>
 /**
  * Update extra JS and CSS files required to render a legacy portlet properly.
  *
- * While the CSS update reuses the original implementation defined in `LegacyContentModule`,
- * the JS update uses the new implementation that ensures proper deduplication and ordering.
+ * Since the original CSS update implementation defined in `LegacyContentModule` can ensure all the
+ * required CSS files are consistently loaded by waiting for all the CSS loading Promises, it can be
+ * reused here. However, for JS files,  the new JS update implementation must be used to ensure proper
+ * deduplication and ordering.
  */
 export const updateExtraFiles = async (
   jsFiles: string[],
