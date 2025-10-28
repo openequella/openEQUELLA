@@ -83,5 +83,5 @@ export const deletePortlet = (uuid: string): Promise<void> =>
 export const editPortlet = (uuid: string): Promise<string> =>
   Axios.post(legacyContentSubmitBaseUrl + "/home.do", {
     event__: ["psh.editPortletFromNewDashboard"],
-    eventp__0: [uuid + "2"],
+    eventp__0: [uuid],
   }).then(({ data: { route } }) => `/${route}`);
