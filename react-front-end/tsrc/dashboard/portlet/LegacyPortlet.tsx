@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { constFalse, constVoid, flow, pipe } from "fp-ts/function";
+import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -92,6 +92,10 @@ export interface LegacyJsFunctions {
   ) => void;
 }
 
+/**
+ * Extend the type definition for the global `window` object to include an object dynamically
+ * created for providing the access to legacy JS functions defined for a specific portlet.
+ */
 declare global {
   interface Window {
     [key: `EQ-${string}`]: LegacyJsFunctions;
@@ -139,34 +143,37 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
   // the request is always sent to the Legacy endpoint `/home.do`.
   const submitLegacyContentRequest = useCallback(
     (payload: StateData, callback?: (response: SubmitResponse) => void) => {
-      submitRequest(OLD_DASHBOARD_PATH, payload)
-        .then(async (resp) => {
-          if (callback) {
-            callback(resp);
-            return;
-          }
+      const handleResponse = async (resp: SubmitResponse) => {
+        // Handle the short-circuit callback case first
+        if (callback) {
+          callback(resp);
+          return;
+        }
 
-          if (isPageContent(resp)) {
+        switch (true) {
+          case isPageContent(resp): {
             const content = await generatePortletContent(resp);
             setContent(content);
-            return;
+            break;
           }
-
-          if (isChangeRoute(resp)) {
+          case isChangeRoute(resp):
             history.push(`/${resp.route}`);
-            return;
-          }
+            break;
 
-          if (isExternalRedirect(resp)) {
+          case isExternalRedirect(resp):
             window.location.href = resp.href;
-            return;
-          }
+            break;
 
-          console.warn(
-            `Unknown response structure for legacy portlet ${portletId}`,
-            resp,
-          );
-        })
+          default:
+            console.warn(
+              `Unknown response structure for legacy portlet ${portletId}`,
+              resp,
+            );
+        }
+      };
+
+      submitRequest(OLD_DASHBOARD_PATH, payload)
+        .then(handleResponse)
         .catch((e) => {
           // todo: Update error handling when working on OEQ-2685.
           console.error(
@@ -214,8 +221,9 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
 
   // Function that handles `window[EQ-{portletId}].updateForm(...)` calls from legacy scripts.
   const updateForm = (formUpdate: FormUpdate): void =>
-    setContent(
-      flow(
+    setContent((prevContent) =>
+      pipe(
+        prevContent,
         O.fromNullable,
         O.map((c) => {
           const state = formUpdate.partial
