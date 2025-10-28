@@ -384,3 +384,12 @@ export const collectParams = (
   });
   return vals;
 };
+
+/**
+ * Remove a collection of elements from the DOM of Legacy content.
+ */
+export const deleteElements = (elements: { [url: string]: HTMLElement }) => {
+  Object.values(elements).forEach((elem) => {
+    elem.parentElement?.removeChild(elem);
+  });
+};

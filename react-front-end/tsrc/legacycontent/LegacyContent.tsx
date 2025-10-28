@@ -39,6 +39,7 @@ import {
 } from "../mainui/Template";
 import {
   collectParams,
+  deleteElements,
   FormUpdate,
   isChangeRoute,
   isExternalRedirect,
@@ -179,10 +180,7 @@ export const LegacyContent = React.memo(function LegacyContent({
         contentId: v4(),
         formId: legacyFormId,
         afterHtml: () => {
-          for (const key in extraCss) {
-            const e = extraCss[key];
-            e.parentElement?.removeChild(e);
-          }
+          deleteElements(extraCss);
           if (scrollTop) {
             document.documentElement.scrollTop = 0;
           }
