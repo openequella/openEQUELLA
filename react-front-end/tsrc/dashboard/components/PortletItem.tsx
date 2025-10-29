@@ -152,10 +152,7 @@ const PortletItem = ({
         !isInstitutionWide && canDelete && (
           <TooltipIconButton
             title={deleteText}
-            onClick={() => {
-              setActionType("Delete");
-              openDialog();
-            }}
+            onClick={() => openDialog("Delete")}
           >
             <DeleteIcon />
           </TooltipIconButton>
@@ -167,10 +164,7 @@ const PortletItem = ({
         isInstitutionWide && canClose && (
           <TooltipIconButton
             title={closeText}
-            onClick={() => {
-              setActionType("Close");
-              openDialog();
-            }}
+            onClick={() => openDialog("Close")}
           >
             <CloseIcon />
           </TooltipIconButton>
@@ -183,7 +177,10 @@ const PortletItem = ({
 
   const isCloseAction = actionType === "Close";
 
-  const openDialog = () => setDialogOpen(true);
+  const openDialog = (actionType: ActionType) => {
+    setDialogOpen(true);
+    setActionType(actionType);
+  };
 
   const closeDialog = () => setDialogOpen(false);
 
@@ -207,7 +204,7 @@ const PortletItem = ({
         open={dialogOpen}
         title={isCloseAction ? closeAlertTitle : deleteAlertTitle}
         onConfirm={isCloseAction ? handleClose : handleDelete}
-        onCancel={() => closeDialog()}
+        onCancel={closeDialog}
         confirmButtonText={languageStrings.common.action.ok}
       >
         {isCloseAction ? (

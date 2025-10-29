@@ -124,7 +124,7 @@ export const getPortletContent = (
 export const openConfirmDialog = async (
   page: RenderResult,
   buttonText: string,
-) => {
+): Promise<HTMLElement> => {
   const button = page.getByRole("button", { name: buttonText });
   await userEvent.click(button);
   return page.findByRole("dialog");
