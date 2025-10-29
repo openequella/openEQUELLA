@@ -288,7 +288,6 @@ export default function IndexPage() {
             else return renderProtectedPage(routeProps, DashboardPage);
           }}
         />
-        <Route path={OLD_DASHBOARD_PATH} render={renderLegacyContent} />
         <Route render={renderLegacyContent} />
       </Switch>
     ),
