@@ -25,8 +25,9 @@ import * as React from "react";
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../mainui/App";
-import { NEW_FAVOURITES_PATH } from "../../mainui/routes";
+import { routes } from "../../mainui/routes";
 import {
+  FavouritesType,
   searchFavouriteItems,
   searchFavouriteSearches,
 } from "../../modules/FavouriteModule";
@@ -133,6 +134,16 @@ export const PortletFavourites = ({
     }),
   );
 
+  const showAllPathForTab = pipe(
+    activeTab,
+    simpleMatch<FavouritesType>({
+      0: () => "resources",
+      1: () => "searches",
+      _: () => "resources",
+    }),
+    routes.Favourites.to,
+  );
+
   return (
     <PortletItem portlet={cfg} isLoading={isLoading}>
       <Grid container direction="column" spacing={2}>
@@ -144,7 +155,7 @@ export const PortletFavourites = ({
           {tabContent}
         </Grid>
         <Grid display="flex" justifyContent="center">
-          <Button variant="outlined" component={Link} to={NEW_FAVOURITES_PATH}>
+          <Button variant="outlined" component={Link} to={showAllPathForTab}>
             {strings.actionShowAll}
           </Button>
         </Grid>

@@ -32,15 +32,18 @@ import { itemWithBookmark } from "../../../__mocks__/SearchResult.mock";
 import { basicSearchObj } from "../../../__mocks__/searchresult_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import FavouritesPage from "../../../tsrc/favourites/FavouritesPage";
+import { FAVOURITES_TYPE_PARAM } from "../../../tsrc/favourites/FavouritesPageHelper";
 import { AppContext } from "../../../tsrc/mainui/App";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
+import { FavouritesType } from "../../../tsrc/modules/FavouriteModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
+  clickButton,
   clickSelect,
   countPresentSelectOptions,
   isToggleButtonChecked,
-  clickButton,
 } from "../MuiTestHelpers";
 import {
   getRefineSearchComponent,
@@ -52,7 +55,6 @@ import {
   SORTORDER_SELECT_ID,
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
-import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { mockApisForFavouriteSearches } from "./components/FavouritesSearchTestHelper";
 
 const { resources: resourcesLabel, searches: searchesLabel } =
@@ -124,8 +126,8 @@ describe("<FavouritesPage/>", () => {
 
     expect(mockFavResourcesSearch).toHaveBeenCalled();
     expect(mockSearch).not.toHaveBeenCalled();
-    expect(isToggleButtonChecked(container, resourcesLabel)).toBeTruthy();
-    expect(isToggleButtonChecked(container, modeItemList)).toBeTruthy();
+    expect(isToggleButtonChecked(container, resourcesLabel)).toBe(true);
+    expect(isToggleButtonChecked(container, modeItemList)).toBe(true);
     expect(listSearchResults).toHaveLength(2);
   });
 
@@ -137,7 +139,7 @@ describe("<FavouritesPage/>", () => {
     const { container } = await renderFavouritesPage();
     await clickButton(container, mode);
 
-    expect(isToggleButtonChecked(container, mode)).toBeTruthy();
+    expect(isToggleButtonChecked(container, mode)).toBe(true);
     expect(gallerySearch).toHaveBeenCalledTimes(1);
     expect(mockFavResourcesSearch).toHaveBeenCalled();
     expect(mockSearch).not.toHaveBeenCalled();
@@ -147,7 +149,7 @@ describe("<FavouritesPage/>", () => {
     const { container } = await renderFavouritesPage();
     await clickButton(container, searchesLabel);
 
-    expect(isToggleButtonChecked(container, searchesLabel)).toBeTruthy();
+    expect(isToggleButtonChecked(container, searchesLabel)).toBe(true);
     expect(mockFavSearchesSearch).toHaveBeenCalled();
   });
 
@@ -281,4 +283,21 @@ describe("<FavouritesPage/>", () => {
       },
     });
   });
+
+  it.each<[FavouritesType, string]>([
+    ["resources", resourcesLabel],
+    ["searches", searchesLabel],
+  ])(
+    "should read favourites type from the params",
+    async (favouritesType: FavouritesType, selectedButtonLabel: string) => {
+      const history = createMemoryHistory();
+      history.push({
+        pathname: "/favourites",
+        search: `?${FAVOURITES_TYPE_PARAM}=${favouritesType}`,
+      });
+
+      const { container } = await renderFavouritesPage(history);
+      expect(isToggleButtonChecked(container, selectedButtonLabel)).toBe(true);
+    },
+  );
 });
