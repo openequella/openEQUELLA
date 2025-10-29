@@ -24,6 +24,7 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import {
   type FavouritesType,
+  FavouritesTypeUnion,
   searchFavouriteSearches,
 } from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
@@ -192,7 +193,7 @@ export const getFavouriteTypeFromSearchParams = (
   pipe(
     searchParams.get(FAVOURITES_TYPE_PARAM),
     O.fromNullable,
-    O.filter((favType) => favType === "resources" || favType === "searches"),
+    O.filter(FavouritesTypeUnion.is),
   );
 
 /**
