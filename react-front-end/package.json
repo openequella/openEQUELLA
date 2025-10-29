@@ -12,7 +12,7 @@
     "tools": "target/tools"
   },
   "engines": {
-    "node": "22.19.0",
+    "node": "22.21.0",
     "npm": "11.6.0"
   },
   "targets": {
@@ -102,7 +102,7 @@
     "@storybook/react": "9.1.7",
     "@storybook/react-webpack5": "9.1.7",
     "@testing-library/dom": "10.4.1",
-    "@testing-library/jest-dom": "6.8.0",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
     "@types/css-mediaquery": "0.1.4",
@@ -122,7 +122,7 @@
     "@types/rewire": "2.5.30",
     "@types/sprintf-js": "1.1.4",
     "@types/uuid": "10.0.0",
-    "babel-jest": "30.1.2",
+    "babel-jest": "30.2.0",
     "buffer": "6.0.3",
     "core-js": "3.45.1",
     "cross-env": "10.0.0",
@@ -130,9 +130,9 @@
     "css-mediaquery": "0.1.2",
     "html-validate": "9.7.1",
     "identity-obj-proxy": "3.0.0",
-    "jest": "30.1.3",
-    "jest-config": "30.1.3",
-    "jest-environment-jsdom": "30.1.2",
+    "jest": "30.2.0",
+    "jest-config": "30.2.0",
+    "jest-environment-jsdom": "30.2.0",
     "mkdirp": "3.0.1",
     "npm-run-all2": "8.0.4",
     "parcel": "2.16.0",
