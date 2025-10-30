@@ -383,7 +383,7 @@ export const languageStrings = {
       },
     },
     dashboardEditor: {
-      title: "Dashboard Editor",
+      title: "Dashboard editor",
       editDashboard: "Edit Dashboard",
       dashboardLayout: "Dashboard Layout",
       createPortlet: "Create Portlet",
