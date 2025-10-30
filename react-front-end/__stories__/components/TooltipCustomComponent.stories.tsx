@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 import { Meta, StoryFn } from "@storybook/react";
+import { Fab } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import * as React from "react";
 import SettingsToggleSwitch from "../../tsrc/components/SettingsToggleSwitch";
 import {
@@ -37,4 +39,16 @@ export const TooltipToggleSwitch: StoryFn<TooltipCustomComponentProps> = (
 );
 TooltipToggleSwitch.args = {
   title: "This is a Tooltip Custom Component",
+};
+
+export const TooltipFab: StoryFn<TooltipCustomComponentProps> = (args) => (
+  <TooltipCustomComponent {...args}>
+    <Fab color="secondary">
+      <EditIcon />
+    </Fab>
+  </TooltipCustomComponent>
+);
+TooltipFab.args = {
+  title: "Edit",
+  sx: { position: "absolute", bottom: 24, right: 24 },
 };

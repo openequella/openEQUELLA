@@ -39,6 +39,8 @@ const {
 } = languageStrings.dashboard.welcomeDesc;
 const { maximise: maximiseText, minimise: minimiseText } =
   languageStrings.common.action;
+const { editDashboard: editDashboardLabel } =
+  languageStrings.dashboard.dashboardEditor;
 
 const { mockGetDashboardDetails, mockUpdatePortletPreference } =
   mockDashboardPageApis();
@@ -148,5 +150,13 @@ describe("<DashboardPage/>", () => {
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(2);
     // After minimising, the content becomes hidden.
     expect(queryPortletContent(container, uuid)).not.toBeInTheDocument();
+  });
+
+  it("shows 'Edit Dashboard' button for non system user", async () => {
+    const { getByRole } = await renderDashboardPage();
+
+    expect(
+      getByRole("button", { name: editDashboardLabel }),
+    ).toBeInTheDocument();
   });
 });

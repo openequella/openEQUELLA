@@ -382,6 +382,15 @@ export const languageStrings = {
           "An unsupported portlet has been detected, please contact your system administrator.",
       },
     },
+    dashboardEditor: {
+      title: "Dashboard Editor",
+      editDashboard: "Edit Dashboard",
+      dashboardLayout: "Dashboard Layout",
+      createPortlet: "Create Portlet",
+      restorePortlet: "Restore Portlet",
+      alertInfo:
+        "You are currently editing your dashboard. Changes will be saved automatically.",
+    },
   },
   drm: {
     getTerms: {
