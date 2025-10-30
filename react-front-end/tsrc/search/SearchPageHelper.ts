@@ -83,6 +83,9 @@ const nop = () => {};
  * as opposed to the Business Layer which is handled by the Modules.
  */
 
+/** The query string parameter name used to store SearchPageOptions in the URL for SearchPage. */
+export const SEARCH_OPTIONS_PARAM = "searchOptions";
+
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
@@ -409,7 +412,7 @@ const generateSearchPageOptionsFromQueryString = async (
   queryString: string,
 ): Promise<SearchPageOptions | undefined> => {
   const params = new URLSearchParams(queryString);
-  const searchPageOptions = params.get("searchOptions");
+  const searchPageOptions = params.get(SEARCH_OPTIONS_PARAM);
 
   // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
   // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
@@ -463,7 +466,7 @@ export const generateQueryStringFromSearchPageOptions = (
 ): string => {
   const params = new URLSearchParams();
   params.set(
-    "searchOptions",
+    SEARCH_OPTIONS_PARAM,
     JSON.stringify(
       searchPageOptions,
       (key: string, value: object[] | undefined) =>
