@@ -55,23 +55,22 @@ describe("<DashboardEditor />", () => {
   it("switches tabs when clicked", async () => {
     const { user, getTabByRole, assertActiveTab } = renderDashboardEditor();
 
-    // Click "Create Portlet" tab and verify it's active
     await user.click(getTabByRole(createPortletLabel));
     assertActiveTab(createPortletLabel);
 
-    // Click "Restore Portlet" tab and verify it's active
     await user.click(getTabByRole(restorePortletLabel));
     assertActiveTab(restorePortletLabel);
   });
 
   it("shows the skeleton by default (uncontrolled loading)", () => {
     const { getTabContentSkeleton } = renderDashboardEditor();
-    // Skeleton component usually has 'progressbar' role
+
     expect(getTabContentSkeleton()).toBeInTheDocument();
   });
 
   it("shows the skeleton when loading prop is true (controlled)", () => {
     const { getTabContentSkeleton } = renderDashboardEditor({ loading: true });
+
     expect(getTabContentSkeleton()).toBeInTheDocument();
   });
 
@@ -80,7 +79,6 @@ describe("<DashboardEditor />", () => {
       loading: false,
     });
 
-    // Skeleton should NOT be present
     expect(queryTabContentSkeleton()).not.toBeInTheDocument();
   });
 
@@ -89,7 +87,6 @@ describe("<DashboardEditor />", () => {
       renderDashboardEditor();
 
     const closeButton = getButtonByRole(closeLabel);
-
     await user.click(closeButton);
 
     expect(mockSetOpenDashboardEditor).toHaveBeenCalledWith(false);

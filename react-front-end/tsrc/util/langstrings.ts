@@ -392,10 +392,10 @@ export const languageStrings = {
     },
     dashboardEditor: {
       title: "Dashboard editor",
-      editDashboard: "Edit Dashboard",
-      dashboardLayout: "Dashboard Layout",
-      createPortlet: "Create Portlet",
-      restorePortlet: "Restore Portlet",
+      editDashboard: "Edit dashboard",
+      dashboardLayout: "Dashboard layout",
+      createPortlet: "Create portlet",
+      restorePortlet: "Restore portlet",
       alertInfo:
         "You are currently editing your dashboard. Changes will be saved automatically.",
     },
