@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as t from "io-ts";
-import Axios from "axios";
-import { API_BASE_URL } from "../AppConfig";
+import { API_BASE_URL, LEGACY_CSS_URL } from "../AppConfig";
 import type { ScrapbookType } from "./ScrapbookModule";
 
 const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
@@ -53,6 +53,11 @@ export interface ChangeRoute {
 
 export interface StateData {
   [key: string]: string[];
+}
+
+export interface FormUpdate {
+  state: StateData;
+  partial: boolean;
 }
 
 export interface LegacyContentResponse {
@@ -138,11 +143,11 @@ export const getLegacyScrapbookEditingPageRoute = async (
  * @param vals - StateData to be submitted.
  * @returns A Promise resolving to a SubmitResponse.
  */
-export const submitRequest = (
+export const submitRequest = <T extends SubmitResponse = SubmitResponse>(
   relativeUrl: string,
   vals: StateData,
-): Promise<SubmitResponse> =>
-  Axios.post<SubmitResponse>(
+): Promise<T> =>
+  Axios.post<T>(
     legacyContentSubmitBaseUrl + encodeRelativeUrl(relativeUrl),
     vals,
   ).then((res) => res.data);
@@ -205,3 +210,186 @@ const encodePathWithOptionalQuery = ([pathname, query]: [
  */
 const encodeRelativeUrl = (url: string): string =>
   pipe(url, splitRelativeUrl, encodePathWithOptionalQuery);
+
+export const resolveUrl = (url: string) =>
+  new URL(url, $("base").attr("href")).href;
+
+/**
+ * Dynamically add script tags to the document head for legacy JS files, and return a promise
+ * which resolves when the last new script is loaded.
+ */
+const loadMissingScripts = (_scripts: string[]) => {
+  return new Promise((resolve) => {
+    const scripts = _scripts.map(resolveUrl);
+    const doc = window.document;
+    const head = doc.getElementsByTagName("head")[0];
+    const scriptTags = doc.getElementsByTagName("script");
+    const scriptSrcs: { [index: string]: boolean } = {};
+    for (let i = 0; i < scriptTags.length; i++) {
+      const scriptTag = scriptTags[i];
+      if (scriptTag.src) {
+        scriptSrcs[scriptTag.src] = true;
+      }
+    }
+    const lastScript = scripts.reduce(
+      (lastScript: HTMLScriptElement | null, scriptUrl) => {
+        if (scriptSrcs[scriptUrl]) {
+          return lastScript;
+        } else {
+          const newScript = doc.createElement("script");
+          newScript.src = scriptUrl;
+          newScript.async = false;
+          head.appendChild(newScript);
+          return newScript;
+        }
+      },
+      null,
+    );
+    if (!lastScript) resolve(undefined);
+    else {
+      lastScript.addEventListener("load", resolve, false);
+      lastScript.addEventListener(
+        "error",
+        () => {
+          console.error(`Failed to load script: ${lastScript.src}`);
+          resolve(undefined);
+        },
+        false,
+      );
+    }
+  });
+};
+
+/**
+ * Update stylesheets by dynamically adding link tags to the document head for CSS files, and
+ * return a promise which resolves when all the new CSS files are loaded.
+ */
+export const updateStylesheets = async (
+  _sheets?: string[],
+): Promise<{ [url: string]: HTMLLinkElement }> => {
+  const sheets = _sheets
+    ? _sheets.map(resolveUrl)
+    : [resolveUrl(LEGACY_CSS_URL)];
+  const doc = window.document;
+  const insertPoint = doc.getElementById("_dynamicInsert");
+  const head = doc.getElementsByTagName("head")[0];
+  let current = insertPoint?.previousElementSibling ?? null;
+  const existingSheets: { [index: string]: HTMLLinkElement } = {};
+
+  while (
+    current != null &&
+    current.tagName === "LINK" &&
+    current instanceof HTMLLinkElement
+  ) {
+    existingSheets[current.href] = current;
+    current = current.previousElementSibling;
+  }
+  const cssPromises = sheets.reduce((lastLink, cssUrl) => {
+    if (existingSheets[cssUrl]) {
+      delete existingSheets[cssUrl];
+      return lastLink;
+    } else {
+      const newCss = doc.createElement("link");
+      newCss.rel = "stylesheet";
+      newCss.href = cssUrl;
+      head.insertBefore(newCss, insertPoint);
+      const p = new Promise((resolve) => {
+        newCss.addEventListener("load", resolve, false);
+        newCss.addEventListener(
+          "error",
+          (_) => {
+            console.error(`Failed to load css: ${newCss.href}`);
+            resolve(undefined);
+          },
+          false,
+        );
+      });
+      lastLink.push(p);
+      return lastLink;
+    }
+  }, [] as Promise<unknown>[]);
+  return Promise.all(cssPromises).then((_) => existingSheets);
+};
+
+/**
+ * Update external resources (JS and CSS), typically called after a new LegacyContentResponse
+ * is received.
+ *
+ * @param jsFiles A list of JS files to be loaded.
+ * @param cssFiles A list of CSS files to be loaded.
+ */
+export const updateIncludes = async (
+  jsFiles: string[],
+  cssFiles?: string[],
+): Promise<{ [url: string]: HTMLLinkElement }> => {
+  const extraCss = await updateStylesheets(cssFiles);
+  await loadMissingScripts(jsFiles);
+  return extraCss;
+};
+
+/**
+ * Collect a variety of values that should be sent to a Legacy event handler from a form
+ * along with an optional command and arguments.
+ *
+ * @param form Typically a Legacy form where the id starts with "eqpageForm".
+ * @param command Name of the Legacy event handler.
+ * @param args Arguments to be passed to the Legacy event handler.
+ */
+export const collectParams = (
+  form: HTMLFormElement,
+  command: string | null,
+  args: string[],
+): StateData => {
+  const vals: { [index: string]: string[] } = {};
+  if (command) {
+    vals["event__"] = [command];
+  }
+  args.forEach((c, i) => {
+    let outval = c;
+    switch (typeof c) {
+      case "object":
+        if (c != null) {
+          outval = JSON.stringify(c);
+        }
+    }
+    vals["eventp__" + i] = [outval];
+  });
+  form
+    .querySelectorAll<HTMLInputElement>("input,textarea")
+    .forEach((v: HTMLInputElement) => {
+      if (v.type) {
+        switch (v.type) {
+          case "button":
+            return;
+          case "checkbox":
+          case "radio":
+            if (!v.checked || v.disabled) return;
+        }
+      }
+      const ex = vals[v.name];
+      if (ex) {
+        ex.push(v.value);
+      } else vals[v.name] = [v.value];
+    });
+  form.querySelectorAll("select").forEach((v: HTMLSelectElement) => {
+    for (let i = 0; i < v.length; i++) {
+      const o = v[i] as HTMLOptionElement;
+      if (o.selected) {
+        const ex = vals[v.name];
+        if (ex) {
+          ex.push(o.value);
+        } else vals[v.name] = [o.value];
+      }
+    }
+  });
+  return vals;
+};
+
+/**
+ * Remove a collection of elements from the DOM of Legacy content.
+ */
+export const deleteElements = (elements: { [url: string]: HTMLElement }) => {
+  Object.values(elements).forEach((elem) => {
+    elem.parentElement?.removeChild(elem);
+  });
+};
