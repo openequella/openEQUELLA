@@ -279,14 +279,11 @@ export default function IndexPage() {
         <Route
           path={OLD_DASHBOARD_PATH}
           exact
-          render={(routeProps) => {
-            if (
-              !isEmpty(routeProps.location.search) ||
-              isSelectionSessionOpen()
-            )
-              return renderLegacyContent(routeProps);
-            else return renderProtectedPage(routeProps, DashboardPage);
-          }}
+          render={(routeProps) =>
+            !isEmpty(routeProps.location.search) || isSelectionSessionOpen()
+              ? renderLegacyContent(routeProps)
+              : renderProtectedPage(routeProps, DashboardPage)
+          }
         />
         <Route render={renderLegacyContent} />
       </Switch>
