@@ -25,7 +25,9 @@ import { sprintf } from "sprintf-js";
 import { getFavouriteSearchesResp } from "../../../../__mocks__/Favourites.mock";
 import { basicSearchObj } from "../../../../__mocks__/searchresult_mock_data";
 import * as stories from "../../../../__stories__/dashboard/portlets/Favourites.stories";
+import { FAVOURITES_TYPE_PARAM } from "../../../../tsrc/favourites/FavouritesPageHelper";
 import { NEW_FAVOURITES_PATH } from "../../../../tsrc/mainui/routes";
+import { FavouritesType } from "../../../../tsrc/modules/FavouriteModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 
 const {
@@ -77,6 +79,13 @@ describe("<PortletFavourites />", () => {
       <Simple />,
     );
 
+    const expectShowAllButtonLink = (favouritesType: FavouritesType) => {
+      const showAllButton = getByRole("link", {
+        name: strings.actionShowAll,
+      });
+      const expectedLink = `${NEW_FAVOURITES_PATH}?${FAVOURITES_TYPE_PARAM}=${favouritesType}`;
+      expect(showAllButton).toHaveAttribute("href", expectedLink);
+    };
     const expectTabSelected = (tabName: string, isSelected: boolean) => {
       const tab = getByRole("tab", { name: tabName });
       expect(tab).toHaveAttribute("aria-selected", `${isSelected}`);
@@ -84,10 +93,12 @@ describe("<PortletFavourites />", () => {
     const expectResourcesTabActive = () => {
       expectTabSelected(strings.resourcesTabName, true);
       expectTabSelected(strings.searchesTabName, false);
+      expectShowAllButtonLink("resources");
     };
     const expectSearchesTabActive = () => {
       expectTabSelected(strings.resourcesTabName, false);
       expectTabSelected(strings.searchesTabName, true);
+      expectShowAllButtonLink("searches");
     };
 
     // Initially resources tab should be active
@@ -104,16 +115,6 @@ describe("<PortletFavourites />", () => {
 
     // Resources tab should be active again
     expectResourcesTabActive();
-  });
-
-  it("renders Show All button with correct link", async () => {
-    const { getByRole } = await setup(<Simple />);
-
-    const showAllButton = getByRole("link", {
-      name: strings.actionShowAll,
-    });
-    expect(showAllButton).toBeInTheDocument();
-    expect(showAllButton).toHaveAttribute("href", NEW_FAVOURITES_PATH);
   });
 
   describe("Successful results", () => {

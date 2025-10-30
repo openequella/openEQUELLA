@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as React from "react";
 import {
   type ReactNode,
   useCallback,
@@ -26,10 +29,8 @@ import {
 } from "react";
 import { useHistory } from "react-router";
 import { AppContext } from "../mainui/App";
-import { pipe } from "fp-ts/function";
 import { NEW_FAVOURITES_PATH } from "../mainui/routes";
 import type { TemplateUpdateProps } from "../mainui/Template";
-import * as React from "react";
 import {
   FavouritesType,
   searchFavouriteItems,
@@ -43,32 +44,31 @@ import {
 } from "../search/Search";
 import { SearchPageBody } from "../search/SearchPageBody";
 import {
+  defaultPagedSearchResult,
+  defaultSearchPageRefinePanelConfig,
+  isFavouriteSearches,
+  isGalleryItems,
+  isListItems,
   SearchContext,
   type SearchContextProps,
   type SearchPageOptions,
   type SearchPageRefinePanelConfig,
-  defaultSearchPageRefinePanelConfig,
-  isListItems,
-  isGalleryItems,
-  defaultPagedSearchResult,
-  isFavouriteSearches,
 } from "../search/SearchPageHelper";
 import type { SearchPageSearchResult } from "../search/SearchPageReducer";
 import { languageStrings } from "../util/langstrings";
 import FavouritesSelector from "./components/FavouritesSelector";
 import {
   defaultFavouritesPageOptions,
-  listFavouriteSearches,
   favouritesItemsResult,
   favouritesPageHeaderConfig,
   favouritesSearchesResult,
   favouritesSearchRefinePanelConfig,
+  getInitialFavouritesType,
   isFavouritesResources,
+  listFavouriteSearches,
   SORT_ORDER_ADDED_AT,
-  getFavouritesTypeFromHistory,
   writeFavouritesTypeToHistory,
 } from "./FavouritesPageHelper";
-import * as OEQ from "@openequella/rest-api-client";
 
 const { title } = languageStrings.favourites;
 const { title: favouritesSelectorTitle } =
@@ -79,7 +79,7 @@ const FavouritesPage = ({ updateTemplate }: TemplateUpdateProps) => {
 
   const history = useHistory<SearchPageHistoryState<FavouritesType>>();
   const [favouritesType, setFavouritesType] = useState<FavouritesType>(
-    getFavouritesTypeFromHistory(history) ?? "resources",
+    getInitialFavouritesType(history),
   );
 
   const initialSearchConfig = useMemo<InitialSearchConfig>(() => {
