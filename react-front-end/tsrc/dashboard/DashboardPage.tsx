@@ -24,6 +24,7 @@ import * as React from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
+  deletePortlet as deletePortletApi,
   getDashboardDetails,
   updatePortletPreference,
 } from "../modules/DashboardModule";
@@ -95,6 +96,19 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler, loadDashboard],
   );
 
+  const deletePortletAndRefresh = useCallback(
+    (uuid: string) =>
+      pipe(
+        TE.tryCatch(
+          () => deletePortletApi(uuid),
+          (e) => `Failed to delete portlet: ${e}`,
+        ),
+        TE.match(appErrorHandler, constVoid),
+        T.tapIO(() => loadDashboard()),
+      )(),
+    [appErrorHandler, loadDashboard],
+  );
+
   useEffect(() => {
     setIsLoading(true);
     pipe(
@@ -103,19 +117,23 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     )();
   }, [loadDashboard, checkCreatePortletAcl]);
 
-  const closePortlet = (uuid: string) => {
-    // TODO: REMOVE ME.
-    console.debug(uuid);
-    // TODO: update dashboardDetails to remove the closed one.
-    // TODO: add API call to update preference and get portlets again.
-  };
+  const closePortlet = useCallback(
+    (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {
+      setDashboardDetails(updateDashboardDetails(uuid));
 
-  const deletePortlet = (uuid: string) => {
-    // TODO: REMOVE ME.
-    console.debug(uuid);
-    // TODO: update dashboardDetails to remove the deleted one.
-    // TODO: add API call to update preference and get portlets again.
-  };
+      return updatePortletPreferenceAndRefresh(uuid, portletPref);
+    },
+    [updatePortletPreferenceAndRefresh],
+  );
+
+  const deletePortlet = useCallback(
+    (uuid: string) => {
+      setDashboardDetails(updateDashboardDetails(uuid));
+
+      return deletePortletAndRefresh(uuid);
+    },
+    [deletePortletAndRefresh],
+  );
 
   const minimisePortlet = useCallback(
     (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {

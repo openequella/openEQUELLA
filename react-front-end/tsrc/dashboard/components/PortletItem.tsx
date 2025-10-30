@@ -17,10 +17,12 @@
  */
 
 import EditIcon from "@mui/icons-material/Edit";
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { useContext } from "react";
 import * as React from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import { sprintf } from "sprintf-js";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { languageStrings } from "../../util/langstrings";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -30,6 +32,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DashboardPageContext } from "../DashboardPageContext";
 import PortletItemSkeleton from "./PortletItemSkeleton";
 
+const { useState } = React;
 const {
   edit: editText,
   delete: deleteText,
@@ -37,6 +40,13 @@ const {
   maximise: maximiseText,
   minimise: minimiseText,
 } = languageStrings.common.action;
+const {
+  close: closeAlertTitle,
+  delete: deleteAlertTitle,
+  closeAlert,
+  deleteAlert,
+  closeAlertInfo,
+} = languageStrings.dashboard.portlets.dialog;
 
 export interface PortletItemProps extends React.PropsWithChildren {
   /**
@@ -83,16 +93,26 @@ const PortletItem = ({
     column,
   } = commonDetails;
 
+  type ActionType = "Delete" | "Close";
+
   const { closePortlet, deletePortlet, minimisePortlet } =
     useContext(DashboardPageContext);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState<ActionType>("Close");
 
   const handleEdit = () => {
     // TODO: redirect to edit page.
   };
 
-  const handleDelete = () => deletePortlet(uuid);
+  const handleDelete = () => {
+    deletePortlet(uuid);
+    closeDialog();
+  };
 
-  const handleClose = () => closePortlet(uuid);
+  const handleClose = () => {
+    closePortlet(uuid, { order, column, isMinimised, isClosed: true });
+    closeDialog();
+  };
 
   const handleMinimise = (newIsMinimised: boolean) =>
     minimisePortlet(uuid, {
@@ -130,7 +150,10 @@ const PortletItem = ({
       {
         // Only private portlets can be deleted(can't be closed).
         !isInstitutionWide && canDelete && (
-          <TooltipIconButton title={deleteText} onClick={handleDelete}>
+          <TooltipIconButton
+            title={deleteText}
+            onClick={() => openDialog("Delete")}
+          >
             <DeleteIcon />
           </TooltipIconButton>
         )
@@ -139,7 +162,10 @@ const PortletItem = ({
       {
         // Only institution wide portlets can be closed(can't be deleted).
         isInstitutionWide && canClose && (
-          <TooltipIconButton title={closeText} onClick={handleClose}>
+          <TooltipIconButton
+            title={closeText}
+            onClick={() => openDialog("Close")}
+          >
             <CloseIcon />
           </TooltipIconButton>
         )
@@ -149,18 +175,50 @@ const PortletItem = ({
     </>
   );
 
-  return isLoading ? (
-    <PortletItemSkeleton />
-  ) : (
-    <Card>
-      <CardHeader title={name} action={actions()} />
+  const isCloseAction = actionType === "Close";
 
-      {!isMinimised && (
-        <CardContent id={`portlet-content-${uuid}`}>
-          {renderChildren ? renderChildren() : children}
-        </CardContent>
+  const openDialog = (actionType: ActionType) => {
+    setDialogOpen(true);
+    setActionType(actionType);
+  };
+
+  const closeDialog = () => setDialogOpen(false);
+
+  return (
+    <>
+      {isLoading ? (
+        <PortletItemSkeleton />
+      ) : (
+        <Card>
+          <CardHeader title={name} action={actions()} />
+
+          {!isMinimised && (
+            <CardContent id={`portlet-content-${uuid}`}>
+              {renderChildren ? renderChildren() : children}
+            </CardContent>
+          )}
+        </Card>
       )}
-    </Card>
+
+      <ConfirmDialog
+        open={dialogOpen}
+        title={isCloseAction ? closeAlertTitle : deleteAlertTitle}
+        onConfirm={isCloseAction ? handleClose : handleDelete}
+        onCancel={closeDialog}
+        confirmButtonText={languageStrings.common.action.ok}
+      >
+        {isCloseAction ? (
+          <>
+            <Typography>{sprintf(closeAlert, name)}</Typography>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              {closeAlertInfo}
+            </Typography>
+          </>
+        ) : (
+          sprintf(deleteAlert, name)
+        )}
+      </ConfirmDialog>
+    </>
   );
 };
 

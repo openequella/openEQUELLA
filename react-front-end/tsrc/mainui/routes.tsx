@@ -17,6 +17,8 @@
  */
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
+import { FavouritesType } from "../modules/FavouriteModule";
 import {
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
@@ -112,7 +114,9 @@ interface Routes {
   Dashboard: OEQRouteNewUI;
   EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
-  Favourites: OEQRouteNewUI;
+  Favourites: OEQRouteNewUI & {
+    to: (favouritesType: FavouritesType) => string;
+  };
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
@@ -240,6 +244,8 @@ export const routes: Routes = {
     permissionChecks: [isEditSystemSettingsGranted("oidc")],
   },
   Favourites: {
+    to: (favouritesType: FavouritesType) =>
+      `${NEW_FAVOURITES_PATH}?${FAVOURITES_TYPE_PARAM}=${favouritesType}`,
     path: NEW_FAVOURITES_PATH,
     component: FavouritesPage,
   },

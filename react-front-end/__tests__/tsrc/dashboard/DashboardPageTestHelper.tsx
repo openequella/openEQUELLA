@@ -15,7 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, RenderResult, waitFor } from "@testing-library/react";
+import { render, type RenderResult, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
@@ -66,6 +67,8 @@ export interface MockDashboardApis {
   mockGetDashboardDetails: jest.SpyInstance;
   /** Spy for the `updatePortletPreference` API. */
   mockUpdatePortletPreference: jest.SpyInstance;
+  /** Spy for the `deletePortlet` API. */
+  mockDeletePortlet: jest.SpyInstance;
 }
 
 /**
@@ -78,6 +81,9 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockGetDashboardDetails: jest.spyOn(DashboardModule, "getDashboardDetails"),
     mockUpdatePortletPreference: jest
       .spyOn(DashboardModule, "updatePortletPreference")
+      .mockResolvedValue(undefined),
+    mockDeletePortlet: jest
+      .spyOn(DashboardModule, "deletePortlet")
       .mockResolvedValue(undefined),
   };
 };
@@ -113,4 +119,13 @@ export const getPortletContent = (
   }
 
   return portletContent;
+};
+
+export const openConfirmDialog = async (
+  page: RenderResult,
+  buttonText: string,
+): Promise<HTMLElement> => {
+  const button = page.getByRole("button", { name: buttonText });
+  await userEvent.click(button);
+  return page.findByRole("dialog");
 };
