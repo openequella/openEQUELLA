@@ -199,6 +199,7 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
             submitLegacyContentRequest(payload);
           },
         ),
+        // False is returned to match existing conventions (see ajaxhelper.js etc.) - the why is lost in history
         constFalse,
       ),
     [formId, submitLegacyContentRequest],

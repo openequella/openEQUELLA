@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 /**
- * Helper file dedicate to legacy portlet related functionalities.
+ * Helper file dedicated to legacy portlet related functionalities.
  */
 import * as A from "fp-ts/Array";
 import { identity, pipe } from "fp-ts/function";
