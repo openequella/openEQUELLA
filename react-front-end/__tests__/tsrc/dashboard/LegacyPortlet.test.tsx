@@ -138,6 +138,7 @@ describe("<LegacyPortlet />", () => {
         html: { body: legacyContent },
       });
 
+      // Secondly, get the button and mock the event handler to throw an error.
       const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
       const legacyBtn = await waitFor(() => getByText(legacyButtonText));
       const eventError = "No Section event handler registered for this portlet";
