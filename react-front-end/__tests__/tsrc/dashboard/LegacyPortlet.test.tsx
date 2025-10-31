@@ -17,6 +17,7 @@
  */
 import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
 import type { JQueryDivProps } from "../../../tsrc/legacycontent/JQueryDiv";
@@ -44,7 +45,7 @@ jest.mock(
   "../../../tsrc/legacycontent/JQueryDiv",
   () =>
     ({ html, ...otherProps }: JQueryDivProps) => (
-      <div {...otherProps}>{html}</div>
+      <div {...otherProps} dangerouslySetInnerHTML={{ __html: html }} />
     ),
 );
 
@@ -101,5 +102,82 @@ describe("<LegacyPortlet />", () => {
 
     expect(mockUpdateExtraFiles).toHaveBeenCalledTimes(1);
     expect(mockUpdateExtraFiles).toHaveBeenCalledWith(jsFiles, cssFiles);
+  });
+
+  describe("Error handling", () => {
+    const generalErrorMsg = `An error occurred while using portlet ${portletUuid}`;
+    const legacyButtonText = "legacy button";
+
+    const mockConsole = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    it("displays an alert if the legacy content request fails", async () => {
+      mockConsole.mockClear();
+      const contentError = "No Section Tree for this portlet";
+      jest
+        .spyOn(LegacyPortletHelper, "getPortletLegacyContent")
+        .mockRejectedValueOnce(contentError);
+
+      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
+      await waitFor(() => {
+        expect(getByText(generalErrorMsg)).toBeInTheDocument();
+        expect(console.error).toHaveBeenLastCalledWith(
+          `${generalErrorMsg}: ${contentError}`,
+        );
+      });
+    });
+
+    it("displays an alert if an error occurs when using a legacy function defined in object 'EQ'", async () => {
+      mockConsole.mockClear();
+      // Firstly, mock the content response to include a button that uses the legacy EQ event.
+      const event = "ppsp.doSearch";
+      const legacyContent = `<button onclick="window['EQ-${portletUuid}'].event('${event}');return false;" >${legacyButtonText}</button>`;
+      mockSubmitResponse.mockResolvedValueOnce({
+        ...legacyContentResponse,
+        html: { body: legacyContent },
+      });
+
+      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
+      const legacyBtn = await waitFor(() => getByText(legacyButtonText));
+      const eventError = "No Section event handler registered for this portlet";
+      mockSubmitResponse.mockRejectedValueOnce(eventError);
+
+      // Now, click the button and check the alert.
+      await userEvent.click(legacyBtn);
+      await waitFor(() => {
+        expect(getByText(generalErrorMsg)).toBeInTheDocument();
+        expect(console.error).toHaveBeenLastCalledWith(
+          generalErrorMsg,
+          { event__: [event] },
+          eventError,
+        );
+      });
+    });
+
+    it("displays an alert if any other unknown error occurs", async () => {
+      mockConsole.mockClear();
+      // Firstly, mock the content response to include a button that uses a legacy JS function which is unavailable at runtime.
+      const legacyContent = `<button onclick="legacyJS();">${legacyButtonText}</button>`;
+      mockSubmitResponse.mockResolvedValueOnce({
+        ...legacyContentResponse,
+        html: { body: legacyContent },
+      });
+
+      // Secondly, get the button and click it
+      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
+      const legacyBtn = await waitFor(() => getByText(legacyButtonText));
+      await userEvent.click(legacyBtn);
+
+      // Check if the alert is displayed.
+      await waitFor(() => {
+        expect(getByText(generalErrorMsg)).toBeInTheDocument();
+        // Not using toHaveBeenLastCalledWith as there is one extra console.error triggered by RTL.
+        expect(console.error).toHaveBeenCalledWith(
+          generalErrorMsg,
+          "legacyJS is not defined",
+        );
+      });
+    });
   });
 });
