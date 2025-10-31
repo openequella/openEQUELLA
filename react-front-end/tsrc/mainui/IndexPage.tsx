@@ -156,6 +156,8 @@ export default function IndexPage() {
     return isNotGuest || hasAuthenticated;
   }, [currentUser]);
 
+  const hasLegacyActionParams = (search: string): boolean => !isEmpty(search);
+
   const renderProtectedPage = React.useCallback(
     (
       routeProps: RouteComponentProps,
@@ -278,9 +280,9 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_DASHBOARD_PATH}
-          exact
           render={(routeProps) =>
-            !isEmpty(routeProps.location.search) || isSelectionSessionOpen()
+            hasLegacyActionParams(routeProps.location.search) ||
+            isSelectionSessionOpen()
               ? renderLegacyContent(routeProps)
               : renderProtectedPage(routeProps, DashboardPage)
           }
