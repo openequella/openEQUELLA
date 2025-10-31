@@ -41,14 +41,16 @@ TooltipToggleSwitch.args = {
   title: "This is a Tooltip Custom Component",
 };
 
-export const TooltipFab: StoryFn<TooltipCustomComponentProps> = (args) => (
+export const TooltipFabWithPositioningProps: StoryFn<
+  TooltipCustomComponentProps
+> = (args) => (
   <TooltipCustomComponent {...args}>
     <Fab color="secondary">
       <EditIcon />
     </Fab>
   </TooltipCustomComponent>
 );
-TooltipFab.args = {
+TooltipFabWithPositioningProps.args = {
   title: "Edit",
   sx: { position: "absolute", bottom: 24, right: 24 },
 };

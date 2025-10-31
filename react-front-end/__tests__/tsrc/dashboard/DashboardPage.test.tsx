@@ -57,8 +57,8 @@ const {
   closeAlert,
   deleteAlert,
 } = languageStrings.dashboard.portlets.dialog;
-const { editDashboard: editDashboardLabel } =
-  languageStrings.dashboard.dashboardEditor;
+const { editDashboard: editDashboardLabel, title: dashboardEditorTitle } =
+  languageStrings.dashboard.editor;
 
 const {
   mockGetDashboardDetails,
@@ -259,11 +259,28 @@ describe("<DashboardPage/>", () => {
     },
   );
 
-  it("shows 'Edit Dashboard' button for non system user", async () => {
+  it("shows 'Edit dashboard' button for non-system user", async () => {
     const { getByRole } = await renderDashboardPage();
 
     expect(
       getByRole("button", { name: editDashboardLabel }),
     ).toBeInTheDocument();
+  });
+
+  it("hides 'Edit dashboard' button for system user", async () => {
+    const { queryByRole } = await renderDashboardPage(systemUser);
+
+    expect(
+      queryByRole("button", { name: editDashboardLabel }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should open Dashboard editor when user clicks on 'Edit dashboard' button", async () => {
+    const { container, findByText } = await renderDashboardPage();
+
+    await clickButton(container, editDashboardLabel);
+    const drawer = await findByText(dashboardEditorTitle);
+
+    expect(drawer).toBeInTheDocument();
   });
 });

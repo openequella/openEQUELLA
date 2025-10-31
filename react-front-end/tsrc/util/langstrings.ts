@@ -390,7 +390,7 @@ export const languageStrings = {
         deleteAlert: "Are you sure you want to delete %s portlet?",
       },
     },
-    dashboardEditor: {
+    editor: {
       title: "Dashboard editor",
       editDashboard: "Edit dashboard",
       dashboardLayout: "Dashboard layout",

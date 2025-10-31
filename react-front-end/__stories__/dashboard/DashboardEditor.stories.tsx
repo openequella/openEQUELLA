@@ -25,9 +25,8 @@ import {
 export default {
   title: "Dashboard/DashboardEditor",
   component: DashboardEditor,
-  args: {
-    setOpenDashboardEditor: () => {},
-    loading: true,
+  argTypes: {
+    setOpenDashboardEditor: { action: "setOpenDashboardEditor" },
   },
 } as Meta<DashboardEditorProps>;
 
@@ -36,7 +35,3 @@ const Template: StoryFn<DashboardEditorProps> = (args) => (
 );
 
 export const DefaultWithTabContentLoading = Template.bind({});
-DefaultWithTabContentLoading.args = {};
-
-export const TabContentLoaded = Template.bind({});
-TabContentLoaded.args = { loading: false };

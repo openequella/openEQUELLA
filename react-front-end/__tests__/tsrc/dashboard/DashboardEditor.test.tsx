@@ -25,7 +25,7 @@ const {
   dashboardLayout: dashLayoutLabel,
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
-} = languageStrings.dashboard.dashboardEditor;
+} = languageStrings.dashboard.editor;
 const { close: closeLabel } = languageStrings.common.action;
 
 describe("<DashboardEditor />", () => {
@@ -50,6 +50,7 @@ describe("<DashboardEditor />", () => {
     const { assertActiveTab } = renderDashboardEditor();
 
     assertActiveTab(dashLayoutLabel);
+    expect.assertions(3);
   });
 
   it("switches tabs when clicked", async () => {
@@ -60,26 +61,14 @@ describe("<DashboardEditor />", () => {
 
     await user.click(getTabByRole(restorePortletLabel));
     assertActiveTab(restorePortletLabel);
+
+    expect.assertions(6);
   });
 
-  it("shows the skeleton by default (uncontrolled loading)", () => {
+  it("shows the skeleton by default", () => {
     const { getTabContentSkeleton } = renderDashboardEditor();
 
     expect(getTabContentSkeleton()).toBeInTheDocument();
-  });
-
-  it("shows the skeleton when loading prop is true (controlled)", () => {
-    const { getTabContentSkeleton } = renderDashboardEditor({ loading: true });
-
-    expect(getTabContentSkeleton()).toBeInTheDocument();
-  });
-
-  it("hides the skeleton when loading prop is false (controlled)", () => {
-    const { queryTabContentSkeleton } = renderDashboardEditor({
-      loading: false,
-    });
-
-    expect(queryTabContentSkeleton()).not.toBeInTheDocument();
   });
 
   it("calls setOpenDashboardEditor(false) when Close button is clicked", async () => {

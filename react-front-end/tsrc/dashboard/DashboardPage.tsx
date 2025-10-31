@@ -43,8 +43,7 @@ import { DashboardEditor } from "./DashboardEditor";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
-const { editDashboard: editDashboardLabel } =
-  languageStrings.dashboard.dashboardEditor;
+const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
@@ -183,18 +182,17 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     );
 
-  const renderDashboard = () => (
-    <>
-      {currentUser?.isSystem ? (
-        <WelcomeBoard isSystemUser />
-      ) : (
-        renderDashboardForNonSystemUser()
-      )}
-      {openDashboardEditor && (
-        <DashboardEditor setOpenDashboardEditor={setOpenDashboardEditor} />
-      )}
-    </>
-  );
+  const renderDashboard = () =>
+    currentUser?.isSystem ? (
+      <WelcomeBoard isSystemUser />
+    ) : (
+      <>
+        {renderDashboardForNonSystemUser()}
+        {openDashboardEditor && (
+          <DashboardEditor setOpenDashboardEditor={setOpenDashboardEditor} />
+        )}
+      </>
+    );
 
   return isLoading ? (
     <Skeleton variant="rounded" height="100%" />

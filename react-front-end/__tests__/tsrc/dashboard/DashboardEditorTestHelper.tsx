@@ -21,7 +21,6 @@ import userEvent from "@testing-library/user-event";
 import {
   DashboardEditor,
   DashboardEditorProps,
-  TabContentSkeletonTestId,
 } from "../../../tsrc/dashboard/DashboardEditor";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
@@ -29,7 +28,9 @@ const {
   dashboardLayout: dashLayoutLabel,
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
-} = languageStrings.dashboard.dashboardEditor;
+} = languageStrings.dashboard.editor;
+
+export const TabContentSkeletonTestId = "tab-content-skeleton";
 
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},

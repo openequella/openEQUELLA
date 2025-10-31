@@ -26,28 +26,12 @@ import {
   Skeleton,
 } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import { ChangeEvent } from "react";
 import * as React from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { TabContentSkeletonTestId } from "../../__tests__/tsrc/dashboard/DashboardEditorTestHelper";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
-
-const { useState, useEffect } = React;
-
-export interface DashboardEditorProps {
-  /**
-   * Function to control the open/closed state of the editor.
-   */
-  setOpenDashboardEditor: (open: boolean) => void;
-  /**
-   * Optional controlled loading state, primarily for Storybook and testing.
-   * When `true`, a skeleton loader is displayed instead of tab content.
-   */
-  loading?: boolean;
-}
-
-export const TabContentSkeletonTestId = "tab-content-skeleton";
 
 const {
   title,
@@ -55,8 +39,15 @@ const {
   dashboardLayout: dashLayoutLabel,
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
-} = languageStrings.dashboard.dashboardEditor;
+} = languageStrings.dashboard.editor;
 const { close } = languageStrings.common.action;
+
+export interface DashboardEditorProps {
+  /**
+   * Function to control the open/closed state of the editor.
+   */
+  setOpenDashboardEditor: (open: boolean) => void;
+}
 
 /**
  * Renders a Drawer component from the right side of the screen which is used
@@ -65,19 +56,11 @@ const { close } = languageStrings.common.action;
  */
 export const DashboardEditor = ({
   setOpenDashboardEditor,
-  loading,
 }: DashboardEditorProps) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [isLoading, setIsLoading] = useState(loading ?? true);
+  const [activeTab, setActiveTab] = React.useState(0);
+  const [isLoading] = React.useState(true);
 
-  // Synchronizes the internal `isLoading` state with the `loading` prop.
-  useEffect(() => {
-    if (loading !== undefined) {
-      setIsLoading(loading);
-    }
-  }, [loading]);
-
-  const handleTabChange = (_: ChangeEvent<object>, newValue: number) =>
+  const handleTabChange = (_: React.ChangeEvent<object>, newValue: number) =>
     setActiveTab(newValue);
 
   const tabContent = pipe(
@@ -110,16 +93,12 @@ export const DashboardEditor = ({
         },
       }}
     >
-      <Box
-        sx={{
-          padding: 2,
-        }}
-      >
-        <Grid container alignItems="center">
-          <Grid size={11}>
+      <Grid container spacing={2} p={2}>
+        <Grid container alignItems="center" size={12}>
+          <Grid size="grow">
             <Typography variant="h5">{title}</Typography>
           </Grid>
-          <Grid size={1}>
+          <Grid size="auto">
             <TooltipIconButton
               title={close}
               onClick={() => setOpenDashboardEditor(false)}
@@ -129,21 +108,22 @@ export const DashboardEditor = ({
             </TooltipIconButton>
           </Grid>
         </Grid>
-        <Alert severity="info" sx={{ mt: 2 }}>
-          {alertInfo}
-        </Alert>
-        <Tabs
-          onChange={handleTabChange}
-          sx={{ my: 2 }}
-          variant="fullWidth"
-          value={activeTab}
-        >
-          <Tab label={dashLayoutLabel} />
-          <Tab label={createPortletLabel} />
-          <Tab label={restorePortletLabel} />
-        </Tabs>
-        {isLoading ? tabContentSkeleton : tabContent}
-      </Box>
+        <Grid size={12}>
+          <Alert severity="info">{alertInfo}</Alert>
+        </Grid>
+        <Grid size={12}>
+          <Tabs
+            onChange={handleTabChange}
+            variant="fullWidth"
+            value={activeTab}
+          >
+            <Tab label={dashLayoutLabel} />
+            <Tab label={createPortletLabel} />
+            <Tab label={restorePortletLabel} />
+          </Tabs>
+        </Grid>
+        <Grid size={12}>{isLoading ? tabContentSkeleton : tabContent}</Grid>
+      </Grid>
     </Drawer>
   );
 };
