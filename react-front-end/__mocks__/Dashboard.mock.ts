@@ -92,15 +92,15 @@ export const publicRecentContributionsPortlet: OEQ.Dashboard.RecentContributions
   };
 
 export const mockPortlets: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet> = [
-  privateSearchPortlet,
   privateFavouritePortlet,
   privateTasksPortlet,
   publicHtmlPortlet,
   publicRecentContributionsPortlet,
 ];
 
-export const basicPortlet: OEQ.Dashboard.BasicPortlet = {
-  portletType: "search",
+export const basicPortlet: OEQ.Dashboard.FormattedTextPortlet = {
+  portletType: "html",
+  rawHtml: "<p>This is a <strong>fairly basic</strong> HTML portlet.</p>",
   commonDetails: {
     uuid: "123e4567-e89b-12d3-a456-426614174000",
     name: "Sample Portlet",
@@ -116,8 +116,10 @@ export const basicPortlet: OEQ.Dashboard.BasicPortlet = {
   },
 };
 
-export const privatePortlet: OEQ.Dashboard.BasicPortlet = {
+export const privatePortlet: OEQ.Dashboard.FormattedTextPortlet = {
   portletType: "html",
+  rawHtml:
+    "<p>This is a <strong>private</strong> HTML portlet.</p><p>Which is slightly unusual, but hey.</p>",
   commonDetails: {
     ...basicPortlet.commonDetails,
     uuid: "123e4567-e89b-12d3-a456-426614174101",

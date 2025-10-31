@@ -26,7 +26,6 @@ import { MemoryRouter } from "react-router-dom";
 import {
   mockPortlets,
   privateFavouritePortlet,
-  privateSearchPortlet,
   privateTasksPortlet,
   publicHtmlPortlet,
   publicRecentContributionsPortlet,
@@ -124,20 +123,30 @@ describe("<PortletContainer />", () => {
     "displays all the portlets in two-column layout %s",
     async (layout: TwoColumnLayout) => {
       const { container } = await renderPortletContainer(layout);
+      const portletsConfiguredForLeftColumn = mockPortlets.filter(
+        (p) => p.commonDetails.column === 0,
+      );
+      const portletsConfiguredForRightColumn = mockPortlets.filter(
+        (p) => p.commonDetails.column === 1,
+      );
 
       const leftColumnPortlets = getDisplayedPortlets(
         container,
         "#portlet-container-left-column",
-        mockPortlets.filter((p) => p.commonDetails.column === 0),
+        portletsConfiguredForLeftColumn,
       );
-      expect(leftColumnPortlets).toHaveLength(3);
+      expect(leftColumnPortlets).toHaveLength(
+        portletsConfiguredForLeftColumn.length,
+      );
 
       const rightColumnPortlets = getDisplayedPortlets(
         container,
         "#portlet-container-right-column",
-        mockPortlets.filter((p) => p.commonDetails.column === 1),
+        portletsConfiguredForRightColumn,
       );
-      expect(rightColumnPortlets).toHaveLength(2);
+      expect(rightColumnPortlets).toHaveLength(
+        portletsConfiguredForRightColumn.length,
+      );
     },
   );
 
@@ -164,7 +173,6 @@ describe("<PortletContainer />", () => {
     const expectedOrder = [
       privateTasksPortlet.commonDetails.name,
       privateFavouritePortlet.commonDetails.name,
-      privateSearchPortlet.commonDetails.name,
       publicHtmlPortlet.commonDetails.name,
       publicRecentContributionsPortlet.commonDetails.name,
     ];
