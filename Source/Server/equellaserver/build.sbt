@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.109"
+val TomcatVersion     = "9.0.111"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
@@ -29,8 +29,8 @@ val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
-val luceneVersion     = "10.3.0"
-val nettyVersion      = "4.2.6.Final"
+val luceneVersion     = "10.3.1"
+val nettyVersion      = "4.2.7.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
