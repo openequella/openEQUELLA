@@ -89,11 +89,11 @@ export const DashboardEditor = ({
       onClose={() => setOpenDashboardEditor(false)}
       slotProps={{
         paper: {
-          sx: { width: { xs: "100%", sm: "60%", md: "40%", lg: "30%" } },
+          sx: { width: { xs: "100%", sm: "60%", md: "40%", lg: "30%" }, p: 2 },
         },
       }}
     >
-      <Grid container spacing={2} p={2}>
+      <Grid container spacing={2}>
         <Grid container alignItems="center" size={12}>
           <Grid size="grow">
             <Typography variant="h5">{title}</Typography>
@@ -108,10 +108,10 @@ export const DashboardEditor = ({
             </TooltipIconButton>
           </Grid>
         </Grid>
-        <Grid size={12}>
+        <Grid>
           <Alert severity="info">{alertInfo}</Alert>
         </Grid>
-        <Grid size={12}>
+        <Grid>
           <Tabs
             onChange={handleTabChange}
             variant="fullWidth"

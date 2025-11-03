@@ -167,18 +167,16 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
       O.bind("layout", ({ details: { layout } }) => O.some(layout)),
       O.fold(
-        () => (
-          <>
-            <WelcomeBoard hasCreatePortletAcl={hasCreatePortletAcl} />
-            {editDashboardButton}
-          </>
-        ),
+        () => <WelcomeBoard hasCreatePortletAcl={hasCreatePortletAcl} />,
         ({ layout, portlets }) => (
-          <>
-            <PortletContainer portlets={portlets} layout={layout} />
-            {editDashboardButton}
-          </>
+          <PortletContainer portlets={portlets} layout={layout} />
         ),
+      ),
+      (mainContent) => (
+        <>
+          {mainContent}
+          {editDashboardButton}
+        </>
       ),
     );
 
