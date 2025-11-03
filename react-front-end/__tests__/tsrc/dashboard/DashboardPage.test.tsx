@@ -36,7 +36,6 @@ import {
   queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
-import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import * as E from "fp-ts/Either";
 import * as OEQ from "@openequella/rest-api-client";
 
@@ -62,13 +61,8 @@ const {
   mockGetDashboardDetails,
   mockUpdatePortletPreference,
   mockDeletePortlet,
+  mockGetCreatePortletAcl,
 } = mockDashboardPageApis();
-
-const mockGetCreatePortletAcl = jest.spyOn(
-  SecurityModule,
-  "hasCreatePortletACL",
-);
-mockGetCreatePortletAcl.mockResolvedValue(E.right(true));
 
 describe("<DashboardPage/>", () => {
   beforeEach(() => {

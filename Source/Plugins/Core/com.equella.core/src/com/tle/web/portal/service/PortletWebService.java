@@ -35,6 +35,18 @@ public interface PortletWebService {
 
   void editPortlet(SectionInfo info, String portletUuid, boolean admin);
 
+  /**
+   * Initiates a portlet editing session from the new UI dashboard.
+   *
+   * <p>This method is triggered by an event handler (`psh.editPortletFromNewDashboard`) when a user
+   * clicks the 'Edit' button on a portlet in the new UI. It prepares the legacy sections framework
+   * to display the correct portlet editor page.
+   *
+   * @param info The current section info.
+   * @param portletUuid The UUID of the portlet to be edited.
+   */
+  void editPortletFromNewDashboard(SectionInfo info, String portletUuid);
+
   void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
 

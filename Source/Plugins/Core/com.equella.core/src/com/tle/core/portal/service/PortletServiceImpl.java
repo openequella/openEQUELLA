@@ -25,6 +25,7 @@ import com.google.common.collect.Collections2;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.StagingFile;
@@ -680,6 +681,9 @@ public class PortletServiceImpl
   @Override
   public Portlet getForEdit(String portletUuid) {
     Portlet portlet = getByUuid(portletUuid);
+    if (portlet == null) {
+      throw new NotFoundException("Portlet with UUID " + portletUuid + " not found.");
+    }
     getExtensionForPortlet(portlet).loadExtra(portlet);
     return portlet;
   }

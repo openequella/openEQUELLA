@@ -19,6 +19,7 @@
 package com.tle.web.portal.service;
 
 import com.dytech.edge.exceptions.RuntimeApplicationException;
+import com.dytech.edge.web.WebConstants;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -26,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Provider;
 import com.tle.beans.Institution;
 import com.tle.common.Triple;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.portal.PortletConstants;
 import com.tle.common.portal.entity.Portlet;
@@ -47,6 +49,7 @@ import com.tle.web.portal.events.PortletsUpdatedEventListener;
 import com.tle.web.portal.renderer.PortletContentRenderer;
 import com.tle.web.portal.renderer.PortletRendererWrapper;
 import com.tle.web.portal.section.common.PortletContributionSection;
+import com.tle.web.portal.section.enduser.ShowPortletsSection;
 import com.tle.web.sections.RegistrationController;
 import com.tle.web.sections.SectionId;
 import com.tle.web.sections.SectionInfo;
@@ -56,6 +59,8 @@ import com.tle.web.sections.SectionUtils;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.DefaultSectionTree;
 import com.tle.web.sections.render.SectionRenderable;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,6 +168,21 @@ public class PortletWebServiceImpl
   }
 
   @Override
+  public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
+    try {
+      SectionInfo forward = info.createForward(WebConstants.DASHBOARD_PAGE);
+      PortletContributionSection con = forward.lookupSection(PortletContributionSection.class);
+      Portlet portlet = portletService.getForEdit(portletUuid);
+      con.startEdit(forward, portletUuid, portlet.getType(), false);
+      info.forward(forward);
+    } catch (NotFoundException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
   public void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional) {
     PortletContributionSection con = info.lookupSection(PortletContributionSection.class);
@@ -175,6 +195,13 @@ public class PortletWebServiceImpl
           portletUuid,
           institutional,
           portletUuid == null ? PortletUpdateEventType.CREATED : PortletUpdateEventType.EDITED);
+    }
+
+    // If the new UI is enabled and the user is returning from an edit session that was
+    // initiated from the dashboard page, forward them back to the new UI dashboard.
+    if (RenderNewTemplate.isNewUIEnabled()
+        && info.lookupSection(ShowPortletsSection.class) != null) {
+      info.forwardToUrl(NewUiRoutes.PATH_DASHBOARD());
     }
   }
 

@@ -22,6 +22,8 @@ import PortletItem, {
   PortletItemProps,
 } from "../../../tsrc/dashboard/components/PortletItem";
 import "@testing-library/jest-dom";
+import { Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 export const portletContent = "Portlet content";
 
@@ -30,10 +32,16 @@ export const defaultProps: PortletItemProps = {
   children: <div>{portletContent}</div>,
 };
 
+const history = createMemoryHistory();
+
 /**
  * Helper to render PortletItem.
  *
  * @param props Props to pass to the component.
  */
 export const renderPortletItem = (props = defaultProps): RenderResult =>
-  render(<PortletItem {...props} />);
+  render(
+    <Router history={history}>
+      <PortletItem {...props} />
+    </Router>,
+  );
