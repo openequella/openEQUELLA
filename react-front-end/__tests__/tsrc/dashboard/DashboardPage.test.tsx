@@ -279,8 +279,8 @@ describe("<DashboardPage/>", () => {
     const { container, findByText } = await renderDashboardPage();
 
     await clickButton(container, editDashboardLabel);
-    const drawer = await findByText(dashboardEditorTitle);
+    const editorTitleElement = await findByText(dashboardEditorTitle);
 
-    expect(drawer).toBeInTheDocument();
+    expect(editorTitleElement).toBeInTheDocument();
   });
 });
