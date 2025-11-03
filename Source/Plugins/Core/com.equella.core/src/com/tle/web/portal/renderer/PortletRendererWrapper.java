@@ -183,6 +183,10 @@ public class PortletRendererWrapper
     this.minimised = minimised;
   }
 
+  public PortletContentRenderer<?> getDelegate() {
+    return delegate;
+  }
+
   public void setDelegate(PortletContentRenderer<?> delegate) {
     this.delegate = delegate;
   }

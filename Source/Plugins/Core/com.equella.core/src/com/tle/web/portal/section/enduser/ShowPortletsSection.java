@@ -18,12 +18,16 @@
 
 package com.tle.web.portal.section.enduser;
 
+import static com.tle.web.portal.service.PortletWebServiceImpl.UUID_SECTIONID_MAP_KEY;
+
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.portal.service.PortletService;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
+import com.tle.web.portal.renderer.PortletContentRenderer;
+import com.tle.web.portal.renderer.PortletRendererWrapper;
 import com.tle.web.portal.service.PortletWebService;
 import com.tle.web.resources.PluginResourceHelper;
 import com.tle.web.resources.ResourcesService;
@@ -34,12 +38,17 @@ import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.AjaxMethod;
+import com.tle.web.sections.annotations.EventFactory;
+import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.layout.CombinedLayout;
 import com.tle.web.sections.equella.layout.ContentLayout;
 import com.tle.web.sections.events.AfterParametersListener;
 import com.tle.web.sections.events.ParametersEvent;
 import com.tle.web.sections.events.ParametersEventListener;
+import com.tle.web.sections.events.RenderEvent;
 import com.tle.web.sections.events.RenderEventContext;
+import com.tle.web.sections.events.StandardRenderContext;
+import com.tle.web.sections.events.js.EventGenerator;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
 import com.tle.web.sections.jquery.libraries.JQueryCore;
 import com.tle.web.sections.jquery.libraries.JQuerySortable;
@@ -51,7 +60,11 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
+import java.util.Map;
+import java.util.Optional;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ShowPortletsSection
     extends AbstractPrototypeSection<ShowPortletsSection.ShowPortletsModel>
@@ -75,6 +88,9 @@ public class ShowPortletsSection
 
   @ViewFactory private FreemarkerFactory view;
   @AjaxFactory private AjaxGenerator ajax;
+  @EventFactory private EventGenerator events;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ShowPortletsSection.class);
 
   @Override
   public Object instantiateModel(SectionInfo info) {
@@ -134,6 +150,30 @@ public class ShowPortletsSection
     getModel(info).getTree(true);
   }
 
+  @EventHandlerMethod
+  public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
+    portletWebService.editPortletFromNewDashboard(info, portletUuid);
+  }
+
+  /**
+   * Event handler that should ONLY be used together with `LegacyContentApi` to retrieve the content
+   * of a Legacy portlet in raw HTML format for the New UI Dashboard.
+   */
+  @EventHandlerMethod
+  public void getPortletContent(SectionInfo info, String uuid) {
+    SectionTree tree = getModel(info).getTree(false);
+    // This is the mapping between Portlet UUID and Section 'PortletRendererWrapper'
+    Map<String, PortletRendererWrapper> portletMapping = tree.getAttribute(UUID_SECTIONID_MAP_KEY);
+
+    Optional.ofNullable(portletMapping.get(uuid))
+        .map(PortletRendererWrapper::getDelegate)
+        .ifPresentOrElse(
+            portletRenderer -> renderPortletForNewDashboard(info, portletRenderer),
+            () ->
+                LOGGER.warn(
+                    "Failed to find Legacy Section 'PortletRendererWrapper' with UUID {}", uuid));
+  }
+
   @AjaxMethod
   public boolean portletMoved(SectionInfo info, int position, String prevUuid, String portletUuid) {
     if (CurrentUser.wasAutoLoggedIn()) {
@@ -171,6 +211,18 @@ public class ShowPortletsSection
     if (p != null && p.equals("cleartree")) {
       portletWebService.clearPortletRendererCache(CurrentUser.getUserID());
     }
+  }
+
+  private void renderPortletForNewDashboard(SectionInfo info, PortletContentRenderer<?> renderer) {
+    StandardRenderContext renderContext = info.getAttributeForClass(StandardRenderContext.class);
+    renderer.setupForNewDashboard(renderContext);
+
+    RenderEvent event =
+        new RenderEvent(
+            renderContext,
+            renderer,
+            (result, id) -> info.getRootRenderContext().setRenderedBody(result));
+    renderContext.processEvent(event);
   }
 
   public class ShowPortletsModel {

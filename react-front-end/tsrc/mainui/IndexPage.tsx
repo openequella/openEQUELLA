@@ -47,6 +47,7 @@ import ProtectedPage from "./ProtectedPage";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
+  NEW_DASHBOARD_PATH,
   OEQRouteNewUI,
   OLD_DASHBOARD_PATH,
   OLD_HIERARCHY_PATH,
@@ -55,6 +56,7 @@ import {
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
+import { isEmpty } from "fp-ts/string";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
@@ -153,6 +155,8 @@ export default function IndexPage() {
 
     return isNotGuest || hasAuthenticated;
   }, [currentUser]);
+
+  const hasLegacyActionParams = (search: string): boolean => !isEmpty(search);
 
   const renderProtectedPage = React.useCallback(
     (
@@ -277,6 +281,7 @@ export default function IndexPage() {
         <Route
           path={OLD_DASHBOARD_PATH}
           render={(routeProps) =>
+            hasLegacyActionParams(routeProps.location.search) ||
             isSelectionSessionOpen()
               ? renderLegacyContent(routeProps)
               : renderProtectedPage(routeProps, DashboardPage)
@@ -326,7 +331,7 @@ export default function IndexPage() {
               </Route>
             )}
             <Route path="/" exact>
-              <Redirect to="/home.do" />
+              <Redirect to={NEW_DASHBOARD_PATH} />
             </Route>
             {newPageRoutes}
             {legacyPageRoutes}
