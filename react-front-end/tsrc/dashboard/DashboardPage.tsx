@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 
-import { Skeleton } from "@mui/material";
+import { Skeleton, Fab } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import { pipe, constVoid } from "fp-ts/function";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as React from "react";
@@ -38,8 +39,11 @@ import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
 import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
+import { DashboardEditor } from "./DashboardEditor";
+import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
+const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
@@ -48,6 +52,8 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [dashboardDetails, setDashboardDetails] =
     useState<OEQ.Dashboard.DashboardDetails>();
   const [hasCreatePortletAcl, setHasCreatePortletAcl] = useState<boolean>();
+  const [openDashboardEditor, setOpenDashboardEditor] =
+    useState<boolean>(false);
 
   useEffect(() => {
     updateTemplate((tp) => ({
@@ -137,6 +143,21 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [updatePortletPreferenceAndRefresh],
   );
 
+  const editDashboardButton = (
+    <TooltipCustomComponent
+      title={editDashboardLabel}
+      sx={{ position: "absolute", bottom: 24, right: 24 }}
+    >
+      <Fab
+        color="secondary"
+        aria-label={editDashboardLabel}
+        onClick={() => setOpenDashboardEditor(true)}
+      >
+        <EditIcon />
+      </Fab>
+    </TooltipCustomComponent>
+  );
+
   const renderDashboardForNonSystemUser = () =>
     pipe(
       O.Do,
@@ -151,13 +172,24 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
           <PortletContainer portlets={portlets} layout={layout} />
         ),
       ),
+      (mainContent) => (
+        <>
+          {mainContent}
+          {editDashboardButton}
+        </>
+      ),
     );
 
   const renderDashboard = () =>
     currentUser?.isSystem ? (
       <WelcomeBoard isSystemUser />
     ) : (
-      renderDashboardForNonSystemUser()
+      <>
+        {renderDashboardForNonSystemUser()}
+        {openDashboardEditor && (
+          <DashboardEditor setOpenDashboardEditor={setOpenDashboardEditor} />
+        )}
+      </>
     );
 
   return isLoading ? (

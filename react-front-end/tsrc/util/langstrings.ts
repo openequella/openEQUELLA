@@ -396,6 +396,15 @@ export const languageStrings = {
         deleteAlert: "Are you sure you want to delete %s portlet?",
       },
     },
+    editor: {
+      title: "Dashboard editor",
+      editDashboard: "Edit dashboard",
+      dashboardLayout: "Dashboard layout",
+      createPortlet: "Create portlet",
+      restorePortlet: "Restore portlet",
+      alertInfo:
+        "You are currently editing your dashboard. Changes will be saved automatically.",
+    },
   },
   drm: {
     getTerms: {
