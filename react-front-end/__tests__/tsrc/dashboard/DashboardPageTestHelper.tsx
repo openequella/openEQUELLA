@@ -17,6 +17,7 @@
  */
 import { render, type RenderResult, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as E from "fp-ts/Either";
 import * as React from "react";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
@@ -24,6 +25,7 @@ import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
+import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const { welcomeTitle } = languageStrings.dashboard;
@@ -69,6 +71,8 @@ export interface MockDashboardApis {
   mockUpdatePortletPreference: jest.SpyInstance;
   /** Spy for the `deletePortlet` API. */
   mockDeletePortlet: jest.SpyInstance;
+  /** Spy for the `hasCreatePortletACL` API. */
+  mockGetCreatePortletAcl: jest.SpyInstance;
 }
 
 /**
@@ -85,6 +89,9 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockDeletePortlet: jest
       .spyOn(DashboardModule, "deletePortlet")
       .mockResolvedValue(undefined),
+    mockGetCreatePortletAcl: jest
+      .spyOn(SecurityModule, "hasCreatePortletACL")
+      .mockResolvedValue(E.right(true)),
   };
 };
 

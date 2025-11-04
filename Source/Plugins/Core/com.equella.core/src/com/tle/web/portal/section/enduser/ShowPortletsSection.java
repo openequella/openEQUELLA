@@ -150,6 +150,11 @@ public class ShowPortletsSection
     getModel(info).getTree(true);
   }
 
+  @EventHandlerMethod
+  public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
+    portletWebService.editPortletFromNewDashboard(info, portletUuid);
+  }
+
   /**
    * Event handler that should ONLY be used together with `LegacyContentApi` to retrieve the content
    * of a Legacy portlet in raw HTML format for the New UI Dashboard.

@@ -29,7 +29,6 @@ import {
   publicHtmlPortlet,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
-import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { clickButton } from "../MuiTestHelpers";
 import {
@@ -62,13 +61,8 @@ const {
   mockGetDashboardDetails,
   mockUpdatePortletPreference,
   mockDeletePortlet,
+  mockGetCreatePortletAcl,
 } = mockDashboardPageApis();
-
-const mockGetCreatePortletAcl = jest.spyOn(
-  SecurityModule,
-  "hasCreatePortletACL",
-);
-mockGetCreatePortletAcl.mockResolvedValue(E.right(true));
 
 describe("<DashboardPage/>", () => {
   beforeEach(() => {

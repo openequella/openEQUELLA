@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "1.7.7",
-    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.2.7",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "3.2.8",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@fontsource/material-icons": "5.2.7",
@@ -67,7 +67,7 @@
     "fp-ts": "2.16.11",
     "fp-ts-contrib": "0.1.29",
     "history": "4.10.1",
-    "html-react-parser": "5.2.6",
+    "html-react-parser": "5.2.7",
     "io-ts": "2.2.22",
     "io-ts-types": "0.5.19",
     "jspolyfill-array.prototype.find": "0.1.3",
