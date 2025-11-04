@@ -52,25 +52,29 @@ libraryDependencies ++= Seq(
   "com.auth0" % "jwks-rsa" % "0.23.0"
 )
 
+// Jackson dependencies
+libraryDependencies ++= Seq(
+  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"       % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonAnnotationsVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion exclude (
+    "javax.xml.bind",
+    "jaxb-api"
+  ),
+  jacksonDataBind,
+  jacksonModuleScala
+)
+
 libraryDependencies ++= Seq(
   "co.fs2"                        %% "fs2-io"                        % fs2Version,
   "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
   "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
-  "com.fasterxml.jackson.core"     % "jackson-core"                  % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"       % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"         % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-annotations"           % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion exclude (
-    "javax.xml.bind",
-    "jaxb-api"
-  ),
-  jacksonDataBind,
-  jacksonModuleScala,
-  "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
+  "io.bit3"                        % "jsass"                         % jsassVersion,
+  "com.flickr4java"                % "flickr4java"                   % "3.0.9" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
