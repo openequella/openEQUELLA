@@ -35,11 +35,15 @@ export const itemWithAttachment: OEQ.Search.SearchResultItem = {
   uuid: "9b9bf5a9-c5af-490b-88fe-7e330679fad2",
   version: 1,
   name: "new title",
+  description: "this item has an attachment",
   status: "personal",
   createdDate: new Date("2014-06-11T10:28:58.190+10:00"),
   modifiedDate: new Date("2014-06-11T10:28:58.393+10:00"),
   collectionId: "6b356e2e-e6a0-235a-5730-15ad1d8ad630",
   commentCount: 0,
+  thumbnailDetails: {
+    attachmentType: "file",
+  },
   attachmentCount: 1,
   attachments: [
     {
@@ -67,12 +71,16 @@ export const itemWithAttachment: OEQ.Search.SearchResultItem = {
 
 export const normalItemWithoutName: OEQ.Search.SearchResultItem = {
   uuid: "266bb0ff-a730-4658-aec0-c68bbefc227c",
+  description: "A normal item without a name",
   version: 1,
   status: "live",
   createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
   modifiedDate: new Date("2014-06-11T09:31:08.557+10:00"),
   collectionId: "9a1ddb24-6bf5-db3d-d8fe-4fca20ecf69c",
   commentCount: 0,
+  thumbnailDetails: {
+    attachmentType: "html",
+  },
   attachments: [],
   thumbnail: "initial",
   displayFields: [],
@@ -87,6 +95,8 @@ export const normalItemWithoutName: OEQ.Search.SearchResultItem = {
 export const itemNotInKeyResource: OEQ.Search.SearchResultItem = {
   uuid: "2534e329-e37e-4851-896e-51d8b39104c4",
   version: 1,
+  description:
+    "An item which does not have a name, and is not in the key resource",
   status: "live",
   createdDate: new Date("2014-06-11T09:27:14.800+10:00"),
   modifiedDate: new Date("2014-06-11T09:27:14.803+10:00"),
@@ -106,6 +116,7 @@ export const itemNotInKeyResource: OEQ.Search.SearchResultItem = {
 export const itemWithBookmark: OEQ.Search.SearchResultItem = {
   uuid: "266bb0ff-a730-4658-aec0-c68bbefc2272",
   name: "b",
+  description: "This item has been bookmarked",
   version: 1,
   status: "live",
   createdDate: new Date("2014-06-11T09:31:08.557+10:00"),
@@ -147,6 +158,11 @@ export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultIte
         modifiedDate: new Date("2014-06-10T16:01:25.967+10:00"),
         collectionId: "6b356e2e-e6a0-235a-5730-15ad1d8ad630",
         commentCount: 0,
+        thumbnailDetails: {
+          attachmentType: "file",
+          mimeType: "image/png",
+          link: "./thumb.jpg",
+        },
         attachments: [
           {
             attachmentType: "file",

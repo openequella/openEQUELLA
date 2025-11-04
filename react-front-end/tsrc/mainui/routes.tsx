@@ -28,6 +28,10 @@ import {
   RequiredPermissionCheck,
 } from "../modules/SecurityModule";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
+import {
+  DehydratedSearchPageOptions,
+  SEARCH_OPTIONS_PARAM,
+} from "../search/SearchPageHelper";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -129,7 +133,10 @@ interface Routes {
   OldHierarchy: OEQRouteTo<ToFunc>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
-  SearchPage: OEQRouteNewUI;
+  SearchPage: OEQRouteNewUI & {
+    // Provides a way to navigate to a quick search with a query.
+    quickSearch: (query: string) => string;
+  };
   SearchSettings: OEQRouteNewUI;
   Settings: OEQRouteNewUI & OEQRouteTo<string>;
   TaskList: OEQRouteTo<string>;
@@ -282,6 +289,10 @@ export const routes: Routes = {
   },
   SearchPage: {
     path: NEW_SEARCH_PATH,
+    quickSearch: (query) => {
+      const searchOptions: DehydratedSearchPageOptions = { query };
+      return `${NEW_SEARCH_PATH}?${SEARCH_OPTIONS_PARAM}=${JSON.stringify(searchOptions)}`;
+    },
     component: SearchPage,
     permissionChecks: [isSearchPageACLGranted],
   },

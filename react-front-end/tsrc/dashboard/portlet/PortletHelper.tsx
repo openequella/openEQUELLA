@@ -22,9 +22,10 @@ import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
+import * as React from "react";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
-import * as React from "react";
+import { PortletQuickSearch } from "./PortletQuickSearch";
 import { PortletUnsupported } from "./PortletUnsupported";
 
 /**
@@ -92,7 +93,7 @@ export const renderPortlet = (
   // TODO: Update portlet component when they are implemented.
   switch (portletType) {
     case "search":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletQuickSearch cfg={portlet} />;
     case "browse":
       return <PortletUnsupported cfg={portlet} />;
     case "favourites":

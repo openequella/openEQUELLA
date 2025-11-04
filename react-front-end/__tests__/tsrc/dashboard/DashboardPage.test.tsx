@@ -16,14 +16,16 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import * as OEQ from "@openequella/rest-api-client";
 import { waitForElementToBeRemoved } from "@testing-library/react";
+import * as E from "fp-ts/Either";
 import { sprintf } from "sprintf-js";
 import {
   basicPortlet,
   emptyDashboardDetails,
   minimisedPortlet,
   mockPortlets,
-  privateSearchPortlet,
+  privatePortlet,
   publicHtmlPortlet,
 } from "../../../__mocks__/Dashboard.mock";
 import { systemUser } from "../../../__mocks__/UserModule.mock";
@@ -36,8 +38,6 @@ import {
   queryPortletContent,
   renderDashboardPage,
 } from "./DashboardPageTestHelper";
-import * as E from "fp-ts/Either";
-import * as OEQ from "@openequella/rest-api-client";
 
 const {
   nonSystemUser: { hintForOeq: hintForOeqText, imageAlt: imageAltText },
@@ -173,7 +173,7 @@ describe("<DashboardPage/>", () => {
     ],
     [
       deleteText,
-      privateSearchPortlet,
+      privatePortlet,
       { title: deleteAlertTitle, desc: deleteAlert },
     ],
   ])(
@@ -199,12 +199,12 @@ describe("<DashboardPage/>", () => {
 
   it.each([
     [closeText, publicHtmlPortlet, mockUpdatePortletPreference],
-    [deleteText, privateSearchPortlet, mockDeletePortlet],
+    [deleteText, privatePortlet, mockDeletePortlet],
   ])(
     "should dismiss the %s portlet confirmation dialog when a user clicks on 'Cancel' button",
-    async (buttonText, mockportlet, mockApi) => {
+    async (buttonText, mockPortlet, mockApi) => {
       mockGetDashboardDetails.mockResolvedValueOnce({
-        portlets: [mockportlet],
+        portlets: [mockPortlet],
       });
 
       const page = await renderDashboardPage();
@@ -229,11 +229,11 @@ describe("<DashboardPage/>", () => {
       isClosed: true,
     },
   ];
-  const deleteArgs: [string] = [privateSearchPortlet.commonDetails.uuid];
+  const deleteArgs: [string] = [privatePortlet.commonDetails.uuid];
 
   it.each([
     [closeText, mockUpdatePortletPreference, publicHtmlPortlet, closeArgs],
-    [deleteText, mockDeletePortlet, privateSearchPortlet, deleteArgs],
+    [deleteText, mockDeletePortlet, privatePortlet, deleteArgs],
   ])(
     "should execute the '%s' action with correct arguments and refresh the dashboard when 'Ok' is clicked",
     async (buttonText, mockApi, mockportlet, expectedArgs) => {
