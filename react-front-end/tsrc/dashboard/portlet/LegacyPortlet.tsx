@@ -125,9 +125,7 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
   const [error, setError] = useState<string>();
 
   // General error message reminding users that an error has occurred while using this portlet.
-  const [generalErrorMsg] = useState(
-    `An error occurred while using portlet ${portletId}`,
-  );
+  const generalErrorMsg = `An error occurred while displaying portlet ${portletId}`;
 
   // Reference to this portlet to help confirm whether an error event is triggered from within this portlet.
   const portletRef = useRef<HTMLDivElement>(null);

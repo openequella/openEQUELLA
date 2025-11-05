@@ -105,7 +105,7 @@ describe("<LegacyPortlet />", () => {
   });
 
   describe("Error handling", () => {
-    const generalErrorMsg = `An error occurred while using portlet ${portletUuid}`;
+    const generalErrorMsg = `An error occurred while displaying portlet ${portletUuid}`;
     const legacyButtonText = "legacy button";
 
     const mockConsole = jest
@@ -139,21 +139,21 @@ describe("<LegacyPortlet />", () => {
       });
 
       // Secondly, get the button and mock the event handler to throw an error.
-      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
-      const legacyBtn = await waitFor(() => getByText(legacyButtonText));
+      const { getByText, findByText } = render(
+        <LegacyPortlet portletId={portletUuid} />,
+      );
+      const legacyBtn = await findByText(legacyButtonText);
       const eventError = "No Section event handler registered for this portlet";
       mockSubmitResponse.mockRejectedValueOnce(eventError);
 
       // Now, click the button and check the alert.
       await userEvent.click(legacyBtn);
-      await waitFor(() => {
-        expect(getByText(generalErrorMsg)).toBeInTheDocument();
-        expect(console.error).toHaveBeenLastCalledWith(
-          generalErrorMsg,
-          { event__: [event] },
-          eventError,
-        );
-      });
+      expect(getByText(generalErrorMsg)).toBeInTheDocument();
+      expect(console.error).toHaveBeenLastCalledWith(
+        generalErrorMsg,
+        { event__: [event] },
+        eventError,
+      );
     });
 
     it("displays an alert if any other unknown error occurs", async () => {
@@ -166,19 +166,19 @@ describe("<LegacyPortlet />", () => {
       });
 
       // Secondly, get the button and click it
-      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
-      const legacyBtn = await waitFor(() => getByText(legacyButtonText));
+      const { getByText, findByText } = render(
+        <LegacyPortlet portletId={portletUuid} />,
+      );
+      const legacyBtn = await findByText(legacyButtonText);
       await userEvent.click(legacyBtn);
 
       // Check if the alert is displayed.
-      await waitFor(() => {
-        expect(getByText(generalErrorMsg)).toBeInTheDocument();
-        // Not using toHaveBeenLastCalledWith as there is one extra console.error triggered by RTL.
-        expect(console.error).toHaveBeenCalledWith(
-          generalErrorMsg,
-          "legacyJS is not defined",
-        );
-      });
+      expect(getByText(generalErrorMsg)).toBeInTheDocument();
+      // Not using toHaveBeenLastCalledWith as there is one extra console.error triggered by RTL.
+      expect(console.error).toHaveBeenCalledWith(
+        generalErrorMsg,
+        "legacyJS is not defined",
+      );
     });
   });
 });
