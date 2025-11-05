@@ -20,6 +20,7 @@ import * as React from "react";
 import {
   itemWithAttachment,
   itemWithBookmark,
+  itemWithLongDescription,
   normalItemWithoutName,
   itemNotInKeyResource,
 } from "../../../__mocks__/SearchResult.mock";
@@ -70,4 +71,9 @@ EmptyList.args = {
 export const SingleItem = Template.bind({});
 SingleItem.args = {
   results: [itemWithAttachment],
+};
+
+export const LongDescription = Template.bind({});
+LongDescription.args = {
+  results: [itemWithLongDescription],
 };

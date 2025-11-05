@@ -139,6 +139,33 @@ export const itemWithBookmark: OEQ.Search.SearchResultItem = {
   },
 };
 
+export const itemWithLongDescription: OEQ.Search.SearchResultItem = {
+  uuid: "42424242-4242-4242-4242-424242424242",
+  version: 1,
+  name: "The Hitchhiker's Guide to the Galaxy",
+  description:
+    "Don't Panic! This is the story of Arthur Dent, an ordinary human who discovers that his best friend Ford Prefect is actually an alien researcher for the titular guidebook, and that Earth is about to be demolished by a Vogon construction fleet to make way for a hyperspace bypass. After hitchhiking aboard the Vogon ship, Arthur and Ford are rescued by the starship Heart of Gold, powered by the revolutionary Infinite Improbability Drive. Aboard the ship, they meet Zaphod Beeblebrox, the eccentric two-headed President of the Galaxy who stole the ship, and Marvin, a chronically depressed robot with a brain the size of a planet. Their journey takes them to the legendary planet Magrathea, where they discover that Earth was actually a giant computer designed to find the Ultimate Question to the Ultimate Answer of Life, the Universe, and Everything, which is famously known to be 42. The mice, who are actually hyper-intelligent pan-dimensional beings, commissioned the Earth computer ten million years ago, but the program was interrupted just five minutes before completion when the Vogons destroyed the planet.",
+  status: "live",
+  createdDate: new Date("2042-05-25T09:00:00.000Z"),
+  modifiedDate: new Date("2042-05-25T09:42:00.000Z"),
+  collectionId: "42000000-0042-4200-4242-000000000042",
+  commentCount: 42,
+  starRatings: -1.0,
+  thumbnailDetails: {
+    attachmentType: "file",
+  },
+  attachmentCount: 1,
+  attachments: [],
+  thumbnail: "initial",
+  displayFields: [],
+  keywordFoundInAttachment: false,
+  links: {
+    view: "http://localhost:8080/rest/items/42424242-4242-4242-4242-424242424242/1/",
+    self: "http://localhost:8080/rest/api/item/42424242-4242-4242-4242-424242424242/1/",
+  },
+  isLatestVersion: true,
+};
+
 export const getSearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
     start: 0,

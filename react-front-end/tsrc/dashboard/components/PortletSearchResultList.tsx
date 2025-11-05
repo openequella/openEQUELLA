@@ -22,6 +22,16 @@ import { Link } from "react-router-dom";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
 
+// CSS styles for two-line text truncation
+const descriptionStyles = {
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  wordBreak: "break-word",
+};
+
 export interface PortletSearchResultListProps {
   /** Array of search result items to display */
   results: OEQ.Search.SearchResultItem[];
@@ -48,6 +58,9 @@ export const PortletSearchResultList = ({
           <ListItemText
             primary={item.name || item.uuid}
             secondary={!hideDescription ? item.description : null}
+            sx={{
+              "& .MuiListItemText-secondary": descriptionStyles,
+            }}
           />
         </ListItem>
       ))}
