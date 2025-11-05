@@ -57,6 +57,7 @@ Simple.args = {
   cfg: privateSearchPortlet,
   searchProvider: mockSearchProvider,
   searchSettingsProvider: mockSearchSettingsProvider,
+  position: { order: 0, column: 0 },
 };
 
 export const NoResults = Template.bind({});

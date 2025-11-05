@@ -26,6 +26,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
+import { PortletPosition } from "../../modules/DashboardModule";
 import {
   FavouritesType,
   searchFavouriteItems,
@@ -34,7 +35,7 @@ import {
 import { SearchOptions } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
-import PortletItem from "../components/PortletItem";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 import { FavouriteItemsTab } from "./FavouriteItemsTab";
 
 const strings = {
@@ -52,6 +53,8 @@ type SearchesProvider = () => Promise<
 export interface PortletFavouritesProps {
   /** The portlet configuration */
   cfg: OEQ.Dashboard.BasicPortlet;
+  /** The actual position of the portlet in the page which is used for drag and drop operations. */
+  position: PortletPosition;
   /** Optional provider for favourite resources - primarily for testing. */
   favouriteResourcesProvider?: ResourcesProvider;
   /** Optional provider for favourite searches - primarily for testing. */
@@ -76,6 +79,7 @@ const defaultSearchesProvider: SearchesProvider = () =>
  */
 export const PortletFavourites = ({
   cfg,
+  position,
   favouriteResourcesProvider = defaultResourcesProvider,
   favouriteSearchesProvider = defaultSearchesProvider,
 }: PortletFavouritesProps): React.JSX.Element => {
@@ -145,7 +149,7 @@ export const PortletFavourites = ({
   );
 
   return (
-    <PortletItem portlet={cfg} isLoading={isLoading}>
+    <DraggablePortlet portlet={cfg} isLoading={isLoading} position={position}>
       <Grid container direction="column" spacing={2}>
         <Grid>
           <Tabs value={activeTab} onChange={handleTabChange}>
@@ -160,6 +164,6 @@ export const PortletFavourites = ({
           </Button>
         </Grid>
       </Grid>
-    </PortletItem>
+    </DraggablePortlet>
   );
 };

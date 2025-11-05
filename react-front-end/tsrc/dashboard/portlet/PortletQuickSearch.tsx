@@ -39,11 +39,12 @@ import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
+import { PortletPosition } from "../../modules/DashboardModule";
 import { defaultSearchOptions, searchItems } from "../../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
-import PortletItem from "../components/PortletItem";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 
 const strings = {
   ...languageStrings.dashboard.portlets.quickSearch,
@@ -64,6 +65,8 @@ type SearchState =
 export interface PortletQuickSearchProps {
   /** The portlet configuration */
   cfg: OEQ.Dashboard.BasicPortlet;
+  /** The actual position of the portlet in the page which is used for drag and drop operations. */
+  position: PortletPosition;
   /** Optional search provider - primarily for testing. */
   searchProvider?: typeof searchItems;
   /** Optional provider for fetching search settings - primarily for testing. */
@@ -75,6 +78,7 @@ export interface PortletQuickSearchProps {
  */
 export const PortletQuickSearch = ({
   cfg,
+  position,
   searchProvider = searchItems,
   searchSettingsProvider = getSearchSettingsFromServer,
 }: PortletQuickSearchProps) => {
@@ -244,8 +248,12 @@ export const PortletQuickSearch = ({
   );
 
   return (
-    <PortletItem portlet={cfg} isLoading={loadingState === "loading"}>
+    <DraggablePortlet
+      portlet={cfg}
+      isLoading={loadingState === "loading"}
+      position={position}
+    >
       {portletContent}
-    </PortletItem>
+    </DraggablePortlet>
   );
 };
