@@ -15,31 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import HTMLReactParser from "html-react-parser";
+import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
-import { PortletPosition } from "../../modules/DashboardModule";
-import { DraggablePortlet } from "../components/DraggablePortlet";
+import { basicPortlet } from "../../__mocks__/Dashboard.mock";
+import {
+  DraggablePortlet,
+  DraggablePortletProps,
+} from "../../tsrc/dashboard/components/DraggablePortlet";
 
-export interface PortletFormattedTextProps {
-  /**
-   * Configuration details of the formatted text portlet.
-   */
-  cfg: OEQ.Dashboard.FormattedTextPortlet;
-  /**
-   * The actual position of the portlet in the page which is used for drag and drop operations.
-   */
-  position: PortletPosition;
-}
+export default {
+  title: "Dashboard/DraggablePortlet",
+  component: DraggablePortlet,
+} as Meta<DraggablePortletProps>;
 
-/**
- * A portlet component that displays pre-configured formatted text (HTML).
- */
-export const PortletFormattedText = ({
-  cfg,
-  position,
-}: PortletFormattedTextProps): React.JSX.Element => (
-  <DraggablePortlet portlet={cfg} position={position}>
-    {HTMLReactParser(cfg.rawHtml)}
-  </DraggablePortlet>
+export const Standard: StoryFn<DraggablePortletProps> = (args) => (
+  <DraggablePortlet {...args} />
 );
+Standard.args = {
+  portlet: basicPortlet,
+  children: <div>You can drag this portlet.</div>,
+  position: { column: 0, order: 0 },
+};

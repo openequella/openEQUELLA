@@ -18,11 +18,11 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { absurd, pipe } from "fp-ts/function";
-import * as NEA from "fp-ts/NonEmptyArray";
 import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { PortletPosition } from "../../modules/DashboardModule";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
 import { PortletQuickSearch } from "./PortletQuickSearch";
@@ -72,8 +72,8 @@ const ordByName: ORD.Ord<OEQ.Dashboard.BasicPortlet> = pipe(
  * Returns a function that filters and sorts the supplied portlets for the specified column.
  */
 export const portletFilterByColumn =
-  (portlets: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet>) =>
-  (col: OEQ.Dashboard.PortletColumn): OEQ.Dashboard.BasicPortlet[] =>
+  (col: OEQ.Dashboard.PortletColumn) =>
+  (portlets: OEQ.Dashboard.BasicPortlet[]): OEQ.Dashboard.BasicPortlet[] =>
     pipe(
       portlets,
       A.filter((p) => p.commonDetails.column === col),
@@ -84,36 +84,39 @@ export const portletFilterByColumn =
  * Given a portlet, returns the appropriate component to render it.
  *
  * @param portlet The portlet to be rendered.
+ * @param position The actual position of the portlet in the page.
  */
 export const renderPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
+  position: PortletPosition,
 ): React.JSX.Element => {
   const { portletType } = portlet;
 
   // TODO: Update portlet component when they are implemented.
   switch (portletType) {
     case "search":
-      return <PortletQuickSearch cfg={portlet} />;
+      return <PortletQuickSearch cfg={portlet} position={position} />;
     case "browse":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     case "favourites":
-      return <PortletFavourites cfg={portlet} />;
+      return <PortletFavourites cfg={portlet} position={position} />;
     case "freemarker":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     case "html":
       return (
         <PortletFormattedText
           cfg={portlet as OEQ.Dashboard.FormattedTextPortlet}
+          position={position}
         />
       );
     case "myresources":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     case "recent":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     case "tasks":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     case "taskstatistics":
-      return <PortletUnsupported cfg={portlet} />;
+      return <PortletUnsupported cfg={portlet} position={position} />;
     default:
       return absurd(portletType);
   }

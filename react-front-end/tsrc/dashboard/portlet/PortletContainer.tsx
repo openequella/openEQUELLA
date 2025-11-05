@@ -18,9 +18,11 @@
 import { Grid } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
 import { useCallback } from "react";
+import { PortletDropZoneGrid } from "./PortletDropZoneGrid";
 import {
   getTwoColumnWidths,
   portletFilterByColumn,
@@ -51,60 +53,77 @@ export const PortletContainer = ({
     col: OEQ.Dashboard.PortletColumn,
   ) => OEQ.Dashboard.BasicPortlet[] = useCallback(
     // Due to eslint limitation, we have to pass an inline function to useCallback here.
-    (col) => portletFilterByColumn(portlets)(col),
+    (col) => portletFilterByColumn(col)(portlets),
     [portlets],
   );
 
-  const renderPortlets: (
-    portletList: OEQ.Dashboard.BasicPortlet[],
-  ) => React.JSX.Element[] = A.map((portlet) => (
-    <Grid
-      size={12}
-      id={`portlet-${portlet.commonDetails.uuid}`}
-      key={portlet.commonDetails.uuid}
-    >
-      {renderPortlet(portlet)}
-    </Grid>
-  ));
+  const renderPortlets =
+    (column: OEQ.Dashboard.PortletColumn) =>
+    (portletList: OEQ.Dashboard.BasicPortlet[]): React.JSX.Element[] =>
+      pipe(
+        portletList,
+        A.mapWithIndex((index, portlet) => (
+          <Grid
+            size={12}
+            id={`portlet-${portlet.commonDetails.uuid}`}
+            key={portlet.commonDetails.uuid}
+          >
+            {renderPortlet(portlet, {
+              column,
+              order: index,
+            })}
+          </Grid>
+        )),
+      );
 
   const renderLayout = () => {
     // Renders a single column by appending the right column's portlets after the left column's.
-    const renderSingleColumn = () => (
-      <Grid
-        container
-        size={12}
-        spacing={2}
-        id="portlet-container-single-column"
-      >
-        {renderPortlets([
-          ...getPortletsForColumn(0),
-          ...getPortletsForColumn(1),
-        ])}
-      </Grid>
-    );
+    const renderSingleColumn = () => {
+      const portlets = [...getPortletsForColumn(0), ...getPortletsForColumn(1)];
+      return (
+        <PortletDropZoneGrid
+          container
+          size={12}
+          spacing={2}
+          id="portlet-container-single-column"
+          column={0}
+          count={portlets.length}
+        >
+          {pipe(portlets, renderPortlets(0))}
+        </PortletDropZoneGrid>
+      );
+    };
 
     // Renders two columns on medium screens and up, based on the specified two-column layout.
     // On extra-small and small screens, the two columns stack vertically.
     const renderTwoColumns = (twoColumnLayout: TwoColumnLayout) => {
       const [leftColWidth, rightColWidth] = getTwoColumnWidths(twoColumnLayout);
+      const firstColumnPortlets = getPortletsForColumn(0);
+      const secondColumnPortlets = getPortletsForColumn(1);
+
       return (
         <>
-          <Grid
+          <PortletDropZoneGrid
             container
             size={{ xs: 12, md: leftColWidth }}
             spacing={2}
             id="portlet-container-left-column"
+            column={0}
+            count={firstColumnPortlets.length}
           >
-            {renderPortlets(getPortletsForColumn(0))}
-          </Grid>
-          <Grid
+            {pipe(getPortletsForColumn(0), renderPortlets(0))}
+          </PortletDropZoneGrid>
+
+          <PortletDropZoneGrid
             container
             size={{ xs: 12, md: rightColWidth }}
             spacing={2}
             id="portlet-container-right-column"
+            column={1}
+            count={secondColumnPortlets.length}
           >
-            {renderPortlets(getPortletsForColumn(1))}
-          </Grid>
+            {pipe(secondColumnPortlets, renderPortlets(1))}
+          </PortletDropZoneGrid>
         </>
       );
     };
@@ -118,8 +137,11 @@ export const PortletContainer = ({
     <Grid
       container
       spacing={2}
+      // Make sure the grid have a specific value of height and the child grid(column) can also take the full height even it's empty.
+      sx={{ height: "100%" }}
+      // Make sure each column stretches to the same height.
+      alignItems="stretch"
       id="dashboard-portlet-container"
-      alignItems="flex-start"
     >
       {renderLayout()}
     </Grid>

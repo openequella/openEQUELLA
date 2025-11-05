@@ -20,6 +20,7 @@ import * as SearchCodec from './gen/Search';
 import * as WizardControlCodec from './gen/WizardControl';
 import * as LtiPlatformCodec from './gen/LtiPlatform';
 import * as OidcCodec from './gen/Oidc';
+import * as DashboardCodec from './gen/Dashboard';
 
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
@@ -58,8 +59,9 @@ export * as WizardControl from './WizardControl';
 
 export const Codec = {
   Common: CommonCodec,
-  Search: SearchCodec,
-  WizardControl: WizardControlCodec,
+  Dashboard: DashboardCodec,
   LtiPlatform: LtiPlatformCodec,
   Oidc: OidcCodec,
+  Search: SearchCodec,
+  WizardControl: WizardControlCodec,
 };

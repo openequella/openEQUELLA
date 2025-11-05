@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Box, Card, CardContent, CardHeader, Skeleton } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";

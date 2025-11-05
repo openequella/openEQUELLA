@@ -20,6 +20,27 @@ import Axios, { AxiosError } from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
 import { legacyContentSubmitBaseUrl } from "./LegacyContentModule";
+import * as t from "io-ts";
+
+/**
+ * Codec for representing the position of a portlet in the dashboard.
+ */
+export const PortletPositionCodec = t.type({
+  /**
+   * Index of the column where the portlet is located.
+   */
+  column: OEQ.Codec.Dashboard.PortletColumnCodec,
+  /**
+   * Index of the order in the column where the portlet is located.
+   */
+  order: t.number,
+});
+
+/**
+ * Unlike the `column` and 'order' value in `OEQ.Dashboard.PortletCommonDetails`,
+ * it represents the real position(index) of a portlet in the dashboard page.
+ */
+export type PortletPosition = t.TypeOf<typeof PortletPositionCodec>;
 
 /**
  * Retrieve Dashboard details, including the list of viewable Portlets and the layout.

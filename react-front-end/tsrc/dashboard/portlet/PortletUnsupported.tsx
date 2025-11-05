@@ -16,25 +16,29 @@
  * limitations under the License.
  */
 import * as React from "react";
+import { PortletPosition } from "../../modules/DashboardModule";
 import { languageStrings } from "../../util/langstrings";
-import PortletItem from "../components/PortletItem";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 import * as OEQ from "@openequella/rest-api-client";
 import { Typography } from "@mui/material";
 
 const { title, description } = languageStrings.dashboard.portlets.unsupported;
 
 export interface PortletUnsupportedProps {
-  /**
-   * Configuration details of the portlet.
-   */
+  /** Configuration details of the portlet. */
   cfg: OEQ.Dashboard.BasicPortlet;
+  /** The actual position of the portlet in the page which is used for drag and drop operations. */
+  position: PortletPosition;
 }
 
-export const PortletUnsupported = ({ cfg }: PortletUnsupportedProps) => (
-  <PortletItem portlet={cfg}>
+export const PortletUnsupported = ({
+  cfg,
+  position,
+}: PortletUnsupportedProps) => (
+  <DraggablePortlet portlet={cfg} position={position}>
     <Typography variant="h6" gutterBottom>
       {title}
     </Typography>
     <Typography variant="subtitle1">{description}</Typography>
-  </PortletItem>
+  </DraggablePortlet>
 );
