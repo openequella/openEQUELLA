@@ -17,6 +17,7 @@
  */
 import EditIcon from "@mui/icons-material/Edit";
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
@@ -52,6 +53,17 @@ const {
   deleteAlert,
   closeAlertInfo,
 } = languageStrings.dashboard.portlets.dialog;
+
+/**
+ * Styles for the portlet content area to ensure portlet content such as images and videos
+ * are properly presented.
+ */
+const StyledCardContent = styled(CardContent)({
+  "& img, & video": {
+    maxWidth: "100%",
+    height: "auto",
+  },
+});
 
 export interface PortletItemProps extends React.PropsWithChildren {
   /**
@@ -203,9 +215,9 @@ const PortletItem = ({
           <CardHeader title={name} action={actions()} />
 
           {!isMinimised && (
-            <CardContent id={`portlet-content-${uuid}`}>
+            <StyledCardContent id={`portlet-content-${uuid}`}>
               {renderChildren ? renderChildren() : children}
-            </CardContent>
+            </StyledCardContent>
           )}
         </Card>
       )}
