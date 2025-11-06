@@ -39,7 +39,7 @@ const strings = {
   actionShowAll: languageStrings.common.action.showAll,
 };
 
-interface PortletRecentContributionsProps {
+export interface PortletRecentContributionsProps {
   /** The portlet configuration */
   cfg: OEQ.Dashboard.RecentContributionsPortlet;
   /** The actual position of the portlet in the page which is used for drag and drop operations. */
