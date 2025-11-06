@@ -382,6 +382,9 @@ export const languageStrings = {
         queryField: "Search",
         searching: "Search in progress",
       },
+      recentContributions: {
+        noneFound: "No recent contributions found.",
+      },
       unsupported: {
         title: "Unsupported portlet configured",
         description:
