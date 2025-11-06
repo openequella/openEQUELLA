@@ -15,27 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { DraggablePortlet } from "../components/DraggablePortlet";
+import { LegacyPortlet } from "./LegacyPortlet";
 import type { PortletBasicProps } from "./PortletHelper";
 
-export interface PortletFormattedTextProps extends PortletBasicProps {
-  /**
-   * Configuration details of the formatted text portlet.
-   */
-  cfg: OEQ.Dashboard.FormattedTextPortlet;
-}
-
 /**
- * A portlet component that displays pre-configured formatted text (HTML).
+ * Portlet component that provides UI customised by scripted content, including:
+ * - HTML and legacy Freemarker markup
+ * - Client-side script execution
+ *
+ * Server-side script is executed as part of the portlet content retrieval.
  */
-export const PortletFormattedText = ({
-  cfg,
-  position,
-}: PortletFormattedTextProps): React.JSX.Element => (
+export const PortletScripted = ({ cfg, position }: PortletBasicProps) => (
   <DraggablePortlet portlet={cfg} position={position}>
-    {HTMLReactParser(cfg.rawHtml)}
+    <LegacyPortlet portletId={cfg.commonDetails.uuid} />
   </DraggablePortlet>
 );

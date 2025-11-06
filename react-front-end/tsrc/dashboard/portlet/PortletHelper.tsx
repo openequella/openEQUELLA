@@ -22,10 +22,11 @@ import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { PortletPosition } from "../../modules/DashboardModule";
+import type { PortletPosition } from "../../modules/DashboardModule";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
 import { PortletQuickSearch } from "./PortletQuickSearch";
+import { PortletScripted } from "./PortletScripted";
 import { PortletUnsupported } from "./PortletUnsupported";
 
 /**
@@ -81,6 +82,21 @@ export const portletFilterByColumn =
     );
 
 /**
+ * Props common to all portlet components.
+ */
+export interface PortletBasicProps {
+  /**
+   * Configuration details of the portlet.
+   */
+  cfg: OEQ.Dashboard.BasicPortlet;
+  /**
+   * The actual position of the portlet in the page which is used
+   * for drag and drop operations.
+   */
+  position: PortletPosition;
+}
+
+/**
  * Given a portlet, returns the appropriate component to render it.
  *
  * @param portlet The portlet to be rendered.
@@ -91,32 +107,33 @@ export const renderPortlet = (
   position: PortletPosition,
 ): React.JSX.Element => {
   const { portletType } = portlet;
+  const basicProps: PortletBasicProps = { cfg: portlet, position };
 
   // TODO: Update portlet component when they are implemented.
   switch (portletType) {
     case "search":
-      return <PortletQuickSearch cfg={portlet} position={position} />;
+      return <PortletQuickSearch {...basicProps} />;
     case "browse":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletUnsupported {...basicProps} />;
     case "favourites":
-      return <PortletFavourites cfg={portlet} position={position} />;
+      return <PortletFavourites {...basicProps} />;
     case "freemarker":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletScripted {...basicProps} />;
     case "html":
       return (
         <PortletFormattedText
           cfg={portlet as OEQ.Dashboard.FormattedTextPortlet}
-          position={position}
+          position={basicProps.position}
         />
       );
     case "myresources":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletUnsupported {...basicProps} />;
     case "recent":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletUnsupported {...basicProps} />;
     case "tasks":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletUnsupported {...basicProps} />;
     case "taskstatistics":
-      return <PortletUnsupported cfg={portlet} position={position} />;
+      return <PortletUnsupported {...basicProps} />;
     default:
       return absurd(portletType);
   }
