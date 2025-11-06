@@ -37,10 +37,12 @@ import {
   submitRequest,
   SubmitResponse,
 } from "../../modules/LegacyContentModule";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 import {
   getPortletLegacyContent,
   updateExtraFiles,
 } from "./LegacyPortletHelper";
+import type { PortletBasicProps } from "./PortletHelper";
 
 /**
  * Type definitions for four most commonly used legacy JS functions invoked by legacy scripts. Other
@@ -103,13 +105,6 @@ declare global {
   }
 }
 
-export interface LegacyPortletProps {
-  /**
-   * Id of the portlet that reuses its legacy content in the new Dashboard.
-   */
-  portletId: string;
-}
-
 /**
  * Component dedicate to rendering the legacy content of a portlet:
  *
@@ -117,10 +112,14 @@ export interface LegacyPortletProps {
  * - Preparing a unique legacy form for the portlet
  * - Preparing the implementation of legacy Javascript functions that are commonly used by legacy portlet functions.
  */
-export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
+export const LegacyPortlet = ({ cfg, position }: PortletBasicProps) => {
+  const portletId = cfg.commonDetails.uuid;
+
   const [formId] = useState(`${legacyFormId}-${portletId}`);
 
   const [content, setContent] = useState<PageContent>();
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState<string>();
 
@@ -262,7 +261,8 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
       .catch((e) => {
         setError(generalErrorMsg);
         console.error(`${generalErrorMsg}: ${e}`);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, [portletId, generatePortletContent, generalErrorMsg]);
 
   useEffect(() => {
@@ -297,12 +297,14 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
 
   return (
     <div ref={portletRef}>
-      {error && (
-        <Alert severity="error" onClose={() => setError(undefined)}>
-          {error}
-        </Alert>
-      )}
-      {content && <LegacyContentRenderer {...content} />}
+      <DraggablePortlet portlet={cfg} position={position} isLoading={isLoading}>
+        {error && (
+          <Alert severity="error" onClose={() => setError(undefined)}>
+            {error}
+          </Alert>
+        )}
+        {content && <LegacyContentRenderer {...content} />}
+      </DraggablePortlet>
     </div>
   );
 };

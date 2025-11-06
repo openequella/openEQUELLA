@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import * as OEQ from "@openequella/rest-api-client";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { privateSearchPortlet } from "../../../__mocks__/Dashboard.mock";
 import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
+import type { PortletBasicProps } from "../../../tsrc/dashboard/portlet/PortletHelper";
 import type { JQueryDivProps } from "../../../tsrc/legacycontent/JQueryDiv";
 import { legacyFormId } from "../../../tsrc/legacycontent/LegacyForm";
 import * as LegacyContentModule from "../../../tsrc/modules/LegacyContentModule";
@@ -60,8 +63,16 @@ mockSubmitResponse.mockResolvedValue(legacyContentResponse);
 
 describe("<LegacyPortlet />", () => {
   const portletUuid = "01f33f25-f3e3-4bb3-898f-2fa2410273f5";
+
+  const cfg: OEQ.Dashboard.BasicPortlet = {
+    ...privateSearchPortlet,
+    portletType: "freemarker",
+  };
+
+  const props: PortletBasicProps = { cfg, position: { column: 0, order: 0 } };
+
   const renderLegacyPortlet = async () => {
-    const result = render(<LegacyPortlet portletId={portletUuid} />);
+    const result = render(<LegacyPortlet {...props} />);
 
     await waitFor(() =>
       expect(result.getByText(portletContent)).toBeInTheDocument(),
@@ -119,7 +130,7 @@ describe("<LegacyPortlet />", () => {
         .spyOn(LegacyPortletHelper, "getPortletLegacyContent")
         .mockRejectedValueOnce(contentError);
 
-      const { getByText } = render(<LegacyPortlet portletId={portletUuid} />);
+      const { getByText } = render(<LegacyPortlet {...props} />);
       await waitFor(() => {
         expect(getByText(generalErrorMsg)).toBeInTheDocument();
         expect(console.error).toHaveBeenLastCalledWith(
@@ -139,9 +150,7 @@ describe("<LegacyPortlet />", () => {
       });
 
       // Secondly, get the button and mock the event handler to throw an error.
-      const { getByText, findByText } = render(
-        <LegacyPortlet portletId={portletUuid} />,
-      );
+      const { getByText, findByText } = render(<LegacyPortlet {...props} />);
       const legacyBtn = await findByText(legacyButtonText);
       const eventError = "No Section event handler registered for this portlet";
       mockSubmitResponse.mockRejectedValueOnce(eventError);
@@ -166,9 +175,7 @@ describe("<LegacyPortlet />", () => {
       });
 
       // Secondly, get the button and click it
-      const { getByText, findByText } = render(
-        <LegacyPortlet portletId={portletUuid} />,
-      );
+      const { getByText, findByText } = render(<LegacyPortlet {...props} />);
       const legacyBtn = await findByText(legacyButtonText);
       await userEvent.click(legacyBtn);
 
