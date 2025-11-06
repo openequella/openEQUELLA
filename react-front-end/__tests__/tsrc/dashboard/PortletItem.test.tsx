@@ -58,6 +58,18 @@ describe("<PortletItem/>", () => {
     expect(getByTestId("portlet-item-skeleton")).toBeInTheDocument();
   });
 
+  it("does not show skeleton for a loading minimised portlet", () => {
+    const { getByLabelText, queryByText, queryByTestId } = renderPortletItem({
+      ...defaultProps,
+      portlet: minimisedPortlet,
+      isLoading: true,
+    });
+
+    expect(getByLabelText(maximiseText)).toBeInTheDocument();
+    expect(queryByText(portletContent)).not.toBeInTheDocument();
+    expect(queryByTestId("portlet-item-skeleton")).not.toBeInTheDocument();
+  });
+
   it("displays portlet name", async () => {
     const { getByText } = renderPortletItem();
 

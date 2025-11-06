@@ -194,9 +194,12 @@ const PortletItem = ({
 
   const closeDialog = () => setDialogOpen(false);
 
+  // Show skeleton only if isLoading is true AND portlet is not minimised
+  const showPortletSkeleton = Boolean(isLoading && !isMinimised);
+
   return (
     <>
-      {isLoading ? (
+      {showPortletSkeleton ? (
         <PortletItemSkeleton />
       ) : (
         <Card>
