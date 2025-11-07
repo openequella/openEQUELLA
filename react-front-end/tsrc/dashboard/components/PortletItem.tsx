@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 import EditIcon from "@mui/icons-material/Edit";
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  SxProps,
+  Typography,
+} from "@mui/material";
+import { Theme } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
@@ -54,17 +60,6 @@ const {
   closeAlertInfo,
 } = languageStrings.dashboard.portlets.dialog;
 
-/**
- * Styles for the portlet content area to ensure portlet content such as images and videos
- * are properly presented.
- */
-const StyledCardContent = styled(CardContent)({
-  "& img, & video": {
-    maxWidth: "100%",
-    height: "auto",
-  },
-});
-
 export interface PortletItemProps extends React.PropsWithChildren {
   /**
    * Basic information about the portlet to be displayed.
@@ -84,6 +79,11 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * to providing `children` directly.
    */
   renderChildren?: () => React.ReactNode;
+  /**
+   * Custom styles to be applied to the `Card` where portlet content and portlet header
+   * section are rendered.
+   */
+  customStyles?: SxProps<Theme>;
 }
 
 /**
@@ -95,6 +95,7 @@ const PortletItem = ({
   children,
   isLoading,
   renderChildren,
+  customStyles,
 }: PortletItemProps) => {
   const {
     name,
@@ -211,13 +212,13 @@ const PortletItem = ({
       {isLoading ? (
         <PortletItemSkeleton />
       ) : (
-        <Card>
+        <Card sx={customStyles}>
           <CardHeader title={name} action={actions()} />
 
           {!isMinimised && (
-            <StyledCardContent id={`portlet-content-${uuid}`}>
+            <CardContent id={`portlet-content-${uuid}`}>
               {renderChildren ? renderChildren() : children}
-            </StyledCardContent>
+            </CardContent>
           )}
         </Card>
       )}

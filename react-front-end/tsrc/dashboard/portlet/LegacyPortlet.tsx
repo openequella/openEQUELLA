@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { Alert } from "@mui/material";
+import { Theme, SxProps } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -105,6 +106,27 @@ declare global {
   }
 }
 
+interface LegacyPortletProps extends PortletBasicProps {
+  /**
+   * Optional styles to help render the legacy portlet content properly. Note that the styles are used
+   * at `Card` level, so use nested CSS selectors to apply styles to any child components.
+   *
+   * Example:
+   * ```
+   *   customStyles={{
+   *     width: "100%", // At the Card level
+   *     '& .MuiCardContent-root': {
+   *       // Applied to the CardContent.
+   *     },
+   *     "& p": {
+   *       // Applied to all the 'p' elements under the Card.
+   *       },
+   *     }}
+   * ```
+   */
+  customStyles?: SxProps<Theme>;
+}
+
 /**
  * Component dedicate to rendering the legacy content of a portlet:
  *
@@ -112,7 +134,11 @@ declare global {
  * - Preparing a unique legacy form for the portlet
  * - Preparing the implementation of legacy Javascript functions that are commonly used by legacy portlet functions.
  */
-export const LegacyPortlet = ({ cfg, position }: PortletBasicProps) => {
+export const LegacyPortlet = ({
+  cfg,
+  position,
+  customStyles,
+}: LegacyPortletProps) => {
   const portletId = cfg.commonDetails.uuid;
 
   const [formId] = useState(`${legacyFormId}-${portletId}`);
@@ -297,7 +323,12 @@ export const LegacyPortlet = ({ cfg, position }: PortletBasicProps) => {
 
   return (
     <div ref={portletRef}>
-      <DraggablePortlet portlet={cfg} position={position} isLoading={isLoading}>
+      <DraggablePortlet
+        portlet={cfg}
+        position={position}
+        isLoading={isLoading}
+        customStyles={customStyles}
+      >
         {error && (
           <Alert severity="error" onClose={() => setError(undefined)}>
             {error}

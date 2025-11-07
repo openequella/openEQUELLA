@@ -28,5 +28,14 @@ import type { PortletBasicProps } from "./PortletHelper";
  * - Supporting server-side script execution that occurs during portlet content retrieval.
  */
 export const PortletScripted = (props: PortletBasicProps) => (
-  <LegacyPortlet {...props} />
+  <LegacyPortlet
+    {...props}
+    // Styles to ensure images and videos are properly presented within the portlet content area.
+    customStyles={{
+      "& img, & video": {
+        maxWidth: "100%",
+        height: "auto",
+      },
+    }}
+  />
 );
