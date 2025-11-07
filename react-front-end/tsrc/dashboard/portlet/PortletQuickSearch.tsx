@@ -39,12 +39,12 @@ import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
-import { PortletPosition } from "../../modules/DashboardModule";
 import { defaultSearchOptions, searchItems } from "../../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../../modules/SearchSettingsModule";
 import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
 import { DraggablePortlet } from "../components/DraggablePortlet";
+import type { PortletBasicProps } from "./PortletHelper";
 
 const strings = {
   ...languageStrings.dashboard.portlets.quickSearch,
@@ -62,11 +62,7 @@ type SearchState =
     }
   | { state: "no results" };
 
-export interface PortletQuickSearchProps {
-  /** The portlet configuration */
-  cfg: OEQ.Dashboard.BasicPortlet;
-  /** The actual position of the portlet in the page which is used for drag and drop operations. */
-  position: PortletPosition;
+export interface PortletQuickSearchProps extends PortletBasicProps {
   /** Optional search provider - primarily for testing. */
   searchProvider?: typeof searchItems;
   /** Optional provider for fetching search settings - primarily for testing. */
