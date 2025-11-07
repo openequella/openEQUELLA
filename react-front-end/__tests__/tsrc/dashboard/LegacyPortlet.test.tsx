@@ -16,9 +16,13 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import * as OEQ from "@openequella/rest-api-client";
 import { render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { privateSearchPortlet } from "../../../__mocks__/Dashboard.mock";
 import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
+import type { PortletBasicProps } from "../../../tsrc/dashboard/portlet/PortletHelper";
 import type { JQueryDivProps } from "../../../tsrc/legacycontent/JQueryDiv";
 import { legacyFormId } from "../../../tsrc/legacycontent/LegacyForm";
 import * as LegacyContentModule from "../../../tsrc/modules/LegacyContentModule";
@@ -44,7 +48,7 @@ jest.mock(
   "../../../tsrc/legacycontent/JQueryDiv",
   () =>
     ({ html, ...otherProps }: JQueryDivProps) => (
-      <div {...otherProps}>{html}</div>
+      <div {...otherProps} dangerouslySetInnerHTML={{ __html: html }} />
     ),
 );
 
@@ -59,8 +63,16 @@ mockSubmitResponse.mockResolvedValue(legacyContentResponse);
 
 describe("<LegacyPortlet />", () => {
   const portletUuid = "01f33f25-f3e3-4bb3-898f-2fa2410273f5";
+
+  const cfg: OEQ.Dashboard.BasicPortlet = {
+    ...privateSearchPortlet,
+    portletType: "freemarker",
+  };
+
+  const props: PortletBasicProps = { cfg, position: { column: 0, order: 0 } };
+
   const renderLegacyPortlet = async () => {
-    const result = render(<LegacyPortlet portletId={portletUuid} />);
+    const result = render(<LegacyPortlet {...props} />);
 
     await waitFor(() =>
       expect(result.getByText(portletContent)).toBeInTheDocument(),
@@ -101,5 +113,79 @@ describe("<LegacyPortlet />", () => {
 
     expect(mockUpdateExtraFiles).toHaveBeenCalledTimes(1);
     expect(mockUpdateExtraFiles).toHaveBeenCalledWith(jsFiles, cssFiles);
+  });
+
+  describe("Error handling", () => {
+    const generalErrorMsg = `An error occurred while displaying portlet ${portletUuid}`;
+    const legacyButtonText = "legacy button";
+
+    const mockConsole = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    it("displays an alert if the legacy content request fails", async () => {
+      mockConsole.mockClear();
+      const contentError = "No Section Tree for this portlet";
+      jest
+        .spyOn(LegacyPortletHelper, "getPortletLegacyContent")
+        .mockRejectedValueOnce(contentError);
+
+      const { getByText } = render(<LegacyPortlet {...props} />);
+      await waitFor(() => {
+        expect(getByText(generalErrorMsg)).toBeInTheDocument();
+        expect(console.error).toHaveBeenLastCalledWith(
+          `${generalErrorMsg}: ${contentError}`,
+        );
+      });
+    });
+
+    it("displays an alert if an error occurs when using a legacy function defined in object 'EQ'", async () => {
+      mockConsole.mockClear();
+      // Firstly, mock the content response to include a button that uses the legacy EQ event.
+      const event = "ppsp.doSearch";
+      const legacyContent = `<button onclick="window['EQ-${portletUuid}'].event('${event}');return false;" >${legacyButtonText}</button>`;
+      mockSubmitResponse.mockResolvedValueOnce({
+        ...legacyContentResponse,
+        html: { body: legacyContent },
+      });
+
+      // Secondly, get the button and mock the event handler to throw an error.
+      const { getByText, findByText } = render(<LegacyPortlet {...props} />);
+      const legacyBtn = await findByText(legacyButtonText);
+      const eventError = "No Section event handler registered for this portlet";
+      mockSubmitResponse.mockRejectedValueOnce(eventError);
+
+      // Now, click the button and check the alert.
+      await userEvent.click(legacyBtn);
+      expect(getByText(generalErrorMsg)).toBeInTheDocument();
+      expect(console.error).toHaveBeenLastCalledWith(
+        generalErrorMsg,
+        { event__: [event] },
+        eventError,
+      );
+    });
+
+    it("displays an alert if any other unknown error occurs", async () => {
+      mockConsole.mockClear();
+      // Firstly, mock the content response to include a button that uses a legacy JS function which is unavailable at runtime.
+      const legacyContent = `<button onclick="legacyJS();">${legacyButtonText}</button>`;
+      mockSubmitResponse.mockResolvedValueOnce({
+        ...legacyContentResponse,
+        html: { body: legacyContent },
+      });
+
+      // Secondly, get the button and click it
+      const { getByText, findByText } = render(<LegacyPortlet {...props} />);
+      const legacyBtn = await findByText(legacyButtonText);
+      await userEvent.click(legacyBtn);
+
+      // Check if the alert is displayed.
+      expect(getByText(generalErrorMsg)).toBeInTheDocument();
+      // Not using toHaveBeenLastCalledWith as there is one extra console.error triggered by RTL.
+      expect(console.error).toHaveBeenCalledWith(
+        generalErrorMsg,
+        "legacyJS is not defined",
+      );
+    });
   });
 });

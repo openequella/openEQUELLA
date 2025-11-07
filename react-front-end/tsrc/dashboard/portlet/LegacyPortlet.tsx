@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Alert } from "@mui/material";
+import { Theme, SxProps } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { v4 } from "uuid";
 import type { PageContent } from "../../legacycontent/LegacyContent";
@@ -36,10 +38,12 @@ import {
   submitRequest,
   SubmitResponse,
 } from "../../modules/LegacyContentModule";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 import {
   getPortletLegacyContent,
   updateExtraFiles,
 } from "./LegacyPortletHelper";
+import type { PortletBasicProps } from "./PortletHelper";
 
 /**
  * Type definitions for four most commonly used legacy JS functions invoked by legacy scripts. Other
@@ -102,11 +106,30 @@ declare global {
   }
 }
 
-export interface LegacyPortletProps {
+interface LegacyPortletProps extends PortletBasicProps {
   /**
-   * Id of the portlet that reuses its legacy content in the new Dashboard.
+   * Optional styles to help render the legacy portlet content properly.
+   * Notes:
+   * 1. The styles must follow the MUI `SxProps` format.
+   * 2. The styles are applied at `Card` level, so use nested CSS selectors to apply styles to child components.
+   *
+   * Example:
+   * ```
+   *   customStyles={{
+   *     width: "100%", // At the Card level
+   *     '& .MuiCardContent-root': {
+   *       backgroundColor: 'red' // Applied to the CardContent.
+   *     },
+   *     '& .MuiCardHeader-root': {
+   *         backgroundColor: 'blue' // Applied to the CardHeader.
+   *     },
+   *     "& p": {
+   *       color: 'orange' // Applied to all the 'p' elements under the Card.
+   *     },
+   *    }}
+   * ```
    */
-  portletId: string;
+  customStyles?: SxProps<Theme>;
 }
 
 /**
@@ -116,10 +139,26 @@ export interface LegacyPortletProps {
  * - Preparing a unique legacy form for the portlet
  * - Preparing the implementation of legacy Javascript functions that are commonly used by legacy portlet functions.
  */
-export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
+export const LegacyPortlet = ({
+  cfg,
+  position,
+  customStyles,
+}: LegacyPortletProps) => {
+  const portletId = cfg.commonDetails.uuid;
+
   const [formId] = useState(`${legacyFormId}-${portletId}`);
 
   const [content, setContent] = useState<PageContent>();
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [error, setError] = useState<string>();
+
+  // General error message reminding users that an error has occurred while using this portlet.
+  const generalErrorMsg = `An error occurred while displaying portlet ${portletId}`;
+
+  // Reference to this portlet to help confirm whether an error event is triggered from within this portlet.
+  const portletRef = useRef<HTMLDivElement>(null);
 
   const history = useHistory();
 
@@ -175,13 +214,11 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
       submitRequest(OLD_DASHBOARD_PATH, payload)
         .then(handleResponse)
         .catch((e) => {
-          // todo: Update error handling when working on OEQ-2685.
-          console.error(
-            `Request to /home.do with payload ${payload} failed: ${e}`,
-          );
+          setError(generalErrorMsg);
+          console.error(generalErrorMsg, payload, e);
         });
     },
-    [history, portletId, generatePortletContent],
+    [history, portletId, generatePortletContent, generalErrorMsg],
   );
 
   // Function that handles `window[EQ-{portletId}].event(...)` calls from legacy scripts.
@@ -252,13 +289,12 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
     getPortletLegacyContent(portletId)
       .then(generatePortletContent)
       .then(setContent)
-      // todo: Update error handling when working on OEQ-2685.
-      .catch((e) =>
-        console.error(
-          `Failed to retrieve legacy content for portlet ${portletId}: ${e}`,
-        ),
-      );
-  }, [portletId, generatePortletContent]);
+      .catch((e) => {
+        setError(generalErrorMsg);
+        console.error(`${generalErrorMsg}: ${e}`);
+      })
+      .finally(() => setIsLoading(false));
+  }, [portletId, generatePortletContent, generalErrorMsg]);
 
   useEffect(() => {
     window[`EQ-${portletId}`] = {
@@ -269,5 +305,42 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
     };
   }, [event, postAjax, portletId]);
 
-  return content && <LegacyContentRenderer {...content} />;
+  useEffect(() => {
+    // Register a global error handler to capture any errors thrown by legacy scripts.
+    const errorHandler = pipe(
+      portletRef.current,
+      O.fromNullable,
+      O.map((ref) => (event: ErrorEvent) => {
+        if (ref.contains(document.activeElement)) {
+          setError(generalErrorMsg);
+          console.error(generalErrorMsg, event.message);
+        }
+      }),
+      O.getOrElse(() => (_: ErrorEvent) => {}),
+    );
+
+    window.addEventListener("error", errorHandler);
+
+    return () => {
+      window.removeEventListener("error", errorHandler);
+    };
+  }, [portletId, generalErrorMsg]);
+
+  return (
+    <div ref={portletRef}>
+      <DraggablePortlet
+        portlet={cfg}
+        position={position}
+        isLoading={isLoading}
+        sx={customStyles}
+      >
+        {error && (
+          <Alert severity="error" onClose={() => setError(undefined)}>
+            {error}
+          </Alert>
+        )}
+        {content && <LegacyContentRenderer {...content} />}
+      </DraggablePortlet>
+    </div>
+  );
 };
