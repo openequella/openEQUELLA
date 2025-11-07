@@ -108,20 +108,25 @@ declare global {
 
 interface LegacyPortletProps extends PortletBasicProps {
   /**
-   * Optional styles to help render the legacy portlet content properly. Note that the styles are used
-   * at `Card` level, so use nested CSS selectors to apply styles to any child components.
+   * Optional styles to help render the legacy portlet content properly.
+   * Notes:
+   * 1. The styles must follow the MUI `SxProps` format.
+   * 2. The styles are applied at `Card` level, so use nested CSS selectors to apply styles to child components.
    *
    * Example:
    * ```
    *   customStyles={{
    *     width: "100%", // At the Card level
    *     '& .MuiCardContent-root': {
-   *       // Applied to the CardContent.
+   *       backgroundColor: 'red' // Applied to the CardContent.
+   *     },
+   *     '& .MuiCardHeader-root': {
+   *         backgroundColor: 'blue' // Applied to the CardHeader.
    *     },
    *     "& p": {
-   *       // Applied to all the 'p' elements under the Card.
-   *       },
-   *     }}
+   *       color: 'orange' // Applied to all the 'p' elements under the Card.
+   *     },
+   *    }}
    * ```
    */
   customStyles?: SxProps<Theme>;
@@ -327,7 +332,7 @@ export const LegacyPortlet = ({
         portlet={cfg}
         position={position}
         isLoading={isLoading}
-        customStyles={customStyles}
+        sx={customStyles}
       >
         {error && (
           <Alert severity="error" onClose={() => setError(undefined)}>

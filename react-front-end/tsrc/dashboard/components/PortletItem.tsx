@@ -77,7 +77,7 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * Custom styles to be applied to the `Card` where portlet content and portlet header
    * section are rendered.
    */
-  customStyles?: SxProps<Theme>;
+  sx?: SxProps<Theme>;
 }
 
 /**
@@ -89,7 +89,7 @@ const PortletItem = ({
   children,
   isLoading,
   renderChildren,
-  customStyles,
+  sx,
 }: PortletItemProps) => {
   const {
     name,
@@ -206,7 +206,7 @@ const PortletItem = ({
       {isLoading ? (
         <PortletItemSkeleton />
       ) : (
-        <Card sx={customStyles}>
+        <Card sx={sx}>
           <CardHeader title={name} action={actions()} />
 
           {!isMinimised && (
