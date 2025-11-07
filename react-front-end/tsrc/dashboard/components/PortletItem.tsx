@@ -16,14 +16,8 @@
  * limitations under the License.
  */
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  SxProps,
-  Typography,
-} from "@mui/material";
-import { Theme } from "@mui/material/styles";
+import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
