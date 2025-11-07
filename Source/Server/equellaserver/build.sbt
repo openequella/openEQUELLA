@@ -248,7 +248,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.181",
+  "io.github.classgraph"          % "classgraph"               % "4.8.184",
   "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
