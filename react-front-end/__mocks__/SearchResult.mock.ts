@@ -34,7 +34,7 @@ export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResu
 export const itemWithAttachment: OEQ.Search.SearchResultItem = {
   uuid: "9b9bf5a9-c5af-490b-88fe-7e330679fad2",
   version: 1,
-  name: "new title",
+  name: "Attachment Item",
   description: "this item has an attachment",
   status: "personal",
   createdDate: new Date("2014-06-11T10:28:58.190+10:00"),
