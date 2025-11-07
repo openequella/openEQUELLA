@@ -26,12 +26,12 @@ import { DateTime } from "luxon";
 import * as React from "react";
 import { useHistory } from "react-router";
 import { routes } from "../../mainui/routes";
-import { PortletPosition } from "../../modules/DashboardModule";
 import { searchItemsBasic } from "../../modules/SearchModule";
 import { languageStrings } from "../../util/langstrings";
 import { DraggablePortlet } from "../components/DraggablePortlet";
 import { PortletSearchResultList } from "../components/PortletSearchResultList";
 import { PortletSearchResultNoneFound } from "../components/PortletSearchResultNoneFound";
+import type { PortletBasicProps } from "./PortletHelper";
 import { convertSearchParamsToOptions } from "./PortletRecentContributionsHelper";
 
 const strings = {
@@ -39,11 +39,9 @@ const strings = {
   actionShowAll: languageStrings.common.action.showAll,
 };
 
-export interface PortletRecentContributionsProps {
+export interface PortletRecentContributionsProps extends PortletBasicProps {
   /** The portlet configuration */
   cfg: OEQ.Dashboard.RecentContributionsPortlet;
-  /** The actual position of the portlet in the page which is used for drag and drop operations. */
-  position: PortletPosition;
   /** Optional search provider - primarily for testing. */
   searchProvider?: typeof searchItemsBasic;
 }

@@ -133,7 +133,7 @@ export const renderPortlet = (
       return (
         <PortletRecentContributions
           cfg={portlet as OEQ.Dashboard.RecentContributionsPortlet}
-          position={position}
+          position={basicProps.position}
         />
       );
     case "tasks":
