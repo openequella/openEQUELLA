@@ -351,7 +351,7 @@ export const searchItems = (
         !!advancedSearchCriteria && A.isNonEmpty(advancedSearchCriteria),
     ),
     O.match(
-      () => OEQ.Search.search(API_BASE_URL, normalParams),
+      () => searchItemsBasic(normalParams),
       (options) =>
         OEQ.Search.searchWithAdvancedParams(
           API_BASE_URL,
@@ -361,6 +361,15 @@ export const searchItems = (
     ),
   );
 };
+
+/** Executes a basic search with provided search parameters.
+ *
+ * @param searchParams Search parameters to be sent to the API.
+ */
+export const searchItemsBasic = (
+  searchParams: OEQ.Search.SearchParams,
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+  OEQ.Search.search(API_BASE_URL, searchParams);
 
 /**
  * Retrieve the search results for a single item - including attachment details. Useful if a

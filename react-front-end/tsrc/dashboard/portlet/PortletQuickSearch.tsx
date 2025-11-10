@@ -21,9 +21,6 @@ import {
   CircularProgress,
   debounce,
   Grid,
-  List,
-  ListItem,
-  ListItemText,
   TextField,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
@@ -36,8 +33,6 @@ import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { Link } from "react-router-dom";
-import OEQThumb from "../../components/OEQThumb";
 import { routes } from "../../mainui/routes";
 import { defaultSearchOptions, searchItems } from "../../modules/SearchModule";
 import { getSearchSettingsFromServer } from "../../modules/SearchSettingsModule";
@@ -45,6 +40,7 @@ import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
 import { DraggablePortlet } from "../components/DraggablePortlet";
 import type { PortletBasicProps } from "./PortletHelper";
+import { PortletSearchResultList } from "../components/PortletSearchResultList";
 
 const strings = {
   ...languageStrings.dashboard.portlets.quickSearch,
@@ -191,23 +187,7 @@ export const PortletQuickSearch = ({
       case "no results":
         return <Alert severity="info">{strings.noResults}</Alert>;
       case "success":
-        return (
-          <List>
-            {result.results.map((item) => (
-              <ListItem
-                key={item.uuid + ":" + item.version}
-                component={Link}
-                to={routes.ViewItem.to(item.uuid, item.version)}
-              >
-                <OEQThumb details={item.thumbnailDetails} />
-                <ListItemText
-                  primary={item.name || item.uuid}
-                  secondary={item.description}
-                />
-              </ListItem>
-            ))}
-          </List>
-        );
+        return <PortletSearchResultList results={result.results} />;
     }
   };
 

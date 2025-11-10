@@ -26,6 +26,7 @@ import type { PortletPosition } from "../../modules/DashboardModule";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
 import { PortletQuickSearch } from "./PortletQuickSearch";
+import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
 import { PortletUnsupported } from "./PortletUnsupported";
 
@@ -129,7 +130,12 @@ export const renderPortlet = (
     case "myresources":
       return <PortletUnsupported {...basicProps} />;
     case "recent":
-      return <PortletUnsupported {...basicProps} />;
+      return (
+        <PortletRecentContributions
+          cfg={portlet as OEQ.Dashboard.RecentContributionsPortlet}
+          position={basicProps.position}
+        />
+      );
     case "tasks":
       return <PortletUnsupported {...basicProps} />;
     case "taskstatistics":
