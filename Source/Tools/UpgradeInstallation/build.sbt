@@ -7,7 +7,7 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-core" % "2.13.0",
   xstreamDep,
   "commons-configuration" % "commons-configuration" % "1.10",
-  "commons-io"            % "commons-io"            % "2.20.0",
+  "commons-io"            % "commons-io"            % "2.21.0",
   "commons-lang"          % "commons-lang"          % "2.6",
   // Need these two jackson deps to allow processing log4j yaml config files.
   jacksonDataBind,
