@@ -108,6 +108,7 @@ describe("<PortletRecentContributions />", () => {
     const { getByText } = await setup(<Default />);
 
     // Should show results from mock data
+    expect(getByText(itemWithAttachment.name!)).toBeInTheDocument();
     expect(getByText(itemWithAttachment.description!)).toBeInTheDocument();
   });
 
@@ -220,13 +221,6 @@ describe("<PortletRecentContributions />", () => {
     );
   });
 
-  it("builds search parameters correctly", async () => {
-    const { getByText } = await setup(<Default />);
-
-    // Verify the component renders, which means buildSearchParams worked correctly
-    expect(getByText("Recent Contributions")).toBeInTheDocument();
-  });
-
   it("uses default maxAge of 30 days when not specified", async () => {
     // Custom portlet config WITHOUT maxAge specified
     const configWithoutMaxAge = {
@@ -268,13 +262,5 @@ describe("<PortletRecentContributions />", () => {
         status: undefined,
       }),
     );
-  });
-
-  it("renders search results with proper component structure", async () => {
-    const { findByText } = await setup(<Default />);
-
-    // Should render results - verify the title is shown
-    const titleElement = await findByText(itemWithAttachment.name!);
-    expect(titleElement).toBeInTheDocument();
   });
 });
