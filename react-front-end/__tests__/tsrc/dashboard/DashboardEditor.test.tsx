@@ -22,7 +22,7 @@ import { renderDashboardEditor } from "./DashboardEditorTestHelper";
 const {
   title,
   alertInfo,
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
