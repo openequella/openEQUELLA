@@ -30,7 +30,7 @@ const {
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 
-export const TabContentSkeletonTestId = "tab-content-skeleton";
+const TabContentSkeletonTestId = "tab-content-skeleton";
 
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},

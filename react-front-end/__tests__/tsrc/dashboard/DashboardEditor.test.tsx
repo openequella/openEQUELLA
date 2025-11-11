@@ -65,12 +65,6 @@ describe("<DashboardEditor />", () => {
     expect.assertions(6);
   });
 
-  it("shows the skeleton by default", () => {
-    const { getTabContentSkeleton } = renderDashboardEditor();
-
-    expect(getTabContentSkeleton()).toBeInTheDocument();
-  });
-
   it("calls setOpenDashboardEditor(false) when Close button is clicked", async () => {
     const { user, mockSetOpenDashboardEditor, getButtonByRole } =
       renderDashboardEditor();

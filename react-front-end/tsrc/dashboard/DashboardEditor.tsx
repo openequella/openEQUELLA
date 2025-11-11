@@ -28,7 +28,6 @@ import {
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { TabContentSkeletonTestId } from "../../__tests__/tsrc/dashboard/DashboardEditorTestHelper";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
@@ -69,7 +68,7 @@ export const DashboardEditor = ({
       variant="rectangular"
       width="100%"
       height={400}
-      data-testid={TabContentSkeletonTestId}
+      data-testid="tab-content-skeleton"
     />
   );
 
