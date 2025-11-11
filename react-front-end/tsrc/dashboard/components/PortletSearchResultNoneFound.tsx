@@ -15,27 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import HTMLReactParser from "html-react-parser";
+import { InfoOutlined } from "@mui/icons-material";
+import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import * as React from "react";
-import { DraggablePortlet } from "../components/DraggablePortlet";
-import type { PortletBasicProps } from "./PortletHelper";
 
-export interface PortletFormattedTextProps extends PortletBasicProps {
-  /**
-   * Configuration details of the formatted text portlet.
-   */
-  cfg: OEQ.Dashboard.FormattedTextPortlet;
+export interface PortletSearchResultNoneFoundProps {
+  /** Message to display indicating that no results were found */
+  noneFoundMessage: string;
 }
 
 /**
- * A portlet component that displays pre-configured formatted text (HTML).
+ * Component that displays a message indicating that no search results were found.
  */
-export const PortletFormattedText = ({
-  cfg,
-  position,
-}: PortletFormattedTextProps): React.JSX.Element => (
-  <DraggablePortlet portlet={cfg} position={position}>
-    {HTMLReactParser(cfg.rawHtml)}
-  </DraggablePortlet>
+export const PortletSearchResultNoneFound: React.FC<
+  PortletSearchResultNoneFoundProps
+> = ({ noneFoundMessage }: PortletSearchResultNoneFoundProps) => (
+  <List>
+    <ListItem>
+      <ListItemIcon>
+        <InfoOutlined />
+      </ListItemIcon>
+      <ListItemText primary={noneFoundMessage} />
+    </ListItem>
+  </List>
 );

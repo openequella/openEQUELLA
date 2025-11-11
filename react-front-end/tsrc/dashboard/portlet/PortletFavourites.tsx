@@ -26,7 +26,6 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
-import { PortletPosition } from "../../modules/DashboardModule";
 import {
   FavouritesType,
   searchFavouriteItems,
@@ -37,6 +36,7 @@ import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
 import { DraggablePortlet } from "../components/DraggablePortlet";
 import { FavouriteItemsTab } from "./FavouriteItemsTab";
+import type { PortletBasicProps } from "./PortletHelper";
 
 const strings = {
   ...languageStrings.dashboard.portlets.favourites,
@@ -50,11 +50,7 @@ type SearchesProvider = () => Promise<
   OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>
 >;
 
-export interface PortletFavouritesProps {
-  /** The portlet configuration */
-  cfg: OEQ.Dashboard.BasicPortlet;
-  /** The actual position of the portlet in the page which is used for drag and drop operations. */
-  position: PortletPosition;
+export interface PortletFavouritesProps extends PortletBasicProps {
   /** Optional provider for favourite resources - primarily for testing. */
   favouriteResourcesProvider?: ResourcesProvider;
   /** Optional provider for favourite searches - primarily for testing. */

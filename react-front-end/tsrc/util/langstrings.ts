@@ -377,13 +377,16 @@ export const languageStrings = {
         searchesTabName: "Searches",
       },
       quickSearch: {
-        failedToInitialise: "Failed to initialise quick search portlet",
-        noResults: "No results found",
+        failedToInitialise: "Failed to initialise quick search portlet.",
+        noResults: "No results found.",
         queryField: "Search",
-        searching: "Search in progress",
+        searching: "Search in progress...",
+      },
+      recentContributions: {
+        noneFound: "No recent contributions found.",
       },
       unsupported: {
-        title: "Unsupported portlet configured",
+        title: "Unsupported portlet configured.",
         description:
           "An unsupported portlet has been detected, please contact your system administrator.",
       },

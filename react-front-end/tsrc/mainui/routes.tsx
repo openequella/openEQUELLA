@@ -136,6 +136,7 @@ interface Routes {
   SearchPage: OEQRouteNewUI & {
     // Provides a way to navigate to a quick search with a query.
     quickSearch: (query: string) => string;
+    withOptions: (options: DehydratedSearchPageOptions) => string;
   };
   SearchSettings: OEQRouteNewUI;
   Settings: OEQRouteNewUI & OEQRouteTo<string>;
@@ -293,6 +294,8 @@ export const routes: Routes = {
       const searchOptions: DehydratedSearchPageOptions = { query };
       return `${NEW_SEARCH_PATH}?${SEARCH_OPTIONS_PARAM}=${JSON.stringify(searchOptions)}`;
     },
+    withOptions: (options: DehydratedSearchPageOptions) =>
+      `${NEW_SEARCH_PATH}?${SEARCH_OPTIONS_PARAM}=${JSON.stringify(options)}`,
     component: SearchPage,
     permissionChecks: [isSearchPageACLGranted],
   },
