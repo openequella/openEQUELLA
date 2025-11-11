@@ -39,7 +39,7 @@ import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
 import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import { DashboardEditor } from "./DashboardEditor";
+import { DashboardEditor } from "./editor/DashboardEditor";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
@@ -146,7 +146,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const editDashboardButton = (
     <TooltipCustomComponent
       title={editDashboardLabel}
-      sx={{ position: "absolute", bottom: 24, right: 24 }}
+      sx={{ position: "fixed", bottom: 24, right: 24 }}
     >
       <Fab
         color="secondary"
@@ -196,7 +196,13 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <Skeleton variant="rounded" height="100%" />
   ) : (
     <DashboardPageContext.Provider
-      value={{ closePortlet, deletePortlet, minimisePortlet }}
+      value={{
+        closePortlet,
+        deletePortlet,
+        minimisePortlet,
+        refreshDashboard: loadDashboard(),
+        dashboardDetails,
+      }}
     >
       {renderDashboard()}
     </DashboardPageContext.Provider>

@@ -399,7 +399,15 @@ export const languageStrings = {
     editor: {
       title: "Dashboard editor",
       editDashboard: "Edit dashboard",
-      dashboardLayout: "Dashboard layout",
+      dashboardLayout: {
+        title: "Dashboard layout",
+        alertNoDashboardDetails: "Failed to get dashboard details.",
+        chooseLayout: "Choose your preferred dashboard layout:",
+        twoColumnsEqual: "Two columns (Equal)",
+        twoColumnsRatio1to2: "Two columns (1:2 ratio)",
+        twoColumnsRatio2to1: "Two columns (2:1 ratio)",
+        singleColumn: "Single column",
+      },
       createPortlet: "Create portlet",
       restorePortlet: "Restore portlet",
       alertInfo:
