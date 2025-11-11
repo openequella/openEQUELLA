@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.111"
+val TomcatVersion     = "9.0.112"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
