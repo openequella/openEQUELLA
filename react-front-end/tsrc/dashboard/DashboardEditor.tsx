@@ -36,7 +36,7 @@ import { simpleMatch } from "../util/match";
 const {
   title,
   alertInfo,
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;

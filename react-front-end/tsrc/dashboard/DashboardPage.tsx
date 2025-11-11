@@ -39,7 +39,7 @@ import * as T from "fp-ts/Task";
 import { DashboardPageContext } from "./DashboardPageContext";
 import { updateDashboardDetails } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import { DashboardEditor } from "./editor/DashboardEditor";
+import { DashboardEditor } from "./DashboardEditor";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
