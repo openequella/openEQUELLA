@@ -194,24 +194,22 @@ const PortletItem = ({
 
   const closeDialog = () => setDialogOpen(false);
 
-  // Show skeleton only if isLoading is true AND portlet is not minimised
-  const showPortletSkeleton = Boolean(isLoading && !isMinimised);
+  const renderPortletContent = () => {
+    if (isMinimised) return null;
+    if (isLoading) return <PortletItemSkeleton />;
+    return (
+      <CardContent id={`portlet-content-${uuid}`}>
+        {renderChildren ? renderChildren() : children}
+      </CardContent>
+    );
+  };
 
   return (
     <>
-      {showPortletSkeleton ? (
-        <PortletItemSkeleton />
-      ) : (
-        <Card>
-          <CardHeader title={name} action={actions()} />
-
-          {!isMinimised && (
-            <CardContent id={`portlet-content-${uuid}`}>
-              {renderChildren ? renderChildren() : children}
-            </CardContent>
-          )}
-        </Card>
-      )}
+      <Card>
+        <CardHeader title={name} action={actions()} />
+        {renderPortletContent()}
+      </Card>
 
       <ConfirmDialog
         open={dialogOpen}
