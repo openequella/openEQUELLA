@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import { Alert } from "@mui/material";
+import { Theme, SxProps } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -37,10 +38,12 @@ import {
   submitRequest,
   SubmitResponse,
 } from "../../modules/LegacyContentModule";
+import { DraggablePortlet } from "../components/DraggablePortlet";
 import {
   getPortletLegacyContent,
   updateExtraFiles,
 } from "./LegacyPortletHelper";
+import type { PortletBasicProps } from "./PortletHelper";
 
 /**
  * Type definitions for four most commonly used legacy JS functions invoked by legacy scripts. Other
@@ -103,11 +106,30 @@ declare global {
   }
 }
 
-export interface LegacyPortletProps {
+interface LegacyPortletProps extends PortletBasicProps {
   /**
-   * Id of the portlet that reuses its legacy content in the new Dashboard.
+   * Optional styles to help render the legacy portlet content properly.
+   * Notes:
+   * 1. The styles must follow the MUI `SxProps` format.
+   * 2. The styles are applied at `Card` level, so use nested CSS selectors to apply styles to child components.
+   *
+   * Example:
+   * ```
+   *   customStyles={{
+   *     width: "100%", // At the Card level
+   *     '& .MuiCardContent-root': {
+   *       backgroundColor: 'red' // Applied to the CardContent.
+   *     },
+   *     '& .MuiCardHeader-root': {
+   *         backgroundColor: 'blue' // Applied to the CardHeader.
+   *     },
+   *     "& p": {
+   *       color: 'orange' // Applied to all the 'p' elements under the Card.
+   *     },
+   *    }}
+   * ```
    */
-  portletId: string;
+  customStyles?: SxProps<Theme>;
 }
 
 /**
@@ -117,10 +139,18 @@ export interface LegacyPortletProps {
  * - Preparing a unique legacy form for the portlet
  * - Preparing the implementation of legacy Javascript functions that are commonly used by legacy portlet functions.
  */
-export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
+export const LegacyPortlet = ({
+  cfg,
+  position,
+  customStyles,
+}: LegacyPortletProps) => {
+  const portletId = cfg.commonDetails.uuid;
+
   const [formId] = useState(`${legacyFormId}-${portletId}`);
 
   const [content, setContent] = useState<PageContent>();
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState<string>();
 
@@ -262,7 +292,8 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
       .catch((e) => {
         setError(generalErrorMsg);
         console.error(`${generalErrorMsg}: ${e}`);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, [portletId, generatePortletContent, generalErrorMsg]);
 
   useEffect(() => {
@@ -297,12 +328,19 @@ export const LegacyPortlet = ({ portletId }: LegacyPortletProps) => {
 
   return (
     <div ref={portletRef}>
-      {error && (
-        <Alert severity="error" onClose={() => setError(undefined)}>
-          {error}
-        </Alert>
-      )}
-      {content && <LegacyContentRenderer {...content} />}
+      <DraggablePortlet
+        portlet={cfg}
+        position={position}
+        isLoading={isLoading}
+        sx={customStyles}
+      >
+        {error && (
+          <Alert severity="error" onClose={() => setError(undefined)}>
+            {error}
+          </Alert>
+        )}
+        {content && <LegacyContentRenderer {...content} />}
+      </DraggablePortlet>
     </div>
   );
 };

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Article, InfoOutlined, Search } from "@mui/icons-material";
+import { Article, Search } from "@mui/icons-material";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { absurd } from "fp-ts/function";
@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { routes } from "../../mainui/routes";
 import { languageStrings } from "../../util/langstrings";
+import { PortletSearchResultNoneFound } from "../components/PortletSearchResultNoneFound";
 
 const { favourites: strings } = languageStrings.dashboard.portlets;
 
@@ -48,16 +49,7 @@ export const FavouriteItemsTab = ({
       type === "resources" ? strings.resourcesTabName : strings.searchesTabName;
     const noneFound = sprintf(strings.noneFound, tabName);
 
-    return (
-      <List>
-        <ListItem>
-          <ListItemIcon>
-            <InfoOutlined />
-          </ListItemIcon>
-          <ListItemText primary={noneFound} />
-        </ListItem>
-      </List>
-    );
+    return <PortletSearchResultNoneFound noneFoundMessage={noneFound} />;
   }
 
   const icon = () => (type === "resources" ? <Article /> : <Search />);

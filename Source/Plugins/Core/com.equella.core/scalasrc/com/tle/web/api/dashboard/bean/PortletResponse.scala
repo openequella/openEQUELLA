@@ -124,7 +124,7 @@ object PortletResponse {
         collectionUuids = collectionUuids,
         query = query,
         maxAge = maxAge,
-        itemStatus = itemStatus.map(_.toString),
+        itemStatus = itemStatus.map(_.exactString()),
         isShowTitleOnly = isShowTitleOnly
       )
     case p @ TaskStatisticsPortlet(commonDetails, trend) =>

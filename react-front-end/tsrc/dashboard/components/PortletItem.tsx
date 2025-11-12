@@ -17,6 +17,7 @@
  */
 import EditIcon from "@mui/icons-material/Edit";
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { pipe } from "fp-ts/function";
 import { useContext } from "react";
 import * as React from "react";
@@ -72,6 +73,11 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * to providing `children` directly.
    */
   renderChildren?: () => React.ReactNode;
+  /**
+   * Custom styles to be applied to the `Card` where portlet content and portlet header
+   * section are rendered.
+   */
+  sx?: SxProps<Theme>;
 }
 
 /**
@@ -83,6 +89,7 @@ const PortletItem = ({
   children,
   isLoading,
   renderChildren,
+  sx,
 }: PortletItemProps) => {
   const {
     name,
@@ -206,7 +213,7 @@ const PortletItem = ({
 
   return (
     <>
-      <Card>
+      <Card sx={sx}>
         <CardHeader title={name} action={actions()} />
         {renderPortletContent()}
       </Card>
