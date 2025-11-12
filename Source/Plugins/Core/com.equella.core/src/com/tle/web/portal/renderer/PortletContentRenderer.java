@@ -21,7 +21,10 @@ package com.tle.web.portal.renderer;
 import static com.tle.web.sections.equella.js.StandardExpressions.FORM_NAME;
 
 import com.tle.common.portal.entity.Portlet;
+import com.tle.web.sections.SectionInfo;
+import com.tle.web.sections.SectionsRuntimeException;
 import com.tle.web.sections.ViewableChildInterface;
+import com.tle.web.sections.ajax.AjaxRenderContext;
 import com.tle.web.sections.equella.js.StandardExpressions;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.generic.AbstractPrototypeSection;
@@ -30,6 +33,7 @@ import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.ExternallyDefinedFunction;
 import com.tle.web.sections.render.HtmlRenderer;
 import com.tle.web.template.RenderNewTemplate;
+import java.util.Optional;
 
 public abstract class PortletContentRenderer<M> extends AbstractPrototypeSection<M>
     implements HtmlRenderer, ViewableChildInterface {
@@ -80,6 +84,32 @@ public abstract class PortletContentRenderer<M> extends AbstractPrototypeSection
           new ExternallyDefinedFunction(eqObject + ".eventnv"),
           new ExternallyDefinedFunction(eqObject + ".event"),
           new ExternallyDefinedFunction(eqObject + ".eventnv"));
+    } else {
+      throw new IllegalStateException("New UI Dashboard is not enabled.");
     }
+  }
+
+  /**
+   * Sets up the legacy AJAX rendering context to make sure the result of a portlet AJAX event
+   * contains correct form ID, EQ object, and submit functions etc.
+   *
+   * @param info SectionInfo which should contain `AjaxRenderContext` to support the AJAX event.
+   */
+  protected void setupForAjaxEvent(SectionInfo info) {
+    Optional.ofNullable(info.getAttributeForClass(AjaxRenderContext.class))
+        .ifPresentOrElse(
+            this::setupForNewDashboard,
+            () -> {
+              throw new SectionsRuntimeException(
+                  "Failed to execute legacy portlet AJAX event: missing AjaxRenderContext");
+            });
+  }
+
+  /**
+   * Returns the custom EQ object name if the portlet is used in the new Dashboard, or `null`
+   * otherwise.
+   */
+  protected String getCustomEQ() {
+    return RenderNewTemplate.isNewUIEnabled() ? "EQ-" + portlet.getUuid() : null;
   }
 }

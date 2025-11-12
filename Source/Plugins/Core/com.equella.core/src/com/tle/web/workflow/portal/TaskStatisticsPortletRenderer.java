@@ -111,9 +111,10 @@ public class TaskStatisticsPortletRenderer
     trendSelector.addChangeEventHandler(
         new OverrideHandler(
             ajax.getAjaxUpdateDomFunction(
+                getCustomEQ(),
                 tree,
                 this,
-                null,
+                events.getEventHandler("trendChanged"),
                 ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
                 id + "taskstatsresults",
                 id + "trendselector")));
@@ -129,6 +130,7 @@ public class TaskStatisticsPortletRenderer
     workflowSelector.addChangeEventHandler(
         new OverrideHandler(
             ajax.getAjaxUpdateDomFunction(
+                getCustomEQ(),
                 tree,
                 this,
                 events.getEventHandler("workflowChanged"),
@@ -182,8 +184,15 @@ public class TaskStatisticsPortletRenderer
 
   @EventHandlerMethod
   public void workflowChanged(SectionInfo info) {
+    setupForAjaxEvent(info);
+
     String selWorkflow = workflowSelector.getSelectedValueAsString(info);
     userPreferenceService.setPreference(KEY_DEFAULT_WORKFLOW + '.' + getSectionId(), selWorkflow);
+  }
+
+  @EventHandlerMethod
+  public void trendChanged(SectionInfo info) {
+    setupForAjaxEvent(info);
   }
 
   @EventHandlerMethod
