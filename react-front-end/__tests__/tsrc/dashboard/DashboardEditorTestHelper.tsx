@@ -36,9 +36,9 @@ const TabContentSkeletonTestId = "tab-content-skeleton";
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},
 ) => {
-  const mockSetOpenDashboardEditor = jest.fn();
+  const onClose = jest.fn();
   const defaultProps: DashboardEditorProps = {
-    onClose: mockSetOpenDashboardEditor,
+    onClose,
     creatablePortletTypes,
   };
 
@@ -69,7 +69,7 @@ export const renderDashboardEditor = (
 
   return {
     user,
-    mockSetOpenDashboardEditor,
+    onClose,
     getTabByRole,
     getButtonByRole,
     getTabContentSkeleton,
