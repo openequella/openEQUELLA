@@ -60,7 +60,7 @@ describe("<DashboardLayout />", () => {
       singleColLayoutDashboardDetails,
     );
 
-    isToggleButtonChecked(container, strings.singleColumn);
+    expect(isToggleButtonChecked(container, strings.singleColumn)).toBe(true);
     await clickButton(container, strings.singleColumn);
 
     expect(mockUpdateDashboardLayout).not.toHaveBeenCalled();

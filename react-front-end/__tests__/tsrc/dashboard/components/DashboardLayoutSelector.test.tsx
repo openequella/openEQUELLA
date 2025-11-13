@@ -47,7 +47,7 @@ describe("<DashboardLayoutSelector />", () => {
     expect.assertions(buttons.length);
   });
 
-  it("marks the matching layout button as selected via aria-checked", () => {
+  it("marks the matching layout button as selected", () => {
     const { container } = renderDashboardLayoutSelector("TwoEqualColumns");
 
     expect(isToggleButtonChecked(container, strings.singleColumn)).toBe(false);
