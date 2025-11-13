@@ -201,21 +201,22 @@ const PortletItem = ({
 
   const closeDialog = () => setDialogOpen(false);
 
+  const renderPortletContent = () => {
+    if (isMinimised) return null;
+    if (isLoading) return <PortletItemSkeleton />;
+    return (
+      <CardContent id={`portlet-content-${uuid}`}>
+        {renderChildren ? renderChildren() : children}
+      </CardContent>
+    );
+  };
+
   return (
     <>
-      {isLoading ? (
-        <PortletItemSkeleton />
-      ) : (
-        <Card sx={sx}>
-          <CardHeader title={name} action={actions()} />
-
-          {!isMinimised && (
-            <CardContent id={`portlet-content-${uuid}`}>
-              {renderChildren ? renderChildren() : children}
-            </CardContent>
-          )}
-        </Card>
-      )}
+      <Card sx={sx}>
+        <CardHeader title={name} action={actions()} />
+        {renderPortletContent()}
+      </Card>
 
       <ConfirmDialog
         open={dialogOpen}

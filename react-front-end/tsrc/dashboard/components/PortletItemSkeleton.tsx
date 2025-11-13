@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Box, Card, CardContent, CardHeader, Skeleton } from "@mui/material";
-import { pipe } from "fp-ts/function";
-import * as NEA from "fp-ts/NonEmptyArray";
+import { CardContent, Skeleton } from "@mui/material";
 import * as React from "react";
 
 /** Test ID for the portlet item skeleton component. Can be used
@@ -29,32 +27,10 @@ export const PortletItemSkeletonTestId = "portlet-item-skeleton";
  * A skeleton for a portlet item, to be shown when the actual portlet content is loading.
  */
 const PortletItemSkeleton = () => {
-  const actions = () => (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      {pipe(
-        NEA.range(1, 3),
-        NEA.map((num) => (
-          <Skeleton
-            key={num}
-            variant="circular"
-            sx={{ margin: "4px" }}
-            component="span"
-            width={32}
-            height={32}
-          />
-        )),
-      )}
-    </Box>
-  );
-
   return (
-    <Card data-testid={PortletItemSkeletonTestId}>
-      <CardHeader title={<Skeleton variant="text" />} action={actions()} />
-
-      <CardContent>
-        <Skeleton variant="rounded" height={180} />
-      </CardContent>
-    </Card>
+    <CardContent data-testid={PortletItemSkeletonTestId}>
+      <Skeleton variant="rounded" height={180} />
+    </CardContent>
   );
 };
 

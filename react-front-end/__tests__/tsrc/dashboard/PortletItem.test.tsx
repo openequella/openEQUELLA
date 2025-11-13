@@ -26,6 +26,7 @@ import {
   privatePortlet,
   privateSearchPortlet,
 } from "../../../__mocks__/Dashboard.mock";
+import { PortletItemSkeletonTestId } from "../../../tsrc/dashboard/components/PortletItemSkeleton";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { clickButton } from "../MuiTestHelpers";
@@ -49,13 +50,29 @@ const mockEditPortlet = jest
   .mockResolvedValue("");
 
 describe("<PortletItem/>", () => {
-  it("displays a skeleton when loading", () => {
-    const { getByTestId } = renderPortletItem({
+  it("displays a skeleton in portlet content area when content is loading", () => {
+    const { getByTestId, getByText, getByLabelText } = renderPortletItem({
       ...defaultProps,
       isLoading: true,
     });
 
-    expect(getByTestId("portlet-item-skeleton")).toBeInTheDocument();
+    // Always show portlet title and actions when content is loading.
+    expect(getByText(basicPortlet.commonDetails.name)).toBeInTheDocument();
+    expect(getByLabelText(minimiseText)).toBeInTheDocument();
+    // Show skeleton when content is loading.
+    expect(getByTestId(PortletItemSkeletonTestId)).toBeInTheDocument();
+  });
+
+  it("does not show skeleton for a loading minimised portlet", () => {
+    const { getByLabelText, queryByText, queryByTestId } = renderPortletItem({
+      ...defaultProps,
+      portlet: minimisedPortlet,
+      isLoading: true,
+    });
+
+    expect(getByLabelText(maximiseText)).toBeInTheDocument();
+    expect(queryByText(portletContent)).not.toBeInTheDocument();
+    expect(queryByTestId(PortletItemSkeletonTestId)).not.toBeInTheDocument();
   });
 
   it("displays portlet name", async () => {
