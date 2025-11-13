@@ -17,7 +17,7 @@
  */
 import { useContext } from "react";
 import * as React from "react";
-import { Alert, Box, Typography } from "@mui/material";
+import { Alert, Grid, Typography } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { DashboardPageContext } from "../DashboardPageContext";
 import { DashboardLayoutSelector } from "../components/DashboardLayoutSelector";
@@ -40,14 +40,14 @@ export const DashboardLayout = () => {
   };
 
   return dashboardDetails ? (
-    <>
-      <Typography variant="body1" mb={3}>
-        {strings.chooseLayout}
-      </Typography>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+    <Grid container direction="column" spacing={2}>
+      <Grid>
+        <Typography variant="body1">{strings.chooseLayout}</Typography>
+      </Grid>
+      <Grid display="flex" justifyContent="center">
         <DashboardLayoutSelector value={activeLayout} onChange={handleChange} />
-      </Box>
-    </>
+      </Grid>
+    </Grid>
   ) : (
     <Alert severity="error">{strings.alertNoDashboardDetails}</Alert>
   );
