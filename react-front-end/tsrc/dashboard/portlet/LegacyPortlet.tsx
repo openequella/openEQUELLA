@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Alert } from "@mui/material";
-import { Theme, SxProps } from "@mui/material/styles";
+import type { Theme, SxProps } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
