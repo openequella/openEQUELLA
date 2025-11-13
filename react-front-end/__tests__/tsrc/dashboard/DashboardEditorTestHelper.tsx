@@ -18,6 +18,7 @@
 import * as React from "react";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,
@@ -37,7 +38,8 @@ export const renderDashboardEditor = (
 ) => {
   const mockSetOpenDashboardEditor = jest.fn();
   const defaultProps: DashboardEditorProps = {
-    setOpenDashboardEditor: mockSetOpenDashboardEditor,
+    onClose: mockSetOpenDashboardEditor,
+    creatablePortletTypes,
   };
 
   const renderResult = render(<DashboardEditor {...defaultProps} {...props} />);

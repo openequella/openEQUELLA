@@ -177,3 +177,21 @@ export const noMinimisePortlet: OEQ.Dashboard.BasicPortlet = {
     canMinimise: false,
   },
 };
+
+export const creatablePortletTypes: OEQ.Dashboard.PortletCreatable[] = [
+  {
+    portletType: "search",
+    name: "Search Portlet",
+    desc: "A portlet that provides search functionality.",
+  },
+  {
+    portletType: "favourites",
+    name: "Favourites Portlet",
+    desc: "A portlet that displays your favourite items.",
+  },
+  {
+    portletType: "tasks",
+    name: "Tasks Portlet",
+    desc: "A portlet that shows your tasks.",
+  },
+];

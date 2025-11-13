@@ -25,6 +25,7 @@ import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   deletePortlet as deletePortletApi,
+  getCreatablePortlets,
   getDashboardDetails,
   updatePortletPreference,
 } from "../modules/DashboardModule";
@@ -55,6 +56,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [openDashboardEditor, setOpenDashboardEditor] =
     useState<boolean>(false);
 
+  const [creatablePortletTypes, setCreatablePortletTypes] = useState<
+    OEQ.Dashboard.PortletCreatable[]
+  >([]);
+
   useEffect(() => {
     updateTemplate((tp) => ({
       ...templateDefaults(title)(tp),
@@ -78,6 +83,18 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         hasCreatePortletACL,
         TE.match(appErrorHandler, setHasCreatePortletAcl),
+      ),
+    [appErrorHandler],
+  );
+
+  const getCreatablePortletTypes = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        TE.tryCatch(
+          getCreatablePortlets,
+          (e) => `Failed to retrieve creatable portlet types: ${e}`,
+        ),
+        TE.match(appErrorHandler, setCreatablePortletTypes),
       ),
     [appErrorHandler],
   );
@@ -111,10 +128,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   useEffect(() => {
     setIsLoading(true);
     pipe(
-      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.sequenceArray([
+        loadDashboard(),
+        checkCreatePortletAcl(),
+        getCreatablePortletTypes(),
+      ]),
       T.tapIO(() => () => setIsLoading(false)),
     )();
-  }, [loadDashboard, checkCreatePortletAcl]);
+  }, [loadDashboard, checkCreatePortletAcl, getCreatablePortletTypes]);
 
   const closePortlet = useCallback(
     (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {
@@ -187,7 +208,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <>
         {renderDashboardForNonSystemUser()}
         {openDashboardEditor && (
-          <DashboardEditor setOpenDashboardEditor={setOpenDashboardEditor} />
+          <DashboardEditor
+            onClose={() => setOpenDashboardEditor(false)}
+            creatablePortletTypes={creatablePortletTypes}
+          />
         )}
       </>
     );

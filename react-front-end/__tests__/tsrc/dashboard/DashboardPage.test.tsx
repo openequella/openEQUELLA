@@ -64,6 +64,7 @@ const {
   mockUpdatePortletPreference,
   mockDeletePortlet,
   mockGetCreatePortletAcl,
+  mockGetCreatablePortlets,
 } = mockDashboardPageApis();
 
 describe("<DashboardPage/>", () => {
@@ -121,6 +122,7 @@ describe("<DashboardPage/>", () => {
     await renderDashboardPage();
 
     expect(mockGetDashboardDetails).toHaveBeenCalledTimes(1);
+    expect(mockGetCreatablePortlets).toHaveBeenCalledTimes(1);
   });
 
   it("updates portlet preference when a user maximizes a portlet", async () => {
