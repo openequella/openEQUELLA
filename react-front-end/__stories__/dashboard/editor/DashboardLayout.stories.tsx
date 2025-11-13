@@ -25,11 +25,12 @@ import * as OEQ from "@openequella/rest-api-client";
 export default {
   title: "Dashboard/DashboardLayout",
   component: DashboardLayout,
+  excludeStories: /^_/,
 } as Meta;
 
 const nop = () => {};
 
-const buildDashboardPageContextDecorator =
+export const _buildDashboardPageContextDecorator =
   (details?: OEQ.Dashboard.DashboardDetails): Decorator =>
   (Story) => (
     <DashboardPageContext.Provider
@@ -47,8 +48,10 @@ const buildDashboardPageContextDecorator =
 
 export const WithDashboardDetails: StoryFn = () => <DashboardLayout />;
 WithDashboardDetails.decorators = [
-  buildDashboardPageContextDecorator(emptyDashboardDetails),
+  _buildDashboardPageContextDecorator(emptyDashboardDetails),
 ];
 
 export const NoDashboardDetails: StoryFn = () => <DashboardLayout />;
-NoDashboardDetails.decorators = [buildDashboardPageContextDecorator(undefined)];
+NoDashboardDetails.decorators = [
+  _buildDashboardPageContextDecorator(undefined),
+];

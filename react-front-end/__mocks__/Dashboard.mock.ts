@@ -177,3 +177,8 @@ export const noMinimisePortlet: OEQ.Dashboard.BasicPortlet = {
     canMinimise: false,
   },
 };
+
+export const singleColLayoutDashboardDetails: OEQ.Dashboard.DashboardDetails = {
+  portlets: [privateSearchPortlet, publicHtmlPortlet],
+  layout: "SingleColumn",
+};

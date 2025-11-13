@@ -17,11 +17,11 @@
  */
 import * as React from "react";
 import type { Meta, StoryFn } from "@storybook/react";
-import { DashboardLayoutSelector } from "../../tsrc/dashboard/components/DashboardLayoutSelector";
-import type { DashboardLayoutSelectorProps } from "../../tsrc/dashboard/components/DashboardLayoutSelector";
+import { DashboardLayoutSelector } from "../../../tsrc/dashboard/components/DashboardLayoutSelector";
+import type { DashboardLayoutSelectorProps } from "../../../tsrc/dashboard/components/DashboardLayoutSelector";
 
 export default {
-  title: "Dashboard/DashboardLayoutSelector",
+  title: "Dashboard/components/DashboardLayoutSelector",
   component: DashboardLayoutSelector,
   argTypes: {
     onChange: { action: "onChange" },
