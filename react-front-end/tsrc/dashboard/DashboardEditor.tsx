@@ -28,15 +28,15 @@ import {
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { TabContentSkeletonTestId } from "../../__tests__/tsrc/dashboard/DashboardEditorTestHelper";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
+import { DashboardLayout } from "./editor/DashboardLayout";
 
 const {
   title,
   alertInfo,
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
@@ -63,23 +63,37 @@ export const DashboardEditor = ({
   const handleTabChange = (_: React.ChangeEvent<object>, newValue: number) =>
     setActiveTab(newValue);
 
-  const tabContent = pipe(
-    activeTab,
-    simpleMatch({
-      0: () => <Box id="dashboard-layout-content">{/* TODO: OEQ-2688 */}</Box>,
-      1: () => <Box id="create-portlet-content">{/* TODO: OEQ-2690 */}</Box>,
-      2: () => <Box id="restore-portlet-content">{/* TODO: OEQ-2690 */}</Box>,
-      _: () => <Alert severity="error">Unknown tab state!</Alert>,
-    }),
-  );
-
   const tabContentSkeleton = (
     <Skeleton
       variant="rectangular"
       width="100%"
       height={400}
-      data-testid={TabContentSkeletonTestId}
+      data-testid="tab-content-skeleton"
     />
+  );
+
+  const tabContent = pipe(
+    activeTab,
+    simpleMatch({
+      0: () => (
+        <Box id="dashboard-layout-content">
+          <DashboardLayout />
+        </Box>
+      ),
+      1: () =>
+        isLoading ? (
+          tabContentSkeleton
+        ) : (
+          <Box id="create-portlet-content">{/* TODO: OEQ-2690 */}</Box>
+        ),
+      2: () =>
+        isLoading ? (
+          tabContentSkeleton
+        ) : (
+          <Box id="restore-portlet-content">{/* TODO: OEQ-2690 */}</Box>
+        ),
+      _: () => <Alert severity="error">Unknown tab state!</Alert>,
+    }),
   );
 
   return (
@@ -122,7 +136,7 @@ export const DashboardEditor = ({
             <Tab label={restorePortletLabel} />
           </Tabs>
         </Grid>
-        <Grid size={12}>{isLoading ? tabContentSkeleton : tabContent}</Grid>
+        <Grid size={12}>{tabContent}</Grid>
       </Grid>
     </Drawer>
   );

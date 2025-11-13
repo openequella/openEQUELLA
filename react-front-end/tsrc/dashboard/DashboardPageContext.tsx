@@ -46,10 +46,19 @@ interface DashboardPageContextProps {
     uuid: string,
     portletPref: OEQ.Dashboard.PortletPreference,
   ) => void;
+  /**
+   * Triggers the refresh of dashboard page by calling the `getDashboardDetails`.
+   */
+  refreshDashboard: () => void;
+  /**
+   * The current details of the Dashboard, including portlets and layout.
+   */
+  dashboardDetails?: OEQ.Dashboard.DashboardDetails;
 }
 
 export const DashboardPageContext = createContext<DashboardPageContextProps>({
   closePortlet: () => {},
   deletePortlet: () => {},
   minimisePortlet: () => {},
+  refreshDashboard: () => {},
 });

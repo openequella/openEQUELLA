@@ -22,7 +22,7 @@ import { renderDashboardEditor } from "./DashboardEditorTestHelper";
 const {
   title,
   alertInfo,
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
@@ -63,12 +63,6 @@ describe("<DashboardEditor />", () => {
     assertActiveTab(restorePortletLabel);
 
     expect.assertions(6);
-  });
-
-  it("shows the skeleton by default", () => {
-    const { getTabContentSkeleton } = renderDashboardEditor();
-
-    expect(getTabContentSkeleton()).toBeInTheDocument();
   });
 
   it("calls setOpenDashboardEditor(false) when Close button is clicked", async () => {
