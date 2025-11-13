@@ -19,7 +19,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import Axios, { AxiosError } from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
-import { legacyContentSubmitBaseUrl } from "./LegacyContentModule";
+import {
+  legacyContentSubmitBaseUrl,
+  ChangeRoute,
+  submitRequest,
+} from "./LegacyContentModule";
 import * as t from "io-ts";
 
 /**
@@ -90,6 +94,22 @@ export const updatePortletPreference = (
  */
 export const deletePortlet = (uuid: string): Promise<void> =>
   OEQ.Dashboard.deletePortlet(API_BASE_URL, uuid);
+
+/**
+ * Retrieves the route to the legacy portlet creation page by submitting a Legacy content API request
+ * to `home.do`. The endpoint is `psh.createPortletFromNewDashboard` where `psh` is the name of Section
+ * `ShowPortletsSection` and `createPortletFromNewDashboard` is the event handler for this request.
+ *
+ * @param portletType Type of the portlet to be created, which must be supplied to the event handler as the first
+ * parameter.
+ */
+export const getLegacyPortletCreationPageRoute = (
+  portletType: OEQ.Dashboard.PortletType,
+): Promise<string> =>
+  submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
+    event__: ["psh.createPortletFromNewDashboard"],
+    eventp__0: [portletType],
+  }).then(({ route }) => `/${route}`);
 
 /**
  * Initiate an editing session for a portlet.
