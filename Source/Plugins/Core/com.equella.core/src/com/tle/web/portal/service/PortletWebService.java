@@ -47,6 +47,14 @@ public interface PortletWebService {
    */
   void editPortletFromNewDashboard(SectionInfo info, String portletUuid);
 
+  /**
+   * Assists accessing the legacy portlet creation page from the new UI dashboard.
+   *
+   * <p>Note: This method must be invoked by a Legacy Content API request in order to generate a
+   * proper route for client to use.
+   */
+  void newPortletFromNewDashboard(SectionInfo info, String portletType);
+
   void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
 
