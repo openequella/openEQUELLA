@@ -26,12 +26,12 @@ import {
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const {
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 
-export const TabContentSkeletonTestId = "tab-content-skeleton";
+const TabContentSkeletonTestId = "tab-content-skeleton";
 
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},

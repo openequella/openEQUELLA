@@ -28,6 +28,7 @@ import { PortletFormattedText } from "./PortletFormattedText";
 import { PortletQuickSearch } from "./PortletQuickSearch";
 import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
+import { PortletTaskStatistics } from "./PortletTaskStatistics";
 import { PortletUnsupported } from "./PortletUnsupported";
 
 /**
@@ -139,7 +140,7 @@ export const renderPortlet = (
     case "tasks":
       return <PortletUnsupported {...basicProps} />;
     case "taskstatistics":
-      return <PortletUnsupported {...basicProps} />;
+      return <PortletTaskStatistics {...basicProps} />;
     default:
       return absurd(portletType);
   }

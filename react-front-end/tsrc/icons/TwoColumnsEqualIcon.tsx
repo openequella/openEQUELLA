@@ -15,23 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CardContent, Skeleton } from "@mui/material";
+import { SvgIcon, SvgIconProps } from "@mui/material";
 import * as React from "react";
 
-/** Test ID for the portlet item skeleton component. Can be used
- *  in tests to find the portlet item skeleton element.
- */
-export const PortletItemSkeletonTestId = "portlet-item-skeleton";
-
 /**
- * A skeleton for a portlet item, to be shown when the actual portlet content is loading.
+ * An icon representing a two-column dashboard layout with equal widths.
  */
-const PortletItemSkeleton = () => {
+export const TwoColumnsEqualIcon = (props: SvgIconProps) => {
   return (
-    <CardContent data-testid={PortletItemSkeletonTestId}>
-      <Skeleton variant="rounded" height={180} />
-    </CardContent>
+    <SvgIcon {...props}>
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect
+          x="5"
+          y="5"
+          width="40"
+          height="90"
+          stroke="currentColor"
+          strokeWidth="6"
+          fill="none"
+          rx="5"
+          ry="5"
+        />
+        <rect
+          x="52.5"
+          y="5"
+          width="40"
+          height="90"
+          stroke="currentColor"
+          strokeWidth="6"
+          fill="none"
+          rx="5"
+          ry="5"
+        />
+      </svg>
+    </SvgIcon>
   );
 };
-
-export default PortletItemSkeleton;

@@ -60,6 +60,7 @@ import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
 import com.tle.web.sections.render.CssInclude;
 import com.tle.web.sections.render.GenericTemplateResult;
 import com.tle.web.sections.render.HtmlRenderer;
+import com.tle.web.template.RenderNewTemplate;
 import java.util.Map;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -166,17 +167,22 @@ public class ShowPortletsSection
    */
   @EventHandlerMethod
   public void getPortletContent(SectionInfo info, String uuid) {
-    SectionTree tree = getModel(info).getTree(false);
-    // This is the mapping between Portlet UUID and Section 'PortletRendererWrapper'
-    Map<String, PortletRendererWrapper> portletMapping = tree.getAttribute(UUID_SECTIONID_MAP_KEY);
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      SectionTree tree = getModel(info).getTree(false);
+      // This is the mapping between Portlet UUID and Section 'PortletRendererWrapper'
+      Map<String, PortletRendererWrapper> portletMapping =
+          tree.getAttribute(UUID_SECTIONID_MAP_KEY);
 
-    Optional.ofNullable(portletMapping.get(uuid))
-        .map(PortletRendererWrapper::getDelegate)
-        .ifPresentOrElse(
-            portletRenderer -> renderPortletForNewDashboard(info, portletRenderer),
-            () ->
-                LOGGER.warn(
-                    "Failed to find Legacy Section 'PortletRendererWrapper' with UUID {}", uuid));
+      Optional.ofNullable(portletMapping.get(uuid))
+          .map(PortletRendererWrapper::getDelegate)
+          .ifPresentOrElse(
+              portletRenderer -> renderPortletForNewDashboard(info, portletRenderer),
+              () ->
+                  LOGGER.warn(
+                      "Failed to find Legacy Section 'PortletRendererWrapper' with UUID {}", uuid));
+    } else {
+      throw new IllegalStateException("New UI Dashboard is not enabled.");
+    }
   }
 
   @AjaxMethod

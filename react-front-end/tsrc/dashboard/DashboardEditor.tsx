@@ -24,11 +24,12 @@ import { TooltipIconButton } from "../components/TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { PortletCreationList } from "./components/PortletCreationList";
+import { DashboardLayout } from "./editor/DashboardLayout";
 
 const {
   title,
   alertInfo,
-  dashboardLayout: dashLayoutLabel,
+  dashboardLayout: { title: dashLayoutLabel },
   createPortlet: createPortletLabel,
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
@@ -62,7 +63,11 @@ export const DashboardEditor = ({
   const tabContent = pipe(
     activeTab,
     simpleMatch({
-      0: () => <Box id="dashboard-layout-content">{/* TODO: OEQ-2688 */}</Box>,
+      0: () => (
+        <Box id="dashboard-layout-content">
+          <DashboardLayout />
+        </Box>
+      ),
       1: () => (
         <Box id="create-portlet-content">
           <PortletCreationList creatablePortletTypes={creatablePortletTypes} />
