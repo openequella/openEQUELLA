@@ -15,16 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as A from 'fp-ts/Array';
+import * as E from 'fp-ts/Either';
+import { constTrue, pipe } from 'fp-ts/function';
+import * as t from 'io-ts';
+import * as PathReporter from 'io-ts/PathReporter';
 import { DELETE, GET, PUT } from './AxiosInstance';
-import type { UuidString, ItemStatus } from './Common';
-import type { Trend } from './Task';
+import type { ItemStatus, UuidString } from './Common';
 import {
+  BasicPortletCodec,
   DashboardDetailsCodec,
+  FormattedTextPortletCodec,
   PortletClosedCodec,
   PortletCreatableCodec,
+  RecentContributionsPortletCodec,
+  TaskStatisticsPortletCodec,
 } from './gen/Dashboard';
+import type { Trend } from './Task';
 import { validate } from './Utils';
-import * as t from 'io-ts';
 
 /**
  * Supported Portlet types, excluding those deprecated.
@@ -232,7 +240,7 @@ const PORTLET_PATH = `${DASHBOARD_PATH}/portlet`;
 export const getDashboardDetails = (
   apiBasePath: string
 ): Promise<DashboardDetails> =>
-  GET(`${apiBasePath}${DASHBOARD_PATH}`, validate(DashboardDetailsCodec));
+  GET(`${apiBasePath}${DASHBOARD_PATH}`, isDashboardDetails);
 
 /**
  * Update the Dashboard layout.
@@ -295,3 +303,41 @@ export const deletePortlet = (
   apiBasePath: string,
   uuid: UuidString
 ): Promise<void> => DELETE(`${apiBasePath}${PORTLET_PATH}/${uuid}`);
+
+/** Helper function to get the appropriate codec for a portlet based on its type. Needs to be maintained if new
+ * portlet types are added. Any unknown ones will just use the BasicPortletCodec. */
+const getCodecForPortlet = (portlet: BasicPortlet) => {
+  switch (portlet.portletType) {
+    case 'html':
+      return FormattedTextPortletCodec;
+    case 'recent':
+      return RecentContributionsPortletCodec;
+    case 'taskstatistics':
+      return TaskStatisticsPortletCodec;
+    default:
+      return BasicPortletCodec;
+  }
+};
+
+/** Validate all portlets in the dashboard using their specific codecs. */
+const validatePortlets = (portlets: BasicPortlet[]) =>
+  pipe(
+    portlets,
+    A.map((portlet) => getCodecForPortlet(portlet).decode(portlet)),
+    A.sequence(E.Applicative)
+  );
+
+/** Type guard to check if data is of type DashboardDetails, with detailed portlet validation. */
+const isDashboardDetails = (data: unknown): data is DashboardDetails =>
+  pipe(
+    data,
+    DashboardDetailsCodec.decode,
+    E.chain((dashboard) => validatePortlets(dashboard.portlets)),
+    E.match((e) => {
+      console.log(
+        'DashboardDetails validation failed: ' +
+          PathReporter.failure(e).join(', ')
+      );
+      return false;
+    }, constTrue)
+  );

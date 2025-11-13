@@ -33,4 +33,14 @@ public enum ItemStatus {
   public String toString() {
     return super.toString().toLowerCase();
   }
+
+  /**
+   * Returns the exact string representation of the enum value. Unfortunately {@code toString()} has
+   * been changed to return a lowercase version. Why? That's lost to history. But exactString() is
+   * here to provide the original functionality for those places where the exact enum name is needed
+   * - such as APIs.
+   */
+  public String exactString() {
+    return super.toString();
+  }
 }

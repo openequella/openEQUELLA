@@ -15,23 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CardContent, Skeleton } from "@mui/material";
+import { Box } from "@mui/material";
 import * as React from "react";
-
-/** Test ID for the portlet item skeleton component. Can be used
- *  in tests to find the portlet item skeleton element.
- */
-export const PortletItemSkeletonTestId = "portlet-item-skeleton";
+import { LegacyPortlet } from "./LegacyPortlet";
+import type { PortletBasicProps } from "./PortletHelper";
 
 /**
- * A skeleton for a portlet item, to be shown when the actual portlet content is loading.
+ * Portlet component that delegates the rendering of task statistics UI to the  `LegacyPortlet` component.
  */
-const PortletItemSkeleton = () => {
-  return (
-    <CardContent data-testid={PortletItemSkeletonTestId}>
-      <Skeleton variant="rounded" height={180} />
-    </CardContent>
-  );
-};
-
-export default PortletItemSkeleton;
+export const PortletTaskStatistics = (props: PortletBasicProps) => (
+  // An additional div with a legacy class name is required to allow legacy css styles to apply correctly.
+  <Box className="portlet_taskstatistics_content">
+    <LegacyPortlet
+      {...props}
+      customStyles={{
+        overflow: "visible", // This is to allow the workflow dropdown to show its full list.
+      }}
+    />
+  </Box>
+);
