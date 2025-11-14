@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { pipe, constVoid } from "fp-ts/function";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as React from "react";
+import { sprintf } from "sprintf-js";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
@@ -45,6 +46,7 @@ import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
+const { errors: dashboardErrors } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
@@ -71,7 +73,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => getDashboardDetails(),
-          (e) => `Failed to get dashboard details: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToGetDashboardDetails, `${e}`),
         ),
         TE.match(appErrorHandler, setDashboardDetails),
       ),
@@ -90,9 +92,8 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const getCreatablePortletTypes = useCallback(
     (): T.Task<void> =>
       pipe(
-        TE.tryCatch(
-          getCreatablePortlets,
-          (e) => `Failed to retrieve creatable portlet types: ${e}`,
+        TE.tryCatch(getCreatablePortlets, (e) =>
+          sprintf(dashboardErrors.failedToGetCreatablePortlets, `${e}`),
         ),
         TE.match(appErrorHandler, setCreatablePortletTypes),
       ),
@@ -104,7 +105,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => updatePortletPreference(uuid, pref),
-          (e) => `Failed to update portlet preference: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
         T.tapIO(() => loadDashboard()),
@@ -117,7 +118,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => deletePortletApi(uuid),
-          (e) => `Failed to delete portlet: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToDeletePortlet, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
         T.tapIO(() => loadDashboard()),

@@ -22,10 +22,16 @@ import { pipe } from "fp-ts/function";
 import { useCallback, useContext } from "react";
 import * as React from "react";
 import { useHistory } from "react-router";
+import { sprintf } from "sprintf-js";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { AppContext } from "../../mainui/App";
 import { getLegacyPortletCreationPageRoute } from "../../modules/DashboardModule";
 import * as TE from "fp-ts/TaskEither";
+import { languageStrings } from "../../util/langstrings";
+
+const {
+  errors: { failedToOpenCreationPage },
+} = languageStrings.dashboard;
 
 interface PortletCreationListProps {
   /**
@@ -49,7 +55,7 @@ export const PortletCreationList = ({
       pipe(
         TE.tryCatch(
           () => getLegacyPortletCreationPageRoute(portletType),
-          (e) => `Failed to access the legacy portlet creation page: ${e}`,
+          (e) => sprintf(failedToOpenCreationPage, `${e}`),
         ),
         TE.match(appErrorHandler, (route) => history.push(route)),
       )(),

@@ -416,6 +416,15 @@ export const languageStrings = {
       alertInfo:
         "You are currently editing your dashboard. Changes will be saved automatically.",
     },
+    errors: {
+      failedToOpenCreationPage:
+        "Failed to access the legacy portlet creation page: %s",
+      failedToDeletePortlet: "Failed to delete portlet: %s",
+      failedToGetCreatablePortlets:
+        "Failed to retrieve creatable portlet types: %s",
+      failedToGetDashboardDetails: "Failed to retrieve dashboard details: %s",
+      failedToUpdatePortletPref: "Failed to update portlet preference: %s",
+    },
   },
   drm: {
     getTerms: {
