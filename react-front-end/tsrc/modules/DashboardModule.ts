@@ -16,14 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import Axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
-import {
-  legacyContentSubmitBaseUrl,
-  ChangeRoute,
-  submitRequest,
-} from "./LegacyContentModule";
+import { ChangeRoute, submitRequest } from "./LegacyContentModule";
 import * as t from "io-ts";
 
 /**
@@ -123,11 +119,11 @@ export const getLegacyPortletCreationPageRoute = (
  * @returns A promise which resolves to the URL path for the legacy editing page.
  */
 export const editPortlet = (uuid: string): Promise<string> =>
-  Axios.post(legacyContentSubmitBaseUrl + OLD_DASHBOARD_PATH, {
+  submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
     event__: ["psh.editPortletFromNewDashboard"],
     eventp__0: [uuid],
   })
-    .then(({ data: { route } }) => `/${route}`)
+    .then(({ route }) => `/${route}`)
     .catch((error: AxiosError | Error) => {
       throw OEQ.Errors.repackageError(error);
     });
