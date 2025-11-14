@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { Skeleton, Fab } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { pipe, constVoid } from "fp-ts/function";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import * as React from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
@@ -34,12 +34,20 @@ import WelcomeBoard from "./components/WelcomeBoard";
 import * as TE from "fp-ts/TaskEither";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
-import { DashboardPageContext } from "./DashboardPageContext";
-import { updateDashboardDetails } from "./DashboardPageHelper";
-import { PortletContainer } from "./portlet/PortletContainer";
 import { DashboardEditor } from "./DashboardEditor";
+import { DashboardPageContext } from "./DashboardPageContext";
+import {
+  batchUpdatePortletPreferences,
+  computeDndPortletNewPosition,
+  decodeDndData,
+  getMovedPortlets,
+  movePortlet,
+  updateDashboardDetails,
+} from "./DashboardPageHelper";
+import { PortletContainer } from "./portlet/PortletContainer";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
@@ -55,11 +63,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [openDashboardEditor, setOpenDashboardEditor] =
     useState<boolean>(false);
 
-  useEffect(() => {
-    updateTemplate((tp) => ({
-      ...templateDefaults(title)(tp),
-    }));
-  }, [updateTemplate]);
+  const checkCreatePortletAcl = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        hasCreatePortletACL,
+        TE.match(appErrorHandler, setHasCreatePortletAcl),
+      ),
+    [appErrorHandler],
+  );
 
   const loadDashboard = useCallback(
     (): T.Task<void> =>
@@ -73,13 +84,71 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler],
   );
 
-  const checkCreatePortletAcl = useCallback(
-    (): T.Task<void> =>
-      pipe(
-        hasCreatePortletACL,
-        TE.match(appErrorHandler, setHasCreatePortletAcl),
-      ),
-    [appErrorHandler],
+  useEffect(() => {
+    updateTemplate((tp) => ({
+      ...templateDefaults(title)(tp),
+    }));
+  }, [updateTemplate]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    pipe(
+      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.tapIO(() => () => setIsLoading(false)),
+    )();
+  }, [loadDashboard, checkCreatePortletAcl]);
+
+  // Register drag-and-drop monitoring for dashboard portlets.
+  useEffect(
+    () =>
+      monitorForElements({
+        onDrop(args) {
+          if (!dashboardDetails) {
+            return;
+          }
+
+          const portletSourceData = args.source.data;
+          const targets = args.location.current.dropTargets;
+
+          pipe(
+            decodeDndData(portletSourceData, targets),
+            E.bindTo("dndData"),
+            E.bind("newPosition", ({ dndData }) =>
+              computeDndPortletNewPosition(dndData),
+            ),
+            E.chain(({ dndData, newPosition }) =>
+              pipe(
+                dashboardDetails,
+                movePortlet(dndData.sourceDndData.portlet, newPosition),
+              ),
+            ),
+            E.map((updatedPortlets) => {
+              const movedPortlets = getMovedPortlets(
+                dashboardDetails.portlets,
+                updatedPortlets,
+              );
+
+              // Update local state.
+              setDashboardDetails((oldDashboard) => ({
+                ...oldDashboard,
+                portlets: updatedPortlets,
+              }));
+
+              // Save new position to server and reload dashboard.
+              pipe(
+                batchUpdatePortletPreferences(movedPortlets),
+                TE.mapLeft((e) => {
+                  appErrorHandler(`Failed to update portlet positions: ${e}`);
+                  // Reload dashboard to reset state.
+                  loadDashboard();
+                }),
+              )();
+            }),
+            E.mapLeft(appErrorHandler),
+          );
+        },
+      }),
+    [appErrorHandler, dashboardDetails, loadDashboard],
   );
 
   const updatePortletPreferenceAndRefresh = useCallback(
@@ -107,14 +176,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       )(),
     [appErrorHandler, loadDashboard],
   );
-
-  useEffect(() => {
-    setIsLoading(true);
-    pipe(
-      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
-      T.tapIO(() => () => setIsLoading(false)),
-    )();
-  }, [loadDashboard, checkCreatePortletAcl]);
 
   const closePortlet = useCallback(
     (uuid: string, portletPref: OEQ.Dashboard.PortletPreference) => {
