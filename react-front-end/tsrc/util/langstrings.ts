@@ -411,7 +411,11 @@ export const languageStrings = {
         twoColumnsRatio2to1: "Two columns (2:1 ratio)",
         singleColumn: "Single column",
       },
-      createPortlet: "Create portlet",
+      createPortlet: {
+        title: "Create portlet",
+        tooltip: "Create %s portlet",
+        noCreatablePortlets: " No portlet types available to create.",
+      },
       restorePortlet: "Restore portlet",
       alertInfo:
         "You are currently editing your dashboard. Changes will be saved automatically.",

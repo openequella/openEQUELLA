@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { List, ListItem, ListItemText } from "@mui/material";
+import { Alert, List, ListItem, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import AddIcon from "@mui/icons-material/Add";
 import { pipe } from "fp-ts/function";
@@ -26,12 +26,15 @@ import { sprintf } from "sprintf-js";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { AppContext } from "../../mainui/App";
 import { getLegacyPortletCreationPageRoute } from "../../modules/DashboardModule";
+import * as A from "fp-ts/Array";
 import * as TE from "fp-ts/TaskEither";
 import { languageStrings } from "../../util/langstrings";
 
 const {
   errors: { failedToOpenCreationPage },
 } = languageStrings.dashboard;
+
+const { createPortlet: createPortletLabel } = languageStrings.dashboard.editor;
 
 interface PortletCreationListProps {
   /**
@@ -57,19 +60,19 @@ export const PortletCreationList = ({
           () => getLegacyPortletCreationPageRoute(portletType),
           (e) => sprintf(failedToOpenCreationPage, `${e}`),
         ),
-        TE.match(appErrorHandler, (route) => history.push(route)),
+        TE.match(appErrorHandler, history.push),
       )(),
     [appErrorHandler, history],
   );
 
-  return (
+  return A.isNonEmpty(creatablePortletTypes) ? (
     <List>
       {creatablePortletTypes.map(({ name, desc, portletType }) => (
         <ListItem
           key={portletType}
           secondaryAction={
             <TooltipIconButton
-              title={name}
+              title={sprintf(createPortletLabel.tooltip, name)}
               onClick={() => createPortlet(portletType)}
             >
               <AddIcon />
@@ -80,5 +83,7 @@ export const PortletCreationList = ({
         </ListItem>
       ))}
     </List>
+  ) : (
+    <Alert severity="warning">{createPortletLabel.noCreatablePortlets}</Alert>
   );
 };

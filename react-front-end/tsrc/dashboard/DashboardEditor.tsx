@@ -30,7 +30,7 @@ const {
   title,
   alertInfo,
   dashboardLayout: { title: dashLayoutLabel },
-  createPortlet: createPortletLabel,
+  createPortlet: { title: createPortletLabel },
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 const { close } = languageStrings.common.action;
