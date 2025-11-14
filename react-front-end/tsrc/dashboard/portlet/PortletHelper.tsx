@@ -25,6 +25,7 @@ import * as React from "react";
 import type { PortletPosition } from "../../modules/DashboardModule";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
+import { PortletMyResources } from "./PortletMyResources";
 import { PortletQuickSearch } from "./PortletQuickSearch";
 import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
@@ -129,7 +130,7 @@ export const renderPortlet = (
         />
       );
     case "myresources":
-      return <PortletUnsupported {...basicProps} />;
+      return <PortletMyResources {...basicProps} />;
     case "recent":
       return (
         <PortletRecentContributions
