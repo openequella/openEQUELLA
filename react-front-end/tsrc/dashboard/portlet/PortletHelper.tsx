@@ -161,3 +161,13 @@ export const isTwoColumnLayout = (
     O.fromNullable(layout),
     O.exists((l) => l !== "SingleColumn"),
   );
+
+/**
+ * Returns true if the given portlet is positioned in the second column.
+ *
+ * @param portlet The portlet whose column value is to be checked.
+ * @returns Whether the portlet resides in the second column.
+ */
+export const isSecondColumnPortlet = (
+  portlet: OEQ.Dashboard.BasicPortlet,
+): boolean => portlet.commonDetails.column === 1;

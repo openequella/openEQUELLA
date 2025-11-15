@@ -32,7 +32,10 @@ import {
   batchUpdatePortletPreferences,
   updateDashboardLayout,
 } from "../../modules/DashboardModule";
-import { isTwoColumnLayout } from "../portlet/PortletHelper";
+import {
+  isSecondColumnPortlet,
+  isTwoColumnLayout,
+} from "../portlet/PortletHelper";
 
 const { dashboardLayout: strings } = languageStrings.dashboard.editor;
 
@@ -63,10 +66,6 @@ export const DashboardLayout = () => {
         newLayout: OEQ.Dashboard.DashboardLayout,
         prevLayout?: OEQ.Dashboard.DashboardLayout,
       ) => isTwoColumnLayout(prevLayout) && !isTwoColumnLayout(newLayout);
-
-      const isSecondColumnPortlet = (
-        portlet: OEQ.Dashboard.BasicPortlet,
-      ): boolean => portlet.commonDetails.column === 1;
 
       const setPortletColumnToFirstColumn = (
         portlet: OEQ.Dashboard.BasicPortlet,

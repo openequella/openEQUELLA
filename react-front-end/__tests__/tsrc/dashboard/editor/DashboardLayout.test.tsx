@@ -21,7 +21,10 @@ import {
   emptyDashboardDetails,
   singleColLayoutDashboardDetails,
 } from "../../../../__mocks__/Dashboard.mock";
-import type { TwoColumnLayout } from "../../../../tsrc/dashboard/portlet/PortletHelper";
+import {
+  isSecondColumnPortlet,
+  TwoColumnLayout,
+} from "../../../../tsrc/dashboard/portlet/PortletHelper";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { clickButton, isToggleButtonChecked } from "../../MuiTestHelpers";
 import {
@@ -32,7 +35,6 @@ import {
 import * as A from "fp-ts/Array";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
-import * as OEQ from "@openequella/rest-api-client";
 
 const { dashboardLayout: strings } = languageStrings.dashboard.editor;
 
@@ -94,16 +96,9 @@ describe("<DashboardLayout />", () => {
   it("moves second-column portlets to first column when switching to SingleColumn layout", async () => {
     const mockDashboardDetails = dashboardDetailsWithLayout();
     const { container } = renderDashboardLayout(mockDashboardDetails);
-
-    await clickButton(container, strings.singleColumn);
-
-    expect(mockUpdateDashboardLayout).toHaveBeenCalledWith("SingleColumn");
-
     const { uuid, isMinimised, isClosed, order } = pipe(
       mockDashboardDetails.portlets,
-      A.findFirst(
-        (p: OEQ.Dashboard.BasicPortlet) => p.commonDetails.column === 1,
-      ),
+      A.findFirst(isSecondColumnPortlet),
       O.map(({ commonDetails }) => ({
         uuid: commonDetails.uuid,
         isMinimised: commonDetails.isMinimised,
@@ -114,6 +109,10 @@ describe("<DashboardLayout />", () => {
         throw new Error("Expected one portlet in column 1 in test data");
       }),
     );
+
+    await clickButton(container, strings.singleColumn);
+
+    expect(mockUpdateDashboardLayout).toHaveBeenCalledWith("SingleColumn");
 
     // There is one portlet in the second column in the mock data.
     expect(mockUpdatePortletPreference).toHaveBeenCalledTimes(1);
