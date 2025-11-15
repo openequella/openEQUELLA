@@ -17,20 +17,20 @@
  */
 import * as React from "react";
 import type { Decorator, Meta, StoryFn } from "@storybook/react";
-import { emptyDashboardDetails } from "../../../__mocks__/Dashboard.mock";
+import { dashboardDetailsWithLayout } from "../../../__mocks__/Dashboard.mock";
 import { DashboardPageContext } from "../../../tsrc/dashboard/DashboardPageContext";
 import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
 import * as OEQ from "@openequella/rest-api-client";
 
 export default {
-  title: "Dashboard/DashboardLayout",
+  title: "Dashboard/editor/DashboardLayout",
   component: DashboardLayout,
-  excludeStories: /^_/,
+  excludeStories: ["buildDashboardPageContextDecorator"],
 } as Meta;
 
 const nop = () => {};
 
-export const _buildDashboardPageContextDecorator =
+export const buildDashboardPageContextDecorator =
   (details?: OEQ.Dashboard.DashboardDetails): Decorator =>
   (Story) => (
     <DashboardPageContext.Provider
@@ -48,10 +48,8 @@ export const _buildDashboardPageContextDecorator =
 
 export const WithDashboardDetails: StoryFn = () => <DashboardLayout />;
 WithDashboardDetails.decorators = [
-  _buildDashboardPageContextDecorator(emptyDashboardDetails),
+  buildDashboardPageContextDecorator(dashboardDetailsWithLayout()),
 ];
 
 export const NoDashboardDetails: StoryFn = () => <DashboardLayout />;
-NoDashboardDetails.decorators = [
-  _buildDashboardPageContextDecorator(undefined),
-];
+NoDashboardDetails.decorators = [buildDashboardPageContextDecorator(undefined)];

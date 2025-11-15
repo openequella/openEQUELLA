@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
+import * as React from "react";
+import { DashboardLayoutSelector } from "../../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import { clickButton, isToggleButtonChecked } from "../../MuiTestHelpers";
 import { renderDashboardLayoutSelector } from "../DashboardEditorTestHelper";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import * as OEQ from "@openequella/rest-api-client";
 
 const { dashboardLayout: strings } = languageStrings.dashboard.editor;
+
+const NUM_LAYOUT_BUTTONS = 4;
 
 describe("<DashboardLayoutSelector />", () => {
   it("renders a ButtonGroup with four layout buttons", () => {
@@ -30,7 +35,7 @@ describe("<DashboardLayoutSelector />", () => {
     const buttons = getAllByRole("button");
 
     expect(getByRole("group")).toBeInTheDocument();
-    expect(buttons).toHaveLength(4);
+    expect(buttons).toHaveLength(NUM_LAYOUT_BUTTONS);
     expect(getButton(strings.singleColumn)).toBeInTheDocument();
     expect(getButton(strings.twoColumnsEqual)).toBeInTheDocument();
     expect(getButton(strings.twoColumnsRatio1to2)).toBeInTheDocument();
@@ -44,39 +49,37 @@ describe("<DashboardLayoutSelector />", () => {
     buttons.forEach((btn) =>
       expect(btn).toHaveAttribute("aria-checked", "false"),
     );
-    expect.assertions(buttons.length);
+    expect.assertions(NUM_LAYOUT_BUTTONS);
   });
 
-  it("marks the matching layout button as selected", () => {
-    const { container } = renderDashboardLayoutSelector("TwoEqualColumns");
+  const layoutOptions: {
+    layout: OEQ.Dashboard.DashboardLayout;
+    label: string;
+  }[] = [
+    { layout: "SingleColumn", label: strings.singleColumn },
+    { layout: "TwoEqualColumns", label: strings.twoColumnsEqual },
+    { layout: "TwoColumnsRatio1to2", label: strings.twoColumnsRatio1to2 },
+    { layout: "TwoColumnsRatio2to1", label: strings.twoColumnsRatio2to1 },
+  ];
 
-    expect(isToggleButtonChecked(container, strings.singleColumn)).toBe(false);
-    expect(isToggleButtonChecked(container, strings.twoColumnsEqual)).toBe(
-      true,
-    );
-    expect(isToggleButtonChecked(container, strings.twoColumnsRatio1to2)).toBe(
-      false,
-    );
-    expect(isToggleButtonChecked(container, strings.twoColumnsRatio2to1)).toBe(
-      false,
-    );
-  });
+  it.each(layoutOptions)(
+    "selects $label when clicked, emits $layout, and marks it as selected",
+    async ({ layout, label }) => {
+      const { onChange, container, rerender } =
+        renderDashboardLayoutSelector(undefined);
 
-  it("emits the correct layout value when each button is clicked", async () => {
-    const { onChange, container } = renderDashboardLayoutSelector();
+      await clickButton(container, label);
 
-    await clickButton(container, strings.singleColumn);
-    expect(onChange).toHaveBeenLastCalledWith("SingleColumn");
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith(layout);
 
-    await clickButton(container, strings.twoColumnsEqual);
-    expect(onChange).toHaveBeenLastCalledWith("TwoEqualColumns");
+      rerender(<DashboardLayoutSelector value={layout} onChange={onChange} />);
 
-    await clickButton(container, strings.twoColumnsRatio1to2);
-    expect(onChange).toHaveBeenLastCalledWith("TwoColumnsRatio1to2");
-
-    await clickButton(container, strings.twoColumnsRatio2to1);
-    expect(onChange).toHaveBeenLastCalledWith("TwoColumnsRatio2to1");
-
-    expect(onChange).toHaveBeenCalledTimes(4);
-  });
+      layoutOptions.forEach((option) => {
+        expect(isToggleButtonChecked(container, option.label)).toBe(
+          option.layout === layout,
+        );
+      });
+    },
+  );
 });

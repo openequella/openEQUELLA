@@ -18,7 +18,7 @@
 import * as React from "react";
 import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { DashboardLayoutSelector } from "../../../tsrc/dashboard/components/DashboardLayoutSelector";
+import { DashboardLayoutSelector } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import {
   DashboardEditor,
   DashboardEditorProps,

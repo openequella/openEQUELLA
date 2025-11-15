@@ -17,12 +17,12 @@
  */
 import * as React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { emptyDashboardDetails } from "../../__mocks__/Dashboard.mock";
+import { dashboardDetailsWithLayout } from "../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,
 } from "../../tsrc/dashboard/DashboardEditor";
-import { _buildDashboardPageContextDecorator } from "./editor/DashboardLayout.stories";
+import { buildDashboardPageContextDecorator } from "./editor/DashboardLayout.stories";
 
 export default {
   title: "Dashboard/DashboardEditor",
@@ -38,5 +38,5 @@ const Template: StoryFn<DashboardEditorProps> = (args) => (
 
 export const Standard: StoryFn<DashboardEditorProps> = Template.bind({});
 Standard.decorators = [
-  _buildDashboardPageContextDecorator(emptyDashboardDetails),
+  buildDashboardPageContextDecorator(dashboardDetailsWithLayout()),
 ];
