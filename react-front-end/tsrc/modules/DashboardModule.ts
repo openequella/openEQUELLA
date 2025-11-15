@@ -21,6 +21,12 @@ import { API_BASE_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
 import { legacyContentSubmitBaseUrl } from "./LegacyContentModule";
 import * as t from "io-ts";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
+import * as Semigroup from "fp-ts/Semigroup";
+import * as T from "fp-ts/Task";
+import * as A from "fp-ts/Array";
+import * as S from "fp-ts/string";
 
 /**
  * Codec for representing the position of a portlet in the dashboard.
@@ -111,3 +117,36 @@ export const editPortlet = (uuid: string): Promise<string> =>
     .catch((error: AxiosError | Error) => {
       throw OEQ.Errors.repackageError(error);
     });
+
+/**
+ * Batch updates portlet preferences for multiple portlets.
+ *
+ * @param newPortlets - An array of portlets with updated preference.
+ */
+export const batchUpdatePortletPreferences = (
+  newPortlets: OEQ.Dashboard.BasicPortlet[],
+): TE.TaskEither<string, void[]> => {
+  const ErrorSemigroup = pipe(S.Semigroup, Semigroup.intercalate(", "));
+
+  const updatePortletPreferenceTE = (
+    uuid: string,
+    pref: OEQ.Dashboard.PortletPreference,
+  ) =>
+    TE.tryCatch(
+      () => updatePortletPreference(uuid, pref),
+      (e) => `Failed to update portlet ${uuid} preferences: ${e}`,
+    );
+
+  return pipe(
+    newPortlets,
+    A.map(({ commonDetails: { uuid, isClosed, isMinimised, column, order } }) =>
+      updatePortletPreferenceTE(uuid, {
+        isClosed,
+        isMinimised,
+        column,
+        order,
+      }),
+    ),
+    A.sequence(TE.getApplicativeTaskValidation(T.ApplyPar, ErrorSemigroup)),
+  );
+};

@@ -20,17 +20,17 @@ import * as React from "react";
 import { Alert, Grid, Typography } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import { DashboardPageContext } from "../DashboardPageContext";
-import { DashboardLayoutSelector } from "../components/DashboardLayoutSelector";
+import { DashboardLayoutSelector } from "./DashboardLayoutSelector";
 import { languageStrings } from "../../util/langstrings";
 import { AppContext } from "../../mainui/App";
-import { constVoid, pipe } from "fp-ts/function";
+import { pipe, constVoid } from "fp-ts/function";
 import * as A from "fp-ts/Array";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import * as O from "fp-ts/Option";
 import {
+  batchUpdatePortletPreferences,
   updateDashboardLayout,
-  updatePortletPreference,
 } from "../../modules/DashboardModule";
 import { isTwoColumnLayout } from "../portlet/PortletHelper";
 
@@ -52,61 +52,57 @@ export const DashboardLayout = () => {
     (newLayout: OEQ.Dashboard.DashboardLayout) =>
       pipe(
         TE.tryCatch(() => updateDashboardLayout(newLayout), String),
-        TE.match(appErrorHandler, constVoid),
+        TE.match(appErrorHandler, () => setActiveLayout(newLayout)),
       ),
     [appErrorHandler],
   );
 
-  const createUpdatePortletPrefTask = React.useCallback(
-    (
-      portlet: OEQ.Dashboard.BasicPortlet,
-      newColumn: OEQ.Dashboard.PortletColumn,
-    ) => {
-      const {
-        commonDetails: { uuid, isClosed, isMinimised, order },
-      } = portlet;
-      return pipe(
-        TE.tryCatch(
-          () =>
-            updatePortletPreference(uuid, {
-              isMinimised,
-              isClosed,
-              order,
-              column: newColumn,
-            }),
-          String,
-        ),
-        TE.match(appErrorHandler, constVoid),
-      );
-    },
-    [appErrorHandler],
-  );
+  const getPortletsWithUpdatedPref = React.useCallback(
+    (newLayout: OEQ.Dashboard.DashboardLayout) => {
+      const isChangeToSingleColumnLayout = (
+        newLayout: OEQ.Dashboard.DashboardLayout,
+        prevLayout?: OEQ.Dashboard.DashboardLayout,
+      ) => isTwoColumnLayout(prevLayout) && !isTwoColumnLayout(newLayout);
 
-  const updatePortletPrefTask = React.useCallback(
-    (newLayout: OEQ.Dashboard.DashboardLayout): T.Task<void>[] =>
-      pipe(
+      const isSecondColumnPortlet = (
+        portlet: OEQ.Dashboard.BasicPortlet,
+      ): boolean => portlet.commonDetails.column === 1;
+
+      const setPortletColumnToFirstColumn = (
+        portlet: OEQ.Dashboard.BasicPortlet,
+      ): OEQ.Dashboard.BasicPortlet => ({
+        ...portlet,
+        commonDetails: { ...portlet.commonDetails, column: 0 },
+      });
+
+      return pipe(
         O.fromNullable(dashboardDetails),
-        O.chain((d) =>
-          A.isNonEmpty(d.portlets)
-            ? O.some({ prevLayout: d.layout, portlets: d.portlets })
-            : O.none,
+        O.filter(({ layout }) =>
+          isChangeToSingleColumnLayout(newLayout, layout),
         ),
-        // Only update preferences when going from second column to first column
-        O.filter(
-          ({ prevLayout }) =>
-            isTwoColumnLayout(prevLayout) && !isTwoColumnLayout(newLayout),
-        ),
-        // Build updatePreference tasks for all second column portlets to update column value to 0
+        O.filter(({ portlets }) => A.isNonEmpty(portlets)),
         O.map(({ portlets }) =>
           pipe(
             portlets,
-            A.filter((p) => p.commonDetails.column === 1),
-            A.map((p) => createUpdatePortletPrefTask(p, 0)),
+            A.filter(isSecondColumnPortlet),
+            A.map(setPortletColumnToFirstColumn),
           ),
         ),
-        O.getOrElseW(() => []),
+        O.getOrElse<OEQ.Dashboard.BasicPortlet[]>(() => []),
+      );
+    },
+    [dashboardDetails],
+  );
+
+  const portletsUpdateTask = React.useCallback(
+    (layout: OEQ.Dashboard.DashboardLayout) =>
+      pipe(
+        layout,
+        getPortletsWithUpdatedPref,
+        batchUpdatePortletPreferences,
+        TE.match(appErrorHandler, constVoid),
       ),
-    [dashboardDetails, createUpdatePortletPrefTask],
+    [appErrorHandler, getPortletsWithUpdatedPref],
   );
 
   const handleChange = React.useCallback(
@@ -114,19 +110,17 @@ export const DashboardLayout = () => {
       if (layout === activeLayout) return;
 
       pipe(
-        [updateDashboardLayoutTask(layout), ...updatePortletPrefTask(layout)],
-        T.sequenceArray,
-        T.map(() => {
-          setActiveLayout(layout);
-          refreshDashboard();
-        }),
+        layout,
+        updateDashboardLayoutTask,
+        T.flatMap(() => portletsUpdateTask(layout)),
+        T.tapIO(() => () => refreshDashboard()),
       )();
     },
     [
       activeLayout,
-      updatePortletPrefTask,
       refreshDashboard,
       updateDashboardLayoutTask,
+      portletsUpdateTask,
     ],
   );
 
