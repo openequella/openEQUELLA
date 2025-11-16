@@ -18,6 +18,7 @@
 
 import * as OEQ from "@openequella/rest-api-client";
 import * as NEA from "fp-ts/NonEmptyArray";
+import { updatePortletPosition } from "../tsrc/dashboard/DashboardPageHelper";
 
 export const emptyDashboardDetails: OEQ.Dashboard.DashboardDetails = {
   portlets: [],
@@ -195,3 +196,29 @@ export const creatablePortletTypes: OEQ.Dashboard.PortletCreatable[] = [
     desc: "A portlet that shows your tasks.",
   },
 ];
+
+/**
+ * Generates dashboard details with provided layout.
+ *
+ * Dashboard default state:
+ * ──────────────────────────────────────────────────────────
+ * Column 0(left)                        Column 1(right)
+ * ──────────────────────────────────────────────────────────
+ * order 0: [basicPortlet]     │  order 0: [noEditPortlet]
+ * order 1: [privatePortlet]   │
+ * order 2: [minimisedPortlet] │
+ * ──────────────────────────────────────────────────────────
+ *
+ * @param layout The layout to be used for the dashboard. Defaults to "TwoEqualColumns".
+ */
+export const dashboardDetailsWithLayout = (
+  layout: OEQ.Dashboard.DashboardLayout = "TwoEqualColumns",
+): OEQ.Dashboard.DashboardDetails => ({
+  portlets: [
+    updatePortletPosition({ column: 0, order: 0 }, basicPortlet),
+    updatePortletPosition({ column: 0, order: 1 }, privatePortlet),
+    updatePortletPosition({ column: 0, order: 2 }, minimisedPortlet),
+    updatePortletPosition({ column: 1, order: 0 }, noEditPortlet),
+  ],
+  layout,
+});

@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { AxiosError } from "axios";
 import { API_BASE_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
 import { ChangeRoute, submitRequest } from "./LegacyContentModule";
@@ -122,8 +121,4 @@ export const editPortlet = (uuid: string): Promise<string> =>
   submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
     event__: ["psh.editPortletFromNewDashboard"],
     eventp__0: [uuid],
-  })
-    .then(({ route }) => `/${route}`)
-    .catch((error: AxiosError | Error) => {
-      throw OEQ.Errors.repackageError(error);
-    });
+  }).then(({ route }) => `/${route}`);
