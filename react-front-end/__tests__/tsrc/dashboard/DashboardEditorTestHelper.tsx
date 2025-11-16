@@ -27,7 +27,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const {
   dashboardLayout: { title: dashLayoutLabel },
-  createPortlet: createPortletLabel,
+  createPortlet: { title: createPortletLabel },
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 
