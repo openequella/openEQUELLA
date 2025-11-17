@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import { Meta, StoryFn } from "@storybook/react";
+import { creatablePortletTypes } from "../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,
@@ -26,12 +27,13 @@ export default {
   title: "Dashboard/DashboardEditor",
   component: DashboardEditor,
   argTypes: {
-    setOpenDashboardEditor: { action: "setOpenDashboardEditor" },
+    onClose: { action: "onClose" },
   },
 } as Meta<DashboardEditorProps>;
 
-const Template: StoryFn<DashboardEditorProps> = (args) => (
+export const Standard: StoryFn<DashboardEditorProps> = (args) => (
   <DashboardEditor {...args} />
 );
-
-export const DefaultWithTabContentLoading = Template.bind({});
+Standard.args = {
+  creatablePortletTypes: creatablePortletTypes,
+};

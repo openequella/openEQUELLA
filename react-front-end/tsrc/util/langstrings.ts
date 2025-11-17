@@ -411,10 +411,23 @@ export const languageStrings = {
         twoColumnsRatio2to1: "Two columns (2:1 ratio)",
         singleColumn: "Single column",
       },
-      createPortlet: "Create portlet",
+      createPortlet: {
+        title: "Create portlet",
+        tooltip: "Create %s portlet",
+        noCreatablePortlets: " No portlet types available to create.",
+      },
       restorePortlet: "Restore portlet",
       alertInfo:
         "You are currently editing your dashboard. Changes will be saved automatically.",
+    },
+    errors: {
+      failedToOpenCreationPage:
+        "Failed to access the legacy portlet creation page: %s",
+      failedToDeletePortlet: "Failed to delete portlet: %s",
+      failedToGetCreatablePortlets:
+        "Failed to retrieve creatable portlet types: %s",
+      failedToGetDashboardDetails: "Failed to retrieve dashboard details: %s",
+      failedToUpdatePortletPref: "Failed to update portlet preference: %s",
     },
   },
   drm: {

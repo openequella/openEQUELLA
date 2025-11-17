@@ -152,6 +152,11 @@ public class ShowPortletsSection
   }
 
   @EventHandlerMethod
+  public void createPortletFromNewDashboard(SectionInfo info, String portletType) {
+    portletWebService.newPortletFromNewDashboard(info, portletType);
+  }
+
+  @EventHandlerMethod
   public void editPortletFromNewDashboard(SectionInfo info, String portletUuid) {
     portletWebService.editPortletFromNewDashboard(info, portletUuid);
   }

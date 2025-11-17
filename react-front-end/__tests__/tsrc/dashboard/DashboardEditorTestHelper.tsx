@@ -18,6 +18,7 @@
 import * as React from "react";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,
@@ -26,7 +27,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const {
   dashboardLayout: { title: dashLayoutLabel },
-  createPortlet: createPortletLabel,
+  createPortlet: { title: createPortletLabel },
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 
@@ -35,9 +36,10 @@ const TabContentSkeletonTestId = "tab-content-skeleton";
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},
 ) => {
-  const mockSetOpenDashboardEditor = jest.fn();
+  const onClose = jest.fn();
   const defaultProps: DashboardEditorProps = {
-    setOpenDashboardEditor: mockSetOpenDashboardEditor,
+    onClose,
+    creatablePortletTypes,
   };
 
   const renderResult = render(<DashboardEditor {...defaultProps} {...props} />);
@@ -67,7 +69,7 @@ export const renderDashboardEditor = (
 
   return {
     user,
-    mockSetOpenDashboardEditor,
+    onClose,
     getTabByRole,
     getButtonByRole,
     getTabContentSkeleton,
