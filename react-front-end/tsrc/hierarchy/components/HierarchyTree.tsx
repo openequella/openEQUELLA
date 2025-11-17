@@ -30,8 +30,8 @@ const viewHierarchyText = languageStrings.hierarchy.viewHierarchy;
 
 export const StyledTreeItem = styled(SimpleTreeView)({
   "& .MuiSimpleTreeView-root": {
-    display: "grid",
-    whiteSpace: "nowrap",
+    // It's used when hierarchy tree overflows the parent container.
+    minWidth: "300px",
   },
 });
 
@@ -44,6 +44,7 @@ export interface HierarchyTreeProps extends HierarchyTopicBasicProps {
 
 /**
  * A tree view of all provided Hierarchy Topic Summary with expandable nodes to show sub topics with optional title and short description.
+ * The parent component who uses this component is responsible for handling the overflowing content if there are too many nested topics.
  */
 const HierarchyTree = ({
   hierarchies,

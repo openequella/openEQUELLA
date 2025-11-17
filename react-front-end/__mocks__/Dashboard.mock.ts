@@ -41,6 +41,17 @@ export const privateSearchPortlet: OEQ.Dashboard.BasicPortlet = {
   portletType: "search",
 };
 
+export const privateBrowsePortlet: OEQ.Dashboard.BasicPortlet = {
+  commonDetails: {
+    ...privateSearchPortlet.commonDetails,
+    uuid: "201ba35f-9457-4242-82e4-fe60745473b3",
+    name: "Private Browse Portlet",
+    column: 0,
+    order: 1,
+  },
+  portletType: "browse",
+};
+
 export const privateFavouritePortlet: OEQ.Dashboard.BasicPortlet = {
   commonDetails: {
     ...privateSearchPortlet.commonDetails,
