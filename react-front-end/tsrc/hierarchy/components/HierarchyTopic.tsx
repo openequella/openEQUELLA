@@ -24,6 +24,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
@@ -176,7 +177,14 @@ const HierarchyTopic = ({
     const title = name ?? compoundUuid;
 
     return disableTitleLink ? (
-      title
+      <Typography
+        sx={{
+          // To make the item count number align properly.
+          display: "inline",
+        }}
+      >
+        {title}
+      </Typography>
     ) : (
       <OEQLink
         muiLinkUrlProvider={() =>

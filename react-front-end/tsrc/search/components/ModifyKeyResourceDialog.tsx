@@ -19,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -230,11 +231,19 @@ const ModifyKeyResourceDialog = ({
       fullWidth
       maxWidth="md"
     >
-      <DialogTitle id={LABELLED_BY}>{dialogTitle}</DialogTitle>
-      <DialogContent>
-        <DialogContentText id={DESCRIBE_BY} gutterBottom>
-          {dialogDesc}
-        </DialogContentText>
+      <DialogTitle id={LABELLED_BY}>
+        <Box sx={(theme) => ({ marginBottom: theme.spacing(1) })}>
+          {dialogTitle}
+        </Box>
+        <DialogContentText id={DESCRIBE_BY}>{dialogDesc}</DialogContentText>
+      </DialogTitle>
+
+      <DialogContent
+        sx={{
+          // Handle overflow case for hierarchy tree.
+          overflow: "auto",
+        }}
+      >
         {isLoading ? (
           <HierarchyTreeSkeleton />
         ) : (

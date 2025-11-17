@@ -22,7 +22,8 @@ import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import type { PortletPosition } from "../../modules/DashboardModule";
+import { PortletPosition } from "../../modules/DashboardModule";
+import { PortletBrowse } from "./PortletBrowse";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
 import { PortletMyResources } from "./PortletMyResources";
@@ -117,7 +118,7 @@ export const renderPortlet = (
     case "search":
       return <PortletQuickSearch {...basicProps} />;
     case "browse":
-      return <PortletUnsupported {...basicProps} />;
+      return <PortletBrowse {...basicProps} />;
     case "favourites":
       return <PortletFavourites {...basicProps} />;
     case "freemarker":

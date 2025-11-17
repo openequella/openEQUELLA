@@ -371,6 +371,9 @@ export const languageStrings = {
       },
     },
     portlets: {
+      browse: {
+        noneFound: "No hierarchies found.",
+      },
       favourites: {
         noneFound: "No favourite %s found.",
         resourcesTabName: "Resources",
