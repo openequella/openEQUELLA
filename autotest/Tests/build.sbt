@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
-  "org.apache.commons"        % "commons-lang3"            % "3.19.0",
+  "org.apache.commons"        % "commons-lang3"            % "3.20.0",
   "org.seleniumhq.selenium"   % "selenium-java"            % "4.34.0",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
