@@ -20,12 +20,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import { pipe, constVoid } from "fp-ts/function";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import * as React from "react";
+import { sprintf } from "sprintf-js";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
+  getCreatablePortlets,
   getDashboardDetails,
   updatePortletPreference,
 } from "../modules/DashboardModule";
@@ -52,6 +54,7 @@ import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
 const { title } = languageStrings.dashboard;
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
+const { errors: dashboardErrors } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
@@ -62,6 +65,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [hasCreatePortletAcl, setHasCreatePortletAcl] = useState<boolean>();
   const [openDashboardEditor, setOpenDashboardEditor] =
     useState<boolean>(false);
+
+  const [creatablePortletTypes, setCreatablePortletTypes] = useState<
+    OEQ.Dashboard.PortletCreatable[]
+  >([]);
 
   const checkCreatePortletAcl = useCallback(
     (): T.Task<void> =>
@@ -77,9 +84,20 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => getDashboardDetails(),
-          (e) => `Failed to get dashboard details: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToGetDashboardDetails, `${e}`),
         ),
         TE.match(appErrorHandler, setDashboardDetails),
+      ),
+    [appErrorHandler],
+  );
+
+  const getCreatablePortletTypes = useCallback(
+    (): T.Task<void> =>
+      pipe(
+        TE.tryCatch(getCreatablePortlets, (e) =>
+          sprintf(dashboardErrors.failedToGetCreatablePortlets, `${e}`),
+        ),
+        TE.match(appErrorHandler, setCreatablePortletTypes),
       ),
     [appErrorHandler],
   );
@@ -93,10 +111,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   useEffect(() => {
     setIsLoading(true);
     pipe(
-      T.sequenceArray([loadDashboard(), checkCreatePortletAcl()]),
+      T.sequenceArray([
+        loadDashboard(),
+        checkCreatePortletAcl(),
+        getCreatablePortletTypes(),
+      ]),
       T.tapIO(() => () => setIsLoading(false)),
     )();
-  }, [loadDashboard, checkCreatePortletAcl]);
+  }, [loadDashboard, checkCreatePortletAcl, getCreatablePortletTypes]);
 
   // Register drag-and-drop monitoring for dashboard portlets.
   useEffect(
@@ -156,7 +178,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => updatePortletPreference(uuid, pref),
-          (e) => `Failed to update portlet preference: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
         T.tapIO(() => loadDashboard()),
@@ -169,7 +191,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         TE.tryCatch(
           () => deletePortletApi(uuid),
-          (e) => `Failed to delete portlet: ${e}`,
+          (e) => sprintf(dashboardErrors.failedToDeletePortlet, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
         T.tapIO(() => loadDashboard()),
@@ -248,7 +270,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       <>
         {renderDashboardForNonSystemUser()}
         {openDashboardEditor && (
-          <DashboardEditor setOpenDashboardEditor={setOpenDashboardEditor} />
+          <DashboardEditor
+            onClose={() => setOpenDashboardEditor(false)}
+            creatablePortletTypes={creatablePortletTypes}
+          />
         )}
       </>
     );

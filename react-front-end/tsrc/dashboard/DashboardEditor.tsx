@@ -15,38 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Alert,
-  Box,
-  Grid,
-  Tab,
-  Tabs,
-  Drawer,
-  Typography,
-  Skeleton,
-} from "@mui/material";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { Alert, Box, Drawer, Grid, Tab, Tabs, Typography } from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
+import { PortletCreationList } from "./components/PortletCreationList";
 import { DashboardLayout } from "./editor/DashboardLayout";
 
 const {
   title,
   alertInfo,
   dashboardLayout: { title: dashLayoutLabel },
-  createPortlet: createPortletLabel,
+  createPortlet: { title: createPortletLabel },
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 const { close } = languageStrings.common.action;
 
 export interface DashboardEditorProps {
   /**
-   * Function to control the open/closed state of the editor.
+   * Function to close the editor.
    */
-  setOpenDashboardEditor: (open: boolean) => void;
+  onClose: () => void;
+  /**
+   * A list of portlet types which the current user can create.
+   */
+  creatablePortletTypes: OEQ.Dashboard.PortletCreatable[];
 }
 
 /**
@@ -55,22 +52,13 @@ export interface DashboardEditorProps {
  * and restoring portlets.
  */
 export const DashboardEditor = ({
-  setOpenDashboardEditor,
+  onClose,
+  creatablePortletTypes,
 }: DashboardEditorProps) => {
   const [activeTab, setActiveTab] = React.useState(0);
-  const [isLoading] = React.useState(true);
 
   const handleTabChange = (_: React.ChangeEvent<object>, newValue: number) =>
     setActiveTab(newValue);
-
-  const tabContentSkeleton = (
-    <Skeleton
-      variant="rectangular"
-      width="100%"
-      height={400}
-      data-testid="tab-content-skeleton"
-    />
-  );
 
   const tabContent = pipe(
     activeTab,
@@ -80,18 +68,12 @@ export const DashboardEditor = ({
           <DashboardLayout />
         </Box>
       ),
-      1: () =>
-        isLoading ? (
-          tabContentSkeleton
-        ) : (
-          <Box id="create-portlet-content">{/* TODO: OEQ-2690 */}</Box>
-        ),
-      2: () =>
-        isLoading ? (
-          tabContentSkeleton
-        ) : (
-          <Box id="restore-portlet-content">{/* TODO: OEQ-2690 */}</Box>
-        ),
+      1: () => (
+        <Box id="create-portlet-content">
+          <PortletCreationList creatablePortletTypes={creatablePortletTypes} />
+        </Box>
+      ),
+      2: () => <Box id="restore-portlet-content">{/* TODO: OEQ-2690 */}</Box>,
       _: () => <Alert severity="error">Unknown tab state!</Alert>,
     }),
   );
@@ -100,7 +82,7 @@ export const DashboardEditor = ({
     <Drawer
       open
       anchor="right"
-      onClose={() => setOpenDashboardEditor(false)}
+      onClose={onClose}
       slotProps={{
         paper: {
           sx: { width: { xs: "100%", sm: "60%", md: "40%", lg: "30%" }, p: 2 },
@@ -115,7 +97,7 @@ export const DashboardEditor = ({
           <Grid size="auto">
             <TooltipIconButton
               title={close}
-              onClick={() => setOpenDashboardEditor(false)}
+              onClick={onClose}
               aria-label={close}
             >
               <KeyboardArrowRightIcon />

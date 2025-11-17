@@ -120,7 +120,12 @@ const HierarchyPanel = ({
   return (
     <Card>
       <CardHeader title={buildBreadcrumbs(hierarchy)} />
-      <CardContent>
+      <CardContent
+        sx={{
+          // Handle overflow for hierarchy tree.
+          overflow: "auto",
+        }}
+      >
         <Stack spacing={2}>
           <Typography variant="h4">{name ?? compoundUuid}</Typography>
 

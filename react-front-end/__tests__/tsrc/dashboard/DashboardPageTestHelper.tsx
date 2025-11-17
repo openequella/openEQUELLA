@@ -19,6 +19,7 @@ import { render, type RenderResult, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as E from "fp-ts/Either";
 import * as React from "react";
+import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
 import "@testing-library/jest-dom";
@@ -73,6 +74,8 @@ export interface MockDashboardApis {
   mockDeletePortlet: jest.SpyInstance;
   /** Spy for the `hasCreatePortletACL` API. */
   mockGetCreatePortletAcl: jest.SpyInstance;
+  /** Spy for the `getCreatablePortlets` API. */
+  mockGetCreatablePortlets: jest.SpyInstance;
 }
 
 /**
@@ -92,6 +95,9 @@ export const mockDashboardPageApis = (): MockDashboardApis => {
     mockGetCreatePortletAcl: jest
       .spyOn(SecurityModule, "hasCreatePortletACL")
       .mockResolvedValue(E.right(true)),
+    mockGetCreatablePortlets: jest
+      .spyOn(DashboardModule, "getCreatablePortlets")
+      .mockResolvedValue(creatablePortletTypes),
   };
 };
 

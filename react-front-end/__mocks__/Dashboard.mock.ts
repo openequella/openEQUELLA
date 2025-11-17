@@ -41,6 +41,17 @@ export const privateSearchPortlet: OEQ.Dashboard.BasicPortlet = {
   portletType: "search",
 };
 
+export const privateBrowsePortlet: OEQ.Dashboard.BasicPortlet = {
+  commonDetails: {
+    ...privateSearchPortlet.commonDetails,
+    uuid: "201ba35f-9457-4242-82e4-fe60745473b3",
+    name: "Private Browse Portlet",
+    column: 0,
+    order: 1,
+  },
+  portletType: "browse",
+};
+
 export const privateFavouritePortlet: OEQ.Dashboard.BasicPortlet = {
   commonDetails: {
     ...privateSearchPortlet.commonDetails,
@@ -178,6 +189,24 @@ export const noMinimisePortlet: OEQ.Dashboard.BasicPortlet = {
     canMinimise: false,
   },
 };
+
+export const creatablePortletTypes: OEQ.Dashboard.PortletCreatable[] = [
+  {
+    portletType: "search",
+    name: "Search Portlet",
+    desc: "A portlet that provides search functionality.",
+  },
+  {
+    portletType: "favourites",
+    name: "Favourites Portlet",
+    desc: "A portlet that displays your favourite items.",
+  },
+  {
+    portletType: "tasks",
+    name: "Tasks Portlet",
+    desc: "A portlet that shows your tasks.",
+  },
+];
 
 /**
  * Generates dashboard details with provided layout.

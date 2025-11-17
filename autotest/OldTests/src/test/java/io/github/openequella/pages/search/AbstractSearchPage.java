@@ -375,13 +375,14 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     addToKeyResourceButton.click();
 
     // wait for the dialog to loading
-    By hierarchyXpath =
-        By.xpath(
-            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(),"
-                + " '"
-                + hierarchyName
-                + "')]]]");
+    String hierarchyXPathString =
+        """
+//div[@aria-labelledby='modify-key-resource-dialog-title']//p[contains(text(), '%s')]/ancestor::div[2]
+"""
+            .formatted(hierarchyName);
+    By hierarchyXpath = By.xpath(hierarchyXPathString);
     By plusButtonXpath = By.xpath(".//button[@aria-label='Add to hierarchy']");
+
     WebElement plusButton =
         waiter
             .until(ExpectedConditions.visibilityOfElementLocated(hierarchyXpath))

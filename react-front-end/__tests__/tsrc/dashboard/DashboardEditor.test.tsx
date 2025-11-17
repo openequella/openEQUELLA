@@ -23,7 +23,7 @@ const {
   title,
   alertInfo,
   dashboardLayout: { title: dashLayoutLabel },
-  createPortlet: createPortletLabel,
+  createPortlet: { title: createPortletLabel },
   restorePortlet: restorePortletLabel,
 } = languageStrings.dashboard.editor;
 const { close: closeLabel } = languageStrings.common.action;
@@ -65,13 +65,12 @@ describe("<DashboardEditor />", () => {
     expect.assertions(6);
   });
 
-  it("calls setOpenDashboardEditor(false) when Close button is clicked", async () => {
-    const { user, mockSetOpenDashboardEditor, getButtonByRole } =
-      renderDashboardEditor();
+  it("calls the provided 'onClose' handler when Close button is clicked", async () => {
+    const { user, onClose, getButtonByRole } = renderDashboardEditor();
 
     const closeButton = getButtonByRole(closeLabel);
     await user.click(closeButton);
 
-    expect(mockSetOpenDashboardEditor).toHaveBeenCalledWith(false);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

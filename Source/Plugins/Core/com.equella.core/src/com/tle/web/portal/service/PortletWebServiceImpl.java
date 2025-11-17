@@ -161,6 +161,16 @@ public class PortletWebServiceImpl
   }
 
   @Override
+  public void newPortletFromNewDashboard(SectionInfo info, String portletType) {
+    // Because user must be navigated back to the new UI Dashboard after either saving or
+    // cancelling the portlet creation, the target Section must still be the Dashboard.
+    SectionInfo target = info.createForward(WebConstants.DASHBOARD_PAGE);
+    PortletContributionSection con = info.lookupSection(PortletContributionSection.class);
+    con.createNew(target, portletType, false);
+    info.forward(target);
+  }
+
+  @Override
   public void editPortlet(SectionInfo info, String portletUuid, boolean admin) {
     PortletContributionSection con = info.lookupSection(PortletContributionSection.class);
     Portlet portlet = portletService.getForEdit(portletUuid);

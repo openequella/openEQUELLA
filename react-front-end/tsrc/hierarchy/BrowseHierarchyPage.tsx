@@ -67,7 +67,12 @@ const BrowseHierarchyPage = ({ updateTemplate }: TemplateUpdateProps) => {
     <LoadingCircle />
   ) : (
     <Card>
-      <CardContent>
+      <CardContent
+        sx={{
+          // Handle overflow for hierarchy tree.
+          overflow: "auto",
+        }}
+      >
         {A.isEmpty(hierarchies) ? (
           <Alert severity="info">{noHierarchyText}</Alert>
         ) : (
