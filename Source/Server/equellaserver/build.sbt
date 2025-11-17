@@ -74,7 +74,7 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
   "io.bit3"                        % "jsass"                         % jsassVersion,
-  "com.flickr4java"                % "flickr4java"                   % "3.0.9" excludeAll (
+  "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
