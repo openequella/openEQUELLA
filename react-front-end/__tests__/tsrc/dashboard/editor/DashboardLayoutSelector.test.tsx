@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import * as React from "react";
-import { DashboardLayoutSelector } from "../../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import { clickButton, isToggleButtonChecked } from "../../MuiTestHelpers";
 import { renderDashboardLayoutSelector } from "../DashboardEditorTestHelper";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
@@ -63,17 +61,21 @@ describe("<DashboardLayoutSelector />", () => {
   ];
 
   it.each(layoutOptions)(
-    "selects $label when clicked, emits $layout, and marks it as selected",
+    "emits $layout when $label button is clicked",
     async ({ layout, label }) => {
-      const { onChange, container, rerender } =
-        renderDashboardLayoutSelector(undefined);
+      const { onChange, container } = renderDashboardLayoutSelector(undefined);
 
       await clickButton(container, label);
 
       expect(onChange).toHaveBeenCalledTimes(1);
       expect(onChange).toHaveBeenCalledWith(layout);
+    },
+  );
 
-      rerender(<DashboardLayoutSelector value={layout} onChange={onChange} />);
+  it.each(layoutOptions)(
+    "marks $label button as selected when value is $layout",
+    ({ layout }) => {
+      const { container } = renderDashboardLayoutSelector(layout);
 
       layoutOptions.forEach((option) => {
         expect(isToggleButtonChecked(container, option.label)).toBe(

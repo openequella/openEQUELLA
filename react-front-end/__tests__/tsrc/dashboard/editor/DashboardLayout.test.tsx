@@ -106,7 +106,9 @@ describe("<DashboardLayout />", () => {
         order: commonDetails.order,
       })),
       O.getOrElseW(() => {
-        throw new Error("Expected one portlet in column 1 in test data");
+        throw new Error(
+          "Expected one portlet in column 1 (second column) in test data",
+        );
       }),
     );
 
