@@ -21,6 +21,7 @@ import { absurd, pipe } from "fp-ts/function";
 import * as N from "fp-ts/number";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
+import * as O from "fp-ts/Option";
 import * as React from "react";
 import { PortletPosition } from "../../modules/DashboardModule";
 import { PortletBrowse } from "./PortletBrowse";
@@ -147,3 +148,27 @@ export const renderPortlet = (
       return absurd(portletType);
   }
 };
+
+/**
+ * A type guard to check if a given dashboard layout is a two-column layout.
+ *
+ * @param layout The dashboard layout to check.
+ * @returns `true` if the layout is a two-column layout.
+ */
+export const isTwoColumnLayout = (
+  layout?: OEQ.Dashboard.DashboardLayout,
+): layout is TwoColumnLayout =>
+  pipe(
+    O.fromNullable(layout),
+    O.exists((l) => l !== "SingleColumn"),
+  );
+
+/**
+ * Returns true if the given portlet is positioned in the second column.
+ *
+ * @param portlet The portlet whose column value is to be checked.
+ * @returns Whether the portlet resides in the second column.
+ */
+export const isSecondColumnPortlet = (
+  portlet: OEQ.Dashboard.BasicPortlet,
+): boolean => portlet.commonDetails.column === 1;

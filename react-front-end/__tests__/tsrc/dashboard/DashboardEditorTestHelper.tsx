@@ -16,14 +16,19 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
+import { DashboardLayoutSelector } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import {
   DashboardEditor,
   DashboardEditorProps,
 } from "../../../tsrc/dashboard/DashboardEditor";
+import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
 import { languageStrings } from "../../../tsrc/util/langstrings";
+import { DashboardPageContext } from "../../../tsrc/dashboard/DashboardPageContext";
+import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
+import * as OEQ from "@openequella/rest-api-client";
 
 const {
   dashboardLayout: { title: dashLayoutLabel },
@@ -33,6 +38,35 @@ const {
 
 const TabContentSkeletonTestId = "tab-content-skeleton";
 
+/** The spies for the mocked API calls related to the Dashboard Editor. */
+export interface MockDashboardEditorApiSpies {
+  /** A spy for the `updateDashboardLayout` API call. */
+  mockUpdateDashboardLayout: jest.SpyInstance;
+  /** A spy for the `updatePortletPreference` API call. */
+  mockUpdatePortletPreference: jest.SpyInstance;
+}
+
+/**
+ * Mocks the API calls related to the Dashboard Editor and returns spies for them.
+ *
+ * @returns An object containing spies for the mocked API calls.
+ */
+export const mockDashboardEditorApis = (): MockDashboardEditorApiSpies => ({
+  mockUpdateDashboardLayout: jest
+    .spyOn(DashboardModule, "updateDashboardLayout")
+    .mockResolvedValue(undefined),
+  mockUpdatePortletPreference: jest
+    .spyOn(DashboardModule, "updatePortletPreference")
+    .mockResolvedValue(undefined),
+});
+
+/**
+ * Renders the `DashboardEditor` component with default props and returns a set of
+ * query helpers and spies for testing.
+ *
+ * @param props Optional props to override the defaults.
+ * @returns An object containing query helpers, spies, and the `userEvent` instance.
+ */
 export const renderDashboardEditor = (
   props: Partial<DashboardEditorProps> = {},
 ) => {
@@ -77,4 +111,48 @@ export const renderDashboardEditor = (
     assertActiveTab,
     ...renderResult,
   };
+};
+
+/**
+ * A mock function for the `refreshDashboard` callback provided by `DashboardPageContext`.
+ */
+export const mockRefreshDashboard = jest.fn();
+
+/**
+ * Renders the `DashboardLayout` component within a `DashboardPageContext.Provider`.
+ *
+ * @param dashboardDetails Optional `DashboardDetails` to provide to the context.
+ * @returns The `render` result from Testing Library.
+ */
+export const renderDashboardLayout = (
+  dashboardDetails?: OEQ.Dashboard.DashboardDetails,
+): RenderResult =>
+  render(
+    <DashboardPageContext.Provider
+      value={{
+        dashboardDetails,
+        refreshDashboard: mockRefreshDashboard,
+        minimisePortlet: jest.fn,
+        closePortlet: jest.fn,
+        deletePortlet: jest.fn,
+      }}
+    >
+      <DashboardLayout />
+    </DashboardPageContext.Provider>,
+  );
+
+/**
+ * Renders the `DashboardLayoutSelector` component with a mocked `onChange` handler.
+ *
+ * @param value Optional initial layout value to be selected.
+ * @returns The mocked `onChange` handler and the `render` result.
+ */
+export const renderDashboardLayoutSelector = (
+  value?: OEQ.Dashboard.DashboardLayout,
+) => {
+  const onChange = jest.fn();
+  const renderResult = render(
+    <DashboardLayoutSelector value={value} onChange={onChange} />,
+  );
+  return { onChange, ...renderResult };
 };

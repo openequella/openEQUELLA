@@ -25,6 +25,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../mainui/App";
 import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
+  batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
   getCreatablePortlets,
   getDashboardDetails,
@@ -42,7 +43,6 @@ import * as T from "fp-ts/Task";
 import { DashboardEditor } from "./DashboardEditor";
 import { DashboardPageContext } from "./DashboardPageContext";
 import {
-  batchUpdatePortletPreferences,
   computeDndPortletNewPosition,
   decodeDndData,
   getMovedPortlets,

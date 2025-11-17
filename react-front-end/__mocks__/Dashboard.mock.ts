@@ -233,3 +233,8 @@ export const dashboardDetailsWithLayout = (
   ],
   layout,
 });
+
+export const singleColLayoutDashboardDetails: OEQ.Dashboard.DashboardDetails = {
+  portlets: [privateSearchPortlet, privateFavouritePortlet],
+  layout: "SingleColumn",
+};

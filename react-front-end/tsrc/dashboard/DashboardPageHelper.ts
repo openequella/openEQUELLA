@@ -23,11 +23,7 @@ import { DropTargetRecord } from "@atlaskit/pragmatic-drag-and-drop/types";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-import * as TE from "fp-ts/TaskEither";
-import {
-  PortletPosition,
-  updatePortletPreference,
-} from "../modules/DashboardModule";
+import { PortletPosition } from "../modules/DashboardModule";
 import * as E from "../util/Either.extended";
 import {
   DndPortletData,
@@ -41,9 +37,7 @@ import { portletFilterByColumn } from "./portlet/PortletHelper";
 import * as O from "fp-ts/Option";
 import { sequenceS } from "fp-ts/Apply";
 import * as P from "fp-ts/Predicate";
-import * as Semigroup from "fp-ts/Semigroup";
 import * as S from "fp-ts/string";
-import * as T from "fp-ts/Task";
 
 interface ValidDndDataResult {
   /**
@@ -346,39 +340,6 @@ export const getMovedPortlets = (
         ),
     ),
   );
-
-/**
- * Batch updates portlet preferences for multiple portlets.
- *
- * @param newPortlets - An array of portlets with updated preference.
- */
-export const batchUpdatePortletPreferences = (
-  newPortlets: OEQ.Dashboard.BasicPortlet[],
-): TE.TaskEither<string, void[]> => {
-  const ErrorSemigroup = pipe(S.Semigroup, Semigroup.intercalate(", "));
-
-  const updatePortletPreferenceTE = (
-    uuid: string,
-    pref: OEQ.Dashboard.PortletPreference,
-  ) =>
-    TE.tryCatch(
-      () => updatePortletPreference(uuid, pref),
-      (e) => `Failed to update portlet ${uuid} preferences: ${e}`,
-    );
-
-  return pipe(
-    newPortlets,
-    A.map(({ commonDetails: { uuid, isClosed, isMinimised, column, order } }) =>
-      updatePortletPreferenceTE(uuid, {
-        isClosed,
-        isMinimised,
-        column,
-        order,
-      }),
-    ),
-    A.sequence(TE.getApplicativeTaskValidation(T.ApplyPar, ErrorSemigroup)),
-  );
-};
 
 /**
  * Updates dashboard’s portlets by applying a portlet update for the given UUID.
