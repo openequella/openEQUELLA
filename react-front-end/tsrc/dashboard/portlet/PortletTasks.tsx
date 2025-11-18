@@ -40,9 +40,15 @@ const strings = {
 };
 
 export interface PortletTasksProps extends PortletBasicProps {
+  /**
+   * A provider function to fetch task and notification counts. Primarily for testing.
+   */
   tasksProvider?: typeof getTaskAndNotificationCounts;
 }
 
+/**
+ * Portlet that displays task and notification counts.
+ */
 export const PortletTasks: React.FC<PortletTasksProps> = ({
   cfg,
   position,
