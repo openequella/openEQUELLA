@@ -68,6 +68,10 @@ export const TasksList: React.FC<TasksListProps> = ({
 }) => {
   const history = useHistory();
 
+  // This is a little bit specialised - clicking on an item submits a legacy request to
+  // navigate to the relevant task/notification page. Because before the user goes to that page,
+  // a request is submitted to set up the relevant search/filter in the server session to be
+  // rendered by the legacy UI.
   const onClick = (taskid: string) => () =>
     submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
       event__: ["pptl.execSearch"],
