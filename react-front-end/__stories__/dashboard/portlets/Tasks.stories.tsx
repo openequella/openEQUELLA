@@ -19,6 +19,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { BrowserRouter } from "react-router-dom";
+import { privateTasksPortlet } from "../../../__mocks__/Dashboard.mock";
 import { getTaskAndNotificationCountsResp } from "../../../__mocks__/TaskModule.mock";
 import {
   PortletTasks,
@@ -81,22 +82,7 @@ const slowTasksProvider = async (): Promise<OEQ.Task.TaskFilterCount[]> => {
 };
 
 // Base portlet configuration
-const basePortletConfig: OEQ.Dashboard.BasicPortlet = {
-  commonDetails: {
-    uuid: "tasks-story-uuid",
-    name: "Tasks",
-    column: 0,
-    order: 0,
-    isInstitutionWide: false,
-    isClosed: false,
-    isMinimised: false,
-    canClose: true,
-    canDelete: true,
-    canEdit: true,
-    canMinimise: true,
-  },
-  portletType: "tasks",
-};
+const basePortletConfig: OEQ.Dashboard.BasicPortlet = privateTasksPortlet;
 
 export const Default = Template.bind({});
 Default.args = {
