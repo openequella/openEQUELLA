@@ -388,6 +388,11 @@ export const languageStrings = {
       recentContributions: {
         noneFound: "No recent contributions found.",
       },
+      tasks: {
+        failedToInitialise: "Failed to initialise tasks portlet.",
+        nothingReturned: "No tasks and notifications returned.",
+        unableToFindItemsOfType: "Unable to find items of type:",
+      },
       unsupported: {
         title: "Unsupported portlet configured.",
         description:
