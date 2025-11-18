@@ -56,16 +56,18 @@ export const PortletTasks: React.FC<PortletTasksProps> = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
-  const [tasksPartition, setTasksPartition] =
-    React.useState<TaskPartition | null>(null);
-  const [notificationsPartition, setNotificationsPartition] =
-    React.useState<TaskPartition | null>(null);
+  const [tasksPartition, setTasksPartition] = React.useState<
+    TaskPartition | undefined
+  >(undefined);
+  const [notificationsPartition, setNotificationsPartition] = React.useState<
+    TaskPartition | undefined
+  >(undefined);
 
   React.useEffect(() => {
     // Clear previous state
     setErrorMessage(undefined);
-    setTasksPartition(null);
-    setNotificationsPartition(null);
+    setTasksPartition(undefined);
+    setNotificationsPartition(undefined);
 
     const fetchTaskCounts = pipe(
       TE.tryCatch(
