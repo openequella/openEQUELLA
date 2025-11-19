@@ -173,7 +173,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
                 TE.mapLeft((e) => {
                   appErrorHandler(`Failed to update portlet positions: ${e}`);
                   // Reload dashboard to reset state.
-                  loadDashboard();
+                  loadDashboard()();
                 }),
               )();
             }),
