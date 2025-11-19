@@ -19,9 +19,9 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { absurd, pipe } from "fp-ts/function";
 import * as N from "fp-ts/number";
+import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
-import * as O from "fp-ts/Option";
 import * as React from "react";
 import { PortletPosition } from "../../modules/DashboardModule";
 import { PortletBrowse } from "./PortletBrowse";
@@ -33,7 +33,6 @@ import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
 import { PortletTasks } from "./PortletTasks";
 import { PortletTaskStatistics } from "./PortletTaskStatistics";
-import { PortletUnsupported } from "./PortletUnsupported";
 
 /**
  * Type definition for Supported two-column layouts.
