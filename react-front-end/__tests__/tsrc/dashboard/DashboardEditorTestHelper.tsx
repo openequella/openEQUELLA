@@ -33,7 +33,7 @@ import * as OEQ from "@openequella/rest-api-client";
 const {
   dashboardLayout: { title: dashLayoutLabel },
   createPortlet: { title: createPortletLabel },
-  restorePortlet: restorePortletLabel,
+  restorePortlet: { title: restorePortletLabel },
 } = languageStrings.dashboard.editor;
 
 const TabContentSkeletonTestId = "tab-content-skeleton";
