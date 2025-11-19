@@ -22,6 +22,7 @@ import { pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
 import { useCallback } from "react";
+import { HEADER_OFFSET } from "../../mainui/Template";
 import { PortletDropZoneGrid } from "./PortletDropZoneGrid";
 import {
   getTwoColumnWidths,
@@ -67,6 +68,7 @@ export const PortletContainer = ({
             size={12}
             id={`portlet-${portlet.commonDetails.uuid}`}
             key={portlet.commonDetails.uuid}
+            sx={{ scrollMarginTop: HEADER_OFFSET }}
           >
             {renderPortlet(portlet, {
               column,

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Skeleton, Fab } from "@mui/material";
+import { Skeleton, Fab, useTheme, alpha } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { pipe, constVoid } from "fp-ts/function";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -23,13 +23,16 @@ import * as React from "react";
 import { sprintf } from "sprintf-js";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../mainui/App";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
+import {
+  HEADER_OFFSET,
+  templateDefaults,
+  TemplateUpdateProps,
+} from "../mainui/Template";
 import {
   batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
   getCreatablePortlets,
   getDashboardDetails,
-  updatePortletPreference,
 } from "../modules/DashboardModule";
 import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
@@ -48,6 +51,7 @@ import {
   getMovedPortlets,
   movePortlet,
   updateDashboardDetails,
+  updatePortletPreferenceTE,
 } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
@@ -58,6 +62,7 @@ const { errors: dashboardErrors } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
+  const theme = useTheme();
 
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
@@ -65,6 +70,9 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const [hasCreatePortletAcl, setHasCreatePortletAcl] = useState<boolean>();
   const [openDashboardEditor, setOpenDashboardEditor] =
     useState<boolean>(false);
+  const [restoredPortletId, setRestoredPortletId] = useState<
+    undefined | string
+  >(undefined);
 
   const [creatablePortletTypes, setCreatablePortletTypes] = useState<
     OEQ.Dashboard.PortletCreatable[]
@@ -80,13 +88,16 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const loadDashboard = useCallback(
-    (): T.Task<void> =>
+    (restoredPortletId?: string): T.Task<void> =>
       pipe(
         TE.tryCatch(
           () => getDashboardDetails(),
           (e) => sprintf(dashboardErrors.failedToGetDashboardDetails, `${e}`),
         ),
-        TE.match(appErrorHandler, setDashboardDetails),
+        TE.match(appErrorHandler, (details) => {
+          setDashboardDetails(details);
+          restoredPortletId && setRestoredPortletId(restoredPortletId);
+        }),
       ),
     [appErrorHandler],
   );
@@ -173,13 +184,50 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     [appErrorHandler, dashboardDetails, loadDashboard],
   );
 
+  useEffect(() => {
+    if (dashboardDetails && restoredPortletId) {
+      const targetElement = document.getElementById(
+        `portlet-${restoredPortletId}`,
+      );
+
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        // If rect.top is less than HEADER_OFFSET, it's behind the app header
+        const isHiddenAbove = rect.top < HEADER_OFFSET;
+
+        // If rect.bottom is greater than the window height, it's off-screen
+        const isHiddenBelow = rect.bottom > window.innerHeight;
+
+        if (isHiddenAbove || isHiddenBelow) {
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+
+        const targetCardElement = targetElement.querySelector(".MuiCard-root");
+        const highlightColor = theme.palette.secondary.main;
+
+        if (targetCardElement) {
+          targetCardElement.animate(
+            [
+              { backgroundColor: alpha(highlightColor, 0.25) },
+              { backgroundColor: alpha(highlightColor, 0) },
+            ],
+            {
+              duration: 3000,
+              easing: theme.transitions.easing.easeInOut,
+            },
+          );
+        }
+      }
+      setRestoredPortletId(undefined);
+    }
+  }, [dashboardDetails, restoredPortletId, theme]);
+
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
       pipe(
-        TE.tryCatch(
-          () => updatePortletPreference(uuid, pref),
-          (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
-        ),
+        updatePortletPreferenceTE(uuid, pref),
         TE.match(appErrorHandler, constVoid),
         T.tapIO(() => loadDashboard()),
       )(),
@@ -286,7 +334,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
         closePortlet,
         deletePortlet,
         minimisePortlet,
-        refreshDashboard: loadDashboard(),
+        refreshDashboard: loadDashboard,
         dashboardDetails,
       }}
     >

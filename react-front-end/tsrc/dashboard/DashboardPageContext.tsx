@@ -18,6 +18,7 @@
 
 import { createContext } from "react";
 import * as OEQ from "@openequella/rest-api-client";
+import * as T from "fp-ts/Task";
 
 interface DashboardPageContextProps {
   /**
@@ -49,7 +50,7 @@ interface DashboardPageContextProps {
   /**
    * Triggers the refresh of dashboard page by calling the `getDashboardDetails`.
    */
-  refreshDashboard: () => void;
+  refreshDashboard: (uuid?: string) => T.Task<void>;
   /**
    * The current details of the Dashboard, including portlets and layout.
    */
@@ -60,5 +61,5 @@ export const DashboardPageContext = createContext<DashboardPageContextProps>({
   closePortlet: () => {},
   deletePortlet: () => {},
   minimisePortlet: () => {},
-  refreshDashboard: () => {},
+  refreshDashboard: () => T.of(undefined),
 });

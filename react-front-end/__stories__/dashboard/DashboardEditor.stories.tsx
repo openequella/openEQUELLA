@@ -17,7 +17,10 @@
  */
 import * as React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { creatablePortletTypes } from "../../__mocks__/Dashboard.mock";
+import {
+  creatablePortletTypes,
+  getClosedPortletsRes,
+} from "../../__mocks__/Dashboard.mock";
 import { dashboardDetailsWithLayout } from "../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
@@ -38,6 +41,7 @@ export const Standard: StoryFn<DashboardEditorProps> = (args) => (
 );
 Standard.args = {
   creatablePortletTypes: creatablePortletTypes,
+  closedPortletsProvider: () => Promise.resolve(getClosedPortletsRes),
 };
 Standard.decorators = [
   buildDashboardPageContextDecorator(dashboardDetailsWithLayout()),

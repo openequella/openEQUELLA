@@ -39,6 +39,7 @@ import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
+import { HEADER_OFFSET } from "../mainui/Template";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -253,10 +254,11 @@ export const SearchPageBody = ({
         writeRawModeToStorage(searchPageOptions.rawMode);
         if (scrollToSearchBar) {
           // Scroll to the top of the search bar.
-          // It calculates top distance of the search bar, subtract 64px for the header height,
+          // It calculates top distance of the search bar, subtract 74px for the header height,
           // and an extra 10px to avoid the header's shadow. Result is the scroll distance.
           const distance =
-            (searchBarRef.current?.getBoundingClientRect().top ?? 0) - 74;
+            (searchBarRef.current?.getBoundingClientRect().top ?? 0) -
+            HEADER_OFFSET;
           window.scrollBy({ top: distance });
         }
         // Allow downloading new search result.

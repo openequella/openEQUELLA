@@ -60,6 +60,7 @@ import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
+export const HEADER_OFFSET = 74;
 
 export interface TemplateProps {
   title: string;

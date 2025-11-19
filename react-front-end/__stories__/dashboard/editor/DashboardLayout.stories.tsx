@@ -21,6 +21,7 @@ import { dashboardDetailsWithLayout } from "../../../__mocks__/Dashboard.mock";
 import { DashboardPageContext } from "../../../tsrc/dashboard/DashboardPageContext";
 import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
 import * as OEQ from "@openequella/rest-api-client";
+import * as T from "fp-ts/Task";
 
 export default {
   title: "Dashboard/editor/DashboardLayout",
@@ -36,7 +37,7 @@ export const buildDashboardPageContextDecorator =
     <DashboardPageContext.Provider
       value={{
         dashboardDetails: details,
-        refreshDashboard: nop,
+        refreshDashboard: () => T.of(undefined),
         minimisePortlet: nop,
         closePortlet: nop,
         deletePortlet: nop,

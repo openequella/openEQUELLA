@@ -172,3 +172,12 @@ export const isTwoColumnLayout = (
 export const isSecondColumnPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
 ): boolean => portlet.commonDetails.column === 1;
+
+/**
+ * Returns true if the given portlet is positioned in the first column.
+ *
+ * @param portlet The portlet whose column value is to be checked.
+ * @returns Whether the portlet resides in the first column.
+ */
+export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
+  portlet.commonDetails.column === 0;

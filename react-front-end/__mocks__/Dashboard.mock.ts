@@ -238,3 +238,20 @@ export const singleColLayoutDashboardDetails: OEQ.Dashboard.DashboardDetails = {
   portlets: [privateSearchPortlet, privateFavouritePortlet],
   layout: "SingleColumn",
 };
+
+export const dashboardDetailsWithNoFirstColumnPortlets: OEQ.Dashboard.DashboardDetails =
+  {
+    portlets: [publicRecentContributionsPortlet, publicHtmlPortlet],
+    layout: "TwoEqualColumns",
+  };
+
+export const getClosedPortletsRes: OEQ.Dashboard.PortletClosed[] = [
+  {
+    uuid: "123e4567-e89b-12d3-a456-426214174001",
+    name: "Sample closed Portlet",
+  },
+  {
+    uuid: "123e4517-e89b-12q3-a456-426214174002",
+    name: "Fav Portlet",
+  },
+];
