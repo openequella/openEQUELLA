@@ -24,7 +24,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 //    - revision is optional
 addDependencyTreePlugin
 
-val circeVersion = "0.14.14"
+val circeVersion = "0.14.15"
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core"    % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
   "commons-discovery"      % "commons-discovery"     % "0.5",
   "commons-configuration"  % "commons-configuration" % "1.10",
   "commons-beanutils"      % "commons-beanutils"     % "1.11.0",
-  "commons-codec"          % "commons-codec"         % "1.19.0",
+  "commons-codec"          % "commons-codec"         % "1.20.0",
   "org.slf4j"              % "slf4j-nop"             % "2.0.17",
   "com.yahoo.platform.yui" % "yuicompressor"         % "2.4.8"
 )

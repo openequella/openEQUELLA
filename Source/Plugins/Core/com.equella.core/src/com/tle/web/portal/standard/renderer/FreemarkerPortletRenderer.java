@@ -40,7 +40,6 @@ import com.tle.web.sections.ajax.AjaxGenerator;
 import com.tle.web.sections.ajax.AjaxGenerator.EffectType;
 import com.tle.web.sections.ajax.handler.AjaxFactory;
 import com.tle.web.sections.ajax.handler.UpdateDomFunction;
-import com.tle.web.sections.annotations.DirectEvent;
 import com.tle.web.sections.annotations.EventFactory;
 import com.tle.web.sections.annotations.EventHandlerMethod;
 import com.tle.web.sections.equella.annotation.PlugKey;
@@ -229,6 +228,7 @@ public class FreemarkerPortletRenderer
       }
     }
 
+    execServerScript(context);
     return view.createResult("freemarkerportlet.ftl", context);
   }
 
@@ -259,8 +259,12 @@ public class FreemarkerPortletRenderer
     return scriptContext;
   }
 
-  @DirectEvent(priority = SectionEvent.PRIORITY_BEFORE_EVENTS)
-  public void onLoadScript(SectionInfo info) {
+  // This method was annotated with '@DirectEvent' before 25.2, and this annotation
+  // caused redundant execution of the server script. It is agreed that the annotation
+  // should be dropped and this method should be called only when the portlet is being
+  // rendered. However, due to the unknowns of why the annotation was used initially,
+  // if there are new issues because of this change, we will investigate another solution.
+  private void execServerScript(SectionInfo info) {
     FreemarkerPortletRendererModel model = getModel(info);
 
     String script = null;
