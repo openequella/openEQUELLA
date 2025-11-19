@@ -51,13 +51,13 @@ export const DashboardLayout = () => {
     OEQ.Dashboard.DashboardLayout | undefined
   >(dashboardDetails?.layout);
 
-  const updateDashboardLayoutTask = React.useCallback(
+  const updateDashboardLayoutTE = React.useCallback(
     (newLayout: OEQ.Dashboard.DashboardLayout) =>
       pipe(
         TE.tryCatch(() => updateDashboardLayout(newLayout), String),
-        TE.match(appErrorHandler, () => setActiveLayout(newLayout)),
+        TE.map(() => setActiveLayout(newLayout)),
       ),
-    [appErrorHandler],
+    [],
   );
 
   const getPortletsWithUpdatedPref = React.useCallback(
@@ -110,16 +110,19 @@ export const DashboardLayout = () => {
 
       pipe(
         layout,
-        updateDashboardLayoutTask,
-        T.flatMap(() => portletsUpdateTask(layout)),
-        T.tapIO(() => () => refreshDashboard()),
+        updateDashboardLayoutTE,
+        // only update portlet preference if updateDashboardLayout API resolves
+        TE.chainTaskK(() => portletsUpdateTask(layout)),
+        TE.match(appErrorHandler, constVoid),
+        T.flatMap(() => refreshDashboard()),
       )();
     },
     [
       activeLayout,
       refreshDashboard,
-      updateDashboardLayoutTask,
+      updateDashboardLayoutTE,
       portletsUpdateTask,
+      appErrorHandler,
     ],
   );
 
