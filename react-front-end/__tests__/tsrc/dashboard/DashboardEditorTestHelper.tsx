@@ -116,7 +116,9 @@ export const renderDashboardEditor = (
 /**
  * A mock function for the `refreshDashboard` callback provided by `DashboardPageContext`.
  */
-export const mockRefreshDashboard = jest.fn();
+export const mockRefreshDashboard = jest
+  .fn()
+  .mockReturnValue(() => Promise.resolve());
 
 /**
  * Renders the `DashboardLayout` component within a `DashboardPageContext.Provider`.
