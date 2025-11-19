@@ -229,7 +229,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       pipe(
         updatePortletPreferenceTE(uuid, pref),
         TE.match(appErrorHandler, constVoid),
-        T.tapIO(() => loadDashboard()),
+        T.chain(() => loadDashboard()),
       )(),
     [appErrorHandler, loadDashboard],
   );
@@ -242,7 +242,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
           (e) => sprintf(dashboardErrors.failedToDeletePortlet, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
-        T.tapIO(() => loadDashboard()),
+        T.chain(() => loadDashboard()),
       )(),
     [appErrorHandler, loadDashboard],
   );
