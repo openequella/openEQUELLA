@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as S from "fp-ts/string";
 import { API_BASE_URL } from "../AppConfig";
 
 /**
@@ -125,8 +127,40 @@ const getTopicIDFromPath = (path: string): string | undefined => {
 };
 
 // Extract topic ID from the old UI hierarchy page query parameter.
-const getTopicIDFromQueryParam = (queryParam: string) =>
-  new URLSearchParams(queryParam).get("topic");
+const getTopicIDFromQueryParam = (queryParam: string): string | undefined =>
+  pipe(
+    new URLSearchParams(queryParam).get("topic"),
+    O.fromNullable,
+    O.map((uuids) => uuids.split(",")),
+    O.map(A.map(convertLegacyCompoundUuidToNewFormat)),
+    O.map(A.intercalate(S.Monoid)(",")),
+    O.toUndefined,
+  );
+
+// Converts a single legacy formatted compound UUID to new base64 format.
+//
+// Legacy format:
+//   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
+// New format:
+//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ="
+const convertLegacyCompoundUuidToNewFormat = (legacyCompoundUuid: string) => {
+  const [uuid, encodedNameMaybe] = legacyCompoundUuid.split(":");
+
+  const decodeFormUrlEncodedSpaces = (name: string) => name.replace(/\+/g, " ");
+
+  const toBase64 = (name: string) =>
+    Buffer.from(name, "utf8").toString("base64");
+
+  return pipe(
+    O.fromNullable(encodedNameMaybe),
+    // Replace special character '+' first since the legacy format uses application/x-www-form-urlencoded.
+    O.map(decodeFormUrlEncodedSpaces),
+    O.map(decodeURIComponent),
+    O.map(toBase64),
+    O.map((base64Name) => `${uuid}:${base64Name}`),
+    O.getOrElse(() => legacyCompoundUuid),
+  );
+};
 
 /**
  * Extract topic ID from a given URL.
@@ -134,13 +168,9 @@ const getTopicIDFromQueryParam = (queryParam: string) =>
  * @param url The URL object to extract the topic ID from.
  */
 export const getTopicIdFromUrl = (url: URL): string | undefined =>
-  pipe(
-    getTopicIDFromPath(url.pathname) ?? getTopicIDFromQueryParam(url.search),
-    O.fromNullable,
-    O.toUndefined,
-  );
+  getTopicIDFromPath(url.pathname) ?? getTopicIDFromQueryParam(url.search);
 
-export const getTopicIDFromLocation = (): string | null => {
+export const getTopicIDFromLocation = (): string | undefined => {
   const location = window.location;
   return (
     getTopicIDFromPath(location.pathname) ??

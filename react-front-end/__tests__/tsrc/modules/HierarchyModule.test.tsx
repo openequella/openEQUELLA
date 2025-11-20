@@ -22,6 +22,12 @@ describe("getTopicIdFromUrl", () => {
   const hierarchyId = "ecf0b378-ffb5-46bd-9d7f-a72ea1637714";
   const virtualHierarchyId =
     "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:Q291cnNlIG1hdGVyaWFs";
+  const virtualHierarchyLegacyId =
+    "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:Course+material";
+  const virtualNestedHierarchyId =
+    "5ec580b5-c6d6-4b25-b828-18dbaca3e898:Q291cnNlIG1hdGVyaWFs,db45a4e7-7d64-4eec-a119-97643de10ace:Q291cnNlIG1hdGVyaWFs";
+  const virtualNestedHierarchyLegacyId =
+    "5ec580b5-c6d6-4b25-b828-18dbaca3e898%3ACourse%2Bmaterial%2Cdb45a4e7-7d64-4eec-a119-97643de10ace%3ACourse%2Bmaterial";
   const origin = "http://localhost:8080";
 
   it.each([
@@ -36,21 +42,31 @@ describe("getTopicIdFromUrl", () => {
       expected: virtualHierarchyId,
     },
     {
+      name: "extract nested virtual topic ID from new UI virtual hierarchy page path",
+      path: `/page/hierarchy/${virtualNestedHierarchyId}`,
+      expected: virtualNestedHierarchyId,
+    },
+    {
       name: "extract topic ID from old UI hierarchy page query parameter",
       path: `/hierarchy.do?topic=${hierarchyId}`,
       expected: hierarchyId,
     },
     {
       name: "extract topic ID from old UI virtual hierarchy page query parameter",
-      path: `/hierarchy.do?topic=${virtualHierarchyId}`,
+      path: `/hierarchy.do?topic=${virtualHierarchyLegacyId}`,
       expected: virtualHierarchyId,
+    },
+    {
+      name: "extract nested topic ID from old UI virtual hierarchy page query parameter",
+      path: `/hierarchy.do?topic=${virtualNestedHierarchyLegacyId}`,
+      expected: virtualNestedHierarchyId,
     },
     {
       name: "return undefined if no topic ID is found",
       path: "/page/not-hierarchy/",
       expected: undefined,
     },
-  ])("%s", ({ path, expected }) => {
+  ])("$name", ({ path, expected }) => {
     const urlObj = new URL(path, origin);
     expect(getTopicIdFromUrl(urlObj)).toBe(expected);
   });
