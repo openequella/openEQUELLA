@@ -29,7 +29,7 @@ val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
-val luceneVersion     = "10.3.1"
+val luceneVersion     = "10.3.2"
 val nettyVersion      = "4.2.7.Final"
 
 libraryDependencies ++= Seq(
