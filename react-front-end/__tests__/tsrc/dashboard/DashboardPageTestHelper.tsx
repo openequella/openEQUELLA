@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { render, type RenderResult, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as E from "fp-ts/Either";
 import * as React from "react";
 import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
-import DashboardPage from "../../../tsrc/dashboard/DashboardPage";
 import "@testing-library/jest-dom";
-import * as OEQ from "@openequella/rest-api-client";
+import Dashboard from "../../../tsrc/dashboard/Dashboard";
 import { AppContext } from "../../../tsrc/mainui/App";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
 import * as SecurityModule from "../../../tsrc/modules/SecurityModule";
@@ -47,7 +47,7 @@ export const renderDashboardPage = async (
         currentUser,
       }}
     >
-      <DashboardPage updateTemplate={jest.fn()} />
+      <Dashboard updateTemplate={jest.fn()} />
     </AppContext.Provider>,
   );
 
