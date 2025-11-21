@@ -59,18 +59,20 @@ interface DashboardPageContextProps {
    *
    * @param uuid UUID of the portlet to be restored.
    */
-  restorePortlet: (uuid: string) => Promise<void>;
+  restorePortlet: (uuid: string) => void;
   /**
    * The UUID of a portlet that has just been restored. Used to trigger a scroll-to-portlet and highlight-portlet action.
    */
   restoredPortletId?: string;
 }
 
+const nop = () => {};
+
 export const defaultDashboardPageContextValue: DashboardPageContextProps = {
-  closePortlet: () => {},
-  deletePortlet: () => {},
-  minimisePortlet: () => {},
-  restorePortlet: () => Promise.resolve(undefined),
+  closePortlet: nop,
+  deletePortlet: nop,
+  minimisePortlet: nop,
+  restorePortlet: nop,
   refreshDashboard: () => T.of(undefined),
 };
 

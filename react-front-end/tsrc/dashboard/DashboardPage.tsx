@@ -241,8 +241,9 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const restorePortlet = useCallback(
-    async (uuid: string): Promise<void> => {
-      await pipe(uuid, setRestoredPortletId, loadDashboard());
+    (uuid: string) => {
+      setRestoredPortletId(uuid);
+      loadDashboard()();
     },
     [loadDashboard],
   );

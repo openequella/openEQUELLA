@@ -137,7 +137,7 @@ export const renderDashboardLayout = (
         minimisePortlet: jest.fn,
         closePortlet: jest.fn,
         deletePortlet: jest.fn,
-        restorePortlet: jest.fn().mockResolvedValue(undefined),
+        restorePortlet: jest.fn(),
       }}
     >
       <DashboardLayout />

@@ -63,6 +63,20 @@ export type ClosedPortletsState =
 const defaultClosedPortletsProvider: ClosedPortletsProvider = () =>
   getClosedPortlets();
 
+const filterOutRestoredPortlet = (
+  closedPortlets: ClosedPortletsState,
+  uuid: string,
+): ClosedPortletsState =>
+  closedPortlets.state === "success"
+    ? {
+        state: "success",
+        results: pipe(
+          closedPortlets.results,
+          A.filter((p) => p.uuid !== uuid),
+        ),
+      }
+    : closedPortlets;
+
 /**
  * This component provides the UI for a user to restore closed portlets.
  */
@@ -100,20 +114,6 @@ export const RestorePortletsTab = ({
     [appErrorHandler, closedPortletsProvider],
   );
 
-  const filterOutRestoredPortlet = (
-    closedPortlets: ClosedPortletsState,
-    uuid: string,
-  ): ClosedPortletsState =>
-    closedPortlets.state === "success"
-      ? {
-          state: "success",
-          results: pipe(
-            closedPortlets.results,
-            A.filter((p) => p.uuid !== uuid),
-          ),
-        }
-      : closedPortlets;
-
   const onPortletRestore = React.useCallback(
     (uuid: string) => {
       setClosedPortlets((prev) => filterOutRestoredPortlet(prev, uuid));
@@ -132,7 +132,7 @@ export const RestorePortletsTab = ({
         TE.match(
           (e) => {
             appErrorHandler(e);
-            return fetchClosedPortlets()();
+            fetchClosedPortlets()();
           },
           () => restorePortlet(uuid),
         ),
