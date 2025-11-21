@@ -15,20 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
+import * as OEQ from "@openequella/rest-api-client";
 import { render, RenderResult } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as React from "react";
 import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
-import { DashboardLayoutSelector } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import {
   DashboardEditor,
   DashboardEditorProps,
 } from "../../../tsrc/dashboard/DashboardEditor";
-import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
-import { languageStrings } from "../../../tsrc/util/langstrings";
 import { DashboardPageContext } from "../../../tsrc/dashboard/DashboardPageContext";
+import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
+import { DashboardLayoutSelector } from "../../../tsrc/dashboard/editor/DashboardLayoutSelector";
 import * as DashboardModule from "../../../tsrc/modules/DashboardModule";
-import * as OEQ from "@openequella/rest-api-client";
+import { languageStrings } from "../../../tsrc/util/langstrings";
 
 const {
   dashboardLayout: { title: dashLayoutLabel },
@@ -137,6 +137,7 @@ export const renderDashboardLayout = (
         minimisePortlet: jest.fn,
         closePortlet: jest.fn,
         deletePortlet: jest.fn,
+        restorePortlet: jest.fn().mockResolvedValue(undefined),
       }}
     >
       <DashboardLayout />
