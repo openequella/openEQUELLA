@@ -15,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Skeleton, Fab, useTheme, alpha } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import { pipe, constVoid } from "fp-ts/function";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import EditIcon from "@mui/icons-material/Edit";
+import { Fab, Skeleton } from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { constVoid, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { sprintf } from "sprintf-js";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { sprintf } from "sprintf-js";
+import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 import { AppContext } from "../mainui/App";
-import {
-  HEADER_OFFSET,
-  templateDefaults,
-  TemplateUpdateProps,
-} from "../mainui/Template";
+import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
@@ -37,12 +40,6 @@ import {
 import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
 import WelcomeBoard from "./components/WelcomeBoard";
-import * as TE from "fp-ts/TaskEither";
-import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
-import * as E from "fp-ts/Either";
-import * as O from "fp-ts/Option";
-import * as T from "fp-ts/Task";
 import { DashboardEditor } from "./DashboardEditor";
 import { DashboardPageContext } from "./DashboardPageContext";
 import {
@@ -54,7 +51,10 @@ import {
   updatePortletPreferenceTE,
 } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
+import {
+  isPortletPresentInDashboard,
+  scrollToPortlet,
+} from "./portlet/PortletHelper";
 
 const { title } = languageStrings.dashboard;
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
@@ -62,7 +62,6 @@ const { errors: dashboardErrors } = languageStrings.dashboard;
 
 const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   const { appErrorHandler, currentUser } = useContext(AppContext);
-  const theme = useTheme();
 
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
@@ -88,16 +87,13 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   const loadDashboard = useCallback(
-    (restoredPortletId?: string): T.Task<void> =>
+    (): T.Task<void> =>
       pipe(
         TE.tryCatch(
           () => getDashboardDetails(),
           (e) => sprintf(dashboardErrors.failedToGetDashboardDetails, `${e}`),
         ),
-        TE.match(appErrorHandler, (details) => {
-          setDashboardDetails(details);
-          restoredPortletId && setRestoredPortletId(restoredPortletId);
-        }),
+        TE.match(appErrorHandler, setDashboardDetails),
       ),
     [appErrorHandler],
   );
@@ -185,44 +181,14 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
   );
 
   useEffect(() => {
-    if (dashboardDetails && restoredPortletId) {
-      const targetElement = document.getElementById(
-        `portlet-${restoredPortletId}`,
-      );
-
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        // If rect.top is less than HEADER_OFFSET, it's behind the app header
-        const isHiddenAbove = rect.top < HEADER_OFFSET;
-
-        // If rect.bottom is greater than the window height, it's off-screen
-        const isHiddenBelow = rect.bottom > window.innerHeight;
-
-        if (isHiddenAbove || isHiddenBelow) {
-          targetElement.scrollIntoView({
-            behavior: "smooth",
-          });
-        }
-
-        const targetCardElement = targetElement.querySelector(".MuiCard-root");
-        const highlightColor = theme.palette.secondary.main;
-
-        if (targetCardElement) {
-          targetCardElement.animate(
-            [
-              { backgroundColor: alpha(highlightColor, 0.25) },
-              { backgroundColor: alpha(highlightColor, 0) },
-            ],
-            {
-              duration: 3000,
-              easing: theme.transitions.easing.easeInOut,
-            },
-          );
-        }
-      }
+    if (
+      restoredPortletId &&
+      isPortletPresentInDashboard(restoredPortletId, dashboardDetails)
+    ) {
+      scrollToPortlet(restoredPortletId);
       setRestoredPortletId(undefined);
     }
-  }, [dashboardDetails, restoredPortletId, theme]);
+  }, [restoredPortletId, dashboardDetails]);
 
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
@@ -272,6 +238,13 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       return updatePortletPreferenceAndRefresh(uuid, portletPref);
     },
     [updatePortletPreferenceAndRefresh],
+  );
+
+  const restorePortlet = useCallback(
+    async (uuid: string): Promise<void> => {
+      await pipe(uuid, setRestoredPortletId, loadDashboard());
+    },
+    [loadDashboard],
   );
 
   const editDashboardButton = (
@@ -334,8 +307,10 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
         closePortlet,
         deletePortlet,
         minimisePortlet,
+        restorePortlet,
         refreshDashboard: loadDashboard,
         dashboardDetails,
+        restoredPortletId: restoredPortletId,
       }}
     >
       {renderDashboard()}

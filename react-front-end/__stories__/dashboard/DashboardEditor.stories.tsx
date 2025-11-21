@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
 import { Meta, StoryFn } from "@storybook/react";
+import * as React from "react";
 import {
   creatablePortletTypes,
+  dashboardDetailsWithLayout,
   getClosedPortletsRes,
 } from "../../__mocks__/Dashboard.mock";
-import { dashboardDetailsWithLayout } from "../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,

@@ -18,8 +18,8 @@
 import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { constant, identity, pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
+import { constant, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
@@ -254,7 +254,7 @@ export const SearchPageBody = ({
         writeRawModeToStorage(searchPageOptions.rawMode);
         if (scrollToSearchBar) {
           // Scroll to the top of the search bar.
-          // It calculates top distance of the search bar, subtract 74px for the header height,
+          // It calculates top distance of the search bar, subtract 64px for the header height,
           // and an extra 10px to avoid the header's shadow. Result is the scroll distance.
           const distance =
             (searchBarRef.current?.getBoundingClientRect().top ?? 0) -

@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createContext } from "react";
 import * as OEQ from "@openequella/rest-api-client";
 import * as T from "fp-ts/Task";
+import { createContext } from "react";
 
 interface DashboardPageContextProps {
   /**
@@ -50,16 +49,31 @@ interface DashboardPageContextProps {
   /**
    * Triggers the refresh of dashboard page by calling the `getDashboardDetails`.
    */
-  refreshDashboard: (uuid?: string) => T.Task<void>;
+  refreshDashboard: () => T.Task<void>;
   /**
    * The current details of the Dashboard, including portlets and layout.
    */
   dashboardDetails?: OEQ.Dashboard.DashboardDetails;
+  /**
+   * Restores a closed portlet. This involves setting the `restoredPortletId` and then refreshing the dashboard to display the newly restored portlet.
+   *
+   * @param uuid UUID of the portlet to be restored.
+   */
+  restorePortlet: (uuid: string) => Promise<void>;
+  /**
+   * The UUID of a portlet that has just been restored. Used to trigger a scroll-to-portlet and highlight-portlet action.
+   */
+  restoredPortletId?: string;
 }
 
-export const DashboardPageContext = createContext<DashboardPageContextProps>({
+export const defaultDashboardPageContextValue: DashboardPageContextProps = {
   closePortlet: () => {},
   deletePortlet: () => {},
   minimisePortlet: () => {},
+  restorePortlet: () => Promise.resolve(undefined),
   refreshDashboard: () => T.of(undefined),
-});
+};
+
+export const DashboardPageContext = createContext<DashboardPageContextProps>(
+  defaultDashboardPageContextValue,
+);

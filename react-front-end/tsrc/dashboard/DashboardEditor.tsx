@@ -21,15 +21,11 @@ import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { TooltipIconButton } from "../components/TooltipIconButton";
-import { getClosedPortlets as getClosedPortletsApi } from "../modules/DashboardModule";
 import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { PortletCreationList } from "./components/PortletCreationList";
 import { DashboardLayout } from "./editor/DashboardLayout";
-import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
-import { PortletRestoration } from "./editor/PortletRestoration";
-import { AppContext } from "../mainui/App";
+import { RestorePortletsTab } from "./editor/RestorePortletsTab";
 
 const {
   title,
@@ -40,7 +36,9 @@ const {
 } = languageStrings.dashboard.editor;
 const { close } = languageStrings.common.action;
 
-type ClosedPortletsProvider = () => Promise<OEQ.Dashboard.PortletClosed[]>;
+export type ClosedPortletsProvider = () => Promise<
+  OEQ.Dashboard.PortletClosed[]
+>;
 
 export interface DashboardEditorProps {
   /**
@@ -51,20 +49,9 @@ export interface DashboardEditorProps {
    * A list of portlet types which the current user can create.
    */
   creatablePortletTypes: OEQ.Dashboard.PortletCreatable[];
-  /** Optional provider for closed portlets - primarily for storybook. */
+  /** Optional provider for closed portlets - primarily used for testing/storybook. */
   closedPortletsProvider?: ClosedPortletsProvider;
 }
-
-/**
- * Represents the different states of the closed portlets data loading process.
- */
-export type ClosedPortletsState =
-  | { state: "loading" }
-  | { state: "success"; results: OEQ.Dashboard.PortletClosed[] }
-  | { state: "failed"; reason: string };
-
-const defaultClosedPortletsProvider: ClosedPortletsProvider = () =>
-  getClosedPortletsApi();
 
 /**
  * Renders a Drawer component from the right side of the screen which is used
@@ -74,34 +61,12 @@ const defaultClosedPortletsProvider: ClosedPortletsProvider = () =>
 export const DashboardEditor = ({
   onClose,
   creatablePortletTypes,
-  closedPortletsProvider = defaultClosedPortletsProvider,
+  closedPortletsProvider,
 }: DashboardEditorProps) => {
-  const { appErrorHandler } = React.useContext(AppContext);
-
   const [activeTab, setActiveTab] = React.useState(0);
-  const [closedPortlets, setClosedPortlets] =
-    React.useState<ClosedPortletsState>({ state: "loading" });
 
   const handleTabChange = (_: React.ChangeEvent<object>, newValue: number) =>
     setActiveTab(newValue);
-
-  const getClosedPortletsTask = React.useCallback((): T.Task<void> => {
-    setClosedPortlets({ state: "loading" });
-    return pipe(
-      TE.tryCatch(() => closedPortletsProvider(), String),
-      TE.match(
-        (e) => {
-          appErrorHandler(e);
-          setClosedPortlets({ state: "failed", reason: e });
-        },
-        (results) => setClosedPortlets({ state: "success", results }),
-      ),
-    );
-  }, [appErrorHandler, closedPortletsProvider]);
-
-  React.useEffect(() => {
-    getClosedPortletsTask()();
-  }, [getClosedPortletsTask]);
 
   const tabContent = pipe(
     activeTab,
@@ -118,10 +83,7 @@ export const DashboardEditor = ({
       ),
       2: () => (
         <Box id="restore-portlet-content">
-          <PortletRestoration
-            closedPortlets={closedPortlets}
-            getClosedPortletsTask={getClosedPortletsTask}
-          />
+          <RestorePortletsTab closedPortletsProvider={closedPortletsProvider} />
         </Box>
       ),
       _: () => <Alert severity="error">Unknown tab state!</Alert>,

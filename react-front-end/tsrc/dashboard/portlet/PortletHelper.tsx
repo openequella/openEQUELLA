@@ -23,6 +23,7 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { HEADER_OFFSET } from "../../mainui/Template";
 import { PortletPosition } from "../../modules/DashboardModule";
 import { PortletBrowse } from "./PortletBrowse";
 import { PortletFavourites } from "./PortletFavourites";
@@ -181,3 +182,48 @@ export const isSecondColumnPortlet = (
  */
 export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
   portlet.commonDetails.column === 0;
+
+/**
+ * Scrolls the page to bring the specified portlet into view if it's currently
+ * outside the visible viewport.
+ *
+ * @param portletId The unique ID of the portlet element to scroll to.
+ */
+export const scrollToPortlet = (portletId: string): void => {
+  const targetElement = document.getElementById(`portlet-${portletId}`);
+  if (!targetElement) {
+    return;
+  }
+
+  const rect = targetElement.getBoundingClientRect();
+  // If rect.top is less than HEADER_OFFSET, it's behind the app header.
+  const isHiddenAbove = rect.top < HEADER_OFFSET;
+  // If rect.bottom is greater than the window height, it's off-screen below.
+  const isHiddenBelow = rect.bottom > window.innerHeight;
+
+  if (isHiddenAbove || isHiddenBelow) {
+    targetElement.scrollIntoView({
+      behavior: "smooth",
+    });
+  }
+};
+
+/**
+ * Returns true if the dashboard currently includes a portlet with the given UUID.
+ *
+ * @param uuid UUID of the portlet to look for.
+ * @param dashboardDetails Optional dashboard details containing the current portlets.
+ */
+export const isPortletPresentInDashboard = (
+  uuid?: string,
+  dashboardDetails?: OEQ.Dashboard.DashboardDetails,
+): boolean =>
+  pipe(
+    O.fromNullable(dashboardDetails),
+    O.exists(({ portlets }) =>
+      pipe(
+        portlets,
+        A.some((p) => p.commonDetails.uuid === uuid),
+      ),
+    ),
+  );

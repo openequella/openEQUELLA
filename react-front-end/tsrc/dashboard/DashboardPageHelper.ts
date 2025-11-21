@@ -21,8 +21,15 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import { DropTargetRecord } from "@atlaskit/pragmatic-drag-and-drop/types";
 import * as OEQ from "@openequella/rest-api-client";
+import { sequenceS } from "fp-ts/Apply";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as N from "fp-ts/number";
+import * as O from "fp-ts/Option";
+import * as Ord from "fp-ts/Ord";
+import * as P from "fp-ts/Predicate";
+import * as S from "fp-ts/string";
 import * as TE from "fp-ts/TaskEither";
 import { sprintf } from "sprintf-js";
 import {
@@ -30,6 +37,7 @@ import {
   updatePortletPreference,
 } from "../modules/DashboardModule";
 import * as E from "../util/Either.extended";
+import { languageStrings } from "../util/langstrings";
 import {
   DndPortletData,
   DndPortletDataCodec,
@@ -42,13 +50,6 @@ import {
   isFirstColumnPortlet,
   portletFilterByColumn,
 } from "./portlet/PortletHelper";
-import * as O from "fp-ts/Option";
-import { sequenceS } from "fp-ts/Apply";
-import * as P from "fp-ts/Predicate";
-import * as S from "fp-ts/string";
-import * as NEA from "fp-ts/NonEmptyArray";
-import * as N from "fp-ts/number";
-import { languageStrings } from "../util/langstrings";
 
 const { errors: dashboardErrors } = languageStrings.dashboard;
 
@@ -399,7 +400,7 @@ export const updateDashboardDetails =
 export const updatePortletPreferenceTE = (
   uuid: string,
   pref: OEQ.Dashboard.PortletPreference,
-) =>
+): TE.TaskEither<string, void> =>
   TE.tryCatch(
     () => updatePortletPreference(uuid, pref),
     (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
@@ -416,26 +417,20 @@ export const updatePortletPreferenceTE = (
 export const getOrderForRestoredPortlet = (
   dashboardDetails?: OEQ.Dashboard.DashboardDetails,
 ): number => {
+  const byOrder = pipe(
+    N.Ord,
+    Ord.contramap((p: OEQ.Dashboard.BasicPortlet) => p.commonDetails.order),
+  );
+
   const getNextOrder = (
     nea: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet>,
-  ): number =>
-    pipe(
-      nea,
-      NEA.map((p) => p.commonDetails.order),
-      NEA.max(N.Ord),
-      (max) => max + 1,
-    );
+  ): number => pipe(nea, NEA.max(byOrder), (p) => p.commonDetails.order + 1);
 
   return pipe(
     O.fromNullable(dashboardDetails),
     O.map((d) => d.portlets),
-    O.chain((portlets) =>
-      pipe(
-        portlets,
-        A.filter(isFirstColumnPortlet),
-        NEA.fromArray,
-        O.map(getNextOrder),
-      ),
+    O.chain(
+      flow(A.filter(isFirstColumnPortlet), NEA.fromArray, O.map(getNextOrder)),
     ),
     O.getOrElse(() => 0),
   );
