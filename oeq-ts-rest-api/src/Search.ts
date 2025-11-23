@@ -526,9 +526,10 @@ export interface SearchResult<T> {
 }
 
 const isMustValid = ([field, values]: Must): boolean => {
+  const noContainsColon = (s: string): boolean => s.match(':') === null;
   const noEmptyValues =
     values.length > 0 && !values.some((v) => v.trim().length < 1);
-  return field.trim().length > 0 && noEmptyValues;
+  return field.trim().length > 0 && noContainsColon(field) && noEmptyValues;
 };
 
 // convert one

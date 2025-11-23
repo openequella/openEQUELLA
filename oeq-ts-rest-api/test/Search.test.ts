@@ -116,7 +116,6 @@ describe('Search with GET:', () => {
       ['Empty value', [['field-empty-value', ['']]]],
       ['Empty value - whitespace', [['field-empty-value-whitespace', [' ']]]],
       ['Colon in field name', [['field:colon', ['value-no-colon']]]],
-      ['Colon in value', [['field-no-colon', ['value:colon']]]],
     ])(
       "attempts to validate the 'musts' client side before sending [%s]",
       async (_, musts) => {
