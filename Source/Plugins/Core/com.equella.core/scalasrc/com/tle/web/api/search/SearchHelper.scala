@@ -304,9 +304,10 @@ object SearchHelper {
     *   an issue processing the strings
     */
   def handleMusts(musts: Array[String]): Map[String, List[String]] = {
-    val delimiter         = ':'
-    val oneOrMoreNonDelim = s"([^$delimiter]+)"
-    val mustExprFormat    = s"$oneOrMoreNonDelim$delimiter$oneOrMoreNonDelim".r
+    val delimiter      = ':'
+    val fieldFormat    = s"([^$delimiter]+)" // Can contain any character except the delimiter.
+    val valueFormat    = s"(.+)"             // Can contain any character.
+    val mustExprFormat = s"$fieldFormat$delimiter$valueFormat".r
 
     def valid = (xs: Array[String]) => xs.forall(s => s.matches(mustExprFormat.regex))
 
