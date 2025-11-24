@@ -1,0 +1,18 @@
+<com.tle.beans.item.Bookmark>
+  <id>2467662</id>
+  <item>
+    <id>952824</id>
+  </item>
+  <keywords class="list">
+    <string>attachment</string>
+  </keywords>
+  <addedAt class="sql-timestamp">2025-11-06 14:29:10.842</addedAt>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <institution>
+    <id>2462475</id>
+    <uniqueId>0</uniqueId>
+    <quota>0.0</quota>
+    <enabled>true</enabled>
+  </institution>
+  <alwaysLatest>true</alwaysLatest>
+</com.tle.beans.item.Bookmark>

@@ -31,7 +31,7 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.security.TLEAclManager;
-import com.tle.web.favourites.FavouritesResultsSection.FavouritesSearch;
+import com.tle.search.FavouritesSearch;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.portal.renderer.PortletContentRenderer;

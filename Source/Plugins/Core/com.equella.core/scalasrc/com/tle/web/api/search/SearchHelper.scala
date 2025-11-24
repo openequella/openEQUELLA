@@ -42,6 +42,7 @@ import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
+import com.tle.search.FavouritesSearch
 import com.tle.web.api.favourite.model.Bookmark
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, EquellaItemBean}
@@ -553,5 +554,7 @@ object SearchHelper {
     *   An optional query string to parse and extract highlighted text from.
     */
   def getHighlightedList(query: Option[String]): List[String] =
-    new DefaultSearch.QueryParser(query.orNull).getHilightedList.asScala.toList
+    new DefaultSearch.QueryParser(
+      query.map(FavouritesSearch.removeBookmarkTagsQuery).orNull
+    ).getHilightedList.asScala.toList
 }
