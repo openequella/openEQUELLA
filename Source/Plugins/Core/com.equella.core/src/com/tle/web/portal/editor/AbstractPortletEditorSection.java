@@ -474,6 +474,7 @@ public abstract class AbstractPortletEditorSection<
     private boolean institutionWideChecked;
     private PortletEditingSession session;
     private PortletEditingBean portlet;
+    private String deprecationMessage;
 
     public String getSessionId() {
       return sessionId;
@@ -545,6 +546,14 @@ public abstract class AbstractPortletEditorSection<
 
     public void setPortlet(PortletEditingBean portlet) {
       this.portlet = portlet;
+    }
+
+    public String getDeprecationMessage() {
+      return deprecationMessage;
+    }
+
+    public void setDeprecationMessage(String deprecationMessage) {
+      this.deprecationMessage = deprecationMessage;
     }
   }
 }

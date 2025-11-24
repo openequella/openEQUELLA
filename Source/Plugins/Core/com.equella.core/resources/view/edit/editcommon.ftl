@@ -9,6 +9,12 @@
 
 <div class="area">
 <h2>${m.pageTitle}</h2>
+<#if m.deprecationMessage??>
+  <div class="alert alert-warning alert-static">
+    <h4 class="alert-title">${b.key("warning.title")}</h4>
+    <p>${m.deprecationMessage}</p>
+  </div>
+</#if>
 <@settingContainer wide=true>
 	<@setting label=b.key('editor.label.title') section=s.title error=m.errors["title"] mandatory=true />
 
@@ -28,7 +34,7 @@
 	</#if>
 
 	<#if m.customEditor??><@render m.customEditor /></#if>
-	
+
 </@settingContainer>
 	<div class="button-strip">
 		<@button section=s.saveButton showAs="save" />

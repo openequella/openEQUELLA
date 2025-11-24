@@ -1809,6 +1809,44 @@ Alerts
       padding-right: $singleMargin;
     }
   }
+
+  &.alert-warning {
+    color: initial;
+  }
+
+  // Static alert variant - Unlike the floating alert, this is used for displaying messages embedded with the page content.
+  &.alert-static {
+    position: static;
+    display: block;
+    box-shadow: none;
+    margin: $doubleMargin 0;
+    border-style: solid;
+    border-width: $minimalMargin;
+    z-index: 0;
+
+    .alert-title {
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+
+    &.alert-warning {
+      border-color: #faebcc;
+      .alert-title::before {
+        @include materialIcon("\e002", $color: #f79000, $size: 20px);
+        margin-right: 10px;
+      }
+    }
+  }
+
+  // Extra spacing for static alerts that have both a title and body paragraph.
+  &.alert-static:has(.alert-title + p) {
+    padding-bottom: 32px;
+
+    p {
+      margin: 0;
+    }
+  }
 }
 
 /*****************************************************************************

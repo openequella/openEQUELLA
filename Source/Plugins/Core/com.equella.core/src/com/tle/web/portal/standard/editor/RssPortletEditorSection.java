@@ -97,6 +97,7 @@ public class RssPortletEditorSection
   protected SectionRenderable customRender(
       RenderEventContext context, RssPortletEditorModel model, PortletEditingBean portlet)
       throws Exception {
+    model.setDeprecationMessage(RESOURCES.getString("portlet.editor.warning.deprecation"));
     return thisView.createResult("edit/editrssportlet.ftl", context);
   }
 
