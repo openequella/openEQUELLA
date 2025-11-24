@@ -1821,7 +1821,7 @@ Alerts
     box-shadow: none;
     margin: $doubleMargin 0;
     border-style: solid;
-    border-width: $minimalMargin;
+    border-width: 4px;
     z-index: 0;
 
     .alert-title {
