@@ -76,7 +76,7 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
-const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
+const Dashboard = React.lazy(() => import("../dashboard/Dashboard"));
 const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 export interface BaseOEQRouteComponentProps {
@@ -209,7 +209,7 @@ export const routes: Routes = {
   },
   Dashboard: {
     path: NEW_DASHBOARD_PATH,
-    component: DashboardPage,
+    component: Dashboard,
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first

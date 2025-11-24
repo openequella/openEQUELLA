@@ -15,15 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Skeleton, Fab } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import { pipe, constVoid } from "fp-ts/function";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import EditIcon from "@mui/icons-material/Edit";
+import { Fab, Skeleton } from "@mui/material";
+import * as OEQ from "@openequella/rest-api-client";
+import * as A from "fp-ts/Array";
+import * as E from "fp-ts/Either";
+import { constVoid, pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
+
+import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { sprintf } from "sprintf-js";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { sprintf } from "sprintf-js";
+import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 import { AppContext } from "../mainui/App";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
@@ -34,12 +41,6 @@ import {
 import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
 import WelcomeBoard from "./components/WelcomeBoard";
-import * as TE from "fp-ts/TaskEither";
-import * as OEQ from "@openequella/rest-api-client";
-import * as A from "fp-ts/Array";
-import * as E from "fp-ts/Either";
-import * as O from "fp-ts/Option";
-import * as T from "fp-ts/Task";
 import { DashboardEditor } from "./DashboardEditor";
 import { DashboardPageContext } from "./DashboardPageContext";
 import {
@@ -50,14 +51,12 @@ import {
   updateDashboardDetails,
 } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 
-const { title } = languageStrings.dashboard;
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 const { errors: dashboardErrors } = languageStrings.dashboard;
 
-const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const { appErrorHandler, currentUser } = useContext(AppContext);
+export const DashboardPage = () => {
+  const { appErrorHandler } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
@@ -101,12 +100,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     [appErrorHandler],
   );
-
-  useEffect(() => {
-    updateTemplate((tp) => ({
-      ...templateDefaults(title)(tp),
-    }));
-  }, [updateTemplate]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -241,7 +234,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     </TooltipCustomComponent>
   );
 
-  const renderDashboardForNonSystemUser = () =>
+  const renderDashboardContent = () =>
     pipe(
       O.Do,
       O.apS("details", O.fromNullable(dashboardDetails)),
@@ -263,19 +256,12 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     );
 
-  const renderDashboard = () =>
-    currentUser?.isSystem ? (
-      <WelcomeBoard isSystemUser />
-    ) : (
-      <>
-        {renderDashboardForNonSystemUser()}
-        {openDashboardEditor && (
-          <DashboardEditor
-            onClose={() => setOpenDashboardEditor(false)}
-            creatablePortletTypes={creatablePortletTypes}
-          />
-        )}
-      </>
+  const renderDashboardEditor = () =>
+    openDashboardEditor && (
+      <DashboardEditor
+        onClose={() => setOpenDashboardEditor(false)}
+        creatablePortletTypes={creatablePortletTypes}
+      />
     );
 
   return isLoading ? (
@@ -290,9 +276,8 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
         dashboardDetails,
       }}
     >
-      {renderDashboard()}
+      {renderDashboardContent()}
+      {renderDashboardEditor()}
     </DashboardPageContext.Provider>
   );
 };
-
-export default DashboardPage;
