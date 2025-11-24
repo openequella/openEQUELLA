@@ -1837,9 +1837,7 @@ Alerts
         margin-right: 10px;
       }
     }
-  }
 
-  &.alert-static:has(.alert-title + p) {
     p {
       margin: 0;
     }
