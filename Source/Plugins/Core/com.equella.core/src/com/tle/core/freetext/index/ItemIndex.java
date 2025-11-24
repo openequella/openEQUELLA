@@ -18,6 +18,8 @@
 
 package com.tle.core.freetext.index;
 
+import static com.dytech.edge.queries.FreeTextQuery.FIELD_BOOKMARK_TAGS;
+
 import com.dytech.edge.exceptions.InvalidDateRangeException;
 import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
@@ -62,6 +64,7 @@ import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
 import com.tle.freetext.TLEAnalyzer;
 import com.tle.freetext.TLEQueryParser;
+import com.tle.search.FavouritesSearch;
 import it.uniroma3.mat.extendedset.intset.ConciseSet;
 import it.uniroma3.mat.extendedset.intset.FastSet;
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
@@ -170,6 +173,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private String defaultOperator;
 
   private StoredFieldVisitor keyFieldSelector;
+
+  // Defines whether to search attachments and how.
+  private enum AttachmentScope {
+    NONE, // Do not search attachment
+    INCLUDE, // Attachments are included in search
+    ONLY // Search attachments only
+  }
 
   public ItemIndex(FreetextIndex freetextIndex) {
     this.freetextIndex = freetextIndex;
@@ -404,7 +414,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                 final String[] fields = new String[] {FreeTextQuery.FIELD_ATTACHMENT_VECTORED};
 
                 Query queryAttachmentOnly =
-                    getQuery(searchreq, searcher.getIndexReader(), fields, searchAttachment);
+                    getQueryOnlyForAttachments(searchreq, searcher.getIndexReader(), fields);
                 queryAttachmentOnly =
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
@@ -901,14 +911,29 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /** Takes a search request and prepares a Lucene Query object. */
   protected BooleanQuery getQuery(Search request, IndexReader reader, boolean searchAttachment) {
-    final String[] fields =
-        FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(
-            new String[FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.size()]);
-    return getQuery(request, reader, fields, searchAttachment);
+    final String[] fields = FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(String[]::new);
+    AttachmentScope attachmentScope =
+        searchAttachment ? AttachmentScope.INCLUDE : AttachmentScope.NONE;
+    return getQuery(request, reader, fields, attachmentScope);
+  }
+
+  // Get query that only searches from attachments.
+  private BooleanQuery getQueryOnlyForAttachments(
+      Search request, IndexReader reader, String[] allFields) {
+    return getQuery(request, reader, allFields, AttachmentScope.ONLY);
   }
 
   private BooleanQuery getQuery(
-      Search request, IndexReader reader, String[] allFields, boolean searchAttachment) {
+      Search request, IndexReader reader, String[] allFields, AttachmentScope attachmentScope) {
+    boolean searchAttachment = attachmentScope != AttachmentScope.NONE;
+    List<String> extraQueries = request.getExtraQueries();
+    String originalQueryString = request.getQuery();
+    // If the query will only be used for searching attachments, remove the bookmark tags query to
+    // avoid searching the tags.
+    String cleanedQueryString =
+        attachmentScope == AttachmentScope.ONLY
+            ? FavouritesSearch.removeBookmarkTagsQuery(originalQueryString)
+            : originalQueryString;
     String[] fields = buildSearchFields(allFields, searchAttachment);
 
     // This full query builder includes all the general search queries plus the queries for filters.
@@ -918,7 +943,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     // This search query builder includes the normal query string and all the extra queries like
     // FreeText query.
     Builder searchQueryBuilder = new Builder();
-    searchQueryBuilder.add(buildNormalQuery(request, fields), Occur.MUST);
+    searchQueryBuilder.add(buildNormalQuery(cleanedQueryString, extraQueries, fields), Occur.MUST);
     Optional.ofNullable(buildExtraQuery(request, reader))
         .ifPresent(q -> searchQueryBuilder.add(q, Occur.MUST));
     fullQuerybuilder.add(searchQueryBuilder.build(), Occur.MUST);
@@ -1081,15 +1106,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /**
    * Build a BooleanQuery for the normal query string of a search and some extra query strings
-   * provided by certain contexts such as tags of a favourite search.
+   * provided by certain contexts such as tags of a favourite search(legacy UI, in the new UI it's
+   * included in the main query).
    *
    * <p>There are three steps.
    * <li>Get the text of a normal query string and use {@link TLEQueryParser} to parse it.
    * <li>Get a list of extra query strings and parse them as well.
    * <li>Join all the parsed results by `Occur.SHOULD`.
+   *
+   * @param queryString The query string from the search request.
+   * @param extraQueries The extra query strings from the search request.
+   * @param fields The fields to search on.
    */
-  private BooleanQuery buildNormalQuery(Search request, String[] fields) {
-    String queryString = request.getQuery();
+  private BooleanQuery buildNormalQuery(
+      String queryString, List<String> extraQueries, String[] fields) {
     Builder normalQueryBuilder = new Builder();
     try {
       if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
@@ -1111,12 +1141,18 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
         normalQueryBuilder.add(tleQuery, Occur.SHOULD);
 
-        List<String> queries = request.getExtraQueries();
-        if (queries != null) {
-          for (String queryStr : queries) {
-            normalQueryBuilder.add(tleParser.parse(queryStr), Occur.SHOULD);
-          }
-        }
+        Optional.ofNullable(extraQueries)
+            .ifPresent(
+                queryList ->
+                    queryList.forEach(
+                        queryStr -> {
+                          try {
+                            Query parsed = tleParser.parse(queryStr);
+                            normalQueryBuilder.add(parsed, Occur.SHOULD);
+                          } catch (Exception e) {
+                            throw new RuntimeException(e);
+                          }
+                        }));
       }
 
     } catch (QueryNodeException ex) {
@@ -1436,7 +1472,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         autoComplete,
         FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM,
         nonStemmed,
-        FreeTextQuery.FIELD_BOOKMARK_TAGS,
+        FIELD_BOOKMARK_TAGS,
         nonStemmed,
         FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM,
         nonStemmed);

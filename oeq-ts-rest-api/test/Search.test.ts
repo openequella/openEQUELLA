@@ -251,7 +251,7 @@ describe('Search with GET:', () => {
 describe('Details for bookmark', () => {
   it('provides no bookmark details for items which have not been favourited', async () => {
     const searchResult = await doSearch({
-      query: 'Search2 API test - Image',
+      query: 'Search2 API test - Text',
     });
 
     expect(searchResult.results).toHaveLength(1);
