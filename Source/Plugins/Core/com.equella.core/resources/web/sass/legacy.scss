@@ -1819,15 +1819,15 @@ Alerts
     position: static;
     display: block;
     box-shadow: none;
+    height: auto;
     margin: $doubleMargin 0;
+    padding: $doubleMargin;
     border-style: solid;
     border-width: 4px;
-    z-index: 0;
 
     .alert-title {
       display: flex;
       align-items: center;
-      margin: 0;
     }
 
     &.alert-warning {
@@ -1839,10 +1839,7 @@ Alerts
     }
   }
 
-  // Extra spacing for static alerts that have both a title and body paragraph.
   &.alert-static:has(.alert-title + p) {
-    padding-bottom: 32px;
-
     p {
       margin: 0;
     }
