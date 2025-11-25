@@ -24,13 +24,13 @@ import * as E from "fp-ts/Either";
 import { constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
+
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
 import { TooltipCustomComponent } from "../components/TooltipCustomComponent";
 import { AppContext } from "../mainui/App";
-import { templateDefaults, TemplateUpdateProps } from "../mainui/Template";
 import {
   batchUpdatePortletPreferences,
   deletePortlet as deletePortletApi,
@@ -56,12 +56,11 @@ import {
   scrollToPortlet,
 } from "./portlet/PortletHelper";
 
-const { title } = languageStrings.dashboard;
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 const { errors: dashboardErrors } = languageStrings.dashboard;
 
-const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
-  const { appErrorHandler, currentUser } = useContext(AppContext);
+export const DashboardPage = () => {
+  const { appErrorHandler } = useContext(AppContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardDetails, setDashboardDetails] =
@@ -108,12 +107,6 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     [appErrorHandler],
   );
-
-  useEffect(() => {
-    updateTemplate((tp) => ({
-      ...templateDefaults(title)(tp),
-    }));
-  }, [updateTemplate]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -263,7 +256,7 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
     </TooltipCustomComponent>
   );
 
-  const renderDashboardForNonSystemUser = () =>
+  const renderDashboardContent = () =>
     pipe(
       O.Do,
       O.apS("details", O.fromNullable(dashboardDetails)),
@@ -285,19 +278,12 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
       ),
     );
 
-  const renderDashboard = () =>
-    currentUser?.isSystem ? (
-      <WelcomeBoard isSystemUser />
-    ) : (
-      <>
-        {renderDashboardForNonSystemUser()}
-        {openDashboardEditor && (
-          <DashboardEditor
-            onClose={() => setOpenDashboardEditor(false)}
-            creatablePortletTypes={creatablePortletTypes}
-          />
-        )}
-      </>
+  const renderDashboardEditor = () =>
+    openDashboardEditor && (
+      <DashboardEditor
+        onClose={() => setOpenDashboardEditor(false)}
+        creatablePortletTypes={creatablePortletTypes}
+      />
     );
 
   return isLoading ? (
@@ -314,9 +300,8 @@ const DashboardPage = ({ updateTemplate }: TemplateUpdateProps) => {
         restoredPortletId: restoredPortletId,
       }}
     >
-      {renderDashboard()}
+      {renderDashboardContent()}
+      {renderDashboardEditor()}
     </DashboardPageContext.Provider>
   );
 };
-
-export default DashboardPage;

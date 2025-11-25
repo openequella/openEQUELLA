@@ -30,6 +30,30 @@ export const PortletTaskStatistics = (props: PortletBasicProps) => (
       {...props}
       customStyles={{
         overflow: "visible", // This is to allow the workflow dropdown to show its full list.
+        // Custom styles to adjust the width of the workflow selector where some legacy styles
+        // must be unset (even with '!important').
+        "& .statscontrols .workflow": {
+          containerType: "inline-size", // Make the component a container for container queries
+          containerName: "legacyWorkflowSelector",
+        },
+        "& .statscontrols .workflow .newListSelected": {
+          minWidth: "unset",
+          width: "unset !important",
+          maxWidth: "calc(100% / 2)",
+        },
+        "@container legacyWorkflowSelector (min-width: 600px)": {
+          "& .statscontrols .workflow .newListSelected": {
+            maxWidth: "calc(100% / 3)",
+          },
+        },
+        "@container legacyWorkflowSelector (min-width: 900px)": {
+          "& .statscontrols .workflow .newListSelected": {
+            maxWidth: "calc(100% / 4)",
+          },
+        },
+        "& .statscontrols .workflow .selectedTxt": {
+          textOverflow: "ellipsis",
+        },
       }}
     />
   </Box>

@@ -72,22 +72,15 @@ describe("<DashboardPage/>", () => {
     jest.clearAllMocks();
   });
 
-  it.each([
-    ["when portlets are empty", []],
-    ["when portlets are not empty", mockPortlets],
-  ])(
-    "shows a special welcome message for system user %s",
-    async (_, portlets) => {
-      const partOfWelcomeMessage =
-        "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users";
-      mockGetDashboardDetails.mockResolvedValueOnce({ portlets });
+  it("shows a special welcome message for system user", async () => {
+    const partOfWelcomeMessage =
+      "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users";
 
-      const { getByText } = await renderDashboardPage(systemUser);
-      expect(
-        getByText(partOfWelcomeMessage, { exact: false }),
-      ).toBeInTheDocument();
-    },
-  );
+    const { getByText } = await renderDashboardPage(systemUser);
+    expect(
+      getByText(partOfWelcomeMessage, { exact: false }),
+    ).toBeInTheDocument();
+  });
 
   it("shows welcome message if no portlets are configured for non-system users", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);

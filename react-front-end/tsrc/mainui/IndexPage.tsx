@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from "react";
+import { isEmpty } from "fp-ts/string";
 import * as React from "react";
+import { useContext } from "react";
+import ReactGA from "react-ga4";
 import {
   BrowserRouter,
   Prompt,
@@ -25,7 +27,6 @@ import {
   RouteComponentProps,
   Switch,
 } from "react-router-dom";
-import ReactGA from "react-ga4";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
@@ -56,7 +57,6 @@ import {
   routes,
 } from "./routes";
 import { Template, TemplateProps, TemplateUpdate } from "./Template";
-import { isEmpty } from "fp-ts/string";
 
 const SearchPage = React.lazy(() => import("../search/SearchPage"));
 const AdvancedSearchPage = React.lazy(
@@ -71,7 +71,7 @@ const BrowseHierarchyPage = React.lazy(
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
-const DashboardPage = React.lazy(() => import("../dashboard/DashboardPage"));
+const Dashboard = React.lazy(() => import("../dashboard/Dashboard"));
 
 const renderData = getRenderData();
 
@@ -284,7 +284,7 @@ export default function IndexPage() {
             hasLegacyActionParams(routeProps.location.search) ||
             isSelectionSessionOpen()
               ? renderLegacyContent(routeProps)
-              : renderProtectedPage(routeProps, DashboardPage)
+              : renderProtectedPage(routeProps, Dashboard)
           }
         />
         <Route render={renderLegacyContent} />
