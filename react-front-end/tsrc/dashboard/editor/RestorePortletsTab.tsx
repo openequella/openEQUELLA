@@ -32,6 +32,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Alert, Skeleton } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -39,6 +40,8 @@ import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { AppContext } from "../../mainui/App";
 import { getClosedPortlets } from "../../modules/DashboardModule";
+import { languageStrings } from "../../util/langstrings";
+import { PortletSearchResultNoneFound } from "../components/PortletSearchResultNoneFound";
 import { ClosedPortletsProvider } from "../DashboardEditor";
 import { DashboardPageContext } from "../DashboardPageContext";
 import {
@@ -47,57 +50,50 @@ import {
 } from "../DashboardPageHelper";
 import { ClosedPortletsList } from "./ClosedPortletsList";
 
+const { noClosedPortlets: noClosedPortletsLabel } =
+  languageStrings.dashboard.editor.restorePortlet;
+
 interface RestorePortletsTabProps {
   /** Optional provider for closed portlets - primarily used for testing/storybook. */
   closedPortletsProvider?: ClosedPortletsProvider;
 }
 
 /**
- * Represents the different states of the closed portlets data loading process.
+ * Represents the current state of the request for 'closed portlets' from the server.
  */
-export type ClosedPortletsState =
+type ClosedPortletsRequestState =
   | { state: "loading" }
-  | { state: "success"; results: OEQ.Dashboard.PortletClosed[] }
+  | { state: "success"; portlets: OEQ.Dashboard.PortletClosed[] }
   | { state: "failed"; reason: string };
 
-const defaultClosedPortletsProvider: ClosedPortletsProvider = () =>
-  getClosedPortlets();
-
-const filterOutRestoredPortlet = (
-  closedPortlets: ClosedPortletsState,
+const updateStateByRemovingPortlet = (
+  prevState: ClosedPortletsRequestState,
   uuid: string,
-): ClosedPortletsState =>
-  closedPortlets.state === "success"
+): ClosedPortletsRequestState =>
+  prevState.state === "success"
     ? {
         state: "success",
-        results: pipe(
-          closedPortlets.results,
+        portlets: pipe(
+          prevState.portlets,
           A.filter((p) => p.uuid !== uuid),
         ),
       }
-    : closedPortlets;
+    : prevState;
 
 /**
  * This component provides the UI for a user to restore closed portlets.
  */
 export const RestorePortletsTab = ({
-  closedPortletsProvider = defaultClosedPortletsProvider,
+  closedPortletsProvider = getClosedPortlets,
 }: RestorePortletsTabProps) => {
+  const { appErrorHandler } = React.useContext(AppContext);
   const { restorePortlet, dashboardDetails } =
     React.useContext(DashboardPageContext);
   const [closedPortlets, setClosedPortlets] =
-    React.useState<ClosedPortletsState>({ state: "loading" });
-  const { appErrorHandler } = React.useContext(AppContext);
+    React.useState<ClosedPortletsRequestState>({ state: "loading" });
 
   // This ref is used to avoid race condition in case of rapid-clicks to restore portlets
   const nextOrderRef = React.useRef<number>(0);
-
-  React.useEffect(() => {
-    const calculatedOrder = getOrderForRestoredPortlet(dashboardDetails);
-    if (calculatedOrder >= nextOrderRef.current) {
-      nextOrderRef.current = calculatedOrder;
-    }
-  }, [dashboardDetails]);
 
   const fetchClosedPortlets = React.useCallback(
     () =>
@@ -108,15 +104,26 @@ export const RestorePortletsTab = ({
             appErrorHandler(e);
             setClosedPortlets({ state: "failed", reason: e });
           },
-          (results) => setClosedPortlets({ state: "success", results }),
+          (portlets) => setClosedPortlets({ state: "success", portlets }),
         ),
       ),
     [appErrorHandler, closedPortletsProvider],
   );
 
+  React.useEffect(() => {
+    const calculatedOrder = getOrderForRestoredPortlet(dashboardDetails);
+    if (calculatedOrder >= nextOrderRef.current) {
+      nextOrderRef.current = calculatedOrder;
+    }
+  }, [dashboardDetails]);
+
+  React.useEffect(() => {
+    fetchClosedPortlets()();
+  }, [fetchClosedPortlets]);
+
   const onPortletRestore = React.useCallback(
     (uuid: string) => {
-      setClosedPortlets((prev) => filterOutRestoredPortlet(prev, uuid));
+      setClosedPortlets((prev) => updateStateByRemovingPortlet(prev, uuid));
 
       const orderToUse = nextOrderRef.current;
       // This ensures the next click gets expected order number, even if dashboardDetails hasn't updated yet.
@@ -141,14 +148,36 @@ export const RestorePortletsTab = ({
     [restorePortlet, fetchClosedPortlets, appErrorHandler],
   );
 
-  React.useEffect(() => {
-    fetchClosedPortlets()();
-  }, [fetchClosedPortlets]);
+  const renderContent = pipe(closedPortlets, (cp) => {
+    switch (cp.state) {
+      case "loading":
+        return (
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={400}
+            data-testid="tab-content-skeleton"
+          />
+        );
+      case "success":
+        if (A.isNonEmpty(cp.portlets)) {
+          return (
+            <ClosedPortletsList
+              closedPortlets={cp.portlets}
+              onPortletRestore={onPortletRestore}
+            />
+          );
+        } else {
+          return (
+            <PortletSearchResultNoneFound
+              noneFoundMessage={noClosedPortletsLabel}
+            />
+          );
+        }
+      case "failed":
+        return <Alert severity="error">{cp.reason}</Alert>;
+    }
+  });
 
-  return (
-    <ClosedPortletsList
-      closedPortlets={closedPortlets}
-      onPortletRestore={onPortletRestore}
-    />
-  );
+  return renderContent;
 };

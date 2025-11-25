@@ -187,22 +187,17 @@ export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
  * Scrolls the page to bring the specified portlet into view if it's currently
  * outside the visible viewport.
  *
- * @param portletId The unique ID of the portlet element to scroll to.
+ * @param portletElement The unique ID of the portlet element to scroll to.
  */
-export const scrollToPortlet = (portletId: string): void => {
-  const targetElement = document.getElementById(`portlet-${portletId}`);
-  if (!targetElement) {
-    return;
-  }
+export const scrollToPortlet = (portletElement: HTMLDivElement): void => {
+  if (isOutsideViewport(portletElement)) {
+    const elementRect = portletElement.getBoundingClientRect();
+    const absoluteElementTop = elementRect.top + window.scrollY;
 
-  const rect = targetElement.getBoundingClientRect();
-  // If rect.top is less than HEADER_OFFSET, it's behind the app header.
-  const isHiddenAbove = rect.top < HEADER_OFFSET;
-  // If rect.bottom is greater than the window height, it's off-screen below.
-  const isHiddenBelow = rect.bottom > window.innerHeight;
+    const targetScrollPosition = absoluteElementTop - HEADER_OFFSET;
 
-  if (isHiddenAbove || isHiddenBelow) {
-    targetElement.scrollIntoView({
+    window.scrollTo({
+      top: targetScrollPosition,
       behavior: "smooth",
     });
   }
