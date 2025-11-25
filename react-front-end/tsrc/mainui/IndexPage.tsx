@@ -280,12 +280,18 @@ export default function IndexPage() {
         />
         <Route
           path={OLD_DASHBOARD_PATH}
-          render={(routeProps) =>
-            hasLegacyActionParams(routeProps.location.search) ||
-            isSelectionSessionOpen()
-              ? renderLegacyContent(routeProps)
-              : renderProtectedPage(routeProps, Dashboard)
-          }
+          render={(routeProps) => {
+            const legacyContentNeeded =
+              hasLegacyActionParams(routeProps.location.search) ||
+              isSelectionSessionOpen();
+
+            if (legacyContentNeeded) {
+              return renderLegacyContent(routeProps);
+            }
+
+            removeLegacyCss();
+            return renderProtectedPage(routeProps, Dashboard);
+          }}
         />
         <Route render={renderLegacyContent} />
       </Switch>
