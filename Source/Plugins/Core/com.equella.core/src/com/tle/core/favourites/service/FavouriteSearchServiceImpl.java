@@ -37,6 +37,7 @@ import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.exceptions.AuthenticationException;
 import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.integration.IntegrationSection;
 import com.tle.web.sections.SectionInfo;
@@ -78,6 +79,10 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   @Override
   @Transactional
   public FavouriteSearch save(FavouriteSearch search) {
+    if (CurrentUser.isGuest()) {
+      throw new AuthenticationException("Guest(Unauthenticated) users cannot favourite searches.");
+    }
+
     Long id = dao.save(search);
     return dao.getById(id);
   }
