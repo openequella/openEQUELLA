@@ -474,6 +474,11 @@ public abstract class AbstractPortletEditorSection<
     private boolean institutionWideChecked;
     private PortletEditingSession session;
     private PortletEditingBean portlet;
+
+    /**
+     * Flag to indicate if the current portlet type is deprecated. When true, a warning message will
+     * be displayed in that specific portlet settings page.
+     */
     private boolean isDeprecated;
 
     public String getSessionId() {

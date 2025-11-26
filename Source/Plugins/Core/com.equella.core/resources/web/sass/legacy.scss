@@ -1823,7 +1823,7 @@ Alerts
     margin: $doubleMargin 0;
     padding: $doubleMargin;
     border-style: solid;
-    border-width: 4px;
+    border-width: 1px;
 
     .alert-title {
       display: flex;
@@ -1831,10 +1831,12 @@ Alerts
     }
 
     &.alert-warning {
-      border-color: #faebcc;
+      // Using secondary color to show the warning-alert border consistent with MUI warning alert.
+      border-color: $secondaryColor;
       .alert-title::before {
-        // Adds orange Material Icon: warning (\e002) before the alert title
-        @include materialIcon("\e002", $color: #f79000, $size: 20px);
+        // Adds Material Icon: warning (\e002) before the alert title.
+        // Using secondary color to keep it consistent with MUI warning alert.
+        @include materialIcon("\e002", $color: $secondaryColor);
         margin-right: 10px;
       }
     }
