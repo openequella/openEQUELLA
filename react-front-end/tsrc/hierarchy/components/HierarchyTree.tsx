@@ -29,7 +29,7 @@ import HierarchyTopic, { HierarchyTopicBasicProps } from "./HierarchyTopic";
 const viewHierarchyText = languageStrings.hierarchy.viewHierarchy;
 
 export const StyledTreeItem = styled(SimpleTreeView)({
-  "& .MuiSimpleTreeView-root": {
+  "& .MuiSimpleTreeView-itemLabel": {
     // It's used when hierarchy tree overflows the parent container.
     minWidth: "300px",
   },
