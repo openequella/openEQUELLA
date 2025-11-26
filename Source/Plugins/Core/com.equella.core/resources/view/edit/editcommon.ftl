@@ -9,10 +9,10 @@
 
 <div class="area">
 <h2>${m.pageTitle}</h2>
-<#if m.deprecationMessage??>
+<#if m.isDeprecated?? && m.isDeprecated>
   <div class="alert alert-warning alert-static">
     <h4 class="alert-title">${b.key("warning.title")}</h4>
-    <p>${m.deprecationMessage}</p>
+    <p>${b.key("portlet.editor.warning.deprecation")}</p>
   </div>
 </#if>
 <@settingContainer wide=true>

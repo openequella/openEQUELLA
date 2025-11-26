@@ -1833,6 +1833,7 @@ Alerts
     &.alert-warning {
       border-color: #faebcc;
       .alert-title::before {
+        // Adds orange Material Icon: warning (\e002) before the alert title
         @include materialIcon("\e002", $color: #f79000, $size: 20px);
         margin-right: 10px;
       }
