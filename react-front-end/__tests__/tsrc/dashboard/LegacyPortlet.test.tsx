@@ -72,7 +72,6 @@ describe("<LegacyPortlet />", () => {
   const props: PortletBasicProps = {
     cfg,
     position: { column: 0, order: 0 },
-    highlight: false,
   };
 
   const renderLegacyPortlet = async () => {

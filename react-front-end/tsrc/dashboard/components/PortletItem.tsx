@@ -105,8 +105,9 @@ export interface PortletItemProps extends React.PropsWithChildren {
   sx?: SxProps<Theme>;
   /**
    * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   * Defaults to false.
    */
-  highlight: boolean;
+  highlight?: boolean;
 }
 
 /**
@@ -119,7 +120,7 @@ const PortletItem = ({
   isLoading,
   renderChildren,
   sx,
-  highlight,
+  highlight = false,
 }: PortletItemProps) => {
   const {
     name,
@@ -256,7 +257,7 @@ const PortletItem = ({
 
   return (
     <>
-      <StyledCard sx={sx} highlight={highlight} ref={cardRef}>
+      <StyledCard sx={sx} ref={cardRef} highlight={highlight}>
         <CardHeader title={name} action={actions()} />
         {renderPortletContent()}
       </StyledCard>

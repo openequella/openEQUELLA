@@ -37,7 +37,6 @@ export default {
 const commonProps: PortletItemProps = {
   portlet: basicPortlet,
   children: <div>Portlet content</div>,
-  highlight: false,
 };
 
 export const Standard: StoryFn<PortletItemProps> = (args) => (

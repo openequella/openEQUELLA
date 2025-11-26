@@ -104,7 +104,7 @@ export interface PortletBasicProps {
   /**
    * Whether to apply a highlight effect to the card, used for newly restored portlet.
    */
-  highlight: boolean;
+  highlight?: boolean;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface PortletBasicProps {
 export const renderPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
   position: PortletPosition,
-  highlight: boolean,
+  highlight?: boolean,
 ): React.JSX.Element => {
   const { portletType } = portlet;
   const basicProps: PortletBasicProps = { cfg: portlet, position, highlight };

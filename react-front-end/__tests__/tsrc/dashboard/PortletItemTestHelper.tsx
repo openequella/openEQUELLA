@@ -30,7 +30,6 @@ export const portletContent = "Portlet content";
 export const defaultProps: PortletItemProps = {
   portlet: basicPortlet,
   children: <div>{portletContent}</div>,
-  highlight: false,
 };
 
 const history = createMemoryHistory();

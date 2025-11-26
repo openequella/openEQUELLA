@@ -45,7 +45,7 @@ export interface ClosedPortletsListProps {
 }
 
 /**
- * Renders the list for closed portlets, including loading, error and empty states.
+ * Renders a list of closed portlets, displaying each portlet's name with a restore button.
  */
 export const ClosedPortletsList = ({
   closedPortlets,
