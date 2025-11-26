@@ -475,6 +475,12 @@ public abstract class AbstractPortletEditorSection<
     private PortletEditingSession session;
     private PortletEditingBean portlet;
 
+    /**
+     * Flag to indicate if the current portlet type is deprecated. When true, a warning message will
+     * be displayed in that specific portlet settings page.
+     */
+    private boolean isDeprecated;
+
     public String getSessionId() {
       return sessionId;
     }
@@ -545,6 +551,14 @@ public abstract class AbstractPortletEditorSection<
 
     public void setPortlet(PortletEditingBean portlet) {
       this.portlet = portlet;
+    }
+
+    public boolean getIsDeprecated() {
+      return isDeprecated;
+    }
+
+    public void setIsDeprecated(boolean isDeprecated) {
+      this.isDeprecated = isDeprecated;
     }
   }
 }
