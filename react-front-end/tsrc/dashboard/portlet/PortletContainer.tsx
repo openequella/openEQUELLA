@@ -39,6 +39,10 @@ export interface PortletContainerProps {
    * The layout to be used for arranging the portlets.
    */
   layout?: OEQ.Dashboard.DashboardLayout;
+  /**
+   * The UUID of a portlet that has just been restored. Used to trigger a highlight action.
+   */
+  restoredPortletId?: string;
 }
 
 /**
@@ -48,6 +52,7 @@ export interface PortletContainerProps {
 export const PortletContainer = ({
   portlets,
   layout = "SingleColumn",
+  restoredPortletId,
 }: PortletContainerProps) => {
   const getPortletsForColumn: (
     col: OEQ.Dashboard.PortletColumn,
@@ -68,10 +73,15 @@ export const PortletContainer = ({
             id={`portlet-${portlet.commonDetails.uuid}`}
             key={portlet.commonDetails.uuid}
           >
-            {renderPortlet(portlet, {
-              column,
-              order: index,
-            })}
+            {renderPortlet(
+              portlet,
+              {
+                column,
+                order: index,
+              },
+              // Highlight the portlet if its UUID matches the restored portlet's ID.
+              restoredPortletId === portlet.commonDetails.uuid,
+            )}
           </Grid>
         )),
       );

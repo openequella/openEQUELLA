@@ -22,11 +22,11 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { privateSearchPortlet } from "../../../__mocks__/Dashboard.mock";
 import { LegacyPortlet } from "../../../tsrc/dashboard/portlet/LegacyPortlet";
+import * as LegacyPortletHelper from "../../../tsrc/dashboard/portlet/LegacyPortletHelper";
 import type { PortletBasicProps } from "../../../tsrc/dashboard/portlet/PortletHelper";
 import type { JQueryDivProps } from "../../../tsrc/legacycontent/JQueryDiv";
 import { legacyFormId } from "../../../tsrc/legacycontent/LegacyForm";
 import * as LegacyContentModule from "../../../tsrc/modules/LegacyContentModule";
-import * as LegacyPortletHelper from "../../../tsrc/dashboard/portlet/LegacyPortletHelper";
 
 const portletContent = "This is a testing portlet";
 const legacyContentResponse: LegacyContentModule.LegacyContentResponse = {
@@ -69,7 +69,10 @@ describe("<LegacyPortlet />", () => {
     portletType: "freemarker",
   };
 
-  const props: PortletBasicProps = { cfg, position: { column: 0, order: 0 } };
+  const props: PortletBasicProps = {
+    cfg,
+    position: { column: 0, order: 0 },
+  };
 
   const renderLegacyPortlet = async () => {
     const result = render(<LegacyPortlet {...props} />);

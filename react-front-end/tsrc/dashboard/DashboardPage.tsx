@@ -36,7 +36,6 @@ import {
   deletePortlet as deletePortletApi,
   getCreatablePortlets,
   getDashboardDetails,
-  updatePortletPreference,
 } from "../modules/DashboardModule";
 import { hasCreatePortletACL } from "../modules/SecurityModule";
 import { languageStrings } from "../util/langstrings";
@@ -49,8 +48,10 @@ import {
   getMovedPortlets,
   movePortlet,
   updateDashboardDetails,
+  updatePortletPreferenceTE,
 } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
+import { scrollToPortlet } from "./portlet/PortletHelper";
 
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 const { errors: dashboardErrors } = languageStrings.dashboard;
@@ -64,6 +65,9 @@ export const DashboardPage = () => {
   const [hasCreatePortletAcl, setHasCreatePortletAcl] = useState<boolean>();
   const [openDashboardEditor, setOpenDashboardEditor] =
     useState<boolean>(false);
+  const [restoredPortletId, setRestoredPortletId] = useState<
+    undefined | string
+  >(undefined);
 
   const [creatablePortletTypes, setCreatablePortletTypes] = useState<
     OEQ.Dashboard.PortletCreatable[]
@@ -155,7 +159,7 @@ export const DashboardPage = () => {
                 TE.mapLeft((e) => {
                   appErrorHandler(`Failed to update portlet positions: ${e}`);
                   // Reload dashboard to reset state.
-                  loadDashboard();
+                  loadDashboard()();
                 }),
               )();
             }),
@@ -169,12 +173,9 @@ export const DashboardPage = () => {
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
       pipe(
-        TE.tryCatch(
-          () => updatePortletPreference(uuid, pref),
-          (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
-        ),
+        updatePortletPreferenceTE(uuid, pref),
         TE.match(appErrorHandler, constVoid),
-        T.tapIO(() => loadDashboard()),
+        T.chain(() => loadDashboard()),
       )(),
     [appErrorHandler, loadDashboard],
   );
@@ -187,7 +188,7 @@ export const DashboardPage = () => {
           (e) => sprintf(dashboardErrors.failedToDeletePortlet, `${e}`),
         ),
         TE.match(appErrorHandler, constVoid),
-        T.tapIO(() => loadDashboard()),
+        T.chain(() => loadDashboard()),
       )(),
     [appErrorHandler, loadDashboard],
   );
@@ -219,6 +220,21 @@ export const DashboardPage = () => {
     [updatePortletPreferenceAndRefresh],
   );
 
+  const restorePortlet = useCallback(
+    (uuid: string) => {
+      setRestoredPortletId(uuid);
+      loadDashboard()();
+    },
+    [loadDashboard],
+  );
+
+  const scrollToRestoredPortletAndReset = (portlet: Element) => {
+    if (portlet) {
+      scrollToPortlet(portlet);
+    }
+    setRestoredPortletId(undefined);
+  };
+
   const editDashboardButton = (
     <TooltipCustomComponent
       title={editDashboardLabel}
@@ -245,7 +261,11 @@ export const DashboardPage = () => {
       O.fold(
         () => <WelcomeBoard hasCreatePortletAcl={hasCreatePortletAcl} />,
         ({ layout, portlets }) => (
-          <PortletContainer portlets={portlets} layout={layout} />
+          <PortletContainer
+            portlets={portlets}
+            layout={layout}
+            restoredPortletId={restoredPortletId}
+          />
         ),
       ),
       (mainContent) => (
@@ -272,8 +292,10 @@ export const DashboardPage = () => {
         closePortlet,
         deletePortlet,
         minimisePortlet,
-        refreshDashboard: loadDashboard(),
+        restorePortlet,
+        refreshDashboard: loadDashboard,
         dashboardDetails,
+        scrollToRestoredPortletAndReset,
       }}
     >
       {renderDashboardContent()}

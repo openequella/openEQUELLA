@@ -15,27 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import type { SxProps, Theme } from "@mui/material/styles";
-import { pipe } from "fp-ts/function";
-import { useContext } from "react";
-import * as React from "react";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  alpha,
+  Card,
+  CardContent,
+  CardHeader,
+  CardProps,
+  Typography,
+} from "@mui/material";
+import { styled, SxProps, Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
+import * as React from "react";
+import { useContext, useEffect, useRef } from "react";
+import { useHistory } from "react-router";
 import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { AppContext } from "../../mainui/App";
 import { editPortlet } from "../../modules/DashboardModule";
 import { languageStrings } from "../../util/langstrings";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { DashboardPageContext } from "../DashboardPageContext";
 import PortletItemSkeleton from "./PortletItemSkeleton";
-import { useHistory } from "react-router";
-import * as TE from "fp-ts/TaskEither";
 
 const { useState } = React;
 
@@ -53,6 +60,24 @@ const {
   deleteAlert,
   closeAlertInfo,
 } = languageStrings.dashboard.portlets.dialog;
+
+interface StyledCardProps extends CardProps {
+  /**
+   * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   */
+  highlight: boolean;
+}
+
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== "highlight",
+})<StyledCardProps>(({ theme, highlight }) => {
+  return {
+    transition: "background-color 3000ms ease-in-out",
+    ...(highlight && {
+      backgroundColor: alpha(theme.palette.secondary.main, 0.25),
+    }),
+  };
+});
 
 export interface PortletItemProps extends React.PropsWithChildren {
   /**
@@ -78,6 +103,11 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * section are rendered.
    */
   sx?: SxProps<Theme>;
+  /**
+   * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   * Defaults to false.
+   */
+  highlight?: boolean;
 }
 
 /**
@@ -90,6 +120,7 @@ const PortletItem = ({
   isLoading,
   renderChildren,
   sx,
+  highlight = false,
 }: PortletItemProps) => {
   const {
     name,
@@ -107,12 +138,25 @@ const PortletItem = ({
 
   type ActionType = "Delete" | "Close";
 
-  const { closePortlet, deletePortlet, minimisePortlet } =
-    useContext(DashboardPageContext);
+  const { appErrorHandler } = useContext(AppContext);
+  const {
+    closePortlet,
+    deletePortlet,
+    minimisePortlet,
+    scrollToRestoredPortletAndReset,
+  } = useContext(DashboardPageContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<ActionType>("Close");
   const history = useHistory();
-  const { appErrorHandler } = useContext(AppContext);
+  const cardRef = useRef(null);
+
+  // When the portlet is highlighted (i.e., just restored), scroll it into view
+  // After scrolling, reset the restored portlet state.
+  useEffect(() => {
+    if (highlight && cardRef.current) {
+      scrollToRestoredPortletAndReset(cardRef.current);
+    }
+  }, [highlight, scrollToRestoredPortletAndReset]);
 
   const handleEdit = () => {
     pipe(
@@ -213,10 +257,10 @@ const PortletItem = ({
 
   return (
     <>
-      <Card sx={sx}>
+      <StyledCard sx={sx} ref={cardRef} highlight={highlight}>
         <CardHeader title={name} action={actions()} />
         {renderPortletContent()}
-      </Card>
+      </StyledCard>
 
       <ConfirmDialog
         open={dialogOpen}

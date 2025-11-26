@@ -25,15 +25,20 @@ import { languageStrings } from "../util/langstrings";
 import { simpleMatch } from "../util/match";
 import { PortletCreationList } from "./components/PortletCreationList";
 import { DashboardLayout } from "./editor/DashboardLayout";
+import { RestorePortletsTab } from "./editor/RestorePortletsTab";
 
 const {
   title,
   alertInfo,
   dashboardLayout: { title: dashLayoutLabel },
   createPortlet: { title: createPortletLabel },
-  restorePortlet: restorePortletLabel,
+  restorePortlet: { title: restorePortletLabel },
 } = languageStrings.dashboard.editor;
 const { close } = languageStrings.common.action;
+
+export type ClosedPortletsProvider = () => Promise<
+  OEQ.Dashboard.PortletClosed[]
+>;
 
 export interface DashboardEditorProps {
   /**
@@ -44,6 +49,8 @@ export interface DashboardEditorProps {
    * A list of portlet types which the current user can create.
    */
   creatablePortletTypes: OEQ.Dashboard.PortletCreatable[];
+  /** Optional provider for closed portlets - primarily used for testing/storybook. */
+  closedPortletsProvider?: ClosedPortletsProvider;
 }
 
 /**
@@ -54,6 +61,7 @@ export interface DashboardEditorProps {
 export const DashboardEditor = ({
   onClose,
   creatablePortletTypes,
+  closedPortletsProvider,
 }: DashboardEditorProps) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
@@ -73,7 +81,11 @@ export const DashboardEditor = ({
           <PortletCreationList creatablePortletTypes={creatablePortletTypes} />
         </Box>
       ),
-      2: () => <Box id="restore-portlet-content">{/* TODO: OEQ-2690 */}</Box>,
+      2: () => (
+        <Box id="restore-portlet-content">
+          <RestorePortletsTab closedPortletsProvider={closedPortletsProvider} />
+        </Box>
+      ),
       _: () => <Alert severity="error">Unknown tab state!</Alert>,
     }),
   );

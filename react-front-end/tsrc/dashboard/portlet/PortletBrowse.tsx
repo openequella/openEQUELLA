@@ -15,19 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { pipe } from "fp-ts/function";
+import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import HierarchyTree from "../../hierarchy/components/HierarchyTree";
 import { getRootHierarchies } from "../../modules/HierarchyModule";
+import { languageStrings } from "../../util/langstrings";
 import { DraggablePortlet } from "../components/DraggablePortlet";
-import * as OEQ from "@openequella/rest-api-client";
 import { PortletSearchResultNoneFound } from "../components/PortletSearchResultNoneFound";
 import type { PortletBasicProps } from "./PortletHelper";
-import { languageStrings } from "../../util/langstrings";
 
 const { noneFound } = languageStrings.dashboard.portlets.browse;
 
@@ -40,8 +40,8 @@ export interface PortletBrowseProps extends PortletBasicProps {
 
 export const PortletBrowse = ({
   cfg,
-  position,
   getRootHierarchiesProvider = getRootHierarchies,
+  ...restProps
 }: PortletBrowseProps) => {
   const [hierarchies, setHierarchies] = useState<
     OEQ.BrowseHierarchy.HierarchyTopicSummary[]
@@ -64,8 +64,8 @@ export const PortletBrowse = ({
   return (
     <DraggablePortlet
       portlet={cfg}
-      position={position}
       isLoading={isLoading}
+      {...restProps}
       sx={{
         // Ensure the content area is scrollable when hierarchy tree overflows.
         "& .MuiCardContent-root": {

@@ -15,27 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
-import HTMLReactParser from "html-react-parser";
-import * as React from "react";
-import { DraggablePortlet } from "../components/DraggablePortlet";
-import type { PortletBasicProps } from "./PortletHelper";
-
-export interface PortletFormattedTextProps extends PortletBasicProps {
-  /**
-   * Configuration details of the formatted text portlet.
-   */
-  cfg: OEQ.Dashboard.FormattedTextPortlet;
-}
+import { HEADER_OFFSET } from "../mainui/Template";
 
 /**
- * A portlet component that displays pre-configured formatted text (HTML).
+ * Check if a DOM element is outside the visible viewport.
+ * This includes checking if the element is hidden behind the main application header.
+ *
+ * @param targetElement The DOM element to check.
+ * @returns `true` if the element is outside the viewport, otherwise `false`.
  */
-export const PortletFormattedText = ({
-  cfg,
-  ...restProps
-}: PortletFormattedTextProps): React.JSX.Element => (
-  <DraggablePortlet portlet={cfg} {...restProps}>
-    {HTMLReactParser(cfg.rawHtml)}
-  </DraggablePortlet>
-);
+export const isOutsideViewport = (targetElement: Element): boolean => {
+  const rect = targetElement.getBoundingClientRect();
+  // If rect.top is less than HEADER_OFFSET, it's behind the app header.
+  const isHiddenAbove = rect.top < HEADER_OFFSET;
+  // If rect.bottom is greater than the window height, it's off-screen below.
+  const isHiddenBelow = rect.bottom > window.innerHeight;
+
+  return isHiddenAbove || isHiddenBelow;
+};

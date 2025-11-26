@@ -24,7 +24,7 @@ const {
   alertInfo,
   dashboardLayout: { title: dashLayoutLabel },
   createPortlet: { title: createPortletLabel },
-  restorePortlet: restorePortletLabel,
+  restorePortlet: { title: restorePortletLabel },
 } = languageStrings.dashboard.editor;
 const { close: closeLabel } = languageStrings.common.action;
 

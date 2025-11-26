@@ -236,6 +236,7 @@ export const languageStrings = {
       undo: "Undo",
       view: "View",
       yes: "Yes",
+      restore: "Restore",
     },
     breadcrumb: "breadcrumb",
     required: "* Required",
@@ -424,7 +425,10 @@ export const languageStrings = {
         tooltip: "Create %s portlet",
         noCreatablePortlets: " No portlet types available to create.",
       },
-      restorePortlet: "Restore portlet",
+      restorePortlet: {
+        title: "Restore portlet",
+        noClosedPortlets: "No closed portlets found.",
+      },
       alertInfo:
         "You are currently editing your dashboard. Changes will be saved automatically.",
     },

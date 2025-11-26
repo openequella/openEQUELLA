@@ -17,32 +17,37 @@
  */
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
+import { getClosedPortletsRes } from "../../../__mocks__/Dashboard.mock";
 import {
-  creatablePortletTypes,
-  dashboardDetailsWithLayout,
-  getClosedPortletsRes,
-} from "../../__mocks__/Dashboard.mock";
-import {
-  DashboardEditor,
-  DashboardEditorProps,
-} from "../../tsrc/dashboard/DashboardEditor";
-import { buildDashboardPageContextDecorator } from "./editor/DashboardLayout.stories";
+  RestorePortletsTab,
+  RestorePortletsTabProps,
+} from "../../../tsrc/dashboard/editor/RestorePortletsTab";
 
 export default {
-  title: "Dashboard/DashboardEditor",
-  component: DashboardEditor,
-  argTypes: {
-    onClose: { action: "onClose" },
-  },
-} as Meta<DashboardEditorProps>;
+  title: "Dashboard/editor/RestorePortletsTab",
+  component: RestorePortletsTab,
+} as Meta<RestorePortletsTabProps>;
 
-export const Standard: StoryFn<DashboardEditorProps> = (args) => (
-  <DashboardEditor {...args} />
+const Template: StoryFn<RestorePortletsTabProps> = (args) => (
+  <RestorePortletsTab {...args} />
 );
-Standard.args = {
-  creatablePortletTypes: creatablePortletTypes,
+
+export const LoadingState = Template.bind({});
+LoadingState.args = {
+  closedPortletsProvider: () => new Promise(() => {}),
+};
+
+export const WithClosedPortletsList = Template.bind({});
+WithClosedPortletsList.args = {
   closedPortletsProvider: () => Promise.resolve(getClosedPortletsRes),
 };
-Standard.decorators = [
-  buildDashboardPageContextDecorator(dashboardDetailsWithLayout()),
-];
+
+export const WithNoClosedPortlets = Template.bind({});
+WithNoClosedPortlets.args = {
+  closedPortletsProvider: () => Promise.resolve([]),
+};
+
+export const ErrorState = Template.bind({});
+ErrorState.args = {
+  closedPortletsProvider: () => Promise.reject("Sample Error text"),
+};

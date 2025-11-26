@@ -75,9 +75,9 @@ const defaultSearchesProvider: SearchesProvider = () =>
  */
 export const PortletFavourites = ({
   cfg,
-  position,
   favouriteResourcesProvider = defaultResourcesProvider,
   favouriteSearchesProvider = defaultSearchesProvider,
+  ...restProps
 }: PortletFavouritesProps): React.JSX.Element => {
   const { currentUser } = useContext(AppContext);
 
@@ -145,7 +145,7 @@ export const PortletFavourites = ({
   );
 
   return (
-    <DraggablePortlet portlet={cfg} isLoading={isLoading} position={position}>
+    <DraggablePortlet portlet={cfg} isLoading={isLoading} {...restProps}>
       <Grid container direction="column" spacing={2}>
         <Grid>
           <Tabs value={activeTab} onChange={handleTabChange}>

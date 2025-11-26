@@ -21,10 +21,23 @@ import {
 } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import { DropTargetRecord } from "@atlaskit/pragmatic-drag-and-drop/types";
 import * as OEQ from "@openequella/rest-api-client";
+import { sequenceS } from "fp-ts/Apply";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
-import { PortletPosition } from "../modules/DashboardModule";
+import { flow, pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as N from "fp-ts/number";
+import * as O from "fp-ts/Option";
+import * as Ord from "fp-ts/Ord";
+import * as P from "fp-ts/Predicate";
+import * as S from "fp-ts/string";
+import * as TE from "fp-ts/TaskEither";
+import { sprintf } from "sprintf-js";
+import {
+  PortletPosition,
+  updatePortletPreference,
+} from "../modules/DashboardModule";
 import * as E from "../util/Either.extended";
+import { languageStrings } from "../util/langstrings";
 import {
   DndPortletData,
   DndPortletDataCodec,
@@ -33,11 +46,12 @@ import {
   DndColumnData,
   DndColumnDataCodec,
 } from "./portlet/PortletDropZoneGrid";
-import { portletFilterByColumn } from "./portlet/PortletHelper";
-import * as O from "fp-ts/Option";
-import { sequenceS } from "fp-ts/Apply";
-import * as P from "fp-ts/Predicate";
-import * as S from "fp-ts/string";
+import {
+  isFirstColumnPortlet,
+  portletFilterByColumn,
+} from "./portlet/PortletHelper";
+
+const { errors: dashboardErrors } = languageStrings.dashboard;
 
 interface ValidDndDataResult {
   /**
@@ -375,3 +389,49 @@ export const updateDashboardDetails =
 
     return { ...dashboard, portlets: updatedPortlets };
   };
+
+/**
+ * Creates a TaskEither that wraps the updatePortletPreference API call.
+ *
+ * @param uuid UUID of the target portlet.
+ * @param pref The new preferences to be applied to the portlet.
+ * @returns A TaskEither that resolves to void on success or a formatted error message on failure.
+ */
+export const updatePortletPreferenceTE = (
+  uuid: string,
+  pref: OEQ.Dashboard.PortletPreference,
+): TE.TaskEither<string, void> =>
+  TE.tryCatch(
+    () => updatePortletPreference(uuid, pref),
+    (e) => sprintf(dashboardErrors.failedToUpdatePortletPref, `${e}`),
+  );
+
+/**
+ * Computes the next order index for a portlet being restored into the first column.
+ * - If dashboardDetails or the first-column list is empty, returns 0.
+ * - Otherwise, finds the current max order in the first column and returns max + 1.
+ *
+ * @param dashboardDetails Optional current dashboard details.
+ * @returns Next order number for a restored portlet.
+ */
+export const getOrderForRestoredPortlet = (
+  dashboardDetails?: OEQ.Dashboard.DashboardDetails,
+): number => {
+  const byOrder = pipe(
+    N.Ord,
+    Ord.contramap((p: OEQ.Dashboard.BasicPortlet) => p.commonDetails.order),
+  );
+
+  const getNextOrder = (
+    nea: NEA.NonEmptyArray<OEQ.Dashboard.BasicPortlet>,
+  ): number => pipe(nea, NEA.max(byOrder), (p) => p.commonDetails.order + 1);
+
+  return pipe(
+    O.fromNullable(dashboardDetails),
+    O.map((d) => d.portlets),
+    O.chain(
+      flow(A.filter(isFirstColumnPortlet), NEA.fromArray, O.map(getNextOrder)),
+    ),
+    O.getOrElse(() => 0),
+  );
+};

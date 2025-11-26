@@ -23,7 +23,9 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { HEADER_OFFSET } from "../../mainui/Template";
 import { PortletPosition } from "../../modules/DashboardModule";
+import { isOutsideViewport } from "../../util/DomUtils";
 import { PortletBrowse } from "./PortletBrowse";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
@@ -99,6 +101,10 @@ export interface PortletBasicProps {
    * for drag and drop operations.
    */
   position: PortletPosition;
+  /**
+   * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   */
+  highlight?: boolean;
 }
 
 /**
@@ -106,13 +112,15 @@ export interface PortletBasicProps {
  *
  * @param portlet The portlet to be rendered.
  * @param position The actual position of the portlet in the page.
+ * @param highlight Whether to highlight the portlet.
  */
 export const renderPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
   position: PortletPosition,
+  highlight?: boolean,
 ): React.JSX.Element => {
   const { portletType } = portlet;
-  const basicProps: PortletBasicProps = { cfg: portlet, position };
+  const basicProps: PortletBasicProps = { cfg: portlet, position, highlight };
 
   // TODO: Update portlet component when they are implemented.
   switch (portletType) {
@@ -127,8 +135,8 @@ export const renderPortlet = (
     case "html":
       return (
         <PortletFormattedText
+          {...basicProps}
           cfg={portlet as OEQ.Dashboard.FormattedTextPortlet}
-          position={basicProps.position}
         />
       );
     case "myresources":
@@ -136,8 +144,8 @@ export const renderPortlet = (
     case "recent":
       return (
         <PortletRecentContributions
+          {...basicProps}
           cfg={portlet as OEQ.Dashboard.RecentContributionsPortlet}
-          position={basicProps.position}
         />
       );
     case "tasks":
@@ -172,3 +180,32 @@ export const isTwoColumnLayout = (
 export const isSecondColumnPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
 ): boolean => portlet.commonDetails.column === 1;
+
+/**
+ * Returns true if the given portlet is positioned in the first column.
+ *
+ * @param portlet The portlet whose column value is to be checked.
+ * @returns Whether the portlet resides in the first column.
+ */
+export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
+  portlet.commonDetails.column === 0;
+
+/**
+ * Scrolls the page to bring the specified portlet into view if it's currently
+ * outside the visible viewport.
+ *
+ * @param portlet The portlet element to scroll to.
+ */
+export const scrollToPortlet = (portlet: Element): void => {
+  if (isOutsideViewport(portlet)) {
+    const portletRect = portlet.getBoundingClientRect();
+    const absolutePortletTop = portletRect.top + window.scrollY;
+
+    const portletScrollPosition = absolutePortletTop - HEADER_OFFSET;
+
+    window.scrollTo({
+      top: portletScrollPosition,
+      behavior: "auto",
+    });
+  }
+};

@@ -60,6 +60,9 @@ import ScreenOptions from "./ScreenOptions";
 
 export type MenuMode = "HIDDEN" | "COLLAPSED" | "FULL";
 export type FullscreenMode = "YES" | "YES_WITH_TOOLBAR" | "NO";
+/* Vertical offset for AppBar height (64px) plus shadow clearance (10px).
+ Used for scroll positioning to ensure content appears below the fixed header. */
+export const HEADER_OFFSET = 74;
 
 export interface TemplateProps {
   title: string;

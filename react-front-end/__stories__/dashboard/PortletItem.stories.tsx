@@ -91,3 +91,14 @@ loading.args = {
   ...commonProps,
   isLoading: true,
 };
+
+export const HighlightTransition: StoryFn<PortletItemProps> = () => {
+  const [highlight, setHighlight] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setHighlight(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return <PortletItem {...commonProps} highlight={highlight} />;
+};

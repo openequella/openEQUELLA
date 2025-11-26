@@ -39,8 +39,8 @@ import { getSearchSettingsFromServer } from "../../modules/SearchSettingsModule"
 import { languageStrings } from "../../util/langstrings";
 import { simpleMatch } from "../../util/match";
 import { DraggablePortlet } from "../components/DraggablePortlet";
-import type { PortletBasicProps } from "./PortletHelper";
 import { PortletSearchResultList } from "../components/PortletSearchResultList";
+import type { PortletBasicProps } from "./PortletHelper";
 
 const strings = {
   ...languageStrings.dashboard.portlets.quickSearch,
@@ -70,9 +70,9 @@ export interface PortletQuickSearchProps extends PortletBasicProps {
  */
 export const PortletQuickSearch = ({
   cfg,
-  position,
   searchProvider = searchItems,
   searchSettingsProvider = getSearchSettingsFromServer,
+  ...restProps
 }: PortletQuickSearchProps) => {
   const history = useHistory();
 
@@ -227,7 +227,7 @@ export const PortletQuickSearch = ({
     <DraggablePortlet
       portlet={cfg}
       isLoading={loadingState === "loading"}
-      position={position}
+      {...restProps}
     >
       {portletContent}
     </DraggablePortlet>

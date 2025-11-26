@@ -15,12 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as React from "react";
-import type { Decorator, Meta, StoryFn } from "@storybook/react";
-import { dashboardDetailsWithLayout } from "../../../__mocks__/Dashboard.mock";
-import { DashboardPageContext } from "../../../tsrc/dashboard/DashboardPageContext";
-import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
 import * as OEQ from "@openequella/rest-api-client";
+import type { Decorator, Meta, StoryFn } from "@storybook/react";
+import * as React from "react";
+import { dashboardDetailsWithLayout } from "../../../__mocks__/Dashboard.mock";
+import {
+  DashboardPageContext,
+  defaultDashboardPageContextValue,
+} from "../../../tsrc/dashboard/DashboardPageContext";
+import { DashboardLayout } from "../../../tsrc/dashboard/editor/DashboardLayout";
 
 export default {
   title: "Dashboard/editor/DashboardLayout",
@@ -28,18 +31,13 @@ export default {
   excludeStories: ["buildDashboardPageContextDecorator"],
 } as Meta;
 
-const nop = () => {};
-
 export const buildDashboardPageContextDecorator =
   (details?: OEQ.Dashboard.DashboardDetails): Decorator =>
   (Story) => (
     <DashboardPageContext.Provider
       value={{
+        ...defaultDashboardPageContextValue,
         dashboardDetails: details,
-        refreshDashboard: nop,
-        minimisePortlet: nop,
-        closePortlet: nop,
-        deletePortlet: nop,
       }}
     >
       {Story()}

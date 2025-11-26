@@ -18,8 +18,8 @@
 import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { constant, identity, pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
+import { constant, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
@@ -39,6 +39,7 @@ import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
+import { HEADER_OFFSET } from "../mainui/Template";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -256,7 +257,8 @@ export const SearchPageBody = ({
           // It calculates top distance of the search bar, subtract 64px for the header height,
           // and an extra 10px to avoid the header's shadow. Result is the scroll distance.
           const distance =
-            (searchBarRef.current?.getBoundingClientRect().top ?? 0) - 74;
+            (searchBarRef.current?.getBoundingClientRect().top ?? 0) -
+            HEADER_OFFSET;
           window.scrollBy({ top: distance });
         }
         // Allow downloading new search result.

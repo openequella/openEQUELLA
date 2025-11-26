@@ -53,8 +53,8 @@ export const PortletRecentContributions: React.FC<
   PortletRecentContributionsProps
 > = ({
   cfg,
-  position,
   searchProvider = searchItemsBasic,
+  ...restProps
 }: PortletRecentContributionsProps) => {
   const history = useHistory();
 
@@ -113,7 +113,7 @@ export const PortletRecentContributions: React.FC<
     );
 
   return (
-    <DraggablePortlet portlet={cfg} isLoading={loading} position={position}>
+    <DraggablePortlet portlet={cfg} isLoading={loading} {...restProps}>
       <Grid container direction="column" spacing={2}>
         <Grid>
           {A.isEmpty(items) ? (
