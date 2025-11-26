@@ -23,6 +23,7 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
+import { HEADER_OFFSET } from "../../mainui/Template";
 import { PortletPosition } from "../../modules/DashboardModule";
 import { isOutsideViewport } from "../../util/DomUtils";
 import { PortletBrowse } from "./PortletBrowse";
@@ -197,8 +198,14 @@ export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
  */
 export const scrollToPortlet = (portlet: Element): void => {
   if (isOutsideViewport(portlet)) {
-    portlet.scrollIntoView({
-      behavior: "instant",
+    const portletRect = portlet.getBoundingClientRect();
+    const absolutePortletTop = portletRect.top + window.scrollY;
+
+    const portletScrollPosition = absolutePortletTop - HEADER_OFFSET;
+
+    window.scrollTo({
+      top: portletScrollPosition,
+      behavior: "auto",
     });
   }
 };
