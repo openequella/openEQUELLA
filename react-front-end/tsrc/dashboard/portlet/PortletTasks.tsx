@@ -51,8 +51,8 @@ export interface PortletTasksProps extends PortletBasicProps {
  */
 export const PortletTasks: React.FC<PortletTasksProps> = ({
   cfg,
-  position,
   tasksProvider = getTaskAndNotificationCounts,
+  ...restProps
 }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
@@ -126,7 +126,7 @@ export const PortletTasks: React.FC<PortletTasksProps> = ({
   );
 
   return (
-    <DraggablePortlet portlet={cfg} isLoading={isLoading} position={position}>
+    <DraggablePortlet portlet={cfg} isLoading={isLoading} {...restProps}>
       {errorMessage ? (
         <Alert severity="error">{errorMessage}</Alert>
       ) : (

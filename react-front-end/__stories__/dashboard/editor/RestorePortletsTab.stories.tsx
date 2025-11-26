@@ -19,49 +19,35 @@ import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { getClosedPortletsRes } from "../../../__mocks__/Dashboard.mock";
 import {
-  ClosedPortletsList,
-  ClosedPortletsListProps,
-} from "../../../tsrc/dashboard/editor/ClosedPortletsList";
+  RestorePortletsTab,
+  RestorePortletsTabProps,
+} from "../../../tsrc/dashboard/editor/RestorePortletsTab";
 
 export default {
-  title: "Dashboard/editor/ClosedPortletsList",
-  component: ClosedPortletsList,
-  argTypes: {
-    onPortletRestore: { action: "onPortletRestore called" },
-  },
-} as Meta<ClosedPortletsListProps>;
+  title: "Dashboard/editor/RestorePortletsTab",
+  component: RestorePortletsTab,
+} as Meta<RestorePortletsTabProps>;
 
-const Template: StoryFn<ClosedPortletsListProps> = (args) => (
-  <ClosedPortletsList {...args} />
+const Template: StoryFn<RestorePortletsTabProps> = (args) => (
+  <RestorePortletsTab {...args} />
 );
 
 export const LoadingState = Template.bind({});
 LoadingState.args = {
-  closedPortlets: {
-    state: "loading",
-  },
+  closedPortletsProvider: () => new Promise(() => {}),
 };
 
 export const WithClosedPortletsList = Template.bind({});
 WithClosedPortletsList.args = {
-  closedPortlets: {
-    state: "success",
-    results: getClosedPortletsRes,
-  },
+  closedPortletsProvider: () => Promise.resolve(getClosedPortletsRes),
 };
 
 export const WithNoClosedPortlets = Template.bind({});
 WithNoClosedPortlets.args = {
-  closedPortlets: {
-    state: "success",
-    results: [],
-  },
+  closedPortletsProvider: () => Promise.resolve([]),
 };
 
 export const ErrorState = Template.bind({});
 ErrorState.args = {
-  closedPortlets: {
-    state: "failed",
-    reason: "Sample error text.",
-  },
+  closedPortletsProvider: () => Promise.reject("Sample Error text"),
 };

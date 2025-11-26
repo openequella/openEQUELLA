@@ -53,7 +53,7 @@ import { ClosedPortletsList } from "./ClosedPortletsList";
 const { noClosedPortlets: noClosedPortletsLabel } =
   languageStrings.dashboard.editor.restorePortlet;
 
-interface RestorePortletsTabProps {
+export interface RestorePortletsTabProps {
   /** Optional provider for closed portlets - primarily used for testing/storybook. */
   closedPortletsProvider?: ClosedPortletsProvider;
 }

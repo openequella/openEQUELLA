@@ -16,20 +16,21 @@
  * limitations under the License.
  */
 import { render, RenderResult } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import * as React from "react";
+import { Router } from "react-router-dom";
 import { basicPortlet } from "../../../__mocks__/Dashboard.mock";
 import PortletItem, {
   PortletItemProps,
 } from "../../../tsrc/dashboard/components/PortletItem";
 import "@testing-library/jest-dom";
-import { Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
 
 export const portletContent = "Portlet content";
 
 export const defaultProps: PortletItemProps = {
   portlet: basicPortlet,
   children: <div>{portletContent}</div>,
+  highlight: false,
 };
 
 const history = createMemoryHistory();

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Alert } from "@mui/material";
-import type { Theme, SxProps } from "@mui/material/styles";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { constFalse, constVoid, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -141,8 +141,8 @@ interface LegacyPortletProps extends PortletBasicProps {
  */
 export const LegacyPortlet = ({
   cfg,
-  position,
   customStyles,
+  ...restProps
 }: LegacyPortletProps) => {
   const portletId = cfg.commonDetails.uuid;
 
@@ -330,9 +330,9 @@ export const LegacyPortlet = ({
     <div ref={portletRef}>
       <DraggablePortlet
         portlet={cfg}
-        position={position}
         isLoading={isLoading}
         sx={customStyles}
+        {...restProps}
       >
         {error && (
           <Alert severity="error" onClose={() => setError(undefined)}>

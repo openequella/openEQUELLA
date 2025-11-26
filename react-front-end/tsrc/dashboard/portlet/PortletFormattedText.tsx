@@ -33,9 +33,9 @@ export interface PortletFormattedTextProps extends PortletBasicProps {
  */
 export const PortletFormattedText = ({
   cfg,
-  position,
+  ...restProps
 }: PortletFormattedTextProps): React.JSX.Element => (
-  <DraggablePortlet portlet={cfg} position={position}>
+  <DraggablePortlet portlet={cfg} {...restProps}>
     {HTMLReactParser(cfg.rawHtml)}
   </DraggablePortlet>
 );

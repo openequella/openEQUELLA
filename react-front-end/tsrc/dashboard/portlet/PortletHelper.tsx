@@ -23,8 +23,8 @@ import * as O from "fp-ts/Option";
 import * as ORD from "fp-ts/Ord";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { HEADER_OFFSET } from "../../mainui/Template";
 import { PortletPosition } from "../../modules/DashboardModule";
+import { isOutsideViewport } from "../../util/DomUtils";
 import { PortletBrowse } from "./PortletBrowse";
 import { PortletFavourites } from "./PortletFavourites";
 import { PortletFormattedText } from "./PortletFormattedText";
@@ -100,6 +100,10 @@ export interface PortletBasicProps {
    * for drag and drop operations.
    */
   position: PortletPosition;
+  /**
+   * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   */
+  highlight: boolean;
 }
 
 /**
@@ -107,13 +111,15 @@ export interface PortletBasicProps {
  *
  * @param portlet The portlet to be rendered.
  * @param position The actual position of the portlet in the page.
+ * @param highlight Whether to highlight the portlet.
  */
 export const renderPortlet = (
   portlet: OEQ.Dashboard.BasicPortlet,
   position: PortletPosition,
+  highlight: boolean,
 ): React.JSX.Element => {
   const { portletType } = portlet;
-  const basicProps: PortletBasicProps = { cfg: portlet, position };
+  const basicProps: PortletBasicProps = { cfg: portlet, position, highlight };
 
   // TODO: Update portlet component when they are implemented.
   switch (portletType) {
@@ -128,8 +134,8 @@ export const renderPortlet = (
     case "html":
       return (
         <PortletFormattedText
+          {...basicProps}
           cfg={portlet as OEQ.Dashboard.FormattedTextPortlet}
-          position={basicProps.position}
         />
       );
     case "myresources":
@@ -137,8 +143,8 @@ export const renderPortlet = (
     case "recent":
       return (
         <PortletRecentContributions
+          {...basicProps}
           cfg={portlet as OEQ.Dashboard.RecentContributionsPortlet}
-          position={basicProps.position}
         />
       );
     case "tasks":
@@ -187,38 +193,12 @@ export const isFirstColumnPortlet = (portlet: OEQ.Dashboard.BasicPortlet) =>
  * Scrolls the page to bring the specified portlet into view if it's currently
  * outside the visible viewport.
  *
- * @param portletElement The unique ID of the portlet element to scroll to.
+ * @param portlet The portlet element to scroll to.
  */
-export const scrollToPortlet = (portletElement: HTMLDivElement): void => {
-  if (isOutsideViewport(portletElement)) {
-    const elementRect = portletElement.getBoundingClientRect();
-    const absoluteElementTop = elementRect.top + window.scrollY;
-
-    const targetScrollPosition = absoluteElementTop - HEADER_OFFSET;
-
-    window.scrollTo({
-      top: targetScrollPosition,
-      behavior: "smooth",
+export const scrollToPortlet = (portlet: Element): void => {
+  if (isOutsideViewport(portlet)) {
+    portlet.scrollIntoView({
+      behavior: "instant",
     });
   }
 };
-
-/**
- * Returns true if the dashboard currently includes a portlet with the given UUID.
- *
- * @param uuid UUID of the portlet to look for.
- * @param dashboardDetails Optional dashboard details containing the current portlets.
- */
-export const isPortletPresentInDashboard = (
-  uuid?: string,
-  dashboardDetails?: OEQ.Dashboard.DashboardDetails,
-): boolean =>
-  pipe(
-    O.fromNullable(dashboardDetails),
-    O.exists(({ portlets }) =>
-      pipe(
-        portlets,
-        A.some((p) => p.commonDetails.uuid === uuid),
-      ),
-    ),
-  );

@@ -91,6 +91,7 @@ const setupWithMocks = (
         cfg={portletConfig}
         searchProvider={mockSearchProvider}
         position={{ order: 0, column: 0 }}
+        highlight={false}
       />
     </MemoryRouter>,
   );

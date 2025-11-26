@@ -33,7 +33,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useHistory } from "react-router";
 import { sprintf } from "sprintf-js";
 import ConfirmDialog from "../../components/ConfirmDialog";
@@ -72,10 +72,7 @@ const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== "highlight",
 })<StyledCardProps>(({ theme, highlight }) => {
   return {
-    transition: theme.transitions.create("background-color", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: 3000,
-    }),
+    transition: "background-color 3000ms ease-in-out",
     ...(highlight && {
       backgroundColor: alpha(theme.palette.secondary.main, 0.25),
     }),
@@ -106,6 +103,10 @@ export interface PortletItemProps extends React.PropsWithChildren {
    * section are rendered.
    */
   sx?: SxProps<Theme>;
+  /**
+   * Whether to apply a highlight effect to the card, used for newly restored portlet.
+   */
+  highlight: boolean;
 }
 
 /**
@@ -118,6 +119,7 @@ const PortletItem = ({
   isLoading,
   renderChildren,
   sx,
+  highlight,
 }: PortletItemProps) => {
   const {
     name,
@@ -135,13 +137,25 @@ const PortletItem = ({
 
   type ActionType = "Delete" | "Close";
 
-  const { closePortlet, deletePortlet, minimisePortlet } =
-    useContext(DashboardPageContext);
+  const { appErrorHandler } = useContext(AppContext);
+  const {
+    closePortlet,
+    deletePortlet,
+    minimisePortlet,
+    scrollToRestoredPortletAndReset,
+  } = useContext(DashboardPageContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [actionType, setActionType] = useState<ActionType>("Close");
   const history = useHistory();
-  const { appErrorHandler } = useContext(AppContext);
-  const { restoredPortletId } = useContext(DashboardPageContext);
+  const cardRef = useRef(null);
+
+  // When the portlet is highlighted (i.e., just restored), scroll it into view
+  // After scrolling, reset the restored portlet state.
+  useEffect(() => {
+    if (highlight && cardRef.current) {
+      scrollToRestoredPortletAndReset(cardRef.current);
+    }
+  }, [highlight, scrollToRestoredPortletAndReset]);
 
   const handleEdit = () => {
     pipe(
@@ -242,7 +256,7 @@ const PortletItem = ({
 
   return (
     <>
-      <StyledCard sx={sx} highlight={restoredPortletId === uuid}>
+      <StyledCard sx={sx} highlight={highlight} ref={cardRef}>
         <CardHeader title={name} action={actions()} />
         {renderPortletContent()}
       </StyledCard>

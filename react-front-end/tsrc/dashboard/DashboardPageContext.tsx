@@ -61,9 +61,12 @@ interface DashboardPageContextProps {
    */
   restorePortlet: (uuid: string) => void;
   /**
-   * The UUID of a portlet that has just been restored. Used to trigger a scroll-to-portlet and highlight-portlet action.
+   * A callback function to scroll the newly restored portlet into view and then
+   * reset the restored portlet state.
+   *
+   * @param portlet The DOM element of the portlet to scroll to.
    */
-  restoredPortletId?: string;
+  scrollToRestoredPortletAndReset: (portlet: Element) => void;
 }
 
 const nop = () => {};
@@ -74,6 +77,7 @@ export const defaultDashboardPageContextValue: DashboardPageContextProps = {
   minimisePortlet: nop,
   restorePortlet: nop,
   refreshDashboard: () => T.of(undefined),
+  scrollToRestoredPortletAndReset: nop,
 };
 
 export const DashboardPageContext = createContext<DashboardPageContextProps>(

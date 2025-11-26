@@ -138,6 +138,7 @@ export const renderDashboardLayout = (
         closePortlet: jest.fn,
         deletePortlet: jest.fn,
         restorePortlet: jest.fn(),
+        scrollToRestoredPortletAndReset: jest.fn(),
       }}
     >
       <DashboardLayout />

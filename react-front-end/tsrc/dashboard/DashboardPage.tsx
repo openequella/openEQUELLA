@@ -51,10 +51,7 @@ import {
   updatePortletPreferenceTE,
 } from "./DashboardPageHelper";
 import { PortletContainer } from "./portlet/PortletContainer";
-import {
-  isPortletPresentInDashboard,
-  scrollToPortlet,
-} from "./portlet/PortletHelper";
+import { scrollToPortlet } from "./portlet/PortletHelper";
 
 const { editDashboard: editDashboardLabel } = languageStrings.dashboard.editor;
 const { errors: dashboardErrors } = languageStrings.dashboard;
@@ -173,16 +170,6 @@ export const DashboardPage = () => {
     [appErrorHandler, dashboardDetails, loadDashboard],
   );
 
-  useEffect(() => {
-    if (
-      restoredPortletId &&
-      isPortletPresentInDashboard(restoredPortletId, dashboardDetails)
-    ) {
-      scrollToPortlet(restoredPortletId);
-      setRestoredPortletId(undefined);
-    }
-  }, [restoredPortletId, dashboardDetails]);
-
   const updatePortletPreferenceAndRefresh = useCallback(
     (uuid: string, pref: OEQ.Dashboard.PortletPreference) =>
       pipe(
@@ -241,6 +228,13 @@ export const DashboardPage = () => {
     [loadDashboard],
   );
 
+  const scrollToRestoredPortletAndReset = (portlet: Element) => {
+    if (portlet) {
+      scrollToPortlet(portlet);
+    }
+    setRestoredPortletId(undefined);
+  };
+
   const editDashboardButton = (
     <TooltipCustomComponent
       title={editDashboardLabel}
@@ -267,7 +261,11 @@ export const DashboardPage = () => {
       O.fold(
         () => <WelcomeBoard hasCreatePortletAcl={hasCreatePortletAcl} />,
         ({ layout, portlets }) => (
-          <PortletContainer portlets={portlets} layout={layout} />
+          <PortletContainer
+            portlets={portlets}
+            layout={layout}
+            restoredPortletId={restoredPortletId}
+          />
         ),
       ),
       (mainContent) => (
@@ -297,7 +295,7 @@ export const DashboardPage = () => {
         restorePortlet,
         refreshDashboard: loadDashboard,
         dashboardDetails,
-        restoredPortletId: restoredPortletId,
+        scrollToRestoredPortletAndReset,
       }}
     >
       {renderDashboardContent()}
