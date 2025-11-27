@@ -20,7 +20,7 @@ import com.tle.web.portal.service.PortletWebService
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{any, anyBoolean, argThat, eq => eqMatcher}
-import org.mockito.Mockito.{mock, mockStatic, verify, when}
+import org.mockito.Mockito.{doNothing, mock, mockStatic, verify, when}
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -369,6 +369,9 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       Then("the exception is captured and returned")
       val result = dashboardService.updatePortletPreference(uuid, updates)
       result.left.value.asInstanceOf[RuntimeException].getMessage shouldBe runtimeError
+
+      // Reset the mock in the end.
+      doNothing().when(mockPortletService).updatePreference(any(), any())
     }
 
     it("should fire a Legacy Portlet Updated event when restoring a Legacy Content portlet") {
