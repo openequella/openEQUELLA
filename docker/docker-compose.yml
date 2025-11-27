@@ -33,7 +33,7 @@ services:
       - ./learningedge-log4j.yaml:/home/equella/equella/learningedge-config/learningedge-log4j.yaml
 
   zookeeper:
-    image: zookeeper:3.9.3
+    image: zookeeper:3.9.4
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181
@@ -43,7 +43,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:17.5
+    image: postgres:18.1
     restart: always
     networks:
       - oeq-cluster

@@ -26,9 +26,7 @@ import com.tle.core.favourites.bean.{FavouriteSearch => FavouriteSearchBean}
 import com.tle.core.favourites.service.{BookmarkService, FavouriteSearchService}
 import com.tle.core.guice.Bind
 import com.tle.core.item.service.ItemService
-import com.tle.exceptions.AccessDeniedException
-
-import java.util.Date
+import com.tle.exceptions.{AccessDeniedException, AuthenticationException}
 import com.tle.web.api.ApiErrorResponse
 import com.tle.web.api.favourite.model.{
   FavouriteSearch,
@@ -40,10 +38,11 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 import org.slf4j.{Logger, LoggerFactory}
 
+import java.util.Date
 import javax.inject.{Inject, Singleton}
+import javax.ws.rs._
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status
-import javax.ws.rs.{BeanParam, DELETE, GET, POST, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -93,22 +92,39 @@ class FavouriteResource @Inject() (
     response = classOf[FavouriteItemModel]
   )
   def addFavouriteItem(favouriteItem: FavouriteItemModel): Response = {
-    // ItemNotFoundException will be thrown by itemService if there is no Item matching this
-    // item ID so we don't validate item ID here again.
-    val item = itemService.get(new ItemId(favouriteItem.itemID))
-    val newBookmark =
-      bookmarkService.add(item, favouriteItem.keywords.toSet.asJava, favouriteItem.isAlwaysLatest)
-    Response
-      .status(Status.CREATED)
-      .entity(
-        FavouriteItemModel(
-          newBookmark.getItem.getItemId.toString,
-          newBookmark.getKeywords.asScala.toArray,
-          newBookmark.isAlwaysLatest,
-          newBookmark.getId
+    val newBookmark = for {
+      // ItemNotFoundException will be thrown by itemService if there is no Item matching this
+      // item ID so we don't validate item ID here again.
+      item <- Try(itemService.get(new ItemId(favouriteItem.itemID)))
+      bookmark <- Try(
+        bookmarkService.add(
+          item,
+          favouriteItem.keywords.toSet.asJava,
+          favouriteItem.isAlwaysLatest
         )
       )
-      .build()
+    } yield bookmark
+
+    newBookmark.fold(
+      {
+        case e: AuthenticationException =>
+          return ApiErrorResponse.unauthorizedRequest(e.getMessage)
+        case e: Exception =>
+          throw e
+      },
+      bookmark =>
+        Response
+          .status(Status.CREATED)
+          .entity(
+            FavouriteItemModel(
+              bookmark.getItem.getItemId.toString,
+              bookmark.getKeywords.asScala.toArray,
+              bookmark.isAlwaysLatest,
+              bookmark.getId
+            )
+          )
+          .build()
+    )
   }
 
   @DELETE
@@ -159,14 +175,20 @@ class FavouriteResource @Inject() (
     favSearchBean.setInstitution(CurrentInstitution.get())
     favSearchBean.setAddedAt(new Date())
     favSearchBean.setOwner(CurrentUser.getUserID)
-    val newFavouriteSearchBean = favouritesSearchService.save(favSearchBean)
 
-    Response
-      .status(Status.CREATED)
-      .entity(
-        FavouriteSearch(newFavouriteSearchBean)
-      )
-      .build()
+    Try(favouritesSearchService.save(favSearchBean)).fold(
+      {
+        case e: AuthenticationException =>
+          return ApiErrorResponse.unauthorizedRequest(e.getMessage)
+        case e: Exception =>
+          throw e
+      },
+      savedSearchBean =>
+        Response
+          .status(Status.CREATED)
+          .entity(FavouriteSearch(savedSearchBean))
+          .build()
+    )
   }
 
   @DELETE

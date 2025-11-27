@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { flow, pipe } from "fp-ts/function";
-import * as TE from "fp-ts/TaskEither";
-import * as O from "fp-ts/Option";
-import * as IO from "fp-ts/IO";
-import { API_BASE_URL, getRenderData } from "../AppConfig";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
+import { flow, pipe } from "fp-ts/function";
+import * as IO from "fp-ts/IO";
+import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
+import { API_BASE_URL, getRenderData } from "../AppConfig";
 import { getTopicIDFromLocation } from "./HierarchyModule";
 
 /**
@@ -92,7 +92,7 @@ const hasRequiredSettingAcl = (
  * Check if the current user has the specified ACL granted for a Hierarchy topic.
  */
 const hasRequiredHierarchyAcl = (acl: string): RequiredPermissionCheck => {
-  const check: (topicID: string | null) => TE.TaskEither<string, boolean> =
+  const check: (topicID: string | undefined) => TE.TaskEither<string, boolean> =
     flow(
       O.fromNullable,
       O.match(

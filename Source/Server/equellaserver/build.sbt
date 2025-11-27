@@ -17,11 +17,11 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.111"
+val TomcatVersion     = "9.0.112"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
-val cxfVersion        = "3.6.8"
+val cxfVersion        = "3.6.9"
 val fs2Version        = "3.12.2"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
@@ -29,7 +29,7 @@ val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
-val luceneVersion     = "10.3.1"
+val luceneVersion     = "10.3.2"
 val nettyVersion      = "4.2.7.Final"
 
 libraryDependencies ++= Seq(
@@ -52,25 +52,29 @@ libraryDependencies ++= Seq(
   "com.auth0" % "jwks-rsa" % "0.23.0"
 )
 
+// Jackson dependencies
+libraryDependencies ++= Seq(
+  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"       % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonAnnotationsVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion exclude (
+    "javax.xml.bind",
+    "jaxb-api"
+  ),
+  jacksonDataBind,
+  jacksonModuleScala
+)
+
 libraryDependencies ++= Seq(
   "co.fs2"                        %% "fs2-io"                        % fs2Version,
   "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
   "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
   "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
-  "com.fasterxml.jackson.core"     % "jackson-core"                  % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"       % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"         % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-annotations"           % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion exclude (
-    "javax.xml.bind",
-    "jaxb-api"
-  ),
-  jacksonDataBind,
-  jacksonModuleScala,
-  "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
+  "io.bit3"                        % "jsass"                         % jsassVersion,
+  "com.flickr4java"                % "flickr4java"                   % "3.0.9" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
@@ -90,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "77.1",
+  "com.ibm.icu" % "icu4j" % "78.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -107,13 +111,13 @@ libraryDependencies ++= Seq(
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
   "com.zaxxer" % "HikariCP" % "7.0.2" excludeAll ExclusionRule(organization = "org.slf4j"),
   "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
-  "commons-codec"             % "commons-codec"         % "1.19.0",
+  "commons-codec"             % "commons-codec"         % "1.20.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.4.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.20.0",
+  "commons-io"                % "commons-io"            % "2.21.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -244,7 +248,7 @@ libraryDependencies ++= Seq(
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.181",
+  "io.github.classgraph"          % "classgraph"               % "4.8.184",
   "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
