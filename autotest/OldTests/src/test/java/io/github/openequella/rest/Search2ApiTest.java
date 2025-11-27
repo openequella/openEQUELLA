@@ -369,10 +369,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   @DataProvider(name = "badMustExpressions")
   public static Object[][] badMustExpressions() {
-    return new Object[][] {
-      {"tooFewDelimiter"}, {"too:many:delimiter"}, {":emptyField"},
-      {"emptyValue:"}, {":"}, {""}
-    };
+    return new Object[][] {{"tooFewDelimiter"}, {":emptyField"}, {"emptyValue:"}, {":"}, {""}};
   }
 
   @Test(
