@@ -77,3 +77,13 @@ export const LongDescription = Template.bind({});
 LongDescription.args = {
   results: [itemWithLongDescription],
 };
+
+export const HtmlDescription = Template.bind({});
+HtmlDescription.args = {
+  results: [
+    {
+      ...itemWithLongDescription,
+      description: "<h1>This is a bold statement.</h1>",
+    },
+  ],
+};
