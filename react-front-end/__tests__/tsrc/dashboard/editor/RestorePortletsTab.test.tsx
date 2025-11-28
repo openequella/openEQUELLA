@@ -91,9 +91,9 @@ describe("<RestorePortletsTab />", () => {
     const restoreButtons = getRestoreButtons();
 
     // The mock data contains a list of two closed portlets
-    getClosedPortletsRes.forEach((portlet) => {
-      expect(getByText(portlet.name)).toBeInTheDocument();
-    });
+    getClosedPortletsRes.forEach((portlet) =>
+      expect(getByText(portlet.name)).toBeInTheDocument(),
+    );
     expect(restoreButtons).toHaveLength(getClosedPortletsRes.length);
     expect.assertions(5);
   });

@@ -474,9 +474,9 @@ describe("getOrderForRestoredPortlet", () => {
   it.each([
     ["dashboardDetails", undefined],
     ["first-column portlets list", dashboardDetailsWithNoFirstColumnPortlets],
-  ])("should return 0 if %s is empty", (_, dashboardDetails) => {
-    expect(getOrderForRestoredPortlet(dashboardDetails)).toBe(0);
-  });
+  ])("should return 0 if %s is empty", (_, dashboardDetails) =>
+    expect(getOrderForRestoredPortlet(dashboardDetails)).toBe(0),
+  );
 
   it("should return the correct order for a restored portlet when the first column is not empty", () => {
     const result = pipe(
