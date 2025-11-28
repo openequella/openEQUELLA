@@ -101,8 +101,8 @@ export const DashboardEditor = ({
         },
       }}
     >
-      <Grid container spacing={2}>
-        <Grid container alignItems="center" size={12}>
+      <Grid container spacing={2} direction="column">
+        <Grid container alignItems="center">
           <Grid size="grow">
             <Typography variant="h5">{title}</Typography>
           </Grid>
@@ -130,7 +130,7 @@ export const DashboardEditor = ({
             <Tab label={restorePortletLabel} />
           </Tabs>
         </Grid>
-        <Grid size={12}>{tabContent}</Grid>
+        <Grid>{tabContent}</Grid>
       </Grid>
     </Drawer>
   );
