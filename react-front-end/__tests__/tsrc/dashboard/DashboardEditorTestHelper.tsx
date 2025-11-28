@@ -16,10 +16,14 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import { render, RenderResult } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
-import { creatablePortletTypes } from "../../../__mocks__/Dashboard.mock";
+import {
+  creatablePortletTypes,
+  dashboardDetailsWithLayout,
+  getClosedPortletsRes,
+} from "../../../__mocks__/Dashboard.mock";
 import {
   DashboardEditor,
   DashboardEditorProps,
@@ -36,14 +40,14 @@ const {
   restorePortlet: { title: restorePortletLabel },
 } = languageStrings.dashboard.editor;
 
-const TabContentSkeletonTestId = "tab-content-skeleton";
-
 /** The spies for the mocked API calls related to the Dashboard Editor. */
 export interface MockDashboardEditorApiSpies {
   /** A spy for the `updateDashboardLayout` API call. */
   mockUpdateDashboardLayout: jest.SpyInstance;
   /** A spy for the `updatePortletPreference` API call. */
   mockUpdatePortletPreference: jest.SpyInstance;
+  /** Spy for the `getClosedPortlets` API. */
+  mockGetClosedPortlets: jest.SpyInstance;
 }
 
 /**
@@ -58,34 +62,66 @@ export const mockDashboardEditorApis = (): MockDashboardEditorApiSpies => ({
   mockUpdatePortletPreference: jest
     .spyOn(DashboardModule, "updatePortletPreference")
     .mockResolvedValue(undefined),
+  mockGetClosedPortlets: jest
+    .spyOn(DashboardModule, "getClosedPortlets")
+    .mockResolvedValue(getClosedPortletsRes),
 });
 
 /**
- * Renders the `DashboardEditor` component with default props and returns a set of
- * query helpers and spies for testing.
+ * Wraps children with DashboardPageContext.Provider.
  *
- * @param props Optional props to override the defaults.
- * @returns An object containing query helpers, spies, and the `userEvent` instance.
+ * @param children The React components to wrap.
+ * @param dashboardDetails Optional dashboard details to override the default.
+ * @returns The render result from Testing Library, and mock context functions.
  */
-export const renderDashboardEditor = (
-  props: Partial<DashboardEditorProps> = {},
+const renderWithDashboardPageContext = (
+  children: React.ReactNode,
+  dashboardDetails?: OEQ.Dashboard.DashboardDetails,
 ) => {
+  const mockRefreshDashboard = jest
+    .fn()
+    .mockReturnValue(() => Promise.resolve());
+
+  const mockRestorePortlet = jest.fn();
+
+  const renderResult = render(
+    <DashboardPageContext.Provider
+      value={{
+        dashboardDetails,
+        refreshDashboard: mockRefreshDashboard,
+        minimisePortlet: jest.fn(),
+        closePortlet: jest.fn(),
+        deletePortlet: jest.fn(),
+        restorePortlet: mockRestorePortlet,
+        scrollToRestoredPortletAndReset: jest.fn(),
+      }}
+    >
+      {children}
+    </DashboardPageContext.Provider>,
+  );
+
+  return { ...renderResult, mockRefreshDashboard, mockRestorePortlet };
+};
+
+/**
+ * Renders the `DashboardEditor` component with default props.
+ *
+ * @returns An object containing render result, helper functions and the `userEvent` instance
+ */
+export const renderDashboardEditor = () => {
   const onClose = jest.fn();
   const defaultProps: DashboardEditorProps = {
     onClose,
     creatablePortletTypes,
   };
 
-  const renderResult = render(<DashboardEditor {...defaultProps} {...props} />);
-  const { getByRole, getByTestId, queryByTestId } = renderResult;
+  const renderResult = render(<DashboardEditor {...defaultProps} />);
+
+  const { getByRole } = renderResult;
 
   const getTabByRole = (name: string) => getByRole("tab", { name });
 
   const getButtonByRole = (name: string) => getByRole("button", { name });
-
-  const getTabContentSkeleton = () => getByTestId(TabContentSkeletonTestId);
-
-  const queryTabContentSkeleton = () => queryByTestId(TabContentSkeletonTestId);
 
   const allTabs = [dashLayoutLabel, createPortletLabel, restorePortletLabel];
 
@@ -106,50 +142,26 @@ export const renderDashboardEditor = (
     onClose,
     getTabByRole,
     getButtonByRole,
-    getTabContentSkeleton,
-    queryTabContentSkeleton,
     assertActiveTab,
     ...renderResult,
   };
 };
 
 /**
- * A mock function for the `refreshDashboard` callback provided by `DashboardPageContext`.
- */
-export const mockRefreshDashboard = jest
-  .fn()
-  .mockReturnValue(() => Promise.resolve());
-
-/**
  * Renders the `DashboardLayout` component within a `DashboardPageContext.Provider`.
  *
  * @param dashboardDetails Optional `DashboardDetails` to provide to the context.
- * @returns The `render` result from Testing Library.
+ * @returns The render result from Testing Library, and mock context functions.
  */
 export const renderDashboardLayout = (
   dashboardDetails?: OEQ.Dashboard.DashboardDetails,
-): RenderResult =>
-  render(
-    <DashboardPageContext.Provider
-      value={{
-        dashboardDetails,
-        refreshDashboard: mockRefreshDashboard,
-        minimisePortlet: jest.fn,
-        closePortlet: jest.fn,
-        deletePortlet: jest.fn,
-        restorePortlet: jest.fn(),
-        scrollToRestoredPortletAndReset: jest.fn(),
-      }}
-    >
-      <DashboardLayout />
-    </DashboardPageContext.Provider>,
-  );
+) => renderWithDashboardPageContext(<DashboardLayout />, dashboardDetails);
 
 /**
  * Renders the `DashboardLayoutSelector` component with a mocked `onChange` handler.
  *
  * @param value Optional initial layout value to be selected.
- * @returns The mocked `onChange` handler and the `render` result.
+ * @returns The mocked `onChange` handler and the render result.
  */
 export const renderDashboardLayoutSelector = (
   value?: OEQ.Dashboard.DashboardLayout,
@@ -159,4 +171,22 @@ export const renderDashboardLayoutSelector = (
     <DashboardLayoutSelector value={value} onChange={onChange} />,
   );
   return { onChange, ...renderResult };
+};
+
+/**
+ * Renders a `RestorePortletsTab` component within a `DashboardPageContext.Provider`.
+ *
+ * @param element The `RestorePortletsTab` component element to render.
+ * @returns The render result from Testing Library, and mock context functions.
+ */
+export const renderRestorePortletsTab = (element: React.ReactElement) => {
+  const renderResult = renderWithDashboardPageContext(
+    element,
+    dashboardDetailsWithLayout(),
+  );
+
+  // skeleton should be there immediately
+  expect(renderResult.getByTestId("tab-content-skeleton")).toBeInTheDocument();
+
+  return renderResult;
 };

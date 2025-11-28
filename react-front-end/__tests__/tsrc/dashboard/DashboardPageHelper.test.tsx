@@ -23,6 +23,7 @@ import { pipe } from "fp-ts/function";
 import {
   basicPortlet,
   dashboardDetailsWithLayout,
+  dashboardDetailsWithNoFirstColumnPortlets,
   minimisedPortlet,
   noEditPortlet,
   privatePortlet,
@@ -31,6 +32,7 @@ import { DndPortletData } from "../../../tsrc/dashboard/components/DraggablePort
 import {
   computeDndPortletNewPosition,
   getMovedPortlets,
+  getOrderForRestoredPortlet,
   movePortlet,
   updatePortletPosition,
 } from "../../../tsrc/dashboard/DashboardPageHelper";
@@ -465,5 +467,22 @@ describe("getMovedPortlets", () => {
 
     expect(result).toHaveLength(expectedResult.length);
     expect(result).toEqual(expect.arrayContaining(expectedResult));
+  });
+});
+
+describe("getOrderForRestoredPortlet", () => {
+  it.each([
+    ["dashboardDetails", undefined],
+    ["first-column portlets list", dashboardDetailsWithNoFirstColumnPortlets],
+  ])("should return 0 if %s is empty", (_, dashboardDetails) =>
+    expect(getOrderForRestoredPortlet(dashboardDetails)).toBe(0),
+  );
+
+  it("should return the correct order for a restored portlet when the first column is not empty", () => {
+    const result = pipe(
+      dashboardDetailsWithLayout(),
+      getOrderForRestoredPortlet,
+    );
+    expect(result).toBe(3);
   });
 });
