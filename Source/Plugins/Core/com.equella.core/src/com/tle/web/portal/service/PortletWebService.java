@@ -20,6 +20,7 @@ package com.tle.web.portal.service;
 
 import com.tle.common.portal.entity.Portlet;
 import com.tle.web.portal.editor.PortletEditor;
+import com.tle.web.portal.events.PortletsUpdatedEvent.PortletUpdateEventType;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
@@ -136,4 +137,11 @@ public interface PortletWebService {
   void clearPortletRendererCache(String userId);
 
   Map<String, PortletEditor> registerEditors(SectionTree tree, String parentId);
+
+  void firePortletsChanged(
+      SectionInfo info,
+      String userId,
+      String portletUuid,
+      boolean institutional,
+      PortletUpdateEventType eventType);
 }

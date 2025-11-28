@@ -25,11 +25,13 @@ import com.tle.common.portal.entity.{Portlet, PortletPreference}
 import com.tle.common.usermanagement.user.CurrentUser
 import com.tle.core.dashboard.model.PortletCreatable.fromDescriptor
 import com.tle.core.dashboard.model._
-import com.tle.core.dashboard.service.DashboardService.DASHBOARD_LAYOUT
+import com.tle.core.dashboard.service.DashboardService.{DASHBOARD_LAYOUT, LEGACY_CONTENT_PORTLETS}
 import com.tle.core.guice.Bind
 import com.tle.core.portal.service.PortletService
 import com.tle.core.services.user.UserPreferenceService
 import com.tle.exceptions.AccessDeniedException
+import com.tle.web.portal.events.PortletsUpdatedEvent.PortletUpdateEventType
+import com.tle.web.portal.service.PortletWebService
 import org.slf4j.{Logger, LoggerFactory}
 
 import javax.inject.{Inject, Singleton}
@@ -40,6 +42,7 @@ import scala.util.{Failure, Success, Try}
 @Bind(classOf[DashboardService])
 class DashboardServiceImpl @Inject() (
     portletService: PortletService,
+    portletWebService: PortletWebService,
     userPreferenceService: UserPreferenceService
 ) extends DashboardService {
 
@@ -165,7 +168,13 @@ class DashboardServiceImpl @Inject() (
     Option(portletService.getByUuid(uuid)) match {
       case Some(portlet) =>
         Either.catchNonFatal {
+          val isRestoringLcp = isRestoringLegacyContentPortlet(portlet, updates)
+
           portletService.updatePreference(portlet, updates)
+
+          if (isRestoringLcp) {
+            legacyEventForRestoration(portlet)
+          }
         }
       case None =>
         Left(new NotFoundException(s"Portlet with UUID $uuid not found"))
@@ -205,5 +214,29 @@ class DashboardServiceImpl @Inject() (
         )
         PortletColumn.left
     }
+  }
+
+  // Check if the update is to restore a legacy content portlet. MUST be called before the preference is updated.
+  private def isRestoringLegacyContentPortlet(
+      portlet: Portlet,
+      update: PortletPreferenceUpdate
+  ): Boolean = {
+    val pref = if (LEGACY_CONTENT_PORTLETS.contains(portlet.getType)) {
+      Option(portletService.getPreference(portlet))
+    } else {
+      None
+    }
+
+    pref.exists(_.isClosed) && !update.isClosed
+  }
+
+  private def legacyEventForRestoration(portlet: Portlet): Unit = {
+    portletWebService.firePortletsChanged(
+      null, // Legacy SectionInfo is not needed so use `null`.
+      CurrentUser.getUserID,
+      portlet.getUuid,
+      portlet.isInstitutional,
+      PortletUpdateEventType.CREATED
+    )
   }
 }
