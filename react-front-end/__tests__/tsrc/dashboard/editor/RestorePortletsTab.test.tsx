@@ -95,6 +95,7 @@ describe("<RestorePortletsTab />", () => {
       expect(getByText(portlet.name)).toBeInTheDocument();
     });
     expect(restoreButtons).toHaveLength(getClosedPortletsRes.length);
+    expect.assertions(5);
   });
 
   it("restores portlet with correct preferences", async () => {
