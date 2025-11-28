@@ -56,6 +56,7 @@ export const PortletSearchResultList = ({
             key={uuid + ":" + version}
             component={Link}
             to={routes.ViewItem.to(uuid, version)}
+            divider
           >
             <OEQThumb details={thumbnailDetails} />
             <ListItemText
