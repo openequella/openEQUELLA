@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 import { Card, CardContent, CardHeader, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { languageStrings } from "../../util/langstrings";
-import HTMLReactParser from "html-react-parser";
-import * as A from "fp-ts/Array";
-import exampleImage from "url:../../assets/dashboard-example.png";
 
 const {
   welcomeTitle,
@@ -30,8 +28,7 @@ const {
     systemUser: { howToModify: howToModifyText },
     nonSystemUser: {
       hintForOeq: hintForOeqText,
-      selectAddButton: selectAddButtonText,
-      imageAlt: imageAltText,
+      selectEditButton: selectEditButtonText,
     },
   },
 } = languageStrings.dashboard;
@@ -46,15 +43,6 @@ export interface WelcomeBoardProps {
    */
   hasCreatePortletAcl?: boolean;
 }
-
-const DashboardExampleImage = styled("img")(({ theme }) => {
-  return {
-    [`&`]: {
-      maxWidth: "100%",
-      padding: theme.spacing(1),
-    },
-  };
-});
 
 /**
  * A welcome board component to be shown on the dashboard page if there is no portlet configured.
@@ -73,15 +61,8 @@ const WelcomeBoard = ({
       )),
     );
 
-  const welcomeMessageWithExampleImage = (
-    <>
-      {welcomeMessages([hintForOeqText, selectAddButtonText])}
-      <DashboardExampleImage src={exampleImage} alt={imageAltText} />
-    </>
-  );
-
   const welcomeMessagesForNonSystemUser = hasCreatePortletAcl
-    ? welcomeMessageWithExampleImage
+    ? welcomeMessages([hintForOeqText, selectEditButtonText])
     : welcomeMessages([hintForOeqText]);
 
   return (
