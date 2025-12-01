@@ -94,6 +94,9 @@ const removeLegacyCss = (): void => {
   }
 };
 
+const hasLegacyContent = () =>
+  document.querySelector(".legacy-portlet") !== null;
+
 export default function IndexPage() {
   const { currentUser } = useContext(AppContext);
   const [fullPageError, setFullPageError] = React.useState<ErrorResponse>();
@@ -205,7 +208,12 @@ export default function IndexPage() {
             key={ind}
             path={oeqRoute.path}
             render={(p) => {
-              removeLegacyCss();
+              // The conditional is to fix issue where the same page is loaded twice: legacy CSS must be removed
+              // only when no legacy content is present, otherwise styles become incorrect.
+              if (!hasLegacyContent()) {
+                removeLegacyCss();
+              }
+
               return renderProtectedPage(
                 p,
                 oeqRoute.component,
@@ -289,7 +297,9 @@ export default function IndexPage() {
               return renderLegacyContent(routeProps);
             }
 
-            removeLegacyCss();
+            if (!hasLegacyContent()) {
+              removeLegacyCss();
+            }
             return renderProtectedPage(routeProps, Dashboard);
           }}
         />

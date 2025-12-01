@@ -327,7 +327,7 @@ export const LegacyPortlet = ({
   }, [portletId, generalErrorMsg]);
 
   return (
-    <div ref={portletRef}>
+    <div ref={portletRef} className="legacy-portlet">
       <DraggablePortlet
         portlet={cfg}
         isLoading={isLoading}
