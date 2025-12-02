@@ -96,6 +96,9 @@ export interface LegacyJsFunctions {
   ) => void;
 }
 
+/** Class name of the legacy portlet. */
+export const LEGACY_PORTLET_CLASS = "legacy-portlet";
+
 /**
  * Extend the type definition for the global `window` object to include an object dynamically
  * created for providing the access to legacy JS functions defined for a specific portlet.
@@ -327,7 +330,7 @@ export const LegacyPortlet = ({
   }, [portletId, generalErrorMsg]);
 
   return (
-    <div ref={portletRef} className="legacy-portlet">
+    <div ref={portletRef} className={LEGACY_PORTLET_CLASS}>
       <DraggablePortlet
         portlet={cfg}
         isLoading={isLoading}
