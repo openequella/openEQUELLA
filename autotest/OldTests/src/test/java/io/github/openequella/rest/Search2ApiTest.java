@@ -26,7 +26,9 @@ public class Search2ApiTest extends AbstractRestApiTest {
   private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
   private final String VIRTUAL_HIERARCHY_TOPIC =
       "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  // Parent topic.
   private final String NORMAL_HIERARCHY_TOPIC = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
+  private final String CAL_BOOK_COLLECTION = "4c147089-cddb-e67c-b5ab-189614eb1463";
 
   private final NameValuePair bookmarkOwner =
       new NameValuePair("musts", "bookmark_owner:" + USER_UUID);
@@ -57,7 +59,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     JsonNode result =
         doSearch(
             200, null, new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"));
-    assertEquals(getAvailable(result), 8);
+    assertEquals(getAvailable(result), 9);
   }
 
   @Test(description = "Search for items belonging to a specific owner")
@@ -440,7 +442,18 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a hierarchy topic result")
   public void hierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
-    assertEquals(getAvailable(result), 58);
+    assertEquals(getAvailable(result), 60);
+  }
+
+  @Test(description = "Search for a hierarchy topic result with collections filter")
+  public void hierarchyTopicWithCollectionsFilter() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
+            new NameValuePair("collections", CAL_BOOK_COLLECTION));
+    assertEquals(getAvailable(result), 7);
   }
 
   @Test(description = "Search for a non-existent hierarchy topic result")
@@ -503,9 +516,8 @@ public class Search2ApiTest extends AbstractRestApiTest {
             200,
             null,
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
-            new NameValuePair("collections", "non-existing"),
             new NameValuePair("status", "ARCHIVED"));
-    assertEquals(getAvailable(result), 58);
+    assertEquals(getAvailable(result), 60);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
