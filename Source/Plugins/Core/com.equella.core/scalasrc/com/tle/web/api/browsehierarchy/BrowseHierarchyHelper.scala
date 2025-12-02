@@ -24,6 +24,7 @@ import com.tle.beans.item.{Item, ItemId, ItemIdKey}
 import com.tle.common.beans.exception.NotFoundException
 import com.tle.common.interfaces.equella.BundleString
 import com.tle.common.security.Privilege
+import com.tle.common.util.CollectionUtils
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.serializer.{ItemSerializerItemBean, ItemSerializerService}
@@ -37,6 +38,7 @@ import com.tle.web.api.search.model.SearchItem
 
 import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters.RichOptional
 
 @Bind
 @Singleton
@@ -79,21 +81,38 @@ class BrowseHierarchyHelper {
       })
   }
 
-  def getRootTopics: List[HierarchyTopicSummary] = {
+  /** Get all root topics' summary.
+    *
+    * @param collectionsFilter
+    *   An additional filter of collection UUIDs that is applied together(intersect) with the
+    *   collections defined in the hierarchy to restrict the search scope. Use 'None' if no
+    *   collection filtering is needed. An empty list means all resources are filtered out,
+    *   resulting in an empty search result.
+    */
+  def getRootTopics(collectionsFilter: Option[List[String]]): List[HierarchyTopicSummary] = {
     val topLevelHierarchies = hierarchyService.getRootTopics
+    val filterCollections   = collectionsFilter.map(_.asJava).orNull
 
     hierarchyService
-      .expandVirtualisedTopics(topLevelHierarchies, null, null)
+      .expandVirtualisedTopics(topLevelHierarchies, null, filterCollections)
       .asScala
       .toList
-      .map(buildHierarchyTopicSummary(_))
+      .map(buildHierarchyTopicSummary(_, None, collectionsFilter))
   }
 
   private def getSubTopics(
       topic: HierarchyTopicEntity,
-      compoundUuid: HierarchyCompoundUuid
+      compoundUuid: HierarchyCompoundUuid,
+      collectionsFilter: Option[Iterable[String]]
   ): List[VirtualisableAndValue[HierarchyTopicEntity]] = {
-    val collections   = hierarchyService.getCollectionUuids(topic).orElse(null)
+    // Parent hierarchy collections filter ∩ extra collections filter.
+    val collections = CollectionUtils
+      .intersect(
+        hierarchyService.getCollectionUuids(topic).toScala.map(_.asScala),
+        collectionsFilter
+      )
+      .map(_.toList.asJava)
+      .orNull
     val subTopics     = hierarchyService.getSubTopics(topic)
     val parentUuidMap = compoundUuid.getAllVirtualHierarchyMap.asJava
 
@@ -110,19 +129,22 @@ class BrowseHierarchyHelper {
   private def buildHierarchyTopicSummary(
       topic: HierarchyTopicEntity,
       virtualTopicName: Option[String],
-      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]]
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]],
+      collectionsFilter: Option[Iterable[String]]
   ): HierarchyTopicSummary = {
     val uuid         = topic.getUuid
     val compoundUuid = HierarchyCompoundUuid(uuid, virtualTopicName, parentCompoundUuidList)
 
     val parentUuidJavaMapForSubTopics = compoundUuid.getAllVirtualHierarchyMap.asJava
-    val hasSubTopic                   = getSubTopics(topic, compoundUuid).nonEmpty
+    val hasSubTopic = getSubTopics(topic, compoundUuid, collectionsFilter).nonEmpty
+
+    val collectionsFilterUuids = collectionsFilter.map(_.toList.asJava).orNull
 
     HierarchyTopicSummary(
       // The string representation of the topic compound UUID.
       compoundUuid = compoundUuid.buildString(),
-      matchingItemCount =
-        hierarchyService.getMatchingItemCount(topic, parentUuidJavaMapForSubTopics),
+      matchingItemCount = hierarchyService
+        .getMatchingItemCount(topic, parentUuidJavaMapForSubTopics, collectionsFilterUuids),
       name = buildVirtualTopicText(topic.getName, virtualTopicName),
       shortDescription = buildVirtualTopicText(topic.getShortDescription, virtualTopicName),
       longDescription = buildVirtualTopicText(topic.getLongDescription, virtualTopicName),
@@ -142,14 +164,17 @@ class BrowseHierarchyHelper {
     * @param parentCompoundUuidList
     *   A List of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual
     *   parents).
+    * @param collectionsFilter
+    *   An optional collection of collection UUIDs to filter the resources of each hierarchy.
     */
-  def buildHierarchyTopicSummary(
+  private def buildHierarchyTopicSummary(
       topicWrapper: VirtualisableAndValue[HierarchyTopicEntity],
-      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]] = None
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]],
+      collectionsFilter: Option[Iterable[String]]
   ): HierarchyTopicSummary = {
     val topic: HierarchyTopicEntity = topicWrapper.getVt
     val matchedVirtualText          = Option(topicWrapper.getVirtualisedValue)
-    buildHierarchyTopicSummary(topic, matchedVirtualText, parentCompoundUuidList)
+    buildHierarchyTopicSummary(topic, matchedVirtualText, parentCompoundUuidList, collectionsFilter)
   }
 
   /** Wrap the given topic entity into a VirtualisableAndValue object.
@@ -178,15 +203,18 @@ class BrowseHierarchyHelper {
     * @param parentCompoundUuidList
     *   A list of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual
     *   parents).
+    * @param collectionsFilter
+    *   An optional collection of collection UUIDs to filter the resources of each hierarchy.
     */
   def getTopicSummary(
       topicEntity: HierarchyTopicEntity,
       virtualTopicName: Option[String],
-      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]]
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]],
+      collectionsFilter: Option[Iterable[String]]
   ): HierarchyTopicSummary = {
     val wrappedTopic: VirtualisableAndValue[HierarchyTopicEntity] =
       wrapHierarchyTopic(topicEntity, virtualTopicName)
-    buildHierarchyTopicSummary(wrappedTopic, parentCompoundUuidList)
+    buildHierarchyTopicSummary(wrappedTopic, parentCompoundUuidList, collectionsFilter)
   }
 
   /** Get the summary information of all the sub topics for the given topic entity.
@@ -198,18 +226,21 @@ class BrowseHierarchyHelper {
     * @param parentCompoundUuidList
     *   A list of HierarchyCompoundUuid for the given topic's virtual ancestors (all virtual
     *   parents).
+    * @param collectionsFilter
+    *   An optional collection of collection UUIDs to filter the resources of each hierarchy.
     */
   def getChildren(
       topicEntity: HierarchyTopicEntity,
       virtualTopicName: Option[String],
-      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]]
+      parentCompoundUuidList: Option[List[HierarchyCompoundUuid]],
+      collectionsFilter: Option[Iterable[String]]
   ): List[HierarchyTopicSummary] = {
     val compoundUuid =
       HierarchyCompoundUuid(topicEntity.getUuid, virtualTopicName, parentCompoundUuidList)
     val parentUuidListForSubTopics = compoundUuid.getAllVirtualHierarchyList
 
-    getSubTopics(topicEntity, compoundUuid).map(
-      buildHierarchyTopicSummary(_, Option(parentUuidListForSubTopics))
+    getSubTopics(topicEntity, compoundUuid, collectionsFilter).map(
+      buildHierarchyTopicSummary(_, Option(parentUuidListForSubTopics), collectionsFilter)
     )
   }
 
