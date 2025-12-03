@@ -20,6 +20,7 @@ import WebIcon from "@mui/icons-material/Language";
 import LinkIcon from "@mui/icons-material/Link";
 import VideoIcon from "@mui/icons-material/Movie";
 import ImageIcon from "@mui/icons-material/Panorama";
+import PlaceholderIcon from "@mui/icons-material/TextFields";
 import Web from "@mui/icons-material/Web";
 import { styled } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
@@ -191,9 +192,9 @@ export default function OEQThumb({ details, large }: OEQThumbProps) {
             : buildGenericThumb(attachmentType, mimeType),
         ),
         O.getOrElse(() => (
-          <div
-            className={classes.thumbnail}
-            aria-label={thumbLabels.emptyThumbnail}
+          <PlaceholderIcon
+            aria-label={thumbLabels.placeholder}
+            {...generalThumbStyles}
           />
         )),
       )}
