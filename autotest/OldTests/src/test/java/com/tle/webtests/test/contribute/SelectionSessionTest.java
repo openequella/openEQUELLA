@@ -221,7 +221,7 @@ public class SelectionSessionTest extends AbstractIntegrationTest {
           new io.github.openequella.pages.favourites.FavouritesPage(context).load();
       page.selectFavouritesSearchesType();
       assertTrue(page.hasSearch(searchName));
-      page.removeSearch(searchName);
+      page.removeFromFavourites(searchName);
     } else {
       FavouriteSearchesPage searches = new FavouritesPage(context).load().searches();
       assertTrue(searches.results().doesResultExist(searchName));

@@ -19,10 +19,8 @@
 package io.github.openequella.pages.favourites
 
 import com.tle.webtests.framework.PageContext
-import com.tle.webtests.pageobject.viewitem.SummaryPage
-import io.github.openequella.pages.search.{AbstractSearchPage, NewSearchPage}
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.{By, WebElement}
+import io.github.openequella.pages.search.AbstractSearchPage
+import org.openqa.selenium.By
 
 class FavouritesPage(
     context: PageContext
@@ -46,9 +44,9 @@ class FavouritesPage(
     */
   def selectSearch(name: String): Unit = selectLink(name)
 
-  /** Remove a favourite search with the given name from favourites.
+  /** Remove a favourite item or search with the given name from favourites page.
     */
-  def removeSearch(name: String): Unit = {
+  def removeFromFavourites(name: String): Unit = {
     val searchLink = findLink(name)
     val removeButton =
       searchLink.findElement(By.xpath("./../..//button[@aria-label='Remove from favourites']"))

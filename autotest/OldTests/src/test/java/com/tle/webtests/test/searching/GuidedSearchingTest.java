@@ -173,7 +173,7 @@ public class GuidedSearchingTest extends AbstractCleanupTest {
     io.github.openequella.pages.favourites.FavouritesPage favouritePage =
         new io.github.openequella.pages.favourites.FavouritesPage(context).load();
     favouritePage.selectFavouritesSearchesType();
-    favouritePage.removeSearch(searchName);
+    favouritePage.removeFromFavourites(searchName);
   }
 
   private void deleteSearch(String searchName) {

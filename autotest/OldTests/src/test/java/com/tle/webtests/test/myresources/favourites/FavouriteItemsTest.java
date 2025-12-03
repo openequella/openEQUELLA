@@ -1,5 +1,6 @@
 package com.tle.webtests.test.myresources.favourites;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -17,99 +18,47 @@ import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.Test;
 import testng.annotation.OldUIOnly;
 
-/*
- * A lot of this test could be refactored into methods
- */
 @TestInstitution("vanilla")
 public class FavouriteItemsTest extends AbstractCleanupTest {
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
-  public void addRemoveFavouriteFromItemSummary() {
+  public void fromItemSummary() {
     logon("AutoTest", "automated");
-    String name = "testfromsummary";
+    String itemName = context.getFullName("testfromsummary");
 
     // Add Item
-    WizardPageTab wizard =
-        new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
-    String itemName = context.getFullName(name);
-    wizard.editbox(1, itemName);
-    wizard.save().publish();
+    createItem(itemName);
 
-    // Find the item and view it
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
-
-    // Add it to favourites (Check that button changes)
-    SummaryPage itemSummary = results.getResultForTitle(itemName, 1).viewSummary();
-    itemSummary.addToFavourites().clickAdd();
-    assertTrue(itemSummary.isFavouriteItem());
+    // Add to favourites from summary page.
+    assertAddFavouriteFromSummary(itemName);
 
     // Check that it appears on the Favourite Items page
-    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
-    assertTrue(favs.results().isResultsAvailable());
-    assertTrue(favs.results().doesResultExist(itemName, 1));
+    assertItemVisibleOnFavourites(itemName);
 
-    // Find the item and view it
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
-
-    // Remove it from favourites (Check that button changes)
-    itemSummary = results.getResultForTitle(itemName, 1).viewSummary();
-    itemSummary.removeFavourite();
-    itemSummary = itemSummary.get();
-    assertFalse(itemSummary.isFavouriteItem());
+    // Remove it from favourites from summary page.
+    assertRemoveFavouriteFromSummary(itemName);
   }
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
-  public void addRemoveFavouriteFromSearchResults() {
+  public void fromSearchResults() {
     logon("AutoTest", "automated");
-    String name = "testfromsearchresult";
+    String itemName = context.getFullName("testfromsearchresult");
 
     // Add Item
-    WizardPageTab wizard =
-        new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
-    String itemName = context.getFullName(name);
-    wizard.editbox(1, itemName);
-    wizard.save().publish();
+    createItem(itemName);
 
-    // Find the item
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
-
-    // Add it to favourites (Check that link changes)
-    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
-    resultForTitle.addToFavourites().clickAdd();
-
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName);
-    resultForTitle = results.getResultForTitle(itemName, 1);
-    assertTrue(resultForTitle.isFavouriteItem());
+    // Add it to favourites from search results.
+    assetAddFavouriteFromSearchPage(itemName);
 
     // Check that it appears on the Favourite Items page
-    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
-    assertTrue(favs.results().doesResultExist(itemName, 1));
+    assertItemVisibleOnFavourites(itemName);
 
     // Remove Favourite with link on search result
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName);
-    resultForTitle = results.getResultForTitle(itemName, 1);
-    resultForTitle.removeFavourite();
-
-    // Check if it has been removed
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName);
-    resultForTitle = results.getResultForTitle(itemName, 1);
-    assertFalse(resultForTitle.isFavouriteItem());
+    assertRemoveFavouriteFromSearchPage(itemName);
   }
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
   public void testFavouriteTagSearch() {
@@ -122,34 +71,21 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     String tag2 = "tagnumbertwo,three;four five";
 
     // Add Item 1 and Item 2
-    WizardPageTab wizard =
-        new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
-    wizard.editbox(1, itemName1);
-    wizard.save().publish();
-    wizard = new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
-    wizard.editbox(1, itemName2);
-    wizard.save().publish();
+    createItem(itemName1);
+    createItem(itemName2);
 
-    // Search for item and add it to favourites
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName1);
-    assertTrue(results.doesResultExist(itemName1, 1));
-    ItemSearchResult resultForTitle = results.getResultForTitle(itemName1, 1);
-    resultForTitle.addToFavourites().setTags(tag1).clickAdd();
+    // Search for item1 and add it to favourites with tag1
+    assetAddFavouriteFromSearchPage(itemName1, tag1);
 
-    // Search for item and add it to favourites
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName2);
-    assertTrue(results.doesResultExist(itemName2, 1));
-    resultForTitle = results.getResultForTitle(itemName2, 1);
-    resultForTitle.addToFavourites().setTags(tag2).clickAdd();
+    // Search for item2 and add it to favourites with tag2
+    assetAddFavouriteFromSearchPage(itemName2, tag2);
 
-    // Goto favourites page and search for tags using keyword filter
+    // Goto favourites page and assert both items are present before filtering
     FavouriteItemsPage favs = new FavouritesPage(context).load().items();
     assertTrue(favs.results().doesResultExist(itemName1));
     assertTrue(favs.results().doesResultExist(itemName2));
 
-    // Search favs with tag/keyword filter
+    // Search favs with tag/keyword filter and verify which items are returned
     ItemListPage favresults = favs.search(tag1);
     assertTrue(favresults.doesResultExist(itemName1, 1));
     assertFalse(favresults.doesResultExist(itemName2));
@@ -157,110 +93,63 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     favresults = favs.search("tagnumbertwo");
     assertTrue(favresults.doesResultExist(itemName2, 1));
     assertFalse(favresults.doesResultExist(itemName1));
+
     favresults = favs.search("three");
     assertTrue(favresults.doesResultExist(itemName2, 1));
     assertFalse(favresults.doesResultExist(itemName1));
+
     favresults = favs.search("four");
     assertTrue(favresults.doesResultExist(itemName2, 1));
     assertFalse(favresults.doesResultExist(itemName1));
+
     favresults = favs.search("five");
     assertTrue(favresults.doesResultExist(itemName2, 1));
     assertFalse(favresults.doesResultExist(itemName1));
+
     favresults = favs.search("three four five");
     assertTrue(favresults.doesResultExist(itemName2, 1));
     assertFalse(favresults.doesResultExist(itemName1));
-
-    // Remove favourites
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName1);
-    assertTrue(results.doesResultExist(itemName1, 1));
-    results.getResultForTitle(itemName1, 1).removeFavourite();
-
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName2);
-    assertTrue(results.doesResultExist(itemName2, 1));
-    results.getResultForTitle(itemName2, 1).removeFavourite();
   }
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
   public void testVersionFavourites() {
     logon("AutoTest", "automated");
-    String name = "testversion";
-    String itemName = context.getFullName(name);
-    String thisversion = "thisversion";
-    String latestversion = "latestversion";
+    String itemName = context.getFullName("version");
+    String thisVersionTag = "thisversion";
+    String latestVersionTag = "latestversion";
 
-    // Add Item
-    WizardPageTab wizard =
-        new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
-    wizard.editbox(1, itemName);
-    wizard.save().publish();
+    // try / catch
+    createItem(itemName);
 
-    // Add to favourites and choose this version
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
+    // Favourite v1 as "This version"
+    addFavouriteForVersion(itemName, thisVersionTag, /* latest= */ false);
 
-    // Add it to favourites (Check that link changes)
-    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
-    resultForTitle.addToFavourites().setTags(thisversion).setLatestVersion(false).clickAdd();
+    // Create v2
+    createNewVersion(itemName);
 
-    // New version item
-    wizard = SearchPage.searchAndView(context, itemName).adminTab().newVersion();
-    wizard.save().publish();
+    // Favourite v2 as "Latest version"
+    addFavouriteForVersion(itemName, latestVersionTag, /* latest= */ true);
 
-    // Add it to favourites
-    searchPage = new SearchPage(context).load();
-    results = searchPage.exactQuery(itemName);
-    assertTrue(results.doesResultExist(itemName, 1));
+    // Verify 'This Version' points to v1 and 'Latest Version' points to v2
+    assertFavouriteVersion(thisVersionTag, itemName, 1);
+    assertFavouriteVersion(latestVersionTag, itemName, 2);
 
-    // Add it to favourites (Check that link changes)
-    resultForTitle = results.getResultForTitle(itemName, 1);
-    resultForTitle.addToFavourites().setTags(latestversion).setLatestVersion(true).clickAdd();
+    // Create v3
+    createNewVersion(itemName);
 
-    // Check favourites point to correct versions
-    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
-    ItemListPage favresults = favs.search(thisversion);
-
-    // Check that latest points to version 1
-    assertTrue(favresults.getResult(1).viewSummary().getItemId().getVersion() == 1);
-
-    favs = new FavouritesPage(context).load().items();
-    favresults = favs.search(latestversion);
-
-    // Check that latest points to version 2
-    assertTrue(favresults.getResult(1).viewSummary().getItemId().getVersion() == 2);
-
-    wizard = SearchPage.searchAndView(context, itemName).adminTab().newVersion();
-    wizard.save().publish();
-
-    favs = new FavouritesPage(context).load().items();
-    favresults = favs.search(latestversion);
-
-    // Check that latest points to version 3
-    assertTrue(favresults.getResult(1).viewSummary().getItemId().getVersion() == 3);
-
-    // Remove favourites
-    favs = new FavouritesPage(context).load().items();
-    favresults = favs.search(latestversion);
-    favresults.getResultForTitle(itemName, 1).removeFavourite();
-    favresults = favs.search(thisversion);
-    favresults.getResultForTitle(itemName, 1).removeFavourite();
+    // Verify "Latest version" now points to v3
+    assertFavouriteVersion(latestVersionTag, itemName, 3);
   }
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
   public void testNoResults() {
     logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
 
-    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
-    assertFalse(favs.hasResults());
+    assertNoFavouriteResults();
   }
 
-  // TODO: OEQ-2610 re-enable it in new UI or write new test.
   @Test
   @OldUIOnly
   public void testAutoLoggedIn() {
@@ -278,5 +167,104 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     searchPage.results().getResult(1).clickTitle();
     SummaryPage summaryPage = new SummaryPage(context);
     assertFalse(summaryPage.hasFavouriteOption());
+  }
+
+  /** Creates and publishes a basic test item with the provided name. */
+  private void createItem(String itemName) {
+    WizardPageTab wizard =
+        new ContributePage(context).load().openWizard(GENERIC_TESTING_COLLECTION);
+    wizard.editbox(1, itemName);
+    wizard.save().publish();
+  }
+
+  /** Adds an item to favourites from the summary page and asserts success. */
+  private void assertAddFavouriteFromSummary(String itemName) {
+    SummaryPage itemSummary =
+        new SearchPage(context)
+            .load()
+            .exactQuery(itemName)
+            .getResultForTitle(itemName, 1)
+            .viewSummary();
+    itemSummary.addToFavourites().clickAdd();
+    assertTrue(itemSummary.isFavouriteItem());
+  }
+
+  /** Adds an item to favourites from the search page and asserts success. */
+  private void assetAddFavouriteFromSearchPage(String itemName, String... tags) {
+    SearchPage searchPage = new SearchPage(context).load();
+    ItemListPage results = searchPage.exactQuery(itemName);
+    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
+    if (tags != null && tags.length > 0) {
+      resultForTitle.addToFavourites().setTags(tags[0]).clickAdd();
+    } else {
+      resultForTitle.addToFavourites().clickAdd();
+    }
+    assertTrue(resultForTitle.isFavouriteItem());
+  }
+
+  /** Removes an item from favourites from the summary page and asserts success. */
+  private void assertRemoveFavouriteFromSummary(String itemName) {
+    SummaryPage itemSummary =
+        new SearchPage(context)
+            .load()
+            .exactQuery(itemName)
+            .getResultForTitle(itemName, 1)
+            .viewSummary();
+    itemSummary.removeFavourite();
+    itemSummary.get();
+    assertFalse(itemSummary.isFavouriteItem());
+  }
+
+  /** Removes an item from favourites from the search page and asserts success. */
+  private void assertRemoveFavouriteFromSearchPage(String itemName) {
+    SearchPage searchPage = new SearchPage(context).load();
+    ItemListPage results = searchPage.exactQuery(itemName);
+    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
+    resultForTitle.removeFavourite();
+
+    results = new SearchPage(context).load().exactQuery(itemName);
+    resultForTitle = results.getResultForTitle(itemName, 1);
+    assertFalse(resultForTitle.isFavouriteItem());
+  }
+
+  /** Asserts an item is visible on the favourites page, optionally filtering by tag. */
+  private void assertItemVisibleOnFavourites(String itemName, String... tags) {
+    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
+    if (tags != null && tags.length > 0) {
+      ItemListPage favresults = favs.search(tags[0]);
+      assertTrue(favresults.doesResultExist(itemName, 1));
+    } else {
+      assertTrue(favs.results().doesResultExist(itemName));
+    }
+  }
+
+  /** Asserts that the favourites page shows no results. */
+  private void assertNoFavouriteResults() {
+    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
+    assertFalse(favs.hasResults());
+  }
+
+  /** Adds a version-specific favourite from the search page. */
+  private void addFavouriteForVersion(String itemName, String tag, boolean latestVersion) {
+    SearchPage searchPage = new SearchPage(context).load();
+    ItemListPage results = searchPage.exactQuery(itemName);
+    assertTrue(results.doesResultExist(itemName, 1));
+
+    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
+    resultForTitle.addToFavourites().setTags(tag).setLatestVersion(latestVersion).clickAdd();
+  }
+
+  /** Creates a new version of an item from its summary page. */
+  private void createNewVersion(String itemName) {
+    WizardPageTab wizard = SearchPage.searchAndView(context, itemName).adminTab().newVersion();
+    wizard.save().publish();
+  }
+
+  /** Asserts a favourite points to the correct item version. */
+  private void assertFavouriteVersion(String tag, String itemName, int expectedVersion) {
+    FavouriteItemsPage favs = new FavouritesPage(context).load().items();
+    ItemListPage favresults = favs.search(tag);
+    SummaryPage summary = favresults.getResult(1).viewSummary();
+    assertEquals(expectedVersion, summary.getItemId().getVersion());
   }
 }

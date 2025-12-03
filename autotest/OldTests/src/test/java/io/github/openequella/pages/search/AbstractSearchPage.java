@@ -33,6 +33,13 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
 
   private final By searchResultListBy = By.xpath(searchResultListXpath);
 
+  private static final String itemByTitleXpath = "//li[.//a[normalize-space()='%s']]";
+
+  private static final String favouriteButtonXpath =
+      itemByTitleXpath + "//button[@aria-label='%s']";
+
+  private static final By dialogBy = By.xpath("//div[@role='dialog']");
+
   public AbstractSearchPage(PageContext context) {
     super(context);
   }
@@ -55,6 +62,11 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   /** Check if the search result list is present. */
   public Boolean hasSearchResultList() {
     return !driver.findElements(searchResultListBy).isEmpty();
+  }
+
+  /** Check if the search result list is empty. */
+  public boolean isSearchResultListEmpty() {
+    return isVisible(By.xpath("//p[text()='No results found.']"));
   }
 
   /**
@@ -87,6 +99,16 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    */
   public boolean hasItem(String itemTitle) {
     return !driver.findElements(By.linkText(itemTitle)).isEmpty();
+  }
+
+  /**
+   * Check if an Item in the search result is marked as a favourite.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public boolean isFavourite(String itemTitle) {
+    By favButtonLocator = favouriteButtonLocator(itemTitle, "Remove from favourites");
+    return !driver.findElements(favButtonLocator).isEmpty();
   }
 
   /**
@@ -349,13 +371,86 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
         driver.findElement(By.xpath("//button[@aria-label='Add search to favourites']"));
     favouriteButton.click();
 
-    WebElement favouriteDialog = driver.findElement(By.xpath("//div[@role='dialog']"));
+    WebElement favouriteDialog = driver.findElement(dialogBy);
     WebElement nameInput = favouriteDialog.findElement(By.tagName("input"));
     nameInput.sendKeys(name);
 
-    WebElement confirmButton = favouriteDialog.findElement(By.id("confirm-dialog-confirm-button"));
-    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
-    confirmButton.click();
+    confirmDialog();
+  }
+
+  public void addItemToFavourites(String name) {
+    addItemToFavourites(name, null, true);
+  }
+
+  public void addItemToFavourites(String name, String[] tags) {
+    addItemToFavourites(name, tags, true);
+  }
+
+  /**
+   * Add an item to favourites from the search results page.
+   *
+   * @param itemName The name of the item to add to favourites.
+   * @param tags An array of tags to associate with the favourite item.
+   * @param useLatestVersion If true, the favourite will track the latest version of the item.
+   */
+  public void addItemToFavourites(String itemName, String[] tags, boolean useLatestVersion) {
+    WebElement addToFavouritesButton =
+        driver.findElement(favouriteButtonLocator(itemName, "Add to favourites"));
+    addToFavouritesButton.click();
+
+    // Wait for the dialog to appear.
+    WebElement favouriteDialog = driver.findElement(dialogBy);
+
+    // Enter each tag followed by the Enter key.
+    if (tags != null) {
+      WebElement tagsInput = favouriteDialog.findElement(By.xpath(".//input[@role='combobox']"));
+      for (String tag : tags) {
+        tagsInput.sendKeys(tag);
+        tagsInput.sendKeys(Keys.ENTER);
+      }
+    }
+
+    // Select version radio based on the `useLatestVersion` value
+    String versionValue = useLatestVersion ? "latest" : "this";
+    WebElement versionRadio =
+        favouriteDialog.findElement(
+            By.xpath(".//input[@type='radio' and @value='" + versionValue + "']"));
+    if (!versionRadio.isSelected()) {
+      versionRadio.click();
+    }
+
+    // Click the confirmation button.
+    confirmDialog();
+
+    waiter.until(
+        ExpectedConditions.presenceOfElementLocated(
+            favouriteButtonLocator(itemName, "Remove from favourites")));
+  }
+
+  /**
+   * Unfavourite an item from the search results page.
+   *
+   * @param itemName The name of the item to remove from favourites.
+   */
+  public void removeFavouriteFromSearchResult(String itemName) {
+    By favRemoveButtonLocator = favouriteButtonLocator(itemName, "Remove from favourites");
+    WebElement removeButton = driver.findElement(favRemoveButtonLocator);
+    waiter.until(ExpectedConditions.elementToBeClickable(removeButton));
+    removeButton.click();
+    confirmDialog();
+
+    waiter.until(ExpectedConditions.numberOfElementsToBe(favRemoveButtonLocator, 0));
+  }
+
+  /**
+   * Build a 'By' locator for the favourite button of a search result item.
+   *
+   * @param itemTitle The title of the item.
+   * @param ariaLabel The aria-label of the button.
+   * @return A By locator for the favourite button.
+   */
+  private By favouriteButtonLocator(String itemTitle, String ariaLabel) {
+    return By.xpath(String.format(favouriteButtonXpath, itemTitle, ariaLabel));
   }
 
   /**
