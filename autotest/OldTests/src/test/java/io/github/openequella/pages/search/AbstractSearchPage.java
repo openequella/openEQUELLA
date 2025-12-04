@@ -4,7 +4,9 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -17,6 +19,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * types of search pages, such as NewSearchPage, AdvancedSearchPage, and HierarchicalPage.
  */
 public abstract class AbstractSearchPage<T extends PageObject> extends AbstractPage<T> {
+
   @FindBy(id = "searchBar")
   protected WebElement searchBar;
 
@@ -35,8 +38,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
 
   private static final String itemByTitleXpath = "//li[.//a[normalize-space()='%s']]";
 
-  private static final String favouriteButtonXpath =
-      itemByTitleXpath + "//button[@aria-label='%s']";
+  private static final String itemButtonXpath = itemByTitleXpath + "//button[@aria-label='%s']";
 
   private static final By dialogBy = By.xpath("//div[@role='dialog']");
 
@@ -106,7 +108,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    *
    * @param itemTitle The title of an Item.
    */
-  public boolean isFavourite(String itemTitle) {
+  public boolean isItemFavourited(String itemTitle) {
     By favButtonLocator = favouriteButtonLocator(itemTitle, "Remove from favourites");
     return !driver.findElements(favButtonLocator).isEmpty();
   }
@@ -378,10 +380,21 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     confirmDialog();
   }
 
+  /**
+   * Add an item to favourites from the search results page using default settings.
+   *
+   * @param name The name of the item to add to favourites.
+   */
   public void addItemToFavourites(String name) {
     addItemToFavourites(name, null, true);
   }
 
+  /**
+   * Add an item to favourites from the search results page with the specified tags.
+   *
+   * @param name The name of the item to add to favourites.
+   * @param tags An array of tags to associate with the favourite item.
+   */
   public void addItemToFavourites(String name, String[] tags) {
     addItemToFavourites(name, tags, true);
   }
@@ -402,13 +415,13 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     WebElement favouriteDialog = driver.findElement(dialogBy);
 
     // Enter each tag followed by the Enter key.
-    if (tags != null) {
-      WebElement tagsInput = favouriteDialog.findElement(By.xpath(".//input[@role='combobox']"));
-      for (String tag : tags) {
-        tagsInput.sendKeys(tag);
-        tagsInput.sendKeys(Keys.ENTER);
-      }
-    }
+    Optional.ofNullable(tags)
+        .ifPresent(
+            ts -> {
+              WebElement tagsInput =
+                  favouriteDialog.findElement(By.xpath(".//input[@role='combobox']"));
+              Arrays.stream(ts).forEach(tag -> tagsInput.sendKeys(tag, Keys.ENTER));
+            });
 
     // Select version radio based on the `useLatestVersion` value
     String versionValue = useLatestVersion ? "latest" : "this";
@@ -450,7 +463,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    * @return A By locator for the favourite button.
    */
   private By favouriteButtonLocator(String itemTitle, String ariaLabel) {
-    return By.xpath(String.format(favouriteButtonXpath, itemTitle, ariaLabel));
+    return By.xpath(String.format(itemButtonXpath, itemTitle, ariaLabel));
   }
 
   /**
@@ -555,5 +568,14 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    */
   public void selectLink(String linkTitle) {
     findLink(linkTitle).click();
+  }
+
+  /**
+   * Checks if the wildcard search toggle is visible.
+   *
+   * @return True if the wildcard toggle is visible, false otherwise.
+   */
+  public boolean hasWildcardToggle() {
+    return isVisible(By.xpath("//span[text()='Wildcard search']"));
   }
 }

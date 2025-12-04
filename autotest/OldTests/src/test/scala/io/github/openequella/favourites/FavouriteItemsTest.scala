@@ -11,9 +11,9 @@ import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
 @TestInstitution("fiveo")
+@NewUIOnly
 class FavouriteItemsTest extends AbstractCleanupAutoTest {
 
-  @NewUIOnly
   @Test(description = "Verify adding and removing an item from favourites on the item summary page")
   def fromItemSummary(): Unit = {
     val itemName = context.getFullName("summary")
@@ -24,7 +24,6 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     assertRemoveFavFromSummaryPage(itemName)
   }
 
-  @NewUIOnly
   @Test(description =
     "Verify adding and removing an item from favourites on the search results page"
   )
@@ -37,19 +36,18 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     assertRemoveFavFromSearchPage(itemName)
   }
 
-  @NewUIOnly
-  @Test(description = "Verify favourites options are hidden when not logged in / auto logged in")
+  @Test(description = "Verify favourites options are not shown when not logged in / auto logged in")
   def testAutoLoggedIn(): Unit = {
     logout().autoLogin()
 
-    // Verify `Favourites` menu option is missing
+    // Verify `Favourites` menu option is not shown
     val menu = new MenuSection(context).get
     assertFalse(
       menu.hasMenuOption("Favourites"),
       "Favourites menu should not be present for auto-logged in users"
     )
 
-    // Open Item summary page for the first item and verify that favourite option is missing
+    // Open Item summary page for the first item and verify that add/remove favourite button is not shown
     val searchPage = new NewSearchPage(context).load()
     searchPage.waitForInitialSearchResult()
     val firstItem   = searchPage.getItemNameByIndex(0)
@@ -60,7 +58,6 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     )
   }
 
-  @NewUIOnly
   @Test(description = "Verify version specific favourites (This Version vs Latest Version)")
   def testVersionFavourites(): Unit = {
     val itemName         = context.getFullName("version")
@@ -80,7 +77,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     searchPage.newSearch();
 
     // Create Version 2
-    createNewVersion(itemName)
+    createItemNewVersion(itemName)
 
     searchPage.load()
 
@@ -94,7 +91,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     assertFavouriteVersion(tagLatestVersion, itemName, 2)
 
     // Create Version 3
-    createNewVersion(itemName)
+    createItemNewVersion(itemName)
 
     // Verify 'Latest Version' now points to v3
     assertFavouriteVersion(tagLatestVersion, itemName, 3)
@@ -105,7 +102,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param allVersions
     *   when true, expands the refine panel and selects 'All' status values.
     */
-  def loadFavouritesPage(allVersions: Boolean = false): FavouritesPage = {
+  private def loadFavouritesPage(allVersions: Boolean = false): FavouritesPage = {
     val favouritesPage = new FavouritesPage(context).load()
     if (allVersions) {
       favouritesPage.expandRefineControlPanel()
@@ -179,7 +176,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
     searchPage.removeFavouriteFromSearchResult(itemName)
-    assertFalse(searchPage.isFavourite(itemName))
+    assertFalse(searchPage.isItemFavourited(itemName))
   }
 
   /** Loads the Favourites page and asserts that the specified item appears in the results.
@@ -188,7 +185,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     *   name of the item expected to be present on the Favourites page.
     */
   private def assertItemInFavouritesPage(itemName: String): Unit = {
-    val favouritesPage = new FavouritesPage(context).load()
+    val favouritesPage = loadFavouritesPage()
     favouritesPage.waitForSearchCompleted()
     assertTrue(favouritesPage.hasItem(itemName))
   }
@@ -198,7 +195,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param itemName
     *   name of the item for which a new version should be created.
     */
-  private def createNewVersion(itemName: String): Unit = {
+  private def createItemNewVersion(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)

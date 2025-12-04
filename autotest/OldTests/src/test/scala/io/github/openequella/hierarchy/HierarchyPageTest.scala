@@ -187,7 +187,7 @@ import testng.annotation.NewUIOnly
     // Remove the saved search
     val newFavouritesPage = new FavouritesPage(context).load
     newFavouritesPage.selectFavouritesSearchesType()
-    newFavouritesPage.removeFromFavourites(searchName)
+    newFavouritesPage.removeFavourite(searchName)
   }
 
   @NewUIOnly

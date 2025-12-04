@@ -30,6 +30,7 @@ import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
 @TestInstitution("fiveo")
+@NewUIOnly
 class FavouritesPageTest extends AbstractCleanupAutoTest {
   private val CUSTOM_TAG = "customTag"
 
@@ -54,7 +55,6 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     searchPage.addToFavouriteSearch(searchName)
   }
 
-  @NewUIOnly
   @Test(description = "User should be able to access favourites page from the menu.")
   def accessFromMenu(): Unit = {
     new HomePage(context).load
@@ -64,10 +64,8 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     assertTrue(favouritesPage.isLoaded)
   }
 
-  @NewUIOnly
-  @Test(description = "Verify empty state for favourites")
+  @Test(description = "Verify empty state when no favourites exist")
   def noResults(): Unit = {
-    logout()
     logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword)
 
     val favouritesPage = new FavouritesPage(context).load()
@@ -77,18 +75,21 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     assertTrue(favouritesPage.isSearchResultListEmpty)
   }
 
-  @NewUIOnly
   @Test(description = "Verify switching between favourite types")
   def switchFavouriteType(): Unit = {
     val favouritesPage = new FavouritesPage(context).load()
+
+    // Switch to Searches
     favouritesPage.selectFavouritesSearchesType()
     assertTrue(favouritesPage.isToggleButtonSelected("Searches"), "Searches should be selected")
+    assertFalse(favouritesPage.hasWildcardToggle, "Wildcard toggle should be hidden for searches")
 
+    // Switch to Resources
     favouritesPage.selectFavouritesResourcesType()
     assertTrue(favouritesPage.isToggleButtonSelected("Resources"), "Resources should be selected")
+    assertTrue(favouritesPage.hasWildcardToggle, "Wildcard toggle should be visible for resources")
   }
 
-  @NewUIOnly
   @Test(description = "Verify user can search for favourite resources by tags")
   def searchByTags(): Unit = {
     val item = context.getFullName("search")
@@ -107,7 +108,6 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     assertTrue(favouritesPage.hasItem(item))
   }
 
-  @NewUIOnly
   @Test(description = "Verify user can remove a favourite resource")
   def removeFavouriteItem(): Unit = {
     val item = context.getFullName("item")
@@ -121,12 +121,11 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     assertTrue(favouritesPage.hasItem(item))
 
     // Remove the item from favourites.
-    favouritesPage.removeFromFavourites(item)
+    favouritesPage.removeFavourite(item)
     favouritesPage.waitForSearchCompleted(0)
     assertFalse(favouritesPage.hasItem(item))
   }
 
-  @NewUIOnly
   @Test(description = "Verify user can remove a favourite search")
   def removeFavouriteSearch(): Unit = {
     val search = context.getFullName("favSearch")
@@ -139,7 +138,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
     assertTrue(favouritesPage.hasItem(search))
 
     // Remove the search from favourites.
-    favouritesPage.removeFromFavourites(search)
+    favouritesPage.removeFavourite(search)
     assertFalse(favouritesPage.hasItem(search))
   }
 }
