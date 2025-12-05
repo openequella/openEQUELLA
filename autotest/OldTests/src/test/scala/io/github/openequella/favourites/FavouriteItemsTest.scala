@@ -19,9 +19,9 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     val itemName = context.getFullName("summary")
 
     createTestItem(itemName)
-    addToFavouritesInSummaryPage(itemName)
+    addFavouriteFromSummaryPage(itemName)
     assertItemInFavouritesPage(itemName)
-    assertRemoveFavFromSummaryPage(itemName)
+    removeFavouriteFromSummaryPage(itemName)
   }
 
   @Test(description =
@@ -31,9 +31,9 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     val itemName = context.getFullName("search")
 
     createTestItem(itemName)
-    addToFavouritesInSearchPage(itemName)
+    addFavouriteFromSearchPage(itemName)
     assertItemInFavouritesPage(itemName)
-    assertRemoveFavFromSearchPage(itemName)
+    removeFavouriteFromSearchPage(itemName)
   }
 
   @Test(description = "Verify favourites options are not shown when not logged in / auto logged in")
@@ -128,7 +128,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param itemName
     *   name of the item to locate in search before opening summary.
     */
-  private def addToFavouritesInSummaryPage(itemName: String): Unit = {
+  private def addFavouriteFromSummaryPage(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
@@ -143,7 +143,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param itemName
     *   name of the item whose favourite flag should be removed.
     */
-  private def assertRemoveFavFromSummaryPage(itemName: String): Unit = {
+  private def removeFavouriteFromSummaryPage(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
@@ -158,7 +158,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param itemName
     *   name of the item to favourite in the current search results.
     */
-  private def addToFavouritesInSearchPage(itemName: String): Unit = {
+  private def addFavouriteFromSearchPage(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
@@ -171,7 +171,7 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     * @param itemName
     *   name of the item to unfavourite from the search results.
     */
-  private def assertRemoveFavFromSearchPage(itemName: String): Unit = {
+  private def removeFavouriteFromSearchPage(itemName: String): Unit = {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)

@@ -33,13 +33,13 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
     createItem(itemName);
 
     // Add to favourites from summary page.
-    addFavouriteFromSummary(itemName);
+    addFavouriteFromSummaryPage(itemName);
 
     // Check that it appears on the Favourite Items page
     assertItemVisibleOnFavourites(itemName);
 
     // Remove it from favourites from summary page.
-    removeFavouriteFromSummary(itemName);
+    removeFavouriteFromSummaryPage(itemName);
   }
 
   @Test
@@ -174,7 +174,7 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
   }
 
   /** Adds an item to favourites from the summary page and asserts success. */
-  private void addFavouriteFromSummary(String itemName) {
+  private void addFavouriteFromSummaryPage(String itemName) {
     SummaryPage itemSummary =
         new SearchPage(context)
             .load()
@@ -198,7 +198,7 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
   }
 
   /** Removes an item from favourites from the summary page and asserts success. */
-  private void removeFavouriteFromSummary(String itemName) {
+  private void removeFavouriteFromSummaryPage(String itemName) {
     SummaryPage itemSummary =
         new SearchPage(context)
             .load()
