@@ -132,7 +132,7 @@ const getTopicIDFromQueryParam = (queryParam: string): string | undefined =>
     new URLSearchParams(queryParam).get("topic"),
     O.fromNullable,
     O.map((uuids) => uuids.split(",")),
-    O.map(A.map(convertLegacyCompoundUuidToNewFormat)),
+    O.map(A.map(convertSingleLegacyIdToNewFormat)),
     O.map(A.intercalate(S.Monoid)(",")),
     O.toUndefined,
   );
@@ -143,7 +143,7 @@ const getTopicIDFromQueryParam = (queryParam: string): string | undefined =>
 //   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
 // New format:
 //   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ="
-const convertLegacyCompoundUuidToNewFormat = (legacyCompoundUuid: string) => {
+const convertSingleLegacyIdToNewFormat = (legacyCompoundUuid: string) => {
   const [uuid, encodedNameMaybe] = legacyCompoundUuid.split(":");
 
   const decodeFormUrlEncodedSpaces = (name: string) => name.replace(/\+/g, " ");
@@ -161,6 +161,47 @@ const convertLegacyCompoundUuidToNewFormat = (legacyCompoundUuid: string) => {
     O.getOrElse(() => legacyCompoundUuid),
   );
 };
+
+// Converts a single new base64 formatted compound UUID back to legacy URL-encoded format.
+//
+// New format:
+//   "46249813-019d-4d14-b772-2a8ca0120c99:RCwgRGF2aWQ="
+// Legacy format:
+//   "46249813-019d-4d14-b772-2a8ca0120c99:D%2C+David"
+const convertSingleNewIdToLegacyFormat = (compoundUuid: string) => {
+  const [uuid, base64NameMaybe] = compoundUuid.split(":");
+
+  const decodeBase64 = (base64: string) =>
+    Buffer.from(base64, "base64").toString("utf8");
+
+  // Legacy format expects application/x-www-form-urlencoded encoding:
+  //   - spaces → '+'
+  //   - special chars → percent-encoded (encodeURIComponent)
+  const encodeFormUrl = (name: string) =>
+    encodeURIComponent(name).replace(/%20/g, "+");
+
+  return pipe(
+    O.fromNullable(base64NameMaybe),
+    O.map(decodeBase64),
+    O.map(encodeFormUrl),
+    O.map((legacyEncodedName) => `${uuid}:${legacyEncodedName}`),
+    O.getOrElse(() => compoundUuid),
+  );
+};
+
+/**
+ * Convert new base64 formatted compound UUIDs to legacy application/x-www-form-urlencoded format.
+ * To follow the legacy logic the final result will be encoded again, to handle the case if the virtual topic name also contains commas.
+ *
+ * @param compoundUuid The compound UUIDs in new format, separated by commas.
+ */
+export const convertNewTopicIdToLegacyFormat = (compoundUuid: string): string =>
+  pipe(
+    compoundUuid.split(","),
+    A.map(convertSingleNewIdToLegacyFormat),
+    A.intercalate(S.Monoid)(","),
+    encodeURIComponent,
+  );
 
 /**
  * Extract topic ID from a given URL.

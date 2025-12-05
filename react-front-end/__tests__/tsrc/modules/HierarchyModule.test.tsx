@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
-import { getTopicIdFromUrl } from "../../../tsrc/modules/HierarchyModule";
+import {
+  convertNewTopicIdToLegacyFormat,
+  getTopicIdFromUrl,
+} from "../../../tsrc/modules/HierarchyModule";
+
+const hierarchyId = "ecf0b378-ffb5-46bd-9d7f-a72ea1637714";
+const virtualHierarchyId =
+  "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:Q291cnNlIG1hdGVyaWFs";
+const virtualHierarchyLegacyId =
+  "9bc71fcc-ff0f-4a70-b11a-05eb903cf468%3ACourse%2Bmaterial";
+const virtualNestedHierarchyId =
+  "5ec580b5-c6d6-4b25-b828-18dbaca3e898:Q291cnNlIG1hdGVyaWFs,db45a4e7-7d64-4eec-a119-97643de10ace:Q291cnNlIG1hdGVyaWFs";
+const virtualNestedHierarchyLegacyId =
+  "5ec580b5-c6d6-4b25-b828-18dbaca3e898%3ACourse%2Bmaterial%2Cdb45a4e7-7d64-4eec-a119-97643de10ace%3ACourse%2Bmaterial";
+const origin = "http://localhost:8080";
 
 describe("getTopicIdFromUrl", () => {
-  const hierarchyId = "ecf0b378-ffb5-46bd-9d7f-a72ea1637714";
-  const virtualHierarchyId =
-    "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:Q291cnNlIG1hdGVyaWFs";
-  const virtualHierarchyLegacyId =
-    "9bc71fcc-ff0f-4a70-b11a-05eb903cf468:Course+material";
-  const virtualNestedHierarchyId =
-    "5ec580b5-c6d6-4b25-b828-18dbaca3e898:Q291cnNlIG1hdGVyaWFs,db45a4e7-7d64-4eec-a119-97643de10ace:Q291cnNlIG1hdGVyaWFs";
-  const virtualNestedHierarchyLegacyId =
-    "5ec580b5-c6d6-4b25-b828-18dbaca3e898%3ACourse%2Bmaterial%2Cdb45a4e7-7d64-4eec-a119-97643de10ace%3ACourse%2Bmaterial";
-  const origin = "http://localhost:8080";
-
   it.each([
     {
       name: "extract topic ID from new UI hierarchy page path",
@@ -69,5 +72,27 @@ describe("getTopicIdFromUrl", () => {
   ])("$name", ({ path, expected }) => {
     const urlObj = new URL(path, origin);
     expect(getTopicIdFromUrl(urlObj)).toBe(expected);
+  });
+});
+
+describe("convertNewTopicIdToLegacyFormat", () => {
+  it.each([
+    {
+      name: "return the same ID for non-virtual topics",
+      newFormat: hierarchyId,
+      legacyFormat: hierarchyId,
+    },
+    {
+      name: "return legacy format for virtual topics",
+      newFormat: virtualHierarchyId,
+      legacyFormat: virtualHierarchyLegacyId,
+    },
+    {
+      name: "return legacy format for nested virtual topics",
+      newFormat: virtualNestedHierarchyId,
+      legacyFormat: virtualNestedHierarchyLegacyId,
+    },
+  ])("$name", ({ newFormat, legacyFormat }) => {
+    expect(convertNewTopicIdToLegacyFormat(newFormat)).toBe(legacyFormat);
   });
 });
