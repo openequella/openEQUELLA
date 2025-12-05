@@ -17,7 +17,6 @@
  */
 import { Editor } from "@tinymce/tinymce-react";
 import { AxiosPromise, AxiosResponse } from "axios";
-import { getBaseUrl, getRenderData } from "../AppConfig";
 import * as React from "react";
 import "tinymce/tinymce";
 import "tinymce/models/dom/model";
@@ -50,6 +49,7 @@ import "tinymce/plugins/table";
 import "tinymce/plugins/visualblocks";
 import "tinymce/plugins/visualchars";
 import "tinymce/plugins/wordcount";
+import { getBaseUrl, getRenderData } from "../AppConfig";
 import "tinymce/plugins/emoticons/js/emojis";
 
 const renderData = getRenderData();
@@ -111,6 +111,7 @@ const RichTextEditor = ({
 
   return (
     <Editor
+      licenseKey="gpl"
       init={{
         min_height: 500,
         automatic_uploads: true,
