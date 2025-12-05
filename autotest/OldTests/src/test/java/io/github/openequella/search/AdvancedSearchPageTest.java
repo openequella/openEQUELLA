@@ -257,7 +257,9 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
 
     // There should be only 1 item in the search result.
     advancedSearchPage.waitForSearchCompleted(1);
-    assertEquals(advancedSearchPage.getItemNameByIndex(0), PowerSearchTest.FIRST);
+    // Use waitForItem to ensure the item is loaded to reduce test flakiness.
+    WebElement item = advancedSearchPage.waitForItem(PowerSearchTest.FIRST);
+    assertNotNull(item);
 
     // Advanced search panel should be opened with values populated.
     WebElement advancedSearchPanel = advancedSearchPage.getAdvancedSearchPanel();
