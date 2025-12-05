@@ -276,11 +276,7 @@ export const updateStylesheets = async (
   let current = insertPoint?.previousElementSibling ?? null;
   const existingSheets: { [index: string]: HTMLLinkElement } = {};
 
-  while (
-    current != null &&
-    current.tagName === "LINK" &&
-    current instanceof HTMLLinkElement
-  ) {
+  while (current?.tagName === "LINK" && current instanceof HTMLLinkElement) {
     existingSheets[current.href] = current;
     current = current.previousElementSibling;
   }
