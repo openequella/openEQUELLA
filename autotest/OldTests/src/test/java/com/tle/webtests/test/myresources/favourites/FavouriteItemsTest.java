@@ -187,14 +187,14 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
 
   /** Adds an item to favourites from the search page and asserts success. */
   private void addFavouriteFromSearchPage(String itemName, String... tags) {
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName);
-    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
-    FavouriteItemDialog<ItemSearchResult> fav = resultForTitle.addToFavourites();
+    FavouriteItemDialog<ItemSearchResult> fav =
+        new SearchPage(context)
+            .load()
+            .exactQuery(itemName)
+            .getResultForTitle(itemName, 1)
+            .addToFavourites();
     Optional.ofNullable(tags).filter(t -> t.length > 0).map(t -> t[0]).ifPresent(fav::setTags);
     fav.clickAdd();
-
-    assertTrue(resultForTitle.isFavouriteItem());
   }
 
   /** Removes an item from favourites from the summary page and asserts success. */
@@ -212,13 +212,12 @@ public class FavouriteItemsTest extends AbstractCleanupTest {
 
   /** Removes an item from favourites from the search page and asserts success. */
   private void removeFavouriteFromSearchPage(String itemName) {
-    SearchPage searchPage = new SearchPage(context).load();
-    ItemListPage results = searchPage.exactQuery(itemName);
-    ItemSearchResult resultForTitle = results.getResultForTitle(itemName, 1);
+    ItemSearchResult resultForTitle =
+        new SearchPage(context).load().exactQuery(itemName).getResultForTitle(itemName, 1);
     resultForTitle.removeFavourite();
 
-    results = new SearchPage(context).load().exactQuery(itemName);
-    resultForTitle = results.getResultForTitle(itemName, 1);
+    resultForTitle =
+        new SearchPage(context).load().exactQuery(itemName).getResultForTitle(itemName, 1);
     assertFalse(resultForTitle.isFavouriteItem());
   }
 

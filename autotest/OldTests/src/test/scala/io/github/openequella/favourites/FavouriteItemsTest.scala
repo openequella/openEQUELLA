@@ -132,8 +132,8 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
-    val summaryPage = searchPage.selectItem(itemName)
 
+    val summaryPage = searchPage.selectItem(itemName)
     summaryPage.addToFavourites().clickAdd()
   }
 
@@ -147,8 +147,8 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
-    val summaryPage = searchPage.selectItem(itemName)
 
+    val summaryPage = searchPage.selectItem(itemName)
     summaryPage.removeFavourite()
     assertFalse(summaryPage.isFavouriteItem)
   }
@@ -199,9 +199,9 @@ class FavouriteItemsTest extends AbstractCleanupAutoTest {
     val searchPage = new NewSearchPage(context).load()
     searchPage.changeQuery(itemName)
     searchPage.waitForSearchCompleted(1)
-    val summaryPage = searchPage.selectItem(itemName)
 
-    val wizard = summaryPage.adminTab().newVersion()
+    val summaryPage = searchPage.selectItem(itemName)
+    val wizard      = summaryPage.adminTab().newVersion()
     wizard.save().publish()
   }
 
