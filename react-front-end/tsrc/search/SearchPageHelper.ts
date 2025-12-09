@@ -875,8 +875,8 @@ export const buildSearchPageNavigationConfig = (
   path: NEW_SEARCH_PATH,
   selectionSessionPathBuilder: () =>
     buildSelectionSessionSearchPageLink(
-      undefined,
-      searchPageOptions.externalMimeTypes,
+      O.none,
+      O.fromNullable(searchPageOptions.externalMimeTypes),
     ),
 });
 

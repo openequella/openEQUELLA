@@ -284,7 +284,9 @@ export const SearchPageBody = ({
         selectionSessionPathBuilder: () =>
           buildSelectionSessionAdvancedSearchLink(
             uuid,
-            searchPageOptions.externalMimeTypes,
+            // No need to keep search options when switching Advanced searches.
+            O.none,
+            O.fromNullable(searchPageOptions.externalMimeTypes),
           ),
       })),
       // Go to the normal Search page if none is selected.
