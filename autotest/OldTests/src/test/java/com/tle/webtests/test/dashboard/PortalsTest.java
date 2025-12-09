@@ -163,7 +163,7 @@ public class PortalsTest extends AbstractCleanupTest {
     assertFalse(home.portalExists(browseName));
   }
 
-  // TODO: OEQ-2610 REMOVE @OldUIOnly
+  // TODO: OEQ-2720 REMOVE @OldUIOnly
   @Test
   @OldUIOnly
   public void testFavPortal() {
