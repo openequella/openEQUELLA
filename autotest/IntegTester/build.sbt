@@ -9,7 +9,7 @@ val CirceVersion  = "0.14.12"
 val Http4sVersion = "0.23.33"
 val jsoupVersion  = "1.21.2"
 
-scalaVersion := "2.13.17"
+scalaVersion := "2.13.18"
 
 excludeDependencies ++= Seq("org.typelevel" % "scala-library")
 
