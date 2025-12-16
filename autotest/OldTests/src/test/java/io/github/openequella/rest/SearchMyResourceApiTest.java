@@ -20,8 +20,8 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
   private final String MY_RESOURCES_ENDPOINT =
       getTestConfig().getInstitutionUrl() + "api/search/myresources";
 
-  @Test(description = "Verify the root level search types exist with correct counts and links")
-  public void testRootSearchTypes() throws IOException {
+  @Test(description = "Verify the myresource search types exist with correct counts and links")
+  public void testSearchTypes() throws IOException {
     JsonNode result = makeRequest(MY_RESOURCES_ENDPOINT);
 
     assertNotNull(result);
@@ -31,11 +31,11 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
     Map<String, JsonNode> nodesById = buildMapById(result);
 
     // Validate specific top-level nodes from the response
-    validateNode(nodesById, "published", "Published");
-    validateNode(nodesById, "draft", "Drafts");
-    validateNode(nodesById, "scrapbook", "Scrapbook");
-    validateNode(nodesById, "archived", "Archive");
-    validateNode(nodesById, "all", "All resources");
+    assertNode(nodesById, "published", "Published", 47);
+    assertNode(nodesById, "draft", "Drafts", 6);
+    assertNode(nodesById, "scrapbook", "Scrapbook", 9);
+    assertNode(nodesById, "archived", "Archive", 3);
+    assertNode(nodesById, "all", "All resources", 74);
 
     // Validate modqueue specifically to check for subSearches
     JsonNode modQueue =
@@ -43,7 +43,7 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
             .orElseThrow(() -> new AssertionError("Moderation queue node not found"));
 
     assertEquals(modQueue.get("name").asText(), "Moderation queue");
-    assertTrue(modQueue.get("count").asInt() >= 0);
+    assertEquals(modQueue.get("count").asInt(), 9);
     assertTrue(modQueue.has("subSearches"), "Moderation queue must have 'subSearches'");
   }
 
@@ -63,9 +63,9 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
 
     Map<String, JsonNode> subSearchesById = buildMapById(subSearches);
 
-    validateSubSearchNode(subSearchesById, "modqueue_moderating", "In moderation");
-    validateSubSearchNode(subSearchesById, "modqueue_review", "Under review");
-    validateSubSearchNode(subSearchesById, "modqueue_rejected", "Rejected");
+    assertSubSearchNode(subSearchesById, "modqueue_moderating", "In moderation", 9);
+    assertSubSearchNode(subSearchesById, "modqueue_review", "Under review", 0);
+    assertSubSearchNode(subSearchesById, "modqueue_rejected", "Rejected", 0);
   }
 
   /**
@@ -82,39 +82,39 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
   }
 
   /**
-   * Validate a top-level search type node against an expected id/name pair and required fields.
+   * Asserts that a top-level search type node exists and has the expected properties.
    *
    * @param nodesById lookup map of nodes keyed by id
    * @param id expected id of the node
    * @param expectedName expected display name for the node
    */
-  private void validateNode(Map<String, JsonNode> nodesById, String id, String expectedName) {
+  private void assertNode(
+      Map<String, JsonNode> nodesById, String id, String expectedName, int expectedCount) {
     JsonNode node =
         Optional.ofNullable(nodesById.get(id))
             .orElseThrow(() -> new AssertionError("Node with id '" + id + "' not found"));
 
     assertEquals(node.get("name").asText(), expectedName);
-    assertTrue(node.has("count"));
-    assertTrue(node.get("count").isInt());
+    assertEquals(node.get("count").asInt(), expectedCount);
     assertTrue(node.has("links"));
   }
 
   /**
-   * Validate a moderation sub-search node against an expected id/name pair and required fields.
+   * Asserts that a sub-search node exists and has the expected properties.
    *
    * @param subSearchesById lookup map of sub-search nodes keyed by id
    * @param id expected sub-search id
    * @param expectedName expected display name for the sub-search
    */
-  private void validateSubSearchNode(
-      Map<String, JsonNode> subSearchesById, String id, String expectedName) {
+  private void assertSubSearchNode(
+      Map<String, JsonNode> subSearchesById, String id, String expectedName, int expectedCount) {
     JsonNode node =
         Optional.ofNullable(subSearchesById.get(id))
             .orElseThrow(
                 () -> new AssertionError("Sub-search node with id '" + id + "' not found"));
 
-    assertEquals(node.get("name").asText(), expectedName, "Sub-search name mismatch");
-    assertTrue(node.has("count"), "Sub-search count missing");
+    assertEquals(node.get("name").asText(), expectedName);
+    assertEquals(node.get("count").asInt(), expectedCount);
   }
 
   /**
