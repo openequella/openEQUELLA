@@ -86,7 +86,7 @@ public class ModerationQueueSearch extends AbstractPrototypeSection<Object>
   }
 
   @Override
-  public MyResourcesSearch createDefaultSearch(SectionInfo info) {
+  public MyResourcesSearch createDefaultSearch() {
     MyResourcesSearch search =
         new MyResourcesSearch() {
           private static final long serialVersionUID = 1L;
@@ -143,7 +143,7 @@ public class ModerationQueueSearch extends AbstractPrototypeSection<Object>
   }
 
   private static DefaultSearch createSearch(ItemStatus itemStatus) {
-    DefaultSearch search = new DefaultSearch();
+    MyResourcesSearch search = new MyResourcesSearch();
     search.setItemStatuses(itemStatus);
     return search;
   }
@@ -153,7 +153,9 @@ public class ModerationQueueSearch extends AbstractPrototypeSection<Object>
 
     public SubSearch(ItemStatus itemStatus) {
       super(
-          new KeyLabel(KEY_SUBSEARCH + itemStatus.name().toLowerCase()), createSearch(itemStatus));
+          itemStatus.toString(),
+          new KeyLabel(KEY_SUBSEARCH + itemStatus.name().toLowerCase()),
+          createSearch(itemStatus));
       this.itemStatus = itemStatus;
     }
 

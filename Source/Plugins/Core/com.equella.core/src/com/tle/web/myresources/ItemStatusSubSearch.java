@@ -31,7 +31,7 @@ public class ItemStatusSubSearch extends AbstractMyResourcesSubSearch {
   }
 
   @Override
-  public MyResourcesSearch createDefaultSearch(SectionInfo info) {
+  public MyResourcesSearch createDefaultSearch() {
     MyResourcesSearch search = new MyResourcesSearch();
     search.setItemStatuses(statuses);
     return search;

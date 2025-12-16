@@ -19,10 +19,13 @@
 package com.tle.web.api.search.bean;
 
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+import java.util.List;
 
 public class SearchDefinitionBean extends AbstractExtendableBean {
   private String name;
   private String id;
+  private int count;
+  private List<SearchDefinitionBean> subSearches;
 
   public String getId() {
     return id;
@@ -38,5 +41,21 @@ public class SearchDefinitionBean extends AbstractExtendableBean {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public int getCount() {
+    return count;
+  }
+
+  public void setCount(int count) {
+    this.count = count;
+  }
+
+  public List<SearchDefinitionBean> getSubSearches() {
+    return subSearches;
+  }
+
+  public void setSubSearches(List<SearchDefinitionBean> subSearches) {
+    this.subSearches = subSearches;
   }
 }

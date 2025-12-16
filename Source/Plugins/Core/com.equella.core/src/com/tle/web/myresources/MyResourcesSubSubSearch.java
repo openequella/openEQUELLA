@@ -23,15 +23,21 @@ import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 
 public abstract class MyResourcesSubSubSearch {
+  private final String id;
   private final Label name;
   private final DefaultSearch search;
 
-  public MyResourcesSubSubSearch(Label name, DefaultSearch search) {
+  public MyResourcesSubSubSearch(String id, Label name, DefaultSearch search) {
+    this.id = id;
     this.name = name;
     this.search = search;
   }
 
   public abstract void execute(SectionInfo info);
+
+  public String getId() {
+    return id;
+  }
 
   public Label getName() {
     return name;

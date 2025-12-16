@@ -45,12 +45,14 @@ import com.tle.web.api.search.bean.SearchDefinitionBean;
 import com.tle.web.myresources.MyResourcesSearch;
 import com.tle.web.myresources.MyResourcesService;
 import com.tle.web.myresources.MyResourcesSubSearch;
+import com.tle.web.myresources.MyResourcesSubSubSearch;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -83,18 +85,9 @@ public class SearchMyResource {
             Lists.transform(
                 listSearches,
                 new Function<MyResourcesSubSearch, SearchDefinitionBean>() {
-
                   @Override
                   public SearchDefinitionBean apply(MyResourcesSubSearch input) {
-                    SearchDefinitionBean searchDefinitionBean = new SearchDefinitionBean();
-                    searchDefinitionBean.setName(CurrentLocale.get(input.getNameKey()));
-                    searchDefinitionBean.setId(input.getValue());
-                    searchDefinitionBean.set(
-                        "links",
-                        urlLinkService
-                            .getMethodUriBuilder(SearchMyResource.class, "subSearch")
-                            .build(input.getValue()));
-                    return searchDefinitionBean;
+                    return buildSearchDefinitionBean(input);
                   }
                 }))
         .build();
@@ -171,7 +164,7 @@ public class SearchMyResource {
 
     for (MyResourcesSubSearch myResourcesSubSearch : listAllowedMyResourcesSearches()) {
       if (myResourcesSubSearch.getValue().equals(subsearch)) {
-        final MyResourcesSearch subSearch = myResourcesSubSearch.createDefaultSearch(null);
+        final MyResourcesSearch subSearch = myResourcesSubSearch.createDefaultSearch();
         final DefaultSearch search =
             createSearch(
                 q,
@@ -259,5 +252,56 @@ public class SearchMyResource {
     search.setSortFields(sortType.getSortField(reverseOrder));
     search.setQuery(freetext);
     return search;
+  }
+
+  /**
+   * Build a SearchDefinitionBean for a MyResourcesSubSearch, including its sub-searches.
+   *
+   * @param search The MyResourcesSubSearch to build the bean from.
+   * @return A populated SearchDefinitionBean.
+   */
+  private SearchDefinitionBean buildSearchDefinitionBean(MyResourcesSubSearch search) {
+    SearchDefinitionBean bean = new SearchDefinitionBean();
+    bean.setName(CurrentLocale.get(search.getNameKey()));
+    bean.setId(search.getValue());
+    bean.set(
+        "links",
+        urlLinkService
+            .getMethodUriBuilder(SearchMyResource.class, "subSearch")
+            .build(search.getValue()));
+
+    int count =
+        freetextService
+            .countsFromFilters(Collections.singletonList(search.createDefaultSearch()))[0];
+    bean.setCount(count);
+
+    List<MyResourcesSubSubSearch> subSearches = search.getSubSearches();
+    if (subSearches != null && !subSearches.isEmpty()) {
+      bean.setSubSearches(buildSubSearchDefinitionBeans(search));
+    }
+
+    return bean;
+  }
+
+  /**
+   * Build a list of SearchDefinitionBean for the sub-searches of a MyResourcesSubSearch.
+   *
+   * @param parentSearch The parent MyResourcesSubSearch.
+   * @return A list of populated SearchDefinitionBean for the sub-searches.
+   */
+  private List<SearchDefinitionBean> buildSubSearchDefinitionBeans(
+      MyResourcesSubSearch parentSearch) {
+    List<SearchDefinitionBean> childBeans = new ArrayList<>();
+    for (MyResourcesSubSubSearch subSearch : parentSearch.getSubSearches()) {
+      SearchDefinitionBean childBean = new SearchDefinitionBean();
+      childBean.setName(subSearch.getName().getText());
+      childBean.setId(parentSearch.getValue() + "_" + subSearch.getId());
+
+      int childCount =
+          freetextService.countsFromFilters(Collections.singletonList(subSearch.getSearch()))[0];
+      childBean.setCount(childCount);
+      childBeans.add(childBean);
+    }
+    return childBeans;
   }
 }
