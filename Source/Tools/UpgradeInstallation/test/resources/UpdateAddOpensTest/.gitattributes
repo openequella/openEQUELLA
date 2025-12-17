@@ -1,0 +1,2 @@
+after_equellaserver-config.bat text eol=crlf
+before_equellaserver-config.bat text eol=crlf

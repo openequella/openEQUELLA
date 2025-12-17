@@ -1,0 +1,48 @@
+<com.tle.common.portal.entity.Portlet>
+  <id>13310</id>
+  <uuid>6e34ab70-a8b2-4e7b-84b9-4dcff91470b7</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2025-08-25 16:13:05.852</dateModified>
+  <dateCreated class="sql-timestamp">2025-08-25 16:13:05.852</dateCreated>
+  <name>
+    <id>13311</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13312</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Private recent contributions</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>titleOnly</key>
+      <value>Show the title and description</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>status</key>
+      <value>live</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>recent</type>
+  <closeable>true</closeable>
+  <minimisable>true</minimisable>
+  <enabled>true</enabled>
+  <institutional>false</institutional>
+  <extraData class="com.tle.common.portal.entity.impl.PortletRecentContrib">
+    <id>13310</id>
+    <portlet reference="../.."/>
+    <collections>
+      <com.tle.beans.entity.itemdef.ItemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="b28f1ffe-2008-4f5e-d559-83c8acd79316"/>
+    </collections>
+    <ageDays>3</ageDays>
+    <query>hello</query>
+  </extraData>
+</com.tle.common.portal.entity.Portlet>

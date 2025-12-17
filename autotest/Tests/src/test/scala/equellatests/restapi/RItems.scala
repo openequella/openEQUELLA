@@ -28,11 +28,11 @@ object RItems {
   def create(item: RCreateItem): ERest[ItemId] = {
     (for {
       fullUri <- OptionT[ERest, Uri](ERest.postCheckHeaders(baseUri, item).map {
-        case (Status.Created, h) => h.get(Location).map(_.uri)
+        case (Status.Created, h) => h.get[Location].map(_.uri)
         case _                   => None
       })
       idUri <- OptionT(ERest.relative(fullUri, baseUri))
-    } yield idUri.path match {
+    } yield idUri.path.renderString match {
       case IdFromUriRegex(uuid, version) => new ItemId(UUID.fromString(uuid), version.toInt)
     }).getOrElse(sys.error("OOPS"))
   }

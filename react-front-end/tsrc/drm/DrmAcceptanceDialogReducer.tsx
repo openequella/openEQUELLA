@@ -54,25 +54,25 @@ export type State =
   | {
       status: "initialising";
       dialog: {
-        title: JSX.Element;
-        content: JSX.Element;
-        buttons: JSX.Element[];
+        title: React.JSX.Element;
+        content: React.JSX.Element;
+        buttons: React.JSX.Element[];
       };
     }
   | {
       status: "successful";
       dialog: {
         title: string;
-        content: JSX.Element;
-        buttons: JSX.Element[];
+        content: React.JSX.Element;
+        buttons: React.JSX.Element[];
       };
     }
   | {
       status: "failed";
       dialog: {
         title: string;
-        content: JSX.Element;
-        buttons: JSX.Element;
+        content: React.JSX.Element;
+        buttons: React.JSX.Element;
       };
     };
 
@@ -84,7 +84,7 @@ export const drmReducer = (state: State, action: Action): State => {
       text: string;
       autoFocus: boolean;
     }[],
-  ): JSX.Element[] =>
+  ): React.JSX.Element[] =>
     buttons.map(({ handler, color, text, autoFocus }) => (
       <Button
         key={text}
@@ -115,10 +115,10 @@ export const drmReducer = (state: State, action: Action): State => {
             title,
             content: (
               <Grid container>
-                <Grid item>
+                <Grid>
                   <Typography variant="subtitle1">{subtitle}</Typography>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <DrmTerms {...agreements} />
                 </Grid>
               </Grid>

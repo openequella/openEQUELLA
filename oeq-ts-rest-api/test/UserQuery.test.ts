@@ -18,13 +18,14 @@
 import * as OEQ from '../src';
 import { SearchResult, tokens } from '../src/UserQuery';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 // We use Vanilla for this one so that we also have 'roles' to test with.
 const API_PATH = TC.API_PATH_VANILLA;
 
 beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(API_PATH, true));
+afterAll(() => logout(API_PATH));
 
 describe('/userquery/search', () => {
   test.each<keyof SearchResult>(['users', 'roles', 'groups'])(

@@ -31,6 +31,8 @@ import java.util.zip.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
@@ -39,11 +41,11 @@ public enum ArchiveType {
   {
     @Override
     public ArchiveExtractor createExtractor(InputStream in, Charset charset) {
-      final ZipInputStream zin = new ZipInputStream(in, charset);
+      final ZipArchiveInputStream zin = new ZipArchiveInputStream(in, charset.name(), true, true);
       return new ArchiveExtractor() {
         @Override
         public ArchiveEntry getNextEntry() throws IOException {
-          final ZipEntry entry = zin.getNextEntry();
+          final ZipArchiveEntry entry = zin.getNextEntry();
           if (entry == null) {
             return null;
           }

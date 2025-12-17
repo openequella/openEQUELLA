@@ -26,6 +26,7 @@ import com.tle.beans.entity.Schema
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.security.SecurityConstants
+import com.tle.common.util.CollectionUtils.convertEmptyListToNone
 import com.tle.core.auditlog.AuditLogService
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.freetext.service.FreeTextService
@@ -91,9 +92,10 @@ class SearchResource {
     response = classOf[FacetedSearchResult]
   )
   def searchFacet(@BeanParam params: FacetedSearchParam): Response = {
-    val searchPayload = SearchPayload(params)
+    val searchPayload     = SearchPayload(params)
+    val collectionsFilter = convertEmptyListToNone(searchPayload.collections)
 
-    searchPayload.hierarchy.map(createPresetSearch).sequence match {
+    searchPayload.hierarchy.map(createHierarchyPresetSearch(_, collectionsFilter)).sequence match {
       case Right(hierarchySearch) =>
         val search = createSearch(searchPayload, None, hierarchySearch)
         doFacetSearch(search, params)
@@ -202,12 +204,21 @@ class SearchResource {
   }
 
   // create a PresetSearch for a hierarchy search
-  private def createPresetSearch(compoundUuidStr: String): Either[String, PresetSearch] = {
+  private def createHierarchyPresetSearch(
+      compoundUuidStr: String,
+      collectionsFilter: Option[Iterable[String]]
+  ): Either[String, PresetSearch] = {
     def buildSearch(compoundUuid: HierarchyCompoundUuid) =
       Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
         case Some(topic) =>
           val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
-          Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
+          Right(
+            hierarchyService.buildSearch(
+              topic,
+              fullUuidNameMap,
+              collectionsFilter.map(_.toList.asJava).orNull
+            )
+          )
         case None =>
           Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
       }
@@ -215,7 +226,7 @@ class SearchResource {
     HierarchyCompoundUuid(compoundUuidStr) match {
       case Right(compoundUuid) => buildSearch(compoundUuid)
       case Left(e) =>
-        Left(s"Failed to parse hierarchy compound UUID ${compoundUuidStr}: ${e.getMessage}")
+        Left(s"Failed to parse hierarchy compound UUID $compoundUuidStr: ${e.getMessage}")
     }
   }
 
@@ -228,8 +239,7 @@ class SearchResource {
       val itemIds                 = freetextResults.map(_.getItemIdKey)
       val serializer              = createSerializer(itemIds)
       val items: List[SearchItem] = freetextResults.map(result => SearchItem(result, serializer))
-      val highlight =
-        new DefaultSearch.QueryParser(payload.query.orNull).getHilightedList.asScala.toList
+      val highlight               = getHighlightedList(payload.query)
 
       SearchResult(
         searchResults.getOffset,
@@ -247,9 +257,11 @@ class SearchResource {
   }
 
   private def doSearch(searchPayload: SearchPayload): Response = {
+    val collectionsFilter = convertEmptyListToNone(searchPayload.collections.toList.asJava)
+
     searchPayload.hierarchy
       .map(URLDecoder.decode(_, StandardCharsets.UTF_8))
-      .map(createPresetSearch)
+      .map(createHierarchyPresetSearch(_, collectionsFilter))
       .sequence match {
       case Right(hierarchySearch) =>
         val search = createSearch(searchPayload, None, hierarchySearch)

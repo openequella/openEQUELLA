@@ -40,8 +40,8 @@ import * as R from "fp-ts/Record";
 
 const { missingValue, invalidUrl } = languageStrings.error;
 const { title: customRolesTitle } = languageStrings.customRolesMappingControl;
-const { roleClaim: roleClaimTitle } =
-  languageStrings.settings.integration.oidc.roleMappings;
+const { roleClaim: roleClaimTitle, userIdAttributeLabel } =
+  languageStrings.settings.integration.oidc.mappings;
 const {
   issuer: issuerLabel,
   authCodeClientId: authCodeClientIdLabel,
@@ -135,7 +135,7 @@ describe("Platform details section", () => {
   });
 });
 
-describe("Role mapping section", () => {
+describe("Mapping section", () => {
   const roleClaimValue = "test value";
   const mockedOidcWithRoleClaim: OEQ.Oidc.IdentityProvider = {
     ...mockedOidcSettings,
@@ -165,6 +165,14 @@ describe("Role mapping section", () => {
     const { queryByText } = await renderOidcSettings(mockedOidcWithRoleClaim);
 
     expect(queryByText(customRolesTitle)).toBeInTheDocument();
+  });
+
+  it("renders a user ID text field", async () => {
+    const { container, queryByText } = await renderOidcSettings();
+    await selectPlatform(container, "ENTRA_ID");
+    const textField = queryByText(userIdAttributeLabel);
+
+    expect(textField).toBeInTheDocument();
   });
 });
 

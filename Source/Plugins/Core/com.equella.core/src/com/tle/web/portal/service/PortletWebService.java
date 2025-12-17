@@ -20,6 +20,7 @@ package com.tle.web.portal.service;
 
 import com.tle.common.portal.entity.Portlet;
 import com.tle.web.portal.editor.PortletEditor;
+import com.tle.web.portal.events.PortletsUpdatedEvent.PortletUpdateEventType;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.SectionTree;
 import com.tle.web.sections.events.RenderContext;
@@ -34,6 +35,26 @@ public interface PortletWebService {
   void newPortlet(SectionInfo info, String portletType, boolean admin);
 
   void editPortlet(SectionInfo info, String portletUuid, boolean admin);
+
+  /**
+   * Initiates a portlet editing session from the new UI dashboard.
+   *
+   * <p>This method is triggered by an event handler (`psh.editPortletFromNewDashboard`) when a user
+   * clicks the 'Edit' button on a portlet in the new UI. It prepares the legacy sections framework
+   * to display the correct portlet editor page.
+   *
+   * @param info The current section info.
+   * @param portletUuid The UUID of the portlet to be edited.
+   */
+  void editPortletFromNewDashboard(SectionInfo info, String portletUuid);
+
+  /**
+   * Assists accessing the legacy portlet creation page from the new UI dashboard.
+   *
+   * <p>Note: This method must be invoked by a Legacy Content API request in order to generate a
+   * proper route for client to use.
+   */
+  void newPortletFromNewDashboard(SectionInfo info, String portletType);
 
   void returnFromEdit(
       SectionInfo info, boolean cancelled, String portletUuid, boolean institutional);
@@ -116,4 +137,11 @@ public interface PortletWebService {
   void clearPortletRendererCache(String userId);
 
   Map<String, PortletEditor> registerEditors(SectionTree tree, String parentId);
+
+  void firePortletsChanged(
+      SectionInfo info,
+      String userId,
+      String portletUuid,
+      boolean institutional,
+      PortletUpdateEventType eventType);
 }

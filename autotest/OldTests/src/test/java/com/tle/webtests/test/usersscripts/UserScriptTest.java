@@ -18,6 +18,7 @@ import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
 @TestInstitution("asc")
 public class UserScriptTest extends AbstractCleanupTest {
@@ -147,6 +148,8 @@ public class UserScriptTest extends AbstractCleanupTest {
     preview.closeDialog(new ItemAdminPage(context));
   }
 
+  // TODO: OEQ-2720 enable test in new UI.
+  @OldUIOnly
   @Test(dependsOnMethods = {"testCreateEntity"})
   public void testPortletScriptLoading() {
     HomePage home = logon();

@@ -18,6 +18,8 @@
 
 package com.tle.web.workflow.portal;
 
+import static com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND;
+
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
 import com.tle.common.security.SettingsTarget;
@@ -56,6 +58,7 @@ import com.tle.web.sections.result.util.BundleLabel;
 import com.tle.web.sections.standard.Link;
 import com.tle.web.sections.standard.SingleSelectionList;
 import com.tle.web.sections.standard.annotations.Component;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.workflow.manage.FilterByWorkflowSection;
 import com.tle.web.workflow.manage.RootTaskManagementSection;
 import com.tle.web.workflow.manage.WorkflowListModel;
@@ -70,7 +73,6 @@ import javax.inject.Inject;
 public class TaskStatisticsPortletRenderer
     extends PortletContentRenderer<
         TaskStatisticsPortletRenderer.TaskStatisticsPortletRendererModel> {
-  private static final String KEY_DEFAULT_TREND = "trend";
   private static final String KEY_DEFAULT_WORKFLOW = "default.workflow";
 
   @PlugKey("portal.taskstats.trend.")
@@ -110,9 +112,10 @@ public class TaskStatisticsPortletRenderer
     trendSelector.addChangeEventHandler(
         new OverrideHandler(
             ajax.getAjaxUpdateDomFunction(
+                getCustomEQ(),
                 tree,
                 this,
-                null,
+                events.getEventHandler("trendChanged"),
                 ajax.getEffectFunction(EffectType.REPLACE_WITH_LOADING),
                 id + "taskstatsresults",
                 id + "trendselector")));
@@ -128,6 +131,7 @@ public class TaskStatisticsPortletRenderer
     workflowSelector.addChangeEventHandler(
         new OverrideHandler(
             ajax.getAjaxUpdateDomFunction(
+                getCustomEQ(),
                 tree,
                 this,
                 events.getEventHandler("workflowChanged"),
@@ -181,8 +185,21 @@ public class TaskStatisticsPortletRenderer
 
   @EventHandlerMethod
   public void workflowChanged(SectionInfo info) {
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      setupForAjaxEvent(info);
+    }
     String selWorkflow = workflowSelector.getSelectedValueAsString(info);
     userPreferenceService.setPreference(KEY_DEFAULT_WORKFLOW + '.' + getSectionId(), selWorkflow);
+  }
+
+  @EventHandlerMethod
+  public void trendChanged(SectionInfo info) {
+    // This event handler does nothing but setting up the event context for using this portlet in
+    // the new Dashboard.
+    // At this point, it is unknown what else approaches can achieve the same result.
+    if (RenderNewTemplate.isNewUIEnabled()) {
+      setupForAjaxEvent(info);
+    }
   }
 
   @EventHandlerMethod

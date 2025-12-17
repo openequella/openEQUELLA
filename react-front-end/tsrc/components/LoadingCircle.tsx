@@ -24,7 +24,7 @@ import * as React from "react";
  */
 const LoadingCircle = () => (
   <Grid container spacing={1} direction="column" alignItems="center">
-    <Grid item>
+    <Grid>
       <CircularProgress />
     </Grid>
   </Grid>

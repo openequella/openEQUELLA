@@ -23,8 +23,29 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Applies security filtering to method results after execution.
+ *
+ * <p>Unlike {@link SecureOnCall} which prevents unauthorised method execution, this annotation
+ * allows the method to execute but filters the returned data based on user permissions. This is
+ * particularly useful for:
+ *
+ * <ul>
+ *   <li>Collection results where filtering after retrieval is more efficient
+ *   <li>Implementing row-level security patterns
+ *   <li>Methods that should return different results based on caller privileges
+ * </ul>
+ *
+ * @see SecureOnCall
+ */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SecureOnReturn {
+  /**
+   * The privilege required to view each result object. Objects for which the current user lacks
+   * this privilege will be filtered out.
+   *
+   * @return the privilege string identifier
+   */
   String priv() default "";
 }

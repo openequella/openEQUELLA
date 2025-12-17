@@ -16,6 +16,7 @@ import com.tle.webtests.pageobject.portal.TopbarMenuSection;
 import com.tle.webtests.test.AbstractCleanupTest;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
 @TestInstitution("fiveo")
 public class MultiLingualTest extends AbstractCleanupTest {
@@ -28,7 +29,9 @@ public class MultiLingualTest extends AbstractCleanupTest {
     return logon("LanguageUser", "``````");
   }
 
+  // TODO: OEQ-2720 enable test in new UI.
   @Test
+  @OldUIOnly
   public void portletLanguage() {
     logon();
 

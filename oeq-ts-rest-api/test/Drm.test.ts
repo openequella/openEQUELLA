@@ -23,13 +23,14 @@ import {
   listDrmTerms,
 } from '../src/Drm';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 const ITEM_UUID = 'ea61a83c-b18b-49e2-8096-e6208776be92';
 const UNAUTHORISED_ITEM_UUID = '73b67c33-aa72-419f-87aa-72d919fcf9f0';
 const ITEM_VERSION = 1;
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH_FIVEO, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(TC.API_PATH_FIVEO, true));
+afterAll(() => logout(TC.API_PATH_FIVEO));
 
 describe('listDrmTerms', () => {
   it('lists DRM terms for an Item', async () => {

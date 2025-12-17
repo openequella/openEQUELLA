@@ -451,11 +451,12 @@ public class Soap51Test extends AbstractCleanupTest {
   @Test
   public void itemFileTest() throws Exception {
     String fullName = context.getFullName("attachment test");
-    String filename = "google.zip";
+    String zipFilename = "google.zip";
     String imageFilename = "avatar.png";
     String image2Filename = "shopimage.jpeg";
     String imageAttachmentUuid = UUID.randomUUID().toString();
     String image2AttachmentUuid = UUID.randomUUID().toString();
+    final byte[] zipFileData = getAttachmentData(zipFilename);
 
     PropBagEx item = new PropBagEx(soapService.newItem(COLLECTION_UUID));
     item.setNode("/item/name", fullName);
@@ -466,7 +467,7 @@ public class Soap51Test extends AbstractCleanupTest {
     PropBagEx attachmentNode = attachmentsNode.newSubtree("attachment");
     attachmentNode.setNode("uuid", UUID.randomUUID().toString());
     attachmentNode.setNode("@type", "local");
-    attachmentNode.setNode("file", filename);
+    attachmentNode.setNode("file", zipFilename);
     attachmentNode.setNode("description", "Google Zip");
 
     attachmentNode = attachmentsNode.newSubtree("attachment");
@@ -483,17 +484,12 @@ public class Soap51Test extends AbstractCleanupTest {
     // attachmentNode.setNode("thumbnail", "suppress");
     attachmentNode.setNode("description", "Image2");
 
-    Base64 b64 = new Base64(-1);
-    String base64Data = b64.encodeToString(getAttachmentData(filename));
     String stagingUuid = item.getNode("/item/staging");
-    soapService.uploadFile(stagingUuid, filename, base64Data, false);
-    soapService.uploadFile(stagingUuid, "_IMS/test", base64Data, false);
 
-    base64Data = b64.encodeToString(getAttachmentData(imageFilename));
-    soapService.uploadFile(stagingUuid, imageFilename, base64Data, false);
-
-    base64Data = b64.encodeToString(getAttachmentData(image2Filename));
-    soapService.uploadFile(stagingUuid, image2Filename, base64Data, false);
+    soapUploadFile(stagingUuid, zipFilename, zipFileData, false);
+    soapUploadFile(stagingUuid, "_IMS/test", zipFileData, false);
+    soapUploadFile(stagingUuid, imageFilename, getAttachmentData(imageFilename), false);
+    soapUploadFile(stagingUuid, image2Filename, getAttachmentData(image2Filename), false);
 
     item = new PropBagEx(soapService.saveItem(item.toString(), true));
 
@@ -505,7 +501,7 @@ public class Soap51Test extends AbstractCleanupTest {
     String[] filenames = soapService.getItemFilenames(uuid, 1, "", false);
     Assert.assertEquals(filenames.length, 3);
     Assert.assertEquals(filenames[0], imageFilename);
-    Assert.assertEquals(filenames[1], filename);
+    Assert.assertEquals(filenames[1], zipFilename);
     Assert.assertEquals(filenames[2], image2Filename);
 
     // MAY include thumbs files (both sizes) for image2, _IMS folder and actual attached files
@@ -525,8 +521,8 @@ public class Soap51Test extends AbstractCleanupTest {
     }
     item.setNode("/item/thumbnail", "custom:" + imageAttachmentUuid);
 
-    soapService.uploadFile(stagingUuid, filename, base64Data, true);
-    soapService.unzipFile(stagingUuid, filename, "");
+    soapUploadFile(stagingUuid, zipFilename, zipFileData, true);
+    soapService.unzipFile(stagingUuid, zipFilename, "");
     item = new PropBagEx(soapService.saveItem(item.toString(), true));
 
     // if you wish to break here, your item should have the avatar thumbnail (specifically, not via
@@ -539,7 +535,7 @@ public class Soap51Test extends AbstractCleanupTest {
     item = new PropBagEx(soapService.editItem(uuid, 1, true));
     Assert.assertEquals(item.getNode("/item/thumbnail"), "custom:" + imageAttachmentUuid);
     stagingUuid = item.getNode("/item/staging");
-    soapService.deleteFile(stagingUuid, filename);
+    soapService.deleteFile(stagingUuid, zipFilename);
     soapService.cancelItemEdit(uuid, 1);
 
     filenames = soapService.getItemFilenames(uuid, 1, "", false);
@@ -547,7 +543,7 @@ public class Soap51Test extends AbstractCleanupTest {
 
     item = new PropBagEx(soapService.editItem(uuid, 1, true));
     stagingUuid = item.getNode("/item/staging");
-    soapService.deleteFile(stagingUuid, filename);
+    soapService.deleteFile(stagingUuid, zipFilename);
     soapService.saveItem(item.toString(), true);
 
     filenames = soapService.getItemFilenames(uuid, 1, "", false);
@@ -555,7 +551,7 @@ public class Soap51Test extends AbstractCleanupTest {
 
     item = new PropBagEx(soapService.editItem(uuid, 1, true));
     stagingUuid = item.getNode("/item/staging");
-    soapService.uploadFile(stagingUuid, "_test", base64Data, false);
+    soapUploadFile(stagingUuid, "_test", zipFileData, false);
     soapService.saveItem(item.toString(), true);
 
     filenames = soapService.getItemFilenames(uuid, 1, "", false);
@@ -991,5 +987,12 @@ public class Soap51Test extends AbstractCleanupTest {
       }
     }
     return result;
+  }
+
+  private void soapUploadFile(
+      String stagingUuid, String targetFilename, byte[] fileData, boolean overwrite)
+      throws Exception {
+    String encoded = Base64.encodeBase64String(fileData);
+    soapService.uploadFile(stagingUuid, targetFilename, encoded, overwrite);
   }
 }

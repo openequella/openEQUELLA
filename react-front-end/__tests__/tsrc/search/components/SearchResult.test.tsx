@@ -34,11 +34,15 @@ import { BrowserRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
 import { DRM_VIOLATION, drmTerms } from "../../../../__mocks__/Drm.mock";
 import { createMatchMedia } from "../../../../__mocks__/MockUseMediaQuery";
-import { imageScrapbook } from "../../../../__mocks__/SearchResult.mock";
+import {
+  imageScrapbook,
+  itemWithBookmark,
+} from "../../../../__mocks__/SearchResult.mock";
 import * as mockData from "../../../../__mocks__/searchresult_mock_data";
 import {
   DRM_ATTACHMENT_NAME,
   DRM_ITEM_NAME,
+  basicSearchObj,
 } from "../../../../__mocks__/searchresult_mock_data";
 import type { RenderData } from "../../../../tsrc/AppConfig";
 import { TooltipIconButton } from "../../../../tsrc/components/TooltipIconButton";
@@ -75,17 +79,20 @@ const {
   allAttachments: selectAllAttachmentsString,
   attachment: selectAttachmentString,
 } = languageStrings.searchpage.selectResource;
+const { tags: tagsLabel } = languageStrings.favourites.favouritesItem;
 
 describe("<SearchResult/>", () => {
   const renderSearchResultWithConfig = async ({
     itemResult,
     customActionButtons,
     customOnClickTitleHandler,
+    showBookmarkTags,
     screenWidth = 1280,
   }: {
     itemResult: OEQ.Search.SearchResultItem;
-    customActionButtons?: JSX.Element[];
+    customActionButtons?: React.JSX.Element[];
     customOnClickTitleHandler?: () => void;
+    showBookmarkTags?: boolean;
     screenWidth?: number;
   }) => {
     window.matchMedia = createMatchMedia(screenWidth);
@@ -102,6 +109,7 @@ describe("<SearchResult/>", () => {
             getItemAttachments={async () => itemResult.attachments!}
             customActionButtons={customActionButtons}
             customOnClickTitleHandler={customOnClickTitleHandler}
+            showBookmarkTags={showBookmarkTags}
           />
         </ThemeProvider>
       </BrowserRouter>,
@@ -304,7 +312,7 @@ describe("<SearchResult/>", () => {
     updateMockGlobalCourseList();
     const item = mockData.basicSearchObj;
     const checkItemTitleLink = (page: RenderResult, url: string) => {
-      expect(page.getByText(item.name!, { selector: "a" })).toHaveAttribute(
+      expect(page.getByRole("link", { name: item.name! })).toHaveAttribute(
         "href",
         url,
       );
@@ -335,7 +343,7 @@ describe("<SearchResult/>", () => {
       customOnClickTitleHandler: customHandler,
     });
 
-    const title = getByText(`${item.name}`, { selector: "a" });
+    const title = getByText(`${item.name}`, { selector: "span" });
     await userEvent.click(title);
 
     expect(customHandler).toHaveBeenCalledTimes(1);
@@ -661,5 +669,41 @@ describe("<SearchResult/>", () => {
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
+  });
+
+  it("should hide bookmark tags by default", async () => {
+    const item = itemWithBookmark;
+    const { queryByText } = await renderSearchResult(item);
+    const tags = item.bookmark!.tags;
+
+    expect(queryByText(tagsLabel)).not.toBeInTheDocument();
+    tags.forEach((tag) => {
+      expect(queryByText(tag)).not.toBeInTheDocument();
+    });
+    expect.assertions(tags.length + 1);
+  });
+
+  it("should display bookmark tags when the 'showBookmarkTags' prop is true", async () => {
+    const item = itemWithBookmark;
+    const { getByText } = await renderSearchResultWithConfig({
+      itemResult: item,
+      showBookmarkTags: true,
+    });
+    const tags = item.bookmark!.tags;
+
+    expect(getByText(tagsLabel)).toBeInTheDocument();
+    tags.forEach((tag) => {
+      expect(getByText(tag)).toBeInTheDocument();
+    });
+    expect.assertions(tags.length + 1);
+  });
+
+  it("should hide bookmark tags when 'showBookmarkTags' is true but the item has no tags", async () => {
+    const { queryByText } = await renderSearchResultWithConfig({
+      itemResult: basicSearchObj,
+      showBookmarkTags: true,
+    });
+
+    expect(queryByText(tagsLabel)).not.toBeInTheDocument();
   });
 });

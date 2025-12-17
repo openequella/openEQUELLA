@@ -58,7 +58,8 @@ final case class OidcUser(
     username: String,
     family_name: String,
     given_name: String,
-    email: String
+    email: String,
+    legacy_id: String
 )
 
 object OidcUser {
@@ -68,7 +69,8 @@ object OidcUser {
     username = "test_user",
     family_name = "User",
     given_name = "Test",
-    email = "test@user"
+    email = "test@user",
+    legacy_id = "b09a4042-b091-87ed-eba9-6fb3c0fbe9a6" // UUID of user 'autotest'
   )
 }
 
@@ -218,8 +220,12 @@ object OidcIntegration extends Http4sDsl[IO] {
     Ok(resp, `Content-Type`(MediaType.application.json))
   }
 
-  def user: IO[Response[IO]] = {
-    Ok(TEST_USER.asJson.noSpaces, `Content-Type`(MediaType.application.json))
+  def user(id: String): IO[Response[IO]] = {
+    if (id == TEST_USER.user_id) {
+      Ok(TEST_USER.asJson.noSpaces, `Content-Type`(MediaType.application.json))
+    } else {
+      NotFound(s"No user found by ID $id")
+    }
   }
 
   private def getRequiredParam(params: Map[String, String]): String => Either[String, String] =
@@ -229,8 +235,8 @@ object OidcIntegration extends Http4sDsl[IO] {
   // return a signed JWT.
   private def validateClientCredentials(headers: Headers) = {
     def getCredentials =
-      headers.get(Authorization).toRight("Missing Authorization header") map { h =>
-        val credentials = h.toRaw.value.drop("Basic ".length)
+      headers.get[Authorization].toRight("Missing Authorization header") map { h =>
+        val credentials = h.credentials.renderString.drop("Basic ".length)
         new String(Base64.getDecoder.decode(credentials)).split(":")
       }
 

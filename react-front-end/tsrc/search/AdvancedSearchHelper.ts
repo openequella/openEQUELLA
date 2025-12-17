@@ -249,13 +249,3 @@ export const isAdvSearchCriteriaSet = (queryValues: FieldValueMap): boolean => {
 
   return isValueMapNotEmpty && isAnyFieldSet;
 };
-
-/**
- * Check if the current URL represents the legacy Advanced search path.
- * @param location Location of current window.
- */
-export const isLegacyAdvancedSearchUrl = (location: Location) => {
-  const params = new URLSearchParams(location.search);
-  const legacyAdvancedSearchId = params.get("in");
-  return legacyAdvancedSearchId?.startsWith("P") ?? false;
-};

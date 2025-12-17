@@ -119,11 +119,57 @@ export type ItemStatus =
   | 'REVIEW'
   | 'SUSPENDED';
 
-export interface PagedResult<T> {
+/**
+ * Standard structure for listing results from the API, on the backend this is
+ * `com.tle.web.api.interfaces.beans.SearchBean<T>`.
+ */
+export interface ListResult<T> {
+  /**
+   * The starting offset into the total search results
+   */
   start: number;
+  /**
+   * How many results can be found in `results`
+   */
   length: number;
+  /**
+   * The maximum number of results available for paging
+   */
   available: number;
+  /**
+   * The individual items which match the search
+   */
   results: T[];
+}
+
+// NOTE: There is duplication here of `ListResult<T>` above, but this is to keep
+//       the codegen happy. See the 'Unsupported' section of
+//       `oeq-ts-rest-api/gen-io-ts/README.md`.
+/**
+ * Standard structure for paged listing results from the API which utilises a
+ * resumption token for paging.
+ */
+export interface PagedResult<T> {
+  /**
+   * The starting offset into the total search results
+   */
+  start: number;
+  /**
+   * How many results can be found in `results`
+   */
+  length: number;
+  /**
+   * The maximum number of results available for paging
+   */
+  available: number;
+  /**
+   * The individual items which match the search
+   */
+  results: T[];
+  /**
+   * The resumption token to be used to retrieve the next page of results, if any.
+   * Absence of this field indicates there are no further results.
+   */
   resumptionToken?: string;
 }
 

@@ -333,7 +333,7 @@ const controlFactory = (
   onChange: (_: ControlValue) => void,
   fieldValueMap: FieldValueMap,
   value?: ControlValue,
-): JSX.Element => {
+): React.JSX.Element => {
   if (!OEQ.WizardControl.isWizardBasicControl(control)) {
     return <WizardUnsupported />;
   }
@@ -567,7 +567,7 @@ export const render = (
   values: FieldValueMap,
   onChange: (updates: FieldValue[]) => void,
   visibilityScriptContext: ScriptContext,
-): JSX.Element[] => {
+): React.JSX.Element[] => {
   const buildOnChangeHandler = (
     c: OEQ.WizardControl.WizardControl,
   ): ((value: ControlValue) => void) =>
@@ -619,7 +619,7 @@ export const render = (
 
   const buildWizardControls: (
     _: ReadonlyArray<OEQ.WizardControl.WizardControl>,
-  ) => JSX.Element[] = flow(
+  ) => React.JSX.Element[] = flow(
     RA.mapWithIndex((idx, c) =>
       controlFactory(
         `wiz-${idx}-${c.controlType}`,

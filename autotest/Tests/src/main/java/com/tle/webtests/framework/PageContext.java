@@ -6,7 +6,7 @@ import java.util.Map;
 import org.openqa.selenium.WebDriver;
 
 public class PageContext {
-  private WebDriver driver;
+  private final WebDriver driver;
   private final String baseUrl;
   private String integUrl;
   private String namePrefix;

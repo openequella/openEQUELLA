@@ -8,31 +8,8 @@
   "prConcurrentLimit": 10,
   "prHourlyLimit": 2,
   "semanticCommits": "enabled",
+  "ignorePaths": [".github/**", "docker/docker-build/**"],
   "packageRules": [
-    {
-      "groupName": "Jackson (XML) packages",
-      "matchPackageNames": [
-        "/^com.fasterxml.jackson/"
-      ]
-    },
-    {
-      "groupName": "Google Inject/Guice packages",
-      "matchPackageNames": [
-        "/^com.google.inject/"
-      ]
-    },
-    {
-      "groupName": "Google API Packages",
-      "matchPackageNames": [
-        "/^com.google.apis/"
-      ]
-    },
-    {
-      "groupName": "XStream packages",
-      "matchPackageNames": [
-        "/^com.thoughtworks.xstream/"
-      ]
-    },
     {
       "groupName": "Apache Axiom packages",
       "matchPackageNames": [
@@ -92,15 +69,39 @@
       "extends": ["packages:eslint"]
     },
     {
-      "groupName": "Typelevel Cats",
+      "groupName": "Google Inject/Guice packages",
       "matchPackageNames": [
-        "/^org.typelevel:cats/"
+        "/^com.google.inject/"
+      ]
+    },
+    {
+      "groupName": "Google API Packages",
+      "matchPackageNames": [
+        "/^com.google.apis/"
       ]
     },
     {
       "groupName": "http4s packages",
       "matchPackageNames": [
         "/^org.http4s:http4s/"
+      ]
+    },
+    {
+      "groupName": "Jackson (XML) packages",
+      "matchPackageNames": [
+        "/^com.fasterxml.jackson/"
+      ]
+    },
+    {
+      "groupName": "Jacoco packages",
+      "matchPackageNames": [
+        "org.jacoco:*"
+      ]
+    },
+    {
+      "groupName": "Pragmatic DnD",
+      "matchPackageNames": [
+        "@atlaskit/pragmatic-drag-and-drop*"
       ]
     },
     {
@@ -130,6 +131,25 @@
       "groupName": "Scala HTTP packages",
       "matchPackageNames": [
         "/^com.softwaremill.sttp/"
+      ]
+    },
+    {
+      "groupName": "TinyMCE",
+      "matchPackageNames": [
+        "@tinymce/tinymce-react",
+        "tinymce"
+      ]
+    },
+    {
+      "groupName": "Typelevel Cats",
+      "matchPackageNames": [
+        "/^org.typelevel:cats/"
+      ]
+    },
+    {
+      "groupName": "XStream packages",
+      "matchPackageNames": [
+        "/^com.thoughtworks.xstream/"
       ]
     },
     {

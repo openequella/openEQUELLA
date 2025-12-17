@@ -50,7 +50,7 @@ export const WizardLabel = ({
   description,
   mandatory = false,
   labelFor,
-}: WizardLabelProps): JSX.Element => (
+}: WizardLabelProps): React.JSX.Element => (
   <label id={id} htmlFor={labelFor}>
     {label && (
       <Typography variant="h6" gutterBottom>

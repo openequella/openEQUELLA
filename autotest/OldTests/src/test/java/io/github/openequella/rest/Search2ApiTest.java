@@ -9,11 +9,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +26,12 @@ public class Search2ApiTest extends AbstractRestApiTest {
   private final String SEARCH_API_ENDPOINT = getTestConfig().getInstitutionUrl() + "api/search2";
   private final String VIRTUAL_HIERARCHY_TOPIC =
       "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw==";
+  // Parent topic.
   private final String NORMAL_HIERARCHY_TOPIC = "6135b550-ce1c-43c2-b34c-0a3cf793759d";
+  private final String CAL_BOOK_COLLECTION = "4c147089-cddb-e67c-b5ab-189614eb1463";
+
+  private final NameValuePair bookmarkOwner =
+      new NameValuePair("musts", "bookmark_owner:" + USER_UUID);
 
   @Test(description = "Search without parameters")
   public void noParamSearchTest() throws IOException {
@@ -39,14 +42,10 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a specific item")
   public void queryTest() throws IOException {
     JsonNode result = doSearch(200, "ActivationApiTest - Book Holding Clone");
-    final Set<String> highlights =
-        StreamSupport.stream(result.get("highlight").spliterator(), false)
-            .map(JsonNode::asText)
-            .collect(Collectors.toSet());
+    final List<String> highlights = getHighlights(result);
 
     assertEquals(getAvailable(result), 1);
-    assertEquals(
-        highlights, new HashSet<>(Arrays.asList("ActivationApiTest", "Book", "Holding", "Clone")));
+    assertEquals(highlights, Arrays.asList("ActivationApiTest", "Book", "Holding", "Clone"));
   }
 
   @Test(description = "Search for specific items by Item status")
@@ -60,7 +59,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
     JsonNode result =
         doSearch(
             200, null, new NameValuePair("collections", "4c147089-cddb-e67c-b5ab-189614eb1463"));
-    assertEquals(getAvailable(result), 8);
+    assertEquals(getAvailable(result), 9);
   }
 
   @Test(description = "Search for items belonging to a specific owner")
@@ -101,15 +100,15 @@ public class Search2ApiTest extends AbstractRestApiTest {
             .map(Optional::get)
             .filter(JsonNode::isTextual)
             .map(JsonNode::textValue)
-            .collect(Collectors.toList());
+            .toList();
 
     assertEquals(
         lastActionDates.size(), available, "Number of dates does not match number of results!");
 
     // sorting order of 'task_lastaction' should see the first item have the oldest date and the
     // last action have the most recent date.
-    final String oldestDate = lastActionDates.get(0);
-    final String mostRecentDate = lastActionDates.get(lastActionDates.size() - 1);
+    final String oldestDate = lastActionDates.getFirst();
+    final String mostRecentDate = lastActionDates.getLast();
 
     // Being ISO dates we can just use simple string comparison
     assertEquals(
@@ -122,6 +121,71 @@ public class Search2ApiTest extends AbstractRestApiTest {
             .filter(isoString -> mostRecentDate.compareToIgnoreCase(isoString) < 0)
             .count(),
         0);
+  }
+
+  @Test(description = "Search for favourite items")
+  public void favouriteItemTest() throws IOException {
+    // Search for items favourite by user 'AutoTest'.
+    JsonNode result = doSearch(200, null, bookmarkOwner);
+
+    // The highlight list should be empty (it must not include any bookmark-related terms).
+    List<String> highlights = getHighlights(result);
+    assertTrue(highlights.isEmpty());
+
+    // It should return bookmark details.
+    Optional<JsonNode> bookmarkNode = getBookmark(result, 1);
+    assertTrue(bookmarkNode.isPresent());
+
+    JsonNode bookmark = bookmarkNode.get();
+    assertEquals(bookmark.get("addedAt").asText(), "2025-09-04T20:51:58.807-05:00");
+    assertEquals(bookmark.get("tags").size(), 2);
+  }
+
+  @Test(description = "Search for favourite items with query term matching a tag")
+  public void favouriteItemQueryInTagTest() throws IOException {
+    String tagName = "attachment";
+
+    JsonNode result = doSearch(200, buildFavouriteSearchQuery(tagName), bookmarkOwner);
+
+    // The highlight list should only contain one query element (and it must not include any
+    // bookmark-related terms).
+    List<String> highlights = getHighlights(result);
+    assertEquals(highlights.size(), 1);
+    assertTrue(highlights.contains(tagName));
+
+    // It should return bookmark details.
+    Optional<JsonNode> bookmarkNode = getBookmark(result, 0);
+    assertTrue(bookmarkNode.isPresent());
+
+    assertFalse(getKeywordFoundInAttachment(result, 0));
+  }
+
+  @Test(description = "Search for favourite items with query find in attachment")
+  public void favouriteItemFindInAttachmentTest() throws IOException {
+    String attachmentName = "Search2 API test.png";
+
+    JsonNode result = doSearch(200, buildFavouriteSearchQuery(attachmentName), bookmarkOwner);
+
+    // It should return bookmark details.
+    Optional<JsonNode> bookmarkNode = getBookmark(result, 0);
+    assertTrue(bookmarkNode.isPresent());
+
+    assertTrue(getKeywordFoundInAttachment(result, 0));
+  }
+
+  @Test(description = "Search for favourite items and order them by their favourite date.")
+  public void orderFavouriteDateTest() throws IOException {
+    final String BOOK_A = "Book A v2";
+    final String BOOK_B = "Book B";
+    final String IMAGE_ITEM = "Search2 API test - Image";
+
+    // Search for items favourite by user 'AutoTest' and order by the favourite date.
+    JsonNode result = doSearch(200, null, new NameValuePair("order", "added_at"), bookmarkOwner);
+
+    assertEquals(getAvailable(result), 3);
+    assertEquals(getItemName(result, 0), IMAGE_ITEM);
+    assertEquals(getItemName(result, 1), BOOK_B);
+    assertEquals(getItemName(result, 2), BOOK_A);
   }
 
   @Test(description = "Search by items' modified date and the order of results is reversed.")
@@ -307,10 +371,7 @@ public class Search2ApiTest extends AbstractRestApiTest {
 
   @DataProvider(name = "badMustExpressions")
   public static Object[][] badMustExpressions() {
-    return new Object[][] {
-      {"tooFewDelimiter"}, {"too:many:delimiter"}, {":emptyField"},
-      {"emptyValue:"}, {":"}, {""}
-    };
+    return new Object[][] {{"tooFewDelimiter"}, {":emptyField"}, {"emptyValue:"}, {":"}, {""}};
   }
 
   @Test(
@@ -381,7 +442,18 @@ public class Search2ApiTest extends AbstractRestApiTest {
   @Test(description = "Search for a hierarchy topic result")
   public void hierarchyTopic() throws IOException {
     JsonNode result = doSearch(200, null, new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC));
-    assertEquals(getAvailable(result), 58);
+    assertEquals(getAvailable(result), 60);
+  }
+
+  @Test(description = "Search for a hierarchy topic result with collections filter")
+  public void hierarchyTopicWithCollectionsFilter() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
+            new NameValuePair("collections", CAL_BOOK_COLLECTION));
+    assertEquals(getAvailable(result), 7);
   }
 
   @Test(description = "Search for a non-existent hierarchy topic result")
@@ -444,9 +516,8 @@ public class Search2ApiTest extends AbstractRestApiTest {
             200,
             null,
             new NameValuePair("hierarchy", NORMAL_HIERARCHY_TOPIC),
-            new NameValuePair("collections", "non-existing"),
             new NameValuePair("status", "ARCHIVED"));
-    assertEquals(getAvailable(result), 58);
+    assertEquals(getAvailable(result), 60);
   }
 
   private JsonNode doSearch(int expectedCode, String query, NameValuePair... queryVals)
@@ -465,11 +536,32 @@ public class Search2ApiTest extends AbstractRestApiTest {
     int statusCode = makeClientRequest(method);
     assertEquals(statusCode, expectedCode);
 
-    return mapper.readTree(method.getResponseBody());
+    return mapper.readTree(method.getResponseBodyAsStream());
   }
 
   private int getAvailable(JsonNode result) {
     return result.get("available").asInt();
+  }
+
+  private String getItemName(JsonNode result, int index) {
+    return result.get("results").get(index).get("name").asText();
+  }
+
+  private Boolean getKeywordFoundInAttachment(JsonNode result, int index) {
+    return result.get("results").get(index).get("keywordFoundInAttachment").asBoolean();
+  }
+
+  private List<String> getHighlights(JsonNode result) {
+    return StreamSupport.stream(result.get("highlight").spliterator(), false)
+        .map(JsonNode::asText)
+        .collect(Collectors.toList());
+  }
+
+  private static Optional<JsonNode> getBookmark(JsonNode result, int index) {
+    return Optional.ofNullable(result)
+        .flatMap(r -> Optional.ofNullable(r.get("results")))
+        .flatMap(items -> Optional.ofNullable(items.get(index)))
+        .flatMap(item -> Optional.ofNullable(item.get("bookmark")));
   }
 
   private Stream<JsonNode> buildResultsStream(JsonNode result) {
@@ -492,5 +584,10 @@ public class Search2ApiTest extends AbstractRestApiTest {
         .filter(resultByUuid)
         .findFirst()
         .flatMap(r -> Optional.ofNullable(r.get("thumbnailDetails")));
+  }
+
+  // Build the final query string that will send from new UI favourite search page.
+  private String buildFavouriteSearchQuery(String query) {
+    return query + " OR bookmark_tags:(" + query + ")";
   }
 }

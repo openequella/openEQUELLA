@@ -37,7 +37,6 @@ import OEQThumb, { classes as thumbClasses } from "../../components/OEQThumb";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { createDrmDialog } from "../../drm/DrmHelper";
 import { defaultDrmStatus } from "../../modules/DrmModule";
-import { Root } from "../../search/components/SearchResult";
 import { buildOpenSummaryPageHandler } from "../../search/SearchPageHelper";
 import { languageStrings } from "../../util/langstrings";
 import HierarchyKeyResourceDialog from "./HierarchyKeyResourceDialog";
@@ -204,34 +203,36 @@ const KeyResource = ({ keyResource, onPinIconClick }: KeyResourceProps) => {
   };
 
   const itemInfo = () => (
-    <Root>
+    <>
       <ListItem alignItems="flex-start">
         <ListItemText
           primary={itemLink()}
           secondary={description}
-          primaryTypographyProps={{
-            color: "primary",
-            variant: "h6",
-            sx: {
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
+          slotProps={{
+            primary: {
+              color: "primary",
+              variant: "h6",
+              sx: {
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              },
             },
-          }}
-          secondaryTypographyProps={{
-            sx: {
-              fontSize: "1rem",
-              overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: "2",
-              // It's deprecated but is the only way to make `WebkitLineClamp` to work.
-              WebkitBoxOrient: "vertical",
+            secondary: {
+              sx: {
+                fontSize: "1rem",
+                overflow: "hidden",
+                display: "-webkit-box",
+                WebkitLineClamp: "2",
+                // It's deprecated but is the only way to make `WebkitLineClamp` to work.
+                WebkitBoxOrient: "vertical",
+              },
             },
           }}
         />
       </ListItem>
       {drmDialog}
-    </Root>
+    </>
   );
 
   return (

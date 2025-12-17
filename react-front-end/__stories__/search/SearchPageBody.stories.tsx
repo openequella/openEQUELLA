@@ -23,7 +23,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { Meta, Story, StoryFn } from "@storybook/react";
+import type { Decorator, Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { classifications } from "../../__mocks__/CategorySelector.mock";
 import { customRefinePanelControl } from "../../__mocks__/RefinePanelControl.mock";
@@ -62,10 +62,12 @@ const searchPageBodyProps: SearchPageBodyProps = {
 };
 
 const buildSearchContextDecorator =
-  (searchContextProps: SearchContextProps = defaultSearchContextProps) =>
-  (Story: Story) => (
+  (
+    searchContextProps: SearchContextProps = defaultSearchContextProps,
+  ): Decorator =>
+  (Story) => (
     <SearchContext.Provider value={searchContextProps}>
-      <Story />
+      {Story()}
     </SearchContext.Provider>
   );
 
@@ -152,6 +154,16 @@ CustomSortingOptions.args = {
   },
 };
 
+export const HideWilcardSearchToggle: StoryFn<SearchPageBodyProps> = (args) => (
+  <SearchPageBody {...args} />
+);
+HideWilcardSearchToggle.args = {
+  ...searchPageBodyProps,
+  searchBarConfig: {
+    enableWildcardToggle: false,
+  },
+};
+
 export const ShowAdvancedSearchFilter: StoryFn<SearchPageBodyProps> = (
   args,
 ) => <SearchPageBody {...args} />;
@@ -184,10 +196,8 @@ CustomSearchResult.args = {
   ...searchPageBodyProps,
   customRenderSearchResults: (searchResult: SearchPageSearchResult) => (
     <List>
-      {searchResult.content.results.map(({ name, uuid, version }) => (
-        <ListItem key={uuid}>
-          name: {name} | uuid: {uuid} | version: {version}
-        </ListItem>
+      {searchResult.content.results.map(({ name }) => (
+        <ListItem key={name}>name: {name}</ListItem>
       ))}
     </List>
   ),

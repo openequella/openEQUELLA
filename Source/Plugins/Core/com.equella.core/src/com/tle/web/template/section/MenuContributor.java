@@ -38,6 +38,11 @@ public interface MenuContributor {
     private final String route;
     private boolean customImage;
 
+    /**
+     * @param route Menu path to use in the new UI. Only used when the New UI is enabled. If
+     *     non-null will be the value used to generate the link for the New UI menu, otherwise a
+     *     Legacy UI link will be used
+     */
     public MenuContribution(
         HtmlLinkState link,
         String backgroundImage,

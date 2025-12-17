@@ -84,7 +84,7 @@ const mockFacetsWithFlags: FacetedSearchClassificationWithFlags[] =
 
 // This test does not need NavigationGuard which is part of the Setting page template.
 jest.mock("../../../tsrc/components/NavigationGuard", () => ({
-  NavigationGuard: (props: NavigationGuardProps) => {
+  NavigationGuard: (_: NavigationGuardProps) => {
     return <div />;
   },
 }));

@@ -49,6 +49,12 @@ import java.net.{URI, URL}
   * @param roleConfig
   *   Optional configuration for custom roles assigned to the user's session. If None, use the
   *   default roles.
+  * @param userIdAttribute
+  *   Since the standard IdP user ID may differ from the OEQ user ID, a mapping between the two IDs
+  *   is required to help maintain the relationship between IdP users and OEQ resources. To support
+  *   this mapping, a custom attribute must be configured in the IdP to store the OEQ user ID. This
+  *   attribute should then be used, along with the standard ID, in an API call to retrieve the OEQ
+  *   user ID. If the standard ID is the same as the OEQ user ID, this attribute can be left empty.
   */
 final case class CommonDetails(
     platform: IdentityProviderPlatform.Value,
@@ -61,6 +67,7 @@ final case class CommonDetails(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean
 )
 
@@ -154,6 +161,7 @@ object IdentityProviderDetails {
       usernameClaim = idp.usernameClaim,
       defaultRoles = idp.defaultRoles,
       roleConfig = idp.roleConfig,
+      userIdAttribute = idp.userIdAttribute,
       enabled = idp.enabled
     )
 

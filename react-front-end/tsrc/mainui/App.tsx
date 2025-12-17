@@ -46,6 +46,7 @@ const RootHierarchyPage = React.lazy(
 const HierarchyBrowsePage = React.lazy(
   () => import("../hierarchy/BrowseHierarchyPage"),
 );
+const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 interface NewPageProps {
   /**
@@ -112,14 +113,14 @@ export const AppContext = React.createContext<AppContextProps>({
 export const withAppContext =
   <T,>(
     Page: React.ComponentType<T & AppContextProps>,
-  ): ((props: T) => JSX.Element) =>
+  ): ((props: T) => React.JSX.Element) =>
   (props: T) => (
     <AppContext.Consumer>
       {(appContextProps) => <Page {...props} {...appContextProps} />}
     </AppContext.Consumer>
   );
 
-const App = ({ entryPage }: AppProps): JSX.Element => {
+const App = ({ entryPage }: AppProps): React.JSX.Element => {
   console.debug("START: <App!!>");
 
   const [currentUser, setCurrentUser] =
@@ -182,6 +183,11 @@ const App = ({ entryPage }: AppProps): JSX.Element => {
         hierarchyBrowsePage: () => (
           <NewPage>
             <HierarchyBrowsePage updateTemplate={nop} />
+          </NewPage>
+        ),
+        favouritesPage: () => (
+          <NewPage>
+            <FavouritesPage updateTemplate={nop} />
           </NewPage>
         ),
         _: (s: string | number) => {

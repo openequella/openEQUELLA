@@ -7,7 +7,7 @@ import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.searching.SearchPage;
 import com.tle.webtests.pageobject.selection.SelectionSession;
-import com.tle.webtests.test.AbstractSessionTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.openqa.selenium.By;
@@ -17,7 +17,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("fiveo")
-public class SummaryXSLTTest extends AbstractSessionTest {
+public class SummaryXSLTTest extends AbstractIntegrationTest {
 
   private static final String ITEM_NAME = "SummaryXSLTTest";
   private static final String IMS_ITEM_NAME = "SummaryXSLTTest - IMS Package";
@@ -57,6 +57,11 @@ public class SummaryXSLTTest extends AbstractSessionTest {
     assertFunction(selectionNode, "selectAttachmentFunction");
     assertFunction(selectionNode, "selectPathFunction");
     assertFunction(selectionNode, "selectItemFunction");
+  }
+
+  @Override
+  protected boolean isCleanupItems() {
+    return false;
   }
 
   private void assertFunction(WebElement selectionNode, String func) {

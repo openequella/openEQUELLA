@@ -27,6 +27,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { OEQLink } from "../../components/OEQLink";
@@ -49,7 +50,7 @@ const buildBreadcrumbs = (
         <OEQLink
           key={compoundUuid}
           muiLinkUrlProvider={() =>
-            buildSelectionSessionHierarchyLink(compoundUuid)
+            buildSelectionSessionHierarchyLink(compoundUuid, O.none)
           }
           routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
         >
@@ -60,7 +61,9 @@ const buildBreadcrumbs = (
     A.prepend(
       <OEQLink
         key="browse"
-        muiLinkUrlProvider={() => buildSelectionSessionHierarchyLink("ALL")} // 'ALL' is the topic used for browsing in Old UI.
+        muiLinkUrlProvider={() =>
+          buildSelectionSessionHierarchyLink("ALL", O.none)
+        } // 'ALL' is the topic used for browsing in Old UI.
         routeLinkUrlProvider={() => routes.BrowseHierarchy.path}
       >
         {browseText}
@@ -120,7 +123,12 @@ const HierarchyPanel = ({
   return (
     <Card>
       <CardHeader title={buildBreadcrumbs(hierarchy)} />
-      <CardContent>
+      <CardContent
+        sx={{
+          // Handle overflow for hierarchy tree.
+          overflow: "auto",
+        }}
+      >
         <Stack spacing={2}>
           <Typography variant="h4">{name ?? compoundUuid}</Typography>
 

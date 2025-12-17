@@ -209,8 +209,11 @@ export const languageStrings = {
       discard: "Discard",
       dismiss: "Dismiss",
       done: "Done",
+      dragToReorder: "Drag to reorder",
       edit: "Edit",
       enable: "Enable",
+      maximise: "Maximise",
+      minimise: "Minimise",
       no: "No",
       ok: "OK",
       openInNewWindow: "Open in new window",
@@ -227,11 +230,13 @@ export const languageStrings = {
       selectAll: "Select all",
       selectNone: "Select none",
       share: "Share",
+      showAll: "Show all",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",
       view: "View",
       yes: "Yes",
+      restore: "Restore",
     },
     breadcrumb: "breadcrumb",
     required: "* Required",
@@ -350,6 +355,92 @@ export const languageStrings = {
       thisYear: "This year",
     },
   },
+  dashboard: {
+    title: "Dashboard",
+    welcomeTitle: "Welcome to openEQUELLA",
+    welcomeDesc: {
+      systemUser: {
+        howToModify:
+          "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users, select <b>Settings</b> from the navigation menu then <b>General > Dashboard</b>.",
+      },
+      nonSystemUser: {
+        hintForOeq:
+          "Select an option from the navigation menu to the left to use openEQUELLA features.",
+        selectEditButton:
+          "Select the <b>Edit dashboard</b> button and go to the <b>Create portlet</b> tab to add portlets to your dashboard.",
+      },
+    },
+    portlets: {
+      browse: {
+        noneFound: "No hierarchies found.",
+      },
+      favourites: {
+        noneFound: "No favourite %s found.",
+        resourcesTabName: "Resources",
+        searchesTabName: "Searches",
+      },
+      quickSearch: {
+        failedToInitialise: "Failed to initialise quick search portlet.",
+        noResults: "No results found.",
+        queryField: "Search",
+        searching: "Search in progress...",
+      },
+      recentContributions: {
+        noneFound: "No recent contributions found.",
+      },
+      tasks: {
+        failedToInitialise: "Failed to initialise tasks portlet.",
+        nothingReturned: "No tasks and notifications returned.",
+        unableToFindItemsOfType: "Unable to find items of type:",
+      },
+      unsupported: {
+        title: "Unsupported portlet configured.",
+        description:
+          "An unsupported portlet has been detected, please contact your system administrator.",
+      },
+      dialog: {
+        close: "Close portlet",
+        delete: "Delete portlet",
+        closeAlert: "Are you sure you want to close %s portlet?",
+        closeAlertInfo:
+          "You can restore it later in the Dashboard Editor. To access it, click the Edit icon in the bottom-right corner.",
+        deleteAlert: "Are you sure you want to delete %s portlet?",
+      },
+    },
+    editor: {
+      title: "Dashboard editor",
+      editDashboard: "Edit dashboard",
+      dashboardLayout: {
+        title: "Dashboard layout",
+        alertNoDashboardDetails: "Failed to get dashboard details.",
+        chooseLayout: "Choose your preferred dashboard layout:",
+        twoColumnsEqual: "Two columns (Equal)",
+        twoColumnsRatio1to2: "Two columns (1:2 ratio)",
+        twoColumnsRatio2to1: "Two columns (2:1 ratio)",
+        singleColumn: "Single column",
+      },
+      createPortlet: {
+        title: "Create portlet",
+        tooltip: "Create %s portlet",
+        noCreatablePortlets: " No portlet types available to create.",
+      },
+      restorePortlet: {
+        title: "Restore portlet",
+        noClosedPortlets: "No closed portlets found.",
+      },
+      alertInfo:
+        "You are currently editing your dashboard. Changes will be saved automatically.",
+    },
+    errors: {
+      failedToOpenCreationPage:
+        "Failed to access the legacy portlet creation page: %s",
+      failedToDeletePortlet: "Failed to delete portlet: %s",
+      failedToGetCreatablePortlets:
+        "Failed to retrieve creatable portlet types: %s",
+      failedToGetDashboardDetails: "Failed to retrieve dashboard details: %s",
+      failedToUpdatePortletPref: "Failed to update portlet preference: %s",
+    },
+  },
   drm: {
     getTerms: {
       error: "Failed to retrieve DRM terms",
@@ -377,6 +468,41 @@ export const languageStrings = {
   },
   errorpage: {
     title: "Error",
+  },
+  favourites: {
+    title: "Favourites",
+    favouritesSearch: {
+      searchCriteria: "Search criteria",
+      addedAt: "Added at",
+      remove: "Remove from favourites",
+      removeAlert:
+        "Are you sure you want to remove this search from your favourites?",
+      showMoreSearchCriteria: "Show more search criteria",
+      hideMoreSearchCriteria: "Hide more search criteria",
+      searchCriteriaLabels: {
+        query: "Query",
+        collection: "Collection",
+        advancedSearch: "Advanced search",
+        hierarchy: "Hierarchy",
+        lastModifiedDateRange: "Last modified date range",
+        owner: "Owner",
+        mimeTypes: "Mime types",
+        classification: "Classification",
+        end: "End",
+        start: "Start",
+      },
+    },
+    favouritesItem: {
+      tags: "Tags",
+    },
+    favouritesSelector: {
+      title: "Favourites type",
+      resources: "Resources",
+      searches: "Searches",
+    },
+    sortOptions: {
+      dateFavourited: "Date favourited",
+    },
   },
   fileUploader: {
     noFileSelected: "No attached resources",
@@ -510,6 +636,11 @@ export const languageStrings = {
     },
     colorPicker: {
       dialogTitle: "Select a Color",
+      customLabel: "Custom",
+      customAriaLabel: "Custom picker",
+      swatchesLabel: "Swatches",
+      swatchesAriaLabel: "Swatches picker",
+      toggleGroupAriaLabel: "Color Picker Type",
     },
   },
   screenoptions: {
@@ -574,7 +705,8 @@ export const languageStrings = {
     favouriteItem: {
       add: "Add to favourites",
       remove: "Remove from favourites",
-      removeAlert: "Are you sure you want to remove from your favourites?",
+      removeAlert:
+        "Are you sure you want to remove this resource from your favourites?",
       tagDescription: "Tags to help when searching (optional).",
     },
     addToHierarchy: {
@@ -612,12 +744,12 @@ export const languageStrings = {
       title: "Filter by Attachment type",
       helperText: "Attachment types",
     },
-    order: {
+    sortOptions: {
       relevance: "Relevance",
-      name: "Name",
-      datemodified: "Date modifed",
-      datecreated: "Date created",
-      rating: "Rating",
+      title: "Title",
+      lastModified: "Date last modified",
+      dateCreated: "Date created",
+      userRating: "User Rating",
     },
     pagination: {
       firstPageButton: "First page",
@@ -857,8 +989,8 @@ export const languageStrings = {
               "Client secret provided by your identity provider to use with the above Client ID when accessing the API - sometimes different from that used for the OpenID Connect configuration.",
           },
         },
-        roleMappings: {
-          title: "Role Mappings",
+        mappings: {
+          title: "Mappings",
           defaultRole: "Default roles",
           defaultRoleDesc:
             "Select the default openEQUELLA roles to be applied to users logging in via the Identity Provider. NOTE: These defaults apply only if no Role claim is defined.",
@@ -870,6 +1002,9 @@ export const languageStrings = {
             customRoleLabel: "Enter IdP role",
             customRoleColumnName: "IdP Role Name",
           },
+          userIdAttributeLabel: "User ID attribute",
+          userIdAttributeDesc:
+            "By default, openEQUELLA uses the standard user ID provided by your chosen IdP as the user identifier (e.g. Entra ID 'oid'). To use a different value, specify the attribute from your IdP that stores the desired user ID.",
         },
         oeqDetails: {
           title: "openEQUELLA (RP) details",

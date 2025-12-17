@@ -1,0 +1,35 @@
+<com.tle.common.portal.entity.Portlet>
+  <id>13324</id>
+  <uuid>d5ef5746-f95e-43ed-80d7-9ac267d2c610</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2025-08-25 16:13:55.0</dateModified>
+  <dateCreated class="sql-timestamp">2025-08-25 16:13:55.0</dateCreated>
+  <name>
+    <id>13325</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>13326</id>
+          <locale>en</locale>
+          <priority>0</priority>
+          <text>Private task statistics</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes>
+    <com.tle.beans.entity.BaseEntity_-Attribute>
+      <key>trend</key>
+      <value>WEEK</value>
+    </com.tle.beans.entity.BaseEntity_-Attribute>
+  </attributes>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>taskstatistics</type>
+  <closeable>true</closeable>
+  <minimisable>true</minimisable>
+  <enabled>true</enabled>
+  <institutional>false</institutional>
+</com.tle.common.portal.entity.Portlet>

@@ -40,10 +40,10 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.3"
-    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "11.2.1.jre8"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.8"
+    lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.1.jre11"
 
-    lazy val log4jVersion   = "2.24.3"
+    lazy val log4jVersion   = "2.25.2"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core"        % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
@@ -56,7 +56,10 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion  = "2.15.3"
+    lazy val jacksonVersion = "2.20.1"
+    // Jackson Annotations has chosen to split for sync versions.
+    // See https://github.com/FasterXML/jackson-annotations/issues/294
+    lazy val jacksonAnnotationsVersion = "2.20"
     lazy val jacksonDataBind = "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
     lazy val jacksonDataFormatYaml =
       "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % jacksonVersion
@@ -69,7 +72,7 @@ object CommonSettings extends AutoPlugin {
   override def requires: Plugins = HeaderPlugin && JvmPlugin
   override def projectSettings = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.13.16",
+    scalaVersion := "2.13.17",
     scalacOptions ++= Seq("-Vimplicits"),
     javacOptions ++= Seq("--release", "21"),
     compileOrder := CompileOrder.Mixed,

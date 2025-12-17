@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext } from "react";
+import { isEmpty } from "fp-ts/string";
 import * as React from "react";
+import { useContext } from "react";
+import ReactGA from "react-ga4";
 import {
   BrowserRouter,
   Prompt,
@@ -25,11 +27,12 @@ import {
   RouteComponentProps,
   Switch,
 } from "react-router-dom";
-import ReactGA from "react-ga4";
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
+import { LEGACY_PORTLET_CLASS } from "../dashboard/portlet/LegacyPortlet";
 import { LegacyContent } from "../legacycontent/LegacyContent";
+import { isLegacyAdvancedSearchLocation } from "../modules/AdvancedSearchModule";
 import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 import {
@@ -37,9 +40,8 @@ import {
   isHierarchyPageACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
-  PermissionCheck,
+  RequiredPermissionCheck,
 } from "../modules/SecurityModule";
-import { isLegacyAdvancedSearchUrl } from "../search/AdvancedSearchHelper";
 import { AppContext } from "./App";
 import ErrorPage from "./ErrorPage";
 import { defaultNavMessage, NavAwayDialog } from "./PreventNavigation";
@@ -47,7 +49,9 @@ import ProtectedPage from "./ProtectedPage";
 import {
   BaseOEQRouteComponentProps,
   isNewUIRoute,
+  NEW_DASHBOARD_PATH,
   OEQRouteNewUI,
+  OLD_DASHBOARD_PATH,
   OLD_HIERARCHY_PATH,
   OLD_MY_RESOURCES_PATH,
   OLD_SEARCH_PATH,
@@ -68,6 +72,7 @@ const BrowseHierarchyPage = React.lazy(
 const MyResourcesPage = React.lazy(
   () => import("../myresources/MyResourcesPage"),
 );
+const Dashboard = React.lazy(() => import("../dashboard/Dashboard"));
 
 const renderData = getRenderData();
 
@@ -89,6 +94,9 @@ const removeLegacyCss = (): void => {
     head.removeChild(legacyCss);
   }
 };
+
+const hasLegacyPortlet = () =>
+  document.querySelector(`.${LEGACY_PORTLET_CLASS}`) !== null;
 
 export default function IndexPage() {
   const { currentUser } = useContext(AppContext);
@@ -152,11 +160,13 @@ export default function IndexPage() {
     return isNotGuest || hasAuthenticated;
   }, [currentUser]);
 
+  const hasLegacyActionParams = (search: string): boolean => !isEmpty(search);
+
   const renderProtectedPage = React.useCallback(
     (
       routeProps: RouteComponentProps,
       component: React.ComponentType<BaseOEQRouteComponentProps>,
-      permissionChecks?: PermissionCheck[],
+      permissionChecks?: RequiredPermissionCheck[],
     ) => {
       return (
         <ProtectedPage
@@ -188,7 +198,7 @@ export default function IndexPage() {
     () =>
       Object.keys(routes)
         .map<OEQRouteNewUI | undefined>((name) => {
-          // @ts-ignore:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
+          // @ts-expect-error:  Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Routes'
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const maybeRoute: any = routes[name];
           return isNewUIRoute(maybeRoute) ? maybeRoute : undefined;
@@ -199,7 +209,12 @@ export default function IndexPage() {
             key={ind}
             path={oeqRoute.path}
             render={(p) => {
-              removeLegacyCss();
+              // The conditional is to fix issue where the dashboard page is loaded twice: legacy CSS must be removed
+              // only when no legacy content(portlet) is present, otherwise styles become incorrect.
+              if (!hasLegacyPortlet()) {
+                removeLegacyCss();
+              }
+
               return renderProtectedPage(
                 p,
                 oeqRoute.component,
@@ -218,7 +233,7 @@ export default function IndexPage() {
           path={[OLD_SEARCH_PATH]}
           render={(routeProps) => {
             const newSearchEnabled: boolean =
-              typeof renderData !== "undefined" && renderData?.newSearch;
+              renderData !== undefined ? renderData.newSearch : false;
             const location = window.location;
 
             // If the path matches the Old Search UI path and new Search UI is disabled, use `LegacyContent`.
@@ -230,7 +245,7 @@ export default function IndexPage() {
 
             return renderProtectedPage(
               routeProps,
-              isLegacyAdvancedSearchUrl(location)
+              isLegacyAdvancedSearchLocation(location)
                 ? AdvancedSearchPage
                 : SearchPage,
               [isSearchPageACLGranted],
@@ -270,6 +285,23 @@ export default function IndexPage() {
                   ]);
 
             return page;
+          }}
+        />
+        <Route
+          path={OLD_DASHBOARD_PATH}
+          render={(routeProps) => {
+            const legacyContentNeeded =
+              hasLegacyActionParams(routeProps.location.search) ||
+              isSelectionSessionOpen();
+
+            if (legacyContentNeeded) {
+              return renderLegacyContent(routeProps);
+            }
+
+            if (!hasLegacyPortlet()) {
+              removeLegacyCss();
+            }
+            return renderProtectedPage(routeProps, Dashboard);
           }}
         />
         <Route render={renderLegacyContent} />
@@ -316,7 +348,7 @@ export default function IndexPage() {
               </Route>
             )}
             <Route path="/" exact>
-              <Redirect to="/home.do" />
+              <Redirect to={NEW_DASHBOARD_PATH} />
             </Route>
             {newPageRoutes}
             {legacyPageRoutes}

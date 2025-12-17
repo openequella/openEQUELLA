@@ -12,8 +12,12 @@ import java.net.URL;
 import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 public class SelectionSession extends AbstractPage<SelectionSession> {
 
@@ -110,10 +114,9 @@ public class SelectionSession extends AbstractPage<SelectionSession> {
         .isEmpty();
   }
 
-  public ItemListPage getShowAllFavourites() {
+  public void clickShowAllFavourites() {
     setRecentTab("Favourites");
     recentBox.findElement(By.id("fav_showAll")).click();
-    return new ItemListPage(context).get();
   }
 
   public boolean recentContributionExists(String fullName) {
@@ -189,5 +192,21 @@ public class SelectionSession extends AbstractPage<SelectionSession> {
 
   public boolean hasBreadcrumbShow() {
     return isPresent(driver.findElement(By.xpath("id('breadcrumbs')/span/a")));
+  }
+
+  public boolean isNewSearchPresent() {
+    ExpectedCondition<Boolean> isPresent =
+        new ExpectedCondition<Boolean>() {
+          @Override
+          public Boolean apply(WebDriver driver) {
+            try {
+              return isVisible(By.xpath("//*[contains(text(),'Search result')]"));
+            } catch (StaleElementReferenceException | NoSuchElementException e) {
+              return false;
+            }
+          }
+        };
+
+    return waiter.until(isPresent);
   }
 }

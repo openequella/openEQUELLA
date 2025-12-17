@@ -19,20 +19,25 @@
 package com.tle.core.favourites.service;
 
 import com.dytech.edge.web.WebConstants;
+import com.google.common.base.Strings;
 import com.tle.beans.Institution;
-import com.tle.common.Check;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.searching.Search;
+import com.tle.common.searching.Search.SortType;
 import com.tle.common.searching.SortField;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.events.UserDeletedEvent;
 import com.tle.core.events.UserEditEvent;
 import com.tle.core.events.UserIdChangedEvent;
 import com.tle.core.events.listeners.UserChangeListener;
+import com.tle.core.favourites.FavouritesConstant;
 import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
 import com.tle.core.favourites.dao.FavouriteSearchDao;
 import com.tle.core.guice.Bind;
+import com.tle.exceptions.AccessDeniedException;
+import com.tle.exceptions.AuthenticationException;
 import com.tle.web.api.browsehierarchy.HierarchyCompoundUuid;
 import com.tle.web.integration.IntegrationSection;
 import com.tle.web.sections.SectionInfo;
@@ -58,13 +63,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Bind(FavouriteSearchService.class)
 @Singleton
 public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserChangeListener {
-  private static final String DEFAULT_ORDER = "dateModified";
-
   @Inject private FavouriteSearchDao dao;
+
+  @Override
+  public FavouriteSearch getById(long id) {
+    return dao.findById(id);
+  }
+
+  @Override
+  public boolean isOwner(FavouriteSearch favouriteSearch) {
+    String userId = CurrentUser.getUserID();
+    return favouriteSearch.getOwner().equals(userId);
+  }
 
   @Override
   @Transactional
   public FavouriteSearch save(FavouriteSearch search) {
+    if (CurrentUser.isGuest()) {
+      throw new AuthenticationException("Guest(Unauthenticated) users cannot favourite searches.");
+    }
+
     Long id = dao.save(search);
     return dao.getById(id);
   }
@@ -76,6 +94,21 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     if (favouriteSearch != null) {
       dao.delete(favouriteSearch);
     }
+  }
+
+  @Override
+  @Transactional
+  public void deleteIfOwned(long id) {
+    FavouriteSearch favouriteSearch =
+        Optional.ofNullable(getById(id))
+            .orElseThrow(() -> new NotFoundException("No favourite search matching ID: " + id));
+
+    if (!isOwner(favouriteSearch)) {
+      throw new AccessDeniedException(
+          "You are not the owner of the favourite search with ID: " + id);
+    }
+
+    dao.delete(favouriteSearch);
   }
 
   /**
@@ -176,17 +209,22 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
     String userId = CurrentUser.getUserID();
     Institution institution = CurrentInstitution.get();
 
-    SortField[] sortType = search.getSortFields();
-    boolean reverse = search.isSortReversed();
-    String sortField = sortType != null ? sortType[0].getField() : DEFAULT_ORDER;
-
+    SortCriteria sortCriteria =
+        resolveSortCriteria(search.getSortFields(), search.isSortReversed());
     Date[] dates = search.getDateRange();
 
     int totalResults =
-        (int) dao.count(Check.nullToEmpty(search.getQuery()), dates, userId, institution);
+        (int) dao.count(Strings.nullToEmpty(search.getQuery()), dates, userId, institution);
     List<FavouriteSearch> results =
         dao.search(
-            search.getQuery(), dates, offset, perPage, sortField, reverse, userId, institution);
+            search.getQuery(),
+            dates,
+            offset,
+            perPage,
+            sortCriteria.field(),
+            sortCriteria.reversed(),
+            userId,
+            institution);
 
     return new SearchFavouritesSearchResults(results, results.size(), offset, totalResults);
   }
@@ -194,7 +232,7 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
   @Override
   public List<FavouriteSearch> getSearchesForOwner(String userID, int maxResults) {
     return dao.findAllByCriteria(
-        Order.desc("dateModified"),
+        Order.desc(FavouritesConstant.ADDED_AT),
         maxResults,
         Restrictions.eq("owner", userID),
         Restrictions.eq("institution", CurrentInstitution.get()));
@@ -246,5 +284,35 @@ public class FavouriteSearchServiceImpl implements FavouriteSearchService, UserC
         .filter(p -> p.getName().equals(param))
         .map(NameValuePair::getValue)
         .findFirst();
+  }
+
+  /**
+   * A simple data holder for basic sort criteria.
+   *
+   * @param field the name of the field to sort by
+   * @param reversed true if the sort should be descending, false if ascending
+   */
+  private record SortCriteria(String field, boolean reversed) {}
+
+  /**
+   * Resolve the final sort field name and sort order based on the provided sort fields and a global
+   * reverse flag.
+   *
+   * @param sortFields Array of SortField instances from the search request. Each SortField has its
+   *     own default sort order (e.g., name ⇒ ASC, date ⇒ DESC).
+   * @param isSortReversed Boolean flag indicating whether the user requested a global reverse. The
+   *     UI may include a “global reverse” option (currently only support in legacy UI).
+   */
+  private SortCriteria resolveSortCriteria(SortField[] sortFields, Boolean isSortReversed) {
+    // 1. Pick the first user-provided SortField or use a default.
+    SortField sortField =
+        Optional.ofNullable(sortFields)
+            .filter(arr -> arr.length > 0)
+            .map(arr -> arr[0])
+            .orElseGet(SortType.ADDEDAT::getSortField);
+
+    // Determine final order by XOR-ing the field’s default with the global flag.
+    boolean reversed = sortField.isReverse() ^ isSortReversed;
+    return new SortCriteria(sortField.getField(), reversed);
   }
 }

@@ -66,7 +66,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import javax.inject.Singleton;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,7 +269,7 @@ public class FreetextIndexImpl
 
   public void setMaxBooleanClauses(int maxBooleanClauses) {
     this.maxBooleanClauses = maxBooleanClauses;
-    BooleanQuery.setMaxClauseCount(maxBooleanClauses);
+    IndexSearcher.setMaxClauseCount(maxBooleanClauses);
   }
 
   @Override

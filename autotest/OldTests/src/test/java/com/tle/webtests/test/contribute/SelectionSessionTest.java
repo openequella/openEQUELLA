@@ -19,14 +19,14 @@ import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
 import com.tle.webtests.pageobject.wizard.ContributePage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import com.tle.webtests.test.files.Attachments;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
 @TestInstitution("contribute")
-public class SelectionSessionTest extends AbstractCleanupTest {
+public class SelectionSessionTest extends AbstractIntegrationTest {
   private static String USERNAME = "AutoTest";
   private static String PASSWORD = "automated";
   private static String SHAREDID = "contribute";
@@ -216,9 +216,17 @@ public class SelectionSessionTest extends AbstractCleanupTest {
         context.getBaseUrl()
             + "searching.do?in=all&q=BasicViewerImage&type=standard&sort=rank&dr=AFTER");
 
-    FavouriteSearchesPage searches = new FavouritesPage(context).load().searches();
-    assertTrue(searches.results().doesResultExist(searchName));
-    searches.delete(searchName);
+    if (testConfig.isNewUI()) {
+      io.github.openequella.pages.favourites.FavouritesPage page =
+          new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+      page.selectFavouritesSearchesType();
+      assertTrue(page.hasSearch(searchName));
+      page.removeSearch(searchName);
+    } else {
+      FavouriteSearchesPage searches = new FavouritesPage(context).load().searches();
+      assertTrue(searches.results().doesResultExist(searchName));
+      searches.delete(searchName);
+    }
   }
 
   @Test

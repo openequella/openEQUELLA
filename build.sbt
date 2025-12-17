@@ -82,14 +82,14 @@ ThisBuild / assemblyMergeStrategy := {
   }
 }
 (ThisBuild / oracleDriverMavenCoordinate) :=
-  Seq("com.oracle.database.jdbc" % "ojdbc11" % "23.4.0.24.05")
+  Seq("com.oracle.database.jdbc" % "ojdbc17" % "23.26.0.0.0")
 
 (ThisBuild / buildConfig) := Common.buildConfig
 
 name := "Equella"
 
 (ThisBuild / equellaMajor)   := 2025
-(ThisBuild / equellaMinor)   := 1
+(ThisBuild / equellaMinor)   := 2
 (ThisBuild / equellaPatch)   := 0
 (ThisBuild / equellaStream)  := "Stable"
 (ThisBuild / equellaBuild)   := buildConfig.value.getString("build.buildname")

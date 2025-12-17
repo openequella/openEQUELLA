@@ -3,28 +3,28 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf node_modules/ .cache",
-    "build": "parcel build --no-autoinstall --out-dir=target/www www/*.html www/*.tsx",
-    "dev": "parcel watch --no-autoinstall --out-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
+    "build": "parcel build --no-autoinstall --dist-dir=target/www www/*.html www/*.tsx",
+    "dev": "parcel watch --no-autoinstall --dist-dir=../target/scala-2.13/classes/www www/*.html www/*.tsx"
   },
   "dependencies": {
-    "@emotion/react": "11.11.4",
-    "@emotion/styled": "11.11.5",
-    "@mui/material": "5.15.16",
-    "axios": "1.8.4",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/material": "7.3.5",
+    "axios": "1.13.2",
     "babel-polyfill": "6.26.0",
     "jss": "10.10.0",
     "md5": "2.3.0",
     "oeq-cloudproviders": "https://github.com/openequella/openEQUELLA-cloudprovidersdk/archive/refs/tags/v0.0.1.tar.gz",
     "query-string": "7.1.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@types/react": "18.3.18",
-    "@types/react-dom": "18.3.5",
-    "@types/md5": "2.3.5",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "@types/md5": "2.3.6",
     "mkdirp": "3.0.1",
-    "parcel-bundler": "1.12.5",
-    "typescript": "5.7.3"
+    "parcel": "2.16.1",
+    "typescript": "5.9.3"
   }
 }

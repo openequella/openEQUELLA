@@ -36,7 +36,10 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
+// TODO: OEQ-2720 enable tests in new UI or write new tests for new UI.
+@OldUIOnly
 @TestInstitution("vanilla")
 public class PortalsTest extends AbstractCleanupTest {
   public PortalsTest() {
@@ -160,7 +163,9 @@ public class PortalsTest extends AbstractCleanupTest {
     assertFalse(home.portalExists(browseName));
   }
 
+  // TODO: OEQ-2610 REMOVE @OldUIOnly
   @Test
+  @OldUIOnly
   public void testFavPortal() {
     HomePage home = dash();
     String favName = context.getFullName("Favourite Portal");

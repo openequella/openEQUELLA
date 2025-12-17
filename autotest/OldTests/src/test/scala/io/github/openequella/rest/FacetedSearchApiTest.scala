@@ -1,8 +1,8 @@
 package io.github.openequella.rest
 
 import com.fasterxml.jackson.databind.JsonNode
+import io.github.openequella.Utils
 import org.apache.commons.httpclient.methods.GetMethod
-import org.apache.http.client.utils.URIBuilder
 import org.testng.Assert.assertEquals
 import org.testng.annotations.Test
 
@@ -10,18 +10,20 @@ import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 class FacetedSearchApiTest extends AbstractRestApiTest {
   private val FACET_SEARCH_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/search2/facet"
-
-  private val HIERARCHY_UUID       = "91a08805-d5f9-478d-aaaf-eff61a266667"
-  private val FACET_AUTHOR_NODE    = "/item/copyright/authors/author"
-  private val BOOK_COLLECTION_UUID = "4c147089-cddb-e67c-b5ab-189614eb1463"
-  private val DRM_COLLECTION_UUID  = "9a961a09-0c6a-b24f-b05b-eb21a696528b"
-  private val AUTHOR_JAMES         = "A James"
+  // Browse books hierarchy
+  private val HIERARCHY_UUID         = "91a08805-d5f9-478d-aaaf-eff61a266667"
+  private val FACET_AUTHOR_NODE      = "/item/copyright/authors/author"
+  private val BASIC_ITEMS_COLLECTION = "b28f1ffe-2008-4f5e-d559-83c8acd79316"
+  private val BOOK_COLLECTION_UUID   = "4c147089-cddb-e67c-b5ab-189614eb1463"
+  private val CAL_BOOK_COLLECTION    = "4c147089-cddb-e67c-b5ab-189614eb1463"
+  private val DRM_COLLECTION_UUID    = "9a961a09-0c6a-b24f-b05b-eb21a696528b"
+  private val AUTHOR_JAMES           = "A James"
 
   @Test(description = "Search without extra params")
   def search(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 5)
+    assertEquals(results.size(), 6)
   }
 
   @Test(description = "Search with query")
@@ -45,7 +47,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
     // search for book collection
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("collections", BOOK_COLLECTION_UUID))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 3)
+    assertEquals(results.size(), 4)
 
     // search with an irrelevant collection
     val paramsDrm  = Seq(("nodes", FACET_AUTHOR_NODE), ("collections", DRM_COLLECTION_UUID))
@@ -65,7 +67,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def searchWithModifiedAfter(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("modifiedAfter", "2024-03-14"))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
     assertEquals(getFirstTermName(results), "A James")
   }
 
@@ -107,7 +109,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def hierarchySearchTest(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("hierarchy", HIERARCHY_UUID))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 3)
+    assertEquals(results.size(), 4)
   }
 
   @Test(description = "Search hierarchy with duplicated criteria which should be ignored")
@@ -115,11 +117,31 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
     val params = Seq(
       ("nodes", FACET_AUTHOR_NODE),
       ("hierarchy", HIERARCHY_UUID),
-      ("status", "ARCHIVED"),
-      ("collections", "non-exist-collection-uuid")
+      ("status", "ARCHIVED")
     )
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 3)
+    assertEquals(results.size(), 4)
+  }
+
+  @Test(description = "Search hierarchy with collections filter")
+  def hierarchySearchWithCollectionsFilterTest(): Unit = {
+    // Search with relevant collection.
+    val params = Seq(
+      ("nodes", FACET_AUTHOR_NODE),
+      ("hierarchy", HIERARCHY_UUID),
+      ("collections", CAL_BOOK_COLLECTION)
+    )
+    val results = getFacetSearch(params)
+    assertEquals(results.size(), 4)
+
+    // Search with irrelevant collection.
+    val paramsBasic = Seq(
+      ("nodes", FACET_AUTHOR_NODE),
+      ("hierarchy", HIERARCHY_UUID),
+      ("collections", BASIC_ITEMS_COLLECTION)
+    )
+    val resultsBasic = getFacetSearch(paramsBasic)
+    assertEquals(resultsBasic.size(), 0)
   }
 
   /** Get the count of a term in the result.
@@ -147,11 +169,10 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   /** Get the facet search result.
     */
   private def getFacetSearch(queryParams: Seq[(String, String)] = Seq()): JsonNode = {
-    val uriBuilder = new URIBuilder(FACET_SEARCH_API_ENDPOINT)
-    queryParams.foreach { case (key, value) => uriBuilder.addParameter(key, value) }
-    val method     = new GetMethod(uriBuilder.build().toString)
+    val url        = Utils.buildUrl(FACET_SEARCH_API_ENDPOINT, queryParams)
+    val method     = new GetMethod(url)
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
-    mapper.readTree(method.getResponseBody).get("results")
+    mapper.readTree(method.getResponseBodyAsStream).get("results")
   }
 }

@@ -54,7 +54,7 @@ export const KalturaPlayerEmbed = ({
   dimensions = { width: 560, height: 395 }, // default to the standard V7 player dimensions
   playerDetails,
 }: KalturaPlayerEmbedProps) => {
-  const divElem = useRef<HTMLElement>();
+  const divElem = useRef<HTMLElement>(null);
   const [playerId] = useState<string>(`kaltura_player_${Date.now()}`);
 
   useEffect(() => {
@@ -77,6 +77,7 @@ export const KalturaPlayerEmbed = ({
       }}
     >
       {/*Player will be embedded to the below div.*/}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
       <div
         id={playerId}
         style={{ width: dimensions.width, height: dimensions.height }}

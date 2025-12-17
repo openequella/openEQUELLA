@@ -19,10 +19,40 @@ import "@fontsource/material-icons";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
+import GlobalStyles from "@mui/material/GlobalStyles";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import { initStrings } from "../util/langstrings";
 import "../util/polyfill";
+
+/*
+ * Global CSS styles required for the self-hosting Material Icons. More details can be found
+ * from the {@link https://fontsource.org/docs/getting-started/migrate-v5} migration guide
+ * of fontsource v5.
+ */
+const muiIconStyles = (
+  <GlobalStyles
+    styles={{
+      ".material-icons": {
+        fontFamily: "'Material Icons'",
+        fontWeight: "normal",
+        fontStyle: "normal",
+        fontSize: 24,
+        display: "inline-block",
+        lineHeight: 1,
+        textTransform: "none",
+        letterSpacing: "normal",
+        wordWrap: "normal",
+        whiteSpace: "nowrap",
+        direction: "ltr",
+        WebkitFontSmoothing: "antialiased",
+        textRendering: "optimizeLegibility",
+        MozOsxFontSmoothing: "grayscale",
+        fontFeatureSettings: "'liga'",
+      },
+    }}
+  />
+);
 
 // Extends global interface `Window` with property `oEQRender` which provides the support for
 // rendering New UI pages in the context of Legacy content.
@@ -33,6 +63,7 @@ declare global {
       myResourcesPage: () => void;
       hierarchyBrowsePage: () => void;
       hierarchyPage: () => void;
+      favouritesPage: () => void;
     };
   }
 }
@@ -42,10 +73,12 @@ window["oEQRender"] = {
   myResourcesPage: () => main("myResourcesPage"),
   hierarchyBrowsePage: () => main("hierarchyBrowsePage"),
   hierarchyPage: () => main("hierarchyPage"),
+  favouritesPage: () => main("favouritesPage"),
 };
 
 export type EntryPage =
   | "advancedSearchPage"
+  | "favouritesPage"
   | "hierarchyBrowsePage"
   | "hierarchyPage"
   | "mainDiv"
@@ -60,7 +93,7 @@ const App = React.lazy(() => import("./App"));
 export default function main(entry: EntryPage) {
   if (process.env.NODE_ENV === "production") {
     const nop = () => {};
-    // eslint-disable-next-line no-native-reassign, no-global-assign
+    // eslint-disable-next-line no-global-assign
     console = {
       ...console,
       debug: nop,
@@ -76,6 +109,7 @@ export default function main(entry: EntryPage) {
   if (rootElement) {
     ReactDOM.createRoot(rootElement).render(
       <React.Suspense fallback={<>loading</>}>
+        {muiIconStyles}
         <App entryPage={entry} />
       </React.Suspense>,
     );

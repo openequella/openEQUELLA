@@ -25,6 +25,7 @@ import com.google.common.collect.Collections2;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.filesystem.handle.BucketFile;
 import com.tle.common.filesystem.handle.StagingFile;
@@ -41,6 +42,7 @@ import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.TargetList;
 import com.tle.common.security.TargetListEntry;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.dashboard.model.PortletPreferenceUpdate;
 import com.tle.core.entity.EntityEditingSession;
 import com.tle.core.entity.service.impl.AbstractEntityServiceImpl;
 import com.tle.core.events.UserDeletedEvent;
@@ -71,6 +73,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -459,6 +462,21 @@ public class PortletServiceImpl
 
   @Transactional(propagation = Propagation.REQUIRED)
   @Override
+  public void updatePreference(Portlet target, PortletPreferenceUpdate update) {
+    PortletPreference preference =
+        Optional.ofNullable(getPreference(target))
+            .orElse(new PortletPreference(target, CurrentUser.getUserID()));
+
+    preference.setClosed(update.isClosed());
+    preference.setMinimised(update.isMinimised());
+    preference.setPosition(update.column());
+    preference.setOrder(update.order());
+
+    prefDao.saveOrUpdate(preference);
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  @Override
   public void savePreferences(Collection<PortletPreference> preferences) {
     for (PortletPreference preference : preferences) {
       if (preference != null) {
@@ -663,6 +681,9 @@ public class PortletServiceImpl
   @Override
   public Portlet getForEdit(String portletUuid) {
     Portlet portlet = getByUuid(portletUuid);
+    if (portlet == null) {
+      throw new NotFoundException("Portlet with UUID " + portletUuid + " not found.");
+    }
     getExtensionForPortlet(portlet).loadExtra(portlet);
     return portlet;
   }

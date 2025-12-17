@@ -4,6 +4,7 @@ import com.tle.webtests.framework.PageContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginPage extends AbstractPage<LoginPage> {
   private By oidcLoginButton = By.name("_oidcLoginSection_loginButton");
@@ -26,6 +27,18 @@ public class LoginPage extends AbstractPage<LoginPage> {
     return new HomePage(context).get();
   }
 
+  /**
+   * Logs in and returns the HomePage, specifying whether the new UI is expected.
+   *
+   * @param username The username to log in with.
+   * @param password The password to log in with.
+   * @param isNewUI True if the new UI is expected, false otherwise.
+   */
+  public HomePage login(String username, String password, boolean isNewUI) {
+    loginWithRedirect(username, password);
+    return new HomePage(context, isNewUI).get();
+  }
+
   public LoginNoticePage loginWithNotice(String username, String password) {
     loginWithRedirect(username, password);
     return new LoginNoticePage(context).get();
@@ -42,11 +55,25 @@ public class LoginPage extends AbstractPage<LoginPage> {
     return errorMessage.getText();
   }
 
-  public String getLoginErrorDetails() {
+  /**
+   * Retrieves the errors displayed on the login page. This static method is typically used in tests
+   * that do not require a {@code LoginPage} instance.
+   *
+   * @param waiter A {@link WebDriverWait} used to wait until the error message is present
+   */
+  public static String getLoginErrorDetails(WebDriverWait waiter) {
     WebElement errorMessage =
         waiter.until(
             ExpectedConditions.presenceOfElementLocated(By.name("login_error_description")));
     return errorMessage.getText();
+  }
+
+  /**
+   * Retrieves the login error message using the {@link WebDriverWait} configured for this {@code
+   * LoginPage} instance.
+   */
+  public String getLoginErrorDetails() {
+    return LoginPage.getLoginErrorDetails(waiter);
   }
 
   public void loginWithRedirect(String username, String password) {

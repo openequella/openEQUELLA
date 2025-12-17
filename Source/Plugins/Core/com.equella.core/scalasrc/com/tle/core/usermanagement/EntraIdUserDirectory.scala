@@ -18,30 +18,12 @@
 
 package com.tle.core.usermanagement
 
-import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
 import com.tle.core.oauthclient.ClientSecretTokenRequest
 import com.tle.integration.oidc.OpenIDConnectParams
 import com.tle.integration.oidc.idp.{GenericIdentityProviderDetails, IdentityProviderPlatform}
-import io.circe.Decoder
-import io.circe.generic.semiauto.deriveDecoder
-import org.apache.http.client.utils.URIBuilder
-import sttp.model.Header
-import java.net.URI
-
-/** Structure for the information of a single user returned from Entra ID.
-  */
-final case class EntraIdUser(
-    id: String,
-    displayName: Option[String],
-    surname: Option[String],
-    givenName: Option[String],
-    mail: Option[String]
-)
-
-/** Structure for response returning multiple users - e.g. user search.
-  */
-final case class EntraIdUserList(value: List[EntraIdUser])
+import io.circe.{ACursor, Decoder}
+import sttp.model.{Header, Uri}
 
 /** The target of this User Directory is the Microsoft Graph REST API.
   *
@@ -55,30 +37,24 @@ class EntraIdUserDirectory extends ApiUserDirectory {
 
   override type IDP = GenericIdentityProviderDetails
 
-  override protected type USER = EntraIdUser
-
-  override protected type USERS = EntraIdUserList
-
-  override protected implicit val userDecoder: Decoder[EntraIdUser] = deriveDecoder[EntraIdUser]
-
-  override protected implicit val usersDecoder: Decoder[EntraIdUserList] =
-    deriveDecoder[EntraIdUserList]
-
-  override protected def toUserList(users: USERS): List[EntraIdUser] = users.value
-
-  override protected def toUserBean(user: EntraIdUser): UserBean = {
-    val username = user.displayName.getOrElse(user.id)
-    new DefaultUserBean(
-      user.id,
-      username,
-      user.givenName.getOrElse(""),
-      user.surname.getOrElse(username),
-      user.mail.orNull
-    )
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+    for {
+      id        <- cursor.downField("id").as[String]
+      username  <- cursor.downField("displayName").as[Option[String]]
+      firstName <- cursor.downField("givenName").as[Option[String]]
+      lastName  <- cursor.downField("surname").as[Option[String]]
+      email     <- cursor.downField("mail").as[Option[String]]
+    } yield IdPUser(id, username, firstName, lastName, email, cursor.value)
   }
 
-  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): URI =
-    URI.create(s"${idp.apiUrl.toString}/users/$id")
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.instance { cursor =>
+    // Users are nested under the "value" field in the response from Microsoft Graph API.
+    val values: ACursor = cursor.downField("value")
+    Decoder.decodeList[IdPUser].tryDecode(values)
+  }
+
+  override protected def userEndpoint(idp: GenericIdentityProviderDetails, id: String): Uri =
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)
 
   /** There are three important things to determine the user listing endpoint in Microsoft Graph:
     *
@@ -100,8 +76,8 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   override protected def userListEndpoint(
       idp: GenericIdentityProviderDetails,
       query: String
-  ): URI = {
-    val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}/users")
+  ): Uri = {
+    val baseEndpoint = Uri(idp.apiUrl.toURI).addPath("users").addParams(includeFields(idp))
 
     def buildSearchCriteria(q: String) =
       List("displayName", "mail", "userPrincipalName")
@@ -115,9 +91,30 @@ class EntraIdUserDirectory extends ApiUserDirectory {
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
       .filter(_.trim.nonEmpty)     // If the remaining are spaces only, do not use it
       .map(buildSearchCriteria)
-      .map(baseEndpoint.addParameter("$search", _))
+      .map(baseEndpoint.addParam("$search", _))
       .getOrElse(baseEndpoint)
-      .build()
+  }
+
+  /** Entra ID supports using query parameter `$filter` to filter users based on custom attributes,
+    * but wildcard searches are not supported for custom attributes. Each filter must be in the
+    * format of `attr eq 'value'`, and multiple filters can be combined using `OR` or `And`. The use
+    * of `$filter` also requires including query parameter `$count` with value `true`.
+    *
+    * References:
+    *   - https://learn.microsoft.com/en-us/graph/filter-query-parameter
+    *   - https://learn.microsoft.com/en-us/graph/aad-advanced-queries?tabs=http#user-properties
+    */
+  override protected def userListByAttrsEndpoint(
+      idp: GenericIdentityProviderDetails,
+      value: String,
+      attrs: List[String]
+  ): Uri = {
+    val filters = attrs.map(attr => s"$attr eq '$value'").mkString(" OR ")
+    Uri(idp.apiUrl.toURI)
+      .addPath("users")
+      .addParams(includeFields(idp))
+      .addParam("$filter", filters)
+      .addParam("$count", "true")
   }
 
   /** According to the doco of OIDC scope, the scope `https://graph.microsoft.com/.default` must be
@@ -141,4 +138,31 @@ class EntraIdUserDirectory extends ApiUserDirectory {
     * Reference link: https://learn.microsoft.com/en-us/graph/aad-advanced-queries
     */
   override protected val requestHeaders: List[Header] = List(Header("ConsistencyLevel", "eventual"))
+
+  /** Entra ID may not return certain custom attributes by default, so explicitly request the
+    * configured attribute to be included by using the '$select' query parameter.
+    *
+    * If the attribute path is hierarchical (e.g.
+    * 'onPremisesExtensionAttributes/extensionAttribute5'), only the top level attribute, namely
+    * 'onPremisesExtensionAttributes', can be specified in the '$select' parameter.
+    */
+  override def customUserIdUrl(idp: IDP, stdId: String, attributePathSegments: Array[String]): Uri =
+    userEndpoint(idp, stdId).addParam("$select", attributePathSegments.head)
+
+  override val customAttributeDelimiter: Char = '/'
+
+  // Builds the `$select` query parameter for Entra ID to specify which fields to include in the response.
+  // Always includes the standard fields: `id`, `displayName`, `surname`, `givenName`, and `mail`. If a custom
+  // user ID attribute is configured, includes its first segment as well.
+  private def includeFields(idp: GenericIdentityProviderDetails): Map[String, String] = {
+    val standardFields = List("id", "displayName", "surname", "givenName", "mail")
+    val fields = idp.commonDetails.userIdAttribute
+      .map(_.split(customAttributeDelimiter))
+      .flatMap(_.headOption)
+      .map(standardFields :+ _)
+      .getOrElse(standardFields)
+      .mkString(",")
+
+    Map("$select" -> fields)
+  }
 }

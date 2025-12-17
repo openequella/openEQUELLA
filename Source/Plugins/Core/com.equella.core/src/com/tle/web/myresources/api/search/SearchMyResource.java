@@ -35,6 +35,7 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.item.serializer.ItemSerializerItemBean;
 import com.tle.core.item.serializer.ItemSerializerService;
+import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory;
 import com.tle.web.api.interfaces.beans.SearchBean;
 import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
@@ -166,7 +167,7 @@ public class SearchMyResource {
     final boolean reverseOrder = (reverse != null && Utils.parseLooseBool(reverse, false));
     final int offset = (start < 0 ? 0 : start);
     final int count = (length <= 0 ? 10 : length);
-    final List<String> infos = CsvList.asList(info, ItemSerializerService.CATEGORY_BASIC);
+    final List<String> infos = CsvList.asList(info, SerialisationCategory.BASIC.toString());
 
     for (MyResourcesSubSearch myResourcesSubSearch : listAllowedMyResourcesSearches()) {
       if (myResourcesSubSearch.getValue().equals(subsearch)) {

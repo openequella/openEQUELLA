@@ -23,7 +23,6 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  TextField,
   Typography,
 } from "@mui/material";
 import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
@@ -149,7 +148,7 @@ class PreLoginNoticeConfigurator extends React.Component<
   };
 
   handleScheduleTypeSelectionChange = (
-    event: ChangeEvent<{}>,
+    event: ChangeEvent<object>,
     value: string,
   ) => {
     this.setState(
@@ -210,13 +209,15 @@ class PreLoginNoticeConfigurator extends React.Component<
           </Typography>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <DateTimePicker
-              renderInput={(props) => (
-                <TextField id="startDatePicker" {...props} />
-              )}
+              slotProps={{
+                textField: { id: "startDatePicker" },
+                toolbar: {
+                  hidden: false,
+                },
+              }}
               onChange={this.handleStartDateChange}
-              inputFormat={dateInputFormat}
-              value={this.state.current.startDate}
-              showToolbar
+              format={dateInputFormat}
+              value={DateTime.fromJSDate(this.state.current.startDate)}
             />
 
             <Typography color="textSecondary" variant="subtitle1">
@@ -224,12 +225,12 @@ class PreLoginNoticeConfigurator extends React.Component<
             </Typography>
 
             <DateTimePicker
-              renderInput={(props) => (
-                <TextField id="endDatePicker" {...props} />
-              )}
+              slotProps={{
+                textField: { id: "endDatePicker" },
+              }}
               onChange={this.handleEndDateChange}
-              inputFormat={dateInputFormat}
-              value={this.state.current.endDate}
+              format={dateInputFormat}
+              value={DateTime.fromJSDate(this.state.current.endDate)}
             />
           </LocalizationProvider>
         </div>
@@ -244,7 +245,7 @@ class PreLoginNoticeConfigurator extends React.Component<
         <CardContent>
           <SettingsListHeading heading={strings.preLogin.title} />
           <Grid id="preLoginConfig" container spacing={2} direction="column">
-            <Grid item>
+            <Grid>
               <React.Suspense fallback={<div>Loading editor...</div>}>
                 <RichTextEditor
                   htmlInput={this.state.current.notice}
@@ -253,7 +254,7 @@ class PreLoginNoticeConfigurator extends React.Component<
                 />
               </React.Suspense>
             </Grid>
-            <Grid item>
+            <Grid>
               <ScheduleSettings />
             </Grid>
           </Grid>

@@ -16,21 +16,21 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 (Runtime / unmanagedClasspath) += (LocalProject("learningedge_config") / baseDirectory).value
 
 val RestEasyVersion   = "3.15.6.Final"
-val SwaggerVersion    = "1.6.12"
-val TomcatVersion     = "9.0.102"
-val axis2Version      = "1.8.2"
+val SwaggerVersion    = "1.6.16"
+val TomcatVersion     = "9.0.112"
+val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
-val curatorVersion    = "5.8.0"
-val cxfVersion        = "3.6.6"
-val fs2Version        = "2.5.12"
-val guiceVersion      = "5.1.0"
+val curatorVersion    = "5.9.0"
+val cxfVersion        = "3.6.9"
+val fs2Version        = "3.12.2"
+val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.19.1"
+val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
-val sttpVersion       = "2.3.0"
-val tikaVersion       = "2.9.1"
-val luceneVersion     = "9.12.1"
-val nettyVersion      = "4.1.119.Final"
+val sttpVersion       = "3.11.0"
+val tikaVersion       = "2.9.4"
+val luceneVersion     = "10.3.2"
+val nettyVersion      = "4.2.7.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -49,32 +49,39 @@ libraryDependencies ++= Seq(
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
   "com.auth0" % "java-jwt" % "4.5.0",
-  "com.auth0" % "jwks-rsa" % "0.22.1"
+  "com.auth0" % "jwks-rsa" % "0.23.0"
+)
+
+// Jackson dependencies
+libraryDependencies ++= Seq(
+  "com.fasterxml.jackson.core"     % "jackson-core"                % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"     % jacksonVersion,
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"       % jacksonVersion,
+  "com.fasterxml.jackson.core"     % "jackson-annotations"         % jacksonAnnotationsVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"          % jacksonVersion,
+  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider" % jacksonVersion exclude (
+    "javax.xml.bind",
+    "jaxb-api"
+  ),
+  jacksonDataBind,
+  jacksonModuleScala
 )
 
 libraryDependencies ++= Seq(
   "co.fs2"                        %% "fs2-io"                        % fs2Version,
-  "com.softwaremill.sttp.client"  %% "core"                          % sttpVersion,
-  "com.softwaremill.sttp.client"  %% "async-http-client-backend-fs2" % sttpVersion,
-  "com.softwaremill.sttp.client"  %% "circe"                         % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "core"                          % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpVersion,
+  "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
-  "com.fasterxml.jackson.core"     % "jackson-core"                  % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"       % jacksonVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8"         % jacksonVersion,
-  "com.fasterxml.jackson.core"     % "jackson-annotations"           % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-base"            % jacksonVersion,
-  "com.fasterxml.jackson.jaxrs"    % "jackson-jaxrs-json-provider"   % jacksonVersion,
-  jacksonDataBind,
-  jacksonModuleScala,
-  "io.bit3"         % "jsass"       % jsassVersion,
-  "com.flickr4java" % "flickr4java" % "3.0.9" excludeAll (
+  "io.bit3"                        % "jsass"                         % jsassVersion,
+  "com.flickr4java"                % "flickr4java"                   % "3.0.9" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
-  "com.google.api-client" % "google-api-client"           % "2.5.1",
+  "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20240514-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.12.1",
-  "com.google.guava"      % "guava"                       % "32.1.3-jre",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
+  "com.google.code.gson"  % "gson"                        % "2.13.2",
+  "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
@@ -87,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "73.2",
+  "com.ibm.icu" % "icu4j" % "78.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -95,7 +102,6 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "com.sun.xml.bind"),
     ExclusionRule(organization = "com.sun.jersey")
   ),
-  "com.miglayout"       % "miglayout-swing"      % "4.2",
   "org.asynchttpclient" % "async-http-client"    % "2.12.4",
   "com.rometools"       % "rome"                 % "2.1.0",
   "io.swagger"          % "swagger-core"         % SwaggerVersion,
@@ -103,15 +109,15 @@ libraryDependencies ++= Seq(
   "io.swagger"          % "swagger-jaxrs"        % SwaggerVersion,
   "io.swagger"         %% "swagger-scala-module" % "1.0.6",
   // Exclude slf4j due to issue: https://github.com/brettwooldridge/HikariCP/issues/1746
-  "com.zaxxer" % "HikariCP" % "4.0.3" excludeAll ExclusionRule(organization = "org.slf4j"),
-  "commons-beanutils"         % "commons-beanutils"     % "1.10.1",
-  "commons-codec"             % "commons-codec"         % "1.18.0",
+  "com.zaxxer" % "HikariCP" % "7.0.2" excludeAll ExclusionRule(organization = "org.slf4j"),
+  "commons-beanutils"         % "commons-beanutils"     % "1.11.0",
+  "commons-codec"             % "commons-codec"         % "1.20.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
   "commons-daemon"            % "commons-daemon"        % "1.4.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
-  "commons-io"                % "commons-io"            % "2.18.0",
+  "commons-io"                % "commons-io"            % "2.21.0",
   "commons-lang"              % "commons-lang"          % "2.6",
   "com.github.equella.legacy" % "itunesu-api-java"      % "1.7",
   "com.github.equella.legacy" % "mets"                  % "1.0",
@@ -133,7 +139,7 @@ libraryDependencies ++= Seq(
   "org.apache.axis2"   % "axis2-adb"                % axis2Version,
   "org.apache.axis2"   % "axis2-transport-http"     % axis2Version,
   "org.apache.axis2"   % "axis2-transport-local"    % axis2Version,
-  "org.apache.commons" % "commons-compress"         % "1.27.1",
+  "org.apache.commons" % "commons-compress"         % "1.28.0",
   "org.apache.curator" % "curator-client"           % curatorVersion,
   "org.apache.curator" % "curator-framework"        % curatorVersion,
   "org.apache.curator" % "curator-recipes"          % curatorVersion,
@@ -202,7 +208,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.80",
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.82",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -238,12 +244,12 @@ libraryDependencies ++= Seq(
     ExclusionRule(organization = "net.sf.saxon")
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
-  "org.scala-sbt"                %% "io"                       % "1.9.9",
+  "org.scala-sbt"                %% "io"                       % "1.10.5",
   "org.mozilla"                   % "rhino"                    % "1.8.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
-  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.3.0",
-  "io.github.classgraph"          % "classgraph"               % "4.8.179",
-  "com.fasterxml"                 % "classmate"                % "1.7.0",
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
+  "io.github.classgraph"          % "classgraph"               % "4.8.184",
+  "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
@@ -361,19 +367,23 @@ run := {
         "Log4j2Plugins.dat"
       ) =>
     MergeStrategy.last
-  case PathList("META-INF", "jdom-info.xml")                => MergeStrategy.first
-  case PathList("META-INF", "axiom.xml")                    => MergeStrategy.first
-  case PathList("javax", "wsdl", _*)                        => MergeStrategy.last
-  case PathList("javax", "xml", "soap", _*)                 => MergeStrategy.first
-  case PathList("javax", "transaction", _*)                 => MergeStrategy.first
-  case PathList("javax", "jws", _*)                         => MergeStrategy.first
-  case PathList("com", "ibm", "wsdl", _*)                   => MergeStrategy.first
-  case PathList("org", "apache", "regexp", _*)              => MergeStrategy.first
-  case PathList("javax", "servlet", "jsp", _*)              => MergeStrategy.first
-  case PathList("javax", "servlet", _*)                     => MergeStrategy.last
-  case PathList("javax", "annotation", _*)                  => MergeStrategy.first
-  case PathList("org", "w3c", "dom", _*)                    => MergeStrategy.first
-  case PathList("META-INF", "mailcap")                      => MergeStrategy.first
+  case PathList("META-INF", "jdom-info.xml")   => MergeStrategy.first
+  case PathList("META-INF", "axiom.xml")       => MergeStrategy.first
+  case PathList("javax", "wsdl", _*)           => MergeStrategy.last
+  case PathList("javax", "xml", "soap", _*)    => MergeStrategy.first
+  case PathList("javax", "transaction", _*)    => MergeStrategy.first
+  case PathList("javax", "jws", _*)            => MergeStrategy.first
+  case PathList("com", "ibm", "wsdl", _*)      => MergeStrategy.first
+  case PathList("org", "apache", "regexp", _*) => MergeStrategy.first
+  case PathList("javax", "servlet", "jsp", _*) => MergeStrategy.first
+  case PathList("javax", "servlet", _*)        => MergeStrategy.last
+  case PathList("javax", "annotation", _*)     => MergeStrategy.first
+  case PathList("org", "w3c", "dom", _*)       => MergeStrategy.first
+  case PathList("META-INF", "mailcap")         => MergeStrategy.first
+  // Keep the new one. Due to the error: Deduplicate found different file contents in the following:
+  // [error]   Jar name = jakarta.activation-1.2.2.jar, jar org = com.sun.activation, entry target = META-INF/mailcap.default
+  // [error]   Jar name = jakarta.activation-api-2.1.3.jar, jar org = jakarta.activation, entry target = META-INF/mailcap.default
+  case PathList("META-INF", "mailcap.default")              => MergeStrategy.last
   case PathList("META-INF", "mimetypes.default")            => MergeStrategy.first
   case PathList("META-INF", "javamail.charset.map")         => MergeStrategy.first
   case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.first
@@ -438,6 +448,12 @@ run := {
   // though would still allow them to be detected.
   // Advice: https://docs.oracle.com/en/graalvm/enterprise/21/docs/reference-manual/native-image/BuildConfiguration/#embedding-a-configuration-file
   case PathList("META-INF", "native-image", _*) => MergeStrategy.rename
+  // There are a number of duplicates around the OSGi manifest files.
+  // However, we're not running in an OSGi context, so these can simply be discarded for all.
+  // Following, we have both java version specific handling (META-INF/versions/*/MANIFEST.MF) and non-versioned.
+  case PathList("META-INF", "versions", _, "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
+  // Also handle non-versioned OSGi manifests.
+  case PathList("META-INF", "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
   case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
@@ -470,12 +486,18 @@ upgradeZip := {
   val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
-  val plugVer = ver.fullVersion
+  val plugVer     = ver.fullVersion
+  val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
   val zipFiles = Seq(
-    assembly.value                                         -> "equella-server.jar",
-    (LocalProject("UpgradeInstallation") / assembly).value -> "database-upgrader.jar",
-    (LocalProject("conversion") / assembly).value          -> "conversion-service.jar",
-    (LocalProject("equella") / versionProperties).value    -> "version.properties"
+    assembly.value -> "equella-server.jar",
+    // This new JAR filename for UpgradeInstallation, must match the string at:
+    // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
+    upgraderJar -> "installation-upgrader.jar",
+    // Temporary, for upgrades from before 2025.2 - remove as part of OEQ-2761
+    // This is it's OLD name, which was misleading as it implied it was only for DB upgrades.
+    upgraderJar                                         -> "database-upgrader.jar",
+    (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
+    (LocalProject("equella") / versionProperties).value -> "version.properties"
   )
   val pluginJars =
     writeJars.value.map(t => (t.file, s"plugins/${t.group}/${t.pluginId}-$plugVer.jar"))

@@ -60,6 +60,8 @@ import com.tle.upgrade.upgraders.apachedaemon.UpdateApacheDaemon;
 import com.tle.upgrade.upgraders.ffmpeg.AddFfmpegConfig;
 import com.tle.upgrade.upgraders.java17.UpdateJavaOpts;
 import com.tle.upgrade.upgraders.log4j2.UpdateLog4JConfigFile;
+import com.tle.upgrade.upgraders.v20252.AddKeepaliveAttribute;
+import com.tle.upgrade.upgraders.v20252.UpdateAddOpens;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -70,15 +72,38 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
+import java.util.function.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
+/**
+ * Main class for the upgrade tool. This is a command line tool that will upgrade an openEQUELLA
+ * installation to the latest version.
+ *
+ * <p>To run the tool, use the following command:
+ *
+ * <pre>
+ * java -Dequella.install.directory=&lt;path to openEQUELLA install&gt; -jar upgrade.jar [--install]
+ * </pre>
+ *
+ * The --install flag is used when installing openEQUELLA for the first time. It will run all the
+ * upgraders that are marked as runOnInstall.
+ *
+ * <p>The equella.install.directory system property is optional. If it is not set, the tool will
+ * assume that it is being run from the tools/upgrade folder of an openEQUELLA installation.
+ *
+ * <p><strong>Note:</strong> This tool is primarily run from the UpgradeManager application, but it
+ * can be run standalone if required (mainly for testing purposes).
+ */
 public class UpgradeMain {
   static {
     URL log4jConfigFile =
@@ -97,7 +122,6 @@ public class UpgradeMain {
   private final XStream xstream;
 
   private final File upgradeLogFile;
-  private static boolean offline;
 
   public static Upgrader[] upgraders =
       new Upgrader[] {
@@ -134,30 +158,19 @@ public class UpgradeMain {
         new UpdateLog4JConfigFile(),
         new AddFfmpegConfig(),
         new UpdateApacheDaemon(),
-        new UpdateJavaOpts()
+        new UpdateJavaOpts(),
+        new AddKeepaliveAttribute(),
+        new UpdateAddOpens()
       };
 
-  public static void main(String[] args) throws Throwable {
+  public static void main(String[] args) {
+    LOGGER.info("Starting Upgrader");
+
     try {
-      LOGGER.info("Upgrader started");
-      InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
-      if (verStream != null) {
-        Properties props = new Properties();
-        props.load(verStream);
-        commit = props.getProperty("version.commit");
-      }
-      offline = Boolean.getBoolean("equella.offline");
-      String installDir = System.getProperty("equella.install.directory");
-      if (installDir == null) {
-        File folder = ExecUtils.findJarFolder(UpgradeMain.class);
-        installDir = folder.getParent();
-      }
-      boolean install = false;
-      for (String arg : args) {
-        if (arg.equals("--install")) {
-          install = true;
-        }
-      }
+      initVersionDetails();
+      String installDir = determineInstallDir();
+      boolean install = Arrays.asList(args).contains("--install");
+
       UpgradeMain upgrader = new UpgradeMain(new File(installDir));
       if (install) {
         upgrader.install();
@@ -165,13 +178,29 @@ public class UpgradeMain {
         upgrader.upgrade();
       }
     } catch (Exception t) {
-      LOGGER.error("Error running database-upgrader.jar", t);
+      LOGGER.error("Error running Upgrader", t);
       System.exit(1);
     }
+
+    LOGGER.info("Upgrader finished successfully");
   }
 
-  public static boolean isOffline() {
-    return offline;
+  private static String determineInstallDir() {
+    return Optional.ofNullable(System.getProperty("equella.install.directory"))
+        .orElseGet(
+            () -> {
+              File folder = ExecUtils.findJarFolder(UpgradeMain.class);
+              return folder.getParent();
+            });
+  }
+
+  private static void initVersionDetails() throws IOException {
+    InputStream verStream = UpgradeMain.class.getResourceAsStream("/version.properties");
+    if (verStream != null) {
+      Properties props = new Properties();
+      props.load(verStream);
+      commit = props.getProperty("version.commit");
+    }
   }
 
   public UpgradeMain(File path) {
@@ -201,7 +230,7 @@ public class UpgradeMain {
       if (!upgrader.isRunOnInstall()) {
         String id = upgrader.getId();
         UpgradeLog entry = new UpgradeLog();
-        entry.setMustExist(!upgrader.isBackwardsCompatible());
+        entry.setMustExist(!upgrader.canBeRemoved());
         entry.setStatus(LogStatus.SKIPPED);
         entry.setExecuted(new Date(now.getTime()));
         entry.setMigrationId(id);
@@ -212,48 +241,100 @@ public class UpgradeMain {
     upgrade();
   }
 
-  @SuppressWarnings({"unchecked"})
   private void upgrade() throws Exception {
+    List<UpgradeLog> upgradeLog = readUpgradeLog();
+    Map<String, UpgradeLog> previousUpgrades =
+        upgradeLog.stream()
+            .collect(HashMap::new, (m, log) -> m.put(log.getMigrationId(), log), HashMap::putAll);
+
+    Map<String, UpgradeOperation> plannedUpgrades = buildUpgradeOperations(previousUpgrades);
+    validateRequiredUpgradesPresent(plannedUpgrades.keySet(), previousUpgrades);
+
+    List<UpgradeOperation> orderedUpgrades = determineOrderOfUpgrades(plannedUpgrades);
+    executeUpgrades(orderedUpgrades, upgradeLog);
+    saveUpgradeLog(upgradeLog);
+  }
+
+  private List<UpgradeOperation> determineOrderOfUpgrades(
+      Map<String, UpgradeOperation> upgradeOperationsMap) {
+    List<UpgradeOperation> orderedUpgrades = new ArrayList<>();
+    for (String migrationId : upgradeOperationsMap.keySet()) {
+      orderUpgradesByDependencies(migrationId, orderedUpgrades, upgradeOperationsMap);
+    }
+
+    return orderedUpgrades;
+  }
+
+  /**
+   * If a previously installed upgrade was logged as 'must exist' (i.e. it was not backwards
+   * compatible), then we need to ensure that it is still present in the list of planned upgrades.
+   * If it is not, then we cannot proceed with the upgrade as we may be missing a required upgrader.
+   *
+   * @param plannedUpgradesIds the list ids of the planned upgrades
+   * @param previousUpgrades the map of previous upgrade logs
+   * @throws RuntimeException if a required upgrade is missing
+   */
+  private static void validateRequiredUpgradesPresent(
+      Set<String> plannedUpgradesIds, Map<String, UpgradeLog> previousUpgrades) {
+    List<UpgradeLog> additionalPreviousUpgrades =
+        determineAdditionalPreviousUpgrades(plannedUpgradesIds, previousUpgrades);
+
+    for (UpgradeLog log : additionalPreviousUpgrades) {
+      if (log.isMustExist()) {
+        throw new RuntimeException(
+            "Can not upgrade to this version, due to missing required upgrader in this version: "
+                + log.getMigrationId());
+      }
+    }
+  }
+
+  private static List<UpgradeLog> determineAdditionalPreviousUpgrades(
+      Set<String> plannedUpgradesIds, Map<String, UpgradeLog> previousUpgrades) {
+    Predicate<Entry<String, UpgradeLog>> notInPlannedUpgrades =
+        entry -> !plannedUpgradesIds.contains(entry.getKey());
+
+    return previousUpgrades.entrySet().stream()
+        .filter(notInPlannedUpgrades)
+        .map(Entry::getValue)
+        .toList();
+  }
+
+  private static Map<String, UpgradeOperation> buildUpgradeOperations(
+      Map<String, UpgradeLog> previousUpgradesById) {
+    Map<String, UpgradeOperation> upgradeOperationsMap = new HashMap<>();
+    for (Upgrader upgrader : upgraders) {
+      var op = initUpgradeOperation(upgrader, previousUpgradesById);
+      upgradeOperationsMap.put(op.getId(), op);
+    }
+
+    return upgradeOperationsMap;
+  }
+
+  private static UpgradeOperation initUpgradeOperation(
+      Upgrader upgrader, Map<String, UpgradeLog> previousUpgradesById) {
+    String id = upgrader.getId();
+    UpgradeOperation upgradeOperation = new UpgradeOperation(id, upgrader);
+    Optional.ofNullable(previousUpgradesById.get(id)).ifPresent(upgradeOperation::setLogEntry);
+
+    return upgradeOperation;
+  }
+
+  /**
+   * @return list of upgrade log entries if the log file exists, otherwise an empty list
+   * @throws IOException if there is a problem reading the log file
+   * @throws ClassCastException if the log file is not the expected format
+   */
+  @SuppressWarnings("unchecked")
+  private List<UpgradeLog> readUpgradeLog() throws IOException, ClassCastException {
     List<UpgradeLog> logEntries;
     if (upgradeLogFile.exists()) {
-      UnicodeReader reader = new UnicodeReader(new FileInputStream(upgradeLogFile), "UTF-8");
-      try {
+      try (UnicodeReader reader = new UnicodeReader(new FileInputStream(upgradeLogFile), "UTF-8")) {
         logEntries = (List<UpgradeLog>) xstream.fromXML(reader);
-      } finally {
-        reader.close();
       }
     } else {
       logEntries = Lists.newArrayList();
     }
-
-    Map<String, UpgradeLog> statuses = new HashMap<String, UpgradeLog>();
-    for (UpgradeLog logEntry : logEntries) {
-      statuses.put(logEntry.getMigrationId(), logEntry);
-    }
-    Map<String, UpgradeOperation> extensionMap = new HashMap<String, UpgradeOperation>();
-    for (Upgrader upgrader : upgraders) {
-      String id = upgrader.getId();
-      UpgradeOperation migrateExtension = new UpgradeOperation(id);
-      migrateExtension.setUpgrader(upgrader);
-      UpgradeLog entry = statuses.remove(id);
-      if (entry != null) {
-        migrateExtension.setLogEntry(entry);
-      }
-      extensionMap.put(id, migrateExtension);
-    }
-    for (UpgradeLog log : statuses.values()) {
-      if (log.isMustExist()) {
-        throw new RuntimeException(
-            "Can not upgrade to this version, missing required backwards incompatible migration: "
-                + log.getMigrationId());
-      }
-    }
-    List<UpgradeOperation> toProcess = new ArrayList<UpgradeOperation>();
-    for (String migrationId : extensionMap.keySet()) {
-      processMigration(migrationId, toProcess, extensionMap);
-    }
-    executeUpgrades(toProcess, logEntries);
-    saveUpgradeLog(logEntries);
+    return logEntries;
   }
 
   private void saveUpgradeLog(List<UpgradeLog> entries) throws IOException {
@@ -290,7 +371,7 @@ public class UpgradeMain {
       }
 
       log.setExecuted(new Date());
-      log.setMustExist(!upgrader.isBackwardsCompatible());
+      log.setMustExist(!upgrader.canBeRemoved());
       if (upgradeOperation.isSkip()) {
         log.setStatus(LogStatus.SKIPPED);
       } else {
@@ -327,24 +408,37 @@ public class UpgradeMain {
     }
   }
 
-  private void processMigration(
-      String id, List<UpgradeOperation> toProcess, Map<String, UpgradeOperation> extensionMap) {
-    UpgradeOperation extension = extensionMap.get(id);
-    if (!extension.isProcessed()) {
-      extension.setProcessed(true);
-      if (extension.getStatus() == null || (extension.getStatus() == LogStatus.ERRORED)) {
-        List<UpgradeDepends> depends = extension.getUpgrader().getDepends();
+  /**
+   * Orders the upgrades by their dependencies. This is a depth-first search algorithm.
+   *
+   * <p>It marks each upgrade as processed when it is added to the ordered list. If an upgrade has
+   * already been processed, it is skipped.
+   *
+   * @param id the id of the upgrade to process
+   * @param orderedUpgrades the list of ordered upgrades to add to - acting as an accumulator
+   * @param plannedUpgrades the map of all planned upgrades
+   */
+  private void orderUpgradesByDependencies(
+      String id,
+      List<UpgradeOperation> orderedUpgrades,
+      Map<String, UpgradeOperation> plannedUpgrades) {
+    UpgradeOperation upgradeOperation = plannedUpgrades.get(id);
+    if (!upgradeOperation.isProcessed()) {
+      upgradeOperation.setProcessed(true);
+      if (upgradeOperation.getStatus() == null
+          || (upgradeOperation.getStatus() == LogStatus.ERRORED)) {
+        List<UpgradeDepends> depends = upgradeOperation.getUpgrader().getDepends();
         for (UpgradeDepends depend : depends) {
-          UpgradeOperation dependency = extensionMap.get(depend.getId());
+          UpgradeOperation dependency = plannedUpgrades.get(depend.getId());
           if (depend.isObsoletes() && dependency.getStatus() == null) {
             dependency.setSkip(true);
           }
           if (depend.isFixes() && dependency.getStatus() != LogStatus.EXECUTED) {
-            extension.setSkip(true);
+            upgradeOperation.setSkip(true);
           }
-          processMigration(depend.getId(), toProcess, extensionMap);
+          orderUpgradesByDependencies(depend.getId(), orderedUpgrades, plannedUpgrades);
         }
-        toProcess.add(extension);
+        orderedUpgrades.add(upgradeOperation);
       }
     }
   }
@@ -356,8 +450,9 @@ public class UpgradeMain {
     private boolean skip;
     private boolean processed;
 
-    public UpgradeOperation(String id) {
+    public UpgradeOperation(String id, Upgrader upgrader) {
       this.id = id;
+      this.upgrader = upgrader;
     }
 
     public boolean isCanRetry() {

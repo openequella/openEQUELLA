@@ -40,10 +40,10 @@ export const NonStandardDrmTerms = ({
   return (
     <StyledLi key={title}>
       <Grid container direction="column">
-        <Grid item>
+        <Grid>
           <Typography>{title}</Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           {terms.map((term) => (
             <Typography key={term}>{term}</Typography>
           ))}

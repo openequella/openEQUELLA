@@ -17,12 +17,12 @@
  */
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import { TreeView } from "@mui/x-tree-view/TreeView";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as S from "fp-ts/string";
 import * as React from "react";
-import { ChangeEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import type { ACLEntityResolvers } from "../../modules/ACLEntityModule";
 import type {
   ACLExpression,
@@ -70,15 +70,15 @@ const ACLExpressionTree = ({
   onDelete,
   onChange,
   aclEntityResolvers,
-}: ACLExpressionTreeProps): JSX.Element => {
+}: ACLExpressionTreeProps): React.JSX.Element => {
   // expand all nodes by default
   const [expanded, setExpanded] = useState<string[]>(flattenIds(aclExpression));
   const [selected, setSelected] = useState<string[]>([]);
 
-  const handleTreeToggle = (_: ChangeEvent<{}>, nodeIds: string[]) =>
+  const handleTreeToggle = (_: SyntheticEvent | null, nodeIds: string[]) =>
     setExpanded(nodeIds);
 
-  const handleTreeSelect = (_: React.SyntheticEvent, nodeIds: string[]) =>
+  const handleTreeSelect = (_: SyntheticEvent | null, nodeIds: string[]) =>
     setSelected(nodeIds);
 
   const parseACLExpression = (aclExpression: ACLExpression, isRoot = false) => {
@@ -87,7 +87,7 @@ const ACLExpressionTree = ({
     const handleRecipientDelete = (recipient: ACLRecipient) => {
       const newRecipients = pipe(
         recipients,
-        A.filter((r) => !recipientEq.equals(r, recipient)),
+        A.filter<ACLRecipient>((r) => !recipientEq.equals(r, recipient)),
       );
 
       onChange({
@@ -119,10 +119,10 @@ const ACLExpressionTree = ({
     return (
       <ACLTreeOperator
         key={id}
-        nodeId={id}
+        itemId={id}
         operator={operator}
         isRoot={isRoot}
-        onSelect={() => onSelect(aclExpression)}
+        onClick={() => onSelect(aclExpression)}
         onDelete={() => onDelete(aclExpression)}
         onOperatorChange={(newOperator: ACLOperatorType) => {
           onChange({
@@ -133,12 +133,12 @@ const ACLExpressionTree = ({
         onAddGroup={handleAddGroup}
       >
         {recipients.map((recipient: ACLRecipient) => {
-          const nodeId = showRecipient(recipient);
+          const itemId = showRecipient(recipient);
 
           return (
             <ACLTreeRecipient
-              key={nodeId}
-              nodeId={nodeId}
+              key={itemId}
+              itemId={itemId}
               recipient={recipient}
               onDelete={() => handleRecipientDelete(recipient)}
               aclEntityResolvers={aclEntityResolvers}
@@ -151,17 +151,16 @@ const ACLExpressionTree = ({
   };
 
   return (
-    <TreeView
+    <SimpleTreeView
       multiSelect
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      expanded={expanded}
-      selected={selected}
-      onNodeToggle={handleTreeToggle}
-      onNodeSelect={handleTreeSelect}
+      slots={{ expandIcon: ArrowRightIcon, collapseIcon: ArrowDropDownIcon }}
+      expandedItems={expanded}
+      selectedItems={selected}
+      onExpandedItemsChange={handleTreeToggle}
+      onSelectedItemsChange={handleTreeSelect}
     >
       {parseACLExpression(aclExpression, true)}
-    </TreeView>
+    </SimpleTreeView>
   );
 };
 

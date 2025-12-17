@@ -22,7 +22,7 @@ import { ListItem, ListItemSecondaryAction, ListItemText } from "@mui/material";
 interface EquellaListItemProps {
   listItemPrimaryText: string;
   listItemSecondText?: ReactNode;
-  listItemAttributes: {};
+  listItemAttributes: object;
   secondaryAction?: ReactNode;
   icon?: ReactNode;
 }

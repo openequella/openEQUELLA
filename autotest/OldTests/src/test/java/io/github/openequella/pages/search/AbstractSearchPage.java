@@ -76,9 +76,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    * @param itemTitle The title of an Item.
    */
   public SummaryPage selectItem(String itemTitle) {
-    By title = By.linkText(itemTitle);
-    WebElement titleLink = waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
-    titleLink.click();
+    selectLink(itemTitle);
     return new SummaryPage(context).get();
   }
 
@@ -89,6 +87,15 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    */
   public boolean hasItem(String itemTitle) {
     return !driver.findElements(By.linkText(itemTitle)).isEmpty();
+  }
+
+  /**
+   * Wait until an Item is displayed in the search result.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public WebElement waitForItem(String itemTitle) {
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(By.linkText(itemTitle)));
   }
 
   /**
@@ -183,10 +190,8 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
-    startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
-    endTextField.sendKeys(end);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-start-label", start);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-end-label", end);
   }
 
   /**
@@ -371,7 +376,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   public void addToKeyResource(String itemName, String hierarchyName) {
     By addToKeyResourceButtonXpath =
         By.xpath(
-            "//div[h6[a[text()='"
+            "//div[h6[a[string(.)='"
                 + itemName
                 + "']]]//button[@aria-label='Add as key resource to a hierarchy']");
 
@@ -379,13 +384,14 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     addToKeyResourceButton.click();
 
     // wait for the dialog to loading
-    By hierarchyXpath =
-        By.xpath(
-            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(),"
-                + " '"
-                + hierarchyName
-                + "')]]]");
+    String hierarchyXPathString =
+        """
+//div[@aria-labelledby='modify-key-resource-dialog-title']//p[contains(text(), '%s')]/ancestor::div[2]
+"""
+            .formatted(hierarchyName);
+    By hierarchyXpath = By.xpath(hierarchyXPathString);
     By plusButtonXpath = By.xpath(".//button[@aria-label='Add to hierarchy']");
+
     WebElement plusButton =
         waiter
             .until(ExpectedConditions.visibilityOfElementLocated(hierarchyXpath))
@@ -417,5 +423,51 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   private void selectFromButtonGroup(WebElement buttonGroup, String buttonText) {
     WebElement button = buttonGroup.findElement(By.xpath(".//button[text()='" + buttonText + "']"));
     button.click();
+  }
+
+  // Starting with MUI v7, the Date Picker's TextField is no longer a single input element.
+  // Instead, it is composed of one or more editable <span> elements, depending on the date format.
+  // To input a value, the first span must be clicked before sending any keys.
+  // Once the first part of the date has been set, the remaining keys will automatically populate
+  // the subsequent span elements in sequence.
+  private void setDatePickerValue(WebElement parent, String label, String value) {
+    // Use '@data-sectionindex='0' to locate the first section, and then use '@inputmode='numeric'
+    // to locate the editable span.
+    WebElement firstSpan =
+        parent.findElement(
+            By.xpath(
+                "//div[@aria-labelledby='"
+                    + label
+                    + "']//span[@data-sectionindex='0']//span[@inputmode='numeric']"));
+    firstSpan.click();
+    firstSpan.sendKeys(value);
+  }
+
+  /**
+   * Returns all item thumbnail elements on the page.
+   *
+   * @return List of thumbnail elements with class "OEQThumb-thumbnail".
+   */
+  public List<WebElement> getAllItemThumbnails() {
+    return driver.findElements(By.cssSelector(".OEQThumb-thumbnail"));
+  }
+
+  /**
+   * Find a link by its title, waiting until it is visible.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public WebElement findLink(String linkTitle) {
+    By title = By.linkText(linkTitle);
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
+  }
+
+  /**
+   * Click a link by its title.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public void selectLink(String linkTitle) {
+    findLink(linkTitle).click();
   }
 }

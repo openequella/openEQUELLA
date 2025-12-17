@@ -1,7 +1,9 @@
 package testng;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITestAnnotation;
 import testng.annotation.NewUIOnly;
@@ -28,8 +30,9 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
 
   // Check if a method is annotated with 'NewUIOnly'
   private void checkSkipTestAnnotation(ITestAnnotation annotation, Method testMethod) {
-    NewUIOnly newUIOnly = testMethod.getAnnotation(NewUIOnly.class);
-    OldUIOnly oldUIOnly = testMethod.getAnnotation(OldUIOnly.class);
+    NewUIOnly newUIOnly = resolveAnnotation(testMethod, NewUIOnly.class);
+    OldUIOnly oldUIOnly = resolveAnnotation(testMethod, OldUIOnly.class);
+
     // Read the configuration of using new UI or not from environment variable.
     boolean isNewUIEnabled = Boolean.parseBoolean(System.getenv(OLD_TEST_NEWUI));
     // Skip tests that should not run against Old UI when CI is running in Old UI
@@ -38,5 +41,12 @@ public class TestAnnotationTransformer implements IAnnotationTransformer {
         || (oldUIOnly != null && oldUIOnly.value() && isNewUIEnabled)) {
       annotation.setEnabled(false);
     }
+  }
+
+  // Read the annotation from method first, if not present, read from class.
+  private static <A extends Annotation> A resolveAnnotation(
+      Method testMethod, Class<A> annotationType) {
+    return Optional.ofNullable(testMethod.getAnnotation(annotationType))
+        .orElseGet(() -> testMethod.getDeclaringClass().getAnnotation(annotationType));
   }
 }

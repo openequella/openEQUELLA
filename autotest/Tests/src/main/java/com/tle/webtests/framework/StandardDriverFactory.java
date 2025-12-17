@@ -2,35 +2,37 @@ package com.tle.webtests.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.tle.common.Check;
-import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.DownloadFilePage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.openqa.selenium.Proxy;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.bidi.log.LogLevel;
+import org.openqa.selenium.bidi.module.LogInspector;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class StandardDriverFactory {
-
+  Logger logger = LoggerFactory.getLogger(StandardDriverFactory.class);
   private final String firefoxBinary;
   private final String chromeBinary;
   private final boolean chrome;
@@ -79,85 +81,10 @@ public class StandardDriverFactory {
   }
 
   public WebDriver getDriver(Class<?> clazz) throws IOException {
-    WebDriver driver;
     String downDir = DownloadFilePage.getDownDir().getAbsolutePath();
-    if (!Check.isEmpty(gridUrl) && !clazz.isAnnotationPresent(LocalWebDriver.class)) {
-      FirefoxProfile profile = new FirefoxProfile();
-      setFirefoxPreferences(profile, downDir);
-      profile.addExtension(
-          new File(
-              AbstractPage.getPathFromUrl(
-                  StandardDriverPool.class.getResource("firebug-1.10.2-fx.xpi"))));
-      profile.addExtension(
-          new File(
-              AbstractPage.getPathFromUrl(
-                  StandardDriverPool.class.getResource("firepath-0.9.7-fx.xpi"))));
-      FirefoxOptions options = new FirefoxOptions().setProfile(profile);
-      if (firefoxHeadless) {
-        options.addArguments("-headless");
-      }
-      driver = new RemoteWebDriver(new URL(gridUrl), options);
-      RemoteWebDriver rd = (RemoteWebDriver) driver;
-      rd.setFileDetector(new LocalFileDetector());
-      driver = new Augmenter().augment(driver);
-    } else {
-      if (chrome) {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        ChromeOptions options = new ChromeOptions();
-        if (chromeBinary != null) {
-          options.setBinary(chromeBinary);
-        }
-        options.addArguments("test-type");
-        options.addArguments("disable-gpu");
-        options.addArguments("no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        if (chromeHeadless) {
-          options.addArguments("headless");
-          options.addArguments("--lang=en-US");
-        }
-        options.addArguments("window-size=1200,800");
+    WebDriver driver = chrome ? setupChrome(downDir) : setupFirefox(downDir);
+    setupLogInspector(driver);
 
-        Map<String, Object> prefs = Maps.newHashMap();
-        prefs.put("intl.accept_languages", "en-US");
-        prefs.put("download.default_directory", downDir);
-        prefs.put("profile.password_manager_enabled", false);
-
-        options.setExperimentalOption("prefs", prefs);
-
-        if (proxy != null) {
-          capabilities.setCapability(CapabilityType.PROXY, proxy);
-        }
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-        RemoteWebDriver rdriver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
-        driver = new Augmenter().augment(rdriver);
-        if (chromeHeadless) {
-          enableHeadlessDownloads(rdriver, downDir);
-        }
-      } else {
-        FirefoxBinary binary;
-        if (firefoxBinary != null) {
-          binary = new FirefoxBinary(new File(firefoxBinary));
-        } else {
-          binary = new FirefoxBinary();
-        }
-        FirefoxProfile profile = new FirefoxProfile();
-        profile.addExtension(getClass(), "firebug-1.10.2-fx.xpi");
-        profile.addExtension(getClass(), "firepath-0.9.7-fx.xpi");
-        setFirefoxPreferences(profile, downDir);
-        FirefoxOptions options = new FirefoxOptions();
-        if (firefoxHeadless) {
-          options.addArguments("-headless");
-        }
-        options.setCapability("moz:webdriverClick", false);
-        if (proxy != null) {
-          options.setCapability(CapabilityType.PROXY, proxy);
-        }
-        options.setBinary(binary);
-        options.setProfile(profile);
-        driver = new FirefoxDriver(options);
-        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.MINUTES);
-      }
-    }
     return driver;
   }
 
@@ -183,6 +110,99 @@ public class StandardDriverFactory {
       httpClient.execute(request).getEntity().getContent().close();
     } catch (IOException e2) {
       e2.printStackTrace();
+    }
+  }
+
+  private WebDriver setupChrome(String downDir) throws IOException {
+    DesiredCapabilities capabilities = new DesiredCapabilities();
+    ChromeOptions options = new ChromeOptions();
+    if (chromeBinary != null) {
+      options.setBinary(chromeBinary);
+    }
+    options.enableBiDi();
+    // Enabling BIDI results in a known issue where alerts are not properly shown. Currently, a
+    // workaround
+    // is to set "unhandledPromptBehavior" to "ignore.
+    // See https://github.com/SeleniumHQ/selenium/issues/14468 for details.
+    options.setCapability(
+        CapabilityType.UNHANDLED_PROMPT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+    options.addArguments("test-type");
+    options.addArguments("disable-gpu");
+    options.addArguments("no-sandbox");
+    options.addArguments("--disable-dev-shm-usage");
+    if (chromeHeadless) {
+      options.addArguments("--headless=new");
+      options.addArguments("--lang=en-US");
+    }
+    options.addArguments("window-size=1200,800");
+
+    Map<String, Object> prefs = Maps.newHashMap();
+    prefs.put("intl.accept_languages", "en-US");
+    prefs.put("download.default_directory", downDir);
+    prefs.put("profile.password_manager_enabled", false);
+
+    options.setExperimentalOption("prefs", prefs);
+    if (proxy != null) {
+      capabilities.setCapability(CapabilityType.PROXY, proxy);
+    }
+    capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+    RemoteWebDriver rdriver = new RemoteWebDriver(getChromeService().getUrl(), capabilities);
+    if (chromeHeadless) {
+      enableHeadlessDownloads(rdriver, downDir);
+    }
+    return new Augmenter().augment(rdriver);
+  }
+
+  private WebDriver setupFirefox(String downDir) {
+    FirefoxProfile profile = new FirefoxProfile();
+    profile.addExtension(getClass(), "firebug-1.10.2-fx.xpi");
+    profile.addExtension(getClass(), "firepath-0.9.7-fx.xpi");
+    setFirefoxPreferences(profile, downDir);
+    FirefoxOptions options = new FirefoxOptions();
+    if (firefoxBinary != null) {
+      options.setBinary(new File(firefoxBinary).getAbsolutePath());
+    }
+    options.enableBiDi();
+    if (firefoxHeadless) {
+      options.addArguments("-headless");
+    }
+    options.setCapability("moz:webdriverClick", false);
+    if (proxy != null) {
+      options.setCapability(CapabilityType.PROXY, proxy);
+    }
+    options.setProfile(profile);
+    WebDriver driver = new FirefoxDriver(options);
+    driver.manage().timeouts().pageLoadTimeout(Duration.ofMinutes(5));
+
+    return driver;
+  }
+
+  // Set up BIDI log inspector to capture unexpected JavaScript exceptions thrown from the
+  // interaction with OEQ.
+  private void setupLogInspector(WebDriver driver) {
+    try (LogInspector logInspector = new LogInspector(driver)) {
+      Marker jsMarker = MarkerFactory.getMarker("JS_ERROR");
+      logInspector.onJavaScriptException(
+          logEntry -> {
+            switch (logEntry.getLevel()) {
+              case LogLevel.ERROR:
+                logger.error(jsMarker, logEntry.getText());
+                break;
+              case LogLevel.WARNING:
+                logger.warn(jsMarker, logEntry.getText());
+                break;
+              case LogLevel.INFO:
+                logger.info(jsMarker, logEntry.getText());
+                break;
+              case LogLevel.DEBUG:
+                logger.debug(jsMarker, logEntry.getText());
+                break;
+              default:
+                // Nothing to do
+            }
+          });
+    } catch (IllegalArgumentException e) {
+      logger.error("Failed to set up BIDI log inspector", e);
     }
   }
 }

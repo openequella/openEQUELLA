@@ -2,6 +2,7 @@ name: SingleSuite
 threadCount: 1
 listeners:
   - testng.TestAnnotationTransformer
+  - com.tle.webtests.framework.ScreenshotListener
 tests:
   - name: OneAfterAnother
     packages:

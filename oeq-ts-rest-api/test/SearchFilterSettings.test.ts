@@ -17,14 +17,19 @@
  */
 import { pipe } from 'fp-ts/function';
 import * as OEQ from '../src';
-import { waitFor } from '../src/Utils';
 import * as TC from './TestConfig';
 import { BatchOperationResponse } from '../src/BatchOperationResponse';
 import { MimeTypeFilter } from '../src/SearchFilterSettings';
 import * as A from 'fp-ts/Array';
+import { logout } from './TestUtils';
 
-beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+// Use a different institution for testing, because this test is highly unstable on Postgres 13.
+// It is easily affected by other Search tests(eg. Search, SearchSettings, SearchFacets).
+// The real cause has not yet been identified, but it is very likely related to the cache handling in the backend's ConfigurationService.
+const API_PATH = TC.API_PATH_VANILLA;
+
+beforeAll(() => OEQ.Auth.login(API_PATH, TC.USERNAME, TC.PASSWORD));
+afterAll(() => logout(API_PATH));
 
 describe('SearchFilterSettings', () => {
   let filterSettingsAtStart: MimeTypeFilter[];
@@ -48,26 +53,26 @@ describe('SearchFilterSettings', () => {
 
   const createNewFilterSettings = async (): Promise<BatchOperationResponse[]> =>
     await OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
-      TC.API_PATH,
+      API_PATH,
       newFilterSettingsData
     );
 
   beforeAll(async () => {
     filterSettingsAtStart =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      await OEQ.SearchFilterSettings.getSearchFilterSettings(API_PATH);
   });
 
   // Clear all filters which were not present at the start of the test.
   afterEach(async () => {
     const filterSettingsAtEnd =
-      await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
+      await OEQ.SearchFilterSettings.getSearchFilterSettings(API_PATH);
 
     const start_ids = getIds(filterSettingsAtStart);
     const end_ids = getIds(filterSettingsAtEnd);
 
     const ids = end_ids.filter((id) => !start_ids.includes(id));
     await OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
-      TC.API_PATH,
+      API_PATH,
       ids
     );
   });
@@ -78,13 +83,10 @@ describe('SearchFilterSettings', () => {
   it('Should be possible to create a batch of the filter settings', async () => {
     // Create new filters
     const newFilterIds = await createNewFilterSettings();
-    // Use waitFor to wait for the cache to be updated in the server.
-    await waitFor(async () => {
-      const allFilterSettings =
-        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-      const allIds = getIds(allFilterSettings);
-      expect(newFilterIds.every(({ id }) => allIds.includes(id))).toBe(true);
-    });
+    const allFilterSettings =
+      await OEQ.SearchFilterSettings.getSearchFilterSettings(API_PATH);
+    const allIds = getIds(allFilterSettings);
+    expect(newFilterIds.every(({ id }) => allIds.includes(id))).toBe(true);
   });
 
   it('Should be possible to update a batch of the filter settings', async () => {
@@ -110,21 +112,17 @@ describe('SearchFilterSettings', () => {
 
     // update filters
     await OEQ.SearchFilterSettings.batchUpdateSearchFilterSetting(
-      TC.API_PATH,
+      API_PATH,
       updateFilterSettingsData
     );
 
-    const assertResultIsUpdated = async () => {
-      const newFilterSettings =
-        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-      const updatedFilterSettings = pipe(
-        newFilterSettings,
-        A.filter(({ id }) => id === filter1Id || id === filter2Id)
-      );
-      expect(updatedFilterSettings).toEqual(updateFilterSettingsData);
-    };
-    // Use waitFor to wait for the cache to be updated in the server.
-    await waitFor(assertResultIsUpdated);
+    const newFilterSettings =
+      await OEQ.SearchFilterSettings.getSearchFilterSettings(API_PATH);
+    const updatedFilterSettings = pipe(
+      newFilterSettings,
+      A.filter(({ id }) => id === filter1Id || id === filter2Id)
+    );
+    expect(updatedFilterSettings).toEqual(updateFilterSettingsData);
   });
 
   it('Should be possible to delete a batch of the filter settings', async () => {
@@ -134,16 +132,13 @@ describe('SearchFilterSettings', () => {
 
     // Delete filters
     await OEQ.SearchFilterSettings.batchDeleteSearchFilterSetting(
-      TC.API_PATH,
+      API_PATH,
       newFilterIds
     );
 
-    // Use waitFor to wait for the cache to be updated in the server.
-    await waitFor(async () => {
-      const finalFilterSettings =
-        await OEQ.SearchFilterSettings.getSearchFilterSettings(TC.API_PATH);
-      const finalIds = getIds(finalFilterSettings);
-      expect(newFilterIds.every((id) => !finalIds.includes(id))).toBe(true);
-    });
+    const finalFilterSettings =
+      await OEQ.SearchFilterSettings.getSearchFilterSettings(API_PATH);
+    const finalIds = getIds(finalFilterSettings);
+    expect(newFilterIds.every((id) => !finalIds.includes(id))).toBe(true);
   });
 });

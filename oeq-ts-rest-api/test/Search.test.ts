@@ -21,9 +21,10 @@ import * as OEQ from '../src';
 import { GET } from '../src/AxiosInstance';
 
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 const STATUS_LIVE = 'LIVE';
 const STATUS_PERSONAL = 'PERSONAL';
@@ -115,7 +116,6 @@ describe('Search with GET:', () => {
       ['Empty value', [['field-empty-value', ['']]]],
       ['Empty value - whitespace', [['field-empty-value-whitespace', [' ']]]],
       ['Colon in field name', [['field:colon', ['value-no-colon']]]],
-      ['Colon in value', [['field-no-colon', ['value:colon']]]],
     ])(
       "attempts to validate the 'musts' client side before sending [%s]",
       async (_, musts) => {
@@ -247,6 +247,28 @@ describe('Search with GET:', () => {
   });
 });
 
+describe('Details for bookmark', () => {
+  it('provides no bookmark details for items which have not been favourited', async () => {
+    const searchResult = await doSearch({
+      query: 'Search2 API test - Text',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const bookmarkDetails = searchResult.results.pop()!.bookmark;
+    expect(bookmarkDetails).toBeUndefined();
+  });
+
+  it('includes bookmark details for favourite items', async () => {
+    const searchResult = await doSearch({
+      query: 'Book A v2',
+    });
+
+    expect(searchResult.results).toHaveLength(1);
+    const bookmarkDetails = searchResult.results.pop()!.bookmark;
+    expect(bookmarkDetails).toBeDefined();
+  });
+});
+
 describe('Search with POST:', () => {
   it('should return results which large number of parameters', async () => {
     // create a large number of mime types
@@ -269,7 +291,7 @@ describe('Hierarchy search:', () => {
     const results = await doSearch({
       hierarchy: '6135b550-ce1c-43c2-b34c-0a3cf793759d',
     });
-    expect(results.available).toBe(58);
+    expect(results.available).toBe(60);
   });
 });
 

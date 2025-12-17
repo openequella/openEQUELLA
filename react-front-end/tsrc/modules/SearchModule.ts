@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import * as EQ from "fp-ts/Eq";
-import { constFalse, flow, pipe } from "fp-ts/function";
+import { constFalse, flow, identity, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import * as S from "fp-ts/string";
@@ -28,6 +28,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
 import { DateRange, getISODateString } from "../util/Date";
+import { isNonEmptyString } from "../util/validation";
 import type { Collection } from "./CollectionsModule";
 import type { SelectedCategories } from "./SearchFacetsModule";
 
@@ -191,17 +192,34 @@ export const defaultSearchOptions: SearchOptions = {
 };
 
 /**
- * Helper function, to support formatting of query in raw mode. When _not_ raw mode
- * we append a wildcard to support the idea of a simple (typeahead) search.
+ * Formats a search query by trimming whitespace, filtering out empty values,
+ * and applying an optional transformation.
  *
- * @param query the intended search query to be sent to the API
- * @param addWildcard whether a wildcard should be appended
+ * @param query The raw search query string.
+ * @param mutator Function to transform the query. Defaults to `identity` (no change).
+ * @returns The trimmed and transformed formatted string, or `undefined` if the search queryis empty/whitespaces/undefined.
  */
-export const formatQuery = (query: string, addWildcard: boolean): string => {
-  const trimmedQuery = query ? query.trim() : "";
-  const appendWildcard = addWildcard && trimmedQuery.length > 0;
-  return trimmedQuery + (appendWildcard ? "*" : "");
-};
+export const formatQuery = (
+  query?: string,
+  mutator: (q: string) => string = identity,
+): string | undefined =>
+  pipe(
+    query,
+    O.fromNullable,
+    O.map(S.trim),
+    O.filter(isNonEmptyString),
+    O.map(mutator),
+    O.toUndefined,
+  );
+
+/**
+ * Formats a search query and appends a trailing '*' wildcard to support the idea of a simple (typeahead) search
+ *
+ * @param query The raw search query string.
+ * @returns The formatted query with a trailing '*', or `undefined` if the search query is empty/whitespaces/undefined.
+ */
+export const formatWildcardQuery = (query?: string): string | undefined =>
+  formatQuery(query, (q) => `${q}*`);
 
 /**
  * Generates a Where clause through Classifications.
@@ -248,7 +266,7 @@ declare const configuredCollections: string[] | undefined;
  *
  * @param searchOptions Search options to be converted to search params.
  */
-const buildSearchParams = ({
+export const buildSearchParams = ({
   query,
   rowsPerPage,
   currentPage,
@@ -267,7 +285,6 @@ const buildSearchParams = ({
   musts,
   hierarchy,
 }: SearchOptions): OEQ.Search.SearchParams => {
-  const processedQuery = query ? formatQuery(query, !rawMode) : undefined;
   // We use selected filters to generate MIME types. However, in Image Gallery,
   // image MIME types are applied before any filter gets selected.
   // So the logic is, we use MIME type filters if any are selected, or specific MIME types
@@ -284,7 +301,7 @@ const buildSearchParams = ({
       : restrictions;
 
   return {
-    query: processedQuery,
+    query: rawMode ? formatQuery(query) : formatWildcardQuery(query),
     start: currentPage * rowsPerPage,
     length: rowsPerPage,
     status,
@@ -334,7 +351,7 @@ export const searchItems = (
         !!advancedSearchCriteria && A.isNonEmpty(advancedSearchCriteria),
     ),
     O.match(
-      () => OEQ.Search.search(API_BASE_URL, normalParams),
+      () => searchItemsBasic(normalParams),
       (options) =>
         OEQ.Search.searchWithAdvancedParams(
           API_BASE_URL,
@@ -344,6 +361,15 @@ export const searchItems = (
     ),
   );
 };
+
+/** Executes a basic search with provided search parameters.
+ *
+ * @param searchParams Search parameters to be sent to the API.
+ */
+export const searchItemsBasic = (
+  searchParams: OEQ.Search.SearchParams,
+): Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>> =>
+  OEQ.Search.search(API_BASE_URL, searchParams);
 
 /**
  * Retrieve the search results for a single item - including attachment details. Useful if a

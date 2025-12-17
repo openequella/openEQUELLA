@@ -31,6 +31,7 @@ import com.tle.common.PathUtils;
 import com.tle.common.URLUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.security.SecurityConstants;
 import com.tle.core.filesystem.ItemFile;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
@@ -51,6 +52,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -84,11 +86,6 @@ public class FileResourceImpl implements FileResource {
   @Inject private StagingService stagingService;
   @Inject private FileSystemService fileSystemService;
   @Inject private ItemLinkService itemLinkService;
-
-  protected StagingFile getStagingFile(String stagingUuid) {
-    ensureStaging(stagingUuid);
-    return new StagingFile(stagingUuid);
-  }
 
   protected RootFolderBean convertStagingFile(StagingFile stagingFile, boolean nested) {
     final RootFolderBean stagingBean = new RootFolderBean();
@@ -196,21 +193,10 @@ public class FileResourceImpl implements FileResource {
     return itemLinkService.addLinks(staging, folder, parentPath);
   }
 
-  protected void ensureStaging(String stagingUuid) {
-    if (!stagingService.stagingExists(stagingUuid)
-        || !fileSystemService.fileExists(new StagingFile(stagingUuid), null)) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-  }
-
-  protected void ensureFileExists(StagingFile staging, String filepath) {
-    if (!fileSystemService.fileExists(staging, filepath)) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-  }
-
   @Override
   public Response createStaging() {
+    hasStagingPermissions();
+
     final StagingFile stagingFile = stagingService.createStagingArea();
     final RootFolderBean stagingBean = convertStagingFile(stagingFile, false);
     return Response.status(Status.CREATED)
@@ -221,11 +207,12 @@ public class FileResourceImpl implements FileResource {
 
   /**
    * @param itemUuid The uuid of the item to copy files from
-   * @param version The version of the item to copy files from
-   * @return
+   * @param itemVersion The version of the item to copy files from
    */
   @Override
   public Response createStagingFromItem(String itemUuid, int itemVersion) {
+    hasStagingPermissions();
+
     final StagingFile stagingFile = stagingService.createStagingArea();
 
     if (Check.isEmpty(itemUuid) || itemVersion == 0) {
@@ -261,10 +248,12 @@ public class FileResourceImpl implements FileResource {
    */
   @Override
   public GenericFileBean getFileMetadata(String stagingUuid, String filename, Boolean deep) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
-    ensureFileExists(stagingFile, filename);
+    hasStagingPermissions();
 
-    boolean nested = (deep == null ? false : deep);
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
+    stagingService.ensureFileExists(stagingFile, filename);
+
+    boolean nested = (deep != null && deep);
 
     if (Check.isEmpty(filename)) {
       return convertStagingFile(stagingFile, nested);
@@ -282,8 +271,10 @@ public class FileResourceImpl implements FileResource {
   @Override
   public Response createFolderPost(
       String stagingUuid, String parentFolder, GenericFileBean folder) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
-    ensureFileExists(stagingFile, parentFolder);
+    hasStagingPermissions();
+
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
+    stagingService.ensureFileExists(stagingFile, parentFolder);
 
     final String filename = folder.getFilename();
     final String newPath = PathUtils.filePath(parentFolder, filename);
@@ -312,8 +303,9 @@ public class FileResourceImpl implements FileResource {
    */
   @Override
   public Response createOrRenameFolderPut(
-      String stagingUuid, String parentFolder, String foldername, GenericFileBean fileOrFolder)
-      throws IOException {
+      String stagingUuid, String parentFolder, String foldername, GenericFileBean fileOrFolder) {
+    hasStagingPermissions();
+
     final String newFoldername =
         (fileOrFolder != null && !Check.isEmpty(fileOrFolder.getFilename())
             ? fileOrFolder.getFilename()
@@ -330,12 +322,14 @@ public class FileResourceImpl implements FileResource {
    */
   @Override
   public Response createFolderPut(String stagingUuid, String parentFolder, String foldername) {
+    hasStagingPermissions();
+
     return createOrRenameFolder(stagingUuid, parentFolder, foldername, foldername);
   }
 
   private Response createOrRenameFolder(
       String stagingUuid, String parentFolder, String oldFoldername, String newFoldername) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
 
     final String oldPath = PathUtils.filePath(parentFolder, oldFoldername);
     final String newPath = PathUtils.filePath(parentFolder, newFoldername);
@@ -373,11 +367,13 @@ public class FileResourceImpl implements FileResource {
    */
   @Override
   public Response deleteFolder(String stagingUuid, String folder) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
+    hasStagingPermissions();
+
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
     if (Check.isEmpty(folder)) {
       stagingService.removeStagingArea(stagingFile, true);
     } else {
-      ensureFileExists(stagingFile, folder);
+      stagingService.ensureFileExists(stagingFile, folder);
       fileSystemService.removeFile(stagingFile, folder);
     }
 
@@ -385,16 +381,19 @@ public class FileResourceImpl implements FileResource {
   }
 
   /**
-   * Respond with the binary data
+   * Downloads a file from the staging area.
    *
-   * @param stagingUuid
-   * @param filename
-   * @return
+   * @param headers HTTP headers, used for caching and conditional requests
+   * @param stagingUuid The UUID of the staging area
+   * @param filepath The path of the file to download
+   * @return A Response containing the file content or a not modified status
    */
   @Override
   public Response downloadFile(HttpHeaders headers, String stagingUuid, String filepath) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
-    ensureFileExists(stagingFile, filepath);
+    hasStagingPermissions();
+
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
+    stagingService.ensureFileExists(stagingFile, filepath);
 
     try {
       final String etag = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
@@ -444,7 +443,9 @@ public class FileResourceImpl implements FileResource {
       long size,
       String contentType,
       InputStream binaryData) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
+    hasStagingPermissions();
+
+    final StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
 
     boolean creating = !fileSystemService.fileExists(stagingFile, filepath);
     try (InputStream bd = binaryData) {
@@ -477,14 +478,26 @@ public class FileResourceImpl implements FileResource {
 
   @Override
   public Response deleteFile(String stagingUuid, String filepath) {
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
-    ensureFileExists(stagingFile, filepath);
+    hasStagingPermissions();
 
-    boolean removed = fileSystemService.removeFile(stagingFile, filepath);
-    if (!removed) {
+    if (!stagingService.deleteFile(stagingUuid, filepath)) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
 
     return Response.status(Status.NO_CONTENT).build();
+  }
+
+  // Note that these permissions are stricter than
+  // com.tle.web.api.item.resource.impl.StagingResourceImpl.checkPermissions - which requires
+  // only an authenticated user. That seemed a bit weak on closer inspection, so this will be used
+  // here.
+  private void hasStagingPermissions() {
+    // Typically use of staging is limited to creating and editing items.
+    final List<String> requiredStagingPermissions =
+        Arrays.asList(SecurityConstants.CREATE_ITEM, SecurityConstants.EDIT_ITEM);
+
+    if (aclService.filterNonGrantedPrivileges(requiredStagingPermissions).isEmpty()) {
+      throw new PrivilegeRequiredException(requiredStagingPermissions);
+    }
   }
 }

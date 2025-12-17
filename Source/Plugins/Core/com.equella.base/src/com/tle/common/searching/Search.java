@@ -35,7 +35,8 @@ public interface Search {
     DATECREATED(FreeTextQuery.FIELD_REALCREATED, true),
     NAME(FreeTextQuery.FIELD_NAME, false),
     FORCOUNT(null, false),
-    RATING(FreeTextQuery.FIELD_RATING, true);
+    RATING(FreeTextQuery.FIELD_RATING, true),
+    ADDEDAT(FreeTextQuery.FIELD_ADDED_AT, true);
 
     private final String field;
     private final boolean reverse;

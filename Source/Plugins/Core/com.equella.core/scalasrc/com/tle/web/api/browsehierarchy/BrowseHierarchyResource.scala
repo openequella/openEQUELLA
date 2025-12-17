@@ -18,10 +18,11 @@
 
 package com.tle.web.api.browsehierarchy
 
-import cats.implicits.{toBifunctorOps, toTraverseOps}
+import cats.implicits.toBifunctorOps
 import com.dytech.edge.exceptions.ItemNotFoundException
 import com.tle.beans.hierarchy.{HierarchyTopic => HierarchyTopicEntity}
 import com.tle.beans.item.ItemId
+import com.tle.common.util.CollectionUtils.convertEmptyListToNone
 import com.tle.core.guice.Bind
 import com.tle.core.hierarchy.HierarchyService
 import com.tle.core.item.service.ItemService
@@ -31,8 +32,8 @@ import io.swagger.annotations.{Api, ApiOperation, ApiParam}
 import org.jboss.resteasy.annotations.cache.NoCache
 
 import javax.inject.{Inject, Singleton}
+import javax.ws.rs._
 import javax.ws.rs.core.Response
-import javax.ws.rs.{GET, Path, PathParam, Produces}
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -54,8 +55,14 @@ class BrowseHierarchyResource {
     responseContainer = "List",
     response = classOf[HierarchyTopicSummary]
   )
-  def browseRootHierarchies(): Response = {
-    val rootTopics = browseHierarchyHelper.getRootTopics
+  def browseRootHierarchies(
+      @ApiParam("Collection UUID(s) to filter by")
+      @QueryParam("collections") collectionUuids: java.util.List[String]
+  ): Response = {
+    // The default value of 'collection' is an empty list.
+    // Convert empty collection list to None, since an empty list means filtering out all resources.
+    val collectionsFilter = convertEmptyListToNone(collectionUuids)
+    val rootTopics        = browseHierarchyHelper.getRootTopics(collectionsFilter)
     Response.ok(rootTopics).build
   }
 
@@ -68,14 +75,19 @@ class BrowseHierarchyResource {
     response = classOf[HierarchyTopicSummary]
   )
   def browseSubHierarchies(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam("Collection UUID(s) to filter by") @QueryParam(
+        "collections"
+      ) collectionUuids: java.util.List[String]
   ): Response = {
+    val collectionsFilter = convertEmptyListToNone(collectionUuids)
     withTopic(compoundUuid) { (topicEntity, currentVirtualTopicName, parentCompoundUuidList, _) =>
       {
         val children = browseHierarchyHelper.getChildren(
           topicEntity,
           currentVirtualTopicName,
-          parentCompoundUuidList
+          parentCompoundUuidList,
+          collectionsFilter
         )
         Response.ok(children).build()
       }
@@ -91,8 +103,13 @@ class BrowseHierarchyResource {
     response = classOf[HierarchyTopic]
   )
   def browseHierarchyDetails(
-      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String
+      @ApiParam("The compound ID") @PathParam("compound-uuid") compoundUuid: String,
+      @ApiParam("Collection UUID(s) to filter by") @QueryParam(
+        "collections"
+      ) collectionUuids: java.util.List[String]
   ): Response = {
+    val collectionsFilter = convertEmptyListToNone(collectionUuids)
+
     withTopic(compoundUuid) {
       (topicEntity, currentVirtualTopicName, parentCompoundUuidList, hierarchyCompoundUuid) =>
         {
@@ -100,7 +117,8 @@ class BrowseHierarchyResource {
             browseHierarchyHelper.getTopicSummary(
               topicEntity,
               currentVirtualTopicName,
-              parentCompoundUuidList
+              parentCompoundUuidList,
+              collectionsFilter
             )
           val parents =
             browseHierarchyHelper.getParents(
@@ -111,7 +129,8 @@ class BrowseHierarchyResource {
             browseHierarchyHelper.getChildren(
               topicEntity,
               currentVirtualTopicName,
-              parentCompoundUuidList
+              parentCompoundUuidList,
+              collectionsFilter
             )
           val allKeyResources =
             browseHierarchyHelper.getKeyResources(hierarchyCompoundUuid)
@@ -178,7 +197,7 @@ class BrowseHierarchyResource {
     validateCompoundUuid(compoundUuid) match {
       case Left(errorResponse) => errorResponse
       case Right((validCompoundUuid, topicEntity)) =>
-        val HierarchyCompoundUuid(topicUuid, currentVirtualTopicName, parentCompoundUuidList) =
+        val HierarchyCompoundUuid(_, currentVirtualTopicName, parentCompoundUuidList) =
           validCompoundUuid
         function(
           topicEntity,

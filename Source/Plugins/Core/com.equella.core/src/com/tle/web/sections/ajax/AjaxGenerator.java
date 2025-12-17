@@ -113,12 +113,14 @@ public interface AjaxGenerator {
       String... ajaxIds);
 
   /**
-   * @param tree
-   * @param modalId
-   * @param event
-   * @param effectFunction function($oldDiv, $newContents, onSuccess)
-   * @param ajaxIds
-   * @return
+   * Build an Ajax function that updates DOM for the target web element as the handler of a Legacy
+   * Section event
+   *
+   * @param tree The Section tree where this function is registered.
+   * @param modalId ID of the Section that creates this function.
+   * @param event Event which will be handled by this function.
+   * @param effectFunction Additional side effect function to be executed when the DOM is updated.
+   * @param ajaxIds ID of the target web element
    */
   UpdateDomFunction getAjaxUpdateDomFunction(
       SectionTree tree,
@@ -128,14 +130,18 @@ public interface AjaxGenerator {
       String... ajaxIds);
 
   /**
-   * @param tree
-   * @param modalId
-   * @param event
-   * @param effectFunction
-   * @param onSuccess
-   * @param ajaxIds
-   * @return
+   * Similar to {@link #getAjaxUpdateDomFunction(SectionTree, SectionId, ParameterizedEvent,
+   * JSCallable, String...)}, but with an additional parameter customEQ, which is the name of a
+   * custom EQ object.
    */
+  UpdateDomFunction getAjaxUpdateDomFunction(
+      String customEQ,
+      SectionTree tree,
+      @Nullable SectionId modalId,
+      ParameterizedEvent event,
+      JSCallable effectFunction,
+      String... ajaxIds);
+
   UpdateDomFunction getAjaxUpdateDomFunctionWithCallback(
       SectionTree tree,
       @Nullable SectionId modalId,

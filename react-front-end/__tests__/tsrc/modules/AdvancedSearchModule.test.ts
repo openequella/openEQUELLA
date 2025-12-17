@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 import { createMemoryHistory, Location } from "history";
-import { getAdvancedSearchIdFromLocation } from "../../../tsrc/modules/AdvancedSearchModule";
+import {
+  getAdvancedSearchIdFromLocation,
+  getAdvancedSearchIdFromUrl,
+} from "../../../tsrc/modules/AdvancedSearchModule";
 
 describe("getAdvancedSearchIdFromLocation", function () {
   const uuid = "c9fd1ae8-0dc1-ab6f-e923-1f195a22d537";
@@ -34,4 +37,32 @@ describe("getAdvancedSearchIdFromLocation", function () {
       expect(getAdvancedSearchIdFromLocation(location)).toBe(uuid);
     },
   );
+});
+
+describe("getAdvancedSearchIdFromUrl", () => {
+  const UUID = "f439c445-fc3e-40ac-b0cd-c733d9164835";
+  const origin = "http://localhost:8080";
+
+  it.each([
+    [
+      "return UUID from the new UI advanced search URL",
+      `/page/advancedsearch/${UUID}?searchOptions=test`,
+      UUID,
+    ],
+    [
+      "return UUID from the old UI advanced search URL",
+      `/searching.do?doc=%3Cxml%2F%3E&in=P${UUID}&q=&type=standard&sort=rank&dr=AFTER`,
+      UUID,
+    ],
+    [
+      "return undefined if the url is not advanced search URL",
+      `/page/notadvancedsearch/${UUID}?searchOptions=test`,
+      undefined,
+    ],
+  ])("%s", async (_, url, expectedResult) => {
+    const urlObj = new URL(url, origin);
+    const uuid = getAdvancedSearchIdFromUrl(urlObj);
+
+    expect(uuid).toBe(expectedResult);
+  });
 });

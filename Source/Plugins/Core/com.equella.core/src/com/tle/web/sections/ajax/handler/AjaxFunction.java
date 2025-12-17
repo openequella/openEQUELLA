@@ -24,17 +24,27 @@ import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.js.JSCallable;
 import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.JSUtils;
+import com.tle.web.sections.js.generic.expression.AbstractExpression;
 import com.tle.web.sections.js.generic.expression.ArrayExpression;
 import com.tle.web.sections.js.generic.expression.CurrentForm;
+import com.tle.web.sections.js.generic.expression.NullExpression;
+import com.tle.web.sections.js.generic.expression.StringExpression;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class AjaxFunction implements JSCallable {
   private final String ajaxMethod;
   private final int numParams;
+  private final String customEQ;
 
   public AjaxFunction(String ajaxMethod, int numParams) {
+    this(ajaxMethod, numParams, null);
+  }
+
+  public AjaxFunction(String ajaxMethod, int numParams, String customEQ) {
     this.ajaxMethod = ajaxMethod;
     this.numParams = numParams;
+    this.customEQ = customEQ;
   }
 
   @Override
@@ -44,12 +54,20 @@ public class AjaxFunction implements JSCallable {
 
   @Override
   public String getExpressionForCall(RenderContext info, JSExpression... params) {
+    // Js expression for custom EQ name. If not provided, use `null`.
+    AbstractExpression eqExp =
+        Optional.ofNullable(customEQ)
+            .<AbstractExpression>map(StringExpression::new)
+            .orElse(new NullExpression());
+
     JSExpression[] newparams =
         JSUtils.convertExpressions(
             CurrentForm.EXPR,
             ajaxMethod,
             new ArrayExpression((Object[]) Arrays.copyOfRange(params, 1, params.length)),
-            params[0]);
+            params[0],
+            new NullExpression(), // This param was never provided so use `null` should be OK.
+            eqExp);
     return JSUtils.createFunctionCall(info, "postAjaxJSON", newparams); // $NON-NLS-1$
   }
 

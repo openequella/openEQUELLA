@@ -218,7 +218,7 @@
     <parameter id="class" value="com.tle.web.workflow.guice.StaticServices" />
     <parameter id="class" value="com.tle.web.workflow.guice.TaskSearchModule" />
     <parameter id="class" value="com.tle.web.workflow.portal.TaskListModule" />
-    <parameter id="class" value="com.tle.integration.oidc.OidcTokenLoggingModule" />
+    <parameter id="class" value="com.tle.integration.oidc.OidcModule" />
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="equella">
     <parameter id="type" value="equella" />
@@ -857,6 +857,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20242.MigrateKeyResourceFromHierarchyXml" />
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20242.MigrateKeyResourceFromHierarchyXml" />
     <parameter id="date" value="2024-06-28" />
+  </extension>
+  <extension plugin-id="com.tle.core.institution.convert" point-id="xmlmigration" id="migrateFavouritesDateModifiedXml">
+    <parameter id="id" value="com.tle.core.institution.migration.v20252.MigrateFavouritesDateModifiedXml" />
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.MigrateFavouritesDateModifiedXml" />
+    <parameter id="date" value="2025-07-14" />
   </extension>
   <extension plugin-id="com.tle.core.item" point-id="itemDaoExtension" id="calItemDao">
     <parameter id="class" value="bean:com.tle.cal.dao.CALDao" />
@@ -6118,6 +6123,11 @@
     <parameter id="id" value="com.tle.core.institution.migration.v20251.UpdateAllowExpressionColumn"/>
     <parameter id="bean" value="bean:com.tle.core.institution.migration.v20251.UpdateAllowExpressionColumn"/>
     <parameter id="date" value="2025-03-24"/>
+  </extension>
+  <extension plugin-id="com.tle.core.migration" point-id="migration" id="RenameFavouritesDateModified">
+    <parameter id="id" value="com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
+    <parameter id="bean" value="bean:com.tle.core.institution.migration.v20252.RenameFavouritesDateModified"/>
+    <parameter id="date" value="2025-07-11"/>
   </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="domainObjects">
     <parameter id="class" value="com.tle.core.integration.beans.AuditLogLms" />

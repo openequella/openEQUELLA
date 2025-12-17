@@ -1,13 +1,13 @@
 libraryDependencies ++= Seq(
   "com.github.equella.jpf" % "jpf"            % "1.0.7",
-  "com.google.guava"       % "guava"          % "32.1.3-jre",
+  "com.google.guava"       % "guava"          % "33.5.0-jre",
   "org.slf4j"              % "jcl-over-slf4j" % "2.0.17",
   "org.slf4j"              % "slf4j-simple"   % "2.0.17",
   springWeb,
   springAop,
   springContext,
-  "com.fifesoft"  % "rsyntaxtextarea" % "1.5.2",
-  "com.miglayout" % "miglayout-swing" % "4.2",
+  "com.fifesoft"  % "rsyntaxtextarea" % "3.6.0",
+  "com.miglayout" % "miglayout-swing" % "11.4.2",
   xstreamDep
 )
 

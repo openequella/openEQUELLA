@@ -23,6 +23,7 @@ import {
   updateIdentityProvider,
 } from '../src/Oidc';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
 const auth0: IdentityProvider = {
   platform: 'AUTH0',
@@ -43,7 +44,7 @@ const auth0: IdentityProvider = {
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 
-afterAll(() => OEQ.Auth.logout(TC.API_PATH, true));
+afterAll(() => logout(TC.API_PATH));
 
 describe('Identity Provider', () => {
   it('updates the Identity Provider configuration', async () => {

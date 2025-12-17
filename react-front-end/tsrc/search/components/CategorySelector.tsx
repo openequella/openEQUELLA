@@ -166,7 +166,7 @@ export const CategorySelector = ({
   }: ShowMoreButtonProps) => (
     <ListItem>
       <Grid container justifyContent="center">
-        <Grid item>
+        <Grid>
           <Button
             variant="text"
             onClick={() => onShowMore(classificationID, !expanded)}
@@ -329,12 +329,12 @@ export const CategorySelector = ({
       return (
         <ListItem divider key={id}>
           <Grid container direction="column">
-            <Grid item>
+            <Grid>
               <Typography variant="subtitle1" style={{ fontWeight: 500 }}>
                 {name}
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <StyledList
                 className={expanded ? classes.classificationList : ""}
               >

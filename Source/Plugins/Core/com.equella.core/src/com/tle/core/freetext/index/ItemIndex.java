@@ -18,6 +18,8 @@
 
 package com.tle.core.freetext.index;
 
+import static com.dytech.edge.queries.FreeTextQuery.FIELD_BOOKMARK_TAGS;
+
 import com.dytech.edge.exceptions.InvalidDateRangeException;
 import com.dytech.edge.exceptions.InvalidSearchQueryException;
 import com.dytech.edge.exceptions.RuntimeApplicationException;
@@ -62,11 +64,13 @@ import com.tle.freetext.FreetextIndex;
 import com.tle.freetext.IndexedItem;
 import com.tle.freetext.TLEAnalyzer;
 import com.tle.freetext.TLEQueryParser;
+import com.tle.search.FavouritesSearch;
 import it.uniroma3.mat.extendedset.intset.ConciseSet;
 import it.uniroma3.mat.extendedset.intset.FastSet;
 import it.uniroma3.mat.extendedset.wrappers.LongSet;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,6 +99,7 @@ import org.apache.lucene.index.AutomatonTermsEnum;
 import org.apache.lucene.index.FieldInfo;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.PostingsEnum;
@@ -168,6 +173,13 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
   private String defaultOperator;
 
   private StoredFieldVisitor keyFieldSelector;
+
+  // Defines whether to search attachments and how.
+  private enum AttachmentScope {
+    NONE, // Do not search attachment
+    INCLUDE, // Attachments are included in search
+    ONLY // Search attachments only
+  }
 
   public ItemIndex(FreetextIndex freetextIndex) {
     this.freetextIndex = freetextIndex;
@@ -263,12 +275,14 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     for (IndexedItem item : documents) {
       if (item.isAdd()) {
         synchronized (item) {
-          Document doc = item.getItemdoc();
-          if (doc.getFields().isEmpty()) {
+          Document originalDoc = item.getItemdoc();
+          if (originalDoc.getFields().isEmpty()) {
             LOGGER.error("Trying to add an empty document for item:" + item.getId());
             continue;
           }
           try {
+            boolean isDocValid = originalDoc.getFields().stream().noneMatch(this::isOversizedTerm);
+            Document doc = isDocValid ? originalDoc : dropOversizedFields(originalDoc);
             long g = writer.addDocument(doc);
             if (item.isNewSearcherRequired()) {
               generation = g;
@@ -280,6 +294,51 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
     }
     return generation;
+  }
+
+  // Check if the value of an IndexableField is oversized.
+  private boolean isOversizedTerm(IndexableField field) {
+    if (field.fieldType().tokenized()) {
+      // Always `false` if the field is tokenized, because:
+      // 1. Although the value is quite big, it is split into individual terms;
+      // 2. The term length limit only applies to individual terms, not the entire value.
+      return false;
+    }
+
+    String strVal = field.stringValue();
+    if (strVal != null) {
+      return strVal.getBytes(StandardCharsets.UTF_8).length > IndexWriter.MAX_TERM_LENGTH;
+    }
+
+    BytesRef binVal = field.binaryValue();
+    if (binVal != null) {
+      return binVal.length > IndexWriter.MAX_TERM_LENGTH;
+    }
+
+    return false;
+  }
+
+  // Makes a copy of the supplied document without the fields that are too big to be indexed.
+  private Document dropOversizedFields(Document original) {
+    Document copy = new Document();
+    original.getFields().stream()
+        .filter(
+            f -> {
+              if (isOversizedTerm(f)) {
+                String itemId = original.get(FreeTextQuery.FIELD_UNIQUE);
+                LOGGER.warn(
+                    "Skip indexing field {} for Item {} because the value exceeds the maximum"
+                        + " length",
+                    f.name(),
+                    itemId);
+                return false;
+              }
+
+              return true;
+            })
+        .forEach(copy::add);
+
+    return copy;
   }
 
   /**
@@ -355,7 +414,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
                 final String[] fields = new String[] {FreeTextQuery.FIELD_ATTACHMENT_VECTORED};
 
                 Query queryAttachmentOnly =
-                    getQuery(searchreq, searcher.getIndexReader(), fields, searchAttachment);
+                    getQueryOnlyForAttachments(searchreq, searcher.getIndexReader(), fields);
                 queryAttachmentOnly =
                     addUniqueIdClauseToQuery(
                         queryAttachmentOnly, itemResults, searcher.getIndexReader());
@@ -411,7 +470,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       FreeTextBooleanQuery bquery = new FreeTextBooleanQuery(false, true);
       bquery.add(new FreeTextFieldQuery(FreeTextQuery.FIELD_UNIQUE, uniqueId));
       BooleanClause clause = convertToBooleanClause(bquery, reader);
-      freeTextBuilder.add(clause.getQuery(), Occur.SHOULD);
+      freeTextBuilder.add(clause.query(), Occur.SHOULD);
     }
 
     Builder fullQueryBuilder = new Builder();
@@ -459,7 +518,9 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             while (iterator.hasNext()) {
               long doc = iterator.next();
               Document document =
-                  indexReader.document((int) doc, Collections.singleton(FreeTextQuery.FIELD_ID));
+                  indexReader
+                      .storedFields()
+                      .document((int) doc, Collections.singleton(FreeTextQuery.FIELD_ID));
               long key = Long.parseLong(document.get(FreeTextQuery.FIELD_ID));
               longSet.add(key);
             }
@@ -505,7 +566,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     if (firstHit < results.length) {
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
-        Document doc = searcher.doc(docId, getKeyFields());
+        Document doc = searcher.storedFields().document(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         longSet.add(key.getKey());
       }
@@ -523,7 +584,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       for (int i = firstHit; i < results.length; i++) {
         int docId = results[i].doc;
         float relevance = results[i].score;
-        Document doc = searcher.doc(docId, getKeyFields());
+        Document doc = searcher.storedFields().document(docId, getKeyFields());
         ItemIdKey key = getKeyForDocument(doc);
         T result = createResult(key, doc, relevance, sortByRelevance);
         retrievedResults.add(result);
@@ -534,7 +595,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     // total number of hits which is less than 2B since Lucene indexes are still bound to at most
     // 2B documents, so it can safely be cast to an int in that case.
     return new SimpleSearchResults<T>(
-        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value);
+        retrievedResults, retrievedResults.size(), firstHit, (int) hits.totalHits.value());
   }
 
   protected abstract T createResult(
@@ -837,7 +898,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       }
       Document doc;
       try {
-        doc = reader.document(docid);
+        doc = reader.storedFields().document(docid);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -850,14 +911,29 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /** Takes a search request and prepares a Lucene Query object. */
   protected BooleanQuery getQuery(Search request, IndexReader reader, boolean searchAttachment) {
-    final String[] fields =
-        FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(
-            new String[FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.size()]);
-    return getQuery(request, reader, fields, searchAttachment);
+    final String[] fields = FreeTextQuery.BASIC_NAME_BODY_ATTACHMENT_FIELDS.toArray(String[]::new);
+    AttachmentScope attachmentScope =
+        searchAttachment ? AttachmentScope.INCLUDE : AttachmentScope.NONE;
+    return getQuery(request, reader, fields, attachmentScope);
+  }
+
+  // Get query that only searches from attachments.
+  private BooleanQuery getQueryOnlyForAttachments(
+      Search request, IndexReader reader, String[] allFields) {
+    return getQuery(request, reader, allFields, AttachmentScope.ONLY);
   }
 
   private BooleanQuery getQuery(
-      Search request, IndexReader reader, String[] allFields, boolean searchAttachment) {
+      Search request, IndexReader reader, String[] allFields, AttachmentScope attachmentScope) {
+    boolean searchAttachment = attachmentScope != AttachmentScope.NONE;
+    List<String> extraQueries = request.getExtraQueries();
+    String originalQueryString = request.getQuery();
+    // If the query will only be used for searching attachments, remove the bookmark tags query to
+    // avoid searching the tags.
+    String cleanedQueryString =
+        attachmentScope == AttachmentScope.ONLY
+            ? FavouritesSearch.removeBookmarkTagsQuery(originalQueryString)
+            : originalQueryString;
     String[] fields = buildSearchFields(allFields, searchAttachment);
 
     // This full query builder includes all the general search queries plus the queries for filters.
@@ -867,7 +943,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
     // This search query builder includes the normal query string and all the extra queries like
     // FreeText query.
     Builder searchQueryBuilder = new Builder();
-    searchQueryBuilder.add(buildNormalQuery(request, fields), Occur.MUST);
+    searchQueryBuilder.add(buildNormalQuery(cleanedQueryString, extraQueries, fields), Occur.MUST);
     Optional.ofNullable(buildExtraQuery(request, reader))
         .ifPresent(q -> searchQueryBuilder.add(q, Occur.MUST));
     fullQuerybuilder.add(searchQueryBuilder.build(), Occur.MUST);
@@ -1030,15 +1106,20 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
   /**
    * Build a BooleanQuery for the normal query string of a search and some extra query strings
-   * provided by certain contexts such as tags of a favourite search.
+   * provided by certain contexts such as tags of a favourite search(legacy UI, in the new UI it's
+   * included in the main query).
    *
    * <p>There are three steps.
    * <li>Get the text of a normal query string and use {@link TLEQueryParser} to parse it.
    * <li>Get a list of extra query strings and parse them as well.
    * <li>Join all the parsed results by `Occur.SHOULD`.
+   *
+   * @param queryString The query string from the search request.
+   * @param extraQueries The extra query strings from the search request.
+   * @param fields The fields to search on.
    */
-  private BooleanQuery buildNormalQuery(Search request, String[] fields) {
-    String queryString = request.getQuery();
+  private BooleanQuery buildNormalQuery(
+      String queryString, List<String> extraQueries, String[] fields) {
     Builder normalQueryBuilder = new Builder();
     try {
       if (Check.isEmpty(queryString) || queryString.trim().equals("*")) {
@@ -1060,12 +1141,18 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
 
         normalQueryBuilder.add(tleQuery, Occur.SHOULD);
 
-        List<String> queries = request.getExtraQueries();
-        if (queries != null) {
-          for (String queryStr : queries) {
-            normalQueryBuilder.add(tleParser.parse(queryStr), Occur.SHOULD);
-          }
-        }
+        Optional.ofNullable(extraQueries)
+            .ifPresent(
+                queryList ->
+                    queryList.forEach(
+                        queryStr -> {
+                          try {
+                            Query parsed = tleParser.parse(queryStr);
+                            normalQueryBuilder.add(parsed, Occur.SHOULD);
+                          } catch (Exception e) {
+                            throw new RuntimeException(e);
+                          }
+                        }));
       }
 
     } catch (QueryNodeException ex) {
@@ -1085,11 +1172,11 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       return null;
     }
     BooleanClause clause = convertToBooleanClause(fullftQuery, reader);
-    Occur occur = clause.getOccur();
+    Occur occur = clause.occur();
     if (!clause.isProhibited() && !clause.isRequired()) {
       occur = Occur.MUST;
     }
-    extraQueryBuilder.add(clause.getQuery(), occur);
+    extraQueryBuilder.add(clause.query(), occur);
 
     return extraQueryBuilder.build();
   }
@@ -1158,8 +1245,8 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
             convertDate(query.getStart(), query),
             convertDate(query.getEnd(), query),
             query.isIncludeStart(),
-            query.isIncludeEnd());
-    termQuery.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_REWRITE);
+            query.isIncludeEnd(),
+            MultiTermQuery.CONSTANT_SCORE_REWRITE);
     return new BooleanClause(termQuery, Occur.SHOULD);
   }
 
@@ -1212,17 +1299,17 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
       if (!not) {
         return first;
       } else if (!(first.isRequired() || first.isProhibited())) {
-        return new BooleanClause(first.getQuery(), Occur.MUST_NOT);
+        return new BooleanClause(first.query(), Occur.MUST_NOT);
       }
     }
 
     for (BooleanClause bclause : lclauses) {
-      Occur clauseOccur = bclause.getOccur();
+      Occur clauseOccur = bclause.occur();
       if (addplus && !(bclause.isRequired() || bclause.isProhibited())) {
         clauseOccur = Occur.MUST;
       }
       allnot &= bclause.isProhibited();
-      queryBuilder.add(bclause.getQuery(), clauseOccur);
+      queryBuilder.add(bclause.query(), clauseOccur);
     }
 
     // When `allnot` is true, it means all the BooleanClause are prohibited, so their occurrences
@@ -1385,7 +1472,7 @@ public abstract class ItemIndex<T extends FreetextResult> extends AbstractIndexE
         autoComplete,
         FreeTextQuery.FIELD_NAME_VECTORED_NOSTEM,
         nonStemmed,
-        FreeTextQuery.FIELD_BOOKMARK_TAGS,
+        FIELD_BOOKMARK_TAGS,
         nonStemmed,
         FreeTextQuery.FIELD_ATTACHMENT_VECTORED_NOSTEM,
         nonStemmed);
