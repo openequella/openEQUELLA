@@ -45,10 +45,7 @@ type MyResourceSearchTypeName =
 /**
  * Sub‑search IDs under the "Moderation queue" type.
  */
-type MyResourceModerationSubSearchId =
-  | 'modqueue_moderating'
-  | 'modqueue_review'
-  | 'modqueue_rejected';
+type MyResourceModerationSubSearchId = 'moderating' | 'review' | 'rejected';
 
 /**
  * Display names for sub‑searches under the "Moderation queue" type.

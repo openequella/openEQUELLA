@@ -97,9 +97,9 @@ describe('SearchMyResource', () => {
     >(modQueue.subSearches!.map((s) => [s.id, s]));
 
     // Validate subsearch entries
-    assertItem(subSearchMap, 'modqueue_moderating', 'In moderation', 9, false);
-    assertItem(subSearchMap, 'modqueue_review', 'Under review', 0, false);
-    assertItem(subSearchMap, 'modqueue_rejected', 'Rejected', 0, false);
+    assertItem(subSearchMap, 'moderating', 'In moderation', 9, false);
+    assertItem(subSearchMap, 'review', 'Under review', 0, false);
+    assertItem(subSearchMap, 'rejected', 'Rejected', 0, false);
     expect.assertions(28);
   });
 });

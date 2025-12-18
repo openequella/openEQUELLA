@@ -295,7 +295,7 @@ public class SearchMyResource {
     for (MyResourcesSubSubSearch subSearch : parentSearch.getSubSearches()) {
       SearchDefinitionBean childBean = new SearchDefinitionBean();
       childBean.setName(subSearch.getName().getText());
-      childBean.setId(parentSearch.getValue() + "_" + subSearch.getId());
+      childBean.setId(subSearch.getId());
 
       int childCount =
           freetextService.countsFromFilters(Collections.singletonList(subSearch.getSearch()))[0];

@@ -63,9 +63,9 @@ public class SearchMyResourceApiTest extends AbstractRestApiTest {
 
     Map<String, JsonNode> subSearchesById = buildMapById(subSearches);
 
-    assertSubSearchNode(subSearchesById, "modqueue_moderating", "In moderation", 9);
-    assertSubSearchNode(subSearchesById, "modqueue_review", "Under review", 0);
-    assertSubSearchNode(subSearchesById, "modqueue_rejected", "Rejected", 0);
+    assertSubSearchNode(subSearchesById, "moderating", "In moderation", 9);
+    assertSubSearchNode(subSearchesById, "review", "Under review", 0);
+    assertSubSearchNode(subSearchesById, "rejected", "Rejected", 0);
   }
 
   /**
