@@ -136,7 +136,7 @@
     "parcel": "2.14.4",
     "punycode": "2.3.1",
     "rewire": "7.0.0",
-    "storybook": "8.6.12",
+    "storybook": "8.6.15",
     "ts-jest": "29.3.1",
     "typescript": "5.8.3"
   }
