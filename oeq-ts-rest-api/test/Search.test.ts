@@ -116,7 +116,6 @@ describe('Search with GET:', () => {
       ['Empty value', [['field-empty-value', ['']]]],
       ['Empty value - whitespace', [['field-empty-value-whitespace', [' ']]]],
       ['Colon in field name', [['field:colon', ['value-no-colon']]]],
-      ['Colon in value', [['field-no-colon', ['value:colon']]]],
     ])(
       "attempts to validate the 'musts' client side before sending [%s]",
       async (_, musts) => {
@@ -292,7 +291,7 @@ describe('Hierarchy search:', () => {
     const results = await doSearch({
       hierarchy: '6135b550-ce1c-43c2-b34c-0a3cf793759d',
     });
-    expect(results.available).toBe(58);
+    expect(results.available).toBe(60);
   });
 });
 

@@ -19,6 +19,7 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
 import { FavouritesType } from "../modules/FavouriteModule";
+import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
 import {
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
@@ -274,7 +275,8 @@ export const routes: Routes = {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
   },
   OldHierarchy: {
-    to: (topic: string) => `${OLD_HIERARCHY_PATH}?topic=${topic}`,
+    to: (topic: string) =>
+      `${OLD_HIERARCHY_PATH}?topic=${convertNewTopicIdToLegacyFormat(topic)}`,
   },
   RemoteSearch: {
     // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to

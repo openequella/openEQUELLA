@@ -22,9 +22,9 @@ import com.tle.core.dashboard.model.{
   PortletClosed,
   PortletCreatable,
   PortletDetails,
-  PortletPreferenceUpdate
+  PortletPreferenceUpdate,
+  PortletType
 }
-import com.tle.exceptions.AccessDeniedException
 
 object DashboardLayout extends Enumeration {
   val SingleColumn, TwoEqualColumns, TwoColumnsRatio2to1, TwoColumnsRatio1to2 = Value
@@ -67,6 +67,10 @@ trait DashboardService {
 
   /** Updates the UI preferences for a portlet identified by its UUID.
     *
+    * Note: If the update is to restore a Legacy Content portlet, a Legacy `PortletUpdatedEvent`
+    * will be fired to make sure Section of the target portlet is correctly registered in the
+    * Section tree.
+    *
     * @param uuid
     *   The unique identifier of the portlet to update.
     * @param updates
@@ -99,4 +103,12 @@ object DashboardService {
   /** Name of the configuration property that stores the dashboard layout.
     */
   val DASHBOARD_LAYOUT: String = "dashboard.layout"
+
+  /** List of portlet types that have not got New UI implemented by 25.2.
+    */
+  val LEGACY_CONTENT_PORTLETS: List[String] =
+    List(PortletType.myresources, PortletType.freemarker, PortletType.taskstatistics).map(
+      _.toString
+    )
+
 }

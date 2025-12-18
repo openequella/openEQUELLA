@@ -366,9 +366,8 @@ export const languageStrings = {
       nonSystemUser: {
         hintForOeq:
           "Select an option from the navigation menu to the left to use openEQUELLA features.",
-        selectAddButton:
-          "Select the <b>Add Portlet</b> button to add portlets to the dashboard as shown in the example below.",
-        imageAlt: "Example image of the dashboard page with an add button",
+        selectEditButton:
+          "Select the <b>Edit dashboard</b> button and go to the <b>Create portlet</b> tab to add portlets to your dashboard.",
       },
     },
     portlets: {
@@ -796,7 +795,7 @@ export const languageStrings = {
     },
     thumbnails: {
       html: "HTML Icon",
-      emptyThumbnail: "Empty Thumbnail",
+      placeholder: "Placeholder Icon",
       provided: "Provided Icon",
       file: "Default File Icon",
       image: "Image Icon",

@@ -26,7 +26,7 @@ import com.tle.web.api.search.model.SearchResultItem
   *   The unique identifier for the topic. For virtual topics, the compoundUuid consist with uuid
   *   and match text, for example: `0a8bde97-66f8-4114-8c7c-365545ce00da:textA`.
   * @param matchingItemCount
-  *   Count of items matching this topic.
+  *   Count of items matching this topic, including key resources.
   * @param name
   *   Name of the topic.
   * @param shortDescription

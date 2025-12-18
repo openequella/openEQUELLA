@@ -17,6 +17,7 @@
  */
 import { List, ListItem, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
+import HTMLReactParser from "html-react-parser";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import OEQThumb from "../../components/OEQThumb";
@@ -48,22 +49,30 @@ export const PortletSearchResultList = ({
 }: PortletSearchResultListProps) => {
   return (
     <List>
-      {results.map((item) => (
-        <ListItem
-          key={item.uuid + ":" + item.version}
-          component={Link}
-          to={routes.ViewItem.to(item.uuid, item.version)}
-        >
-          <OEQThumb details={item.thumbnailDetails} />
-          <ListItemText
-            primary={item.name || item.uuid}
-            secondary={!hideDescription ? item.description : null}
-            sx={{
-              "& .MuiListItemText-secondary": descriptionStyles,
-            }}
-          />
-        </ListItem>
-      ))}
+      {results.map((item) => {
+        const { uuid, version, name, description, thumbnailDetails } = item;
+        return (
+          <ListItem
+            key={uuid + ":" + version}
+            component={Link}
+            to={routes.ViewItem.to(uuid, version)}
+            divider
+          >
+            <OEQThumb details={thumbnailDetails} />
+            <ListItemText
+              primary={name || uuid}
+              secondary={
+                !hideDescription && description
+                  ? HTMLReactParser(description)
+                  : null
+              }
+              sx={{
+                "& .MuiListItemText-secondary": descriptionStyles,
+              }}
+            />
+          </ListItem>
+        );
+      })}
     </List>
   );
 };

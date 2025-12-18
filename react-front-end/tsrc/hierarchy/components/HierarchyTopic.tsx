@@ -31,9 +31,10 @@ import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import HTMLReactParser from "html-react-parser";
-import { useEffect, useState } from "react";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { OEQLink } from "../../components/OEQLink";
 import { TooltipIconButton } from "../../components/TooltipIconButton";
 import { routes } from "../../mainui/routes";
@@ -188,7 +189,7 @@ const HierarchyTopic = ({
     ) : (
       <OEQLink
         muiLinkUrlProvider={() =>
-          buildSelectionSessionHierarchyLink(compoundUuid)
+          buildSelectionSessionHierarchyLink(compoundUuid, O.none)
         }
         routeLinkUrlProvider={() => routes.Hierarchy.to(compoundUuid)}
       >

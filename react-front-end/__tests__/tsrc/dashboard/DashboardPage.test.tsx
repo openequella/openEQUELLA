@@ -40,7 +40,7 @@ import {
 } from "./DashboardPageTestHelper";
 
 const {
-  nonSystemUser: { hintForOeq: hintForOeqText, imageAlt: imageAltText },
+  nonSystemUser: { hintForOeq: hintForOeqText },
 } = languageStrings.dashboard.welcomeDesc;
 const {
   maximise: maximiseText,
@@ -93,11 +93,10 @@ describe("<DashboardPage/>", () => {
   it("shows an enhanced welcome message if no portlets are configured for non-system users with CREATE_PORTLET permission", async () => {
     mockGetDashboardDetails.mockResolvedValueOnce(emptyDashboardDetails);
 
-    const { getByText, getByAltText } = await renderDashboardPage();
+    const { getByText } = await renderDashboardPage();
     expect(
-      getByText("as shown in the example below", { exact: false }),
+      getByText("add portlets to your dashboard", { exact: false }),
     ).toBeInTheDocument();
-    expect(getByAltText(imageAltText)).toBeInTheDocument();
   });
 
   it("displays portlet container when portlets are configured", async () => {

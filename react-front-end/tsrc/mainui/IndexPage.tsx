@@ -30,6 +30,7 @@ import {
 import { shallowEqual } from "shallow-equal-object";
 import { ErrorResponse } from "../api/errors";
 import { getRenderData, getRouterBaseName, LEGACY_CSS_URL } from "../AppConfig";
+import { LEGACY_PORTLET_CLASS } from "../dashboard/portlet/LegacyPortlet";
 import { LegacyContent } from "../legacycontent/LegacyContent";
 import { isLegacyAdvancedSearchLocation } from "../modules/AdvancedSearchModule";
 import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
@@ -93,6 +94,9 @@ const removeLegacyCss = (): void => {
     head.removeChild(legacyCss);
   }
 };
+
+const hasLegacyPortlet = () =>
+  document.querySelector(`.${LEGACY_PORTLET_CLASS}`) !== null;
 
 export default function IndexPage() {
   const { currentUser } = useContext(AppContext);
@@ -205,7 +209,12 @@ export default function IndexPage() {
             key={ind}
             path={oeqRoute.path}
             render={(p) => {
-              removeLegacyCss();
+              // The conditional is to fix issue where the dashboard page is loaded twice: legacy CSS must be removed
+              // only when no legacy content(portlet) is present, otherwise styles become incorrect.
+              if (!hasLegacyPortlet()) {
+                removeLegacyCss();
+              }
+
               return renderProtectedPage(
                 p,
                 oeqRoute.component,
@@ -289,7 +298,9 @@ export default function IndexPage() {
               return renderLegacyContent(routeProps);
             }
 
-            removeLegacyCss();
+            if (!hasLegacyPortlet()) {
+              removeLegacyCss();
+            }
             return renderProtectedPage(routeProps, Dashboard);
           }}
         />

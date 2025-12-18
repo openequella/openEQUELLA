@@ -486,7 +486,7 @@ public class PortletWebServiceImpl
     clearTree(CurrentInstitution.get(), userId);
   }
 
-  protected void firePortletsChanged(
+  public void firePortletsChanged(
       SectionInfo info,
       String userId,
       String portletUuid,

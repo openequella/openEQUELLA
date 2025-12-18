@@ -163,7 +163,8 @@ export const DashboardPage = () => {
                 }),
               )();
             }),
-            E.mapLeft(appErrorHandler),
+            // For DnD data computing errors, just log it to avoid disrupting user.
+            E.mapLeft(console.warn),
           );
         },
       }),

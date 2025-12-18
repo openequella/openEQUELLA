@@ -15,10 +15,12 @@ import com.tle.core.dashboard.service.{DashboardLayout, DashboardServiceImpl}
 import com.tle.core.portal.service.PortletService
 import com.tle.core.services.user.UserPreferenceService
 import com.tle.exceptions.AccessDeniedException
+import com.tle.web.portal.events.PortletsUpdatedEvent.PortletUpdateEventType
+import com.tle.web.portal.service.PortletWebService
 import com.tle.web.workflow.portal.TaskStatisticsPortletEditor.KEY_DEFAULT_TREND
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.{any, argThat}
-import org.mockito.Mockito.{mock, mockStatic, verify, when}
+import org.mockito.ArgumentMatchers.{any, anyBoolean, argThat, eq => eqMatcher}
+import org.mockito.Mockito.{doNothing, mock, mockStatic, verify, when}
 import org.scalatest.Inside.inside
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -32,8 +34,10 @@ import scala.jdk.CollectionConverters._
 
 class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen with EitherValues {
   val mockPortletService: PortletService               = mock(classOf[PortletService])
+  val mockPortletWebService: PortletWebService         = mock(classOf[PortletWebService])
   val mockUserPreferenceService: UserPreferenceService = mock(classOf[UserPreferenceService])
-  val dashboardService = new DashboardServiceImpl(mockPortletService, mockUserPreferenceService)
+  val dashboardService =
+    new DashboardServiceImpl(mockPortletService, mockPortletWebService, mockUserPreferenceService)
 
   val userId = UUID.randomUUID().toString
   mockStatic(classOf[CurrentUser])
@@ -365,6 +369,34 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
       Then("the exception is captured and returned")
       val result = dashboardService.updatePortletPreference(uuid, updates)
       result.left.value.asInstanceOf[RuntimeException].getMessage shouldBe runtimeError
+
+      // Reset the mock in the end.
+      doNothing().when(mockPortletService).updatePreference(any(), any())
+    }
+
+    it("should fire a Legacy Portlet Updated event when restoring a Legacy Content portlet") {
+      Given("a closed Legacy Content portlet ")
+      val lcp = new Portlet("myresources")
+      lcp.setUuid(uuid)
+      val pref = new PortletPreference(lcp, userId)
+      pref.setClosed(true)
+      when(mockPortletService.getByUuid(uuid)).thenReturn(lcp)
+      when(mockPortletService.getPreference(searchPortlet)).thenReturn(pref)
+
+      When("the preference is updated to restore the portlet")
+      val result = dashboardService.updatePortletPreference(uuid, updates.copy(isClosed = false))
+
+      Then("the update is successful and a Legacy Portlet Updated event is fired")
+      result shouldBe a[Right[_, _]]
+      val eventCaptor = ArgumentCaptor.forClass(classOf[PortletUpdateEventType])
+      verify(mockPortletWebService).firePortletsChanged(
+        any(),
+        eqMatcher(userId),
+        eqMatcher(uuid),
+        anyBoolean(),
+        eventCaptor.capture()
+      )
+      eventCaptor.getValue shouldBe PortletUpdateEventType.CREATED
     }
   }
 
