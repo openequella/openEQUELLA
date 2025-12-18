@@ -114,6 +114,15 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   }
 
   /**
+   * Wait until an Item is displayed in the search result.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public WebElement waitForItem(String itemTitle) {
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(By.linkText(itemTitle)));
+  }
+
+  /**
    * Wait until the correct number of items are displayed.
    *
    * @param itemCount The expected number of items
