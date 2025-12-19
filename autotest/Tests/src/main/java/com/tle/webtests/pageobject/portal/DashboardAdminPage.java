@@ -26,7 +26,7 @@ public class DashboardAdminPage
     driver.get(context.getBaseUrl() + "access/portaladmin.do");
   }
 
-  public void deleteAll(String query) {
+  public void deleteAllPortlet(String query) {
     ItemListPage portals = search(query);
 
     while (portals.isResultsAvailable()) {
@@ -35,8 +35,8 @@ public class DashboardAdminPage
     }
   }
 
-  public void deleteAll() {
-    deleteAll("");
+  public void deleteAllPortlet() {
+    deleteAllPortlet("");
   }
 
   public ItemListPage search(String query) {

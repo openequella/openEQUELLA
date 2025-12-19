@@ -1,0 +1,30 @@
+<com.tle.common.portal.entity.Portlet>
+  <id>2480180</id>
+  <uuid>5002d1f5-eb60-40af-ad34-80fd3b859824</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2025-12-09 14:40:29.755</dateModified>
+  <dateCreated class="sql-timestamp">2025-12-09 14:40:29.755</dateCreated>
+  <name>
+    <id>2480181</id>
+    <strings>
+      <entry>
+        <string>aa</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2480182</id>
+          <locale>aa</locale>
+          <priority>0</priority>
+          <text>Test global portlet</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <type>browse</type>
+  <closeable>true</closeable>
+  <minimisable>true</minimisable>
+  <enabled>true</enabled>
+  <institutional>true</institutional>
+</com.tle.common.portal.entity.Portlet>

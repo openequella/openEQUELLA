@@ -441,7 +441,7 @@ public class PortalsTest extends AbstractCleanupTest {
   protected void cleanupAfterClass() throws Exception {
     logon("portlettest1", "``````");
     String prefix = context.getNamePrefix();
-    new DashboardAdminPage(context).load().deleteAll(prefix);
+    new DashboardAdminPage(context).load().deleteAllPortlet(prefix);
     super.cleanupAfterClass();
   }
 
