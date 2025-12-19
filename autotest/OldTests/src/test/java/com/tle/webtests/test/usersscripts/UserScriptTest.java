@@ -180,6 +180,6 @@ public class UserScriptTest extends AbstractCleanupTest {
         moduleItemNamePrefix,
         moduleItemName,
         moduleSetItemName);
-    new DashboardAdminPage(context).load().deleteAll(scriptedPortlet.toString());
+    new DashboardAdminPage(context).load().deleteAllPortlet(scriptedPortlet.toString());
   }
 }

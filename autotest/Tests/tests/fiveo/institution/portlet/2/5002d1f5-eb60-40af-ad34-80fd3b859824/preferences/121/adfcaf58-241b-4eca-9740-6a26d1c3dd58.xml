@@ -1,0 +1,17 @@
+<com.tle.common.portal.entity.PortletPreference>
+  <id>2480186</id>
+  <portlet>
+    <id>2480180</id>
+    <systemType>false</systemType>
+    <disabled>false</disabled>
+    <closeable>false</closeable>
+    <minimisable>false</minimisable>
+    <enabled>false</enabled>
+    <institutional>false</institutional>
+  </portlet>
+  <userId>adfcaf58-241b-4eca-9740-6a26d1c3dd58</userId>
+  <position>0</position>
+  <order>1</order>
+  <closed>false</closed>
+  <minimised>false</minimised>
+</com.tle.common.portal.entity.PortletPreference>
