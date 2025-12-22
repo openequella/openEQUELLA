@@ -19,6 +19,14 @@ import * as OEQ from '../src';
 import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
+type MyResourceType =
+  | OEQ.SearchMyResource.MyResourceSearchType
+  | OEQ.SearchMyResource.MyResourceModeratingSubSearch;
+
+type MyResourceTypeName =
+  | OEQ.SearchMyResource.MyResourceSearchTypeName
+  | OEQ.SearchMyResource.MyResourceModerationSubSearchName;
+
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(TC.API_PATH));
 
@@ -29,18 +37,12 @@ afterAll(() => logout(TC.API_PATH));
  * @param id The ID to look for
  * @param expectedName The expected display name
  * @param expectedCount The expected count number
- * @param expectLinks Whether to assert that the 'links' property exists (default: true)
  */
 const assertItem = (
-  map: Map<
-    string,
-    | OEQ.SearchMyResource.MyResourceSearchType
-    | OEQ.SearchMyResource.MyResourceModeratingSubSearch
-  >,
+  map: Map<string, MyResourceType>,
   id: string,
-  expectedName: string,
-  expectedCount: number,
-  expectLinks = true
+  expectedName: MyResourceTypeName,
+  expectedCount: number
 ) => {
   const item = map.get(id);
 
@@ -51,12 +53,28 @@ const assertItem = (
   expect(item.name).toBe(expectedName);
   expect(item.count).toBe(expectedCount);
 
-  if (expectLinks) {
-    expect(
-      (item as OEQ.SearchMyResource.MyResourceSearchType).links
-    ).toBeTruthy();
+  return item;
+};
+
+const hasLinks = (
+  item: MyResourceType
+): item is OEQ.SearchMyResource.MyResourceSearchType => 'links' in item;
+
+const assertItemWithLinks = (
+  map: Map<string, MyResourceType>,
+  id: string,
+  expectedName: MyResourceTypeName,
+  expectedCount: number
+) => {
+  const item = assertItem(map, id, expectedName, expectedCount);
+
+  expect(hasLinks(item)).toBe(true);
+
+  if (!hasLinks(item)) {
+    throw new Error(`Expected 'links' for resource type with '${id}'`);
   }
 
+  expect(item.links).toBeTruthy();
   return item;
 };
 
@@ -74,13 +92,13 @@ describe('SearchMyResource', () => {
       OEQ.SearchMyResource.MyResourceSearchType
     >(result.map((i) => [i.id, i]));
 
-    assertItem(resultMap, 'published', 'Published', 47);
-    assertItem(resultMap, 'draft', 'Drafts', 6);
-    assertItem(resultMap, 'scrapbook', 'Scrapbook', 9);
-    assertItem(resultMap, 'archived', 'Archive', 3);
-    assertItem(resultMap, 'all', 'All resources', 74);
+    assertItemWithLinks(resultMap, 'published', 'Published', 47);
+    assertItemWithLinks(resultMap, 'draft', 'Drafts', 6);
+    assertItemWithLinks(resultMap, 'scrapbook', 'Scrapbook', 9);
+    assertItemWithLinks(resultMap, 'archived', 'Archive', 3);
+    assertItemWithLinks(resultMap, 'all', 'All resources', 74);
 
-    const modQueue = assertItem(
+    const modQueue = assertItemWithLinks(
       resultMap,
       'modqueue',
       'Moderation queue',
@@ -97,9 +115,9 @@ describe('SearchMyResource', () => {
     >(modQueue.subSearches!.map((s) => [s.id, s]));
 
     // Validate subsearch entries
-    assertItem(subSearchMap, 'moderating', 'In moderation', 9, false);
-    assertItem(subSearchMap, 'review', 'Under review', 0, false);
-    assertItem(subSearchMap, 'rejected', 'Rejected', 0, false);
-    expect.assertions(28);
+    assertItem(subSearchMap, 'moderating', 'In moderation', 9);
+    assertItem(subSearchMap, 'review', 'Under review', 0);
+    assertItem(subSearchMap, 'rejected', 'Rejected', 0);
+    expect.assertions(34);
   });
 });

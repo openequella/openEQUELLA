@@ -18,6 +18,8 @@
 
 package com.tle.web.myresources.api.search;
 
+import static java.util.function.Predicate.not;
+
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -41,19 +43,19 @@ import com.tle.web.api.item.ItemLinkService;
 import com.tle.web.api.item.equella.interfaces.beans.EquellaItemBean;
 import com.tle.web.api.item.interfaces.ItemResource;
 import com.tle.web.api.item.interfaces.beans.ItemBean;
-import com.tle.web.api.search.bean.SearchDefinitionBean;
+import com.tle.web.api.search.bean.MyResourceStatusSummaryBean;
 import com.tle.web.myresources.MyResourcesSearch;
 import com.tle.web.myresources.MyResourcesService;
 import com.tle.web.myresources.MyResourcesSubSearch;
-import com.tle.web.myresources.MyResourcesSubSubSearch;
 import com.tle.web.remoting.rest.service.UrlLinkService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -62,6 +64,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import org.springframework.transaction.annotation.Transactional;
 
 @Bind
 @Path("search/myresources")
@@ -77,20 +80,20 @@ public class SearchMyResource {
 
   @Inject private MyResourcesService myResourcesService;
 
+  /**
+   * Returns a list of available My Resources search types (e.g. Published, Drafts, etc.) with
+   * counts and nested subSearches.
+   *
+   * @return Response containing a list of MyResourceStatusSummaryBean.
+   */
   @GET
   @Path("")
+  @Transactional
   public Response getMyResourcesSearchTypes() {
-    List<MyResourcesSubSearch> listSearches = listAllowedMyResourcesSearches();
-    return Response.ok(
-            Lists.transform(
-                listSearches,
-                new Function<MyResourcesSubSearch, SearchDefinitionBean>() {
-                  @Override
-                  public SearchDefinitionBean apply(MyResourcesSubSearch input) {
-                    return buildSearchDefinitionBean(input);
-                  }
-                }))
-        .build();
+    List<MyResourceStatusSummaryBean> searches =
+        listAllowedMyResourcesSearches().stream().map(this::buildStatusSummaryBean).toList();
+
+    return Response.ok(searches).build();
   }
 
   @GET
@@ -255,53 +258,42 @@ public class SearchMyResource {
   }
 
   /**
-   * Build a SearchDefinitionBean for a MyResourcesSubSearch, including its sub-searches.
+   * Build a MyResourceStatusSummaryBean for a MyResourcesSubSearch, including its sub-searches.
    *
    * @param search The MyResourcesSubSearch to build the bean from.
-   * @return A populated SearchDefinitionBean.
+   * @return A populated MyResourceStatusSummaryBean.
    */
-  private SearchDefinitionBean buildSearchDefinitionBean(MyResourcesSubSearch search) {
-    SearchDefinitionBean bean = new SearchDefinitionBean();
-    bean.setName(CurrentLocale.get(search.getNameKey()));
-    bean.setId(search.getValue());
-    bean.set(
-        "links",
+  private MyResourceStatusSummaryBean buildStatusSummaryBean(MyResourcesSubSearch search) {
+    int count = freetextService.countFromFilter(search.createDefaultSearch());
+    URI link =
         urlLinkService
             .getMethodUriBuilder(SearchMyResource.class, "subSearch")
-            .build(search.getValue()));
+            .build(search.getValue());
 
-    int count =
-        freetextService
-            .countsFromFilters(Collections.singletonList(search.createDefaultSearch()))[0];
-    bean.setCount(count);
+    MyResourceStatusSummaryBean bean =
+        new MyResourceStatusSummaryBean(
+            CurrentLocale.get(search.getNameKey()), search.getValue(), count, link);
 
-    List<MyResourcesSubSubSearch> subSearches = search.getSubSearches();
-    if (subSearches != null && !subSearches.isEmpty()) {
-      bean.setSubSearches(buildSubSearchDefinitionBeans(search));
-    }
+    Optional.ofNullable(search.getSubSearches())
+        .filter(not(List::isEmpty))
+        .ifPresent(subs -> bean.setSubSearches(buildSubSearchBeans(search)));
 
     return bean;
   }
 
   /**
-   * Build a list of SearchDefinitionBean for the sub-searches of a MyResourcesSubSearch.
+   * Build a list of MyResourceStatusSummaryBean for the sub-searches of a MyResourcesSubSearch.
    *
    * @param parentSearch The parent MyResourcesSubSearch.
-   * @return A list of populated SearchDefinitionBean for the sub-searches.
+   * @return A list of populated MyResourceStatusSummaryBean for the sub-searches.
    */
-  private List<SearchDefinitionBean> buildSubSearchDefinitionBeans(
-      MyResourcesSubSearch parentSearch) {
-    List<SearchDefinitionBean> childBeans = new ArrayList<>();
-    for (MyResourcesSubSubSearch subSearch : parentSearch.getSubSearches()) {
-      SearchDefinitionBean childBean = new SearchDefinitionBean();
-      childBean.setName(subSearch.getName().getText());
-      childBean.setId(subSearch.getId());
-
-      int childCount =
-          freetextService.countsFromFilters(Collections.singletonList(subSearch.getSearch()))[0];
-      childBean.setCount(childCount);
-      childBeans.add(childBean);
-    }
-    return childBeans;
+  private List<MyResourceStatusSummaryBean> buildSubSearchBeans(MyResourcesSubSearch parentSearch) {
+    return parentSearch.getSubSearches().stream()
+        .map(
+            sub -> {
+              int count = freetextService.countFromFilter(sub.getSearch());
+              return new MyResourceStatusSummaryBean(sub.getName().getText(), sub.getId(), count);
+            })
+        .toList();
   }
 }

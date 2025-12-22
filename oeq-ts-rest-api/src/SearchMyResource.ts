@@ -34,7 +34,7 @@ type MyResourceSearchTypeId =
 /**
  * Display names for each myresources search types.
  */
-type MyResourceSearchTypeName =
+export type MyResourceSearchTypeName =
   | 'Published'
   | 'Drafts'
   | 'Scrapbook'
@@ -50,7 +50,7 @@ type MyResourceModerationSubSearchId = 'moderating' | 'review' | 'rejected';
 /**
  * Display names for sub‑searches under the "Moderation queue" type.
  */
-type MyResourceModerationSubSearchName =
+export type MyResourceModerationSubSearchName =
   | 'In moderation'
   | 'Under review'
   | 'Rejected';

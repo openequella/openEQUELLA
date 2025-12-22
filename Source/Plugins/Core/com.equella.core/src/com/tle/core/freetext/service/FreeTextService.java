@@ -72,6 +72,14 @@ public interface FreeTextService {
 
   int[] countsFromFilters(Collection<? extends Search> filters);
 
+  /**
+   * Calculates the number of items that match the given search filter.
+   *
+   * @param filter The search criteria to count results for.
+   * @return The total number of matching items, or -1 if the filter is null.
+   */
+  int countFromFilter(Search filter);
+
   List<ItemIdKey> getAutoCompleteTitles(Search request);
 
   String getAutoCompleteTerm(Search request, String prefix);
