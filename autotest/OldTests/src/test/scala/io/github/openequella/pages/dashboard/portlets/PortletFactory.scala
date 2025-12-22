@@ -40,6 +40,11 @@ object PortletFactory {
     def create(ctx: PageContext, title: String) = new GenericPortlet(ctx, title)
   }
 
+  case object Browse extends PortletFactory[BrowsePortlet] {
+    val portletType: PortletType.Value          = PortletType.Browse
+    def create(ctx: PageContext, title: String) = new BrowsePortlet(ctx, title)
+  }
+
   case object Favourites extends PortletFactory[FavouritesPortlet] {
     val portletType: PortletType.Value          = PortletType.Favourites
     def create(ctx: PageContext, title: String) = new FavouritesPortlet(ctx, title)
