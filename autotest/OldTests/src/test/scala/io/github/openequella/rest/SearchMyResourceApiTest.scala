@@ -13,13 +13,9 @@ class SearchMyResourceApiTest extends AbstractRestApiTest {
 
   @Test(description = "Verify the myresource search types exist with correct counts and links")
   def testSearchTypes(): Unit = {
-    val result = makeRequest(MY_RESOURCES_ENDPOINT)
+    val nodesById = fetchMyResources()
 
-    assertNotNull(result)
-    assertTrue(result.isArray)
-    assertEquals(result.size(), 6)
-
-    val nodesById = buildMapById(result)
+    assertEquals(nodesById.size, 6)
 
     // Validate specific top-level nodes from the response
     assertNode(nodesById, "published", "Published", 47)
@@ -41,8 +37,7 @@ class SearchMyResourceApiTest extends AbstractRestApiTest {
 
   @Test(description = "Verify the Moderation Queue sub-search structure")
   def testModerationQueueHierarchy(): Unit = {
-    val root      = makeRequest(MY_RESOURCES_ENDPOINT)
-    val nodesById = buildMapById(root)
+    val nodesById = fetchMyResources()
 
     val modQueue = nodesById.getOrElse(
       "modqueue",
@@ -122,17 +117,19 @@ class SearchMyResourceApiTest extends AbstractRestApiTest {
     assertEquals(node.get("count").asInt(), expectedCount)
   }
 
-  /** Execute a GET request to the supplied URL and assert that a 200 OK is returned.
+  /** Execute a GET request to the My Resources endpoint and return a map of nodes keyed by ID.
     *
-    * @param url
-    *   endpoint to call
     * @return
-    *   parsed JSON body of the response
+    *   map from id to the corresponding JSON node
     */
-  private def makeRequest(url: String): JsonNode = {
-    val method   = new GetMethod(url)
+  private def fetchMyResources(): Map[String, JsonNode] = {
+    val method   = new GetMethod(MY_RESOURCES_ENDPOINT)
     val respCode = makeClientRequest(method)
     assertEquals(respCode, HttpStatus.SC_OK)
-    mapper.readTree(method.getResponseBodyAsStream)
+    val result = mapper.readTree(method.getResponseBodyAsStream)
+
+    assertNotNull(result)
+    assertTrue(result.isArray)
+    buildMapById(result)
   }
 }

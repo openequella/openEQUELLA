@@ -20,7 +20,6 @@ package com.tle.web.api.search.bean;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
  * metadata about the search type such as its ID, display name, item count, and any sub-searches
  * (e.g. Moderation Queue statuses).
  */
-public class MyResourceStatusSummaryBean extends AbstractExtendableBean {
+public class MyResourceStatusSummaryBean {
   /** The display name of the search type. */
   private String name;
 
