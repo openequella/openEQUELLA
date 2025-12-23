@@ -22,21 +22,50 @@ import com.tle.common.search.DefaultSearch;
 import com.tle.web.sections.SectionInfo;
 import com.tle.web.sections.render.Label;
 
+/**
+ * Represents a sub-category of search within My Resources search types. (e.g. specific moderation
+ * statuses within the 'Moderation Queue' type).
+ */
 public abstract class MyResourcesSubSubSearch {
+  private final String id;
   private final Label name;
   private final DefaultSearch search;
 
-  public MyResourcesSubSubSearch(Label name, DefaultSearch search) {
+  /**
+   * @param id The unique identifier for this sub-search.
+   * @param name The display label for this sub-search.
+   * @param search The search criteria definition.
+   */
+  public MyResourcesSubSubSearch(String id, Label name, DefaultSearch search) {
+    this.id = id;
     this.name = name;
     this.search = search;
   }
 
+  /**
+   * Execute logic associated with this sub-search given the current section info.
+   *
+   * @param info The current SectionInfo.
+   */
   public abstract void execute(SectionInfo info);
 
+  /**
+   * @return The unique identifier for this sub-search.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * @return The display label for this sub-search.
+   */
   public Label getName() {
     return name;
   }
 
+  /**
+   * @return The search criteria definition.
+   */
   public DefaultSearch getSearch() {
     return search;
   }

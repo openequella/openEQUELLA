@@ -84,7 +84,7 @@ public class ScrapbookSubSearch extends AbstractPrototypeSection<ScrapbookSubSea
   }
 
   @Override
-  public MyResourcesSearch createDefaultSearch(SectionInfo info) {
+  public MyResourcesSearch createDefaultSearch() {
     MyResourcesSearch search = new MyResourcesSearch();
     search.setItemStatuses(ItemStatus.PERSONAL);
     return search;

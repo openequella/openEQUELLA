@@ -26,7 +26,7 @@ import com.tle.web.sections.generic.NumberOrder;
 import java.util.List;
 
 public interface MyResourcesSubSearch extends NumberOrder {
-  MyResourcesSearch createDefaultSearch(SectionInfo info);
+  MyResourcesSearch createDefaultSearch();
 
   List<MyResourcesSubSubSearch> getSubSearches();
 

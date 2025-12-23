@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 import * as CommonCodec from './gen/Common';
-import * as SearchCodec from './gen/Search';
-import * as WizardControlCodec from './gen/WizardControl';
+import * as DashboardCodec from './gen/Dashboard';
 import * as LtiPlatformCodec from './gen/LtiPlatform';
 import * as OidcCodec from './gen/Oidc';
-import * as DashboardCodec from './gen/Dashboard';
+import * as SearchCodec from './gen/Search';
+import * as WizardControlCodec from './gen/WizardControl';
 
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
@@ -56,6 +56,7 @@ export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as WizardCommonTypes from './WizardCommonTypes';
 export * as WizardControl from './WizardControl';
+export * as SearchMyResource from './SearchMyResource';
 
 export const Codec = {
   Common: CommonCodec,
