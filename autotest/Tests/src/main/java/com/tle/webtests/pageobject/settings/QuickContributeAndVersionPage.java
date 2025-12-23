@@ -37,6 +37,11 @@ public class QuickContributeAndVersionPage extends AbstractPage<QuickContributeA
 
   public boolean save() {
     saveButton.click();
+
+    // Wait for a response to the save request
+    final String confirmationDivXpath = "//div[@id='receipt-message']/span";
+    waitForElement(By.xpath(confirmationDivXpath));
+
     return true;
   }
 }
