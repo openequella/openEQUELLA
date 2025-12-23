@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
@@ -126,7 +127,12 @@ interface Routes {
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
-  MyResources: OEQRouteNewUI;
+  MyResources: OEQRouteNewUI & {
+    to: (
+      type: OEQ.SearchMyResource.MyResourceSearchTypeId,
+      mStatus?: OEQ.SearchMyResource.MyResourceModerationSubSearchId,
+    ) => string;
+  };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
   OidcSettings: OEQRouteNewUI;
@@ -261,6 +267,13 @@ export const routes: Routes = {
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
     component: MyResourcesPage,
+    to: (
+      type: OEQ.SearchMyResource.MyResourceSearchTypeId,
+      mStatus?: OEQ.SearchMyResource.MyResourceModerationSubSearchId,
+    ) =>
+      `${NEW_MY_RESOURCES_PATH}?type=${type}${
+        mStatus ? `&mstatus=${mStatus}` : ""
+      }`,
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,

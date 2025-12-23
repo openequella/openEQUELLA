@@ -74,6 +74,17 @@ export const privateTasksPortlet: OEQ.Dashboard.BasicPortlet = {
   portletType: "tasks",
 };
 
+export const privateMyResourcesPortlet: OEQ.Dashboard.BasicPortlet = {
+  commonDetails: {
+    ...privateSearchPortlet.commonDetails,
+    name: "Private My Resources Portlet",
+    uuid: "47d805e4-a87b-43f7-bcbf-a59e304a2af9",
+    column: 0,
+    order: 0,
+  },
+  portletType: "myresources",
+};
+
 export const publicHtmlPortlet: OEQ.Dashboard.FormattedTextPortlet = {
   commonDetails: {
     ...privateSearchPortlet.commonDetails,

@@ -23,7 +23,7 @@ import { validate } from './Utils';
 /**
  * IDs returned by GET /search/myresources for each myresources type
  */
-type MyResourceSearchTypeId =
+export type MyResourceSearchTypeId =
   | 'published'
   | 'draft'
   | 'scrapbook'
@@ -45,7 +45,10 @@ export type MyResourceSearchTypeName =
 /**
  * Sub‑search IDs under the "Moderation queue" type.
  */
-type MyResourceModerationSubSearchId = 'moderating' | 'review' | 'rejected';
+export type MyResourceModerationSubSearchId =
+  | 'moderating'
+  | 'review'
+  | 'rejected';
 
 /**
  * Display names for sub‑searches under the "Moderation queue" type.
