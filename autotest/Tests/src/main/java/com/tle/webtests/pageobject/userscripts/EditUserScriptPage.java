@@ -69,14 +69,6 @@ public class EditUserScriptPage
     ajaxUpdate.get();
   }
 
-  public boolean isModuleNameInvalid() {
-    return isPresent(By.xpath("//div[@class='module-name']/following-sibling::p"));
-  }
-
-  public boolean isScriptInvalid() {
-    return isPresent(By.xpath("//div[@class='editor-container']/following-sibling::p"));
-  }
-
   public void setModuleName(String moduleName) {
     getModuleNameField().clear();
     getModuleNameField().sendKeys(moduleName);

@@ -1,11 +1,15 @@
 package com.tle.webtests.pageobject.generic.entities;
 
 import com.tle.webtests.pageobject.AbstractPage;
+import com.tle.webtests.pageobject.ExpectWaiter;
+import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.generic.component.MultiLingualEditbox;
+import java.util.Objects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class AbstractEditEntityPage<
         THIS extends AbstractEditEntityPage<THIS, SHOWLISTPAGE>,
@@ -94,9 +98,16 @@ public abstract class AbstractEditEntityPage<
     return listPage.get();
   }
 
-  public THIS saveWithErrors() {
+  public THIS saveWithErrors(String expectedError) {
     getSaveButton().click();
-    return visibilityWaiter(driver, By.className("ctrlinvalidmessage")).get();
+    By errorBy = By.className("ctrlinvalidmessage");
+    return ExpectWaiter.waiter(
+            ExpectedConditions2.refreshed(
+                ExpectedConditions.and(
+                    ExpectedConditions.visibilityOfElementLocated(errorBy),
+                    ExpectedConditions.textToBePresentInElementLocated(errorBy, expectedError))),
+            this)
+        .get();
   }
 
   public SHOWLISTPAGE cancel() {
@@ -108,20 +119,12 @@ public abstract class AbstractEditEntityPage<
     return setName(name == null ? "" : name.toString());
   }
 
-  /**
-   * Avoid using this directly
-   *
-   * @param name
-   * @return
-   */
+  /** Avoid using this directly */
   @SuppressWarnings("unchecked")
   protected THIS setName(String name) {
     MultiLingualEditbox nameBox = new MultiLingualEditbox(context, getNameField());
-    if (name == null) {
-      nameBox.setCurrentString("");
-    } else {
-      nameBox.setCurrentString(name);
-    }
+    nameBox.setCurrentString(Objects.requireNonNullElse(name, ""));
+
     return (THIS) this;
   }
 
