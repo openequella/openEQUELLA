@@ -501,4 +501,43 @@ public final class ExpectedConditions2 {
       }
     };
   }
+
+  /**
+   * Wrapper for a condition, which allows for elements to update by redrawing.
+   *
+   * <p>This acts exactly like {@link ExpectedConditions#refreshed(ExpectedCondition)} but also
+   * handles the Chrome-specific "Node with given id does not belong to the document" error,
+   * treating it as a stale element reference.
+   *
+   * <p>See: <a href="https://github.com/SeleniumHQ/selenium/issues/15401">Selenium issue on
+   * GitHub</a>
+   *
+   * @param condition ExpectedCondition to wrap
+   * @param <T> return type of the condition provided
+   * @return the result of the provided condition
+   */
+  public static <T> ExpectedCondition<T> refreshed(final ExpectedCondition<T> condition) {
+    return new ExpectedCondition<>() {
+      @Override
+      public T apply(WebDriver driver) {
+        try {
+          return condition.apply(driver);
+        } catch (StaleElementReferenceException e) {
+          return null;
+        } catch (WebDriverException e) {
+          // Handle the specific Chrome inspector error regarding stale nodes
+          if (e.getMessage() != null
+              && e.getMessage().contains("Node with given id does not belong to the document")) {
+            return null;
+          }
+          throw e;
+        }
+      }
+
+      @Override
+      public String toString() {
+        return String.format("condition (%s) to be refreshed", condition);
+      }
+    };
+  }
 }
