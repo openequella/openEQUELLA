@@ -23,7 +23,7 @@ import * as React from "react";
 import { useHistory } from "react-router";
 import { OLD_DASHBOARD_PATH } from "../../mainui/routes";
 import { ChangeRoute, submitRequest } from "../../modules/LegacyContentModule";
-import { ListItemContent } from "./PortletHelper";
+import { ListItemContent } from "../components/ListItemContent";
 
 export interface TasksListProps {
   /** The top level count item */

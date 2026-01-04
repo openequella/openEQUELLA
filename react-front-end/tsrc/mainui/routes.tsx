@@ -29,9 +29,11 @@ import {
   isViewHierarchyTopicACLGranted,
   RequiredPermissionCheck,
 } from "../modules/SecurityModule";
+import { PARAM_MYRESOURCES_TYPE } from "../myresources/MyResourcesPageHelper";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import {
   DehydratedSearchPageOptions,
+  generateQueryStringFromSearchPageOptions,
   SEARCH_OPTIONS_PARAM,
 } from "../search/SearchPageHelper";
 import { TemplateUpdate } from "./Template";
@@ -129,8 +131,8 @@ interface Routes {
   Lti13PlatformsSettings: OEQRouteNewUI;
   MyResources: OEQRouteNewUI & {
     to: (
-      type: OEQ.SearchMyResource.MyResourceSearchTypeId,
-      mStatus?: OEQ.SearchMyResource.MyResourceModerationSubSearchId,
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.MyResource.ModerationQueueSubCategoryId,
     ) => string;
   };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
@@ -268,12 +270,20 @@ export const routes: Routes = {
     path: NEW_MY_RESOURCES_PATH,
     component: MyResourcesPage,
     to: (
-      type: OEQ.SearchMyResource.MyResourceSearchTypeId,
-      mStatus?: OEQ.SearchMyResource.MyResourceModerationSubSearchId,
-    ) =>
-      `${NEW_MY_RESOURCES_PATH}?type=${type}${
-        mStatus ? `&mstatus=${mStatus}` : ""
-      }`,
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.MyResource.ModerationQueueSubCategoryId,
+    ) => {
+      const params = [`${PARAM_MYRESOURCES_TYPE}=${myResourcesType}`];
+
+      if (status) {
+        params.push(
+          generateQueryStringFromSearchPageOptions({
+            status: [status.toUpperCase()],
+          }),
+        );
+      }
+      return `${NEW_MY_RESOURCES_PATH}?${params.join("&")}`;
+    },
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,

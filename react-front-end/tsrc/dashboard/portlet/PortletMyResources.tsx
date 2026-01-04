@@ -25,19 +25,19 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../mainui/App";
 import { routes } from "../../mainui/routes";
 import {
-  getMyResourceSearchTypes,
-  MyResourcesTypeData,
-} from "../../modules/SearchMyResourceModule";
+  getMyResourceCategories,
+  MyResourcesCategory,
+} from "../../modules/MyResourceModule";
 import { languageStrings } from "../../util/langstrings";
 import { DraggablePortlet } from "../components/DraggablePortlet";
-import { MyResourcesType } from "./MyResourcesType";
+import { MyResourcesListItem } from "./MyResourcesListItem";
 import type { PortletBasicProps } from "./PortletHelper";
 
 const { showAll: showAllText } = languageStrings.common.action;
 
 export interface PortletMyResourcesProps extends PortletBasicProps {
-  /** A provider function to fetch the list of My Resources types. Primarily for testing. */
-  myResourcesTypeProvider?: typeof getMyResourceSearchTypes;
+  /** A provider function to fetch the list of My Resources categories. Primarily for testing. */
+  myResourcesTypeProvider?: typeof getMyResourceCategories;
 }
 
 /**
@@ -46,7 +46,7 @@ export interface PortletMyResourcesProps extends PortletBasicProps {
  */
 export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
   cfg,
-  myResourcesTypeProvider = getMyResourceSearchTypes,
+  myResourcesTypeProvider = getMyResourceCategories,
   ...restProps
 }) => {
   const { currentUser } = useContext(AppContext);
@@ -56,16 +56,14 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
     undefined,
   );
   const [myResourcesTypes, setMyResourcesTypes] = React.useState<
-    MyResourcesTypeData[]
+    MyResourcesCategory[]
   >([]);
 
   React.useEffect(() => {
     if (currentUser) {
-      const fetchMyResourcesTypes = pipe(
-        TE.tryCatch(
-          () => myResourcesTypeProvider(currentUser.scrapbookEnabled),
-          String,
-        ),
+      const fetchMyResourcesTypes = TE.tryCatch(
+        () => myResourcesTypeProvider(currentUser.scrapbookEnabled),
+        String,
       );
 
       pipe(
@@ -79,7 +77,7 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
   const myResourcesTypesList = (
     <List>
       {myResourcesTypes.map((type) => (
-        <MyResourcesType key={type.id} myResourcesType={type} />
+        <MyResourcesListItem key={type.id} myResourcesType={type} />
       ))}
     </List>
   );
@@ -98,7 +96,7 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
           <Button
             variant="outlined"
             component={Link}
-            to={routes.MyResources.to("all")}
+            to={routes.MyResources.to("All resources")}
           >
             {showAllText}
           </Button>

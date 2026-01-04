@@ -18,14 +18,14 @@
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import { privateMyResourcesPortlet } from "../../../__mocks__/Dashboard.mock";
-import { getMyResourceTypesTransformedResp } from "../../../__mocks__/myResourcesTypes_mock_data";
+import { getMyResourceCategoriesTransformedResp } from "../../../__mocks__/myResourcesCategories_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import {
   PortletMyResources,
   PortletMyResourcesProps,
 } from "../../../tsrc/dashboard/portlet/PortletMyResources";
 import { AppContext } from "../../../tsrc/mainui/App";
-import { MyResourcesTypeData } from "../../../tsrc/modules/SearchMyResourceModule";
+import { MyResourcesCategory } from "../../../tsrc/modules/MyResourceModule";
 
 interface StoryProps extends PortletMyResourcesProps {
   currentUser?: typeof getCurrentUserMock;
@@ -54,22 +54,24 @@ const Template: StoryFn<StoryProps> = ({
 
 const mockMyResourcesTypeProvider = async (
   isScrapbookEnabled: boolean,
-): Promise<MyResourcesTypeData[]> =>
+): Promise<MyResourcesCategory[]> =>
   isScrapbookEnabled
-    ? getMyResourceTypesTransformedResp
-    : getMyResourceTypesTransformedResp.filter((r) => r.id !== "scrapbook");
+    ? getMyResourceCategoriesTransformedResp
+    : getMyResourceCategoriesTransformedResp.filter(
+        (r) => r.id !== "scrapbook",
+      );
 
 const failingMyResourcesTypeProvider = async (): Promise<
-  MyResourcesTypeData[]
+  MyResourcesCategory[]
 > => {
   throw new Error("Failed to fetch my resources types");
 };
 
 const slowMyResourcesTypeProvider = async (): Promise<
-  MyResourcesTypeData[]
+  MyResourcesCategory[]
 > => {
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  return getMyResourceTypesTransformedResp;
+  return getMyResourceCategoriesTransformedResp;
 };
 
 export const Simple = Template.bind({});

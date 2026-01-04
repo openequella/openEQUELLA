@@ -22,19 +22,19 @@ import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { MyResourcesTypeData } from "../../modules/SearchMyResourceModule";
-import { ListItemContent } from "./PortletHelper";
+import { MyResourcesCategory } from "../../modules/MyResourceModule";
+import { ListItemContent } from "../components/ListItemContent";
 
-export interface MyResourcesTypeProps {
+export interface MyResourcesListItemProps {
   /** The data for a specific 'My Resources' type. */
-  myResourcesType: MyResourcesTypeData;
+  myResourcesType: MyResourcesCategory;
 }
 
 /**
  * Component that renders a list item for a 'My Resources' type with count. It handles the display of the
- * parent category and any associated sub-searches as nested items.
+ * parent category and any associated sub-categories as nested items.
  */
-export const MyResourcesType: React.FC<MyResourcesTypeProps> = ({
+export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
   myResourcesType,
 }) => {
   const parentListItem = (
@@ -47,7 +47,7 @@ export const MyResourcesType: React.FC<MyResourcesTypeProps> = ({
   );
 
   const childItems = pipe(
-    O.fromNullable(myResourcesType.subSearches),
+    O.fromNullable(myResourcesType.subCategories),
     O.filter(A.isNonEmpty),
     O.map(
       flow(
@@ -65,7 +65,7 @@ export const MyResourcesType: React.FC<MyResourcesTypeProps> = ({
             />
           </ListItemButton>
         )),
-        (items) => <List>{items}</List>,
+        (items) => <List disablePadding>{items}</List>,
       ),
     ),
     O.toNullable,

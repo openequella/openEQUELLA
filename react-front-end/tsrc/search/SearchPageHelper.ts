@@ -454,15 +454,16 @@ export const generateSearchPageOptionsFromUrl = async (
 
 /**
  * A function that takes search options and converts it to a JSON representation.
- * Collections and owner properties are both reduced down to their uuid and id properties respectively.
+ * It encodes a subset of `SearchPageOptions` without constructing a full object. Useful where only specific fields (e.g. `status`) need to be stored in a URL or similar.
  * Undefined properties are excluded.
- * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
+ * Intended to be used in conjunction with `newSearchQueryToSearchOptions`.
  *
- * @param searchPageOptions Search options selected on Search page.
+ * @typeParam T A partial shape compatible with `SearchPageOptions`.Only the fields actually used by this function need to be provided.
+ * @param searchPageOptions The search options to be converted into a query string.
  * @return url encoded key/value pair of JSON searchOptions
  */
-export const generateQueryStringFromSearchPageOptions = (
-  searchPageOptions: SearchPageOptions,
+export const generateQueryStringFromSearchPageOptions = <T>(
+  searchPageOptions: T,
 ): string => {
   const params = new URLSearchParams();
   params.set(
@@ -471,6 +472,7 @@ export const generateQueryStringFromSearchPageOptions = (
       searchPageOptions,
       (key: string, value: object[] | undefined) =>
         simpleMatch({
+          // Collections and owner properties are both reduced down to their uuid and id properties respectively.
           collections: () =>
             value?.map((collection) => pick(collection, ["uuid"])),
           owner: () => (value ? pick(value, ["id"]) : undefined),

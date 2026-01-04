@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import FolderIcon from "@mui/icons-material/Folder";
-import { Box, Chip, ListItemIcon, ListItemText } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { absurd, pipe } from "fp-ts/function";
@@ -47,18 +45,6 @@ export type TwoColumnLayout = Exclude<
 >;
 
 type TwoColumnWidths = [number, number];
-
-/**
- * Props for the `ListItemContent` component.
- */
-interface ListItemContentProps {
-  /** Text to display. */
-  text: string;
-  /** Optional count to display in a chip. */
-  count: number;
-  /** Icon to display on the left. Defaults to `<FolderIcon />`. */
-  icon?: React.ReactElement;
-}
 
 /**
  * Returns the widths of two columns, according to the provided two-column layout. The result is a tuple
@@ -223,25 +209,3 @@ export const scrollToPortlet = (portlet: Element): void => {
     });
   }
 };
-
-/**
- * A reusable component to display the content of a list item, including an icon,
- * primary text, and an optional count chip.
- */
-export const ListItemContent: React.FC<ListItemContentProps> = ({
-  text,
-  count,
-  icon,
-}): React.ReactElement => (
-  <>
-    <ListItemIcon>{icon ? icon : <FolderIcon />}</ListItemIcon>
-    <ListItemText
-      primary={
-        <Box display="flex" alignItems="center" gap={1}>
-          <span>{text}</span>
-          {count > 0 && <Chip label={count} color="primary" size="small" />}
-        </Box>
-      }
-    />
-  </>
-);

@@ -20,12 +20,12 @@ import * as TC from './TestConfig';
 import { logout } from './TestUtils';
 
 type MyResourceType =
-  | OEQ.SearchMyResource.MyResourceSearchType
-  | OEQ.SearchMyResource.MyResourceModeratingSubSearch;
+  | OEQ.MyResource.MyResourcesCategory
+  | OEQ.MyResource.MyResourcesSubCategory;
 
 type MyResourceTypeName =
-  | OEQ.SearchMyResource.MyResourceSearchTypeName
-  | OEQ.SearchMyResource.MyResourceModerationSubSearchName;
+  | OEQ.MyResource.MyResourcesCategoryName
+  | OEQ.MyResource.ModerationQueueSubCategoryName;
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(TC.API_PATH));
@@ -58,7 +58,7 @@ const assertItem = (
 
 const hasLinks = (
   item: MyResourceType
-): item is OEQ.SearchMyResource.MyResourceSearchType => 'links' in item;
+): item is OEQ.MyResource.MyResourcesCategory => 'links' in item;
 
 const assertItemWithLinks = (
   map: Map<string, MyResourceType>,
@@ -78,19 +78,16 @@ const assertItemWithLinks = (
   return item;
 };
 
-describe('SearchMyResource', () => {
+describe('MyResource', () => {
   it('should retrieve search types with counts and correct Moderation Queue hierarchy', async () => {
-    const result = await OEQ.SearchMyResource.getMyResourceSearchTypes(
-      TC.API_PATH
-    );
+    const result = await OEQ.MyResource.getMyResourceCategories(TC.API_PATH);
 
     expect(Array.isArray(result)).toBe(true);
     expect(result.length).toBeGreaterThanOrEqual(6);
 
-    const resultMap = new Map<
-      string,
-      OEQ.SearchMyResource.MyResourceSearchType
-    >(result.map((i) => [i.id, i]));
+    const resultMap = new Map<string, OEQ.MyResource.MyResourcesCategory>(
+      result.map((i) => [i.id, i])
+    );
 
     assertItemWithLinks(resultMap, 'published', 'Published', 47);
     assertItemWithLinks(resultMap, 'draft', 'Drafts', 6);
@@ -103,16 +100,15 @@ describe('SearchMyResource', () => {
       'modqueue',
       'Moderation queue',
       9
-    ) as OEQ.SearchMyResource.MyResourceSearchType;
+    ) as OEQ.MyResource.MyResourcesCategory;
 
     // Validate moderation queue subsearch
     expect(Array.isArray(modQueue.subSearches)).toBe(true);
     expect(modQueue.subSearches).toHaveLength(3);
 
-    const subSearchMap = new Map<
-      string,
-      OEQ.SearchMyResource.MyResourceModeratingSubSearch
-    >(modQueue.subSearches!.map((s) => [s.id, s]));
+    const subSearchMap = new Map<string, OEQ.MyResource.MyResourcesSubCategory>(
+      modQueue.subSearches!.map((s) => [s.id, s])
+    );
 
     // Validate subsearch entries
     assertItem(subSearchMap, 'moderating', 'In moderation', 9);
