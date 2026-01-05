@@ -45,7 +45,7 @@ export type MyResourcesCategoryName =
 /**
  * Sub‑category IDs under the "Moderation queue" type.
  */
-export type ModerationQueueSubCategoryId = 'moderating' | 'review' | 'rejected';
+type ModerationQueueSubCategoryId = 'moderating' | 'review' | 'rejected';
 
 /**
  * Display names for sub‑category under the "Moderation queue" type.

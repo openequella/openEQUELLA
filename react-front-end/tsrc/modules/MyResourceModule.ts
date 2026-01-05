@@ -75,7 +75,10 @@ const transformMyResourcesCategories =
         O.map(
           NEA.map((ss: OEQ.MyResource.MyResourcesSubCategory) => ({
             ...ss,
-            to: routes.MyResources.to(parentName, ss.id),
+            to: routes.MyResources.to(
+              parentName,
+              ss.id.toUpperCase() as OEQ.Common.ItemStatus,
+            ),
           })),
         ),
         O.toUndefined,

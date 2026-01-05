@@ -132,7 +132,7 @@ interface Routes {
   MyResources: OEQRouteNewUI & {
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
-      status?: OEQ.MyResource.ModerationQueueSubCategoryId,
+      status?: OEQ.Common.ItemStatus,
     ) => string;
   };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
@@ -271,14 +271,14 @@ export const routes: Routes = {
     component: MyResourcesPage,
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
-      status?: OEQ.MyResource.ModerationQueueSubCategoryId,
+      status?: OEQ.Common.ItemStatus,
     ) => {
       const params = [`${PARAM_MYRESOURCES_TYPE}=${myResourcesType}`];
 
       if (status) {
         params.push(
           generateQueryStringFromSearchPageOptions({
-            status: [status.toUpperCase()],
+            status: [status],
           }),
         );
       }
