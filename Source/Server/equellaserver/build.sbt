@@ -79,7 +79,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20251217-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
   "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
