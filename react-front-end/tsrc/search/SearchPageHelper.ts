@@ -458,12 +458,11 @@ export const generateSearchPageOptionsFromUrl = async (
  * Undefined properties are excluded.
  * Intended to be used in conjunction with `newSearchQueryToSearchOptions`.
  *
- * @typeParam T A partial shape compatible with `SearchPageOptions`.Only the fields actually used by this function need to be provided.
  * @param searchPageOptions The search options to be converted into a query string.
  * @return url encoded key/value pair of JSON searchOptions
  */
-export const generateQueryStringFromSearchPageOptions = <T>(
-  searchPageOptions: T,
+export const generateQueryStringFromSearchPageOptions = (
+  searchPageOptions: Partial<SearchPageOptions>,
 ): string => {
   const params = new URLSearchParams();
   params.set(

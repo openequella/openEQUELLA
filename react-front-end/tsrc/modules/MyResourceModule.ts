@@ -17,11 +17,13 @@
  */
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
-import { pipe } from "fp-ts/function";
+import { flow, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
 import { API_BASE_URL } from "../AppConfig";
-import { routes } from "../mainui/routes";
+import { NEW_MY_RESOURCES_PATH, routes } from "../mainui/routes";
+import { PARAM_MYRESOURCES_TYPE } from "../myresources/MyResourcesPageHelper";
+import { generateQueryStringFromSearchPageOptions } from "../search/SearchPageHelper";
 
 /**
  * Represents a sub-category for a 'My Resources' type, specifically for 'Moderation queue'.
@@ -45,69 +47,69 @@ export interface MyResourcesCategory
   subCategories?: MyResourcesSubCategory[];
 }
 
+/** Predicate to filter out the 'all' category or 'scrapbook' if it is disabled. */
+const shouldIncludeCategory =
+  (isScrapbookEnabled: boolean) =>
+  (category: OEQ.MyResource.MyResourcesCategory): boolean =>
+    category.id !== "all" &&
+    (isScrapbookEnabled || category.id !== "scrapbook");
+
+/** Maps API sub-searches to UI sub-categories containing route links. */
+const buildSubCategoryRoutes = (
+  parentName: OEQ.MyResource.MyResourcesCategoryName,
+  subCategories?: OEQ.MyResource.MyResourcesSubCategory[],
+): MyResourcesSubCategory[] | undefined =>
+  pipe(
+    O.fromNullable(subCategories),
+    O.chain(NEA.fromArray),
+    O.map(
+      NEA.map((subCategory) => ({
+        ...subCategory,
+        to: routes.MyResources.to(
+          parentName,
+          subCategory.id.toUpperCase() as OEQ.Common.ItemStatus,
+        ),
+      })),
+    ),
+    O.toUndefined,
+  );
+
+/** Converts a raw API MyResources category into the UI model by adding routing links. and excluding 'links'. */
+const addRoutingInfo = ({
+  links,
+  subSearches,
+  ...rest
+}: OEQ.MyResource.MyResourcesCategory): MyResourcesCategory => ({
+  ...rest,
+  to: routes.MyResources.to(rest.name),
+  subCategories: buildSubCategoryRoutes(rest.name, subSearches),
+});
+
 /**
  * Transforms the list of My Resources categories from the API into the data structure required by the UI.
- * This involves filtering out unwanted types (like 'all' or 'scrapbook' if disabled), adding navigation links (`to`) and excluding `links` attribute from main type .
  *
  * @param isScrapbookEnabled Whether the Scrapbook feature is enabled for the current user.
  */
-const transformMyResourcesCategories =
-  (isScrapbookEnabled: boolean) =>
-  (types: OEQ.MyResource.MyResourcesCategory[]): MyResourcesCategory[] => {
-    // Filter out the `all` category as it is used with `Show All` button, and 'scrapbook' category if it is not enabled for current user.
-    const filterMyResourcesCategories = (
-      t: OEQ.MyResource.MyResourcesCategory,
-    ): boolean =>
-      t.id !== "all" && (isScrapbookEnabled || t.id !== "scrapbook");
+const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
+  flow(
+    A.filter(shouldIncludeCategory(isScrapbookEnabled)),
+    A.map(addRoutingInfo),
+  );
 
-    const mapSubSearches = (
-      parentName: OEQ.MyResource.MyResourcesCategoryName,
-      subSearches?: OEQ.MyResource.MyResourcesSubCategory[],
-    ) =>
-      pipe(
-        subSearches,
-        O.fromPredicate(
-          (
-            ss,
-          ): ss is NEA.NonEmptyArray<OEQ.MyResource.MyResourcesSubCategory> =>
-            parentName === "Moderation queue" && !!ss && A.isNonEmpty(ss),
-        ),
-        O.map(
-          NEA.map((ss: OEQ.MyResource.MyResourcesSubCategory) => ({
-            ...ss,
-            to: routes.MyResources.to(
-              parentName,
-              ss.id.toUpperCase() as OEQ.Common.ItemStatus,
-            ),
-          })),
-        ),
-        O.toUndefined,
-      );
+/**
+ * Helper to build the URL for My Resources page including 'myResourcesType' and optional 'status'.
+ */
+export const buildMyResourceUrl = (
+  myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+  status?: OEQ.Common.ItemStatus,
+): string => {
+  const baseUrl = `${NEW_MY_RESOURCES_PATH}?${PARAM_MYRESOURCES_TYPE}=${myResourcesType}`;
 
-    // Converts a raw API search type into `MyResourcesCategory` by adding routing links and removing raw API links.
-    const toMyResourcesCategory = ({
-      links,
-      subSearches,
-      ...rest
-    }: OEQ.MyResource.MyResourcesCategory): MyResourcesCategory => ({
-      ...rest,
-      to: routes.MyResources.to(rest.name),
-      ...pipe(
-        mapSubSearches(rest.name, subSearches),
-        O.fromNullable,
-        O.match(
-          () => ({}),
-          (subCategories) => ({ subCategories }),
-        ),
-      ),
-    });
+  const buildStatusQueryParam = (status: OEQ.Common.ItemStatus): string =>
+    generateQueryStringFromSearchPageOptions({ status: [status] });
 
-    return pipe(
-      types,
-      A.filter(filterMyResourcesCategories),
-      A.map(toMyResourcesCategory),
-    );
-  };
+  return status ? `${baseUrl}&${buildStatusQueryParam(status)}` : baseUrl;
+};
 
 /**
  * Retrieves the details of My Resources categories available to the current user.

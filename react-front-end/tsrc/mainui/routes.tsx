@@ -21,6 +21,7 @@ import * as React from "react";
 import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
 import { FavouritesType } from "../modules/FavouriteModule";
 import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
+import { buildMyResourceUrl } from "../modules/MyResourceModule";
 import {
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
@@ -29,11 +30,9 @@ import {
   isViewHierarchyTopicACLGranted,
   RequiredPermissionCheck,
 } from "../modules/SecurityModule";
-import { PARAM_MYRESOURCES_TYPE } from "../myresources/MyResourcesPageHelper";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
 import {
   DehydratedSearchPageOptions,
-  generateQueryStringFromSearchPageOptions,
   SEARCH_OPTIONS_PARAM,
 } from "../search/SearchPageHelper";
 import { TemplateUpdate } from "./Template";
@@ -272,18 +271,7 @@ export const routes: Routes = {
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
       status?: OEQ.Common.ItemStatus,
-    ) => {
-      const params = [`${PARAM_MYRESOURCES_TYPE}=${myResourcesType}`];
-
-      if (status) {
-        params.push(
-          generateQueryStringFromSearchPageOptions({
-            status: [status],
-          }),
-        );
-      }
-      return `${NEW_MY_RESOURCES_PATH}?${params.join("&")}`;
-    },
+    ) => buildMyResourceUrl(myResourcesType, status),
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,

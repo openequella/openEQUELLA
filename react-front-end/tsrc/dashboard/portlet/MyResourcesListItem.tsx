@@ -51,16 +51,16 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
     O.filter(A.isNonEmpty),
     O.map(
       flow(
-        A.map((subSearch) => (
+        A.map((subCategory) => (
           <ListItemButton
-            key={subSearch.id}
+            key={subCategory.id}
             sx={{ pl: 4 }}
             component={Link}
-            to={subSearch.to}
+            to={subCategory.to}
           >
             <ListItemContent
-              text={subSearch.name}
-              count={subSearch.count}
+              text={subCategory.name}
+              count={subCategory.count}
               icon={<ViewList />}
             />
           </ListItemButton>
