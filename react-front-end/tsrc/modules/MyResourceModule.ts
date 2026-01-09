@@ -84,7 +84,14 @@ const addRoutingInfo = (
     (cat) => ({
       ...cat,
       to: routes.MyResources.to(cat.name),
-      subCategories: buildSubCategoryRoutes(cat.name, cat.subSearches),
+      ...pipe(
+        buildSubCategoryRoutes(cat.name, cat.subSearches),
+        O.fromNullable,
+        O.match(
+          () => ({}),
+          (subCategories) => ({ subCategories }),
+        ),
+      ),
     }),
     omit(["links", "subSearches"]),
   );
@@ -94,7 +101,7 @@ const addRoutingInfo = (
  *
  * @param isScrapbookEnabled Whether the Scrapbook feature is enabled for the current user.
  */
-const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
+export const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
   flow(
     A.filter(shouldIncludeCategory(isScrapbookEnabled)),
     A.map(addRoutingInfo),

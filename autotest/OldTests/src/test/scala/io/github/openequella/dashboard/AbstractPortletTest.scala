@@ -46,7 +46,7 @@ abstract class AbstractPortletTest extends AbstractCleanupTest {
   protected def loginWithPortletAccount(): Unit = logon("portlettest1", "``````")
 
   protected def loadDashboardPage(): Unit = {
-    dashboardPage = new DashboardPage(context)
+    dashboardPage = new DashboardPage(context).load()
     dashboardPage.waitForLoad()
   }
 }

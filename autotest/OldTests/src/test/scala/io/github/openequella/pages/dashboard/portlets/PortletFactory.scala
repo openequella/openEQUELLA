@@ -54,4 +54,9 @@ object PortletFactory {
     val portletType: PortletType.Value          = PortletType.Scripted
     def create(ctx: PageContext, title: String) = new ScriptedPortlet(ctx, title)
   }
+
+  case object MyResources extends PortletFactory[MyResourcesPortlet] {
+    val portletType: PortletType.Value          = PortletType.MyResources
+    def create(ctx: PageContext, title: String) = new MyResourcesPortlet(ctx, title)
+  }
 }
