@@ -22,43 +22,57 @@ export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
     name: "Published",
     id: "published",
     count: 47,
-    to: "/page/myresources?myResourcesType=Published",
+    to: new URL(
+      "http://localhost:8080/rest/page/myresources?myResourcesType=Published",
+    ),
   },
   {
     name: "Drafts",
     id: "draft",
     count: 6,
-    to: "/page/myresources?myResourcesType=Drafts",
+    to: new URL(
+      "http://localhost:8080/rest/page/myresources?myResourcesType=Drafts",
+    ),
   },
   {
     name: "Scrapbook",
     id: "scrapbook",
     count: 9,
-    to: "/page/myresources?myResourcesType=Scrapbook",
+    to: new URL(
+      "http://localhost:8080/rest/page/myresources?myResourcesType=Scrapbook",
+    ),
   },
   {
     name: "Moderation queue",
     id: "modqueue",
     count: 9,
-    to: "/page/myresources?myResourcesType=Moderation queue",
+    to: new URL(
+      "http://localhost:8080/rest/page/myresources?myResourcesType=Moderation queue",
+    ),
     subCategories: [
       {
         name: "In moderation",
         id: "moderating",
         count: 9,
-        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
+        to: new URL(
+          "http://localhost:8080/rest//page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
+        ),
       },
       {
         name: "Under review",
         id: "review",
         count: 0,
-        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REVIEW%22%5D%7D",
+        to: new URL(
+          "http://localhost:8080/rest/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REVIEW%22%5D%7D",
+        ),
       },
       {
         name: "Rejected",
         id: "rejected",
         count: 0,
-        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REJECTED%22%5D%7D",
+        to: new URL(
+          "http://localhost:8080/rest/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REJECTED%22%5D%7D",
+        ),
       },
     ],
   },
@@ -66,6 +80,8 @@ export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
     name: "Archive",
     id: "archived",
     count: 3,
-    to: "/page/myresources?myResourcesType=Archive",
+    to: new URL(
+      "http://localhost:8080/rest/page/myresources?myResourcesType=Archive",
+    ),
   },
 ];

@@ -132,7 +132,7 @@ interface Routes {
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
       status?: OEQ.Common.ItemStatus,
-    ) => string;
+    ) => URL;
   };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;

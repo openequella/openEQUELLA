@@ -20,7 +20,7 @@ import * as A from "fp-ts/Array";
 import { flow, pipe } from "fp-ts/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
-import { API_BASE_URL } from "../AppConfig";
+import { API_BASE_URL, getBaseUrl } from "../AppConfig";
 import { NEW_MY_RESOURCES_PATH, routes } from "../mainui/routes";
 import { PARAM_MYRESOURCES_TYPE } from "../myresources/MyResourcesPageHelper";
 import { generateQueryStringFromSearchPageOptions } from "../search/SearchPageHelper";
@@ -30,7 +30,7 @@ import { generateQueryStringFromSearchPageOptions } from "../search/SearchPageHe
  */
 interface MyResourcesSubCategory extends OEQ.MyResource.MyResourcesSubCategory {
   /** Contains the route for UI navigation. */
-  to: string;
+  to: URL;
 }
 
 /**
@@ -39,7 +39,7 @@ interface MyResourcesSubCategory extends OEQ.MyResource.MyResourcesSubCategory {
 export interface MyResourcesCategory
   extends Omit<OEQ.MyResource.MyResourcesCategory, "links" | "subSearches"> {
   /** Contains the route for UI navigation. */
-  to: string;
+  to: URL;
   /**
    * An optional list of sub-categories, each also including a `to` route.
    * This is primarily for the 'Moderation queue'.
@@ -97,18 +97,28 @@ const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
   );
 
 /**
- * Helper to build the URL for My Resources page including 'myResourcesType' and optional 'status'.
+ * Builds a URL value object for the My Resources page.
+ * Encapsulates search parameter serialization to maintain consistency with the search API.
  */
 export const buildMyResourceUrl = (
   myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
   status?: OEQ.Common.ItemStatus,
-): string => {
-  const baseUrl = `${NEW_MY_RESOURCES_PATH}?${PARAM_MYRESOURCES_TYPE}=${myResourcesType}`;
+): URL => {
+  const url = new URL(NEW_MY_RESOURCES_PATH.slice(1), getBaseUrl());
 
-  const buildStatusQueryParam = (status: OEQ.Common.ItemStatus): string =>
-    generateQueryStringFromSearchPageOptions({ status: [status] });
+  // Set the primary resource type
+  url.searchParams.set(PARAM_MYRESOURCES_TYPE, myResourcesType);
 
-  return status ? `${baseUrl}&${buildStatusQueryParam(status)}` : baseUrl;
+  // If status is provided, merge the serialized search options into our URL
+  if (status) {
+    const searchOptionsQuery = generateQueryStringFromSearchPageOptions({
+      status: [status],
+    });
+    const searchParams = new URLSearchParams(searchOptionsQuery);
+    searchParams.forEach((value, key) => url.searchParams.set(key, value));
+  }
+
+  return url;
 };
 
 /**
