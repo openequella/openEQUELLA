@@ -94,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.1",
+  "com.ibm.icu" % "icu4j" % "78.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
