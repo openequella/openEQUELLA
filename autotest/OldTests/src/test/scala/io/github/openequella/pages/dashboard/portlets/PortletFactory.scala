@@ -49,4 +49,9 @@ object PortletFactory {
     val portletType: PortletType.Value          = PortletType.Favourites
     def create(ctx: PageContext, title: String) = new FavouritesPortlet(ctx, title)
   }
+
+  case object Scripted extends PortletFactory[ScriptedPortlet] {
+    val portletType: PortletType.Value          = PortletType.Scripted
+    def create(ctx: PageContext, title: String) = new ScriptedPortlet(ctx, title)
+  }
 }
