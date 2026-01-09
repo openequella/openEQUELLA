@@ -55,7 +55,7 @@ export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
         id: "moderating",
         count: 9,
         to: new URL(
-          "http://localhost:8080/rest//page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
+          "http://localhost:8080/rest/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
         ),
       },
       {
