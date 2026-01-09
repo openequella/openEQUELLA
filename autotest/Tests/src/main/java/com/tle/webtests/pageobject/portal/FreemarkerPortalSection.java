@@ -10,7 +10,12 @@ public class FreemarkerPortalSection extends AbstractPortalSection<FreemarkerPor
     super(context, title);
   }
 
-  public boolean scriptCountdownTest(String spanId) {
+  /**
+   * Check if the script countdown has finished.
+   *
+   * @param spanId The ID of the span element to check.
+   */
+  public boolean isScriptCountdownFinished(String spanId) {
     WebElement span = driver.findElement(By.id(spanId));
     try {
       waiter.until(ExpectedConditions2.elementTextToBe(span, "finished!"));

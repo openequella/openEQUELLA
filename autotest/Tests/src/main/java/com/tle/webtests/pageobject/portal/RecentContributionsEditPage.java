@@ -24,7 +24,8 @@ public class RecentContributionsEditPage
     displayList = new EquellaSelect(context, driver.findElement(By.id("rct_d")));
   }
 
-  public void checkSelectedCollection() {
+  /** Ensures the "All resources" option is selected in the collections filter. */
+  public void ensureAllResourcesSelected() {
     WebElement allResourceOption =
         driver.findElement(By.xpath("//input[@id=//label[text()='All resources']/@for]"));
     if (!allResourceOption.isSelected()) allResourceOption.click();

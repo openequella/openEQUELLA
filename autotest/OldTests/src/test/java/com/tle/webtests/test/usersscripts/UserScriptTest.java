@@ -1,3 +1,21 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.webtests.test.usersscripts;
 
 import static org.testng.Assert.assertTrue;
@@ -16,9 +34,14 @@ import com.tle.webtests.pageobject.searching.ItemAdminPage;
 import com.tle.webtests.pageobject.userscripts.EditUserScriptPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
 import com.tle.webtests.test.AbstractCleanupTest;
+import io.github.openequella.pages.dashboard.DashboardPage;
+import io.github.openequella.pages.dashboard.PortletType$;
+import io.github.openequella.pages.dashboard.portlets.PortletFactory;
+import io.github.openequella.pages.dashboard.portlets.ScriptedPortlet;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import testng.annotation.NewUIOnly;
 import testng.annotation.OldUIOnly;
 
 @TestInstitution("asc")
@@ -59,6 +82,8 @@ public class UserScriptTest extends AbstractCleanupTest {
           + " itemFun.getItemName();xml.set(\"/newItemName\",newItemName);};";
   private static final String SET_ITEM_NAME_SCRIPT = "require(\"itemModify\").setName();";
 
+  private static final String TIMER_SPAN_ID = "timer";
+
   @Test
   public void testCreateEntity() {
     logon();
@@ -90,23 +115,38 @@ public class UserScriptTest extends AbstractCleanupTest {
     preview.closeDialog(new ItemAdminPage(context));
   }
 
-  // TODO: OEQ-2720 enable test in new UI.
+  @NewUIOnly
+  @Test(dependsOnMethods = {"testCreateEntity"})
+  public void testPortletScriptLoadingNewUi() {
+    logon();
+    DashboardPage dashboardPage = new DashboardPage(context);
+    dashboardPage.waitForLoad();
+    dashboardPage.openCreatePortletPage(PortletType$.MODULE$.Scripted());
+
+    dashboardPage = setupScriptedPortletConfiguration().save(new DashboardPage(context));
+    dashboardPage.waitForLoad();
+
+    String portletTitle = scriptedPortlet.toString();
+
+    ScriptedPortlet scriptPortlet =
+        dashboardPage.getPortlet(PortletFactory.Scripted$.MODULE$, portletTitle);
+    boolean isScriptExecuted = scriptPortlet.isScriptCountdownFinished(TIMER_SPAN_ID);
+
+    Assert.assertTrue(dashboardPage.hasPortlet(portletTitle), "portlet didn't save");
+    Assert.assertTrue(isScriptExecuted, "script didn't work :(");
+  }
+
   @OldUIOnly
   @Test(dependsOnMethods = {"testCreateEntity"})
   public void testPortletScriptLoading() {
-    HomePage home = logon();
-    FreemarkerPortalEditPage editPortlet = new FreemarkerPortalEditPage(context);
-    editPortlet = home.addPortal(editPortlet);
-    editPortlet.setTitle(scriptedPortlet);
-    editPortlet.loadFreemarkerScript(displayScript);
-    editPortlet.switchToClientScript();
-    editPortlet.loadClientSideScript(executableScript);
-    home = editPortlet.save(home);
-    Assert.assertTrue(home.portalExists(scriptedPortlet.toString()), "portlet didn't save");
+    logon().addPortal(new FreemarkerPortalEditPage(context));
+    HomePage home = setupScriptedPortletConfiguration().save(new HomePage(context));
 
-    FreemarkerPortalSection portal =
-        new FreemarkerPortalSection(context, scriptedPortlet.toString()).get();
-    Assert.assertTrue(portal.scriptCountdownTest("timer"), "script didn't work :(");
+    String portletTitle = scriptedPortlet.toString();
+    boolean isScriptExecuted =
+        new FreemarkerPortalSection(context, portletTitle).isScriptCountdownFinished(TIMER_SPAN_ID);
+    Assert.assertTrue(home.portalExists(portletTitle), "portlet didn't save");
+    Assert.assertTrue(isScriptExecuted, "script didn't work :(");
   }
 
   private ShowUserScriptsPage createDisplayScript(ShowUserScriptsPage scriptsPage) {
@@ -207,5 +247,14 @@ public class UserScriptTest extends AbstractCleanupTest {
         moduleItemName,
         moduleSetItemName);
     new DashboardAdminPage(context).load().deleteAllPortlet(scriptedPortlet.toString());
+  }
+
+  private FreemarkerPortalEditPage setupScriptedPortletConfiguration() {
+    FreemarkerPortalEditPage editPortlet = new FreemarkerPortalEditPage(context).get();
+    editPortlet.setTitle(scriptedPortlet);
+    editPortlet.loadFreemarkerScript(displayScript);
+    editPortlet.switchToClientScript();
+    editPortlet.loadClientSideScript(executableScript);
+    return editPortlet;
   }
 }

@@ -28,6 +28,10 @@ object PortletType extends Enumeration {
     */
   val Generic: Value = Value("Generic")
 
-  val Browse: Value     = Value("Browse")
-  val Favourites: Value = Value("Favourites")
+  val Browse: Value      = Value("Browse")
+  val Favourites: Value  = Value("Favourites")
+  val Scripted: Value    = Value("Scripted")
+  val QuickSearch: Value = Value("Quick search")
+  val Html: Value        = Value("Formatted text")
+  val Recent: Value      = Value("Recent contributions")
 }
