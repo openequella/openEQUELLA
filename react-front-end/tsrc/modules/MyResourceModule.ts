@@ -24,13 +24,14 @@ import { API_BASE_URL, getBaseUrl } from "../AppConfig";
 import { NEW_MY_RESOURCES_PATH, routes } from "../mainui/routes";
 import { PARAM_MYRESOURCES_TYPE } from "../myresources/MyResourcesPageHelper";
 import { generateQueryStringFromSearchPageOptions } from "../search/SearchPageHelper";
+import { omit } from "../util/objects";
 
 /**
  * Represents a sub-category for a 'My Resources' type, specifically for 'Moderation queue'.
  */
 interface MyResourcesSubCategory extends OEQ.MyResource.MyResourcesSubCategory {
   /** Contains the route for UI navigation. */
-  to: URL;
+  to: string;
 }
 
 /**
@@ -39,7 +40,7 @@ interface MyResourcesSubCategory extends OEQ.MyResource.MyResourcesSubCategory {
 export interface MyResourcesCategory
   extends Omit<OEQ.MyResource.MyResourcesCategory, "links" | "subSearches"> {
   /** Contains the route for UI navigation. */
-  to: URL;
+  to: string;
   /**
    * An optional list of sub-categories, each also including a `to` route.
    * This is primarily for the 'Moderation queue'.
@@ -75,15 +76,18 @@ const buildSubCategoryRoutes = (
   );
 
 /** Converts a raw API MyResources category into the UI model by adding routing links. and excluding 'links'. */
-const addRoutingInfo = ({
-  links,
-  subSearches,
-  ...rest
-}: OEQ.MyResource.MyResourcesCategory): MyResourcesCategory => ({
-  ...rest,
-  to: routes.MyResources.to(rest.name),
-  subCategories: buildSubCategoryRoutes(rest.name, subSearches),
-});
+const addRoutingInfo = (
+  category: OEQ.MyResource.MyResourcesCategory,
+): MyResourcesCategory =>
+  pipe(
+    category,
+    (cat) => ({
+      ...cat,
+      to: routes.MyResources.to(cat.name),
+      subCategories: buildSubCategoryRoutes(cat.name, cat.subSearches),
+    }),
+    omit(["links", "subSearches"]),
+  );
 
 /**
  * Transforms the list of My Resources categories from the API into the data structure required by the UI.

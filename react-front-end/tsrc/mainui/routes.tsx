@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import { getRelativeUrl } from "../AppConfig";
 import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
 import { FavouritesType } from "../modules/FavouriteModule";
 import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
@@ -132,7 +134,7 @@ interface Routes {
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
       status?: OEQ.Common.ItemStatus,
-    ) => URL;
+    ) => string;
   };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
@@ -271,7 +273,12 @@ export const routes: Routes = {
     to: (
       myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
       status?: OEQ.Common.ItemStatus,
-    ) => buildMyResourceUrl(myResourcesType, status),
+    ) =>
+      pipe(
+        buildMyResourceUrl(myResourcesType, status),
+        (url) => url.href,
+        getRelativeUrl,
+      ),
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,

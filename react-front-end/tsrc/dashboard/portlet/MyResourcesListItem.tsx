@@ -21,6 +21,7 @@ import * as A from "fp-ts/Array";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { MyResourcesCategory } from "../../modules/MyResourceModule";
 import { ListItemContent } from "../components/ListItemContent";
 
@@ -37,7 +38,7 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
   myResourcesType,
 }) => {
   const parentListItem = (
-    <ListItemButton component="a" href={myResourcesType.to.href}>
+    <ListItemButton component={Link} to={myResourcesType.to}>
       <ListItemContent
         text={myResourcesType.name}
         count={myResourcesType.count}
@@ -54,8 +55,8 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
           <ListItemButton
             key={subCategory.id}
             sx={{ pl: 4 }}
-            component="a"
-            href={subCategory.to.href}
+            component={Link}
+            to={subCategory.to}
           >
             <ListItemContent
               text={subCategory.name}
