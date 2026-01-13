@@ -9,10 +9,11 @@ RUN apk update \
   && apk add --no-cache \
     bash \
     curl \
-    imagemagick \
     ffmpeg \
-    unzip \
     gcompat \
+    ghostscript \
+    imagemagick \
+    unzip \
   && adduser equella --disabled-password --gecos -shell /bin/bash
 
 # Install openEQUELLA
