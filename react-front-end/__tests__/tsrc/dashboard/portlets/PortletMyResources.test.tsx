@@ -56,7 +56,7 @@ const setup = async (
 // Mock getBaseUrl() function
 updateMockGetBaseUrl();
 
-describe("<PorletMyResources />", () => {
+describe("<PortletMyResources />", () => {
   it("renders without crashing and displays list of my resources types", async () => {
     const { getByText } = await setup(<Simple />);
 

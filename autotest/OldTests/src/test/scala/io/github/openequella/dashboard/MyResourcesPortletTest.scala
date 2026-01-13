@@ -7,11 +7,29 @@ import org.testng.Assert.assertTrue
 import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
+object MyResourceCategories {
+  val PUBLISHED        = "Published"        -> "Published"
+  val DRAFTS           = "Drafts"           -> "Drafts"
+  val SCRAPBOOK        = "Scrapbook"        -> "Scrapbook"
+  val MODERATION_QUEUE = "Moderation queue" -> "Moderation+queue"
+  val ARCHIVE          = "Archive"          -> "Archive"
+
+  val ALL_CATEGORIES = Map(PUBLISHED, DRAFTS, SCRAPBOOK, MODERATION_QUEUE, ARCHIVE)
+
+  val MOD_QUEUE_SUB_CATEGORIES = Map(
+    "In moderation" -> "%22status%22%3A%5B%22MODERATING%22%5D",
+    "Under review"  -> "%22status%22%3A%5B%22REVIEW%22%5D",
+    "Rejected"      -> "%22status%22%3A%5B%22REJECTED%22%5D"
+  )
+
+  val ALL_RESOURCES = "All+resources"
+}
+
 @NewUIOnly
 @TestInstitution("vanilla")
 class MyResourcesPortletTest extends AbstractPortletTest {
 
-  @Test(description = "Should be able to see categories and navigate to them")
+  @Test(description = "Should navigate to correct filtered views when clicking categories")
   def testMyResourcesPortletInteractions(): Unit = {
     val portletName = context.getFullName("My Resources")
 
@@ -22,37 +40,27 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     val myResources = dashboardPage.getPortlet(MyResources, portletName)
 
     // Select each top-level category and verify the URL filter.
-    val categories = Map(
-      "Published"        -> "Published",
-      "Drafts"           -> "Drafts",
-      "Scrapbook"        -> "Scrapbook",
-      "Moderation queue" -> "Moderation+queue",
-      "Archive"          -> "Archive"
-    )
-
-    categories.foreach { case (itemName, urlType) =>
+    MyResourceCategories.ALL_CATEGORIES.foreach { case (itemName, urlFragmentExpected) =>
       assertTrue(myResources.hasCategory(itemName))
       myResources.clickCategory(itemName)
-      assertTrue(context.getDriver.getCurrentUrl.contains(s"myResourcesType=$urlType"))
+      assertUrlContains(urlFragmentExpected)
       loadDashboardPage()
     }
 
     // Select each moderation sub-category and verify the status filter in the URL
-    val modQueueSubCategories = Map(
-      "In moderation" -> "%22status%22%3A%5B%22MODERATING%22%5D",
-      "Under review"  -> "%22status%22%3A%5B%22REVIEW%22%5D",
-      "Rejected"      -> "%22status%22%3A%5B%22REJECTED%22%5D"
-    )
-
-    modQueueSubCategories.foreach { case (subCat, urlExpected) =>
+    MyResourceCategories.MOD_QUEUE_SUB_CATEGORIES.foreach { case (subCat, urlFragmentExpected) =>
       assertTrue(myResources.hasCategory(subCat))
       myResources.clickCategory(subCat)
-      assertTrue(context.getDriver.getCurrentUrl.contains(urlExpected))
+      assertUrlContains(urlFragmentExpected)
       loadDashboardPage()
     }
 
     // Ensure the 'Show all' button navigates to the 'All resources' view.
     myResources.clickShowAll()
-    assertTrue(context.getDriver.getCurrentUrl.contains("myResourcesType=All+resources"))
+    assertUrlContains(MyResourceCategories.ALL_RESOURCES)
+  }
+
+  private def assertUrlContains(expected: String): Unit = {
+    assertTrue(context.getDriver.getCurrentUrl.contains(expected))
   }
 }

@@ -97,6 +97,7 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
             variant="outlined"
             component={Link}
             to={routes.MyResources.to("All resources")}
+            data-testid="my-resources-show-all-button"
           >
             {showAllText}
           </Button>

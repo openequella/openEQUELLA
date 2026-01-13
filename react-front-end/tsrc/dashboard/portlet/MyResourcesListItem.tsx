@@ -38,7 +38,11 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
   myResourcesType,
 }) => {
   const parentListItem = (
-    <ListItemButton component={Link} to={myResourcesType.to}>
+    <ListItemButton
+      component={Link}
+      to={myResourcesType.to}
+      data-testid={`my-resources-category-${myResourcesType.name}`}
+    >
       <ListItemContent
         text={myResourcesType.name}
         count={myResourcesType.count}
@@ -57,6 +61,7 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
             sx={{ pl: 4 }}
             component={Link}
             to={subCategory.to}
+            data-testid={`my-resources-category-${subCategory.name}`}
           >
             <ListItemContent
               text={subCategory.name}

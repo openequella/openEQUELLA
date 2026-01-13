@@ -16,9 +16,15 @@ class MyResourcesPortlet(context: PageContext, name: String)
     */
   def hasCategory(name: String): Boolean = isPresent(resourceBy(name))
 
-  private def resourceBy(resourceName: String): By = By.xpath(
-    s"$portletXpath//a[contains(@class, 'MuiListItemButton-root') and .//span[text()='$resourceName']]"
-  )
+  /** Locator for a My Resources category based on its display name.
+    *
+    * @param resourceName
+    *   Display name of the category.
+    * @return
+    *   A `By` selector targeting the category element via its `data-testid`.
+    */
+  private def resourceBy(resourceName: String): By =
+    By.cssSelector(s"[data-testid='my-resources-category-$resourceName']")
 
   /** Click on a specific category link within the portlet. Waits for the element to be clickable
     * before interacting.
@@ -31,9 +37,10 @@ class MyResourcesPortlet(context: PageContext, name: String)
     element.click()
   }
 
-  /** Click the "Show all" button to navigate to the full list of resources.
+  /** Click the "Show all" button to navigate to the unfiltered view of all MyResources across all
+    * categories.
     */
   def clickShowAll(): Unit = {
-    driver.findElement(By.xpath(s"$portletXpath//a[text()='Show all']")).click()
+    driver.findElement(By.cssSelector("[data-testid='my-resources-show-all-button']")).click()
   }
 }

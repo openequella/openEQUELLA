@@ -78,23 +78,21 @@ const buildSubCategoryRoutes = (
 /** Converts a raw API MyResources category into the UI model by adding routing links. and excluding 'links'. */
 const addRoutingInfo = (
   category: OEQ.MyResource.MyResourcesCategory,
-): MyResourcesCategory =>
-  pipe(
-    category,
-    (cat) => ({
-      ...cat,
-      to: routes.MyResources.to(cat.name),
-      ...pipe(
-        buildSubCategoryRoutes(cat.name, cat.subSearches),
-        O.fromNullable,
-        O.match(
-          () => ({}),
-          (subCategories) => ({ subCategories }),
-        ),
-      ),
-    }),
+): MyResourcesCategory => {
+  const subCategories = buildSubCategoryRoutes(
+    category.name,
+    category.subSearches,
+  );
+
+  return pipe(
+    {
+      ...category,
+      to: routes.MyResources.to(category.name),
+      ...(subCategories ? { subCategories } : {}),
+    },
     omit(["links", "subSearches"]),
   );
+};
 
 /**
  * Transforms the list of My Resources categories from the API into the data structure required by the UI.
