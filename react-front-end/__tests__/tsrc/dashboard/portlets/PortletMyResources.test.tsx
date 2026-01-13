@@ -17,10 +17,9 @@
  */
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
-import { render, type RenderResult } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
-
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { getMyResourceCategoriesTransformedResp } from "../../../../__mocks__/myResourcesCategories_mock_data";
@@ -33,23 +32,13 @@ const { showAll: showAllText } = languageStrings.common.action;
 
 const { Simple, ScrapbookDisabled, ErrorOnLoad } = composeStories(stories);
 
-/** Ready state check function that waits for Alert component to be present */
-const waitForAlert = async (renderResult: RenderResult): Promise<void> => {
-  await renderResult.findByRole("alert");
-};
-
 const setup = async (
   element: React.ReactElement,
-  readyStateCheck?: (renderResult: RenderResult) => Promise<void>,
+  readySelector: string = "link",
+  readySelectorName: string = showAllText,
 ) => {
   const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
-
-  const defaultReadyStateCheck = async (ctx: typeof renderResult) => {
-    await ctx.findByRole("link", { name: showAllText });
-  };
-
-  await (readyStateCheck || defaultReadyStateCheck)(renderResult);
-
+  await renderResult.findByRole(readySelector, { name: readySelectorName });
   return renderResult;
 };
 
@@ -101,7 +90,7 @@ describe("<PortletMyResources />", () => {
   });
 
   it("shows error message when no results are returned", async () => {
-    const { getByText } = await setup(<ErrorOnLoad />, waitForAlert);
+    const { getByText } = await setup(<ErrorOnLoad />, "alert", "");
 
     expect(
       getByText("Error: Failed to fetch my resources types"),
