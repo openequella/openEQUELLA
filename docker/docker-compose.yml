@@ -10,13 +10,13 @@ services:
       - database
     labels:
       - "traefik.enable=true"
-      - "traefik.backend=oeq"
       - "traefik.docker.network=oeq-cluster"
-      - "traefik.frontend.rule=Host:oeq.localhost"
-      - "traefik.port=8080"
-      - "traefik.backend.loadbalancer.stickiness=true"
-      - "traefik.backend.loadbalancer.stickiness.cookieName=JSESSIONNODE"
-      - "traefik.frontend.passHostHeader=true"
+      - "traefik.http.routers.oeq.rule=Host(`oeq.localhost`)"
+      - "traefik.http.routers.oeq.entrypoints=web"
+      - "traefik.http.routers.oeq.service=oeq-service"
+      - "traefik.http.services.oeq-service.loadbalancer.server.port=8080"
+      - "traefik.http.services.oeq-service.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.oeq-service.loadbalancer.sticky.cookie.name=JSESSIONNODE"
     environment:
       - EQ_MESSAGING_BINDPORT=8999
       - EQ_MESSAGING_USEHOSTNAME=true
@@ -53,17 +53,21 @@ services:
       - POSTGRES_PASSWORD=$OEQ_DATABASE_PASSWORD
 
   traefik:
-    image: traefik:v1.7.34
+    image: traefik:v3.6.6
     restart: always
-    command: --api --docker
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
-      - "8080:8080"
+      - "8081:8080"
       - "80:80"
     networks:
       - oeq-cluster
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik.toml:/traefik.toml
 
 networks:
   oeq-cluster:
