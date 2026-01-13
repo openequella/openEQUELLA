@@ -48,7 +48,7 @@
     "@typescript-eslint/eslint-plugin": "8.48.1",
     "@typescript-eslint/parser": "8.48.1",
     "axios-cookiejar-support": "6.0.5",
-    "core-js": "3.45.1",
+    "core-js": "3.47.0",
     "eslint": "9.39.1",
     "eslint-plugin-unused-imports": "4.3.0",
     "eslint-config-prettier": "10.1.8",
