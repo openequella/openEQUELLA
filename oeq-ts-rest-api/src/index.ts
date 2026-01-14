@@ -56,7 +56,7 @@ export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as WizardCommonTypes from './WizardCommonTypes';
 export * as WizardControl from './WizardControl';
-export * as SearchMyResource from './SearchMyResource';
+export * as MyResource from './MyResource';
 
 export const Codec = {
   Common: CommonCodec,

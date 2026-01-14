@@ -15,23 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package io.github.openequella.pages.dashboard
-
-/** Enumeration of the different portlet types available. The value represents the text of the
-  * default portlet title in the UI.
-  */
-object PortletType extends Enumeration {
-  type PortletType = Value
-
-  /** Only for testing purposes, represents a generic portlet when the type is unknown.
-    */
-  val Generic: Value = Value("Generic")
-
-  val Browse: Value      = Value("Browse")
-  val Favourites: Value  = Value("Favourites")
-  val Scripted: Value    = Value("Scripted")
-  val QuickSearch: Value = Value("Quick search")
-  val Html: Value        = Value("Formatted text")
-  val Recent: Value      = Value("Recent contributions")
-}
+/**
+ * Returns a new object with the specified keys omitted.
+ */
+export const omit =
+  <T, K extends keyof T>(keys: K[]) =>
+  (obj: T): Omit<T, K> => {
+    const result = { ...obj };
+    keys.forEach((key) => delete result[key]);
+    return result;
+  };

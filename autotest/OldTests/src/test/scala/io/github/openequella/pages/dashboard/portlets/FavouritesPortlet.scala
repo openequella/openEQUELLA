@@ -23,7 +23,7 @@ import com.tle.webtests.pageobject.searching.SearchPage
 import com.tle.webtests.pageobject.viewitem.SummaryPage
 import org.openqa.selenium.By
 
-/** Represents a Favourites Portlet in the Dashboard.
+/** Represents a Favourites Portlet.
   *
   * @param context
   *   The PageContext for the current test session.

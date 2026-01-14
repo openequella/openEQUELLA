@@ -25,12 +25,12 @@ val cxfVersion        = "3.6.9"
 val fs2Version        = "3.12.2"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.21.2"
+val jsoupVersion      = "1.22.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
 val luceneVersion     = "10.3.2"
-val nettyVersion      = "4.2.7.Final"
+val nettyVersion      = "4.2.9.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -79,7 +79,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20251217-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
   "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -94,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.1",
+  "com.ibm.icu" % "icu4j" % "78.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -245,11 +245,11 @@ libraryDependencies ++= Seq(
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
   "org.scala-sbt"                %% "io"                       % "1.10.5",
-  "org.mozilla"                   % "rhino"                    % "1.8.1",
+  "org.mozilla"                   % "rhino"                    % "1.9.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.184",
-  "com.fasterxml"                 % "classmate"                % "1.7.1",
+  "com.fasterxml"                 % "classmate"                % "1.7.3",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
