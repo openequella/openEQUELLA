@@ -33,9 +33,9 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.TaskTrendBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
@@ -47,6 +47,8 @@ import javax.ws.rs.core.UriInfo;
 public class WorkflowResourceImpl
     extends AbstractBaseEntityResource<Workflow, BaseEntitySecurityBean, WorkflowBean>
     implements WorkflowResource {
+  private static final String UNKNOWN_TASK_NAME = "";
+
   @Inject private WorkflowService workflowService;
   @Inject private WorkflowBeanSerializer serializer;
   @Inject private TaskStatisticsService taskStatisticsService;
@@ -111,24 +113,21 @@ public class WorkflowResourceImpl
 
   /** Helper to batch resolve task names and build the standard JSON response. */
   private Response buildTrendResponse(List<TaskTrend> trends) {
-    List<Long> bundleIds = new ArrayList<>();
-    for (TaskTrend t : trends) {
-      bundleIds.add(t.getNameId());
-    }
-    bundleCache.addBundleIds(bundleIds);
+    List<Long> bundleIds = trends.stream().map(TaskTrend::getNameId).collect(Collectors.toList());
 
+    bundleCache.addBundleIds(bundleIds);
     Map<Long, String> names = bundleCache.getBundleMap();
 
-    List<TaskTrendBean> resultBeans = new ArrayList<>();
-    for (TaskTrend t : trends) {
-      String name = names.get(t.getNameId());
-      if (name == null) {
-        name = "";
-      }
-      resultBeans.add(
-          new TaskTrendBean(
-              String.valueOf(t.getWorkflowItemId()), name, t.getWaiting(), t.getTrend()));
-    }
+    List<TaskTrendBean> resultBeans =
+        trends.stream()
+            .map(
+                t ->
+                    new TaskTrendBean(
+                        String.valueOf(t.getWorkflowItemId()),
+                        names.getOrDefault(t.getNameId(), UNKNOWN_TASK_NAME),
+                        t.getWaiting(),
+                        t.getTrend()))
+            .collect(Collectors.toList());
 
     return Response.ok(resultBeans).build();
   }
