@@ -101,12 +101,21 @@ public class WorkflowResourceImpl
    * (400 Bad Request) if the string is invalid or null.
    */
   private Trend parseTrend(String trend) {
-    try {
-      return Trend.valueOf(trend.toUpperCase());
-    } catch (IllegalArgumentException | NullPointerException e) {
+    if (trend == null || trend.isBlank()) {
       throw new WebApplicationException(
           Response.status(Response.Status.BAD_REQUEST)
-              .entity("Invalid trend parameter: " + trend)
+              .entity("{\"error\": \"Trend parameter is required\"}")
+              .build());
+    }
+    try {
+      return Trend.valueOf(trend.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new WebApplicationException(
+          Response.status(Response.Status.BAD_REQUEST)
+              .entity(
+                  String.format(
+                      "{\"error\": \"Invalid trend value: '%s'. Allowed values: WEEK, MONTH\"}",
+                      trend))
               .build());
     }
   }
