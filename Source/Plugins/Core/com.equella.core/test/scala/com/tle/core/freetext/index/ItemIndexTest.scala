@@ -450,7 +450,7 @@ class ItemIndexTest
         val (itemIndex, searchConfig) = f
 
         Given("two Items where the first one requires ACL 'DISCOVER_ITEM'")
-        val itemName = "acl_item"
+        val itemName       = "acl_item"
         val permissionItem = generateIndexedItems(
           itemName = itemName,
           privilege = Option(SecurityConstants.DISCOVER_ITEM)
@@ -572,7 +572,7 @@ class ItemIndexTest
         val monday    = dateFormatter.parse("2023-07-10")
         val tuesday   = dateFormatter.parse("2023-07-11")
         val wednesday = dateFormatter.parse("2023-07-12")
-        val items = List(monday, wednesday, tuesday).flatMap(dateModified =>
+        val items     = List(monday, wednesday, tuesday).flatMap(dateModified =>
           generateIndexedItems(dateModified = dateModified)
         )
         createIndexes(itemIndex, items)
@@ -582,7 +582,7 @@ class ItemIndexTest
 
         Then("the search result should be ordered by by date modified")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
-        val dates =
+        val dates  =
           result.map(d => dateFormatter.parse(d.get(FreeTextQuery.FIELD_REALLASTMODIFIED)))
         val isOrderedByLastModifiedDate = dates.tail
           .foldLeft((true, dates.head)) {
@@ -612,7 +612,7 @@ class ItemIndexTest
         Then(
           "the search result should include all the Items where names are in different forms of 'test'"
         )
-        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        val result    = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         val itemNames =
           result.map(_.get(FreeTextQuery.FIELD_NAME))
         itemNames shouldBe Array("testing", "tested")
@@ -725,7 +725,7 @@ class ItemIndexTest
       val successfulReading: AtomicInteger = new AtomicInteger(0)
 
       // Thread pools for Index writing and reading. Allocate half of the available processors to each pool.
-      val processors = Runtime.getRuntime.availableProcessors
+      val processors  = Runtime.getRuntime.availableProcessors
       val writingPool = ExecutionContext.fromExecutor(
         Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("writing pool"))
       )

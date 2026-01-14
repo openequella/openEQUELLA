@@ -181,7 +181,7 @@ class SearchResource {
     }
 
     val collectionId = params.collections(0)
-    val collection = Option(itemDefinitionService.getByUuid(collectionId)) match {
+    val collection   = Option(itemDefinitionService.getByUuid(collectionId)) match {
       case Some(c) => c
       case None => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
     }
@@ -196,7 +196,7 @@ class SearchResource {
 
     Option(collection.getSchema) match {
       case Some(s) => s
-      case None =>
+      case None    =>
         throw new NotFoundException(
           s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}"
         )
@@ -225,7 +225,7 @@ class SearchResource {
 
     HierarchyCompoundUuid(compoundUuidStr) match {
       case Right(compoundUuid) => buildSearch(compoundUuid)
-      case Left(e) =>
+      case Left(e)             =>
         Left(s"Failed to parse hierarchy compound UUID $compoundUuidStr: ${e.getMessage}")
     }
   }
@@ -249,7 +249,7 @@ class SearchResource {
         highlight
       )
     } match {
-      case Success(searchResult) => Response.ok.entity(searchResult).build()
+      case Success(searchResult)                   => Response.ok.entity(searchResult).build()
       case Failure(_: InvalidSearchQueryException) =>
         ApiErrorResponse.badRequest("Invalid search query - please remove any special characters.")
       case Failure(e) => throw e

@@ -75,7 +75,7 @@ object AdvancedSearchParameters {
             new LocalDate(d, Dates.ISO_DATE_ONLY, CurrentTimeZone.get)
           } match {
             case Success(value) => value
-            case Failure(e) =>
+            case Failure(e)     =>
               throw new IllegalArgumentException(
                 s"Failed to build date range query for field $field due to ${e.getMessage}"
               )

@@ -84,7 +84,7 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
   val mockConfigurationService: OidcConfigurationService = mock(classOf[OidcConfigurationService])
   val mockStateService: OidcStateService                 = mock(classOf[OidcStateService])
   implicit val mockNonceService: OidcNonceService        = mock(classOf[OidcNonceService])
-  val authService: OidcAuthService = new OidcAuthService(
+  val authService: OidcAuthService                       = new OidcAuthService(
     mockStateService,
     mockUserService,
     mockConfigurationService,
@@ -174,7 +174,7 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
     it("returns an error of InvalidState if no state details can be found by the returned state") {
       Given("a callback request with a state")
       val invalidState = "abc"
-      val params = Map(
+      val params       = Map(
         OpenIDConnectParams.CODE  -> Array(CODE),
         OpenIDConnectParams.STATE -> Array(invalidState)
       )

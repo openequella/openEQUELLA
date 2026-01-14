@@ -77,7 +77,7 @@ class OidcCallbackServlet @Inject() (
     result match {
       case Right(targetPage) =>
         val institution = CurrentInstitution.get().getUrl
-        val redirectTo = targetPage match {
+        val redirectTo  = targetPage match {
           case Some(p) =>
             new URIBuilder(s"$institution${WebConstants.LOGIN_PAGE}").addParameter(".page", p)
           case None => new URIBuilder(s"$institution${WebConstants.DASHBOARD_PAGE}")
@@ -85,7 +85,7 @@ class OidcCallbackServlet @Inject() (
 
         resp.sendRedirect(redirectTo.build().toString)
       case Left(e) =>
-        val msg = e.msg.getOrElse(NO_FURTHER_INFO)
+        val msg     = e.msg.getOrElse(NO_FURTHER_INFO)
         val fullMsg = e match {
           case err: HasCode[_] => s"${err.code.toString} - $msg"
           case _               => msg

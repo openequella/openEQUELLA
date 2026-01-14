@@ -22,9 +22,9 @@ object JPFScanPlugin extends AutoPlugin {
   }
 
   def parseJPF(f: File): ParsedJPF = {
-    val x        = saxBuilder.build(f)
-    val root     = x.getRootElement
-    val pluginId = root.getAttribute("id").getValue
+    val x               = saxBuilder.build(f)
+    val root            = x.getRootElement
+    val pluginId        = root.getAttribute("id").getValue
     val (extDeps, deps) = root
       .getChildren("requires")
       .asScala
@@ -103,7 +103,7 @@ object JPFScanPlugin extends AutoPlugin {
               val deps    = internalDeps.map(_._1)
               val (a, l)  = convertAll(already + pId, processed, deps)
               val prjDeps = deps.toSeq.flatMap(classpathDep)
-              val prj = Project(toSbtPrj(pId), baseDir)
+              val prj     = Project(toSbtPrj(pId), baseDir)
                 .dependsOn(prjDeps: _*)
                 .settings(
                   (Compile / managedClasspath) ++= (parentForPlugin(
@@ -145,7 +145,7 @@ object JPFScanPlugin extends AutoPlugin {
   override def trigger = noTrigger
 
   override def derivedProjects(proj: ProjectDefinition[_]): Seq[Project] = {
-    val baseDir = proj.base
+    val baseDir      = proj.base
     val allManifests = (baseDir / "Source/Plugins" * "*" * "*" / "plugin-jpf.xml").get ++
       (baseDir / "Platform/Plugins" * "*" / "plugin-jpf.xml").get ++
       (baseDir / "Interface/Plugins" * "*" / "plugin-jpf.xml").get ++
@@ -157,7 +157,7 @@ object JPFScanPlugin extends AutoPlugin {
     val pluginList = (if (buildConfig.hasPath("plugin.whitelist"))
                         buildConfig.getStringList("plugin.whitelist").asScala.toSet
                       else manifestMap.keySet) ++ minimumPlugins
-    val projects = convertAllPlugins(manifestMap, pluginList)
+    val projects   = convertAllPlugins(manifestMap, pluginList)
     val allPlugins = Project("allPlugins", baseDir / "Source/Plugins")
       .aggregate(projects.map(Project.projectToRef): _*)
     allPlugins +: projects

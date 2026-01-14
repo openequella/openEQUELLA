@@ -103,7 +103,7 @@ object WizardControlHelper {
           ControlUniqueConstraints(c.isForceUnique, c.isCheckDuplication)
         )
       case c: CustomControl => wizardCustomControlConverter(c)
-      case _ =>
+      case _                =>
         LOGGER.error("Unknown Wizard Control type")
         UnknownWizardControl()
     }

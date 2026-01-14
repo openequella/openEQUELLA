@@ -85,7 +85,7 @@ class SearchFilterResource {
     searchPrivProvider.checkAuthorised()
     validate(searchFilter) match {
       case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
-      case Right(_) =>
+      case Right(_)     =>
         searchFilter.setId(UUID.randomUUID().toString)
 
         // Adding a search filter is essentially a update of the search setting
@@ -116,7 +116,7 @@ class SearchFilterResource {
       case Some(filter) =>
         validate(searchFilter) match {
           case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
-          case Right(_) =>
+          case Right(_)     =>
             filter.setMimeTypes(searchFilter.getMimeTypes)
             filter.setName(searchFilter.getName)
             updateSettings(searchSettings)

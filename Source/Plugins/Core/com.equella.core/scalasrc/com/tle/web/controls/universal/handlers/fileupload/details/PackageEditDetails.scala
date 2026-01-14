@@ -170,7 +170,7 @@ class PackageEditDetails(
       a.setPreview(previewCheckBox.isChecked(info))
     }
     a.setViewer(viewers.getSelectedValueAsString(info))
-    val newExpand = expandButtons.getSelectedValue(info) == ExpandType.EXPAND
+    val newExpand                    = expandButtons.getSelectedValue(info) == ExpandType.EXPAND
     val ad: Option[AttachmentDelete] = a match {
       case ims: ImsAttachment if newExpand != ims.isExpand =>
         ims.setExpand(newExpand)

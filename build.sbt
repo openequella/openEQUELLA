@@ -23,7 +23,7 @@ lazy val learningedge_config = project in file("Dev/learningedge-config")
 
 lazy val allPlugins      = LocalProject("allPlugins")
 lazy val allPluginsScope = ScopeFilter(inAggregates(allPlugins, includeRoot = false))
-val legacyPaths = Seq(
+val legacyPaths          = Seq(
   (Compile / javaSource)                   := baseDirectory.value / "src",
   (Test / javaSource)                      := baseDirectory.value / "test",
   (Compile / unmanagedResourceDirectories) := (baseDirectory.value / "resources") :: Nil,
@@ -31,7 +31,7 @@ val legacyPaths = Seq(
   (Test / unmanagedSourceDirectories)      := (Test / javaSource).value :: Nil
 )
 
-lazy val autotest = project in file("autotest")
+lazy val autotest      = project in file("autotest")
 lazy val equellaserver =
   (project in file("Source/Server/equellaserver")).enablePlugins(JPFRunnerPlugin)
 
@@ -82,7 +82,7 @@ lazy val equella = (project in file("."))
 ThisBuild / assemblyMergeStrategy := {
   case PathList("module-info.class")         => MergeStrategy.discard
   case x if x.endsWith("/module-info.class") => MergeStrategy.discard
-  case x =>
+  case x                                     =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
@@ -145,7 +145,7 @@ updateLicenses := {
   val ourOrg         = organization.value
   val serverReport   = (equellaserver / updateLicenses).value
   val plugsinReports = updateLicenses.all(allPluginsScope).value
-  val allLicenses = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
+  val allLicenses    = (plugsinReports.flatMap(_.licenses) ++ serverReport.licenses)
     .groupBy(_.module)
     .values
     .map(_.head)
@@ -193,8 +193,8 @@ mergeJPF := {
 
   import complete.DefaultParsers.*
 
-  val adminConsole = false
-  val args         = spaceDelimited("<arg>").parsed
+  val adminConsole   = false
+  val args           = spaceDelimited("<arg>").parsed
   val _allPluginDirs =
     pluginAndLibs.all(allPluginsScope).value
   val extensionsOnly =
@@ -233,7 +233,7 @@ ThisBuild / oeqTsRestApiDir := baseDirectory.value / "oeq-ts-rest-api"
 
 ThisBuild / reactFrontEndDir       := baseDirectory.value / "react-front-end"
 ThisBuild / reactFrontEndOutputDir := reactFrontEndDir.value / "target/resources"
-ThisBuild / buildReactFrontEnd := {
+ThisBuild / buildReactFrontEnd     := {
   // build rest module first since it is a dependency of react front end
   val apiDir = oeqTsRestApiDir.value
   Common.nodeInstall(apiDir)
@@ -266,7 +266,7 @@ def javadocSources(base: File): PathFinder = {
 }
 
 (Compile / doc / aggregate) := false
-(Compile / doc / sources) := {
+(Compile / doc / sources)   := {
   (javadocSources((LocalProject("com_equella_base") / baseDirectory).value)
     +++ javadocSources((LocalProject("com_equella_core") / baseDirectory).value)).get
 }

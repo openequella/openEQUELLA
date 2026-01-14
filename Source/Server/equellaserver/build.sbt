@@ -339,7 +339,7 @@ excludeDependencies ++= Seq(
 
 run := {
   val cp = (Runtime / fullClasspath).value
-  val o = ForkOptions().withRunJVMOptions(
+  val o  = ForkOptions().withRunJVMOptions(
     Vector(
       "-cp",
       Path.makeString(cp.files),
@@ -454,7 +454,7 @@ run := {
   case PathList("META-INF", "versions", _, "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
   // Also handle non-versioned OSGi manifests.
   case PathList("META-INF", "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
-  case x =>
+  case x                                               =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
@@ -481,14 +481,14 @@ additionalPlugins := {
 }
 
 upgradeZip := {
-  val log         = streams.value.log
-  val ver         = equellaVersion.value
-  val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  val log          = streams.value.log
+  val ver          = equellaVersion.value
+  val releaseDate  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer     = ver.fullVersion
   val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
-  val zipFiles = Seq(
+  val zipFiles    = Seq(
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
