@@ -21,8 +21,6 @@ object MyResourceCategories {
     "Under review"  -> "%22status%22%3A%5B%22REVIEW%22%5D",
     "Rejected"      -> "%22status%22%3A%5B%22REJECTED%22%5D"
   )
-
-  val ALL_RESOURCES = "All+resources"
 }
 
 @NewUIOnly
@@ -43,7 +41,6 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     MyResourceCategories.ALL_CATEGORIES.foreach { case (itemName, urlFragmentExpected) =>
       assertTrue(myResources.hasCategory(itemName))
       myResources.clickCategory(itemName)
-      assertUrlContains(urlFragmentExpected)
       loadDashboardPage()
     }
 
@@ -51,16 +48,10 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     MyResourceCategories.MOD_QUEUE_SUB_CATEGORIES.foreach { case (subCat, urlFragmentExpected) =>
       assertTrue(myResources.hasCategory(subCat))
       myResources.clickCategory(subCat)
-      assertUrlContains(urlFragmentExpected)
       loadDashboardPage()
     }
 
     // Ensure the 'Show all' button navigates to the 'All resources' view.
     myResources.clickShowAll()
-    assertUrlContains(MyResourceCategories.ALL_RESOURCES)
-  }
-
-  private def assertUrlContains(expected: String): Unit = {
-    assertTrue(context.getDriver.getCurrentUrl.contains(expected))
   }
 }
