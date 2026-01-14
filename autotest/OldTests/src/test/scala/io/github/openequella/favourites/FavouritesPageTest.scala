@@ -129,7 +129,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
   @Test(description = "Verify user can remove a favourite search")
   def removeFavouriteSearch(): Unit = {
     val search = context.getFullName("favSearch")
-    setupFavouriteSearch(search);
+    setupFavouriteSearch(search)
 
     val favouritesPage = new FavouritesPage(context).load()
     favouritesPage.selectFavouritesSearchesType()
@@ -139,6 +139,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
 
     // Remove the search from favourites.
     favouritesPage.removeFavourite(search)
+    favouritesPage.waitForSearchCompleted(0)
     assertFalse(favouritesPage.hasItem(search))
   }
 }
