@@ -28,7 +28,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class WorkflowTrendsApiTest extends AbstractRestApiTest {
@@ -38,12 +37,6 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
       getTestConfig().getInstitutionUrl() + "api/workflow/%s/trends";
 
   private final String TARGET_WORKFLOW_UUID = "0f7bd496-8466-4fa5-b166-8132cc5294e4";
-
-  @Override
-  @BeforeClass
-  public void login() throws IOException {
-    makeClientRequest(authHelper.buildLoginMethod("workflowhelper", "``````"));
-  }
 
   // --- Tests for GET all workflow trends---
 
