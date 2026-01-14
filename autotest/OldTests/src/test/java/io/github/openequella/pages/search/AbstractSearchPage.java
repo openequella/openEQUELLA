@@ -493,7 +493,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
 
     // wait for the dialog to loading
     String hierarchyXPathString =
-        """
+"""
 //div[@aria-labelledby='modify-key-resource-dialog-title']//p[contains(text(), '%s')]/ancestor::div[2]
 """
             .formatted(hierarchyName);
