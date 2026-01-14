@@ -99,7 +99,7 @@ const addRoutingInfo = (
  *
  * @param isScrapbookEnabled Whether the Scrapbook feature is enabled for the current user.
  */
-export const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
+const transformMyResourcesCategories = (isScrapbookEnabled: boolean) =>
   flow(
     A.filter(shouldIncludeCategory(isScrapbookEnabled)),
     A.map(addRoutingInfo),

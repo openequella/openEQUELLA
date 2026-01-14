@@ -20,10 +20,7 @@ import {
   getMyResourceCategoriesTransformedResp,
   mockGetMyResourceCategoriesResp,
 } from "../../../__mocks__/myResourcesCategories_mock_data";
-import {
-  getMyResourceCategories,
-  transformMyResourcesCategories,
-} from "../../../tsrc/modules/MyResourceModule";
+import { getMyResourceCategories } from "../../../tsrc/modules/MyResourceModule";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 
 jest.mock("@openequella/rest-api-client", () => {
@@ -54,29 +51,5 @@ describe("getMyResourceCategories", () => {
     // 'all' resource type is filtered out
     expect(result).toHaveLength(mockGetMyResourceCategoriesResp.length - 1);
     expect(result).toEqual(getMyResourceCategoriesTransformedResp);
-  });
-});
-
-describe("transformMyResourcesCategories", () => {
-  it("filters out 'all' and keeps 'scrapbook' when scrapbook is enabled for the current user", () => {
-    const result = transformMyResourcesCategories(true)(
-      mockGetMyResourceCategoriesResp,
-    );
-    const ids = result.map((type) => type.id);
-
-    expect(ids).not.toContain("all");
-    expect(ids).toContain("scrapbook");
-    expect(result).toHaveLength(mockGetMyResourceCategoriesResp.length - 1);
-  });
-
-  it("filters out both 'all' and 'scrapbook' when scrapbook is disabled for the current user", () => {
-    const result = transformMyResourcesCategories(false)(
-      mockGetMyResourceCategoriesResp,
-    );
-    const ids = result.map((type) => type.id);
-
-    expect(ids).not.toContain("all");
-    expect(ids).not.toContain("scrapbook");
-    expect(result).toHaveLength(mockGetMyResourceCategoriesResp.length - 2);
   });
 });
