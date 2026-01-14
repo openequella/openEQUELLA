@@ -43,15 +43,13 @@ class DashboardPageTest extends AbstractCleanupTest {
   @BeforeMethod
   def setupTest(): Unit = {
     logon()
-    dashboardPage = new DashboardPage(context)
-    dashboardPage.waitForLoad()
+    dashboardPage = new DashboardPage(context).get()
   }
 
   @AfterMethod
   def cleanupTest(): Unit = {
     logon()
-    dashboardPage = new DashboardPage(context)
-    dashboardPage.waitForLoad()
+    dashboardPage = new DashboardPage(context).get()
     dashboardPage.changeLayout(SingleColumn)
     cleanupPortlets()
   }
