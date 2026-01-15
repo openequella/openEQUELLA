@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class WorkflowTrendsApiTest extends AbstractRestApiTest {
@@ -40,23 +41,16 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   // --- Tests for GET all workflow trends---
 
-  @Test(description = "Retrieve workflow trends with 'WEEK' trend")
-  public void getWeeklyTrends() throws IOException {
-    JsonNode result = doRequest(WORKFLOW_TRENDS_ENDPOINT, HttpStatus.SC_OK, "WEEK");
-    assertNotNull(result);
-    validateResponseStructure(result);
+  @DataProvider(name = "trendValues")
+  public Object[][] trendValues() {
+    return new Object[][] {{"WEEK"}, {"MONTH"}, {"week"}};
   }
 
-  @Test(description = "Retrieve workflow trends with 'MONTH' trend")
-  public void getMonthlyTrends() throws IOException {
-    JsonNode result = doRequest(WORKFLOW_TRENDS_ENDPOINT, HttpStatus.SC_OK, "MONTH");
-    assertNotNull(result);
-    validateResponseStructure(result);
-  }
-
-  @Test(description = "Retrieve workflow trends case insensitive (lowercase 'week')")
-  public void getWeeklyTrendsLowerCase() throws IOException {
-    JsonNode result = doRequest(WORKFLOW_TRENDS_ENDPOINT, HttpStatus.SC_OK, "week");
+  @Test(
+      description = "Retrieve workflow trends with valid trend values",
+      dataProvider = "trendValues")
+  public void getTrendsWithValidValue(String trendValue) throws IOException {
+    JsonNode result = doRequest(WORKFLOW_TRENDS_ENDPOINT, HttpStatus.SC_OK, trendValue);
     assertNotNull(result);
     validateResponseStructure(result);
   }
