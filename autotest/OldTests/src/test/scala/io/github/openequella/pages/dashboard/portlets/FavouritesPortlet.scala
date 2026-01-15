@@ -32,7 +32,12 @@ import org.openqa.selenium.By
   */
 class FavouritesPortlet(context: PageContext, name: String)
     extends GenericPortlet[FavouritesPortlet](context, name) {
-  validationXpath = s"$portletXpath//button[text()='Resources']"
+  private val RESOURCES_TAB_TEXT = "Resources"
+  private val SEARCHES_TAB_TEXT  = "Searches"
+
+  private val resourceTabXpath = s"$portletXpath//button[text()='$RESOURCES_TAB_TEXT']"
+
+  validationXpath = resourceTabXpath
 
   /** The XPath locator for a favourite resource/search within the Favourites Portlet.
     */
@@ -77,28 +82,28 @@ class FavouritesPortlet(context: PageContext, name: String)
   /** Click the Resources tab in the Favourites Portlet.
     */
   def clickResourcesTab(): Unit = {
-    val resourcesTab = By.xpath(s"$portletXpath//button[text()='Resources']")
+    val resourcesTab = By.xpath(resourceTabXpath)
     driver.findElement(resourcesTab).click()
   }
 
   /** Click the Searches tab in the Favourites Portlet.
     */
   def clickSearchesTab(): Unit = {
-    val searchesTab = By.xpath(s"$portletXpath//button[text()='Searches']")
+    val searchesTab = By.xpath(s"$portletXpath//button[text()='$SEARCHES_TAB_TEXT']")
     driver.findElement(searchesTab).click()
   }
 
   /** Click the Show All button in the Favourites Portlet.
     */
   def clickShowAllButton(): Unit = {
-    val showAllButton = By.xpath(s"$portletXpath//a[text()='Show all']")
+    val showAllButton = By.xpath(s"$portletXpath//a[text()='$SHOW_ALL_TEXT']")
     driver.findElement(showAllButton).click()
   }
 
   /** Checks if the Portlet is minimised.
     */
   override def isMinimised: Boolean = {
-    val favouritesPortletContent = By.xpath("//button[text()='Resources']")
+    val favouritesPortletContent = By.xpath(resourceTabXpath)
     super.isMinimised && !isPresent(favouritesPortletContent)
   }
 }

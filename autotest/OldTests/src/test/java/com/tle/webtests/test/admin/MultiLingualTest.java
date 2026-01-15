@@ -87,12 +87,11 @@ public class MultiLingualTest extends AbstractCleanupTest {
   public void portletLanguageNewUi() {
     logon();
 
-    DashboardPage page = new DashboardPage(context);
-    page.waitForLoad();
+    DashboardPage page = new DashboardPage(context).get();
     // Create a portlet with multi-language title.
     page.openCreatePortletPage(PortletType$.MODULE$.Browse());
     DashboardPage dashboardPage = setupMultiLanguageTitleNewUI();
-    dashboardPage.waitForLoad();
+    dashboardPage.get();
 
     assertTrue(dashboardPage.hasPortlet(ENGLISH));
     assertFalse(dashboardPage.hasPortlet(NOT_ENGLISH));
@@ -100,14 +99,12 @@ public class MultiLingualTest extends AbstractCleanupTest {
     setupUserLanguage("aa_DJ");
 
     dashboardPage = new DashboardPage(context).load();
-    dashboardPage.waitForLoad();
     assertFalse(dashboardPage.hasPortlet(ENGLISH));
     assertTrue(dashboardPage.hasPortlet(NOT_ENGLISH));
 
     setupUserLanguage("en_AU");
 
     dashboardPage = new DashboardPage(context).load();
-    dashboardPage.waitForLoad();
     assertTrue(dashboardPage.hasPortlet(ENGLISH));
     assertFalse(dashboardPage.hasPortlet(NOT_ENGLISH));
 
