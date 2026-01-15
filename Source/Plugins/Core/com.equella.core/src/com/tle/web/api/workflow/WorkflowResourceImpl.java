@@ -87,6 +87,9 @@ public class WorkflowResourceImpl
 
   @Override
   public Response getTrendsForWorkflow(String uuid, String trend) {
+    if (uuid == null || uuid.isBlank()) {
+      throw badRequest("Workflow uuid parameter is required");
+    }
     if (!workflowService.existsByUuid(uuid)) {
       throw entityNotFound(uuid);
     }
@@ -96,26 +99,28 @@ public class WorkflowResourceImpl
   }
 
   /**
+   * Helper utility to construct a standard BAD_REQUEST (400) exception with a JSON error message.
+   */
+  private WebApplicationException badRequest(String message) {
+    return new WebApplicationException(
+        Response.status(Response.Status.BAD_REQUEST)
+            .entity(String.format("{\"error\": \"%s\"}", message))
+            .build());
+  }
+
+  /**
    * Helper to parse the trend string parameter into a Trend enum. Throws a WebApplicationException
    * (400 Bad Request) if the string is invalid or null.
    */
   private Trend parseTrend(String trend) {
     if (trend == null || trend.isBlank()) {
-      throw new WebApplicationException(
-          Response.status(Response.Status.BAD_REQUEST)
-              .entity("{\"error\": \"Trend parameter is required\"}")
-              .build());
+      throw badRequest("Trend parameter is required");
     }
     try {
       return Trend.valueOf(trend.toUpperCase());
     } catch (IllegalArgumentException e) {
-      throw new WebApplicationException(
-          Response.status(Response.Status.BAD_REQUEST)
-              .entity(
-                  String.format(
-                      "{\"error\": \"Invalid trend value: '%s'. Allowed values: WEEK, MONTH\"}",
-                      trend))
-              .build());
+      throw badRequest(
+          String.format("Invalid trend value: '%s'. Allowed values: WEEK, MONTH", trend));
     }
   }
 
