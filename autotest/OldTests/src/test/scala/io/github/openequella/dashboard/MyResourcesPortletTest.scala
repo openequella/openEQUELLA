@@ -27,7 +27,9 @@ object MyResourceCategories {
 @TestInstitution("vanilla")
 class MyResourcesPortletTest extends AbstractPortletTest {
 
-  @Test(description = "Should navigate to correct filtered views when clicking categories")
+  @Test(description =
+    "Verifies the existence and clickability of MyResources categories and sub-categories"
+  )
   def testMyResourcesPortletInteractions(): Unit = {
     val portletName = context.getFullName("My Resources")
 
@@ -37,21 +39,21 @@ class MyResourcesPortletTest extends AbstractPortletTest {
 
     val myResources = dashboardPage.getPortlet(MyResources, portletName)
 
-    // Select each top-level category and verify the URL filter.
+    // Verify each top-level category presence and interaction.
     MyResourceCategories.ALL_CATEGORIES.foreach { case (itemName) =>
       assertTrue(myResources.hasCategory(itemName))
       myResources.clickCategory(itemName)
       loadDashboardPage()
     }
 
-    // Select each moderation sub-category and verify the status filter in the URL
+    // Verify each moderation sub-category presence and interaction.
     MyResourceCategories.MOD_QUEUE_SUB_CATEGORIES.foreach { case (subCat) =>
       assertTrue(myResources.hasCategory(subCat))
       myResources.clickCategory(subCat)
       loadDashboardPage()
     }
 
-    // Ensure the 'Show all' button navigates to the 'All resources' view.
+    // Ensure the 'Show all' button exists and is interactable.
     myResources.clickShowAll()
   }
 }
