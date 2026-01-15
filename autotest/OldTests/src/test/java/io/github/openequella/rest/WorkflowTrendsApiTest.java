@@ -32,12 +32,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class WorkflowTrendsApiTest extends AbstractRestApiTest {
-  private final String WORKFLOW_TRENDS_ENDPOINT =
-      getTestConfig().getInstitutionUrl() + "api/workflow/trends";
-  private final String SPECIFIC_WORKFLOW_ENDPOINT_TEMPLATE =
-      getTestConfig().getInstitutionUrl() + "api/workflow/%s/trends";
-
   private final String TARGET_WORKFLOW_UUID = "0f7bd496-8466-4fa5-b166-8132cc5294e4";
+
+  private String getWorkflowTrendsEndpoint() {
+    return getTestConfig().getInstitutionUrl() + "api/workflow/trends";
+  }
+
+  private String getSpecificWorkflowEndpointTemplate() {
+    return getTestConfig().getInstitutionUrl() + "api/workflow/%s/trends";
+  }
 
   // --- Tests for GET all workflow trends---
 
@@ -50,14 +53,14 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
       description = "Retrieve workflow trends with valid trend values",
       dataProvider = "trendValues")
   public void getTrendsWithValidValue(String trendValue) throws IOException {
-    JsonNode result = doRequest(WORKFLOW_TRENDS_ENDPOINT, HttpStatus.SC_OK, trendValue);
+    JsonNode result = doRequest(getWorkflowTrendsEndpoint(), HttpStatus.SC_OK, trendValue);
     assertNotNull(result);
     validateResponseStructure(result);
   }
 
   @Test(description = "Fail to retrieve trends with invalid trend value")
   public void getInvalidTrends() throws IOException {
-    final HttpMethod method = new GetMethod(WORKFLOW_TRENDS_ENDPOINT);
+    final HttpMethod method = new GetMethod(getWorkflowTrendsEndpoint());
     method.setQueryString(new NameValuePair[] {new NameValuePair("trend", "YEAR")});
 
     int statusCode = makeClientRequest(method);
@@ -68,7 +71,7 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   @Test(description = "Retrieve trends for a specific workflow")
   public void getSpecificWorkflowTrends() throws IOException {
-    String endpoint = String.format(SPECIFIC_WORKFLOW_ENDPOINT_TEMPLATE, TARGET_WORKFLOW_UUID);
+    String endpoint = String.format(getSpecificWorkflowEndpointTemplate(), TARGET_WORKFLOW_UUID);
 
     JsonNode result = doRequest(endpoint, HttpStatus.SC_OK, "WEEK");
 
@@ -78,14 +81,14 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid UUID")
   public void getSpecificWorkflowInvalidUuid() throws IOException {
-    String endpoint = String.format(SPECIFIC_WORKFLOW_ENDPOINT_TEMPLATE, "invalid-uuid-12345");
+    String endpoint = String.format(getSpecificWorkflowEndpointTemplate(), "invalid-uuid-12345");
 
     doRequest(endpoint, HttpStatus.SC_NOT_FOUND, "WEEK");
   }
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid trend")
   public void getSpecificWorkflowInvalidTrend() throws IOException {
-    String endpoint = String.format(SPECIFIC_WORKFLOW_ENDPOINT_TEMPLATE, TARGET_WORKFLOW_UUID);
+    String endpoint = String.format(getSpecificWorkflowEndpointTemplate(), TARGET_WORKFLOW_UUID);
     final HttpMethod method = new GetMethod(endpoint);
     method.setQueryString(new NameValuePair[] {new NameValuePair("trend", "INVALID")});
 
