@@ -48,15 +48,15 @@ class DashboardPage(
 
   /** Waits for either the Welcome board or the portlets to be loaded.
     */
-  def waitForLoad(): Unit = waiter.until(new ExpectedCondition[Boolean] {
-    override def apply(driver: WebDriver): Boolean = {
+  override def findLoadedElement(): WebElement = waiter.until(new ExpectedCondition[WebElement] {
+    override def apply(driver: WebDriver): WebElement = {
       lazy val welcome =
-        !driver.findElements(By.xpath("//*[text()='Welcome to openEQUELLA']")).isEmpty
+        driver.findElements(By.xpath("//*[text()='Welcome to openEQUELLA']")).asScala.headOption
 
       lazy val portlets =
-        !driver.findElements(By.cssSelector("#dashboard-portlet-container")).isEmpty
+        driver.findElements(By.cssSelector("#dashboard-portlet-container")).asScala.headOption
 
-      welcome || portlets
+      welcome.orElse(portlets).orNull
     }
   })
 

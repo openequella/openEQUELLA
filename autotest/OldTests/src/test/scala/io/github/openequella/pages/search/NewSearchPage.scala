@@ -16,24 +16,13 @@
  * limitations under the License.
  */
 
-package io.github.openequella.pages.dashboard
+package io.github.openequella.pages.search
 
-/** Enumeration of the different portlet types available. The value represents the text of the
-  * default portlet title in the UI.
-  */
-object PortletType extends Enumeration {
-  type PortletType = Value
+import com.tle.webtests.framework.PageContext
 
-  /** Only for testing purposes, represents a generic portlet when the type is unknown.
-    */
-  val Generic: Value = Value("Generic")
-
-  val Browse: Value      = Value("Browse")
-  val Favourites: Value  = Value("Favourites")
-  val Scripted: Value    = Value("Scripted")
-  val QuickSearch: Value = Value("Quick search")
-  val Html: Value        = Value("Formatted text")
-  val Recent: Value      = Value("Recent contributions")
-  val Tasks: Value       = Value("Tasks")
-  val MyResources: Value = Value("My resources")
+/** Represents the new Search page in the UI. */
+class NewSearchPage(context: PageContext) extends AbstractSearchPage[NewSearchPage](context) {
+  override protected def loadUrl(): Unit = {
+    driver.get(context.getBaseUrl + "page/search")
+  }
 }

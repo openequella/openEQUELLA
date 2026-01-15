@@ -16,24 +16,11 @@
  * limitations under the License.
  */
 
-package io.github.openequella.pages.dashboard
+package io.github.openequella.pages.search
 
-/** Enumeration of the different portlet types available. The value represents the text of the
-  * default portlet title in the UI.
+/** Enumeration of the different Item Status.
   */
-object PortletType extends Enumeration {
-  type PortletType = Value
-
-  /** Only for testing purposes, represents a generic portlet when the type is unknown.
-    */
-  val Generic: Value = Value("Generic")
-
-  val Browse: Value      = Value("Browse")
-  val Favourites: Value  = Value("Favourites")
-  val Scripted: Value    = Value("Scripted")
-  val QuickSearch: Value = Value("Quick search")
-  val Html: Value        = Value("Formatted text")
-  val Recent: Value      = Value("Recent contributions")
-  val Tasks: Value       = Value("Tasks")
-  val MyResources: Value = Value("My resources")
+object ItemStatus extends Enumeration {
+  type ItemStatus = Value
+  val DRAFT, LIVE = Value
 }

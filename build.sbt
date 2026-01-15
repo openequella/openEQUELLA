@@ -5,6 +5,20 @@ import sbt.io.Using
 import java.time.Instant
 import java.util.Properties
 
+import net.nmoncho.sbt.dependencycheck.settings._
+
+// NVD API key for OWASP Dependency Check.
+// The check may be slower / rate-limited if not set.
+val nvdApiKey: Option[String] =
+  sys.env.get("NVD_API_KEY").filter(_.nonEmpty)
+
+ThisBuild / dependencyCheckNvdApi := {
+  nvdApiKey match {
+    case Some(key) => NvdApiSettings(apiKey = key)
+    case None      => NvdApiSettings()
+  }
+}
+
 lazy val learningedge_config = project in file("Dev/learningedge-config")
 
 lazy val allPlugins      = LocalProject("allPlugins")

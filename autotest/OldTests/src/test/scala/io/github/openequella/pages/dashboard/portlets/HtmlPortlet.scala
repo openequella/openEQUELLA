@@ -16,24 +16,23 @@
  * limitations under the License.
  */
 
-package io.github.openequella.pages.dashboard
+package io.github.openequella.pages.dashboard.portlets
 
-/** Enumeration of the different portlet types available. The value represents the text of the
-  * default portlet title in the UI.
+import com.tle.webtests.framework.PageContext
+
+/** Represents a HTML Portlet.
+  *
+  * @param context
+  *   The PageContext for the current test session.
+  * @param name
+  *   The name of the HTML Portlet.
   */
-object PortletType extends Enumeration {
-  type PortletType = Value
+class HtmlPortlet(context: PageContext, name: String)
+    extends GenericPortlet[HtmlPortlet](context, name) {
 
-  /** Only for testing purposes, represents a generic portlet when the type is unknown.
+  /** Gets the text content of the HTML Portlet.
     */
-  val Generic: Value = Value("Generic")
-
-  val Browse: Value      = Value("Browse")
-  val Favourites: Value  = Value("Favourites")
-  val Scripted: Value    = Value("Scripted")
-  val QuickSearch: Value = Value("Quick search")
-  val Html: Value        = Value("Formatted text")
-  val Recent: Value      = Value("Recent contributions")
-  val Tasks: Value       = Value("Tasks")
-  val MyResources: Value = Value("My resources")
+  def getHtmlText: String = driver
+    .findElement(contentContainerBy)
+    .getText
 }
