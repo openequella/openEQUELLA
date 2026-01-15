@@ -87,7 +87,7 @@ public class WorkflowResourceImpl
 
   @Override
   public Response getTrendsForWorkflow(String uuid, String trend) {
-    if (workflowService.getByUuid(uuid) == null) {
+    if (!workflowService.existsByUuid(uuid)) {
       throw entityNotFound(uuid);
     }
     Trend trendEnum = parseTrend(trend);

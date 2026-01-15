@@ -203,6 +203,13 @@ public abstract class AbstractEntityServiceImpl<
   }
 
   @Override
+  @Transactional
+  public boolean existsByUuid(String uuid) {
+    Check.checkNotEmpty(uuid);
+    return entityDao.countByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion()) > 0;
+  }
+
+  @Override
   @SecureOnReturn(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   @Transactional
   public T getForRestEdit(String uuid) {
