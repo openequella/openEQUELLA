@@ -8,18 +8,18 @@ import org.testng.annotations.Test
 import testng.annotation.NewUIOnly
 
 object MyResourceCategories {
-  val PUBLISHED        = "Published"        -> "Published"
-  val DRAFTS           = "Drafts"           -> "Drafts"
-  val SCRAPBOOK        = "Scrapbook"        -> "Scrapbook"
-  val MODERATION_QUEUE = "Moderation queue" -> "Moderation+queue"
-  val ARCHIVE          = "Archive"          -> "Archive"
+  val PUBLISHED        = "Published"
+  val DRAFTS           = "Drafts"
+  val SCRAPBOOK        = "Scrapbook"
+  val MODERATION_QUEUE = "Moderation queue"
+  val ARCHIVE          = "Archive"
 
-  val ALL_CATEGORIES = Map(PUBLISHED, DRAFTS, SCRAPBOOK, MODERATION_QUEUE, ARCHIVE)
+  val ALL_CATEGORIES: Set[String] = Set(PUBLISHED, DRAFTS, SCRAPBOOK, MODERATION_QUEUE, ARCHIVE)
 
-  val MOD_QUEUE_SUB_CATEGORIES = Map(
-    "In moderation" -> "%22status%22%3A%5B%22MODERATING%22%5D",
-    "Under review"  -> "%22status%22%3A%5B%22REVIEW%22%5D",
-    "Rejected"      -> "%22status%22%3A%5B%22REJECTED%22%5D"
+  val MOD_QUEUE_SUB_CATEGORIES: Set[String] = Set(
+    "In moderation",
+    "Under review",
+    "Rejected"
   )
 }
 
@@ -38,14 +38,14 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     val myResources = dashboardPage.getPortlet(MyResources, portletName)
 
     // Select each top-level category and verify the URL filter.
-    MyResourceCategories.ALL_CATEGORIES.foreach { case (itemName, urlFragmentExpected) =>
+    MyResourceCategories.ALL_CATEGORIES.foreach { case (itemName) =>
       assertTrue(myResources.hasCategory(itemName))
       myResources.clickCategory(itemName)
       loadDashboardPage()
     }
 
     // Select each moderation sub-category and verify the status filter in the URL
-    MyResourceCategories.MOD_QUEUE_SUB_CATEGORIES.foreach { case (subCat, urlFragmentExpected) =>
+    MyResourceCategories.MOD_QUEUE_SUB_CATEGORIES.foreach { case (subCat) =>
       assertTrue(myResources.hasCategory(subCat))
       myResources.clickCategory(subCat)
       loadDashboardPage()
