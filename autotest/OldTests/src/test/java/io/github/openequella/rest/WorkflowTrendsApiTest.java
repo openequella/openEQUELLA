@@ -53,7 +53,7 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
       description = "Retrieve workflow trends with valid trend values",
       dataProvider = "trendValues")
   public void getTrendsWithValidValue(String trendValue) throws IOException {
-    JsonNode result = doRequest(getWorkflowTrendsEndpoint(), HttpStatus.SC_OK, trendValue);
+    JsonNode result = executeRequest(getWorkflowTrendsEndpoint(), trendValue);
     assertNotNull(result);
     validateResponseStructure(result);
   }
@@ -63,8 +63,7 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
     final HttpMethod method = new GetMethod(getWorkflowTrendsEndpoint());
     method.setQueryString(new NameValuePair[] {new NameValuePair("trend", "YEAR")});
 
-    int statusCode = makeClientRequest(method);
-    assertEquals(statusCode, HttpStatus.SC_BAD_REQUEST);
+    assertStatusCode(method, HttpStatus.SC_BAD_REQUEST);
   }
 
   // --- Tests for GET specific workflow trends ---
@@ -73,7 +72,7 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
   public void getSpecificWorkflowTrends() throws IOException {
     String endpoint = String.format(getSpecificWorkflowEndpointTemplate(), TARGET_WORKFLOW_UUID);
 
-    JsonNode result = doRequest(endpoint, HttpStatus.SC_OK, "WEEK");
+    JsonNode result = executeRequest(endpoint, "WEEK");
 
     assertNotNull(result);
     validateResponseStructure(result);
@@ -83,7 +82,8 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
   public void getSpecificWorkflowInvalidUuid() throws IOException {
     String endpoint = String.format(getSpecificWorkflowEndpointTemplate(), "invalid-uuid-12345");
 
-    doRequest(endpoint, HttpStatus.SC_NOT_FOUND, "WEEK");
+    final HttpMethod method = buildGetMethod(endpoint, "WEEK");
+    assertStatusCode(method, HttpStatus.SC_NOT_FOUND);
   }
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid trend")
@@ -92,25 +92,43 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
     final HttpMethod method = new GetMethod(endpoint);
     method.setQueryString(new NameValuePair[] {new NameValuePair("trend", "INVALID")});
 
-    int statusCode = makeClientRequest(method);
-    assertEquals(statusCode, HttpStatus.SC_BAD_REQUEST);
+    assertStatusCode(method, HttpStatus.SC_BAD_REQUEST);
   }
 
-  private JsonNode doRequest(String url, int expectedCode, String trendParam) throws IOException {
+  /**
+   * Execute a GET request against the workflow trends endpoint with an optional trend parameter,
+   * asserting a 200 OK response and returning the parsed JSON.
+   */
+  private JsonNode executeRequest(String url, String trendParam) throws IOException {
+    final HttpMethod method = buildGetMethod(url, trendParam);
+    int statusCode = makeClientRequest(method);
+    if (statusCode != HttpStatus.SC_OK) {
+      throw new IOException("Request failed. Expected 200 OK, but received status: " + statusCode);
+    }
+    return mapper.readTree(method.getResponseBodyAsStream());
+  }
+
+  /** Build a GET method with an optional "trend" query parameter. */
+  private HttpMethod buildGetMethod(String url, String trendParam) {
     final HttpMethod method = new GetMethod(url);
     if (trendParam != null) {
       method.setQueryString(new NameValuePair[] {new NameValuePair("trend", trendParam)});
     }
-
-    int statusCode = makeClientRequest(method);
-    assertEquals(statusCode, expectedCode);
-
-    if (expectedCode == HttpStatus.SC_OK) {
-      return mapper.readTree(method.getResponseBodyAsStream());
-    }
-    return null;
+    return method;
   }
 
+  /** Assert that executing the given HTTP method returns the expected status code. */
+  private void assertStatusCode(HttpMethod method, int expectedCode) throws IOException {
+    int statusCode = makeClientRequest(method);
+    assertEquals(statusCode, expectedCode);
+  }
+
+  /**
+   * Validates that the provided JSON response complies with the expected structure for Workflow
+   * Trends.
+   *
+   * @param result The JsonNode containing the API response body to validate.
+   */
   private void validateResponseStructure(JsonNode result) {
     assertTrue(result.isArray(), "Response should be an array");
 
