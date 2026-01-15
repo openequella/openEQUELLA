@@ -24,18 +24,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TaskTrendBean {
   /** The unique identifier of the workflow task (workflow item) this statistic row refers to. */
-  private String taskId;
+  private final String taskId;
 
   /** The resolved, localised display name of the workflow task. */
-  private String name;
+  private final String name;
 
   /** The number of items currently waiting at this workflow task. */
-  private int waiting;
+  private final int waiting;
 
   /** The change in the waiting count over the requested trend period. */
-  private int trend;
+  private final int trend;
 
-  public TaskTrendBean() {}
+  public TaskTrendBean() {
+    this("", "", 0, 0);
+  }
 
   public TaskTrendBean(String taskId, String name, int waiting, int trend) {
     this.taskId = taskId;
@@ -48,31 +50,15 @@ public class TaskTrendBean {
     return taskId;
   }
 
-  public void setTaskId(String taskId) {
-    this.taskId = taskId;
-  }
-
   public String getName() {
     return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public int getWaiting() {
     return waiting;
   }
 
-  public void setWaiting(int waiting) {
-    this.waiting = waiting;
-  }
-
   public int getTrend() {
     return trend;
-  }
-
-  public void setTrend(int trend) {
-    this.trend = trend;
   }
 }
