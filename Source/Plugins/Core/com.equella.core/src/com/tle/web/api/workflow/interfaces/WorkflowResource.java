@@ -111,7 +111,6 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
   @Path("/trends")
   @ApiOperation(value = "Returns a list of all Task trends")
   public Response getTrends(
-      @Context UriInfo uriInfo,
       @ApiParam(
               value = "The trend period (WEEK or MONTH)",
               required = true,
@@ -123,7 +122,6 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
   @Path("/{uuid}/trends")
   @ApiOperation(value = "Returns a list of Task trends for the specified workflow")
   public Response getTrendsForWorkflow(
-      @Context UriInfo uriInfo,
       @ApiParam("The UUID of the workflow") @PathParam("uuid") String uuid,
       @ApiParam(
               value = "The trend period (WEEK or MONTH)",

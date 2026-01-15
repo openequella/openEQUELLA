@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 @Bind(WorkflowResource.class)
 @Singleton
@@ -80,14 +79,14 @@ public class WorkflowResourceImpl
   }
 
   @Override
-  public Response getTrends(UriInfo uriInfo, String trend) {
+  public Response getTrends(String trend) {
     Trend trendEnum = parseTrend(trend);
     List<TaskTrend> trends = taskStatisticsService.getWaitingTasks(trendEnum);
     return buildTrendResponse(trends);
   }
 
   @Override
-  public Response getTrendsForWorkflow(UriInfo uriInfo, String uuid, String trend) {
+  public Response getTrendsForWorkflow(String uuid, String trend) {
     if (workflowService.getByUuid(uuid) == null) {
       throw entityNotFound(uuid);
     }
