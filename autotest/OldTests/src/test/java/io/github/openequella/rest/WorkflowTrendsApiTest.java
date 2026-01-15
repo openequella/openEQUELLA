@@ -112,15 +112,20 @@ public class WorkflowTrendsApiTest extends AbstractRestApiTest {
   }
 
   private void validateResponseStructure(JsonNode result) {
-    assertTrue(result.isArray());
+    assertTrue(result.isArray(), "Response should be an array");
 
-    if (!result.isEmpty()) {
-      JsonNode item = result.get(0);
+    for (JsonNode item : result) {
+      assertNotNull(item.get("taskId"), "taskId field should exist");
+      assertTrue(item.get("taskId").isTextual(), "taskId should be a string");
 
-      assertNotNull(item.get("taskId"));
-      assertNotNull(item.get("name"));
-      assertNotNull(item.get("waiting"));
-      assertNotNull(item.get("trend"));
+      assertNotNull(item.get("name"), "name field should exist");
+      assertTrue(item.get("name").isTextual(), "name should be a string");
+
+      assertNotNull(item.get("waiting"), "waiting field should exist");
+      assertTrue(item.get("waiting").isInt(), "waiting should be an integer");
+
+      assertNotNull(item.get("trend"), "trend field should exist");
+      assertTrue(item.get("trend").isInt(), "trend should be an integer");
     }
   }
 }
