@@ -17,7 +17,7 @@ object ReplayTestCase {
       .flatMap(_.as[FailedTestCase])
       .flatMap { ftc =>
         val modSymbol = currentMirror.staticModule(ftc.propertiesClass)
-        val propInst =
+        val propInst  =
           currentMirror.reflectModule(modSymbol).instance.asInstanceOf[StatefulProperties]
         Decoder
           .decodeSeq(propInst.testCaseDecoder)

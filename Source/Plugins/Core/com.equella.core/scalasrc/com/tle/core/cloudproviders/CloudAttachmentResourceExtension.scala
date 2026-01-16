@@ -67,8 +67,8 @@ case class CloudAttachmentViewableResource(
 ) extends AbstractWrappedResource(parent) {
 
   import CloudAttachmentViewableResource._
-  val fields = CloudAttachmentFields(attach)
-  val itemId = parent.getViewableItem.getItemId
+  val fields   = CloudAttachmentFields(attach)
+  val itemId   = parent.getViewableItem.getItemId
   val viewerId = Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
     .flatMap { rif =>
       Option(rif.getModel(info).getViewer)
@@ -170,7 +170,7 @@ case class CloudAttachmentViewableResource(
 
   override def getContentStream: ContentStream = {
     (for {
-      provider <- OptionT.fromOption[IO](providerO)
+      provider      <- OptionT.fromOption[IO](providerO)
       viewerDetails <- OptionT.fromOption[IO] {
         serviceUriForViewer(provider, cloudViewer(provider))
       }
@@ -183,7 +183,7 @@ case class CloudAttachmentViewableResource(
         )
       )
     } yield response).value map {
-      case None => EmptyResponseStream
+      case None           => EmptyResponseStream
       case Some(response) =>
         response.body match {
           case Right(responseStream) => SttpResponseContentStream(response, responseStream)
@@ -214,9 +214,9 @@ case class SttpResponseContentStream(
     response: Response[Either[String, fs2.Stream[IO, Byte]]],
     responseStream: fs2.Stream[IO, Byte]
 ) extends AbstractContentStream(null, response.contentType.orNull) {
-  override def getContentLength: Long      = response.contentLength.getOrElse(-1L)
-  override def getInputStream: InputStream = null
-  override def mustWrite(): Boolean        = true
+  override def getContentLength: Long         = response.contentLength.getOrElse(-1L)
+  override def getInputStream: InputStream    = null
+  override def mustWrite(): Boolean           = true
   override def write(out: OutputStream): Unit = {
     val channel = Channels.newChannel(out)
     responseStream.chunks.map(c => IO(channel.write(c.toByteBuffer))).compile.drain.unsafeRunSync()

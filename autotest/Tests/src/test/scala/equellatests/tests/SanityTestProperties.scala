@@ -71,7 +71,7 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   statefulProp("go to pages") {
     generateCommands {
       case s if s.completedPages == Pages.values => List()
-      case s =>
+      case s                                     =>
         Fairness.favourIncomplete(1, 0)(Pages.values.toSeq, s.completedPages.contains).map(List(_))
     }
   }

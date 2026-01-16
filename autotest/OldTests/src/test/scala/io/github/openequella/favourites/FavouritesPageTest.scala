@@ -58,7 +58,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
   @Test(description = "User should be able to access favourites page from the menu.")
   def accessFromMenu(): Unit = {
     new HomePage(context).load
-    val menus = new MenuSection(context).get
+    val menus          = new MenuSection(context).get
     val favouritesPage =
       menus.clickMenu("Favourites", new FavouritesPage(context))
     assertTrue(favouritesPage.isLoaded)

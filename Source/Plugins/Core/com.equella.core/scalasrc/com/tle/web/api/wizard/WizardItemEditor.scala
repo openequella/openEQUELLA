@@ -93,7 +93,7 @@ class WizardItemEditor(wsi: WizardStateInterface) extends ItemEditor with ItemEd
 
   override def getAttachmentEditor[T <: AttachmentEditor](uuid_ : String, `type`: Class[T]): T = {
     val (uuid, existingAttachmentO) = Option(uuid_) match {
-      case None => (UUID.randomUUID().toString, None)
+      case None         => (UUID.randomUUID().toString, None)
       case Some(exUuid) =>
         ItemEditorImpl.checkValidUuid(exUuid)
         (exUuid, attachmentMap.get(exUuid))
