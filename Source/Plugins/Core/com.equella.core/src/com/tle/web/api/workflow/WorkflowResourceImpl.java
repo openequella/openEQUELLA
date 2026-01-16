@@ -18,6 +18,7 @@
 
 package com.tle.web.api.workflow;
 
+import com.google.api.client.util.Strings;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Trend;
 import com.tle.common.workflow.Workflow;
@@ -87,7 +88,7 @@ public class WorkflowResourceImpl
 
   @Override
   public Response getTrendsForWorkflow(String uuid, String trend) {
-    if (uuid == null || uuid.isBlank()) {
+    if (Strings.isNullOrEmpty(uuid)) {
       throw badRequest("Workflow uuid parameter is required");
     }
     if (!workflowService.existsByUuid(uuid)) {
@@ -113,7 +114,7 @@ public class WorkflowResourceImpl
    * (400 Bad Request) if the string is invalid or null.
    */
   private Trend parseTrend(String trend) {
-    if (trend == null || trend.isBlank()) {
+    if (Strings.isNullOrEmpty(trend)) {
       throw badRequest("Trend parameter is required");
     }
     try {
