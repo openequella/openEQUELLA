@@ -205,7 +205,7 @@ public abstract class AbstractEntityServiceImpl<
   @Override
   @Transactional
   public boolean existsByUuid(String uuid) {
-    Check.checkNotEmpty(uuid);
+    Check.checkValidUuid(uuid);
     return entityDao.countByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion()) > 0;
   }
 

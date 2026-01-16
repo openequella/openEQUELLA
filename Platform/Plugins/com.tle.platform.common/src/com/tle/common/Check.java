@@ -31,19 +31,11 @@ import java.util.UUID;
 @SuppressWarnings("nls")
 public final class Check {
   public static UUID checkValidUuid(String uuid) {
-    UUID jUuid = null;
     try {
-      jUuid = UUID.fromString(uuid);
-      if (!uuid.equals(jUuid.toString())) {
-        jUuid = null;
-      }
-    } catch (Exception e) {
-      jUuid = null;
+      return UUID.fromString(uuid);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid UUID '" + uuid + "'", e);
     }
-    if (jUuid == null) {
-      throw new IllegalArgumentException("Invalid UUID '" + uuid + "'");
-    }
-    return jUuid;
   }
 
   public static boolean isValidUuid(String uuid) {

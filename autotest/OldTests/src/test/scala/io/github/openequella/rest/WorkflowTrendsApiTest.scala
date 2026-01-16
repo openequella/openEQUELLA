@@ -58,7 +58,8 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid UUID")
   def specificWorkflowInvalidUuid(): Unit = {
-    val endpoint = getSpecificWorkflowEndpointTemplate.format("invalid-uuid-12345")
+    val endpoint =
+      getSpecificWorkflowEndpointTemplate.format("0f7bd496-8466-4fa5-b166-8832cc5294e4")
 
     val method = buildGetMethod(endpoint, "WEEK")
     assertStatusCode(method, HttpStatus.SC_NOT_FOUND)
