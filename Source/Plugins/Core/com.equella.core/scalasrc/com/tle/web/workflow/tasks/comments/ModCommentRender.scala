@@ -43,7 +43,7 @@ object ModCommentRender {
   ): SectionRenderable = {
 
     case class ModRow(wc: WorkflowMessage) {
-      def getMessage = wc.getMessage
+      def getMessage    = wc.getMessage
       def getExtraClass = wc.getType match {
         case WorkflowMessage.TYPE_ACCEPT => "approval"
         case WorkflowMessage.TYPE_REJECT => "rejection"
@@ -51,7 +51,7 @@ object ModCommentRender {
       }
       def getDateRenderer = JQueryTimeAgo.timeAgoTag(wc.getDate)
       def getUser         = userLinkSection.createLink(info, wc.getUser)
-      val getAttachments = {
+      val getAttachments  = {
         val wfile = new WorkflowMessageFile(wc.getUuid)
         fileSystemService.enumerate(wfile, "", null).map { fe =>
           new HtmlLinkState(

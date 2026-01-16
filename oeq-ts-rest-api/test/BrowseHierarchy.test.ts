@@ -26,7 +26,7 @@ afterAll(() => logout(TC.API_PATH));
 describe('Browse hierarchy', () => {
   it('should be able to get all root hierarchies', async () => {
     const result = await OEQ.BrowseHierarchy.browseRootHierarchies(TC.API_PATH);
-    expect(result).toHaveLength(8);
+    expect(result).toHaveLength(9);
   });
 
   it('should be able to get all sub hierarchies of a provided hierarchy', async () => {

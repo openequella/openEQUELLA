@@ -19,8 +19,10 @@ import { Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
 import { ReactNode } from "react";
+import { TooltipProps } from "@mui/material/Tooltip/Tooltip";
 
-export interface TooltipCustomComponentProps {
+export interface TooltipCustomComponentProps
+  extends Omit<TooltipProps, "children" | "title"> {
   /** The text to be displayed on the tooltip. */
   title: string;
   /** The children to be rendered inside the tooltip. */
@@ -39,8 +41,9 @@ const StyledDiv = styled("div")(() => ({
 export const TooltipCustomComponent = ({
   title,
   children,
+  ...rest
 }: TooltipCustomComponentProps) => (
-  <Tooltip title={title}>
+  <Tooltip title={title} {...rest}>
     <StyledDiv>{children}</StyledDiv>
   </Tooltip>
 );

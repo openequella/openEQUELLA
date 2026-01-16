@@ -26,6 +26,7 @@ import com.tle.beans.entity.Schema
 import com.tle.common.i18n.CurrentLocale
 import com.tle.common.search.{DefaultSearch, PresetSearch}
 import com.tle.common.security.SecurityConstants
+import com.tle.common.util.CollectionUtils.convertEmptyListToNone
 import com.tle.core.auditlog.AuditLogService
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.freetext.service.FreeTextService
@@ -91,9 +92,10 @@ class SearchResource {
     response = classOf[FacetedSearchResult]
   )
   def searchFacet(@BeanParam params: FacetedSearchParam): Response = {
-    val searchPayload = SearchPayload(params)
+    val searchPayload     = SearchPayload(params)
+    val collectionsFilter = convertEmptyListToNone(searchPayload.collections)
 
-    searchPayload.hierarchy.map(createPresetSearch).sequence match {
+    searchPayload.hierarchy.map(createHierarchyPresetSearch(_, collectionsFilter)).sequence match {
       case Right(hierarchySearch) =>
         val search = createSearch(searchPayload, None, hierarchySearch)
         doFacetSearch(search, params)
@@ -179,7 +181,7 @@ class SearchResource {
     }
 
     val collectionId = params.collections(0)
-    val collection = Option(itemDefinitionService.getByUuid(collectionId)) match {
+    val collection   = Option(itemDefinitionService.getByUuid(collectionId)) match {
       case Some(c) => c
       case None => throw new NotFoundException(s"Failed to find Collection for ID: $collectionId")
     }
@@ -194,7 +196,7 @@ class SearchResource {
 
     Option(collection.getSchema) match {
       case Some(s) => s
-      case None =>
+      case None    =>
         throw new NotFoundException(
           s"Failed to find Schema for Collection: ${CurrentLocale.get(collection.getName)}"
         )
@@ -202,20 +204,29 @@ class SearchResource {
   }
 
   // create a PresetSearch for a hierarchy search
-  private def createPresetSearch(compoundUuidStr: String): Either[String, PresetSearch] = {
+  private def createHierarchyPresetSearch(
+      compoundUuidStr: String,
+      collectionsFilter: Option[Iterable[String]]
+  ): Either[String, PresetSearch] = {
     def buildSearch(compoundUuid: HierarchyCompoundUuid) =
       Option(hierarchyService.getHierarchyTopicByUuid(compoundUuid.uuid)) match {
         case Some(topic) =>
           val fullUuidNameMap = compoundUuid.getAllVirtualHierarchyMap.asJava
-          Right(hierarchyService.buildSearch(topic, fullUuidNameMap))
+          Right(
+            hierarchyService.buildSearch(
+              topic,
+              fullUuidNameMap,
+              collectionsFilter.map(_.toList.asJava).orNull
+            )
+          )
         case None =>
           Left(s"Failed to get preset search: Topic $compoundUuidStr not found.")
       }
 
     HierarchyCompoundUuid(compoundUuidStr) match {
       case Right(compoundUuid) => buildSearch(compoundUuid)
-      case Left(e) =>
-        Left(s"Failed to parse hierarchy compound UUID ${compoundUuidStr}: ${e.getMessage}")
+      case Left(e)             =>
+        Left(s"Failed to parse hierarchy compound UUID $compoundUuidStr: ${e.getMessage}")
     }
   }
 
@@ -238,7 +249,7 @@ class SearchResource {
         highlight
       )
     } match {
-      case Success(searchResult) => Response.ok.entity(searchResult).build()
+      case Success(searchResult)                   => Response.ok.entity(searchResult).build()
       case Failure(_: InvalidSearchQueryException) =>
         ApiErrorResponse.badRequest("Invalid search query - please remove any special characters.")
       case Failure(e) => throw e
@@ -246,9 +257,11 @@ class SearchResource {
   }
 
   private def doSearch(searchPayload: SearchPayload): Response = {
+    val collectionsFilter = convertEmptyListToNone(searchPayload.collections.toList.asJava)
+
     searchPayload.hierarchy
       .map(URLDecoder.decode(_, StandardCharsets.UTF_8))
-      .map(createPresetSearch)
+      .map(createHierarchyPresetSearch(_, collectionsFilter))
       .sequence match {
       case Right(hierarchySearch) =>
         val search = createSearch(searchPayload, None, hierarchySearch)

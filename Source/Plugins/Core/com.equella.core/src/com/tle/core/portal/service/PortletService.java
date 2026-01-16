@@ -22,6 +22,7 @@ import com.tle.common.portal.PortletTypeDescriptor;
 import com.tle.common.portal.entity.Portlet;
 import com.tle.common.portal.entity.PortletPreference;
 import com.tle.common.portal.service.RemotePortletService;
+import com.tle.core.dashboard.model.PortletPreferenceUpdate;
 import com.tle.core.entity.service.AbstractEntityService;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +53,15 @@ public interface PortletService
   void savePreferences(Collection<PortletPreference> preferences);
 
   void savePreference(PortletPreference preference);
+
+  /**
+   * Updates the preferences for a given portlet, creating a new preference record if one does not
+   * already exist.
+   *
+   * @param target The portlet whose preferences will be updated.
+   * @param update An object containing the new values for the preferences.
+   */
+  void updatePreference(Portlet target, PortletPreferenceUpdate update);
 
   Map<String, PortletTypeDescriptor> mapAllAvailableTypes();
 

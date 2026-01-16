@@ -18,6 +18,7 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { flow, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as t from "io-ts";
 import { API_BASE_URL } from "../AppConfig";
 import { getISODateString } from "../util/Date";
 import { buildSearchParams, formatQuery, SearchOptions } from "./SearchModule";
@@ -115,7 +116,11 @@ const buildFavouriteSearchParams = ({
   addedAfter: getISODateString(lastModifiedDateRange?.start),
 });
 
-export type FavouritesType = "resources" | "searches";
+export const FavouritesTypeUnion = t.union([
+  t.literal("resources"),
+  t.literal("searches"),
+]);
+export type FavouritesType = t.TypeOf<typeof FavouritesTypeUnion>;
 
 /**
  * Add an Item to user's favourites.

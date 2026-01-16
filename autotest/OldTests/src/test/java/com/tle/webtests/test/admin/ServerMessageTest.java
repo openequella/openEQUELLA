@@ -21,27 +21,26 @@ public class ServerMessageTest extends AbstractSessionTest {
   public void testServerMessage() {
     PageContext adminContext = new PageContext(this.context, testConfig.getAdminUrl());
     InstitutionListTab listTab =
-        new ServerAdminLogonPage(context)
+        new ServerAdminLogonPage(adminContext)
             .load()
             .logon(testConfig.getAdminPassword(), new InstitutionListTab(adminContext));
     ServerSettingsTab settingsTab = listTab.serverSettingsTab();
     settingsTab.setServerMessage(SERVER_MESSAGE);
 
-    logon("AutoTest", "automated");
-    ContributePage page = new ContributePage(context).load();
-    if (!page.usingNewUI()) {
-      assertTrue(isTextPresent(SERVER_MESSAGE));
-    } else {
-      // won't be present as it is not currently implemented in the new UI
-      assertFalse(isTextPresent(SERVER_MESSAGE));
+    if (!testConfig.isNewUI()) {
+      assertTrue(isServerMessagePresent());
+      logout();
     }
-    logout();
 
     settingsTab = listTab.load().serverSettingsTab();
     settingsTab.disableServerMessage();
 
-    logon("AutoTest", "automated");
+    assertFalse(isServerMessagePresent());
+  }
+
+  private boolean isServerMessagePresent() {
+    logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
     new ContributePage(context).load();
-    assertFalse(isTextPresent(SERVER_MESSAGE));
+    return isTextPresent(SERVER_MESSAGE);
   }
 }

@@ -97,7 +97,7 @@ class TestingCloudProvider extends Http4sDsl[IO] {
         val formMap = formData.values.view.mapValues(_.toVector)
         val authReq = new AuthorizationRequest(headerMap(request), formMap.toMap)
         IO.fromFuture { IO(TestTokenEndpoint.handleRequest(authReq, TestTokenEndpoint)) }.flatMap {
-          case Left(err) => Forbidden(err.description)
+          case Left(err)     => Forbidden(err.description)
           case Right(result) =>
             Ok(
               OAuthTokenResponse(

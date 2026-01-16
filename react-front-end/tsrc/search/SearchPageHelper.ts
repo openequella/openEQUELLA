@@ -83,6 +83,9 @@ const nop = () => {};
  * as opposed to the Business Layer which is handled by the Modules.
  */
 
+/** The query string parameter name used to store SearchPageOptions in the URL for SearchPage. */
+export const SEARCH_OPTIONS_PARAM = "searchOptions";
+
 /**
  * Type of search options that are specific to Search page presentation layer.
  */
@@ -409,7 +412,7 @@ const generateSearchPageOptionsFromQueryString = async (
   queryString: string,
 ): Promise<SearchPageOptions | undefined> => {
   const params = new URLSearchParams(queryString);
-  const searchPageOptions = params.get("searchOptions");
+  const searchPageOptions = params.get(SEARCH_OPTIONS_PARAM);
 
   // If the query params contain `searchOptions` convert to `SearchOptions` with `newSearchQueryToSearchPageOptions`.
   // Else if the query params contain params from legacy `searching.do` (i.e. `LegacySearchParams`) then convert to
@@ -451,23 +454,24 @@ export const generateSearchPageOptionsFromUrl = async (
 
 /**
  * A function that takes search options and converts it to a JSON representation.
- * Collections and owner properties are both reduced down to their uuid and id properties respectively.
+ * It encodes a subset of `SearchPageOptions` without constructing a full object. Useful where only specific fields (e.g. `status`) need to be stored in a URL or similar.
  * Undefined properties are excluded.
- * Intended to be used in conjunction with SearchModule.newSearchQueryToSearchOptions
+ * Intended to be used in conjunction with `newSearchQueryToSearchOptions`.
  *
- * @param searchPageOptions Search options selected on Search page.
+ * @param searchPageOptions The search options to be converted into a query string.
  * @return url encoded key/value pair of JSON searchOptions
  */
 export const generateQueryStringFromSearchPageOptions = (
-  searchPageOptions: SearchPageOptions,
+  searchPageOptions: Partial<SearchPageOptions>,
 ): string => {
   const params = new URLSearchParams();
   params.set(
-    "searchOptions",
+    SEARCH_OPTIONS_PARAM,
     JSON.stringify(
       searchPageOptions,
       (key: string, value: object[] | undefined) =>
         simpleMatch({
+          // Collections and owner properties are both reduced down to their uuid and id properties respectively.
           collections: () =>
             value?.map((collection) => pick(collection, ["uuid"])),
           owner: () => (value ? pick(value, ["id"]) : undefined),
@@ -872,8 +876,8 @@ export const buildSearchPageNavigationConfig = (
   path: NEW_SEARCH_PATH,
   selectionSessionPathBuilder: () =>
     buildSelectionSessionSearchPageLink(
-      undefined,
-      searchPageOptions.externalMimeTypes,
+      O.none,
+      O.fromNullable(searchPageOptions.externalMimeTypes),
     ),
 });
 

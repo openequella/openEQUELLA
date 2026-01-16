@@ -109,7 +109,7 @@ object CloudAttachmentSerializer {
     case i: java.lang.Integer       => i.asJson
     case b: java.lang.Boolean       => b.asJson
     case a: java.util.Collection[_] => a.asScala.map(fromJava).asJson
-    case m: java.util.Map[_, _] =>
+    case m: java.util.Map[_, _]     =>
       m.asScala.map { case (k, v) =>
         (k.toString, fromJava(v))
       }.asJson

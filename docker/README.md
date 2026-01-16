@@ -239,10 +239,9 @@ guide.
 
 Next, a couple of pre-requisites:
 
-- You need two directories in the `docker` directory of your git clone. Make sure the user docker
-  will be running as has write permissions. They are:
-  - `filestore`; and
-  - `traefik.toml`
+- You need one directory in the `docker` directory of your git clone. Make sure the user docker
+  will be running as has write permissions:
+  - `filestore`
 - Additionally, you will need to add an entry to your `/etc/hosts` file pointing `127.0.0.1` to
   `oeq.localhost`
 
@@ -258,6 +257,8 @@ After that, it's time to start the cluster:
 - Following that you can go to the Administer server page and then open Health check where you
   should expect to see a table which lists all node IDs. By default, there is only one, but below
   you can find instructions for increasing the number.
+- (optional) Access the Traefik dashboard at <http://localhost:8081/dashboard/> to monitor routing
+  and load balancing. (NOTE: the trailing slash is required.)
 
 ### Updating
 

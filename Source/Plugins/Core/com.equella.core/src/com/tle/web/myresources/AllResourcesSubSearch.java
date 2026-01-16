@@ -27,7 +27,7 @@ public class AllResourcesSubSearch extends AbstractMyResourcesSubSearch {
   }
 
   @Override
-  public MyResourcesSearch createDefaultSearch(SectionInfo info) {
+  public MyResourcesSearch createDefaultSearch() {
     return new MyResourcesSearch();
   }
 

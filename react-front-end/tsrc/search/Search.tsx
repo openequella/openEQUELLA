@@ -207,6 +207,7 @@ export const Search = ({
     ): void => {
       dispatch({
         type: "search",
+        requestToken: crypto.randomUUID(),
         options: searchPageOptions,
         updateClassifications,
         callback,
@@ -314,7 +315,8 @@ export const Search = ({
       console.debug("SearchPage: useEffect - searching");
       console.time(timerId);
 
-      const { options, updateClassifications, callback } = searchState;
+      const { requestToken, options, updateClassifications, callback } =
+        searchState;
 
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
@@ -374,6 +376,7 @@ export const Search = ({
 
           dispatch({
             type: "search-complete",
+            requestToken,
             result: { ...searchResult },
             classifications,
           });

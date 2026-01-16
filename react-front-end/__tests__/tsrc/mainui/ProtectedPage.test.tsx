@@ -24,7 +24,7 @@ import ProtectedPage, {
   ProtectedPageProps,
 } from "../../../tsrc/mainui/ProtectedPage";
 import * as TE from "fp-ts/TaskEither";
-import type { PermissionCheck } from "../../../tsrc/modules/SecurityModule";
+import type { RequiredPermissionCheck } from "../../../tsrc/modules/SecurityModule";
 
 describe("<ProtectedPage/>", () => {
   const page = "Page";
@@ -80,7 +80,10 @@ describe("<ProtectedPage/>", () => {
 
   describe("Permission check", () => {
     const permissionCheck = jest.fn().mockResolvedValue(true);
-    const task: PermissionCheck = TE.tryCatch(permissionCheck, () => "Failed");
+    const task: RequiredPermissionCheck = TE.tryCatch(
+      permissionCheck,
+      () => "Failed",
+    );
 
     const permitted = {
       ...defaultPageProps,

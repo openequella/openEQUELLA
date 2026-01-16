@@ -21,6 +21,7 @@ package com.tle.core.favourites.service;
 import com.tle.common.searching.Search;
 import com.tle.core.favourites.SearchFavouritesSearchResults;
 import com.tle.core.favourites.bean.FavouriteSearch;
+import com.tle.exceptions.AuthenticationException;
 import com.tle.web.sections.SectionInfo;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public interface FavouriteSearchService {
    *
    * @param search A search definition to be saved to database.
    * @return A FavouriteSearch instance of the new entry.
+   * @throws AuthenticationException If the current user is a guest (unauthenticated) he is not
+   *     allowed to favourite searches.
    */
   FavouriteSearch save(FavouriteSearch search);
 

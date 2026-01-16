@@ -7,15 +7,15 @@ import sbt.plugins.JvmPlugin
 
 object CommonSettings extends AutoPlugin {
   object autoImport {
-    lazy val versionProperties = taskKey[File]("Version property file")
-    lazy val upgradeZip        = taskKey[File]("Create upgrade zip")
-    lazy val installerZip      = taskKey[File]("Create the installer zip")
-    lazy val equellaMajor      = settingKey[Int]("The major equella version")
-    lazy val equellaMinor      = settingKey[Int]("The minor equella version")
-    lazy val equellaPatch      = settingKey[Int]("The patch equella version")
-    lazy val equellaStream     = settingKey[String]("The equella stream name")
-    lazy val equellaBuild      = settingKey[String]("The equella build version")
-    lazy val equellaVersion    = settingKey[EquellaVersion]("The full equella version")
+    lazy val versionProperties  = taskKey[File]("Version property file")
+    lazy val upgradeZip         = taskKey[File]("Create upgrade zip")
+    lazy val installerZip       = taskKey[File]("Create the installer zip")
+    lazy val equellaMajor       = settingKey[Int]("The major equella version")
+    lazy val equellaMinor       = settingKey[Int]("The minor equella version")
+    lazy val equellaPatch       = settingKey[Int]("The patch equella version")
+    lazy val equellaStream      = settingKey[String]("The equella stream name")
+    lazy val equellaBuild       = settingKey[String]("The equella build version")
+    lazy val equellaVersion     = settingKey[EquellaVersion]("The full equella version")
     lazy val bundleOracleDriver =
       settingKey[Boolean]("The flag used to indicate if oracle driver is needed or not")
     lazy val oracleDriverMavenCoordinate =
@@ -29,9 +29,9 @@ object CommonSettings extends AutoPlugin {
     lazy val writeScriptingJavadoc = taskKey[File]("Write the scripting javadoc")
     lazy val mergeJPF              = inputKey[Unit]("Merge all")
     lazy val buildReactFrontEnd    = taskKey[File]("Build the ReactJS based front-end")
-    lazy val oeqTsRestApiDir =
+    lazy val oeqTsRestApiDir       =
       settingKey[File]("The base directory of the oEQ Typescript REST module project")
-    lazy val reactFrontEndDir = settingKey[File]("The base directory of the ReactJS project")
+    lazy val reactFrontEndDir       = settingKey[File]("The base directory of the ReactJS project")
     lazy val reactFrontEndOutputDir =
       settingKey[File]("The output/target directory of the ReactJS project")
     lazy val reactFrontEndLanguageBundle =
@@ -43,7 +43,7 @@ object CommonSettings extends AutoPlugin {
     lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.8"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.1.jre11"
 
-    lazy val log4jVersion   = "2.25.2"
+    lazy val log4jVersion   = "2.25.3"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core"        % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
@@ -70,12 +70,12 @@ object CommonSettings extends AutoPlugin {
   override def trigger: PluginTrigger = allRequirements
 
   override def requires: Plugins = HeaderPlugin && JvmPlugin
-  override def projectSettings = Seq(
+  override def projectSettings   = Seq(
     organization := "com.github.equella",
-    scalaVersion := "2.13.17",
+    scalaVersion := "2.13.18",
     scalacOptions ++= Seq("-Vimplicits"),
     javacOptions ++= Seq("--release", "21"),
-    compileOrder := CompileOrder.Mixed,
+    compileOrder  := CompileOrder.Mixed,
     headerLicense := Some(
       HeaderLicense.Custom(
         """|Licensed to The Apereo Foundation under one or more contributor license

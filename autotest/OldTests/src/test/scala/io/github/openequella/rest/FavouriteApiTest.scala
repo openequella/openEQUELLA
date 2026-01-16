@@ -18,17 +18,12 @@
 
 package io.github.openequella.rest
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import io.github.openequella.Utils
-import org.apache.commons.httpclient.methods.{
-  DeleteMethod,
-  GetMethod,
-  PostMethod,
-  StringRequestEntity
-}
-import org.testng.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.apache.commons.httpclient.HttpStatus
+import org.apache.commons.httpclient.methods.{DeleteMethod, GetMethod, PostMethod}
+import org.testng.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.testng.annotations.{DataProvider, Test}
 
 import scala.jdk.CollectionConverters._
@@ -49,19 +44,22 @@ class FavouriteApiTest extends AbstractRestApiTest {
   private var searchId: Long   = 0L
 
   @Test
+  def testAddFavouriteItemUnauthenticated(): Unit = {
+    logout()
+
+    val (responseCode, _) = postFavouriteItem(Array())
+
+    // The API checks item permissions first. Because the guest user cannot view the item, it returns a 403 response.
+    assertEquals(responseCode, HttpStatus.SC_FORBIDDEN)
+    login()
+  }
+
+  @Test
   def testAddFavouriteItem(): Unit = {
-    val method              = new PostMethod(FAVOURITE_ITEM_API_ENDPOINT)
-    val tags: Array[String] = Array("a", "b")
+    val tags: Array[String]    = Array("a", "b")
+    val (responseCode, method) = postFavouriteItem(tags)
 
-    val body: ObjectNode = mapper.createObjectNode()
-    body.put("itemID", ITEM_KEY)
-    body.set("keywords", mapper.valueToTree(tags))
-    body.put("isAlwaysLatest", true)
-
-    method.setRequestEntity(
-      new StringRequestEntity(body.toString, "application/json", "UTF-8")
-    )
-    assertEquals(makeClientRequest(method), HttpStatus.SC_CREATED)
+    assertEquals(responseCode, HttpStatus.SC_CREATED)
 
     val response: JsonNode      = mapper.readTree(method.getResponseBodyAsStream)
     val keywords: Array[String] = response.get("keywords").elements().asScala.map(_.asText).toArray
@@ -90,21 +88,24 @@ class FavouriteApiTest extends AbstractRestApiTest {
   }
 
   @Test
+  def testAddFavouriteSearchUnauthenticated(): Unit = {
+    logout()
+
+    val (responseCode, _) = postFavouriteSearch("search name", "search path")
+
+    assertEquals(responseCode, HttpStatus.SC_UNAUTHORIZED)
+    login()
+  }
+
+  @Test
   def testAddFavouriteSearch(): Unit = {
     val searchName = SEARCH_D
     val searchPath =
       "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RANK%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D"
 
-    val method           = new PostMethod(FAVOURITE_SEARCH_API_ENDPOINT)
-    val body: ObjectNode = mapper.createObjectNode()
-    body.put("name", searchName)
-    body.put("url", searchPath)
+    val (responseCode, method) = postFavouriteSearch(searchName, searchPath)
 
-    method.setRequestEntity(
-      new StringRequestEntity(body.toString, "application/json", "UTF-8")
-    )
-
-    assertEquals(makeClientRequest(method), HttpStatus.SC_CREATED)
+    assertEquals(responseCode, HttpStatus.SC_CREATED)
     val response: JsonNode = mapper.readTree(method.getResponseBodyAsStream)
     assertEquals(response.get("name").asText(), searchName)
     assertEquals(response.get("url").asText(), searchPath)
@@ -189,6 +190,26 @@ class FavouriteApiTest extends AbstractRestApiTest {
   def testStartAndLength(): Unit = {
     val response: JsonNode = getFavouriteSearchResults(Seq("start" -> "1", "length" -> "1"))
     assertEquals(getFirstFavouriteSearchName(response), SEARCH_B)
+  }
+
+  private def postFavouriteItem(tags: Array[String]): (Int, PostMethod) = {
+    val method = new PostMethod(FAVOURITE_ITEM_API_ENDPOINT)
+
+    val body: ObjectNode = mapper.createObjectNode()
+    body.put("itemID", ITEM_KEY)
+    body.set("keywords", mapper.valueToTree(tags))
+    body.put("isAlwaysLatest", true)
+
+    (makeClientRequestWithEntity(method, body), method)
+  }
+
+  private def postFavouriteSearch(searchName: String, searchPath: String): (Int, PostMethod) = {
+    val method           = new PostMethod(FAVOURITE_SEARCH_API_ENDPOINT)
+    val body: ObjectNode = mapper.createObjectNode()
+    body.put("name", searchName)
+    body.put("url", searchPath)
+
+    (makeClientRequestWithEntity(method, body), method)
   }
 
   private def getFavouriteSearchResults(queryParams: Seq[(String, String)] = Seq()): JsonNode = {

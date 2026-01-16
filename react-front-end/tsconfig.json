@@ -25,6 +25,7 @@
   },
   "include": [
     "tsrc/**/*",
+    "tsrc/assets/declaration.d.ts",
     "__tests__/**/*",
     "__stories__/**/*",
     "__mocks__/**/*"

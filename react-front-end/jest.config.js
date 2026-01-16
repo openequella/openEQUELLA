@@ -33,5 +33,7 @@ module.exports = {
     // Mocking CSS modules as per the Jest documentation: https://jestjs.io/docs/webpack#mocking-css-modules
     // Required due to the use of pragmatic-drag-and-drop which has directly imported CSS files.
     "\\.(css|less)$": "identity-obj-proxy",
+    // Mocking static files as per the jest documentation: https://jestjs.io/docs/webpack#handling-static-assets
+    "\\.(png|jpg|jpeg)$": "<rootDir>/__mocks__/fileMock.ts",
   },
 };

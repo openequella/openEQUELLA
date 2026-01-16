@@ -591,4 +591,16 @@ public abstract class AbstractPage<T extends PageObject>
     waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
     confirmButton.click();
   }
+
+  /**
+   * Checks if a toggle button with a specific aria-label is currently selected.
+   *
+   * @param label The aria-label of the toggle button.
+   * @return True if the button is selected, false otherwise.
+   */
+  public boolean isToggleButtonSelected(String label) {
+    String buttonXpath =
+        String.format("//button[@aria-label='%s' and @aria-checked='true']", label);
+    return !driver.findElements(By.xpath(buttonXpath)).isEmpty();
+  }
 }

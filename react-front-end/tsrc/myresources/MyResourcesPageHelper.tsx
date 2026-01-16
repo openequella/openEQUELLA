@@ -32,6 +32,7 @@ import * as t from "io-ts";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
+import { MyResourcesCategoryNameCodec } from "../../../oeq-ts-rest-api/src/gen/MyResource";
 import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
@@ -70,16 +71,7 @@ import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
-export const MyResourcesTypeRuntypes = t.union([
-  t.literal("Published"),
-  t.literal("Drafts"),
-  t.literal("Scrapbook"),
-  t.literal("Moderation queue"),
-  t.literal("Archive"),
-  t.literal("All resources"),
-]);
-
-export type MyResourcesType = t.TypeOf<typeof MyResourcesTypeRuntypes>;
+export type MyResourcesType = t.TypeOf<typeof MyResourcesCategoryNameCodec>;
 
 /**
  * Return a list of Item status that match the given MyResources type.
@@ -221,7 +213,7 @@ const getMyResourcesTypeFromNewUIQueryParam = (
 ): O.Option<MyResourcesType> =>
   pipe(
     params.get(PARAM_MYRESOURCES_TYPE),
-    O.fromPredicate(MyResourcesTypeRuntypes.is),
+    O.fromPredicate(MyResourcesCategoryNameCodec.is),
   );
 
 /**

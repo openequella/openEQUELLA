@@ -393,7 +393,7 @@ class Lti13AuthService {
       unknownUserHandling match {
         case UnknownUserHandling.ERROR =>
           Left(AccessDenied(s"Failed to authenticate (Unknown User)"))
-        case UnknownUserHandling.GUEST => Right(asGuest())
+        case UnknownUserHandling.GUEST  => Right(asGuest())
         case UnknownUserHandling.CREATE =>
           LOGGER.info(s"Creating new user $username($oeqUserId).")
           // - Create a TLEUser

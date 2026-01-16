@@ -32,15 +32,18 @@ import { itemWithBookmark } from "../../../__mocks__/SearchResult.mock";
 import { basicSearchObj } from "../../../__mocks__/searchresult_mock_data";
 import { getCurrentUserMock } from "../../../__mocks__/UserModule.mock";
 import FavouritesPage from "../../../tsrc/favourites/FavouritesPage";
+import { FAVOURITES_TYPE_PARAM } from "../../../tsrc/favourites/FavouritesPageHelper";
 import { AppContext } from "../../../tsrc/mainui/App";
+import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
+import { FavouritesType } from "../../../tsrc/modules/FavouriteModule";
 import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import {
+  clickButton,
   clickSelect,
   countPresentSelectOptions,
   isToggleButtonChecked,
-  selectToggleButton,
 } from "../MuiTestHelpers";
 import {
   getRefineSearchComponent,
@@ -52,7 +55,6 @@ import {
   SORTORDER_SELECT_ID,
   waitForSearchCompleted,
 } from "../search/SearchPageTestHelper";
-import * as FavouriteModule from "../../../tsrc/modules/FavouriteModule";
 import { mockApisForFavouriteSearches } from "./components/FavouritesSearchTestHelper";
 
 const { resources: resourcesLabel, searches: searchesLabel } =
@@ -124,8 +126,8 @@ describe("<FavouritesPage/>", () => {
 
     expect(mockFavResourcesSearch).toHaveBeenCalled();
     expect(mockSearch).not.toHaveBeenCalled();
-    expect(isToggleButtonChecked(container, resourcesLabel)).toBeTruthy();
-    expect(isToggleButtonChecked(container, modeItemList)).toBeTruthy();
+    expect(isToggleButtonChecked(container, resourcesLabel)).toBe(true);
+    expect(isToggleButtonChecked(container, modeItemList)).toBe(true);
     expect(listSearchResults).toHaveLength(2);
   });
 
@@ -135,9 +137,9 @@ describe("<FavouritesPage/>", () => {
   ])("shows Favourite Resources's %s", async (mode, gallerySearch) => {
     gallerySearch.mockResolvedValueOnce(getEmptyGallerySearchResp);
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, mode);
+    await clickButton(container, mode);
 
-    expect(isToggleButtonChecked(container, mode)).toBeTruthy();
+    expect(isToggleButtonChecked(container, mode)).toBe(true);
     expect(gallerySearch).toHaveBeenCalledTimes(1);
     expect(mockFavResourcesSearch).toHaveBeenCalled();
     expect(mockSearch).not.toHaveBeenCalled();
@@ -145,9 +147,9 @@ describe("<FavouritesPage/>", () => {
 
   it("supports changing Favourites Type to 'Searches' using Favourites Selector", async () => {
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
 
-    expect(isToggleButtonChecked(container, searchesLabel)).toBeTruthy();
+    expect(isToggleButtonChecked(container, searchesLabel)).toBe(true);
     expect(mockFavSearchesSearch).toHaveBeenCalled();
   });
 
@@ -158,7 +160,7 @@ describe("<FavouritesPage/>", () => {
     expect(queryWildcardSearchSwitch(container)).toBeInTheDocument();
 
     // Switch to Favourite Searches
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
     expect(queryWildcardSearchSwitch(container)).not.toBeInTheDocument();
   });
 
@@ -177,7 +179,7 @@ describe("<FavouritesPage/>", () => {
     [searchesLabel, [sortOptions.title, dateFavourited]],
   ])("shows custom sort order for Favourite %s", async (typeLabel, options) => {
     const { container } = await renderFavouritesPage();
-    await selectToggleButton(container, typeLabel);
+    await clickButton(container, typeLabel);
     await clickSelect(container, SORTORDER_SELECT_ID);
     const foundOptions = countPresentSelectOptions(options);
 
@@ -230,7 +232,7 @@ describe("<FavouritesPage/>", () => {
 
     it("shows only Favourites Selector and Date Range Selector refine panel controls for Favourite Searches", async () => {
       const { container } = await renderFavouritesPage();
-      await selectToggleButton(container, searchesLabel);
+      await clickButton(container, searchesLabel);
       const options: string[] = ["FavouritesSelector", "DateRangeSelector"];
 
       options.forEach((componentSuffix) =>
@@ -269,7 +271,7 @@ describe("<FavouritesPage/>", () => {
     const history = createMemoryHistory();
     const { container } = await renderFavouritesPage(history);
 
-    await selectToggleButton(container, searchesLabel);
+    await clickButton(container, searchesLabel);
     expect(history.location.state).toEqual({
       searchPageOptions: {
         ...defaultSearchPageOptions,
@@ -281,4 +283,21 @@ describe("<FavouritesPage/>", () => {
       },
     });
   });
+
+  it.each<[FavouritesType, string]>([
+    ["resources", resourcesLabel],
+    ["searches", searchesLabel],
+  ])(
+    "should read favourites type from the params",
+    async (favouritesType: FavouritesType, selectedButtonLabel: string) => {
+      const history = createMemoryHistory();
+      history.push({
+        pathname: "/favourites",
+        search: `?${FAVOURITES_TYPE_PARAM}=${favouritesType}`,
+      });
+
+      const { container } = await renderFavouritesPage(history);
+      expect(isToggleButtonChecked(container, selectedButtonLabel)).toBe(true);
+    },
+  );
 });

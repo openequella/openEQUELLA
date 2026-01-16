@@ -18,11 +18,13 @@
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import * as H from "history";
 import type { ReactNode } from "react";
 import * as React from "react";
 import {
   type FavouritesType,
+  FavouritesTypeUnion,
   searchFavouriteSearches,
 } from "../modules/FavouriteModule";
 import type { SearchOptions } from "../modules/SearchModule";
@@ -43,6 +45,8 @@ const { title } = languageStrings.searchpage.sortOptions;
 const { dateFavourited } = languageStrings.favourites.sortOptions;
 
 export const SORT_ORDER_ADDED_AT = "added_at";
+
+export const FAVOURITES_TYPE_PARAM = "favouritesType";
 
 export const defaultFavouritesPageOptions: SearchPageOptions = {
   ...defaultSearchPageOptions,
@@ -175,8 +179,41 @@ export const sortOrderOptions = (
  */
 export const getFavouritesTypeFromHistory = (
   history: H.History<SearchPageHistoryState<FavouritesType>>,
-): FavouritesType | undefined =>
-  history.location.state?.customData?.["favouritesType"];
+): O.Option<FavouritesType> =>
+  O.fromNullable(history.location.state?.customData?.["favouritesType"]);
+
+/**
+ * Read the value of favourites type from URL search parameters.
+ *
+ * @param searchParams The URL search parameters.
+ */
+export const getFavouriteTypeFromSearchParams = (
+  searchParams: URLSearchParams,
+): O.Option<FavouritesType> =>
+  pipe(
+    searchParams.get(FAVOURITES_TYPE_PARAM),
+    O.fromNullable,
+    O.filter(FavouritesTypeUnion.is),
+  );
+
+/**
+ * Get the initial favourites type from either History custom data or URL search parameters.
+ * Defaults to "resources" if neither are present.
+ *
+ * @param history The history to read from.
+ */
+export const getInitialFavouritesType = (
+  history: H.History<SearchPageHistoryState<FavouritesType>>,
+): FavouritesType =>
+  pipe(
+    getFavouritesTypeFromHistory(history),
+    O.alt(() =>
+      getFavouriteTypeFromSearchParams(
+        new URLSearchParams(history.location.search),
+      ),
+    ),
+    O.getOrElse<FavouritesType>(() => "resources"),
+  );
 
 /**
  * Write the value of favourites type to History custom data.

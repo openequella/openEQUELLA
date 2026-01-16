@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import { Backdrop } from "@mui/material";
-import { pipe } from "fp-ts/function";
+import { constFalse, pipe } from "fp-ts/function";
 import { isEqual } from "lodash";
 import * as O from "fp-ts/Option";
 import * as React from "react";
@@ -28,16 +28,19 @@ import {
   fromAxiosResponse,
   generateFromError,
 } from "../api/errors";
-import { getRelativeUrl, LEGACY_CSS_URL } from "../AppConfig";
+import { getRelativeUrl } from "../AppConfig";
 import LoadingCircle from "../components/LoadingCircle";
 import { AppContext } from "../mainui/App";
-import { BaseOEQRouteComponentProps } from "../mainui/routes";
+import type { BaseOEQRouteComponentProps } from "../mainui/routes";
 import {
   FullscreenMode,
   templateDefaults,
   templatePropsForLegacy,
 } from "../mainui/Template";
 import {
+  collectParams,
+  deleteElements,
+  FormUpdate,
   isChangeRoute,
   isExternalRedirect,
   isPageContent,
@@ -45,6 +48,7 @@ import {
   StateData,
   submitRequest,
   SubmitResponse,
+  updateIncludes,
 } from "../modules/LegacyContentModule";
 import { deleteRawModeFromStorage } from "../search/SearchPageHelper";
 import { LegacyContentRenderer } from "./LegacyContentRenderer";
@@ -57,11 +61,6 @@ declare global {
   }
 
   const _trigger: (value: string) => boolean;
-}
-
-interface FormUpdate {
-  state: StateData;
-  partial: boolean;
 }
 
 export interface PageContent {
@@ -77,6 +76,7 @@ export interface PageContent {
   preventUnload: boolean;
   noForm: boolean;
   afterHtml: () => void;
+  formId: string;
 }
 
 export interface LegacyContentProps extends BaseOEQRouteComponentProps {
@@ -178,6 +178,7 @@ export const LegacyContent = React.memo(function LegacyContent({
       const pageContent = {
         ...content,
         contentId: v4(),
+        formId: legacyFormId,
         afterHtml: () => {
           deleteElements(extraCss);
           if (scrollTop) {
@@ -303,8 +304,9 @@ export const LegacyContent = React.memo(function LegacyContent({
       });
   }
 
-  function stdSubmit(validate: boolean) {
-    return function (command: string) {
+  const stdSubmit =
+    (validate: boolean) =>
+    (command: string, ...args: string[]) => {
       if (window._trigger) {
         _trigger("presubmit");
         if (validate) {
@@ -313,23 +315,27 @@ export const LegacyContent = React.memo(function LegacyContent({
           }
         }
       }
-      const form = getEqPageForm();
-      if (!form) {
-        onError(
-          generateFromError({
-            name: "stdSubmit Failure",
-            message:
-              "stdSubmit unable to proceed due to missing " + legacyFormId,
-          }),
-        );
-      } else {
-        // eslint-disable-next-line prefer-rest-params
-        const vals = collectParams(form, command, [].slice.call(arguments, 1));
-        submitCurrentForm(true, false, form.action, vals);
-      }
-      return false;
+
+      return pipe(
+        getEqPageForm(),
+        O.fromNullable,
+        O.fold(
+          () =>
+            onError(
+              generateFromError({
+                name: "stdSubmit Failure",
+                message:
+                  "stdSubmit unable to proceed due to missing " + legacyFormId,
+              }),
+            ),
+          (form) => {
+            const vals = collectParams(form, command, args);
+            submitCurrentForm(true, false, form.action, vals);
+          },
+        ),
+        constFalse,
+      );
     };
-  }
 
   React.useEffect(
     () => {
@@ -425,162 +431,3 @@ export const LegacyContent = React.memo(function LegacyContent({
     </>
   );
 });
-
-function resolveUrl(url: string) {
-  return new URL(url, $("base").attr("href")).href;
-}
-
-async function updateIncludes(
-  js: string[],
-  css?: string[],
-): Promise<{ [url: string]: HTMLLinkElement }> {
-  const extraCss = await updateStylesheets(css);
-  await loadMissingScripts(js);
-  return extraCss;
-}
-
-function updateStylesheets(
-  _sheets?: string[],
-): Promise<{ [url: string]: HTMLLinkElement }> {
-  const sheets = _sheets
-    ? _sheets.map(resolveUrl)
-    : [resolveUrl(LEGACY_CSS_URL)];
-  const doc = window.document;
-  const insertPoint = doc.getElementById("_dynamicInsert");
-  const head = doc.getElementsByTagName("head")[0];
-  let current = insertPoint?.previousElementSibling ?? null;
-  const existingSheets: { [index: string]: HTMLLinkElement } = {};
-
-  while (
-    current != null &&
-    current.tagName === "LINK" &&
-    current instanceof HTMLLinkElement
-  ) {
-    existingSheets[current.href] = current;
-    current = current.previousElementSibling;
-  }
-  const cssPromises = sheets.reduce((lastLink, cssUrl) => {
-    if (existingSheets[cssUrl]) {
-      delete existingSheets[cssUrl];
-      return lastLink;
-    } else {
-      const newCss = doc.createElement("link");
-      newCss.rel = "stylesheet";
-      newCss.href = cssUrl;
-      head.insertBefore(newCss, insertPoint);
-      const p = new Promise((resolve) => {
-        newCss.addEventListener("load", resolve, false);
-        newCss.addEventListener(
-          "error",
-          (_) => {
-            console.error(`Failed to load css: ${newCss.href}`);
-            resolve(undefined);
-          },
-          false,
-        );
-      });
-      lastLink.push(p);
-      return lastLink;
-    }
-  }, [] as Promise<unknown>[]);
-  return Promise.all(cssPromises).then((_) => existingSheets);
-}
-
-function deleteElements(elements: { [url: string]: HTMLElement }) {
-  for (const key in elements) {
-    const e = elements[key];
-    e.parentElement?.removeChild(e);
-  }
-}
-
-function loadMissingScripts(_scripts: string[]) {
-  return new Promise((resolve) => {
-    const scripts = _scripts.map(resolveUrl);
-    const doc = window.document;
-    const head = doc.getElementsByTagName("head")[0];
-    const scriptTags = doc.getElementsByTagName("script");
-    const scriptSrcs: { [index: string]: boolean } = {};
-    for (let i = 0; i < scriptTags.length; i++) {
-      const scriptTag = scriptTags[i];
-      if (scriptTag.src) {
-        scriptSrcs[scriptTag.src] = true;
-      }
-    }
-    const lastScript = scripts.reduce(
-      (lastScript: HTMLScriptElement | null, scriptUrl) => {
-        if (scriptSrcs[scriptUrl]) {
-          return lastScript;
-        } else {
-          const newScript = doc.createElement("script");
-          newScript.src = scriptUrl;
-          newScript.async = false;
-          head.appendChild(newScript);
-          return newScript;
-        }
-      },
-      null,
-    );
-    if (!lastScript) resolve(undefined);
-    else {
-      lastScript.addEventListener("load", resolve, false);
-      lastScript.addEventListener(
-        "error",
-        () => {
-          console.error(`Failed to load script: ${lastScript.src}`);
-          resolve(undefined);
-        },
-        false,
-      );
-    }
-  });
-}
-
-function collectParams(
-  form: HTMLFormElement,
-  command: string | null,
-  args: string[],
-) {
-  const vals: { [index: string]: string[] } = {};
-  if (command) {
-    vals["event__"] = [command];
-  }
-  args.forEach((c, i) => {
-    let outval = c;
-    switch (typeof c) {
-      case "object":
-        if (c != null) {
-          outval = JSON.stringify(c);
-        }
-    }
-    vals["eventp__" + i] = [outval];
-  });
-  form
-    .querySelectorAll<HTMLInputElement>("input,textarea")
-    .forEach((v: HTMLInputElement) => {
-      if (v.type) {
-        switch (v.type) {
-          case "button":
-            return;
-          case "checkbox":
-          case "radio":
-            if (!v.checked || v.disabled) return;
-        }
-      }
-      const ex = vals[v.name];
-      if (ex) {
-        ex.push(v.value);
-      } else vals[v.name] = [v.value];
-    });
-  form.querySelectorAll("select").forEach((v: HTMLSelectElement) => {
-    for (let i = 0; i < v.length; i++) {
-      const o = v[i] as HTMLOptionElement;
-      if (o.selected) {
-        const ex = vals[v.name];
-        if (ex) {
-          ex.push(o.value);
-        } else vals[v.name] = [o.value];
-      }
-    }
-  });
-  return vals;
-}

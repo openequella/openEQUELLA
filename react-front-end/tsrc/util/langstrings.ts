@@ -212,6 +212,8 @@ export const languageStrings = {
       dragToReorder: "Drag to reorder",
       edit: "Edit",
       enable: "Enable",
+      maximise: "Maximise",
+      minimise: "Minimise",
       no: "No",
       ok: "OK",
       openInNewWindow: "Open in new window",
@@ -228,11 +230,13 @@ export const languageStrings = {
       selectAll: "Select all",
       selectNone: "Select none",
       share: "Share",
+      showAll: "Show all",
       showLess: "Show less",
       showMore: "Show more",
       undo: "Undo",
       view: "View",
       yes: "Yes",
+      restore: "Restore",
     },
     breadcrumb: "breadcrumb",
     required: "* Required",
@@ -349,6 +353,92 @@ export const languageStrings = {
       lastSevenDays: "Last seven days",
       lastMonth: "Last month",
       thisYear: "This year",
+    },
+  },
+  dashboard: {
+    title: "Dashboard",
+    welcomeTitle: "Welcome to openEQUELLA",
+    welcomeDesc: {
+      systemUser: {
+        howToModify:
+          "To modify or delete Dashboard portlets seen by non-admin openEQUELLA users, select <b>Settings</b> from the navigation menu then <b>General > Dashboard</b>.",
+      },
+      nonSystemUser: {
+        hintForOeq:
+          "Select an option from the navigation menu to the left to use openEQUELLA features.",
+        selectEditButton:
+          "Select the <b>Edit dashboard</b> button and go to the <b>Create portlet</b> tab to add portlets to your dashboard.",
+      },
+    },
+    portlets: {
+      browse: {
+        noneFound: "No hierarchies found.",
+      },
+      favourites: {
+        noneFound: "No favourite %s found.",
+        resourcesTabName: "Resources",
+        searchesTabName: "Searches",
+      },
+      quickSearch: {
+        failedToInitialise: "Failed to initialise quick search portlet.",
+        noResults: "No results found.",
+        queryField: "Search",
+        searching: "Search in progress...",
+      },
+      recentContributions: {
+        noneFound: "No recent contributions found.",
+      },
+      tasks: {
+        failedToInitialise: "Failed to initialise tasks portlet.",
+        nothingReturned: "No tasks and notifications returned.",
+        unableToFindItemsOfType: "Unable to find items of type:",
+      },
+      unsupported: {
+        title: "Unsupported portlet configured.",
+        description:
+          "An unsupported portlet has been detected, please contact your system administrator.",
+      },
+      dialog: {
+        close: "Close portlet",
+        delete: "Delete portlet",
+        closeAlert: "Are you sure you want to close %s portlet?",
+        closeAlertInfo:
+          "You can restore it later in the Dashboard Editor. To access it, click the Edit icon in the bottom-right corner.",
+        deleteAlert: "Are you sure you want to delete %s portlet?",
+      },
+    },
+    editor: {
+      title: "Dashboard editor",
+      editDashboard: "Edit dashboard",
+      dashboardLayout: {
+        title: "Dashboard layout",
+        alertNoDashboardDetails: "Failed to get dashboard details.",
+        chooseLayout: "Choose your preferred dashboard layout:",
+        twoColumnsEqual: "Two columns (Equal)",
+        twoColumnsRatio1to2: "Two columns (1:2 ratio)",
+        twoColumnsRatio2to1: "Two columns (2:1 ratio)",
+        singleColumn: "Single column",
+      },
+      createPortlet: {
+        title: "Create portlet",
+        tooltip: "Create %s portlet",
+        noCreatablePortlets: " No portlet types available to create.",
+      },
+      restorePortlet: {
+        title: "Restore portlet",
+        noClosedPortlets: "No closed portlets found.",
+      },
+      alertInfo:
+        "You are currently editing your dashboard. Changes will be saved automatically.",
+    },
+    errors: {
+      failedToOpenCreationPage:
+        "Failed to access the legacy portlet creation page: %s",
+      failedToDeletePortlet: "Failed to delete portlet: %s",
+      failedToGetCreatablePortlets:
+        "Failed to retrieve creatable portlet types: %s",
+      failedToGetDashboardDetails: "Failed to retrieve dashboard details: %s",
+      failedToUpdatePortletPref: "Failed to update portlet preference: %s",
     },
   },
   drm: {
@@ -705,7 +795,7 @@ export const languageStrings = {
     },
     thumbnails: {
       html: "HTML Icon",
-      emptyThumbnail: "Empty Thumbnail",
+      placeholder: "Placeholder Icon",
       provided: "Provided Icon",
       file: "Default File Icon",
       image: "Image Icon",

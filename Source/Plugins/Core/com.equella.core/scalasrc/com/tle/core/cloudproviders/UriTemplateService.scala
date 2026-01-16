@@ -29,7 +29,7 @@ case class Replacement(text: String) extends UriTemplate
 case class UriParseError(msg: String) extends Throwable
 
 object ServiceUriParser extends RegexParsers with JavaTokenParsers {
-  private def textOnly: Parser[Text] = """[^$]+""".r ^^ { Text.apply }
+  private def textOnly: Parser[Text]     = """[^$]+""".r ^^ { Text.apply }
   private def escapeDollar: Parser[Text] = "$$" ^^ { _ =>
     Text("$")
   }
@@ -72,7 +72,7 @@ object UriTemplateService {
         val collected = uriParts.foldRight(CollectTemplate()) {
           case (uriTemplate, CollectTemplate(raw, args, last)) =>
             uriTemplate match {
-              case Text(t) => CollectTemplate(t :: raw, args, Some(uriTemplate))
+              case Text(t)        => CollectTemplate(t :: raw, args, Some(uriTemplate))
               case Replacement(v) =>
                 val replaceValue = v match {
                   case "baseUrl" => baseurl

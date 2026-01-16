@@ -74,6 +74,12 @@ export const getCurrentUserMock: OEQ.LegacyContent.CurrentUserDetails = {
   canDownloadSearchResult: true,
   roles: [],
   scrapbookEnabled: true,
+  isSystem: false,
+};
+
+export const systemUser: OEQ.LegacyContent.CurrentUserDetails = {
+  ...getCurrentUserMock,
+  isSystem: true,
 };
 
 export const tokens: string[] = ["moodle", "token1", "token2"];

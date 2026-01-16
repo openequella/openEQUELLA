@@ -27,6 +27,8 @@ import {
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
+import { routes } from "../mainui/routes";
+import { simpleMatch } from "../util/match";
 import { getAdvancedSearchIdFromUrl } from "./AdvancedSearchModule";
 import { getTopicIdFromUrl } from "./HierarchyModule";
 import {
@@ -37,8 +39,6 @@ import {
   LegacyContentResponse,
   SubmitResponse,
 } from "./LegacyContentModule";
-import { routes } from "../mainui/routes";
-import { simpleMatch } from "../util/match";
 
 /**
  *  This Module is all about interacting with the Legacy AJAX endpoints
@@ -276,21 +276,36 @@ export const buildSelectionSessionItemSummaryLink = (
 export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
   buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
 
+// Append search parameters to the base route if provided.
+const withSearchParams =
+  (searchParams: O.Option<URLSearchParams>) =>
+  (baseRoute: string): string => {
+    const separator = baseRoute.includes("?") ? "&" : "?";
+    return pipe(
+      searchParams,
+      O.map((params) => `${baseRoute}${separator}${params.toString()}`),
+      O.getOrElse(() => baseRoute),
+    );
+  };
+
 /**
  * Build a Selection Session specific Advanced search Link. The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
  * @param uuid The UUID of an Advanced search
- * @param externalMimeTypes A list of MIME types provided by LMS.
+ * @param searchParams The search parameters to be appended to the search URL
+ * @param externalMimeTypes A list of MIME types provided by LMS
  */
 export const buildSelectionSessionAdvancedSearchLink = (
   uuid: string,
-  externalMimeTypes?: string[],
+  searchParams: O.Option<URLSearchParams>,
+  externalMimeTypes: O.Option<string[]>,
 ): string =>
-  buildSelectionSessionLink(
+  pipe(
     routes.OldAdvancedSearch.to(uuid),
-    false,
-    externalMimeTypes,
+    withSearchParams(searchParams),
+    (path) =>
+      buildSelectionSessionLink(path, false, O.toUndefined(externalMimeTypes)),
   );
 
 /**
@@ -298,9 +313,15 @@ export const buildSelectionSessionAdvancedSearchLink = (
  * before use.
  *
  * @param uuid Compound UUID of the Hierarchy topic
+ * @param searchParams The search parameters to be appended to the hierarchy URL
  */
-export const buildSelectionSessionHierarchyLink = (uuid: string): string =>
-  buildSelectionSessionLink(routes.OldHierarchy.to(uuid), false, []);
+export const buildSelectionSessionHierarchyLink = (
+  uuid: string,
+  searchParams: O.Option<URLSearchParams>,
+): string =>
+  pipe(routes.OldHierarchy.to(uuid), withSearchParams(searchParams), (path) =>
+    buildSelectionSessionLink(path, false, []),
+  );
 
 /**
  * Given a URL used to access Scrapbook legacy pages in normal New UI mode, convert the URL into a Selection Session specific one.
@@ -319,8 +340,8 @@ export const buildSelectionSessionScrapbookLink = (url: string): string =>
  * @param externalMimeTypes A list of MIME types provided by LMS.
  */
 export const buildSelectionSessionSearchPageLink = (
-  searchParams?: URLSearchParams,
-  externalMimeTypes?: string[],
+  searchParams: O.Option<URLSearchParams>,
+  externalMimeTypes: O.Option<string[]>,
 ) => {
   const { layout } = getSelectionSessionInfo();
   const legacySelectionSessionPath = pipe(
@@ -336,11 +357,14 @@ export const buildSelectionSessionSearchPageLink = (
   );
 
   const searchingPath = `/${legacySelectionSessionPath}/searching.do`;
-  const routePath = searchParams
-    ? `${searchingPath}?${searchParams.toString()}`
-    : searchingPath;
 
-  return buildSelectionSessionLink(routePath, false, externalMimeTypes);
+  return pipe(searchingPath, withSearchParams(searchParams), (routePath) =>
+    buildSelectionSessionLink(
+      routePath,
+      false,
+      O.toUndefined(externalMimeTypes),
+    ),
+  );
 };
 
 /**
@@ -355,27 +379,28 @@ export const buildFavouritesSearchSelectionSessionLink = (
   path: string,
 ): string => {
   const url = O.tryCatch(() => new URL(path, getBaseUrl()));
+  const searchParams = pipe(
+    url,
+    O.map((u) => u.searchParams),
+  );
 
   const hierarchyLink = pipe(
     url,
     O.chainNullableK(getTopicIdFromUrl),
-    O.map(buildSelectionSessionHierarchyLink),
+    O.map((uuid) => buildSelectionSessionHierarchyLink(uuid, searchParams)),
   );
 
   const buildAdvancedSearchLink = () =>
     pipe(
       url,
       O.chainNullableK(getAdvancedSearchIdFromUrl),
-      O.map(buildSelectionSessionAdvancedSearchLink),
+      O.map((uuid) =>
+        buildSelectionSessionAdvancedSearchLink(uuid, searchParams, O.none),
+      ),
     );
 
   const buildDefaultLink = () =>
-    pipe(
-      url,
-      O.map((u) => u.searchParams),
-      O.toUndefined,
-      buildSelectionSessionSearchPageLink,
-    );
+    buildSelectionSessionSearchPageLink(searchParams, O.none);
 
   return pipe(
     hierarchyLink,

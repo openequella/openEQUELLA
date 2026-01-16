@@ -42,6 +42,7 @@ import com.tle.core.item.serializer.ItemSerializerService.SerialisationCategory
 import com.tle.core.security.ACLChecks.hasAcl
 import com.tle.core.services.item.{FreetextResult, FreetextSearchResults}
 import com.tle.legacy.LegacyGuice
+import com.tle.search.FavouritesSearch
 import com.tle.web.api.favourite.model.Bookmark
 import com.tle.web.api.interfaces.beans.AbstractExtendableBean
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, EquellaItemBean}
@@ -139,7 +140,7 @@ object SearchHelper {
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
       payload.dynaCollection
     )
-    val whereQuery: Option[FreeTextBooleanQuery] = payload.whereClause.map(WhereParser.parse)
+    val whereQuery: Option[FreeTextBooleanQuery]        = payload.whereClause.map(WhereParser.parse)
     val advSearchCriteria: Option[FreeTextBooleanQuery] =
       fieldValues.map(buildAdvancedSearchCriteria)
 
@@ -304,9 +305,10 @@ object SearchHelper {
     *   an issue processing the strings
     */
   def handleMusts(musts: Array[String]): Map[String, List[String]] = {
-    val delimiter         = ':'
-    val oneOrMoreNonDelim = s"([^$delimiter]+)"
-    val mustExprFormat    = s"$oneOrMoreNonDelim$delimiter$oneOrMoreNonDelim".r
+    val delimiter      = ':'
+    val fieldFormat    = s"([^$delimiter]+)" // Can contain any character except the delimiter.
+    val valueFormat    = s"(.+)"             // Can contain any character.
+    val mustExprFormat = s"$fieldFormat$delimiter$valueFormat".r
 
     def valid = (xs: Array[String]) => xs.forall(s => s.matches(mustExprFormat.regex))
 
@@ -350,8 +352,8 @@ object SearchHelper {
     *   The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
-    val key  = item.idKey
-    val bean = item.bean
+    val key                           = item.idKey
+    val bean                          = item.bean
     lazy val sanitisedAttachmentBeans =
       Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
     val rawItem = LegacyGuice.itemService.getUnsecureIfExists(key)
@@ -553,5 +555,7 @@ object SearchHelper {
     *   An optional query string to parse and extract highlighted text from.
     */
   def getHighlightedList(query: Option[String]): List[String] =
-    new DefaultSearch.QueryParser(query.orNull).getHilightedList.asScala.toList
+    new DefaultSearch.QueryParser(
+      query.map(FavouritesSearch.removeBookmarkTagsQuery).orNull
+    ).getHilightedList.asScala.toList
 }

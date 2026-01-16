@@ -16,27 +16,23 @@
  * limitations under the License.
  */
 
-package com.tle.web.api.search.bean;
+package io.github.openequella.pages.dashboard
 
-import com.tle.web.api.interfaces.beans.AbstractExtendableBean;
+/** Enumeration of the different portlet types available. The value represents the text of the
+  * default portlet title in the UI.
+  */
+object PortletType extends Enumeration {
+  type PortletType = Value
 
-public class SearchDefinitionBean extends AbstractExtendableBean {
-  private String name;
-  private String id;
+  /** Only for testing purposes, represents a generic portlet when the type is unknown.
+    */
+  val Generic: Value = Value("Generic")
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
+  val Browse: Value      = Value("Browse")
+  val Favourites: Value  = Value("Favourites")
+  val Scripted: Value    = Value("Scripted")
+  val QuickSearch: Value = Value("Quick search")
+  val Html: Value        = Value("Formatted text")
+  val Recent: Value      = Value("Recent contributions")
+  val Tasks: Value       = Value("Tasks")
 }

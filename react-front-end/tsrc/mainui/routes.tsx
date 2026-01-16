@@ -15,17 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as OEQ from "@openequella/rest-api-client";
+import { pipe } from "fp-ts/function";
 import { LocationDescriptor } from "history";
 import * as React from "react";
+import { getRelativeUrl } from "../AppConfig";
+import { FAVOURITES_TYPE_PARAM } from "../favourites/FavouritesPageHelper";
+import { FavouritesType } from "../modules/FavouriteModule";
+import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
+import { buildMyResourceUrl } from "../modules/MyResourceModule";
 import {
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
   isManageCloudProviderACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
-  PermissionCheck,
+  RequiredPermissionCheck,
 } from "../modules/SecurityModule";
 import AdvancedSearchPage from "../search/AdvancedSearchPage";
+import {
+  DehydratedSearchPageOptions,
+  SEARCH_OPTIONS_PARAM,
+} from "../search/SearchPageHelper";
 import { TemplateUpdate } from "./Template";
 
 const ThemePage = React.lazy(() => import("../theme/ThemePage"));
@@ -70,6 +81,7 @@ const BrowseHierarchyPage = React.lazy(
 const RootHierarchyPage = React.lazy(
   () => import("../hierarchy/RootHierarchyPage"),
 );
+const Dashboard = React.lazy(() => import("../dashboard/Dashboard"));
 const FavouritesPage = React.lazy(() => import("../favourites/FavouritesPage"));
 
 export interface BaseOEQRouteComponentProps {
@@ -96,7 +108,7 @@ export interface OEQRouteNewUI {
    * route points to. When none, authentication is required for the access. To make this route
    * publicly available, make this function always return a Promise of `true`.
    */
-  permissionChecks?: PermissionCheck[];
+  permissionChecks?: RequiredPermissionCheck[];
 }
 
 interface OEQRouteTo<T = string | ToFunc | ToVersionFunc> {
@@ -108,14 +120,22 @@ interface Routes {
   CloudProviders: OEQRouteNewUI;
   ContentIndexSettings: OEQRouteNewUI;
   CreateLti13Platform: OEQRouteNewUI;
+  Dashboard: OEQRouteNewUI;
   EditLti13Platform: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   FacetedSearchSetting: OEQRouteNewUI;
-  Favourites: OEQRouteNewUI;
+  Favourites: OEQRouteNewUI & {
+    to: (favouritesType: FavouritesType) => string;
+  };
   Hierarchy: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   LoginNoticeConfig: OEQRouteNewUI;
   Logout: OEQRouteTo<string>;
   Lti13PlatformsSettings: OEQRouteNewUI;
-  MyResources: OEQRouteNewUI;
+  MyResources: OEQRouteNewUI & {
+    to: (
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.Common.ItemStatus,
+    ) => string;
+  };
   NewAdvancedSearch: OEQRouteNewUI & OEQRouteTo<ToFunc>;
   Notifications: OEQRouteTo<string>;
   OidcSettings: OEQRouteNewUI;
@@ -123,7 +143,11 @@ interface Routes {
   OldHierarchy: OEQRouteTo<ToFunc>;
   RemoteSearch: OEQRouteTo<ToFunc>;
   SearchFilterSettings: OEQRouteNewUI;
-  SearchPage: OEQRouteNewUI;
+  SearchPage: OEQRouteNewUI & {
+    // Provides a way to navigate to a quick search with a query.
+    quickSearch: (query: string) => string;
+    withOptions: (options: DehydratedSearchPageOptions) => string;
+  };
   SearchSettings: OEQRouteNewUI;
   Settings: OEQRouteNewUI & OEQRouteTo<string>;
   TaskList: OEQRouteTo<string>;
@@ -169,6 +193,9 @@ export const OLD_MY_RESOURCES_PATH = "/access/myresources.do";
 export const NEW_HIERARCHY_PATH = "/page/hierarchy";
 export const OLD_HIERARCHY_PATH = "/hierarchy.do";
 
+export const NEW_DASHBOARD_PATH = "/page/home";
+export const OLD_DASHBOARD_PATH = "/home.do";
+
 export const routes: Routes = {
   BrowseHierarchy: {
     path: "/page/hierarchies",
@@ -189,6 +216,10 @@ export const routes: Routes = {
     path: "/page/createLti13Platform",
     component: CreateLti13PlatformPage,
     permissionChecks: [isEditSystemSettingsGranted("lti13platforms")],
+  },
+  Dashboard: {
+    path: NEW_DASHBOARD_PATH,
+    component: Dashboard,
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first
@@ -231,12 +262,23 @@ export const routes: Routes = {
     permissionChecks: [isEditSystemSettingsGranted("oidc")],
   },
   Favourites: {
+    to: (favouritesType: FavouritesType) =>
+      `${NEW_FAVOURITES_PATH}?${FAVOURITES_TYPE_PARAM}=${favouritesType}`,
     path: NEW_FAVOURITES_PATH,
     component: FavouritesPage,
   },
   MyResources: {
     path: NEW_MY_RESOURCES_PATH,
     component: MyResourcesPage,
+    to: (
+      myResourcesType: OEQ.MyResource.MyResourcesCategoryName,
+      status?: OEQ.Common.ItemStatus,
+    ) =>
+      pipe(
+        buildMyResourceUrl(myResourcesType, status),
+        (url) => url.href,
+        getRelativeUrl,
+      ),
   },
   NewAdvancedSearch: {
     to: (uuid: string) => `${NEW_ADVANCED_SEARCH_PATH}/${uuid}`,
@@ -251,7 +293,8 @@ export const routes: Routes = {
     to: (uuid: string) => `/advanced/searching.do?in=P${uuid}&editquery=true`,
   },
   OldHierarchy: {
-    to: (topic: string) => `${OLD_HIERARCHY_PATH}?topic=${topic}`,
+    to: (topic: string) =>
+      `${OLD_HIERARCHY_PATH}?topic=${convertNewTopicIdToLegacyFormat(topic)}`,
   },
   RemoteSearch: {
     // `uc` parameter comes from sections code (AbstractRootSearchSection.Model.java). Setting it to
@@ -267,6 +310,12 @@ export const routes: Routes = {
   },
   SearchPage: {
     path: NEW_SEARCH_PATH,
+    quickSearch: (query) => {
+      const searchOptions: DehydratedSearchPageOptions = { query };
+      return `${NEW_SEARCH_PATH}?${SEARCH_OPTIONS_PARAM}=${JSON.stringify(searchOptions)}`;
+    },
+    withOptions: (options: DehydratedSearchPageOptions) =>
+      `${NEW_SEARCH_PATH}?${SEARCH_OPTIONS_PARAM}=${JSON.stringify(options)}`,
     component: SearchPage,
     permissionChecks: [isSearchPageACLGranted],
   },

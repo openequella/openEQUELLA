@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import {
-  getByLabelText,
   getByRole,
   screen,
   SelectorMatcherOptions,
@@ -169,10 +168,10 @@ export const isToggleButtonChecked = (
 };
 
 /**
- * Select a MUI Toggle Button by clicking it.
+ * Clicks a button element.
  *
  * @param container The container element to search within.
- * @param label The accessible name of the toggle button to click.
+ * @param label The accessible name of the button to click.
  */
-export const selectToggleButton = (container: HTMLElement, label: string) =>
-  userEvent.click(getByLabelText(container, label));
+export const clickButton = (container: HTMLElement, label: string) =>
+  userEvent.click(getByRole(container, "button", { name: label }));

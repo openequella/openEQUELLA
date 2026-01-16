@@ -17,32 +17,50 @@
  */
 import * as React from "react";
 import { ReactNode, Fragment } from "react";
+import type { StateData } from "../modules/LegacyContentModule";
 
+/**
+ * ID of the main OEQ form in the Legacy UI.
+ */
 export const legacyFormId = "eqpageForm";
 
-export const getEqPageForm = (): HTMLFormElement | null =>
-  document.querySelector<HTMLFormElement>(`#${legacyFormId}`);
+/**
+ * Attempt to retrieve a legacy form by ID.
+ *
+ * WARNING:It's strongly discouraged to directly access DOM using `document.querySelector` in React,
+ * and it should be ideally done by using useRef. However, considering the complexity of Legacy content
+ * UI structure, we keep this approach for the time being.
+ *
+ * @param id - ID of the form to retrieve. Defaults to "eqpageForm".
+ */
+export const getEqPageForm = (
+  id: string = legacyFormId,
+): HTMLFormElement | null => document.querySelector<HTMLFormElement>(`#${id}`);
 
 interface LegacyFormProps {
-  state: { [key: string]: string[] };
+  formId: string;
+  state: StateData;
   children: ReactNode;
 }
 
-export function LegacyForm({ children, state }: LegacyFormProps) {
-  return (
-    <form name="eqForm" id={legacyFormId} onSubmit={(e) => e.preventDefault()}>
-      <div style={{ display: "none" }} className="_hiddenstate">
-        {Object.keys(state).map((k, i) => {
-          return (
-            <Fragment key={i}>
-              {state[k].map((v, i) => (
-                <input key={i} type="hidden" name={k} value={v} />
-              ))}
-            </Fragment>
-          );
-        })}
-      </div>
-      {children}
-    </form>
-  );
-}
+/**
+ * Render the Legacy form in New UI. Before 25.2, there should be only one form in the whole Legacy
+ * content UI structure. However, since 25.2, this is no longer the case as we need to support displaying
+ * multiple portlets in the new Dashboard using the Legacy content approach. This means there can be
+ * multiple instances of this component in the new Dashboard, and therefore an additional prop for the unique
+ * form ID is mandatory.
+ */
+export const LegacyForm = ({ children, state, formId }: LegacyFormProps) => (
+  <form name="eqForm" id={formId} onSubmit={(e) => e.preventDefault()}>
+    <div style={{ display: "none" }} className="_hiddenstate">
+      {Object.keys(state).map((k, i) => (
+        <Fragment key={i}>
+          {state[k].map((v, i) => (
+            <input key={i} type="hidden" name={k} value={v} />
+          ))}
+        </Fragment>
+      ))}
+    </div>
+    {children}
+  </form>
+);

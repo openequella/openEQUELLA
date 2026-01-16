@@ -17,20 +17,20 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.112"
+val TomcatVersion     = "9.0.113"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
-val cxfVersion        = "3.6.8"
+val cxfVersion        = "3.6.9"
 val fs2Version        = "3.12.2"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.21.2"
+val jsoupVersion      = "1.22.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
-val luceneVersion     = "10.3.1"
-val nettyVersion      = "4.2.7.Final"
+val luceneVersion     = "10.3.2"
+val nettyVersion      = "4.2.9.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -79,12 +79,12 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp.client3" %% "circe"                         % sttpVersion,
   "cglib"                          % "cglib"                         % "3.3.0",
   "io.bit3"                        % "jsass"                         % jsassVersion,
-  "com.flickr4java"                % "flickr4java"                   % "3.0.9" excludeAll (
+  "com.flickr4java"                % "flickr4java"                   % "3.0.11" excludeAll (
     ExclusionRule(organization = "org.apache.axis", name = "axis")
   ),
   "com.google.api-client" % "google-api-client"           % "2.8.1",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20250714-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20251217-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
   "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -99,7 +99,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.1",
+  "com.ibm.icu" % "icu4j" % "78.2",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -119,7 +119,7 @@ libraryDependencies ++= Seq(
   "commons-codec"             % "commons-codec"         % "1.20.0",
   "commons-collections"       % "commons-collections"   % "3.2.2",
   "commons-configuration"     % "commons-configuration" % "1.10",
-  "commons-daemon"            % "commons-daemon"        % "1.4.1",
+  "commons-daemon"            % "commons-daemon"        % "1.5.1",
   "commons-discovery"         % "commons-discovery"     % "0.5",
   "commons-httpclient"        % "commons-httpclient"    % "3.1",
   "commons-io"                % "commons-io"            % "2.21.0",
@@ -213,7 +213,7 @@ libraryDependencies ++= Seq(
   "org.apache.tomcat"                    % "tomcat-util"                    % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-util-scan"               % TomcatVersion,
   "org.apache.tomcat"                    % "tomcat-ssi"                     % TomcatVersion,
-  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.82",
+  "org.bouncycastle"                     % "bcprov-jdk18on"                 % "1.83",
   "org.ccil.cowan.tagsoup"               % "tagsoup"                        % "1.2.1",
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
@@ -250,11 +250,11 @@ libraryDependencies ++= Seq(
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
   "org.scala-sbt"                %% "io"                       % "1.10.5",
-  "org.mozilla"                   % "rhino"                    % "1.8.0",
+  "org.mozilla"                   % "rhino"                    % "1.9.0",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.184",
-  "com.fasterxml"                 % "classmate"                % "1.7.1",
+  "com.fasterxml"                 % "classmate"                % "1.7.3",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
@@ -344,7 +344,7 @@ excludeDependencies ++= Seq(
 
 run := {
   val cp = (Runtime / fullClasspath).value
-  val o = ForkOptions().withRunJVMOptions(
+  val o  = ForkOptions().withRunJVMOptions(
     Vector(
       "-cp",
       Path.makeString(cp.files),
@@ -459,7 +459,7 @@ run := {
   case PathList("META-INF", "versions", _, "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
   // Also handle non-versioned OSGi manifests.
   case PathList("META-INF", "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
-  case x =>
+  case x                                               =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
@@ -486,14 +486,14 @@ additionalPlugins := {
 }
 
 upgradeZip := {
-  val log         = streams.value.log
-  val ver         = equellaVersion.value
-  val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  val log          = streams.value.log
+  val ver          = equellaVersion.value
+  val releaseDate  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer     = ver.fullVersion
   val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
-  val zipFiles = Seq(
+  val zipFiles    = Seq(
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR

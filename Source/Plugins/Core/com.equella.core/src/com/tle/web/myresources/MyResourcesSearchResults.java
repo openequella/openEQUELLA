@@ -74,7 +74,7 @@ public class MyResourcesSearchResults
   public FreetextSearchEvent createSearchEvent(SectionInfo info) {
     MyResourcesSubSearch subSearch = searchTypeSection.getSearchType().getSelectedValue(info);
     return new FreetextSearchEvent(
-        subSearch.createDefaultSearch(info), subSearch.createDefaultSearch(info));
+        subSearch.createDefaultSearch(), subSearch.createDefaultSearch());
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

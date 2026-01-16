@@ -8,7 +8,20 @@ import org.openqa.selenium.By;
 
 public class HomePage extends AbstractPage<HomePage> {
   public HomePage(PageContext context) {
-    super(context, By.xpath("//div[contains(@class, 'dashboard')]"));
+    super(context);
+    setLoadedBy(isNewUI());
+  }
+
+  public HomePage(PageContext context, boolean isNewUI) {
+    super(context);
+    setLoadedBy(isNewUI);
+  }
+
+  // Set the loadedBy element based on whether it's the new UI or not.
+  private void setLoadedBy(boolean isNewUI) {
+    String loadedByXpath =
+        isNewUI ? "//h5[text()='Dashboard']" : "//div[contains(@class, 'dashboard')]";
+    loadedBy = By.xpath(loadedByXpath);
   }
 
   public boolean portalExists(String title) {
