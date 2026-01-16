@@ -18,47 +18,5 @@
 
 package com.tle.web.api.workflow.interfaces.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /** Bean representing statistics for a single workflow task. */
-@XmlRootElement
-public class TaskTrendBean {
-  /** The unique identifier of the workflow task (workflow item) this statistic row refers to. */
-  private final String taskId;
-
-  /** The resolved, localised display name of the workflow task. */
-  private final String name;
-
-  /** The number of items currently waiting at this workflow task. */
-  private final int waiting;
-
-  /** The change in the waiting count over the requested trend period. */
-  private final int trend;
-
-  public TaskTrendBean() {
-    this("", "", 0, 0);
-  }
-
-  public TaskTrendBean(String taskId, String name, int waiting, int trend) {
-    this.taskId = taskId;
-    this.name = name;
-    this.waiting = waiting;
-    this.trend = trend;
-  }
-
-  public String getTaskId() {
-    return taskId;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public int getWaiting() {
-    return waiting;
-  }
-
-  public int getTrend() {
-    return trend;
-  }
-}
+public record TaskTrendBean(String taskId, String name, int waiting, int trend) {}
