@@ -83,7 +83,7 @@ object ProviderError {
     */
   def Try[A](msg: String = "")(producer: => A): Either[ProviderError, A] =
     scala.util.Try(producer) match {
-      case Success(result) => Right(result)
+      case Success(result)    => Right(result)
       case Failure(exception) =>
         LOGGER.debug(s"Error: $msg", exception)
         Left(ProviderError(msg + exception.getMessage, exception))

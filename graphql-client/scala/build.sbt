@@ -66,7 +66,7 @@ downloadSchema := {
   // Ensure the target directory exists
   Files.createDirectories(Paths.get(targetDir))
 
-  val client = HttpClient.newHttpClient()
+  val client  = HttpClient.newHttpClient()
   val request = HttpRequest
     .newBuilder()
     .uri(URI.create(url))

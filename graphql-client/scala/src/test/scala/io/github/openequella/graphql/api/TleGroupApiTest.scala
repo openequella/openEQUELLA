@@ -157,7 +157,7 @@ class TleGroupApiTest
       Given("A parent group with a single child group")
       val parentGroupName = "createGroupTestParent"
       val childGroupName  = "createGroupTestChild"
-      val newGroupIds = for {
+      val newGroupIds     = for {
         parentGroup <- addGroup(parentGroupName)
         childGroup  <- addGroup(childGroupName, Some(parentGroup.uniqueId))
       } yield (parentGroup.uniqueId, childGroup.uniqueId)
@@ -240,7 +240,7 @@ class TleGroupApiTest
       val groupName    = "updateGroupTest"
       val newGroupName = "newName"
       val newGroupDesc = "newDescription"
-      val blankGroup = TleGroupView(
+      val blankGroup   = TleGroupView(
         uniqueId = "",
         parentId = None,
         name = "",
@@ -324,7 +324,7 @@ class TleGroupApiTest
 
     it("can handle adding users to a group with special characters in their names") {
       val groupName = "updateGroupSpecialCharacterTest"
-      val users = specialCharacters.toList.map { special =>
+      val users     = specialCharacters.toList.map { special =>
         s"user${special}character"
       }
       val groupId = for {
@@ -405,7 +405,7 @@ class TleGroupApiTest
       Given("A group with a large number of users")
       val totalUsers = 100
       val users      = for (i <- 1 to totalUsers) yield s"user$i"
-      val groupId = for {
+      val groupId    = for {
         group <- addGroup("listGroupUsers")
         _     <- setGroupUsers(group.uniqueId, users.toList)
       } yield group.uniqueId

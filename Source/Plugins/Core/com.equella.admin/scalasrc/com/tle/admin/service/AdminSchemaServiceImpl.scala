@@ -50,7 +50,7 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def hasReferencingClasses(id: Long): Boolean =
     MetadataSchemaApi.hasReferences(id) match {
       case Right(hasRefs) => hasRefs
-      case Left(errors) =>
+      case Left(errors)   =>
         throw new ClientRequestException(
           s"Error checking references for schema with ID: $id",
           errors
@@ -87,14 +87,14 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def identifyByUuid(uuid: String): Long = MetadataSchemaApi.getIdByUuid(uuid) match {
     case Right(Some(id)) => id
     case Right(None)     => 0
-    case Left(errors) =>
+    case Left(errors)    =>
       throw new ClientRequestException(s"Error identifying schema by UUID: $uuid", errors)
   }
 
   override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
     MetadataSchemaApi.exportSchema(id, withSecurity) match {
       case Right(Some(bytes)) => bytes
-      case Right(None) =>
+      case Right(None)        =>
         throw new NotFoundException(
           s"Schema with ID: $id not found or export failed."
         )
@@ -105,7 +105,7 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def startEdit(id: Long): EntityPack[Schema] =
     MetadataSchemaApi.startEdit(id) match {
       case Right(schemaEditView) => schemaEditView convert toEntityPack
-      case Left(errors) =>
+      case Left(errors)          =>
         throw new ClientRequestException(s"Error starting edit of schema with ID: $id", errors)
     }
 

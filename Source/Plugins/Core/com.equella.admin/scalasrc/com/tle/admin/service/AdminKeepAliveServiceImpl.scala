@@ -37,7 +37,7 @@ class AdminKeepAliveServiceImpl @Inject() (implicit cfg: RestConfiguration)
     if (task.isEmpty) {
       LOGGER.debug("Starting new background thread for keep-alive service")
       val daemon = new Timer("keep-alive", true)
-      val tt = new TimerTask {
+      val tt     = new TimerTask {
         override def run(): Unit = {
           StatusApi.heartbeat
         }

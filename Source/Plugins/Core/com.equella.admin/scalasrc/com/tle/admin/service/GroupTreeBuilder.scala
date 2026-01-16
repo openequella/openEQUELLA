@@ -143,7 +143,7 @@ class GroupTreeBuilder(
     parentId match {
       case Some(id) =>
         getGroup(id) match {
-          case None => throw new IllegalStateException("Parent ID could not be found")
+          case None        => throw new IllegalStateException("Parent ID could not be found")
           case Some(group) =>
             val parentNode = newNode(group)
             parentNode.add(childNode)

@@ -112,7 +112,7 @@ class GraphQLServlet extends HttpServlet {
     }
 
     try {
-      val query = Source.fromInputStream(req.getInputStream).mkString
+      val query      = Source.fromInputStream(req.getInputStream).mkString
       val processing = for {
         gqlRequest <- Try(
           readFromString[GraphQLRequest](query)

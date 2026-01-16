@@ -130,7 +130,7 @@ object TestHelper {
         pagination: ForwardPagination,
         items: List[T] = List.empty
     ): List[T] = queryFn(pagination) match {
-      case Left(errors) => fail(s"Failed to get items: $errors")
+      case Left(errors)                              => fail(s"Failed to get items: $errors")
       case Right(result) if result.continue.nonEmpty =>
         retrieveItems(result.continue.get.asInstanceOf[ForwardPagination], items ++ result.items)
       case Right(result) => items ++ result.items
@@ -164,7 +164,7 @@ object TestHelper {
         pagination: BackwardPagination,
         items: List[T] = List.empty
     ): List[T] = queryFn(pagination) match {
-      case Left(errors) => fail(s"Failed to get items: $errors")
+      case Left(errors)                              => fail(s"Failed to get items: $errors")
       case Right(result) if result.continue.nonEmpty =>
         retrieveItems(result.continue.get.asInstanceOf[BackwardPagination], result.items ++ items)
       case Right(result) => result.items ++ items

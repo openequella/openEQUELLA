@@ -87,7 +87,7 @@ package object schema {
         }
     }
 
-    val rawLimit = pagination.count.count
+    val rawLimit    = pagination.count.count
     val cappedLimit = pagination.cursor match {
       // For after cursors, we can't go past the end of the list
       case PaginationCursor.After(_) => math.min(rawLimit, max - offset)
