@@ -193,4 +193,12 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
   }
 
   void afterAdd(EntityPack<T> pack);
+
+  /**
+   * Checks if an entity with the specified UUID exists in the current institution.
+   *
+   * @param uuid The UUID of the entity to check.
+   * @return true if the entity exists, false otherwise.
+   */
+  boolean existsByUuid(String uuid);
 }
