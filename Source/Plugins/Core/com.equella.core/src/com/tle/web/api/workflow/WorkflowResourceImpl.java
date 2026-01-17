@@ -49,8 +49,6 @@ import javax.ws.rs.core.Response;
 public class WorkflowResourceImpl
     extends AbstractBaseEntityResource<Workflow, BaseEntitySecurityBean, WorkflowBean>
     implements WorkflowResource {
-  private static final String UNKNOWN_TASK_NAME = "";
-
   @Inject private WorkflowService workflowService;
   @Inject private WorkflowBeanSerializer serializer;
   @Inject private TaskStatisticsService taskStatisticsService;
@@ -130,12 +128,11 @@ public class WorkflowResourceImpl
     List<TaskTrendBean> resultBeans =
         trends.stream()
             .map(
-                t ->
-                    new TaskTrendBean(
-                        String.valueOf(t.getWorkflowItemId()),
-                        names.getOrDefault(t.getNameId(), UNKNOWN_TASK_NAME),
-                        t.getWaiting(),
-                        t.getTrend()))
+                t -> {
+                  String uuid = String.valueOf(t.getWorkflowItemId());
+                  return new TaskTrendBean(
+                      uuid, names.getOrDefault(t.getNameId(), uuid), t.getWaiting(), t.getTrend());
+                })
             .collect(Collectors.toList());
 
     return Response.ok(resultBeans).build();
