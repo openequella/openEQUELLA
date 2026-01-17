@@ -19,6 +19,7 @@
 package com.tle.web.api.workflow;
 
 import com.google.api.client.util.Strings;
+import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Trend;
 import com.tle.common.workflow.Workflow;
@@ -39,7 +40,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 
 @Bind(WorkflowResource.class)
@@ -89,10 +91,12 @@ public class WorkflowResourceImpl
   @Override
   public Response getTrendsForWorkflow(String uuid, String trend) {
     if (Strings.isNullOrEmpty(uuid)) {
-      throw badRequest("Workflow uuid parameter is required");
+      throw new BadRequestException(
+          CurrentLocale.get("com.tle.web.api.workflow.error.uuidmissing"));
     }
     if (!workflowService.existsByUuid(uuid)) {
-      throw entityNotFound(uuid);
+      throw new NotFoundException(
+          CurrentLocale.get("com.tle.web.api.workflow.error.workflownotfound", uuid));
     }
     Trend trendEnum = parseTrend(trend);
     List<TaskTrend> trends = taskStatisticsService.getWaitingTasksForWorkflow(uuid, trendEnum);
@@ -100,28 +104,19 @@ public class WorkflowResourceImpl
   }
 
   /**
-   * Helper utility to construct a standard BAD_REQUEST (400) exception with a JSON error message.
-   */
-  private WebApplicationException badRequest(String message) {
-    return new WebApplicationException(
-        Response.status(Response.Status.BAD_REQUEST)
-            .entity(String.format("{\"error\": \"%s\"}", message))
-            .build());
-  }
-
-  /**
-   * Helper to parse the trend string parameter into a Trend enum. Throws a WebApplicationException
-   * (400 Bad Request) if the string is invalid or null.
+   * Helper to parse the trend string parameter into a Trend enum. Throws BadRequestException if the
+   * string is invalid or null.
    */
   private Trend parseTrend(String trend) {
     if (Strings.isNullOrEmpty(trend)) {
-      throw badRequest("Trend parameter is required");
+      throw new BadRequestException(
+          CurrentLocale.get("com.tle.web.api.workflow.error.trendmissing"));
     }
     try {
       return Trend.valueOf(trend.toUpperCase());
     } catch (IllegalArgumentException e) {
-      throw badRequest(
-          String.format("Invalid trend value: '%s'. Allowed values: WEEK, MONTH", trend));
+      throw new BadRequestException(
+          CurrentLocale.get("com.tle.web.api.workflow.error.trendinvalid", trend));
     }
   }
 
