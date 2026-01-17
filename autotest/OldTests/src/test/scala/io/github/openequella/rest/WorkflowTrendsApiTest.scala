@@ -11,6 +11,8 @@ import java.io.IOException
 class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   private val TargetWorkflowUuid = "0f7bd496-8466-4fa5-b166-8132cc5294e4"
+  private val TrendWeek          = "WEEK"
+  private val TrendMonth         = "MONTH"
 
   private def getWorkflowTrendsEndpoint: String =
     getTestConfig.getInstitutionUrl + "api/workflow/trends"
@@ -22,9 +24,9 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   @DataProvider(name = "trendValues")
   def trendValues: Array[Array[Object]] = Array(
-    Array("WEEK"),
-    Array("MONTH"),
-    Array("week")
+    Array(TrendWeek),
+    Array(TrendMonth),
+    Array(TrendWeek.toLowerCase)
   )
 
   @Test(
@@ -39,8 +41,7 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
   @Test(description = "Fail to retrieve trends with invalid trend value")
   def invalidTrends(): Unit = {
-    val method = new GetMethod(getWorkflowTrendsEndpoint)
-    method.setQueryString(Array(new NameValuePair("trend", "YEAR")))
+    val method = buildGetMethod(getWorkflowTrendsEndpoint, "YEAR")
 
     assertStatusCode(method, HttpStatus.SC_BAD_REQUEST)
   }
@@ -50,7 +51,7 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
   @Test(description = "Retrieve trends for a specific workflow")
   def specificWorkflowTrends(): Unit = {
     val endpoint = getSpecificWorkflowEndpointTemplate.format(TargetWorkflowUuid)
-    val result   = executeRequest(endpoint, "WEEK")
+    val result   = executeRequest(endpoint, TrendWeek)
 
     assertNotNull(result)
     validateResponseStructure(result)
@@ -61,15 +62,14 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
     val endpoint =
       getSpecificWorkflowEndpointTemplate.format("0f7bd496-8466-4fa5-b166-8832cc5294e4")
 
-    val method = buildGetMethod(endpoint, "WEEK")
+    val method = buildGetMethod(endpoint, TrendWeek)
     assertStatusCode(method, HttpStatus.SC_NOT_FOUND)
   }
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid trend")
   def specificWorkflowInvalidTrend(): Unit = {
     val endpoint = getSpecificWorkflowEndpointTemplate.format(TargetWorkflowUuid)
-    val method   = new GetMethod(endpoint)
-    method.setQueryString(Array(new NameValuePair("trend", "INVALID")))
+    val method   = buildGetMethod(endpoint, "INVALID")
 
     assertStatusCode(method, HttpStatus.SC_BAD_REQUEST)
   }
