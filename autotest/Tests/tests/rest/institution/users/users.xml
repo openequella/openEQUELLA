@@ -82,4 +82,13 @@
     <emailAddress></emailAddress>
     <password>SHA256:cc9e37d975bb25b2fcecd8c20d9c77dbe7ce2649de0127b9a5ca76038f852da0</password>
   </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>822609</id>
+    <uuid>76203221-88e4-4641-9d29-42e78d6ae48d</uuid>
+    <username>test_myresources</username>
+    <firstName>test</firstName>
+    <lastName>myresources</lastName>
+    <emailAddress/>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
 </list>
