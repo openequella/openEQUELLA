@@ -43,11 +43,16 @@ export const getCountForItem = (
       O.map(NEA.head),
     );
 
+  const parseBadge = (badge: HTMLElement) =>
+    parseInt(badge.textContent ?? "", 10);
+
+  const isNumber = O.fromPredicate(not(Number.isNaN));
+
   return pipe(
     O.fromNullable(nameEl.parentElement),
     O.chain(getBadgeValue),
-    O.map((badgeMaybe) => parseInt(badgeMaybe.textContent ?? "", 10)),
-    O.chain(O.fromPredicate(not(Number.isNaN))),
+    O.map(parseBadge),
+    O.chain(isNumber),
     O.toUndefined,
   );
 };
