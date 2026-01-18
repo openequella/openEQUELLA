@@ -79,19 +79,21 @@ const buildSubCategoryRoutes = (
 const addRoutingInfo = (
   category: OEQ.MyResource.MyResourcesCategory,
 ): MyResourcesCategory => {
+  const baseCategory = {
+    ...category,
+    to: routes.MyResources.to(category.name),
+  };
+
   const subCategories = buildSubCategoryRoutes(
     category.name,
     category.subSearches,
   );
 
-  return pipe(
-    {
-      ...category,
-      to: routes.MyResources.to(category.name),
-      ...(subCategories ? { subCategories } : {}),
-    },
-    omit(["links", "subSearches"]),
-  );
+  const withSubCategories = subCategories
+    ? { ...baseCategory, subCategories }
+    : baseCategory;
+
+  return omit(withSubCategories, ["links", "subSearches"]);
 };
 
 /**
