@@ -13,20 +13,18 @@ class NewMyResourcesPage(context: PageContext)
   /** Gets the currently selected text from the My Resources dropdown. Finds the element with
     * role='combobox' inside the MyResourcesSelector panel.
     */
-  def getMyResourcesSelectorValue: String = {
+  def getMyResourcesSelectorValue: String =
     getRefineControl("MyResourcesSelector")
       .findElement(By.cssSelector("div[role='combobox']"))
       .getText
-  }
 
   /** Gets a list of all currently selected Statuses (chips) from the Status selector. Finds all
     * elements with class 'MuiChip-label' inside the StatusSelector panel.
     */
-  def getStatusSelectorValues: List[String] = {
+  def getStatusSelectorValues: List[String] =
     getRefineControl("StatusSelector")
       .findElements(By.className("MuiChip-label"))
       .asScala
       .map(_.getText)
       .toList
-  }
 }
