@@ -35,6 +35,7 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.TaskTrendBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,12 +44,16 @@ import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Bind(WorkflowResource.class)
 @Singleton
 public class WorkflowResourceImpl
     extends AbstractBaseEntityResource<Workflow, BaseEntitySecurityBean, WorkflowBean>
     implements WorkflowResource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(WorkflowResourceImpl.class);
+
   @Inject private WorkflowService workflowService;
   @Inject private WorkflowBeanSerializer serializer;
   @Inject private TaskStatisticsService taskStatisticsService;
@@ -79,62 +84,108 @@ public class WorkflowResourceImpl
     return WorkflowResource.class;
   }
 
+  /**
+   * Retrieves task trend statistics across all workflows.
+   *
+   * @param trend The time period for trend calculation (WEEK or MONTH, case-insensitive)
+   * @return HTTP 200 with JSON array of {@link TaskTrendBean} objects. Returns empty array if no
+   *     tasks are waiting.
+   * @throws BadRequestException (400) if trend parameter is missing or invalid
+   */
   @Override
   public Response getTrends(String trend) {
-    Trend trendEnum = parseTrend(trend);
+    Trend trendEnum = validateTrend(trend);
     List<TaskTrend> trends = taskStatisticsService.getWaitingTasks(trendEnum);
     return buildTrendResponse(trends);
   }
 
+  /**
+   * Retrieves task trend statistics for a specific workflow.
+   *
+   * @param uuid The UUID of the workflow to query
+   * @param trend The time period for trend calculation (WEEK or MONTH, case-insensitive)
+   * @return HTTP 200 with JSON array of {@link TaskTrendBean} objects
+   * @throws BadRequestException (400) if uuid or trend parameter is missing/invalid
+   * @throws NotFoundException (404) if workflow with specified UUID does not exist
+   */
   @Override
   public Response getTrendsForWorkflow(String uuid, String trend) {
-    if (Strings.isNullOrEmpty(uuid)) {
-      throw new BadRequestException(
-          CurrentLocale.get("com.tle.web.api.workflow.error.uuidmissing"));
-    }
-    if (!workflowService.existsByUuid(uuid)) {
-      throw new NotFoundException(
-          CurrentLocale.get("com.tle.web.api.workflow.error.workflownotfound", uuid));
-    }
-    Trend trendEnum = parseTrend(trend);
+    validateWorkflowUuid(uuid);
+    Trend trendEnum = validateTrend(trend);
     List<TaskTrend> trends = taskStatisticsService.getWaitingTasksForWorkflow(uuid, trendEnum);
     return buildTrendResponse(trends);
   }
 
   /**
-   * Helper to parse the trend string parameter into a Trend enum. Throws BadRequestException if the
-   * string is invalid or null.
+   * Helper to parse the trend string parameter into a Trend enum.
+   *
+   * @param trend The trend string to be parsed.
+   * @return The corresponding Trend enum.
+   * @throws BadRequestException If the trend string is null, empty, or invalid.
    */
-  private Trend parseTrend(String trend) {
+  private Trend validateTrend(String trend) {
     if (Strings.isNullOrEmpty(trend)) {
       throw new BadRequestException(
           CurrentLocale.get("com.tle.web.api.workflow.error.trendmissing"));
     }
-    try {
-      return Trend.valueOf(trend.toUpperCase());
-    } catch (IllegalArgumentException e) {
+
+    return Arrays.stream(Trend.values())
+        .filter(t -> t.name().equalsIgnoreCase(trend))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new BadRequestException(
+                    CurrentLocale.get("com.tle.web.api.workflow.error.trendinvalid", trend)));
+  }
+
+  private void validateWorkflowUuid(String uuid) {
+    if (Strings.isNullOrEmpty(uuid)) {
       throw new BadRequestException(
-          CurrentLocale.get("com.tle.web.api.workflow.error.trendinvalid", trend));
+          CurrentLocale.get("com.tle.web.api.workflow.error.uuidmissing"));
+    }
+    try {
+      if (!workflowService.existsByUuid(uuid)) {
+        throw new NotFoundException(
+            CurrentLocale.get("com.tle.web.api.workflow.error.workflownotfound", uuid));
+      }
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException(e);
     }
   }
 
   /** Helper to batch resolve task names and build the standard JSON response. */
   private Response buildTrendResponse(List<TaskTrend> trends) {
+    List<TaskTrendBean> beans = transformToTrendBeans(trends);
+    return Response.ok(beans).build();
+  }
+
+  private List<TaskTrendBean> transformToTrendBeans(List<TaskTrend> trends) {
+    Map<Long, String> bundleNames = resolveBundleNames(trends);
+    return trends.stream().map(t -> mapToTrendBean(t, bundleNames)).collect(Collectors.toList());
+  }
+
+  private Map<Long, String> resolveBundleNames(List<TaskTrend> trends) {
     List<Long> bundleIds = trends.stream().map(TaskTrend::getNameId).collect(Collectors.toList());
-
     bundleCache.addBundleIds(bundleIds);
-    Map<Long, String> names = bundleCache.getBundleMap();
+    return bundleCache.getBundleMap();
+  }
 
-    List<TaskTrendBean> resultBeans =
-        trends.stream()
-            .map(
-                t -> {
-                  String uuid = String.valueOf(t.getWorkflowItemId());
-                  return new TaskTrendBean(
-                      uuid, names.getOrDefault(t.getNameId(), uuid), t.getWaiting(), t.getTrend());
-                })
-            .collect(Collectors.toList());
+  private TaskTrendBean mapToTrendBean(TaskTrend trend, Map<Long, String> bundleNames) {
+    String taskId = resolveTaskIdentifier(trend);
+    String taskName = resolveBundleName(trend.getNameId(), bundleNames, taskId);
+    return new TaskTrendBean(taskId, taskName, trend.getWaiting(), trend.getTrend());
+  }
 
-    return Response.ok(resultBeans).build();
+  private String resolveTaskIdentifier(TaskTrend trend) {
+    return String.valueOf(trend.getWorkflowItemId());
+  }
+
+  private String resolveBundleName(Long nameId, Map<Long, String> names, String fallback) {
+    String name = names.get(nameId);
+    if (name == null) {
+      LOGGER.warn("Bundle name not found for ID: {}, using fallback: {}", nameId, fallback);
+      return fallback;
+    }
+    return name;
   }
 }
