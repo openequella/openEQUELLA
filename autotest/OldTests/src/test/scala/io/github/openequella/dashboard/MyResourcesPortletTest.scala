@@ -38,6 +38,26 @@ object ModerationQueueSubCategories {
     UNDER_REVIEW  -> 0,
     REJECTED      -> 0
   )
+
+  /** Maps the portlet sub-category display name to the resource status string used in the My
+    * Resources page 'Status' selector (e.g. "In moderation" maps to "MODERATING").
+    */
+  val STATUS_MAPPINGS: Map[String, String] = Map(
+    IN_MODERATION -> "MODERATING",
+    UNDER_REVIEW  -> "REVIEW",
+    REJECTED      -> "REJECTED"
+  )
+
+  /** Check if the list of statuses currently visible in the My Resources page contains the expected
+    * status for the given sub-category.
+    *
+    * @param subCategory
+    *   The name of the sub-category being tested (e.g. "In moderation")
+    * @param currentStatuses
+    *   The list of status chips visible in the Selector
+    */
+  def hasExpectedStatus(subCategory: String, currentStatuses: List[String]): Boolean =
+    currentStatuses.contains(STATUS_MAPPINGS(subCategory))
 }
 
 @NewUIOnly
@@ -46,8 +66,7 @@ class MyResourcesPortletTest extends AbstractPortletTest {
   // Override to use the user (AutoTest) for 'rest' institution, instead of portlettest1
   override protected def loginWithPortletAccount(): Unit = logon()
 
-  var portletName: String             = _
-  var myResources: MyResourcesPortlet = _
+  private var portletName: String = _
 
   @BeforeClass
   def setupClass(): Unit = {
@@ -56,19 +75,11 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     createMyResourcesPortlet(portletName)
   }
 
-  @Override
-  override def cleanupAfterClass(): Unit = {
-    logon("test_myresources", "``````")
-    cleanupPortlets()
-
-    super.cleanupAfterClass()
-  }
-
   @Test(description =
     "Verifies the existence of MyResources categories, sub-categories, and 'SHOW ALL' button"
   )
   def testContentPresence(): Unit = {
-    myResources = getMyResourcesPortlet(portletName)
+    val myResources = getMyResourcesPortlet(portletName)
 
     // Verify each top-level category and their count presence and interaction.
     MyResourceCategories.CATEGORY_COUNTS.foreach { case (itemName, expectedCount) =>
@@ -98,13 +109,10 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     assertTrue(myResources.hasShowAllButton, "The 'Show All' button should be present")
   }
 
-  @Test(description =
-    "Verifies navigation behavior for top-level categories, sub-categories, and 'Show All' button"
-  )
-  def testNavigations(): Unit = {
-    // Test navigation for top-level categories
+  @Test(description = "Verifies navigation behavior for top-level categories")
+  def testTopLevelCategoryNavigation(): Unit = {
     MyResourceCategories.CATEGORY_COUNTS.keys.foreach { itemName =>
-      myResources = getMyResourcesPortlet(portletName)
+      val myResources = getMyResourcesPortlet(portletName)
       myResources.clickCategory(itemName)
       val myResourcesPage = loadMyResourcesPage
 
@@ -112,37 +120,36 @@ class MyResourcesPortletTest extends AbstractPortletTest {
       assertEquals(myResourcesPage.getMyResourcesSelectorValue, itemName)
       loadDashboardPage()
     }
+  }
 
-    val statusMapping: Map[String, String] = Map(
-      ModerationQueueSubCategories.IN_MODERATION -> "MODERATING",
-      ModerationQueueSubCategories.UNDER_REVIEW  -> "REVIEW",
-      ModerationQueueSubCategories.REJECTED      -> "REJECTED"
-    )
-
-    // Test navigation for moderation sub-categories
+  @Test(description = "Verifies navigation behavior for moderation sub-categories")
+  def testSubCategoryNavigation(): Unit = {
     ModerationQueueSubCategories.SUBCATEGORY_COUNTS.keys.foreach { subCat =>
-      myResources = getMyResourcesPortlet(portletName)
+      val myResources = getMyResourcesPortlet(portletName)
       myResources.clickCategory(subCat)
       val myResourcesPage = loadMyResourcesPage
 
+      // Verify My Resources selector matches the "Moderation queue"
       assertEquals(
         myResourcesPage.getMyResourcesSelectorValue,
         MyResourceCategories.MODERATION_QUEUE
       )
+
       myResourcesPage.expandRefineControlPanel()
 
       // Verify Status selector contains the correct status chip
-      val expectedStatus  = statusMapping.getOrElse(subCat, subCat.toUpperCase)
       val currentStatuses = myResourcesPage.getStatusSelectorValues
       assertTrue(
-        currentStatuses.contains(expectedStatus),
-        s"Status selector values $currentStatuses did not contain expected status '$expectedStatus'"
+        ModerationQueueSubCategories.hasExpectedStatus(subCat, currentStatuses),
+        s"Status selector values $currentStatuses did not contain expected status for sub-category '$subCat'"
       )
       loadDashboardPage()
     }
+  }
 
-    // Click the "Show All" button and verify navigation
-    myResources = getMyResourcesPortlet(portletName)
+  @Test(description = "Verifies navigation behavior for 'Show All' button")
+  def testShowAllNavigation(): Unit = {
+    val myResources = getMyResourcesPortlet(portletName)
     myResources.clickShowAll()
     val myResourcesPage = loadMyResourcesPage
     assertEquals(myResourcesPage.getMyResourcesSelectorValue, MyResourceCategories.ALL_RESOURCES)
@@ -152,7 +159,8 @@ class MyResourcesPortletTest extends AbstractPortletTest {
     "Verifies Scrapbook category is excluded when access to Scrapbook is disabled"
   )
   def testRestrictedUserScrapbookAccess(): Unit = {
-    logon("test_myresources", "``````")
+    // This user doesn't have access to Scrapbook
+    logon("AutoTest_ScrapbookDisabled", "``````")
 
     val restrictedPortletName = context.getFullName("Scrapbook disabled")
     createMyResourcesPortlet(restrictedPortletName)
