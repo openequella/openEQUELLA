@@ -4,9 +4,11 @@ import com.tle.webtests.framework.PageContext
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 
+import scala.jdk.CollectionConverters._
+
 class MyResourcesPortlet(context: PageContext, name: String)
     extends GenericPortlet[MyResourcesPortlet](context, name) {
-  private val showAllButtonBy = By.cssSelector("[role='link'][aria-label='Show all']")
+  private val showAllButtonBy = By.cssSelector("a[aria-label='Show all']")
 
   /** Locator for a My Resources category based on its display name.
     *
@@ -36,11 +38,14 @@ class MyResourcesPortlet(context: PageContext, name: String)
     */
   def getCategoryCount(name: String): Int = {
     checkLoadedElement()
-    val categoryElement = getLoadedElement.findElement(resourceBy(name))
-    val chips           = categoryElement.findElements(By.cssSelector(".MuiChip-label"))
+    val chips = getLoadedElement
+      .findElement(resourceBy(name))
+      .findElements(By.cssSelector(".MuiChip-label"))
+      .asScala
 
-    // If list is empty, count is 0. Otherwise, parse the text.
-    if (chips.isEmpty) 0 else chips.get(0).getText.trim.toInt
+    chips.headOption
+      .map(_.getText.trim.toInt)
+      .getOrElse(0)
   }
 
   /** Click on a specific category link within the portlet. Waits for the element to be clickable

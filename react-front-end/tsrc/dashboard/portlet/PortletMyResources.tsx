@@ -97,7 +97,6 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
             aria-label={showAllText}
             variant="outlined"
             component={Link}
-            role="link"
             to={routes.MyResources.to("All resources")}
           >
             {showAllText}
