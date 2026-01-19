@@ -1,7 +1,7 @@
 name := "graphql-client"
 
-ThisBuild / scalaVersion     := "2.13.16"
-ThisBuild / version          := "0.4.0-SNAPSHOT"
+ThisBuild / scalaVersion     := "2.13.18"
+ThisBuild / version          := "0.5.0-SNAPSHOT"
 ThisBuild / organization     := "io.github.openequella"
 ThisBuild / organizationName := "openEQUELLA GraphQL Client"
 
@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
   )
 
 libraryDependencies ++= Seq(
-  "com.github.ghostdogpr"         %% "caliban-client" % "2.11.1",
+  "com.github.ghostdogpr"         %% "caliban-client" % "3.0.0",
   "com.softwaremill.sttp.client3" %% "zio"            % "3.11.0",
   // Add Scala Test
   "com.github.sbt" % "junit-interface" % "0.13.3" % Test,

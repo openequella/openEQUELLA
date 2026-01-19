@@ -22,7 +22,7 @@ import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
-import sttp.client3.{Request, SimpleHttpClient, asString, basicRequest}
+import sttp.client4.{DefaultSyncBackend, Request, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
 
@@ -36,6 +36,8 @@ final case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponse
 object Client {
   private val GRAPHQL_PATH = Seq("graphql")
   private val LOGIN_PATH   = Seq("api", "auth", "login")
+
+  private val backend = DefaultSyncBackend()
 
   def query[R](request: SelectionBuilder[Operations.RootQuery, R])(implicit
       cfg: ClientConfiguration
@@ -58,7 +60,7 @@ object Client {
       )
       .response(asString)
 
-    SimpleHttpClient().send(request) match {
+    request.send(backend) match {
       case response if response.code == StatusCode.Ok =>
         // There is a slight short falling in this API. If you target an institution URL that is invalid,
         // you still get a 200 back with a cookie. Ideally, the API needs to reply with a body as well
@@ -145,9 +147,9 @@ object Client {
     */
   private def send[T](
       cookieJar: scala.collection.mutable.Set[CookieWithMeta]
-  )(request: Request[T, Any]): T = {
-    val result =
-      SimpleHttpClient().send(request.contentType(MediaType.ApplicationJson).cookies(cookieJar))
+  )(request: Request[T]): T = {
+    val requestWithCookies = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
+    val result             = requestWithCookies.send(backend)
 
     val cookies = result.cookies.collect { case Right(cookie) =>
       cookie
