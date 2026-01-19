@@ -30,6 +30,16 @@ import java.util.UUID;
 
 @SuppressWarnings("nls")
 public final class Check {
+  /**
+   * Parses the given string into a UUID.
+   *
+   * <p>This method is lenient regarding case sensitivity; it accepts any format parseable by {@link
+   * java.util.UUID#fromString(String)}, including non-canonical uppercase UUIDs.
+   *
+   * @param uuid The string to parse.
+   * @return The parsed UUID object.
+   * @throws IllegalArgumentException If the string is null, empty, or not a valid UUID.
+   */
   public static UUID checkValidUuid(String uuid) {
     try {
       return UUID.fromString(uuid);
@@ -38,13 +48,19 @@ public final class Check {
     }
   }
 
+  /**
+   * Checks if the string is a valid UUID.
+   *
+   * <p>Note: This method is lenient. It accepts any format parseable by {@link
+   * java.util.UUID#fromString(String)}, including non-canonical uppercase UUIDs (e.g., "A-B-C").
+   *
+   * @param uuid The string to check.
+   * @return true if the string is a valid UUID, false otherwise.
+   */
   public static boolean isValidUuid(String uuid) {
     try {
-      UUID jUuid = UUID.fromString(uuid);
-      if (uuid.equals(jUuid.toString())) {
-        return true;
-      }
-      return false;
+      UUID.fromString(uuid);
+      return true;
     } catch (Exception e) {
       return false;
     }
