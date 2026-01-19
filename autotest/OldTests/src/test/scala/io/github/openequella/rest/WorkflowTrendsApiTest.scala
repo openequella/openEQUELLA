@@ -39,11 +39,29 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
     validateResponseStructure(result)
   }
 
-  @Test(description = "Fail to retrieve trends with invalid trend value")
-  def invalidTrends(): Unit = {
-    val method = buildGetMethod(getWorkflowTrendsEndpoint, "YEAR")
+  @DataProvider(name = "invalidTrendValues")
+  def invalidTrendValues: Array[Array[Object]] = Array(
+    Array("YEAR"),
+    Array(""),
+    Array(null)
+  )
 
+  @Test(
+    description = "Fail to retrieve workflow trends with invalid, empty, or missing trend values",
+    dataProvider = "invalidTrendValues"
+  )
+  def trendsWithInvalidValue(trendValue: String): Unit = {
+    val method = buildGetMethod(getWorkflowTrendsEndpoint, trendValue)
     assertStatusCode(method, HttpStatus.SC_BAD_REQUEST)
+  }
+
+  @Test(description = "Verify empty response structure when user lacks manage workflow permission")
+  def emptyTrendsResponse(): Unit = {
+    loginAsLowPrivilegeUser()
+    val result = executeRequest(getWorkflowTrendsEndpoint, TrendWeek)
+    assertTrue(result.isArray, "Response should be a JSON array")
+    assertEquals(result.size(), 0, "Expected empty array for user with no workflow permissions")
+    login()
   }
 
   // --- Tests for GET specific workflow trends ---
@@ -55,6 +73,27 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
     assertNotNull(result)
     validateResponseStructure(result)
+  }
+
+  @Test(description =
+    "Verify 403 Forbidden when user lacks MANAGE_WORKFLOW permission for specific workflow"
+  )
+  def trendsAccessDenied(): Unit = {
+    loginAsLowPrivilegeUser()
+
+    val endpoint = getSpecificWorkflowEndpointTemplate.format(TargetWorkflowUuid)
+    val method   = buildGetMethod(endpoint, TrendWeek)
+
+    assertStatusCode(method, HttpStatus.SC_FORBIDDEN)
+    login()
+  }
+
+  @Test(description = "Reject null UUID parameter")
+  def nullUuidParameter(): Unit = {
+    val endpoint = getSpecificWorkflowEndpointTemplate.format(null)
+    val method   = buildGetMethod(endpoint, TrendWeek)
+
+    assertStatusCode(method, HttpStatus.SC_BAD_REQUEST)
   }
 
   @Test(description = "Fail to retrieve specific workflow trends with invalid UUID")
