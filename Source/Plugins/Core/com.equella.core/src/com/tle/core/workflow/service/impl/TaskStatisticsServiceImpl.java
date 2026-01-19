@@ -31,6 +31,7 @@ import com.tle.core.workflow.TaskTrend;
 import com.tle.core.workflow.dao.TaskHistoryDao;
 import com.tle.core.workflow.service.TaskStatisticsService;
 import com.tle.core.workflow.service.WorkflowService;
+import com.tle.exceptions.AccessDeniedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -111,8 +112,20 @@ public class TaskStatisticsServiceImpl implements TaskStatisticsService {
   @Override
   @Transactional
   public List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend) {
+    Collection<BaseEntityLabel> manageable = workflowService.listManagable();
+
+    BaseEntityLabel matchedWorkflow =
+        manageable.stream()
+            .filter(label -> label.getUuid().equals(uuid))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new AccessDeniedException(
+                        CurrentLocale.get(
+                            "com.tle.web.api.workflow.error.workflowAccessDenied", uuid)));
+
     return taskHistoryDao.getTaskTrendsForWorkflows(
-        Collections.singleton(uuid), getTrendDate(trend));
+        Collections.singleton(matchedWorkflow.getUuid()), getTrendDate(trend));
   }
 
   private Date getTrendDate(Trend trend) {

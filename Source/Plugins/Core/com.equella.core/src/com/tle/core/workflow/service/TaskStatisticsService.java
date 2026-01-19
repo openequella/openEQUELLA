@@ -26,8 +26,24 @@ import java.util.Date;
 import java.util.List;
 
 public interface TaskStatisticsService {
+  /**
+   * Retrieves task trends for all workflows the current user is allowed to manage.
+   *
+   * @param trend The time period for the trend (WEEK, MONTH).
+   * @return A list of task trends for authorized workflows.
+   */
   List<TaskTrend> getWaitingTasks(Trend trend);
 
+  /**
+   * Retrieves task trends for a specific workflow, ensuring the user has the MANAGE_WORKFLOW
+   * privilege.
+   *
+   * @param uuid The UUID of the workflow to check.
+   * @param trend The time period for the trend.
+   * @return A list of task trends for the specified workflow.
+   * @throws com.tle.exceptions.AccessDeniedException if the user does not have permission to manage
+   *     this workflow.
+   */
   List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend);
 
   void enterTask(Item item, WorkflowItem task, Date entry);
