@@ -81,7 +81,7 @@ by [Edalex](https://edalex.com).
 **Frontend Build:**
 
 - **NPM** - Package management (Node 24.11.0)
-- **Parcel** - Bundler for TypeScript/React code
+- **Parcel**(v2.x) - Bundler for TypeScript/React code
 - Build commands in `react-front-end/package.json`
 
 **JPF Plugins:**
@@ -185,7 +185,7 @@ Source/
 │   ├── equellaserver/  # Server bootstrap and entry point
 │   ├── adminTool/      # Admin console launcher
 │   └── conversion/     # Conversion service
-├── Reporting/        # BiRT reporting
+├── Reporting/        # BIRT reporting
 ├── Themes/           # UI themes
 └── Tools/            # Utility tools
 ```
@@ -241,6 +241,7 @@ package.json         # Root NPM configuration
 
 - Work in `react-front-end/tsrc/`
 - Add REST client methods in `oeq-ts-rest-api/src/`
+- Write tests for REST client methods in `oeq-ts-rest-api/src/test`
 - Write Jest tests in `react-front-end/__tests__/`
 - Consider Storybook stories in `react-front-end/__stories__/`
 
@@ -267,6 +268,7 @@ package.json         # Root NPM configuration
 
 - Use Hibernate entities
 - Consider migration scripts for schema changes
+- Consider data migration for Export/Import files changes (e.g.backward-compatible import)
 - Support all three databases (Postgres, MS SQL, Oracle)
 
 ## Testing Standards
@@ -409,7 +411,7 @@ When working with integration features, be aware of:
 
 - **LMS Integration** - LTI support (Moodle, Canvas, Brightspace)
 - **Authentication** - OIDC, LDAP, OAuth providers
-- **Reporting** - BiRT with custom connectors
+- **Reporting** - BIRT with custom connectors
 - **Search** - Apache Lucene indexing
 
 ## Additional Resources
