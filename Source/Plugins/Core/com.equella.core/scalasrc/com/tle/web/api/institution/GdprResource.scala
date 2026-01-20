@@ -41,7 +41,7 @@ import javax.ws.rs.core.{Response, StreamingOutput}
 class GdprResource {
 
   val tleUserDao = LegacyGuice.tleUserDao
-  val mapper = JsonMapper
+  val mapper     = JsonMapper
     .builder()
     .addModule(DefaultScalaModule)
     .build()

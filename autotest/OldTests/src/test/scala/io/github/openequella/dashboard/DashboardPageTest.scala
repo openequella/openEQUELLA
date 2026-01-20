@@ -43,15 +43,13 @@ class DashboardPageTest extends AbstractCleanupTest {
   @BeforeMethod
   def setupTest(): Unit = {
     logon()
-    dashboardPage = new DashboardPage(context)
-    dashboardPage.waitForLoad()
+    dashboardPage = new DashboardPage(context).get()
   }
 
   @AfterMethod
   def cleanupTest(): Unit = {
     logon()
-    dashboardPage = new DashboardPage(context)
-    dashboardPage.waitForLoad()
+    dashboardPage = new DashboardPage(context).get()
     dashboardPage.changeLayout(SingleColumn)
     cleanupPortlets()
   }
@@ -66,7 +64,7 @@ class DashboardPageTest extends AbstractCleanupTest {
 
   @Test(description = "User should be able to access dashboard page from the menu.")
   def accessFromMenu(): Unit = {
-    val menus = new MenuSection(context).get
+    val menus         = new MenuSection(context).get
     val dashboardPage =
       menus.clickMenu("Dashboard", new DashboardPage(context))
 

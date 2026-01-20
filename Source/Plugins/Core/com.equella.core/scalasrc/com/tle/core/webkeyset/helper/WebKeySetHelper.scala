@@ -65,7 +65,7 @@ object WebKeySetHelper {
     val factory = KeyFactory.getInstance(key.algorithm)
 
     val decryptedPrivateKey = LegacyGuice.encryptionService.decrypt(key.privateKey)
-    val originalPrivateKey =
+    val originalPrivateKey  =
       factory.generatePrivate(new PKCS8EncodedKeySpec(getPemContent(decryptedPrivateKey)))
 
     val publicKey = factory.generatePublic(new X509EncodedKeySpec(getPemContent(key.publicKey)))

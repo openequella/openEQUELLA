@@ -143,7 +143,7 @@ object RenderNewTemplate {
   // that are only available in New UI such as the Facet settings page.
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
-      val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
+      val paramOverride   = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
       val sessionOverride = paramOverride.fold(
         Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))
       ) { newUI =>
@@ -224,7 +224,7 @@ object RenderNewTemplate {
   }
 
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
-    val req = context.getRequest
+    val req         = context.getRequest
     val _renderData =
       new ObjectExpression(
         "baseResources",

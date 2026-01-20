@@ -5,7 +5,7 @@ libraryDependencies += "org.mockito" % "mockito-core" % "5.21.0" % Test
 
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
-  val bundle =
+  val bundle  =
     decode[Map[String, String]](IO.read(reactFrontEndLanguageBundle.value))
       .fold(throw _, identity)
   val pluginLangStrings = langStrings.value

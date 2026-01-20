@@ -55,7 +55,7 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
   def doAdd: Gen[List[CloudProviderTestCommand]] =
     for {
       nProviders <- Gen.choose(1, 3)
-      providers <- Gen.listOfN(
+      providers  <- Gen.listOfN(
         nProviders,
         for {
           sz <- Gen.choose(0, 10)
@@ -66,10 +66,10 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
 
   def genTestCommands(s: ProviderTestState): Gen[List[CloudProviderTestCommand]] = s match {
     case s if s.scenarios == Scenarios.values => List()
-    case s =>
+    case s                                    =>
       for {
         command <- Fairness.favourIncomplete(1, 0)(Scenarios.values.toSeq, s.scenarios.contains)
-        res <- command match {
+        res     <- command match {
           case Scenarios.Delete if s.registered.nonEmpty =>
             Gen.oneOf(s.registered.toSeq).map(p => List(DeleteProvider(p.name)))
           case _ => doAdd
@@ -142,7 +142,7 @@ object CloudProviderProperties extends StatefulProperties("Cloud Providers") wit
 
   }
 
-  var stopIntegServer: () => Unit = _
+  var stopIntegServer: () => Unit                   = _
   override def createBrowser: SimpleSeleniumBrowser = {
     val browser = super.createBrowser
     stopIntegServer = IntegTester.start()

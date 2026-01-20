@@ -11,10 +11,14 @@ addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.1.1")
 // Provides access to the OWASP Dependency Check to search for
 // vulnerabilities in our dependencies. Most useful:
 // - ./sbt dependencyCheckAnyProject
+// Recommended: run with an NVD API key (via the NVD_API_KEY env var, read in the root build.sbt)
+// to avoid rate limiting, and allow more retries since Maven Central
+// can be flaky to access:
+// - NVD_API_KEY="your API key" ./sbt -Danalyzer.central.retry.count=7 dependencyCheck
 //
 // NOTE: Uses a lot of temporary file storage, you may need to:
 //   export JVM_OPTS="-Djava.io.tmpdir=/var/tmp"
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
+addSbtPlugin("net.nmoncho" % "sbt-dependency-check" % "1.8.5")
 
 // Provides support for all the tasks found at:
 // https://github.com/sbt/sbt-dependency-graph#main-tasks

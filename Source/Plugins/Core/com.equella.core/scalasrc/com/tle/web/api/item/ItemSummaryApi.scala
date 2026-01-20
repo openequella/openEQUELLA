@@ -90,7 +90,7 @@ object ItemSummaryApi {
           )
         )
       case "displayNodes" =>
-        val dn = xstream.fromXML(config).asInstanceOf[java.util.List[DisplayNode]].asScala
+        val dn          = xstream.fromXML(config).asInstanceOf[java.util.List[DisplayNode]].asScala
         val fullItemXml = LegacyGuice.itemHelper.convertToXml(
           new ItemPack[Item](item, itemXml, ""),
           new ItemHelper.ItemHelperSettings(true)

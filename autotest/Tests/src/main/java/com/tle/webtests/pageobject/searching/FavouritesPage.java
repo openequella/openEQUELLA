@@ -34,7 +34,6 @@ public class FavouritesPage extends AbstractPage<FavouritesPage> {
     }
     super.checkLoaded();
   }
-  ;
 
   By xpathForPage(String searchType) {
     return By.xpath(

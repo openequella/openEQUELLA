@@ -6,6 +6,7 @@ import com.tle.webtests.framework.factory.RefreshableElement;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -160,6 +161,16 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
     } else {
       throw new RuntimeException("Page '" + text + "' is not present or is not clickable");
     }
+  }
+
+  /**
+   * Fills multiple edit boxes on the wizard page.
+   *
+   * @param fields A map where the key is the control index(start from 1) and the value is the text
+   *     to enter.
+   */
+  public void fillFields(Map<Integer, String> fields) {
+    fields.forEach((index, value) -> editbox(index, value));
   }
 
   private class PageCondition implements ExpectedCondition<Boolean> {

@@ -195,7 +195,7 @@ class BrowseHierarchyResource {
       ) => Response
   ): Response = {
     validateCompoundUuid(compoundUuid) match {
-      case Left(errorResponse) => errorResponse
+      case Left(errorResponse)                     => errorResponse
       case Right((validCompoundUuid, topicEntity)) =>
         val HierarchyCompoundUuid(_, currentVirtualTopicName, parentCompoundUuidList) =
           validCompoundUuid

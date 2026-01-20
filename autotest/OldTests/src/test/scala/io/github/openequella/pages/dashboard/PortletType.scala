@@ -34,4 +34,6 @@ object PortletType extends Enumeration {
   val QuickSearch: Value = Value("Quick search")
   val Html: Value        = Value("Formatted text")
   val Recent: Value      = Value("Recent contributions")
+  val Tasks: Value       = Value("Tasks")
+  val MyResources: Value = Value("My resources")
 }

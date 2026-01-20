@@ -211,7 +211,7 @@ class WizardApi {
 
     val filterCookies = {
       val filterList = List("JSESSIONID")
-      val cookies =
+      val cookies    =
         req.getCookies.filter(cookie => filterList.exists(!_.startsWith(cookie.getName)))
       // Generate a string which include cookie pairs separated by a semi-colon
       cookies.map(cookie => s"${cookie.getName}=${cookie.getValue}").mkString(";")

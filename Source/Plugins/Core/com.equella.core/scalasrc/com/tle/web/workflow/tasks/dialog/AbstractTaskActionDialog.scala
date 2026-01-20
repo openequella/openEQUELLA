@@ -126,8 +126,8 @@ abstract class AbstractTaskActionDialog
     val model             = getModel(context)
     val stagingFolderUuid = model.stagingFolderUuid
     val fileEntries = fileSystemService.enumerate(new StagingFile(stagingFolderUuid), null, null)
-    val files = fileEntries.zipWithIndex.flatMap { case (fileEntry, index) =>
-      val filename = fileEntry.getName
+    val files       = fileEntries.zipWithIndex.flatMap { case (fileEntry, index) =>
+      val filename   = fileEntry.getName
       val shouldShow = currentUploads.find(_._2._1 == filename) match {
         case None => Some((index.toString, true, new StatementHandler(removeCallback, filename)))
         case Some((uuid, (fn, ar, err))) if !ar.get() =>
@@ -283,7 +283,7 @@ abstract class AbstractTaskActionDialog
         new PassThroughFunction("cl", events.getSubmitValuesFunction("cancelled"))
     })))
     cancelButton.setClickHandler(events.getSubmitValuesHandler("cancelled"))
-    val divs = Seq("uploads", "comment-error")
+    val divs               = Seq("uploads", "comment-error")
     val updateProgressArea = ajaxEvents.getAjaxUpdateDomFunction(
       tree,
       this,
