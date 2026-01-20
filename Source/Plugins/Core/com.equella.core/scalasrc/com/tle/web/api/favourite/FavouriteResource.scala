@@ -95,7 +95,7 @@ class FavouriteResource @Inject() (
     val newBookmark = for {
       // ItemNotFoundException will be thrown by itemService if there is no Item matching this
       // item ID so we don't validate item ID here again.
-      item <- Try(itemService.get(new ItemId(favouriteItem.itemID)))
+      item     <- Try(itemService.get(new ItemId(favouriteItem.itemID)))
       bookmark <- Try(
         bookmarkService.add(
           item,

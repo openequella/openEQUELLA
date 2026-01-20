@@ -6,7 +6,7 @@ libraryDependencies ++= Seq(
   springWeb,
   springAop,
   springContext,
-  "com.fifesoft"  % "rsyntaxtextarea" % "3.6.0",
+  "com.fifesoft"  % "rsyntaxtextarea" % "3.6.1",
   "com.miglayout" % "miglayout-swing" % "11.4.2",
   xstreamDep
 )
@@ -23,7 +23,7 @@ excludeDependencies ++= Seq(
 )
 
 (assembly / packageOptions) += Package.ManifestAttributes("Permissions" -> "all-permissions")
-(assembly / assemblyOption) := (assembly / assemblyOption).value
+(assembly / assemblyOption)        := (assembly / assemblyOption).value
 (assembly / assemblyMergeStrategy) := {
   case PathList("org", "xmlpull", "v1", _*) => MergeStrategy.first
   // The following three were added when the hibernate-types was added the the hibernate module
@@ -34,7 +34,7 @@ excludeDependencies ++= Seq(
   // org.springframework/spring-context/jars/spring-context-3.2.18.RELEASE.jar:overview.html
   // org.springframework/spring-web/jars/spring-web-3.2.18.RELEASE.jar:overview.html
   case x if x.contains("overview.html") => MergeStrategy.first
-  case x =>
+  case x                                =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }

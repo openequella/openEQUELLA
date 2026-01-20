@@ -61,9 +61,9 @@ trait NotificationLookup {
   trait TaskNotification extends ItemNotification {
     val itemTaskId = Try(new ItemTaskId(note.getItemid))
       .getOrElse(new ItemTaskId(new ItemId(note.getItemidOnly), ""))
-    def taskId      = itemTaskId.getTaskId
-    def getTaskName = taskLabel(taskId)
-    def getTaskLink = linkToTask(taskId)
+    def taskId                                             = itemTaskId.getTaskId
+    def getTaskName                                        = taskLabel(taskId)
+    def getTaskLink                                        = linkToTask(taskId)
     def workflowItem(taskId: String): Option[WorkflowNode] =
       Option(item.getItemDefinition.getWorkflow)
         .flatMap(_.getNodes.asScala.find(_.getUuid == taskId))

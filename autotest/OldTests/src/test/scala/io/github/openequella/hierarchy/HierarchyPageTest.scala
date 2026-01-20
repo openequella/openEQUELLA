@@ -56,7 +56,7 @@ import testng.annotation.NewUIOnly
   @Test(description = "User should be able to access hierarchy page from the menu.")
   def accessFromMenu(): Unit = {
     new HomePage(context).load
-    val menus = new MenuSection(context).get
+    val menus         = new MenuSection(context).get
     val hierarchyPage =
       menus.clickMenu(A_TOPIC_NAME, new HierarchyPage(context, A_TOPIC_NAME, A_TOPIC_UUID))
     assertTrue(hierarchyPage.isLoaded)

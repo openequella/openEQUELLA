@@ -66,7 +66,7 @@ class DrmResource {
       Try {
         Option(drm) match {
           case Some(drmSettings) => ItemDrmDetails(drmSettings)
-          case None =>
+          case None              =>
             throw new NotFoundException(s"Failed to find DRM terms for item: $uuid/$version")
         }
       }

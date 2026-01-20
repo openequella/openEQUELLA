@@ -78,7 +78,7 @@ class FacetedSearchClassificationResource {
     privilegeChecker.checkAuthorised()
     validate(classification) match {
       case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
-      case Right(_) =>
+      case Right(_)     =>
         classification.setDateCreated(new Date())
         classification.setDateModified(new Date())
         classification.setInstitution(CurrentInstitution.get)
@@ -103,7 +103,7 @@ class FacetedSearchClassificationResource {
       case Some(classification) =>
         validate(jsonBody) match {
           case Left(errors) => ApiErrorResponse.badRequest(errors: _*)
-          case Right(_) =>
+          case Right(_)     =>
             classification.setName(jsonBody.getName)
             classification.setMaxResults(jsonBody.getMaxResults)
             classification.setOrderIndex(jsonBody.getOrderIndex)
@@ -128,7 +128,7 @@ class FacetedSearchClassificationResource {
     val batchResponses = ListBuffer[ApiBatchOperationResponse]()
 
     jsonBody.foreach(newClassification => {
-      val id = newClassification.getId
+      val id       = newClassification.getId
       val response = validate(newClassification) match {
         case Left(errors) =>
           ApiBatchOperationResponse(id, 400, errors.mkString(""))

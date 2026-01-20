@@ -87,7 +87,7 @@ class TaskNotifications
 
     def date = msg.getDate
 
-    val uuid = msg.getUuid
+    val uuid     = msg.getUuid
     val getFiles =
       fileSystemService.enumerate(new WorkflowMessageFile(uuid), Constants.BLANK, null).map { fe =>
         new NameValue(fe.getName, WorkflowMessageServlet.messageUrl(uuid, fe.getName))
@@ -119,7 +119,7 @@ class TaskNotifications
   case class TaskNoteModel(lul: LazyUserLookup)(val note: Notification, val item: Item)
       extends TaskNotification
       with OwnerLookup {
-    val status = Option(workflowService.getIncompleteStatus(itemTaskId))
+    val status                            = Option(workflowService.getIncompleteStatus(itemTaskId))
     val currentTask: Option[WorkflowItem] = workflowItem(taskId).collect { case wi: WorkflowItem =>
       wi
     }
@@ -133,7 +133,7 @@ class TaskNotifications
           new KeyLabel(KEY_AUTOMSG, l, new PluralKeyLabel(KEY_AUTODAYS, workflowItem.getActionDays))
         }
     }.orNull
-    val causeStep = status.flatMap(wis => Option(wis.getCause))
+    val causeStep     = status.flatMap(wis => Option(wis.getCause))
     val causeAccepted =
       causeStep.filter(_.getNode.getParent != null).map(_.getStatus == WorkflowNodeStatus.COMPLETE)
 

@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
 object NotifyMyLive {
 
   def notifyOwners(op: AbstractStandardWorkflowOperation, ups: UserPreferenceService): Unit = {
-    val item = op.getItem
+    val item  = op.getItem
     val users = ups
       .getPreferenceForUsers(
         UserPreferenceService.NOTIFY_MYLIVE,

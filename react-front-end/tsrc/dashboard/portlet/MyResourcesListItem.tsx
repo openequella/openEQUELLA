@@ -37,8 +37,15 @@ export interface MyResourcesListItemProps {
 export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
   myResourcesType,
 }) => {
+  const getAriaLabel = (name: string, count: number) =>
+    `${name}${count > 0 ? `, ${count} items` : ""}`;
+
   const parentListItem = (
-    <ListItemButton component={Link} to={myResourcesType.to}>
+    <ListItemButton
+      component={Link}
+      to={myResourcesType.to}
+      aria-label={getAriaLabel(myResourcesType.name, myResourcesType.count)}
+    >
       <ListItemContent
         text={myResourcesType.name}
         count={myResourcesType.count}
@@ -57,6 +64,7 @@ export const MyResourcesListItem: React.FC<MyResourcesListItemProps> = ({
             sx={{ pl: 4 }}
             component={Link}
             to={subCategory.to}
+            aria-label={getAriaLabel(subCategory.name, subCategory.count)}
           >
             <ListItemContent
               text={subCategory.name}

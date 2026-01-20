@@ -39,7 +39,7 @@ import scala.jdk.CollectionConverters._
   */
 object IMSAttachmentCommit extends AttachmentCommit {
   override def apply(a: Attachment, stg: StagingContext): Attachment = a
-  override def cancel(a: Attachment, stg: StagingContext): Unit =
+  override def cancel(a: Attachment, stg: StagingContext): Unit      =
     IMSPackageExtension.deleteIMSFiles(stg, a)
 }
 

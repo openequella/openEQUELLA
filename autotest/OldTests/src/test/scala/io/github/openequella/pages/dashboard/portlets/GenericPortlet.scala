@@ -43,6 +43,13 @@ class GenericPortlet[T <: PageObject](context: PageContext, name: String)
 
   loadedBy = By.xpath(portletXpath)
 
+  protected val SHOW_ALL_TEXT = "Show all"
+  private val MAXIMISE_TEXT   = "Maximise"
+  private val MINIMISE_TEXT   = "Minimise"
+  private val EDIT_TEXT       = "Edit"
+  private val DELETE_TEXT     = "Delete"
+  private val CLOSE_TEXT      = "Close"
+
   /** Waits for the Portlet content to be loaded.
     */
   def waitForLoad(): Unit = {
@@ -77,34 +84,34 @@ class GenericPortlet[T <: PageObject](context: PageContext, name: String)
   /** Check is the Portlet is minimised.
     */
   def isMinimised: Boolean =
-    !isPresent(contentContainerBy) && isPresent(getPortletButtonBy("Maximise"))
+    !isPresent(contentContainerBy) && isPresent(getPortletButtonBy(MAXIMISE_TEXT))
 
   /** Clicks the minimise button of a portlet with the given title.
     */
-  def minimise(): Unit = getPortletButton("Minimise").click()
+  def minimise(): Unit = getPortletButton(MINIMISE_TEXT).click()
 
   /** Clicks the maximise button of a portlet with the given title.
     */
-  def maximise(): Unit = getPortletButton("Maximise").click()
+  def maximise(): Unit = getPortletButton(MAXIMISE_TEXT).click()
 
   /** Clicks the edit button.
     */
   def edit(): EditPortletPage = {
-    getPortletButton("Edit").click()
+    getPortletButton(EDIT_TEXT).click()
     new EditPortletPage(context).get()
   }
 
   /** Clicks the delete button.
     */
   def delete(): Unit = {
-    getPortletButton("Delete").click()
+    getPortletButton(DELETE_TEXT).click()
     confirmDialog()
   }
 
   /** Clicks the close button.
     */
   def close(): Unit = {
-    getPortletButton("Close").click()
+    getPortletButton(CLOSE_TEXT).click()
     confirmDialog()
   }
 

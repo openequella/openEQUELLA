@@ -41,7 +41,7 @@ object SearchMenuContributor extends MenuContributor {
     } else {
       val uis          = UISettings.getUISettings
       val useNewSearch = uis.newUI.newSearch && RenderNewTemplate.isNewLayout(info)
-      val hls = new HtmlLinkState(
+      val hls          = new HtmlLinkState(
         new SimpleBookmark(if (useNewSearch) "page/search" else "searching.do")
       )
       hls.setLabel(SearchMenuContributor.LABEL_KEY)

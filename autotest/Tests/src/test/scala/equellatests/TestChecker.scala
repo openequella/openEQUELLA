@@ -19,7 +19,7 @@ object TestChecker {
     val testConfig = GlobalConfig.testConfig
     withBrowserDriver(name, testConfig) { driver =>
       val context = new PageContext(driver, testConfig, testConfig.getAdminUrl)
-      val choice = new UndeterminedPage[InstitutionTabInterface](
+      val choice  = new UndeterminedPage[InstitutionTabInterface](
         context,
         new InstitutionListTab(context),
         new ImportTab(context)

@@ -113,7 +113,7 @@ object IntegTester extends IOApp with Http4sDsl[IO] {
     case request @ (GET | POST) -> Root / "index.html"        => appHtml(request)
     case request @ (GET | POST) -> Root / "viewitem.html"     => viewItemHtml(request)
     case request @ (GET | POST) -> Root / "echo" / "index.do" => echoServer(request)
-    case request @ (GET | POST) -> Root / "oauthredirector" =>
+    case request @ (GET | POST) -> Root / "oauthredirector"   =>
       OAuthRedirector.oauthRedirector(request)
     case request @ (GET | POST) -> Root / "provider/" => appHtml(request)
   }

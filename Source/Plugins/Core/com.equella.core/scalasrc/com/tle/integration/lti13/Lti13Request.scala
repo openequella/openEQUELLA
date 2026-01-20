@@ -78,7 +78,7 @@ case class LtiDeepLinkingSettings(
 
 object LtiDeepLinkingSettings {
   // Name of each settings is defined in the format of snake case so add this config to help decode.
-  implicit val config: Configuration = Configuration.default.withSnakeCaseMemberNames
+  implicit val config: Configuration    = Configuration.default.withSnakeCaseMemberNames
   implicit val urlDecoder: Decoder[URL] = Decoder.decodeString.emap { str =>
     Either
       .catchNonFatal(new URL(str))
@@ -241,7 +241,7 @@ object Lti13Request {
 
     val details = for {
       messageType <- requiredClaim(Lti13Claims.MESSAGE_TYPE)
-      validType <- Either
+      validType   <- Either
         .catchNonFatal(LtiMessageType.withName(messageType))
         .leftMap(_ => InvalidJWT(s"Unknown LTI message type: $messageType"))
       request <- getRequest(validType)
