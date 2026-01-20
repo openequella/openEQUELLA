@@ -22,7 +22,7 @@ import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
-import sttp.client4.{Backend, DefaultSyncBackend, Request, asString, basicRequest}
+import sttp.client4.{Backend, DefaultSyncBackend, Request, Response, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
 import sttp.shared.Identity
@@ -81,9 +81,7 @@ object Client {
         // There is a slight short falling in this API. If you target an institution URL that is invalid,
         // you still get a 200 back with a cookie. Ideally, the API needs to reply with a body as well
         // so that we can confirm we have actually logged in.
-        cfg.cookies ++= response.cookies.collect { case Right(cookie) =>
-          cookie
-        }
+        cfg.cookies ++= extractCookies(response)
         Right(())
       case response =>
         Left((response.code, s"Login failed with status code ${response.code}"))
@@ -167,11 +165,13 @@ object Client {
     val authenticatedRequest = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
     val response             = authenticatedRequest.send(backend)
 
-    val cookies = response.cookies.collect { case Right(cookie) =>
-      cookie
-    }
-    cookieJar ++= cookies
+    cookieJar ++= extractCookies(response)
 
     response.body
   }
+
+  private def extractCookies(response: Identity[Response[_]]): Seq[CookieWithMeta] =
+    response.cookies.collect { case Right(cookie) =>
+      cookie
+    }
 }
