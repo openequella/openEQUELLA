@@ -159,14 +159,14 @@ object Client {
   private def send[T](
       cookieJar: scala.collection.mutable.Set[CookieWithMeta]
   )(request: Request[T]): T = {
-    val requestWithCookies = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
-    val result             = requestWithCookies.send(backend)
+    val authenticatedRequest = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
+    val response             = authenticatedRequest.send(backend)
 
-    val cookies = result.cookies.collect { case Right(cookie) =>
+    val cookies = response.cookies.collect { case Right(cookie) =>
       cookie
     }
     cookieJar ++= cookies
 
-    result.body
+    response.body
   }
 }
