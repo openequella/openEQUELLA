@@ -94,6 +94,7 @@ export const PortletMyResources: React.FC<PortletMyResourcesProps> = ({
         </Grid>
         <Grid display="flex" justifyContent="center">
           <Button
+            aria-label={showAllText}
             variant="outlined"
             component={Link}
             to={routes.MyResources.to("All resources")}

@@ -1,3 +1,4 @@
 *.properties
 data/
 plugins/
+learningedge-log4j.yaml
