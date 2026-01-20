@@ -185,7 +185,7 @@ object OidcIntegration extends Http4sDsl[IO] {
 
       val result = for {
         grantType <- validate(OidcParams.GRANT_TYPE)
-        jwt       <-
+        jwt <-
           if (grantType == GRANT_TYPE_CREDENTIALS) validateClientCredentials(headers)
           else validateAuthorisationCode(validate)
       } yield jwt

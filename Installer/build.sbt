@@ -24,7 +24,7 @@ excludeDependencies ++= Seq(
 
 (assembly / assemblyMergeStrategy) := {
   case "module-info.class" => MergeStrategy.discard
-  case x                   =>
+  case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
@@ -44,7 +44,7 @@ installerZip := {
   val serverData     = baseDirectory.value / "data/server"
   val allServerFiles = serverData ** "*" pair (relativeTo(serverData), false)
   val upZip          = (equellaserver / upgradeZip).value
-  val allFiles       = Seq(
+  val allFiles = Seq(
     assembly.value -> "enterprise-install.jar",
     upZip          -> s"manager/updates/${upZip.getName}"
   ) ++ allServerFiles

@@ -25,7 +25,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
   val userService: UserService                       = mock(classOf[UserService])
   implicit val encryptionService: EncryptionService  = new EncryptionServiceImpl
   implicit val webKeySetService: WebKeySetService    = new WebKeySetServiceImpl
-  val auth0: Auth0                                   = Auth0(
+  val auth0: Auth0 = Auth0(
     issuer = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com",
     authCodeClientId = "C5tvBaB7svqjLPe0dDPBicgPcVPDJumZ",
     authCodeClientSecret =

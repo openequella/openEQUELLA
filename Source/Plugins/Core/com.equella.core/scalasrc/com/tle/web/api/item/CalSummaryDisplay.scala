@@ -94,7 +94,7 @@ object CalSummaryDisplay {
       val attachMap = LegacyGuice.calWebService.getAttachmentMap(info, item).asScala
       val vi        = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
       val title     = LangUtils.getString(item.getName, CoreStrings.text("summary.unnamedportion"))
-      val sections  = p.getSections.asScala.flatMap { s =>
+      val sections = p.getSections.asScala.flatMap { s =>
         val range     = s.getRange
         val pageCount = PageCounter.countTotalRange(range)
         val atUuid    = s.getAttachment
@@ -112,12 +112,12 @@ object CalSummaryDisplay {
   }
 
   def journalData(info: SectionInfo, holding: CALHolding): HoldingSummary = {
-    val calWebService   = LegacyGuice.calWebService
+    val calWebService = LegacyGuice.calWebService
     val journalPortions = holding.getPortions.asScala.flatMap { p =>
       val item      = p.getItem
       val vi        = LegacyGuice.viewableItemFactory.createNewViewableItem(item.getItemId)
       val attachMap = calWebService.getAttachmentMap(info, item).asScala
-      val sections  = p.getSections.asScala.flatMap { s =>
+      val sections = p.getSections.asScala.flatMap { s =>
         val atUuid = s.getAttachment
         attachMap.get(atUuid).map { at =>
           p.getTitle -> JournalSection(copyrightAttachment(info, item, vi, at))

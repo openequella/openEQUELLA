@@ -47,7 +47,7 @@ class FavouritesPage(
   /** Remove a favourite item or search with the given name from favourites page.
     */
   def removeFavourite(name: String): Unit = {
-    val searchLink   = findLink(name)
+    val searchLink = findLink(name)
     val removeButton =
       searchLink.findElement(By.xpath("./../..//button[@aria-label='Remove from favourites']"))
 

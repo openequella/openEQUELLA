@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as OEQ from "@openequella/rest-api-client";
 import { MyResourcesCategory } from "../tsrc/modules/MyResourceModule";
 
 export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
@@ -41,25 +40,25 @@ export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
     name: "Moderation queue",
     id: "modqueue",
     count: 9,
-    to: "/page/myresources?myResourcesType=Moderation+queue",
+    to: "/page/myresources?myResourcesType=Moderation queue",
     subCategories: [
       {
         name: "In moderation",
         id: "moderating",
         count: 9,
-        to: "/page/myresources?myResourcesType=Moderation+queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
+        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22MODERATING%22%5D%7D",
       },
       {
         name: "Under review",
         id: "review",
         count: 0,
-        to: "/page/myresources?myResourcesType=Moderation+queue&searchOptions=%7B%22status%22%3A%5B%22REVIEW%22%5D%7D",
+        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REVIEW%22%5D%7D",
       },
       {
         name: "Rejected",
         id: "rejected",
         count: 0,
-        to: "/page/myresources?myResourcesType=Moderation+queue&searchOptions=%7B%22status%22%3A%5B%22REJECTED%22%5D%7D",
+        to: "/page/myresources?myResourcesType=Moderation queue&searchOptions=%7B%22status%22%3A%5B%22REJECTED%22%5D%7D",
       },
     ],
   },
@@ -70,60 +69,3 @@ export const getMyResourceCategoriesTransformedResp: MyResourcesCategory[] = [
     to: "/page/myresources?myResourcesType=Archive",
   },
 ];
-
-export const mockGetMyResourceCategoriesResp: OEQ.MyResource.MyResourcesCategory[] =
-  [
-    {
-      name: "Published",
-      id: "published",
-      count: 47,
-      links: "http://localhost:8080/rest/api/search/myresources/published",
-    },
-    {
-      name: "Drafts",
-      id: "draft",
-      count: 6,
-      links: "http://localhost:8080/rest/api/search/myresources/draft",
-    },
-    {
-      name: "Scrapbook",
-      id: "scrapbook",
-      count: 9,
-      links: "http://localhost:8080/rest/api/search/myresources/scrapbook",
-    },
-    {
-      name: "Moderation queue",
-      id: "modqueue",
-      count: 9,
-      links: "http://localhost:8080/rest/api/search/myresources/modqueue",
-      subSearches: [
-        {
-          name: "In moderation",
-          id: "moderating",
-          count: 9,
-        },
-        {
-          name: "Under review",
-          id: "review",
-          count: 0,
-        },
-        {
-          name: "Rejected",
-          id: "rejected",
-          count: 0,
-        },
-      ],
-    },
-    {
-      name: "Archive",
-      id: "archived",
-      count: 3,
-      links: "http://localhost:8080/rest/api/search/myresources/archived",
-    },
-    {
-      name: "All resources",
-      id: "all",
-      count: 74,
-      links: "http://localhost:8080/rest/api/search/myresources/all",
-    },
-  ];

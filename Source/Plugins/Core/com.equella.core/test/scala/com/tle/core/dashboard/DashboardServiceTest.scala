@@ -36,7 +36,7 @@ class DashboardServiceTest extends AnyFunSpec with Matchers with GivenWhenThen w
   val mockPortletService: PortletService               = mock(classOf[PortletService])
   val mockPortletWebService: PortletWebService         = mock(classOf[PortletWebService])
   val mockUserPreferenceService: UserPreferenceService = mock(classOf[UserPreferenceService])
-  val dashboardService                                 =
+  val dashboardService =
     new DashboardServiceImpl(mockPortletService, mockPortletWebService, mockUserPreferenceService)
 
   val userId = UUID.randomUUID().toString

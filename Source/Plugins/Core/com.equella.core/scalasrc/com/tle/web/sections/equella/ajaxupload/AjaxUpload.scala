@@ -99,12 +99,12 @@ object AjaxUploadResponse {
 }
 
 object AjaxUpload {
-  val r               = ResourcesService.getResourceHelper(getClass)
-  val CSS_INCLUDE     = new CssInclude(r.url("css/render/ajaxupload.css"))
+  val r           = ResourcesService.getResourceHelper(getClass)
+  val CSS_INCLUDE = new CssInclude(r.url("css/render/ajaxupload.css"))
   private val INCLUDE =
     new IncludeFile(r.url("scripts/render/ajaxupload.js"), CSS_INCLUDE, JQueryProgression.PRERENDER)
   private val FILE_UPLOAD_HANDLER_CLASS = new ExternallyDefinedFunction("AjaxUploads", INCLUDE)
-  private val VALIDATE_FUNC             =
+  private val VALIDATE_FUNC =
     new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "validateFile", 5)
   private val ADD_UPLOAD_FUNC =
     new ExternallyDefinedFunction(FILE_UPLOAD_HANDLER_CLASS, "addUploadEntry", 4)

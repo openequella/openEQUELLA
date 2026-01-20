@@ -116,7 +116,7 @@ class QtiPackageAttachmentHandlerNew extends PackageAttachmentExtension {
     */
   object QtiPackageCommit extends AttachmentCommit {
     override def apply(a: Attachment, stg: StagingContext): Attachment = a
-    override def cancel(a: Attachment, stg: StagingContext): Unit      =
+    override def cancel(a: Attachment, stg: StagingContext): Unit =
       stg.delete(QtiConstants.QTI_FOLDER_PATH)
   }
 }

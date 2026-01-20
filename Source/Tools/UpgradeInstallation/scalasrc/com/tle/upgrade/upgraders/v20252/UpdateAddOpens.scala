@@ -153,7 +153,7 @@ class UpdateAddOpens extends AbstractUpgrader {
     val configFileUpdater = new LineFileModifier(configFile, result) {
       override protected def processLineMulti(line: String): java.util.List[String] = {
         val javaOptsPattern: Regex = modifications.javaOptsRegex
-        val updates                = line match {
+        val updates = line match {
           case javaOptsPattern(opts) =>
             val cleanedOpts = modifications.removeExistingAddOpens(opts)
             modifications.javaAddOpens ++ List("", modifications.javaOptsModifier(cleanedOpts))

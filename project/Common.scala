@@ -24,7 +24,7 @@ object Common {
 
   private val defaultConfig = ConfigFactory.parseFile(file("project/build-defaults.conf"))
   private val configFile    = sys.props.get("config.file").getOrElse("build.conf")
-  val buildConfig           =
+  val buildConfig =
     ConfigFactory.load(ConfigFactory.parseFile(file(configFile))).withFallback(defaultConfig)
 
   def loadLangProperties(f: File, prefix: String, group: String): LangStrings = {
@@ -60,7 +60,7 @@ object Common {
   }
 
   def nodeScript(script: String, dir: File): Unit = {
-    val os     = sys.props("os.name").toLowerCase
+    val os = sys.props("os.name").toLowerCase
     val precmd = os match {
       case x if x contains "windows" => Seq("cmd", "/C")
       case _                         => Seq.empty
@@ -70,7 +70,7 @@ object Common {
   }
 
   def nodeInstall(dir: File): Unit = {
-    val os     = sys.props("os.name").toLowerCase
+    val os = sys.props("os.name").toLowerCase
     val precmd = os match {
       case x if x contains "windows" => Seq("cmd", "/C")
       case _                         => Seq.empty

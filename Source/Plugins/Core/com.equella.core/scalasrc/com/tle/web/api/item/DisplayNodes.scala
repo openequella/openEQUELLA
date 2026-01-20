@@ -28,7 +28,7 @@ import scala.jdk.CollectionConverters._
 object DisplayNodes {
 
   def create(itemxml: PropBagEx)(dn: DisplayNode): Option[MetaDisplay] = {
-    val nodePath  = dn.getNode
+    val nodePath = dn.getNode
     val valueText = if (nodePath.indexOf('@') != -1) {
       itemxml.getNode(nodePath)
     } else {

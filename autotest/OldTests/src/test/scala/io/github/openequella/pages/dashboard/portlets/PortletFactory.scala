@@ -54,29 +54,4 @@ object PortletFactory {
     val portletType: PortletType.Value          = PortletType.Scripted
     def create(ctx: PageContext, title: String) = new ScriptedPortlet(ctx, title)
   }
-
-  case object QuickSearch extends PortletFactory[QuickSearchPortlet] {
-    val portletType: PortletType.Value          = PortletType.QuickSearch
-    def create(ctx: PageContext, title: String) = new QuickSearchPortlet(ctx, title)
-  }
-
-  case object Html extends PortletFactory[HtmlPortlet] {
-    val portletType: PortletType.Value          = PortletType.Html
-    def create(ctx: PageContext, title: String) = new HtmlPortlet(ctx, title)
-  }
-
-  case object Recent extends PortletFactory[RecentPortlet] {
-    val portletType: PortletType.Value          = PortletType.Recent
-    def create(ctx: PageContext, title: String) = new RecentPortlet(ctx, title)
-  }
-
-  case object Tasks extends PortletFactory[TasksPortlet] {
-    val portletType: PortletType.Value          = PortletType.Tasks
-    def create(ctx: PageContext, title: String) = new TasksPortlet(ctx, title)
-  }
-
-  case object MyResources extends PortletFactory[MyResourcesPortlet] {
-    val portletType: PortletType.Value          = PortletType.MyResources
-    def create(ctx: PageContext, title: String) = new MyResourcesPortlet(ctx, title)
-  }
 }

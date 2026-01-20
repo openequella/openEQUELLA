@@ -119,11 +119,12 @@ public class UserScriptTest extends AbstractCleanupTest {
   @Test(dependsOnMethods = {"testCreateEntity"})
   public void testPortletScriptLoadingNewUi() {
     logon();
-    DashboardPage dashboardPage = new DashboardPage(context).get();
+    DashboardPage dashboardPage = new DashboardPage(context);
+    dashboardPage.waitForLoad();
     dashboardPage.openCreatePortletPage(PortletType$.MODULE$.Scripted());
 
     dashboardPage = setupScriptedPortletConfiguration().save(new DashboardPage(context));
-    dashboardPage.get();
+    dashboardPage.waitForLoad();
 
     String portletTitle = scriptedPortlet.toString();
 

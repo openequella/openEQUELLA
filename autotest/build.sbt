@@ -25,7 +25,7 @@ lazy val OldTests = (project in file("OldTests")).dependsOn(Tests, config)
 
 (ThisBuild / autotestBuildConfig) := {
   val defaultConfig = ConfigFactory.parseFile(file("autotest/autotest-defaults.conf"))
-  val configFile    = file(
+  val configFile = file(
     sys.props.getOrElse(
       "config.file", {
         val envConfig = sys.env.get("AUTOTEST_CONFIG")
@@ -114,7 +114,7 @@ coverageJar := {
 dumpCoverage := {
   val cc           = autotestBuildConfig.value.getConfig("coverage")
   val dumpFilename = "jacoco.exec"
-  val f            =
+  val f =
     optPath(cc, "file")
       .filter(f => f.isDirectory && f.canWrite)
       // When dumping into a directory, make sure each file is unique
@@ -141,7 +141,7 @@ coverageLoader := {
       l.load(f)
   }
   cc.getStringList("hosts").asScala.foreach { h =>
-    val ind           = h.indexOf(':')
+    val ind = h.indexOf(':')
     val (hname, port) =
       if (ind == -1) (h, 6300) else (h.substring(0, ind), h.substring(ind + 1).toInt)
     log.info(s"Collecting coverage from $h")
@@ -163,7 +163,7 @@ val saxBuilder = {
 }
 
 (coverageReport / sourceDirectory) := target.value / "all_srcs"
-(coverageReport / target)          := {
+(coverageReport / target) := {
   val cc = autotestBuildConfig.value.getConfig("coverage")
   optPath(cc, "reportdir").getOrElse(target.value / "coverage-report")
 }
@@ -266,7 +266,7 @@ configureInstall := {
 (test / aggregate) := false
 
 collectArtifacts := {
-  val results                                                 = target.value / "test-artifacts.zip"
+  val results = target.value / "test-artifacts.zip"
   def allFiles(files: Seq[File]): Traversable[(File, String)] = {
     files.flatMap(f => (f ** "*").pair(rebase(f, f.getName)))
   }

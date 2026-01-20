@@ -96,7 +96,7 @@ class AclResource {
     checkPrivs("VIEW_SECURITY_TREE", "EDIT_SECURITY_TREE")
     val targetListBean = new TargetListBean
     val allAcls        = aclManager.getTargetList(Node.INSTITUTION, null)
-    val tBeanList      = allAcls.getEntries.asScala.map { ae =>
+    val tBeanList = allAcls.getEntries.asScala.map { ae =>
       val tBean = new TargetListEntryBean
       tBean.setGranted(ae.isGranted)
       tBean.setOverride(ae.isOverride)

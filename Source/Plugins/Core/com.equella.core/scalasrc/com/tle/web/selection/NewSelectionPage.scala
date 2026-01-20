@@ -36,7 +36,7 @@ object NewSelectionPage {
   val mapper = LegacyGuice.objectMapperService.createObjectMapper()
 
   def setupSelection(req: HttpServletRequest): Unit = {
-    val _sessionId           = req.getPathInfo.substring(1)
+    val _sessionId = req.getPathInfo.substring(1)
     val (sessionId, integId) = _sessionId.indexOf(':') match {
       case -1 => (_sessionId, None)
       case i  => (_sessionId.substring(0, i), Some(_sessionId.substring(i + 1)))

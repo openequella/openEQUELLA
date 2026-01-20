@@ -4,8 +4,6 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.WaitingPageObject;
 import com.tle.webtests.pageobject.remoterepo.AbstractRemoteRepoSearchPage;
-import com.tle.webtests.pageobject.viewitem.SummaryPage;
-import java.util.Map;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -88,29 +86,5 @@ public class ContributePage extends AbstractPage<ContributePage> {
     WaitingPageObject<ContributePage> removalWaiter = removalWaiter(resume);
     resume.findElement(By.xpath("../..")).findElement(By.linkText("Remove")).click();
     removalWaiter.get();
-  }
-
-  /**
-   * Create and publish an item in the given collection with the given field values.
-   *
-   * @param collection The collection name
-   * @param fields A map of field numbers to values
-   */
-  public SummaryPage createAndPublishItem(String collection, Map<Integer, String> fields) {
-    WizardPageTab wizard = openWizard(collection);
-    wizard.fillFields(fields);
-    return wizard.save().publish();
-  }
-
-  /**
-   * Create and draft an item in the given collection with the given field values.
-   *
-   * @param collection The collection name
-   * @param fields A map of field numbers to values
-   */
-  public SummaryPage createAndDraftItem(String collection, Map<Integer, String> fields) {
-    WizardPageTab wizard = openWizard(collection);
-    wizard.fillFields(fields);
-    return wizard.save().draft();
   }
 }

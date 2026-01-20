@@ -63,9 +63,9 @@ class NotificationEmailer(
     val user     = userBean.getUniqueID
     dao.updateLastAttempt(user, batched, processDate, attemptId)
     val reasonMap = dao.getReasonCounts(user, attemptId).asScala.view.mapValues(_.intValue()).toMap
-    val canSend   = emailService.hasMailSettings && Option(userBean.getEmailAddress)
+    val canSend = emailService.hasMailSettings && Option(userBean.getEmailAddress)
       .exists(_.nonEmpty)
-    val ext2Reasons  = reasonMap.keys.groupBy(extensionForType)
+    val ext2Reasons = reasonMap.keys.groupBy(extensionForType)
     val emailCallers = ext2Reasons.flatMap { case (extO, reasons) =>
       (extO, canSend) match {
         case (Some(ext), true) =>
@@ -78,7 +78,7 @@ class NotificationEmailer(
             )
             .asScala
           ext.emails(userBean, newestNotes, reasonMap).map { ne =>
-            val id                = UUID.randomUUID()
+            val id = UUID.randomUUID()
             def successCB(): Unit = {
               val (p, d) = ne.pertainsTo.partition(n => ext.isIndexed(n.getReason))
               def ids(n: Iterable[Notification]) =

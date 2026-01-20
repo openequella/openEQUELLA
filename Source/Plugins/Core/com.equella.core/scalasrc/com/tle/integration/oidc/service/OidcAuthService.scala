@@ -148,7 +148,7 @@ class OidcAuthService @Inject() (
     */
   def buildAuthUrl(authUrl: String, clientId: String, targetPage: String): String = {
     val (codeVerifier, codeChallenge) = generatePKCEPair
-    val stateDetails                  = OidcStateDetails(
+    val stateDetails = OidcStateDetails(
       codeVerifier = codeVerifier,
       codeChallenge = codeChallenge,
       targetPage = Option(targetPage).filter(_.nonEmpty)
@@ -183,13 +183,13 @@ class OidcAuthService @Inject() (
   def verifyCallbackRequest(
       params: Map[String, Array[String]]
   ): Either[AuthorisationError, OidcCallbackDetails] = {
-    def paramMap              = getParam(params)
+    def paramMap = getParam(params)
     def paramValue(p: String) =
       paramMap(p).toRight(AuthInvalidRequest(s"Missing required parameter '$p'"))
 
     for {
-      code         <- paramValue(OpenIDConnectParams.CODE)
-      state        <- paramValue(OpenIDConnectParams.STATE)
+      code  <- paramValue(OpenIDConnectParams.CODE)
+      state <- paramValue(OpenIDConnectParams.STATE)
       stateDetails <- stateService
         .getState(state)
         .toRight(InvalidState(s"Invalid state provided: $state"))
@@ -221,7 +221,7 @@ class OidcAuthService @Inject() (
       stateDetails: OidcStateDetails,
       idp: IdentityProviderDetails
   ): Either[OAuth2Error, String] = {
-    val idpDetails   = idp.commonDetails
+    val idpDetails = idp.commonDetails
     val tokenRequest = basicRequest
       .body(
         OpenIDConnectParams.CLIENT_ID     -> idpDetails.authCodeClientId,
@@ -243,7 +243,7 @@ class OidcAuthService @Inject() (
         .map(_.id_token)
     } match {
       case Success(result) => result
-      case Failure(err)    =>
+      case Failure(err) =>
         Left(ServerError(s"Failed to communicate with the Token endpoint: ${err.getMessage}"))
     }
   }
@@ -271,7 +271,7 @@ class OidcAuthService @Inject() (
       decodedToken <- decodeJwt(token)
       idpDetails = idp.commonDetails
       jsonWebKeySetProvider <- jwkProvider.get(idpDetails.keysetUrl)
-      jwk                   <- Either
+      jwk <- Either
         .catchNonFatal(jsonWebKeySetProvider.get(decodedToken.getKeyId))
         .leftMap(_ => InvalidJWT("Failed to retrieve JWK by the obtained ID token's key ID"))
       verifiedToken <- verifyToken(
@@ -310,7 +310,7 @@ class OidcAuthService @Inject() (
     def claim: String => Option[String] = getClaim(idToken)
 
     for {
-      userId   <- getUserId(idp, idToken)
+      userId <- getUserId(idp, idToken)
       username <- idp.commonDetails.usernameClaim
         .filter(_.nonEmpty)
         .map(c =>
@@ -390,7 +390,7 @@ class OidcAuthService @Inject() (
       .map { case RoleConfiguration(roleClaim, mappings) =>
         getClaimAsSet(token, roleClaim) match {
           case Some(idpRoles) => Right(idpRoles.flatMap(getOeqRolesFromMappings(mappings)))
-          case None           =>
+          case None =>
             Left(
               InvalidJWT(
                 s"Missing the configured role claim $roleClaim in the ID token, or the claim is not in the format of array."

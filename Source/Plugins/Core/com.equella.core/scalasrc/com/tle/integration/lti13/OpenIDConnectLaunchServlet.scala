@@ -50,7 +50,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // (e.g. AuthenticationResponse) only require POST
     InitiateLoginRequest(req.getParameterMap.asScala.toMap) match {
       case Some(initReq) => handleInitiateLoginRequest(initReq, resp)
-      case None          =>
+      case None =>
         resp.sendError(
           HttpServletResponse.SC_BAD_REQUEST,
           "Unsupported 'GET' LTI 1.3 launch request received."
@@ -65,7 +65,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
 
     // TODO Needs validation around the request - was it a form POST request, does it have any params, etc.
 
-    val params           = req.getParameterMap.asScala.toMap
+    val params = req.getParameterMap.asScala.toMap
     val processedRequest =
       InitiateLoginRequest(params) orElse AuthenticationResponse(params) orElse AuthErrorResponse(
         params
@@ -74,7 +74,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     processedRequest match {
       case Some(validRequest) =>
         validRequest match {
-          case initReq: InitiateLoginRequest    => handleInitiateLoginRequest(initReq, resp)
+          case initReq: InitiateLoginRequest => handleInitiateLoginRequest(initReq, resp)
           case authResp: AuthenticationResponse =>
             handleAuthenticationResponse(
               authResp,
@@ -102,7 +102,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     LOGGER.debug(initLogin.toString)
     lti13AuthService.buildAuthReqUrl(initLogin).map(resp.encodeRedirectURL) match {
       case Some(authRedirectUrl) => resp.sendRedirect(authRedirectUrl)
-      case None                  =>
+      case None =>
         resp.sendError(
           HttpServletResponse.SC_BAD_REQUEST,
           "Unable to start launch with provided request."
@@ -127,7 +127,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     // Request with the appropriate error and state parameters. Other parameters SHOULD
     // NOT be returned."
     def onAuthFailure(error: Lti13Error): Unit = {
-      val msg    = error.msg
+      val msg = error.msg
       val output = error match {
         case OAuth2LayerError(oauth2Error) =>
           val code = oauth2Error.code
@@ -159,7 +159,7 @@ class OpenIDConnectLaunchServlet extends HttpServlet {
     } yield (lti13Request, verifiedToken.getIssuer)
 
     authResult match {
-      case Left(error)                     => onAuthFailure(error)
+      case Left(error) => onAuthFailure(error)
       case Right((ltiRequest, platformId)) =>
         ltiRequest match {
           case deepLinkingRequest: LtiDeepLinkingRequest =>

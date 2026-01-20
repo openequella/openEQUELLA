@@ -27,7 +27,7 @@ excludeDependencies ++= Seq(
 val upgradeManager = LocalProject("UpgradeManager")
 
 (Compile / resourceGenerators) += Def.task {
-  val base  = (Compile / resourceManaged).value
+  val base = (Compile / resourceManaged).value
   val files = Seq(
     (upgradeManager / assembly).value -> base / "manager/manager.jar",
     versionProperties.value           -> base / "version.properties"

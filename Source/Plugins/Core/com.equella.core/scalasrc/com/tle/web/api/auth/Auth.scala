@@ -60,8 +60,8 @@ class Auth {
   ): Response = {
     LegacyGuice.userSessionService.reenableSessionUse()
 
-    val us                                = LegacyGuice.userService
-    val wad                               = us.getWebAuthenticationDetails(req)
+    val us  = LegacyGuice.userService
+    val wad = us.getWebAuthenticationDetails(req)
     def lfr(messageKey: String): Response =
       loginFailedResponse(wad, username, CurrentLocale.get(RESOURCE_HELPER.key(messageKey)))
 

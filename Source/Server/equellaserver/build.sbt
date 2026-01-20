@@ -25,7 +25,7 @@ val cxfVersion        = "3.6.9"
 val fs2Version        = "3.12.2"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.22.1"
+val jsoupVersion      = "1.21.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "2.9.4"
@@ -94,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.2",
+  "com.ibm.icu" % "icu4j" % "78.1",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -245,11 +245,11 @@ libraryDependencies ++= Seq(
   ),
   "xml-resolver"                  % "xml-resolver"             % "1.2",
   "org.scala-sbt"                %% "io"                       % "1.10.5",
-  "org.mozilla"                   % "rhino"                    % "1.9.0",
+  "org.mozilla"                   % "rhino"                    % "1.8.1",
   "io.lemonlabs"                 %% "scala-uri"                % "4.0.3",
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "2.4.0",
   "io.github.classgraph"          % "classgraph"               % "4.8.184",
-  "com.fasterxml"                 % "classmate"                % "1.7.3",
+  "com.fasterxml"                 % "classmate"                % "1.7.1",
   "org.glassfish"                 % "javax.el"                 % "3.0.1-b12",
   "jakarta.validation"            % "jakarta.validation-api"   % "3.1.1",
   "com.github.stephenc.jcip"      % "jcip-annotations"         % "1.0-1",
@@ -339,7 +339,7 @@ excludeDependencies ++= Seq(
 
 run := {
   val cp = (Runtime / fullClasspath).value
-  val o  = ForkOptions().withRunJVMOptions(
+  val o = ForkOptions().withRunJVMOptions(
     Vector(
       "-cp",
       Path.makeString(cp.files),
@@ -454,7 +454,7 @@ run := {
   case PathList("META-INF", "versions", _, "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
   // Also handle non-versioned OSGi manifests.
   case PathList("META-INF", "OSGI-INF", "MANIFEST.MF") => MergeStrategy.discard
-  case x                                               =>
+  case x =>
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
@@ -481,14 +481,14 @@ additionalPlugins := {
 }
 
 upgradeZip := {
-  val log          = streams.value.log
-  val ver          = equellaVersion.value
-  val releaseDate  = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  val log         = streams.value.log
+  val ver         = equellaVersion.value
+  val releaseDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
   val outZip: File =
     target.value / s"tle-upgrade-${ver.major}.${ver.minor}.r${releaseDate} (${ver.semanticVersion}-${ver.releaseType}).zip"
   val plugVer     = ver.fullVersion
   val upgraderJar = (LocalProject("UpgradeInstallation") / assembly).value
-  val zipFiles    = Seq(
+  val zipFiles = Seq(
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR

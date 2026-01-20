@@ -81,7 +81,7 @@ object WebFileUploads {
     Try(stream.close)
     tried match {
       case Success(finfo) => Successful(finfo)
-      case Failure(t)     =>
+      case Failure(t) =>
         Try(ctx.stagingContext.delete(uf.uploadPath))
         t match {
           case b: BannedFileException => IllegalFile(BannedType)
@@ -247,7 +247,7 @@ object WebFileUploads {
         _ => uf.cancel.set(true)
       case su: SuccessfulUpload  => removeFilesForUpload(su)
       case ValidatedUpload(s, _) => removeFilesForUpload(s)
-      case fu: FailedUpload      =>
+      case fu: FailedUpload =>
         _ => ()
     }
   }

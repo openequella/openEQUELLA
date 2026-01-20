@@ -167,7 +167,7 @@ object OAuthServerAccess {
     def getCloudProviderName: String =
       cpUser.flatMap(user => CloudProviderHelper.getByUuid(user.providerId)) match {
         case Some(cp) => cp.name
-        case None     =>
+        case None =>
           throw new NotFoundException(s"Failed to find Cloud provider for token ${tokenData}")
       }
 

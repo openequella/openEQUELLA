@@ -4,7 +4,7 @@ libraryDependencies ++= Seq(
   "org.slf4j"              % "slf4j-simple"    % "2.0.17",
   "com.google.guava"       % "guava"           % "33.5.0-jre",
   "com.github.equella.jpf" % "jpf"             % "1.0.7",
-  "com.fifesoft"           % "rsyntaxtextarea" % "3.6.1",
+  "com.fifesoft"           % "rsyntaxtextarea" % "3.6.0",
   "com.miglayout"          % "miglayout-swing" % "11.4.2",
   springWeb,
   springAop,

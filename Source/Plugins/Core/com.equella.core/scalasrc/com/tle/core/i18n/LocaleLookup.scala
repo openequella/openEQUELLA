@@ -27,12 +27,12 @@ object LocaleLookup {
   def selectLocale: LocaleData = {
     val ss               = LegacyGuice.userSessionService
     val sessionAvailable = ss.isSessionAvailable
-    val sessionLocale    =
+    val sessionLocale =
       if (sessionAvailable) Option(ss.getAttribute[LocaleData](WebConstants.KEY_LOCALE)) else None
     sessionLocale.getOrElse {
       val request         = ss.getAssociatedRequest
       val preferredLocale = LegacyGuice.userPreferenceService.getPreferredLocale(request)
-      val locale          =
+      val locale =
         new LocaleData(preferredLocale, LegacyGuice.languageService.isRightToLeft(preferredLocale))
       if (sessionAvailable) ss.setAttribute(WebConstants.KEY_LOCALE, locale)
       locale

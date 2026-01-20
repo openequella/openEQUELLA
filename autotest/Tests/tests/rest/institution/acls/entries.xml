@@ -1560,19 +1560,6 @@
     <aclPriority>1400</aclPriority>
   </com.tle.beans.security.AccessEntry>
   <com.tle.beans.security.AccessEntry>
-    <id>824094</id>
-    <expression>
-      <id>821131</id>
-      <dynamic>false</dynamic>
-    </expression>
-    <targetObject>B:116628</targetObject>
-    <privilege>CREATE_ITEM</privilege>
-    <aggregateOrdering>2000 0004 R</aggregateOrdering>
-    <grantRevoke>R</grantRevoke>
-    <aclOrder>4</aclOrder>
-    <aclPriority>0</aclPriority>
-  </com.tle.beans.security.AccessEntry>
-  <com.tle.beans.security.AccessEntry>
     <id>117588</id>
     <expression>
       <id>474</id>

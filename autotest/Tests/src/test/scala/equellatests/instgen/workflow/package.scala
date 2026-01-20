@@ -6,8 +6,8 @@ import equellatests.GlobalConfig
 import equellatests.domain.TestLogon
 
 package object workflow {
-  val workflowInst  = GlobalConfig.createTestInst("workflow")
-  val adminLogon    = TestLogon("admin", "``````", workflowInst, "ad", "min")
+  val workflowInst = GlobalConfig.createTestInst("workflow")
+  val adminLogon   = TestLogon("admin", "``````", workflowInst, "ad", "min")
   val tleAdminLogon = TestLogon(
     "TLE_ADMINISTRATOR",
     GlobalConfig.testConfig.getAdminPassword,

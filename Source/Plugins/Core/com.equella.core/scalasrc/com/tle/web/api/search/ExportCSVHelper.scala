@@ -30,7 +30,7 @@ import scala.jdk.CollectionConverters._
 case class CSVHeader(name: String, xpath: String)
 
 object ExportCSVHelper {
-  val DRM_HEADER                            = "DRM"
+  val DRM_HEADER = "DRM"
   val STANDARD_HEADER_LIST: List[CSVHeader] = List(
     ("Item ID", "item/@id"),
     ("Item status", "item/@itemstatus"),
@@ -130,7 +130,7 @@ object ExportCSVHelper {
   ): String = {
     val childNodes = node.getChildren.asScala.toList
     val attributes = node.getAttributesForNode("").asScala.toMap
-    val delimiter  =
+    val delimiter =
       if (isRootNode && childNodes.nonEmpty) DOUBLE_PIPE_DELIMITER else SINGLE_PIPE_DELIMITER
     val parentNameForChildren = parentNodeName.map(name => s"$name/${node.getNodeName}")
 
@@ -153,7 +153,7 @@ object ExportCSVHelper {
         )
       } else {
         val nodeValue = node.getNode
-        val content   = if (isRootNode && childNodes.isEmpty && attributes.isEmpty) {
+        val content = if (isRootNode && childNodes.isEmpty && attributes.isEmpty) {
           nodeValue
         } else {
           s"${parentNameForChildren.getOrElse(node.getNodeName)}:${nodeValue}"
@@ -179,7 +179,7 @@ object ExportCSVHelper {
       // If the xpath points to an attribute, read the value directly.
       val cellContent: String = header.xpath match {
         case xpathAttributeRegex() => xml.getNode(header.xpath)
-        case _                     =>
+        case _ =>
           xml
             .iterator(header.xpath) // This is a PropBagIterator.
             .iterator()             // So we have to call 'iterator' again.

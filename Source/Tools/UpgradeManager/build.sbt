@@ -22,7 +22,7 @@ libraryDependencies ++= Seq(
 
 (assembly / assemblyMergeStrategy) := {
   case "module-info.class" => MergeStrategy.discard
-  case x                   =>
+  case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }

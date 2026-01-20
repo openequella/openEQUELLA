@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-alpine AS baseequella
+FROM eclipse-temurin:21-alpine as baseequella
 
 # Install needed tools to install and run openEQUELLA, clean up the apt cache afterwards.
 
@@ -9,15 +9,14 @@ RUN apk update \
   && apk add --no-cache \
     bash \
     curl \
-    ffmpeg \
-    gcompat \
-    ghostscript \
     imagemagick \
+    ffmpeg \
     unzip \
+    gcompat \
   && adduser equella --disabled-password --gecos -shell /bin/bash
 
 # Install openEQUELLA
-FROM baseequella AS installer
+FROM baseequella as installer
 
 ARG OEQ_INSTALL_FILE=installer.zip
 
@@ -35,7 +34,7 @@ COPY entrypoint.sh .
 COPY learningedge-log4j.yaml learningedge-config/
 
 # Now build the final image
-FROM baseequella AS equella
+FROM baseequella as equella
 
 EXPOSE 8080
 

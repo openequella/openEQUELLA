@@ -68,7 +68,7 @@ object WizardFileUploadsProperties
     }
 
     def matchesFailure(failure: FailureTypes.Value)(tf: TestFile): Boolean = failure match {
-      case FailureTypes.TooLarge  => maxFileSizeMB.exists(_.toLong * 1024L * 1024L < tf.fileSize)
+      case FailureTypes.TooLarge => maxFileSizeMB.exists(_.toLong * 1024L * 1024L < tf.fileSize)
       case FailureTypes.WrongType =>
         mimeTypes.exists(!_.contains(StandardMimeTypes.extMimeMapping(tf.extension)))
       case FailureTypes.Banned => TestFile.bannedExt(tf.extension)
@@ -303,7 +303,7 @@ object WizardFileUploadsProperties
         DescriptionEdit(Uniqueify.uniqueify(ValidDescription.addNumber)(others.contains, vd).desc)
       )
     case EditTypes.Restriction => RestrictionEdit(!a.restricted)
-    case EditTypes.Viewer      =>
+    case EditTypes.Viewer =>
       Gen.oneOf(a.viewerOptions.get.toSeq :+ "").map(v => ViewerEdit(Some(v).filterNot(_.isEmpty)))
     case EditTypes.Thumb => ThumbSettingEdit(!a.suppressThumb)
   }
@@ -359,7 +359,7 @@ object WizardFileUploadsProperties
         commandsWith(s.currentPage) {
           case LoginPageLoc   => createNewItem
           case SummaryPageLoc => if (s.unverified.nonEmpty) List(EditItem) else createNewItem
-          case Page1(item)    =>
+          case Page1(item) =>
             val edits       = availableEdits(item)
             val failures    = availableFailures(item)
             val newEdits    = edits -- s.edits
@@ -403,7 +403,7 @@ object WizardFileUploadsProperties
             if (newEdits.isEmpty) List(SaveAttachment)
             else
               for {
-                editType    <- Gen.oneOf(newEdits.toSeq)
+                editType <- Gen.oneOf(newEdits.toSeq)
                 editCommand <- attachmentEditFor(
                   editType,
                   edited,
@@ -435,7 +435,7 @@ object WizardFileUploadsProperties
         withCurrentPage { case p1 @ Page1(item) =>
           val control = fucFromIndex(item, controlIndex)
           if (!failed) {
-            val desc   = tf.packageName.getOrElse(filename)
+            val desc = tf.packageName.getOrElse(filename)
             val attach = Attachment(
               id,
               control,
@@ -513,7 +513,7 @@ object WizardFileUploadsProperties
       s: FileUploadState,
       b: SimpleSeleniumBrowser
   ) = c match {
-    case EditItem                 => b.runOnPage { case sp: SummaryPage => sp.edit() }
+    case EditItem => b.runOnPage { case sp: SummaryPage => sp.edit() }
     case CreateItem(name, wizard) =>
       b.run {
         ContributePage(b.page.ctx).load().openWizard(wizard)
@@ -524,7 +524,7 @@ object WizardFileUploadsProperties
         val ctrl                = page1.universalControl(control.num)
         val expectedDescription = tf.packageName.getOrElse(filename)
         val failure             = control.illegalReason.lift(tf).map(_(filename))
-        val w                   = failure
+        val w = failure
           .map(ctrl.errorExpectation)
           .getOrElse(ctrl.attachNameWaiter(expectedDescription, false))
         ctrl.uploadInline(tf, filename, w)
@@ -535,8 +535,8 @@ object WizardFileUploadsProperties
       }
     case StartEditingAttachment(attachUuid) =>
       b.verifyOnPageAndState(s.currentPage) { case (Page1(item), page1: WizardPageTab) =>
-        val a        = item.attachmentForId(attachUuid)
-        val uc       = page1.universalControl(a.control.num)
+        val a  = item.attachmentForId(attachUuid)
+        val uc = page1.universalControl(a.control.num)
         val waitPage =
           if (a.ispackage) new PackageAttachmentEditPage(uc) else new FileAttachmentEditPage(uc)
         uc.editResource(a.nameInTable, waitPage.pageExpectation)
@@ -551,7 +551,7 @@ object WizardFileUploadsProperties
     case EditAttachmentDetails(changes) =>
       b.runOnPage { case aep: AttachmentEditPage => changes.run(aep); aep }
     case SaveAttachment => b.runOnPage { case aep: AttachmentEditPage => aep.save() }
-    case SaveItem       =>
+    case SaveItem =>
       b.verifyOnPageAndState(s.currentPage) { case (Page1(item), page1: WizardPageTab) =>
         val summary = if (s.savedItem.isDefined) page1.saveToSummary() else page1.save().publish()
         val itemId  = summary.itemId()

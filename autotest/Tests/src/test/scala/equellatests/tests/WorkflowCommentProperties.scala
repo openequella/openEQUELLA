@@ -103,10 +103,10 @@ object WorkflowCommentProperties
 
   def stdComment(msgType: MessageType): Gen[(List[WorkflowCommentCommand], Boolean)] =
     for {
-      comment      <- arbitrary[RandomWords]
-      numFiles     <- Gen.choose(0, 3)
-      files        <- Gen.listOfN(numFiles, fileAndName)
-      cancel       <- Gen.frequency(1 -> true, 4 -> false)
+      comment  <- arbitrary[RandomWords]
+      numFiles <- Gen.choose(0, 3)
+      files    <- Gen.listOfN(numFiles, fileAndName)
+      cancel   <- Gen.frequency(1 -> true, 4 -> false)
       blankMessage <- Gen
         .frequency(2 -> false, 1 -> true)
         .map(mb => mb && numFiles == 0 && msgType.typ == MessageTypes.Approve)
@@ -156,7 +156,7 @@ object WorkflowCommentProperties
       s.copy(item = Some(newItem), items = s.items :+ newItem)
     case InvalidCommentCommand(msgType, file, invalidReason) => s.copy(attemptedInvalid = true)
     case CloseDialogCommand                                  => s
-    case PostCommentCommand(msg, files, msgType, cancel)     =>
+    case PostCommentCommand(msg, files, msgType, cancel) =>
       def nextTask(current: String) = msgType match {
         case ApproveMessage      => nextTask3Step(current)
         case CommentMessage      => Some(current)
@@ -233,8 +233,8 @@ object WorkflowCommentProperties
     case PostCommentCommand(msg, files, msgType, cancel) =>
       b.verifyOnPage { case mv: ModerationView =>
         val md = msgType match {
-          case CommentMessage      => mv.postComment()
-          case ApproveMessage      => mv.approve()
+          case CommentMessage => mv.postComment()
+          case ApproveMessage => mv.approve()
           case RejectMessage(step) =>
             val rd       = mv.reject()
             val stepName = step.getOrElse("Original Contributor")

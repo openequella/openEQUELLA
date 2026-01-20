@@ -140,7 +140,7 @@ object SearchHelper {
     val dynaCollectionQuery: Option[FreeTextBooleanQuery] = handleDynaCollection(
       payload.dynaCollection
     )
-    val whereQuery: Option[FreeTextBooleanQuery]        = payload.whereClause.map(WhereParser.parse)
+    val whereQuery: Option[FreeTextBooleanQuery] = payload.whereClause.map(WhereParser.parse)
     val advSearchCriteria: Option[FreeTextBooleanQuery] =
       fieldValues.map(buildAdvancedSearchCriteria)
 
@@ -352,8 +352,8 @@ object SearchHelper {
     *   The result of converting `item` to a `SearchResultItem`.
     */
   def convertToItem(item: SearchItem, includeAttachments: Boolean = true): SearchResultItem = {
-    val key                           = item.idKey
-    val bean                          = item.bean
+    val key  = item.idKey
+    val bean = item.bean
     lazy val sanitisedAttachmentBeans =
       Option(bean.getAttachments).map(_.asScala.map(sanitiseAttachmentBean).toList)
     val rawItem = LegacyGuice.itemService.getUnsecureIfExists(key)

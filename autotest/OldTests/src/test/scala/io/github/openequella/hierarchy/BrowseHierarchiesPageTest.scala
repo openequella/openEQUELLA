@@ -32,7 +32,7 @@ import testng.annotation.NewUIOnly
   private val HIERARCHY_A_TOPIC_UUID = "e8c49738-7609-0079-e354-67b2e4e6b54c"
   private val CHILD_HIERARCHY_NAME   = "Child"
   private val A_TOPI_COUNT           = 2
-  private val A_TOPIC_SHORT_DESC     =
+  private val A_TOPIC_SHORT_DESC =
     "This is short descriptions"
 
   private def getHierarchyPanel: HierarchyPanel =

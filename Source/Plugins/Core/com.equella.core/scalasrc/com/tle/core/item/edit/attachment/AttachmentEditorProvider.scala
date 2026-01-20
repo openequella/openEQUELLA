@@ -31,7 +31,7 @@ object AttachmentEditorProvider {
     Option(extMap.get(className)).map(tracker.getNewBeanByExtension).getOrElse {
       className match {
         case c if c == classOf[CloudAttachmentEditor].getName => new CloudAttachmentEditor()
-        case _                                                =>
+        case _ =>
           throw new ItemEditingException(
             s"No extension for '$className' ${classOf[CloudAttachmentEditor].getName}"
           )

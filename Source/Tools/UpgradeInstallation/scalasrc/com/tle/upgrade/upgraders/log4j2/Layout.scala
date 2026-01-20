@@ -54,7 +54,7 @@ object Layout {
 
         case "org.apache.log4j.HTMLLayout" | "com.dytech.common.log4j.HTMLLayout2" |
             "com.tle.core.equella.runner.HTMLLayout3" =>
-          val title        = readProperty(s"$layoutKey.title", props)
+          val title = readProperty(s"$layoutKey.title", props)
           val locationInfo =
             readBooleanProperty(s"$layoutKey.LocationInfo", props)
           val datePattern = readProperty(s"$layoutKey.datePattern", props)

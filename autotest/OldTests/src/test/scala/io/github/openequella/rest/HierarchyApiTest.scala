@@ -8,16 +8,16 @@ import org.testng.annotations.Test
 import scala.jdk.CollectionConverters._
 
 class HierarchyApiTest extends AbstractRestApiTest {
-  private val HIERARCHY_API_ENDPOINT        = getTestConfig.getInstitutionUrl + "api/hierarchy"
+  private val HIERARCHY_API_ENDPOINT = getTestConfig.getInstitutionUrl + "api/hierarchy"
   private val BROWSE_HIERARCHY_API_ENDPOINT =
     getTestConfig.getInstitutionUrl + "api/browsehierarchy2"
 
   private val DEFAULT_ITEM_UUID = "cadcd296-a4d7-4024-bb5d-6c7507e6872a"
   private val DEFAULT_VERSION   = 2
 
-  private val nonExistingUuid        = "non-existing-uuid"
-  private val normaTopicUuid         = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
-  private val virtualTopicJamesUuid  = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
+  private val nonExistingUuid       = "non-existing-uuid"
+  private val normaTopicUuid        = "6135b550-ce1c-43c2-b34c-0a3cf793759d"
+  private val virtualTopicJamesUuid = "886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
   private val virtualTopicHobartUuid =
     "46249813-019d-4d14-b772-2a8ca0120c99:SG9iYXJ,886aa61d-f8df-4e82-8984-c487849f80ff:QSBKYW1lcw=="
 

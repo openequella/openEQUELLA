@@ -56,11 +56,6 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     return searchBar;
   }
 
-  /** Gets the current search query from the search bar. */
-  public String getQuery() {
-    return searchBar.getAttribute("value");
-  }
-
   /** Get the search list element. */
   public WebElement getSearchList() {
     return driver.findElement(searchResultListBy);

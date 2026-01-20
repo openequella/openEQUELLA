@@ -88,7 +88,7 @@ object CloudProviderService {
           .replaceVariables(serviceUri.url, provider.baseUrl, contextParams ++ params)
       )
 
-      req            = f(uri)
+      req = f(uri)
       requestContext = "[" + RandomStringUtils.randomAlphanumeric(
         6
       ) + "] provider: " + provider.id + ", vendor: " + provider.vendorId
@@ -116,7 +116,7 @@ object CloudProviderService {
       provider: CloudProviderInstance
   ): Either[String, List[CloudControlDefinition]] = {
     provider.serviceUrls.get(ControlsServiceId) match {
-      case None                  => Right(List.empty)
+      case None => Right(List.empty)
       case Some(controlsService) => {
         serviceRequest(
           controlsService,

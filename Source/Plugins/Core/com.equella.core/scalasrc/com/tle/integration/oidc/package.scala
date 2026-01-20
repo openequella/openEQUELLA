@@ -141,13 +141,13 @@ package object oidc {
   )(implicit nonceService: OidcNonceService): Either[GeneralError, DecodedJWT] =
     for {
       // Standard verification, including signature, issuer, audience etc.
-      verifier    <- buildJwtVerifier(jsonWebKey, issuer, audience, idToken.getAlgorithm)
+      verifier <- buildJwtVerifier(jsonWebKey, issuer, audience, idToken.getAlgorithm)
       verifiedJwt <- Either
         .catchNonFatal(verifier.verify(idToken))
         .leftMap(t => InvalidJWT(s"Provided JWT failed signature verification: ${t.getMessage}"))
       // Nonce verification
       nonce <- getRequiredClaim(verifiedJwt, OpenIDConnectParams.NONCE)
-      _     <- nonceService
+      _ <- nonceService
         .validateNonce(nonce, state)
         .leftMap(err => InvalidJWT(s"Provided JWT failed nonce verification: $err"))
     } yield verifiedJwt // Both verification pass and return the verified token

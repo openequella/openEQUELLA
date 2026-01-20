@@ -38,19 +38,15 @@ abstract class AbstractPortletTest extends AbstractCleanupTest {
   // Cleanup after class to remove any portlets/items created during tests.
   override protected def cleanupAfterClass(): Unit = {
     loginWithPortletAccount()
-    cleanupPortlets()
+    val prefix = context.getNamePrefix
+    new DashboardAdminPage(context).load.deleteAllPortlet(prefix)
     super.cleanupAfterClass()
   }
 
-  // For vanilla institution.
   protected def loginWithPortletAccount(): Unit = logon("portlettest1", "``````")
 
   protected def loadDashboardPage(): Unit = {
-    dashboardPage = new DashboardPage(context).load()
-  }
-
-  protected def cleanupPortlets(): Unit = {
-    val namePrefix = context.getNamePrefix
-    new DashboardAdminPage(context).load().deleteAllPortlet(namePrefix)
+    dashboardPage = new DashboardPage(context)
+    dashboardPage.waitForLoad()
   }
 }

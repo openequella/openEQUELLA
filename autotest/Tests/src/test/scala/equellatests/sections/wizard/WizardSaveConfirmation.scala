@@ -16,7 +16,7 @@ class WizardSaveConfirmation(val ctx: PageContext) extends WaitingBrowserPage {
     )
 
   def clickButton(name: String) = driver.findElement(buttonBy(name)).click()
-  def publish(): SummaryPage    = {
+  def publish(): SummaryPage = {
     clickButton("Publish")
     new SummaryPage(ctx).get()
   }

@@ -134,7 +134,7 @@ abstract class StatefulProperties(name: String) extends Properties(name: String)
 
     def nextCommand(s: State, commands: List[Command], previousCommands: Int): Prop =
       commands match {
-        case Nil       => Prop.proved
+        case Nil => Prop.proved
         case c :: tail => {
           failedAfter.foreach { failedAt =>
             if (failedAt == previousCommands) System.err.println("*** Failed on next command ***")

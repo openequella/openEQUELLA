@@ -359,8 +359,8 @@ class LegacyContentApi {
     }
 
     path match {
-      case ""                            => ("/home.do", identity)
-      case p if p.startsWith("items/")   => itemViewer(p.substring("items/".length), (_, vi) => vi)
+      case ""                          => ("/home.do", identity)
+      case p if p.startsWith("items/") => itemViewer(p.substring("items/".length), (_, vi) => vi)
       case p if p.startsWith("preview/") =>
         val itemId = ItemTaskId.parse(p.substring("preview/".length))
         (
@@ -437,8 +437,8 @@ class LegacyContentApi {
       @Context req: HttpServletRequest,
       @Context resp: HttpServletResponse
   ): Response = {
-    val contributors          = LegacyGuice.menuService.getContributors
-    val noInst                = CurrentInstitution.get == null
+    val contributors = LegacyGuice.menuService.getContributors
+    val noInst       = CurrentInstitution.get == null
     val (noParam, filterName) =
       if (noInst) (false, "serverAdmin")
       else if (CurrentUser.isGuest) (false, "guest")
@@ -470,7 +470,7 @@ class LegacyContentApi {
         .map { case (_, links) =>
           links.sortBy(_.getLinkPriority).map { mc =>
             val menuLink = mc.getLink
-            val href     = Option(menuLink.getBookmark)
+            val href = Option(menuLink.getBookmark)
               .getOrElse(
                 new BookmarkAndModify(
                   context,
@@ -617,13 +617,13 @@ class LegacyContentApi {
       val context           = info.getRootRenderContext.asInstanceOf[StandardRenderContext]
       val decs              = Decorations.getDecorations(info)
       val accessibilityMode = accessibilityModeService.isAccessibilityMode
-      val html              = result match {
+      val html = result match {
         case tr: TemplateResult =>
           val body = SectionUtils.renderToString(
             context,
             wrapBody(context, tr.getNamedResult(context, "body"))
           )
-          val form                       = context.getForm
+          val form = context.getForm
           val formString: Option[String] = Option(form.getAction) match {
             case Some(action) => Some(SectionUtils.renderToString(context, form))
             case None         => None
@@ -659,7 +659,7 @@ class LegacyContentApi {
       val jsFiles  = context.getJsFiles.asScala
       val cssFiles = loadCss(context)
       val metaTags = context.getHeaderMarkup
-      val title    =
+      val title =
         Option(decs.getBannerTitle).orElse(Option(decs.getTitle)).map(_.getText).getOrElse("")
       val menuMode       = decs.getMenuMode.toString
       val fullscreenMode = decs.isFullscreen.toString
@@ -754,7 +754,7 @@ class LegacyContentApi {
   def renderCrumbs(context: RenderContext, d: Decorations): Option[SectionRenderable] = {
     val bc = Breadcrumbs.get(context)
     if (d.isForceBreadcrumbsOn || (d.isBreadcrumbs && !bc.getLinks.isEmpty)) Option {
-      val ct        = new TagState("breadcrumb-inner")
+      val ct = new TagState("breadcrumb-inner")
       val allCrumbs = bc.getLinks.asScala.map {
         case ls: HtmlLinkState => new LinkRenderer(ls)
         case o                 => new TagRenderer("span", o)

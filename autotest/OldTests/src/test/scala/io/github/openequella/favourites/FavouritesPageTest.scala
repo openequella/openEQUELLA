@@ -58,7 +58,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
   @Test(description = "User should be able to access favourites page from the menu.")
   def accessFromMenu(): Unit = {
     new HomePage(context).load
-    val menus          = new MenuSection(context).get
+    val menus = new MenuSection(context).get
     val favouritesPage =
       menus.clickMenu("Favourites", new FavouritesPage(context))
     assertTrue(favouritesPage.isLoaded)
@@ -129,7 +129,7 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
   @Test(description = "Verify user can remove a favourite search")
   def removeFavouriteSearch(): Unit = {
     val search = context.getFullName("favSearch")
-    setupFavouriteSearch(search)
+    setupFavouriteSearch(search);
 
     val favouritesPage = new FavouritesPage(context).load()
     favouritesPage.selectFavouritesSearchesType()
@@ -139,7 +139,6 @@ class FavouritesPageTest extends AbstractCleanupAutoTest {
 
     // Remove the search from favourites.
     favouritesPage.removeFavourite(search)
-    favouritesPage.waitForSearchCompleted(0)
     assertFalse(favouritesPage.hasItem(search))
   }
 }

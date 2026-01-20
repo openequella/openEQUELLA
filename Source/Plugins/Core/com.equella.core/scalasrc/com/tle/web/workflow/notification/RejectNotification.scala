@@ -45,7 +45,7 @@ class RejectNotification
 
     val getRejectedMessage = new TextLabel(modStatus.getRejectedMessage)
     val getRejectedBy      = new UserLabel(modStatus.getRejectedBy, lul)
-    val getRejectedTask    =
+    val getRejectedTask =
       Option(item.getItemDefinition.getWorkflow)
         .flatMap(_.getNodes.asScala.find(_.getUuid == modStatus.getRejectedStep))
         .map(n => new BundleLabel(n.getName, bundleCache))

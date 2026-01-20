@@ -70,7 +70,7 @@ sealed trait AttachmentEditPage extends WaitingBrowserPage {
   }
 
   def save(): WizardPageTab = {
-    val expected   = uc.updatedExpectation()
+    val expected = uc.updatedExpectation()
     val saveButton = uc
       .elemForId("_dialog")
       .findElement(

@@ -156,7 +156,7 @@ class EntraIdUserDirectory extends ApiUserDirectory {
   // user ID attribute is configured, includes its first segment as well.
   private def includeFields(idp: GenericIdentityProviderDetails): Map[String, String] = {
     val standardFields = List("id", "displayName", "surname", "givenName", "mail")
-    val fields         = idp.commonDetails.userIdAttribute
+    val fields = idp.commonDetails.userIdAttribute
       .map(_.split(customAttributeDelimiter))
       .flatMap(_.headOption)
       .map(standardFields :+ _)

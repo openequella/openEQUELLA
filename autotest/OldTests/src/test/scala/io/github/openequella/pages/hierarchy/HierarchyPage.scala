@@ -86,7 +86,7 @@ class HierarchyPage(
   // Select the version of the key resource in the dialog
   private def selectKeyResourceVersion(isLatest: Boolean): Unit = {
     val selectVersionDialog = driver.findElement(By.xpath("//div[@role='dialog']"))
-    val versionLabelXpath   =
+    val versionLabelXpath =
       if (isLatest) By.xpath("//span[contains(text(), 'Always use latest version')]")
       else By.xpath("//span[contains(text(), 'This version')]");
     selectVersionDialog.findElement(versionLabelXpath).click()
@@ -99,7 +99,7 @@ class HierarchyPage(
     */
   def addKeyResourceFromResultList(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val addButton             = waiter.until(
+    val addButton = waiter.until(
       ExpectedConditions.visibilityOfElementLocated(pinIconXpath(itemName, addKeyResourceLabel))
     )
 
@@ -118,7 +118,7 @@ class HierarchyPage(
     */
   def removeKeyResourceFromSearchResult(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val button                = waiter.until(
+    val button = waiter.until(
       ExpectedConditions.visibilityOfElementLocated(pinIconXpath(itemName, removeKeyResourceLabel))
     )
 
@@ -136,7 +136,7 @@ class HierarchyPage(
     */
   def removeKeyResourceFromKeyResourcePanel(itemName: String): Unit = {
     val originalResourceCount = keyResourceCount
-    val pinIconXpath          = By.xpath(
+    val pinIconXpath = By.xpath(
       ".//a[text()='" + itemName + "']/ancestor::div[contains(@class, 'KeyResource-container')]//button[@aria-label='" + removeKeyResourceLabel + "']"
     )
 

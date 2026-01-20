@@ -87,8 +87,8 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
   def makeCommands(requiredScenarios: BulkOpTypes.ValueSet): Gen[Seq[BulkCommand]] =
     for {
       numItems <- Gen.choose(1, 5)
-      com      <- generateCommands {
-        case s if requiredScenarios.subsetOf(s.scenarios)                       => List()
+      com <- generateCommands {
+        case s if requiredScenarios.subsetOf(s.scenarios) => List()
         case s if s.itemsInModeration.size < numItems && s.items.size < PageMax =>
           for {
             name <- RandomWords.someWords
@@ -99,7 +99,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
             selections <- Gen.pick(numPicks, s.itemsInModeration.map(_.name))
             msg        <- Arbitrary.arbitrary[RandomWords].map(_.asString)
             randomUser <- Gen.oneOf("admin", "SimpleModerator")
-            op         <- Fairness.favour3to1[BulkOp](
+            op <- Fairness.favour3to1[BulkOp](
               Seq(Approve(msg), Reject(msg), Reassign(randomUser)),
               b => s.scenarios.contains(b.typ)
             )
@@ -125,7 +125,7 @@ object BulkWorkflowProperties extends StatefulProperties("BulkWorkflowOps") with
       val newItem = BulkItem(name, Some("Step 1"), status = RStatus.moderating, assignedTo = None)
       s.copy(items = s.items :+ newItem)
     case SelectItems(names) => s.copy(selected = names)
-    case PerformOp(op)      =>
+    case PerformOp(op) =>
       s.copy(
         selected = Seq.empty,
         scenarios = s.scenarios + op.typ,

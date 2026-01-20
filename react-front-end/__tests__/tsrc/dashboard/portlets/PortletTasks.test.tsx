@@ -17,15 +17,17 @@
  */
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
-import { render } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import * as NEA from "fp-ts/NonEmptyArray";
+import * as O from "fp-ts/Option";
+import { not } from "fp-ts/Predicate";
 import * as React from "react";
 import { getTaskAndNotificationCountsResp } from "../../../../__mocks__/TaskModule.mock";
 import * as stories from "../../../../__stories__/dashboard/portlets/Tasks.stories";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
-import { getCountForItem } from "./PortletTestHelper";
 
 const strings = {
   ...languageStrings.dashboard.portlets.tasks,
@@ -61,6 +63,29 @@ const setup = async (
 /** Ready state check function that waits for Alert component to be present */
 const waitForAlert = async (context: RenderContext): Promise<void> => {
   await context.findByRole("alert");
+};
+
+const getCountForItem = (
+  name: string,
+  getByText: (text: string) => HTMLElement,
+): number | undefined => {
+  const nameEl = getByText(name);
+  const digitRegex = /^[0-9]+$/;
+
+  const getBadgeValue = (container: HTMLElement) =>
+    pipe(
+      within(container).queryAllByText((c) => digitRegex.test(c)),
+      O.fromPredicate(A.isNonEmpty),
+      O.map(NEA.head),
+    );
+
+  return pipe(
+    O.fromNullable(nameEl.parentElement),
+    O.chain(getBadgeValue),
+    O.map((badgeMaybe) => parseInt(badgeMaybe.textContent ?? "", 10)),
+    O.chain(O.fromPredicate(not(Number.isNaN))),
+    O.toUndefined,
+  );
 };
 
 describe("<PortletTasks />", () => {

@@ -20,7 +20,7 @@ import * as OEQ from "@openequella/rest-api-client";
 export const getTaskAndNotificationCountsResp: OEQ.Task.TaskFilterCount[] = [
   {
     id: "taskall",
-    name: "All tasks",
+    name: "All Tasks",
     count: 9,
   },
   {

@@ -223,7 +223,7 @@ class FileEditDetails(
     def getExecuteUnzip = executeUnzip
 
     lazy val getFileListDiv = {
-      val pa                                             = _files.groupBy(_.parentPath)
+      val pa = _files.groupBy(_.parentPath)
       def mkNodeChildren(path: String): ObjectExpression =
         new ObjectExpression(
           "folder",
@@ -262,7 +262,7 @@ class FileEditDetails(
         (
           false,
           (files ++ folders).zipWithIndex.map { case (efp, i) =>
-            val id    = "s" + i
+            val id = "s" + i
             val check =
               if (efp.file) selections.getBooleanState(info, efp.fullpath)
               else {
@@ -313,7 +313,7 @@ class FileEditDetails(
       dest.setMd5sum(src.getMd5sum)
       dest.setThumbnail(src.getThumbnail)
     }
-    val unzipped    = zipHandler.unzipped
+    val unzipped = zipHandler.unzipped
     val (a, delete) = (_a, unzipped) match {
       case (fa: FileAttachment, true) =>
         val za = new ZipAttachment

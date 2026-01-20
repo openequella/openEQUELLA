@@ -27,26 +27,26 @@ import com.tle.webtests.pageobject.LoginPage
 
 /** New UI tests for OIDC settings page. */
 @TestInstitution("fiveo") class OidcSettingsPageTest extends AbstractSessionTest {
-  val issuerLabel                            = "Issuer *"
-  val clientIdLabel                          = "Client ID *"
-  val clientSecretLabel                      = "Client secret *"
-  val loginUrlLabel                          = "Identity Provider Login URL *"
-  val keyUrlLabel                            = "Public Key Endpoint URL *"
-  val tokenUrlLabel                          = "Token URL *"
-  val usernameClaimLabel                     = "Username claim"
-  val apiEndpointLabel                       = "API endpoint *"
-  val apiClientIdLabel                       = "API Client ID *"
-  val apiClientSecretLabel                   = "API Client Secret *"
-  val roleClaimLabel                         = "Role claim"
-  val userIdAttributeLabel                   = "User ID attribute"
-  val defaultRoles: List[String]             = List("Admin", "Student")
+  val issuerLabel                = "Issuer *"
+  val clientIdLabel              = "Client ID *"
+  val clientSecretLabel          = "Client secret *"
+  val loginUrlLabel              = "Identity Provider Login URL *"
+  val keyUrlLabel                = "Public Key Endpoint URL *"
+  val tokenUrlLabel              = "Token URL *"
+  val usernameClaimLabel         = "Username claim"
+  val apiEndpointLabel           = "API endpoint *"
+  val apiClientIdLabel           = "API Client ID *"
+  val apiClientSecretLabel       = "API Client Secret *"
+  val roleClaimLabel             = "Role claim"
+  val userIdAttributeLabel       = "User ID attribute"
+  val defaultRoles: List[String] = List("Admin", "Student")
   val customRoles: Map[String, List[String]] = Map(
     "TestRole" -> List("Admin")
   )
 
   @Test(description = "User should be able to create a new OIDC settings.")
   def createOidcSettings(): Unit = {
-    val entraId                              = "Entra ID"
+    val entraId = "Entra ID"
     val textFieldValues: Map[String, String] = Map(
       issuerLabel          -> "https://example.com",
       clientIdLabel        -> "123456",
@@ -141,7 +141,7 @@ import com.tle.webtests.pageobject.LoginPage
 
     // Reload page and check the value.
     val newOidcSettingsPage = new OidcSettingsPage(context).load()
-    val realSettings        = newCommonDetails.map({ case (label, _) =>
+    val realSettings = newCommonDetails.map({ case (label, _) =>
       label -> newOidcSettingsPage.getTextFieldValue(label)
     })
     assertEquals(realSettings, newCommonDetails)
