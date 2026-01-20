@@ -44,7 +44,12 @@ object Client {
       try {
         b.close()
       } catch {
-        case _: Exception => // Ignore exceptions during shutdown
+        case e: Exception =>
+          // Backend close failures during JVM shutdown are non-recoverable and should not
+          // prevent application termination. Log for diagnostics but don't propagate.
+          System.err.println(
+            s"Non-critical: HTTP backend cleanup failed during shutdown: ${e.getMessage}"
+          )
       }
     }
     b
