@@ -18,7 +18,7 @@
 
 package com.tle.web.api.workflow;
 
-import com.google.api.client.util.Strings;
+import com.google.common.base.Strings;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Trend;
@@ -38,6 +38,7 @@ import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -181,11 +182,11 @@ public class WorkflowResourceImpl
   }
 
   private String resolveBundleName(Long nameId, Map<Long, String> names, String fallback) {
-    String name = names.get(nameId);
-    if (name == null) {
-      LOGGER.warn("Bundle name not found for ID: {}, using fallback: {}", nameId, fallback);
-      return fallback;
-    }
-    return name;
+    return Optional.ofNullable(names.get(nameId))
+        .orElseGet(
+            () -> {
+              LOGGER.warn("Bundle name not found for ID: {}, using fallback: {}", nameId, fallback);
+              return fallback;
+            });
   }
 }
