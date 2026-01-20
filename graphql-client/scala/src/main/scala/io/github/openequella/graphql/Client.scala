@@ -22,9 +22,10 @@ import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
-import sttp.client4.{DefaultSyncBackend, Request, asString, basicRequest}
+import sttp.client4.{Backend, DefaultSyncBackend, Request, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
+import sttp.shared.Identity
 
 final case class ClientConfiguration(
     institutionUrl: Uri,
@@ -37,7 +38,17 @@ object Client {
   private val GRAPHQL_PATH = Seq("graphql")
   private val LOGIN_PATH   = Seq("api", "auth", "login")
 
-  private val backend = DefaultSyncBackend()
+  private lazy val backend: Backend[Identity] = {
+    val b = DefaultSyncBackend()
+    sys.addShutdownHook {
+      try {
+        b.close()
+      } catch {
+        case _: Exception => // Ignore exceptions during shutdown
+      }
+    }
+    b
+  }
 
   def query[R](request: SelectionBuilder[Operations.RootQuery, R])(implicit
       cfg: ClientConfiguration
