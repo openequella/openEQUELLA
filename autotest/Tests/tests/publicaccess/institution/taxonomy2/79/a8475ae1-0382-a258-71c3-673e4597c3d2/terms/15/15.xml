@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498649</id>
+  <uuid>9f10ee65-cd5e-45e1-a5ab-d1262c30b2e3</uuid>
+  <value>Slide</value>
+  <valueHash>6160a53ece50ce6d4f5ef4452549835e</valueHash>
+  <fullValue>Learning Resource Type\Slide</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

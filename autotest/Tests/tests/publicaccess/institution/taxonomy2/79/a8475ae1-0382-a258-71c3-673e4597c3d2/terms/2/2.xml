@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498636</id>
+  <uuid>8489853e-6255-4c97-807b-264900e5c535</uuid>
+  <value>Exam</value>
+  <valueHash>b66068cf75e5acb6cf1af2ad1d0642ed</valueHash>
+  <fullValue>Learning Resource Type\Exam</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

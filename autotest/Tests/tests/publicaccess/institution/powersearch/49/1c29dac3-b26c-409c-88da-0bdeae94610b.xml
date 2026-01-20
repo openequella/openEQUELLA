@@ -1,0 +1,204 @@
+<com.tle.beans.entity.PowerSearch>
+  <id>2498651</id>
+  <uuid>1c29dac3-b26c-409c-88da-0bdeae94610b</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-22 13:17:28.946</dateModified>
+  <dateCreated class="sql-timestamp">2013-11-22 13:15:04.214</dateCreated>
+  <name>
+    <id>2498652</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498653</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Learning Resources Advanced Search</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <schema entityclass="com.tle.beans.entity.Schema" uuid="9fc6f87c-88c8-4492-81e3-69b2e1399097"/>
+  <itemdefs class="list">
+    <com.tle.beans.entity.itemdef.ItemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="241dfa27-5023-4b89-91ca-1f716cb2cf9b"/>
+  </itemdefs>
+  <wizard>
+    <title>
+      <id>0</id>
+      <strings class="singleton-map">
+        <k class="string">en_AU</k>
+        <v class="com.tle.beans.entity.LanguageString">
+          <id>0</id>
+          <locale>en_AU</locale>
+          <priority>2</priority>
+          <text>Advanced Search</text>
+          <bundle reference="../../.."/>
+        </v>
+      </strings>
+    </title>
+    <controls>
+      <com.dytech.edge.wizard.beans.control.CustomControl>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>0</size1>
+        <size2>0</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Learning Resource Type</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/item/lom/educational/learning.resource.type</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items/>
+        <powerSearchFriendlyName>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Learning Resource Type</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </powerSearchFriendlyName>
+        <classType>termselector</classType>
+        <attributes>
+          <entry>
+            <string>KEY_TERM_STORAGE_FORMAT</string>
+            <string>LEAF_ONLY</string>
+          </entry>
+          <entry>
+            <string>KEY_ALLOW_ADD_TERMS</string>
+            <boolean>false</boolean>
+          </entry>
+          <entry>
+            <string>KEY_DISPLAY_TYPE</string>
+            <string>autocompleteEditBox</string>
+          </entry>
+          <entry>
+            <string>RELOAD_PAGE_ON_SELECTION</string>
+            <boolean>false</boolean>
+          </entry>
+          <entry>
+            <string>KEY_SELECTED_TAXONOMY</string>
+            <string>a8475ae1-0382-a258-71c3-673e4597c3d2</string>
+          </entry>
+          <entry>
+            <string>KEY_SELECTION_RESTRICTION</string>
+            <string>LEAF_ONLY</string>
+          </entry>
+          <entry>
+            <string>KEY_ALLOW_MULTIPLE</string>
+            <boolean>true</boolean>
+          </entry>
+        </attributes>
+      </com.dytech.edge.wizard.beans.control.CustomControl>
+      <com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+        <mandatory>false</mandatory>
+        <reload>false</reload>
+        <include>true</include>
+        <size1>1</size1>
+        <size2>0</size2>
+        <title>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Options</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </title>
+        <targetnodes>
+          <com.dytech.edge.wizard.TargetNode>
+            <target>/item/itembody/meta/switches/options</target>
+            <attribute></attribute>
+          </com.dytech.edge.wizard.TargetNode>
+        </targetnodes>
+        <items>
+          <com.dytech.edge.wizard.beans.control.WizardControlItem>
+            <name>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Resources with DRM</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </name>
+            <value>drm</value>
+            <defaultValue></defaultValue>
+          </com.dytech.edge.wizard.beans.control.WizardControlItem>
+          <com.dytech.edge.wizard.beans.control.WizardControlItem>
+            <name>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Resources with Navigation</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </name>
+            <value>navigation</value>
+            <defaultValue></defaultValue>
+          </com.dytech.edge.wizard.beans.control.WizardControlItem>
+        </items>
+        <powerSearchFriendlyName>
+          <id>0</id>
+          <strings>
+            <entry>
+              <string>en</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>0</id>
+                <locale>en</locale>
+                <priority>1</priority>
+                <text>Options</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </powerSearchFriendlyName>
+      </com.dytech.edge.wizard.beans.control.CheckBoxGroup>
+    </controls>
+  </wizard>
+</com.tle.beans.entity.PowerSearch>

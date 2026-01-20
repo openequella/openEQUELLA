@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498650</id>
+  <uuid>aaf76e2c-80b7-4943-a2cc-356a7e6d7cfe</uuid>
+  <value>Table</value>
+  <valueHash>51c45b795d5d18a3e4e0c37e8b20a141</valueHash>
+  <fullValue>Learning Resource Type\Table</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
