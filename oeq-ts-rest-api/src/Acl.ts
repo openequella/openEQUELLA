@@ -19,12 +19,13 @@ import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { validate } from './Utils';
 
-export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
 export const ACL_CREATE_PORTLET = 'CREATE_PORTLET';
-export const ACL_SEARCH_PAGE = 'SEARCH_PAGE';
-export const ACL_HIERARCHY_PAGE = 'HIERARCHY_PAGE';
+export const ACL_DASHBOARD_PAGE = 'DASHBOARD_PAGE';
 export const ACL_EDIT_SYSTEM_SETTINGS = 'EDIT_SYSTEM_SETTINGS';
+export const ACL_HIERARCHY_PAGE = 'HIERARCHY_PAGE';
 export const ACL_MANAGE_CLOUD_PROVIDER = 'MANAGE_CLOUD_PROVIDER';
+export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
+export const ACL_SEARCH_PAGE = 'SEARCH_PAGE';
 export const ACL_VIEW_HIERARCHY_TOPIC = 'VIEW_HIERARCHY_TOPIC';
 
 /**
