@@ -2,6 +2,10 @@
 
 This file provides guidance for AI assistants and developers working with the openEQUELLA codebase.
 
+**For developers:** This document offers a comprehensive architectural overview and coding
+conventions reference. For detailed development environment setup and contribution workflow, please
+refer to [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 ## Project Overview
 
 openEQUELLA is a digital repository platform that provides a single platform to house teaching and
