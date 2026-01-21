@@ -205,8 +205,15 @@ REST client:
 
 ```
 oeq-ts-rest-api/     # REST API client module
-└── src/             # TypeScript REST client code
+├── src/             # TypeScript REST client code
+├── gen-io-ts/       # TypeScript project that generates io-ts codecs from src/ interfaces
+│                    # for runtime validation of server responses
+└── test/            # REST client API tests (validate client API, not REST API itself)
 ```
+
+**Note:** Tests in `oeq-ts-rest-api/test/` validate the REST client's API (including type
+validation), not the actual REST API endpoints. Testing of the REST API itself is done in the
+autotest project.
 
 **Testing:**
 
