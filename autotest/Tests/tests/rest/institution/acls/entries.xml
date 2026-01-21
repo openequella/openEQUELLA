@@ -1793,4 +1793,17 @@
     <aclOrder>0</aclOrder>
     <aclPriority>-1900</aclPriority>
   </com.tle.beans.security.AccessEntry>
+  <com.tle.beans.security.AccessEntry>
+    <id>815966</id>
+    <expression>
+      <id>815965</id>
+      <dynamic>false</dynamic>
+    </expression>
+    <targetObject>*</targetObject>
+    <privilege>MANAGE_WORKFLOW</privilege>
+    <aggregateOrdering>0275 0000 G</aggregateOrdering>
+    <grantRevoke>G</grantRevoke>
+    <aclOrder>0</aclOrder>
+    <aclPriority>-1725</aclPriority>
+  </com.tle.beans.security.AccessEntry>
 </list>

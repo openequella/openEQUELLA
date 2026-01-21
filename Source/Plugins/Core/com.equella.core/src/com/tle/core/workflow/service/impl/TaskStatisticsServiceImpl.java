@@ -18,8 +18,6 @@
 
 package com.tle.core.workflow.service.impl;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.tle.beans.TaskHistory;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.item.Item;
@@ -31,11 +29,13 @@ import com.tle.core.workflow.TaskTrend;
 import com.tle.core.workflow.dao.TaskHistoryDao;
 import com.tle.core.workflow.service.TaskStatisticsService;
 import com.tle.core.workflow.service.WorkflowService;
-import java.util.Collection;
+import com.tle.exceptions.AccessDeniedException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hibernate.criterion.Restrictions;
@@ -94,25 +94,26 @@ public class TaskStatisticsServiceImpl implements TaskStatisticsService {
   @Override
   @Transactional
   public List<TaskTrend> getWaitingTasks(Trend trend) {
-    // Get all tasks
-    Collection<BaseEntityLabel> listManagable = workflowService.listManagable();
-    Collection<String> manageableUuids =
-        Collections2.transform(
-            listManagable,
-            new Function<BaseEntityLabel, String>() {
-              @Override
-              public String apply(BaseEntityLabel input) {
-                return input.getUuid();
-              }
-            });
-    return taskHistoryDao.getTaskTrendsForWorkflows(manageableUuids, getTrendDate(trend));
+    return taskHistoryDao.getTaskTrendsForWorkflows(
+        getManageableWorkflowUuids(), getTrendDate(trend));
   }
 
   @Override
   @Transactional
   public List<TaskTrend> getWaitingTasksForWorkflow(String uuid, Trend trend) {
+    if (!getManageableWorkflowUuids().contains(uuid)) {
+      throw new AccessDeniedException(
+          CurrentLocale.get("com.tle.web.api.workflow.error.workflowAccessDenied", uuid));
+    }
+
     return taskHistoryDao.getTaskTrendsForWorkflows(
         Collections.singleton(uuid), getTrendDate(trend));
+  }
+
+  private Set<String> getManageableWorkflowUuids() {
+    return workflowService.listManagable().stream()
+        .map(BaseEntityLabel::getUuid)
+        .collect(Collectors.toSet());
   }
 
   private Date getTrendDate(Trend trend) {

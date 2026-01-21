@@ -20,6 +20,7 @@ package com.tle.core.entity.service;
 
 import com.dytech.edge.common.LockedException;
 import com.thoughtworks.xstream.XStream;
+import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.entity.BaseEntity;
@@ -193,4 +194,12 @@ public interface AbstractEntityService<B extends EntityEditingBean, T extends Ba
   }
 
   void afterAdd(EntityPack<T> pack);
+
+  /**
+   * Checks if an entity with the specified UUID exists in the current institution.
+   *
+   * @param uuid The UUID of the entity to check.
+   * @return true if the entity exists, false otherwise.
+   */
+  boolean existsByUuid(@NonNull String uuid);
 }
