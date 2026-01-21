@@ -31,11 +31,11 @@ export const getAllWorkflowsTrends = (
 /**
  * Retrieves a list tasks trends for a specific workflow for a given trend.
  *
- * @param id The UUID of the workflow to query.
+ * @param uuid The UUID of the workflow to query.
  * @param trend The time period for trend calculation.
  */
 export const getWorkflowTrends = (
-  id: OEQ.Common.UuidString,
+  uuid: OEQ.Common.UuidString,
   trend: OEQ.Task.Trend,
 ): Promise<OEQ.Workflow.TaskTrendDetails[]> =>
-  OEQ.Workflow.getWorkflowTrends(API_BASE_URL, id, trend);
+  OEQ.Workflow.getWorkflowTrends(API_BASE_URL, uuid, trend);
