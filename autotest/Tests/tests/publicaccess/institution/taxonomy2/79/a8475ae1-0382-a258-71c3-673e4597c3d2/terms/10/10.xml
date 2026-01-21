@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498644</id>
+  <uuid>8f2e4340-26bc-403a-8a93-5be7a5f0a57d</uuid>
+  <value>Narrative text</value>
+  <valueHash>8807391733aa26ebbbc64ebc3d2c64b5</valueHash>
+  <fullValue>Learning Resource Type\Narrative text</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

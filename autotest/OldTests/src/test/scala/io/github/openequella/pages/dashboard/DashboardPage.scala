@@ -44,7 +44,10 @@ class DashboardPage(
   val rightColumnXpath = "//div[@id='portlet-container-right-column']"
 
   override def loadUrl(): Unit =
-    driver.get(context.getBaseUrl + "page/home")
+    loadPath("page/home")
+
+  override def loadLegacyUrl(): Unit =
+    loadPath("home.do")
 
   /** Waits for either the Welcome board or the portlets to be loaded.
     */

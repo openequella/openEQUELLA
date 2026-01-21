@@ -1,0 +1,42 @@
+<com.tle.beans.entity.report.Report>
+  <id>2498618</id>
+  <uuid>4ef1d128-659d-c1e8-72cf-11507e07753a</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-22 13:30:37.861</dateModified>
+  <dateCreated class="sql-timestamp">2013-11-22 13:30:37.861</dateCreated>
+  <description>
+    <id>2498619</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498620</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>An index to a list of sample reports</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>2498621</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498622</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Sample Reports</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <filename>reportFiles/index.rptdesign</filename>
+  <hideReport>false</hideReport>
+</com.tle.beans.entity.report.Report>

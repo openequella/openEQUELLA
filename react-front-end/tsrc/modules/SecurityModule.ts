@@ -151,6 +151,13 @@ export const isEditSystemSettingsGranted: (
   hasRequiredSettingAcl(setting, OEQ.Acl.ACL_EDIT_SYSTEM_SETTINGS);
 
 /**
+ * Return a TaskEither to check whether ACL DASHBOARD_PAGE is granted to the current user.
+ */
+export const isDashboardACLGranted: RequiredPermissionCheck = hasRequiredAcl(
+  OEQ.Acl.ACL_DASHBOARD_PAGE,
+);
+
+/**
  * True if the user has authenticated before the initial rendering of New UI.
  */
 export const hasAuthenticated = getRenderData()?.hasAuthenticated ?? false;

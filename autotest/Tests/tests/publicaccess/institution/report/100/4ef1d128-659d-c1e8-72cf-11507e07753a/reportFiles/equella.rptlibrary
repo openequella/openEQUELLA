@@ -1,0 +1,1020 @@
+<library id="1" version="3.2.22" xmlns="http://www.eclipse.org/birt/2005/design">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.6.1.v20100902 Build &lt;2.6.1.v20100915-1750&gt;</property>
+    <property name="units">in</property>
+    <property name="theme">defaultTheme</property>
+    <data-sources>
+        <oda-data-source extensionID="com.tle.reporting.oda.datasource" id="5" name="EQUELLA">
+            <property name="webserviceUrl">http://origliasso/Shiny/my/</property>
+            <property name="webserviceUser"/>
+            <encrypted-property encryptionID="base64" name="webservicePassword"/>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.ump" id="71" name="QueryUser">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">id</property>
+                    <text-property name="displayName">id</text-property>
+                    <text-property name="heading">id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">username</property>
+                    <text-property name="displayName">username</text-property>
+                    <text-property name="heading">username</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">firstname</property>
+                    <text-property name="displayName">firstname</text-property>
+                    <text-property name="heading">firstname</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lastname</property>
+                    <text-property name="displayName">lastname</text-property>
+                    <text-property name="heading">lastname</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">email</property>
+                    <text-property name="displayName">email</text-property>
+                    <text-property name="heading">email</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">param1</property>
+                    <property name="nativeName">param1</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">1</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">id</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">username</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">firstname</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">lastname</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">email</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">id</property>
+                    <property name="nativeName">id</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">username</property>
+                    <property name="nativeName">username</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">firstname</property>
+                    <property name="nativeName">firstname</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">lastname</property>
+                    <property name="nativeName">lastname</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">email</property>
+                    <property name="nativeName">email</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[u:%3F]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>1.0</Version>
+  <design:DataSetParameters>
+    <design:parameterDefinitions>
+      <design:inOutMode>In</design:inOutMode>
+      <design:attributes>
+        <design:name>param1</design:name>
+        <design:position>1</design:position>
+        <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+        <design:precision>0</design:precision>
+        <design:scale>0</design:scale>
+        <design:nullability>Unknown</design:nullability>
+      </design:attributes>
+      <design:inputAttributes>
+        <design:elementAttributes/>
+      </design:inputAttributes>
+    </design:parameterDefinitions>
+  </design:DataSetParameters>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>id</design:name>
+            <design:position>1</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>id</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>id</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>username</design:name>
+            <design:position>2</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>username</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>username</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>firstname</design:name>
+            <design:position>3</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>firstname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>firstname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>lastname</design:name>
+            <design:position>4</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lastname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lastname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>email</design:name>
+            <design:position>5</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>email</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>email</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" id="72" name="Item Name">
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">param_1</property>
+                    <property name="nativeName"/>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">1</property>
+                    <property name="isInput">true</property>
+                </structure>
+                <structure>
+                    <property name="name">param_2</property>
+                    <property name="nativeName"/>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">2</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">itemName</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">itemName</property>
+                    <property name="nativeName">itemName</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select ls.text as "itemName"
+from item i inner join language_string ls on i.name_id = ls.bundle_id
+where i.uuid = ? and i.version = ? and i.institution_id = CURRENT_INSTITUTION
+]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>1.0</Version>
+  <design:DataSetParameters>
+    <design:parameterDefinitions>
+      <design:inOutMode>In</design:inOutMode>
+      <design:attributes>
+        <design:name></design:name>
+        <design:position>1</design:position>
+        <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+        <design:precision>0</design:precision>
+        <design:scale>0</design:scale>
+        <design:nullability>Unknown</design:nullability>
+      </design:attributes>
+    </design:parameterDefinitions>
+    <design:parameterDefinitions>
+      <design:inOutMode>In</design:inOutMode>
+      <design:attributes>
+        <design:name></design:name>
+        <design:position>2</design:position>
+        <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+        <design:precision>0</design:precision>
+        <design:scale>0</design:scale>
+        <design:nullability>Unknown</design:nullability>
+      </design:attributes>
+    </design:parameterDefinitions>
+  </design:DataSetParameters>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.ump" id="94" name="QueryGroup">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">id</property>
+                    <text-property name="displayName">id</text-property>
+                    <text-property name="heading">id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">name</property>
+                    <text-property name="displayName">name</text-property>
+                    <text-property name="heading">name</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">param1</property>
+                    <property name="nativeName">param1</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">1</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">id</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">id</property>
+                    <property name="nativeName">id</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">name</property>
+                    <property name="nativeName">name</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[g:%3F]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>1.0</Version>
+  <design:DataSetParameters>
+    <design:parameterDefinitions>
+      <design:inOutMode>In</design:inOutMode>
+      <design:attributes>
+        <design:name>param1</design:name>
+        <design:position>1</design:position>
+        <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+        <design:precision>0</design:precision>
+        <design:scale>0</design:scale>
+        <design:nullability>Unknown</design:nullability>
+      </design:attributes>
+      <design:inputAttributes>
+        <design:elementAttributes/>
+      </design:inputAttributes>
+    </design:parameterDefinitions>
+  </design:DataSetParameters>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>id</design:name>
+            <design:position>1</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>id</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>id</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>username</design:name>
+            <design:position>2</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>username</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>username</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>firstname</design:name>
+            <design:position>3</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>firstname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>firstname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>lastname</design:name>
+            <design:position>4</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lastname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lastname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>email</design:name>
+            <design:position>5</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>email</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>email</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.ump" id="95" name="QueryRole">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">id</property>
+                    <text-property name="displayName">id</text-property>
+                    <text-property name="heading">id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">name</property>
+                    <text-property name="displayName">name</text-property>
+                    <text-property name="heading">name</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">param1</property>
+                    <property name="nativeName">param1</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">1</property>
+                    <property name="position">1</property>
+                    <property name="isOptional">false</property>
+                    <property name="isInput">true</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">id</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">name</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">id</property>
+                    <property name="nativeName">id</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">name</property>
+                    <property name="nativeName">name</property>
+                    <property name="dataType">string</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[r:%3F]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>1.0</Version>
+  <design:DataSetParameters>
+    <design:parameterDefinitions>
+      <design:inOutMode>In</design:inOutMode>
+      <design:attributes>
+        <design:name>param1</design:name>
+        <design:position>1</design:position>
+        <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+        <design:precision>0</design:precision>
+        <design:scale>0</design:scale>
+        <design:nullability>Unknown</design:nullability>
+      </design:attributes>
+      <design:inputAttributes>
+        <design:elementAttributes/>
+      </design:inputAttributes>
+    </design:parameterDefinitions>
+  </design:DataSetParameters>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>id</design:name>
+            <design:position>1</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>id</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>id</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>username</design:name>
+            <design:position>2</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>username</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>username</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>firstname</design:name>
+            <design:position>3</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>firstname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>firstname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>lastname</design:name>
+            <design:position>4</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lastname</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lastname</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:name>email</design:name>
+            <design:position>5</design:position>
+            <design:nativeDataTypeCode>1</design:nativeDataTypeCode>
+            <design:precision>0</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>email</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>email</design:label>
+            <design:formattingHints>
+              <design:displaySize>0</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <themes>
+        <theme id="4" name="defaultTheme">
+            <styles>
+                <style id="67" name="table-header">
+                    <property name="backgroundColor">#0202C7</property>
+                    <property name="fontSize">14pt</property>
+                    <property name="color">#FFFFFF</property>
+                </style>
+                <style id="68" name="table-group-header-1">
+                    <property name="backgroundColor">#7BBAF7</property>
+                    <property name="fontSize">12pt</property>
+                </style>
+                <style id="69" name="report">
+                    <property name="fontFamily">&quot;Arial&quot;</property>
+                </style>
+                <style id="70" name="table">
+                    <property name="borderBottomStyle">solid</property>
+                    <property name="borderBottomWidth">thin</property>
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="borderTopStyle">solid</property>
+                    <property name="borderTopWidth">thin</property>
+                </style>
+                <style id="93" name="HeaderTable">
+                    <property name="marginTop">10px</property>
+                    <property name="marginBottom">10px</property>
+                </style>
+            </styles>
+        </theme>
+    </themes>
+    <page-setup>
+        <simple-master-page id="3" name="EQUELLA">
+            <property name="leftMargin">0.25in</property>
+            <page-header>
+                <grid id="96" name="Header">
+                    <column id="97">
+                        <property name="width">2.6941176470588237in</property>
+                    </column>
+                    <column id="101">
+                        <property name="width">5.129411764705883in</property>
+                    </column>
+                    <row id="98">
+                        <cell id="99">
+                            <image id="7" name="Logo">
+                                <structure name="toc"/>
+                                <property name="source">embed</property>
+                                <property name="imageName">EQUELLA-logo.png</property>
+                            </image>
+                        </cell>
+                        <cell id="100">
+                            <label id="102" name="TitleLabel">
+                                <list-property name="userProperties">
+                                    <structure>
+                                        <property name="name">PageTitle</property>
+                                        <property name="type">expression</property>
+                                        <expression name="default" type="javascript"/>
+                                    </structure>
+                                </list-property>
+                                <property name="backgroundAttachment">scroll</property>
+                                <property name="backgroundPositionX">0%</property>
+                                <property name="backgroundPositionY">0%</property>
+                                <property name="backgroundRepeat">repeat</property>
+                                <property name="fontFamily">sans-serif</property>
+                                <property name="fontSize">48px</property>
+                                <property name="fontWeight">normal</property>
+                                <property name="fontStyle">normal</property>
+                                <property name="fontVariant">normal</property>
+                                <property name="color">#078EBE</property>
+                                <property name="textLineThrough">none</property>
+                                <property name="textOverline">none</property>
+                                <property name="textUnderline">none</property>
+                                <property name="borderBottomColor">black</property>
+                                <property name="borderBottomStyle">none</property>
+                                <property name="borderBottomWidth">medium</property>
+                                <property name="borderLeftColor">black</property>
+                                <property name="borderLeftStyle">none</property>
+                                <property name="borderLeftWidth">medium</property>
+                                <property name="borderRightColor">black</property>
+                                <property name="borderRightStyle">none</property>
+                                <property name="borderRightWidth">medium</property>
+                                <property name="borderTopColor">black</property>
+                                <property name="borderTopStyle">none</property>
+                                <property name="borderTopWidth">medium</property>
+                                <property name="marginTop">0pt</property>
+                                <property name="marginLeft">0pt</property>
+                                <property name="marginBottom">0pt</property>
+                                <property name="marginRight">0pt</property>
+                                <property name="paddingTop">1pt</property>
+                                <property name="paddingLeft">1pt</property>
+                                <property name="paddingBottom">1pt</property>
+                                <property name="paddingRight">1pt</property>
+                                <property name="textAlign">right</property>
+                                <property name="letterSpacing">normal</property>
+                                <property name="lineHeight">normal</property>
+                                <property name="orphans">2</property>
+                                <property name="textTransform">none</property>
+                                <property name="whiteSpace">normal</property>
+                                <property name="widows">2</property>
+                                <property name="wordSpacing">normal</property>
+                                <property name="display">block</property>
+                                <property name="pageBreakAfter">auto</property>
+                                <property name="pageBreakBefore">auto</property>
+                                <property name="pageBreakInside">auto</property>
+                                <property name="showIfBlank">false</property>
+                                <property name="canShrink">false</property>
+                                <property name="overflow">hidden</property>
+                            </label>
+                        </cell>
+                    </row>
+                </grid>
+            </page-header>
+            <page-footer>
+                <text-data id="24" name="NewTextData">
+                    <property name="fontSize">9pt</property>
+                    <property name="color">#9C9C9C</property>
+                    <property name="borderTopColor">#9C9C9C</property>
+                    <property name="borderTopStyle">solid</property>
+                    <property name="borderTopWidth">1px</property>
+                    <property name="marginTop">50px</property>
+                    <property name="paddingTop">5px</property>
+                    <property name="textAlign">center</property>
+                    <expression name="valueExpr" type="javascript">&quot;Report generated &quot; + new Date()</expression>
+                    <property name="contentType">html</property>
+                </text-data>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <list-property name="images">
+        <structure>
+            <property name="name">EQUELLA-logo.png</property>
+            <property name="type">image/png</property>
+            <property name="data">
+                iVBORw0KGgoAAAANSUhEUgAAANoAAABQCAIAAADwVPwyAAAAA3NCSVQICAjb4U/gAAAAEHRFWHRTb2Z0
+                d2FyZQBTaHV0dGVyY4LQCQAAIABJREFUeNrtfXd4G8e171nsLjoBAgRIECRIgqRISlShSHVLVrPVTKvZ
+                kmWnuCRuSRwnudclTnKT3LzUl3udPMdx4rjF3ZZlNUuyKcmiGklRpAqpwgYWdBK97gK7i31/LIhGinKR
+                Eznh+fDhAxazs7OY3545v3POzCAsy8KkTMr1IbzJv2BSrh/BPvOZrd3Wb//hgCdIAsD/uW/ZtuXV16RB
+                3Wb3V3+5k6v20c1zH9k0b7KTJuF4dTl1ydzWbeE+O7yha9Wgs722RLU2V3CyhyYH66tLjGU7+h3cZ4mQ
+                P72i4Fo1qMMwnPg8syxvsof+1YW9BtoRAaS8QFFWkAMAi6oLZ5Wor1XrKorVcyoLAGBqseqm2tLJ7vpX
+                FyTty2dm1qEoQxBRABDjrFgsvlatizKxIEkDgBhlhULBZHf9e2Fz0tEzKf9cOXv27OzZsz+X7Tgpk3J9
+                Met/jDh9BBmlxx5XyMUSPjrZf5NwHF+YGIsgAAAsCygPuQYVMszvt5/6276zJMUIcTTjPV8h+d131iyv
+                Lpjswkk4ponZEXjqxY9tnqTrcf2C8m+tr0PRz6W9Xvv40pPPH7rSr5YR75sfnruxSvM5rzIp/1JwZFn4
+                7TtNrzWcT1FrtNdP3Llihkou+jw1v3GoE8EwlqYnO+nfRz4vlaGoSJfJlXYIxfT52TLp5/LRMAwzYPVM
+                jMXyAsWkapyEY5r4idjlIWcmULQKPvq5au6z+Vy+qwQep1073/uk/IvAsd/usbozI8sVxZ8XKD1ml4+c
+                SDVmS4V5Cslk/03CMU2GPaGMIVUi5E8ryvmc1Q7arjpS58glwsn+m6QyabJwauF3Ns/3BcnEkSUzi+rK
+                8wDgyEXLhR4LAJTkK9bNLf1Udl4iP+OK2lEmKs3Lmuy/STimiUoueuY7qxmGiX9HeJzTMcrEHv/Th1yq
+                2JzKghtmFCslnxSOMZYdHPEBQwN6xeZV6XJwHJ/sv0k4jiNjNd+IO3R5yJHQZOJPE0EJkdSA1TMBFgGg
+                rlI72XmTtuMnld4Rf+LzTbNLhPingGOWiL916VSJkJ96EMGwBIn55i11ty2unOy8fz35ojJ6gsHgB6eH
+                SDoGAPXzyj+tS5yiqA/bB10BUohlPjASEX/13LLP6UialOtHUjN6JhPMJuU6guOkjpmU64zKdJvdzZct
+                FEVrlNIrjYOhKIOmp+kwLEymeE3KtYfjT146sr3xIscSel97JMPO29vSu+dkjy9Ejj05Tyl94o5Fheor
+                +v+swegFD9VPYe4oG6JiieN0NBrHNEWjOMZQcY93MIZIeWwwlpmfVqSUrFCwC/JE1/z+XZGYm2QAIAdj
+                lRL+JCD++XA802vnvpQX5AjSFd7elt77f7932D3RBNNnvrN63ON/6Y+4o6zbS3gNAyZTPK7tiqG015co
+                4wUeGwrHP9OAkyQAhHkoQkYAIEwzwCEVxwrm1dy9pvan04RjlXeMZZ8fiB4x+pUyMUuO89jIBejPZ2al
+                sntXJLa917vHTI54ggBgDlKFUjwfZ2+pUm/VS1Nx6Q5Ff3tswMFiAMALh3IkgsdXTMkRxNsQZWIvt1lO
+                mzyJ8j+4sXRarrR90PXcyX4QCCASib+ny2NLy4rz5E/tPOenYkIiTIrEMpz3g+UVqc82STH/ve+C3eYW
+                47wwFRPjvCc31E7w8Heb3X/adZqM0EIBRkZoACgvUDx2x0IegiR6s6Gt3xck180vv1bz4q89HBPJCjXl
+                Gokw6VuOxZg9J3smxuKwO8iygIxJt/1VF6nkI8ETTbuOXrbRPAAgUEzE0ASKcbAgWB5CU1wuLYvhCE1x
+                J7I0DUwEAGBUZUIkgoTDlg8aftVvljy68amqzNigJ8r+5ZLnfABgyAl8AURT+j4SAYBZWtmva+Xx+gH+
+                esH9Qqez3U3B6EWBpof9BAB8YPC8UKR8daV2Wq6U+6XNTf2ufSRRX4EA+flN5Ymv/mDkuTP280ZnvME4
+                9vCcAgDpu5edL7ZZuJq5kvwYE40lWePDN5T2e4inGy4BHY8gFOdmPbV6Wup9DQ37nj3Q4feHgGWBYRCB
+                4MkNtRPphQ87n913Luk0YRitUvqtDXOyRHwAeGZn62/faVk7t6xQlfXjlxo7DMO/+uaK6xGOTz+ydtgV
+                EAuwVXPLeSnICkWYc332ic8v1yrGYvEv/RElHW7adfy1lgFEKmEFcYiHhUIAILgvOM5SKAEAKA4ALIYC
+                ANAMYDgAIDTFYliiL1kAQFG4dOl/Pyrfkj9rijwtHtPrjYwgIgAiE4sAnGZaoMS5+wpFmfua3O9eHBnz
+                N4xeC8Paje67dvj2f22WVsoHgAGrO1mMpmdXaVO17EiEMbjDHBABYFaRSp0tBoCLNn/GFaI8FGLx26nT
+                KdXZ4lMGBwDA6I1XaBUZZlLHcJCKUjDq+pipzc5XiidQjbsOnUcwlKUZDosA4CWiVlewslDZbXb/8f3T
+                j2yc095ji1D0o5vn/vH90xuXVM27zqIJPAC45+YZT2xb9MimeZWFytTfIlHG5PBNfP7Ymfm9PsoUYto/
+                an6tZQCys1kMBwyNv3A8+QIAkQhwPP7OvbhiACyGIygKnOsbx+LAQjFX5+UBfzTjio5g1OaPgxz44+RZ
+                1sgmxOIYaJ73M79uixc75Uq73AJlmjFjCDDBYDjeQoBCAWiyBFEm1pGRA5ouSjFWkMU/mxjiaQYApmvl
+                GcUG7F6CjMaHHhRdXJGL8HgTqEZrKMqO6loWRQEgTEStPgIAjnUM6bWK5bNLjnUMXR5yrppbrpAKz6es
+                sHAdaccrSb/dM/FIjWBYqVaRcfCwK8Yaend2WBGpJK7zACARX8awNJ009uBoD7EYjnB6kaYBx4CiEQwD
+                kuynMgt3UoKEzoVoRJfFny5mAcBK87RYDABfVJAFAP/dGRiLxfoCESPNOmPyDPvphAoEgOOXbaFF+RI+
+                2uFj0h6/9Ny5Xos79Wt1voyP8i6NBB1kkrcJBfiSwqTB5w7Ta2r1KIq2DY5CFkMBYJ460wjpMqZhepZW
+                xkPGn4TUPuh6reF8Aoup0jc0sry6oLw4d8Da1G/13DizWC4Rnu21eYJk7bSiLxMcLxldE59cmifXKtMs
+                6ygTM4WY9i6rK0KDVJqGxVTwoSgwDKAocMFuZpz/MROR3EMvFBawJIAg7YrhtNOfqlFuKcCFSHyMI1kk
+                R8BrGSb+eGYYcByouL1Yp8T/tKJ0SrZAiLBWQn3n/oF2qz/RQnMUhryERsJPJV5SnFeWldSOTIy9NBJI
+                wg5HS5ViALhocpNkUqcuKcx6+/7FLIYBgBBhYwwj4GMkxfRYk9qRLxFN0WtS7yJARC2+FFrGMOXFuVfq
+                iL/saAkQ0cRInRisAWDA6gGAJRXq5TUlP36p8f5bZvuC5Pee/ei+NTV1JTlfJjj2DF0ly0uvVYjFaYNj
+                gAZXgBh2BxEMY68ExFGlMX6lNJ0sn/q44xgACLNlxen2U4CGoRFf0p/PF9RIYgnmCwASgCgT+++zngiL
+                AEVxiKxT4m+t0yds0Cl89LGanG0JONI0YJifRf1BxhxNKqQypViXlSTdJB1rcyRNVUwqqZDyAKBthIg/
+                bwDcKJzuQkIBoN3k8pJU4lC+BNOnU2arK9jtDsMoT8wRC/LU8iupxndPGZL3y0dD0eT/1mf1AACG85/9
+                3tqnt7ccOjsIAL958Oa7V16vzPpKcrr3KjymJFcuF6WxCjfJGP0RT4hkMTwNi9w7iibMrLSEHRQDZnSs
+                RFGIRBKIZAEQAJZlud6V6AoKxGjGFc8xkuRgDfD05aDCEB4l3bEfzcoW8eBjUwAAiWtHHH+sJieDDyVR
+                PkprZAjT6Yq4AkQCozq1TMBPNtsVjhrc8QsBRcv5aGWxOs5jEvpeIDjW5/rmex0JX880neoHN+r7XSGC
+                QRKDdaVSnOH1tPqIEYePwyKCYbM1klzBOEEHJsZyqjF+NZHg3hVTn/2okx1VkAM2LwdpPsp7YtuiJ7Yt
+                ut79juNKlIkNWD0Tz+WbWarOmFI94I/yrBYvDSASpmExAUQUy8ToKKVNjMjAMJBxUQThzPOFBVkSXlqQ
+                3UXSSR4DANHIu0OpdCzyo1nZh02BCJtsZ10W1JdlZ9yLPxpLtR0BIFvM77tgT47vGLZAiaZ6Pc+7osFg
+                OKG8a3IEGhFKUozd7klqx0ik3cG023oS1X5jMQDoz5o80Ug0MQhUl2YOxENWN0kxCeeXriR/3Nlwxy5b
+                E6qRpZmtN0zZvHz6ywc7w6PPgydIuvzE55zV+Q9l1uMKzkNqp2gmwOKcyoJNi6dmsh8Ki/oDfgauiEUs
+                5ZXg14kj6KgSTSkQZ9kUDVJJiUrCT8/xORdKv4V0Zj1LK1Ph7B5zmm98Yf44K1j0+yKpvKqQzwpwzEAi
+                CVsTaLo8X5HJY1J0vEYm4KFov4cYoWJp1nDieQMAgNVVeQDQ4U4j7JVj7MIOT5RNJjUjlQrBuP7/Nz88
+                l1CNCIZuWTZtRqEywawBIEhE+u2eL1NUZnzWjCD/+/Cqcq0ikGLiJKRQlfWVlTPGRghMIcYdpsfBYkIp
+                xn03eJqCvJIRybFOzoLEMcCwapU4lV2yAOe96Q9Mut9Ri8XkfJQLvSQPZo0zyabV6Em9rk4tA4AOH5Ow
+                ZaU4L8NsTeUxADBXpwCATlfEEYik2o5p8SEcSnMkUSZmT4UIhs7JE2fwmAvWNBdb6ZTCsbW19djebDOy
+                KIYwNADcPlfPpRxoZCKDM37LwXB02BP60sMRAArVWZ/Wcd/nCtFeX9JqTDUWM7CYAUSaTjqDmBRAJ5QT
+                RYNcXipPU34UE0vjMQBbi8UlWfF6fBFms05IssgQjQHQXG0CPqYQ8Mb6Svdb0jToLVXqYV94cMSfaGeZ
+                UqxNuTjLsqk8RgisXqsEgD6bh2RYgDgW6/JlK2cXoxESAMgonaOSVxdk97nCTm8g1WzlnOfJOFOEGbEm
+                3RoymaRYmtlTLMCfdp4OExEOiyyKlWsV5/rsIZpNZdZhOjZo8/wrwPHTiisSCzvdnhAJgMd1G03HHTqQ
+                PnxjGBd9GUcdppoHSQVJcd2mkfIzaHUqj9EJ2KfnyLXpZTo8KdodxyNRyhOJZbCBX580DoeTxXKE2Fa9
+                9KSdcAWIhO2oU8tyxMmaTT7SGYwkGJhayJujxAFgwOZJVY33r5z64Hxdxo1eNLltoeRtVirFinSa4vCG
+                exwBBEW58VovF5ZqMv27jRctO85bU0KC9LMNF55tuMApVxZFOUSyNP0lWtP6WuY7WsKMyeEPBUkkEACC
+                BIIAmk7Ci8Ni3FLEAcdBKh0NxuATu8Tj3EJfpMLTeEyvN5LKY5R8JAOLAJBxCuD4jh63axSRJMU80ep6
+                uTeQ+hjcOUujlPAtBJPkMTQNAHhKjt1rZywWH5GwHWfqcpQSfijKGB1pI3jGKJwIt6TGr6tLc7mwctKQ
+                dYUSPAZB0ZlK/lgu8tyOljARyRji/QHCHyBYmkGYTF/Pv512HHKHMY/HFY4gAkE8FBtnJFicxMQHcRxw
+                HASCJO2gqCs6IBM/4VihADQSfAIe42GxJ9q9AMBQdDCGyAXoV0olMxT8AoXYSfgT12p3w+r3+26rULoo
+                aBxwt4+EU7E4S4b+cE4uAChQNnl1DGvstr/cJl5RpaEikZ0X7L9ptqTOdbx7Vh4ADHmJSxQfIG6rCVHk
+                uZP9uefMiTUBF5apt9QV9XjTYPR+22DCUkTIyJO3zhywewGAU40swxw1+Vf/5kCcvng8D2xdXJoj2Xd5
+                omhnQjsCgCcUcYeiX4r0uavAMcrExh680jyVljBOe32Aoiw3EI878TSh/DgspiY9pIIv3efCMgxgWHV+
+                ZpQsg8cY3aHfBZMVqnjMpkIBAvhNKiw+rI26wdvdVHvLcDKjZ9TNlIPB7+qncSpWIRWKBVg4MpqLyfIe
+                OtAnPdQPAEGOzI5i8ZYpqnUzCgBg2OFzuZPJEyTDvthmSWKdpjUSPMoUGh2B1DsdcoeHRgIiJEawPAB4
+                8tbM8KDRFTSOJJnNN/yBZ1sNCdXIotic/CwAoLJkeMBPZcmCtpEElUEwbMDqCYcjX244tnZbXzvYOW7M
+                Ok8p/c7GuRn5FgBgM9k8Y7N0rzTbPxqJYzGRC5hqO2bQUpZFMKx0TD6L2x/O9PKkMOsChXhKtgAAHpwq
+                /3uv30nQqUHCce5LJvrbisJVuvhaKwtV+NTCnPb0PIMglfl8Fiizfr6ilPMc9QRjiUE244mKs++SnKEg
+                02P1pLWEZgCAw2KRBM1Ty88MOLlhmh1Dz4ty5UPDvj0tfUl7ID/r7z+/Q5fFp2LAZ6Msym88P7T+5+8n
+                20xErO7ABImS1zsc2wddd/2fnQbLFWPWXSZXw2/uSlVVUSY2YneHgiQgn2yt0cgoECkKaApoGigq3nmJ
+                TEeKAi7ZDEAnF2pVsgzmdDzET43HZCBSi8WUAh4ATJHjbyzL+0rjsJO4ohu1vjjrtzcWJNIcASBLxP/r
+                wpzVI/5kYGaMzCrIfnFtaSL4m5qHO86owkMqi9Vmi2MoQKU9FQlnFkCVTkWEIz3pBmiGvHXG4gonn7oH
+                bq1NaTYfACoKcyR8NEzEqcyIn+y3euZ9GWamjw/HHYfOGyyuCUIyXj9BURF+is95KMhE/QEiSiMolsYd
+                GCbp66Go8ZgKFWc83IsZ1ZFxZclwlSgkwtT0BY45AUC+TAQAeIwCAJaiEBxnqfj1l6jxxJOxSic5XK/7
+                5Xnv0d4RRihCSQIAgI8DQK1OcXexYFPFOKuu1ZXkfLBN/MLx3l2WaCQYApwXZHlSJAY4v0wpfrhWs2V6
+                XmIQ5PSiLu5myjRUeKFQhVatkeAng3RxFj62AAB4SaquSstEIrlqeSJJfqx4QmRRrhwAQkFyRZly9aKq
+                jAISAb6wSttpsEtFApJi6C/PGpnjTGxlWfaOX7zPzZ65kmxZVv3uf92WeqTBFHr8mf3nB4YRgSCe45jw
+                LwoFyXhMhgOc+6cIIv45QgJFx4OENA0UhZAkyzBiYG+YX7nzW0tToykxlvVEWS5zh2QRIcIm3uPqDRvH
+                zHVFYu0jBBeDKRChdXmisWR8rDh9xBl/jNuaTszHZuXwdXJRxjDAAnhCUQBgMYwfo6kY4DwAAO5DlIcJ
+                EZbLb4hQDIthSDpKcB5EooxUzAeAcJThTkFoGudBqoHAZ6Mkg/IRKsriACAS8cdGmGIs6w1TMZrhYSgA
+                xGhGKuZ/qpUX/pGSOrF1HO3o8pMDNu/E0eryMWmOA1a3Z7zpXUDTQKFXDLokaDU3x4VKUY0UFVeNLCsS
+                YEXqrIz/nYcgOYI4IiRj3ieQP1z0cXGafJxlpFllwli1SlwgQrn0CE+QXKLLysCoSi5aJb9K3QhACl24
+                IsQlfDR+I4LMMlmjzpwkdARj6+FLAQAmikHzEORLOg1tPDgGCE+QnACLCIaNTQLvd4dDQZJjwQg32WA0
+                82D8dMax9IUkU/Vi3GpkGGAYAKwi+9psedQ+QhwweJJ2AhAJp1KeGKfDhIuG5q9Wa6UwKdcFHK0+YgIS
+                AwBijJeRBB5j2Ys2P0UQSb86zYzOAqEzEZkBdGaUvqRjEWiGZRhupohezJOrFNfkhpOpEhnuJ5rmEsLz
+                ZCLt5GZf1w8c+4auMpskWyYuL1SlO1zIqD8QoWOA8jgAcXQ47n1Mxd/oLKfk14RbJ1UvkiRnjXE/ZctE
+                44Y3PoMccTIT/UzTcxVYajBwUv6ZcGTZeDr7BJKvkGSYJkOecI/VgzE0F3tjEQRB0SQvTviZE5oyY05C
+                gkcn7EXO9U3TQNEFQh5PoShWXBs4bs7j1WTlAYCLgkve6IgnaA5SyYA1hpWoJGJ8cnWN6wOOkUjkqiHO
+                BdWZyU59BASH3eEYl3gPwLKjFiQONDMRj0l8Hh2guQnX7GgGLsLQ+QpFgVyYI7s2CaR3TM1J8UExw4TK
+                GGL80ZgnSIr5mICPTVfgCDIJjOsDjnwBfyxrTpWC3Ox76udkUrlwiIjG0RMfo1F0HETiOBBEWvAwPTIR
+                5y6jUxEgGBLz0ZpyzZSinC8CIiiKaqXoKGuZXPj++oMjD0F+sGWhXCps77EBgJCPkVGae4crhwdVQlTE
+                x8I0gyRmsjJMApGQ2EOb4zepAYnEzLeEUuSwSNEIQ7ORyOals4QC7K55+smu+jelMiq56NNO8JlVoq6b
+                Wtgw4mZpBlAsGeUbjbrGQTlm7E6uhZKqFCkaCYdZFN2yrLpQlbVwuu5LEW+dlC8Ejp9BlBL+k7fObL9s
+                dtscbCSCYCibAUqaBgQBhkFSMipYhmETBGoUiNyIX1eWx1moFcXqWxdMmfjqfr//4MFDZrOFh/IqKqYs
+                WbxYLBY3NTe7nM5bbrmFx+O1t59pP3PG7/PL5LJNmzb6ff6Ojo7y8vLmlhauhmAwuHzZ0qlTp+3duzcr
+                K+vmm1agGN7V1XW6rX3D+ltlsnisPBwO79n7Qc2smVVVVQCwd+9ek9lCkqS+pKS+/hYcx1tbT587f37L
+                7bcrFNl+v//w4Y+NRpNILFq4YMGMGdM7Oy+0tbffuGRJWVmpwdB/qrV1y+23nT17zma3rV296vDHjcFg
+                cO3aNVKp9NChwwBw000rGZo60dTc0dEZISM5qpzbNm/iGmMw9B/++ONIJKLJy7vpppsUiuyPGhoMhn4q
+                Smm1+bffftvp020nTp6MMbG77/m6WqUymcyNR48O24e1Bdq1a9YoFNlHjx3z+3z19fUIgjQ1N7tdrvr6
+                +kOHDl+8eAnn4zU1s+bPnYNiuMPpPHb02JDRqNVq199af/zEiZ6e3hgTKyrSbdq0sam5uaXllFAo/NbD
+                D10TIF2z9Nvl1QXbH183s2aKQCRgaQZhaIShEZJESBIJhZBQCAgSCQbB52ODIe4FBAkEKYiQshiVx0YL
+                0FhZFj4nP2vlNK0+PxsAvnbzjHtunnHVSw8NGd/b8T4ZISNk5JVXXn3n3e0URTU0HDp/vpPH4732+hvP
+                /vk5q9WG47jRaGRo+nRbW0vLKYIgIpHI8eMn2traY0xMJpN3dHS8v3NXQ8PBUJgAgDNnz7W0nGJSUuyM
+                RmNDw0G/PwAAHo937wf7hwaHAADHMQzDPB7v62+8eeRIo9lsBgCr1fru9vfICGnoM7z88isej7fzwoWG
+                hoP7DxwAgFOtrceOHQeAI42NXV3dNBM78OFH7+/c1d3dAwA7d+02mc0Mwzz9h2defvmVQCDIQ3kWsyXR
+                mGPHjx8/fgIA9u3fv2v37nA4vGfPB329fTyUh2HY6dNtf37uOQDI0+SJhMKurq5f/urXFzovAMDevR+8
+                9fbbFEUdPHjo/PlOBEEAYP/+AxcvXSbJyP79BxxOh9fre+65v/b2GUwm8y9+8cuPjzRSFOX3+/1+/44d
+                O80mMw/l4TjW1Nz8/PN/Q3moUqm8vrRjApGtv77tZJdteMTLrQr+GYRb9bSiMKeiQPkJ6YvVZhUI+Pfd
+                d68qJ4cDxNo1q/0+39Kli5uam/fvP/CN++5dvnwZt70DRVH9/QN5mry5c+fMnDmzq6t7yZLFd2zdEolE
+                X37llaysrDBBhMNhmUxmtVj1JSUyWdJOMJstGIbpS/UAMDxsB4CtW7dMmVIuEYsQBDl06FAwGBSJRBaL
+                ZcaM6cMjI1yr2tva393+HgDY7XYA6O3t8/v9LpdLry8hCMJisa5cuTwSifr9PgBoP3OmsrKCYZjKyooP
+                9u1rP3PmqR8+WV09jZe+Oo/FbJlTV3f/N79pNpmDwaDf7ycIYuvW22fX1Egkkj8/9xeJRHrXnds0Go3f
+                73/55b+Xl5V959sPCoTit95+p6GhYfOmjeFQeNbMmQBAkhGPxzt37hyLxeL2uL///e95vd7Ozs5QKLx7
+                z14MRX/+s59mZ8sBoLu7myCIe+75+vTqapFI9MyfnpXJ5Hd95U61SnU9whEA+ChveXUB/GO3mbZabXm5
+                eVkSEYIgMlkWhmFer5dmGHVuXkvLqepp01auXIEgiMHQHw6Hi4uLLBbLkiWLEQTxej2hUDA/X4MgyMcf
+                HwaAhx964Jk//dnr9WZnK4wm04IF81P3KDGZzUKhUKVUctAkCOKNN95UKpV33/11qVR6/MTJhx584MTJ
+                k0aTCQBsNjsA7Ny5y9Bn2Lxpg0DAH7YP19TMunDh4tGjR31eX3X1NJ/P7/F4inQ6s9ksk8lz1eq2tvbK
+                ygqxSCQSCk+fblu16uYZM6YDQGfnBRzHOCMhGAwGAgEyQv71r88DwLq1a202G0EQu3ftOXLk6EMP3j9/
+                3rzW1tMvvPDSgw89YDaZrDbbvffeLRRJAECWJRUKRQ6Hk2aY4uJiAHA4HAzDVFZUuFyuSCS694MPrFbr
+                rbfW83iIwdD/la/cqVDE56QPj4zQNP3e9h0fHz7y4EMP1NXVnj177m9/e/H++7/xCRDJjjKIzwpHJsb+
+                effp0902AY4BQISiC1VZP9iy8NrOIXf6iJ0nu8jIOFmxJfmKW+aX8yZUktFoxGK2FJcUC0UShmHOnj1f
+                VVUZCoUxFFUqFMP24dm1s7khafeePSQZue/eu/1+f1GRDgCMRpNQKCrVl/r9/g8/OlhQoPUHAhRFDY+M
+                5KhUfr+vpKQ4wyooKy3llhHrHxiQyWQbNq7HcVytVr/62mskSeI45na7/f4ASUYcDgfDxI4cafzGfffe
+                dNPKrq4uj9f71a9+hSDIDz86SFHUhg3rnU4HAKhU6tbWVqVSuWHD+qf/8McdO3YqlUoMw61W27p1azmb
+                9fXX36iaWsXBcXh4JBgKuU1up9P1s5/+RKPRvPb6G2q1esPG9QCQLc/SzJv78MMPvvLKq2+//U5JcZFa
+                pcpRqQAgFou1tZ+dWlUVCAYAgPsTTGZTLBYrLCw8ePAQhmHHj59YvnzZXXdu+6ihgSCIUn1p4vb7+wfy
+                NRruKvIs6dIbbwSAv//9tTffeOvRRx+5Wj8jn1c7Hrts/e4zH2YcvHlh5XL5NVN+3Wb3V3+5s91LxUvr
+                AAAStklEQVQwPG7GRrZU+LuHbr5/3ewJavD5A2aLZerUKr/fv3vP3u7u7p/+14+7e3oAQKvVisTi1lOt
+                y5beiGLY4ODQ8mVLHQ4njuN5uXkA0GcwiEUirTZ/167dDodDJBTu33eApmmnw2m32RkmhqGYx+OVZUlQ
+                DPf7/W63u7i4yOPxCgR8q9VWVKTjusRg6G9pOSWVSt9++12H05ktlweCgd7evhUrlhsMhosXL91000qz
+                2ULTdFlZ6eIbFr340ssYhhUWFjY2NqpVqpwcZXdPr0yWNX16dVFRUXd3d0lJsSZfIxKJmk42T6+utlqt
+                Vptt3S1r4zaDxUwQxNYtt+/es8doNGk0GoOhX6PRcI1hGIYkI7Wza3fv2hMhIzK53Ga3D/QPZEmzdu3e
+                bTAYHn/sP4eHh4PBIIph0WiksfFYbq5aJBT09PbOnl0TY2JGo5GiKKFQSNP0uXNnc3KUoXBYLssyGAyF
+                usL4VWiKJCNz58zZvWtPKBz+RwzW3I6CqZKnlMqu6caUv3+nmdsoblzxBsnjHcZvrK2ZQEGSBEmSxEcN
+                Bz8+0ggADz30QFVV1f4DH8rkcplMtnz50jfeeOupH/1EJBIRBDF1apWhf0Crzc/LywUAk8mk1Wr9/sDJ
+                k01bt9y+ds3NNMM+++fnzGaLXC7HcfyFF19SZGc/+eQTCkW2w+EEgObmlrNnz61dsxpDUYOh/9vf+e6C
+                BfO9Xq9Wm//4Y/+JYdjhw4f37f/QOGQMBoM1s2aWlurfeusdg6Hf4/GoVSqxWFxZWalUKqUSCYryzBaL
+                vlQvEIp8Xu+UOXUIgtTV1hiNRrVarVapVixftm//gf987AkAkEgkCUVls9mlUumyZcvOd3QeaWycPr2a
+                CIetVivXmEULF/7x/z3DMIxUItm0aaNSqSwrK/3LX5/HMIzH491157YZM6bjOCYSiX7yk5/y+XwA+NbD
+                D4bCxLB9eN26tXq9/pe/+vXRo8cWL1585MjRnbv27P1gf5FO9+BDD4RD4ZERx3cf/f6CBfNrZ9c886c/
+                A4BUIrlj65ZrhYeJ9pW5/3/2vbCvPfXInMqCA7+561oN1kyMXfDtlyaAIwD88K7FEy89EAwGL126TJCE
+                VCKdMqU84Qfh8/k6XSEAmEzm7u5uANDr9Xp9scVii0ajZWWlXDGJRCwWi4eGjFVVldwmhyaTORqNSiRi
+                h8NJ05RIJKqoqODxeH6/f2jISNMUhuGafI3f5+fIh0wmp6hojkrF2U9+v99qteaoVC6ns6ioCMfxrq5u
+                Tb6GJEjuurFYbGBgEABKSooHB4ckEnFubm5PT09enkahyA4GgwMDg5p8DVebwdDf09MjlohL9aWFhQWc
+                1cG1sKys1OF02m12vb7EbDZTFB2NRnNzc+VyWVNTM4ZhdXV1nNnn9/vPnjtHkuSsmTM1mviyfSaT+cKF
+                CziOz6qZpVapSDIyODjAtaGz80J2drZOVxgMBjs6O8OhsF6vLyrSGQwG7ioFBVoUw063tkqk0pkzZiaM
+                y88mn2ibI4Zh1jz1zqHTfakHtyyrfuvHmzOWifrMYnYEFjzysmXEO0GZl3+46ZP4eiblyytXyQaP22Qk
+                02mwZ2ybWq5VfHIstnZbT10yJ76qsyWbb5yaOlugd8QfCpMT1JAtFRZrlZMdNhmVAbkIv29NzcH2gcSR
+                qcWqb22Y+8mxuP5Hb6fOi81TSvNys5en+ID6hkZ85ESzinLkEu3VDAOGYYAd9XEiPBRFY7EYwzCJ7YVZ
+                lo0xNMJDeTweVxjF0n7ioRgyapsyNMWVTNaffoTbKjnV+8PVmaiEoqjEA5s4yLIsTdOJ4zEWeDwej8dL
+                NGzU50rxeDwURTPKp7Yw+RPCG7tRLklGeDxITKnjWsvj8bjTMxrPMEwsFsNx/Er/4ZWu8k+AI8pDfvXN
+                Fb+4j0WABQAWkE81Rp+6ZB47R1uCpS8GafWwE05yU0iFxXnyicODb7/zLhEmKIoCgMrKKfX19bt37zFb
+                LMuWLuU8dseOH+/u7lm7Zk1envq9HTsB4M5td3Ddc+DAgeERx9o1qzmLym63v79zV3Z29sYN68ViMQB0
+                dXV9fKQxKytr2x1bcRwnidCrr7+lVqk2btyAIIjD6Wxva+/t6+MieHd//Ws9PT0HDx2mKCrGxACgvn4d
+                55ppbmk5fvyEUCDE+ThJkhRF1dXW5uQom1tOrVi+jCtjt9u3v7ejrq520cKFzS0t7e1nuHoEQsHGDRs4
+                OxgAzpw5e+LESYqiBELBzJkz5s+t4xyKBkN/U3MzZzRPrapcuXKFTCb78KMGi8Wy/tZ6jUbDNV4kEtXf
+                cgsXw3z9jTdL9fpFixbueH+nx+Ph2jx9evWyZcsOHDgwMDgYY2JiibimZtbcOXP+MbuHX8UNjvKQT+gx
+                ypAeS1rSJIJhUpEgY92jqyZWTi1WTTz/zWq1HjnSKJfLNRoNTVM8FHO6XEcajzocjkAgyMHx5Mnmzs7O
+                LbffbjJZGhoaKioqOSzGYrEPPzpIkuTGDRu42ra/t4MjASuWL+PgePHiJS4WN23q1Lq6Wot1+MiRxkWL
+                FnJO9eef/5vRZMrXaADA6/OyMeZ0W3tTU3ORTofzcSxFBzscjkAgYDD0BwIBtVotk2XhfLy55VRzc8uK
+                5cviPq+enqam5oqKKQDQ2Hiss7OTq0dMSfDR/HmGYZqam1tOnaqsrBwYHGxqag74t9XX1zc1N7/wwksE
+                QVRWVlosls7OTpvdfv83v9HX29dy6tTCBQs0Gs2Jky1HjjSKRKJFCxcqFNnHjh07fvxEqV5vtVobGg7K
+                5XKVKgcAMAwLBAN7P9iHYViRTnfp8uXjx088/th/JMy7L0EKxVjpSt/JgqVpvVaRmkLr9BEDNu/ElRSq
+                rpLI09/fj2HY7bdtvvHGxTTNCIXCnp6eYDAIAIODgyaTubCwwOf15ms0CkX25a7LkUh0ds2suHHs8weD
+                wVK9niOGXV1dra2nOX+Q1+vl9OXwSHyeRlNzc11drdlixjBs5swZfr+fw+I993y9trYWQzEAoOiYyWRW
+                KpXf//6jHMEXieL3u/rmlStXrHjxxZfb2tu/9fCDWq1WIpHs33dAm59fVFSUcN8AQHFREcuyRqOxsrLy
+                B99/FMMwAOCeDQCIRCJmk7lIp3v0u4+43e4f/+S/jCazwdD/wgsvZcvljz/2H0VFRS6X+//+/n/a2tpv
+                ra/P0+QJBHwAYBi68ehRDm0UFWVZtuHg4XyNZtmyZYcOHcQw7M4775g/bz5NUxKJhAsGbtiw/rbNmxoa
+                Dr7+xptWm/2zopH9NOqM/UJ2bHX6iMtDzoyDVbpPl0Kbp5RuXFJ1FW5useI4jvNxt9vj9/t5PN7wyAhB
+                EGq1OhAItLW1BQKBYChUqCsEgGH7MADwUJ7JZDaZzB2dHRRFFRQWcArsvffeVygUN920kgsAcrGQkRFH
+                VlaWQMDv7e3zeLxOhxNFeaX60tbW00aTadWqm1evWqVWqRSKbIUiOxAMWCwWhSI7FAr7/X6apjk1jCCI
+                UCSRSqUOp0MkEpWW6mUymd8fGB4Zxvm4y+U2mcwGQ39XV7dSqczOzna6XD6fTyQShsNhl8vNQ5Kuj1A4
+                bDSZysrLFIpsr9cLANnZ2Vz45N5776mqqhKLxTpdYVlpKUVR0WhUKhFzWRcdHZ0GQ3++RkMQBEXRFy5c
+                dDgc8+bPEwoFRpMZAHAc93o9BEkiCMI9hKV6PQBcvtzFqcl/iOmIfCHaUcBHF00rOEbT2OiaE/kKyebl
+                01PLqOSi/9i64H/ebfEESYVUmPGu1yq+u2nuxOt4sCxrtdoIgvjLX54HgMrKyp/99CdGownDsHVr1/z9
+                1dcud3UXFBRQFMV5GW12OwC88sqrqZXoCgs52667p+fur39Nr9cfOPDhiMMBAC6X2+Fw1NTMYhimqam5
+                o7PDarPx+QK5XHbx4iUAuHHJkjRD1ucPhYKc0gKAbdu2bli/PvGr3W73eLxarZbjGVzWj8HQ//gTTybK
+                VE+bplQquMrPnTt/7tx5APj+9x6dNy/OIO02OwA4na7t2997f+euIp1ualXl22+/W6TTcZYJ97eEwmEc
+                x/l8PobhOI4HgoH29jNqtXrJksXvbn+PIIjm5haBgL9s6Y0Mw4yMOGiafuaZZwGgpmbWo9/9rsViBYA9
+                e/fu2PE+QZLbtt2RqPzTq8brYLDOEvFffbx+yBkCgCDNMpGIVpk1NoV22/LqzTeU+4kYAPAwNJaSmSsX
+                Y1e1nb1en91uT0RR83JzoxHSarUqFIq6OXUnTp4cHBw80tgYjUZK9aUJVbdhw3oMQ1Ee2nj0qMHQr9fr
+                STLS0HAIRXl6vd7lcuE4brVYAcDr9brd7rKyUm2+tqmp+ciRo36fT6vV8ng8h9MhEPDV6rS8geGR4Ugk
+                unz5ssrKCgCorKhI/dXhcIZCwTlz6rivFouFYWJLliyumDKFiTEej3f37j3KHCWfL+jvH8AwbNWqm8vK
+                SimKqqqqTFRisVgAoLOzc3BwcO7cORvWr6eoqNVmW7hwQaJMIBDo6+vjYo8isQgAWlpOXbhw8Y47tqhy
+                VADQ1t7e09tbV1en0Wjsdrvb7U78h4UFhRiKDA4OYRhmMPSLRKKf/+ynCRb1GbTdp0XkFwJHkmI6huK2
+                48ziHKHwitvp8PkC1WedRDo8bA+FQjfcsIiLogKAx+M1Gk1FRTpltnzJksWvvPLquXPnRSJRcXERFyyp
+                njbtlnXxyG/7mTMikaikpPjEyZNc2OZ/n/4DRVEEQTgcDgAYHh4GAG2+tqKiLF+j4crMrp0di8WoKMUw
+                MZ/Pn8jMBQCuF1euWMEp40zWZbNGItHS0vgsCy7r59b6eq6zOzsv7N69R1dYAAADA4MSiYTjv5m28sCA
+                SCS6++6vVVZUqNVqFEXPnj0LAG5XcvOvt995lyCIBQvmi8ViHMcpijp79pxMJps3dx6nkltbWxkmtm7t
+                Wu4h8Xg862+tT/yHwWCwr69v+vRqhUJx/PgJk9n0meDIfjbzEUv4q4acoSDNSjFkSoGC9/kmSu060fW9
+                Zz+KRGkAePqRtV9QWGVwcIimabfLffTYMSpKzZs3NxgMut3uBQvmoxheW1v7zjvbCYJQq1QymWxoyBgI
+                BAoL415Ph9NpsVi12vxQKLR/3wGlUrl16+1c5+3etcdqs/n9fpPZzBlnAoHohhsWvbfjfQDI12ikUmmh
+                rtBoMv31+eeXLV0aCASUOcr58+YPDg4BwLlz58wWM47jc+pq05bUGjJy6ocjyEajEUV5cnkczZ0XLgCA
+                VlvAsqzRZIpGo62nW4VCoVQirR3NSIrFYn29fdlyecK5AwCFOp1apbp46dJrr79RVKQ73drWfuZMTc2s
+                tWvXAoCAL+DWi1qwYL5Ckc3laEYi0braWi5ZyWqz0jTtcDoT/6HD4SQIQqfTrVi+rKmp6b3tO2bOmCGV
+                Sj+rXkQ+DYIRDABYFv64q/3J5w8BQFlBzr5f3zl2ctankg7DcMLpmJMlhC9GHE6nSCQ639FxvqMDw7DK
+                ykqn0yESibi8KaVCsWDB/JaWU8UlxZyqE4lEulGT3OV0Mgwzffr0s+fOOZzOu+7cllAP3d093pZTnNoo
+                0uk4xNTU1Bw8dDgajRYWFvB4vHVr1w4PD1uttr+/+hqO42vXrAYAn9eL4/i+/QcAoKioaE5dcrPfaDQS
+                DAblcjk3vrs9HipKlZToE8rVarHmazQFBVqny4WhKAC88852AJg9u2b27BoOjj6f3+vzTZs6NYFFAFCr
+                VBs2rt+xY2dDw0EAkEgkq1bdfNvmTUKhAAAkErFIJJJKpYsWLgQAiUQqEokwDFu5cjnn3B4ZcYhEora2
+                9ra2dgzD9Hq91+sViUS5arVGo6mrq2tvbz/Z1LR61aovfqRGAFiEZdlQlNn4k3h4uiA3u+WZez/nVKmb
+                n3iTqy1PKd33+7u/oL3vTCYzxy4BAMexKeVl/kBocHBgypQp3NPscDqNQ8aCAi1nJNlstsrKSs5pwuVD
+                cJkNXq93ypQpwtFN6ex2u8PhLC4u4lJ49PoSHo9HUZTRaAqHw4mS4XDYYOgPBANKhaKoqEggEPT29lIU
+                DQA0TalU6tQxjqGpwSETRUUrKysRBCHJSG9vL5emwBUwGPopKlpRUUGSpNFopEanGanVqkTSw9izUnmS
+                0WgCgPz8/NRfuVPEYjF3F9xXHMfKysoS+SJOp4NzkeI4Vlqq9/kDdpu9sLBQocj2eLyDgwMZ93LNpbX1
+                9Lx5c7mt1RCWZVNTGeZUFrQ8e9/nTJLY29LbfMEEABXF6q+vmMZDJxd1+PeUT2Q1cikULMsiCCAsyzp9
+                xA+ea7B5QgCwdenUidNdJ2VSri1kWRYSkf2J8h0nZVL+AWDkYgVfYFRmUiblkznDM9g38v8BXcdVKsMP
+                KTgAAAAASUVORK5CYII=
+            </property>
+        </structure>
+    </list-property>
+</library>

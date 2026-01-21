@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498637</id>
+  <uuid>d252d7c4-3936-4e4e-b20e-bf575264875e</uuid>
+  <value>Exercise</value>
+  <valueHash>ef8fb97d271d5d2e855498ac9a9b41b7</valueHash>
+  <fullValue>Learning Resource Type\Exercise</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

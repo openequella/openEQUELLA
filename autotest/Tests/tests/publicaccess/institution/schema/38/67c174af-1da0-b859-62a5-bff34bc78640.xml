@@ -1,0 +1,31 @@
+<com.tle.beans.entity.Schema>
+  <id>2498579</id>
+  <uuid>67c174af-1da0-b859-62a5-bff34bc78640</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-09-19 14:34:38.189</dateModified>
+  <dateCreated class="sql-timestamp">2013-09-19 14:32:00.288</dateCreated>
+  <name>
+    <id>2498580</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498581</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Dublin Core</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms/>
+  <impTransforms/>
+  <itemNamePath>/dc/title</itemNamePath>
+  <itemDescriptionPath>/dc/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;oai type=&quot;text&quot;&gt;&lt;id attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/oai&gt;&lt;/item&gt;&lt;dc&gt;&lt;title search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;keywords search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;author search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;publisher search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;contributor type=&quot;text&quot;/&gt;&lt;date type=&quot;text&quot;/&gt;&lt;type type=&quot;text&quot;/&gt;&lt;format&gt;&lt;media type=&quot;text&quot;/&gt;&lt;format type=&quot;text&quot;/&gt;&lt;pages type=&quot;text&quot;/&gt;&lt;/format&gt;&lt;identifier&gt;&lt;url type=&quot;text&quot;/&gt;&lt;isbn search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;language type=&quot;text&quot;/&gt;&lt;relation type=&quot;text&quot;/&gt;&lt;coverage type=&quot;text&quot;/&gt;&lt;rights type=&quot;text&quot;/&gt;&lt;/dc&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

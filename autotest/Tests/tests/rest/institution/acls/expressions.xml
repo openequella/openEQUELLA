@@ -54,4 +54,14 @@
     <dynamic>false</dynamic>
     <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58 </expression>
   </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>821131</id>
+    <dynamic>false</dynamic>
+    <expression>U:76203221-88e4-4641-9d29-42e78d6ae48d </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>815965</id>
+    <dynamic>false</dynamic>
+    <expression>U:adfcaf58-241b-4eca-9740-6a26d1c3dd58 </expression>
+  </com.tle.beans.security.AccessExpression>
 </list>

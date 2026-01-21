@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498640</id>
+  <uuid>ca52c857-caab-46c1-b6c5-e55311c9fec0</uuid>
+  <value>Index</value>
+  <valueHash>88fa71f0a6e0dfedbb46d91cc0b37a50</valueHash>
+  <fullValue>Learning Resource Type\Index</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>
