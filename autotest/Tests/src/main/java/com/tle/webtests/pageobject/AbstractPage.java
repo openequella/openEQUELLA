@@ -5,6 +5,7 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestUtils;
 import com.tle.webtests.framework.factory.RefreshingFieldDecorator;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -193,8 +194,31 @@ public abstract class AbstractPage<T extends PageObject>
     return get();
   }
 
+  /** Load page using legacy entry point. */
+  public T loadFromLegacyEntry() {
+    loadLegacyUrl();
+    return get();
+  }
+
+  /**
+   * Navigates the driver to a resource relative to the context's base URL.
+   *
+   * @param path the relative route to append (e.g., "/login").
+   */
+  protected void loadPath(String path) {
+    URI baseUrl = URI.create(context.getBaseUrl());
+    URI fullUri = baseUrl.resolve(path);
+
+    driver.get(fullUri.toString());
+  }
+
   protected void loadUrl() {
     throw new Error("This page object does not support loading");
+  }
+
+  /** Load page using legacy URL. */
+  protected void loadLegacyUrl() {
+    throw new Error("This page object does not support legacy loading");
   }
 
   public WaitingPageObject<T> acceptAlert() {

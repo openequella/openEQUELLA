@@ -1,0 +1,77 @@
+<com.tle.beans.entity.Schema>
+  <id>2498574</id>
+  <uuid>9fc6f87c-88c8-4492-81e3-69b2e1399097</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-22 13:20:54.281</dateModified>
+  <dateCreated class="sql-timestamp">2013-09-19 14:32:11.016</dateCreated>
+  <description>
+    <id>2498575</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498576</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Sample LOM, Copyright VB, Learning Federation and general node set. Fully configurable by a client institution.</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </description>
+  <name>
+    <id>2498577</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498578</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Generic schema</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>identity.xslt</filename>
+      <type>HARVESTER</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </expTransforms>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>identity.xsl</filename>
+      <type>Identity</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>marcxml_to_journal-20130729.xslt</filename>
+      <type>MARCXML to Journal</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>marcxml_to_book-20130729.xslt</filename>
+      <type>MARCXML to Book</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>OAI_DC.xsl</filename>
+      <type>OAI_DC</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>Merlot_1113.xsl</filename>
+      <type>MERLOT to Learning Resources</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/item/itembody/name</itemNamePath>
+  <itemDescriptionPath>/item/itembody/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;copyright&gt;&lt;type attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;parenttype attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;title field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;abstract field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;isbn field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;authors&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/authors&gt;&lt;editors&gt;&lt;editor field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/editors&gt;&lt;issn field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;issue&gt;&lt;type field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;value field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/issue&gt;&lt;volume field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;origin field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;publisher field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;publication&gt;&lt;year field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;place field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/publication&gt;&lt;edition type=&quot;text&quot;/&gt;&lt;pages field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;portions&gt;&lt;portion&gt;&lt;title field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;authors&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/authors&gt;&lt;abstract field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;number field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;topics&gt;&lt;topic field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/topics&gt;&lt;doi search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;sections&gt;&lt;section&gt;&lt;pages field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachment field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;type field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;copyrightstatus field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;permissiontype field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;permission field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;illustration field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/section&gt;&lt;/sections&gt;&lt;/portion&gt;&lt;/portions&gt;&lt;conference&gt;&lt;name field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;location field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;number field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;year field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/conference&gt;&lt;/copyright&gt;&lt;lom&gt;&lt;general&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;title search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;language field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;keyword search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;aggregationlevel field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/general&gt;&lt;lifecycle&gt;&lt;version field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;status field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;contribute&gt;&lt;role type=&quot;text&quot;/&gt;&lt;entity type=&quot;text&quot;/&gt;&lt;date type=&quot;text&quot;/&gt;&lt;/contribute&gt;&lt;/lifecycle&gt;&lt;metametadata&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;contribute&gt;&lt;role type=&quot;text&quot;/&gt;&lt;entity type=&quot;text&quot;/&gt;&lt;date type=&quot;text&quot;/&gt;&lt;/contribute&gt;&lt;metadataschema type=&quot;text&quot;/&gt;&lt;language field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/metametadata&gt;&lt;technical&gt;&lt;format field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;size search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;location search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;requirement&gt;&lt;orcomposite&gt;&lt;type type=&quot;text&quot;/&gt;&lt;name type=&quot;text&quot;/&gt;&lt;minimumversion type=&quot;text&quot;/&gt;&lt;maximumversion type=&quot;text&quot;/&gt;&lt;/orcomposite&gt;&lt;/requirement&gt;&lt;installationremarks search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;otherplatformrequirements type=&quot;text&quot;/&gt;&lt;duration type=&quot;text&quot;/&gt;&lt;/technical&gt;&lt;educational&gt;&lt;learning.resource.type field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;intendedenduserrole field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;context field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;typicalagerange field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/educational&gt;&lt;rights&gt;&lt;cost type=&quot;text&quot;/&gt;&lt;copyrightandotherrestrictions type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/rights&gt;&lt;relation&gt;&lt;kind field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/relation&gt;&lt;annotation&gt;&lt;entity type=&quot;text&quot;/&gt;&lt;date type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/annotation&gt;&lt;classification&gt;&lt;purpose type=&quot;text&quot;/&gt;&lt;taxonpath&gt;&lt;source type=&quot;text&quot;/&gt;&lt;taxon&gt;&lt;id type=&quot;text&quot;/&gt;&lt;entry field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/taxon&gt;&lt;/taxonpath&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/classification&gt;&lt;/lom&gt;&lt;tlf&gt;&lt;catalogentry&gt;&lt;catalog field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;entry field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/catalogentry&gt;&lt;curriculum&gt;&lt;learningarea field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;strand field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;contentconcept search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;skillprocess search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/curriculum&gt;&lt;audience&gt;&lt;userlevel field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;sector field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/audience&gt;&lt;technical&gt;&lt;learningresourcetype field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/technical&gt;&lt;educational&gt;&lt;value search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/educational&gt;&lt;tlfid field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/tlf&gt;&lt;itembody&gt;&lt;name search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;richtext search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachments&gt;&lt;uuid type=&quot;text&quot;/&gt;&lt;/attachments&gt;&lt;collection type=&quot;text&quot;/&gt;&lt;origination field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;keywords&gt;&lt;aggregatedKeywords type=&quot;text&quot;/&gt;&lt;keyword field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/keywords&gt;&lt;meta&gt;&lt;switches&gt;&lt;itemType type=&quot;text&quot;/&gt;&lt;userAgreed type=&quot;text&quot;/&gt;&lt;agreementType type=&quot;text&quot;/&gt;&lt;options field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/switches&gt;&lt;/meta&gt;&lt;originalContributor&gt;&lt;userId type=&quot;text&quot;/&gt;&lt;firstName type=&quot;text&quot;/&gt;&lt;lastName type=&quot;text&quot;/&gt;&lt;email type=&quot;text&quot;/&gt;&lt;/originalContributor&gt;&lt;itemRights&gt;&lt;agreementDate type=&quot;text&quot;/&gt;&lt;authors&gt;&lt;author&gt;&lt;firstName type=&quot;text&quot;/&gt;&lt;lastName type=&quot;text&quot;/&gt;&lt;/author&gt;&lt;/authors&gt;&lt;/itemRights&gt;&lt;/itembody&gt;&lt;/item&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations>
+    <com.tle.beans.entity.schema.Citation>
+      <name>Generic</name>
+      <transformation>generic_citation_200800811-1.xsl</transformation>
+    </com.tle.beans.entity.schema.Citation>
+  </citations>
+</com.tle.beans.entity.Schema>

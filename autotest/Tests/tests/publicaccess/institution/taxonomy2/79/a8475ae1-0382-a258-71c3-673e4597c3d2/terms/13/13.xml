@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498647</id>
+  <uuid>bf797451-ac49-45a5-b283-501da9ba7f6d</uuid>
+  <value>Self Assessment</value>
+  <valueHash>a1c3bf78688339b0843c0abbb1e0c461</valueHash>
+  <fullValue>Learning Resource Type\Self Assessment</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

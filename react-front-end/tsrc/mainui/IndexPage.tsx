@@ -37,6 +37,7 @@ import { LegacyBrowseHierarchyLiteral } from "../modules/LegacyContentModule";
 import { isSelectionSessionOpen } from "../modules/LegacySelectionSessionModule";
 import {
   hasAuthenticated,
+  isDashboardACLGranted,
   isHierarchyPageACLGranted,
   isSearchPageACLGranted,
   isViewHierarchyTopicACLGranted,
@@ -301,7 +302,9 @@ export default function IndexPage() {
             if (!hasLegacyPortlet()) {
               removeLegacyCss();
             }
-            return renderProtectedPage(routeProps, Dashboard);
+            return renderProtectedPage(routeProps, Dashboard, [
+              isDashboardACLGranted,
+            ]);
           }}
         />
         <Route render={renderLegacyContent} />

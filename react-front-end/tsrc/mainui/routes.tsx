@@ -25,6 +25,7 @@ import { FavouritesType } from "../modules/FavouriteModule";
 import { convertNewTopicIdToLegacyFormat } from "../modules/HierarchyModule";
 import { buildMyResourceUrl } from "../modules/MyResourceModule";
 import {
+  isDashboardACLGranted,
   isEditSystemSettingsGranted,
   isHierarchyPageACLGranted,
   isManageCloudProviderACLGranted,
@@ -220,6 +221,7 @@ export const routes: Routes = {
   Dashboard: {
     path: NEW_DASHBOARD_PATH,
     component: Dashboard,
+    permissionChecks: [isDashboardACLGranted],
   },
   EditLti13Platform: {
     // normally platform ID will be an URL which need to be encoded first
