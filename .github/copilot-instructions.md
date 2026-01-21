@@ -319,6 +319,44 @@ cd react-front-end
 npm run test
 ```
 
+### REST Client Testing
+
+**Purpose:**
+
+The `oeq-ts-rest-api/test/` directory contains tests that validate the REST client's API and
+functionality, **not** the actual REST API endpoints themselves. These tests ensure:
+
+- REST client methods work correctly
+- Type definitions are accurate
+- io-ts runtime type validation properly validates server responses
+- Client API contracts are maintained
+
+**Key Points:**
+
+- Located in `oeq-ts-rest-api/test/`
+- Use Jest as the test framework
+- Focus on client-side API behavior and type safety
+- Validate that io-ts codecs (generated in `oeq-ts-rest-api/gen-io-ts/`) correctly validate server
+  responses
+- **Require a running openEQUELLA instance** to execute (tests make real HTTP calls)
+
+**Running Tests:**
+
+```bash
+cd oeq-ts-rest-api
+npm test
+```
+
+**Prerequisites:**
+
+Before running these tests, ensure you have:
+
+1. A running openEQUELLA instance (typically via `./sbt compile equellaserver/run`)
+2. Proper configuration pointing to your test instance
+
+**Note:** For testing the actual REST API endpoints themselves (server-side behavior), use the
+integration tests in `autotest/IntegTester/`.
+
 ### Selenium End-to-End Tests
 
 **Location:** `autotest/OldTests/` (despite name, this is the active test suite)
