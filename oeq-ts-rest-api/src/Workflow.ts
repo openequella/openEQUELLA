@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
@@ -22,11 +23,21 @@ import { TaskTrendDetailsCodec } from './gen/Workflow';
 import { Trend } from './Task';
 import { validate } from './Utils';
 
-const BASE_WORKFLOW_API_PATH = '/workflow';
-const TRENDS_API_PATH = '/trends';
+/**
+ * Base path segment for all workflow-related API endpoints.
+ * Used to construct URLs like: {apiBasePath}/workflow/...
+ */
+const BASE_WORKFLOW_API_PATH = '/workflow' as const;
+
+/**
+ * Path segment for workflow trends endpoints.
+ * Appended to workflow paths: /workflow/trends or /workflow/{uuid}/trends
+ */
+const TRENDS_API_PATH = '/trends' as const;
 
 /**
  * Details of task trend including its id, name, current waiting count, and trend.
+ * All fields are guaranteed to be present (non-null, non-undefined).
  */
 export interface TaskTrendDetails {
   /**
@@ -47,6 +58,8 @@ export interface TaskTrendDetails {
   trend: number;
 }
 
+const tasksTrendsValidator = pipe(TaskTrendDetailsCodec, t.array, validate);
+
 /**
  * Retrieves a list of tasks trends across all workflows.
  *
@@ -58,8 +71,8 @@ export const getAllWorkflowsTrends = (
   trend: Trend
 ): Promise<TaskTrendDetails[]> =>
   GET<TaskTrendDetails[]>(
-    apiBasePath + BASE_WORKFLOW_API_PATH + TRENDS_API_PATH,
-    validate(t.array(TaskTrendDetailsCodec)),
+    `${apiBasePath}${BASE_WORKFLOW_API_PATH}${TRENDS_API_PATH}`,
+    tasksTrendsValidator,
     { trend }
   );
 
@@ -76,7 +89,7 @@ export const getWorkflowTrends = (
   trend: Trend
 ): Promise<TaskTrendDetails[]> =>
   GET<TaskTrendDetails[]>(
-    apiBasePath + BASE_WORKFLOW_API_PATH + `/${uuid}${TRENDS_API_PATH}`,
-    validate(t.array(TaskTrendDetailsCodec)),
+    `${apiBasePath}${BASE_WORKFLOW_API_PATH}/${uuid}${TRENDS_API_PATH}`,
+    tasksTrendsValidator,
     { trend }
   );
