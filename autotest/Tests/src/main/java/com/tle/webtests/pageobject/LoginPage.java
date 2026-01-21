@@ -15,29 +15,16 @@ public class LoginPage extends AbstractPage<LoginPage> {
     super(context, By.id("_logonButton"));
   }
 
-  /**
-   * Loads the login page URL.
-   *
-   * <p>Note: when {@code logout=true}, the server may redirect away from the login page (e.g. to
-   * the Dashboard) if the current institution allows public access. To guarantee it end up on the
-   * actual login page, callers may need to follow up with {@code logout=false} to force the login
-   * form URL.
-   *
-   * @param logout {@code true} to hit the logout entry point first; {@code false} to force the
-   *     login form URL.
-   */
-  private void loadUrl(boolean logout) {
-    String path = logout ? LOGIN_PATH + "?logout=true" : LOGIN_PATH;
-    loadPath(path);
-  }
-
   @Override
   public LoginPage load() {
-    // First attempt a logout to clear any existing session. In Public Access institutions this can
-    // redirect to the Dashboard instead of the login page, so it then load the login again form URL
-    // without logout parameter to ensure it's actually on the Login page.
-    loadUrl(true);
-    loadUrl(false);
+    // Clear session: redirection to Dashboard is possible here.
+    // Note: In a public access institution this can redirect to the Dashboard instead of the login
+    // page.
+    loadPath(LOGIN_PATH + "?logout=true");
+
+    // Force navigation: ensures we land on the actual login form.
+    loadPath(LOGIN_PATH);
+
     return get();
   }
 
