@@ -10,9 +10,12 @@ import java.io.IOException
 
 class WorkflowTrendsApiTest extends AbstractRestApiTest {
 
-  private val TargetWorkflowUuid = "0f7bd496-8466-4fa5-b166-8132cc5294e4"
-  private val TrendWeek          = "WEEK"
-  private val TrendMonth         = "MONTH"
+  private val TargetWorkflowUuid       = "0f7bd496-8466-4fa5-b166-8132cc5294e4"
+  private val NoTasksWorkflowUuid      = "23ced460-f8f8-4bd4-bdc2-971064636de8"
+  private val NoPermissionWorkflowUuid = "117dead8-767d-4eff-ba06-5e1964f2f2db"
+
+  private val TrendWeek  = "WEEK"
+  private val TrendMonth = "MONTH"
 
   private def getWorkflowTrendsEndpoint: String =
     getTestConfig.getInstitutionUrl + "api/workflow/trends"
@@ -75,17 +78,23 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
     validateResponseStructure(result)
   }
 
+  @Test(description = "Retrieve an empty list if the workflow has no waiting tasks")
+  def specificWorkflowNoTasks(): Unit = {
+    val endpoint = getSpecificWorkflowEndpointTemplate.format(NoTasksWorkflowUuid)
+    val result   = executeRequest(endpoint, TrendWeek)
+
+    assertTrue(result.isArray, "Response should be a JSON array")
+    assertEquals(result.size(), 0, "Response array should be empty")
+  }
+
   @Test(description =
     "Verify 403 Forbidden when user lacks MANAGE_WORKFLOW permission for specific workflow"
   )
   def trendsAccessDenied(): Unit = {
-    loginAsLowPrivilegeUser()
-
-    val endpoint = getSpecificWorkflowEndpointTemplate.format(TargetWorkflowUuid)
+    val endpoint = getSpecificWorkflowEndpointTemplate.format(NoPermissionWorkflowUuid)
     val method   = buildGetMethod(endpoint, TrendWeek)
 
     assertStatusCode(method, HttpStatus.SC_FORBIDDEN)
-    login()
   }
 
   @Test(description = "Reject null UUID parameter")
