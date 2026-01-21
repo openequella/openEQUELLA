@@ -1,4 +1,4 @@
-package io.github.openequella.regression
+package io.github.openequella.security
 
 import com.tle.webtests.framework.TestInstitution
 import com.tle.webtests.pageobject.searching.SearchPage
