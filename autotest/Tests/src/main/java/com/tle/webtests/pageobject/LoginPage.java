@@ -7,15 +7,38 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class LoginPage extends AbstractPage<LoginPage> {
+  private final String LOGIN_PATH = "logon.do";
+
   private By oidcLoginButton = By.name("_oidcLoginSection_loginButton");
 
   public LoginPage(PageContext context) {
     super(context, By.id("_logonButton"));
   }
 
+  /**
+   * Loads the login page URL.
+   *
+   * <p>Note: when {@code logout=true}, the server may redirect away from the login page (e.g. to
+   * the Dashboard) if the current institution allows public access. To guarantee it end up on the
+   * actual login page, callers may need to follow up with {@code logout=false} to force the login
+   * form URL.
+   *
+   * @param logout {@code true} to hit the logout entry point first; {@code false} to force the
+   *     login form URL.
+   */
+  private void loadUrl(boolean logout) {
+    String path = logout ? LOGIN_PATH + "?logout=true" : LOGIN_PATH;
+    loadPath(path);
+  }
+
   @Override
-  protected void loadUrl() {
-    driver.get(context.getBaseUrl() + "logon.do?logout=true");
+  public LoginPage load() {
+    // First attempt a logout to clear any existing session. In Public Access institutions this can
+    // redirect to the Dashboard instead of the login page, so it then load the login again form URL
+    // without logout parameter to ensure it's actually on the Login page.
+    loadUrl(true);
+    loadUrl(false);
+    return get();
   }
 
   public LoginPage logout() {

@@ -193,8 +193,28 @@ public abstract class AbstractPage<T extends PageObject>
     return get();
   }
 
+  /** Load page using legacy entry point. */
+  public T loadFromLegacyEntry() {
+    loadLegacyUrl();
+    return get();
+  }
+
+  /**
+   * Load page using specific URL.
+   *
+   * @param path The URL to load, relative to the base URL.
+   */
+  protected void loadPath(String path) {
+    driver.get(context.getBaseUrl() + path);
+  }
+
   protected void loadUrl() {
     throw new Error("This page object does not support loading");
+  }
+
+  /** Load page using legacy URL. */
+  protected void loadLegacyUrl() {
+    throw new Error("This page object does not support legacy loading");
   }
 
   public WaitingPageObject<T> acceptAlert() {

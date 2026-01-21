@@ -19,9 +19,14 @@
 package io.github.openequella.pages.search
 
 import com.tle.webtests.framework.PageContext
+import org.openqa.selenium.By
 
 /** Represents the new Search page in the UI. */
 class NewSearchPage(context: PageContext) extends AbstractSearchPage[NewSearchPage](context) {
+  private val TITLE = "Search"
+
+  loadedBy = By.xpath(s"//h5[text()='$TITLE']")
+
   override protected def loadUrl(): Unit = {
     driver.get(context.getBaseUrl + "page/search")
   }
