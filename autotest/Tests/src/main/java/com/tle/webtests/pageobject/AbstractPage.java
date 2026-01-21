@@ -5,6 +5,7 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.framework.TestUtils;
 import com.tle.webtests.framework.factory.RefreshingFieldDecorator;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -200,12 +201,15 @@ public abstract class AbstractPage<T extends PageObject>
   }
 
   /**
-   * Load page using specific URL.
+   * Navigates the driver to a resource relative to the context's base URL.
    *
-   * @param path The URL to load, relative to the base URL.
+   * @param path the relative route to append (e.g., "/login").
    */
   protected void loadPath(String path) {
-    driver.get(context.getBaseUrl() + path);
+    URI baseUrl = URI.create(context.getBaseUrl());
+    URI fullUri = baseUrl.resolve(path);
+
+    driver.get(fullUri.toString());
   }
 
   protected void loadUrl() {
