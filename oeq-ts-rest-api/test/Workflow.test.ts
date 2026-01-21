@@ -65,7 +65,7 @@ describe('Workflow Trends API', () => {
       expect(result).toHaveLength(0);
     });
 
-    it('should receive 403 response if user lacks permission for the workflow', async () => {
+    it('should return 403 when user lacks permission for the workflow', async () => {
       await expect(
         getWorkflowTrends(NO_PERMISSION_WORKFLOW_UUID)
       ).rejects.toHaveProperty('status', 403);
@@ -75,8 +75,8 @@ describe('Workflow Trends API', () => {
       [404, 'non-existing', NON_EXISTENT_WORKFLOW_UUID],
       [400, 'invalid', 'INVALID_UUID'],
     ])(
-      'should get %d response if requesting trends for a %s workflow',
-      async (status, _, uuid: string) => {
+      'should return %d when requesting trends for a %s workflow',
+      async (status, _description, uuid: string) => {
         await expect(getWorkflowTrends(uuid)).rejects.toHaveProperty(
           'status',
           status
