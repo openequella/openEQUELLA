@@ -450,6 +450,19 @@ npm run storybook    # Launch Storybook
 ./sbt jpfWriteDevJars
 ```
 
+**Full clean rebuild:**
+
+When changing branches or making significant changes, do a full clean rebuild to avoid stale
+artefacts:
+
+```bash
+./sbt devrebuild
+```
+
+This even rebuilds the New UI frontend from scratch. And triggers a build of the REST client and the
+io-ts
+codecs.
+
 ## Integration Points
 
 When working with integration features, be aware of:
