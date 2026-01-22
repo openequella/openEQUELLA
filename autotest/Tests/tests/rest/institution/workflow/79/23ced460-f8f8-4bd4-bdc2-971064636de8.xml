@@ -1,0 +1,49 @@
+<com.tle.common.workflow.Workflow>
+  <id>848052</id>
+  <uuid>23ced460-f8f8-4bd4-bdc2-971064636de8</uuid>
+  <owner>adfcaf58-241b-4eca-9740-6a26d1c3dd58</owner>
+  <dateModified class="sql-timestamp">2026-01-21 06:39:39.344</dateModified>
+  <dateCreated class="sql-timestamp">2026-01-21 06:39:39.344</dateCreated>
+  <name>
+    <id>848053</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>848054</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Workflow with no tasks</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.SerialNode>
+      <id>848055</id>
+      <uuid>eca32532-6774-41cf-bca5-90816327a378</uuid>
+      <name>
+        <id>848056</id>
+        <strings>
+          <entry>
+            <string>en_US</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>848057</id>
+              <locale>en_US</locale>
+              <priority>2</priority>
+              <text>Start</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <childIndex>0</childIndex>
+    </com.tle.common.workflow.node.SerialNode>
+  </nodes>
+</com.tle.common.workflow.Workflow>
