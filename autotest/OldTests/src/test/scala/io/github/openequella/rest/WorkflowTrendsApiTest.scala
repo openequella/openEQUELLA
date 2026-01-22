@@ -51,9 +51,8 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
     description = "Fail to retrieve workflow trends with invalid, empty, or missing trend values",
     dataProvider = "invalidTrendValues"
   )
-  def trendsWithInvalidValue(trendValue: String): Unit = {
+  def trendsWithInvalidValue(trendValue: String): Unit =
     executeRequestExpectingStatus(getWorkflowTrendsEndpoint, trendValue, HttpStatus.SC_BAD_REQUEST)
-  }
 
   @Test(description = "Verify empty response structure when user lacks manage workflow permission")
   def emptyTrendsResponse(): Unit = {
@@ -81,7 +80,7 @@ class WorkflowTrendsApiTest extends AbstractRestApiTest {
     val result   = executeRequestExpecting200(endpoint, TrendWeek)
 
     assertTrue(result.isArray, "Response should be a JSON array")
-    assertEquals(result.size(), 0, "Response array should be empty")
+    assertTrue(result.isEmpty, "Response array should be empty")
   }
 
   @Test(description =
