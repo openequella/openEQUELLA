@@ -27,17 +27,16 @@ import { validate } from './Utils';
  * Base path segment for all workflow-related API endpoints.
  * Used to construct URLs like: {apiBasePath}/workflow/...
  */
-const BASE_WORKFLOW_API_PATH = '/workflow' as const;
+const BASE_WORKFLOW_API_PATH = '/workflow';
 
 /**
  * Path segment for workflow trends endpoints.
  * Appended to workflow paths: /workflow/trends or /workflow/{uuid}/trends
  */
-const TRENDS_API_PATH = '/trends' as const;
+const TRENDS_API_PATH = '/trends';
 
 /**
  * Details of task trend including its id, name, current waiting count, and trend.
- * All fields are guaranteed to be present (non-null, non-undefined).
  */
 export interface TaskTrendDetails {
   /**
