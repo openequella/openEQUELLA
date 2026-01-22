@@ -22,9 +22,10 @@ import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
-import sttp.client3.{Request, SimpleHttpClient, asString, basicRequest}
+import sttp.client4.{Backend, DefaultSyncBackend, Request, Response, asString, basicRequest}
 import sttp.model.headers.CookieWithMeta
 import sttp.model.{MediaType, StatusCode, Uri}
+import sttp.shared.Identity
 
 final case class ClientConfiguration(
     institutionUrl: Uri,
@@ -36,6 +37,23 @@ final case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponse
 object Client {
   private val GRAPHQL_PATH = Seq("graphql")
   private val LOGIN_PATH   = Seq("api", "auth", "login")
+
+  private lazy val backend: Backend[Identity] = {
+    val b = DefaultSyncBackend()
+    sys.addShutdownHook {
+      try {
+        b.close()
+      } catch {
+        case e: Exception =>
+          // Backend close failures during JVM shutdown are non-recoverable and should not
+          // prevent application termination. Log for diagnostics but don't propagate.
+          System.err.println(
+            s"Non-critical: HTTP backend cleanup failed during shutdown: ${e.getMessage}"
+          )
+      }
+    }
+    b
+  }
 
   def query[R](request: SelectionBuilder[Operations.RootQuery, R])(implicit
       cfg: ClientConfiguration
@@ -58,14 +76,12 @@ object Client {
       )
       .response(asString)
 
-    SimpleHttpClient().send(request) match {
+    request.send(backend) match {
       case response if response.code == StatusCode.Ok =>
         // There is a slight short falling in this API. If you target an institution URL that is invalid,
         // you still get a 200 back with a cookie. Ideally, the API needs to reply with a body as well
         // so that we can confirm we have actually logged in.
-        cfg.cookies ++= response.cookies.collect { case Right(cookie) =>
-          cookie
-        }
+        cfg.cookies ++= extractCookies(response)
         Right(())
       case response =>
         Left((response.code, s"Login failed with status code ${response.code}"))
@@ -145,15 +161,17 @@ object Client {
     */
   private def send[T](
       cookieJar: scala.collection.mutable.Set[CookieWithMeta]
-  )(request: Request[T, Any]): T = {
-    val result =
-      SimpleHttpClient().send(request.contentType(MediaType.ApplicationJson).cookies(cookieJar))
+  )(request: Request[T]): T = {
+    val authenticatedRequest = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
+    val response             = authenticatedRequest.send(backend)
 
-    val cookies = result.cookies.collect { case Right(cookie) =>
+    cookieJar ++= extractCookies(response)
+
+    response.body
+  }
+
+  private def extractCookies(response: Identity[Response[_]]): Seq[CookieWithMeta] =
+    response.cookies.collect { case Right(cookie) =>
       cookie
     }
-    cookieJar ++= cookies
-
-    result.body
-  }
 }

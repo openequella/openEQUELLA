@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   springWeb,
   springAop,
   springContext,
-  "io.github.openequella" %% "graphql-client" % "0.4.0-SNAPSHOT",
+  "io.github.openequella" %% "graphql-client" % "0.5.0-SNAPSHOT",
   "com.google.inject"      % "guice"          % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     // Maybe it can be removed when all HTTP Invoker code is gone

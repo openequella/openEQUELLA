@@ -2,9 +2,12 @@ schema {
   query: Queries
   mutation: Mutations
 }
+
 "A date-time without a time-zone in the ISO-8601 calendar system in the format of 1970-01-01T00:00:00"
 scalar LocalDateTime
+
 scalar Long
+
 scalar Unit
 
 type BaseEntityReference {
