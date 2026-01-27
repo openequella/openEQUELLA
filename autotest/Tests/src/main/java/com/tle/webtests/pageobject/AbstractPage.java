@@ -163,9 +163,15 @@ public abstract class AbstractPage<T extends PageObject>
 
   protected void checkLoadedElement() {
     loadedElement = findLoadedElement();
-    boolean displayed = loadedElement.isDisplayed();
-    if (mustBeVisible && !displayed) {
-      throw new NotFoundException("Found " + loadedElement + " but not visible");
+    boolean isDisplayed = loadedElement.isDisplayed();
+
+    if (mustBeVisible && !isDisplayed) {
+      // Try to scroll to element and check again
+      // since selenium v4.40.0 there is more strict check on element visibility.
+      scrollToElement(loadedElement);
+      if (!loadedElement.isDisplayed()) {
+        throw new NotFoundException("Found " + loadedElement + " but not visible");
+      }
     }
   }
 
