@@ -60,7 +60,126 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-@SuppressWarnings("nls")
+/**
+ * Base class for Admin Console tools that manage {@link BaseEntity} entities within openEQUELLA.
+ *
+ * <p>This is a key architectural component in the Admin Console that provides a complete CRUD
+ * (Create, Read, Update, Delete) interface for managing entities such as collections, schemas,
+ * workflows, power searches, taxonomies, and other system-level resources.
+ *
+ * <p><b>Class Hierarchy:</b>
+ *
+ * <ul>
+ *   <li>{@link AdminTool} - Top-level interface for all admin tools
+ *   <li>{@link AdminToolList} - Provides list-based UI with add, edit, remove functionality
+ *   <li>{@link AdminToolListClone} - Adds clone, import, export, archive, and unarchive
+ *       capabilities
+ *   <li><b>{@code BaseEntityTool}</b> - Implements full entity lifecycle management with server
+ *       interaction, locking, and validation
+ * </ul>
+ *
+ * <p><b>Key Responsibilities:</b>
+ *
+ * <ul>
+ *   <li><b>Entity Lifecycle Management:</b> Create, retrieve, update, delete entities with proper
+ *       server synchronisation
+ *   <li><b>Edit Locking:</b> Manage entity edit locks to prevent concurrent modification conflicts
+ *   <li><b>Import/Export:</b> Serialize/deserialize entities to/from ZIP files with optional
+ *       security rules
+ *   <li><b>Cloning:</b> Duplicate existing entities for reuse
+ *   <li><b>Archive/Unarchive:</b> Toggle entity availability without deletion
+ *   <li><b>Security:</b> Check privileges before allowing create/modify operations
+ *   <li><b>User Experience:</b> Coordinate background operations with {@link GlassSwingWorker},
+ *       handle errors gracefully, provide user feedback
+ * </ul>
+ *
+ * <p><b>Subclass Implementation Pattern:</b>
+ *
+ * <p>Concrete subclasses must implement four abstract methods to specialise for a specific entity
+ * type:
+ *
+ * <pre>{@code
+ * public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition> {
+ *   public ItemDefinitionTool() {
+ *     super(ItemDefinition.class, RemoteItemDefinitionService.ENTITY_TYPE);
+ *   }
+ *
+ *   @Override
+ *   protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client) {
+ *     return client.getService(RemoteItemDefinitionService.class);
+ *   }
+ *
+ *   @Override
+ *   protected BaseEntityEditor<ItemDefinition> createEditor(boolean readonly) {
+ *     return new ItemEditor(this, readonly);
+ *   }
+ *
+ *   @Override
+ *   protected String getEntityName() {
+ *     return CurrentLocale.get("com.tle.admin.gui.itemdefinitiontool.collection");
+ *   }
+ *
+ *   @Override
+ *   protected String getErrorPath() {
+ *     return "itemEditor";
+ *   }
+ * }
+ * }</pre>
+ *
+ * <p><b>Existing Implementations:</b>
+ *
+ * <ul>
+ *   <li>{@code ItemDefinitionTool} - Item collections
+ *   <li>{@code SchemaTool} - Metadata schemas
+ *   <li>{@code WorkflowTool} - Workflow definitions
+ *   <li>{@code PowerSearchTool} - Advanced search pages
+ *   <li>{@code TaxonomyTool} - Taxonomy/vocabulary management
+ *   <li>{@code HarvesterProfileTool} - Content harvesting profiles
+ *   <li>{@code CourseInfoTool} - Course/class management
+ *   <li>{@code SearchTool} - Federated search configurations
+ *   <li>{@code ReportingTool} - BIRT report definitions
+ *   <li>{@code DynaCollectionTool} - Dynamic collections
+ *   <li>{@code BaseEntityWithAddDialogTool} - Variant supporting type selection on creation
+ * </ul>
+ *
+ * <p><b>When to Add Code Here:</b>
+ *
+ * <ul>
+ *   <li>Adding generic entity management functionality needed by <i>all</i> or <i>most</i> entity
+ *       types
+ *   <li>Fixing bugs in core entity lifecycle operations (create, edit, delete, clone, import,
+ *       export)
+ *   <li>Enhancing error handling or user feedback for entity operations
+ *   <li>Improving locking/unlocking logic
+ * </ul>
+ *
+ * <p><b>When to Add Code Elsewhere:</b>
+ *
+ * <ul>
+ *   <li>Entity-specific behaviour → Implement in the concrete subclass (e.g., {@code
+ *       ItemDefinitionTool})
+ *   <li>Custom UI or validation → Implement in the {@link BaseEntityEditor} subclass (e.g., {@code
+ *       ItemEditor})
+ *   <li>Server-side business logic → Implement in the service layer (e.g., {@code
+ *       RemoteItemDefinitionService})
+ *   <li>List display changes → Override methods in {@link AdminToolList} or {@link
+ *       AdminToolListClone}
+ * </ul>
+ *
+ * <p><b>Threading Model:</b>
+ *
+ * <p>All server communication and potentially long-running operations are executed on background
+ * threads via {@link GlassSwingWorker}. This prevents UI blocking while displaying a glass pane
+ * with progress indicator.
+ *
+ * @param <T> The specific {@link BaseEntity} subclass this tool manages (e.g., {@code
+ *     ItemDefinition}, {@code Schema}, {@code Workflow})
+ * @see BaseEntity
+ * @see AdminToolList
+ * @see AdminToolListClone
+ * @see BaseEntityEditor
+ * @see RemoteAbstractEntityService
+ */
 public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolListClone {
   static final Log LOGGER = LogFactory.getLog(BaseEntityTool.class);
 
