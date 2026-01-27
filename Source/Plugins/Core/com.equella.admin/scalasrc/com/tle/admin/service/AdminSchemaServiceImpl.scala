@@ -19,9 +19,9 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
-import com.tle.admin.graphql.conversion.Converter
 import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.toEntityPack
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
+import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
 import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
@@ -108,6 +108,16 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
       case Left(errors)          =>
         throw new ClientRequestException(s"Error starting edit of schema with ID: $id", errors)
     }
+
+  override def startCreate(): EntityPack[Schema] =
+    MetadataSchemaApi.startCreate() match {
+      case Right(startCreateView) =>
+        startCreateView convert EntitySkeletonViewConverter.toEntityPack(new Schema())
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error starting creation of new schema.", errors)
+    }
+
+  override def isStartCreateSupported: Boolean = true
 
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
     // TODO: Can this logging be centralise in the abstract class? As it will be the same
