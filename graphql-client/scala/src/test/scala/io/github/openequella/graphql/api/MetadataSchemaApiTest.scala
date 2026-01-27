@@ -19,7 +19,11 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.{BaseEntityReferenceView, MetadataSchemaEditView}
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  EntitySkeletonView,
+  MetadataSchemaEditView
+}
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -355,6 +359,31 @@ class MetadataSchemaApiTest
       When("an unauthenticated user tries to start editing a schema")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.startEdit(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("startCreate") {
+    it("should start creating a new metadata schema") {
+      When("startCreate is called")
+      val result = MetadataSchemaApi.startCreate()
+
+      Then("it should return an EntitySkeletonView")
+      result.isRight shouldBe true
+      val skeleton = result.value
+      skeleton shouldBe a[EntitySkeletonView]
+      skeleton.uuid should not be empty
+      skeleton.owner should not be empty
+      skeleton.stagingId should not be empty
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to start creating a schema")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.startCreate()(unauthenticated)
       }
 
       Then("it should return an AccessDeniedError")

@@ -20,6 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
+  EntitySkeletonView,
   MetadataSchemaEditView,
   MetadataSchemaView
 }
@@ -178,6 +179,24 @@ object MetadataSchemaApi {
   ): Either[List[ApiError], MetadataSchemaEditView] = {
     val mutation = Mutations.metadataSchemaStartEdit(id) {
       MetadataSchemaEditView.selector
+    }
+
+    Client.mutate(mutation)
+  }
+
+  /** Start creating a new metadata schema.
+    *
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or an EntitySkeletonView representing the skeleton for the new
+    *   schema.
+    */
+  def startCreate()(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], EntitySkeletonView] = {
+    val mutation = Mutations.metadataSchemaStartCreate {
+      EntitySkeletonView.selector
     }
 
     Client.mutate(mutation)
