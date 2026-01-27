@@ -68,7 +68,32 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
 
   EntityPack<T> getReadOnlyPack(long id);
 
+  /**
+   * Starts the editing of an existing entity, with staging area.
+   *
+   * @param id the ID of the entity to edit
+   * @return an EntityPack with the entity ready for editing.
+   */
   EntityPack<T> startEdit(long id);
+
+  /**
+   * Starts the creation of a new entity, with staging area.
+   *
+   * @return an EntityPack with a new entity ready for editing.
+   */
+  default EntityPack<T> startCreate() {
+    throw new UnsupportedOperationException("Creation of new entities is not supported");
+  }
+
+  /**
+   * Used to check if the service provides managed creation of new entities. If not, the UI needs to
+   * handle creation in some other way.
+   *
+   * @return whether creating new entities is supported by the service.
+   */
+  default boolean isStartCreateSupported() {
+    return false;
+  }
 
   void cancelEdit(long id, boolean force);
 
