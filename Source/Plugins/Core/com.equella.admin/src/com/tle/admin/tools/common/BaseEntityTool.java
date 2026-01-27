@@ -24,6 +24,7 @@ import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
+import com.tle.admin.AdminTool;
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.i18n.Lookup;
@@ -993,9 +994,6 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     worker.start();
   }
 
-  /**
-   * @author Nicholas Read
-   */
   protected class ZipFileFilter extends FileFilter {
     @Override
     public boolean accept(File f) {
@@ -1022,11 +1020,15 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     return clientService;
   }
 
-  /** Return null if there was a (legitimate) problem creating this item. */
+  /** Create a new entity pack, either via the service or directly. */
   protected EntityPack<T> create() {
+    return service.isStartCreateSupported() ? service.startCreate() : createEntityDirect();
+  }
+
+  private EntityPack<T> createEntityDirect() {
     T entity;
     try {
-      entity = entityClass.newInstance();
+      entity = entityClass.getDeclaredConstructor().newInstance();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -1034,7 +1036,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     entity.setUuid(UUID.randomUUID().toString());
     entity.setOwner(driver.getLoggedInUserUUID());
 
-    return new EntityPack<T>(
+    return new EntityPack<>(
         entity, clientService.getService(RemoteAdminService.class).createStaging());
   }
 }
