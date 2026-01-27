@@ -128,7 +128,7 @@ public class DirListViewer extends AbstractPrototypeSection<Object> implements V
     response.setContentType("text/html");
 
     try (PrintWriter writer = new PrintWriter(new PrintStream(response.getOutputStream()))) {
-      writer.print("<html><head></head><body><h1>");
+      writer.print("<html><head></head><body><h1 data-testid='item-dir-list-title'>");
       writer.print(CurrentLocale.get("viewitem.section.dirlistsection.tle"));
       writer.print("</h1><b>");
       writer.print(
