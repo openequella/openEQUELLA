@@ -23,10 +23,31 @@ import com.tle.common.EntityPack
 import io.github.openequella.graphql.api.views.EntitySkeletonView
 
 object EntitySkeletonViewConverter {
-  def toEntityPack[T <: BaseEntity](emptyEntity: T)(view: EntitySkeletonView): EntityPack[T] = {
-    emptyEntity.setOwner(view.owner)
-    emptyEntity.setUuid(view.uuid)
 
-    new EntityPack[T](emptyEntity, view.stagingId)
+  /** Converts an `EntitySkeletonView` to an `EntityPack` by creating and populating a fresh entity
+    * instance.
+    *
+    * This converter uses a by-name parameter factory to create a new entity internally, avoiding
+    * mutation of externally-created objects and maintaining functional programming principles.
+    *
+    * @param entityFactory
+    *   A by-name parameter that creates a fresh entity instance. This is evaluated inside the
+    *   method to instantiate the entity, which is then populated with data from the view. Example:
+    *   `toEntityPack(new Schema)` (note: no parentheses after Schema, making it by-name).
+    * @param view
+    *   The entity skeleton view containing basic entity metadata (uuid, owner, stagingId).
+    * @tparam T
+    *   The specific type of `BaseEntity` being created.
+    * @return
+    *   An `EntityPack` containing the newly created and populated entity along with the staging ID.
+    */
+  def toEntityPack[T <: BaseEntity](
+      entityFactory: => T
+  )(view: EntitySkeletonView): EntityPack[T] = {
+    val entity = entityFactory
+    entity.setOwner(view.owner)
+    entity.setUuid(view.uuid)
+
+    new EntityPack[T](entity, view.stagingId)
   }
 }

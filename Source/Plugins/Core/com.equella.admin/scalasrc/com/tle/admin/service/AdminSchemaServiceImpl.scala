@@ -112,7 +112,7 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   override def startCreate(): EntityPack[Schema] =
     MetadataSchemaApi.startCreate() match {
       case Right(startCreateView) =>
-        startCreateView convert EntitySkeletonViewConverter.toEntityPack(new Schema())
+        startCreateView convert EntitySkeletonViewConverter.toEntityPack(new Schema)
       case Left(errors) =>
         throw new ClientRequestException(s"Error starting creation of new schema.", errors)
     }
