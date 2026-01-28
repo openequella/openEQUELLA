@@ -25,7 +25,7 @@ public class ItemUrlPage extends AbstractPage<ItemUrlPage> {
   }
 
   public ItemUrlPage(PageContext context, ItemId itemId, String folderContext) {
-    super(context, By.id("listing"));
+    super(context, By.cssSelector("[data-testid='item-dir-list-title']"));
     this.itemId = itemId;
     this.folderContext = folderContext;
   }
