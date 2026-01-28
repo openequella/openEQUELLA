@@ -131,6 +131,14 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     _.startEdit(id)
   }
 
+  override def startCreate(): EntityPack[E] = implementMe {
+    _.startCreate()
+  }
+
+  override def isStartCreateSupported: Boolean = implementMe {
+    _.isStartCreateSupported
+  }
+
   override def cancelEdit(id: Long, force: Boolean): Unit = implementMe {
     _.cancelEdit(id, force)
   }
