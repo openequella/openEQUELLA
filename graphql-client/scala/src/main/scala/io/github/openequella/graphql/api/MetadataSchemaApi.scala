@@ -18,13 +18,19 @@
 
 package io.github.openequella.graphql.api
 
+import caliban.client.SelectionBuilder
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
   MetadataSchemaEditView,
   MetadataSchemaView
 }
-import io.github.openequella.graphql.client.{Mutations, Queries}
+import io.github.openequella.graphql.client.{
+  MetadataSchemaMutations,
+  MetadataSchemaQueries,
+  Mutations,
+  Queries
+}
 import io.github.openequella.graphql.{Client, ClientConfiguration}
 
 import java.util.Base64
@@ -44,11 +50,11 @@ object MetadataSchemaApi {
   def listSchemas()(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
-    val query = Queries.metadataSchemas {
+    val q = MetadataSchemaQueries.list {
       BaseEntityReferenceView.selector
     }
 
-    Client.query(query)
+    query(q)
   }
 
   /** Retrieves a metadata schema by its ID.
@@ -64,11 +70,11 @@ object MetadataSchemaApi {
   def getById(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[MetadataSchemaView]] = {
-    val query = Queries.metadataSchema(id) {
+    val q = MetadataSchemaQueries.byId(id) {
       MetadataSchemaView.selector
     }
 
-    Client.query(query)
+    query(q)
   }
 
   /** Retrieves the ID of a metadata schema by its UUID.
@@ -84,9 +90,9 @@ object MetadataSchemaApi {
   def getIdByUuid(uuid: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[Long]] = {
-    val query = Queries.metadataSchemaIdForUuid(uuid)
+    val q = MetadataSchemaQueries.idForUuid(uuid)
 
-    Client.query(query)
+    query(q)
   }
 
   /** Get the uses of a Metadata Schema
@@ -102,11 +108,11 @@ object MetadataSchemaApi {
   def getUses(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], List[BaseEntityReferenceView]] = {
-    val query = Queries.metadataSchemaUses(id) {
+    val q = MetadataSchemaQueries.uses(id) {
       BaseEntityReferenceView.selector
     }
 
-    Client.query(query)
+    query(q)
   }
 
   /** Checks if a metadata schema has any referencing entities.
@@ -122,8 +128,8 @@ object MetadataSchemaApi {
   def hasReferences(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Boolean] = {
-    val query = Queries.metadataSchemaHasReferences(id)
-    Client.query(query)
+    val q = MetadataSchemaQueries.hasReferences(id)
+    query(q)
   }
 
   /** Retrieves the import schema types for a metadata schema.
@@ -139,8 +145,8 @@ object MetadataSchemaApi {
   def getImportTypes(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], List[String]] = {
-    val query = Queries.metadataSchemaImportTypes(id)
-    Client.query(query)
+    val q = MetadataSchemaQueries.importTypes(id)
+    query(q)
   }
 
   /** Exports a metadata schema as a ZIP file.
@@ -157,12 +163,12 @@ object MetadataSchemaApi {
   def exportSchema(id: Long, withSecurity: Boolean)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[Array[Byte]]] = {
-    val query = Queries.metadataSchemaExport(id, withSecurity)
+    val q = MetadataSchemaQueries.export(id, withSecurity)
 
     // The query returns a base64 encoded string (representing a zip file), which we need to decode
     // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
     // of the base64 encoding and decoding process.
-    Client.query(query).map(_.map(base64ToBytes))
+    query(q).map(_.map(base64ToBytes))
   }
 
   /** Start editing a metadata schema by its ID.
@@ -177,11 +183,11 @@ object MetadataSchemaApi {
   def startEdit(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaEditView] = {
-    val mutation = Mutations.metadataSchemaStartEdit(id) {
+    val mutation = MetadataSchemaMutations.startEdit(id) {
       MetadataSchemaEditView.selector
     }
 
-    Client.mutate(mutation)
+    mutate(mutation)
   }
 
   /** Start creating a new metadata schema.
@@ -195,12 +201,26 @@ object MetadataSchemaApi {
   def startCreate()(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], EntitySkeletonView] = {
-    val mutation = Mutations.metadataSchemaStartCreate {
+    val mutation = MetadataSchemaMutations.startCreate {
       EntitySkeletonView.selector
     }
 
-    Client.mutate(mutation)
+    mutate(mutation)
   }
+
+  /** Handles the nested mutation call structure for metadata schema mutations.
+    */
+  private def mutate[R](mutation: SelectionBuilder[MetadataSchemaMutations, R])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], R] =
+    Client.mutate(Mutations.metadataSchema(mutation))
+
+  /** Handles the nested query call structure for metadata schema queries.
+    */
+  private def query[R](query: SelectionBuilder[MetadataSchemaQueries, R])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], R] =
+    Client.query(Queries.metadataSchema(query))
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)

@@ -191,75 +191,10 @@ object Queries {
       )
     )
 
-  /** List all metadata schemas
+  /** Queries for Metadata Schemas
     */
-  def metadataSchemas[A](
-      innerSelection: SelectionBuilder[BaseEntityReference, A]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[A]] =
-    _root_.caliban.client.SelectionBuilder.Field("metadataSchemas", ListOf(Obj(innerSelection)))
-
-  /** Export a metadata schema, returning a base64 encoded zip file
-    */
-  def metadataSchemaExport(id: Long, withSecurity: Boolean)(implicit
-      encoder0: ArgEncoder[Long],
-      encoder1: ArgEncoder[Boolean]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[String]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchemaExport",
-      OptionOf(Scalar()),
-      arguments =
-        List(Argument("id", id, "Long!"), Argument("withSecurity", withSecurity, "Boolean!"))
-    )
-
-  /** Get the metadata schema ID for a given UUID
-    */
-  def metadataSchemaIdForUuid(value: String)(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[Long]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchemaIdForUuid",
-      OptionOf(Scalar()),
-      arguments = List(Argument("value", value, "String!"))
-    )
-
-  /** Get a metadata schema by ID
-    */
-  def metadataSchema[A](id: Long)(innerSelection: SelectionBuilder[MetadataSchema, A])(implicit
-      encoder0: ArgEncoder[Long]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchema",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("id", id, "Long!"))
-    )
-
-  /** Get the uses of a metadata schema by ID
-    */
-  def metadataSchemaUses[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(
-      implicit encoder0: ArgEncoder[Long]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchemaUses",
-      ListOf(Obj(innerSelection)),
-      arguments = List(Argument("id", id, "Long!"))
-    )
-
-  /** Get the types of schema import transformations for a metadata schema by ID
-    */
-  def metadataSchemaImportTypes(id: Long)(implicit
-      encoder0: ArgEncoder[Long]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, List[String]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchemaImportTypes",
-      ListOf(Scalar()),
-      arguments = List(Argument("id", id, "Long!"))
-    )
-
-  /** Check if a metadata schema has an referencing entities
-    */
-  def metadataSchemaHasReferences(id: Long)(implicit
-      encoder0: ArgEncoder[Long]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, Boolean] =
-    _root_.caliban.client.SelectionBuilder
-      .Field("metadataSchemaHasReferences", Scalar(), arguments = List(Argument("id", id, "Long!")))
+  def metadataSchema[A](
+      innerSelection: SelectionBuilder[MetadataSchemaQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
 }

@@ -139,25 +139,10 @@ object Mutations {
       )
     )
 
-  /** Start editing an existing metadata schema. Expected that it will be followed by a
-    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
+  /** Operations for managing Metadata Schemas
     */
-  def metadataSchemaStartEdit[A](
-      id: Long
-  )(innerSelection: SelectionBuilder[EditableEntityMetadataSchema, A])(implicit
-      encoder0: ArgEncoder[Long]
+  def metadataSchema[A](
+      innerSelection: SelectionBuilder[MetadataSchemaMutations, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "metadataSchemaStartEdit",
-      Obj(innerSelection),
-      arguments = List(Argument("id", id, "Long!"))
-    )
-
-  /** Start creating a new metadata schema. Expected that it will be followed by a
-    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
-    */
-  def metadataSchemaStartCreate[A](
-      innerSelection: SelectionBuilder[EditableEntitySkeleton, A]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("metadataSchemaStartCreate", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
 }

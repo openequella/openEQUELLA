@@ -19,7 +19,7 @@
 package com.tle.web.remoting.graphql.schema
 
 import caliban._
-import caliban.schema.Annotations.GQLDescription
+import caliban.schema.Annotations.{GQLDescription, GQLName}
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
@@ -51,35 +51,45 @@ class MetadataSchemaSchema extends SchemaProvider {
   )
 
   private val queries = Queries(
-    metadataSchemas = () => schemaProvider.listSchemas(),
-    metadataSchemaExport = args => schemaProvider.exportSchema(args.id, args.withSecurity),
-    metadataSchemaIdForUuid = uuid => schemaProvider.schemaIdForUuid(uuid),
-    metadataSchema = args => schemaProvider.schemaById(args.id),
-    metadataSchemaUses = args => schemaProvider.getUses(args.id),
-    metadataSchemaImportTypes = args => schemaProvider.getImportTypes(args.id),
-    metadataSchemaHasReferences = args => schemaProvider.hasReferences(args.id)
+    metadataSchema = MetadataSchemaQueryOps(
+      list = () => schemaProvider.listSchemas(),
+      export = args => schemaProvider.exportSchema(args.id, args.withSecurity),
+      idForUuid = uuid => schemaProvider.schemaIdForUuid(uuid),
+      byId = args => schemaProvider.schemaById(args.id),
+      uses = args => schemaProvider.getUses(args.id),
+      importTypes = args => schemaProvider.getImportTypes(args.id),
+      hasReferences = args => schemaProvider.hasReferences(args.id)
+    )
   )
 
   private val mutations = Mutations(
-    metadataSchemaStartEdit = args => schemaProvider.startEdit(args.id),
-    metadataSchemaStartCreate = () => schemaProvider.startCreate()
+    metadataSchema = MetadataSchemaMutationOps(
+      startEdit = args => schemaProvider.startEdit(args.id),
+      startCreate = () => schemaProvider.startCreate()
+    )
   )
 
   case class Queries(
+      @GQLDescription("Queries for Metadata Schemas")
+      metadataSchema: MetadataSchemaQueryOps
+  )
+
+  @GQLName("MetadataSchemaQueries")
+  case class MetadataSchemaQueryOps(
       @GQLDescription("List all metadata schemas")
-      metadataSchemas: () => List[BaseEntityReference],
+      list: () => List[BaseEntityReference],
       @GQLDescription("Export a metadata schema, returning a base64 encoded zip file")
-      metadataSchemaExport: SchemaExportArgs => Option[String],
+      export: SchemaExportArgs => Option[String],
       @GQLDescription("Get the metadata schema ID for a given UUID")
-      metadataSchemaIdForUuid: String => Option[Long],
+      idForUuid: String => Option[Long],
       @GQLDescription("Get a metadata schema by ID")
-      metadataSchema: SchemaByIdArgs => Option[MetadataSchema],
+      byId: SchemaByIdArgs => Option[MetadataSchema],
       @GQLDescription("Get the uses of a metadata schema by ID")
-      metadataSchemaUses: SchemaByIdArgs => List[BaseEntityReference],
+      uses: SchemaByIdArgs => List[BaseEntityReference],
       @GQLDescription("Get the types of schema import transformations for a metadata schema by ID")
-      metadataSchemaImportTypes: SchemaByIdArgs => List[String],
+      importTypes: SchemaByIdArgs => List[String],
       @GQLDescription("Check if a metadata schema has an referencing entities")
-      metadataSchemaHasReferences: SchemaByIdArgs => Boolean
+      hasReferences: SchemaByIdArgs => Boolean
   )
 
   case class SchemaExportArgs(
@@ -95,14 +105,20 @@ class MetadataSchemaSchema extends SchemaProvider {
   )
 
   case class Mutations(
+      @GQLDescription("Operations for managing Metadata Schemas")
+      metadataSchema: MetadataSchemaMutationOps
+  )
+
+  @GQLName("MetadataSchemaMutations")
+  case class MetadataSchemaMutationOps(
       @GQLDescription(
         "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
       )
-      metadataSchemaStartEdit: MetadataSchemaStartEditArgs => EditableEntity[MetadataSchema],
+      startEdit: MetadataSchemaStartEditArgs => EditableEntity[MetadataSchema],
       @GQLDescription(
         "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
       )
-      metadataSchemaStartCreate: () => EditableEntitySkeleton
+      startCreate: () => EditableEntitySkeleton
   )
 
   case class MetadataSchemaStartEditArgs(

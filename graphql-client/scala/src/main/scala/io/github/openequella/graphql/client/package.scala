@@ -31,6 +31,8 @@ package object client {
   type LanguageBundle
   type LanguageString
   type MetadataSchema
+  type MetadataSchemaMutations
+  type MetadataSchemaQueries
   type MetadataSchemaTransform
   type PageInfo
   type StringConnection

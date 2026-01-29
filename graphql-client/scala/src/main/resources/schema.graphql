@@ -148,6 +148,30 @@ type MetadataSchema {
   citations: [Citation!]!
 }
 
+type MetadataSchemaMutations {
+  "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+  startEdit("ID of the metadata schema to edit, or none to create a new one" id: Long!): EditableEntityMetadataSchema!
+  "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+  startCreate: EditableEntitySkeleton!
+}
+
+type MetadataSchemaQueries {
+  "List all metadata schemas"
+  list: [BaseEntityReference!]!
+  "Export a metadata schema, returning a base64 encoded zip file"
+  export("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
+  "Get the metadata schema ID for a given UUID"
+  idForUuid(value: String!): Long
+  "Get a metadata schema by ID"
+  byId("ID of the metadata schema" id: Long!): MetadataSchema
+  "Get the uses of a metadata schema by ID"
+  uses("ID of the metadata schema" id: Long!): [BaseEntityReference!]!
+  "Get the types of schema import transformations for a metadata schema by ID"
+  importTypes("ID of the metadata schema" id: Long!): [String!]!
+  "Check if a metadata schema has an referencing entities"
+  hasReferences("ID of the metadata schema" id: Long!): Boolean!
+}
+
 "A schema transform that defines how metadata is transformed during export or import operations with external systems."
 type MetadataSchemaTransform {
   "Filename of the schema transform stored on the server - managed via staging area"
@@ -169,10 +193,8 @@ type Mutations {
   internalGroupDelete("The unique ID of the group to delete" uniqueId: String!, "Whether to delete all children of the group, or move them to the parent of the group being deleted" deleteChildren: Boolean!): Unit
   "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
   internalGroupUpdate("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): Group
-  "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
-  metadataSchemaStartEdit("ID of the metadata schema to edit, or none to create a new one" id: Long!): EditableEntityMetadataSchema!
-  "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
-  metadataSchemaStartCreate: EditableEntitySkeleton!
+  "Operations for managing Metadata Schemas"
+  metadataSchema: MetadataSchemaMutations!
 }
 
 type PageInfo {
@@ -201,20 +223,8 @@ type Queries {
   internalGroupSearch("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
   "List user ids for all users in the specified group"
   internalGroupUsers("The unique ID of the group to list users for" uniqueId: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): StringConnection
-  "List all metadata schemas"
-  metadataSchemas: [BaseEntityReference!]!
-  "Export a metadata schema, returning a base64 encoded zip file"
-  metadataSchemaExport("ID of the metadata schema to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
-  "Get the metadata schema ID for a given UUID"
-  metadataSchemaIdForUuid(value: String!): Long
-  "Get a metadata schema by ID"
-  metadataSchema("ID of the metadata schema" id: Long!): MetadataSchema
-  "Get the uses of a metadata schema by ID"
-  metadataSchemaUses("ID of the metadata schema" id: Long!): [BaseEntityReference!]!
-  "Get the types of schema import transformations for a metadata schema by ID"
-  metadataSchemaImportTypes("ID of the metadata schema" id: Long!): [String!]!
-  "Check if a metadata schema has an referencing entities"
-  metadataSchemaHasReferences("ID of the metadata schema" id: Long!): Boolean!
+  "Queries for Metadata Schemas"
+  metadataSchema: MetadataSchemaQueries!
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"
