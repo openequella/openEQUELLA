@@ -128,7 +128,7 @@ class TLEUserSchema extends SchemaProvider {
 
   case class Mutations(
       @GQLDescription("Operations for managing internal users")
-      internalUser: InternalUserMutationOps
+      internalUsers: InternalUserMutationOps
   )
 
   private val queries = Queries(
@@ -144,7 +144,7 @@ class TLEUserSchema extends SchemaProvider {
   )
 
   private val mutations = Mutations(
-    internalUser = InternalUserMutationOps(
+    internalUsers = InternalUserMutationOps(
       create = args =>
         tleUserProvider
           .createUser(args.username, args.email, args.firstName, args.lastName, args.password),
