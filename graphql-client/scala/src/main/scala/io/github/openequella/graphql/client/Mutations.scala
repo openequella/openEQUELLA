@@ -25,65 +25,17 @@ object Mutations {
 
   /** Operations for managing internal users
     */
-  def internalUser[A](
+  def internalUsers[A](
       innerSelection: SelectionBuilder[InternalUserMutations, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("internalUser", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
 
-  /** Create a new group
+  /** Operations for managing internal groups
     */
-  def internalGroupCreate[A](name: String, parentId: scala.Option[String] = None)(
-      innerSelection: SelectionBuilder[Group, A]
-  )(implicit
-      encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalGroupCreate",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("name", name, "String!"), Argument("parentId", parentId, "String"))
-    )
-
-  /** Delete a group by its unique ID
-    */
-  def internalGroupDelete(uniqueId: String, deleteChildren: Boolean)(implicit
-      encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[Boolean]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[Unit]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalGroupDelete",
-      OptionOf(Scalar()),
-      arguments = List(
-        Argument("uniqueId", uniqueId, "String!"),
-        Argument("deleteChildren", deleteChildren, "Boolean!")
-      )
-    )
-
-  /** Update a group by its unique ID - can also be used to move group within the hierarchy by
-    * changing the parent ID
-    */
-  def internalGroupUpdate[A](
-      uniqueId: String,
-      name: scala.Option[String] = None,
-      description: scala.Option[String] = None,
-      parentId: scala.Option[String] = None,
-      users: scala.Option[List[String]] = None
-  )(innerSelection: SelectionBuilder[Group, A])(implicit
-      encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]],
-      encoder2: ArgEncoder[scala.Option[List[String]]]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalGroupUpdate",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(
-        Argument("uniqueId", uniqueId, "String!"),
-        Argument("name", name, "String"),
-        Argument("description", description, "String"),
-        Argument("parentId", parentId, "String"),
-        Argument("users", users, "[String!]")
-      )
-    )
+  def internalGroups[A](
+      innerSelection: SelectionBuilder[InternalGroupMutations, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
+    _root_.caliban.client.SelectionBuilder.Field("internalGroups", Obj(innerSelection))
 
   /** Operations for managing Metadata Schemas
     */

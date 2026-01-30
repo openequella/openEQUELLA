@@ -27,6 +27,8 @@ package object client {
   type Group
   type GroupConnection
   type GroupEdge
+  type InternalGroupMutations
+  type InternalGroupQueries
   type InternalUserMutations
   type InternalUserQueries
   type KVStringString

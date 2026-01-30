@@ -56,7 +56,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       : SelectionBuilder[InternalUserMutations, A] => SelectionBuilder[
         _root_.caliban.client.Operations.RootMutation,
         A
-      ] = Mutations.internalUser
+      ] = Mutations.internalUsers
 
   private val tleUser = (
     User.uniqueId ~ User.username ~ User.email ~ User.firstName ~ User.lastName

@@ -18,8 +18,10 @@
 
 package io.github.openequella.graphql.api
 
+import caliban.client.Operations.RootQuery
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.client._
-import io.github.openequella.graphql.{Client, ClientConfiguration}
 
 /** Represents an internal openEQUELLA group.
   *
@@ -47,7 +49,18 @@ final case class TleGroupView(
 
 /** Provides access to the openEQUELLA internal group API.
   */
-object TleGroupApi {
+object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutations] {
+
+  override protected def queryWrapper[A]
+      : SelectionBuilder[InternalGroupQueries, A] => SelectionBuilder[RootQuery, A] =
+    Queries.internalGroups
+
+  override protected def mutationWrapper[A]
+      : SelectionBuilder[InternalGroupMutations, A] => SelectionBuilder[
+        _root_.caliban.client.Operations.RootMutation,
+        A
+      ] = Mutations.internalGroups
+
   private val tleGroup =
     (Group.uniqueId ~ Group.parentId ~ Group.name ~ Group.description ~ Group.hasGroups ~ Group.hasUsers)
       .mapN(TleGroupView)
@@ -70,11 +83,11 @@ object TleGroupApi {
   def getByUniqueId(uniqueId: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[TleGroupView]] = {
-    val query = Queries.internalGroupById(uniqueId) {
+    val q = InternalGroupQueries.byId(uniqueId) {
       tleGroup
     }
 
-    Client.query(query)
+    query(q)
   }
 
   /** Retrieves the details of an individual group by its name.
@@ -90,11 +103,11 @@ object TleGroupApi {
   def getByName(name: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[TleGroupView]] = {
-    val query = Queries.internalGroupByName(name) {
+    val q = InternalGroupQueries.byName(name) {
       tleGroup
     }
 
-    Client.query(query)
+    query(q)
   }
 
   /** Retrieves the details of multiple groups by their unique identifiers.
@@ -114,9 +127,9 @@ object TleGroupApi {
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
     queryWithPagination(pagination) { (first, last, before, after) =>
-      Queries.internalGroupsByIds(groupIds.toList, first, last, before, after) {
+      queryWrapper(InternalGroupQueries.listByIds(groupIds.toList, first, last, before, after) {
         groupConnection
-      }
+      })
     }
 
   /** Creates a new group.
@@ -133,12 +146,12 @@ object TleGroupApi {
   def createGroup(name: String, parentId: Option[String] = None)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], TleGroupView] = {
-    val query = Mutations.internalGroupCreate(name, parentId) {
+    val m = InternalGroupMutations.create(name, parentId) {
       tleGroup
     }
 
     flattenResult {
-      Client.mutate(query)
+      mutate(m)
     }
   }
 
@@ -157,10 +170,10 @@ object TleGroupApi {
   def deleteGroup(uniqueId: String, deleteChildren: Boolean = true)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] = {
-    val query = Mutations.internalGroupDelete(uniqueId, deleteChildren)
+    val m = InternalGroupMutations.delete(uniqueId, deleteChildren)
 
     flattenResult {
-      Client.mutate(query)
+      mutate(m)
     }
   }
 
@@ -193,12 +206,12 @@ object TleGroupApi {
   )(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], TleGroupView] = {
-    val query = Mutations.internalGroupUpdate(uniqueId, name, description, parentId, users) {
+    val m = InternalGroupMutations.update(uniqueId, name, description, parentId, users) {
       tleGroup
     }
 
     flattenResult {
-      Client.mutate(query)
+      mutate(m)
     }
   }
 
@@ -220,9 +233,9 @@ object TleGroupApi {
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
     queryWithPagination(pagination) { (first, last, before, after) =>
-      Queries.internalGroups(parentId, first, last, before, after) {
+      queryWrapper(InternalGroupQueries.list(parentId, first, last, before, after) {
         groupConnection
-      }
+      })
     }
 
   /** Lists the users in a group.
@@ -248,9 +261,9 @@ object TleGroupApi {
         .mapN(ConnectionView[String](_, _))
 
     queryWithPagination(pagination) { (first, last, before, after) =>
-      Queries.internalGroupUsers(groupId, first, last, before, after) {
+      queryWrapper(InternalGroupQueries.users(groupId, first, last, before, after) {
         userConnection
-      }
+      })
     }
   }
 
@@ -273,8 +286,8 @@ object TleGroupApi {
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
     queryWithPagination(pagination) { (first, last, before, after) =>
-      Queries.internalGroupSearch(query, first, last, before, after) {
+      queryWrapper(InternalGroupQueries.search(query, first, last, before, after) {
         groupConnection
-      }
+      })
     }
 }

@@ -102,6 +102,30 @@ type GroupEdge {
   node: Group!
 }
 
+type InternalGroupMutations {
+  "Create a new group"
+  create("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): Group
+  "Delete a group by its unique ID"
+  delete("The unique ID of the group to delete" uniqueId: String!, "Whether to delete all children of the group, or move them to the parent of the group being deleted" deleteChildren: Boolean!): Unit
+  "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
+  update("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): Group
+}
+
+type InternalGroupQueries {
+  "Retrieve a group by its unique ID"
+  byId("The unique ID of the group to retrieve" uniqueId: String!): Group
+  "Retrieve a group by its name"
+  byName("The name of the group to retrieve" name: String!): Group
+  "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
+  list("The unique ID of the parent group to list groups for - or none for the root" parentId: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  "List multiple groups by their unique IDs, invalid IDs will be ignored"
+  listByIds("The unique IDs of the groups to retrieve" uniqueIds: [String!]!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  "Search for groups anywhere within the hierarchy by name (wildcard search)"
+  search("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  "List user ids for all users in the specified group"
+  users("The unique ID of the group to list users for" uniqueId: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): StringConnection
+}
+
 type InternalUserMutations {
   "Create a new internal user"
   create("Username of the user to create which they'll use for authentication - must be unique" username: String!, "Email address of the user" email: String, "First name of the user" firstName: String!, "Last name of the user" lastName: String!, "Password of the user - will be hashed on store" password: String!): User
@@ -200,13 +224,9 @@ type MetadataSchemaTransform {
 
 type Mutations {
   "Operations for managing internal users"
-  internalUser: InternalUserMutations!
-  "Create a new group"
-  internalGroupCreate("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): Group
-  "Delete a group by its unique ID"
-  internalGroupDelete("The unique ID of the group to delete" uniqueId: String!, "Whether to delete all children of the group, or move them to the parent of the group being deleted" deleteChildren: Boolean!): Unit
-  "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
-  internalGroupUpdate("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): Group
+  internalUsers: InternalUserMutations!
+  "Operations for managing internal groups"
+  internalGroups: InternalGroupMutations!
   "Operations for managing Metadata Schemas"
   metadataSchema: MetadataSchemaMutations!
 }
@@ -221,18 +241,8 @@ type PageInfo {
 type Queries {
   "Queries for internal users"
   internalUsers: InternalUserQueries!
-  "Retrieve a group by its unique ID"
-  internalGroupById("The unique ID of the group to retrieve" uniqueId: String!): Group
-  "Retrieve a group by its name"
-  internalGroupByName("The name of the group to retrieve" name: String!): Group
-  "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
-  internalGroups("The unique ID of the parent group to list groups for - or none for the root" parentId: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
-  "List multiple groups by their unique IDs, invalid IDs will be ignored"
-  internalGroupsByIds("The unique IDs of the groups to retrieve" uniqueIds: [String!]!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
-  "Search for groups anywhere within the hierarchy by name (wildcard search)"
-  internalGroupSearch("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
-  "List user ids for all users in the specified group"
-  internalGroupUsers("The unique ID of the group to list users for" uniqueId: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): StringConnection
+  "Queries for internal groups"
+  internalGroups: InternalGroupQueries!
   "Queries for Metadata Schemas"
   metadataSchema: MetadataSchemaQueries!
 }
