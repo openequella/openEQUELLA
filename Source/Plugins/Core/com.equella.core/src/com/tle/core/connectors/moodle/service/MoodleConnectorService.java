@@ -97,6 +97,7 @@ import org.xml.sax.XMLReader;
 @Singleton
 public class MoodleConnectorService extends AbstractIntegrationConnectorRespository {
   private static final Logger LOGGER = LoggerFactory.getLogger(MoodleConnectorService.class);
+  private static final String WEBSERVICE_FUNCTION_PREFIX = "mod_equella_";
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -138,7 +139,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     final IItem<?> resourcesItem = lmsLinkInfo.getResourceItem();
 
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_add_item_to_course");
+    final Map<String, String> data = functionCall(ws, "add_item_to_course");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
     param(data, SECTION_ID_PARAM, sectionId);
@@ -211,7 +212,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, boolean editable, boolean archived, boolean management)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_list_courses_for_user");
+    final Map<String, String> data = functionCall(ws, "list_courses_for_user");
     param(data, USER_PARAM, username);
     param(data, "modifiable", editable);
     param(data, ARCHIVED_PARAM, archived);
@@ -250,7 +251,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String courseId, boolean management)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_list_sections_for_course");
+    final Map<String, String> data = functionCall(ws, "list_sections_for_course");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
 
@@ -299,7 +300,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       boolean allVersion)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_find_usage_for_item");
+    final Map<String, String> data = functionCall(ws, "find_usage_for_item");
     param(data, USER_PARAM, username);
     param(data, "uuid", uuid);
     param(data, "version", version);
@@ -325,7 +326,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       boolean reverseSort)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_find_all_usage");
+    final Map<String, String> data = functionCall(ws, "find_all_usage");
     param(data, USER_PARAM, username);
     param(data, "query", query.replace("*", "%"));
     param(data, COURSE_ID_PARAM, Check.isEmpty(courseId) ? 0 : Integer.valueOf(courseId));
@@ -377,7 +378,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String query, boolean archived)
       throws LmsUserNotFoundException {
     MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_unfiltered_usage_count");
+    final Map<String, String> data = functionCall(ws, "unfiltered_usage_count");
     param(data, USER_PARAM, username);
     param(data, "query", query);
     param(data, ARCHIVED_PARAM, archived);
@@ -495,7 +496,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   public String getCourseCode(Connector connector, String username, String courseId)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_get_course_code");
+    final Map<String, String> data = functionCall(ws, "get_course_code");
     param(data, USER_PARAM, username);
     param(data, COURSE_ID_PARAM, courseId);
 
@@ -531,7 +532,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 
   private Map<String, String> functionCall(MoodleWebService ws, String function) {
     final Map<String, String> params = Maps.newHashMap();
-    params.put("wsfunction", function);
+    params.put("wsfunction", WEBSERVICE_FUNCTION_PREFIX + function);
     params.put("wstoken", ws.getToken());
     return params;
   }
@@ -666,7 +667,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   public boolean deleteContent(Connector connector, String username, String id)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_delete_item");
+    final Map<String, String> data = functionCall(ws, "delete_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", id);
 
@@ -687,7 +688,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String contentId, String title, String description)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_edit_item");
+    final Map<String, String> data = functionCall(ws, "edit_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", contentId);
     param(data, "title", title);
@@ -710,7 +711,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       Connector connector, String username, String contentId, String courseId, String locationId)
       throws LmsUserNotFoundException {
     final MoodleWebService ws = setupService(connector);
-    final Map<String, String> data = functionCall(ws, "mod_equella_move_item");
+    final Map<String, String> data = functionCall(ws, "move_item");
     param(data, USER_PARAM, username);
     param(data, "itemid", contentId);
     param(data, COURSE_ID_PARAM, courseId);
@@ -756,7 +757,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     }
 
     // call the webservice test function
-    final Map<String, String> data = functionCall(ws, "mod_equella_test_connection");
+    final Map<String, String> data = functionCall(ws, "test_connection");
     param(data, "param", username);
 
     try {
