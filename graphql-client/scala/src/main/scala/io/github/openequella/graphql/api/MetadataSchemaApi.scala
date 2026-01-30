@@ -18,7 +18,9 @@
 
 package io.github.openequella.graphql.api
 
+import caliban.client.Operations.RootQuery
 import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
@@ -31,13 +33,22 @@ import io.github.openequella.graphql.client.{
   Mutations,
   Queries
 }
-import io.github.openequella.graphql.{Client, ClientConfiguration}
 
 import java.util.Base64
 
 /** Provides access to the openEQUELLA metadata schema API.
   */
-object MetadataSchemaApi {
+object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchemaMutations] {
+
+  override protected def queryWrapper[A]
+      : SelectionBuilder[MetadataSchemaQueries, A] => SelectionBuilder[RootQuery, A] =
+    Queries.metadataSchema
+
+  override protected def mutationWrapper[A]
+      : SelectionBuilder[MetadataSchemaMutations, A] => SelectionBuilder[
+        _root_.caliban.client.Operations.RootMutation,
+        A
+      ] = Mutations.metadataSchema
 
   /** Lists all metadata schemas available in the system.
     *
@@ -207,20 +218,6 @@ object MetadataSchemaApi {
 
     mutate(mutation)
   }
-
-  /** Handles the nested mutation call structure for metadata schema mutations.
-    */
-  private def mutate[R](mutation: SelectionBuilder[MetadataSchemaMutations, R])(implicit
-      cfg: ClientConfiguration
-  ): Either[List[ApiError], R] =
-    Client.mutate(Mutations.metadataSchema(mutation))
-
-  /** Handles the nested query call structure for metadata schema queries.
-    */
-  private def query[R](query: SelectionBuilder[MetadataSchemaQueries, R])(implicit
-      cfg: ClientConfiguration
-  ): Either[List[ApiError], R] =
-    Client.query(Queries.metadataSchema(query))
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)
