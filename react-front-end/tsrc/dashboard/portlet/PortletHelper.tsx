@@ -122,7 +122,6 @@ export const renderPortlet = (
   const { portletType } = portlet;
   const basicProps: PortletBasicProps = { cfg: portlet, position, highlight };
 
-  // TODO: Update portlet component when they are implemented.
   switch (portletType) {
     case "search":
       return <PortletQuickSearch {...basicProps} />;
@@ -151,7 +150,12 @@ export const renderPortlet = (
     case "tasks":
       return <PortletTasks {...basicProps} />;
     case "taskstatistics":
-      return <PortletTaskStatistics {...basicProps} />;
+      return (
+        <PortletTaskStatistics
+          {...basicProps}
+          cfg={portlet as OEQ.Dashboard.TaskStatisticsPortlet}
+        />
+      );
     default:
       return absurd(portletType);
   }
