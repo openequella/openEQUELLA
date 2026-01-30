@@ -23,51 +23,12 @@ import caliban.client._
 
 object Queries {
 
-  /** List all internal users, optionally filtered by a query
+  /** Queries for internal users
     */
   def internalUsers[A](
-      query: scala.Option[String] = None,
-      first: scala.Option[Int] = None,
-      last: scala.Option[Int] = None,
-      before: scala.Option[String] = None,
-      after: scala.Option[String] = None
-  )(innerSelection: SelectionBuilder[UserConnection, A])(implicit
-      encoder0: ArgEncoder[scala.Option[String]],
-      encoder1: ArgEncoder[scala.Option[Int]]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUsers",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(
-        Argument("query", query, "String"),
-        Argument("first", first, "Int"),
-        Argument("last", last, "Int"),
-        Argument("before", before, "String"),
-        Argument("after", after, "String")
-      )
-    )
-
-  /** Retrieve details of a user based on username
-    */
-  def internalUserByUsername[A](username: String)(innerSelection: SelectionBuilder[User, A])(
-      implicit encoder0: ArgEncoder[String]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUserByUsername",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("username", username, "String!"))
-    )
-
-  /** Retrieve details of a user based on unique ID
-    */
-  def internalUserById[A](id: String)(innerSelection: SelectionBuilder[User, A])(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUserById",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(Argument("id", id, "String!"))
-    )
+      innerSelection: SelectionBuilder[InternalUserQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
 
   /** Retrieve a group by its unique ID
     */

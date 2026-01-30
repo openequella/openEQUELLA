@@ -23,66 +23,12 @@ import caliban.client._
 
 object Mutations {
 
-  /** Create a new internal user
+  /** Operations for managing internal users
     */
-  def internalUserCreate[A](
-      username: String,
-      email: scala.Option[String] = None,
-      firstName: String,
-      lastName: String,
-      password: String
-  )(innerSelection: SelectionBuilder[User, A])(implicit
-      encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUserCreate",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(
-        Argument("username", username, "String!"),
-        Argument("email", email, "String"),
-        Argument("firstName", firstName, "String!"),
-        Argument("lastName", lastName, "String!"),
-        Argument("password", password, "String!")
-      )
-    )
-
-  /** Update an existing internal user
-    */
-  def internalUserUpdate[A](
-      id: String,
-      username: scala.Option[String] = None,
-      email: scala.Option[String] = None,
-      firstName: scala.Option[String] = None,
-      lastName: scala.Option[String] = None,
-      password: scala.Option[String] = None
-  )(innerSelection: SelectionBuilder[User, A])(implicit
-      encoder0: ArgEncoder[String],
-      encoder1: ArgEncoder[scala.Option[String]]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[A]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUserUpdate",
-      OptionOf(Obj(innerSelection)),
-      arguments = List(
-        Argument("id", id, "String!"),
-        Argument("username", username, "String"),
-        Argument("email", email, "String"),
-        Argument("firstName", firstName, "String"),
-        Argument("lastName", lastName, "String"),
-        Argument("password", password, "String")
-      )
-    )
-
-  /** Delete an existing internal user
-    */
-  def internalUserDelete(id: String)(implicit
-      encoder0: ArgEncoder[String]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, scala.Option[Unit]] =
-    _root_.caliban.client.SelectionBuilder.Field(
-      "internalUserDelete",
-      OptionOf(Scalar()),
-      arguments = List(Argument("id", id, "String!"))
-    )
+  def internalUser[A](
+      innerSelection: SelectionBuilder[InternalUserMutations, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
+    _root_.caliban.client.SelectionBuilder.Field("internalUser", Obj(innerSelection))
 
   /** Create a new group
     */

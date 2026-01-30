@@ -102,6 +102,24 @@ type GroupEdge {
   node: Group!
 }
 
+type InternalUserMutations {
+  "Create a new internal user"
+  create("Username of the user to create which they'll use for authentication - must be unique" username: String!, "Email address of the user" email: String, "First name of the user" firstName: String!, "Last name of the user" lastName: String!, "Password of the user - will be hashed on store" password: String!): User
+  "Update an existing internal user"
+  update("ID of existing user to update - used to find target user" id: String!, "New username of the user - should be unique" username: String, "New email address of the user" email: String, "New first name of the user" firstName: String, "New last name of the user" lastName: String, "New password of the user - will be hashed on store" password: String): User
+  "Delete an existing internal user"
+  delete("The unique ID of the user to delete" id: String!): Unit
+}
+
+type InternalUserQueries {
+  "List all internal users, optionally filtered by a query"
+  list("A string to filter users by" query: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): UserConnection
+  "Retrieve details of a user based on username"
+  byUsername("Username of the user to retrieve" username: String!): User
+  "Retrieve details of a user based on unique ID"
+  byId("Unique ID of the user to retrieve" id: String!): User
+}
+
 "A key-value pair of String and String"
 type KVStringString {
   "Key"
@@ -181,12 +199,8 @@ type MetadataSchemaTransform {
 }
 
 type Mutations {
-  "Create a new internal user"
-  internalUserCreate("Username of the user to create which they'll use for authentication - must be unique" username: String!, "Email address of the user" email: String, "First name of the user" firstName: String!, "Last name of the user" lastName: String!, "Password of the user - will be hashed on store" password: String!): User
-  "Update an existing internal user"
-  internalUserUpdate("ID of existing user to update - used to find target user" id: String!, "New username of the user - should be unique" username: String, "New email address of the user" email: String, "New first name of the user" firstName: String, "New last name of the user" lastName: String, "New password of the user - will be hashed on store" password: String): User
-  "Delete an existing internal user"
-  internalUserDelete("The unique ID of the user to delete" id: String!): Unit
+  "Operations for managing internal users"
+  internalUser: InternalUserMutations!
   "Create a new group"
   internalGroupCreate("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): Group
   "Delete a group by its unique ID"
@@ -205,12 +219,8 @@ type PageInfo {
 }
 
 type Queries {
-  "List all internal users, optionally filtered by a query"
-  internalUsers("A string to filter users by" query: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): UserConnection
-  "Retrieve details of a user based on username"
-  internalUserByUsername("Username of the user to retrieve" username: String!): User
-  "Retrieve details of a user based on unique ID"
-  internalUserById("Unique ID of the user to retrieve" id: String!): User
+  "Queries for internal users"
+  internalUsers: InternalUserQueries!
   "Retrieve a group by its unique ID"
   internalGroupById("The unique ID of the group to retrieve" uniqueId: String!): Group
   "Retrieve a group by its name"
