@@ -36,7 +36,7 @@ import scala.jdk.OptionConverters._
   */
 class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
     extends AdminTLEGroupService {
-  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEUserServiceImpl])
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEGroupServiceImpl])
 
   override def add(parentID: String, name: String): String = {
     LOGGER.debug("Adding group: {}", name)
