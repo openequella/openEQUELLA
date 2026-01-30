@@ -392,6 +392,27 @@ export const languageStrings = {
         failedToInitialise: "Failed to initialise tasks portlet.",
         nothingReturned: "No tasks and notifications returned.",
         unableToFindItemsOfType: "Unable to find items of type:",
+        failedToRedirect: "Failed to redirect to task page.",
+      },
+      taskStatistics: {
+        noPermission: "You do not have permission to manage any workflows.",
+        noResult: "There are no results for the selected workflow.",
+        failedToFetchTrends: "Failed to fetch workflow trend data.",
+        workflow: {
+          label: "Workflow",
+          allWorkflows: "Within all workflows",
+        },
+        trend: {
+          label: "trend period",
+          weekly: "Weekly",
+          monthly: "Monthly",
+        },
+        table: {
+          label: "trend table",
+          colTask: "Task",
+          colWaiting: "Waiting",
+          colTrend: "Trend",
+        },
       },
       unsupported: {
         title: "Unsupported portlet configured.",

@@ -158,6 +158,12 @@ export const isDashboardACLGranted: RequiredPermissionCheck = hasRequiredAcl(
 );
 
 /**
+ * Return a TaskEither to check whether ACL MANAGE_WORKFLOW is granted to the current user.
+ */
+export const isManageWorkflowACLGranted: RequiredPermissionCheck =
+  hasRequiredAcl(OEQ.Acl.ACL_MANAGE_WORKFLOW);
+
+/**
  * True if the user has authenticated before the initial rendering of New UI.
  */
 export const hasAuthenticated = getRenderData()?.hasAuthenticated ?? false;

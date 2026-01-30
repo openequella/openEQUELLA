@@ -16,11 +16,14 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/lib/TaskEither";
 import * as O from "fp-ts/Option";
+import type { History } from "history";
+import * as React from "react";
+import { getLegacyTaskPageRoute } from "../../modules/LegacyContentModule";
 import { languageStrings } from "../../util/langstrings";
 import { TasksList } from "./TasksList";
 
@@ -76,3 +79,24 @@ export const createTasksListMaybe =
       )),
       O.toNullable,
     );
+
+/**
+ * Builds an `onClick` handler for a task item.
+ *
+ * Clicking on a task submits a legacy request to navigate to the manage task page. Because before
+ * the user goes to that page, a request is submitted to set up the relevant search/filter in the
+ * server session to be rendered by the legacy UI.
+ *
+ * @param history The history object to use for navigation.
+ * @param legacyEventId The legacy event ID for the server to set up the legacy task page.
+ */
+export const buildTaskOnClickHandler =
+  (history: History, legacyEventId: string) => (taskId: string) => () => {
+    const redirect = () =>
+      getLegacyTaskPageRoute(legacyEventId, taskId).then(history.push);
+
+    pipe(
+      TE.tryCatch(redirect, String),
+      TE.mapLeft((e) => console.warn(`${strings.failedToRedirect} [${e}]`)),
+    )();
+  };

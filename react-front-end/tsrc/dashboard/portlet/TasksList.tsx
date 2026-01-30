@@ -21,9 +21,8 @@ import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { OLD_DASHBOARD_PATH } from "../../mainui/routes";
-import { ChangeRoute, submitRequest } from "../../modules/LegacyContentModule";
 import { ListItemContent } from "../components/ListItemContent";
+import { buildTaskOnClickHandler } from "./PortletTasksHelper";
 
 export interface TasksListProps {
   /** The top level count item */
@@ -45,15 +44,7 @@ export const TasksList: React.FC<TasksListProps> = ({
 }) => {
   const history = useHistory();
 
-  // This is a little bit specialised - clicking on an item submits a legacy request to
-  // navigate to the relevant task/notification page. Because before the user goes to that page,
-  // a request is submitted to set up the relevant search/filter in the server session to be
-  // rendered by the legacy UI.
-  const onClick = (taskid: string) => () =>
-    submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
-      event__: ["pptl.execSearch"],
-      eventp__0: [taskid],
-    }).then(({ route }) => history.push(`/${route}`));
+  const onClick = buildTaskOnClickHandler(history, "pptl.execSearch");
 
   const parentListItem = (
     <ListItemButton key={group.id} onClick={onClick(group.id)}>

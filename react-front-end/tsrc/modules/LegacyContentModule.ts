@@ -20,6 +20,7 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as t from "io-ts";
 import { API_BASE_URL, LEGACY_CSS_URL } from "../AppConfig";
+import { OLD_DASHBOARD_PATH } from "../mainui/routes";
 import type { ScrapbookType } from "./ScrapbookModule";
 
 export const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
@@ -135,6 +136,22 @@ export const getLegacyScrapbookEditingPageRoute = async (
     eventp__0: [itemKey],
     eventp__1: [searchOptionID],
   }).then(({ data: { route } }) => `/${route}`);
+
+/**
+ * Get the route of a legacy task page (such as task page or mange tasks page) by submitting a legacy event
+ * that prepares the server-side session search/filter.
+ *
+ * @param eventName The legacy event name to submit.
+ * @param taskId The ID of the task we want to see.
+ */
+export const getLegacyTaskPageRoute = async (
+  eventName: string,
+  taskId: string,
+): Promise<string> =>
+  submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
+    event__: [eventName],
+    eventp__0: [taskId],
+  }).then(({ route }) => `/${route}`);
 
 /**
  * Send a request to the legacy content submit API.
