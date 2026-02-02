@@ -207,10 +207,10 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       (UserConnection.pageInfo { PageInfoView.selector } ~ UserConnection.edges { userEdge })
         .mapN(ConnectionView[TleUserView](_, _))
 
-    queryWithPagination(pagination) { (first, last, before, after) =>
-      queryWrapper(InternalUserQueries.list(query, first, last, before, after) {
+    queryPaginated(pagination) { (first, last, before, after) =>
+      InternalUserQueries.list(query, first, last, before, after) {
         userConnection
-      })
+      }
     }
   }
 }

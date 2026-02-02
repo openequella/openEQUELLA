@@ -126,10 +126,10 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
   def getGroupsByIds(pagination: Pagination, groupIds: Set[String])(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
-    queryWithPagination(pagination) { (first, last, before, after) =>
-      queryWrapper(InternalGroupQueries.listByIds(groupIds.toList, first, last, before, after) {
+    queryPaginated(pagination) { (first, last, before, after) =>
+      InternalGroupQueries.listByIds(groupIds.toList, first, last, before, after) {
         groupConnection
-      })
+      }
     }
 
   /** Creates a new group.
@@ -232,10 +232,10 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
   def listGroups(pagination: Pagination, parentId: Option[String] = None)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
-    queryWithPagination(pagination) { (first, last, before, after) =>
-      queryWrapper(InternalGroupQueries.list(parentId, first, last, before, after) {
+    queryPaginated(pagination) { (first, last, before, after) =>
+      InternalGroupQueries.list(parentId, first, last, before, after) {
         groupConnection
-      })
+      }
     }
 
   /** Lists the users in a group.
@@ -260,10 +260,10 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
       (StringConnection.pageInfo { PageInfoView.selector } ~ StringConnection.edges { userEdge })
         .mapN(ConnectionView[String](_, _))
 
-    queryWithPagination(pagination) { (first, last, before, after) =>
-      queryWrapper(InternalGroupQueries.users(groupId, first, last, before, after) {
+    queryPaginated(pagination) { (first, last, before, after) =>
+      InternalGroupQueries.users(groupId, first, last, before, after) {
         userConnection
-      })
+      }
     }
   }
 
@@ -285,9 +285,9 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
   def searchGroups(pagination: Pagination, query: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], PaginationResult[TleGroupView]] =
-    queryWithPagination(pagination) { (first, last, before, after) =>
-      queryWrapper(InternalGroupQueries.search(query, first, last, before, after) {
+    queryPaginated(pagination) { (first, last, before, after) =>
+      InternalGroupQueries.search(query, first, last, before, after) {
         groupConnection
-      })
+      }
     }
 }
