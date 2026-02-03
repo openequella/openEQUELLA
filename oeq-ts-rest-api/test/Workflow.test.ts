@@ -32,8 +32,8 @@ const TREND_MONTH: Trend = 'MONTH';
 const getAllWorkflowsTrends = (trend: Trend) =>
   OEQ.Workflow.getAllWorkflowsTrends(TC.API_PATH, trend);
 
-const getWorkflowTrends = (uuid: string, trend: Trend = TREND_WEEK) =>
-  OEQ.Workflow.getWorkflowTrends(TC.API_PATH, uuid, trend);
+const getWorkflowStatistics = (uuid: string, trend: Trend = TREND_WEEK) =>
+  OEQ.Workflow.getWorkflowStatistics(TC.API_PATH, uuid, trend);
 
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(TC.API_PATH));
@@ -49,25 +49,31 @@ describe('Workflow Trends API', () => {
     );
   });
 
-  describe('getWorkflowTrends', () => {
+  describe('getWorkflowStatistics', () => {
     it.each([[TREND_WEEK], [TREND_MONTH]])(
       'should be able to retrieve trends for a specific workflow with trend value: %s',
       async (trend: Trend) => {
-        const result = await getWorkflowTrends(TARGET_WORKFLOW_UUID, trend);
-        expect(Array.isArray(result)).toBe(true);
-        expect(result).toHaveLength(2);
+        const result = await getWorkflowStatistics(TARGET_WORKFLOW_UUID, trend);
+        const { itemCount, taskTrends } = result;
+
+        expect(Array.isArray(taskTrends)).toBe(true);
+        expect(taskTrends).toHaveLength(2);
+        expect(itemCount).toBe(4);
       }
     );
 
     it('should retrieve an empty list if the workflow has no waiting tasks', async () => {
-      const result = await getWorkflowTrends(NO_TASKS_WORKFLOW_UUID);
-      expect(Array.isArray(result)).toBe(true);
-      expect(result).toHaveLength(0);
+      const result = await getWorkflowStatistics(NO_TASKS_WORKFLOW_UUID);
+      const { itemCount, taskTrends } = result;
+
+      expect(Array.isArray(taskTrends)).toBe(true);
+      expect(taskTrends).toHaveLength(0);
+      expect(itemCount).toBe(0);
     });
 
     it('should return 403 when user lacks permission for the workflow', async () => {
       await expect(
-        getWorkflowTrends(NO_PERMISSION_WORKFLOW_UUID)
+        getWorkflowStatistics(NO_PERMISSION_WORKFLOW_UUID)
       ).rejects.toHaveProperty('status', 403);
     });
 
@@ -77,7 +83,7 @@ describe('Workflow Trends API', () => {
     ])(
       'should return %d when requesting trends for a %s workflow',
       async (status, _description, uuid: string) => {
-        await expect(getWorkflowTrends(uuid)).rejects.toHaveProperty(
+        await expect(getWorkflowStatistics(uuid)).rejects.toHaveProperty(
           'status',
           status
         );

@@ -34,7 +34,7 @@ import { PortletQuickSearch } from "./PortletQuickSearch";
 import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
 import { PortletTasks } from "./PortletTasks";
-import { PortletTaskStatistics } from "./PortletTaskStatistics";
+import { PortletTaskStatistics } from "./taskstatistics/PortletTaskStatistics";
 
 /**
  * Type definition for Supported two-column layouts.

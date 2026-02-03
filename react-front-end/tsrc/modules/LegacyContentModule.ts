@@ -18,10 +18,15 @@
 import Axios from "axios";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
+import type { History } from "history";
 import * as t from "io-ts";
 import { API_BASE_URL, LEGACY_CSS_URL } from "../AppConfig";
 import { OLD_DASHBOARD_PATH } from "../mainui/routes";
+import { languageStrings } from "../util/langstrings";
 import type { ScrapbookType } from "./ScrapbookModule";
+
+const strings = languageStrings.legacyModule;
 
 export const legacyContentSubmitBaseUrl = `${API_BASE_URL}/content/submit`;
 const legacyMyResourcesUrl = `${legacyContentSubmitBaseUrl}/access/myresources.do`;
@@ -154,6 +159,18 @@ export const getLegacyTaskPageRoute = async (
   }).then(({ route }) => `/${route}`);
 
 /**
+ * Get the legacy manage resource page route for a given workflow ID.
+ * The provided workflow will be set as a search filter in the management page.
+ *
+ * @param workflowId The workflow ID to filter the manage page.
+ */
+export const getLegacyManagePageRoute = (workflowId: string): Promise<string> =>
+  submitRequest<ChangeRoute>(OLD_DASHBOARD_PATH, {
+    event__: ["ptspr.showItemsInWorkflow"],
+    ptspr_workflowSelector: [workflowId],
+  }).then(({ route }) => `/${route}`);
+
+/**
  * Send a request to the legacy content submit API.
  *
  * @param relativeUrl - A relative URL which may include query parameters (e.g., tokens).
@@ -168,6 +185,26 @@ export const submitRequest = <T extends SubmitResponse = SubmitResponse>(
     legacyContentSubmitBaseUrl + encodeRelativeUrl(relativeUrl),
     vals,
   ).then((res) => res.data);
+
+/**
+ * Builds an onClick handler for legacy link.
+ *
+ * Clicking on a legacy link submits a legacy request to navigate to the legacy page. Because before
+ * the user goes to that page, a request is submitted to set up the relevant search/filter in the
+ * server session to be rendered by the legacy UI.
+ *
+ * @param history The history object to use for navigation.
+ * @param getLegacyRoute A function that returns the legacy route.
+ */
+export const buildLegacyLinkOnClickHandler =
+  (history: History, getLegacyRoute: () => Promise<string>) => () => {
+    const redirect = () => getLegacyRoute().then(history.push);
+
+    pipe(
+      TE.tryCatch(redirect, String),
+      TE.mapLeft((e) => console.warn(`${strings.failedToRedirect} [${e}]`)),
+    )();
+  };
 
 /**
  * Splits a relative URL into pathname and optional query string.

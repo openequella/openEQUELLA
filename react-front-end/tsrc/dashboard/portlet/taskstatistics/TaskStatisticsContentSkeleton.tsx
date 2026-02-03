@@ -27,9 +27,9 @@ import {
 import { pipe } from "fp-ts/lib/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
-import { classes } from "./PortletTaskStatisticsContent";
+import { classes } from "./TaskStatisticsContent";
 
-export const PortletTaskStatisticsContentSkeleton = () => (
+export const TaskStatisticsContentSkeleton = () => (
   <>
     <TableContainer classes={{ root: classes.table }}>
       <Table stickyHeader size="small">

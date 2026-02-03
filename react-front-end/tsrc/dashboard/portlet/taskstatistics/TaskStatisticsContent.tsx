@@ -28,12 +28,13 @@ export const classes = {
   table: `${PREFIX}-table`,
   tableRow: `${PREFIX}-table-row`,
   tableLink: `${PREFIX}-table-link`,
+  itemCount: `${PREFIX}-item-count`,
 };
 
 /**
  * Styled div to render the statistics content.
  */
-export const PortletTaskStatisticsContent = styled("div")(({ theme }) => ({
+export const TaskStatisticsContent = styled("div")(({ theme }) => ({
   [`& .${classes.options}`]: {
     display: "flex",
     alignItems: "center",
@@ -55,5 +56,8 @@ export const PortletTaskStatisticsContent = styled("div")(({ theme }) => ({
   },
   [`& .${classes.tableLink}`]: {
     cursor: "pointer",
+  },
+  [`& .${classes.itemCount}`]: {
+    marginBottom: 0,
   },
 }));
