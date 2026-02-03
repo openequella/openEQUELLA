@@ -28,6 +28,7 @@ export const ACL_MANAGE_WORKFLOW = 'MANAGE_WORKFLOW';
 export const ACL_SEARCH_COLLECTION = 'SEARCH_COLLECTION';
 export const ACL_SEARCH_PAGE = 'SEARCH_PAGE';
 export const ACL_VIEW_HIERARCHY_TOPIC = 'VIEW_HIERARCHY_TOPIC';
+export const ACL_VIEW_MANAGEMENT_PAGE = 'VIEW_MANAGEMENT_PAGE';
 
 /**
  * The unique ID of each system setting.

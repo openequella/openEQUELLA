@@ -28,7 +28,7 @@ import {
 import {
   PortletTaskStatistics,
   PortletTaskStatisticsProps,
-} from "../../../tsrc/dashboard/portlet/PortletTaskStatistics";
+} from "../../../tsrc/dashboard/portlet/taskstatistics/PortletTaskStatistics";
 
 export default {
   title: "Dashboard/portlets/PortletTaskStatistics",

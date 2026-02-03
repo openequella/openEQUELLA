@@ -41,23 +41,24 @@ import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { TaskStatisticsPortlet } from "../../../../oeq-ts-rest-api/src/Dashboard";
-import { isManageWorkflowACLGranted } from "../../modules/SecurityModule";
+import { TaskStatisticsPortlet } from "../../../../../oeq-ts-rest-api/src/Dashboard";
+import {
+  isManageWorkflowACLGranted,
+  isViewManagementPageACLGranted,
+} from "../../../modules/SecurityModule";
 import {
   getAllWorkflowsTrends,
-  getWorkflowTrends,
-} from "../../modules/WorkflowModule";
-import { languageStrings } from "../../util/langstrings";
-import { simpleMatch } from "../../util/match";
-import { DraggablePortlet } from "../components/DraggablePortlet";
-import { PortletSearchResultNoneFound } from "../components/PortletSearchResultNoneFound";
-import { PortletBasicProps } from "./PortletHelper";
-import { buildTaskOnClickHandler } from "./PortletTasksHelper";
-import {
-  classes,
-  PortletTaskStatisticsContent,
-} from "./PortletTaskStatisticsContent";
-import { PortletTaskStatisticsContentSkeleton } from "./PortletTaskStatisticsContentSkeleton";
+  getWorkflowStatistics,
+} from "../../../modules/WorkflowModule";
+import { languageStrings } from "../../../util/langstrings";
+import { simpleMatch } from "../../../util/match";
+import { DraggablePortlet } from "../../components/DraggablePortlet";
+import { PortletSearchResultNoneFound } from "../../components/PortletSearchResultNoneFound";
+import { PortletBasicProps } from "../PortletHelper";
+import { buildTaskOnClickHandler } from "../PortletTasksHelper";
+import { ItemCount } from "./ItemCount";
+import { classes, TaskStatisticsContent } from "./TaskStatisticsContent";
+import { TaskStatisticsContentSkeleton } from "./TaskStatisticsContentSkeleton";
 
 const strings = {
   ...languageStrings.dashboard.portlets.taskStatistics,
@@ -73,19 +74,34 @@ export interface PortletTaskStatisticsProps extends PortletBasicProps {
    */
   getAllWorkflowTrendsProvider?: typeof getAllWorkflowsTrends;
   /**
-   * A provider function to fetch specific workflow trends. Primarily for testing.
+   * A provider function to fetch specific workflow statistics. Primarily for testing.
    */
-  getWorkflowTrendsProvider?: typeof getWorkflowTrends;
+  getWorkflowStatisticsProvider?: typeof getWorkflowStatistics;
   /**
    * A provider function to check manage workflow ACL permission. Primarily for testing.
    */
   isManageWorkflowACLGrantedProvider?: typeof isManageWorkflowACLGranted;
+  /**
+   * A provider function to check view management page ACL permission. Primarily for testing.
+   */
+  isViewManagementPageACLGrantedProvider?: typeof isViewManagementPageACLGranted;
 }
 
 // ID for the workflow selection label.
 const WORKFLOW_LABEL_ID = "workflow-label";
 // Workflow selection value for all workflows.
 const WITHIN_ALL_WORKFLOWS = "all";
+
+/**
+ * Variant of {@link OEQ.Workflow.WorkflowStatistics} used for UI normalization:
+ * The portlet loads trends from two different endpoints that return slightly different payloads.
+ * To keep the UI rendering logic consistent, it normalizes both responses into the same
+ * shape and make `itemCount` optional for endpoints where it is not provided.
+ */
+type WorkflowStatisticsView = Omit<
+  OEQ.Workflow.WorkflowStatistics,
+  "itemCount"
+> & { itemCount?: number };
 
 /**
  * Represents the lifecycle of fetching workflow statistics (task trends) data.
@@ -99,7 +115,7 @@ type WorkflowStatisticsState =
   | { state: "fetching" }
   | {
       state: "success";
-      results: OEQ.Workflow.TaskTrendDetails[];
+      results: WorkflowStatisticsView;
     }
   | { state: "noResults" };
 
@@ -109,8 +125,9 @@ type WorkflowStatisticsState =
 export const PortletTaskStatistics = ({
   cfg,
   getAllWorkflowTrendsProvider = getAllWorkflowsTrends,
-  getWorkflowTrendsProvider = getWorkflowTrends,
+  getWorkflowStatisticsProvider = getWorkflowStatistics,
   isManageWorkflowACLGrantedProvider = isManageWorkflowACLGranted,
+  isViewManagementPageACLGrantedProvider = isViewManagementPageACLGranted,
   ...restProps
 }: PortletTaskStatisticsProps) => {
   const history = useHistory();
@@ -124,8 +141,10 @@ export const PortletTaskStatistics = ({
     useState<string>(WITHIN_ALL_WORKFLOWS);
   const [selectedTrend, setSelectedTrend] = useState<OEQ.Task.Trend>(cfg.trend);
 
+  const [hasViewManagementPageAcl, setHasViewManagementPageAcl] =
+    useState<boolean>(false);
   const [workflowStatistics, setWorkflowStatistics] =
-    React.useState<WorkflowStatisticsState>({
+    useState<WorkflowStatisticsState>({
       state: "initial",
     });
 
@@ -144,37 +163,55 @@ export const PortletTaskStatistics = ({
       return;
     }
 
-    const fetchTrends = (): Promise<OEQ.Workflow.TaskTrendDetails[]> =>
+    pipe(
+      isViewManagementPageACLGrantedProvider,
+      TE.match(
+        (_) => setHasViewManagementPageAcl(false),
+        setHasViewManagementPageAcl,
+      ),
+    )();
+  }, [isViewManagementPageACLGrantedProvider, loadingState]);
+
+  useEffect(() => {
+    if (loadingState !== "loaded") {
+      return;
+    }
+
+    const toStatisticsView = (
+      trends: OEQ.Workflow.TaskTrendDetails[],
+    ): WorkflowStatisticsView => ({
+      taskTrends: trends,
+    });
+
+    const fetchStatistics = (): Promise<WorkflowStatisticsView> =>
       selectedWorkflow === WITHIN_ALL_WORKFLOWS
-        ? getAllWorkflowTrendsProvider(selectedTrend)
-        : getWorkflowTrendsProvider(selectedWorkflow, selectedTrend);
+        ? getAllWorkflowTrendsProvider(selectedTrend).then(toStatisticsView)
+        : getWorkflowStatisticsProvider(selectedWorkflow, selectedTrend);
 
     setWorkflowStatistics({ state: "fetching" });
 
     pipe(
-      TE.tryCatch(fetchTrends, String),
+      TE.tryCatch(fetchStatistics, String),
       TE.match(
         (e) => {
-          console.warn(`${strings.failedToFetchTrends} [${e}]`);
+          console.warn(`${strings.failedToFetchStatistics} [${e}]`);
           setWorkflowStatistics({ state: "noResults" });
         },
-        (statistics) =>
-          pipe(
-            statistics,
-            O.fromPredicate(A.isEmpty),
-            O.match<OEQ.Workflow.TaskTrendDetails[], WorkflowStatisticsState>(
-              () => ({ state: "success", results: statistics }),
-              () => ({ state: "noResults" }),
-            ),
-            setWorkflowStatistics,
-          ),
+        (statistics) => {
+          const state: WorkflowStatisticsState = A.isEmpty(
+            statistics.taskTrends,
+          )
+            ? { state: "noResults" }
+            : { state: "success", results: statistics };
+          setWorkflowStatistics(state);
+        },
       ),
     )();
   }, [
     selectedTrend,
     selectedWorkflow,
     getAllWorkflowTrendsProvider,
-    getWorkflowTrendsProvider,
+    getWorkflowStatisticsProvider,
     loadingState,
   ]);
 
@@ -260,18 +297,26 @@ export const PortletTaskStatistics = ({
       case "initial":
         return null;
       case "fetching":
-        return <PortletTaskStatisticsContentSkeleton />;
+        return <TaskStatisticsContentSkeleton />;
       case "noResults":
         return (
           <PortletSearchResultNoneFound noneFoundMessage={strings.noResult} />
         );
-      case "success":
+      case "success": {
+        const { taskTrends, itemCount } = workflowStatistics.results;
         return (
           <>
-            {renderTrendTable(workflowStatistics.results)}
-            {/*TODO: OEQ-2890 show item count for workflow, and show link if user has view management page permission.*/}
+            {renderTrendTable(taskTrends)}
+            {itemCount && itemCount > 0 && (
+              <ItemCount
+                workflow={selectedWorkflow}
+                itemCount={itemCount}
+                isClickable={hasViewManagementPageAcl}
+              />
+            )}
           </>
         );
+      }
     }
   };
 
@@ -282,7 +327,7 @@ export const PortletTaskStatistics = ({
         <Alert severity="error">{strings.noPermission}</Alert>
       ),
       loaded: () => (
-        <PortletTaskStatisticsContent>
+        <TaskStatisticsContent>
           <Box className={classes.options}>
             {workflowSelector}
             {trendToggleButtons}
@@ -291,7 +336,7 @@ export const PortletTaskStatistics = ({
           <Divider className={classes.divider} />
 
           {renderStatisticsResults()}
-        </PortletTaskStatisticsContent>
+        </TaskStatisticsContent>
       ),
       // In theory this state shouldn't be seen because we show a loading state in the DraggablePortlet
       _: () => <div>Loading...</div>,

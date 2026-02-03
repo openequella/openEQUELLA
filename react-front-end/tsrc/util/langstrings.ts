@@ -392,12 +392,12 @@ export const languageStrings = {
         failedToInitialise: "Failed to initialise tasks portlet.",
         nothingReturned: "No tasks and notifications returned.",
         unableToFindItemsOfType: "Unable to find items of type:",
-        failedToRedirect: "Failed to redirect to task page.",
       },
       taskStatistics: {
         noPermission: "You do not have permission to manage any workflows.",
         noResult: "There are no results for the selected workflow.",
-        failedToFetchTrends: "Failed to fetch workflow trend data.",
+        failedToFetchStatistics: "Failed to fetch workflow statistics.",
+        itemCount: "Total resources in workflow: %s",
         workflow: {
           label: "Workflow",
           allWorkflows: "Within all workflows",
@@ -548,6 +548,9 @@ export const languageStrings = {
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   kalturaPlayer: {
     title: "Kaltura video player",
+  },
+  legacyModule: {
+    failedToRedirect: "Failed to redirect to page.",
   },
   lightboxComponent: {
     openSummaryPage: "Open resource summary page",

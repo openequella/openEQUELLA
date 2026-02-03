@@ -35,6 +35,7 @@ import com.tle.web.api.interfaces.beans.security.BaseEntitySecurityBean;
 import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.TaskTrendBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
+import com.tle.web.api.workflow.interfaces.beans.WorkflowStatisticsBean;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -105,16 +106,17 @@ public class WorkflowResourceImpl
    *
    * @param uuid The UUID of the workflow to query
    * @param trend The time period for trend calculation (WEEK or MONTH, case-insensitive)
-   * @return HTTP 200 with JSON array of {@link TaskTrendBean} objects
+   * @return HTTP 200 with JSON object of {@link WorkflowStatisticsBean}
    * @throws BadRequestException (400) if uuid or trend parameter is missing/invalid
    * @throws NotFoundException (404) if workflow with specified UUID does not exist
    */
   @Override
-  public Response getTrendsForWorkflow(String uuid, String trend) {
+  public Response getStatisticsForWorkflow(String uuid, String trend) {
     validateWorkflowUuid(uuid);
     Trend trendEnum = validateTrend(trend);
     List<TaskTrend> trends = taskStatisticsService.getWaitingTasksForWorkflow(uuid, trendEnum);
-    return buildTrendResponse(trends);
+    int itemCount = workflowService.getItemCountForWorkflow(uuid);
+    return buildWorkflowStatisticsResponse(trends, itemCount);
   }
 
   /**
@@ -158,6 +160,13 @@ public class WorkflowResourceImpl
   private Response buildTrendResponse(List<TaskTrend> trends) {
     List<TaskTrendBean> beans = transformToTrendBeans(trends);
     return Response.ok(beans).build();
+  }
+
+  /** Helper to build a response with a wrapper object with trend beans and item count. */
+  private Response buildWorkflowStatisticsResponse(List<TaskTrend> trends, int itemCount) {
+    List<TaskTrendBean> trendBeans = transformToTrendBeans(trends);
+    WorkflowStatisticsBean statistics = new WorkflowStatisticsBean(trendBeans, itemCount);
+    return Response.ok(statistics).build();
   }
 
   private List<TaskTrendBean> transformToTrendBeans(List<TaskTrend> trends) {
