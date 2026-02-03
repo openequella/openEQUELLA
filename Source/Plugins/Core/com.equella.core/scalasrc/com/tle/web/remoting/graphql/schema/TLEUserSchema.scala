@@ -20,7 +20,7 @@ package com.tle.web.remoting.graphql.schema
 
 import caliban._
 import caliban.relay.{Base64Cursor, Pagination, PaginationArgs}
-import caliban.schema.Annotations.GQLDescription
+import caliban.schema.Annotations.{GQLDescription, GQLName}
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
@@ -69,13 +69,19 @@ class TLEUserSchema extends SchemaProvider {
 
   case class UserByIdArgs(@GQLDescription("Unique ID of the user to retrieve") id: String)
 
-  case class Queries(
+  @GQLName("InternalUserQueries")
+  case class InternalUserQueryOps(
       @GQLDescription("List all internal users, optionally filtered by a query")
-      internalUsers: ListUsersArgs => IO[CalibanError, UserConnection],
+      list: ListUsersArgs => IO[CalibanError, UserConnection],
       @GQLDescription("Retrieve details of a user based on username")
-      internalUserByUsername: UserByUsernameArgs => Option[User],
+      byUsername: UserByUsernameArgs => Option[User],
       @GQLDescription("Retrieve details of a user based on unique ID")
-      internalUserById: UserByIdArgs => Option[User]
+      byId: UserByIdArgs => Option[User]
+  )
+
+  case class Queries(
+      @GQLDescription("Queries for internal users")
+      internalUsers: InternalUserQueryOps
   )
 
   case class CreateUserArgs(
@@ -92,6 +98,7 @@ class TLEUserSchema extends SchemaProvider {
       @GQLDescription("Password of the user - will be hashed on store")
       password: String
   )
+
   case class UpdateUserArgs(
       @GQLDescription("ID of existing user to update - used to find target user")
       id: String,
@@ -106,40 +113,52 @@ class TLEUserSchema extends SchemaProvider {
       @GQLDescription("New password of the user - will be hashed on store")
       password: Option[String]
   )
+
   case class DeleteUserArgs(@GQLDescription("The unique ID of the user to delete") id: String)
-  case class Mutations(
+
+  @GQLName("InternalUserMutations")
+  case class InternalUserMutationOps(
       @GQLDescription("Create a new internal user")
-      internalUserCreate: CreateUserArgs => ResultWithErrors[User],
+      create: CreateUserArgs => ResultWithErrors[User],
       @GQLDescription("Update an existing internal user")
-      internalUserUpdate: UpdateUserArgs => ResultWithErrors[User],
+      update: UpdateUserArgs => ResultWithErrors[User],
       @GQLDescription("Delete an existing internal user")
-      internalUserDelete: DeleteUserArgs => ResultWithErrors[Unit]
+      delete: DeleteUserArgs => ResultWithErrors[Unit]
+  )
+
+  case class Mutations(
+      @GQLDescription("Operations for managing internal users")
+      internalUsers: InternalUserMutationOps
   )
 
   private val queries = Queries(
-    internalUsers = args =>
-      for {
-        pagination <- Pagination(args)
-        users = tleUserProvider.listUsers(args.query, pagination)
-      } yield users,
-    internalUserByUsername = args => tleUserProvider.userByUsername(args.username),
-    internalUserById = args => tleUserProvider.userById(args.id)
+    internalUsers = InternalUserQueryOps(
+      list = args =>
+        for {
+          pagination <- Pagination(args)
+          users = tleUserProvider.listUsers(args.query, pagination)
+        } yield users,
+      byUsername = args => tleUserProvider.userByUsername(args.username),
+      byId = args => tleUserProvider.userById(args.id)
+    )
   )
 
   private val mutations = Mutations(
-    internalUserCreate = args =>
-      tleUserProvider
-        .createUser(args.username, args.email, args.firstName, args.lastName, args.password),
-    internalUserUpdate = args =>
-      tleUserProvider.updateUser(
-        args.id,
-        args.username,
-        args.email,
-        args.firstName,
-        args.lastName,
-        args.password
-      ),
-    internalUserDelete = args => tleUserProvider.deleteUser(args.id)
+    internalUsers = InternalUserMutationOps(
+      create = args =>
+        tleUserProvider
+          .createUser(args.username, args.email, args.firstName, args.lastName, args.password),
+      update = args =>
+        tleUserProvider.updateUser(
+          args.id,
+          args.username,
+          args.email,
+          args.firstName,
+          args.lastName,
+          args.password
+        ),
+      delete = args => tleUserProvider.deleteUser(args.id)
+    )
   )
 
   /** Get the API for the TLE User GraphQL schema.

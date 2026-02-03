@@ -21,26 +21,21 @@ package io.github.openequella.graphql.client
 import caliban.client.FieldBuilder._
 import caliban.client._
 
-object Mutations {
+object MetadataSchemaMutations {
 
-  /** Operations for managing internal users
+  /** Start editing an existing metadata schema. Expected that it will be followed by a
+    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
     */
-  def internalUsers[A](
-      innerSelection: SelectionBuilder[InternalUserMutations, A]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
+  def startEdit[A](id: Long)(innerSelection: SelectionBuilder[EditableEntityMetadataSchema, A])(
+      implicit encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[MetadataSchemaMutations, A] = _root_.caliban.client.SelectionBuilder
+    .Field("startEdit", Obj(innerSelection), arguments = List(Argument("id", id, "Long!")))
 
-  /** Operations for managing internal groups
+  /** Start creating a new metadata schema. Expected that it will be followed by a
+    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
     */
-  def internalGroups[A](
-      innerSelection: SelectionBuilder[InternalGroupMutations, A]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("internalGroups", Obj(innerSelection))
-
-  /** Operations for managing Metadata Schemas
-    */
-  def metadataSchema[A](
-      innerSelection: SelectionBuilder[MetadataSchemaMutations, A]
-  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
+  def startCreate[A](
+      innerSelection: SelectionBuilder[EditableEntitySkeleton, A]
+  ): SelectionBuilder[MetadataSchemaMutations, A] =
+    _root_.caliban.client.SelectionBuilder.Field("startCreate", Obj(innerSelection))
 }

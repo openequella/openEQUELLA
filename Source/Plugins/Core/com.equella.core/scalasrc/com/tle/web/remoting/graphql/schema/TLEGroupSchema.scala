@@ -20,7 +20,7 @@ package com.tle.web.remoting.graphql.schema
 
 import caliban._
 import caliban.relay.{Base64Cursor, Pagination, PaginationArgs}
-import caliban.schema.Annotations.GQLDescription
+import caliban.schema.Annotations.{GQLDescription, GQLName}
 import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
@@ -50,61 +50,6 @@ class TLEGroupSchema extends SchemaProvider {
       queries,
       mutations
     )
-  )
-
-  private val queries = Queries(
-    internalGroupById = args => tleGroupProvider.groupById(args.uniqueId),
-    internalGroupByName = args => tleGroupProvider.groupByName(args.name),
-    internalGroups = args =>
-      for {
-        pagination <- Pagination(args)
-        groups     <- tleGroupProvider.listGroups(args.parentId, pagination)
-      } yield groups,
-    internalGroupsByIds = args =>
-      for {
-        pagination <- Pagination(args)
-        groups     <- tleGroupProvider.listGroupsByIds(args.uniqueIds, pagination)
-      } yield groups,
-    internalGroupSearch = args =>
-      for {
-        pagination <- Pagination(args)
-        groups = tleGroupProvider.searchGroups(args.query, pagination)
-      } yield groups,
-    internalGroupUsers = args =>
-      for {
-        pagination <- Pagination(args)
-        users = tleGroupProvider.listGroupUsers(args.uniqueId, pagination)
-      } yield users
-  )
-
-  private val mutations = Mutations(
-    internalGroupCreate = args => tleGroupProvider.createGroup(args.name, args.parentId),
-    internalGroupDelete = args => tleGroupProvider.deleteGroup(args.uniqueId, args.deleteChildren),
-    internalGroupUpdate = args =>
-      tleGroupProvider.updateGroup(
-        args.uniqueId,
-        args.name,
-        args.description,
-        args.parentId,
-        args.users
-      )
-  )
-
-  case class Queries(
-      @GQLDescription("Retrieve a group by its unique ID")
-      internalGroupById: GroupByIdArgs => Option[Group],
-      @GQLDescription("Retrieve a group by its name")
-      internalGroupByName: GroupByNameArgs => Option[Group],
-      @GQLDescription(
-        "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
-      )
-      internalGroups: ListGroupsArgs => IO[CalibanError, GroupConnection],
-      @GQLDescription("List multiple groups by their unique IDs, invalid IDs will be ignored")
-      internalGroupsByIds: ListGroupsByIdsArgs => IO[CalibanError, GroupConnection],
-      @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
-      internalGroupSearch: GroupSearchArgs => IO[CalibanError, GroupConnection],
-      @GQLDescription("List user ids for all users in the specified group")
-      internalGroupUsers: ListGroupUsersArgs => IO[CalibanError, StringConnection]
   )
 
   case class GroupByIdArgs(
@@ -195,15 +140,27 @@ class TLEGroupSchema extends SchemaProvider {
       after: Option[String]
   ) extends PaginationArgs[Base64Cursor]
 
-  case class Mutations(
-      @GQLDescription("Create a new group")
-      internalGroupCreate: GroupCreateArgs => ResultWithErrors[Group],
-      @GQLDescription("Delete a group by its unique ID")
-      internalGroupDelete: GroupDeleteArgs => ResultWithErrors[Unit],
+  @GQLName("InternalGroupQueries")
+  case class InternalGroupQueryOps(
+      @GQLDescription("Retrieve a group by its unique ID")
+      byId: GroupByIdArgs => Option[Group],
+      @GQLDescription("Retrieve a group by its name")
+      byName: GroupByNameArgs => Option[Group],
       @GQLDescription(
-        "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
+        "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
       )
-      internalGroupUpdate: GroupUpdateArgs => ResultWithErrors[Group]
+      list: ListGroupsArgs => IO[CalibanError, GroupConnection],
+      @GQLDescription("List multiple groups by their unique IDs, invalid IDs will be ignored")
+      listByIds: ListGroupsByIdsArgs => IO[CalibanError, GroupConnection],
+      @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
+      search: GroupSearchArgs => IO[CalibanError, GroupConnection],
+      @GQLDescription("List user ids for all users in the specified group")
+      users: ListGroupUsersArgs => IO[CalibanError, StringConnection]
+  )
+
+  case class Queries(
+      @GQLDescription("Queries for internal groups")
+      internalGroups: InternalGroupQueryOps
   )
 
   case class GroupCreateArgs(
@@ -237,5 +194,64 @@ class TLEGroupSchema extends SchemaProvider {
         "The updated list of users in the group - replacing what was previously there."
       )
       users: Option[Set[String]]
+  )
+
+  @GQLName("InternalGroupMutations")
+  case class InternalGroupMutationOps(
+      @GQLDescription("Create a new group")
+      create: GroupCreateArgs => ResultWithErrors[Group],
+      @GQLDescription("Delete a group by its unique ID")
+      delete: GroupDeleteArgs => ResultWithErrors[Unit],
+      @GQLDescription(
+        "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
+      )
+      update: GroupUpdateArgs => ResultWithErrors[Group]
+  )
+
+  case class Mutations(
+      @GQLDescription("Operations for managing internal groups")
+      internalGroups: InternalGroupMutationOps
+  )
+
+  private val queries = Queries(
+    internalGroups = InternalGroupQueryOps(
+      byId = args => tleGroupProvider.groupById(args.uniqueId),
+      byName = args => tleGroupProvider.groupByName(args.name),
+      list = args =>
+        for {
+          pagination <- Pagination(args)
+          groups     <- tleGroupProvider.listGroups(args.parentId, pagination)
+        } yield groups,
+      listByIds = args =>
+        for {
+          pagination <- Pagination(args)
+          groups     <- tleGroupProvider.listGroupsByIds(args.uniqueIds, pagination)
+        } yield groups,
+      search = args =>
+        for {
+          pagination <- Pagination(args)
+          groups = tleGroupProvider.searchGroups(args.query, pagination)
+        } yield groups,
+      users = args =>
+        for {
+          pagination <- Pagination(args)
+          users = tleGroupProvider.listGroupUsers(args.uniqueId, pagination)
+        } yield users
+    )
+  )
+
+  private val mutations = Mutations(
+    internalGroups = InternalGroupMutationOps(
+      create = args => tleGroupProvider.createGroup(args.name, args.parentId),
+      delete = args => tleGroupProvider.deleteGroup(args.uniqueId, args.deleteChildren),
+      update = args =>
+        tleGroupProvider.updateGroup(
+          args.uniqueId,
+          args.name,
+          args.description,
+          args.parentId,
+          args.users
+        )
+    )
   )
 }
