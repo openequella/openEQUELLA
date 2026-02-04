@@ -397,6 +397,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     return 0;
   }
 
+  // Note: SECTION_ID_PARAM is not handled here because Moodle folders cannot be targeted via the
+  // 'push' interface - only sections are supported.
   @SuppressWarnings("null")
   private List<ConnectorContent> parseResponse(XmlDocument response, String moodleServerUrl) {
     ArrayList<ConnectorContent> contentList = new ArrayList<ConnectorContent>();
@@ -413,83 +415,74 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           contentList.add(content);
           content.setExternalUrl(
               URLUtils.newURL(moodleServerUrl, "mod/equella/view.php?id=" + value).toString());
-        }
-        if (key.equals("coursename")) {
-          content.setCourse(value);
-        } else if (key.equals(COURSE_ID_PARAM)) {
-          content.setCourseUrl(
-              URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
-        } else if (key.equals("section")) {
-          content.setFolder(value);
-        }
-        // else if( key.equals(SECTION_ID_PARAM) )
-        // {
-        // No, this is for folders, not sections. In fact, you can't
-        // add to folders via the 'push' interface. A bit of an
-        // oversight...
-        // if( !Check.isEmpty(value) )
-        // {
-        // int folderId = Integer.parseInt(value);
-        // if( folderId != 0 )
-        // {
-        // content.setFolderUrl(URLUtils.newURL(moodleServerUrl,
-        // "mod/folder/view.php?id=" + value).toString());
-        // }
-        // }
-        // }
-        else if (key.equals("dateAdded")) {
-          content.setDateAdded(new Date(Long.parseLong(value)));
-        } else if (key.equals("dateModified")) {
-          content.setDateModified(new Date(Long.parseLong(value)));
-        } else if (key.equals("uuid")) {
-          content.setUuid(value);
-        } else if (key.equals("version")) {
-          if (!Check.isEmpty(value)) {
-            content.setVersion(Integer.parseInt(value));
-          }
-        } else if (key.equals("moodlename")) {
-          content.setExternalTitle(value);
-        } else if (key.equals("moodledescription")) {
-          content.setExternalDescription(value);
-        } else if (key.equals("attachment")) {
-          content.setAttachmentUrl(value);
-        } else if (key.equals("attachmentUuid")) {
-          content.setAttachmentUuid(value);
-        } else if (key.equals("coursecode")) {
-          content.setCourseCode(value);
-        } else if (key.equals("instructor")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_INSTRUCTOR, getKey("moodle.finduses.instructor"), value);
-          }
-        } else if (key.equals("dateAccessed")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_DATE_ACCESSED,
-                getKey("moodle.finduses.dateAccessed"),
-                new Date(Long.parseLong(value)));
-          }
-        } else if (key.equals("enrollments")) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(
-                ConnectorContent.KEY_ENROLLMENTS,
-                getKey("moodle.finduses.enrollments"),
-                Integer.valueOf(value));
-          }
-        } else if (key.equals("visible")) {
-          content.setAvailable(Integer.parseInt(value) == 1);
-          content.setAttribute(
-              "visible", getKey("moodle.finduses.visible"), Integer.parseInt(value) == 1);
         } else if (key.equals("key")) {
           attributeKey = value;
-        } else if (key.equals(VALUE_NODE)) {
-          if (!Check.isEmpty(value)) {
-            content.setAttribute(attributeKey, getKey("moodle.finduses." + attributeKey), value);
-          }
+        } else if (content != null) {
+          populateContentField(content, key, value, moodleServerUrl, attributeKey);
         }
       }
     }
     return contentList;
+  }
+
+  private void populateContentField(
+      ConnectorContent content,
+      String key,
+      String value,
+      String moodleServerUrl,
+      String attributeKey) {
+    switch (key) {
+      case "coursename" -> content.setCourse(value);
+      case COURSE_ID_PARAM ->
+          content.setCourseUrl(
+              URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
+      case "section" -> content.setFolder(value);
+      case "dateAdded" -> content.setDateAdded(new Date(Long.parseLong(value)));
+      case "dateModified" -> content.setDateModified(new Date(Long.parseLong(value)));
+      case "uuid" -> content.setUuid(value);
+      case "version" -> {
+        if (!Check.isEmpty(value)) {
+          content.setVersion(Integer.parseInt(value));
+        }
+      }
+      case "moodlename" -> content.setExternalTitle(value);
+      case "moodledescription" -> content.setExternalDescription(value);
+      case "attachment" -> content.setAttachmentUrl(value);
+      case "attachmentUuid" -> content.setAttachmentUuid(value);
+      case "coursecode" -> content.setCourseCode(value);
+      case "instructor" -> {
+        if (!Check.isEmpty(value)) {
+          content.setAttribute(
+              ConnectorContent.KEY_INSTRUCTOR, getKey("moodle.finduses.instructor"), value);
+        }
+      }
+      case "dateAccessed" -> {
+        if (!Check.isEmpty(value)) {
+          content.setAttribute(
+              ConnectorContent.KEY_DATE_ACCESSED,
+              getKey("moodle.finduses.dateAccessed"),
+              new Date(Long.parseLong(value)));
+        }
+      }
+      case "enrollments" -> {
+        if (!Check.isEmpty(value)) {
+          content.setAttribute(
+              ConnectorContent.KEY_ENROLLMENTS,
+              getKey("moodle.finduses.enrollments"),
+              Integer.valueOf(value));
+        }
+      }
+      case "visible" -> {
+        boolean isVisible = Integer.parseInt(value) == 1;
+        content.setAvailable(isVisible);
+        content.setAttribute("visible", getKey("moodle.finduses.visible"), isVisible);
+      }
+      case VALUE_NODE -> {
+        if (!Check.isEmpty(value)) {
+          content.setAttribute(attributeKey, getKey("moodle.finduses." + attributeKey), value);
+        }
+      }
+    }
   }
 
   @Override
