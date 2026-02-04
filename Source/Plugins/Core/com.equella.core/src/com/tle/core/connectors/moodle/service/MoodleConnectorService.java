@@ -98,6 +98,8 @@ import org.xml.sax.XMLReader;
 public class MoodleConnectorService extends AbstractIntegrationConnectorRespository {
   private static final Logger LOGGER = LoggerFactory.getLogger(MoodleConnectorService.class);
   private static final String WEBSERVICE_FUNCTION_PREFIX = "mod_equella_";
+  private static final String MOODLE_WS_FUNCTION_PARAM = "wsfunction";
+  private static final String MOODLE_WS_TOKEN_PARAM = "wstoken";
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -525,8 +527,8 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
 
   private Map<String, String> functionCall(MoodleWebService ws, String function) {
     final Map<String, String> params = Maps.newHashMap();
-    params.put("wsfunction", WEBSERVICE_FUNCTION_PREFIX + function);
-    params.put("wstoken", ws.getToken());
+    params.put(MOODLE_WS_FUNCTION_PARAM, WEBSERVICE_FUNCTION_PREFIX + function);
+    params.put(MOODLE_WS_TOKEN_PARAM, ws.getToken());
     return params;
   }
 
