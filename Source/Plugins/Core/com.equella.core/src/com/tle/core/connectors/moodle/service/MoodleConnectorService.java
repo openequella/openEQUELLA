@@ -484,6 +484,9 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           content.setAttribute(attributeKey, getKey("moodle.finduses." + attributeKey), value);
         }
       }
+      default -> {
+        LOGGER.warn("Ignoring unknown Moodle response key: {} = {}", key, value);
+      }
     }
   }
 
