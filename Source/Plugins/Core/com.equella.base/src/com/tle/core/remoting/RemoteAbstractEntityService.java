@@ -95,6 +95,14 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
     return false;
   }
 
+  /**
+   * Cancels the editing session for an entity and removes its lock.
+   *
+   * @param id the ID of the entity being edited
+   * @param force if true, removes the lock regardless of which session owns it (forced unlock); if
+   *     false, only removes the lock if the current session owns it, otherwise throws a
+   *     LockedException
+   */
   void cancelEdit(long id, boolean force);
 
   T stopEdit(EntityPack<T> pack, boolean unlock);
