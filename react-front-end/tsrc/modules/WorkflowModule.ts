@@ -39,3 +39,10 @@ export const getWorkflowStatistics = (
   trend: OEQ.Task.Trend,
 ): Promise<OEQ.Workflow.WorkflowStatistics> =>
   OEQ.Workflow.getWorkflowStatistics(API_BASE_URL, uuid, trend);
+
+/**
+ * Retrieves a list of workflows that the current user can manage.
+ */
+export const getManageableWorkflows = (): Promise<
+  OEQ.Workflow.WorkflowSummary[]
+> => OEQ.Workflow.getManageableWorkflows(API_BASE_URL);

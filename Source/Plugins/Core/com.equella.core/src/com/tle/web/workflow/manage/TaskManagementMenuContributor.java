@@ -59,7 +59,7 @@ public class TaskManagementMenuContributor extends AbstractCachedMenuContributor
 
   @Override
   protected Boolean getCachedObject(SectionInfo info) {
-    return !workflowService.listManagable().isEmpty();
+    return !workflowService.listManageable().isEmpty();
   }
 
   @Override

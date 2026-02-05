@@ -19,6 +19,7 @@
 package com.tle.web.api.workflow;
 
 import com.google.common.base.Strings;
+import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.workflow.Trend;
@@ -36,10 +37,14 @@ import com.tle.web.api.workflow.interfaces.WorkflowResource;
 import com.tle.web.api.workflow.interfaces.beans.TaskTrendBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowBean;
 import com.tle.web.api.workflow.interfaces.beans.WorkflowStatisticsBean;
+import com.tle.web.api.workflow.interfaces.beans.WorkflowSummaryBean;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -119,6 +124,14 @@ public class WorkflowResourceImpl
     return buildWorkflowStatisticsResponse(trends, itemCount);
   }
 
+  /** Get a list of workflows that the current user can manage (with MANAGE_WORKFLOW privilege). */
+  @Override
+  public Response getManageableWorkflows() {
+    Collection<BaseEntityLabel> workflowEntities = workflowService.listManageable();
+    List<WorkflowSummaryBean> beans = toWorkflowSummaryBeans(new ArrayList<>(workflowEntities));
+    return Response.ok(beans).build();
+  }
+
   /**
    * Helper to parse the trend string parameter into a Trend enum.
    *
@@ -158,32 +171,42 @@ public class WorkflowResourceImpl
 
   /** Helper to batch resolve task names and build the standard JSON response. */
   private Response buildTrendResponse(List<TaskTrend> trends) {
-    List<TaskTrendBean> beans = transformToTrendBeans(trends);
+    List<TaskTrendBean> beans = toTrendBeans(trends);
     return Response.ok(beans).build();
   }
 
   /** Helper to build a response with a wrapper object with trend beans and item count. */
   private Response buildWorkflowStatisticsResponse(List<TaskTrend> trends, int itemCount) {
-    List<TaskTrendBean> trendBeans = transformToTrendBeans(trends);
+    List<TaskTrendBean> trendBeans = toTrendBeans(trends);
     WorkflowStatisticsBean statistics = new WorkflowStatisticsBean(trendBeans, itemCount);
     return Response.ok(statistics).build();
   }
 
-  private List<TaskTrendBean> transformToTrendBeans(List<TaskTrend> trends) {
-    Map<Long, String> bundleNames = resolveBundleNames(trends);
-    return trends.stream().map(t -> mapToTrendBean(t, bundleNames)).collect(Collectors.toList());
+  private <T> Map<Long, String> collectBundleNamesFrom(
+      Collection<T> entities, Function<T, Long> idExtractor) {
+    List<Long> bundleIds = entities.stream().map(idExtractor).collect(Collectors.toList());
+    return collectBundleNames(bundleIds);
   }
 
-  private Map<Long, String> resolveBundleNames(List<TaskTrend> trends) {
-    List<Long> bundleIds = trends.stream().map(TaskTrend::getNameId).collect(Collectors.toList());
+  // Helper to collect bundle names and update bundle cache for given bundle IDs.
+  private Map<Long, String> collectBundleNames(List<Long> bundleIds) {
     bundleCache.addBundleIds(bundleIds);
     return bundleCache.getBundleMap();
   }
 
-  private TaskTrendBean mapToTrendBean(TaskTrend trend, Map<Long, String> bundleNames) {
+  private Map<Long, String> collectBundleNamesForTrends(List<TaskTrend> trends) {
+    return collectBundleNamesFrom(trends, TaskTrend::getNameId);
+  }
+
+  private TaskTrendBean toTrendBean(TaskTrend trend, Map<Long, String> bundleNames) {
     String taskId = resolveTaskIdentifier(trend);
     String taskName = resolveBundleName(trend.getNameId(), bundleNames, taskId);
     return new TaskTrendBean(taskId, taskName, trend.getWaiting(), trend.getTrend());
+  }
+
+  private List<TaskTrendBean> toTrendBeans(List<TaskTrend> trends) {
+    Map<Long, String> bundleNames = collectBundleNamesForTrends(trends);
+    return trends.stream().map(t -> toTrendBean(t, bundleNames)).collect(Collectors.toList());
   }
 
   private String resolveTaskIdentifier(TaskTrend trend) {
@@ -197,5 +220,24 @@ public class WorkflowResourceImpl
               LOGGER.warn("Bundle name not found for ID: {}, using fallback: {}", nameId, fallback);
               return fallback;
             });
+  }
+
+  private Map<Long, String> collectBundleNamesForWorkflows(List<BaseEntityLabel> workflowEntities) {
+    return collectBundleNamesFrom(workflowEntities, BaseEntityLabel::getBundleId);
+  }
+
+  private WorkflowSummaryBean toWorkflowSummaryBean(
+      BaseEntityLabel workflowEntity, Map<Long, String> bundleNames) {
+    Long nameBundleId = workflowEntity.getBundleId();
+    String uuid = workflowEntity.getUuid();
+    String name = resolveBundleName(nameBundleId, bundleNames, uuid);
+    return new WorkflowSummaryBean(uuid, name);
+  }
+
+  private List<WorkflowSummaryBean> toWorkflowSummaryBeans(List<BaseEntityLabel> workflowEntities) {
+    Map<Long, String> bundleNames = collectBundleNamesForWorkflows(workflowEntities);
+    return workflowEntities.stream()
+        .map(w -> toWorkflowSummaryBean(w, bundleNames))
+        .collect(Collectors.toList());
   }
 }

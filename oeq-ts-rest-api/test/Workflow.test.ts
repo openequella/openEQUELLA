@@ -35,6 +35,9 @@ const getAllWorkflowsTrends = (trend: Trend) =>
 const getWorkflowStatistics = (uuid: string, trend: Trend = TREND_WEEK) =>
   OEQ.Workflow.getWorkflowStatistics(TC.API_PATH, uuid, trend);
 
+const getManageableWorkflows = () =>
+  OEQ.Workflow.getManageableWorkflows(TC.API_PATH);
+
 beforeAll(() => OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD));
 afterAll(() => logout(TC.API_PATH));
 
@@ -89,5 +92,12 @@ describe('Workflow Trends API', () => {
         );
       }
     );
+  });
+
+  describe('getManageableWorkflows', () => {
+    it('should be able to get all manageable workflows', async () => {
+      const result = await getManageableWorkflows();
+      expect(Array.isArray(result)).toBe(true);
+    });
   });
 });
