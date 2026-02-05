@@ -191,10 +191,12 @@ type MetadataSchema {
 }
 
 type MetadataSchemaMutations {
-  "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+  "Start editing an existing metadata schema. Expected that it will be followed by a stopEdit or cancelEdit operation."
   startEdit("ID of the metadata schema to edit, or none to create a new one" id: Long!): EditableEntityMetadataSchema!
-  "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+  "Start creating a new metadata schema. Typically followed by an add operation with details for new schema."
   startCreate: EditableEntitySkeleton!
+  "Stop editing a metadata schema - discarding any changes made, and unlocking schema."
+  cancelEdit("ID of the metadata schema edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it." force: Boolean): Unit
 }
 
 type MetadataSchemaQueries {

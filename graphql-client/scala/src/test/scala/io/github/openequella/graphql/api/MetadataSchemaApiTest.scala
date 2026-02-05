@@ -390,4 +390,55 @@ class MetadataSchemaApiTest
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
+
+  describe("cancelEdit") {
+    it("should cancel editing a metadata schema successfully") {
+      Given("A valid metadata schema ID")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("startEdit is called followed by cancelEdit")
+      val editResult = MetadataSchemaApi.startEdit(schemaId)
+      editResult.isRight shouldBe true
+
+      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+
+      Then("it should complete without errors")
+      cancelResult.isRight shouldBe true
+    }
+
+    it("should return a NotFoundError for an invalid schema ID") {
+      Given("An invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("cancelEdit is called with the invalid schema ID")
+      val result = MetadataSchemaApi.cancelEdit(invalidSchemaId)
+
+      Then("it should return a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("should cancel editing with force parameter") {
+      Given("A valid metadata schema ID and force set to true")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("startEdit is called followed by cancelEdit with force=true")
+      val editResult = MetadataSchemaApi.startEdit(schemaId)
+      editResult.isRight shouldBe true
+
+      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+
+      Then("it should complete without errors")
+      cancelResult.isRight shouldBe true
+    }
+
+    it("should return an AccessDeniedError if not authenticated") {
+      When("an unauthenticated user tries to cancel editing a schema")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.cancelEdit(1)(unauthenticated)
+      }
+
+      Then("it should return an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
 }

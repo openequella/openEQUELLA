@@ -23,19 +23,31 @@ import caliban.client._
 
 object MetadataSchemaMutations {
 
-  /** Start editing an existing metadata schema. Expected that it will be followed by a
-    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
+  /** Start editing an existing metadata schema. Expected that it will be followed by a stopEdit or
+    * cancelEdit operation.
     */
   def startEdit[A](id: Long)(innerSelection: SelectionBuilder[EditableEntityMetadataSchema, A])(
       implicit encoder0: ArgEncoder[Long]
   ): SelectionBuilder[MetadataSchemaMutations, A] = _root_.caliban.client.SelectionBuilder
     .Field("startEdit", Obj(innerSelection), arguments = List(Argument("id", id, "Long!")))
 
-  /** Start creating a new metadata schema. Expected that it will be followed by a
-    * metadataSchemaStopEdit or metadataSchemaCancelEdit operation.
+  /** Start creating a new metadata schema. Typically followed by an add operation with details for
+    * new schema.
     */
   def startCreate[A](
       innerSelection: SelectionBuilder[EditableEntitySkeleton, A]
   ): SelectionBuilder[MetadataSchemaMutations, A] =
     _root_.caliban.client.SelectionBuilder.Field("startCreate", Obj(innerSelection))
+
+  /** Stop editing a metadata schema - discarding any changes made, and unlocking schema.
+    */
+  def cancelEdit(id: Long, force: scala.Option[Boolean] = None)(implicit
+      encoder0: ArgEncoder[Long],
+      encoder1: ArgEncoder[scala.Option[Boolean]]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[Unit]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "cancelEdit",
+      OptionOf(Scalar()),
+      arguments = List(Argument("id", id, "Long!"), Argument("force", force, "Boolean"))
+    )
 }
