@@ -58,6 +58,9 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
         new URL(
             pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()),
             resourcePath);
+    if (res.getPath().contains("../") || res.getPath().contains("..\\")) {
+        throw new SecurityException("Invalid file path");
+    }
     final File file = IoUtil.url2file(res);
 
     ContentStream stream;
