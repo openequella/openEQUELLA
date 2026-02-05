@@ -19,7 +19,11 @@ import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
-import { TaskTrendDetailsCodec, WorkflowStatisticsCodec } from './gen/Workflow';
+import {
+  TaskTrendDetailsCodec,
+  WorkflowStatisticsCodec,
+  WorkflowSummaryCodec,
+} from './gen/Workflow';
 import { Trend } from './Task';
 import { validate } from './Utils';
 
@@ -40,6 +44,12 @@ const TRENDS_API_PATH = '/trends';
  * Appended to workflow paths: /workflow/{uuid}/statistics
  */
 const STATISTICS_API_PATH = '/statistics';
+
+/**
+ * Path segment for manageable workflow endpoints.
+ * Appended to workflow paths: /workflow/manageable
+ */
+const MANAGEABLE_API_PATH = '/manageable';
 
 /**
  * Details of task trend including its id, name, current waiting count, and trend.
@@ -77,6 +87,26 @@ export interface WorkflowStatistics {
 const tasksTrendsValidator = pipe(TaskTrendDetailsCodec, t.array, validate);
 
 /**
+ * Summary information about a workflow.
+ */
+export interface WorkflowSummary {
+  /**
+   * Unique identifier of the workflow.
+   */
+  uuid: string;
+  /**
+   * The name of the workflow.
+   */
+  name: string;
+}
+
+const WorkflowSummariesValidator = pipe(
+  WorkflowSummaryCodec,
+  t.array,
+  validate
+);
+
+/**
  * Retrieves a list of tasks trends across all workflows.
  *
  * @param apiBasePath The base path of the API.
@@ -108,4 +138,17 @@ export const getWorkflowStatistics = (
     `${apiBasePath}${BASE_WORKFLOW_API_PATH}/${uuid}${STATISTICS_API_PATH}`,
     validate(WorkflowStatisticsCodec),
     { trend }
+  );
+
+/**
+ * Retrieves a list of workflows that the current user can manage.
+ *
+ * @param apiBasePath The base path of the API.
+ */
+export const getManageableWorkflows = (
+  apiBasePath: string
+): Promise<WorkflowSummary[]> =>
+  GET<WorkflowSummary[]>(
+    `${apiBasePath}${BASE_WORKFLOW_API_PATH}${MANAGEABLE_API_PATH}`,
+    WorkflowSummariesValidator
   );

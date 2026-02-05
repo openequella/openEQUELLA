@@ -14,11 +14,15 @@ class WorkflowApiTest extends AbstractRestApiTest {
   private val TrendWeek  = "WEEK"
   private val TrendMonth = "MONTH"
 
-  private def getWorkflowTrendsEndpoint: String =
-    getTestConfig.getInstitutionUrl + "api/workflow/trends"
+  private val BASE_API_PATH = s"${getTestConfig.getInstitutionUrl}api/workflow"
+
+  private val workflowTrendsEndpoint = s"${BASE_API_PATH}/trends"
 
   private def getWorkflowStatisticsEndpoint(workflowUuid: String): String =
-    s"${getTestConfig.getInstitutionUrl}api/workflow/$workflowUuid/statistics"
+    s"${BASE_API_PATH}/$workflowUuid/statistics"
+
+  private val getManageableWorkflowsEndpoint: String =
+    s"${BASE_API_PATH}/manageable"
 
   // --- Tests for GET all workflow trends ---
 
@@ -34,7 +38,7 @@ class WorkflowApiTest extends AbstractRestApiTest {
     dataProvider = "trendValues"
   )
   def trendsWithValidValue(trendValue: String): Unit = {
-    val result = executeRequestExpecting200(getWorkflowTrendsEndpoint, trendValue)
+    val result = executeRequestExpecting200(workflowTrendsEndpoint, Option(trendValue))
     assertNotNull(result)
     validateTrendsStructure(result)
   }
@@ -51,12 +55,12 @@ class WorkflowApiTest extends AbstractRestApiTest {
     dataProvider = "invalidTrendValues"
   )
   def trendsWithInvalidValue(trendValue: String): Unit =
-    executeRequestExpectingStatus(getWorkflowTrendsEndpoint, trendValue, HttpStatus.SC_BAD_REQUEST)
+    executeRequestExpectingStatus(workflowTrendsEndpoint, trendValue, HttpStatus.SC_BAD_REQUEST)
 
   @Test(description = "Verify empty response structure when user lacks manage workflow permission")
   def emptyTrendsResponse(): Unit = {
     loginAsLowPrivilegeUser()
-    val result = executeRequestExpecting200(getWorkflowTrendsEndpoint, TrendWeek)
+    val result = executeRequestExpecting200(workflowTrendsEndpoint, Option(TrendWeek))
     assertTrue(result.isArray, "Response should be a JSON array")
     assertEquals(result.size(), 0, "Expected empty array for user with no workflow permissions")
     login()
@@ -67,7 +71,7 @@ class WorkflowApiTest extends AbstractRestApiTest {
   @Test(description = "Retrieve trends and item count for a specific workflow")
   def workflowStatistics(): Unit = {
     val endpoint = getWorkflowStatisticsEndpoint(TargetWorkflowUuid)
-    val result   = executeRequestExpecting200(endpoint, TrendWeek)
+    val result   = executeRequestExpecting200(endpoint, Option(TrendWeek))
 
     assertNotNull(result)
     validateStatisticsStructure(result)
@@ -76,7 +80,7 @@ class WorkflowApiTest extends AbstractRestApiTest {
   @Test(description = "Retrieve an empty list if the workflow has no waiting tasks")
   def workflowStatisticsNoTasks(): Unit = {
     val endpoint = getWorkflowStatisticsEndpoint(NoTasksWorkflowUuid)
-    val result   = executeRequestExpecting200(endpoint, TrendWeek)
+    val result   = executeRequestExpecting200(endpoint, Option(TrendWeek))
 
     val taskTrends = getTaskTrends(result)
     val itemCount  = getItemCount(result)
@@ -114,9 +118,30 @@ class WorkflowApiTest extends AbstractRestApiTest {
     executeRequestExpectingStatus(endpoint, "INVALID", HttpStatus.SC_BAD_REQUEST)
   }
 
+  // --- Tests for GET manageable workflows ---
+
+  @Test(description = "Get all manageable workflows")
+  def manageableWorkflows(): Unit = {
+    val result = executeRequestExpecting200(getManageableWorkflowsEndpoint)
+    validWorkflowSummary(result)
+  }
+
+  @Test(description = "Return empty list if user doesn't have MANAGE_WORKFLOW permission")
+  def manageableWorkflowsWithoutPermission(): Unit = {
+    loginAsLowPrivilegeUser()
+
+    val result = executeRequestExpecting200(getManageableWorkflowsEndpoint)
+    assertTrue(result.isEmpty)
+
+    login()
+  }
+
   /** Execute a GET request and return the parsed JSON, explicitly asserting a 200 OK status.
     */
-  private def executeRequestExpecting200(url: String, trendParam: String): JsonNode = {
+  private def executeRequestExpecting200(
+      url: String,
+      trendParam: Option[String] = None
+  ): JsonNode = {
     val method     = buildGetMethod(url, trendParam)
     val statusCode = makeClientRequest(method)
     assertEquals(
@@ -136,7 +161,7 @@ class WorkflowApiTest extends AbstractRestApiTest {
       trendParam: String,
       expectedCode: Int
   ): Unit = {
-    val method     = buildGetMethod(url, trendParam)
+    val method     = buildGetMethod(url, Option(trendParam))
     val statusCode = makeClientRequest(method)
     assertEquals(
       statusCode,
@@ -146,17 +171,32 @@ class WorkflowApiTest extends AbstractRestApiTest {
   }
 
   /** Build a GET method with an optional "trend" query parameter. */
-  private def buildGetMethod(url: String, trendParam: String): HttpMethod = {
+  private def buildGetMethod(url: String, trendParam: Option[String]): HttpMethod = {
     val method = new GetMethod(url)
-    if (trendParam != null) {
-      method.setQueryString(Array(new NameValuePair("trend", trendParam)))
-    }
+    trendParam.foreach(trend => method.setQueryString(Array(new NameValuePair("trend", trend))))
     method
   }
 
   private def getItemCount(result: JsonNode): JsonNode = result.get("itemCount")
 
   private def getTaskTrends(result: JsonNode): JsonNode = result.get("taskTrends")
+
+  private def validWorkflowSummary(result: JsonNode): Unit = {
+    assertTrue(result.isArray, "Response should be an array")
+
+    val elements = result.elements()
+    while (elements.hasNext) {
+      val item = elements.next()
+      val uuid = item.get("uuid")
+      val name = item.get("name")
+
+      assertNotNull(uuid, "uuid field should exist")
+      assertTrue(uuid.isTextual, "uuid should be a string")
+
+      assertNotNull(name, "name field should exist")
+      assertTrue(name.isTextual, "name should be a string")
+    }
+  }
 
   /** Validates that the provided JSON response complies with the expected structure for Workflow
     * Trends.

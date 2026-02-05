@@ -129,4 +129,9 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
               allowableValues = "WEEK, MONTH")
           @QueryParam("trend")
           String trend);
+
+  @GET
+  @Path("/manageable")
+  @ApiOperation("List all workflows the current user can manage")
+  public Response getManageableWorkflows();
 }
