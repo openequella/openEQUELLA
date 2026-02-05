@@ -65,7 +65,8 @@ class MetadataSchemaSchema extends SchemaProvider {
   private val mutations = Mutations(
     metadataSchema = MetadataSchemaMutationOps(
       startEdit = args => schemaProvider.startEdit(args.id),
-      startCreate = () => schemaProvider.startCreate()
+      startCreate = () => schemaProvider.startCreate(),
+      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force)
     )
   )
 
@@ -112,17 +113,30 @@ class MetadataSchemaSchema extends SchemaProvider {
   @GQLName("MetadataSchemaMutations")
   case class MetadataSchemaMutationOps(
       @GQLDescription(
-        "Start editing an existing metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+        "Start editing an existing metadata schema. Expected that it will be followed by a stopEdit or cancelEdit operation."
       )
       startEdit: MetadataSchemaStartEditArgs => EditableEntity[MetadataSchema],
       @GQLDescription(
-        "Start creating a new metadata schema. Expected that it will be followed by a metadataSchemaStopEdit or metadataSchemaCancelEdit operation."
+        "Start creating a new metadata schema. Typically followed by an add operation with details for new schema."
       )
-      startCreate: () => EditableEntitySkeleton
+      startCreate: () => EditableEntitySkeleton,
+      @GQLDescription(
+        "Stop editing a metadata schema - discarding any changes made, and unlocking schema."
+      )
+      cancelEdit: MetadataSchemaCancelEditArgs => ResultWithErrors[Unit]
   )
 
   case class MetadataSchemaStartEditArgs(
       @GQLDescription("ID of the metadata schema to edit, or none to create a new one")
       id: Long
+  )
+
+  case class MetadataSchemaCancelEditArgs(
+      @GQLDescription("ID of the metadata schema edit session to cancel")
+      id: Long,
+      @GQLDescription(
+        "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it."
+      )
+      force: Option[Boolean] = None
   )
 }
