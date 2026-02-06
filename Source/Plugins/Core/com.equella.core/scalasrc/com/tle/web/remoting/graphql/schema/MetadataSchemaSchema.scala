@@ -121,7 +121,7 @@ class MetadataSchemaSchema extends SchemaProvider {
       )
       startCreate: () => EditableEntitySkeleton,
       @GQLDescription(
-        "Stop editing a metadata schema - discarding any changes made, and unlocking schema."
+        "Cancel editing a metadata schema - discarding any changes made and unlocking the schema."
       )
       cancelEdit: MetadataSchemaCancelEditArgs => ResultWithErrors[Unit]
   )

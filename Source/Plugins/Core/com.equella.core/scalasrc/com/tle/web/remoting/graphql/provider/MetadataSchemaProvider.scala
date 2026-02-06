@@ -138,7 +138,7 @@ class MetadataSchemaProvider @Inject() (
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def cancelEdit(id: Long, force: Option[Boolean] = None): Either[ProviderError, Unit] = {
     LOGGER.debug(s"Cancelling edit of metadata schema with id $id")
-    ProviderError.Try("Failed to cancel edit of metadata schema: ") {
+    ProviderError.Try(s"Failed to cancel edit of metadata schema with id $id: ") {
       schemaService.cancelEdit(id, force.getOrElse(false))
     }
   }
