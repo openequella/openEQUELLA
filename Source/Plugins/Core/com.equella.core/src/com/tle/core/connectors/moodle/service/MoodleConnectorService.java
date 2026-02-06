@@ -475,7 +475,9 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           content.setCourseUrl(
               URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
       case "version" -> {
-        if (!Check.isEmpty(value)) content.setVersion(Integer.parseInt(value));
+        if (!Check.isEmpty(value)) {
+          content.setVersion(Integer.parseInt(value));
+        }
       }
       case "instructor" ->
           setAttributeIfPresent(
