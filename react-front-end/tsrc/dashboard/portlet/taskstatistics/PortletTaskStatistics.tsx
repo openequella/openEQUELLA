@@ -21,26 +21,20 @@ import {
   Divider,
   FormControl,
   InputLabel,
-  Link as MuiLink,
   MenuItem,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
 import * as OEQ from "@openequella/rest-api-client";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
+import { absurd } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
 import { TaskStatisticsPortlet } from "../../../../../oeq-ts-rest-api/src/Dashboard";
 import {
   isManageWorkflowACLGranted,
@@ -48,17 +42,18 @@ import {
 } from "../../../modules/SecurityModule";
 import {
   getAllWorkflowsTrends,
+  getManageableWorkflows,
   getWorkflowStatistics,
 } from "../../../modules/WorkflowModule";
 import { languageStrings } from "../../../util/langstrings";
 import { simpleMatch } from "../../../util/match";
 import { DraggablePortlet } from "../../components/DraggablePortlet";
 import { PortletSearchResultNoneFound } from "../../components/PortletSearchResultNoneFound";
-import { PortletBasicProps } from "../PortletHelper";
-import { buildTaskOnClickHandler } from "../PortletTasksHelper";
+import { logWarn, PortletBasicProps } from "../PortletHelper";
 import { ItemCount } from "./ItemCount";
 import { classes, TaskStatisticsContent } from "./TaskStatisticsContent";
 import { TaskStatisticsContentSkeleton } from "./TaskStatisticsContentSkeleton";
+import { TrendTable } from "./TrendTable";
 
 const strings = {
   ...languageStrings.dashboard.portlets.taskStatistics,
@@ -69,6 +64,12 @@ export interface PortletTaskStatisticsProps extends PortletBasicProps {
    * Configuration details of the portlet.
    */
   cfg: TaskStatisticsPortlet;
+
+  // Data providers (for testing/DI)
+  /**
+   * A provider function to fetch manageable workflows. Primarily for testing.
+   */
+  getManageableWorkflowsProvider?: typeof getManageableWorkflows;
   /**
    * A provider function to fetch all workflow trends. Primarily for testing.
    */
@@ -77,6 +78,8 @@ export interface PortletTaskStatisticsProps extends PortletBasicProps {
    * A provider function to fetch specific workflow statistics. Primarily for testing.
    */
   getWorkflowStatisticsProvider?: typeof getWorkflowStatistics;
+
+  // Permission providers (for testing/DI)
   /**
    * A provider function to check manage workflow ACL permission. Primarily for testing.
    */
@@ -124,14 +127,13 @@ type WorkflowStatisticsState =
  */
 export const PortletTaskStatistics = ({
   cfg,
+  getManageableWorkflowsProvider = getManageableWorkflows,
   getAllWorkflowTrendsProvider = getAllWorkflowsTrends,
   getWorkflowStatisticsProvider = getWorkflowStatistics,
   isManageWorkflowACLGrantedProvider = isManageWorkflowACLGranted,
   isViewManagementPageACLGrantedProvider = isViewManagementPageACLGranted,
   ...restProps
 }: PortletTaskStatisticsProps) => {
-  const history = useHistory();
-
   const [loadingState, setLoadingState] = React.useState<
     "loading" | "loaded" | "noPermission"
   >("loading");
@@ -141,6 +143,10 @@ export const PortletTaskStatistics = ({
     useState<string>(WITHIN_ALL_WORKFLOWS);
   const [selectedTrend, setSelectedTrend] = useState<OEQ.Task.Trend>(cfg.trend);
 
+  const [workflowOptions, setWorkflowOptions] = useState<
+    OEQ.Workflow.WorkflowSummary[]
+  >([]);
+
   const [hasViewManagementPageAcl, setHasViewManagementPageAcl] =
     useState<boolean>(false);
   const [workflowStatistics, setWorkflowStatistics] =
@@ -149,14 +155,25 @@ export const PortletTaskStatistics = ({
     });
 
   useEffect(() => {
+    const onFail = (e: string) => {
+      logWarn(strings.failedToFetchWorkflowOptions, e);
+      setWorkflowOptions([]);
+    };
+
+    const fetchWorkflowOptions = pipe(
+      TE.tryCatch(() => getManageableWorkflowsProvider(), String),
+      TE.match(onFail, setWorkflowOptions),
+      T.tapIO(() => () => setLoadingState("loaded")),
+    );
+
     pipe(
       isManageWorkflowACLGrantedProvider,
-      TE.match(
+      TE.matchW(
         (_) => setLoadingState("noPermission"),
-        (_) => setLoadingState("loaded"),
+        () => fetchWorkflowOptions(),
       ),
     )();
-  }, [isManageWorkflowACLGrantedProvider]);
+  }, [isManageWorkflowACLGrantedProvider, getManageableWorkflowsProvider]);
 
   useEffect(() => {
     if (loadingState !== "loaded") {
@@ -194,7 +211,7 @@ export const PortletTaskStatistics = ({
       TE.tryCatch(fetchStatistics, String),
       TE.match(
         (e) => {
-          console.warn(`${strings.failedToFetchStatistics} [${e}]`);
+          logWarn(strings.failedToFetchStatistics, e);
           setWorkflowStatistics({ state: "noResults" });
         },
         (statistics) => {
@@ -215,8 +232,6 @@ export const PortletTaskStatistics = ({
     loadingState,
   ]);
 
-  const taskOnClick = buildTaskOnClickHandler(history, "ptspr.showTaskFilter");
-
   const handleTrendChange = (
     _: React.MouseEvent<HTMLElement>,
     newTrend: OEQ.Task.Trend,
@@ -231,8 +246,17 @@ export const PortletTaskStatistics = ({
         label={strings.workflow.label}
         onChange={(e) => setSelectedWorkflow(e.target.value)}
       >
-        <MenuItem value="all">{strings.workflow.allWorkflows}</MenuItem>
-        {/*TODO: OEQ-2702 render other workflow options fetched from API*/}
+        <MenuItem key={WITHIN_ALL_WORKFLOWS} value={WITHIN_ALL_WORKFLOWS}>
+          {strings.workflow.allWorkflows}
+        </MenuItem>
+        {pipe(
+          workflowOptions,
+          A.map((w) => (
+            <MenuItem key={w.uuid} value={w.uuid}>
+              {w.name}
+            </MenuItem>
+          )),
+        )}
       </Select>
     </FormControl>
   );
@@ -254,46 +278,9 @@ export const PortletTaskStatistics = ({
     </ToggleButtonGroup>
   );
 
-  const renderTrendTableRow = ({
-    taskId,
-    name,
-    waiting,
-    trend,
-  }: OEQ.Workflow.TaskTrendDetails) => (
-    <TableRow key={taskId} className={classes.tableRow}>
-      <TableCell>
-        <MuiLink
-          component="button"
-          onClick={taskOnClick(taskId)}
-          className={classes.tableLink}
-          underline="hover"
-        >
-          {name}
-        </MuiLink>
-      </TableCell>
-      <TableCell align="right">{waiting}</TableCell>
-      <TableCell align="right">{trend > 0 ? `+${trend}` : trend}</TableCell>
-    </TableRow>
-  );
-
-  const renderTrendTable = (statistics: OEQ.Workflow.TaskTrendDetails[]) => (
-    <TableContainer classes={{ root: classes.table }}>
-      <Table stickyHeader size="small" aria-label={strings.table.label}>
-        <TableHead>
-          <TableRow>
-            <TableCell>{strings.table.colTask}</TableCell>
-            <TableCell align="right">{strings.table.colWaiting}</TableCell>
-            <TableCell align="right">{strings.table.colTrend}</TableCell>
-          </TableRow>
-        </TableHead>
-
-        <TableBody>{pipe(statistics, A.map(renderTrendTableRow))}</TableBody>
-      </Table>
-    </TableContainer>
-  );
-
-  const renderStatisticsResults = () => {
-    switch (workflowStatistics.state) {
+  const renderStatisticsResults = (): React.ReactNode => {
+    const { state } = workflowStatistics;
+    switch (state) {
       case "initial":
         return null;
       case "fetching":
@@ -304,10 +291,11 @@ export const PortletTaskStatistics = ({
         );
       case "success": {
         const { taskTrends, itemCount } = workflowStatistics.results;
+        const hasItems = itemCount !== undefined && itemCount > 0;
         return (
           <>
-            {renderTrendTable(taskTrends)}
-            {itemCount && itemCount > 0 && (
+            <TrendTable trends={taskTrends} />
+            {hasItems && (
               <ItemCount
                 workflow={selectedWorkflow}
                 itemCount={itemCount}
@@ -317,6 +305,8 @@ export const PortletTaskStatistics = ({
           </>
         );
       }
+      default:
+        return absurd(state);
     }
   };
 

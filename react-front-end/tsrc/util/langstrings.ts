@@ -394,14 +394,11 @@ export const languageStrings = {
         unableToFindItemsOfType: "Unable to find items of type:",
       },
       taskStatistics: {
+        failedToFetchStatistics: "Failed to fetch workflow statistics.",
+        failedToFetchWorkflowOptions: "Failed to fetch manageable workflows.",
+        itemCount: "Total resources in workflow: %s",
         noPermission: "You do not have permission to manage any workflows.",
         noResult: "There are no results for the selected workflow.",
-        failedToFetchStatistics: "Failed to fetch workflow statistics.",
-        itemCount: "Total resources in workflow: %s",
-        workflow: {
-          label: "Workflow",
-          allWorkflows: "Within all workflows",
-        },
         trend: {
           label: "trend period",
           weekly: "Weekly",
@@ -412,6 +409,10 @@ export const languageStrings = {
           colTask: "Task",
           colWaiting: "Waiting",
           colTrend: "Trend",
+        },
+        workflow: {
+          label: "Workflow",
+          allWorkflows: "Within all workflows",
         },
       },
       unsupported: {

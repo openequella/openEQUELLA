@@ -213,3 +213,12 @@ export const scrollToPortlet = (portlet: Element): void => {
     });
   }
 };
+
+/**
+ * Logs a warning message to the console with the provided error message and error details.
+ *
+ * @param prefix The prefix message to provide context for the error.
+ * @param error The error details to be logged.
+ */
+export const logWarn = (prefix: string, error: unknown) =>
+  console.warn(`${prefix} [${error}]`);
