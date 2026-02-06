@@ -22,8 +22,12 @@ import { privateTaskStatisticsPortlet } from "../../../__mocks__/Dashboard.mock"
 import { neverReturn } from "../../../__mocks__/Utils";
 import {
   failingGetAllWorkflowTrends,
+  failingGetManageableWorkflows,
+  failingGetWorkflowStatistics,
   getAllWorkflowTrends,
   getEmptyWorkflowTrends,
+  getManageableWorkflows,
+  getWorkflowStatistics,
 } from "../../../__mocks__/WorkflowModule.mock";
 import {
   PortletTaskStatistics,
@@ -42,8 +46,11 @@ const Template: StoryFn<PortletTaskStatisticsProps> = (args) => (
 export const Standard: StoryFn<PortletTaskStatisticsProps> = Template.bind({});
 Standard.args = {
   cfg: privateTaskStatisticsPortlet,
+  getManageableWorkflowsProvider: getManageableWorkflows,
   getAllWorkflowTrendsProvider: getAllWorkflowTrends,
+  getWorkflowStatisticsProvider: getWorkflowStatistics,
   isManageWorkflowACLGrantedProvider: TE.right(true),
+  isViewManagementPageACLGrantedProvider: TE.left("No permission"),
 };
 
 export const WithMonthlyTrend: StoryFn<PortletTaskStatisticsProps> =
@@ -78,6 +85,19 @@ ErrorTrends.args = {
   getAllWorkflowTrendsProvider: failingGetAllWorkflowTrends,
 };
 
+export const ErrorWorkflowOptions: StoryFn<PortletTaskStatisticsProps> =
+  Template.bind({});
+ErrorWorkflowOptions.args = {
+  ...Standard.args,
+  getManageableWorkflowsProvider: failingGetManageableWorkflows,
+};
+
+export const ErrorStatisticsForSpecificWorkflow = Template.bind({});
+ErrorStatisticsForSpecificWorkflow.args = {
+  ...Standard.args,
+  getWorkflowStatisticsProvider: failingGetWorkflowStatistics,
+};
+
 export const Loading: StoryFn<PortletTaskStatisticsProps> = Template.bind({});
 Loading.args = {
   ...Standard.args,
@@ -89,4 +109,11 @@ export const FetchingTrendData: StoryFn<PortletTaskStatisticsProps> =
 FetchingTrendData.args = {
   ...Standard.args,
   getAllWorkflowTrendsProvider: neverReturn,
+};
+
+export const hasViewManagementPagePermission: StoryFn<PortletTaskStatisticsProps> =
+  Template.bind({});
+hasViewManagementPagePermission.args = {
+  ...Standard.args,
+  isViewManagementPageACLGrantedProvider: TE.right(true),
 };
