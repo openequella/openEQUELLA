@@ -81,6 +81,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -100,6 +102,23 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   private static final String WEBSERVICE_FUNCTION_PREFIX = "mod_equella_";
   private static final String MOODLE_WS_FUNCTION_PARAM = "wsfunction";
   private static final String MOODLE_WS_TOKEN_PARAM = "wstoken";
+
+  /**
+   * Mappings for simple string-to-field assignments. Complex logic is handled explicitly in {@link
+   * #populateContentField}.
+   */
+  private static final Map<String, BiConsumer<ConnectorContent, String>> FIELD_MAPPERS =
+      Map.of(
+          "coursecode", ConnectorContent::setCourseCode,
+          "coursename", ConnectorContent::setCourse,
+          "section", ConnectorContent::setFolder,
+          "dateAdded", (c, v) -> c.setDateAdded(new Date(Long.parseLong(v))),
+          "dateModified", (c, v) -> c.setDateModified(new Date(Long.parseLong(v))),
+          "uuid", ConnectorContent::setUuid,
+          "moodlename", ConnectorContent::setExternalTitle,
+          "moodledescription", ConnectorContent::setExternalDescription,
+          "attachment", ConnectorContent::setAttachmentUrl,
+          "attachmentUuid", ConnectorContent::setAttachmentUuid);
 
   @Inject private HttpService httpService;
   @Inject private ConfigurationService configService;
@@ -427,66 +446,80 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     return contentList;
   }
 
+  /**
+   * Populates fields on a {@link ConnectorContent} object based on a key-value pair from a Moodle
+   * XML response.
+   *
+   * @param content The content object to populate.
+   * @param key The key derived from the Moodle XML response (e.g., "id", "coursename").
+   * @param value The value associated with the key.
+   * @param moodleServerUrl The base URL of the Moodle server, used for constructing links.
+   * @param attributeKey A specific attribute key if processing a generic value node, otherwise
+   *     null.
+   */
   private void populateContentField(
       ConnectorContent content,
       String key,
       String value,
       String moodleServerUrl,
       String attributeKey) {
+    // Lookup and execute simple mappings
+    if (FIELD_MAPPERS.containsKey(key)) {
+      FIELD_MAPPERS.get(key).accept(content, value);
+      return;
+    }
+
+    // Handle complex context-dependent logic separately
     switch (key) {
-      case "coursename" -> content.setCourse(value);
       case COURSE_ID_PARAM ->
           content.setCourseUrl(
               URLUtils.newURL(moodleServerUrl, "course/view.php?id=" + value).toString());
-      case "section" -> content.setFolder(value);
-      case "dateAdded" -> content.setDateAdded(new Date(Long.parseLong(value)));
-      case "dateModified" -> content.setDateModified(new Date(Long.parseLong(value)));
-      case "uuid" -> content.setUuid(value);
       case "version" -> {
-        if (!Check.isEmpty(value)) {
-          content.setVersion(Integer.parseInt(value));
-        }
+        if (!Check.isEmpty(value)) content.setVersion(Integer.parseInt(value));
       }
-      case "moodlename" -> content.setExternalTitle(value);
-      case "moodledescription" -> content.setExternalDescription(value);
-      case "attachment" -> content.setAttachmentUrl(value);
-      case "attachmentUuid" -> content.setAttachmentUuid(value);
-      case "coursecode" -> content.setCourseCode(value);
-      case "instructor" -> {
-        if (!Check.isEmpty(value)) {
-          content.setAttribute(
-              ConnectorContent.KEY_INSTRUCTOR, getKey("moodle.finduses.instructor"), value);
-        }
-      }
-      case "dateAccessed" -> {
-        if (!Check.isEmpty(value)) {
-          content.setAttribute(
+      case "instructor" ->
+          setAttributeIfPresent(
+              content, ConnectorContent.KEY_INSTRUCTOR, "instructor", value, Function.identity());
+      case "dateAccessed" ->
+          setAttributeIfPresent(
+              content,
               ConnectorContent.KEY_DATE_ACCESSED,
-              getKey("moodle.finduses.dateAccessed"),
-              new Date(Long.parseLong(value)));
-        }
-      }
-      case "enrollments" -> {
-        if (!Check.isEmpty(value)) {
-          content.setAttribute(
-              ConnectorContent.KEY_ENROLLMENTS,
-              getKey("moodle.finduses.enrollments"),
-              Integer.valueOf(value));
-        }
-      }
+              "dateAccessed",
+              value,
+              v -> new Date(Long.parseLong(v)));
+      case "enrollments" ->
+          setAttributeIfPresent(
+              content, ConnectorContent.KEY_ENROLLMENTS, "enrollments", value, Integer::valueOf);
       case "visible" -> {
-        boolean isVisible = Integer.parseInt(value) == 1;
+        boolean isVisible = "1".equals(value);
         content.setAvailable(isVisible);
         content.setAttribute("visible", getKey("moodle.finduses.visible"), isVisible);
       }
-      case VALUE_NODE -> {
-        if (!Check.isEmpty(value)) {
-          content.setAttribute(attributeKey, getKey("moodle.finduses." + attributeKey), value);
-        }
-      }
-      default -> {
-        LOGGER.warn("Ignoring unknown Moodle response key: {} = {}", key, value);
-      }
+      case VALUE_NODE ->
+          setAttributeIfPresent(content, attributeKey, attributeKey, value, Function.identity());
+      default -> LOGGER.warn("Ignoring unknown key: {}", key);
+    }
+  }
+
+  /**
+   * Helper utility to set a {@link ConnectorContent} attribute only if the provided value is not
+   * empty. Handles the localization of the attribute label key.
+   *
+   * @param content The content object to update.
+   * @param key The internal key for the attribute.
+   * @param langSuffix The suffix for the I18n key (prefixed with "moodle.finduses.").
+   * @param value The raw string value to parse and set.
+   * @param parser A function to convert the raw string value into the expected attribute type.
+   * @param <T> The type of the attribute value (e.g., String, Date, Integer).
+   */
+  private <T> void setAttributeIfPresent(
+      ConnectorContent content,
+      String key,
+      String langSuffix,
+      String value,
+      Function<String, T> parser) {
+    if (!Check.isEmpty(value)) {
+      content.setAttribute(key, getKey("moodle.finduses." + langSuffix), parser.apply(value));
     }
   }
 
