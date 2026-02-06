@@ -39,7 +39,7 @@ object MetadataSchemaMutations {
   ): SelectionBuilder[MetadataSchemaMutations, A] =
     _root_.caliban.client.SelectionBuilder.Field("startCreate", Obj(innerSelection))
 
-  /** Stop editing a metadata schema - discarding any changes made, and unlocking schema.
+  /** Cancel editing a metadata schema - discarding any changes made and unlocking the schema.
     */
   def cancelEdit(id: Long, force: scala.Option[Boolean] = None)(implicit
       encoder0: ArgEncoder[Long],
