@@ -66,7 +66,7 @@ class MetadataSchemaSchema extends SchemaProvider {
     metadataSchema = MetadataSchemaMutationOps(
       startEdit = args => schemaProvider.startEdit(args.id),
       startCreate = () => schemaProvider.startCreate(),
-      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force)
+      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force.getOrElse(false))
     )
   )
 
@@ -135,7 +135,7 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription("ID of the metadata schema edit session to cancel")
       id: Long,
       @GQLDescription(
-        "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it."
+        "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided."
       )
       force: Option[Boolean] = None
   )
