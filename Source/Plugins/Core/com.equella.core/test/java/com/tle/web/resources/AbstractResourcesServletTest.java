@@ -46,7 +46,12 @@ public class AbstractResourcesServletTest {
     private final String pluginId;
     private final String rootPath;
 
-    public TestResourcesServlet(String pluginId, String rootPath) {
+    public TestResourcesServlet(
+        String pluginId,
+        String rootPath,
+        PluginService pluginService,
+        ContentStreamWriter contentStreamWriter) {
+      super(pluginService, contentStreamWriter);
       this.pluginId = pluginId;
       this.rootPath = rootPath;
     }
@@ -81,19 +86,8 @@ public class AbstractResourcesServletTest {
     response = mock(HttpServletResponse.class);
     classLoader = mock(ClassLoader.class);
 
-    // Create servlet instance
-    servlet = new TestResourcesServlet("test.plugin", "web/");
-
-    // Inject mocked dependencies using reflection
-    java.lang.reflect.Field pluginServiceField =
-        AbstractResourcesServlet.class.getDeclaredField("pluginService");
-    pluginServiceField.setAccessible(true);
-    pluginServiceField.set(servlet, pluginService);
-
-    java.lang.reflect.Field writerField =
-        AbstractResourcesServlet.class.getDeclaredField("contentStreamWriter");
-    writerField.setAccessible(true);
-    writerField.set(servlet, contentStreamWriter);
+    // Create servlet instance with injected dependencies (no reflection needed)
+    servlet = new TestResourcesServlet("test.plugin", "web/", pluginService, contentStreamWriter);
 
     // Create test directory structure
     rootDir = tempFolder.newFolder("plugin-root", "web");

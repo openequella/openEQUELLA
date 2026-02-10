@@ -76,6 +76,26 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
   @Inject private ContentStreamWriter contentStreamWriter;
 
   /**
+   * Package-private constructor for testing purposes.
+   *
+   * <p>Allows tests to inject mock dependencies without using reflection. Production code should
+   * use the default constructor with {@code @Inject} annotations for dependency injection via
+   * Guice.
+   *
+   * @param pluginService the plugin service for resolving plugin resources
+   * @param contentStreamWriter the writer for streaming content to HTTP responses
+   */
+  AbstractResourcesServlet(PluginService pluginService, ContentStreamWriter contentStreamWriter) {
+    this.pluginService = pluginService;
+    this.contentStreamWriter = contentStreamWriter;
+  }
+
+  /** Default constructor for Guice dependency injection. */
+  protected AbstractResourcesServlet() {
+    // Dependencies injected via @Inject annotations
+  }
+
+  /**
    * Serves a plugin resource file with comprehensive security validation.
    *
    * <p>This method performs multiple security checks to prevent path traversal attacks:
