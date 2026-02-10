@@ -43,7 +43,7 @@
     "@babel/preset-env": "7.29.0",
     "@types/jest": "30.0.0",
     "@types/lodash": "4.17.23",
-    "@types/node": "24.10.7",
+    "@types/node": "24.10.13",
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "8.54.0",
     "@typescript-eslint/parser": "8.54.0",
