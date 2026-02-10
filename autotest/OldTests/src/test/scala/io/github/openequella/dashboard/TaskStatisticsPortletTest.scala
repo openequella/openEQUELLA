@@ -66,7 +66,7 @@ class TaskStatisticsPortletTest extends AbstractPortletTest {
 
     val managePage = new ManageTasksPage(context).get()
     assertTrue(managePage.isLoaded)
-    assertEquals(managePage.results().getResults.size(), 2)
+    assertEquals(managePage.getResultCount, 2)
   }
 
   @Test(description = "redirects to manage resources page when user clicks on item count")
@@ -75,7 +75,7 @@ class TaskStatisticsPortletTest extends AbstractPortletTest {
     val managePage = taskStatisticsPortlet.clickItemCount()
 
     assertTrue(managePage.isLoaded)
-    assertEquals(managePage.getResultSize, 4)
+    assertEquals(managePage.getResultCount, 4)
   }
 
   @Test(description =

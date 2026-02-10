@@ -24,17 +24,9 @@ import org.openqa.selenium.By
   */
 object Locators {
 
-  /** CSS attribute selector: [data-testid="..."]
-    *
-    * @param testId
-    *   The value of the data-testid attribute to locate.
-    */
+  /** Locates element by its data-testid attribute. */
   def byTestId(testId: String): By = By.cssSelector(s"[data-testid=$testId]")
 
-  /** CSS attribute selector: [aria-label="..."]
-    *
-    * @param label
-    *   The value of the aria-label attribute to locate.
-    */
+  /** Locates element by its aria-label attribute. */
   def byAriaLabel(label: String): By = By.cssSelector(s"[aria-label=$label]")
 }

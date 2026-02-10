@@ -37,8 +37,8 @@ import org.openqa.selenium.{By, WebElement}
   */
 class TaskStatisticsPortlet(context: PageContext, name: String)
     extends GenericPortlet[TaskStatisticsPortlet](context, name) {
-  val NO_RESULTS_TEXT       = "There are no results for the selected workflow."
-  val PERMISSION_ERROR_TEXT = "You do not have permission to manage any workflows."
+  private val NO_RESULTS_TEXT       = "There are no results for the selected workflow."
+  private val PERMISSION_ERROR_TEXT = "You do not have permission to manage any workflows."
 
   private val noPermissionXpath = s"$portletXpath//div[text()='$PERMISSION_ERROR_TEXT']"
   private val noResultsXpath    = s"$portletXpath//span[text()='$NO_RESULTS_TEXT']"
