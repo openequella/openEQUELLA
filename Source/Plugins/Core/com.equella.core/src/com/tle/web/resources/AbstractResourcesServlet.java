@@ -212,9 +212,9 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    * @return Optional containing the root file if it exists, empty otherwise
    */
   private Optional<File> getRootFile(HttpServletRequest request) {
-    return Optional.ofNullable(
-            pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath()))
-        .flatMap(rootUrl -> Optional.ofNullable(IoUtil.url2file(rootUrl)));
+    ClassLoader classLoader = pluginService.getClassLoader(getPluginId(request));
+    URL rootUrl = classLoader.getResource(getRootPath());
+    return Optional.ofNullable(rootUrl).flatMap(url -> Optional.ofNullable(IoUtil.url2file(url)));
   }
 
   /**
