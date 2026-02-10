@@ -633,4 +633,22 @@ public abstract class AbstractPage<T extends PageObject>
         String.format("//button[@aria-label='%s' and @aria-checked='true']", label);
     return !driver.findElements(By.xpath(buttonXpath)).isEmpty();
   }
+
+  /**
+   * Use to 'select' an option from a MUI `<Select>`.
+   *
+   * @param selectBy The locator for the select element to click to open the options list.
+   * @param optionText The text which represents the option you wish to select - user visible.
+   */
+  public void selectOption(By selectBy, String optionText) {
+    driver.findElement(selectBy).click();
+
+    WebElement selectOption =
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//li[@role='option' and contains(., '" + optionText + "')]")));
+
+    assert selectOption != null;
+    selectOption.click();
+  }
 }

@@ -34,6 +34,10 @@ public class AbstractSessionTest extends AbstractTest {
     return logon(AUTOTEST_LOGON, AUTOTEST_PASSWD);
   }
 
+  public HomePage logonAsLowPrivilegeUser() {
+    return logon(AUTOTEST_LOW_PRIVILEGE_LOGON, AUTOTEST_PASSWD);
+  }
+
   /**
    * Logs in with the specified username and password but does not update the internal username and
    * password. (Thereby it _only_ does a logon.)
