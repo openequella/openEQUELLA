@@ -346,6 +346,11 @@ public class AbstractResourcesServletTest {
     when(classLoader.getResource("web/")).thenReturn(jarUrl);
 
     // This should work with URLContentStream instead of FileContentStream
+    // Note: For JAR resources, canonical path verification is skipped (logged at WARN level)
+    // but this is acceptable because:
+    // 1. Early validation already rejected ".." sequences
+    // 2. JAR resources are immutable
+    // 3. URL constructor normalizes paths
     servlet.testService(request, response, "resource.js", "application/javascript");
 
     verify(contentStreamWriter)

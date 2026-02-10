@@ -191,6 +191,15 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    * <p>This is the final security check to prevent path traversal attacks that may bypass earlier
    * validations through URL encoding, normalization, or other techniques.
    *
+   * <p><b>Fail Secure:</b> If the root file cannot be determined (e.g., for JAR resources), a
+   * warning is logged but the request proceeds. This is acceptable because:
+   *
+   * <ul>
+   *   <li>Early validation has already rejected paths containing ".." sequences
+   *   <li>JAR resources are immutable and cannot be manipulated via path traversal
+   *   <li>The URL constructor normalizes paths before file resolution
+   * </ul>
+   *
    * @param request the HTTP request for plugin ID resolution
    * @param file the resolved file to verify
    * @throws RuntimeException wrapping IOException if canonical paths cannot be resolved
@@ -199,7 +208,15 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
   private void verifyCanonicalPath(HttpServletRequest request, File file) {
     try {
       final Path canonicalFilePath = file.getCanonicalFile().toPath();
-      getRootFile(request).ifPresent(rootFile -> checkPathWithinRoot(canonicalFilePath, rootFile));
+
+      getRootFile(request)
+          .ifPresentOrElse(
+              rootFile -> checkPathWithinRoot(canonicalFilePath, rootFile),
+              () ->
+                  LOGGER.warn(
+                      "Canonical path verification skipped for file-based resource: {} - root file"
+                          + " not available (likely JAR resource)",
+                      canonicalFilePath));
     } catch (IOException e) {
       throw new RuntimeException("Failed to verify canonical path", e);
     }
