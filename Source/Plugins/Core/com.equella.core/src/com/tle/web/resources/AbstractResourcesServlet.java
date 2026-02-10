@@ -113,7 +113,7 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
     // Use Optional to functionally handle file vs URL resources
     final ContentStream stream =
         Optional.ofNullable(IoUtil.url2file(resourceUrl))
-            .map(file -> createFileContentStream(file, request, mimeType, filename))
+            .map(file -> createAndValidateFileContentStream(file, request, mimeType, filename))
             .orElseGet(() -> createURLContentStream(resourceUrl, filename, mimeType));
 
     contentStreamWriter.outputStream(request, response, stream, isCalculateETag);
@@ -131,7 +131,7 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    * @return File content stream for the resource
    * @throws SecurityException if file path is outside root directory
    */
-  private ContentStream createFileContentStream(
+  private ContentStream createAndValidateFileContentStream(
       File file, HttpServletRequest request, String mimeType, String filename) {
     // Canonical path verification for file resources
     verifyCanonicalPath(request, file);
