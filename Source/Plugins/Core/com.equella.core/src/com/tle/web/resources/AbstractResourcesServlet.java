@@ -199,6 +199,17 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
   }
 
   /**
+   * Retrieves the root URL for the plugin's resource directory.
+   *
+   * @param request the HTTP request for plugin ID resolution
+   * @return Optional containing the root URL if it exists, empty otherwise
+   */
+  private Optional<URL> getRootUrl(HttpServletRequest request) {
+    ClassLoader classLoader = pluginService.getClassLoader(getPluginId(request));
+    return Optional.ofNullable(classLoader.getResource(getRootPath()));
+  }
+
+  /**
    * Builds the resource URL from the plugin's root path and resource path.
    *
    * @param request the HTTP request for plugin ID resolution
@@ -207,10 +218,10 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    * @throws IOException if URL construction fails
    */
   private URL buildResourceUrl(HttpServletRequest request, String resourcePath) throws IOException {
-    URL rootUrl = pluginService.getClassLoader(getPluginId(request)).getResource(getRootPath());
-    if (rootUrl == null) {
-      throw new IllegalStateException("Plugin root path not found: " + getRootPath());
-    }
+    URL rootUrl =
+        getRootUrl(request)
+            .orElseThrow(
+                () -> new IllegalStateException("Plugin root path not found: " + getRootPath()));
     return new URL(rootUrl, resourcePath);
   }
 
@@ -258,9 +269,7 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    * @return Optional containing the root file if it exists, empty otherwise
    */
   private Optional<File> getRootFile(HttpServletRequest request) {
-    ClassLoader classLoader = pluginService.getClassLoader(getPluginId(request));
-    URL rootUrl = classLoader.getResource(getRootPath());
-    return Optional.ofNullable(rootUrl).flatMap(url -> Optional.ofNullable(IoUtil.url2file(url)));
+    return getRootUrl(request).flatMap(url -> Optional.ofNullable(IoUtil.url2file(url)));
   }
 
   /**
