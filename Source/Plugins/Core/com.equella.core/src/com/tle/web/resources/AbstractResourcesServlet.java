@@ -141,7 +141,16 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
   /**
    * Validates that the resource path does not contain directory traversal sequences.
    *
-   * @param resourcePath the path to validate
+   * <p><b>URL Encoding Defense:</b> This string-based check is effective against URL-encoded
+   * attacks (e.g., {@code %2e%2e%2f}) because the HTTP container (Tomcat) automatically decodes
+   * URL-encoded paths <em>before</em> they reach the servlet. By the time this method executes,
+   * {@code %2e%2e} has already been decoded to {@code ..}, so the string check catches it.
+   *
+   * <p><b>Defense-in-Depth:</b> Even if this check were bypassed, the canonical path verification
+   * in {@link #verifyCanonicalPath} provides a second layer of defense by comparing resolved file
+   * paths.
+   *
+   * @param resourcePath the path to validate (already URL-decoded by the HTTP container)
    * @throws SecurityException if path contains ".." sequences
    */
   private void validateResourcePath(String resourcePath) {

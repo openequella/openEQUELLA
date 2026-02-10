@@ -176,7 +176,17 @@ public class AbstractResourcesServletTest {
 
   @Test
   public void testPathTraversalWithEncodedDots() {
-    // Test with encoded dots (though URL encoding happens at different layer)
+    // This test demonstrates that the string "..%2F..%2Fetc%2Fpasswd" is caught
+    // because it contains literal ".." sequences.
+    //
+    // In a real HTTP request scenario:
+    // 1. Client sends: GET /resource/%2e%2e%2fetc%2fpasswd
+    // 2. Tomcat decodes: %2e%2e → ..  (URL decoding happens automatically)
+    // 3. Servlet receives: "../etc/passwd" (already decoded)
+    // 4. validateResourcePath(): Detects ".." and blocks
+    //
+    // This test passes because even the test string contains ".." literals,
+    // simulating what the servlet would receive after HTTP container decoding.
     SecurityException exception =
         assertThrows(
             SecurityException.class,
