@@ -404,6 +404,9 @@ class MetadataSchemaApiTest
 
       Then("completes without errors")
       cancelResult.isRight shouldBe true
+
+      And("the schema is no longer locked for editing")
+      isSchemaLockedForEditing(schemaId) shouldBe false
     }
 
     it("returns a NotFoundError for an invalid schema ID") {
@@ -418,17 +421,34 @@ class MetadataSchemaApiTest
     }
 
     it("forcefully releases locks when force parameter is true") {
-      Given("a valid metadata schema in edit mode and force parameter")
+      Given("a schema locked by another user")
       val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-      When("calling cancelEdit with force=true after startEdit")
+      // Lock the schema as the ADMIN user
+      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
+        val adminEditResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
+        adminEditResult.isRight shouldBe true
+      }
+
+      And("the current user cannot start an edit session due to the lock")
+      val blockedEditResult = MetadataSchemaApi.startEdit(schemaId)
+      blockedEditResult.isLeft shouldBe true
+      blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+
+      When("calling cancelEdit with force=true to release the other user's lock")
+      val forceUnlockResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+
+      Then("completes without errors")
+      forceUnlockResult.isRight shouldBe true
+
+      And("the current user can now start an edit session")
       val editResult = MetadataSchemaApi.startEdit(schemaId)
       editResult.isRight shouldBe true
 
-      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
-
-      Then("completes without errors")
+      And("after cancelling the edit, the schema is no longer locked")
+      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
       cancelResult.isRight shouldBe true
+      isSchemaLockedForEditing(schemaId) shouldBe false
     }
 
     it("denies access when not authenticated") {
@@ -439,6 +459,27 @@ class MetadataSchemaApiTest
 
       Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+
+    def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean = {
+      // A schema is considered locked for editing if another user cannot start an edit session on it.
+      // If the current user created the lock, then they can still start an edit session,
+      // so we need to test with a different user.
+      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
+        val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
+        val isLocked            = editResultOtherUser match {
+          case Left(errors) =>
+            if (errors.exists(_.isInstanceOf[LockedError])) true
+            else
+              fail(s"Expected a LockedError, but got: $errors")
+          case Right(_) => false
+        }
+        // tidy-up by cancelling the edit session we just started (if it was successful)
+        if (!isLocked) {
+          MetadataSchemaApi.cancelEdit(schemaId)(otherSession)
+        }
+        isLocked
+      }
     }
   }
 }
