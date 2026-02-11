@@ -28,6 +28,7 @@ import com.tle.admin.AdminTool;
 import com.tle.admin.Driver;
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.i18n.Lookup;
+import com.tle.admin.service.ClientRequestException;
 import com.tle.beans.entity.BaseEntity;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.EntityPack;
@@ -44,6 +45,7 @@ import com.tle.common.i18n.StringLookup;
 import com.tle.common.security.SecurityConstants;
 import com.tle.core.remoting.RemoteAbstractEntityService;
 import com.tle.i18n.BundleCache;
+import io.github.openequella.graphql.api.LockedError;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -349,9 +351,9 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
   @Override
   protected final void onEdit() {
-    final long uuid = Long.parseLong(getSelectedObjects().get(0).getValue());
+    final long uuid = Long.parseLong(getSelectedObjects().getFirst().getValue());
     final GlassSwingWorker<LockedException> worker =
-        new GlassSwingWorker<LockedException>() {
+        new GlassSwingWorker<>() {
           EntityPack<T> original;
 
           @Override
@@ -361,6 +363,16 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
               return null;
             } catch (LockedException ex) {
               return ex;
+            } catch (ClientRequestException cex) {
+              scala.Option<LockedError> lockedError = cex.getApiErrorOfType(LockedError.class);
+              if (lockedError.isDefined()) {
+                // Only the message is needed, the rest of the LockedException details are not used
+                // where this 'exception' is handled down in 'finished()' - see 'msg' and 'locked1'
+                // variables.
+                return new LockedException(lockedError.get().message(), null, null, 0);
+              } else {
+                throw cex;
+              }
             }
           }
 

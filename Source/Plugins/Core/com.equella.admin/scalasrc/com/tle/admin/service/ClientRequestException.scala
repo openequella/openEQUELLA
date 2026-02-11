@@ -31,4 +31,17 @@ class ClientRequestException(message: String, apiErrors: List[ApiError])
     }
     sb.toString()
   }
+
+  /** Gets the first API error of the specified type, if it exists.
+    *
+    * @param clazz
+    *   the class of the API error to retrieve
+    * @tparam T
+    *   the type of the API error
+    * @return
+    *   an Option containing the first API error of the specified type, or None if no such error
+    *   exists
+    */
+  def getApiErrorOfType[T <: ApiError](clazz: Class[T]): Option[T] =
+    apiErrors.find(e => clazz.isInstance(e)).map(e => clazz.cast(e))
 }
