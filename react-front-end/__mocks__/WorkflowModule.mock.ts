@@ -48,7 +48,7 @@ export const WORKFLOW_ITEM_COUNT_0 = "workflow-ItemCount0";
 /**
  * Mock data for workflow statistics keyed by uuid and trend.
  */
-const workflowStatisticsMap: Record<
+export const workflowStatisticsMap: Record<
   string,
   Record<OEQ.Task.Trend, OEQ.Workflow.WorkflowStatistics>
 > = {
@@ -131,20 +131,22 @@ export const getWorkflowStatistics = (
 export const failingGetWorkflowStatistics = () =>
   Promise.reject(new Error("Get workflow statistics failed"));
 
+export const allManageableWorkflows: OEQ.Workflow.WorkflowSummary[] = [
+  {
+    uuid: WORKFLOW_ITEM_COUNT_0,
+    name: "Sample workflow with item count 0",
+  },
+  {
+    uuid: WORKFLOW_SAMPLE,
+    name: "Sample workflow",
+  },
+];
+
 /**
  * Mock implementation of getManageableWorkflows API.
  */
 export const getManageableWorkflows = () =>
-  Promise.resolve([
-    {
-      uuid: WORKFLOW_ITEM_COUNT_0,
-      name: "Sample Workflow with Item Count 0",
-    },
-    {
-      uuid: WORKFLOW_SAMPLE,
-      name: "Sample Workflow",
-    },
-  ]);
+  Promise.resolve(allManageableWorkflows);
 
 /**
  * Mock implementation of getManageableWorkflows API that fails.
