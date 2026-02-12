@@ -125,6 +125,24 @@ class MetadataSchemaProvider @Inject() (
     )
   }
 
+  /** Cancel the editing session for a metadata schema and remove its lock.
+    *
+    * @param id
+    *   the ID of the metadata schema being edited.
+    * @param force
+    *   if true, removes the lock regardless of which session owns it (forced unlock); if false,
+    *   only removes the lock if the current session owns it.
+    * @return
+    *   Either a ProviderError if the operation fails, or Unit on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def cancelEdit(id: Long, force: Boolean = false): Either[ProviderError, Unit] = {
+    LOGGER.debug(s"Cancelling edit of metadata schema with id $id")
+    ProviderError.Try(s"Failed to cancel edit of metadata schema with id $id: ") {
+      schemaService.cancelEdit(id, force)
+    }
+  }
+
   /** Get a metadata schema by ID.
     *
     * @param id

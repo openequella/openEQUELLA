@@ -42,199 +42,199 @@ class MetadataSchemaApiTest
   private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
 
   describe("listSchemas") {
-    it("should return a list of metadata schemas") {
-      When("listSchemas is called")
+    it("returns all metadata schemas") {
+      When("calling listSchemas")
       val result = MetadataSchemaApi.listSchemas()
 
-      Then("it should return a list of BaseEntityReferenceView")
+      Then("returns a list of BaseEntityReferenceView")
       result.isRight shouldBe true
       result.value.length should be > 1
       result.value.head.uuid should not be empty
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to list schemas")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls listSchemas")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.listSchemas()(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("getIdByUuid") {
-    it("should return the ID for a valid schema UUID") {
-      Given("A valid schema UUID")
+    it("returns the ID for a valid schema UUID") {
+      Given("a valid schema UUID")
       val schema = MetadataSchemaApi.listSchemas().value.head
 
-      When("getIdByUuid is called with the schema UUID")
+      When("calling getIdByUuid with the schema UUID")
       val result = MetadataSchemaApi.getIdByUuid(schema.uuid)
 
-      Then("it should return the schema ID")
+      Then("returns the schema ID")
       result.isRight shouldBe true
       result.value.get shouldBe schema.id
     }
 
-    it("should return None for an invalid schema UUID") {
-      Given("An invalid schema UUID")
+    it("returns None for an invalid schema UUID") {
+      Given("an invalid schema UUID")
       val invalidUuid = "invalid-uuid"
 
-      When("getIdByUuid is called with the invalid UUID")
+      When("calling getIdByUuid with the invalid UUID")
       val result = MetadataSchemaApi.getIdByUuid(invalidUuid)
 
-      Then("it should return None")
+      Then("returns None")
       result.isRight shouldBe true
       result.value shouldBe None
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to get a schema ID by UUID")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls getIdByUuid")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getIdByUuid("some-uuid")(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("getUses") {
-    it("should return a list of uses for a valid schema ID") {
-      Given("A valid metadata schema ID")
+    it("returns all entities using a valid schema") {
+      Given("a valid metadata schema ID")
       val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-      When("getUses is called with the schema ID")
+      When("calling getUses with the schema ID")
       val result = MetadataSchemaApi.getUses(schemaId)
 
-      Then("it should return a list of BaseEntityReferenceView")
+      Then("returns a list of BaseEntityReferenceView")
       result.isRight shouldBe true
       result.value shouldBe a[List[_]]
       all(result.value) shouldBe a[BaseEntityReferenceView]
     }
 
-    it("should return an empty list for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns an empty list for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("getUses is called with the invalid schema ID")
+      When("calling getUses with the invalid schema ID")
       val result = MetadataSchemaApi.getUses(invalidSchemaId)
 
-      Then("it should return an empty list")
+      Then("returns an empty list")
       result.value shouldBe empty
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to get uses")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls getUses")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getUses(1)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("hasReferences") {
-    it("should return true or false for a valid schema ID") {
-      Given("A valid metadata schema ID")
+    it("checks if a schema has references") {
+      Given("a valid metadata schema ID")
       val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-      When("hasReferences is called with the schema ID")
+      When("calling hasReferences with the schema ID")
       val result = MetadataSchemaApi.hasReferences(schemaId)
 
-      Then("it should return true or false")
+      Then("returns true or false")
       result.isRight shouldBe true
       result.value should (be(true) or be(false))
     }
 
-    it("should return NotFoundError for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("hasReferences is called with the invalid schema ID")
+      When("calling hasReferences with the invalid schema ID")
       val result = MetadataSchemaApi.hasReferences(invalidSchemaId)
 
-      Then("it should return a NotFoundError")
+      Then("returns a NotFoundError")
       TestHelper.checkApiError(result) shouldBe a[NotFoundError]
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to check for references")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls hasReferences")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.hasReferences(1)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("getImportTypes") {
-    it("should return a list of import types for a valid schema ID") {
-      Given("A valid metadata schema ID")
+    it("returns available import types for a valid schema") {
+      Given("a valid metadata schema ID")
       val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-      When("getImportTypes is called with the schema ID")
+      When("calling getImportTypes with the schema ID")
       val result = MetadataSchemaApi.getImportTypes(schemaId)
 
-      Then("it should return a list of strings")
+      Then("returns a list of strings")
       result.isRight shouldBe true
       result.value shouldBe a[List[_]]
       all(result.value) shouldBe a[String]
     }
 
-    it("should return an empty list for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns an empty list for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("getImportTypes is called with the invalid schema ID")
+      When("calling getImportTypes with the invalid schema ID")
       val result = MetadataSchemaApi.getImportTypes(invalidSchemaId)
 
-      Then("it should return an empty list")
+      Then("returns an empty list")
       result.value shouldBe empty
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to get import types")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls getImportTypes")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getImportTypes(1)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("exportSchema") {
-    it("should export a metadata schema as a ZIP file") {
+    it("exports a metadata schema as a ZIP file") {
       val withSecurityOptions = Table(
         "withSecurity",
         true,
         false
       )
       forAll(withSecurityOptions) { withSecurity =>
-        Given(s"A valid metadata schema ID and withSecurity set to $withSecurity")
+        Given(s"a valid metadata schema ID with withSecurity=$withSecurity")
         val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-        When("exportSchema is called with the schema ID and withSecurity")
+        When("calling exportSchema with the schema ID and withSecurity")
         val result = MetadataSchemaApi.exportSchema(schemaId, withSecurity)
 
         // We convert the result to a ZipInputStream for easier testing.
         // Most often in actual application the bytes are simply saved to a file.
         // Here we just want to ensure that the bytes can be interpreted as a zip file.
-        Then("it should return a Array[Byte] convertable to a ZipInputStream")
+        Then("returns an Array[Byte] convertable to a ZipInputStream")
         result.isRight shouldBe true
         val zis = result.value.map(bytesToZipInputStream).get
         zis shouldBe a[ZipInputStream]
 
-        And("the zip file should include a valid _entity.xml")
+        And("the zip file includes a valid _entity.xml")
         val entityXml = extractEntityXml(zis).value
         entityXml should (startWith("<com.tle.common.ImportExportPack>") and include(
           """<entity class="com.tle.beans.entity.Schema">"""
         ))
 
-        And("the _entity.xml should contain the security information depending on withSecurity")
+        And("the _entity.xml contains security information based on withSecurity")
         val securityElement = "<targetList>"
         if (withSecurity) {
           entityXml should include(securityElement)
@@ -247,24 +247,24 @@ class MetadataSchemaApiTest
       }
     }
 
-    it("should return a not found error for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns None for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("exportSchema is called with the invalid schema ID")
+      When("calling exportSchema with the invalid schema ID")
       val result = MetadataSchemaApi.exportSchema(invalidSchemaId, withSecurity = false)
 
-      Then("it should return None")
+      Then("returns None")
       result shouldBe Right(None)
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to export a schema")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls exportSchema")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.exportSchema(1, withSecurity = false)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
 
@@ -290,52 +290,52 @@ class MetadataSchemaApiTest
   }
 
   describe("getById") {
-    it("should return the schema for a valid schema ID") {
-      Given("A valid schema ID")
+    it("retrieves a schema by its ID") {
+      Given("a valid schema ID")
       val schema = MetadataSchemaApi.listSchemas().value.head
 
-      When("getById is called with the schema ID")
+      When("calling getById with the schema ID")
       val result = MetadataSchemaApi.getById(schema.id)
 
-      Then("it should return the schema")
+      Then("returns the schema")
       result.isRight shouldBe true
       val fetchedSchema = result.value.value
       fetchedSchema.details.id shouldBe schema.id
       fetchedSchema.details.uuid shouldBe schema.uuid
     }
 
-    it("should return None for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns None for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("getById is called with the invalid schema ID")
+      When("calling getById with the invalid schema ID")
       val result = MetadataSchemaApi.getById(invalidSchemaId)
 
-      Then("it should return None")
+      Then("returns None")
       result.isRight shouldBe true
       result.value shouldBe None
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to get a schema by ID")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls getById")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.getById(1)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("startEdit") {
-    it("should start editing a metadata schema for a valid schema ID") {
-      Given("A valid metadata schema ID")
+    it("initiates an edit session for a valid schema") {
+      Given("a valid metadata schema ID")
       val schemaId = MetadataSchemaApi.listSchemas().value.head.id
 
-      When("startEdit is called with the schema ID")
+      When("calling startEdit with the schema ID")
       val result = MetadataSchemaApi.startEdit(schemaId)
 
-      Then("it should return a MetadataSchemaEditView")
+      Then("returns a MetadataSchemaEditView")
       result.isRight shouldBe true
       val editView = result.value
       editView shouldBe a[MetadataSchemaEditView]
@@ -344,34 +344,34 @@ class MetadataSchemaApiTest
       editView.targetList shouldBe a[List[_]]
     }
 
-    it("should return a NotFoundError for an invalid schema ID") {
-      Given("An invalid schema ID")
+    it("returns a NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
       val invalidSchemaId = -1L
 
-      When("startEdit is called with the invalid schema ID")
+      When("calling startEdit with the invalid schema ID")
       val result = MetadataSchemaApi.startEdit(invalidSchemaId)
 
-      Then("it should return a NotFoundError")
+      Then("returns a NotFoundError")
       TestHelper.checkApiError(result) shouldBe a[NotFoundError]
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to start editing a schema")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls startEdit")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.startEdit(1)(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 
   describe("startCreate") {
-    it("should start creating a new metadata schema") {
-      When("startCreate is called")
+    it("initiates creation of a new metadata schema") {
+      When("calling startCreate")
       val result = MetadataSchemaApi.startCreate()
 
-      Then("it should return an EntitySkeletonView")
+      Then("returns an EntitySkeletonView")
       result.isRight shouldBe true
       val skeleton = result.value
       skeleton shouldBe a[EntitySkeletonView]
@@ -380,14 +380,106 @@ class MetadataSchemaApiTest
       skeleton.stagingId should not be empty
     }
 
-    it("should return an AccessDeniedError if not authenticated") {
-      When("an unauthenticated user tries to start creating a schema")
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls startCreate")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
         MetadataSchemaApi.startCreate()(unauthenticated)
       }
 
-      Then("it should return an AccessDeniedError")
+      Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("cancelEdit") {
+    it("cancels an edit session and releases the lock") {
+      Given("a valid metadata schema ID in edit mode")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      When("calling cancelEdit after startEdit")
+      val editResult = MetadataSchemaApi.startEdit(schemaId)
+      editResult.isRight shouldBe true
+
+      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+
+      Then("completes without errors")
+      cancelResult.isRight shouldBe true
+
+      And("the schema is no longer locked for editing")
+      isSchemaLockedForEditing(schemaId) shouldBe false
+    }
+
+    it("returns a NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("calling cancelEdit with the invalid schema ID")
+      val result = MetadataSchemaApi.cancelEdit(invalidSchemaId)
+
+      Then("returns a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("forcefully releases locks when force parameter is true") {
+      Given("a schema locked by another user")
+      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+
+      // Lock the schema as the ADMIN user
+      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
+        val adminEditResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
+        adminEditResult.isRight shouldBe true
+      }
+
+      And("the current user cannot start an edit session due to the lock")
+      val blockedEditResult = MetadataSchemaApi.startEdit(schemaId)
+      blockedEditResult.isLeft shouldBe true
+      blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+
+      When("calling cancelEdit with force=true to release the other user's lock")
+      val forceUnlockResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+
+      Then("completes without errors")
+      forceUnlockResult.isRight shouldBe true
+
+      And("the current user can now start an edit session")
+      val editResult = MetadataSchemaApi.startEdit(schemaId)
+      editResult.isRight shouldBe true
+
+      And("after cancelling the edit, the schema is no longer locked")
+      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+      cancelResult.isRight shouldBe true
+      isSchemaLockedForEditing(schemaId) shouldBe false
+    }
+
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls cancelEdit")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.cancelEdit(1)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+
+    def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean = {
+      // A schema is considered locked for editing if another user cannot start an edit session on it.
+      // If the current user created the lock, then they can still start an edit session,
+      // so we need to test with a different user.
+      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
+        val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
+        val isLocked            = editResultOtherUser match {
+          case Left(errors) =>
+            if (errors.exists(_.isInstanceOf[LockedError])) true
+            else
+              fail(s"Expected a LockedError, but got: $errors")
+          case Right(_) => false
+        }
+        // tidy-up by cancelling the edit session we just started (if it was successful)
+        if (!isLocked) {
+          MetadataSchemaApi.cancelEdit(schemaId)(otherSession)
+        }
+        isLocked
+      }
     }
   }
 }

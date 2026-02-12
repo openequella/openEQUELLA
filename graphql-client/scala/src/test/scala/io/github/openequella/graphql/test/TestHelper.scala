@@ -38,7 +38,8 @@ object TestHelper {
     * @return
     *   the client configuration if successful, or fail the test with an error message if not
     */
-  def loginToRestInstitution(): ClientConfiguration = login(INSTITUTION_REST, CREDENTIALS_AUTOTEST)
+  def loginToRestInstitution(): ClientConfiguration =
+    loginToInstitution(INSTITUTION_REST, CREDENTIALS_AUTOTEST)
 
   /** Login to the specified institution with the given credentials.
     *
@@ -50,22 +51,78 @@ object TestHelper {
     * @return
     *   the client configuration if successful, or fail the test with an error message if not
     */
-  def login(institution: String, credentials: (String, String)): ClientConfiguration = {
+  def loginToInstitution(
+      institution: String,
+      credentials: (String, String)
+  ): ClientConfiguration = {
     val instUrl                           = Uri("localhost").port(8080).withPath(institution)
     implicit val cfg: ClientConfiguration = ClientConfiguration(instUrl)
+    login(credentials)
+  }
 
+  /** Login to the same institution as the given client configuration, but with different
+    * credentials.
+    *
+    * @param credentials
+    *   the credentials to use (typically one of the constants defined in this object)
+    * @param cfg
+    *   the client configuration to use for the institution URL
+    * @return
+    *   the new client configuration if successful, or fail the test with an error message if not
+    */
+  def loginSameInstitutionWithDifferentUser(credentials: (String, String))(implicit
+      cfg: ClientConfiguration
+  ): ClientConfiguration = {
+    val newCfg: ClientConfiguration = ClientConfiguration(cfg.institutionUrl)
+    login(credentials)(newCfg)
+  }
+
+  /** A wrapper around the standard Client.login specifically for testing. It will return the client
+    * configuration if the login is successful, or fail the test with an error message if not.
+    */
+  private def login(credentials: (String, String))(implicit cfg: ClientConfiguration) =
     Client.login(credentials._1, credentials._2) match {
       case Right(_)  => cfg
       case Left(err) => fail(err._2)
     }
-  }
 
+  /** Run the given action with an unauthenticated client configuration. This is useful for testing
+    * access control.
+    *
+    * @param action
+    *   the action to run with the unauthenticated client configuration
+    * @tparam T
+    *   the return type of the action
+    * @return
+    *   the result of the action
+    */
   def asUnauthenticatedUser[T](
       action: ClientConfiguration => T
   )(implicit cfg: ClientConfiguration): T = {
     val unAuthenticatedCfg: ClientConfiguration =
       cfg.copy(cookies = scala.collection.mutable.Set.empty)
     action(unAuthenticatedCfg)
+  }
+
+  /** Run the given action with a client configuration that is logged in with different credentials
+    * to the given client configuration. This is useful for testing access control and multi-user
+    * scenarios.
+    *
+    * @param credentials
+    *   the credentials to use for the new client configuration (typically one of the constants
+    *   defined in this object)
+    * @param action
+    *   the action to run with the new client configuration
+    * @tparam T
+    *   the return type of the action
+    * @return
+    *   the result of the action
+    */
+  def withUser[T](
+      credentials: (String, String)
+  )(action: ClientConfiguration => T)(implicit cfg: ClientConfiguration): T = {
+    val otherSession = loginSameInstitutionWithDifferentUser(credentials)
+    action(otherSession)
   }
 
   /** Check that the response is an error response, and return the error. This can then be used to

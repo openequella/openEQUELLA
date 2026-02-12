@@ -219,6 +219,27 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     mutate(mutation)
   }
 
+  /** Cancel editing a metadata schema, discarding any changes and unlocking the schema.
+    *
+    * @param id
+    *   The ID of the metadata schema to cancel editing.
+    * @param force
+    *   If true, forcefully unlocks the schema even if locked by another user. Defaults to None.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    */
+  def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] = {
+    val mutation = MetadataSchemaMutations.cancelEdit(id, force)
+
+    flattenResult {
+      mutate(mutation)
+    }
+  }
+
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)
 }
