@@ -21,7 +21,7 @@ package io.github.openequella.pages.dashboard.portlets
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.portal.TaskStatisticsPortalEditPage
 import com.tle.webtests.pageobject.tasklist.ManageTasksPage
-import io.github.openequella.Locators.{byAriaLabel, byTestId}
+import io.github.openequella.Locators.byAriaLabel
 import io.github.openequella.pages.dashboard.TaskTrend.TaskTrend
 import io.github.openequella.pages.dashboard.{DashboardPage, TaskTrend}
 import io.github.openequella.pages.manage.ManageResourcesPage
@@ -37,6 +37,7 @@ import org.openqa.selenium.{By, WebElement}
   */
 class TaskStatisticsPortlet(context: PageContext, name: String)
     extends GenericPortlet[TaskStatisticsPortlet](context, name) {
+  private val ITEM_COUNT_TEXT       = "Total resources in workflow"
   private val NO_RESULTS_TEXT       = "There are no results for the selected workflow."
   private val PERMISSION_ERROR_TEXT = "You do not have permission to manage any workflows."
 
@@ -81,7 +82,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     * page with the appropriate filters applied.
     */
   def clickItemCount(): ManageResourcesPage = {
-    val link = byTestId("task-statistics-item-count-link")
+    val link = By.xpath(s"$portletXpath//button[contains(text(),'$ITEM_COUNT_TEXT')]");
     driver.findElement(link).click()
 
     new ManageResourcesPage(context).get()
