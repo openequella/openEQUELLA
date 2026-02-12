@@ -107,9 +107,7 @@ public class AbstractResourcesServletTest {
     // Test serving a legitimate file
     servlet.testService(request, response, "test.txt", "text/plain");
 
-    // Verify content stream writer was called
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
@@ -117,8 +115,7 @@ public class AbstractResourcesServletTest {
     // Test serving a file with leading slash (should be normalized)
     servlet.testService(request, response, "/test.txt", "text/plain");
 
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
@@ -131,41 +128,25 @@ public class AbstractResourcesServletTest {
 
     servlet.testService(request, response, "subdir/subtest.txt", "text/plain");
 
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
   public void testBasicPathTraversal() {
     // Test basic path traversal attempt with ../
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "../etc/passwd", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("../etc/passwd");
   }
 
   @Test
   public void testPathTraversalWithBackslash() {
     // Test path traversal with Windows-style separator
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "..\\etc\\passwd", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("..\\etc\\passwd");
   }
 
   @Test
   public void testPathTraversalInMiddle() {
     // Test path traversal in the middle of path
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "subdir/../../../etc/passwd", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("subdir/../../../etc/passwd");
   }
 
   @Test
@@ -181,24 +162,13 @@ public class AbstractResourcesServletTest {
     //
     // This test passes because even the test string contains ".." literals,
     // simulating what the servlet would receive after HTTP container decoding.
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "..%2F..%2Fetc%2Fpasswd", null));
-
-    // Should still catch the .. sequence
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("..%2F..%2Fetc%2Fpasswd");
   }
 
   @Test
   public void testMultipleTraversalSequences() {
     // Test multiple traversal sequences
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "../../../../../../etc/passwd", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("../../../../../../etc/passwd");
   }
 
   @Test
@@ -292,28 +262,17 @@ public class AbstractResourcesServletTest {
 
     servlet.testService(request, response, dottedFilename, "text/plain");
 
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
   public void testTraversalAtEndOfPath() {
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "somepath/..", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("somepath/..");
   }
 
   @Test
   public void testTraversalAtBeginningOfPath() {
-    SecurityException exception =
-        assertThrows(
-            SecurityException.class,
-            () -> servlet.testService(request, response, "../somepath", null));
-
-    assertDirectoryTraversalDetection(exception);
+    assertPathTraversalBlocked("../somepath");
   }
 
   @Test
@@ -324,8 +283,7 @@ public class AbstractResourcesServletTest {
     // and collapsing consecutive slashes
     servlet.testService(request, response, "//test.txt", "text/plain");
 
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
@@ -339,8 +297,7 @@ public class AbstractResourcesServletTest {
 
     servlet.testService(request, response, "subdir//test.txt", "text/plain");
 
-    verify(contentStreamWriter)
-        .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
+    verifyContentStreamWritten();
   }
 
   @Test
@@ -357,11 +314,26 @@ public class AbstractResourcesServletTest {
     // 3. URL constructor normalizes paths
     servlet.testService(request, response, "resource.js", "application/javascript");
 
+    verifyContentStreamWritten();
+  }
+
+  /** Verifies that the content stream writer was called to output a stream (without ETag). */
+  private void verifyContentStreamWritten() {
     verify(contentStreamWriter)
         .outputStream(eq(request), eq(response), any(ContentStream.class), eq(false));
   }
 
-  private static void assertDirectoryTraversalDetection(SecurityException exception) {
+  /**
+   * Asserts that the given path is blocked as a directory traversal attempt.
+   *
+   * @param maliciousPath the path expected to trigger a SecurityException
+   */
+  private void assertPathTraversalBlocked(String maliciousPath) {
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class,
+            () -> servlet.testService(request, response, maliciousPath, null));
+
     assertTrue(exception.getMessage().contains("directory traversal"));
   }
 }
