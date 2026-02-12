@@ -94,7 +94,7 @@ public class FilterByWorkflowSection
           public Iterable<BaseEntityLabel> populateModel(SectionInfo info) {
             List<BaseEntityLabel> workflowOptions = new ArrayList<BaseEntityLabel>();
 
-            Collection<BaseEntityLabel> listManagable = workflowService.listManagable();
+            Collection<BaseEntityLabel> listManagable = workflowService.listManageable();
 
             ItemDefinition collection = getCollection(info);
 
@@ -146,7 +146,7 @@ public class FilterByWorkflowSection
   }
 
   public boolean isShowing(SectionInfo info) {
-    Collection<BaseEntityLabel> listManagable = workflowService.listManagable();
+    Collection<BaseEntityLabel> listManagable = workflowService.listManageable();
     boolean emptyList = listManagable.isEmpty();
     return itemStatus.getOnlyInModeration().isChecked(info) && !emptyList;
   }

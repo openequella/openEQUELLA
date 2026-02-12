@@ -393,6 +393,28 @@ export const languageStrings = {
         nothingReturned: "No tasks and notifications returned.",
         unableToFindItemsOfType: "Unable to find items of type:",
       },
+      taskStatistics: {
+        failedToFetchStatistics: "Failed to fetch workflow statistics.",
+        failedToFetchWorkflowOptions: "Failed to fetch manageable workflows.",
+        itemCount: "Total resources in workflow: %s",
+        noPermission: "You do not have permission to manage any workflows.",
+        noResult: "There are no results for the selected workflow.",
+        trend: {
+          label: "trend period",
+          weekly: "Weekly",
+          monthly: "Monthly",
+        },
+        table: {
+          label: "trend table",
+          colTask: "Task",
+          colWaiting: "Waiting",
+          colTrend: "Trend",
+        },
+        workflow: {
+          label: "Workflow",
+          allWorkflows: "Within all workflows",
+        },
+      },
       unsupported: {
         title: "Unsupported portlet configured.",
         description:
@@ -527,6 +549,9 @@ export const languageStrings = {
     "Your query is invalid. Try simplifying your query to only contain basic terms, and check that you do not have any whitespace around '*' or '+' characters.",
   kalturaPlayer: {
     title: "Kaltura video player",
+  },
+  legacyModule: {
+    failedToRedirect: "Failed to redirect to page.",
   },
   lightboxComponent: {
     openSummaryPage: "Open resource summary page",

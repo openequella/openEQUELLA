@@ -18,6 +18,7 @@
 
 import * as OEQ from "@openequella/rest-api-client";
 import * as NEA from "fp-ts/NonEmptyArray";
+import { TaskStatisticsPortlet } from "../../oeq-ts-rest-api/src/Dashboard";
 import { updatePortletPosition } from "../tsrc/dashboard/DashboardPageHelper";
 
 export const emptyDashboardDetails: OEQ.Dashboard.DashboardDetails = {
@@ -72,6 +73,18 @@ export const privateTasksPortlet: OEQ.Dashboard.BasicPortlet = {
     order: 0,
   },
   portletType: "tasks",
+};
+
+export const privateTaskStatisticsPortlet: TaskStatisticsPortlet = {
+  commonDetails: {
+    ...privateSearchPortlet.commonDetails,
+    name: "Private Tasks Statistics Portlet",
+    uuid: "47d805e4-a87b-43f7-bcbf-a59e304a2a10",
+    column: 0,
+    order: 0,
+  },
+  portletType: "taskstatistics",
+  trend: "WEEK",
 };
 
 export const privateMyResourcesPortlet: OEQ.Dashboard.BasicPortlet = {

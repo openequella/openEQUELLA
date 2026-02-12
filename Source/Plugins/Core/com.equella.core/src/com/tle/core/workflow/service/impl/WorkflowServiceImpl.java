@@ -595,10 +595,17 @@ public class WorkflowServiceImpl
     return allMessages;
   }
 
+  /**
+   * Retrieves all workflows that the current user has permission to manage.
+   *
+   * @return Collection of workflow entities. Returns empty collection if user lacks MANAGE_WORKFLOW
+   *     privilege for any workflows.
+   * @see SecureOnReturn Filters results based on MANAGE_WORKFLOW privilege
+   */
   @Override
   @Transactional
   @SecureOnReturn(priv = "MANAGE_WORKFLOW")
-  public Collection<BaseEntityLabel> listManagable() {
+  public Collection<BaseEntityLabel> listManageable() {
     return listAll();
   }
 
