@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 import {
+  Box,
   Skeleton,
   Table,
   TableBody,
@@ -27,10 +28,14 @@ import {
 import { pipe } from "fp-ts/lib/function";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as React from "react";
+import { languageStrings } from "../../../util/langstrings";
 import { classes } from "./TaskStatisticsContent";
 
+const { contentSkeletonLabel } =
+  languageStrings.dashboard.portlets.taskStatistics;
+
 export const TaskStatisticsContentSkeleton = () => (
-  <>
+  <Box aria-busy aria-label={contentSkeletonLabel}>
     <TableContainer classes={{ root: classes.table }}>
       <Table stickyHeader size="small">
         <TableHead>
@@ -69,5 +74,5 @@ export const TaskStatisticsContentSkeleton = () => (
     </TableContainer>
 
     <Skeleton variant="text" height={24} />
-  </>
+  </Box>
 );

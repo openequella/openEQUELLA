@@ -111,9 +111,9 @@ FetchingTrendData.args = {
   getAllWorkflowTrendsProvider: neverReturn,
 };
 
-export const hasViewManagementPagePermission: StoryFn<PortletTaskStatisticsProps> =
+export const HasViewManagementPagePermission: StoryFn<PortletTaskStatisticsProps> =
   Template.bind({});
-hasViewManagementPagePermission.args = {
+HasViewManagementPagePermission.args = {
   ...Standard.args,
   isViewManagementPageACLGrantedProvider: TE.right(true),
 };
