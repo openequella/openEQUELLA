@@ -399,6 +399,7 @@ export const languageStrings = {
         itemCount: "Total resources in workflow: %s",
         noPermission: "You do not have permission to manage any workflows.",
         noResult: "There are no results for the selected workflow.",
+        contentSkeletonLabel: "Loading task statistics",
         trend: {
           label: "trend period",
           weekly: "Weekly",

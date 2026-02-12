@@ -240,3 +240,29 @@ export const validateGrouping = (input: string): boolean => {
     O.getOrElse(constFalse),
   );
 };
+
+/**
+ * Escapes a string so it can be safely embedded into a RegExp as a literal.
+ *
+ * This prevents characters like `.`, `?`, `(`, `)`, `[`, `]`, `*`, `+`, etc.
+ * from being interpreted as regular-expression syntax.
+ */
+const escapeRegExp = (text: string): string =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Converts an i18n sprintf-style format string into a RegExp by treating the text
+ * as a literal and replacing `%s` placeholders with `.+`.
+ *
+ * Example:
+ *   "Total resources in workflow: %s"
+ * becomes:
+ *   /Total resources in workflow: .+/
+ *
+ * Note: This utility intentionally only handles `%s` placeholders.
+ */
+export const sprintfFormatToRegex = (format: string): RegExp => {
+  const escaped = escapeRegExp(format);
+  const pattern = escaped.replace(/%s/g, ".+");
+  return new RegExp(pattern);
+};

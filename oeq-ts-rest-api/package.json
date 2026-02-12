@@ -10,8 +10,8 @@
     "src"
   ],
   "engines": {
-    "node": "24.11.0",
-    "npm": "11.7.0"
+    "node": "24.13.1",
+    "npm": "11.9.0"
   },
   "scripts": {
     "prepare": "cd gen-io-ts && npm ci && npm run gen && cd -",
@@ -43,12 +43,12 @@
     "@babel/preset-env": "7.29.0",
     "@types/jest": "30.0.0",
     "@types/lodash": "4.17.23",
-    "@types/node": "24.10.7",
+    "@types/node": "24.10.13",
     "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "8.54.0",
     "@typescript-eslint/parser": "8.54.0",
     "axios-cookiejar-support": "6.0.5",
-    "core-js": "3.47.0",
+    "core-js": "3.48.0",
     "eslint": "9.39.2",
     "eslint-plugin-unused-imports": "4.3.0",
     "eslint-config-prettier": "10.1.8",
