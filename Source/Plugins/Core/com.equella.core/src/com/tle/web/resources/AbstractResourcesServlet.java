@@ -70,6 +70,11 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
   /** Parent directory traversal sequence used in path traversal attacks. */
   private static final String PARENT_DIR_SEQUENCE = "..";
 
+  /**
+   * Flag to determine if ETag should be calculated for the resource. Subclasses can set this to
+   * true if needed. Keep in mind there is an overhead to calculating ETags, especially for large
+   * files, so it should only be enabled when necessary.
+   */
   protected boolean isCalculateETag = false;
 
   @Inject private PluginService pluginService;
