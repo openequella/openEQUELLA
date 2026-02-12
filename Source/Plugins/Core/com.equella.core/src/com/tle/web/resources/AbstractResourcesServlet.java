@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.java.plugin.util.IoUtil;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,11 +181,15 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
    */
   private void validateResourcePath(String resourcePath) {
     if (resourcePath.contains(PARENT_DIR_SEQUENCE)) {
-      String sanitizedPath = resourcePath.replace(PARENT_DIR_SEQUENCE, "[REDACTED]");
+      String sanitizedPath = getSanitizedPath(resourcePath);
       LOGGER.warn("Path traversal attempt detected in resource path: {}", sanitizedPath);
       throw new SecurityException(
           "Access denied: resource path contains directory traversal sequences");
     }
+  }
+
+  private static @NonNull String getSanitizedPath(String resourcePath) {
+    return resourcePath.replace(PARENT_DIR_SEQUENCE, "[REDACTED]");
   }
 
   /**
@@ -290,8 +295,7 @@ public abstract class AbstractResourcesServlet extends HttpServlet {
       Path canonicalRootPath = rootFile.getCanonicalFile().toPath();
 
       if (!canonicalFilePath.startsWith(canonicalRootPath)) {
-        String sanitizedPath =
-            canonicalFilePath.toString().replace(PARENT_DIR_SEQUENCE, "[REDACTED]");
+        String sanitizedPath = getSanitizedPath(canonicalFilePath.toString());
         LOGGER.warn(
             "Canonical path traversal attempt detected: file path {} is outside root directory",
             sanitizedPath);
