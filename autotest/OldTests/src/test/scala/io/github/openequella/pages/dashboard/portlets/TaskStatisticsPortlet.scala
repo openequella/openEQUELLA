@@ -73,9 +73,31 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     *   The name of the task to click.
     */
   def clickTask(taskName: String): ManageTasksPage = {
-    val task = By.xpath(s"$portletXpath//button[text()='$taskName']")
+    val task = By.xpath(buildTaskXpath(taskName))
     driver.findElement(task).click()
     new ManageTasksPage(context).get()
+  }
+
+  /** Gets the count of waiting for a given task name from the rend data table.
+    *
+    * @param taskName
+    *   The name of the task to get the waiting count for.
+    */
+  def getWaitingCount(taskName: String): Int = {
+    val countXpath = s"${buildTaskXpath(taskName)}/../following-sibling::td"
+    val waitingCol = driver.findElement(By.xpath(countXpath))
+    waitingCol.getText.toInt
+  }
+
+  /** Gets the item count number from the item count text.
+    */
+  def getItemCount: Int = {
+    val itemCountContainer = driver.findElement(By.cssSelector(".PortletTaskStatistics-item-count"))
+    val text               = itemCountContainer.getText
+    "\\d+".r.findFirstIn(text) match {
+      case Some(value) => value.toInt
+      case None        => throw new RuntimeException(s"Could not find item count in text: $text")
+    }
   }
 
   /** Clicks on the item count link in the portlet, which should navigate to the manage resources
@@ -130,4 +152,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
   // Wait for the trend to load by checking for the presence of the table or the no results message.
   private def waitForTrendData =
     waiter.until(ExpectedConditions.presenceOfElementLocated(By.xpath(validationXpath)))
+
+  private def buildTaskXpath(taskName: String): String =
+    s"$portletXpath//button[text()='$taskName']"
 }

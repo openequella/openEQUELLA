@@ -61,21 +61,24 @@ class TaskStatisticsPortletTest extends AbstractPortletTest {
 
   @Test(description = "redirects to manage tasks page when user clicks on task")
   def redirectToManageTasksPage(): Unit = {
+    val taskName = "Step 1"
     taskStatisticsPortlet.selectWorkflow(WORKFLOW_3_STEP)
-    taskStatisticsPortlet.clickTask("Step 1")
+    val resourceNumber = taskStatisticsPortlet.getWaitingCount(taskName)
+    taskStatisticsPortlet.clickTask(taskName)
 
     val managePage = new ManageTasksPage(context).get()
     assertTrue(managePage.isLoaded)
-    assertEquals(managePage.getResultCount, 2)
+    assertEquals(managePage.getResultCount, resourceNumber)
   }
 
   @Test(description = "redirects to manage resources page when user clicks on item count")
   def redirectToManageResourcesPage(): Unit = {
     taskStatisticsPortlet.selectWorkflow(WORKFLOW_3_STEP)
-    val managePage = taskStatisticsPortlet.clickItemCount()
+    val resourceNumber = taskStatisticsPortlet.getItemCount
+    val managePage     = taskStatisticsPortlet.clickItemCount()
 
     assertTrue(managePage.isLoaded)
-    assertEquals(managePage.getResultCount, 4)
+    assertEquals(managePage.getResultCount, resourceNumber)
   }
 
   @Test(description =
