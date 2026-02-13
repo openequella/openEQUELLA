@@ -111,7 +111,7 @@ public class TaskStatisticsServiceImpl implements TaskStatisticsService {
   }
 
   private Set<String> getManageableWorkflowUuids() {
-    return workflowService.listManagable().stream()
+    return workflowService.listManageable().stream()
         .map(BaseEntityLabel::getUuid)
         .collect(Collectors.toSet());
   }

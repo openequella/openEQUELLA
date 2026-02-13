@@ -19,7 +19,11 @@ import { pipe } from 'fp-ts/function';
 import * as t from 'io-ts';
 import { GET } from './AxiosInstance';
 import { UuidString } from './Common';
-import { TaskTrendDetailsCodec } from './gen/Workflow';
+import {
+  TaskTrendDetailsCodec,
+  WorkflowStatisticsCodec,
+  WorkflowSummaryCodec,
+} from './gen/Workflow';
 import { Trend } from './Task';
 import { validate } from './Utils';
 
@@ -31,9 +35,21 @@ const BASE_WORKFLOW_API_PATH = '/workflow';
 
 /**
  * Path segment for workflow trends endpoints.
- * Appended to workflow paths: /workflow/trends or /workflow/{uuid}/trends
+ * Appended to workflow paths: /workflow/trends
  */
 const TRENDS_API_PATH = '/trends';
+
+/**
+ * Path segment for workflow statistics endpoints.
+ * Appended to workflow paths: /workflow/{uuid}/statistics
+ */
+const STATISTICS_API_PATH = '/statistics';
+
+/**
+ * Path segment for manageable workflow endpoints.
+ * Appended to workflow paths: /workflow/manageable
+ */
+const MANAGEABLE_API_PATH = '/manageable';
 
 /**
  * Details of task trend including its id, name, current waiting count, and trend.
@@ -57,7 +73,38 @@ export interface TaskTrendDetails {
   trend: number;
 }
 
+export interface WorkflowStatistics {
+  /**
+   * A list of task trend details for the workflow.
+   */
+  taskTrends: TaskTrendDetails[];
+  /**
+   * The number of items currently in moderation status for the workflow.
+   */
+  itemCount: number;
+}
+
 const tasksTrendsValidator = pipe(TaskTrendDetailsCodec, t.array, validate);
+
+/**
+ * Summary information about a workflow.
+ */
+export interface WorkflowSummary {
+  /**
+   * Unique identifier of the workflow.
+   */
+  uuid: string;
+  /**
+   * The name of the workflow.
+   */
+  name: string;
+}
+
+const WorkflowSummariesValidator = pipe(
+  WorkflowSummaryCodec,
+  t.array,
+  validate
+);
 
 /**
  * Retrieves a list of tasks trends across all workflows.
@@ -76,19 +123,32 @@ export const getAllWorkflowsTrends = (
   );
 
 /**
- * Retrieves a list of tasks trends for a specific workflow.
+ * Retrieves a list of tasks trends and item count for a specific workflow.
  *
  * @param apiBasePath The base path of the API.
  * @param uuid The UUID of the workflow to query.
  * @param trend The time period for trend calculation.
  */
-export const getWorkflowTrends = (
+export const getWorkflowStatistics = (
   apiBasePath: string,
   uuid: UuidString,
   trend: Trend
-): Promise<TaskTrendDetails[]> =>
-  GET<TaskTrendDetails[]>(
-    `${apiBasePath}${BASE_WORKFLOW_API_PATH}/${uuid}${TRENDS_API_PATH}`,
-    tasksTrendsValidator,
+): Promise<WorkflowStatistics> =>
+  GET<WorkflowStatistics>(
+    `${apiBasePath}${BASE_WORKFLOW_API_PATH}/${uuid}${STATISTICS_API_PATH}`,
+    validate(WorkflowStatisticsCodec),
     { trend }
+  );
+
+/**
+ * Retrieves a list of workflows that the current user can manage.
+ *
+ * @param apiBasePath The base path of the API.
+ */
+export const getManageableWorkflows = (
+  apiBasePath: string
+): Promise<WorkflowSummary[]> =>
+  GET<WorkflowSummary[]>(
+    `${apiBasePath}${BASE_WORKFLOW_API_PATH}${MANAGEABLE_API_PATH}`,
+    WorkflowSummariesValidator
   );

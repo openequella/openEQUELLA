@@ -34,7 +34,7 @@ import { PortletQuickSearch } from "./PortletQuickSearch";
 import { PortletRecentContributions } from "./PortletRecentContributions";
 import { PortletScripted } from "./PortletScripted";
 import { PortletTasks } from "./PortletTasks";
-import { PortletTaskStatistics } from "./PortletTaskStatistics";
+import { PortletTaskStatistics } from "./taskstatistics/PortletTaskStatistics";
 
 /**
  * Type definition for Supported two-column layouts.
@@ -122,7 +122,6 @@ export const renderPortlet = (
   const { portletType } = portlet;
   const basicProps: PortletBasicProps = { cfg: portlet, position, highlight };
 
-  // TODO: Update portlet component when they are implemented.
   switch (portletType) {
     case "search":
       return <PortletQuickSearch {...basicProps} />;
@@ -151,7 +150,12 @@ export const renderPortlet = (
     case "tasks":
       return <PortletTasks {...basicProps} />;
     case "taskstatistics":
-      return <PortletTaskStatistics {...basicProps} />;
+      return (
+        <PortletTaskStatistics
+          {...basicProps}
+          cfg={portlet as OEQ.Dashboard.TaskStatisticsPortlet}
+        />
+      );
     default:
       return absurd(portletType);
   }
@@ -209,3 +213,12 @@ export const scrollToPortlet = (portlet: Element): void => {
     });
   }
 };
+
+/**
+ * Logs a warning message to the console with the provided error message and error details.
+ *
+ * @param prefix The prefix message to provide context for the error.
+ * @param error The error details to be logged.
+ */
+export const logWarn = (prefix: string, error: unknown) =>
+  console.warn(`${prefix} [${error}]`);

@@ -119,9 +119,9 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
           String trend);
 
   @GET
-  @Path("/{uuid}/trends")
-  @ApiOperation(value = "Returns a list of Task trends for the specified workflow")
-  public Response getTrendsForWorkflow(
+  @Path("/{uuid}/statistics")
+  @ApiOperation(value = "Returns task trends and the current item count for the specified workflow")
+  public Response getStatisticsForWorkflow(
       @ApiParam("The UUID of the workflow") @PathParam("uuid") String uuid,
       @ApiParam(
               value = "The trend period (WEEK or MONTH)",
@@ -129,4 +129,9 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
               allowableValues = "WEEK, MONTH")
           @QueryParam("trend")
           String trend);
+
+  @GET
+  @Path("/manageable")
+  @ApiOperation("List all workflows the current user can manage")
+  public Response getManageableWorkflows();
 }

@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 import * as OEQ from "@openequella/rest-api-client";
-import * as React from "react";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import type { History } from "history";
+import * as React from "react";
+import {
+  buildLegacyLinkOnClickHandler,
+  getLegacyTaskPageRoute,
+} from "../../modules/LegacyContentModule";
 import { languageStrings } from "../../util/langstrings";
 import { TasksList } from "./TasksList";
 
@@ -75,4 +80,16 @@ export const createTasksListMaybe =
         <TasksList group={parent} items={children} itemIcon={childIcon} />
       )),
       O.toNullable,
+    );
+
+/**
+ * Builds an `onClick` handler for a task item.
+ *
+ * @param history The history object to use for navigation.
+ * @param legacyEventId The legacy event ID for the server to set up the legacy task page.
+ */
+export const buildTaskOnClickHandler =
+  (history: History, legacyEventId: string) => (taskId: string) =>
+    buildLegacyLinkOnClickHandler(history, () =>
+      getLegacyTaskPageRoute(legacyEventId, taskId),
     );
