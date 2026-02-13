@@ -19,11 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.{
-  BaseEntityReferenceView,
-  EntitySkeletonView,
-  MetadataSchemaEditView
-}
+import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
