@@ -495,7 +495,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       case "visible" -> {
         boolean isVisible = "1".equals(value);
         content.setAvailable(isVisible);
-        content.setAttribute("visible", getKey("moodle.finduses.visible"), isVisible);
+        content.setAttribute("visible", getKey("visible"), isVisible);
       }
       case VALUE_NODE ->
           setAttributeIfPresent(content, attributeKey, attributeKey, value, Function.identity());
@@ -521,7 +521,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       String value,
       Function<String, T> parser) {
     if (!Check.isEmpty(value)) {
-      content.setAttribute(key, getKey("moodle.finduses." + langSuffix), parser.apply(value));
+      content.setAttribute(key, getKey(langSuffix), parser.apply(value));
     }
   }
 
@@ -546,10 +546,6 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     }
 
     return courseCode;
-  }
-
-  private String errorString(String partKey) {
-    return CurrentLocale.get("com.tle.core.connectors.moodle." + partKey);
   }
 
   private MoodleWebService setupService(Connector connector) {
@@ -633,8 +629,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           String message = xml.nodeValue("MESSAGE", exception);
           if (message.startsWith(ERROR_USER_NOT_FOUND)) {
             String username = message.substring(ERROR_USER_NOT_FOUND.length());
-            throw new LmsUserNotFoundException(
-                username, CurrentLocale.get(getKey("connector.error"), username));
+            throw new LmsUserNotFoundException(username, connectorString("error", username));
           }
           throw new MoodleException("Error contacting Moodle: " + message);
         }
@@ -663,16 +658,24 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
   }
 
   private String getKey(String partKey) {
-    return KEY_PFX + partKey;
+    return KEY_PFX + "moodle.finduses." + partKey;
+  }
+
+  private String connectorString(String partKey, final Object... values) {
+    return CurrentLocale.get(KEY_PFX + "connector." + partKey, values);
+  }
+
+  private String connectorTestString(String partKey) {
+    return connectorString("test.error." + partKey);
   }
 
   @Override
   public ConnectorTerminology getConnectorTerminology() {
     ConnectorTerminology terms = new ConnectorTerminology();
-    terms.setShowArchived(getKey("moodle.finduses.showarchived"));
-    terms.setShowArchivedLocations(getKey("moodle.finduses.showarchived.courses"));
-    terms.setCourseHeading(getKey("moodle.finduses.course"));
-    terms.setLocationHeading(getKey("moodle.finduses.location"));
+    terms.setShowArchived(getKey("showarchived"));
+    terms.setShowArchivedLocations(getKey("showarchived.courses"));
+    terms.setCourseHeading(getKey("course"));
+    terms.setLocationHeading(getKey("location"));
     return terms;
   }
 
@@ -771,10 +774,10 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
     final MoodleWebService ws = setupService(serverUrl, webServiceToken);
 
     if (Check.isEmpty(serverUrl)) {
-      return errorString("connector.test.error.nourl");
+      return connectorTestString("nourl");
     }
     if (Check.isEmpty(ws.getToken())) {
-      return errorString("connector.test.error.notoken");
+      return connectorTestString("notoken");
     }
 
     // try the URL. Given that this is a test connection method, we aren't
@@ -786,7 +789,7 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
       httpService.getWebContent(request, configService.getProxyDetails());
     } catch (Exception e) // NOSONAR
     {
-      return errorString("connector.test.error.unreachableurl");
+      return connectorTestString("unreachableurl");
     }
 
     // call the webservice test function
@@ -805,11 +808,11 @@ public class MoodleConnectorService extends AbstractIntegrationConnectorResposit
           }
 
           if (key == null || !key.equals(SUCCESS_KEY) || value == null || !value.equals(username)) {
-            return errorString("connector.test.error.invalidresponse");
+            return connectorTestString("invalidresponse");
           }
         }
       } else {
-        return errorString("connector.test.error.emptyresponse");
+        return connectorTestString("emptyresponse");
       }
     } catch (Exception m) {
       return m.getMessage();
