@@ -22,5 +22,6 @@ package com.tle.web.remoting.graphql
   */
 object ErrorCode extends Enumeration {
   type Code = Value
-  val ACCESS_DENIED, BAD_REQUEST, CLIENT_ABORT, INTERNAL_ERROR, IO_ERROR, LOCKED, NOT_FOUND = Value
+  val ACCESS_DENIED, BAD_REQUEST, CLIENT_ABORT, INTERNAL_ERROR, IN_USE, IO_ERROR, LOCKED,
+      NOT_FOUND = Value
 }

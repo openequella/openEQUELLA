@@ -66,7 +66,8 @@ class MetadataSchemaSchema extends SchemaProvider {
     metadataSchema = MetadataSchemaMutationOps(
       startEdit = args => schemaProvider.startEdit(args.id),
       startCreate = () => schemaProvider.startCreate(),
-      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force.getOrElse(false))
+      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
+      delete = args => schemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
     )
   )
 
@@ -123,7 +124,11 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription(
         "Cancel editing a metadata schema - discarding any changes made and unlocking the schema."
       )
-      cancelEdit: MetadataSchemaCancelEditArgs => ResultWithErrors[Unit]
+      cancelEdit: MetadataSchemaCancelEditArgs => ResultWithErrors[Unit],
+      @GQLDescription(
+        "Delete a metadata schema - with consideration to references controllable by args."
+      )
+      delete: MetadataSchemaDeleteArgs => ResultWithErrors[Unit]
   )
 
   case class MetadataSchemaStartEditArgs(
@@ -138,5 +143,14 @@ class MetadataSchemaSchema extends SchemaProvider {
         "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided."
       )
       force: Option[Boolean] = None
+  )
+
+  case class MetadataSchemaDeleteArgs(
+      @GQLDescription("ID of the metadata schema to delete")
+      id: Long,
+      @GQLDescription(
+        "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided."
+      )
+      checkReferences: Option[Boolean] = Some(true)
   )
 }

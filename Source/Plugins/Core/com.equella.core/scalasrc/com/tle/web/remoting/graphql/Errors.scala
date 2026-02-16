@@ -43,13 +43,14 @@ object Errors {
     *   the error code
     */
   def mapException(throwable: Throwable): ErrorCode.Code = throwable match {
-    case _: ItemEditingException | _: InvalidDataException | _: InUseException => BAD_REQUEST
-    case _: AccessDeniedException                                              => ACCESS_DENIED
-    case _: LockedException                                                    => LOCKED
-    case _: NotFoundException | _: javax.ws.rs.NotFoundException               => NOT_FOUND
-    case _: ClientAbortException                                               => CLIENT_ABORT
-    case _: IOException                                                        => IO_ERROR
-    case _                                                                     => INTERNAL_ERROR
+    case _: ItemEditingException | _: InvalidDataException       => BAD_REQUEST
+    case _: AccessDeniedException                                => ACCESS_DENIED
+    case _: LockedException                                      => LOCKED
+    case _: NotFoundException | _: javax.ws.rs.NotFoundException => NOT_FOUND
+    case _: ClientAbortException                                 => CLIENT_ABORT
+    case _: IOException                                          => IO_ERROR
+    case _: InUseException                                       => IN_USE
+    case _                                                       => INTERNAL_ERROR
   }
 
   /** Standardises the building of the `cause` `extension` object for an error. We use `cause` to

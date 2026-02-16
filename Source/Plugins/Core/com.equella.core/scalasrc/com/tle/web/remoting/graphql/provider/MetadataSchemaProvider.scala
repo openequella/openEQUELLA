@@ -143,6 +143,25 @@ class MetadataSchemaProvider @Inject() (
     }
   }
 
+  /** Delete a metadata schema, with consideration to references controllable by the checkReferences
+    * argument.
+    *
+    * @param id
+    *   the ID of the metadata schema to delete.
+    * @param checkReferences
+    *   if true, the deletion will only proceed if there are no references to the schema; if false,
+    *   the schema will be deleted regardless of references (use with caution).
+    * @return
+    *   Either a ProviderError if the operation fails, or Unit on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def delete(id: Long, checkReferences: Boolean = true): Either[ProviderError, Unit] = {
+    LOGGER.debug(s"Deleting metadata schema with id $id, checkReferences: $checkReferences")
+    ProviderError.Try(s"Failed to delete metadata schema with id $id: ") {
+      schemaService.delete(id, checkReferences)
+    }
+  }
+
   /** Get a metadata schema by ID.
     *
     * @param id
