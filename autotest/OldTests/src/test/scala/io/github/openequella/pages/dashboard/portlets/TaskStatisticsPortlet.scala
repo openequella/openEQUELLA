@@ -25,6 +25,7 @@ import io.github.openequella.Locators.{byAriaLabel, byTextContains}
 import io.github.openequella.pages.dashboard.TaskTrend.TaskTrend
 import io.github.openequella.pages.dashboard.{DashboardPage, TaskTrend}
 import io.github.openequella.pages.manage.ManageResourcesPage
+import org.openqa.selenium.support.locators.RelativeLocator.`with`
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.{By, WebElement}
 
@@ -84,9 +85,10 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     *   The name of the task to get the waiting count for.
     */
   def getWaitingCount(taskName: String): Int = {
-    val countXpath = s"${buildTaskXpath(taskName)}/../following-sibling::td"
-    val waitingCol = driver.findElement(By.xpath(countXpath))
-    waitingCol.getText.toInt
+    val taskButton = driver.findElement(By.xpath(buildTaskXpath(taskName)))
+    // Declaratively find the 'td' to the right of our task button
+    val waitingCell = driver.findElement(`with`(By.tagName("td")).toRightOf(taskButton))
+    waitingCell.getText.toInt
   }
 
   /** Gets the item count number from the item count text.
