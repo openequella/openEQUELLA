@@ -53,7 +53,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     */
   def selectWorkflow(workflow: String): Unit = {
     selectOption(By.xpath(s"$portletXpath//div[@aria-labelledby='workflow-label']"), workflow)
-    waitForTrendData
+    waitForLoadingTrendData
   }
 
   /** Selects a trend from the trend toggle buttons.
@@ -63,7 +63,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     */
   def selectTrend(trend: TaskTrend): Unit = {
     getTrendButton(trend).click()
-    waitForTrendData
+    waitForLoadingTrendData
   }
 
   /** Clicks on a task link in the portlet, which should navigate to the manage tasks page with the
@@ -149,9 +149,13 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     driver.findElement(button)
   }
 
-  // Wait for the trend to load by checking for the presence of the table or the no results message.
-  private def waitForTrendData =
+  // Waits for the trend data to finish loading.
+  private def waitForLoadingTrendData = {
+    waiter.until(
+      ExpectedConditions.invisibilityOfElementLocated(byAriaLabel("Loading task statistics"))
+    )
     waiter.until(ExpectedConditions.presenceOfElementLocated(By.xpath(validationXpath)))
+  }
 
   private def buildTaskXpath(taskName: String): String =
     s"$portletXpath//button[text()='$taskName']"
