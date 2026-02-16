@@ -18,11 +18,16 @@
 
 package io.github.openequella
 
+import com.tle.webtests.pageobject.AbstractPage.quoteXPath
 import org.openqa.selenium.By
 
 /** Utility object for locating elements.
   */
 object Locators {
+
+  /** Locates an element whose *direct* text node contains the given text (non-exact match). */
+  def byTextContains(text: String): By =
+    By.xpath(s"//*[contains(text(), ${quoteXPath(text)})]")
 
   /** Locates element by its data-testid attribute. */
   def byTestId(testId: String): By = By.cssSelector(s"[data-testid='$testId']")

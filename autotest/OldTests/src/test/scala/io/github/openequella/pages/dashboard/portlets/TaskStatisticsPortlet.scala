@@ -21,7 +21,7 @@ package io.github.openequella.pages.dashboard.portlets
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.portal.TaskStatisticsPortalEditPage
 import com.tle.webtests.pageobject.tasklist.ManageTasksPage
-import io.github.openequella.Locators.byAriaLabel
+import io.github.openequella.Locators.{byAriaLabel, byTextContains}
 import io.github.openequella.pages.dashboard.TaskTrend.TaskTrend
 import io.github.openequella.pages.dashboard.{DashboardPage, TaskTrend}
 import io.github.openequella.pages.manage.ManageResourcesPage
@@ -78,7 +78,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     new ManageTasksPage(context).get()
   }
 
-  /** Gets the count of waiting for a given task name from the rend data table.
+  /** Gets the waiting count for the given task name from the trend data table.
     *
     * @param taskName
     *   The name of the task to get the waiting count for.
@@ -91,13 +91,10 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
 
   /** Gets the item count number from the item count text.
     */
-  def getItemCount: Int = {
-    val itemCountContainer = driver.findElement(By.cssSelector(".PortletTaskStatistics-item-count"))
+  def getItemCount: Option[Int] = {
+    val itemCountContainer = driver.findElement(byTextContains("Total resources in workflow"))
     val text               = itemCountContainer.getText
-    "\\d+".r.findFirstIn(text) match {
-      case Some(value) => value.toInt
-      case None        => throw new RuntimeException(s"Could not find item count in text: $text")
-    }
+    "\\d+".r.findFirstIn(text).map(_.toInt)
   }
 
   /** Clicks on the item count link in the portlet, which should navigate to the manage resources

@@ -23,7 +23,7 @@ import com.tle.webtests.pageobject.tasklist.ManageTasksPage
 import io.github.openequella.pages.dashboard.portlets.PortletFactory.TaskStatistics
 import io.github.openequella.pages.dashboard.portlets.TaskStatisticsPortlet
 import io.github.openequella.pages.dashboard.{PortletType, TaskTrend}
-import org.testng.Assert.{assertEquals, assertTrue}
+import org.testng.Assert.{assertEquals, assertTrue, fail}
 import org.testng.annotations.{BeforeClass, BeforeMethod, Test}
 import testng.annotation.NewUIOnly
 
@@ -74,8 +74,11 @@ class TaskStatisticsPortletTest extends AbstractPortletTest {
   @Test(description = "redirects to manage resources page when user clicks on item count")
   def redirectToManageResourcesPage(): Unit = {
     taskStatisticsPortlet.selectWorkflow(WORKFLOW_3_STEP)
-    val resourceNumber = taskStatisticsPortlet.getItemCount
-    val managePage     = taskStatisticsPortlet.clickItemCount()
+    val resourceNumber =
+      taskStatisticsPortlet.getItemCount.getOrElse {
+        fail(s"Can't get item count for workflow '$WORKFLOW_3_STEP'")
+      }
+    val managePage = taskStatisticsPortlet.clickItemCount()
 
     assertTrue(managePage.isLoaded)
     assertEquals(managePage.getResultCount, resourceNumber)
