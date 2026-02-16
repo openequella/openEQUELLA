@@ -18,8 +18,6 @@
 import "@testing-library/jest-dom";
 import * as OEQ from "@openequella/rest-api-client";
 import { composeStories } from "@storybook/react";
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { publicRecentContributionsPortlet } from "../../../../__mocks__/Dashboard.mock";
@@ -30,6 +28,7 @@ import {
 import * as stories from "../../../../__stories__/dashboard/portlets/RecentContributions.stories";
 import { PortletRecentContributions } from "../../../../tsrc/dashboard/portlet/PortletRecentContributions";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { RenderContext, setupStoryComponent } from "../../TestSetupHelper";
 
 const strings = {
   ...languageStrings.dashboard.portlets.recentContributions,
@@ -54,38 +53,29 @@ const waitForPortletReady = async (
 ) => await findByRole("button", { name: strings.actionShowAll });
 
 /** Setup function without waiting for portlet to be ready. Focused on supporting Storybook stories. */
-const setupNoWait = (element: React.ReactElement) => {
-  const user = userEvent.setup();
-  const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
+const setupNoWait = (element: React.ReactElement) =>
+  setupStoryComponent(<MemoryRouter>{element}</MemoryRouter>);
 
-  return { user, ...renderResult };
+const readyStateCheck = async (ctx: RenderContext) => {
+  await waitForPortletReady(ctx.findByRole);
 };
 
 /** Setup function that waits for portlet to be ready. Focused on supporting Storybook stories. */
-const setup = async (element: React.ReactElement) => {
-  const renderResult = setupNoWait(element);
-
-  // Check that Show All button is present to ensure component has loaded
-  await waitForPortletReady(renderResult.findByRole);
-
-  return renderResult;
-};
+const setup = async (element: React.ReactElement) =>
+  setupStoryComponent(<MemoryRouter>{element}</MemoryRouter>, readyStateCheck);
 
 /** Setup function for tests that need to mock search provider and history
  */
-const setupWithMocks = (
+const setupWithMocks = async (
   searchResponse: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
   portletConfig: OEQ.Dashboard.RecentContributionsPortlet = publicRecentContributionsPortlet,
 ) => {
-  const user = userEvent.setup();
-
   // Create mock search provider
   const mockSearchProvider = jest.fn().mockResolvedValue(searchResponse);
-
   // Clear previous history calls
   mockHistoryPush.mockClear();
 
-  const renderResult = render(
+  const context = await setupStoryComponent(
     <MemoryRouter>
       <PortletRecentContributions
         cfg={portletConfig}
@@ -96,10 +86,9 @@ const setupWithMocks = (
   );
 
   return {
-    user,
     mockSearchProvider,
     mockHistory: mockHistoryPush,
-    ...renderResult,
+    ...context,
   };
 };
 
@@ -155,7 +144,7 @@ describe("<PortletRecentContributions />", () => {
       highlight: [],
     };
 
-    const { getByText, findByRole, mockSearchProvider } = setupWithMocks(
+    const { getByText, findByRole, mockSearchProvider } = await setupWithMocks(
       searchResponse,
       customConfig,
     );
@@ -187,7 +176,7 @@ describe("<PortletRecentContributions />", () => {
   });
 
   it("shows loading state for slow searches", async () => {
-    const { findByTestId } = setupNoWait(<SlowLoading />);
+    const { findByTestId } = await setupNoWait(<SlowLoading />);
 
     // Should show loading skeleton while waiting
     // Note: The loading state is managed by DraggablePortlet's isLoading prop
@@ -205,7 +194,7 @@ describe("<PortletRecentContributions />", () => {
     };
 
     const { user, mockHistory, findByRole, getByRole } =
-      setupWithMocks(searchResponse);
+      await setupWithMocks(searchResponse);
     await waitForPortletReady(findByRole);
 
     // Click the Show All button
@@ -237,7 +226,7 @@ describe("<PortletRecentContributions />", () => {
       highlight: [],
     };
 
-    const { mockSearchProvider, findByRole } = setupWithMocks(
+    const { mockSearchProvider, findByRole } = await setupWithMocks(
       searchResponse,
       configWithoutMaxAge,
     );
