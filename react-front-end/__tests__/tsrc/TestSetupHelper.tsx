@@ -35,12 +35,12 @@ export type RenderContext = ReturnType<typeof render> & {
  */
 export const setupStoryComponent = async (
   element: React.ReactElement,
-  readyStateCheck: (context: RenderContext) => Promise<void>,
+  readyStateCheck?: (context: RenderContext) => Promise<void>,
 ): Promise<RenderContext> => {
   const user = userEvent.setup();
   const renderResult = render(element);
   const context = { user, ...renderResult };
 
-  await readyStateCheck(context);
+  await readyStateCheck?.(context);
   return context;
 };

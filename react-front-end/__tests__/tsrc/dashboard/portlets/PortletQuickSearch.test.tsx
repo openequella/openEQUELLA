@@ -18,12 +18,12 @@
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
 import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { itemWithAttachment } from "../../../../__mocks__/SearchResult.mock";
 import * as stories from "../../../../__stories__/dashboard/portlets/QuickSearch.stories";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { setupStoryComponent } from "../../TestSetupHelper";
 
 const { Simple, NoResults, ErrorOnSearch, SettingsError, SlowSearch } =
   composeStories(stories);
@@ -34,14 +34,16 @@ const strings = {
 };
 
 const setup = async (element: React.ReactElement) => {
-  const user = userEvent.setup();
-  const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
+  const context = await setupStoryComponent(
+    <MemoryRouter>{element}</MemoryRouter>,
+  );
+
   // Wait for the search field to be present
-  const input: HTMLInputElement = (await renderResult.findByLabelText(
+  const input: HTMLInputElement = (await context.findByLabelText(
     strings.queryField,
   )) as HTMLInputElement;
 
-  return { user, ...renderResult, input };
+  return { ...context, input };
 };
 
 describe("<PortletQuickSearch />", () => {

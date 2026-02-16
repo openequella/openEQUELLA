@@ -17,8 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { sprintf } from "sprintf-js";
@@ -29,6 +27,7 @@ import { FAVOURITES_TYPE_PARAM } from "../../../../tsrc/favourites/FavouritesPag
 import { NEW_FAVOURITES_PATH } from "../../../../tsrc/mainui/routes";
 import { FavouritesType } from "../../../../tsrc/modules/FavouriteModule";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
+import { RenderContext, setupStoryComponent } from "../../TestSetupHelper";
 
 const {
   ErrorResources,
@@ -46,13 +45,18 @@ const strings = {
 const noResourcesLabel = sprintf(strings.noneFound, strings.resourcesTabName);
 const noSearchesLabel = sprintf(strings.noneFound, strings.searchesTabName);
 
-const setup = async (element: React.ReactElement) => {
-  const user = userEvent.setup();
-  const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
-
+const readyStateCheck = async (context: RenderContext) => {
   // Check that Show All button is present to ensure component has loaded
-  await renderResult.findByRole("link", { name: strings.actionShowAll });
+  await context.findByRole("link", { name: strings.actionShowAll });
+};
 
+const setup = async (element: React.ReactElement) => {
+  const renderResult = await setupStoryComponent(
+    <MemoryRouter>{element}</MemoryRouter>,
+    readyStateCheck,
+  );
+
+  const { user } = renderResult;
   const clickResourcesTab = async () => {
     await user.click(
       renderResult.getByRole("tab", { name: strings.resourcesTabName }),
@@ -64,7 +68,7 @@ const setup = async (element: React.ReactElement) => {
     );
   };
 
-  return { user, ...renderResult, clickResourcesTab, clickSearchesTab };
+  return { ...renderResult, clickResourcesTab, clickSearchesTab };
 };
 
 describe("<PortletFavourites />", () => {
