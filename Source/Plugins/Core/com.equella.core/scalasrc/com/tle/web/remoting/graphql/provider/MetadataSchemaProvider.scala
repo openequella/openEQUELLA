@@ -24,6 +24,8 @@ import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.schema.service.SchemaService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
+import com.tle.web.remoting.graphql.schema.conversion.EditableEntityConverter.toEntityPack
+import com.tle.web.remoting.graphql.schema.conversion.MetadataSchemaConverter
 import com.tle.web.remoting.graphql.schema.types._
 import org.slf4j.LoggerFactory
 
@@ -140,6 +142,27 @@ class MetadataSchemaProvider @Inject() (
     LOGGER.debug(s"Cancelling edit of metadata schema with id $id")
     ProviderError.Try(s"Failed to cancel edit of metadata schema with id $id: ") {
       schemaService.cancelEdit(id, force)
+    }
+  }
+
+  /** Stop the editing session for a metadata schema, saving any changes and removing its lock.
+    *
+    * @param details
+    *   the details of the metadata schema being edited, including the changes to save.
+    * @param lockAfterwards
+    *   if true, re-locks the metadata schema after saving (useful for continuing to edit); if
+    *   false, leaves it unlocked.
+    * @return
+    *   Either a ProviderError if the operation fails, or Unit on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def add(
+      details: EditableEntity[MetadataSchema],
+      lockAfterwards: Boolean
+  ): Either[ProviderError, Unit] = {
+    LOGGER.debug(s"Adding new metadata schema with details: ${details.entity}")
+    ProviderError.Try("Failed to add new metadata schema: ") {
+      schemaService.add(toEntityPack(details, MetadataSchemaConverter.toSchema), lockAfterwards)
     }
   }
 
