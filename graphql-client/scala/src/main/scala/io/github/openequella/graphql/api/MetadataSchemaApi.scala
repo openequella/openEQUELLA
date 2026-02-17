@@ -21,6 +21,7 @@ package io.github.openequella.graphql.api
 import caliban.client.Operations.RootQuery
 import caliban.client.SelectionBuilder
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.views.conversions.MetadataSchemaConversions
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
@@ -234,6 +235,54 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] = {
     val mutation = MetadataSchemaMutations.cancelEdit(id, force)
+
+    flattenResult {
+      mutate(mutation)
+    }
+  }
+
+  /** Add a new metadata schema.
+    *
+    * Typically called after a `startCreate` operation, with the details for the new schema
+    * populated. The `MetadataSchemaEditView` type is used as input to maintain consistency with the
+    * view returned by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    *
+    * @param details
+    *   The metadata schema details to add, using the same view type returned by `startEdit`.
+    * @param lockAfterwards
+    *   If true, keeps the schema locked after creation for further editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    */
+  def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] = {
+    val input    = MetadataSchemaConversions.toInput(details)
+    val mutation = MetadataSchemaMutations.add(input, lockAfterwards)
+
+    flattenResult {
+      mutate(mutation)
+    }
+  }
+
+  /** Delete a metadata schema.
+    *
+    * @param id
+    *   The ID of the metadata schema to delete.
+    * @param checkReferences
+    *   If true, checks for references before deleting and fails if any exist. If false or None,
+    *   deletes without checking references.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    */
+  def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] = {
+    val mutation = MetadataSchemaMutations.delete(id, checkReferences)
 
     flattenResult {
       mutate(mutation)

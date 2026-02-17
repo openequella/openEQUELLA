@@ -19,6 +19,11 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
+  buildNewSchemaDetails,
+  getFirstSchemaId,
+  getSchemaName
+}
 import io.github.openequella.graphql.api.views.{EntitySkeletonView, MetadataSchemaEditView}
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
@@ -41,7 +46,7 @@ class MetadataSchemaApiMutationsTest
   describe("startEdit") {
     it("initiates an edit session for a valid schema") {
       Given("a valid metadata schema ID")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = getFirstSchemaId()
 
       When("calling startEdit with the schema ID")
       val result = MetadataSchemaApi.startEdit(schemaId)
@@ -108,7 +113,7 @@ class MetadataSchemaApiMutationsTest
   describe("cancelEdit") {
     it("cancels an edit session and releases the lock") {
       Given("a valid metadata schema ID in edit mode")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = getFirstSchemaId()
 
       When("calling cancelEdit after startEdit")
       val editResult = MetadataSchemaApi.startEdit(schemaId)
@@ -136,7 +141,7 @@ class MetadataSchemaApiMutationsTest
 
     it("forcefully releases locks when force parameter is true") {
       Given("a schema locked by another user")
-      val schemaId = MetadataSchemaApi.listSchemas().value.head.id
+      val schemaId = getFirstSchemaId()
 
       // Lock the schema as the ADMIN user
       TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
@@ -194,6 +199,135 @@ class MetadataSchemaApiMutationsTest
         }
         isLocked
       }
+    }
+  }
+
+  describe("add") {
+    it("creates a new metadata schema") {
+      Given("a skeleton from startCreate")
+      val skeleton = MetadataSchemaApi.startCreate().value
+
+      And("a fully populated MetadataSchemaEditView")
+      val newSchemaDetails = buildNewSchemaDetails(skeleton)
+
+      When("calling add with the new schema details")
+      val addResult = MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false)
+
+      Then("completes without errors")
+      addResult.isRight shouldBe true
+
+      And("the schema can be retrieved by its UUID")
+      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+      val schema   = MetadataSchemaApi.getById(schemaId).value.value
+      schema.details.uuid shouldBe skeleton.uuid
+      getSchemaName(schema).value shouldBe "Test Schema"
+
+      // Clean up: delete the created schema
+      val deleteResult = MetadataSchemaApi.delete(schemaId)
+      deleteResult.isRight shouldBe true
+    }
+
+    it("can keep the schema locked after creation when lockAfterwards is true") {
+      Given("a skeleton from startCreate")
+      val skeleton = MetadataSchemaApi.startCreate().value
+
+      And("a fully populated MetadataSchemaEditView")
+      val newSchemaDetails = buildNewSchemaDetails(skeleton)
+
+      When("calling add with lockAfterwards = true")
+      val addResult = MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = true)
+
+      Then("completes without errors")
+      addResult.isRight shouldBe true
+
+      And("the schema is locked for editing by the current user")
+      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+
+      // Another user cannot start an edit session
+      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
+        val editResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
+        editResult.isLeft shouldBe true
+        editResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+      }
+
+      // Clean up: cancel the edit and delete the schema
+      MetadataSchemaApi.cancelEdit(schemaId)
+      val deleteResult = MetadataSchemaApi.delete(schemaId)
+      deleteResult.isRight shouldBe true
+    }
+
+    it("denies access when not authenticated") {
+      Given("a skeleton from startCreate (authenticated)")
+      val skeleton = MetadataSchemaApi.startCreate().value
+
+      And("a fully populated MetadataSchemaEditView")
+      val newSchemaDetails = buildNewSchemaDetails(skeleton)
+
+      When("an unauthenticated user calls add")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("delete") {
+    it("deletes an existing metadata schema") {
+      Given("a new metadata schema")
+      val skeleton         = MetadataSchemaApi.startCreate().value
+      val newSchemaDetails = buildNewSchemaDetails(skeleton, name = "Schema to Delete")
+      MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false).value
+
+      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+
+      When("calling delete with the schema ID")
+      val deleteResult = MetadataSchemaApi.delete(schemaId)
+
+      Then("completes without errors")
+      deleteResult.isRight shouldBe true
+
+      And("the schema no longer exists")
+      val getResult = MetadataSchemaApi.getById(schemaId).value
+      getResult shouldBe None
+    }
+
+    it("returns a NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("calling delete with the invalid schema ID")
+      val result = MetadataSchemaApi.delete(invalidSchemaId)
+
+      Then("returns a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("fails when checkReferences is true and schema has references") {
+      Given("a metadata schema that is in use")
+      // Use a known schema that has references (typically the first one in the list)
+      val schemaId = getFirstSchemaId()
+
+      // Verify it has references
+      val hasRefs = MetadataSchemaApi.hasReferences(schemaId).value
+      assume(hasRefs, "Test requires a schema with references")
+
+      When("calling delete with checkReferences = true")
+      val result = MetadataSchemaApi.delete(schemaId, checkReferences = Some(true))
+
+      Then("returns an error indicating references exist")
+      result.isLeft shouldBe true
+    }
+
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls delete")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.delete(1)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
 }
