@@ -8,6 +8,7 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import java.time.LocalDateTime
+import java.util.Locale
 import scala.jdk.CollectionConverters._
 
 class EditableEntityConverterTest extends AnyFunSpec with Matchers with GivenWhenThen {
@@ -36,6 +37,79 @@ class EditableEntityConverterTest extends AnyFunSpec with Matchers with GivenWhe
 
       And("the TargetList entries are correctly mapped")
       assertTargetListEntries(result.getTargetList)
+    }
+
+    it("handles empty language bundles") {
+      Given("an EditableEntity with empty language bundles")
+      val entityDetailsWithEmptyBundles = createEntityDetailsWithEmptyLanguageBundles()
+      val schema                        = createMinimalMetadataSchema(entityDetailsWithEmptyBundles)
+      val editableEntity                = createMinimalEditableEntity(schema)
+
+      When("toEntityPack is called")
+      val result: EntityPack[Schema] =
+        EditableEntityConverter.toEntityPack[MetadataSchema, Schema](
+          editableEntity,
+          MetadataSchemaConverter.toSchema
+        )
+
+      Then("the entity's language bundles have empty strings maps")
+      val entity = result.getEntity
+      entity.getName should not be null
+      entity.getName.getStrings shouldBe empty
+      entity.getDescription should not be null
+      entity.getDescription.getStrings shouldBe empty
+    }
+
+    it("converts entity without version") {
+      Given("an EditableEntity with no version specified")
+      val schema         = createMinimalMetadataSchema(createMinimalEntityDetails())
+      val editableEntity = createMinimalEditableEntity(schema, version = None)
+
+      When("toEntityPack is called")
+      val result: EntityPack[Schema] =
+        EditableEntityConverter.toEntityPack[MetadataSchema, Schema](
+          editableEntity,
+          MetadataSchemaConverter.toSchema
+        )
+
+      Then("the EntityPack version is null")
+      result.getVersion shouldBe null
+    }
+
+    it("handles empty target list") {
+      Given("an EditableEntity with an empty target list")
+      val schema         = createMinimalMetadataSchema(createMinimalEntityDetails())
+      val editableEntity = createMinimalEditableEntity(schema, targetList = List.empty)
+
+      When("toEntityPack is called")
+      val result: EntityPack[Schema] =
+        EditableEntityConverter.toEntityPack[MetadataSchema, Schema](
+          editableEntity,
+          MetadataSchemaConverter.toSchema
+        )
+
+      Then("the EntityPack has a non-null TargetList with empty entries")
+      result.getTargetList should not be null
+      result.getTargetList.getEntries shouldBe empty
+    }
+
+    it("handles None language bundles") {
+      Given("an EntityDetails with None for language bundles")
+      val entityDetailsWithNoBundles = createEntityDetailsWithNoLanguageBundles()
+      val schema                     = createMinimalMetadataSchema(entityDetailsWithNoBundles)
+      val editableEntity             = createMinimalEditableEntity(schema)
+
+      When("toEntityPack is called")
+      val result: EntityPack[Schema] =
+        EditableEntityConverter.toEntityPack[MetadataSchema, Schema](
+          editableEntity,
+          MetadataSchemaConverter.toSchema
+        )
+
+      Then("the entity's name and description are null")
+      val entity = result.getEntity
+      entity.getName shouldBe null
+      entity.getDescription shouldBe null
     }
   }
 
@@ -142,14 +216,33 @@ class EditableEntityConverterTest extends AnyFunSpec with Matchers with GivenWhe
 }
 
 object EditableEntityConverterTest {
+  private val BASIC_SCHEMA                  = "<xml><item><name/><description/></item></xml>"
+  private val BASIC_SCHEMA_PATH_NAME        = "/xml/item/name"
+  private val BASIC_SCHEMA_PATH_DESCRIPTION = "/xml/item/description"
+
   // Test data - Language strings
   val testNameStrings: List[LanguageString] = List(
-    LanguageString(id = 1L, priority = 1, locale = "en", text = "Test Schema Name"),
-    LanguageString(id = 2L, priority = 2, locale = "fr", text = "Nom du schéma de test")
+    LanguageString(
+      id = 1L,
+      priority = 1,
+      locale = Locale.ENGLISH.toString,
+      text = "Test Schema Name"
+    ),
+    LanguageString(
+      id = 2L,
+      priority = 2,
+      locale = Locale.FRENCH.toString,
+      text = "Nom du schéma de test"
+    )
   )
 
   val testDescriptionStrings: List[LanguageString] = List(
-    LanguageString(id = 3L, priority = 1, locale = "en", text = "Test Schema Description")
+    LanguageString(
+      id = 3L,
+      priority = 1,
+      locale = Locale.ENGLISH.toString,
+      text = "Test Schema Description"
+    )
   )
 
   // Test data - EntityDetails
@@ -186,9 +279,9 @@ object EditableEntityConverterTest {
     details = testEntityDetails,
     exportTransforms = testExportTransforms,
     importTransforms = testImportTransforms,
-    itemNamePath = "/xml/item/name",
-    itemDescriptionPath = "/xml/item/description",
-    definition = "<root><item><name/><description/></item></root>",
+    itemNamePath = BASIC_SCHEMA_PATH_NAME,
+    itemDescriptionPath = BASIC_SCHEMA_PATH_DESCRIPTION,
+    definition = BASIC_SCHEMA,
     citations = testCitations
   )
 
@@ -216,4 +309,59 @@ object EditableEntityConverterTest {
     version = Some("2026.1.0"),
     targetList = testTargetListEntries
   )
+
+  // Factory methods for edge case tests
+  def createMinimalEntityDetails(
+      nameBundle: Option[LanguageBundle] = Some(
+        LanguageBundle(id = 1L, strings = List(LanguageString(1L, 1, "en", "Test")))
+      ),
+      descriptionBundle: Option[LanguageBundle] = Some(
+        LanguageBundle(id = 2L, strings = List(LanguageString(2L, 1, "en", "Description")))
+      )
+  ): EntityDetails = EntityDetails(
+    id = 1L,
+    uuid = "minimal-uuid",
+    owner = "test-owner",
+    dateCreated = None,
+    dateModified = None,
+    nameBundle = nameBundle,
+    descriptionBundle = descriptionBundle,
+    attributes = Map.empty,
+    disabled = false
+  )
+
+  def createEntityDetailsWithEmptyLanguageBundles(): EntityDetails =
+    createMinimalEntityDetails(
+      nameBundle = Some(LanguageBundle(id = 1L, strings = List.empty)),
+      descriptionBundle = Some(LanguageBundle(id = 2L, strings = List.empty))
+    )
+
+  def createEntityDetailsWithNoLanguageBundles(): EntityDetails =
+    createMinimalEntityDetails(
+      nameBundle = None,
+      descriptionBundle = None
+    )
+
+  def createMinimalMetadataSchema(details: EntityDetails): MetadataSchema =
+    MetadataSchema(
+      details = details,
+      exportTransforms = List.empty,
+      importTransforms = List.empty,
+      itemNamePath = BASIC_SCHEMA_PATH_NAME,
+      itemDescriptionPath = BASIC_SCHEMA_PATH_DESCRIPTION,
+      definition = BASIC_SCHEMA,
+      citations = List.empty
+    )
+
+  def createMinimalEditableEntity(
+      schema: MetadataSchema,
+      version: Option[String] = Some("2026.1.0"),
+      targetList: List[TargetListEntry] = List.empty
+  ): EditableEntity[MetadataSchema] =
+    EditableEntity(
+      entity = schema,
+      stagingId = "staging-test",
+      version = version,
+      targetList = targetList
+    )
 }
