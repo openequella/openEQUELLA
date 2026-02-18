@@ -27,18 +27,18 @@ object CitationConverter {
 
   /** Converts a GraphQL citation type to its Hibernate entity representation.
     *
-    * @param view
+    * @param from
     *   the GraphQL citation containing name and transformation
     * @return
     *   a new [[Citation]] entity populated with the provided values
     */
   def toCitation(
-      view: com.tle.web.remoting.graphql.schema.types.Citation
+      from: com.tle.web.remoting.graphql.schema.types.Citation
   ): Citation = {
-    val c = new Citation
-    c.setName(view.name)
-    c.setTransformation(view.transformation)
+    val to = new Citation
+    to.setName(from.name)
+    to.setTransformation(from.transformation)
 
-    c
+    to
   }
 }

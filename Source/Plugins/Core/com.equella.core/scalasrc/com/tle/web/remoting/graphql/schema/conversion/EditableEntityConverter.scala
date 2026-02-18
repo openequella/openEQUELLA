@@ -32,7 +32,7 @@ object EditableEntityConverter {
 
   /** Converts a GraphQL editable entity wrapper to an [[EntityPack]].
     *
-    * @param editableEntity
+    * @param from
     *   the GraphQL wrapper containing the entity and metadata
     * @param toBaseEntity
     *   conversion function for the specific entity type
@@ -44,17 +44,17 @@ object EditableEntityConverter {
     *   a new [[EntityPack]] containing the converted entity and access control list
     */
   def toEntityPack[A, E <: com.tle.beans.entity.BaseEntity](
-      editableEntity: EditableEntity[A],
+      from: EditableEntity[A],
       toBaseEntity: A => E
   ): EntityPack[E] = {
-    val pack = new EntityPack[E]()
+    val to = new EntityPack[E]()
 
-    pack.setStagingID(editableEntity.stagingId)
-    editableEntity.version.foreach(pack.setVersion)
+    to.setStagingID(from.stagingId)
+    from.version.foreach(to.setVersion)
 
-    pack.setTargetList(editableEntity.targetList convert toTargetList)
-    pack.setEntity(editableEntity.entity convert toBaseEntity)
+    to.setTargetList(from.targetList convert toTargetList)
+    to.setEntity(from.entity convert toBaseEntity)
 
-    pack
+    to
   }
 }

@@ -32,26 +32,26 @@ object TargetListEntryConverter {
 
   /** Converts a list of GraphQL target list entries to a [[TargetList]].
     *
-    * @param targetList
+    * @param from
     *   the GraphQL access control entries
     * @return
     *   a new [[TargetList]] containing the converted entries
     */
   def toTargetList(
-      targetList: List[com.tle.web.remoting.graphql.schema.types.TargetListEntry]
+      from: List[com.tle.web.remoting.graphql.schema.types.TargetListEntry]
   ): TargetList =
-    new TargetList(targetList.map(toTargetListEntry).asJava)
+    new TargetList(from.map(toTargetListEntry).asJava)
 
   private def toTargetListEntry(
-      targetListEntry: com.tle.web.remoting.graphql.schema.types.TargetListEntry
+      from: com.tle.web.remoting.graphql.schema.types.TargetListEntry
   ): TargetListEntry = {
-    val entry = new TargetListEntry()
-    entry.setGranted(targetListEntry.granted)
-    entry.setOverride(targetListEntry.overridden)
-    entry.setPrivilege(targetListEntry.privilege)
-    entry.setWho(targetListEntry.who)
-    entry.setPostfix(targetListEntry.postfix)
+    val to = new TargetListEntry()
+    to.setGranted(from.granted)
+    to.setOverride(from.overridden)
+    to.setPrivilege(from.privilege)
+    to.setWho(from.who)
+    to.setPostfix(from.postfix)
 
-    entry
+    to
   }
 }

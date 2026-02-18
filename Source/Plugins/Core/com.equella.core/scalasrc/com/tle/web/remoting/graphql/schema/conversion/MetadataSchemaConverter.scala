@@ -34,38 +34,38 @@ object MetadataSchemaConverter {
 
   /** Converts a GraphQL metadata schema to its Hibernate entity representation.
     *
-    * @param metadataSchema
+    * @param from
     *   the GraphQL metadata schema containing all schema configuration
     * @return
     *   a new [[Schema]] entity populated with the provided values
     */
-  def toSchema(metadataSchema: MetadataSchema): Schema = {
-    val schema = new Schema()
+  def toSchema(from: MetadataSchema): Schema = {
+    val to = new Schema()
 
-    populateBaseEntity(metadataSchema.details, schema)
-    schema.setExportTransforms(
-      metadataSchema.exportTransforms.map(toSchemaTransform).asJava
+    populateBaseEntity(from.details, to)
+    to.setExportTransforms(
+      from.exportTransforms.map(toSchemaTransform).asJava
     )
-    schema.setImportTransforms(
-      metadataSchema.importTransforms.map(toSchemaTransform).asJava
+    to.setImportTransforms(
+      from.importTransforms.map(toSchemaTransform).asJava
     )
-    schema.setItemNamePath(metadataSchema.itemNamePath)
-    schema.setItemDescriptionPath(metadataSchema.itemDescriptionPath)
-    schema.setSerialisedDefinition(metadataSchema.definition)
-    schema.setCitations(
-      metadataSchema.citations.map(toCitation).asJava
+    to.setItemNamePath(from.itemNamePath)
+    to.setItemDescriptionPath(from.itemDescriptionPath)
+    to.setSerialisedDefinition(from.definition)
+    to.setCitations(
+      from.citations.map(toCitation).asJava
     )
 
-    schema
+    to
   }
 
   private def toSchemaTransform(
-      transform: MetadataSchemaTransform
+      from: MetadataSchemaTransform
   ): SchemaTransform = {
-    val st = new SchemaTransform()
-    st.setFilename(transform.filename)
-    st.setType(transform.schemaType)
+    val to = new SchemaTransform()
+    to.setFilename(from.filename)
+    to.setType(from.schemaType)
 
-    st
+    to
   }
 }
