@@ -2,6 +2,7 @@ package com.tle.webtests.test;
 
 import static org.testng.Assert.assertEquals;
 
+import com.codeborne.selenide.WebDriverRunner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.tle.webtests.framework.HasTestConfig;
@@ -91,6 +92,9 @@ public abstract class AbstractTest implements HasTestConfig {
       contextUrl = testConfig.getAdminUrl();
     }
     WebDriver driver = new StandardDriverFactory(testConfig).getDriver(getClass());
+    // Set the driver for Selenide.
+    WebDriverRunner.setWebDriver(driver);
+
     context = new PageContext(driver, testConfig, contextUrl);
     if (!testConfig.isNoInstitution()) {
       context.setIntegUrl(testConfig.getIntegrationUrl(rootFolder.getName()));
