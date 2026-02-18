@@ -113,7 +113,8 @@ class MetadataSchemaProvider @Inject() (
 
   /** Start creating a new metadata schema. This method returns an `EditableBaseEntitySkeleton` that
     * contains the necessary information to start creating a new metadata schema. It is expected
-    * that it will be followed by further stop or cancel edit operation.
+    * that it will be followed be a call to `add` with the details of the new metadata schema to be
+    * created.
     *
     * @return
     *   an `EditableBaseEntitySkeleton` ready for editing.
@@ -145,10 +146,14 @@ class MetadataSchemaProvider @Inject() (
     }
   }
 
-  /** Stop the editing session for a metadata schema, saving any changes and removing its lock.
+  /** Completes the editing session for a new metadata schema by saving the changes - following the
+    * initial `startCreate` call. Optionally re-locks the schema for continued editing if
+    * `lockAfterwards` is true; otherwise, leaves it unlocked. Note that the details parameter must
+    * contain the necessary information to identify the metadata schema being added based on that
+    * returned from `startCreate`.
     *
     * @param details
-    *   the details of the metadata schema being edited, including the changes to save.
+    *   the details of the metadata schema being added.
     * @param lockAfterwards
     *   if true, re-locks the metadata schema after saving (useful for continuing to edit); if
     *   false, leaves it unlocked.
