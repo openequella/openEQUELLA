@@ -29,6 +29,12 @@ package object conversion {
 
   /** Extension method to allow functional conversion with infix notation.
     *
+    * Usage:
+    * {{{
+    *   val result = inputValue convert toOutputType
+    *   // Equivalent to: toOutputType(inputValue)
+    * }}}
+    *
     * @param a
     *   the value to convert
     * @tparam A
