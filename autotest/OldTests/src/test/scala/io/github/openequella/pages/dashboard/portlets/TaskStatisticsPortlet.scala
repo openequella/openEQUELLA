@@ -19,7 +19,7 @@
 package io.github.openequella.pages.dashboard.portlets
 
 import com.codeborne.selenide.Selectors.withText
-import com.codeborne.selenide.Selenide.$
+import com.codeborne.selenide.Selenide.$x
 import com.tle.webtests.framework.PageContext
 import com.tle.webtests.pageobject.portal.TaskStatisticsPortalEditPage
 import com.tle.webtests.pageobject.tasklist.ManageTasksPage
@@ -96,7 +96,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
   /** Gets the item count number from the item count text.
     */
   def getItemCount: Option[Int] = {
-    val itemCountContainer = $(withText("Total resources in workflow"))
+    val itemCountContainer = $x(portletXpath).$(withText("Total resources in workflow"))
     val text               = itemCountContainer.getText
     "\\d+".r.findFirstIn(text).map(_.toInt)
   }
@@ -105,8 +105,7 @@ class TaskStatisticsPortlet(context: PageContext, name: String)
     * page with the appropriate filters applied.
     */
   def clickItemCount(): ManageResourcesPage = {
-    val link = $(withText(ITEM_COUNT_TEXT))
-    link.click()
+    $x(portletXpath).$(withText(ITEM_COUNT_TEXT)).click()
     new ManageResourcesPage(context).get()
   }
 
