@@ -67,6 +67,7 @@ class MetadataSchemaSchema extends SchemaProvider {
       startEdit = args => schemaProvider.startEdit(args.id),
       startCreate = () => schemaProvider.startCreate(),
       cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
+      add = args => schemaProvider.add(args.details, args.lockAfterwards),
       delete = args => schemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
     )
   )
@@ -126,6 +127,10 @@ class MetadataSchemaSchema extends SchemaProvider {
       )
       cancelEdit: MetadataSchemaCancelEditArgs => ResultWithErrors[Unit],
       @GQLDescription(
+        "Add a new metadata schema - typically after a startCreate operation, with details for the new schema."
+      )
+      add: MetadataSchemaAddArgs => ResultWithErrors[Unit],
+      @GQLDescription(
         "Delete a metadata schema - with consideration to references controllable by args."
       )
       delete: MetadataSchemaDeleteArgs => ResultWithErrors[Unit]
@@ -152,5 +157,12 @@ class MetadataSchemaSchema extends SchemaProvider {
         "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided."
       )
       checkReferences: Option[Boolean] = Some(true)
+  )
+
+  case class MetadataSchemaAddArgs(
+      @GQLDescription("Details of the metadata schema to add")
+      details: EditableEntity[MetadataSchema],
+      @GQLDescription("Whether the newly added schema should be locked for editing after creation")
+      lockAfterwards: Boolean
   )
 }

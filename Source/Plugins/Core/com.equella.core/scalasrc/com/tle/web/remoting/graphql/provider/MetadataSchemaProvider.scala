@@ -24,6 +24,8 @@ import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.schema.service.SchemaService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
+import com.tle.web.remoting.graphql.schema.conversion.EditableEntityConverter.toEntityPack
+import com.tle.web.remoting.graphql.schema.conversion.MetadataSchemaConverter
 import com.tle.web.remoting.graphql.schema.types._
 import org.slf4j.LoggerFactory
 
@@ -111,7 +113,8 @@ class MetadataSchemaProvider @Inject() (
 
   /** Start creating a new metadata schema. This method returns an `EditableBaseEntitySkeleton` that
     * contains the necessary information to start creating a new metadata schema. It is expected
-    * that it will be followed by further stop or cancel edit operation.
+    * that it will be followed be a call to `add` with the details of the new metadata schema to be
+    * created.
     *
     * @return
     *   an `EditableBaseEntitySkeleton` ready for editing.
@@ -140,6 +143,31 @@ class MetadataSchemaProvider @Inject() (
     LOGGER.debug(s"Cancelling edit of metadata schema with id $id")
     ProviderError.Try(s"Failed to cancel edit of metadata schema with id $id: ") {
       schemaService.cancelEdit(id, force)
+    }
+  }
+
+  /** Completes the editing session for a new metadata schema by saving the changes - following the
+    * initial `startCreate` call. Optionally re-locks the schema for continued editing if
+    * `lockAfterwards` is true; otherwise, leaves it unlocked. Note that the details parameter must
+    * contain the necessary information to identify the metadata schema being added based on that
+    * returned from `startCreate`.
+    *
+    * @param details
+    *   the details of the metadata schema being added.
+    * @param lockAfterwards
+    *   if true, re-locks the metadata schema after saving (useful for continuing to edit); if
+    *   false, leaves it unlocked.
+    * @return
+    *   Either a ProviderError if the operation fails, or Unit on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def add(
+      details: EditableEntity[MetadataSchema],
+      lockAfterwards: Boolean
+  ): Either[ProviderError, Unit] = {
+    LOGGER.debug(s"Adding new metadata schema with details: ${details.entity}")
+    ProviderError.Try("Failed to add new metadata schema: ") {
+      schemaService.add(toEntityPack(details, MetadataSchemaConverter.toSchema), lockAfterwards)
     }
   }
 
