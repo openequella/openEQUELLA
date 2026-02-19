@@ -128,6 +128,27 @@ public abstract class AbstractPage<T extends PageObject>
     return quoteXPath(Integer.toString(input));
   }
 
+  /**
+   * Safely quotes an arbitrary string for use as an XPath string literal.
+   *
+   * <p>XPath string literals can be wrapped in either single quotes (<code>'text'</code>) or double
+   * quotes (<code>"text"</code>), but they cannot contain the same quote character used to wrap
+   * them. If the input contains both single and double quotes, this method falls back to using an
+   * XPath <code>concat(...)</code> expression to construct the string safely.
+   *
+   * <p>This utility is typically used when dynamically building XPath expressions, for example when
+   * matching text content or attribute values:
+   *
+   * <pre>{@code
+   * By.xpath("//*[text() = " + quoteXPath("He said: \"I'm ok\"") + "]");
+   * }</pre>
+   *
+   * <p>The returned value is guaranteed to be a syntactically valid XPath string expression for the
+   * given input.
+   *
+   * @param input The raw string value to be embedded into an XPath expression.
+   * @return A quoted XPath string literal, or a <code>concat(...)</code> expression if required.
+   */
   public static String quoteXPath(String input) {
     final String txt = input;
     if (txt.indexOf("'") > -1 && txt.indexOf("\"") > -1) {
@@ -632,5 +653,24 @@ public abstract class AbstractPage<T extends PageObject>
     String buttonXpath =
         String.format("//button[@aria-label='%s' and @aria-checked='true']", label);
     return !driver.findElements(By.xpath(buttonXpath)).isEmpty();
+  }
+
+  /**
+   * Use to 'select' an option from a MUI `<Select>`.
+   *
+   * @param selectBy The locator for the select element to click to open the options list.
+   * @param optionText The text which represents the option you wish to select - user visible.
+   */
+  public void selectOption(By selectBy, String optionText) {
+    driver.findElement(selectBy).click();
+
+    String safeOptionText = quoteXPath(optionText);
+    WebElement selectOption =
+        waiter.until(
+            ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//li[@role='option' and contains(., " + safeOptionText + ")]")));
+
+    assert selectOption != null;
+    selectOption.click();
   }
 }

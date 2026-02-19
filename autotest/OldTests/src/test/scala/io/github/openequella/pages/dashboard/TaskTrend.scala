@@ -18,23 +18,9 @@
 
 package io.github.openequella.pages.dashboard
 
-/** Enumeration of the different portlet types available. The value represents the text of the
-  * default portlet title in the UI.
+/** Enumeration of the different Task trend options available in the Task statistics Portlet.
   */
-object PortletType extends Enumeration {
-  type PortletType = Value
-
-  /** Only for testing purposes, represents a generic portlet when the type is unknown.
-    */
-  val Generic: Value = Value("Generic")
-
-  val Browse: Value         = Value("Browse")
-  val Favourites: Value     = Value("Favourites")
-  val Scripted: Value       = Value("Scripted")
-  val QuickSearch: Value    = Value("Quick search")
-  val Html: Value           = Value("Formatted text")
-  val Recent: Value         = Value("Recent contributions")
-  val Tasks: Value          = Value("Tasks")
-  val TaskStatistics: Value = Value("Task statistics")
-  val MyResources: Value    = Value("My resources")
+object TaskTrend extends Enumeration {
+  type TaskTrend = Value
+  val WEEK, MONTH = Value
 }

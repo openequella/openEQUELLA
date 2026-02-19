@@ -75,6 +75,11 @@ object PortletFactory {
     def create(ctx: PageContext, title: String) = new TasksPortlet(ctx, title)
   }
 
+  case object TaskStatistics extends PortletFactory[TaskStatisticsPortlet] {
+    val portletType: PortletType.Value          = PortletType.TaskStatistics
+    def create(ctx: PageContext, title: String) = new TaskStatisticsPortlet(ctx, title)
+  }
+
   case object MyResources extends PortletFactory[MyResourcesPortlet] {
     val portletType: PortletType.Value          = PortletType.MyResources
     def create(ctx: PageContext, title: String) = new MyResourcesPortlet(ctx, title)
