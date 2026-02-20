@@ -20,10 +20,32 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views._
+import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.Assertions.fail
 
 /** Helper object for MetadataSchemaApiMutationsTest containing schema creation utilities. */
 object MetadataSchemaApiMutationsTestHelper {
+
+  def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean = {
+    // A schema is considered locked for editing if another user cannot start an edit session on it.
+    // If the current user created the lock, then they can still start an edit session,
+    // so we need to test with a different user.
+    TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
+      val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
+      val isLocked            = editResultOtherUser match {
+        case Left(errors) =>
+          if (errors.exists(_.isInstanceOf[LockedError])) true
+          else
+            fail(s"Expected a LockedError, but got: $errors")
+        case Right(_) => false
+      }
+      // tidy-up by cancelling the edit session we just started (if it was successful)
+      if (!isLocked) {
+        MetadataSchemaApi.cancelEdit(schemaId)(otherSession)
+      }
+      isLocked
+    }
+  }
 
   /** Gets the ID of the first schema in the system for use in tests.
     *
