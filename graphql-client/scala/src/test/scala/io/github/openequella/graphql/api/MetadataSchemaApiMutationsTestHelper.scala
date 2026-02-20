@@ -19,14 +19,8 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.views.{
-  EntityDetailsView,
-  EntitySkeletonView,
-  LanguageBundleView,
-  LanguageStringView,
-  MetadataSchemaEditView,
-  MetadataSchemaView
-}
+import io.github.openequella.graphql.api.views._
+import org.scalatest.Assertions.fail
 
 /** Helper object for MetadataSchemaApiMutationsTest containing schema creation utilities. */
 object MetadataSchemaApiMutationsTestHelper {
@@ -40,8 +34,15 @@ object MetadataSchemaApiMutationsTestHelper {
     * @throws NoSuchElementException
     *   if no schemas exist in the system.
     */
-  def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long =
-    MetadataSchemaApi.listSchemas().toOption.flatMap(_.headOption).map(_.id).get
+  def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long = {
+    MetadataSchemaApi.listSchemas() match {
+      case Right(schemas) if schemas.nonEmpty => schemas.head.id
+      case Right(_)                           =>
+        fail("Test setup error: No schemas available in the system")
+      case Left(errors) =>
+        fail(s"Failed to retrieve schemas: ${errors.mkString(", ")}")
+    }
+  }
 
   /** Extracts the default locale name text from a MetadataSchemaView.
     *
@@ -51,7 +52,10 @@ object MetadataSchemaApiMutationsTestHelper {
     *   The name text if present, or None if the name bundle or strings are missing.
     */
   def getSchemaName(schema: MetadataSchemaView): Option[String] =
-    schema.details.nameBundle.flatMap(_.strings.headOption.map(_.text))
+    for {
+      bundle      <- schema.details.nameBundle
+      firstString <- bundle.strings.headOption
+    } yield firstString.text
 
   /** Builds a MetadataSchemaEditView for a new schema using the skeleton from startCreate.
     *
