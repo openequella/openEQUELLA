@@ -23,7 +23,9 @@ import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
   buildNewSchemaDetails,
   getFirstSchemaId,
   getSchemaName,
-  isSchemaLockedForEditing
+  isSchemaLockedForEditing,
+  withEditSession,
+  withTestSchema
 }
 import io.github.openequella.graphql.api.views.{EntitySkeletonView, MetadataSchemaEditView}
 import io.github.openequella.graphql.test.TestHelper
@@ -50,18 +52,13 @@ class MetadataSchemaApiMutationsTest
       val schemaId = getFirstSchemaId()
 
       When("calling startEdit with the schema ID")
-      val result = MetadataSchemaApi.startEdit(schemaId)
-
-      Then("returns a MetadataSchemaEditView")
-      result.isRight shouldBe true
-      val editView = result.value
-      editView shouldBe a[MetadataSchemaEditView]
-      editView.schema.details.id shouldBe schemaId
-      editView.stagingId should not be empty
-      editView.targetList shouldBe a[List[_]]
-
-      // tidy-up by cancelling the edit session we just started
-      MetadataSchemaApi.cancelEdit(schemaId)
+      withEditSession(schemaId) { editView =>
+        Then("returns a MetadataSchemaEditView")
+        editView shouldBe a[MetadataSchemaEditView]
+        editView.schema.details.id shouldBe schemaId
+        editView.stagingId should not be empty
+        editView.targetList shouldBe a[List[_]]
+      }
     }
 
     it("returns a NotFoundError for an invalid schema ID") {
@@ -150,25 +147,30 @@ class MetadataSchemaApiMutationsTest
         adminEditResult.isRight shouldBe true
       }
 
-      And("the current user cannot start an edit session due to the lock")
-      val blockedEditResult = MetadataSchemaApi.startEdit(schemaId)
-      blockedEditResult.isLeft shouldBe true
-      blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+      try {
+        And("the current user cannot start an edit session due to the lock")
+        val blockedEditResult = MetadataSchemaApi.startEdit(schemaId)
+        blockedEditResult.isLeft shouldBe true
+        blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
 
-      When("calling cancelEdit with force=true to release the other user's lock")
-      val forceUnlockResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+        When("calling cancelEdit with force=true to release the other user's lock")
+        val forceUnlockResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
 
-      Then("completes without errors")
-      forceUnlockResult.isRight shouldBe true
+        Then("completes without errors")
+        forceUnlockResult.isRight shouldBe true
 
-      And("the current user can now start an edit session")
-      val editResult = MetadataSchemaApi.startEdit(schemaId)
-      editResult.isRight shouldBe true
+        And("the current user can now start an edit session")
+        val editResult = MetadataSchemaApi.startEdit(schemaId)
+        editResult.isRight shouldBe true
 
-      And("after cancelling the edit, the schema is no longer locked")
-      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
-      cancelResult.isRight shouldBe true
-      isSchemaLockedForEditing(schemaId) shouldBe false
+        And("after cancelling the edit, the schema is no longer locked")
+        val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+        cancelResult.isRight shouldBe true
+        isSchemaLockedForEditing(schemaId) shouldBe false
+      } finally {
+        // Best-effort cleanup: force-cancel any lingering lock
+        MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+      }
     }
 
     it("denies access when not authenticated") {
@@ -184,56 +186,26 @@ class MetadataSchemaApiMutationsTest
 
   describe("add") {
     it("creates a new metadata schema") {
-      Given("a skeleton from startCreate")
-      val skeleton = MetadataSchemaApi.startCreate().value
-
-      And("a fully populated MetadataSchemaEditView")
-      val newSchemaDetails = buildNewSchemaDetails(skeleton)
-
-      When("calling add with the new schema details")
-      val addResult = MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false)
-
-      Then("completes without errors")
-      addResult.isRight shouldBe true
-
-      And("the schema can be retrieved by its UUID")
-      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
-      val schema   = MetadataSchemaApi.getById(schemaId).value.value
-      schema.details.uuid shouldBe skeleton.uuid
-      getSchemaName(schema).value shouldBe "Test Schema"
-
-      // Clean up: delete the created schema
-      val deleteResult = MetadataSchemaApi.delete(schemaId)
-      deleteResult.isRight shouldBe true
+      When("creating a new metadata schema with valid details")
+      withTestSchema() { schemaId =>
+        Then("the schema can be retrieved by its ID")
+        val schema = MetadataSchemaApi.getById(schemaId).value.value
+        getSchemaName(schema).value shouldBe "Test Schema"
+      }
     }
 
     it("can keep the schema locked after creation when lockAfterwards is true") {
-      Given("a skeleton from startCreate")
-      val skeleton = MetadataSchemaApi.startCreate().value
+      When("creating a new metadata schema with lockAfterwards = true")
+      withTestSchema(lockAfterwards = true) { schemaId =>
+        Then("the schema is locked for editing by the current user")
 
-      And("a fully populated MetadataSchemaEditView")
-      val newSchemaDetails = buildNewSchemaDetails(skeleton)
-
-      When("calling add with lockAfterwards = true")
-      val addResult = MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = true)
-
-      Then("completes without errors")
-      addResult.isRight shouldBe true
-
-      And("the schema is locked for editing by the current user")
-      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
-
-      // Another user cannot start an edit session
-      TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
-        val editResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
-        editResult.isLeft shouldBe true
-        editResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+        // Another user cannot start an edit session
+        TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
+          val editResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
+          editResult.isLeft shouldBe true
+          editResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
+        }
       }
-
-      // Clean up: cancel the edit and delete the schema
-      MetadataSchemaApi.cancelEdit(schemaId)
-      val deleteResult = MetadataSchemaApi.delete(schemaId)
-      deleteResult.isRight shouldBe true
     }
 
     it("denies access when not authenticated") {
@@ -255,22 +227,18 @@ class MetadataSchemaApiMutationsTest
 
   describe("delete") {
     it("deletes an existing metadata schema") {
-      Given("a new metadata schema")
-      val skeleton         = MetadataSchemaApi.startCreate().value
-      val newSchemaDetails = buildNewSchemaDetails(skeleton, name = "Schema to Delete")
-      MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false).value
+      Given("a valid metadata schema ID")
+      withTestSchema(name = "Schema to Delete") { schemaId =>
+        When("calling delete with the schema ID")
+        val deleteResult = MetadataSchemaApi.delete(schemaId)
 
-      val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+        Then("completes without errors")
+        deleteResult.isRight shouldBe true
 
-      When("calling delete with the schema ID")
-      val deleteResult = MetadataSchemaApi.delete(schemaId)
-
-      Then("completes without errors")
-      deleteResult.isRight shouldBe true
-
-      And("the schema no longer exists")
-      val getResult = MetadataSchemaApi.getById(schemaId).value
-      getResult shouldBe None
+        And("the schema no longer exists")
+        val getResult = MetadataSchemaApi.getById(schemaId).value
+        getResult shouldBe None
+      }
     }
 
     it("returns a NotFoundError for an invalid schema ID") {

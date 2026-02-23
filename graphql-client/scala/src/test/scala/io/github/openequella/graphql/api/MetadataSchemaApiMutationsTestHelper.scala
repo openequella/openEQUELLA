@@ -22,6 +22,8 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views._
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.Assertions.fail
+import org.scalatest.EitherValues._
+import org.scalatest.OptionValues._
 
 import java.util.Locale
 
@@ -154,5 +156,68 @@ object MetadataSchemaApiMutationsTestHelper {
       version = None,
       targetList = List.empty
     )
+  }
+
+  /** Loan-pattern helper that creates a test schema, runs the test body, and guarantees cleanup.
+    *
+    * Creates a new metadata schema using `startCreate` / `add`, resolves its ID, and passes it to
+    * the test body. In the `finally` block, any lingering edit lock is force-cancelled and the
+    * schema is deleted — ensuring no resource leaks even when assertions fail.
+    *
+    * @param name
+    *   The name for the test schema. Defaults to "Test Schema".
+    * @param description
+    *   Optional description. Defaults to Some("A test schema").
+    * @param lockAfterwards
+    *   Whether to keep the schema locked after creation. Defaults to false.
+    * @param test
+    *   The test body, receiving the newly created schema's numeric ID.
+    * @param cfg
+    *   The client configuration.
+    */
+  def withTestSchema(
+      name: String = "Test Schema",
+      description: Option[String] = Some("A test schema"),
+      lockAfterwards: Boolean = false
+  )(test: Long => Unit)(implicit cfg: ClientConfiguration): Unit = {
+    val skeleton = MetadataSchemaApi.startCreate().value
+    val details  = buildNewSchemaDetails(skeleton, name = name, description = description)
+    MetadataSchemaApi.add(details, lockAfterwards = lockAfterwards).value
+    val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+
+    try {
+      test(schemaId)
+    } finally {
+      // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
+      // Errors are ignored — the schema may already be unlocked or deleted by the test.
+      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+      MetadataSchemaApi.delete(schemaId)
+    }
+  }
+
+  /** Loan-pattern helper that starts an edit session on an existing schema and guarantees cleanup.
+    *
+    * Calls `startEdit` for the given schema, passes the resulting `MetadataSchemaEditView` to the
+    * test body, and in the `finally` block force-cancels the edit session — ensuring the lock is
+    * released even when assertions fail.
+    *
+    * @param schemaId
+    *   The numeric ID of the schema to edit.
+    * @param test
+    *   The test body, receiving the `MetadataSchemaEditView` from `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    */
+  def withEditSession(schemaId: Long)(test: MetadataSchemaEditView => Unit)(implicit
+      cfg: ClientConfiguration
+  ): Unit = {
+    val editView = MetadataSchemaApi.startEdit(schemaId).value
+
+    try {
+      test(editView)
+    } finally {
+      // Best-effort cleanup: force-cancel to release any lingering lock.
+      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+    }
   }
 }
