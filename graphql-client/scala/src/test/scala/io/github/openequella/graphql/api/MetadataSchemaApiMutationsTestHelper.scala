@@ -23,8 +23,13 @@ import io.github.openequella.graphql.api.views._
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.Assertions.fail
 
+import java.util.Locale
+
 /** Helper object for MetadataSchemaApiMutationsTest containing schema creation utilities. */
 object MetadataSchemaApiMutationsTestHelper {
+  val NEW_ENTITY_ID          = 0L
+  val DEFAULT_PRIORITY       = 1
+  val DEFAULT_LOCALE: String = Locale.ENGLISH.toString
 
   def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean = {
     // A schema is considered locked for editing if another user cannot start an edit session on it.
@@ -96,19 +101,33 @@ object MetadataSchemaApiMutationsTestHelper {
       description: Option[String] = Some("A test schema")
   ): MetadataSchemaEditView = {
     val nameBundle = LanguageBundleView(
-      id = 0,
-      strings = List(LanguageStringView(id = 0, priority = 1, locale = "en", text = name))
+      id = NEW_ENTITY_ID,
+      strings = List(
+        LanguageStringView(
+          id = NEW_ENTITY_ID,
+          priority = DEFAULT_PRIORITY,
+          locale = DEFAULT_LOCALE,
+          text = name
+        )
+      )
     )
 
     val descriptionBundle = description.map { desc =>
       LanguageBundleView(
-        id = 0,
-        strings = List(LanguageStringView(id = 0, priority = 1, locale = "en", text = desc))
+        id = NEW_ENTITY_ID,
+        strings = List(
+          LanguageStringView(
+            id = NEW_ENTITY_ID,
+            priority = DEFAULT_PRIORITY,
+            locale = DEFAULT_LOCALE,
+            text = desc
+          )
+        )
       )
     }
 
     val details = EntityDetailsView(
-      id = 0,
+      id = NEW_ENTITY_ID,
       uuid = skeleton.uuid,
       owner = skeleton.owner,
       dateCreated = None,
