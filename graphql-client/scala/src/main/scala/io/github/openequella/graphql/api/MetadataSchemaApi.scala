@@ -20,6 +20,7 @@ package io.github.openequella.graphql.api
 
 import caliban.client.Operations.RootQuery
 import caliban.client.SelectionBuilder
+import cats.implicits._
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views.conversions.MetadataSchemaConversions
 import io.github.openequella.graphql.api.views.{
@@ -258,14 +259,16 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val input    = MetadataSchemaConversions.toInput(details)
-    val mutation = MetadataSchemaMutations.add(input, lockAfterwards)
-
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    for {
+      input <- Either
+        .catchNonFatal(MetadataSchemaConversions.toInput(details))
+        .leftMap(e => List(UnknownError(s"Failed to convert details to input: ${e.getMessage}")))
+      mutation = MetadataSchemaMutations.add(input, lockAfterwards)
+      result <- flattenResult {
+        mutate(mutation)
+      }
+    } yield result
 
   /** Delete a metadata schema.
     *
