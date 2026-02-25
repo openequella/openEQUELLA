@@ -191,20 +191,17 @@ class MetadataSchemaApiMutationsTest
         Then("the schema can be retrieved by its ID")
         val schema = MetadataSchemaApi.getById(schemaId).value.value
         getSchemaName(schema).value shouldBe "Test Schema"
+
+        And("the schema is not locked for editing")
+        isSchemaLockedForEditing(schemaId) shouldBe false
       }
     }
 
     it("can keep the schema locked after creation when lockAfterwards is true") {
       When("creating a new metadata schema with lockAfterwards = true")
       withTestSchema(lockAfterwards = true) { schemaId =>
-        Then("the schema is locked for editing by the current user")
-
-        // Another user cannot start an edit session
-        TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit adminSession =>
-          val editResult = MetadataSchemaApi.startEdit(schemaId)(adminSession)
-          editResult.isLeft shouldBe true
-          editResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
-        }
+        Then("the schema is locked for editing")
+        isSchemaLockedForEditing(schemaId) shouldBe true
       }
     }
 
