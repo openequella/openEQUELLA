@@ -124,6 +124,13 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
         throw new ClientRequestException(s"Error cancelling edit of schema with ID: $id", errors)
     }
 
+  override def delete(entityid: Long, checkReferences: Boolean): Unit =
+    MetadataSchemaApi.delete(entityid, Some(checkReferences)) match {
+      case Right(_)     => // No content expected on success
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error deleting schema with ID: $entityid", errors)
+    }
+
   override def isStartCreateSupported: Boolean = true
 
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
