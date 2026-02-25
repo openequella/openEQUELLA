@@ -18,14 +18,14 @@
 
 package io.github.openequella.graphql.api
 
-import ApiErrorCause.Cause
+import io.github.openequella.graphql.api.ApiErrorCause.Cause
 
 /** Represents an error that occurred during an API operation. Matching the possible 'cause' values
   * returned by the server.
   */
 object ApiErrorCause extends Enumeration {
   type Cause = Value
-  val ACCESS_DENIED, BAD_REQUEST, CLIENT_ABORT, INTERNAL_ERROR, IO_ERROR, LOCKED, NOT_FOUND,
+  val ACCESS_DENIED, BAD_REQUEST, CLIENT_ABORT, INTERNAL_ERROR, IN_USE, IO_ERROR, LOCKED, NOT_FOUND,
       UNKNOWN = Value
 
   /** Converts a string to a Cause.
@@ -65,6 +65,7 @@ object ApiError {
       case ApiErrorCause.BAD_REQUEST    => BadRequestError(message)
       case ApiErrorCause.CLIENT_ABORT   => ClientAbortError(message)
       case ApiErrorCause.INTERNAL_ERROR => InternalError(message)
+      case ApiErrorCause.IN_USE         => InUseError(message)
       case ApiErrorCause.IO_ERROR       => IOError(message)
       case ApiErrorCause.LOCKED         => LockedError(message)
       case ApiErrorCause.NOT_FOUND      => NotFoundError(message)
@@ -96,6 +97,13 @@ final case class ClientAbortError(message: String) extends ApiError with HasCaus
   */
 final case class InternalError(message: String) extends ApiError with HasCause {
   override val cause: Cause = ApiErrorCause.INTERNAL_ERROR
+}
+
+/** Returned by the server if the operation failed because the resource being acted on is currently
+  * in use. For example, trying to delete a schema that is used by a collection definition.
+  */
+final case class InUseError(message: String) extends ApiError with HasCause {
+  override val cause: Cause = ApiErrorCause.IN_USE
 }
 
 final case class IOError(message: String) extends ApiError with HasCause {

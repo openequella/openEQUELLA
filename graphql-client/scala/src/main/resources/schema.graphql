@@ -10,6 +10,115 @@ scalar Long
 
 scalar Unit
 
+"A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
+input CitationInput {
+  "Name for the citation"
+  name: String!
+  "Name of the XSLT file for citation - can be downloaded from the server"
+  transformation: String!
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+input EditableEntityMetadataSchemaInput {
+  "Base entity being edited"
+  entity: MetadataSchemaInput!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntryInput!]!
+}
+
+"Common details for entities, including identifiers, ownership, timestamps, and additional attributes."
+input EntityDetailsInput {
+  "Unique identifier for this entity."
+  id: Long!
+  "Universally unique identifier for this entity, used for referencing across different entities."
+  uuid: String!
+  "Owner of this entity, typically the user who created it."
+  owner: String!
+  "Timestamp for when this entity was created - only valid when starting an edit on an existing entity."
+  dateCreated: LocalDateTime
+  "Timestamp for when this entity was last modified - only valid when starting an edit on an existing entity."
+  dateModified: LocalDateTime
+  "Language bundle for the _name_ of this entity, used for internationalization."
+  nameBundle: LanguageBundleInput
+  "Language bundle for the _description_ of this entity, used for internationalization."
+  descriptionBundle: LanguageBundleInput
+  "A map of additional attributes for this entity, allowing for flexible metadata storage."
+  attributes: [KVStringStringInput!]!
+  "Indicates whether this entity is disabled, affecting its visibility and usability."
+  disabled: Boolean!
+}
+
+"A key-value pair of String and String"
+input KVStringStringInput {
+  "Key"
+  key: String!
+  "Value"
+  value: String!
+}
+
+"A bundle of language strings, each representing a translation for a specific locale."
+input LanguageBundleInput {
+  "Unique identifier for this language bundle."
+  id: Long!
+  "List of language strings in this bundle."
+  strings: [LanguageStringInput!]!
+}
+
+"A single translation of a piece of text for a specific locale."
+input LanguageStringInput {
+  "Unique identifier for this language string."
+  id: Long!
+  "Priority of this language string, with lower numbers indicating higher priority."
+  priority: Int!
+  "Locale code for this language string, e.g., 'en' for English."
+  locale: String!
+  "The translated text for this locale."
+  text: String!
+}
+
+"A metadata schema, which defines the structure and transforms for metadata items in openEQUELLA."
+input MetadataSchemaInput {
+  "Details of the metadata schema, including UUID and owner"
+  details: EntityDetailsInput!
+  "Transforms applied when exporting this schema between repositories"
+  exportTransforms: [MetadataSchemaTransformInput!]!
+  "Transforms applied when importing this schema between repositories"
+  importTransforms: [MetadataSchemaTransformInput!]!
+  "Path to the name attribute in the schema"
+  itemNamePath: String!
+  "Path to the description attribute in the schema"
+  itemDescriptionPath: String!
+  "XML definition of the schema"
+  definition: String!
+  "List of citations associated with this schema"
+  citations: [CitationInput!]!
+}
+
+"A schema transform that defines how metadata is transformed during export or import operations with external systems."
+input MetadataSchemaTransformInput {
+  "Filename of the schema transform stored on the server - managed via staging area"
+  filename: String!
+  "Type of the schema transform, e.g., OAI_Identity, HARVESTER, OAI_DC"
+  schemaType: String!
+}
+
+input TargetListEntryInput {
+  "Whether the privilege is granted or revoked"
+  granted: Boolean!
+  "Has precedence over other actions in the list"
+  overridden: Boolean!
+  "The privilege being granted or revoked, e.g., 'VIEW_ITEM', 'EDIT_SCHEMA', etc."
+  privilege: String!
+  "The user, group or other entity this applies to. Expecting values like '*', 'U:<username>', 'G:<groupname>' etc."
+  who: String!
+  "An optional postfix for the entry, used for additional context or information - defaults to empty string"
+  postfix: String!
+}
+
 type BaseEntityReference {
   "The database ID of the entity"
   id: Long!
@@ -197,6 +306,10 @@ type MetadataSchemaMutations {
   startCreate: EditableEntitySkeleton!
   "Cancel editing a metadata schema - discarding any changes made and unlocking the schema."
   cancelEdit("ID of the metadata schema edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
+  "Add a new metadata schema - typically after a startCreate operation, with details for the new schema."
+  add("Details of the metadata schema to add" details: EditableEntityMetadataSchemaInput!, "Whether the newly added schema should be locked for editing after creation" lockAfterwards: Boolean!): Unit
+  "Delete a metadata schema - with consideration to references controllable by args."
+  delete("ID of the metadata schema to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
 }
 
 type MetadataSchemaQueries {

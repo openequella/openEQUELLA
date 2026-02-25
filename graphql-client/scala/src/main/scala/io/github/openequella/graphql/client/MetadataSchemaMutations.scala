@@ -50,4 +50,33 @@ object MetadataSchemaMutations {
       OptionOf(Scalar()),
       arguments = List(Argument("id", id, "Long!"), Argument("force", force, "Boolean"))
     )
+
+  /** Add a new metadata schema - typically after a startCreate operation, with details for the new
+    * schema.
+    */
+  def add(details: EditableEntityMetadataSchemaInput, lockAfterwards: Boolean)(implicit
+      encoder0: ArgEncoder[EditableEntityMetadataSchemaInput],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[Unit]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "add",
+      OptionOf(Scalar()),
+      arguments = List(
+        Argument("details", details, "EditableEntityMetadataSchemaInput!"),
+        Argument("lockAfterwards", lockAfterwards, "Boolean!")
+      )
+    )
+
+  /** Delete a metadata schema - with consideration to references controllable by args.
+    */
+  def delete(id: Long, checkReferences: scala.Option[Boolean] = None)(implicit
+      encoder0: ArgEncoder[Long],
+      encoder1: ArgEncoder[scala.Option[Boolean]]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[Unit]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "delete",
+      OptionOf(Scalar()),
+      arguments =
+        List(Argument("id", id, "Long!"), Argument("checkReferences", checkReferences, "Boolean"))
+    )
 }
