@@ -264,8 +264,8 @@ class MetadataSchemaApiMutationsTest
       When("calling delete with checkReferences = true")
       val result = MetadataSchemaApi.delete(schemaId, checkReferences = Some(true))
 
-      Then("returns an error indicating references exist")
-      result.isLeft shouldBe true
+      Then("returns an InUseError indicating references exist")
+      TestHelper.checkApiError(result) shouldBe a[InUseError]
     }
 
     it("denies access when not authenticated") {
