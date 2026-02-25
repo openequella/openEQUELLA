@@ -27,7 +27,11 @@ import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
   withEditSession,
   withTestSchema
 }
-import io.github.openequella.graphql.api.views.{EntitySkeletonView, MetadataSchemaEditView}
+import io.github.openequella.graphql.api.views.{
+  BaseEntityReferenceView,
+  EntitySkeletonView,
+  MetadataSchemaEditView
+}
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -187,21 +191,27 @@ class MetadataSchemaApiMutationsTest
   describe("add") {
     it("creates a new metadata schema") {
       When("creating a new metadata schema with valid details")
-      withTestSchema() { schemaId =>
-        Then("the schema can be retrieved by its ID")
-        val schema = MetadataSchemaApi.getById(schemaId).value.value
+      withTestSchema() { reference =>
+        Then("the add result returns a valid BaseEntityReferenceView")
+        reference shouldBe a[BaseEntityReferenceView]
+        reference.id should be > 0L
+        reference.uuid should not be empty
+        reference.owner should not be empty
+
+        And("the schema can be retrieved by its ID")
+        val schema = MetadataSchemaApi.getById(reference.id).value.value
         getSchemaName(schema).value shouldBe "Test Schema"
 
         And("the schema is not locked for editing")
-        isSchemaLockedForEditing(schemaId) shouldBe false
+        isSchemaLockedForEditing(reference.id) shouldBe false
       }
     }
 
     it("can keep the schema locked after creation when lockAfterwards is true") {
       When("creating a new metadata schema with lockAfterwards = true")
-      withTestSchema(lockAfterwards = true) { schemaId =>
+      withTestSchema(lockAfterwards = true) { ref =>
         Then("the schema is locked for editing")
-        isSchemaLockedForEditing(schemaId) shouldBe true
+        isSchemaLockedForEditing(ref.id) shouldBe true
       }
     }
 
@@ -225,7 +235,9 @@ class MetadataSchemaApiMutationsTest
   describe("delete") {
     it("deletes an existing metadata schema") {
       Given("a valid metadata schema ID")
-      withTestSchema(name = "Schema to Delete") { schemaId =>
+      withTestSchema(name = "Schema to Delete") { reference =>
+        val schemaId = reference.id
+
         When("calling delete with the schema ID")
         val deleteResult = MetadataSchemaApi.delete(schemaId)
 

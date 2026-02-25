@@ -307,7 +307,7 @@ type MetadataSchemaMutations {
   "Cancel editing a metadata schema - discarding any changes made and unlocking the schema."
   cancelEdit("ID of the metadata schema edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
   "Add a new metadata schema - typically after a startCreate operation, with details for the new schema."
-  add("Details of the metadata schema to add" details: EditableEntityMetadataSchemaInput!, "Whether the newly added schema should be locked for editing after creation" lockAfterwards: Boolean!): Unit
+  add("Details of the metadata schema to add" details: EditableEntityMetadataSchemaInput!, "Whether the newly added schema should be locked for editing after creation" lockAfterwards: Boolean!): BaseEntityReference
   "Delete a metadata schema - with consideration to references controllable by args."
   delete("ID of the metadata schema to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
 }

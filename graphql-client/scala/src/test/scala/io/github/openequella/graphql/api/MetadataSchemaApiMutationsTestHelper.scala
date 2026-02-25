@@ -23,7 +23,6 @@ import io.github.openequella.graphql.api.views._
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.Assertions.fail
 import org.scalatest.EitherValues._
-import org.scalatest.OptionValues._
 
 import java.util.Locale
 
@@ -179,14 +178,14 @@ object MetadataSchemaApiMutationsTestHelper {
       name: String = "Test Schema",
       description: Option[String] = Some("A test schema"),
       lockAfterwards: Boolean = false
-  )(test: Long => Unit)(implicit cfg: ClientConfiguration): Unit = {
-    val skeleton = MetadataSchemaApi.startCreate().value
-    val details  = buildNewSchemaDetails(skeleton, name = name, description = description)
-    MetadataSchemaApi.add(details, lockAfterwards = lockAfterwards).value
-    val schemaId = MetadataSchemaApi.getIdByUuid(skeleton.uuid).value.value
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit = {
+    val skeleton  = MetadataSchemaApi.startCreate().value
+    val details   = buildNewSchemaDetails(skeleton, name = name, description = description)
+    val reference = MetadataSchemaApi.add(details, lockAfterwards = lockAfterwards).value
+    val schemaId  = reference.id
 
     try {
-      test(schemaId)
+      test(reference)
     } finally {
       // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
       // Errors are ignored — the schema may already be unlocked or deleted by the test.
