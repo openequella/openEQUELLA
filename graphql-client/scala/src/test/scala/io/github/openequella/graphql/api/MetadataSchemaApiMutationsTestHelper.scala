@@ -33,10 +33,12 @@ object MetadataSchemaApiMutationsTestHelper {
   val DEFAULT_PRIORITY       = 1
   val DEFAULT_LOCALE: String = Locale.ENGLISH.toString
 
-  def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean = {
-    // A schema is considered locked for editing if another user cannot start an edit session on it.
-    // If the current user created the lock, then they can still start an edit session,
-    // so we need to test with a different user.
+  /** Checks if a metadata schema is locked for editing by attempting to start an edit session with
+    * a different user. A schema is considered locked for editing if another user cannot start an
+    * edit session on it. If the current user created the lock, then they can still start an edit
+    * session, so we need to test with a different user.
+    */
+  def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean =
     TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
       val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
       val isLocked            = editResultOtherUser match {
@@ -52,7 +54,6 @@ object MetadataSchemaApiMutationsTestHelper {
       }
       isLocked
     }
-  }
 
   /** Gets the ID of the first schema in the system for use in tests.
     *
@@ -63,7 +64,7 @@ object MetadataSchemaApiMutationsTestHelper {
     * @throws NoSuchElementException
     *   if no schemas exist in the system.
     */
-  def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long = {
+  def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long =
     MetadataSchemaApi.listSchemas() match {
       case Right(schemas) if schemas.nonEmpty => schemas.head.id
       case Right(_)                           =>
@@ -71,7 +72,6 @@ object MetadataSchemaApiMutationsTestHelper {
       case Left(errors) =>
         fail(s"Failed to retrieve schemas: ${errors.mkString(", ")}")
     }
-  }
 
   /** Extracts the default locale name text from a MetadataSchemaView.
     *
