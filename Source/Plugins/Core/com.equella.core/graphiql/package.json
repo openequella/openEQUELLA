@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf dist/ node_modules/ .parcel-cache/",
-    "dev": "vite build --watch --mode development",
-    "devbuild": "vite build --mode development",
+    "dev": "vite build --watch --mode development --emptyOutDir",
+    "devbuild": "vite build --mode development --emptyOutDir",
     "build": "vite build --mode production"
   },
   "dependencies": {
