@@ -8,7 +8,7 @@
     "build": "vite build --mode production"
   },
   "dependencies": {
-    "@graphiql/toolkit": "0.9.1",
+    "@graphiql/toolkit": "0.11.3",
     "graphiql": "5.2.2",
     "graphql": "16.8.1",
     "react": "18.2.0",
