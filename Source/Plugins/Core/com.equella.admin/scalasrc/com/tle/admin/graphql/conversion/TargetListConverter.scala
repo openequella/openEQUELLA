@@ -28,6 +28,11 @@ object TargetListConverter {
     val entries = views.map(TargetListEntryViewConverter.toTargetListEntry).asJava
     new TargetList(entries)
   }
+
+  def fromTargetList(targetList: TargetList): List[TargetListEntryView] =
+    Option(targetList.getEntries)
+      .map(_.asScala.map(TargetListEntryViewConverter.fromTargetListEntry).toList)
+      .getOrElse(List.empty)
 }
 
 object TargetListEntryViewConverter {
@@ -41,4 +46,13 @@ object TargetListEntryViewConverter {
 
     entry
   }
+
+  def fromTargetListEntry(entry: TargetListEntry): TargetListEntryView =
+    TargetListEntryView(
+      granted = entry.isGranted,
+      overridden = entry.isOverride,
+      privilege = entry.getPrivilege,
+      who = entry.getWho,
+      postfix = entry.getPostfix
+    )
 }

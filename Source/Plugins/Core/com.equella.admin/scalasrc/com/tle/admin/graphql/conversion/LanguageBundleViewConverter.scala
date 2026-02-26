@@ -49,4 +49,22 @@ object LanguageBundleViewConverter {
       .toMap
       .asJava
 
+  def fromLanguageBundle(bundle: LanguageBundle): LanguageBundleView = {
+    val strings = Option(bundle.getStrings)
+      .map(_.asScala.values.map(fromLanguageString).toList)
+      .getOrElse(List.empty)
+
+    LanguageBundleView(
+      id = bundle.getId,
+      strings = strings
+    )
+  }
+
+  private def fromLanguageString(languageString: LanguageString): LanguageStringView =
+    LanguageStringView(
+      id = languageString.getId,
+      priority = languageString.getPriority,
+      locale = languageString.getLocale,
+      text = languageString.getText
+    )
 }

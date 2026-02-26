@@ -18,7 +18,8 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CitationViewConverter.toCitation
+import com.tle.admin.graphql.conversion.CitationViewConverter.{fromCitation, toCitation}
+import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.fromBaseEntity
 import com.tle.beans.entity.{Schema, SchemaTransform}
 import io.github.openequella.graphql.api.views.{MetadataSchemaTransformView, MetadataSchemaView}
 
@@ -33,9 +34,9 @@ object MetadataSchemaViewConverter {
     s.setItemNamePath(view.itemNamePath)
     s.setItemDescriptionPath(view.itemDescriptionPath)
     s.setSerialisedDefinition(view.definition)
-    s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asJava)
-    s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asJava)
-    s.setCitations(view.citations.map(toCitation).asJava)
+    s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asArrayList)
+    s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asArrayList)
+    s.setCitations(view.citations.map(toCitation).asArrayList)
 
     resolveLanguageStrings(view, s)
 
@@ -56,4 +57,34 @@ object MetadataSchemaViewConverter {
     s.setName(name.orNull)
     s.setDescription(description.orNull)
   }
+
+  def fromSchema(schema: Schema): MetadataSchemaView = {
+    val exportTransforms = Option(schema.getExportTransforms)
+      .map(_.asScala.map(fromSchemaTransform).toList)
+      .getOrElse(List.empty)
+
+    val importTransforms = Option(schema.getImportTransforms)
+      .map(_.asScala.map(fromSchemaTransform).toList)
+      .getOrElse(List.empty)
+
+    val citations = Option(schema.getCitations)
+      .map(_.asScala.map(fromCitation).toList)
+      .getOrElse(List.empty)
+
+    MetadataSchemaView(
+      details = fromBaseEntity(schema),
+      exportTransforms = exportTransforms,
+      importTransforms = importTransforms,
+      itemNamePath = schema.getItemNamePath,
+      itemDescriptionPath = schema.getItemDescriptionPath,
+      definition = schema.getSerialisedDefinition,
+      citations = citations
+    )
+  }
+
+  private def fromSchemaTransform(transform: SchemaTransform): MetadataSchemaTransformView =
+    MetadataSchemaTransformView(
+      filename = transform.getFilename,
+      schemaType = transform.getType
+    )
 }

@@ -19,7 +19,10 @@
 package com.tle.admin.service
 
 import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
-import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.toEntityPack
+import com.tle.admin.graphql.conversion.MetadataSchemaEditViewConverter.{
+  fromEntityPack,
+  toEntityPack
+}
 import com.tle.admin.graphql.conversion.MetadataSchemaViewConverter.toSchema
 import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
 import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
@@ -29,6 +32,7 @@ import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteSchemaService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.MetadataSchemaApi
+import io.github.openequella.graphql.api.views.MetadataSchemaEditView
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
@@ -130,6 +134,15 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
       case Left(errors) =>
         throw new ClientRequestException(s"Error deleting schema with ID: $entityid", errors)
     }
+
+  override def add(pack: EntityPack[Schema], lockAfterwards: Boolean): BaseEntityLabel = {
+    val details: MetadataSchemaEditView = pack convert fromEntityPack
+    MetadataSchemaApi.add(details, lockAfterwards) match {
+      case Right(ref)   => ref convert toBaseEntityLabel
+      case Left(errors) =>
+        throw new ClientRequestException(s"Error adding new schema.", errors)
+    }
+  }
 
   override def isStartCreateSupported: Boolean = true
 

@@ -18,6 +18,11 @@
 
 package com.tle.admin.graphql
 
+import java.time.LocalDateTime
+import java.util
+import java.util.Date
+import scala.jdk.CollectionConverters._
+
 /** This package contains support for converting types between the GraphQL schema and internal
   * classes used in the AdminConsole.
   */
@@ -31,4 +36,30 @@ package object conversion {
   implicit class Converter[A](val a: A) extends AnyVal {
     def convert[B](f: A => B): B = f(a)
   }
+
+  /** Extension method to convert Scala iterables to mutable Java ArrayLists.
+    *
+    * This is useful when working with legacy Java APIs that expect mutable lists rather than the
+    * immutable views returned by `.asJava`. As typically oEQ beans use ArrayLists for their
+    * collection fields, this provides a convenient way to convert Scala collections to the expected
+    * Java collection type.
+    *
+    * @param iterable
+    *   The Scala iterable to convert
+    */
+  implicit class ArrayListConverter[A](private val iterable: Iterable[A]) extends AnyVal {
+
+    /** Converts this Scala iterable to a mutable Java ArrayList.
+      *
+      * @return
+      *   A new mutable ArrayList containing all elements
+      */
+    def asArrayList: util.ArrayList[A] = new util.ArrayList[A](iterable.toSeq.asJava)
+  }
+
+  /** Converts a Java `Date` to a Scala `LocalDateTime`. This is useful for converting Dates from
+    * the Java world (e.g. from the database) to the Scala world; keeping in mind they may be null.
+    */
+  def toLocalDateTime(date: Date): Option[LocalDateTime] =
+    Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
 }

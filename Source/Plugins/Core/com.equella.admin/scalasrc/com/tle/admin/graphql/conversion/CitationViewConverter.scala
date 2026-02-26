@@ -30,4 +30,9 @@ object CitationViewConverter {
     c
   }
 
+  def fromCitation(citation: Citation): CitationView =
+    CitationView(
+      name = citation.getName,
+      transformation = citation.getTransformation
+    )
 }
