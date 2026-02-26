@@ -1,32 +1,15 @@
 {
   "name": "openequella-graphiql",
   "private": true,
-  "config": {
-    "parcelEntryPoint": "src/index.html"
-  },
-  "targets": {
-    "mainapp": {
-      "distDir": "dist",
-      "engines": {
-        "browserslist": "> 0.5%, last 2 versions, not dead"
-      }
-    },
-    "mainappdev": {
-      "distDir": "../target/scala-2.13/classes/graphql-ui",
-      "engines": {
-        "browserslist": "> 0.5%, last 2 versions, not dead"
-      }
-    }
-  },
   "scripts": {
     "clean": "rm -rf dist/ node_modules/ .parcel-cache/",
-    "dev": "parcel watch --no-autoinstall --public-url=. --target mainappdev ${npm_package_config_parcelEntryPoint}",
-    "devbuild": "parcel build --public-url=. --target mainappdev ${npm_package_config_parcelEntryPoint}",
-    "build": "parcel build --public-url=. --target mainapp ${npm_package_config_parcelEntryPoint}"
+    "dev": "vite build --watch --mode development",
+    "devbuild": "vite build --mode development",
+    "build": "vite build --mode production"
   },
   "dependencies": {
     "@graphiql/toolkit": "0.9.1",
-    "graphiql": "3.2.0",
+    "graphiql": "5.2.2",
     "graphql": "16.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
@@ -34,7 +17,9 @@
   "devDependencies": {
     "@types/react": "18.2.75",
     "@types/react-dom": "18.2.24",
-    "parcel": "2.12.0",
-    "typescript": "5.4.4"
+    "@vitejs/plugin-react": "4.4.1",
+    "typescript": "5.4.4",
+    "vite": "6.3.4",
+    "vite-plugin-monaco-editor": "1.1.0"
   }
 }
