@@ -20,7 +20,7 @@ import { GraphiQL } from "graphiql";
 import * as React from "react";
 import { JSX } from "react";
 import { createRoot } from "react-dom/client";
-import "graphiql/graphiql.css";
+import "graphiql/style.css";
 
 const graphiQLUI = (baseURL: string): JSX.Element => {
   const fetcher = createGraphiQLFetcher({
