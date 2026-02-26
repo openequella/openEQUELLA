@@ -41,6 +41,7 @@ class BaseEntityToolOnRemoveHandler extends GlassSwingWorker<Object> {
 
   private final BaseEntityTool<?> entityTool;
   private final List<NameValue> selectedEntities;
+  // The entity currently being deleted; set during construct() and read during exception()
   private NameValue currentEntity;
 
   /**
@@ -104,14 +105,24 @@ class BaseEntityToolOnRemoveHandler extends GlassSwingWorker<Object> {
   }
 
   private void displayInUseMessage(NameValue failedEntity, Exception exception) {
-    String exceptionMessage =
+    final String defaultAdditionalDetail = formatInUseBy("Unknown");
+    // Slightly unconventional, but the type of entity which is causing the in-use error is simply
+    // passed in the message of the InUseException. Although this is not the case for the
+    // ClientRequestException which is a standard error message with details.
+    final String additionalDetail =
         switch (exception) {
-          case InUseException e -> e.getMessage();
+          case InUseException e -> formatInUseBy(e.getMessage());
           case ClientRequestException e ->
-              e.getApiErrorOfType(InUseError.class).map(InUseError::message).getOrElse(() -> "");
-          default -> "";
+              e.getApiErrorOfType(InUseError.class)
+                  .map(InUseError::message)
+                  .getOrElse(() -> defaultAdditionalDetail);
+          default -> defaultAdditionalDetail;
         };
     Driver.displayInformation(
-        getComponent(), BaseEntityTool.s("cannotdelete.inuse", failedEntity, exceptionMessage));
+        getComponent(), BaseEntityTool.s("cannotdelete.inuse", failedEntity, additionalDetail));
+  }
+
+  private String formatInUseBy(String entityType) {
+    return BaseEntityTool.s("cannotdelete.inuseby", entityType);
   }
 }
