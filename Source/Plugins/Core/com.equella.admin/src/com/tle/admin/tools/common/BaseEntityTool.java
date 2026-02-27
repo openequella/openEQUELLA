@@ -19,7 +19,6 @@
 package com.tle.admin.tools.common;
 
 import com.dytech.edge.common.LockedException;
-import com.dytech.edge.exceptions.InUseException;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -186,7 +185,14 @@ import org.apache.commons.logging.LogFactory;
 public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolListClone {
   static final Log LOGGER = LogFactory.getLog(BaseEntityTool.class);
 
+  private static final String KEY_PREFIX = "com.tle.admin.gui.baseentitytool.";
+
   protected static final StringLookup strings = Lookup.lookup;
+
+  /** Shorthand for {@code CurrentLocale.get("com.tle.admin.gui.baseentitytool." + suffix, ...)}. */
+  static String s(String suffix, Object... values) {
+    return CurrentLocale.get(KEY_PREFIX + suffix, values);
+  }
 
   // //////// ABSTRACT ///////////
 
@@ -340,8 +346,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void exception() {
             Exception exception = getException();
             LOGGER.warn("Error creating GUI", exception);
-            Driver.displayInformation(
-                parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.error"));
+            Driver.displayInformation(parentFrame, s("error"));
           }
         };
 
@@ -380,20 +385,14 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             LockedException locked1 = get();
             if (locked1 != null) {
-              String[] buttons = {
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.open"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.unlock"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.donotopen")
-              };
-              String msg =
-                  locked1.getMessage()
-                      + CurrentLocale.get("com.tle.admin.gui.baseentitytool.message");
+              String[] buttons = {s("open"), s("unlock"), s("donotopen")};
+              String msg = locked1.getMessage() + s("message");
 
               final int result =
                   JOptionPane.showOptionDialog(
                       parentFrame,
                       msg,
-                      CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
+                      s("locked"),
                       JOptionPane.YES_NO_CANCEL_OPTION,
                       JOptionPane.QUESTION_MESSAGE,
                       null,
@@ -488,65 +487,9 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
   @Override
   protected final void onRemove() {
-    final List<NameValue> pairs = getSelectedObjects();
-    final GlassSwingWorker<?> worker =
-        new GlassSwingWorker<Object>() {
-          private int upTo;
-
-          @Override
-          public Object construct() {
-            for (upTo = 0; upTo < pairs.size(); upTo++) {
-              remove(Long.parseLong(pairs.get(upTo).getValue()));
-            }
-            return null;
-          }
-
-          @Override
-          public void finished() {
-            removeSelectedObjects();
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.deleted", getEntityNameNormal()));
-          }
-
-          @Override
-          public void exception() {
-            Exception exception = getException();
-            if (exception instanceof InUseException) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.cannotdelete.inuse",
-                      pairs.get(upTo),
-                      exception.getMessage()));
-            } else if (exception instanceof LockedException) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.cannotdelete.locked", pairs.get(upTo)));
-            } else if (exception.getMessage() != null
-                && exception.getMessage().equals("Access is denied")) {
-              Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.nopermission", pairs.get(upTo)));
-
-            } else {
-              Driver.displayError(parentFrame, getDeletingErrorMessage(), exception);
-              LOGGER.error(
-                  "Could not delete "
-                      + getEntityNameLower()
-                      + " "
-                      + pairs.get(upTo).getValue(), // $NON-NLS-2$
-                  exception);
-            }
-            refreshAndSelect();
-          }
-        };
-
-    worker.setComponent(parentFrame);
-    worker.start();
+    var onRemoveHandler =
+        new BaseEntityToolOnRemoveHandler(parentFrame, getSelectedObjects(), this);
+    onRemoveHandler.start();
   }
 
   @Override
@@ -565,10 +508,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             addToList(get());
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.cloned", getEntityNameNormal()));
+            Driver.displayInformation(parentFrame, s("cloned", getEntityNameNormal()));
           }
 
           @Override
@@ -601,8 +541,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
         final int result2 =
             JOptionPane.showConfirmDialog(
                 parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.confirmoverwrite"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.overwrite"),
+                s("confirmoverwrite"),
+                s("overwrite"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
 
@@ -620,10 +560,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
   private void doWrite(final long uuid, final File file) {
     final boolean exportSecurity =
         JOptionPane.showConfirmDialog(
-                parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.exportrules"),
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.export"),
-                JOptionPane.YES_NO_OPTION)
+                parentFrame, s("exportrules"), s("export"), JOptionPane.YES_NO_OPTION)
             == JOptionPane.YES_OPTION;
 
     final GlassSwingWorker<?> worker =
@@ -640,10 +577,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
           @Override
           public void finished() {
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.exported", getEntityNameNormal()));
+            Driver.displayInformation(parentFrame, s("exported", getEntityNameNormal()));
           }
 
           @Override
@@ -662,11 +596,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     final int confirm =
         JOptionPane.showConfirmDialog(
             parentFrame,
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.warningimport",
-                getEntityNameLower(),
-                CurrentLocale.get("com.tle.application.name")),
-            CurrentLocale.get("com.tle.admin.gui.baseentitytool.import", getEntityNameNormal()),
+            s("warningimport", getEntityNameLower(), CurrentLocale.get("com.tle.application.name")),
+            s("import", getEntityNameNormal()),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
@@ -680,8 +611,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
           doImport(service.importEntity(out.toByteArray()));
         } catch (Exception ex) {
-          Driver.displayInformation(
-              parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.notvalid"));
+          Driver.displayInformation(parentFrame, s("notvalid"));
           LOGGER.error("Couldn't load selected file", ex);
         }
       }
@@ -702,17 +632,13 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
             long id = get();
             boolean newEntity = id == 0;
             if (newEntity && !canAddNew) {
-              JOptionPane.showMessageDialog(
-                  parentFrame, CurrentLocale.get("com.tle.admin.gui.baseentitytool.notallowed"));
+              JOptionPane.showMessageDialog(parentFrame, s("notallowed"));
               return;
             }
 
             // Check if they also want to import security details for the entity
             if (JOptionPane.showConfirmDialog(
-                    parentFrame,
-                    CurrentLocale.get("com.tle.admin.gui.baseentitytool.confirmimport"),
-                    CurrentLocale.get("com.tle.admin.gui.baseentitytool.importsecurity"),
-                    JOptionPane.YES_NO_OPTION)
+                    parentFrame, s("confirmimport"), s("importsecurity"), JOptionPane.YES_NO_OPTION)
                 != JOptionPane.YES_OPTION) {
               pack.setTargetList(null);
               pack.setOtherTargetLists(null);
@@ -753,9 +679,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
             NameValue nv = get();
             addToList(nv);
 
-            Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get("com.tle.admin.gui.baseentitytool.importsuccess", nv.getName()));
+            Driver.displayInformation(parentFrame, s("importsuccess", nv.getName()));
           }
 
           @Override
@@ -782,10 +706,8 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
     int confirm =
         JOptionPane.showConfirmDialog(
             parentFrame,
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.warningoverwrite", getEntityNameLower()),
-            CurrentLocale.get(
-                "com.tle.admin.gui.baseentitytool.overwriteentity", getEntityNameNormal()),
+            s("warningoverwrite", getEntityNameLower()),
+            s("overwriteentity", getEntityNameNormal()),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
@@ -809,15 +731,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
               LockedException locked = (LockedException) get();
               if (locked != null) {
-                String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                String msg = locked.getMessage() + s("forcefully");
                 int confirm1 =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 unlockFirst = confirm1 == JOptionPane.YES_OPTION;
               }
               doOverwrite(pack, unlockFirst);
@@ -853,10 +770,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           @Override
           public void finished() {
             Driver.displayInformation(
-                parentFrame,
-                CurrentLocale.get(
-                    "com.tle.admin.gui.baseentitytool.importsuccess",
-                    CurrentLocale.get(entity.getName())));
+                parentFrame, s("importsuccess", CurrentLocale.get(entity.getName())));
           }
 
           @Override
@@ -896,15 +810,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
                 didArchive = true;
                 fin = true;
               } catch (LockedException locked) {
-                final String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                final String msg = locked.getMessage() + s("forcefully");
                 final int confirmUnlock =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 if (confirmUnlock == JOptionPane.YES_OPTION) {
                   forceUnlock(locked.getEntityId());
                 } else {
@@ -919,11 +828,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             if (didArchive) {
               Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.archived",
-                      ids.size(),
-                      getEntityNameLower()));
+                  parentFrame, s("archived", ids.size(), getEntityNameLower()));
             }
           }
 
@@ -964,15 +869,10 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
                 didUnarchive = true;
                 fin = true;
               } catch (LockedException locked) {
-                final String msg =
-                    locked.getMessage()
-                        + CurrentLocale.get("com.tle.admin.gui.baseentitytool.forcefully");
+                final String msg = locked.getMessage() + s("forcefully");
                 final int confirmUnlock =
                     JOptionPane.showConfirmDialog(
-                        parentFrame,
-                        msg,
-                        CurrentLocale.get("com.tle.admin.gui.baseentitytool.locked"),
-                        JOptionPane.YES_NO_OPTION);
+                        parentFrame, msg, s("locked"), JOptionPane.YES_NO_OPTION);
                 if (confirmUnlock == JOptionPane.YES_OPTION) {
                   forceUnlock(locked.getEntityId());
                 } else {
@@ -987,11 +887,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
           public void finished() {
             if (didUnarchive) {
               Driver.displayInformation(
-                  parentFrame,
-                  CurrentLocale.get(
-                      "com.tle.admin.gui.baseentitytool.unarchived",
-                      ids.size(),
-                      getEntityNameLower()));
+                  parentFrame, s("unarchived", ids.size(), getEntityNameLower()));
             }
           }
 
@@ -1018,8 +914,7 @@ public abstract class BaseEntityTool<T extends BaseEntity> extends AdminToolList
 
     @Override
     public String getDescription() {
-      return CurrentLocale.get("com.tle.admin.gui.baseentitytool.exported", getEntityName())
-          + " (*.zip)";
+      return s("exported", getEntityName()) + " (*.zip)";
     }
   }
 
