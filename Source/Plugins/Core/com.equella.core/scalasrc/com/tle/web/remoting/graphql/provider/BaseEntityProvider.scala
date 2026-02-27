@@ -23,7 +23,6 @@ import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.schema.types.LanguageBundle
 
 import javax.inject.{Inject, Singleton}
-import scala.language.implicitConversions
 
 /** A Provider for operations involving Base Entities. Ultimately proxied to the
   * `BaseEntityService`.
