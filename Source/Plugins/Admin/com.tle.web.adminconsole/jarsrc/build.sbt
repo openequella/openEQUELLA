@@ -7,7 +7,7 @@ libraryDependencies ++= Seq(
   springAop,
   springContext,
   "com.fifesoft"  % "rsyntaxtextarea" % "3.6.1",
-  "com.miglayout" % "miglayout-swing" % "11.4.2",
+  "com.miglayout" % "miglayout-swing" % "11.4.3",
   xstreamDep
 )
 
