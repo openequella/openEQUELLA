@@ -158,16 +158,19 @@ class MetadataSchemaProvider @Inject() (
     *   if true, re-locks the metadata schema after saving (useful for continuing to edit); if
     *   false, leaves it unlocked.
     * @return
-    *   Either a ProviderError if the operation fails, or Unit on success.
+    *   Either a ProviderError if the operation fails, or a BaseEntityReference to the newly created
+    *   metadata schema on success.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def add(
       details: EditableEntity[MetadataSchema],
       lockAfterwards: Boolean
-  ): Either[ProviderError, Unit] = {
+  ): Either[ProviderError, BaseEntityReference] = {
     LOGGER.debug(s"Adding new metadata schema with details: ${details.entity}")
     ProviderError.Try("Failed to add new metadata schema: ") {
-      schemaService.add(toEntityPack(details, MetadataSchemaConverter.toSchema), lockAfterwards)
+      val ref =
+        schemaService.add(toEntityPack(details, MetadataSchemaConverter.toSchema), lockAfterwards)
+      BaseEntityReference(ref)
     }
   }
 

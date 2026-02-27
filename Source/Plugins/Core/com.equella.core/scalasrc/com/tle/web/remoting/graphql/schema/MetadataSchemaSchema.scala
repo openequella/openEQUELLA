@@ -129,7 +129,7 @@ class MetadataSchemaSchema extends SchemaProvider {
       @GQLDescription(
         "Add a new metadata schema - typically after a startCreate operation, with details for the new schema."
       )
-      add: MetadataSchemaAddArgs => ResultWithErrors[Unit],
+      add: MetadataSchemaAddArgs => ResultWithErrors[BaseEntityReference],
       @GQLDescription(
         "Delete a metadata schema - with consideration to references controllable by args."
       )

@@ -54,13 +54,15 @@ object MetadataSchemaMutations {
   /** Add a new metadata schema - typically after a startCreate operation, with details for the new
     * schema.
     */
-  def add(details: EditableEntityMetadataSchemaInput, lockAfterwards: Boolean)(implicit
+  def add[A](details: EditableEntityMetadataSchemaInput, lockAfterwards: Boolean)(
+      innerSelection: SelectionBuilder[BaseEntityReference, A]
+  )(implicit
       encoder0: ArgEncoder[EditableEntityMetadataSchemaInput],
       encoder1: ArgEncoder[Boolean]
-  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[Unit]] =
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
       "add",
-      OptionOf(Scalar()),
+      OptionOf(Obj(innerSelection)),
       arguments = List(
         Argument("details", details, "EditableEntityMetadataSchemaInput!"),
         Argument("lockAfterwards", lockAfterwards, "Boolean!")

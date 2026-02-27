@@ -259,12 +259,14 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] =
+  ): Either[List[ApiError], BaseEntityReferenceView] =
     for {
       input <- Either
         .catchNonFatal(MetadataSchemaConversions.toInput(details))
         .leftMap(e => List(UnknownError(s"Failed to convert details to input: ${e.getMessage}")))
-      mutation = MetadataSchemaMutations.add(input, lockAfterwards)
+      mutation = MetadataSchemaMutations.add(input, lockAfterwards) {
+        BaseEntityReferenceView.selector
+      }
       result <- flattenResult {
         mutate(mutation)
       }
