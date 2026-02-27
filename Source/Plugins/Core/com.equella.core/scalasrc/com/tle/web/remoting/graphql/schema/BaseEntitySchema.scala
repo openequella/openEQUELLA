@@ -32,16 +32,7 @@ import javax.inject.{Inject, Singleton}
   */
 @Bind
 @Singleton
-class BaseEntitySchema extends SchemaProvider {
-  private var baseEntityProvider: BaseEntityProvider = _
-
-  /** Default constructor for Guice.
-    */
-  @Inject def this(baseEntityProvider: BaseEntityProvider) = {
-    this()
-    this.baseEntityProvider = baseEntityProvider
-  }
-
+class BaseEntitySchema @Inject() (baseEntityProvider: BaseEntityProvider) extends SchemaProvider {
   override def getApi: GraphQL[Any] = graphQL(
     RootResolver(
       queries
