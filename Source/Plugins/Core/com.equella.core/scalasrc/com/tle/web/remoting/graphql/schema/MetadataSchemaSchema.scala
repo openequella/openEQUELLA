@@ -36,11 +36,11 @@ import javax.inject.{Inject, Singleton}
 @Bind
 @Singleton
 class MetadataSchemaSchema extends SchemaProvider {
-  private var schemaProvider: MetadataSchemaProvider = _
+  private var metadataSchemaProvider: MetadataSchemaProvider = _
 
   @Inject def this(metadataSchemaProvider: MetadataSchemaProvider) {
     this()
-    this.schemaProvider = metadataSchemaProvider
+    this.metadataSchemaProvider = metadataSchemaProvider
   }
 
   override def getApi: GraphQL[Any] = graphQL(
@@ -52,23 +52,23 @@ class MetadataSchemaSchema extends SchemaProvider {
 
   private val queries = Queries(
     metadataSchema = MetadataSchemaQueryOps(
-      list = () => schemaProvider.listSchemas(),
-      export = args => schemaProvider.exportSchema(args.id, args.withSecurity),
-      idForUuid = uuid => schemaProvider.schemaIdForUuid(uuid),
-      byId = args => schemaProvider.schemaById(args.id),
-      uses = args => schemaProvider.getUses(args.id),
-      importTypes = args => schemaProvider.getImportTypes(args.id),
-      hasReferences = args => schemaProvider.hasReferences(args.id)
+      list = () => metadataSchemaProvider.listSchemas(),
+      export = args => metadataSchemaProvider.exportSchema(args.id, args.withSecurity),
+      idForUuid = uuid => metadataSchemaProvider.schemaIdForUuid(uuid),
+      byId = args => metadataSchemaProvider.schemaById(args.id),
+      uses = args => metadataSchemaProvider.getUses(args.id),
+      importTypes = args => metadataSchemaProvider.getImportTypes(args.id),
+      hasReferences = args => metadataSchemaProvider.hasReferences(args.id)
     )
   )
 
   private val mutations = Mutations(
     metadataSchema = MetadataSchemaMutationOps(
-      startEdit = args => schemaProvider.startEdit(args.id),
-      startCreate = () => schemaProvider.startCreate(),
-      cancelEdit = args => schemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
-      add = args => schemaProvider.add(args.details, args.lockAfterwards),
-      delete = args => schemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
+      startEdit = args => metadataSchemaProvider.startEdit(args.id),
+      startCreate = () => metadataSchemaProvider.startCreate(),
+      cancelEdit = args => metadataSchemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
+      add = args => metadataSchemaProvider.add(args.details, args.lockAfterwards),
+      delete = args => metadataSchemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
     )
   )
 
