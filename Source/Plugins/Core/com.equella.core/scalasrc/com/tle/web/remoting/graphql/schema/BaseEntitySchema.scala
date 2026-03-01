@@ -33,6 +33,7 @@ import javax.inject.{Inject, Singleton}
 @Bind
 @Singleton
 class BaseEntitySchema @Inject() (baseEntityProvider: BaseEntityProvider) extends SchemaProvider {
+
   override def getApi: GraphQL[Any] = graphQL(
     RootResolver(
       queries

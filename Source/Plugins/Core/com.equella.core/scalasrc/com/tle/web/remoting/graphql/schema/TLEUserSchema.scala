@@ -35,15 +35,7 @@ import javax.inject.{Inject, Singleton}
   */
 @Bind
 @Singleton
-class TLEUserSchema extends SchemaProvider {
-  private var tleUserProvider: TLEUserProvider = _
-
-  /** Default constructor for Guice.
-    */
-  @Inject def this(tleUserProvider: TLEUserProvider) = {
-    this()
-    this.tleUserProvider = tleUserProvider
-  }
+class TLEUserSchema @Inject() (tleUserProvider: TLEUserProvider) extends SchemaProvider {
 
   case class ListUsersArgs(
       @GQLDescription("A string to filter users by") query: Option[String],

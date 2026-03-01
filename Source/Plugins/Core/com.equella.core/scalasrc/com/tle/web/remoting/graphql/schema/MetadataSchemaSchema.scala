@@ -35,13 +35,8 @@ import javax.inject.{Inject, Singleton}
 
 @Bind
 @Singleton
-class MetadataSchemaSchema extends SchemaProvider {
-  private var metadataSchemaProvider: MetadataSchemaProvider = _
-
-  @Inject def this(metadataSchemaProvider: MetadataSchemaProvider) {
-    this()
-    this.metadataSchemaProvider = metadataSchemaProvider
-  }
+class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProvider)
+    extends SchemaProvider {
 
   override def getApi: GraphQL[Any] = graphQL(
     RootResolver(
