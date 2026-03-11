@@ -38,7 +38,7 @@ object MetadataSchemaViewConverter {
     s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asArrayList)
     s.setCitations(view.citations.map(toCitation).asArrayList)
 
-    resolveLanguageStrings(view, s)
+    setLanguageStrings(view, s)
 
     s
   }
@@ -51,7 +51,7 @@ object MetadataSchemaViewConverter {
     st
   }
 
-  private def resolveLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
+  private def setLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
     val EntityDetailsViewStrings(name, description) = EntityDetailsViewStrings(view.details)
 
     s.setName(name.orNull)
