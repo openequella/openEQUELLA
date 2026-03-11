@@ -30,9 +30,14 @@ object CitationViewConverter {
     c
   }
 
-  def fromCitation(citation: Citation): CitationView =
-    CitationView(
-      name = citation.getName,
-      transformation = citation.getTransformation
+  def fromCitation(citation: Citation): CitationView = {
+    val name = Option(citation.getName).getOrElse(
+      throw new IllegalArgumentException("Citation name must not be null")
     )
+    val transformation = Option(citation.getTransformation).getOrElse(
+      throw new IllegalArgumentException("Citation transformation must not be null")
+    )
+
+    CitationView(name = name, transformation = transformation)
+  }
 }
