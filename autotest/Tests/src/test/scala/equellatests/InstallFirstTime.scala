@@ -16,14 +16,14 @@ object InstallFirstTime extends App {
     val context     = new PageContext(driver, testConfig, testConfig.getAdminUrl)
     var installPage = new InstallPage(context).load
 
-    installPage = assertEmptyFormValidation(installPage)
-    installPage = assertInvalidEmailsValidation(installPage)
+    installPage = validateEmptyFormFields(installPage)
+    installPage = validateInvalidEmails(installPage)
     completeInstallation(installPage)
 
     driver.quit()
   }
 
-  private def assertEmptyFormValidation(page: InstallPage): InstallPage = {
+  private def validateEmptyFormFields(page: InstallPage): InstallPage = {
     fillInstallationForm(
       page = page,
       emails = Some(""),
@@ -33,17 +33,17 @@ object InstallFirstTime extends App {
       passwordConfirm = Some("")
     )
 
-    val updatedPage = page.clickInstallAndWaitUntil(_.isPasswordError)
+    val updatedPage = page.installAndWait(_.isPasswordError)
 
     assert(updatedPage.isPasswordError)
     assert(updatedPage.isEmailsError)
-    assert(updatedPage.isStmpError)
+    assert(updatedPage.isSmtpError)
     assert(updatedPage.isNoReplyError)
 
     updatedPage
   }
 
-  private def assertInvalidEmailsValidation(page: InstallPage): InstallPage = {
+  private def validateInvalidEmails(page: InstallPage): InstallPage = {
     fillInstallationForm(
       page = page,
       emails = Some(INVALID_EMAILS),
@@ -53,7 +53,7 @@ object InstallFirstTime extends App {
       passwordConfirm = Some(testConfig.getAdminPassword)
     )
 
-    val updatedPage = page.clickInstallAndWaitUntil(_.isEmailsError)
+    val updatedPage = page.installAndWait(_.isEmailsError)
 
     assert(!updatedPage.isPasswordError)
     assert(updatedPage.isEmailsError)
