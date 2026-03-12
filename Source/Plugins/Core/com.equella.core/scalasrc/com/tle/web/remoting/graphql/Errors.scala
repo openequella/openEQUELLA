@@ -24,7 +24,7 @@ import com.dytech.edge.common.LockedException
 import com.dytech.edge.exceptions.InUseException
 import com.tle.beans.item.ItemEditingException
 import com.tle.common.beans.exception.{InvalidDataException, NotFoundException}
-import com.tle.exceptions.AccessDeniedException
+import com.tle.exceptions.{AccessDeniedException, AuthenticationException}
 import com.tle.web.remoting.graphql.ErrorCode._
 import org.apache.catalina.connector.ClientAbortException
 
@@ -44,7 +44,7 @@ object Errors {
     */
   def mapException(throwable: Throwable): ErrorCode.Code = throwable match {
     case _: ItemEditingException | _: InvalidDataException       => BAD_REQUEST
-    case _: AccessDeniedException                                => ACCESS_DENIED
+    case _: AccessDeniedException | _: AuthenticationException   => ACCESS_DENIED
     case _: LockedException                                      => LOCKED
     case _: NotFoundException | _: javax.ws.rs.NotFoundException => NOT_FOUND
     case _: ClientAbortException                                 => CLIENT_ABORT

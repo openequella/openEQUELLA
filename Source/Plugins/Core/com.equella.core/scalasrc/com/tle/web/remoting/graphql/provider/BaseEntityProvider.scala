@@ -20,6 +20,7 @@ package com.tle.web.remoting.graphql.provider
 
 import com.tle.core.entity.service.BaseEntityService
 import com.tle.core.guice.Bind
+import com.tle.core.security.impl.RequiresLogin
 import com.tle.web.remoting.graphql.schema.types.LanguageBundle
 
 import javax.inject.{Inject, Singleton}
@@ -38,6 +39,7 @@ class BaseEntityProvider @Inject() (baseEntityService: BaseEntityService) {
     * @return
     *   the GraphQL `LanguageBundle` object, or `None` if no entity is found
     */
+  @RequiresLogin(message = "Guest (unauthenticated) users cannot get base entity name.")
   def nameById(id: Long): Option[LanguageBundle] =
     Option(baseEntityService.getNameForId(id)).map(LanguageBundle.apply)
 }
