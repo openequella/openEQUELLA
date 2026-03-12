@@ -21,7 +21,6 @@ package com.tle.admin.graphql
 import java.time.LocalDateTime
 import java.util
 import java.util.Date
-import scala.jdk.CollectionConverters._
 
 /** This package contains support for converting types between the GraphQL schema and internal
   * classes used in the AdminConsole.
@@ -54,7 +53,11 @@ package object conversion {
       * @return
       *   A new mutable ArrayList containing all elements
       */
-    def asArrayList: util.ArrayList[A] = new util.ArrayList[A](iterable.toSeq.asJava)
+    def asArrayList: util.ArrayList[A] = {
+      val list = new util.ArrayList[A](iterable.size)
+      iterable.foreach(list.add)
+      list
+    }
   }
 
   /** Converts a Java `Date` to a Scala `LocalDateTime`. This is useful for converting Dates from
