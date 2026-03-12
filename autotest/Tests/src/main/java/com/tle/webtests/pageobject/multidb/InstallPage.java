@@ -59,6 +59,11 @@ public class InstallPage extends AbstractPage<InstallPage> {
     passwordField.sendKeys(password);
   }
 
+  public void setPasswordConfirm(String password) {
+    passwordConfirmField.clear();
+    passwordConfirmField.sendKeys(password);
+  }
+
   public DatabasesPage install() {
     installButton.click();
     return new DatabasesPage(context).get();
@@ -76,18 +81,14 @@ public class InstallPage extends AbstractPage<InstallPage> {
     return isPresent(By.xpath("id('isi_noReplySender')/../p[contains(@class, 'ctrlinvalid')]"));
   }
 
-  public boolean isStmpError() {
+  public boolean isSmtpError() {
     return isPresent(By.xpath("id('isi_smtpServer')/../p[contains(@class, 'ctrlinvalid')]"));
   }
 
-  public InstallPage installInvalid(Function<InstallPage, Boolean> waitTill) {
+  /** Click the installation button and wait until the given condition is true. */
+  public InstallPage installAndWait(Function<InstallPage, Boolean> condition) {
     installButton.click();
-    getWaiter().until(wd -> waitTill);
+    getWaiter().until(wd -> condition.apply(this));
     return get();
-  }
-
-  public void setPasswordConfirm(String string) {
-    passwordConfirmField.clear();
-    passwordConfirmField.sendKeys(string);
   }
 }
