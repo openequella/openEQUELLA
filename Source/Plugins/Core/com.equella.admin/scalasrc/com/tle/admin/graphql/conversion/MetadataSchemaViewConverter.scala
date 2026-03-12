@@ -23,8 +23,6 @@ import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.fromBaseEntit
 import com.tle.beans.entity.{Schema, SchemaTransform}
 import io.github.openequella.graphql.api.views.{MetadataSchemaTransformView, MetadataSchemaView}
 
-import scala.jdk.CollectionConverters._
-
 object MetadataSchemaViewConverter {
   def toSchema(view: MetadataSchemaView): Schema = {
     val s = new Schema(view.details.id)
@@ -59,17 +57,9 @@ object MetadataSchemaViewConverter {
   }
 
   def fromSchema(schema: Schema): MetadataSchemaView = {
-    val exportTransforms = Option(schema.getExportTransforms)
-      .map(_.asScala.map(fromSchemaTransform).toList)
-      .getOrElse(List.empty)
-
-    val importTransforms = Option(schema.getImportTransforms)
-      .map(_.asScala.map(fromSchemaTransform).toList)
-      .getOrElse(List.empty)
-
-    val citations = Option(schema.getCitations)
-      .map(_.asScala.map(fromCitation).toList)
-      .getOrElse(List.empty)
+    val exportTransforms = NullSafeList(schema.getExportTransforms) convert fromSchemaTransform
+    val importTransforms = NullSafeList(schema.getImportTransforms) convert fromSchemaTransform
+    val citations        = NullSafeList(schema.getCitations) convert fromCitation
 
     MetadataSchemaView(
       details = fromBaseEntity(schema),
