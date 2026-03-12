@@ -23,7 +23,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def search(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 6)
+    assertEquals(results.size(), 7)
   }
 
   @Test(description = "Search with query")
@@ -47,7 +47,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
     // search for book collection
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("collections", BOOK_COLLECTION_UUID))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
 
     // search with an irrelevant collection
     val paramsDrm  = Seq(("nodes", FACET_AUTHOR_NODE), ("collections", DRM_COLLECTION_UUID))
@@ -67,7 +67,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def searchWithModifiedAfter(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("modifiedAfter", "2024-03-14"))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 5)
+    assertEquals(results.size(), 6)
     assertEquals(getFirstTermName(results), "A James")
   }
 
@@ -109,7 +109,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
   def hierarchySearchTest(): Unit = {
     val params  = Seq(("nodes", FACET_AUTHOR_NODE), ("hierarchy", HIERARCHY_UUID))
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
   }
 
   @Test(description = "Search hierarchy with duplicated criteria which should be ignored")
@@ -120,7 +120,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
       ("status", "ARCHIVED")
     )
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
   }
 
   @Test(description = "Search hierarchy with collections filter")
@@ -132,7 +132,7 @@ class FacetedSearchApiTest extends AbstractRestApiTest {
       ("collections", CAL_BOOK_COLLECTION)
     )
     val results = getFacetSearch(params)
-    assertEquals(results.size(), 4)
+    assertEquals(results.size(), 5)
 
     // Search with irrelevant collection.
     val paramsBasic = Seq(
