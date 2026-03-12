@@ -128,20 +128,32 @@ describe("generateCategoryWhereQuery", () => {
     },
   ];
 
-  it("should generate a where clause for one category", () => {
+  const apostropheCategory: SelectedCategories = {
+    id: 766944,
+    schemaNode: "/item/author",
+    categories: ["Garry's Cousin"],
+  };
+
+  it("generates a where clause for one category", () => {
     const singleCategory = [selectedCategories[1]];
     expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
       "(/xml/item/city='Hobart')",
     );
   });
 
-  it("should generate a where clause for multiple groups of categories", () => {
+  it("generates a where clause for multiple groups of categories", () => {
     expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
       "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')",
     );
   });
 
-  it("should return undefined if no categories are selected", () => {
+  it("generates a where clause with apostrophe characters properly escaped", () => {
+    expect(SearchModule.generateCategoryWhereQuery([apostropheCategory])).toBe(
+      "(/xml/item/author='Garry''s Cousin')",
+    );
+  });
+
+  it("returns undefined if no categories are selected", () => {
     expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
     expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
   });

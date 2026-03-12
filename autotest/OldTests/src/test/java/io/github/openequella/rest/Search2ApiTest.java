@@ -242,6 +242,27 @@ public class Search2ApiTest extends AbstractRestApiTest {
     assertEquals(getAvailable(result), 1);
   }
 
+  /**
+   * Verifies that single quotes in whereClause values are correctly handled when escaped.
+   *
+   * <p>In the query language, a single quote inside a string literal must be escaped by doubling it
+   * (e.g. Garry's Cousin -> 'Garry''s Cousin'). Without this escape, the query parser would treat
+   * the quote as the end of the string and fail to parse the whereClause correctly.
+   *
+   * <p>This test ensures that searches containing escaped single quotes return the expected
+   * results.
+   */
+  @Test(description = "Search with whereClause with escaped single quote")
+  public void whereClauseEscapedSingleQuote() throws IOException {
+    JsonNode result =
+        doSearch(
+            200,
+            null,
+            new NameValuePair(
+                "whereClause", "where /xml/item/copyright/authors/author='Garry''s Cousin'"));
+    assertEquals(getAvailable(result), 1);
+  }
+
   @Test(description = "Search by an invalid item status")
   public void invalidItemStatusSearch() throws IOException {
     doSearch(404, null, new NameValuePair("status", "ALIVE"));

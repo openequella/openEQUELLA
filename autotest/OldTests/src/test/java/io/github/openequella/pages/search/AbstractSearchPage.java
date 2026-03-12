@@ -1,5 +1,10 @@
 package io.github.openequella.pages.search;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
+
+import com.codeborne.selenide.SelenideElement;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.PageObject;
@@ -269,8 +274,9 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     getWaiter()
         .until(
             driver ->
-                ownerSelectDialog.findElements(By.xpath(".//ul[@id='item-search-list']/div")).size()
-                    > 0);
+                !ownerSelectDialog
+                    .findElements(By.xpath(".//ul[@id='item-search-list']/div"))
+                    .isEmpty());
     // Click one of found users.
     WebElement owner =
         ownerSelectDialog.findElement(By.xpath(".//span[text()='" + ownerName + "']"));
@@ -281,6 +287,20 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     confirmButton.click();
     // Wait until the dialog is closed.
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
+  }
+
+  /**
+   * Select a classification option in the Classifications card in the Refine Panel.
+   *
+   * @param optionText The text of a classification option.
+   */
+  public void selectClassification(String optionText) {
+    SelenideElement classificationsCard =
+        $$("h5").findBy(text("Classifications")).parent().shouldBe(visible);
+
+    SelenideElement option = classificationsCard.$$("p").findBy(text(optionText)).shouldBe(visible);
+
+    option.click();
   }
 
   /**
