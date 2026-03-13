@@ -57,40 +57,17 @@ object NestedApi {
   ]
 }
 
-/** Mixin trait for APIs that have nested query and mutation structures.
+/** Mixin trait for APIs that have nested query structures.
   *
   * @tparam Q
   *   The root query type for the nested API.
-  * @tparam M
-  *   The root mutation type for the nested API.
   */
-trait NestedApi[Q, M] {
+trait NestedQueryApi[Q] {
 
   /** Wrapper for query calls to adapt to the nested query API structure.
     */
   protected def queryWrapper[A]
       : SelectionBuilder[Q, A] => SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A]
-
-  /** Wrapper for mutation calls to adapt to the nested mutation API structure.
-    */
-  protected def mutationWrapper[A]
-      : SelectionBuilder[M, A] => SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A]
-
-  /** Handles the mutations calls for nested mutation API structure.
-    *
-    * @param mutation
-    *   The selection builder for the mutation.
-    * @param cfg
-    *   The client configuration.
-    * @tparam R
-    *   The result type of the mutation.
-    * @return
-    *   Either a list of ApiError or the result of type R.
-    */
-  protected def mutate[R](mutation: SelectionBuilder[M, R])(implicit
-      cfg: ClientConfiguration
-  ): Either[List[ApiError], R] =
-    Client.mutate(mutationWrapper(mutation))
 
   /** Handles the query calls for nested query API structure.
     *
@@ -132,3 +109,45 @@ trait NestedApi[Q, M] {
       queryWrapper(nestedQueryBuilder(first, last, before, after))
     }
 }
+
+/** Mixin trait for APIs that have nested mutation structures.
+  *
+  * @tparam M
+  *   The root mutation type for the nested API.
+  */
+trait NestedMutationApi[M] {
+
+  /** Wrapper for mutation calls to adapt to the nested mutation API structure.
+    */
+  protected def mutationWrapper[A]
+      : SelectionBuilder[M, A] => SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A]
+
+  /** Handles the mutations calls for nested mutation API structure.
+    *
+    * @param mutation
+    *   The selection builder for the mutation.
+    * @param cfg
+    *   The client configuration.
+    * @tparam R
+    *   The result type of the mutation.
+    * @return
+    *   Either a list of ApiError or the result of type R.
+    */
+  protected def mutate[R](mutation: SelectionBuilder[M, R])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], R] =
+    Client.mutate(mutationWrapper(mutation))
+}
+
+/** Mixin trait for APIs that have nested query and mutation structures.
+  *
+  * This trait combines both query and mutation capabilities by extending NestedQueryApi and
+  * NestedMutationApi. Use this trait when your API requires both operations. For APIs that only
+  * need one type of operation, extend NestedQueryApi or NestedMutationApi directly.
+  *
+  * @tparam Q
+  *   The root query type for the nested API.
+  * @tparam M
+  *   The root mutation type for the nested API.
+  */
+trait NestedApi[Q, M] extends NestedQueryApi[Q] with NestedMutationApi[M]

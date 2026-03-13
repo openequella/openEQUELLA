@@ -19,6 +19,7 @@
 package io.github.openequella.graphql
 
 package object client {
+  type BaseEntityQueries
   type BaseEntityReference
   type Citation
   type EditableEntityMetadataSchema
