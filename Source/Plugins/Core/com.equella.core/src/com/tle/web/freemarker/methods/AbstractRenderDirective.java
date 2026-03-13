@@ -34,26 +34,12 @@ import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.io.StringWriter;
 import java.util.Map;
 
 @NonNullByDefault
 public abstract class AbstractRenderDirective extends SectionsTemplateModel
     implements TemplateDirectiveModel {
-  private static Method currentContextMethod;
-  @Nullable private static Field bodyField;
-
-  static {
-    try {
-      currentContextMethod =
-          Environment.class.getDeclaredMethod("getCurrentMacroContext"); // $NON-NLS-1$
-      currentContextMethod.setAccessible(true);
-    } catch (Exception e) {
-      throw new SectionsRuntimeException(e);
-    }
-  }
-
   @NonNullByDefault(false)
   @SuppressWarnings({"unchecked", "nls", "rawtypes"})
   @Override
@@ -74,8 +60,12 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
                 .setStyles(
                     getParam("style", params), getParam("class", params), getParam("id", params));
           }
-          if (renderable instanceof NestedRenderable && body != null && getBodyField(env) != null) {
-            ((NestedRenderable) renderable).setNestedRenderable(new BodyDirectiveRenderable(body));
+          if (renderable instanceof NestedRenderable && body != null) {
+            String nestedBody = renderBody(body);
+            if (nestedBody != null) {
+              ((NestedRenderable) renderable)
+                  .setNestedRenderable(new BodyDirectiveRenderable(nestedBody));
+            }
           }
           SectionWriter writer = new SectionWriter(env.getOut(), info);
           writer.preRender(renderable);
@@ -94,20 +84,15 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
 
   public static class BodyDirectiveRenderable implements SectionRenderable {
 
-    private final TemplateDirectiveBody body;
+    private final String renderedBody;
 
-    public BodyDirectiveRenderable(TemplateDirectiveBody body) {
-      this.body = body;
+    public BodyDirectiveRenderable(String renderedBody) {
+      this.renderedBody = renderedBody;
     }
 
     @Override
     public void realRender(SectionWriter writer) throws IOException {
-      try {
-
-        body.render(writer);
-      } catch (TemplateException e) {
-        throw new SectionsRuntimeException(e);
-      }
+      writer.write(renderedBody);
     }
 
     @Override
@@ -130,12 +115,14 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
       Object section, Map<String, TemplateModel> params);
 
   @Nullable
-  private static synchronized Object getBodyField(Environment env) throws Exception {
-    Object context = currentContextMethod.invoke(env);
-    if (bodyField == null) {
-      bodyField = context.getClass().getDeclaredField("nestedContent");
-      bodyField.setAccessible(true);
+  private String renderBody(TemplateDirectiveBody body) {
+    try {
+      StringWriter buffer = new StringWriter();
+      body.render(buffer);
+      String nestedBody = buffer.toString();
+      return nestedBody.isEmpty() ? null : nestedBody;
+    } catch (TemplateException | IOException e) {
+      throw new SectionsRuntimeException(e);
     }
-    return bodyField.get(context);
   }
 }
