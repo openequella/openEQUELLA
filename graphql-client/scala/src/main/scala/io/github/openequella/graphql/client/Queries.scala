@@ -23,6 +23,13 @@ import caliban.client._
 
 object Queries {
 
+  /** Queries for base entities
+    */
+  def baseEntities[A](
+      innerSelection: SelectionBuilder[BaseEntityQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("baseEntities", Obj(innerSelection))
+
   /** Queries for internal users
     */
   def internalUsers[A](
