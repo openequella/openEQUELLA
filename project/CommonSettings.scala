@@ -40,7 +40,7 @@ object CommonSettings extends AutoPlugin {
     lazy val platformCommon  = LocalProject("com_tle_platform_common")
     lazy val platformSwing   = LocalProject("com_tle_platform_swing")
     lazy val platformEquella = LocalProject("com_tle_platform_equella")
-    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.9"
+    lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.10"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.1.jre11"
 
     lazy val log4jVersion   = "2.25.3"
@@ -56,7 +56,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion = "2.21.0"
+    lazy val jacksonVersion = "2.21.1"
     // Jackson Annotations has chosen to split for sync versions.
     // See https://github.com/FasterXML/jackson-annotations/issues/294
     lazy val jacksonAnnotationsVersion = "2.20"

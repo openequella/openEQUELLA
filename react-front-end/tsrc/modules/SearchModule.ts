@@ -237,10 +237,20 @@ export const generateCategoryWhereQuery = (
 
   const and = " AND ";
   const or = " OR ";
+
+  // Escape apostrophes by doubling them (`'` -> `''`) because the where clause uses
+  // single-quoted string literals. Without this, values like `Men's Wear` would break
+  // the query syntax; `Men''s Wear` is parsed as the literal value `Men's Wear`.
+  const escapeApostrophes = (value: string): string =>
+    value.replace(/'/g, "''");
+
   const processNodeTerms = (
     categories: string[],
     schemaNode?: string,
-  ): string => categories.map((c) => `/xml${schemaNode}='${c}'`).join(or);
+  ): string =>
+    categories
+      .map((c) => `/xml${schemaNode}='${escapeApostrophes(c)}'`)
+      .join(or);
 
   return selectedCategories
     .filter((c) => c.categories.length > 0)

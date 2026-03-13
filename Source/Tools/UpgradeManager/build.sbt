@@ -3,8 +3,8 @@ import java.util.jar.Attributes
 import sbt.Package.ManifestAttributes
 
 libraryDependencies ++= Seq(
-  "org.apache.commons"   % "commons-fileupload2-core"  % "2.0.0-M4",
-  "org.apache.commons"   % "commons-fileupload2-javax" % "2.0.0-M4",
+  "org.apache.commons"   % "commons-fileupload2-core"  % "2.0.0-M5",
+  "org.apache.commons"   % "commons-fileupload2-javax" % "2.0.0-M5",
   "commons-io"           % "commons-io"                % "2.21.0",
   "com.google.guava"     % "guava"                     % "33.5.0-jre",
   "org.antlr"            % "ST4"                       % "4.3.4",

@@ -17,7 +17,6 @@
  */
 import "@testing-library/jest-dom";
 import { composeStories } from "@storybook/react";
-import { render } from "@testing-library/react";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
 import * as React from "react";
@@ -26,21 +25,29 @@ import { getMyResourceCategoriesTransformedResp } from "../../../../__mocks__/my
 import * as stories from "../../../../__stories__/dashboard/portlets/MyResources.stories";
 import { languageStrings } from "../../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../../BaseUrlHelper";
+import { RenderContext, setupStoryComponent } from "../../TestSetupHelper";
 import { getCountForItem } from "./PortletTestHelper";
 
 const { showAll: showAllText } = languageStrings.common.action;
 
 const { Simple, ScrapbookDisabled, ErrorOnLoad } = composeStories(stories);
 
+const waitForShowAllText = async (context: RenderContext): Promise<void> => {
+  await context.findByRole("link", { name: showAllText });
+};
+
+const waitForAlert = async (context: RenderContext): Promise<void> => {
+  await context.findByRole("alert");
+};
+
 const setup = async (
   element: React.ReactElement,
-  readySelector: string = "link",
-  readySelectorName: string = showAllText,
-) => {
-  const renderResult = render(<MemoryRouter>{element}</MemoryRouter>);
-  await renderResult.findByRole(readySelector, { name: readySelectorName });
-  return renderResult;
-};
+  readyStateCheck?: (context: RenderContext) => Promise<void>,
+) =>
+  setupStoryComponent(
+    <MemoryRouter>{element}</MemoryRouter>,
+    readyStateCheck ?? waitForShowAllText,
+  );
 
 // Mock getBaseUrl() function
 updateMockGetBaseUrl();
@@ -90,7 +97,7 @@ describe("<PortletMyResources />", () => {
   });
 
   it("shows error message when no results are returned", async () => {
-    const { getByText } = await setup(<ErrorOnLoad />, "alert", "");
+    const { getByText } = await setup(<ErrorOnLoad />, waitForAlert);
 
     expect(
       getByText("Error: Failed to fetch my resources types"),

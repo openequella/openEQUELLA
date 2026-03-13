@@ -43,10 +43,96 @@ import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.PluginAttribute;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.util.IoUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Service that manages plugin metadata and JAR file location for the Admin Console.
+ *
+ * <p>This service implements {@link RemotePluginDownloadService} and is remotely invoked by the
+ * Admin Console to discover available plugins and their download locations. It works in conjunction
+ * with {@link DownloadServlet} to enable plugin distribution in production environments.
+ *
+ * <h2>Architecture Overview</h2>
+ *
+ * When the Admin Console launches, it:
+ *
+ * <ol>
+ *   <li>Calls {@link #getAllPluginDetails(String)} to get the list of available plugins
+ *   <li>Receives plugin metadata with rewritten JAR URLs pointing to {@link DownloadServlet} (e.g.,
+ *       {@code https://institution.url/ds/plugin-name.jar})
+ *   <li>Downloads the JAR files through the {@link DownloadServlet}'s {@code /ds/*} endpoint
+ *   <li>Loads the plugins locally from the downloaded JARs
+ * </ol>
+ *
+ * <h2>Core Responsibilities</h2>
+ *
+ * <ol>
+ *   <li><strong>Plugin Discovery:</strong> Identifies all plugins of a given type (e.g.,
+ *       "admin-console") and their dependencies
+ *   <li><strong>URL Rewriting:</strong> Converts local {@code jar:file:} URLs to HTTP-accessible
+ *       {@code jar:https:} URLs that point to {@link DownloadServlet}
+ *   <li><strong>JAR File Resolution:</strong> Maps JAR filenames to their physical filesystem
+ *       locations
+ *   <li><strong>Plugin Filtering:</strong> Excludes certain system plugins (e.g., Guice, Spring,
+ *       Hibernate) from distribution
+ * </ol>
+ *
+ * <h2>URL Rewriting Mechanism</h2>
+ *
+ * The {@link #getAllPluginDetails(String)} method performs conditional URL rewriting:
+ *
+ * <ul>
+ *   <li><strong>Production (JAR protocol):</strong> When plugins are loaded from {@code
+ *       jar:file:/path/to/plugin.jar!/}, URLs are rewritten to {@code
+ *       jar:https://institution.url/ds/plugin.jar!/} to enable HTTP download via {@link
+ *       DownloadServlet}
+ *       <ul>
+ *         <li>Original: {@code jar:file:/opt/equella/plugins/plugin-name.jar!/}
+ *         <li>Rewritten: {@code jar:https://institution.url/ds/plugin-name.jar!/}
+ *       </ul>
+ *   <li><strong>Development (File protocol):</strong> When plugins are loaded from {@code
+ *       file:/path/to/plugin/}, URLs are left unchanged, allowing direct filesystem access
+ *       <ul>
+ *         <li>No rewriting occurs
+ *         <li>{@link DownloadServlet} is never invoked
+ *         <li>Admin Console reads plugins directly from the local filesystem
+ *       </ul>
+ * </ul>
+ *
+ * <h2>Admin Console Integration</h2>
+ *
+ * The Admin Console uses this service as follows:
+ *
+ * <ol>
+ *   <li>Obtains a remote proxy to this service via {@code
+ *       clientService.getService(RemotePluginDownloadService.class)}
+ *   <li>Calls {@link #getAllPluginDetails(String)} with plugin type "admin-console"
+ *   <li>Receives a list of {@link com.tle.core.remoting.RemotePluginDownloadService.PluginDetails}
+ *       containing:
+ *       <ul>
+ *         <li>JAR download URLs (rewritten to use {@link DownloadServlet} in production)
+ *         <li>Plugin manifest XML content
+ *       </ul>
+ *   <li>Downloads JARs via the provided URLs
+ *   <li>Registers and activates plugins locally
+ * </ol>
+ *
+ * <h2>Servlet Mapping Configuration</h2>
+ *
+ * The service automatically discovers the {@link DownloadServlet} URL pattern during {@link
+ * #setupMapping()} initialization by reading the {@code downloadServletMapping} extension from
+ * {@code plugin-jpf.xml}. This pattern (typically {@code /ds/*}) is used to construct the rewritten
+ * download URLs.
+ *
+ * @see DownloadServlet
+ * @see com.tle.core.remoting.RemotePluginDownloadService
+ * @see com.tle.admin.PluginServiceImpl
+ */
 @Bind
 @Singleton
 public class PluginDownloadService implements RemotePluginDownloadService {
+  private final Logger LOGGER = LoggerFactory.getLogger(PluginDownloadService.class);
   private String jarPath;
 
   @Inject private PluginService pluginService;
@@ -72,14 +158,22 @@ public class PluginDownloadService implements RemotePluginDownloadService {
 
     List<PluginDetails> details = new ArrayList<PluginDetails>();
     for (PluginDescriptor desc : plugins) {
-      TLEPluginLocation location = manifestToLocation.get(desc.getId());
+      String descId = desc.getId();
+      TLEPluginLocation location = manifestToLocation.get(descId);
       if (!pluginService.isPluginDisabled(location)) {
         StringWriter manWriter = new StringWriter();
         try {
           Resources.asCharSource(location.getManifestLocation(), Charsets.UTF_8).copyTo(manWriter);
 
           URL jarUrl = location.getContextLocation();
-          if (jarUrl.getProtocol().equals("jar")) {
+          String originalProtocol = jarUrl.getProtocol();
+          if (originalProtocol.equals("jar")) {
+            LOGGER.debug(
+                "PluginDownloadService: Rewriting JAR URL for plugin '{}'. Original URL protocol:"
+                    + " {}",
+                descId,
+                originalProtocol);
+
             jarUrl =
                 new URL(
                     "jar",
@@ -88,6 +182,13 @@ public class PluginDownloadService implements RemotePluginDownloadService {
                             institutionService.getInstitutionUrl(),
                             jarPath + location.getJar() + "!/")
                         .toString());
+            LOGGER.debug("PluginDownloadService: New download URL for '{}': {}", descId, jarUrl);
+          } else {
+            LOGGER.debug(
+                "PluginDownloadService: Keeping original URL for plugin '{}' (protocol: {}): {}",
+                descId,
+                originalProtocol,
+                jarUrl);
           }
           details.add(new PluginDetails(jarUrl, manWriter.toString()));
         } catch (IOException e) {

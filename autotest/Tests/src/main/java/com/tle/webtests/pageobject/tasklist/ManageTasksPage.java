@@ -90,13 +90,9 @@ public class ManageTasksPage
   public ModerateListSearchResults exactQuery(String query) {
     return search('"' + query + '"');
   }
-  //
-  // public ModerateListSearchResults search(String query)
-  // {
-  // WaitingPageObject<ModerateListSearchResults> waiter =
-  // getResultsUpdateWaiter();
-  // setQuery(query);
-  // searchButton.click();
-  // return waiter.get();
-  // }
+
+  /** Returns the number of results currently shown on the page. */
+  public int getResultCount() {
+    return results().getResults().size();
+  }
 }

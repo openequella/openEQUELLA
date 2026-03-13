@@ -43,7 +43,7 @@ services:
       - oeq-cluster
 
   database:
-    image: postgres:18.1
+    image: postgres:18.2
     restart: always
     networks:
       - oeq-cluster
@@ -53,7 +53,7 @@ services:
       - POSTGRES_PASSWORD=$OEQ_DATABASE_PASSWORD
 
   traefik:
-    image: traefik:v3.6.7
+    image: traefik:v3.6.10
     restart: always
     command:
       - "--api.dashboard=true"

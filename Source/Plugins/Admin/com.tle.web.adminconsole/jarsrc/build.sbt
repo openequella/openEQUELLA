@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
   springAop,
   springContext,
   "com.fifesoft"  % "rsyntaxtextarea" % "3.6.1",
-  "com.miglayout" % "miglayout-swing" % "11.4.2",
+  "com.miglayout" % "miglayout-swing" % "11.4.3",
   xstreamDep,
   "io.github.openequella" %% "graphql-client" % "0.5.0-SNAPSHOT",
   "com.google.inject"      % "guice"          % guiceVersion excludeAll (

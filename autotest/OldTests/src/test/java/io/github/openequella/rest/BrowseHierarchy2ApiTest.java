@@ -50,7 +50,7 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
   private final String BASIC_ITEMS_COLLECTION = "b28f1ffe-2008-4f5e-d559-83c8acd79316";
   private final String SAVE_SCRIPT_COLLECTION = "c7194cd0-f586-49b6-9fcc-4b1c5237efd9";
 
-  private final int ROOT_HIERARCHY_COUNT = 9;
+  private final int ROOT_HIERARCHY_COUNT = 10;
 
   private final List<String> BOOK_COLLECTIONS =
       List.of(BASIC_ITEMS_COLLECTION, CAL_BOOK_COLLECTION);
@@ -73,7 +73,7 @@ public class BrowseHierarchy2ApiTest extends AbstractRestApiTest {
     JsonNode hierarchies = getRootHierarchies(List.of(BASIC_ITEMS_COLLECTION), 200);
 
     // Should filter out virtual hierarchies not related to the collection.
-    assertEquals(hierarchies.size(), ROOT_HIERARCHY_COUNT - 3);
+    assertEquals(hierarchies.size(), ROOT_HIERARCHY_COUNT - 4);
 
     // Because these virtual topics only have one type of collection resources,
     // so filtering out resources by collection will make them remove from the result.

@@ -9,7 +9,7 @@ inConfig(Serial)(Defaults.testTasks)
 val circeVersion  = "0.14.12"
 val http4sVersion = "0.23.33"
 val catsVersion   = "2.13.0"
-val cxfVersion    = "3.6.9"
+val cxfVersion    = "3.6.10"
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.4" cross CrossVersion.full)
 
@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
   "org.apache.commons"        % "commons-lang3"            % "3.20.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "4.40.0",
+  "org.seleniumhq.selenium"   % "selenium-java"            % "4.41.0",
+  "com.codeborne"             % "selenide"                 % "7.14.0",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
   "xalan"                     % "xalan"                    % "2.7.3",
@@ -35,7 +36,7 @@ libraryDependencies ++= Seq(
   "com.jcraft"                % "jsch"                     % "0.1.55",
   "org.jacoco"                % "org.jacoco.report"        % "0.8.14",
   "org.dspace"                % "oclc-harvester2"          % "1.0.0",
-  "com.typesafe"              % "config"                   % "1.4.5",
+  "com.typesafe"              % "config"                   % "1.4.6",
   "org.apache.logging.log4j"  % "log4j"                    % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-core"               % log4jVersion,
   "org.apache.logging.log4j"  % "log4j-slf4j2-impl"        % log4jVersion,
