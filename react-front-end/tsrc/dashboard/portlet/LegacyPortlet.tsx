@@ -22,7 +22,6 @@ import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router";
-import { v4 } from "uuid";
 import type { PageContent } from "../../legacycontent/LegacyContent";
 import { LegacyContentRenderer } from "../../legacycontent/LegacyContentRenderer";
 import { getEqPageForm, legacyFormId } from "../../legacycontent/LegacyForm";
@@ -173,7 +172,7 @@ export const LegacyPortlet = ({
 
       return {
         ...resp,
-        contentId: v4(),
+        contentId: crypto.randomUUID(),
         formId,
         afterHtml: constVoid,
       };
