@@ -18,6 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
+import com.tle.admin.graphql.conversion.TargetListEntryViewConverter.{
+  fromTargetListEntry,
+  toTargetListEntry
+}
 import com.tle.common.security.{TargetList, TargetListEntry}
 import io.github.openequella.graphql.api.views.TargetListEntryView
 
@@ -25,9 +29,12 @@ import scala.jdk.CollectionConverters._
 
 object TargetListConverter {
   def toTargetList(views: List[TargetListEntryView]): TargetList = {
-    val entries = views.map(TargetListEntryViewConverter.toTargetListEntry).asJava
+    val entries = views.map(toTargetListEntry).asJava
     new TargetList(entries)
   }
+
+  def fromTargetList(targetList: TargetList): List[TargetListEntryView] =
+    NullSafeList(targetList.getEntries) convert fromTargetListEntry
 }
 
 object TargetListEntryViewConverter {
@@ -41,4 +48,13 @@ object TargetListEntryViewConverter {
 
     entry
   }
+
+  def fromTargetListEntry(entry: TargetListEntry): TargetListEntryView =
+    TargetListEntryView(
+      granted = entry.isGranted,
+      overridden = entry.isOverride,
+      privilege = entry.getPrivilege,
+      who = entry.getWho,
+      postfix = entry.getPostfix
+    )
 }

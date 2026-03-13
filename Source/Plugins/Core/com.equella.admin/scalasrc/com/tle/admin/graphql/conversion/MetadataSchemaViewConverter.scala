@@ -18,11 +18,10 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.CitationViewConverter.toCitation
+import com.tle.admin.graphql.conversion.CitationViewConverter.{fromCitation, toCitation}
+import com.tle.admin.graphql.conversion.EntityDetailsViewConverter.fromBaseEntity
 import com.tle.beans.entity.{Schema, SchemaTransform}
 import io.github.openequella.graphql.api.views.{MetadataSchemaTransformView, MetadataSchemaView}
-
-import scala.jdk.CollectionConverters._
 
 object MetadataSchemaViewConverter {
   def toSchema(view: MetadataSchemaView): Schema = {
@@ -33,11 +32,11 @@ object MetadataSchemaViewConverter {
     s.setItemNamePath(view.itemNamePath)
     s.setItemDescriptionPath(view.itemDescriptionPath)
     s.setSerialisedDefinition(view.definition)
-    s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asJava)
-    s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asJava)
-    s.setCitations(view.citations.map(toCitation).asJava)
+    s.setExportTransforms(view.exportTransforms.map(toSchemaTransform).asArrayList)
+    s.setImportTransforms(view.importTransforms.map(toSchemaTransform).asArrayList)
+    s.setCitations(view.citations.map(toCitation).asArrayList)
 
-    resolveLanguageStrings(view, s)
+    setLanguageStrings(view, s)
 
     s
   }
@@ -50,10 +49,32 @@ object MetadataSchemaViewConverter {
     st
   }
 
-  private def resolveLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
+  private def setLanguageStrings(view: MetadataSchemaView, s: Schema): Unit = {
     val EntityDetailsViewStrings(name, description) = EntityDetailsViewStrings(view.details)
 
     s.setName(name.orNull)
     s.setDescription(description.orNull)
   }
+
+  def fromSchema(schema: Schema): MetadataSchemaView = {
+    val exportTransforms = NullSafeList(schema.getExportTransforms) convert fromSchemaTransform
+    val importTransforms = NullSafeList(schema.getImportTransforms) convert fromSchemaTransform
+    val citations        = NullSafeList(schema.getCitations) convert fromCitation
+
+    MetadataSchemaView(
+      details = fromBaseEntity(schema),
+      exportTransforms = exportTransforms,
+      importTransforms = importTransforms,
+      itemNamePath = schema.getItemNamePath,
+      itemDescriptionPath = schema.getItemDescriptionPath,
+      definition = schema.getSerialisedDefinition,
+      citations = citations
+    )
+  }
+
+  private def fromSchemaTransform(transform: SchemaTransform): MetadataSchemaTransformView =
+    MetadataSchemaTransformView(
+      filename = transform.getFilename,
+      schemaType = transform.getType
+    )
 }

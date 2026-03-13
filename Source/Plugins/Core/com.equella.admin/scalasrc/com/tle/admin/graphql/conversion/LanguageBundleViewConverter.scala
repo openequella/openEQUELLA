@@ -49,4 +49,20 @@ object LanguageBundleViewConverter {
       .toMap
       .asJava
 
+  def fromLanguageBundle(bundle: LanguageBundle): LanguageBundleView = {
+    val strings = NullSafeMapValues(bundle.getStrings) convert fromLanguageString
+
+    LanguageBundleView(
+      id = bundle.getId,
+      strings = strings
+    )
+  }
+
+  private def fromLanguageString(languageString: LanguageString): LanguageStringView =
+    LanguageStringView(
+      id = languageString.getId,
+      priority = languageString.getPriority,
+      locale = languageString.getLocale,
+      text = languageString.getText
+    )
 }
