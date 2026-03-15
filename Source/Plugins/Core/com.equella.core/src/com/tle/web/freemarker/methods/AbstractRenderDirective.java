@@ -61,11 +61,9 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
                     getParam("style", params), getParam("class", params), getParam("id", params));
           }
           if (renderable instanceof NestedRenderable && body != null) {
-            String nestedBody = renderBody(body);
-            if (nestedBody != null) {
-              ((NestedRenderable) renderable)
-                  .setNestedRenderable(new BodyDirectiveRenderable(nestedBody));
-            }
+            NestedRenderable nestedRenderable = (NestedRenderable) renderable;
+            nestedRenderable.setNestedRenderable(
+                new BodyDirectiveRenderable(body, nestedRenderable.getNestedRenderable()));
           }
           SectionWriter writer = new SectionWriter(env.getOut(), info);
           writer.preRender(renderable);
@@ -84,20 +82,37 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
 
   public static class BodyDirectiveRenderable implements SectionRenderable {
 
-    private final String renderedBody;
+    private final TemplateDirectiveBody body;
+    @Nullable private final SectionRenderable fallbackRenderable;
 
-    public BodyDirectiveRenderable(String renderedBody) {
-      this.renderedBody = renderedBody;
+    public BodyDirectiveRenderable(
+        TemplateDirectiveBody body, @Nullable SectionRenderable fallbackRenderable) {
+      this.body = body;
+      this.fallbackRenderable = fallbackRenderable;
     }
 
     @Override
     public void realRender(SectionWriter writer) throws IOException {
-      writer.write(renderedBody);
+      StringWriter bodyBuffer = new StringWriter();
+      try {
+        body.render(bodyBuffer);
+      } catch (TemplateException e) {
+        throw new SectionsRuntimeException(e);
+      }
+
+      String renderedBody = bodyBuffer.toString();
+      if (renderedBody.isBlank() && fallbackRenderable != null) {
+        fallbackRenderable.realRender(writer);
+      } else {
+        writer.write(renderedBody);
+      }
     }
 
     @Override
     public void preRender(PreRenderContext info) {
-      // nothing
+      if (fallbackRenderable != null) {
+        fallbackRenderable.preRender(info);
+      }
     }
   }
 
@@ -113,16 +128,4 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   @Nullable
   protected abstract SectionRenderable getRenderable(
       Object section, Map<String, TemplateModel> params);
-
-  @Nullable
-  private String renderBody(TemplateDirectiveBody body) {
-    try {
-      StringWriter buffer = new StringWriter();
-      body.render(buffer);
-      String nestedBody = buffer.toString();
-      return nestedBody.isEmpty() ? null : nestedBody;
-    } catch (TemplateException | IOException e) {
-      throw new SectionsRuntimeException(e);
-    }
-  }
 }

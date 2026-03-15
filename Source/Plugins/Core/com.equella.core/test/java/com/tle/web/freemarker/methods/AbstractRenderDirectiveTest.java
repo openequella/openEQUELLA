@@ -77,6 +77,9 @@ public class AbstractRenderDirectiveTest {
     StringWriter output = new StringWriter();
     Environment env = newEnvironment(output);
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    nestedRenderable.setNestedRenderable(
+        new AbstractRenderDirective.BodyDirectiveRenderable(
+            writer -> writer.write("fallback-label"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
     TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
@@ -94,8 +97,8 @@ public class AbstractRenderDirectiveTest {
 
     directive.execute(env, params, new TemplateModel[0], body);
 
-    assertNull(nestedRenderable.getNestedRenderable());
-    assertEquals("", output.toString());
+    assertNotNull(nestedRenderable.getNestedRenderable());
+    assertEquals("fallback-label", output.toString());
   }
 
   private static Environment newEnvironment(StringWriter output)
