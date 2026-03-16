@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class AbstractRenderDirectiveTest {
@@ -169,6 +170,89 @@ public class AbstractRenderDirectiveTest {
     directive.execute(env, params, new TemplateModel[0], body);
 
     assertEquals("fallback-label", output.toString());
+  }
+
+  @Test
+  public void executeSkipsBodyDirectiveFallbackChainForMissingMacroContextNpe() throws Exception {
+    StringWriter output = new StringWriter();
+    Environment env = newEnvironment(output);
+    RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    AtomicInteger skippedBodyInvocations = new AtomicInteger(0);
+    SectionRenderable terminalFallback =
+        new SectionRenderable() {
+          @Override
+          public void realRender(SectionWriter writer) throws IOException {
+            writer.write("terminal-fallback");
+          }
+
+          @Override
+          public void preRender(PreRenderContext info) {
+            // no-op
+          }
+        };
+    SectionRenderable nestedChain =
+        new AbstractRenderDirective.BodyDirectiveRenderable(
+            writer -> skippedBodyInvocations.incrementAndGet(), terminalFallback);
+    nestedRenderable.setNestedRenderable(
+        new AbstractRenderDirective.BodyDirectiveRenderable(
+            writer -> writer.write("ignored"), nestedChain));
+    TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
+
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              NullPointerException npe =
+                  new NullPointerException(
+                      "Cannot read field \"nestedContentParameterNames\" because "
+                          + "\"this.invokingMacroContext\" is null");
+              npe.setStackTrace(
+                  new StackTraceElement[] {
+                    new StackTraceElement(
+                        "freemarker.core.BodyInstruction$Context",
+                        "<init>",
+                        "BodyInstruction.java",
+                        128)
+                  });
+              throw npe;
+            })
+        .when(body)
+        .render(any(Writer.class));
+
+    Map<String, TemplateModel> params = new HashMap<>();
+    params.put("section", new TestAdapterTemplateModel(nestedRenderable));
+
+    directive.execute(env, params, new TemplateModel[0], body);
+
+    assertEquals("terminal-fallback", output.toString());
+    assertEquals(0, skippedBodyInvocations.get());
+  }
+
+  @Test
+  public void executeFallsBackWhenBodyRenderHitsStacklessNpe() throws Exception {
+    StringWriter output = new StringWriter();
+    Environment env = newEnvironment(output);
+    RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    nestedRenderable.setNestedRenderable(
+        new AbstractRenderDirective.BodyDirectiveRenderable(
+            writer -> writer.write("stackless-fallback"), null));
+    TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
+
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              NullPointerException npe = new NullPointerException();
+              npe.setStackTrace(new StackTraceElement[0]);
+              throw npe;
+            })
+        .when(body)
+        .render(any(Writer.class));
+
+    Map<String, TemplateModel> params = new HashMap<>();
+    params.put("section", new TestAdapterTemplateModel(nestedRenderable));
+
+    directive.execute(env, params, new TemplateModel[0], body);
+
+    assertEquals("stackless-fallback", output.toString());
   }
 
   private static Environment newEnvironment(StringWriter output)
