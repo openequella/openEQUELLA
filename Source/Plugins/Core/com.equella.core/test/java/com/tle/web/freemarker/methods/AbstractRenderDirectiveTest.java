@@ -6,12 +6,15 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.tle.web.sections.SectionWriter;
 import com.tle.web.sections.events.PreRenderContext;
 import com.tle.web.sections.events.RenderContext;
 import com.tle.web.sections.render.NestedRenderable;
+import com.tle.web.sections.render.PreRenderable;
 import com.tle.web.sections.render.SectionRenderable;
 import freemarker.core.Environment;
 import freemarker.template.AdapterTemplateModel;
@@ -54,6 +57,7 @@ public class AbstractRenderDirectiveTest {
 
     assertNotNull(nestedRenderable.getNestedRenderable());
     assertEquals("nested-body", output.toString());
+    verify(body, times(1)).render(any(Writer.class));
   }
 
   @Test
@@ -101,6 +105,72 @@ public class AbstractRenderDirectiveTest {
     assertEquals("fallback-label", output.toString());
   }
 
+  @Test
+  public void executePreservesFallbackPreRenderWhenBodyOverridesOutput() throws Exception {
+    StringWriter output = new StringWriter();
+    Environment env = newEnvironment(output);
+    RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    SectionRenderable fallback = mock(SectionRenderable.class);
+    nestedRenderable.setNestedRenderable(fallback);
+    TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
+
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              Writer writer = invocation.getArgument(0);
+              writer.write("override");
+              return null;
+            })
+        .when(body)
+        .render(any(Writer.class));
+
+    Map<String, TemplateModel> params = new HashMap<>();
+    params.put("section", new TestAdapterTemplateModel(nestedRenderable));
+
+    directive.execute(env, params, new TemplateModel[0], body);
+
+    assertEquals("override", output.toString());
+    verify(fallback, times(1)).preRender(any(PreRenderContext.class));
+  }
+
+  @Test
+  public void executeFallsBackWhenBodyRenderHitsMissingMacroContextNpe() throws Exception {
+    StringWriter output = new StringWriter();
+    Environment env = newEnvironment(output);
+    RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    nestedRenderable.setNestedRenderable(
+        new AbstractRenderDirective.BodyDirectiveRenderable(
+            writer -> writer.write("fallback-label"), null));
+    TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
+
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              NullPointerException npe =
+                  new NullPointerException(
+                      "Cannot read field \"nestedContentParameterNames\" because "
+                          + "\"this.invokingMacroContext\" is null");
+              npe.setStackTrace(
+                  new StackTraceElement[] {
+                    new StackTraceElement(
+                        "freemarker.core.BodyInstruction$Context",
+                        "<init>",
+                        "BodyInstruction.java",
+                        128)
+                  });
+              throw npe;
+            })
+        .when(body)
+        .render(any(Writer.class));
+
+    Map<String, TemplateModel> params = new HashMap<>();
+    params.put("section", new TestAdapterTemplateModel(nestedRenderable));
+
+    directive.execute(env, params, new TemplateModel[0], body);
+
+    assertEquals("fallback-label", output.toString());
+  }
+
   private static Environment newEnvironment(StringWriter output)
       throws IOException, TemplateException {
     Configuration configuration = new Configuration(Configuration.VERSION_2_3_34);
@@ -117,6 +187,14 @@ public class AbstractRenderDirectiveTest {
       RenderContext renderContext = mock(RenderContext.class);
       PreRenderContext preRenderContext = mock(PreRenderContext.class);
       when(renderContext.getPreRenderContext()).thenReturn(preRenderContext);
+      doAnswer(
+              invocation -> {
+                PreRenderable preRenderable = invocation.getArgument(0);
+                preRenderable.preRender(preRenderContext);
+                return null;
+              })
+          .when(preRenderContext)
+          .preRender(any(PreRenderable.class));
       this.sectionWriter = new SectionWriter(new StringWriter(), renderContext);
     }
 
@@ -168,7 +246,9 @@ public class AbstractRenderDirectiveTest {
 
     @Override
     public void preRender(PreRenderContext info) {
-      // no-op for tests
+      if (nestedRenderable != null) {
+        nestedRenderable.preRender(info);
+      }
     }
   }
 }

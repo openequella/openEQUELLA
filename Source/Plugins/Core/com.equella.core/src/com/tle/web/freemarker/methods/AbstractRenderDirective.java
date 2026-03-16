@@ -98,6 +98,12 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
         body.render(bodyBuffer);
       } catch (TemplateException e) {
         throw new SectionsRuntimeException(e);
+      } catch (NullPointerException e) {
+        if (isMissingMacroContextNpe(e) && fallbackRenderable != null) {
+          fallbackRenderable.realRender(writer);
+          return;
+        }
+        throw e;
       }
 
       String renderedBody = bodyBuffer.toString();
@@ -128,4 +134,17 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   @Nullable
   protected abstract SectionRenderable getRenderable(
       Object section, Map<String, TemplateModel> params);
+
+  private static boolean isMissingMacroContextNpe(NullPointerException npe) {
+    String message = npe.getMessage();
+    if (message == null || !message.contains("invokingMacroContext")) {
+      return false;
+    }
+    for (StackTraceElement frame : npe.getStackTrace()) {
+      if ("freemarker.core.BodyInstruction$Context".equals(frame.getClassName())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
