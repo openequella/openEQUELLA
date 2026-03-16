@@ -16,30 +16,18 @@
  * limitations under the License.
  */
 
-package com.tle.core.entity.service;
+package com.tle.admin.service
 
-import com.tle.beans.entity.LanguageBundle;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.tle.beans.entity.LanguageBundle
 
-public interface BaseEntityService {
+/** Service class for admin operations on entities via the GraphQL library.
+  */
+trait AdminBaseEntityService {
 
-  /**
-   * Get the language bundle for the name of an entity.
-   *
-   * @param id the identity of the entity.
-   */
-  LanguageBundle getNameForId(long id);
-
-  List<Long> getIdsFromUuids(Set<String> uuids);
-
-  Map<Long, String> getUuids(Set<Long> ids);
-
-  /**
-   * A list of edit privileges for entities where the user either does not have permission, or does
-   * have permission but there are no actual entities that can be edited (there are none, or revokes
-   * are on the entities themselves).
-   */
-  List<String> getEditPrivilegeForEntitiesIHaveNoneToEdit();
+  /** Get the language bundle for the name of an entity.
+    *
+    * @param id
+    *   the identity of the entity.
+    */
+  def getNameForId(id: Long): Option[LanguageBundle]
 }
