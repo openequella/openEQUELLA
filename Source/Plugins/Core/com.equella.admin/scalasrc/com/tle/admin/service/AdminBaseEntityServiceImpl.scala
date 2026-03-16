@@ -16,10 +16,22 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.admin.service
 
-import com.tle.beans.entity.LanguageBundle;
+import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
+import com.tle.admin.helper.GraphQLQueryHelper.getEntity
+import com.tle.beans.entity.LanguageBundle
+import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.BaseEntityApi
+import org.slf4j.{Logger, LoggerFactory}
 
-public interface RemoteBaseEntityService {
-  LanguageBundle getNameForId(long id);
+import javax.inject.Inject
+
+class AdminBaseEntityServiceImpl @Inject() (implicit
+    val cfg: ClientConfiguration
+) extends AdminBaseEntityService {
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminBaseEntityServiceImpl])
+
+  override def getNameForId(id: Long): Option[LanguageBundle] =
+    getEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
 }
