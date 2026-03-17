@@ -186,8 +186,8 @@ record BodyRenderNpeDiagnostics(
   }
 
   private static int fallbackDepth(@Nullable SectionRenderable renderable) {
-    if (renderable instanceof AbstractRenderDirective.BodyDirectiveRenderable) {
-      return ((AbstractRenderDirective.BodyDirectiveRenderable) renderable).fallbackDepth();
+    if (renderable instanceof BodyDirectiveRenderable) {
+      return ((BodyDirectiveRenderable) renderable).fallbackDepth();
     }
     return 0;
   }

@@ -83,8 +83,7 @@ public class AbstractRenderDirectiveTest {
     Environment env = newEnvironment(output);
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
     nestedRenderable.setNestedRenderable(
-        new AbstractRenderDirective.BodyDirectiveRenderable(
-            writer -> writer.write("fallback-label"), null));
+        new BodyDirectiveRenderable(writer -> writer.write("fallback-label"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
     TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
@@ -140,8 +139,7 @@ public class AbstractRenderDirectiveTest {
     Environment env = newEnvironment(output);
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
     nestedRenderable.setNestedRenderable(
-        new AbstractRenderDirective.BodyDirectiveRenderable(
-            writer -> writer.write("fallback-label"), null));
+        new BodyDirectiveRenderable(writer -> writer.write("fallback-label"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
     TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
@@ -191,11 +189,10 @@ public class AbstractRenderDirectiveTest {
           }
         };
     SectionRenderable nestedChain =
-        new AbstractRenderDirective.BodyDirectiveRenderable(
+        new BodyDirectiveRenderable(
             writer -> skippedBodyInvocations.incrementAndGet(), terminalFallback);
     nestedRenderable.setNestedRenderable(
-        new AbstractRenderDirective.BodyDirectiveRenderable(
-            writer -> writer.write("ignored"), nestedChain));
+        new BodyDirectiveRenderable(writer -> writer.write("ignored"), nestedChain));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
     TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
@@ -233,8 +230,7 @@ public class AbstractRenderDirectiveTest {
     Environment env = newEnvironment(output);
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
     nestedRenderable.setNestedRenderable(
-        new AbstractRenderDirective.BodyDirectiveRenderable(
-            writer -> writer.write("stackless-fallback"), null));
+        new BodyDirectiveRenderable(writer -> writer.write("stackless-fallback"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
     TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
@@ -293,13 +289,8 @@ public class AbstractRenderDirectiveTest {
     }
   }
 
-  private static final class TestAdapterTemplateModel
+  private record TestAdapterTemplateModel(Object wrapped)
       implements AdapterTemplateModel, TemplateModel {
-    private final Object wrapped;
-
-    private TestAdapterTemplateModel(Object wrapped) {
-      this.wrapped = wrapped;
-    }
 
     @Override
     public Object getAdaptedObject(Class hint) {
