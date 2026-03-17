@@ -45,7 +45,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRenderDirective.class);
 
   @NonNullByDefault(false)
-  @SuppressWarnings({"unchecked", "nls", "rawtypes"})
+  @SuppressWarnings({"unchecked", "nls"})
   @Override
   public void execute(Environment env, Map params, TemplateModel[] arg2, TemplateDirectiveBody body)
       throws TemplateException, IOException {
@@ -64,8 +64,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
                 .setStyles(
                     getParam("style", params), getParam("class", params), getParam("id", params));
           }
-          if (renderable instanceof NestedRenderable && body != null) {
-            NestedRenderable nestedRenderable = (NestedRenderable) renderable;
+          if (renderable instanceof NestedRenderable nestedRenderable && body != null) {
             nestedRenderable.setNestedRenderable(
                 new BodyDirectiveRenderable(body, nestedRenderable.getNestedRenderable()));
           }
@@ -95,53 +94,87 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
       this.fallbackRenderable = fallbackRenderable;
     }
 
+    /**
+     * Renders nested FreeMarker directive content into Sections rendering.
+     *
+     * <p>Under FreeMarker 2.3.34, rendering nested directive bodies can throw {@link
+     * NullPointerException} in two known edge-cases:
+     *
+     * <ul>
+     *   <li>missing macro invocation context (`BodyInstruction$Context` with `invokingMacroContext`
+     *       null), and
+     *   <li>a stackless/message-less NPE emitted by FreeMarker internals.
+     * </ul>
+     *
+     * <p>For those recoverable cases we intentionally fall back to the original nested renderable
+     * chain to preserve legacy rendering behaviour (including Ajax/dialog paths). Any other NPE is
+     * treated as unexpected and rethrown after logging diagnostics.
+     *
+     * <p>This came about when migrating to FreeMarker 2.3.34. The original legacy implementation
+     * relied on accessing internal methods via reflection. But in about version 2.3.24 these were
+     * removed, so {@code AbstractRenderDirective} was changed to use only public APIs.
+     */
     @Override
     public void realRender(SectionWriter writer) throws IOException {
+      String renderedBody = renderBodyOrFallback(writer);
+      if (renderedBody == null) {
+        return;
+      }
+      writeRenderedBodyOrFallback(renderedBody, writer);
+    }
+
+    @Nullable
+    private String renderBodyOrFallback(SectionWriter writer) throws IOException {
       StringWriter bodyBuffer = new StringWriter();
       try {
         body.render(bodyBuffer);
+        return bodyBuffer.toString();
       } catch (TemplateException e) {
         throw new SectionsRuntimeException(e);
       } catch (NullPointerException e) {
-        if (canFallbackFromBodyNpe(e) && fallbackRenderable != null) {
-          SectionRenderable resolvedFallback = unwrapBodyDirectiveFallback(fallbackRenderable);
-          LOGGER.warn(
-              "FreeMarker nested body rendering hit recoverable body NPE. Falling back to "
-                  + "original nested renderable. fallbackRenderableClass={}, fallbackDepth={}, "
-                  + "fallbackIdentity={}, resolvedFallbackClass={}, resolvedFallbackIdentity={}, "
-                  + "details={}",
-              fallbackRenderable.getClass().getName(),
-              fallbackDepth(fallbackRenderable),
-              renderableIdentity(fallbackRenderable),
-              resolvedFallback.getClass().getName(),
-              renderableIdentity(resolvedFallback),
-              summariseThrowableSingleLine(e, 20));
-          resolvedFallback.realRender(writer);
-          return;
-        }
-        LOGGER.error(
-            "Unexpected NullPointerException while rendering FreeMarker nested body. "
-                + "fallbackRenderablePresent={}, fallbackRenderableClass={}, fallbackDepth={}, "
-                + "fallbackIdentity={}, npeMessagePresent={}, stackFrameCount={}, "
-                + "firstFrame={}, causePresent={}, details={}",
-            fallbackRenderable != null,
-            fallbackRenderable == null ? "<none>" : fallbackRenderable.getClass().getName(),
-            fallbackDepth(fallbackRenderable),
-            renderableIdentity(fallbackRenderable),
-            e.getMessage() != null,
-            e.getStackTrace() == null ? -1 : e.getStackTrace().length,
-            firstFrame(e),
-            e.getCause() != null,
-            summariseThrowableSingleLine(e, 30));
-        throw e;
+        return recoverFromBodyNpeOrRethrow(writer, e);
       }
+    }
 
-      String renderedBody = bodyBuffer.toString();
+    @Nullable
+    private String recoverFromBodyNpeOrRethrow(SectionWriter writer, NullPointerException e)
+        throws IOException {
+      if (canFallbackFromBodyNpe(e) && fallbackRenderable != null) {
+        renderRecoverableFallback(writer, e);
+        return null;
+      }
+      logUnexpectedBodyNpe(e);
+      throw e;
+    }
+
+    private void renderRecoverableFallback(SectionWriter writer, NullPointerException npe)
+        throws IOException {
+      SectionRenderable resolvedFallback = unwrapBodyDirectiveFallback(fallbackRenderable);
+      if (LOGGER.isDebugEnabled()) {
+        BodyRenderNpeDiagnostics diagnostics =
+            BodyRenderNpeDiagnostics.forRecoverable(npe, fallbackRenderable, resolvedFallback, 20);
+        LOGGER.debug(
+            "FreeMarker nested body rendering hit recoverable body NPE; using fallback. {}",
+            diagnostics);
+      }
+      resolvedFallback.realRender(writer);
+    }
+
+    private void logUnexpectedBodyNpe(NullPointerException npe) {
+      BodyRenderNpeDiagnostics diagnostics =
+          BodyRenderNpeDiagnostics.forUnexpected(npe, fallbackRenderable, 30);
+      LOGGER.error(
+          "Unexpected NullPointerException while rendering FreeMarker nested body. {}",
+          diagnostics);
+    }
+
+    private void writeRenderedBodyOrFallback(String renderedBody, SectionWriter writer)
+        throws IOException {
       if (renderedBody.isBlank() && fallbackRenderable != null) {
         fallbackRenderable.realRender(writer);
-      } else {
-        writer.write(renderedBody);
+        return;
       }
+      writer.write(renderedBody);
     }
 
     @Override
@@ -149,6 +182,16 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
       if (fallbackRenderable != null) {
         fallbackRenderable.preRender(info);
       }
+    }
+
+    int fallbackDepth() {
+      int depth = 1;
+      SectionRenderable current = fallbackRenderable;
+      while (current instanceof BodyDirectiveRenderable) {
+        depth++;
+        current = ((BodyDirectiveRenderable) current).fallbackRenderable;
+      }
+      return depth;
     }
   }
 
@@ -189,72 +232,14 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
     return isMissingMacroContextNpe(npe) || isStacklessNpe(npe);
   }
 
-  private static String summariseThrowableSingleLine(Throwable throwable, int maxFrames) {
-    StringBuilder sb = new StringBuilder();
-    Throwable current = throwable;
-    int depth = 0;
-    while (current != null) {
-      if (depth > 0) {
-        sb.append(" || caused by: ");
-      }
-      sb.append(current.getClass().getName());
-      if (current.getMessage() != null) {
-        sb.append(": ").append(current.getMessage());
-      } else {
-        sb.append(": <no-message>");
-      }
-      StackTraceElement[] frames = current.getStackTrace();
-      if (frames == null || frames.length == 0) {
-        sb.append(" | <no-stack-frames>");
-        current = current.getCause();
-        depth++;
-        continue;
-      }
-      int limit = Math.min(maxFrames, frames.length);
-      for (int i = 0; i < limit; i++) {
-        sb.append(" | at ").append(frames[i]);
-      }
-      if (frames.length > limit) {
-        sb.append(" | ... ").append(frames.length - limit).append(" more");
-      }
-      current = current.getCause();
-      depth++;
-    }
-    return sb.toString();
-  }
-
-  private static String renderableIdentity(@Nullable SectionRenderable renderable) {
-    if (renderable == null) {
-      return "<none>";
-    }
-    return renderable.getClass().getName()
-        + "@"
-        + Integer.toHexString(System.identityHashCode(renderable));
-  }
-
-  private static int fallbackDepth(@Nullable SectionRenderable renderable) {
-    int depth = 0;
-    SectionRenderable current = renderable;
-    while (current instanceof BodyDirectiveRenderable) {
-      depth++;
-      current = ((BodyDirectiveRenderable) current).fallbackRenderable;
-    }
-    return depth;
-  }
-
-  private static String firstFrame(Throwable throwable) {
-    StackTraceElement[] frames = throwable.getStackTrace();
-    if (frames == null || frames.length == 0) {
-      return "<none>";
-    }
-    return frames[0].toString();
-  }
-
   private static SectionRenderable unwrapBodyDirectiveFallback(SectionRenderable renderable) {
     SectionRenderable current = renderable;
-    while (current instanceof BodyDirectiveRenderable
-        && ((BodyDirectiveRenderable) current).fallbackRenderable != null) {
-      current = ((BodyDirectiveRenderable) current).fallbackRenderable;
+    while (current instanceof BodyDirectiveRenderable) {
+      SectionRenderable next = ((BodyDirectiveRenderable) current).fallbackRenderable;
+      if (next == null) {
+        break;
+      }
+      current = next;
     }
     return current;
   }
