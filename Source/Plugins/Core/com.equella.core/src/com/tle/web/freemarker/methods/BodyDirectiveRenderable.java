@@ -28,6 +28,7 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,33 +85,34 @@ final class BodyDirectiveRenderable implements SectionRenderable {
    */
   @Override
   public void realRender(SectionWriter writer) throws IOException {
-    String renderedBody = renderBodyOrFallback(writer);
-    if (renderedBody == null) {
-      return;
+    var body = renderBodyOrFallback(writer);
+    if (body.isPresent()) {
+      writeRenderedBodyOrFallback(body.get(), writer);
     }
-    writeRenderedBodyOrFallback(renderedBody, writer);
   }
 
   @Nullable
-  private String renderBodyOrFallback(SectionWriter writer) throws IOException {
+  private Optional<String> renderBodyOrFallback(SectionWriter writer) throws IOException {
     StringWriter bodyBuffer = new StringWriter();
     try {
       body.render(bodyBuffer);
-      return bodyBuffer.toString();
+      return Optional.ofNullable(bodyBuffer.toString());
     } catch (TemplateException e) {
       throw new SectionsRuntimeException(e);
     } catch (NullPointerException e) {
-      return recoverFromBodyNpeOrRethrow(writer, e);
+      recoverFromBodyNpeOrRethrow(writer, e);
+      return Optional.empty();
     }
   }
 
   @Nullable
-  private String recoverFromBodyNpeOrRethrow(SectionWriter writer, NullPointerException e)
+  private void recoverFromBodyNpeOrRethrow(SectionWriter writer, NullPointerException e)
       throws IOException {
     if (canFallbackFromBodyNpe(e) && fallbackRenderable != null) {
       renderRecoverableFallback(writer, e);
-      return null;
+      return;
     }
+
     logUnexpectedBodyNpe(e);
     throw e;
   }
