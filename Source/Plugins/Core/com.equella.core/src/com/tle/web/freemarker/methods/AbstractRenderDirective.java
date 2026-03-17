@@ -59,7 +59,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
   @Override
   public void execute(Environment env, Map params, TemplateModel[] arg2, TemplateDirectiveBody body)
       throws TemplateException, IOException {
-    RenderContext info = getSectionWriter();
+    RenderContext renderContext = getSectionWriter();
     try {
       Object model = params.get("section");
       if (model instanceof AdapterTemplateModel) {
@@ -78,7 +78,7 @@ public abstract class AbstractRenderDirective extends SectionsTemplateModel
             nestedRenderable.setNestedRenderable(
                 new BodyDirectiveRenderable(body, nestedRenderable.getNestedRenderable()));
           }
-          SectionWriter writer = new SectionWriter(env.getOut(), info);
+          SectionWriter writer = new SectionWriter(env.getOut(), renderContext);
           writer.preRender(renderable);
           renderable.realRender(writer);
         }

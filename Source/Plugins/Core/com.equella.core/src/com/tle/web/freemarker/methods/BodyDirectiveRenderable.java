@@ -36,10 +36,15 @@ import org.slf4j.LoggerFactory;
  *
  * <p>This class owns the FreeMarker-2.3.34-specific recovery policy for known nested-body NPE edge
  * cases, while preserving legacy fallback rendering semantics for existing Section render trees.
+ *
+ * <p><strong>Visibility:</strong> Package-private to keep FreeMarker-specific recovery heuristics
+ * scoped to this package; it is intended to be constructed by {@link AbstractRenderDirective}.
  */
 @NonNullByDefault
 final class BodyDirectiveRenderable implements SectionRenderable {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyDirectiveRenderable.class);
+  private static final int RECOVERABLE_NPE_STACK_FRAME_LIMIT = 20;
+  private static final int UNEXPECTED_NPE_STACK_FRAME_LIMIT = 30;
 
   private final TemplateDirectiveBody body;
   @Nullable private final SectionRenderable fallbackRenderable;
@@ -115,7 +120,8 @@ final class BodyDirectiveRenderable implements SectionRenderable {
     SectionRenderable resolvedFallback = unwrapBodyDirectiveFallback(fallbackRenderable);
     if (LOGGER.isDebugEnabled()) {
       BodyRenderNpeDiagnostics diagnostics =
-          BodyRenderNpeDiagnostics.forRecoverable(npe, fallbackRenderable, resolvedFallback, 20);
+          BodyRenderNpeDiagnostics.forRecoverable(
+              npe, fallbackRenderable, resolvedFallback, RECOVERABLE_NPE_STACK_FRAME_LIMIT);
       LOGGER.debug(
           "FreeMarker nested body rendering hit recoverable body NPE; using fallback. {}",
           diagnostics);
@@ -125,7 +131,8 @@ final class BodyDirectiveRenderable implements SectionRenderable {
 
   private void logUnexpectedBodyNpe(NullPointerException npe) {
     BodyRenderNpeDiagnostics diagnostics =
-        BodyRenderNpeDiagnostics.forUnexpected(npe, fallbackRenderable, 30);
+        BodyRenderNpeDiagnostics.forUnexpected(
+            npe, fallbackRenderable, UNEXPECTED_NPE_STACK_FRAME_LIMIT);
     LOGGER.error(
         "Unexpected NullPointerException while rendering FreeMarker nested body. {}", diagnostics);
   }
@@ -157,10 +164,15 @@ final class BodyDirectiveRenderable implements SectionRenderable {
   }
 
   private static boolean isMissingMacroContextNpe(NullPointerException npe) {
+    return containsMacroContextMessage(npe) && originatesFromBodyInstructionContext(npe);
+  }
+
+  private static boolean containsMacroContextMessage(NullPointerException npe) {
     String message = npe.getMessage();
-    if (message == null || !message.contains("invokingMacroContext")) {
-      return false;
-    }
+    return message != null && message.contains("invokingMacroContext");
+  }
+
+  private static boolean originatesFromBodyInstructionContext(NullPointerException npe) {
     for (StackTraceElement frame : npe.getStackTrace()) {
       if ("freemarker.core.BodyInstruction$Context".equals(frame.getClassName())) {
         return true;

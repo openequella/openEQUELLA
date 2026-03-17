@@ -251,6 +251,35 @@ public class AbstractRenderDirectiveTest {
     assertEquals("stackless-fallback", output.toString());
   }
 
+  @Test(expected = NullPointerException.class)
+  public void executeRethrowsUnexpectedBodyRenderNpe() throws Exception {
+    StringWriter output = new StringWriter();
+    Environment env = newEnvironment(output);
+    RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
+    nestedRenderable.setNestedRenderable(
+        new BodyDirectiveRenderable(writer -> writer.write("should-not-render"), null));
+    TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
+
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              NullPointerException npe = new NullPointerException("unexpected");
+              npe.setStackTrace(
+                  new StackTraceElement[] {
+                    new StackTraceElement(
+                        "com.example.OtherContext", "render", "OtherContext.java", 1)
+                  });
+              throw npe;
+            })
+        .when(body)
+        .render(any(Writer.class));
+
+    Map<String, TemplateModel> params = new HashMap<>();
+    params.put("section", new TestAdapterTemplateModel(nestedRenderable));
+
+    directive.execute(env, params, new TemplateModel[0], body);
+  }
+
   private static Environment newEnvironment(StringWriter output)
       throws IOException, TemplateException {
     Configuration configuration = new Configuration(Configuration.VERSION_2_3_34);
