@@ -22,7 +22,6 @@ import * as O from "fp-ts/Option";
 import * as React from "react";
 import { useContext } from "react";
 import { flushSync } from "react-dom";
-import { v4 } from "uuid";
 import {
   ErrorResponse,
   fromAxiosResponse,
@@ -177,7 +176,7 @@ export const LegacyContent = React.memo(function LegacyContent({
     updateIncludes(content.js, content.css).then((extraCss) => {
       const pageContent = {
         ...content,
-        contentId: v4(),
+        contentId: crypto.randomUUID(),
         formId: legacyFormId,
         afterHtml: () => {
           deleteElements(extraCss);
