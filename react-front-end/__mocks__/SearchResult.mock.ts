@@ -20,7 +20,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { range } from "lodash";
 import { DateTime } from "luxon";
-import { v4 as uuidv4 } from "uuid";
 
 export const getEmptySearchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem> =
   {
@@ -361,7 +360,7 @@ export const getSearchResultsCustom = (
   length: 10,
   available: numberOfResults,
   results: range(numberOfResults).map((i) => ({
-    uuid: uuidv4(),
+    uuid: crypto.randomUUID(),
     name: `item ${i}`,
     version: 1,
     status: "live",

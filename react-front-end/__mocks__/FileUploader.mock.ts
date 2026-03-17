@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { v4 } from "uuid";
 import type {
   AjaxFileEntry,
   UpdateEntry,
@@ -23,7 +22,7 @@ import type {
 } from "../tsrc/modules/FileUploaderModule";
 
 export const uploadedFileEntry: AjaxFileEntry = {
-  id: v4(),
+  id: crypto.randomUUID(),
   name: "test2.png",
   link: "https://localhost:8080/test/upload/test2",
   preview: true,

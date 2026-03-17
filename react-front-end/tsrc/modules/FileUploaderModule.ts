@@ -17,7 +17,6 @@
  */
 import Axios, { AxiosProgressEvent, CancelTokenSource } from "axios";
 import { sprintf } from "sprintf-js";
-import { v4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 
 const { CancelToken } = Axios;
@@ -464,7 +463,7 @@ export const updateCtrlErrorText = (ctrlId: string, text: string) => {
 };
 
 export const generateLocalFile = (file: File): UploadingFile => ({
-  localId: v4(),
+  localId: crypto.randomUUID(),
   fileEntry: file,
   status: "uploading",
   uploadPercentage: 0,
