@@ -30,6 +30,7 @@ import io.github.openequella.graphql.api.views.{
   MetadataSchemaView
 }
 import io.github.openequella.graphql.client.{
+  EditableEntityMetadataSchemaInput,
   MetadataSchemaMutations,
   MetadataSchemaQueries,
   Mutations,
@@ -255,22 +256,41 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of ApiError or Unit if the operation was successful.
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
     */
   def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    for {
-      input <- Either
-        .catchNonFatal(MetadataSchemaConversions.toInput(details))
-        .leftMap(e => List(UnknownError(s"Failed to convert details to input: ${e.getMessage}")))
-      mutation = MetadataSchemaMutations.add(input, lockAfterwards) {
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.add(input, lockAfterwards) {
         BaseEntityReferenceView.selector
       }
-      result <- flattenResult {
-        mutate(mutation)
+    }
+
+  /** Stop editing a metadata schema, saving changes and optionally unlocking.
+    *
+    * Typically called after a `startEdit` operation to commit changes to a metadata schema. The
+    * `MetadataSchemaEditView` type is used as input to maintain consistency with the view returned
+    * by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    *
+    * @param details
+    *   The metadata schema details to save, using the view type returned by `startEdit`.
+    * @param unlock
+    *   If true, unlocks the schema after saving; if false, keeps it locked for continued editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema, or an error
+    *   if the operation failed.
+    */
+  def stopEdit(details: MetadataSchemaEditView, unlock: Boolean)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], MetadataSchemaView] =
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.stopEdit(input, unlock) {
+        MetadataSchemaView.selector
       }
-    } yield result
+    }
 
   /** Delete a metadata schema.
     *
@@ -296,4 +316,29 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)
+
+  /** Converts a [[MetadataSchemaEditView]] to the GraphQL input type, builds a mutation using that
+    * input, and executes it - unwrapping the Option result.
+    *
+    * @param details
+    *   The view to convert.
+    * @param buildMutation
+    *   A function that, given the converted input, returns the mutation selection builder.
+    * @return
+    *   Either a list of ApiError or the mutation result.
+    */
+  private def withConvertedInput[A](details: MetadataSchemaEditView)(
+      buildMutation: EditableEntityMetadataSchemaInput => SelectionBuilder[
+        MetadataSchemaMutations,
+        Option[A]
+      ]
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], A] =
+    for {
+      input <- Either
+        .catchNonFatal(MetadataSchemaConversions.toInput(details))
+        .leftMap(e =>
+          List(UnknownError(s"Failed to convert details to input type: ${e.getMessage}"))
+        )
+      result <- flattenResult { mutate(buildMutation(input)) }
+    } yield result
 }

@@ -69,6 +69,23 @@ object MetadataSchemaMutations {
       )
     )
 
+  /** Stop editing a metadata schema - saving changes and optionally unlocking.
+    */
+  def stopEdit[A](details: EditableEntityMetadataSchemaInput, unlock: Boolean)(
+      innerSelection: SelectionBuilder[MetadataSchema, A]
+  )(implicit
+      encoder0: ArgEncoder[EditableEntityMetadataSchemaInput],
+      encoder1: ArgEncoder[Boolean]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "stopEdit",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(
+        Argument("details", details, "EditableEntityMetadataSchemaInput!"),
+        Argument("unlock", unlock, "Boolean!")
+      )
+    )
+
   /** Delete a metadata schema - with consideration to references controllable by args.
     */
   def delete(id: Long, checkReferences: scala.Option[Boolean] = None)(implicit
