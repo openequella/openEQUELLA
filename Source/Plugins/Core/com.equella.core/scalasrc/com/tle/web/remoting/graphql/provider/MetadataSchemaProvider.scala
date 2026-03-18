@@ -174,6 +174,34 @@ class MetadataSchemaProvider @Inject() (
     }
   }
 
+  /** Completes the editing session for an existing metadata schema by saving the changes -
+    * following the initial `startEdit` call. Optionally unlocks the schema after saving if `unlock`
+    * is true; otherwise, keeps it locked for continued editing. Note that the details parameter
+    * must contain the necessary information to identify the metadata schema being edited based on
+    * that returned from `startEdit`.
+    *
+    * @param details
+    *   the details of the metadata schema being saved.
+    * @param unlock
+    *   if true, unlocks the metadata schema after saving; if false, keeps it locked (useful for
+    *   continuing to edit).
+    * @return
+    *   Either a ProviderError if the operation fails, or a MetadataSchema representing the saved
+    *   entity on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def stopEdit(
+      details: EditableEntity[MetadataSchema],
+      unlock: Boolean
+  ): Either[ProviderError, MetadataSchema] = {
+    LOGGER.debug(s"Stopping edit of metadata schema with details: ${details.entity}")
+    ProviderError.Try("Failed to stop edit of metadata schema: ") {
+      MetadataSchema(
+        schemaService.stopEdit(toEntityPack(details, MetadataSchemaConverter.toSchema), unlock)
+      )
+    }
+  }
+
   /** Delete a metadata schema, with consideration to references controllable by the checkReferences
     * argument.
     *

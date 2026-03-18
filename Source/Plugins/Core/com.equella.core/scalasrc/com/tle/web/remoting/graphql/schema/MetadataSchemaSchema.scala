@@ -63,6 +63,7 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       startCreate = () => metadataSchemaProvider.startCreate(),
       cancelEdit = args => metadataSchemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
       add = args => metadataSchemaProvider.add(args.details, args.lockAfterwards),
+      stopEdit = args => metadataSchemaProvider.stopEdit(args.details, args.unlock),
       delete = args => metadataSchemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
     )
   )
@@ -126,6 +127,10 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       )
       add: MetadataSchemaAddArgs => ResultWithErrors[BaseEntityReference],
       @GQLDescription(
+        "Stop editing a metadata schema - saving changes and optionally unlocking."
+      )
+      stopEdit: MetadataSchemaStopEditArgs => ResultWithErrors[MetadataSchema],
+      @GQLDescription(
         "Delete a metadata schema - with consideration to references controllable by args."
       )
       delete: MetadataSchemaDeleteArgs => ResultWithErrors[Unit]
@@ -159,5 +164,14 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       details: EditableEntity[MetadataSchema],
       @GQLDescription("Whether the newly added schema should be locked for editing after creation")
       lockAfterwards: Boolean
+  )
+
+  case class MetadataSchemaStopEditArgs(
+      @GQLDescription("Details of the metadata schema to save")
+      details: EditableEntity[MetadataSchema],
+      @GQLDescription(
+        "Whether to unlock the schema after saving, if false, keeps it locked for continued editing"
+      )
+      unlock: Boolean
   )
 }
