@@ -128,6 +128,16 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
         throw new ClientRequestException(s"Error cancelling edit of schema with ID: $id", errors)
     }
 
+  override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema =
+    MetadataSchemaApi.stopEdit(pack convert fromEntityPack, unlock) match {
+      case Right(updatedView) => updatedView convert toSchema
+      case Left(errors)       =>
+        throw new ClientRequestException(
+          s"Error saving changes for schema with ID: ${pack.getEntity.getId}",
+          errors
+        )
+    }
+
   override def delete(entityid: Long, checkReferences: Boolean): Unit =
     MetadataSchemaApi.delete(entityid, Some(checkReferences)) match {
       case Right(_)     => // No content expected on success
