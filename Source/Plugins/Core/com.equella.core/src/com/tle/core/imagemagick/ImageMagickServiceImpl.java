@@ -66,8 +66,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   private int thumbnailingTimeout;
 
   private String imageMagickPath;
-  private File convertExe;
-  private File identifyExe;
+  private File magickExe;
 
   @Inject
   public void setImageMagickPath(@Named("imageMagick.path") String imageMagickPath) {
@@ -80,7 +79,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     validateAgainstTimer(srcFile);
     boolean gif = srcFile.getAbsolutePath().endsWith(".gif");
     if (gif) {
-      opts.add(convertExe.getAbsolutePath());
+      opts.add(magickExe.getAbsolutePath());
       opts.add(srcFile.getAbsolutePath() + "[0]");
       String frame = srcFile.getParent() + "\\frame.gif";
       opts.add(frame);
@@ -93,7 +92,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       options.setImgHeight(imageDimensions.height);
       options.setImgWidth(imageDimensions.width);
 
-      opts.add(convertExe.getAbsolutePath());
+      opts.add(magickExe.getAbsolutePath());
       boolean madeDirs = dstFile.getParentFile().mkdirs();
       if (!(madeDirs || dstFile.getParentFile().exists())) {
         throw new IOException(
@@ -170,7 +169,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       // if so.
       ExecResult exec2 =
           ExecUtils.exec(
-              convertExe.getAbsolutePath(),
+              magickExe.getAbsolutePath(),
               dstFile.getAbsolutePath(),
               "-threshold",
               "99%",
@@ -197,7 +196,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
         ExecUtils.execWithTimeLimit(
             thumbnailingTimeout,
             new String[] {
-              identifyExe.getAbsolutePath(),
+              magickExe.getAbsolutePath(),
+              "identify",
               "-format",
               "%wx%h",
               new String(
@@ -209,11 +209,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @PostConstruct
   public void afterPropertiesSet() throws Exception {
     final File imageMagicDir = new File(imageMagickPath);
-    convertExe = ExecUtils.findExe(imageMagicDir, "convert");
-    identifyExe = ExecUtils.findExe(imageMagicDir, "identify");
-    if (convertExe == null || identifyExe == null) {
+    magickExe = ExecUtils.findExe(imageMagicDir, "magick");
+    if (magickExe == null) {
       throw new RuntimeException(
-          "ImageMagick was not found, specifically the convert and identify programs.  The"
+          "ImageMagick was not found, specifically the 'magick' program. The"
               + " configured path is "
               + imageMagicDir.getCanonicalPath());
     }
@@ -228,7 +227,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public Dimension getImageDimensions(File image) throws IOException {
     ExecResult result =
         ExecUtils.exec(
-            identifyExe.getAbsolutePath(),
+            magickExe.getAbsolutePath(),
+            "identify",
             "-format",
             "%wx%h",
             new String(image.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
@@ -249,12 +249,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     operation("-sample", src, dest, null, width, height, true, options);
   }
 
-  @Override
-  public void sampleNoRatio(File src, File dest, String width, String height, String... options)
-      throws IOException {
-    operation("-sample", src, dest, null, width, height, false, options);
-  }
-
   private void operation(
       String op,
       File src,
@@ -265,7 +259,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       boolean keepRatio,
       String[] options) {
     ArrayList<String> args = new ArrayList<String>();
-    args.add(convertExe.getAbsolutePath());
+    args.add(magickExe.getAbsolutePath());
     args.add(src.getAbsolutePath());
     args.add(op);
     if (opParam != null) {
@@ -322,7 +316,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public void checkServiceRequest(CheckServiceRequestEvent request) {
     ServiceStatus status = new ServiceStatus(ServiceName.IMAGEMAGICK);
     try {
-      ExecResult versionResult = ExecUtils.exec(identifyExe.getAbsolutePath(), "-version");
+      ExecResult versionResult =
+          ExecUtils.exec(magickExe.getAbsolutePath(), "identify", "-version");
 
       if (!versionResult.getStderr().isEmpty()) {
         status.setServiceStatus(Status.BAD);

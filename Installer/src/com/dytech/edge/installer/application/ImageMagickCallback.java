@@ -42,13 +42,8 @@ public class ImageMagickCallback implements Callback {
       return;
     }
 
-    File convert = findExe(installer, dir, "convert");
-    if (convert == null) {
-      return;
-    }
-
-    File identify = findExe(installer, dir, "identify");
-    if (identify == null) {
+    File magick = findExe(installer, dir, "magick");
+    if (magick == null) {
       return;
     }
 
