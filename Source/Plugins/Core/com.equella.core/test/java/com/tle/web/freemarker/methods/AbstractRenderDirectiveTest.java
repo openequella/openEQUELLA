@@ -78,7 +78,7 @@ public class AbstractRenderDirectiveTest {
   }
 
   @Test
-  public void executeDoesNotSetNestedRenderableWhenBodyRendersEmptyContent() throws Exception {
+  public void executeRendersExistingFallbackWhenBodyRendersEmptyContent() throws Exception {
     StringWriter output = new StringWriter();
     Environment env = newEnvironment(output);
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
