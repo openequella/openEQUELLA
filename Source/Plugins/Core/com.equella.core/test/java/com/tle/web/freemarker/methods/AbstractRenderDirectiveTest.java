@@ -41,15 +41,7 @@ public class AbstractRenderDirectiveTest {
     RecordingNestedRenderable nestedRenderable = new RecordingNestedRenderable();
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
-    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
-    doAnswer(
-            invocation -> {
-              Writer writer = invocation.getArgument(0);
-              writer.write("nested-body");
-              return null;
-            })
-        .when(body)
-        .render(any(Writer.class));
+    TemplateDirectiveBody body = mockBodyWriting("nested-body");
 
     Map<String, TemplateModel> params = new HashMap<>();
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
@@ -86,15 +78,7 @@ public class AbstractRenderDirectiveTest {
         new BodyDirectiveRenderable(writer -> writer.write("fallback-label"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
-    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
-    doAnswer(
-            invocation -> {
-              Writer writer = invocation.getArgument(0);
-              writer.write("");
-              return null;
-            })
-        .when(body)
-        .render(any(Writer.class));
+    TemplateDirectiveBody body = mockBodyWriting("");
 
     Map<String, TemplateModel> params = new HashMap<>();
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
@@ -114,15 +98,7 @@ public class AbstractRenderDirectiveTest {
     nestedRenderable.setNestedRenderable(fallback);
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
-    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
-    doAnswer(
-            invocation -> {
-              Writer writer = invocation.getArgument(0);
-              writer.write("override");
-              return null;
-            })
-        .when(body)
-        .render(any(Writer.class));
+    TemplateDirectiveBody body = mockBodyWriting("override");
 
     Map<String, TemplateModel> params = new HashMap<>();
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
@@ -142,25 +118,7 @@ public class AbstractRenderDirectiveTest {
         new BodyDirectiveRenderable(writer -> writer.write("fallback-label"), null));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
-    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
-    doAnswer(
-            invocation -> {
-              NullPointerException npe =
-                  new NullPointerException(
-                      "Cannot read field \"nestedContentParameterNames\" because "
-                          + "\"this.invokingMacroContext\" is null");
-              npe.setStackTrace(
-                  new StackTraceElement[] {
-                    new StackTraceElement(
-                        "freemarker.core.BodyInstruction$Context",
-                        "<init>",
-                        "BodyInstruction.java",
-                        128)
-                  });
-              throw npe;
-            })
-        .when(body)
-        .render(any(Writer.class));
+    TemplateDirectiveBody body = mockBodyThrowingMissingMacroContextNpe();
 
     Map<String, TemplateModel> params = new HashMap<>();
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
@@ -195,25 +153,7 @@ public class AbstractRenderDirectiveTest {
         new BodyDirectiveRenderable(writer -> writer.write("ignored"), nestedChain));
     TestRenderDirective directive = new TestRenderDirective(nestedRenderable);
 
-    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
-    doAnswer(
-            invocation -> {
-              NullPointerException npe =
-                  new NullPointerException(
-                      "Cannot read field \"nestedContentParameterNames\" because "
-                          + "\"this.invokingMacroContext\" is null");
-              npe.setStackTrace(
-                  new StackTraceElement[] {
-                    new StackTraceElement(
-                        "freemarker.core.BodyInstruction$Context",
-                        "<init>",
-                        "BodyInstruction.java",
-                        128)
-                  });
-              throw npe;
-            })
-        .when(body)
-        .render(any(Writer.class));
+    TemplateDirectiveBody body = mockBodyThrowingMissingMacroContextNpe();
 
     Map<String, TemplateModel> params = new HashMap<>();
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
@@ -278,6 +218,42 @@ public class AbstractRenderDirectiveTest {
     params.put("section", new TestAdapterTemplateModel(nestedRenderable));
 
     directive.execute(env, params, new TemplateModel[0], body);
+  }
+
+  private static TemplateDirectiveBody mockBodyWriting(String content) throws Exception {
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              Writer writer = invocation.getArgument(0);
+              writer.write(content);
+              return null;
+            })
+        .when(body)
+        .render(any(Writer.class));
+    return body;
+  }
+
+  private static TemplateDirectiveBody mockBodyThrowingMissingMacroContextNpe() throws Exception {
+    TemplateDirectiveBody body = mock(TemplateDirectiveBody.class);
+    doAnswer(
+            invocation -> {
+              NullPointerException npe =
+                  new NullPointerException(
+                      "Cannot read field \"nestedContentParameterNames\" because "
+                          + "\"this.invokingMacroContext\" is null");
+              npe.setStackTrace(
+                  new StackTraceElement[] {
+                    new StackTraceElement(
+                        "freemarker.core.BodyInstruction$Context",
+                        "<init>",
+                        "BodyInstruction.java",
+                        128)
+                  });
+              throw npe;
+            })
+        .when(body)
+        .render(any(Writer.class));
+    return body;
   }
 
   private static Environment newEnvironment(StringWriter output)
