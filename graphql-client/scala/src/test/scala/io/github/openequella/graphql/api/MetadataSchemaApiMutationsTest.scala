@@ -30,7 +30,8 @@ import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
-  MetadataSchemaEditView
+  MetadataSchemaEditView,
+  MetadataSchemaView
 }
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
@@ -229,6 +230,93 @@ class MetadataSchemaApiMutationsTest
 
       Then("returns an AccessDeniedError")
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
+
+  describe("stopEdit") {
+    it("saves changes to a metadata schema and unlocks when unlock=true") {
+      Given("a metadata schema in edit mode")
+      withTestSchema(lockAfterwards = true) { reference =>
+        val schemaId = reference.id
+
+        When("calling stopEdit with unlock=true")
+        val editView   = MetadataSchemaApi.startEdit(schemaId).value
+        val stopResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
+
+        Then("completes without errors and returns the schema")
+        stopResult.isRight shouldBe true
+        val savedSchema = stopResult.value
+        savedSchema shouldBe a[MetadataSchemaView]
+        savedSchema.details.id shouldBe schemaId
+
+        And("the schema is no longer locked for editing")
+        isSchemaLockedForEditing(schemaId) shouldBe false
+      }
+    }
+
+    it("saves changes and keeps the schema locked when unlock=false") {
+      Given("a metadata schema in edit mode")
+      withTestSchema(lockAfterwards = true) { reference =>
+        val schemaId = reference.id
+
+        When("calling stopEdit with unlock=false")
+        val editView   = MetadataSchemaApi.startEdit(schemaId).value
+        val stopResult = MetadataSchemaApi.stopEdit(editView, unlock = false)
+
+        Then("completes without errors and returns the schema")
+        stopResult.isRight shouldBe true
+        val savedSchema = stopResult.value
+        savedSchema shouldBe a[MetadataSchemaView]
+        savedSchema.details.id shouldBe schemaId
+
+        And("the schema remains locked for editing")
+        isSchemaLockedForEditing(schemaId) shouldBe true
+
+        And("cleanup: cancel the edit session to release the lock")
+        MetadataSchemaApi.cancelEdit(schemaId)
+      }
+    }
+
+    it("returns a NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
+      val invalidSchemaId = -1L
+
+      And("a valid MetadataSchemaEditView")
+      val skeleton = MetadataSchemaApi.startCreate().value
+      val editView = buildNewSchemaDetails(skeleton)
+
+      When("calling stopEdit with the invalid schema ID")
+      // Create a view with the invalid ID to test the mutation error handling
+      val editViewWithBadId = editView.copy(
+        schema = editView.schema.copy(
+          details = editView.schema.details.copy(id = invalidSchemaId)
+        )
+      )
+      val result = MetadataSchemaApi.stopEdit(editViewWithBadId, unlock = true)
+
+      Then("returns a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("denies access when not authenticated") {
+      Given("a valid metadata schema ID")
+      val schemaId = getFirstSchemaId()
+
+      And("a valid MetadataSchemaEditView")
+      val editView = MetadataSchemaApi.startEdit(schemaId).value
+
+      try {
+        When("an unauthenticated user calls stopEdit")
+        val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+          MetadataSchemaApi.stopEdit(editView, unlock = true)(unauthenticated)
+        }
+
+        Then("returns an AccessDeniedError")
+        TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+      } finally {
+        // Best-effort cleanup: force-cancel to release any lingering lock.
+        MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+      }
     }
   }
 
