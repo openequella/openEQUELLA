@@ -64,7 +64,8 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       cancelEdit = args => metadataSchemaProvider.cancelEdit(args.id, args.force.getOrElse(false)),
       add = args => metadataSchemaProvider.add(args.details, args.lockAfterwards),
       stopEdit = args => metadataSchemaProvider.stopEdit(args.details, args.unlock),
-      delete = args => metadataSchemaProvider.delete(args.id, args.checkReferences.getOrElse(true))
+      delete = args => metadataSchemaProvider.delete(args.id, args.checkReferences.getOrElse(true)),
+      cloneSchema = args => metadataSchemaProvider.clone(args.id)
     )
   )
 
@@ -133,7 +134,12 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       @GQLDescription(
         "Delete a metadata schema - with consideration to references controllable by args."
       )
-      delete: MetadataSchemaDeleteArgs => ResultWithErrors[Unit]
+      delete: MetadataSchemaDeleteArgs => ResultWithErrors[Unit],
+      @GQLName("clone")
+      @GQLDescription(
+        "Clone a metadata schema - creating a copy of the schema with a new ID."
+      )
+      cloneSchema: MetadataSchemaCloneArgs => ResultWithErrors[BaseEntityReference]
   )
 
   case class MetadataSchemaStartEditArgs(
@@ -173,5 +179,10 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
         "Whether to unlock the schema after saving, if false, keeps it locked for continued editing"
       )
       unlock: Boolean
+  )
+
+  case class MetadataSchemaCloneArgs(
+      @GQLDescription("ID of the metadata schema to clone")
+      id: Long
   )
 }
