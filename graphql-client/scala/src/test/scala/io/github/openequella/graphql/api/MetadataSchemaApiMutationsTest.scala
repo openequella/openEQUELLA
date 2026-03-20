@@ -423,4 +423,55 @@ class MetadataSchemaApiMutationsTest
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
+
+  describe("importSchema") {
+    it(
+      "imports a metadata schema from a zip file, returning an editable entity ready for stopEdit"
+    ) {
+      Given("a valid metadata schema export")
+      val schemaId    = getFirstSchemaId()
+      val exportBytes = MetadataSchemaApi.exportSchema(schemaId, withSecurity = false).value.value
+
+      When("calling importSchema with the exported bytes")
+      val importResult = MetadataSchemaApi.importSchema(exportBytes)
+
+      Then("returns a MetadataSchemaEditView ready for editing")
+      importResult.isRight shouldBe true
+      val editView = importResult.value
+      editView shouldBe a[MetadataSchemaEditView]
+      editView.stagingId should not be empty
+
+      And("calling stopEdit completes the import and persists the schema")
+      val savedResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
+      savedResult.isRight shouldBe true
+      val savedSchema = savedResult.value
+      savedSchema shouldBe a[MetadataSchemaView]
+      savedSchema.details.id should be > 0L
+
+      And("cleanup: delete the imported schema")
+      MetadataSchemaApi.delete(savedSchema.details.id)
+    }
+
+    it("returns an error for invalid (non-zip) bytes") {
+      Given("invalid bytes that are not a zip file")
+      val invalidBytes = "this is not a zip file".getBytes("UTF-8")
+
+      When("calling importSchema with the invalid bytes")
+      val result = MetadataSchemaApi.importSchema(invalidBytes)
+
+      Then("returns an error")
+      result.isLeft shouldBe true
+    }
+
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls importSchema")
+      val dummyBytes = Array[Byte](0, 1, 2, 3)
+      val response   = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.importSchema(dummyBytes)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
 }

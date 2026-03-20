@@ -319,6 +319,8 @@ type MetadataSchemaMutations {
   delete("ID of the metadata schema to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
   "Clone a metadata schema - creating a copy of the schema with a new ID."
   clone("ID of the metadata schema to clone" id: Long!): BaseEntityReference
+  "Import a metadata schema from a base64-encoded zip file. Returns an editable entity ready for stopEdit to complete the import."
+  import("Base64-encoded zip file of the metadata schema to import" zipBase64: String!): EditableEntityMetadataSchema
 }
 
 type MetadataSchemaQueries {
