@@ -123,8 +123,9 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
    * Starts the process of importing an entity defined in a zip file, by extracting the zip file and
    * storing the contents in the staging area. <strong>The entity is not yet imported.</strong>
    *
-   * <p>It is expected that after this call, the client will typically use startEdit() and
-   * stopEdit() to complete the import process.
+   * <p>After this call, the caller must use {@code stopEdit()} with the returned {@code EntityPack}
+   * to complete the import and persist the entity. To discard the import, discard the returned pack
+   * (the staging area will be cleaned up by the server).
    *
    * @param zip the zip file to import
    * @return the entity pack containing the entity prepared for import

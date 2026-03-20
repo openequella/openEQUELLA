@@ -441,15 +441,21 @@ class MetadataSchemaApiMutationsTest
       editView shouldBe a[MetadataSchemaEditView]
       editView.stagingId should not be empty
 
-      And("calling stopEdit completes the import and persists the schema")
-      val savedResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
-      savedResult.isRight shouldBe true
-      val savedSchema = savedResult.value
-      savedSchema shouldBe a[MetadataSchemaView]
-      savedSchema.details.id should be > 0L
-
-      And("cleanup: delete the imported schema")
-      MetadataSchemaApi.delete(savedSchema.details.id)
+      var persistedId: Option[Long] = None
+      try {
+        And("calling stopEdit completes the import and persists the schema")
+        val savedResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
+        savedResult.isRight shouldBe true
+        val savedSchema = savedResult.value
+        savedSchema shouldBe a[MetadataSchemaView]
+        savedSchema.details.id should be > 0L
+        persistedId = Some(savedSchema.details.id)
+      } finally {
+        // If stopEdit succeeded, clean up the persisted schema. If it failed, the
+        // staging area is left for server-side garbage collection — there is no
+        // client-accessible cleanup path for unpersisted imports.
+        persistedId.foreach(id => MetadataSchemaApi.delete(id))
+      }
     }
 
     it("returns an error for invalid (non-zip) bytes") {
@@ -459,8 +465,8 @@ class MetadataSchemaApiMutationsTest
       When("calling importSchema with the invalid bytes")
       val result = MetadataSchemaApi.importSchema(invalidBytes)
 
-      Then("returns an error")
-      result.isLeft shouldBe true
+      Then("returns an InternalError indicating the import failed")
+      TestHelper.checkApiError(result) shouldBe a[InternalError]
     }
 
     it("denies access when not authenticated") {
