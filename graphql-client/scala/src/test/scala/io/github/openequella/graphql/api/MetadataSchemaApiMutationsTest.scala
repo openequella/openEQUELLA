@@ -375,4 +375,52 @@ class MetadataSchemaApiMutationsTest
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
     }
   }
+
+  describe("clone") {
+    it("creates a copy of an existing metadata schema") {
+      Given("an existing metadata schema")
+      withTestSchema(name = "Original Schema") { original =>
+        When("calling clone with the schema ID")
+        val cloneResult = MetadataSchemaApi.clone(original.id)
+
+        Then("returns a BaseEntityReferenceView for the new clone")
+        cloneResult.isRight shouldBe true
+        val cloneRef = cloneResult.value
+        cloneRef shouldBe a[BaseEntityReferenceView]
+        cloneRef.id should not be original.id
+        cloneRef.uuid should not be original.uuid
+
+        try {
+          And("the cloned schema can be retrieved by its new ID")
+          val clonedSchema = MetadataSchemaApi.getById(cloneRef.id).value.value
+          val cloneName    = getSchemaName(clonedSchema)
+          cloneName.value should startWith("Copy of ")
+          cloneName.value should include("Original Schema")
+        } finally {
+          MetadataSchemaApi.delete(cloneRef.id)
+        }
+      }
+    }
+
+    it("returns a NotFoundError for an invalid schema ID") {
+      Given("an invalid schema ID")
+      val invalidSchemaId = -1L
+
+      When("calling clone with the invalid schema ID")
+      val result = MetadataSchemaApi.clone(invalidSchemaId)
+
+      Then("returns a NotFoundError")
+      TestHelper.checkApiError(result) shouldBe a[NotFoundError]
+    }
+
+    it("denies access when not authenticated") {
+      When("an unauthenticated user calls clone")
+      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
+        MetadataSchemaApi.clone(1)(unauthenticated)
+      }
+
+      Then("returns an AccessDeniedError")
+      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
+    }
+  }
 }

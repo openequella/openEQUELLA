@@ -98,4 +98,12 @@ object MetadataSchemaMutations {
       arguments =
         List(Argument("id", id, "Long!"), Argument("checkReferences", checkReferences, "Boolean"))
     )
+
+  /** Clone a metadata schema - creating a copy of the schema with a new ID.
+    */
+  def clone$[A](id: Long)(innerSelection: SelectionBuilder[BaseEntityReference, A])(implicit
+      encoder0: ArgEncoder[Long]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder
+      .Field("clone", OptionOf(Obj(innerSelection)), arguments = List(Argument("id", id, "Long!")))
 }
