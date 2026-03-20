@@ -51,11 +51,19 @@ import org.apache.commons.logging.LogFactory;
 
 @Bind(ImageMagickService.class)
 @Singleton
-@SuppressWarnings("nls")
 public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckRequestListener {
   private static final Log LOGGER = LogFactory.getLog(ImageMagickServiceImpl.class);
   private static final String KEY_PFX =
       AbstractPluginService.getMyPluginId(ImageMagickServiceImpl.class) + ".";
+
+  /** Pattern for parsing output from {@code magick identify}. */
+  private static final Pattern DIMENSIONS_PATTERN =
+      Pattern.compile(".*?(\\d+)x(\\d+).*?", Pattern.DOTALL);
+
+  /** Standard thumbnail dimensions. */
+  private static final int STD_THUMB_WIDTH = 88;
+
+  private static final int STD_THUMB_HEIGHT = 66;
 
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
@@ -75,145 +83,44 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
-    List<String> opts = new ArrayList<String>();
+    List<String> args = new ArrayList<String>();
     validateAgainstTimer(srcFile);
-    boolean gif = srcFile.getAbsolutePath().endsWith(".gif");
-    if (gif) {
-      opts.add(magickExe.getAbsolutePath());
-      opts.add(srcFile.getAbsolutePath() + "[0]");
-      String frame = srcFile.getParent() + "\\frame.gif";
-      opts.add(frame);
-      ExecUtils.exec(opts);
-      srcFile = new File(frame);
-      opts.clear();
-    }
-    try {
-      Dimension imageDimensions = getImageDimensions(srcFile);
-      options.setImgHeight(imageDimensions.height);
-      options.setImgWidth(imageDimensions.width);
+    srcFile = extractGifFrameIfNeeded(srcFile, args);
 
-      opts.add(magickExe.getAbsolutePath());
-      boolean madeDirs = dstFile.getParentFile().mkdirs();
-      if (!(madeDirs || dstFile.getParentFile().exists())) {
-        throw new IOException(
-            "Could not create/confirm directory " + dstFile.getParentFile().getAbsolutePath());
-      }
+    try {
+      Dimension imgDimensions = getImageDimensions(srcFile);
+      options.setImgWidth(imgDimensions.width);
+      options.setImgHeight(imgDimensions.height);
+
+      args.add(magickExe.getAbsolutePath());
+      ensureParentDirectoryExists(dstFile);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
 
-    int thumbWidth = options.getWidth();
-    int thumbHeight = options.getHeight();
-    if (!options.isNoSize()) {
-      int sizeX = options.getImgWidth();
-      int sizeY = options.getImgHeight();
-      if (sizeX == 0) {
-        sizeX = thumbWidth * 2;
-      }
-      if (sizeY == 0) {
-        sizeY = thumbHeight * 2;
-      }
-      opts.add("-size");
-      opts.add(sizeX + "x" + sizeY);
-    }
+    appendSizeArgs(args, options);
+    args.add(srcFile.getAbsolutePath());
+    appendThumbnailArgs(args, options);
+    args.add(dstFile.getAbsolutePath());
 
-    opts.add(srcFile.getAbsolutePath());
+    ExecUtils.exec(args).ensureOk();
 
-    if (!options.isNoSize()) {
-      opts.add("-thumbnail");
-      String thumbOpt = "";
-
-      if (options.isKeepAspect()
-          || (options.getImgHeight() < thumbHeight && options.getImgWidth() < thumbWidth)) {
-        thumbOpt = ">";
-      } else {
-        thumbOpt = "^";
-      }
-
-      opts.add(thumbWidth + "x" + thumbHeight + thumbOpt);
-      if (options.getGravity() != null) {
-        opts.add("-gravity");
-        opts.add(options.getGravity());
-      }
-
-      if (!Check.isEmpty(options.getBackgroundColour())) {
-        opts.add("-bordercolor");
-        opts.add(options.getBackgroundColour());
-        opts.add("-border");
-        opts.add("50");
-      }
-
-      int cropWidth = options.getCropWidth();
-      int cropHeight = options.getCropHeight();
-      if (cropHeight > 0 && cropWidth > 0) {
-        opts.add("-crop");
-        int cropX = options.getCropX();
-        int cropY = options.getCropY();
-        opts.add(cropWidth + "x" + cropHeight + "+" + cropX + "+" + cropY); // $NON-NLS-2$
-        opts.add("+repage");
-      }
-    }
-
-    opts.add(dstFile.getAbsolutePath());
-    ExecResult exec = ExecUtils.exec(opts);
-    exec.ensureOk();
-    if (gif) {
-      boolean wasDeleted = srcFile.delete();
-      if (!wasDeleted) {
-        LOGGER.warn("Unable to delete generated gif frame:" + srcFile.getAbsolutePath());
-      }
-    }
-
-    if (!options.isSkipBlankCheck()) {
-      // Check that we have not created a blank (white) thumbnail - delete
-      // if so.
-      ExecResult exec2 =
-          ExecUtils.exec(
-              magickExe.getAbsolutePath(),
-              dstFile.getAbsolutePath(),
-              "-threshold",
-              "99%",
-              "-format",
-              "\"%[fx:100*mean]\"",
-              "info:"); //$NON-NLS-2$//$NON-NLS-4$
-      exec2.ensureOk();
-      if (exec2.getStdout().contains("100")) {
-        boolean wasDeleted = dstFile.delete();
-        if (!wasDeleted) {
-          LOGGER.warn("Unable to delete presumed blank thumbnail: " + dstFile.getAbsolutePath());
-        }
-      }
-    }
+    cleanupGifFrame(srcFile, options);
+    checkForBlankThumbnail(dstFile, options);
   }
 
-  private void validateAgainstTimer(File image) {
-    // use a timed process so that thumbnailing
-    // for problem files doesn't attempt indefinitely.
-    // Set in plugins/com.tle.core.imagemagick/config.properties
-    // thumbnail.timeout as an integer in seconds.
-    // if not set, the default is 20 seconds. If set to 0, uses a regular non-timed process.
-    ExecResult result =
-        ExecUtils.execWithTimeLimit(
-            thumbnailingTimeout,
-            new String[] {
-              magickExe.getAbsolutePath(),
-              "identify",
-              "-format",
-              "%wx%h",
-              new String(
-                  image.getAbsolutePath().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8)
-            });
-    result.ensureOk();
-  }
-
+  /**
+   * Resolves and validates the {@code magick} executable on startup.
+   *
+   * @throws RuntimeException if the executable cannot be found
+   */
   @PostConstruct
   public void afterPropertiesSet() throws Exception {
     final File imageMagicDir = new File(imageMagickPath);
     magickExe = ExecUtils.findExe(imageMagicDir, "magick");
     if (magickExe == null) {
       throw new RuntimeException(
-          "ImageMagick was not found, specifically the 'magick' program. The"
-              + " configured path is "
+          "ImageMagick was not found, specifically the 'magick' program. The configured path is "
               + imageMagicDir.getCanonicalPath());
     }
   }
@@ -227,14 +134,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public Dimension getImageDimensions(File image) throws IOException {
     ExecResult result =
         ExecUtils.exec(
-            magickExe.getAbsolutePath(),
-            "identify",
-            "-format",
-            "%wx%h",
-            new String(image.getAbsolutePath().getBytes("UTF-8"), "UTF-8"));
+            magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", toUtf8Path(image));
     result.ensureOk();
 
-    Matcher m = Pattern.compile(".*?(\\d+)x(\\d+).*?", Pattern.DOTALL).matcher(result.getStdout());
+    Matcher m = DIMENSIONS_PATTERN.matcher(result.getStdout());
     if (m.matches()) {
       return new Dimension(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
     }
@@ -249,6 +152,79 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     operation("-sample", src, dest, null, width, height, true, options);
   }
 
+  @Override
+  public void sampleNoRatio(File src, File dest, String width, String height, String... options)
+      throws IOException {
+    operation("-sample", src, dest, null, width, height, false, options);
+  }
+
+  @Override
+  public void crop(File src, File dest, String width, String height, String... options)
+      throws IOException {
+    operation("-crop", src, dest, null, width, height, true, options);
+  }
+
+  @Override
+  public void rotate(File src, File dest, int angle, String... options) throws IOException {
+    operation("-rotate", src, dest, Integer.toString(angle), null, null, true, options);
+  }
+
+  @Override
+  public void generateStandardThumbnail(File srcFile, File dstFile) {
+    ThumbnailOptions opts = new ThumbnailOptions();
+    opts.setWidth(STD_THUMB_WIDTH);
+    opts.setHeight(STD_THUMB_HEIGHT);
+    opts.setCropWidth(STD_THUMB_WIDTH);
+    opts.setCropHeight(STD_THUMB_HEIGHT);
+    opts.setGravity("center");
+    opts.setBackgroundColour("White");
+    generateThumbnailAdvanced(srcFile, dstFile, opts);
+  }
+
+  @Override
+  public boolean supported(String mimeType) {
+    return mimeType.startsWith("image/") || mimeType.equals("windows/metafile");
+  }
+
+  @Override
+  public void checkServiceRequest(CheckServiceRequestEvent request) {
+    ServiceStatus status = new ServiceStatus(ServiceName.IMAGEMAGICK);
+    try {
+      ExecResult result = ExecUtils.exec(magickExe.getAbsolutePath(), "identify", "-version");
+      if (!result.getStderr().isEmpty()) {
+        status.setServiceStatus(Status.BAD);
+        status.setMoreInfo(
+            CurrentLocale.get(
+                KEY_PFX + "imagemagick.servicecheck.moreinfo.problem",
+                imageMagickPath,
+                result.getStderr()));
+      } else {
+        status.setServiceStatus(Status.GOOD);
+        status.setMoreInfo(
+            CurrentLocale.get(
+                KEY_PFX + "imagemagick.servicecheck.moreinfo",
+                imageMagickPath,
+                result.getStdout()));
+      }
+    } catch (Exception e) {
+      status.setServiceStatus(Status.BAD);
+      status.setMoreInfo(
+          CurrentLocale.get(
+              KEY_PFX + "imagemagick.servicecheck.moreinfo.problem",
+              imageMagickPath,
+              e.getMessage()));
+    }
+    eventService.publishApplicationEvent(
+        new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
+  }
+
+  /**
+   * Runs a single ImageMagick operation (e.g. sample, crop, rotate).
+   *
+   * @param op the ImageMagick operation flag
+   * @param opParam optional parameter for the operation (e.g. rotation angle), or {@code null}
+   * @param keepRatio if {@code false}, appends {@code !} to force exact dimensions
+   */
   private void operation(
       String op,
       File src,
@@ -258,7 +234,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       String height,
       boolean keepRatio,
       String[] options) {
-    ArrayList<String> args = new ArrayList<String>();
+    List<String> args = new ArrayList<>();
     args.add(magickExe.getAbsolutePath());
     args.add(src.getAbsolutePath());
     args.add(op);
@@ -276,73 +252,133 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       args.addAll(Arrays.asList(options));
     }
     args.add(dest.getAbsolutePath());
-    ExecUtils.exec(args.toArray(new String[args.size()])).ensureOk();
+    ExecUtils.exec(args.toArray(new String[0])).ensureOk();
   }
 
-  @Override
-  public void crop(File src, File dest, String width, String height, String... options)
-      throws IOException {
-    operation("-crop", src, dest, null, width, height, true, options);
+  /**
+   * Validates the image against a timed process to prevent indefinite thumbnailing on problematic
+   * files. The timeout is configured via {@code thumbnail.timeout} in config.properties; defaults
+   * to 20 seconds, or 0 to disable.
+   */
+  private void validateAgainstTimer(File image) {
+    ExecResult result =
+        ExecUtils.execWithTimeLimit(
+            thumbnailingTimeout,
+            new String[] {
+              magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", toUtf8Path(image)
+            });
+    result.ensureOk();
   }
 
-  @Override
-  public void rotate(final File srcImage, final File destImage, int angle, String... options)
-      throws IOException {
-    operation("-rotate", srcImage, destImage, Integer.toString(angle), null, null, true, options);
-  }
-
-  @Override
-  public void generateStandardThumbnail(File srcFile, File dstFile) {
-    // int size = 64;
-    int height = 66;
-    int width = 88;
-    ThumbnailOptions topts = new ThumbnailOptions();
-    topts.setHeight(height);
-    topts.setWidth(width);
-    topts.setCropHeight(height);
-    topts.setCropWidth(width);
-    topts.setGravity("center");
-    topts.setBackgroundColour("White");
-
-    generateThumbnailAdvanced(srcFile, dstFile, topts);
-  }
-
-  @Override
-  public boolean supported(String mimeType) {
-    return mimeType.startsWith("image/") || mimeType.equals("windows/metafile");
-  }
-
-  @Override
-  public void checkServiceRequest(CheckServiceRequestEvent request) {
-    ServiceStatus status = new ServiceStatus(ServiceName.IMAGEMAGICK);
-    try {
-      ExecResult versionResult =
-          ExecUtils.exec(magickExe.getAbsolutePath(), "identify", "-version");
-
-      if (!versionResult.getStderr().isEmpty()) {
-        status.setServiceStatus(Status.BAD);
-        status.setMoreInfo(
-            CurrentLocale.get(
-                KEY_PFX + "imagemagick.servicecheck.moreinfo.problem",
-                imageMagickPath,
-                versionResult.getStderr()));
-      } else {
-        status.setServiceStatus(Status.GOOD);
-        status.setMoreInfo(
-            CurrentLocale.get(
-                KEY_PFX + "imagemagick.servicecheck.moreinfo",
-                imageMagickPath,
-                versionResult.getStdout()));
-      }
-    } catch (Exception e) {
-      status.setServiceStatus(Status.BAD);
-      status.setMoreInfo(
-          CurrentLocale.get(
-              KEY_PFX + "imagemagick.servicecheck.moreinfo.problem",
-              imageMagickPath,
-              e.getMessage()));
+  /**
+   * If the source is a GIF, extracts its first frame to a temporary file and returns it. Otherwise
+   * returns the original file unchanged.
+   */
+  private File extractGifFrameIfNeeded(File srcFile, List<String> args) {
+    if (!srcFile.getAbsolutePath().endsWith(".gif")) {
+      return srcFile;
     }
-    eventService.publishApplicationEvent(
-        new CheckServiceResponseEvent(request.getRequetserNodeId(), zkService.getNodeId(), status));
+    String framePath = srcFile.getParent() + "\\frame.gif";
+    args.add(magickExe.getAbsolutePath());
+    args.add(srcFile.getAbsolutePath() + "[0]");
+    args.add(framePath);
+    ExecUtils.exec(args);
+    args.clear();
+    return new File(framePath);
+  }
+
+  /** Ensures the parent directory of {@code file} exists, creating it if necessary. */
+  private void ensureParentDirectoryExists(File file) throws IOException {
+    File parent = file.getParentFile();
+    if (!parent.mkdirs() && !parent.exists()) {
+      throw new IOException("Could not create/confirm directory " + parent.getAbsolutePath());
+    }
+  }
+
+  /** Appends {@code -size} arguments when the options do not suppress sizing. */
+  private void appendSizeArgs(List<String> args, ThumbnailOptions options) {
+    if (options.isNoSize()) {
+      return;
+    }
+    int sizeX = options.getImgWidth() == 0 ? options.getWidth() * 2 : options.getImgWidth();
+    int sizeY = options.getImgHeight() == 0 ? options.getHeight() * 2 : options.getImgHeight();
+    args.add("-size");
+    args.add(sizeX + "x" + sizeY);
+  }
+
+  /** Appends thumbnail, gravity, border, and crop arguments based on {@code options}. */
+  private void appendThumbnailArgs(List<String> args, ThumbnailOptions options) {
+    if (options.isNoSize()) {
+      return;
+    }
+    int thumbWidth = options.getWidth();
+    int thumbHeight = options.getHeight();
+
+    args.add("-thumbnail");
+    boolean fitInside =
+        options.isKeepAspect()
+            || (options.getImgHeight() < thumbHeight && options.getImgWidth() < thumbWidth);
+    args.add(thumbWidth + "x" + thumbHeight + (fitInside ? ">" : "^"));
+
+    if (options.getGravity() != null) {
+      args.add("-gravity");
+      args.add(options.getGravity());
+    }
+
+    if (!Check.isEmpty(options.getBackgroundColour())) {
+      args.add("-bordercolor");
+      args.add(options.getBackgroundColour());
+      args.add("-border");
+      args.add("50");
+    }
+
+    int cropWidth = options.getCropWidth();
+    int cropHeight = options.getCropHeight();
+    if (cropWidth > 0 && cropHeight > 0) {
+      args.add("-crop");
+      args.add(cropWidth + "x" + cropHeight + "+" + options.getCropX() + "+" + options.getCropY());
+      args.add("+repage");
+    }
+  }
+
+  /** Deletes a temporary GIF frame file after thumbnailing is complete. */
+  private void cleanupGifFrame(File srcFile, ThumbnailOptions options) {
+    if (!srcFile.getAbsolutePath().endsWith("frame.gif")) {
+      return;
+    }
+    if (!srcFile.delete()) {
+      LOGGER.warn("Unable to delete generated gif frame: " + srcFile.getAbsolutePath());
+    }
+  }
+
+  /**
+   * Checks whether the generated thumbnail is blank (all white). If it is, the file is deleted.
+   * Skipped when {@link ThumbnailOptions#isSkipBlankCheck()} is {@code true}.
+   */
+  private void checkForBlankThumbnail(File dstFile, ThumbnailOptions options) {
+    if (options.isSkipBlankCheck()) {
+      return;
+    }
+    ExecResult result =
+        ExecUtils.exec(
+            magickExe.getAbsolutePath(),
+            dstFile.getAbsolutePath(),
+            "-threshold",
+            "99%",
+            "-format",
+            "\"%[fx:100*mean]\"",
+            "info:");
+    result.ensureOk();
+    if (result.getStdout().contains("100")) {
+      if (!dstFile.delete()) {
+        LOGGER.warn("Unable to delete presumed blank thumbnail: " + dstFile.getAbsolutePath());
+      }
+    }
+  }
+
+  /** Returns the absolute path of a file, round-tripped through UTF-8 bytes. */
+  private String toUtf8Path(File file) {
+    return new String(
+        file.getAbsolutePath().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
   }
 }
