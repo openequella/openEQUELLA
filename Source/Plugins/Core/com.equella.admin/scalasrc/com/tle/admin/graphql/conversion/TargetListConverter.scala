@@ -34,7 +34,9 @@ object TargetListConverter {
   }
 
   def fromTargetList(targetList: TargetList): List[TargetListEntryView] =
-    NullSafeList(targetList.getEntries) convert fromTargetListEntry
+    Option(targetList)
+      .map(tl => NullSafeList(tl.getEntries) convert fromTargetListEntry)
+      .getOrElse(List.empty)
 }
 
 object TargetListEntryViewConverter {
