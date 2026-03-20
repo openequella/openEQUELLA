@@ -65,7 +65,8 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       add = args => metadataSchemaProvider.add(args.details, args.lockAfterwards),
       stopEdit = args => metadataSchemaProvider.stopEdit(args.details, args.unlock),
       delete = args => metadataSchemaProvider.delete(args.id, args.checkReferences.getOrElse(true)),
-      cloneSchema = args => metadataSchemaProvider.clone(args.id)
+      cloneSchema = args => metadataSchemaProvider.clone(args.id),
+      importSchema = args => metadataSchemaProvider.importSchema(args.zipBase64)
     )
   )
 
@@ -139,7 +140,12 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
       @GQLDescription(
         "Clone a metadata schema - creating a copy of the schema with a new ID."
       )
-      cloneSchema: MetadataSchemaCloneArgs => ResultWithErrors[BaseEntityReference]
+      cloneSchema: MetadataSchemaCloneArgs => ResultWithErrors[BaseEntityReference],
+      @GQLName("import")
+      @GQLDescription(
+        "Import a metadata schema from a base64-encoded zip file. Returns an editable entity ready for stopEdit to complete the import."
+      )
+      importSchema: MetadataSchemaImportArgs => ResultWithErrors[EditableEntity[MetadataSchema]]
   )
 
   case class MetadataSchemaStartEditArgs(
@@ -184,5 +190,10 @@ class MetadataSchemaSchema @Inject() (metadataSchemaProvider: MetadataSchemaProv
   case class MetadataSchemaCloneArgs(
       @GQLDescription("ID of the metadata schema to clone")
       id: Long
+  )
+
+  case class MetadataSchemaImportArgs(
+      @GQLDescription("Base64-encoded zip file of the metadata schema to import")
+      zipBase64: String
   )
 }

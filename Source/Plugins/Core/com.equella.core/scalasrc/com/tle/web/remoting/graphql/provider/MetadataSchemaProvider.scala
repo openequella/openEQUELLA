@@ -83,6 +83,28 @@ class MetadataSchemaProvider @Inject() (
     }.map(zipFile => Base64.getEncoder.encodeToString(zipFile))
   }
 
+  /** Import a metadata schema from a base64-encoded zip file. This is the inverse of
+    * [[exportSchema]]. The entity is extracted into a staging area and prepared for editing but is
+    * NOT yet persisted — the caller must follow up with [[stopEdit]] to complete the import, or
+    * [[cancelEdit]] to discard it.
+    *
+    * @param zipBase64
+    *   a base64-encoded string representing the zip file to import.
+    * @return
+    *   Either a ProviderError if the operation fails, or an EditableEntity containing the imported
+    *   metadata schema ready for editing.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def importSchema(
+      zipBase64: String
+  ): Either[ProviderError, EditableEntity[MetadataSchema]] = {
+    LOGGER.debug("Importing metadata schema from base64 zip")
+    ProviderError.Try("Failed to import metadata schema: ") {
+      val zipBytes = Base64.getDecoder.decode(zipBase64)
+      EditableEntity(schemaService.importEntity(zipBytes), MetadataSchema.apply)
+    }
+  }
+
   /** Get the metadata schema ID for a given UUID.
     *
     * @param uuid
