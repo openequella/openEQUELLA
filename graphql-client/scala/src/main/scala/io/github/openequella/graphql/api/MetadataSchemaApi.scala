@@ -314,6 +314,27 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     }
   }
 
+  /** Clones a metadata schema, creating a copy with a new ID. The cloned schema's name will be
+    * prefixed with "Copy of " in all language variants.
+    *
+    * @param id
+    *   The ID of the metadata schema to clone.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created clone.
+    */
+  def clone(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], BaseEntityReferenceView] =
+    flattenResult {
+      mutate(
+        MetadataSchemaMutations.clone$(id) {
+          BaseEntityReferenceView.selector
+        }
+      )
+    }
+
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)
 

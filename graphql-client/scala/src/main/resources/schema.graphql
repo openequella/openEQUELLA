@@ -317,6 +317,8 @@ type MetadataSchemaMutations {
   stopEdit("Details of the metadata schema to save" details: EditableEntityMetadataSchemaInput!, "Whether to unlock the schema after saving, if false, keeps it locked for continued editing" unlock: Boolean!): MetadataSchema
   "Delete a metadata schema - with consideration to references controllable by args."
   delete("ID of the metadata schema to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the schema regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
+  "Clone a metadata schema - creating a copy of the schema with a new ID."
+  clone("ID of the metadata schema to clone" id: Long!): BaseEntityReference
 }
 
 type MetadataSchemaQueries {

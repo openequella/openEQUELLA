@@ -132,7 +132,13 @@ public interface RemoteAbstractEntityService<T extends BaseEntity> {
   EntityPack<T> importEntity(byte[] zip);
 
   /**
-   * @return a pair containing the entity ID, and the name bundle ID.
+   * Clones the entity with the given ID, persisting the new copy immediately. The cloned entity is
+   * assigned a new UUID and has its owner cleared. Its name is prefixed with a locale-specific
+   * "Copy of " string (from the {@code baseentity.clone.prefix} language key) in every language
+   * variant. Associated entity files are also copied to a new staging area.
+   *
+   * @param id the ID of the entity to clone
+   * @return a label for the newly created clone
    */
   BaseEntityLabel clone(long id);
 

@@ -275,4 +275,20 @@ class MetadataSchemaProvider @Inject() (
     LOGGER.debug(s"Checking for references to metadata schema with ID: $id")
     schemaService.hasReferencingClasses(id)
   }
+
+  /** Clone a metadata schema, creating a copy with a new ID.
+    *
+    * @param id
+    *   the ID of the metadata schema to clone.
+    * @return
+    *   Either a ProviderError if the operation fails, or a BaseEntityReference to the cloned
+    *   metadata schema on success.
+    */
+  @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
+  def clone(id: Long): Either[ProviderError, BaseEntityReference] = {
+    LOGGER.debug(s"Cloning metadata schema with id $id")
+    ProviderError.Try(s"Failed to clone metadata schema with id $id: ") {
+      BaseEntityReference(schemaService.clone(id))
+    }
+  }
 }

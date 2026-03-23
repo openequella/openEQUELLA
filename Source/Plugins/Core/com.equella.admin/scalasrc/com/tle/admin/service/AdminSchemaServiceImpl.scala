@@ -154,6 +154,12 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
     }
   }
 
+  override def clone(id: Long): BaseEntityLabel = MetadataSchemaApi.clone(id) match {
+    case Right(ref)   => ref convert toBaseEntityLabel
+    case Left(errors) =>
+      throw new ClientRequestException(s"Error cloning schema with ID: $id", errors)
+  }
+
   override def isStartCreateSupported: Boolean = true
 
   override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
