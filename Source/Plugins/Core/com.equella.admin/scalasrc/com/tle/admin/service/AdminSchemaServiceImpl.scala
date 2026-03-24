@@ -106,6 +106,13 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
         throw new ClientRequestException(s"Error exporting schema with ID: $id", errors)
     }
 
+  override def importEntity(zip: Array[Byte]): EntityPack[Schema] =
+    MetadataSchemaApi.importSchema(zip) match {
+      case Right(editView) => editView convert toEntityPack
+      case Left(errors)    =>
+        throw new ClientRequestException("Error importing schema.", errors)
+    }
+
   override def startEdit(id: Long): EntityPack[Schema] =
     MetadataSchemaApi.startEdit(id) match {
       case Right(schemaEditView) => schemaEditView convert toEntityPack

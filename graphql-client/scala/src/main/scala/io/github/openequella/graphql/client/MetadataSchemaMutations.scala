@@ -106,4 +106,18 @@ object MetadataSchemaMutations {
   ): SelectionBuilder[MetadataSchemaMutations, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder
       .Field("clone", OptionOf(Obj(innerSelection)), arguments = List(Argument("id", id, "Long!")))
+
+  /** Import a metadata schema from a base64-encoded zip file. Returns an editable entity ready for
+    * stopEdit to complete the import.
+    */
+  def `import`[A](
+      zipBase64: String
+  )(innerSelection: SelectionBuilder[EditableEntityMetadataSchema, A])(implicit
+      encoder0: ArgEncoder[String]
+  ): SelectionBuilder[MetadataSchemaMutations, scala.Option[A]] =
+    _root_.caliban.client.SelectionBuilder.Field(
+      "import",
+      OptionOf(Obj(innerSelection)),
+      arguments = List(Argument("zipBase64", zipBase64, "String!"))
+    )
 }

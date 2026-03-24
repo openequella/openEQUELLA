@@ -185,6 +185,32 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     query(q).map(_.map(base64ToBytes))
   }
 
+  /** Imports a metadata schema from a ZIP file.
+    *
+    * This is the inverse of [[exportSchema]]. The entity is prepared from the zip file but is NOT
+    * yet persisted — the caller must follow up with [[stopEdit]] to complete the import, or
+    * [[cancelEdit]] to discard it.
+    *
+    * @param zip
+    *   The ZIP file bytes to import.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of errors or a MetadataSchemaEditView ready for stopEdit.
+    */
+  def importSchema(zip: Array[Byte])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], MetadataSchemaEditView] = {
+    val zipBase64 = Base64.getEncoder.encodeToString(zip)
+    flattenResult {
+      mutate(
+        MetadataSchemaMutations.`import`(zipBase64) {
+          MetadataSchemaEditView.selector
+        }
+      )
+    }
+  }
+
   /** Start editing a metadata schema by its ID.
     *
     * @param id

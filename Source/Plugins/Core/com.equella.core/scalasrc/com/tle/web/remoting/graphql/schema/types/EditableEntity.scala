@@ -81,7 +81,8 @@ object EditableEntity {
 
   private def convertTargetList(
       targetList: com.tle.common.security.TargetList
-  ): List[TargetListEntry] = {
-    targetList.getEntries.asScala.toList.map(TargetListEntry(_))
-  }
+  ): List[TargetListEntry] =
+    Option(targetList)
+      .map(_.getEntries.asScala.toList.map(TargetListEntry(_)))
+      .getOrElse(List.empty)
 }
