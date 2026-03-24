@@ -19,15 +19,14 @@
 package com.tle.core.schema.service;
 
 import com.dytech.devlib.PropBagEx;
+import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
 import com.tle.core.entity.EntityEditingBean;
 import com.tle.core.entity.service.AbstractEntityService;
-import com.tle.core.remoting.RemoteSchemaService;
 import java.util.List;
 import java.util.Set;
 
-public interface SchemaService
-    extends AbstractEntityService<EntityEditingBean, Schema>, RemoteSchemaService {
+public interface SchemaService extends AbstractEntityService<EntityEditingBean, Schema> {
   String ENTITY_TYPE = "SCHEMA";
 
   List<String> getExportSchemaTypes();
@@ -40,4 +39,28 @@ public interface SchemaService
   String transformForImport(long id, String type, PropBagEx foreignXml);
 
   List<String> getAllCitations();
+
+  /**
+   * Get the uses of a metadata schema by ID.
+   *
+   * <p>Returns a list of entities (items, collections, etc.) that reference or use this metadata
+   * schema. This is useful for understanding the impact of schema changes and for managing
+   * dependencies.
+   *
+   * @param id the ID of the metadata schema
+   * @return a list of entities that use this schema
+   */
+  List<BaseEntityLabel> getSchemaUses(long id);
+
+  /**
+   * Get the types of schema import transformations for a metadata schema by ID.
+   *
+   * <p>Returns the types of transformations that can be applied when importing this schema between
+   * repositories. Import transformations are used to adapt schema structure and data format when
+   * moving content from one system to another.
+   *
+   * @param id the ID of the metadata schema
+   * @return a list of import transformation type names
+   */
+  List<String> getImportSchemaTypes(long id);
 }
