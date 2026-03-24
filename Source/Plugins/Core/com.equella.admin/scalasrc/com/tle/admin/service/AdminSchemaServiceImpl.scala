@@ -29,17 +29,17 @@ import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNo
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
-import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteSchemaService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.MetadataSchemaApi
 import io.github.openequella.graphql.api.views.MetadataSchemaEditView
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 
-class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(implicit
+@Singleton
+class AdminSchemaServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminEntityService[Schema]
     with AdminSchemaService {
@@ -168,19 +168,4 @@ class AdminSchemaServiceImpl @Inject() (val delegate: RemoteSchemaService)(impli
   }
 
   override def isStartCreateSupported: Boolean = true
-
-  override def implementMe[T](f: RemoteAbstractEntityService[Schema] => T): T = {
-    // TODO: Can this logging be centralise in the abstract class? As it will be the same
-    //       for all the overrides.
-    LOGGER.warn(
-      "Missing implementation of [{}] for RemoteAbstractEntityService, will try delegate.",
-      getCallerMethodName,
-      new NotImplementedError()
-    )
-    f(delegate)
-  }
-
-  private def getCallerMethodName: String = {
-    Thread.currentThread().getStackTrace()(3).getMethodName
-  }
 }
