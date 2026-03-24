@@ -22,7 +22,7 @@ val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
 val cxfVersion        = "3.6.10"
-val fs2Version        = "3.12.2"
+val fs2Version        = "3.13.0"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.22.1"
@@ -84,7 +84,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.9.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20251217-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260205-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
   "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -99,7 +99,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.2",
+  "com.ibm.icu" % "icu4j" % "78.3",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),

@@ -18,7 +18,6 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, RenderResult, act } from "@testing-library/react";
 import * as React from "react";
-import { v4 } from "uuid";
 import {
   failedUploadResponse,
   files,
@@ -35,7 +34,7 @@ const mockNewUpload = jest.spyOn(FileUploaderModule, "newUpload");
 mockNewUpload.mockImplementation(() =>
   Promise.resolve({
     ...successfulUploadResponse,
-    entry: { ...uploadedFileEntry, id: v4() },
+    entry: { ...uploadedFileEntry, id: crypto.randomUUID() },
   }),
 );
 const mockUpdateDuplicateMessage = jest.spyOn(
