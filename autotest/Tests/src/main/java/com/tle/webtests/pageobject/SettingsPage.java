@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byLinkText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.sleep;
 
 import com.codeborne.selenide.SelenideElement;
@@ -13,9 +14,26 @@ import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.externaltools.ShowExternalToolsPage;
 import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
 import com.tle.webtests.pageobject.searching.SearchSettingsPage;
-import com.tle.webtests.pageobject.settings.*;
+import com.tle.webtests.pageobject.settings.ActiveCachingPage;
+import com.tle.webtests.pageobject.settings.ContentRestrictionsPage;
+import com.tle.webtests.pageobject.settings.CourseDefaultsPage;
+import com.tle.webtests.pageobject.settings.DateFormatSettingPage;
+import com.tle.webtests.pageobject.settings.DiagnosticsPage;
+import com.tle.webtests.pageobject.settings.GoogleApiSettingsPage;
+import com.tle.webtests.pageobject.settings.GoogleSettingsPage;
+import com.tle.webtests.pageobject.settings.HarvesterSkipDrmPage;
+import com.tle.webtests.pageobject.settings.LTI13PlatformsSettingsPage;
+import com.tle.webtests.pageobject.settings.LanguageSettingsPage;
+import com.tle.webtests.pageobject.settings.LoginSettingsPage;
+import com.tle.webtests.pageobject.settings.MailSettingsPage;
+import com.tle.webtests.pageobject.settings.ManualDataFixesPage;
+import com.tle.webtests.pageobject.settings.MimeSearchPage;
+import com.tle.webtests.pageobject.settings.OAISettingsPage;
+import com.tle.webtests.pageobject.settings.OidcSettingsPage;
+import com.tle.webtests.pageobject.settings.PSSSettingsPage;
+import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
+import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class SettingsPage extends AbstractPage<SettingsPage> {
@@ -61,12 +79,12 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   @Override
   protected WebElement findLoadedElement() {
-    return driver.findElement(By.id("settingsPage"));
+    return $("#settingsPage");
   }
 
   @Override
   protected void loadUrl() {
-    driver.get(context.getBaseUrl() + "access/settings.do");
+    open(context.getBaseUrl() + "access/settings.do");
   }
 
   protected SelenideElement expandGroup(String group) {
