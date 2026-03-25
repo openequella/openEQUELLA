@@ -606,10 +606,6 @@
     <parameter id="class" value="com.tle.common.security.remoting.RemoteTLEAclManager" />
     <parameter id="bean" value="bean:remoteAclService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="schemaInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteSchemaService" />
-    <parameter id="bean" value="bean:remoteSchemaService" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="collectionInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteItemDefinitionService" />
     <parameter id="bean" value="bean:remoteItemdefinitionService" />
