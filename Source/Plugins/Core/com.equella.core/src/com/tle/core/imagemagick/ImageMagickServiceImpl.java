@@ -37,7 +37,6 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +64,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   private static final int STD_THUMB_HEIGHT = 66;
 
+  private static final String BORDER_WIDTH_PX = "50";
+
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
@@ -85,9 +86,12 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
     List<String> args = new ArrayList<String>();
     validateAgainstTimer(srcFile);
-    srcFile = extractGifFrameIfNeeded(srcFile, args);
 
     try {
+      if (srcFile.getAbsolutePath().endsWith(".gif")) {
+        srcFile = extractFirstGifFrame(srcFile);
+      }
+
       Dimension imgDimensions = getImageDimensions(srcFile);
       options.setImgWidth(imgDimensions.width);
       options.setImgHeight(imgDimensions.height);
@@ -105,7 +109,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
     ExecUtils.exec(args).ensureOk();
 
-    cleanupGifFrame(srcFile, options);
+    cleanupGifFrame(srcFile);
     checkForBlankThumbnail(dstFile, options);
   }
 
@@ -134,7 +138,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public Dimension getImageDimensions(File image) throws IOException {
     ExecResult result =
         ExecUtils.exec(
-            magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", toUtf8Path(image));
+            magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", image.getAbsolutePath());
     result.ensureOk();
 
     Matcher m = DIMENSIONS_PATTERN.matcher(result.getStdout());
@@ -265,7 +269,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
         ExecUtils.execWithTimeLimit(
             thumbnailingTimeout,
             new String[] {
-              magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", toUtf8Path(image)
+              magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", image.getAbsolutePath()
             });
     result.ensureOk();
   }
@@ -274,24 +278,32 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
    * If the source is a GIF, extracts its first frame to a temporary file and returns it. Otherwise
    * returns the original file unchanged.
    */
-  private File extractGifFrameIfNeeded(File srcFile, List<String> args) {
-    if (!srcFile.getAbsolutePath().endsWith(".gif")) {
-      return srcFile;
+  private File extractFirstGifFrame(File gifFile) throws IOException {
+    if (!hasExtension(gifFile, "gif")) {
+      return gifFile;
     }
-    String framePath = srcFile.getParent() + "\\frame.gif";
-    args.add(magickExe.getAbsolutePath());
-    args.add(srcFile.getAbsolutePath() + "[0]");
-    args.add(framePath);
-    ExecUtils.exec(args);
-    args.clear();
-    return new File(framePath);
+
+    File frameFile = new File(gifFile.getParent(), "frame.gif");
+    List<String> command =
+        Arrays.asList(
+            magickExe.getAbsolutePath(),
+            gifFile.getAbsolutePath() + "[0]",
+            frameFile.getAbsolutePath());
+
+    ExecUtils.exec(command);
+    return frameFile;
   }
 
   /** Ensures the parent directory of {@code file} exists, creating it if necessary. */
   private void ensureParentDirectoryExists(File file) throws IOException {
     File parent = file.getParentFile();
-    if (!parent.mkdirs() && !parent.exists()) {
-      throw new IOException("Could not create/confirm directory " + parent.getAbsolutePath());
+    boolean created = parent.mkdirs();
+    boolean exists = parent.exists();
+    if (!created && !exists) {
+      throw new IOException(
+          String.format(
+              "Failed to create directory '%s'. Check filesystem permissions.",
+              parent.getAbsolutePath()));
     }
   }
 
@@ -315,10 +327,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     int thumbHeight = options.getHeight();
 
     args.add("-thumbnail");
-    boolean fitInside =
-        options.isKeepAspect()
-            || (options.getImgHeight() < thumbHeight && options.getImgWidth() < thumbWidth);
-    args.add(thumbWidth + "x" + thumbHeight + (fitInside ? ">" : "^"));
+    boolean shrinkOnly =
+        options.isKeepAspect() || isAlreadySmallerThanTarget(options, thumbWidth, thumbHeight);
+    String resizeOperator = shrinkOnly ? ">" : "^";
+    args.add(thumbWidth + "x" + thumbHeight + resizeOperator);
 
     if (options.getGravity() != null) {
       args.add("-gravity");
@@ -329,7 +341,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       args.add("-bordercolor");
       args.add(options.getBackgroundColour());
       args.add("-border");
-      args.add("50");
+      args.add(BORDER_WIDTH_PX);
     }
 
     int cropWidth = options.getCropWidth();
@@ -342,7 +354,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   }
 
   /** Deletes a temporary GIF frame file after thumbnailing is complete. */
-  private void cleanupGifFrame(File srcFile, ThumbnailOptions options) {
+  private void cleanupGifFrame(File srcFile) {
     if (!srcFile.getAbsolutePath().endsWith("frame.gif")) {
       return;
     }
@@ -366,7 +378,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
             "-threshold",
             "99%",
             "-format",
-            "\"%[fx:100*mean]\"",
+            "\"%[fx:100*mean]\"", // Calculates average pixel brightness as percentage
             "info:");
     result.ensureOk();
     if (result.getStdout().contains("100")) {
@@ -376,9 +388,16 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
   }
 
-  /** Returns the absolute path of a file, round-tripped through UTF-8 bytes. */
-  private String toUtf8Path(File file) {
-    return new String(
-        file.getAbsolutePath().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+  /**
+   * Checks if the original image dimensions are already smaller than the target thumbnail
+   * dimensions.
+   */
+  private boolean isAlreadySmallerThanTarget(
+      ThumbnailOptions options, int targetWidth, int targetHeight) {
+    return options.getImgHeight() < targetHeight && options.getImgWidth() < targetWidth;
+  }
+
+  private boolean hasExtension(File file, String ext) {
+    return file.getName().toLowerCase().endsWith("." + ext.toLowerCase());
   }
 }
