@@ -259,6 +259,17 @@ task is required to copy the jars into a known location for the runner. This tas
 ./sbt jpfWriteDevJars
 ```
 
+### Dependency on the GraphQL client library
+
+The Admin Console requires the Scala GraphQL client. Until this is published to Maven Central, you must build it locally (and re-run this whenever the library code changes):
+
+```bash
+# From the project root:
+(cd graphql-client/scala && ./sbt publishLocal)
+```
+
+For more details on the client module, see the [GraphQL Client README](graphql-client/scala/README.md).
+
 ### Running SBT task to generate non-java resources
 
 When you build openEQUELLA from within IntelliJ, it will only compile Scala/Java sources and copy
