@@ -55,6 +55,16 @@ The generated files are stored in `src/main/scala/io/github/openequella/graphql/
 committed to the repository, making it easy to review exactly what changed in the generated API
 when the schema is updated.
 
+After code generation, run the SBT `compile` task to automatically add license headers to the
+generated files:
+
+```bash
+sbt compile
+```
+
+This uses the [sbt-header plugin](https://github.com/sbt/sbt-header), which automatically applies
+the header set in `build.sbt` to all source files during compilation.
+
 ## IntelliJ Setup
 
 ### Add the graphql-client module
@@ -97,10 +107,32 @@ approach is to maintain a dedicated working directory:
 2. Create a separate local database for the new working directory.
 3. In the new working directory, run `./sbt prepareDevConfig` and then adjust the generated
    configuration:
-   - Point it at your new database.
-   - Set a different port (e.g. `9090`) so it doesn't clash with your main working directory.
+  - Point it at your new database.
+  - Set a different port (e.g. `9090`) so it doesn't clash with your main working directory.
 
 > **Note on git hooks:** Pre-commit hooks are shared across worktrees because there is only one
 > real `.git` directory (in the original working directory). In practice this is usually fine —
 > Husky delegates to tooling in the active working directory — but it is worth keeping in mind if
 > anything unexpected happens with the pre-commit hooks.
+
+## Code Quality
+
+This project enforces strict code quality standards:
+
+### Compiler Warnings
+
+The Scala compiler is configured with strict warning settings via `scalacOptions`:
+
+- `-Werror`: Treat all compiler warnings as errors, ensuring code quality is maintained
+- `-Wunused`: Warn about unused imports, variables, and other unused declarations
+- `-Xlint`: Enable additional linting checks for best practices
+
+These settings ensure that code quality issues are caught early in the development process and must
+be resolved before code can compile.
+
+### Static Analysis with Scapegoat
+
+[Scapegoat](https://github.com/scapegoat-scala/scapegoat) is integrated as a static code analyzer.
+It runs during compilation to detect potential bugs and code smells. Generated files in
+`src/main/scala/io/github/openequella/graphql/client/` are excluded from Scapegoat analysis since
+they are automatically generated.
