@@ -2,12 +2,12 @@ package com.tle.webtests.pageobject;
 
 import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byLinkText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -77,8 +77,6 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   // --- UI toggles (public for test access) ---
   public static final String TOGGLE_NEW_UI = "Enable new UI";
   public static final String TOGGLE_NEW_SEARCH = "Enable new search page";
-
-  private static final int UI_TOGGLE_SAVE_DELAY_MS = 1000;
 
   public SettingsPage(PageContext context) {
     super(context);
@@ -231,12 +229,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   /** Enable or disable new UI feature. */
   public void setNewUI(boolean enable) {
-    boolean stateChanged = toggleSwitchInUIGroup(TOGGLE_NEW_UI, enable);
-
-    // Only sleep if we actually clicked the switch and triggered a background save
-    if (stateChanged) {
-      sleep(UI_TOGGLE_SAVE_DELAY_MS);
-    }
+    toggleSwitchInUIGroup(TOGGLE_NEW_UI, enable);
   }
 
   /** Enable or disable new search page UI. NewSearch only works when new UI is enabled. */
@@ -244,12 +237,8 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     toggleSwitchInUIGroup(TOGGLE_NEW_SEARCH, enable);
   }
 
-  /**
-   * Toggles a Material-UI switch.
-   *
-   * @return true if the switch state was changed, false if it was already correct.
-   */
-  private boolean toggleSwitchInUIGroup(String switchText, boolean enable) {
+  /** Helper method to find and click a toggle only if the state change is required. */
+  private void toggleSwitchInUIGroup(String switchText, boolean enable) {
     SelenideElement groupElement = expandGroup(GROUP_UI);
 
     ElementsCollection labels = groupElement.$$("label");
@@ -261,9 +250,17 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     if (currentState != enable) {
       checkbox.shouldBe(enabled);
       label.click();
-      return true;
+      handlePostClickSideEffects(switchText, enable);
     }
+  }
 
-    return false;
+  /**
+   * Verifies that the correct container i.e. #mainDiv for new UI and #eqpageForm for legacy UI
+   * loads after toggling new UI switch.
+   */
+  private void handlePostClickSideEffects(String toggleName, boolean newState) {
+    if (TOGGLE_NEW_UI.equals(toggleName)) {
+      $(newState ? "#mainDiv" : "#eqpageForm").shouldBe(exist);
+    }
   }
 }
