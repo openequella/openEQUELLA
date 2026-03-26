@@ -77,6 +77,8 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   public static final String TOGGLE_NEW_UI = "Enable new UI";
   public static final String TOGGLE_NEW_SEARCH = "Enable new search page";
 
+  private static final int UI_TOGGLE_SAVE_DELAY_MS = 1000;
+
   public SettingsPage(PageContext context) {
     super(context);
     // Tell Selenide to use the existing browser session
@@ -232,7 +234,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
     // Only sleep if we actually clicked the switch and triggered a background save
     if (stateChanged) {
-      sleep(1000);
+      sleep(UI_TOGGLE_SAVE_DELAY_MS);
     }
   }
 
