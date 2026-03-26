@@ -9,6 +9,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.Selenide.sleep;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import com.tle.webtests.framework.PageContext;
@@ -250,10 +251,14 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
    */
   private boolean toggleSwitchInUIGroup(String switchText, boolean enable) {
     SelenideElement groupElement = expandGroup(GROUP_UI);
-    SelenideElement label = groupElement.$$("label").findBy(text(switchText));
+
+    ElementsCollection labels = groupElement.$$("label");
+    SelenideElement label = labels.findBy(text(switchText));
+
     SelenideElement checkbox = label.$("input[type='checkbox']");
 
-    if (checkbox.isSelected() != enable) {
+    boolean currentState = checkbox.isSelected();
+    if (currentState != enable) {
       checkbox.shouldBe(enabled);
       label.click();
       return true;
