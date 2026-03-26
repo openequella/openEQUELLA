@@ -1,43 +1,46 @@
 # Scala GraphQL Client for openEQUELLA
 
 This library is currently intended to be built and published locally before you then run the oEQ
-build. Long term, the idea will be to publish this publicly.
+build. Long term, the idea will be to publish this to a public Maven repository.
+
+> **Prerequisites:** Ensure you have the openEQUELLA development environment set up as described
+> in the root [CONTRIBUTING.md](../../CONTRIBUTING.md) before following these instructions.
 
 Guide for later on how to do publishing: <https://www.scala-sbt.org/1.x/docs/Publishing.html>
 
-For now, the following commands should be run in the `graphql-client/scala` directory:
+To build and publish locally, run the following command from the `graphql-client/scala` directory:
 
-```
+```bash
 sbt publishLocal
 ```
 
-This will then place the library in your local Ivy repository.
+This places the library in your local Ivy repository, where the main oEQ build can then find it.
 
 ## Code Generation
 
-First, download the latest schema from a local instance of openEQUELLA. This can be done by running
-the following command:
+First, download the latest schema from a local instance of openEQUELLA:
 
-```
+```bash
 wget http://localhost:8080/vanilla/graphql/schema
 ```
 
-(This assumes that your institution URL is `http://localhost:8080/vanilla` and that you have enabled
-the GraphQL schema endpoint. To do this set the `graphql.schema` property to `true` in the
-`optional-config.properties` file.)
+> **Note:** This assumes your institution URL is `http://localhost:8080/vanilla` and that the
+> GraphQL schema endpoint is enabled. To enable it, set `graphql.schema=true` in
+> `optional-config.properties`.
 
-Now place the `schema` file you downloaded in the `src/main/resources` directory. And rename it to
-`schema.graphql` so that the following instructions work.
+Move the downloaded `schema` file into `src/main/resources/` and rename it to `schema.graphql`.
 
-Alternatively, you can use the SBT task:
+Alternatively, the following SBT task handles the download and places the file in the correct
+location automatically, replacing the manual steps above:
 
-```
+```bash
 sbt downloadSchema
 ```
 
-Lastly, run the following command in SBT to generate the client classes:
+Once the schema is in place, open the SBT console and run the following task to generate the client
+classes:
 
-```
+```sbt
 calibanGenClient
   src/main/resources/schema.graphql
   src/main/scala/io/github/openequella/graphql/client/
@@ -46,12 +49,11 @@ calibanGenClient
   --scalarMappings LocalDateTime:java.time.LocalDateTime
 ```
 
-**NOTE:** Important to include the trailing slash for the output path.
+> **Note:** The trailing slash on the output path is required.
 
-### Storage of generated files
-
-The generated files are stored in the `src/main/scala/io/github/openequella/graphql/client` directory.
-We then also keep this in the repository so that it is straightforward to see what has changed.
+The generated files are stored in `src/main/scala/io/github/openequella/graphql/client/` and
+committed to the repository, making it easy to review exactly what changed in the generated API
+when the schema is updated.
 
 ## IntelliJ Setup
 
@@ -83,10 +85,12 @@ import as always used:
 
 ### Dedicated working directory
 
+> **Temporary:** This section is only relevant while the GraphQL feature branch has not yet been
+> merged to `develop`. It can be removed once that merge is complete.
+
 Switching between the main branches (e.g. `develop`) and the GraphQL feature branches
-(e.g. `component/admin-comms`) can cause issues due to the additional module. Until the feature
-branch is merged back to `develop`, the recommended approach is to maintain a dedicated working
-directory:
+(e.g. `component/admin-comms`) can cause issues due to the additional module. The recommended
+approach is to maintain a dedicated working directory:
 
 1. Use [git worktrees](https://git-scm.com/docs/git-worktree) to create an additional working
    directory — this avoids the overhead of a full clone.
@@ -100,4 +104,3 @@ directory:
 > real `.git` directory (in the original working directory). In practice this is usually fine —
 > Husky delegates to tooling in the active working directory — but it is worth keeping in mind if
 > anything unexpected happens with the pre-commit hooks.
-
