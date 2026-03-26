@@ -88,7 +88,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   @Override
   protected WebElement findLoadedElement() {
-    return $("#settingsPage");
+    return $("#settingsPage").toWebElement();
   }
 
   @Override
