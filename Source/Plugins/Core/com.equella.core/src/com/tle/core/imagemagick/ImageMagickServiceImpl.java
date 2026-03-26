@@ -96,7 +96,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       options.setImgWidth(imgDimensions.width);
       options.setImgHeight(imgDimensions.height);
 
-      args.add(magickExe.getAbsolutePath());
+      addExecutablePath(args);
       ensureParentDirectoryExists(dstFile);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -137,8 +137,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public Dimension getImageDimensions(File image) throws IOException {
     ExecResult result =
-        ExecUtils.exec(
-            magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", image.getAbsolutePath());
+        ExecUtils.exec(getMagickExePath(), "identify", "-format", "%wx%h", image.getAbsolutePath());
     result.ensureOk();
 
     Matcher m = DIMENSIONS_PATTERN.matcher(result.getStdout());
@@ -194,7 +193,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public void checkServiceRequest(CheckServiceRequestEvent request) {
     ServiceStatus status = new ServiceStatus(ServiceName.IMAGEMAGICK);
     try {
-      ExecResult result = ExecUtils.exec(magickExe.getAbsolutePath(), "identify", "-version");
+      ExecResult result = ExecUtils.exec(getMagickExePath(), "identify", "-version");
       if (!result.getStderr().isEmpty()) {
         status.setServiceStatus(Status.BAD);
         status.setMoreInfo(
@@ -239,7 +238,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       boolean keepRatio,
       String[] options) {
     List<String> args = new ArrayList<>();
-    args.add(magickExe.getAbsolutePath());
+    addExecutablePath(args);
     args.add(src.getAbsolutePath());
     args.add(op);
     if (opParam != null) {
@@ -269,7 +268,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
         ExecUtils.execWithTimeLimit(
             thumbnailingTimeout,
             new String[] {
-              magickExe.getAbsolutePath(), "identify", "-format", "%wx%h", image.getAbsolutePath()
+              getMagickExePath(), "identify", "-format", "%wx%h", image.getAbsolutePath()
             });
     result.ensureOk();
   }
@@ -286,9 +285,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     File frameFile = new File(gifFile.getParent(), "frame.gif");
     List<String> command =
         Arrays.asList(
-            magickExe.getAbsolutePath(),
-            gifFile.getAbsolutePath() + "[0]",
-            frameFile.getAbsolutePath());
+            getMagickExePath(), gifFile.getAbsolutePath() + "[0]", frameFile.getAbsolutePath());
 
     ExecUtils.exec(command);
     return frameFile;
@@ -373,7 +370,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
     ExecResult result =
         ExecUtils.exec(
-            magickExe.getAbsolutePath(),
+            getMagickExePath(),
             dstFile.getAbsolutePath(),
             "-threshold",
             "99%",
@@ -399,5 +396,13 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   private boolean hasExtension(File file, String ext) {
     return file.getName().toLowerCase().endsWith("." + ext.toLowerCase());
+  }
+
+  private String getMagickExePath() {
+    return magickExe.getAbsolutePath();
+  }
+
+  private void addExecutablePath(List<String> args) {
+    args.add(getMagickExePath());
   }
 }
