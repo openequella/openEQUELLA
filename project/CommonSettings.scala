@@ -101,7 +101,7 @@ object CommonSettings extends AutoPlugin {
     ),
     libraryDependencies ++= Seq(
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest" %% "scalatest"       % "3.2.19" % Test
+      "org.scalatest" %% "scalatest"       % "3.2.20" % Test
     )
   )
 }
