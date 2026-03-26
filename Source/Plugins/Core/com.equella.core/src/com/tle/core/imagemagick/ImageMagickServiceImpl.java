@@ -102,6 +102,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       throw new RuntimeException(e);
     }
 
+    // NOTE: Order is significant — magick requires: executable, size hint, src, transform args, dst
+    // See: https://imagemagick.org/script/command-line-processing.php
     appendSizeArgs(args, options);
     args.add(srcFile.getAbsolutePath());
     appendThumbnailArgs(args, options);
