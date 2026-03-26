@@ -39,11 +39,13 @@ import org.openqa.selenium.WebElement;
 
 public class SettingsPage extends AbstractPage<SettingsPage> {
 
+  // --- Group identifiers ---
   private static final String GROUP_GENERAL = "General";
   private static final String GROUP_INTEGRATIONS = "Integrations";
   private static final String GROUP_SEARCHING = "Search";
   private static final String GROUP_UI = "UI";
 
+  // --- General settings ---
   private static final String SETTING_ACTIVE_CACHING = "Active caching";
   private static final String SETTING_CONTENT_RESTRICTIONS = "Content restrictions and quotas";
   private static final String SETTING_COURSE_DEFAULTS = "Copyright";
@@ -55,20 +57,23 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   private static final String SETTING_HARVESTER = "Harvester";
   private static final String SETTING_LANGUAGES = "Languages";
   private static final String SETTING_LOGIN = "Login";
-  private static final String SETTING_LTI_13 = "LTI 1.3 platforms";
   private static final String SETTING_MAIL = "Mail";
   private static final String SETTING_MANUAL_DATA_FIXES = "Manual data fixes";
   private static final String SETTING_MIME_TYPES = "MIME types";
   private static final String SETTING_OAI = "OAI";
-  private static final String SETTING_OAUTH = "OAuth";
-  private static final String SETTING_OIDC = "OpenID Connect (OIDC)";
-  private static final String SETTING_PSS = "Pearson SCORM Services (PSS)";
   private static final String SETTING_SEARCH_INDEXING = "Searching and content indexing";
   private static final String SETTING_SEARCH_PAGE = "Search page";
   private static final String SETTING_SELECTION_SESSIONS = "Selection sessions";
-  private static final String SETTING_SHORTCUTURLS = "Shortcut URLs";
+  private static final String SETTING_SHORTCUT_URLS = "Shortcut URLs";
   private static final String SETTING_USER_SCRIPTS = "User scripts";
 
+  // --- Integration settings ---
+  private static final String SETTING_LTI_13 = "LTI 1.3 platforms";
+  private static final String SETTING_OAUTH = "OAuth";
+  private static final String SETTING_OIDC = "OpenID Connect (OIDC)";
+  private static final String SETTING_PSS = "Pearson SCORM Services (PSS)";
+
+  // --- UI toggles (public for test access) ---
   public static final String TOGGLE_NEW_UI = "Enable new UI";
   public static final String TOGGLE_NEW_SEARCH = "Enable new search page";
 
@@ -141,7 +146,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     return clickSetting(SETTING_HARVESTER, new HarvesterSkipDrmPage(context));
   }
 
-  public LanguageSettingsPage languageSetingsPage() {
+  public LanguageSettingsPage languageSettingsPage() {
     return clickSetting(SETTING_LANGUAGES, new LanguageSettingsPage(context));
   }
 
@@ -158,7 +163,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   public ShortcutURLsSettingsPage shortcutURLsSettingsPage() {
-    return clickSetting(SETTING_SHORTCUTURLS, new ShortcutURLsSettingsPage(context));
+    return clickSetting(SETTING_SHORTCUT_URLS, new ShortcutURLsSettingsPage(context));
   }
 
   public ActiveCachingPage activeCachingSettings() {
@@ -221,7 +226,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   // --- UI Settings Toggling ---
 
-  /** Enable or disable new search UI. */
+  /** Enable or disable new UI feature. */
   public void setNewUI(boolean enable) {
     boolean stateChanged = toggleSwitchInUIGroup(TOGGLE_NEW_UI, enable);
 
@@ -231,7 +236,7 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     }
   }
 
-  /** Enable or disable new search UI. NewSearch only works when new UI is enabled. */
+  /** Enable or disable new search page UI. NewSearch only works when new UI is enabled. */
   public void setNewSearchUI(boolean enable) {
     toggleSwitchInUIGroup(TOGGLE_NEW_SEARCH, enable);
   }

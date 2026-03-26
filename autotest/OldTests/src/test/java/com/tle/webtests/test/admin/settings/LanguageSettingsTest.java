@@ -64,7 +64,7 @@ public class LanguageSettingsTest extends AbstractSessionTest {
   private LanguageSettingsPage loginToLanguageSettingsPage() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.languageSetingsPage();
+    return sp.languageSettingsPage();
   }
 
   @Override
