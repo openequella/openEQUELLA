@@ -21,7 +21,6 @@ package com.tle.admin.boot;
 import com.dytech.common.net.Proxy;
 import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
-import com.tle.client.ListCookieHandler;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.common.Check;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
@@ -35,6 +34,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
@@ -130,6 +130,7 @@ public final class Bootstrap {
 
   private boolean login(URL endpointUrl) {
     try {
+      CookieHandler.setDefault(new CookieManager());
       String tokenParam = System.getProperty(TOKEN_PARAMETER);
       if (tokenParam != null) {
         String token =
@@ -140,10 +141,6 @@ public final class Bootstrap {
         return true;
       } else {
         // bring up username/password modal
-        ListCookieHandler lch = new ListCookieHandler();
-        lch.setIgnoreCookieOverrideAttempts(true);
-        CookieHandler.setDefault(lch);
-
         String username = System.getProperty(USERNAME_PARAMETER);
         String password = System.getProperty(PASSWORD_PARAMETER);
 

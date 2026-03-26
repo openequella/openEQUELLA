@@ -29,9 +29,8 @@ import scala.jdk.CollectionConverters._
 object CookieHelper {
   private val LOGGER: Logger = LoggerFactory.getLogger(CookieHelper.getClass)
 
-  /** Extract the cookies from the system store targetting the provided URI. With the knowledge that
-    * the `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which only
-    * stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
+  /** Extract the cookies from the system store targeting the provided URI. Loads cookies from the
+    * `Cookie` header as returned by the system `CookieHandler`.
     * @param uri
     *   The URI to target for cookies.
     */

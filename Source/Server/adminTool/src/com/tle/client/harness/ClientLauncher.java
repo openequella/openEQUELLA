@@ -24,7 +24,6 @@ import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.PluginServiceImpl;
-import com.tle.client.ListCookieHandler;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.BlindSSLSocketFactory;
 import com.tle.core.plugins.PluginAwareObjectInputStream;
@@ -53,6 +52,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -351,9 +351,7 @@ public class ClientLauncher extends JFrame
             LOGGER.info("Endpoint:  " + endpointUrl.toString());
 
             // Initialise server session
-            ListCookieHandler lch = new ListCookieHandler();
-            lch.setIgnoreCookieOverrideAttempts(true);
-            CookieHandler.setDefault(lch);
+            CookieHandler.setDefault(new CookieManager());
 
             Map<String, String> params = new HashMap<String, String>();
             params.put("username", server.getUsername());
