@@ -1,5 +1,6 @@
 package com.tle.webtests.pageobject;
 
+import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byLinkText;
@@ -90,7 +91,13 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   protected SelenideElement expandGroup(String group) {
     SelenideElement groupElement =
         $$(".SettingsPage-heading").findBy(text(group)).closest(".MuiAccordion-root");
-    groupElement.$(".SettingsPage-heading").click();
+
+    // Only click if not already expanded
+    if (!groupElement.has(cssClass("Mui-expanded"))) {
+      SelenideElement heading = groupElement.$(".SettingsPage-heading");
+      heading.click();
+    }
+
     return groupElement;
   }
 
