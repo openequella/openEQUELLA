@@ -27,10 +27,10 @@ import java.net.URL
   * loading system cookies. As can be seen in the login methods (e.g.
   * `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
   * `CookieHandler.getDefault` method to load system cookies. This helper class provides a way to
-  * load system cookies into a ClientConfiguration object.
+  * load those system cookies into a ClientConfiguration object.
   *
-  * The main cookie of interest is the `JSESSIONID` cookie. This cookie is used to maintain a
-  * session with the openEQUELLA.
+  * The main cookie of interest is the `JSESSIONID` cookie, used to maintain a session with
+  * openEQUELLA.
   */
 object ClientConfigurationHelper {
 
@@ -40,9 +40,7 @@ object ClientConfigurationHelper {
     ClientConfiguration(Uri(url.toURI))
   }
 
-  /** Load system cookies into a ClientConfiguration object. With the knowledge that the
-    * `CookieHandler` used in the admin console is `com.tle.client.ListCookieHandler` which only
-    * stores the `Cookie` header, this method will only load cookies from the `Cookie` header.
+  /** Load system cookies into a ClientConfiguration object.
     */
   def loadSystemCookies(cfg: ClientConfiguration): Unit = {
     cfg.cookies.addAll(CookieHelper.getSystemCookies(cfg.institutionUrl))
