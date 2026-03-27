@@ -35,7 +35,7 @@ public class PearsonSCORMPlayerTest extends AbstractCleanupTest {
   public void testLoadScormZip() {
     logon("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    PSSSettingsPage psssp = sp.pssSettingsPage();
+    PSSSettingsPage psssp = sp.clickPssSetting();
     psssp.enablePSS(true);
     // Set fields
     psssp.setBaseUrl(BASE_URL);
@@ -77,7 +77,7 @@ public class PearsonSCORMPlayerTest extends AbstractCleanupTest {
   protected void cleanupAfterClass() throws Exception {
     super.cleanupAfterClass();
     SettingsPage sp = new SettingsPage(context).load();
-    PSSSettingsPage psssp = sp.pssSettingsPage();
+    PSSSettingsPage psssp = sp.clickPssSetting();
     psssp.enablePSS(false);
     psssp.save();
   }

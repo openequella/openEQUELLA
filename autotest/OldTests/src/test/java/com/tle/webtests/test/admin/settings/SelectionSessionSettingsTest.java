@@ -93,7 +93,7 @@ public class SelectionSessionSettingsTest extends AbstractSessionTest {
   private SelectionSessionSettingsPage logonToSelectionSessionSettings() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.selectionSessionSettingsPage();
+    return sp.clickSelectionSessionSetting();
   }
 
   @Override

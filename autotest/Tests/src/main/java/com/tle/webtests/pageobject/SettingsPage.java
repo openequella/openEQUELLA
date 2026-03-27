@@ -48,25 +48,19 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   private static final String GROUP_INTEGRATIONS = "Integrations";
   private static final String GROUP_SEARCHING = "Search";
   private static final String GROUP_UI = "UI";
+  private static final String GROUP_DIAGNOSTICS = "Diagnostics";
 
   // --- General settings ---
   private static final String SETTING_ACTIVE_CACHING = "Active caching";
   private static final String SETTING_CONTENT_RESTRICTIONS = "Content restrictions and quotas";
-  private static final String SETTING_COURSE_DEFAULTS = "Copyright";
   private static final String SETTING_DATE_FORMAT = "Display date format";
-  private static final String SETTING_DIAGNOSTICS = "Diagnostics";
-  private static final String SETTING_EXTERNAL_TOOLS = "External tool providers (LTI)";
   private static final String SETTING_GOOGLE_ANALYTICS = "Google Analytics";
   private static final String SETTING_GOOGLE_API = "Google API";
   private static final String SETTING_HARVESTER = "Harvester";
   private static final String SETTING_LANGUAGES = "Languages";
   private static final String SETTING_LOGIN = "Login";
   private static final String SETTING_MAIL = "Mail";
-  private static final String SETTING_MANUAL_DATA_FIXES = "Manual data fixes";
   private static final String SETTING_MIME_TYPES = "MIME types";
-  private static final String SETTING_OAI = "OAI";
-  private static final String SETTING_SEARCH_INDEXING = "Searching and content indexing";
-  private static final String SETTING_SEARCH_PAGE = "Search page";
   private static final String SETTING_SELECTION_SESSIONS = "Selection sessions";
   private static final String SETTING_SHORTCUT_URLS = "Shortcut URLs";
   private static final String SETTING_USER_SCRIPTS = "User scripts";
@@ -76,6 +70,16 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   private static final String SETTING_OAUTH = "OAuth";
   private static final String SETTING_OIDC = "OpenID Connect (OIDC)";
   private static final String SETTING_PSS = "Pearson SCORM Services (PSS)";
+  private static final String SETTING_OAI = "OAI";
+  private static final String SETTING_COURSE_DEFAULTS = "Copyright";
+  private static final String SETTING_EXTERNAL_TOOLS = "External tool providers (LTI)";
+
+  // --- Diagnostics settings ---
+  private static final String SETTING_DIAGNOSTICS = "Diagnostics";
+  private static final String SETTING_MANUAL_DATA_FIXES = "Manual data fixes";
+
+  // --- Search settings ---
+  private static final String SETTING_SEARCH_PAGE = "Search page";
 
   // --- UI toggles (public for test access) ---
   public static final String TOGGLE_NEW_UI = "Enable new UI";
@@ -109,117 +113,118 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     return page.get();
   }
 
-  /** Overloaded helper for the most common group: General */
-  protected <T extends AbstractPage<T>> T clickSetting(String title, T page) {
-    return clickSetting(GROUP_GENERAL, title, page);
-  }
-
   public boolean isSettingVisible(String title) {
     return $(byLinkText(title)).isDisplayed();
   }
 
   // --- General Settings Navigations ---
 
-  public MimeSearchPage mimeSettings() {
-    return clickSetting(SETTING_MIME_TYPES, new MimeSearchPage(context));
+  protected <T extends AbstractPage<T>> T clickGeneralSetting(String title, T page) {
+    return clickSetting(GROUP_GENERAL, title, page);
   }
 
-  public GoogleApiSettingsPage googleApiSettings() {
-    return clickSetting(SETTING_GOOGLE_API, new GoogleApiSettingsPage(context));
+  public MimeSearchPage clickMimeSetting() {
+    return clickGeneralSetting(SETTING_MIME_TYPES, new MimeSearchPage(context));
   }
 
-  public GoogleSettingsPage googleSettings() {
-    return clickSetting(SETTING_GOOGLE_ANALYTICS, new GoogleSettingsPage(context));
+  public GoogleApiSettingsPage clickGoogleApiSetting() {
+    return clickGeneralSetting(SETTING_GOOGLE_API, new GoogleApiSettingsPage(context));
   }
 
-  public ContentRestrictionsPage contentRestrictionsSettings() {
-    return clickSetting(SETTING_CONTENT_RESTRICTIONS, new ContentRestrictionsPage(context));
+  public GoogleSettingsPage clickGoogleSetting() {
+    return clickGeneralSetting(SETTING_GOOGLE_ANALYTICS, new GoogleSettingsPage(context));
   }
 
-  public ShowExternalToolsPage externalToolsSettings() {
-    return clickSetting(SETTING_EXTERNAL_TOOLS, new ShowExternalToolsPage(context));
+  public ContentRestrictionsPage clickContentRestrictionsSetting() {
+    return clickGeneralSetting(SETTING_CONTENT_RESTRICTIONS, new ContentRestrictionsPage(context));
   }
 
-  public HarvesterSkipDrmPage harvestSkipDrmSettings() {
-    return clickSetting(SETTING_HARVESTER, new HarvesterSkipDrmPage(context));
+  public HarvesterSkipDrmPage clickHarvestSkipDrmSetting() {
+    return clickGeneralSetting(SETTING_HARVESTER, new HarvesterSkipDrmPage(context));
   }
 
-  public LanguageSettingsPage languageSettingsPage() {
-    return clickSetting(SETTING_LANGUAGES, new LanguageSettingsPage(context));
+  public LanguageSettingsPage clickLanguageSetting() {
+    return clickGeneralSetting(SETTING_LANGUAGES, new LanguageSettingsPage(context));
   }
 
-  public LoginSettingsPage loginSettings() {
-    return clickSetting(SETTING_LOGIN, new LoginSettingsPage(context));
+  public LoginSettingsPage clickLoginSetting() {
+    return clickGeneralSetting(SETTING_LOGIN, new LoginSettingsPage(context));
   }
 
-  public OAISettingsPage oaiSettingsPage() {
-    return clickSetting(SETTING_OAI, new OAISettingsPage(context));
+  public SelectionSessionSettingsPage clickSelectionSessionSetting() {
+    return clickGeneralSetting(
+        SETTING_SELECTION_SESSIONS, new SelectionSessionSettingsPage(context));
   }
 
-  public SelectionSessionSettingsPage selectionSessionSettingsPage() {
-    return clickSetting(SETTING_SELECTION_SESSIONS, new SelectionSessionSettingsPage(context));
+  public ShortcutURLsSettingsPage clickShortcutURLsSetting() {
+    return clickGeneralSetting(SETTING_SHORTCUT_URLS, new ShortcutURLsSettingsPage(context));
   }
 
-  public ShortcutURLsSettingsPage shortcutURLsSettingsPage() {
-    return clickSetting(SETTING_SHORTCUT_URLS, new ShortcutURLsSettingsPage(context));
+  public ActiveCachingPage clickActiveCachingSetting() {
+    return clickGeneralSetting(SETTING_ACTIVE_CACHING, new ActiveCachingPage(context));
   }
 
-  public ActiveCachingPage activeCachingSettings() {
-    return clickSetting(SETTING_ACTIVE_CACHING, new ActiveCachingPage(context));
+  public MailSettingsPage clickMailSetting() {
+    return clickGeneralSetting(SETTING_MAIL, new MailSettingsPage(context));
   }
 
-  public DiagnosticsPage diagnosticsPage() {
-    return clickSetting(SETTING_DIAGNOSTICS, new DiagnosticsPage(context));
+  public PSSSettingsPage clickPssSetting() {
+    return clickGeneralSetting(SETTING_PSS, new PSSSettingsPage(context));
   }
 
-  public MailSettingsPage mailSettingsPage() {
-    return clickSetting(SETTING_MAIL, new MailSettingsPage(context));
+  public ShowUserScriptsPage clickUserScriptsSetting() {
+    return clickGeneralSetting(SETTING_USER_SCRIPTS, new ShowUserScriptsPage(context));
   }
 
-  public PSSSettingsPage pssSettingsPage() {
-    return clickSetting(SETTING_PSS, new PSSSettingsPage(context));
-  }
-
-  public ShowUserScriptsPage userScriptsPage() {
-    return clickSetting(SETTING_USER_SCRIPTS, new ShowUserScriptsPage(context));
-  }
-
-  public DateFormatSettingPage dateFormatSettingPage() {
-    return clickSetting(SETTING_DATE_FORMAT, new DateFormatSettingPage(context));
-  }
-
-  public ManualDataFixesPage maualDataFixPage() {
-    return clickSetting(SETTING_MANUAL_DATA_FIXES, new ManualDataFixesPage(context));
-  }
-
-  // --- Search Settings Navigations ---
-
-  public boolean isSearchSettingsVisible() {
-    return isSettingVisible(SETTING_SEARCH_INDEXING);
-  }
-
-  public SearchSettingsPage searchSettings() {
-    return clickSetting(GROUP_SEARCHING, SETTING_SEARCH_PAGE, new SearchSettingsPage(context));
+  public DateFormatSettingPage clickDateFormatSetting() {
+    return clickGeneralSetting(SETTING_DATE_FORMAT, new DateFormatSettingPage(context));
   }
 
   // --- Integration Settings Navigations ---
 
-  public CourseDefaultsPage courseDefaultsSettings() {
+  protected <T extends AbstractPage<T>> T clickIntegrationSetting(String title, T page) {
+    return clickSetting(GROUP_INTEGRATIONS, title, page);
+  }
+
+  public CourseDefaultsPage clickCourseDefaultsSetting() {
+    return clickIntegrationSetting(SETTING_COURSE_DEFAULTS, new CourseDefaultsPage(context));
+  }
+
+  public LTI13PlatformsSettingsPage clickLti13PlatformsSetting() {
+    return clickIntegrationSetting(SETTING_LTI_13, new LTI13PlatformsSettingsPage(context));
+  }
+
+  public OidcSettingsPage clickOidcSetting() {
+    return clickIntegrationSetting(SETTING_OIDC, new OidcSettingsPage(context));
+  }
+
+  public OAuthSettingsPage clickOAuthSetting() {
+    return clickIntegrationSetting(SETTING_OAUTH, new OAuthSettingsPage(context));
+  }
+
+  public OAISettingsPage clickOaiSetting() {
+    return clickIntegrationSetting(SETTING_OAI, new OAISettingsPage(context));
+  }
+
+  public ShowExternalToolsPage clickExternalToolsSetting() {
+    return clickIntegrationSetting(SETTING_EXTERNAL_TOOLS, new ShowExternalToolsPage(context));
+  }
+
+  // --- Diagnostics Settings Navigations ---
+
+  public DiagnosticsPage clickDiagnosticSetting() {
+    return clickSetting(GROUP_DIAGNOSTICS, SETTING_DIAGNOSTICS, new DiagnosticsPage(context));
+  }
+
+  public ManualDataFixesPage clickManualDataFixesSetting() {
     return clickSetting(
-        GROUP_INTEGRATIONS, SETTING_COURSE_DEFAULTS, new CourseDefaultsPage(context));
+        GROUP_DIAGNOSTICS, SETTING_MANUAL_DATA_FIXES, new ManualDataFixesPage(context));
   }
 
-  public LTI13PlatformsSettingsPage lti13PlatformsSettingsPage() {
-    return clickSetting(
-        GROUP_INTEGRATIONS, SETTING_LTI_13, new LTI13PlatformsSettingsPage(context));
-  }
+  // --- Search Settings Navigations ---
 
-  public OidcSettingsPage oidcSettingsPage() {
-    return clickSetting(GROUP_INTEGRATIONS, SETTING_OIDC, new OidcSettingsPage(context));
-  }
-
-  public OAuthSettingsPage oauthSettingsPage() {
-    return clickSetting(GROUP_INTEGRATIONS, SETTING_OAUTH, new OAuthSettingsPage(context));
+  public SearchSettingsPage clickSearchSetting() {
+    return clickSetting(GROUP_SEARCHING, SETTING_SEARCH_PAGE, new SearchSettingsPage(context));
   }
 
   // --- UI Settings Toggling ---
