@@ -1,15 +1,17 @@
 package com.tle.webtests.pageobject;
 
-import static com.codeborne.selenide.Condition.cssClass;
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.checked;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byLinkText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import com.tle.webtests.framework.PageContext;
@@ -36,6 +38,7 @@ import com.tle.webtests.pageobject.settings.PSSSettingsPage;
 import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
+import java.util.Optional;
 import org.openqa.selenium.WebElement;
 
 public class SettingsPage extends AbstractPage<SettingsPage> {
@@ -94,21 +97,15 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     open(context.getBaseUrl() + "access/settings.do");
   }
 
-  protected SelenideElement expandGroup(String group) {
-    SelenideElement groupElement =
-        $$(".SettingsPage-heading").findBy(text(group)).closest(".MuiAccordion-root");
-
-    // Only click if not already expanded
-    if (!groupElement.has(cssClass("Mui-expanded"))) {
-      SelenideElement heading = groupElement.$(".SettingsPage-heading");
-      heading.click();
-    }
-
-    return groupElement;
+  protected void expandGroup(String group) {
+    Optional.of($$("button").findBy(text(group)).shouldBe(visible))
+        .filter(btn -> btn.has(attribute("aria-expanded", "false")))
+        .ifPresent(SelenideElement::click);
   }
 
   protected <T extends AbstractPage<T>> T clickSetting(String group, String title, T page) {
-    expandGroup(group).$(byLinkText(title)).click();
+    expandGroup(group);
+    $(byLinkText(title)).shouldBe(visible).click();
     return page.get();
   }
 
@@ -229,28 +226,26 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   /** Enable or disable new UI feature. */
   public void setNewUI(boolean enable) {
-    toggleSwitchInUIGroup(TOGGLE_NEW_UI, enable);
+    setUiGroupSwitchState(TOGGLE_NEW_UI, enable);
   }
 
   /** Enable or disable new search page UI. NewSearch only works when new UI is enabled. */
   public void setNewSearchUI(boolean enable) {
-    toggleSwitchInUIGroup(TOGGLE_NEW_SEARCH, enable);
+    setUiGroupSwitchState(TOGGLE_NEW_SEARCH, enable);
   }
 
   /** Helper method to find and click a toggle only if the state change is required. */
-  private void toggleSwitchInUIGroup(String switchText, boolean enable) {
-    SelenideElement groupElement = expandGroup(GROUP_UI);
+  private void setUiGroupSwitchState(String switchText, boolean expectedState) {
+    expandGroup(GROUP_UI);
 
-    ElementsCollection labels = groupElement.$$("label");
-    SelenideElement label = labels.findBy(text(switchText));
+    SelenideElement label = $$("label").findBy(text(switchText)).shouldBe(visible);
 
     SelenideElement checkbox = label.$("input[type='checkbox']");
 
-    boolean currentState = checkbox.isSelected();
-    if (currentState != enable) {
+    if (checkbox.isSelected() != expectedState) {
       checkbox.shouldBe(enabled);
       label.click();
-      handlePostClickSideEffects(switchText, enable);
+      handlePostClickSideEffects(switchText, expectedState, checkbox);
     }
   }
 
@@ -258,9 +253,12 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
    * Verifies that the correct container i.e. #mainDiv for new UI and #eqpageForm for legacy UI
    * loads after toggling new UI switch.
    */
-  private void handlePostClickSideEffects(String toggleName, boolean newState) {
+  private void handlePostClickSideEffects(
+      String toggleName, boolean expectedState, SelenideElement checkbox) {
     if (TOGGLE_NEW_UI.equals(toggleName)) {
-      $(newState ? "#mainDiv" : "#eqpageForm").shouldBe(exist);
+      $(expectedState ? "#mainDiv" : "#eqpageForm").shouldBe(exist);
+    } else {
+      checkbox.shouldHave(expectedState ? checked : not(checked));
     }
   }
 }
