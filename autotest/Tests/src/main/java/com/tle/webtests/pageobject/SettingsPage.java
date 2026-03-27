@@ -34,7 +34,6 @@ import com.tle.webtests.pageobject.settings.ManualDataFixesPage;
 import com.tle.webtests.pageobject.settings.MimeSearchPage;
 import com.tle.webtests.pageobject.settings.OAISettingsPage;
 import com.tle.webtests.pageobject.settings.OidcSettingsPage;
-import com.tle.webtests.pageobject.settings.PSSSettingsPage;
 import com.tle.webtests.pageobject.settings.SelectionSessionSettingsPage;
 import com.tle.webtests.pageobject.settings.ShortcutURLsSettingsPage;
 import com.tle.webtests.pageobject.userscripts.ShowUserScriptsPage;
@@ -69,7 +68,6 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   private static final String SETTING_LTI_13 = "LTI 1.3 platforms";
   private static final String SETTING_OAUTH = "OAuth";
   private static final String SETTING_OIDC = "OpenID Connect (OIDC)";
-  private static final String SETTING_PSS = "Pearson SCORM Services (PSS)";
   private static final String SETTING_OAI = "OAI";
   private static final String SETTING_COURSE_DEFAULTS = "Copyright";
   private static final String SETTING_EXTERNAL_TOOLS = "External tool providers (LTI)";
@@ -166,10 +164,6 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   public MailSettingsPage clickMailSetting() {
     return clickGeneralSetting(SETTING_MAIL, new MailSettingsPage(context));
-  }
-
-  public PSSSettingsPage clickPssSetting() {
-    return clickGeneralSetting(SETTING_PSS, new PSSSettingsPage(context));
   }
 
   public ShowUserScriptsPage clickUserScriptsSetting() {
