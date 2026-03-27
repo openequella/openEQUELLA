@@ -233,7 +233,9 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
     setUiGroupSwitchState(TOGGLE_NEW_SEARCH, enable);
   }
 
-  /** Helper method to find and click a toggle only if the state change is required. */
+  /**
+   * Helper method to find toggle switch by label and click it only if the state change is required.
+   */
   private void setUiGroupSwitchState(String switchText, boolean expectedState) {
     expandGroup(GROUP_UI);
 
@@ -249,8 +251,8 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   }
 
   /**
-   * Verifies that the correct container i.e. #mainDiv for new UI and #eqpageForm for legacy UI
-   * loads after toggling new UI switch.
+   * Validates the outcome of a toggle switch. Checks the page layout for the new UI toggle, or the
+   * checkbox state for new search page UI toggle.
    */
   private void handlePostClickSideEffects(
       String toggleName, boolean expectedState, SelenideElement checkbox) {
