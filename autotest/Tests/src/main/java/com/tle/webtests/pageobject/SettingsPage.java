@@ -13,7 +13,6 @@ import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
 
 import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.externaltools.ShowExternalToolsPage;
 import com.tle.webtests.pageobject.oauth.OAuthSettingsPage;
@@ -85,8 +84,6 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
 
   public SettingsPage(PageContext context) {
     super(context);
-    // Tell Selenide to use the existing browser session
-    WebDriverRunner.setWebDriver(driver);
   }
 
   @Override
