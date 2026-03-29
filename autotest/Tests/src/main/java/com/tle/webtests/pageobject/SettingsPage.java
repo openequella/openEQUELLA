@@ -223,40 +223,30 @@ public class SettingsPage extends AbstractPage<SettingsPage> {
   /** Enable or disable new UI feature. */
   public void setNewUI(boolean enable) {
     setUiGroupSwitchState(TOGGLE_NEW_UI, enable);
+    $(enable ? "#mainDiv" : "#eqpageForm").shouldBe(exist);
   }
 
   /** Enable or disable new search page UI. NewSearch only works when new UI is enabled. */
   public void setNewSearchUI(boolean enable) {
-    setUiGroupSwitchState(TOGGLE_NEW_SEARCH, enable);
+    SelenideElement checkbox = setUiGroupSwitchState(TOGGLE_NEW_SEARCH, enable);
+    checkbox.shouldHave(enable ? checked : not(checked));
   }
 
   /**
    * Helper method to find toggle switch by label and click it only if the state change is required.
+   * Returns the checkbox element so callers can perform their own specific post-click assertions.
    */
-  private void setUiGroupSwitchState(String switchText, boolean expectedState) {
+  private SelenideElement setUiGroupSwitchState(String switchText, boolean expectedState) {
     expandGroup(GROUP_UI);
 
     SelenideElement label = $$("label").findBy(text(switchText)).shouldBe(visible);
-
     SelenideElement checkbox = label.$("input[type='checkbox']");
 
     if (checkbox.isSelected() != expectedState) {
       checkbox.shouldBe(enabled);
       label.click();
-      handlePostClickSideEffects(switchText, expectedState, checkbox);
     }
-  }
 
-  /**
-   * Validates the outcome of a toggle switch. Checks the page layout for the new UI toggle, or the
-   * checkbox state for new search page UI toggle.
-   */
-  private void handlePostClickSideEffects(
-      String toggleName, boolean expectedState, SelenideElement checkbox) {
-    if (TOGGLE_NEW_UI.equals(toggleName)) {
-      $(expectedState ? "#mainDiv" : "#eqpageForm").shouldBe(exist);
-    } else {
-      checkbox.shouldHave(expectedState ? checked : not(checked));
-    }
+    return checkbox;
   }
 }
