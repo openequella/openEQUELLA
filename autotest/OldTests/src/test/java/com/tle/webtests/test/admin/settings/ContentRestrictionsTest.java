@@ -56,7 +56,7 @@ public class ContentRestrictionsTest extends AbstractSessionTest {
   private ContentRestrictionsPage logonToContentResrictionsPage() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.contentRestrictionsSettings();
+    return sp.clickContentRestrictionsSetting();
   }
 
   @Test

@@ -77,7 +77,7 @@ public class ActiveCachingTest extends AbstractSessionTest {
   private ActiveCachingPage logonToActiveCachingPage() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.activeCachingSettings();
+    return sp.clickActiveCachingSetting();
   }
 
   @Override

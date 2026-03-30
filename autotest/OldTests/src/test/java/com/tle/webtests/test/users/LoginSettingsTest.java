@@ -100,6 +100,6 @@ public class LoginSettingsTest extends AbstractSessionTest {
       logon(USER, "automated");
     }
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.loginSettings();
+    return sp.clickLoginSetting();
   }
 }
