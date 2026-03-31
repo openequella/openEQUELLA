@@ -26,18 +26,50 @@ import org.scalatest.matchers.should.Matchers.{a, convertToAnyShouldWrapper}
 import org.scalatest.prop.Tables.Table
 import sttp.model.Uri
 
+import java.util.Properties
 import scala.annotation.tailrec
+import scala.util.Using
 
 object TestHelper {
   val CREDENTIALS_AUTOTEST: (String, String) = ("AutoTest", "automated")
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
   val INSTITUTION_REST: String               = "rest"
 
-  /** The port the test server is running on. Defaults to 8080 (CI), but can be overridden via the
-    * system property `oeq.test.port` for local development (e.g. `-Doeq.test.port=9090`).
+  /** Load the test server port from configuration with CLI -D override support.
+    *
+    * Precedence order:
+    *   1. Default value: 8080
+    *   2. Value from test.properties (loaded from classpath if present)
+    *   3. CLI -D system property (highest priority)
+    *
+    * Users can copy test.properties.sample to test.properties and customize local settings.
+    * test.properties is gitignored — do not commit it.
     */
-  private val serverPort: Int =
-    Option(System.getProperty("oeq.test.port")).map(_.toInt).getOrElse(8080)
+  private def loadServerPort(): Int =
+    cfgOption("oeq.test.port").map(_.toInt).getOrElse(8080)
+
+  private def cfgOption(configKey: String): Option[String] =
+    Option(System.getProperty(configKey)).orElse(loadFromPropertiesFile(configKey))
+
+  private def loadFromPropertiesFile(propertyKey: String): Option[String] =
+    Option(getClass.getClassLoader.getResourceAsStream("test.properties"))
+      .flatMap { inputStream =>
+        Using(inputStream) { stream =>
+          val props = new Properties()
+          props.load(stream)
+
+          Option(props.getProperty(propertyKey))
+        }.toOption.flatten
+      }
+
+  /** The port the test server is running on.
+    *
+    * Priority order:
+    *   1. Default: 8080 (for CI)
+    *   2. Value from test.properties file
+    *   3. CLI -D option (e.g., `-Doeq.test.port=9090`)
+    */
+  private val serverPort: Int = loadServerPort()
 
   /** Login to the REST institution with the automated test user.
     *

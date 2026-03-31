@@ -65,6 +65,60 @@ sbt compile
 This uses the [sbt-header plugin](https://github.com/sbt/sbt-header), which automatically applies
 the header set in `build.sbt` to all source files during compilation.
 
+## Test Configuration
+
+The test suite runs integration tests against a local openEQUELLA instance on the `rest` institution
+(the standard test institution used by CI). By default, it assumes the instance is on
+`localhost:8080`. You can customize the port for local development:
+
+### Quick Start (CLI override only)
+
+Run tests with a different server port:
+
+```bash
+sbt -Doeq.test.port=9090 test
+```
+
+### Persistent Configuration (recommended for IntelliJ)
+
+To avoid creating multiple IntelliJ run configurations:
+
+1. Copy the sample configuration file:
+
+   ```bash
+   cp src/test/resources/test.properties.sample src/test/resources/test.properties
+   ```
+
+2. Edit `src/test/resources/test.properties` and set your local port:
+
+   ```properties
+   oeq.test.port=9090
+   ```
+
+3. Run tests normally — your configuration is automatically loaded:
+
+   ```bash
+   sbt test
+   ```
+
+**Note:** `test.properties` is gitignored — do not commit it. Only `.sample` is committed.
+
+### Configuration Precedence
+
+Settings are applied in this order (later values override earlier ones):
+
+1. **Default value:** `localhost:8080`
+2. **`test.properties` file:** If present in `src/test/resources/`
+3. **CLI `-D` options:** Highest priority — e.g., `-Doeq.test.port=9090`
+
+This means:
+- CI uses the default port 8080 (no local test.properties file)
+- Local development can use `test.properties` for convenience
+- Individual test runs can still override via CLI if needed
+
+Tests always run against the `rest` institution (the standard test institution) to ensure
+consistent test expectations and data fixtures.
+
 ## IntelliJ Setup
 
 ### Add the graphql-client module
