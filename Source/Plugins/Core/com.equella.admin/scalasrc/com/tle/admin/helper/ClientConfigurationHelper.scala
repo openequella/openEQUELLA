@@ -23,14 +23,7 @@ import sttp.model.Uri
 
 import java.net.URL
 
-/** Helper class for Java interop with the ClientConfiguration class. Main area of helping is
-  * loading system cookies. As can be seen in the login methods (e.g.
-  * `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
-  * `CookieHandler.getDefault` method to load system cookies. This helper class provides a way to
-  * load those system cookies into a ClientConfiguration object.
-  *
-  * The main cookie of interest is the `JSESSIONID` cookie, used to maintain a session with
-  * openEQUELLA.
+/** Helper class for Java interop with the ClientConfiguration class.
   */
 object ClientConfigurationHelper {
 
@@ -38,11 +31,5 @@ object ClientConfigurationHelper {
     */
   def create(url: URL): ClientConfiguration = {
     ClientConfiguration(Uri(url.toURI))
-  }
-
-  /** Load system cookies into a ClientConfiguration object.
-    */
-  def loadSystemCookies(cfg: ClientConfiguration): Unit = {
-    cfg.cookies.addAll(CookieHelper.getSystemCookies(cfg.institutionUrl))
   }
 }

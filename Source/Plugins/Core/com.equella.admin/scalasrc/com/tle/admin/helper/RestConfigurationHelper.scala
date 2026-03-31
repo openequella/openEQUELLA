@@ -23,18 +23,7 @@ import sttp.model.Uri
 
 import java.net.URL
 
-/** Helper class for Java interop with the RestConfiguration class. Main area of helping is loading
-  * system cookies. As can be seen in the login methods (e.g.
-  * `com.tle.admin.boot.Bootstrap#login(java.net.URL)`) the admin console uses the
-  * `CookieHandler.getDefault` method to load system cookies. This helper class provides a way to
-  * load system cookies into a RestConfiguration object.
-  *
-  * The main cookie of interest is the `JSESSIONID` cookie. This cookie is used to maintain a
-  * session with the openEQUELLA.
-  *
-  * Note that this is largely a duplicate of `ClientConfigurationHelper` in the same package.
-  * Alternatively, this duplication could've been abstracted out with typeclasses, however, there is
-  * only ever intended to be two of these. So the decision was to keep it simple.
+/** Helper class for Java interop with the RestConfiguration class.
   */
 object RestConfigurationHelper {
 
@@ -42,13 +31,6 @@ object RestConfigurationHelper {
     */
   def create(url: URL): RestConfiguration = {
     RestConfiguration(Uri(url.toURI))
-  }
-
-  /** Load system cookies into a RestConfiguration object to match those which have been used after
-    * logging into openEQUELLA.
-    */
-  def loadSystemCookies(cfg: RestConfiguration): Unit = {
-    cfg.cookies.addAll(CookieHelper.getSystemCookies(cfg.institutionUrl))
   }
 
 }

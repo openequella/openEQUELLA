@@ -67,19 +67,12 @@ public class ClientModule extends AbstractModule {
   @Provides
   @Singleton
   ClientConfiguration provideClientConfiguration() {
-    // Set the client configuration for the GraphQL library
-    ClientConfiguration clientConfiguration = ClientConfigurationHelper.create(serverUrl);
-    ClientConfigurationHelper.loadSystemCookies(clientConfiguration);
-
-    return clientConfiguration;
+    return ClientConfigurationHelper.create(serverUrl);
   }
 
   @Provides
   @Singleton
   RestConfiguration provideRestConfiguration() {
-    RestConfiguration restConfiguration = RestConfigurationHelper.create(serverUrl);
-    RestConfigurationHelper.loadSystemCookies(restConfiguration);
-
-    return restConfiguration;
+    return RestConfigurationHelper.create(serverUrl);
   }
 }
