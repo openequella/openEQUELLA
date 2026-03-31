@@ -33,6 +33,7 @@ import com.tle.admin.codeeditor.EquellaSyntaxTextArea;
 import com.tle.admin.common.gui.AbstractFileWorker;
 import com.tle.admin.i18n.Lookup;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminJavaScriptService;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.applet.client.DialogUtils;
@@ -40,7 +41,6 @@ import com.tle.common.applet.client.FileWorker;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.StringLookup;
-import com.tle.common.javascript.RemoteJavascriptService;
 import com.tle.common.wizard.controls.advancedscript.AdvancedScriptControl;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -323,23 +324,24 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
     }
   }
 
-  private static NameValue[] getJavascriptModules() {
-    List<NameValue> result = new ArrayList<NameValue>();
-    RemoteJavascriptService jsService =
-        Driver.instance().getClientService().getService(RemoteJavascriptService.class);
+  private static Stream<NameValue> getModulesByLibrary(
+      AdminJavaScriptService jsService, NameValue lib) {
+    return jsService.modulesByLibraryId(lib.getValue()).stream()
+        .flatMap(List::stream)
+        .map(
+            module ->
+                new NameValue(
+                    lib.getName() + " - " + module.getName(),
+                    lib.getValue() + "." + module.getValue()));
+  }
 
-    List<NameValue> libs = jsService.getAllJavascriptLibraryNames();
-    for (NameValue lib : libs) {
-      for (NameValue module : jsService.getAllJavascriptModuleNames(lib.getValue())) {
-        result.add(
-            new NameValue(
-                lib.getName() + " - " + module.getName(),
-                lib.getValue() // $NON-NLS-1$
-                    + "."
-                    + module.getValue())); // $NON-NLS-1$
-      }
-    }
-    return result.toArray(new NameValue[result.size()]);
+  private static NameValue[] getJavascriptModules() {
+    AdminJavaScriptService jsService =
+        Driver.instance().getClientService().getService(AdminJavaScriptService.class);
+
+    return jsService.listLibraries().stream()
+        .flatMap(lib -> getModulesByLibrary(jsService, lib))
+        .toArray(NameValue[]::new);
   }
 
   @Override
