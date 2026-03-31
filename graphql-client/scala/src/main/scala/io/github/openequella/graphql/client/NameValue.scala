@@ -16,29 +16,20 @@
  * limitations under the License.
  */
 
-package com.tle.web.remoting.graphql.schema.types
+package io.github.openequella.graphql.client
 
-import caliban.schema.Annotations.GQLDescription
+import caliban.client.FieldBuilder._
+import caliban.client._
 
-/** GraphQL representation of `com.tle.beans.entity.schema.Citation`.
-  *
-  * @see
-  *   [[com.tle.beans.entity.schema.Citation]]
-  */
-@GQLDescription(
-  "A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
-)
-final case class Citation(
-    @GQLDescription("Name for the citation")
-    name: String,
-    @GQLDescription("Name of the XSLT file for citation - can be downloaded from the server")
-    transformation: String
-)
-object Citation {
-  def apply(citation: com.tle.beans.entity.schema.Citation): Citation = {
-    Citation(
-      name = citation.getName,
-      transformation = citation.getTransformation
-    )
-  }
+object NameValue {
+
+  /** Display name for the value.
+    */
+  def name: SelectionBuilder[NameValue, String] =
+    _root_.caliban.client.SelectionBuilder.Field("name", Scalar())
+
+  /** Value associated with the name.
+    */
+  def value: SelectionBuilder[NameValue, String] =
+    _root_.caliban.client.SelectionBuilder.Field("value", Scalar())
 }

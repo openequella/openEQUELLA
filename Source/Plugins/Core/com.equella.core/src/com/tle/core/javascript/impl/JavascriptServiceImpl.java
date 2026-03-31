@@ -19,6 +19,7 @@
 package com.tle.core.javascript.impl;
 
 import com.tle.common.NameValue;
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.core.guice.Bind;
 import com.tle.core.javascript.JavascriptLibrary;
 import com.tle.core.javascript.JavascriptModule;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -78,19 +80,14 @@ public class JavascriptServiceImpl implements JavascriptService {
   @Override
   public List<NameValue> getAllJavascriptModuleNames(String libraryId) {
     JavascriptLibrary lib = tracker.getBeanMap().get(libraryId);
-    List<NameValue> names = new ArrayList<NameValue>();
-    for (JavascriptModule module : lib.getModules().values()) {
-      names.add(new NameValue(module.getDisplayName(), module.getId()));
+    if (lib == null) {
+      throw new NotFoundException("No JavaScript library with ID " + libraryId + " found");
     }
-    Collections.sort(
-        names,
-        new Comparator<NameValue>() {
-          @Override
-          public int compare(NameValue mod1, NameValue mod2) {
-            return mod1.getName().compareToIgnoreCase(mod2.getName());
-          }
-        });
-    return names;
+
+    return lib.getModules().values().stream()
+        .map(module -> new NameValue(module.getDisplayName(), module.getId()))
+        .sorted(Comparator.comparing(NameValue::getName, String.CASE_INSENSITIVE_ORDER))
+        .collect(Collectors.toList());
   }
 
   @Inject

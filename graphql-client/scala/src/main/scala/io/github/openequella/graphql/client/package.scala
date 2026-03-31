@@ -32,6 +32,7 @@ package object client {
   type InternalGroupQueries
   type InternalUserMutations
   type InternalUserQueries
+  type JavaScriptQueries
   type KVStringString
   type LanguageBundle
   type LanguageString
@@ -39,6 +40,7 @@ package object client {
   type MetadataSchemaMutations
   type MetadataSchemaQueries
   type MetadataSchemaTransform
+  type NameValue
   type PageInfo
   type StringConnection
   type StringEdge

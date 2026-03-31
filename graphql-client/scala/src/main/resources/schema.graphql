@@ -258,6 +258,13 @@ type InternalUserQueries {
   byId("Unique ID of the user to retrieve" id: String!): User
 }
 
+type JavaScriptQueries {
+  "List names and IDs of all JavaScript libraries"
+  libraries: [NameValue!]!
+  "Retrieve names and IDs of all JavaScript modules for a given JavaScript library ID"
+  modules("The unique ID of the JavaScript library to retrieve module names and IDs for" id: String!): [NameValue!]
+}
+
 "A key-value pair of String and String"
 type KVStringString {
   "Key"
@@ -357,6 +364,14 @@ type Mutations {
   metadataSchema: MetadataSchemaMutations!
 }
 
+"A simple name/value pair."
+type NameValue {
+  "Display name for the value."
+  name: String!
+  "Value associated with the name."
+  value: String!
+}
+
 type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
@@ -367,6 +382,8 @@ type PageInfo {
 type Queries {
   "Queries for base entities"
   baseEntities: BaseEntityQueries!
+  "Queries for JavaScript"
+  javaScript: JavaScriptQueries!
   "Queries for internal users"
   internalUsers: InternalUserQueries!
   "Queries for internal groups"

@@ -20,25 +20,23 @@ package com.tle.web.remoting.graphql.schema.types
 
 import caliban.schema.Annotations.GQLDescription
 
-/** GraphQL representation of `com.tle.beans.entity.schema.Citation`.
+/** GraphQL representation of `com.tle.common.NameValue`.
   *
   * @see
-  *   [[com.tle.beans.entity.schema.Citation]]
+  *   [[com.tle.common.NameValue]]
   */
 @GQLDescription(
-  "A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
+  "A simple name/value pair."
 )
-final case class Citation(
-    @GQLDescription("Name for the citation")
+final case class NameValue(
+    @GQLDescription("Display name for the value.")
     name: String,
-    @GQLDescription("Name of the XSLT file for citation - can be downloaded from the server")
-    transformation: String
+    @GQLDescription("Value associated with the name.")
+    value: String
 )
-object Citation {
-  def apply(citation: com.tle.beans.entity.schema.Citation): Citation = {
-    Citation(
-      name = citation.getName,
-      transformation = citation.getTransformation
-    )
-  }
+object NameValue {
+  def apply(nameValue: com.tle.common.NameValue): NameValue = NameValue(
+    name = nameValue.getName,
+    value = nameValue.getValue
+  )
 }
