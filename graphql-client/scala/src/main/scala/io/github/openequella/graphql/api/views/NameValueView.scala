@@ -16,29 +16,23 @@
  * limitations under the License.
  */
 
-package com.tle.web.remoting.graphql.schema.types
+package io.github.openequella.graphql.api.views
 
-import caliban.schema.Annotations.GQLDescription
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.client.NameValue
 
-/** GraphQL representation of `com.tle.beans.entity.schema.Citation`.
+/** View model for a name-value pair.
   *
-  * @see
-  *   [[com.tle.beans.entity.schema.Citation]]
+  * @param name
+  *   Display name for the value.
+  * @param value
+  *   Value associated with the name.
   */
-@GQLDescription(
-  "A configuration of a transform which controls how licensed materials are cited in openEQUELLA."
-)
-final case class Citation(
-    @GQLDescription("Name for the citation")
-    name: String,
-    @GQLDescription("Name of the XSLT file for citation - can be downloaded from the server")
-    transformation: String
-)
-object Citation {
-  def apply(citation: com.tle.beans.entity.schema.Citation): Citation = {
-    Citation(
-      name = citation.getName,
-      transformation = citation.getTransformation
-    )
-  }
+case class NameValueView(name: String, value: String)
+object NameValueView {
+
+  /** The selection builder for NameValueView.
+    */
+  val selector: SelectionBuilder[NameValue, NameValueView] =
+    (NameValue.name ~ NameValue.value).mapN(NameValueView.apply _)
 }

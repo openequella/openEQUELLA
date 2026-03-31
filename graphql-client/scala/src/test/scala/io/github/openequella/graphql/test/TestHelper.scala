@@ -265,4 +265,12 @@ object TestHelper {
     "?",
     "/"
   )
+
+  /** Assert that the response is an AccessDeniedError.
+    *
+    * @param response
+    *   the response to check
+    */
+  def assertAccessDeniedError[T](response: Either[List[ApiError], T]): Unit =
+    checkApiError(response) shouldBe a[AccessDeniedError]
 }
