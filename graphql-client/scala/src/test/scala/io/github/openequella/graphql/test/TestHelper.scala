@@ -33,6 +33,12 @@ object TestHelper {
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
   val INSTITUTION_REST: String               = "rest"
 
+  /** The port the test server is running on. Defaults to 8080 (CI), but can be overridden via the
+    * system property `oeq.test.port` for local development (e.g. `-Doeq.test.port=9090`).
+    */
+  private val serverPort: Int =
+    Option(System.getProperty("oeq.test.port")).map(_.toInt).getOrElse(8080)
+
   /** Login to the REST institution with the automated test user.
     *
     * @return
@@ -55,8 +61,9 @@ object TestHelper {
       institution: String,
       credentials: (String, String)
   ): ClientConfiguration = {
-    val instUrl                           = Uri("localhost").port(8080).withPath(institution)
-    implicit val cfg: ClientConfiguration = ClientConfiguration(instUrl)
+    val instUrl                           = Uri("localhost").port(serverPort).withPath(institution)
+    implicit val cfg: ClientConfiguration =
+      ClientConfiguration(instUrl, new java.net.CookieManager())
     login(credentials)
   }
 
@@ -73,7 +80,9 @@ object TestHelper {
   def loginSameInstitutionWithDifferentUser(credentials: (String, String))(implicit
       cfg: ClientConfiguration
   ): ClientConfiguration = {
-    val newCfg: ClientConfiguration = ClientConfiguration(cfg.institutionUrl)
+    // Create a fresh CookieManager so this user gets its own session.
+    val newCfg: ClientConfiguration =
+      ClientConfiguration(cfg.institutionUrl, new java.net.CookieManager())
     login(credentials)(newCfg)
   }
 
@@ -99,8 +108,9 @@ object TestHelper {
   def asUnauthenticatedUser[T](
       action: ClientConfiguration => T
   )(implicit cfg: ClientConfiguration): T = {
+    // Create a fresh CookieManager so this config has no session cookies.
     val unAuthenticatedCfg: ClientConfiguration =
-      cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      ClientConfiguration(cfg.institutionUrl, new java.net.CookieManager())
     action(unAuthenticatedCfg)
   }
 
