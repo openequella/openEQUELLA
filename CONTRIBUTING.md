@@ -197,9 +197,58 @@ A suite of software (and specifically, command line tools) used by openEQUELLA f
 manipulating image attachments. A key requirement for when contributing items with image
 attachments.
 
+openEQUELLA requires **ImageMagick 7+** for querying and manipulating image attachments.
+
+#### Technical Note: The Shift to ImageMagick 7
+
+ImageMagick 7 replaced the legacy `convert` command with a single unified entry point: `magick`.
+Other legacy tools followed suit (e.g., `identify` became `magick identify`). openEQUELLA
+exclusively uses this `magick`-first syntax, making **ImageMagick 6 incompatible**.
+
+> ⚠️ **Important Note for Linux Users:** Do **not** use `sudo apt install imagemagick`. Standard
+> Ubuntu and Debian repositories currently distribute the 6.x LTS branch. Because version 6 relies
+> on the old `convert` syntax, installing it via `apt` will cause openEQUELLA's image processing
+> and test suites to fail.
+
+#### Docker Dev Cluster Users
+
+If you are running the server via the Docker configuration, the strictly pinned
+**ImageMagick 7.1.2-18** AppImage is automatically installed and mapped to `/opt/imagemagick`.
+No further configuration is required.
+
+#### Native Linux Development (Recommended Setup)
+
+To ensure your local native environment perfectly matches the CI/CD pipeline, download and extract
+the official AppImage. Run these commands to install it to `/opt/imagemagick`:
+
+```bash
+# Download and extract the pinned ImageMagick 7.1.2-18 AppImage
+wget -nv -O magick "https://github.com/ImageMagick/ImageMagick/releases/download/7.1.2-18/ImageMagick-d4e4b2b-gcc-x86_64.AppImage"
+chmod +x magick
+./magick --appimage-extract
+sudo mv squashfs-root /opt/imagemagick
+sudo mv /opt/imagemagick/AppRun /opt/imagemagick/magick
+rm magick
 ```
-sudo apt install imagemagick
+
+> **Note:** Because `./sbt prepareDevConfig` looks in `/opt/imagemagick` by default, using this
+> exact installation method means you do **not** need to alter any configuration files.
+
+#### Using a Custom Installation Path
+
+If you compiled ImageMagick 7 from source or used a third-party script that installed it to a
+custom location (e.g., `/usr/local/bin/magick`), you must override the default developer
+configuration.
+
+Create or edit a `build.conf` file in the root of the openEQUELLA project and add:
+
+```conf
+devconfig {
+  imagemagick = "/usr/local/bin" # Change this to the folder containing your 'magick' executable
+}
 ```
+
+Then run `./sbt prepareDevConfig` so openEQUELLA knows where to find your custom installation.
 
 ### Install FFmpeg
 
