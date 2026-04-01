@@ -40,12 +40,16 @@ import java.net.http.{HttpClient => JHttpClient}
   */
 final case class ClientConfiguration(
     institutionUrl: Uri,
-    cookieManager: CookieManager = ClientConfiguration.defaultCookieManager()
+    cookieManager: CookieManager = ClientConfiguration.ensureSystemCookieManager()
 ) {
 
   /** A lazily-initialised backend tied to this configuration's CookieManager. Created once and
     * reused across all requests, allowing TCP/TLS connection reuse via the underlying HttpClient's
     * connection pool.
+    *
+    * Lifecycle: in production, `ClientConfiguration` is provided as a Guice `@Singleton`, so this
+    * backend lives for the application lifetime and is cleaned up on JVM exit. In tests, each
+    * `ClientConfiguration` gets its own backend instance, which is likewise cleaned up on JVM exit.
     */
   lazy val backend: Backend[Identity] = {
     val httpClient = JHttpClient
@@ -58,8 +62,11 @@ final case class ClientConfiguration(
 
 object ClientConfiguration {
 
-  /** Returns the system CookieManager if one is set (creating one if needed). */
-  def defaultCookieManager(): CookieManager = {
+  /** Returns the system CookieManager, initialising it as the default `CookieHandler` if none has
+    * been set yet. Note: this method has the side effect of calling `CookieHandler.setDefault` on
+    * first use if no handler is configured.
+    */
+  def ensureSystemCookieManager(): CookieManager = {
     if (CookieHandler.getDefault == null) {
       CookieHandler.setDefault(new CookieManager())
     }
