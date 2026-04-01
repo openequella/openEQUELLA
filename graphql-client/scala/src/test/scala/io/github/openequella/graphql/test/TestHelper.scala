@@ -28,7 +28,7 @@ import sttp.model.Uri
 
 import java.util.Properties
 import scala.annotation.tailrec
-import scala.util.Using
+import scala.util.{Failure, Success, Try, Using}
 
 object TestHelper {
   val CREDENTIALS_AUTOTEST: (String, String) = ("AutoTest", "automated")
@@ -46,7 +46,17 @@ object TestHelper {
     * test.properties is gitignored — do not commit it.
     */
   private def loadServerPort(): Int =
-    cfgOption("oeq.test.port").map(_.toInt).getOrElse(8080)
+    cfgOption("oeq.test.port")
+      .map { portStr =>
+        Try(portStr.toInt) match {
+          case Success(port) => port
+          case Failure(_)    =>
+            throw new IllegalArgumentException(
+              s"Invalid oeq.test.port value '$portStr': must be a number. Check test.properties or -Doeq.test.port."
+            )
+        }
+      }
+      .getOrElse(8080)
 
   private def cfgOption(configKey: String): Option[String] =
     Option(System.getProperty(configKey)).orElse(loadFromPropertiesFile(configKey))
