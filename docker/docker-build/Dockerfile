@@ -1,6 +1,6 @@
 # A bare image ready for building oEQ and also running test suites
 
-FROM eclipse-temurin:11 as basebuild
+FROM eclipse-temurin:11 AS basebuild
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -12,31 +12,32 @@ RUN \
     vim \
     less \
     iproute2 \
-# libtinfo5 is needed for Purescript tools
-    libtinfo5 \
-    imagemagick \
+# libtinfo6 is needed for Purescript tools
+    libtinfo6 \
     ffmpeg \
     git \
     libimage-exiftool-perl \
     unzip \
     wget \
+    jq \
 # tidy up APT and save some space
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-FROM basebuild as basebuild-testtools
-
 ARG DIR_BIN=/usr/local/bin
-ARG GOOGLE_DEB_FILENAME=google-chrome-stable_current_amd64.deb
 
-# Install tools to support running autotests
+COPY install-imagemagick $DIR_BIN
+RUN install-imagemagick
+
+FROM basebuild AS basebuild-testtools
+
+# Install Google Chrome and chromedriver
+COPY install-chrome $DIR_BIN
 COPY install-chromedriver $DIR_BIN
+
 RUN \
   apt-get update \
-# Install Google Chrome
-  && wget -nv https://dl.google.com/linux/direct/$GOOGLE_DEB_FILENAME \
-  && apt-get install -y ./$GOOGLE_DEB_FILENAME \
-  && rm $GOOGLE_DEB_FILENAME \
+  && install-chrome \
   && install-chromedriver $DIR_BIN \
 # Install a local PostgreSQL \
   && apt-get install -y postgresql \
@@ -48,7 +49,7 @@ RUN \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-FROM basebuild-testtools as buildenv
+FROM basebuild-testtools AS buildenv
 
 ARG CLONEDIR=openequella
 

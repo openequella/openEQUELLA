@@ -2,14 +2,21 @@
 
 set -euxo pipefail
 
-MAJ_VER=$(google-chrome --version | awk '{ print $3 }' | awk -F . '{ print $1 }')
-VER=$(curl --silent https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${MAJ_VER})
-URL=https://chromedriver.storage.googleapis.com/$VER/chromedriver_linux64.zip
-FILENAME_DL=driver.zip
-FILENAME_DRIVER=chromedriver
+DRIVER_ZIP_FOLDER="chromedriver-linux64"
+DRIVER_NAME="chromedriver"
 
-wget -nv -O $FILENAME_DL "$URL"
-unzip $FILENAME_DL
-rm $FILENAME_DL
-chmod a+x $FILENAME_DRIVER
-mv $FILENAME_DRIVER "$1"
+CHROME_VERSION=$(google-chrome --version | awk '{ print $3 }')
+CHROME_VERSIONS_ENDPOINT="https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
+# Extract the download link for Chrome Driver for Linux (64-bit).
+CHROME_DRIVER_LINK=$(curl ${CHROME_VERSIONS_ENDPOINT} | jq -r ".versions[] | select(.version == \"${CHROME_VERSION}\") | .downloads.chromedriver | .[] | select(.platform == \"linux64\").url")
+
+DRIVER_ZIP_FILE=$DRIVER_ZIP_FOLDER.zip
+# Download chrome driver.
+wget -nv -O $DRIVER_ZIP_FILE $CHROME_DRIVER_LINK
+unzip $DRIVER_ZIP_FILE
+DRIVER_PATH=$DRIVER_ZIP_FOLDER/$DRIVER_NAME
+chmod a+x $DRIVER_PATH
+mv $DRIVER_PATH "$1"
+
+rm $DRIVER_ZIP_FILE
+rm -rf $DRIVER_ZIP_FOLDER
