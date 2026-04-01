@@ -13,9 +13,11 @@
   "packageRules": [
     {
       "description": "Wait 7 days before proposing any update to ensure stability",
-      "matchPackagePatterns": ["*"],
       "minimumReleaseAge": "7 days",
-      "internalChecksFilter": "strict"
+      "internalChecksFilter": "strict",
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "description": "Group all patch updates for devDependencies",
