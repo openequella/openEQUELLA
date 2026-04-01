@@ -51,7 +51,7 @@ package object rest {
     * @return
     *   the response from the server
     */
-  def sendWithCookies[T](
+  def send[T](
       request: Request[T, Any]
   ): Either[RestError, Response[T]] =
     Try(sharedBackend.send(request)) match {

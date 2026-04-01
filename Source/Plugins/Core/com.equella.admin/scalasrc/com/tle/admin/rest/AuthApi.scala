@@ -31,7 +31,7 @@ object AuthApi {
     */
   def logout(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
     val request = basicRequest.put(cfg.apiUrl().addPath(API_PATH, "logout"))
-    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+    handleResult(extractAction(request), send(request)) { _ =>
       Right(())
     }
   }
