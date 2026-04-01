@@ -26,7 +26,7 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
 import java.util.Optional
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
 
@@ -34,6 +34,7 @@ import scala.jdk.OptionConverters._
   * class is intended for use primarily by the existing Java code, preference is given to Java types
   * over Scala types.
   */
+@Singleton
 class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
     extends AdminTLEGroupService {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminTLEGroupServiceImpl])

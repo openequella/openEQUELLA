@@ -16,23 +16,29 @@
  * limitations under the License.
  */
 
-package com.tle.admin.service
+package com.tle.admin.graphql.conversion
 
-import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
-import com.tle.admin.helper.GraphQLQueryHelper.getEntity
-import com.tle.beans.entity.LanguageBundle
-import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.BaseEntityApi
-import org.slf4j.{Logger, LoggerFactory}
+import com.tle.common.NameValue
+import io.github.openequella.graphql.api.views.NameValueView
 
-import javax.inject.{Inject, Singleton}
+/** Converter for transforming GraphQL [[NameValueView]] to the [[NameValue]].
+  */
+object NameValueViewConverter {
 
-@Singleton
-class AdminBaseEntityServiceImpl @Inject() (implicit
-    val cfg: ClientConfiguration
-) extends AdminBaseEntityService {
-  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminBaseEntityServiceImpl])
+  /** Converts a GraphQL [[NameValueView]] into a [[NameValue]].
+    *
+    * @param view
+    *   the GraphQL name-value pair containing name and value.
+    * @return
+    *   a new [[NameValue]] entity populated with the provided values.
+    */
+  def toNameValue(
+      view: NameValueView
+  ): NameValue = {
+    val to = new NameValue
+    to.setName(view.name)
+    to.setValue(view.value)
 
-  override def getNameForId(id: Long): Option[LanguageBundle] =
-    getEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
+    to
+  }
 }

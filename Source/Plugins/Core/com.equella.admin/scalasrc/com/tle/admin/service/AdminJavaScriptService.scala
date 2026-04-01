@@ -18,21 +18,22 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
-import com.tle.admin.helper.GraphQLQueryHelper.getEntity
-import com.tle.beans.entity.LanguageBundle
-import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.BaseEntityApi
-import org.slf4j.{Logger, LoggerFactory}
+import com.tle.common.NameValue
 
-import javax.inject.{Inject, Singleton}
+/** Service class for admin operations on JavaScript libraries and modules via the GraphQL library.
+  */
+trait AdminJavaScriptService {
 
-@Singleton
-class AdminBaseEntityServiceImpl @Inject() (implicit
-    val cfg: ClientConfiguration
-) extends AdminBaseEntityService {
-  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminBaseEntityServiceImpl])
+  /** Get all JavaScript library names and IDs.
+    */
+  def listLibraries: java.util.List[NameValue]
 
-  override def getNameForId(id: Long): Option[LanguageBundle] =
-    getEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
+  /** Get all JavaScript module names and IDs for the specified library.
+    *
+    * @param libraryId
+    *   the identity of the JavaScript library.
+    * @return
+    *   None if the library does not exist, otherwise return a list of name and ID pairs.
+    */
+  def modulesByLibraryId(libraryId: String): java.util.Optional[java.util.List[NameValue]]
 }

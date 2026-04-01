@@ -18,21 +18,35 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.graphql.conversion.LanguageBundleViewConverter.toLanguageBundle
+import com.tle.admin.graphql.conversion.NameValueViewConverter.toNameValue
 import com.tle.admin.helper.GraphQLQueryHelper.getEntity
-import com.tle.beans.entity.LanguageBundle
+import com.tle.common.NameValue
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.BaseEntityApi
+import io.github.openequella.graphql.api.JavaScriptApi
 import org.slf4j.{Logger, LoggerFactory}
 
 import javax.inject.{Inject, Singleton}
+import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
 
 @Singleton
-class AdminBaseEntityServiceImpl @Inject() (implicit
+class AdminJavaScriptServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
-) extends AdminBaseEntityService {
-  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminBaseEntityServiceImpl])
+) extends AdminJavaScriptService {
 
-  override def getNameForId(id: Long): Option[LanguageBundle] =
-    getEntity("Name [by ID]", id, BaseEntityApi.getNameById).map(toLanguageBundle)
+  private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminJavaScriptServiceImpl])
+
+  override def listLibraries: java.util.List[NameValue] =
+    JavaScriptApi.listLibraries match {
+      case Right(libraries) => libraries.map(toNameValue).asJava
+      case Left(errors)     =>
+        throw new ClientRequestException("Error listing JavaScript libraries.", errors)
+    }
+
+  override def modulesByLibraryId(
+      libraryId: String
+  ): java.util.Optional[java.util.List[NameValue]] =
+    getEntity("JavaScript modules [by library ID]", libraryId, JavaScriptApi.modulesByLibraryId)
+      .map(_.map(toNameValue).asJava)
+      .toJava
 }
