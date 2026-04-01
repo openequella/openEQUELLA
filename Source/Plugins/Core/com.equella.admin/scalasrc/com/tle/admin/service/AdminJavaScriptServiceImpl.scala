@@ -25,10 +25,11 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.JavaScriptApi
 import org.slf4j.{Logger, LoggerFactory}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
 
+@Singleton
 class AdminJavaScriptServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminJavaScriptService {

@@ -51,6 +51,7 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,7 +328,7 @@ public class AdvancedScriptControlEditor extends AbstractControlEditor<AdvancedS
   private static Stream<NameValue> getModulesByLibrary(
       AdminJavaScriptService jsService, NameValue lib) {
     return jsService.modulesByLibraryId(lib.getValue()).stream()
-        .flatMap(List::stream)
+        .flatMap(Collection::stream)
         .map(
             module ->
                 new NameValue(

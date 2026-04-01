@@ -25,8 +25,9 @@ import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.BaseEntityApi
 import org.slf4j.{Logger, LoggerFactory}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class AdminBaseEntityServiceImpl @Inject() (implicit
     val cfg: ClientConfiguration
 ) extends AdminBaseEntityService {
