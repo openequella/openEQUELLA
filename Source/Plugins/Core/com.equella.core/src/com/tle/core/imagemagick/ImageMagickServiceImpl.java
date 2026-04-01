@@ -37,7 +37,6 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -64,8 +63,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   private static final int STD_THUMB_HEIGHT = 66;
 
-  private static final String BORDER_WIDTH_PX = "50";
-
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
@@ -84,34 +81,28 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
-    List<String> args = new ArrayList<String>();
     validateAgainstTimer(srcFile);
+    File input = handleGifFrame(srcFile);
 
     try {
-      if (srcFile.getAbsolutePath().endsWith(".gif")) {
-        srcFile = extractFirstGifFrame(srcFile);
-      }
-
-      Dimension imgDimensions = getImageDimensions(srcFile);
-      options.setImgWidth(imgDimensions.width);
-      options.setImgHeight(imgDimensions.height);
-
-      addExecutablePath(args);
+      updateDimensions(input, options);
       ensureParentDirectoryExists(dstFile);
+
+      // NOTE: Order is significant — magick requires: executable, size hint, src, transform args,
+      // dst. See: https://imagemagick.org/script/command-line-processing.php
+      new MagickCommandBuilder(getMagickExePath())
+          .withSizeHint(options)
+          .from(input)
+          .withTransforms(options)
+          .to(dstFile)
+          .exec()
+          .ensureOk();
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } finally {
+      cleanupGifFrame(input);
     }
 
-    // NOTE: Order is significant — magick requires: executable, size hint, src, transform args, dst
-    // See: https://imagemagick.org/script/command-line-processing.php
-    appendSizeArgs(args, options);
-    args.add(srcFile.getAbsolutePath());
-    appendThumbnailArgs(args, options);
-    args.add(dstFile.getAbsolutePath());
-
-    ExecUtils.exec(args).ensureOk();
-
-    cleanupGifFrame(srcFile);
     checkForBlankThumbnail(dstFile, options);
   }
 
@@ -154,24 +145,24 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public void sample(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-sample", src, dest, null, width, height, true, options);
+    operation("-sample", src, dest, null, width + "x" + height, options);
   }
 
   @Override
   public void sampleNoRatio(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-sample", src, dest, null, width, height, false, options);
+    operation("-sample", src, dest, null, width + "x" + height + "!", options);
   }
 
   @Override
   public void crop(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-crop", src, dest, null, width, height, true, options);
+    operation("-crop", src, dest, null, width + "x" + height, options);
   }
 
   @Override
   public void rotate(File src, File dest, int angle, String... options) throws IOException {
-    operation("-rotate", src, dest, Integer.toString(angle), null, null, true, options);
+    operation("-rotate", src, dest, Integer.toString(angle), null, options);
   }
 
   @Override
@@ -226,38 +217,28 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   /**
    * Runs a single ImageMagick operation (e.g. sample, crop, rotate).
    *
-   * @param op the ImageMagick operation flag
+   * @param op the ImageMagick operation flag (e.g. "-sample", "-crop")
+   * @param src the source image file
+   * @param dest the destination image file
    * @param opParam optional parameter for the operation (e.g. rotation angle), or {@code null}
-   * @param keepRatio if {@code false}, appends {@code !} to force exact dimensions
+   * @param dimensions formatted dimension string (e.g. "200x150" or "200x150!" or null to skip)
+   * @param extraOptions any additional ImageMagick flags to append
    */
   private void operation(
-      String op,
-      File src,
-      File dest,
-      String opParam,
-      String width,
-      String height,
-      boolean keepRatio,
-      String[] options) {
-    List<String> args = new ArrayList<>();
-    addExecutablePath(args);
-    args.add(src.getAbsolutePath());
-    args.add(op);
-    if (opParam != null) {
-      args.add(opParam);
+      String op, File src, File dest, String opParam, String dimensions, String[] extraOptions) {
+    MagickCommandBuilder builder =
+        new MagickCommandBuilder(getMagickExePath()).from(src).operation(op, opParam);
+
+    if (dimensions != null) {
+      builder.operation(dimensions, null);
     }
-    if (width != null && height != null) {
-      String dim = width + "x" + height;
-      if (!keepRatio) {
-        dim += "!";
+    if (extraOptions != null) {
+      for (String option : extraOptions) {
+        builder.operation(option, null);
       }
-      args.add(dim);
     }
-    if (options != null) {
-      args.addAll(Arrays.asList(options));
-    }
-    args.add(dest.getAbsolutePath());
-    ExecUtils.exec(args.toArray(new String[0])).ensureOk();
+
+    builder.to(dest).exec().ensureOk();
   }
 
   /**
@@ -279,18 +260,27 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
    * If the source is a GIF, extracts its first frame to a temporary file and returns it. Otherwise
    * returns the original file unchanged.
    */
-  private File extractFirstGifFrame(File gifFile) throws IOException {
-    if (!hasExtension(gifFile, "gif")) {
-      return gifFile;
+  private File handleGifFrame(File srcFile) {
+    if (!hasExtension(srcFile, "gif")) {
+      return srcFile;
     }
 
-    File frameFile = new File(gifFile.getParent(), "frame.gif");
+    File frameFile = new File(srcFile.getParent(), "frame.gif");
     List<String> command =
         Arrays.asList(
-            getMagickExePath(), gifFile.getAbsolutePath() + "[0]", frameFile.getAbsolutePath());
-
+            getMagickExePath(), srcFile.getAbsolutePath() + "[0]", frameFile.getAbsolutePath());
     ExecUtils.exec(command);
     return frameFile;
+  }
+
+  /**
+   * Reads the actual dimensions of {@code imageFile} and stores them in {@code options} so that the
+   * command builder can make informed sizing decisions.
+   */
+  private void updateDimensions(File imageFile, ThumbnailOptions options) throws IOException {
+    Dimension imgDimensions = getImageDimensions(imageFile);
+    options.setImgWidth(imgDimensions.width);
+    options.setImgHeight(imgDimensions.height);
   }
 
   /** Ensures the parent directory of {@code file} exists, creating it if necessary. */
@@ -303,52 +293,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
           String.format(
               "Failed to create directory '%s'. Check filesystem permissions.",
               parent.getAbsolutePath()));
-    }
-  }
-
-  /** Appends {@code -size} arguments when the options do not suppress sizing. */
-  private void appendSizeArgs(List<String> args, ThumbnailOptions options) {
-    if (options.isNoSize()) {
-      return;
-    }
-    int sizeX = options.getImgWidth() == 0 ? options.getWidth() * 2 : options.getImgWidth();
-    int sizeY = options.getImgHeight() == 0 ? options.getHeight() * 2 : options.getImgHeight();
-    args.add("-size");
-    args.add(sizeX + "x" + sizeY);
-  }
-
-  /** Appends thumbnail, gravity, border, and crop arguments based on {@code options}. */
-  private void appendThumbnailArgs(List<String> args, ThumbnailOptions options) {
-    if (options.isNoSize()) {
-      return;
-    }
-    int thumbWidth = options.getWidth();
-    int thumbHeight = options.getHeight();
-
-    args.add("-thumbnail");
-    boolean shrinkOnly =
-        options.isKeepAspect() || isAlreadySmallerThanTarget(options, thumbWidth, thumbHeight);
-    String resizeOperator = shrinkOnly ? ">" : "^";
-    args.add(thumbWidth + "x" + thumbHeight + resizeOperator);
-
-    if (options.getGravity() != null) {
-      args.add("-gravity");
-      args.add(options.getGravity());
-    }
-
-    if (!Check.isEmpty(options.getBackgroundColour())) {
-      args.add("-bordercolor");
-      args.add(options.getBackgroundColour());
-      args.add("-border");
-      args.add(BORDER_WIDTH_PX);
-    }
-
-    int cropWidth = options.getCropWidth();
-    int cropHeight = options.getCropHeight();
-    if (cropWidth > 0 && cropHeight > 0) {
-      args.add("-crop");
-      args.add(cropWidth + "x" + cropHeight + "+" + options.getCropX() + "+" + options.getCropY());
-      args.add("+repage");
     }
   }
 
@@ -387,24 +331,11 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
   }
 
-  /**
-   * Checks if the original image dimensions are already smaller than the target thumbnail
-   * dimensions.
-   */
-  private boolean isAlreadySmallerThanTarget(
-      ThumbnailOptions options, int targetWidth, int targetHeight) {
-    return options.getImgHeight() < targetHeight && options.getImgWidth() < targetWidth;
-  }
-
   private boolean hasExtension(File file, String ext) {
     return file.getName().toLowerCase().endsWith("." + ext.toLowerCase());
   }
 
   private String getMagickExePath() {
     return magickExe.getAbsolutePath();
-  }
-
-  private void addExecutablePath(List<String> args) {
-    args.add(getMagickExePath());
   }
 }
