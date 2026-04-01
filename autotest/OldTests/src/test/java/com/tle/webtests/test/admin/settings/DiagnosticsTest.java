@@ -16,7 +16,7 @@ public class DiagnosticsTest extends AbstractSessionTest {
   private DiagnosticsPage logonToDiagnosticsPage() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.diagnosticsPage();
+    return sp.clickDiagnosticSetting();
   }
 
   @Test

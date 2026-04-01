@@ -2,6 +2,7 @@ package com.tle.webtests.pageobject;
 
 import com.google.common.collect.Lists;
 import com.tle.webtests.framework.PageContext;
+import java.util.Arrays;
 import java.util.List;
 import org.openqa.selenium.NotFoundException;
 
@@ -9,11 +10,10 @@ public class UndeterminedPage<T extends PageObject> extends AbstractPage<T> {
   private List<AbstractPage<? extends T>> choices = Lists.newArrayList();
   private AbstractPage<? extends T> determinedChoice;
 
-  public UndeterminedPage(
-      PageContext context, AbstractPage<? extends T> page1, AbstractPage<? extends T> page2) {
+  @SafeVarargs
+  public UndeterminedPage(PageContext context, AbstractPage<? extends T>... pages) {
     super(context);
-    add(page1);
-    add(page2);
+    Arrays.stream(pages).forEach(this::add);
   }
 
   public UndeterminedPage<T> add(AbstractPage<? extends T> page) {

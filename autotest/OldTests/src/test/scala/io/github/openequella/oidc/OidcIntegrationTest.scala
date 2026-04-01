@@ -40,7 +40,7 @@ class OidcIntegrationTest extends AbstractIntegrationTest {
 
     // Check role mappings. The user should have the role of `System Admin` which allows the user to access the OIDC Setting page.
     val settingsPage = new SettingsPage(context).load()
-    assertTrue(settingsPage.oidcSettingsPage != null)
+    assertTrue(settingsPage.clickOidcSetting != null)
   }
 
   @DataProvider(name = "authRespErrors")

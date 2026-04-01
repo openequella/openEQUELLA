@@ -17,7 +17,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 val RestEasyVersion   = "3.15.6.Final"
 val SwaggerVersion    = "1.6.16"
-val TomcatVersion     = "9.0.115"
+val TomcatVersion     = "9.0.116"
 val axis2Version      = "2.0.0"
 val circeVersion      = "0.14.5"
 val curatorVersion    = "5.9.0"
@@ -28,9 +28,9 @@ val jsassVersion      = "5.11.1"
 val jsoupVersion      = "1.22.1"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
-val tikaVersion       = "2.9.4"
+val tikaVersion       = "3.3.0"
 val luceneVersion     = "10.4.0"
-val nettyVersion      = "4.2.10.Final"
+val nettyVersion      = "4.2.12.Final"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -79,7 +79,7 @@ libraryDependencies ++= Seq(
   ),
   "com.google.api-client" % "google-api-client"           % "2.9.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
-  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20251217-2.0.0",
+  "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260323-2.0.0",
   "com.google.code.gson"  % "gson"                        % "2.13.2",
   "com.google.guava"      % "guava"                       % "33.5.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
@@ -94,7 +94,7 @@ libraryDependencies ++= Seq(
     // Due to deduplicates with aopalliance via Spring AOP.
     ExclusionRule(organization = "aopalliance", name = "aopalliance")
   ),
-  "com.ibm.icu" % "icu4j" % "78.2",
+  "com.ibm.icu" % "icu4j" % "78.3",
   sqlServerDep excludeAll (
     // Conflicts with RESTeasy jakarta.xml.bind-api
     ExclusionRule(organization = "javax.xml.bind"),
@@ -213,7 +213,7 @@ libraryDependencies ++= Seq(
   "org.codehaus.xfire"                   % "xfire-aegis"                    % "1.2.6",
   "org.dspace"                           % "cql-java"                       % "1.0",
   "org.omegat"                           % "jmyspell-core"                  % "1.0.0-beta-2",
-  "org.freemarker"                       % "freemarker"                     % "2.3.34",
+  "org.freemarker"                       % "freemarker"                     % "2.3.23",
   "com.github.equella.legacy"            % "hurl"                           % "1.1",
   "org.jboss.resteasy"                   % "resteasy-jaxrs"                 % RestEasyVersion,
   "org.jboss.spec.javax.annotation"      % "jboss-annotations-api_1.3_spec" % "2.0.1.Final",
