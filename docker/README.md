@@ -152,10 +152,11 @@ the resultant image can be used for completely fresh builds and also the executi
 tests. This could also be used for an image to run a CI type build, and so in a similar thought can
 also be used to diagnose CI build issues.
 
-It solely uses OpenJDK using the openjdk image as its base. And for the installation of dependent
-build tools (SBT and Node/NPM) it relies on wrappers (`./sbt`) and scripts (`nvm` with `.nvmrc`) to
-ensure the correct ones are used. Thereby in theory always being in sync with what is currently in
-the repository.
+It uses eclipse-temurin:11 as its base image. For the installation of dependent build tools,
+SBT relies on the ./sbt wrapper in the repository to ensure the correct version is always used.
+NVM is installed directly in the Dockerfile via the official installation script, and the repository's
+.nvmrc is then used to set up the correct Node/NPM version. Both are therefore always in sync
+with what is currently in the repository.
 
 As part of the build it clones the openEQUELLA repository and uses the `.nvmrc` to install an
 initial version of Node/NVM. However, SBT and it's dependencies will only be installed at the first
@@ -163,15 +164,26 @@ execution of `./sbt` - this minimises the image size.
 
 The image has a Postgres server all setup with a database and user matching those in the default
 autotest configuration. This assists with being able to run openEQUELLA in the container and then
-the end-to-end selenium tests. To support this, Google Chrome and the matching driver is also
-installed in the build image. (Note: Due to the way Google does its Chrome releases, we're unable
-to pin this to a version, so whatever is the 'stable' version at time of building the docker image
-will be used.)
+the end-to-end selenium tests. To support this, Google Chrome and the matching ChromeDriver are
+installed in the build image via two helper scripts in the `docker-build` directory:
 
-**Note:** The matching chromedriver is installed with the helper script
-`/usr/local/bin/install-chromedriver` and the build has it place `chromedriver` at
-`/usr/local/bin/chromedriver`. You need to make sure if you wish to run the tests you configure
-accordingly.
+- **`install-chrome`** — Downloads and installs Google Chrome from the official `.deb` package.
+  By default it installs the version pinned in the script via `CUSTOMIZE_CHROME_VERSION` (currently
+  `143.0.7499.192`). To use the latest stable release instead, simply clear that variable in the
+  script before building.
+
+- **`install-chromedriver`** — Reads the version of the Chrome binary already installed
+  (`google-chrome --version`), then queries the
+  [Chrome for Testing JSON endpoint](https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json)
+  to find and download the exactly matching ChromeDriver for Linux 64-bit. The driver is placed at
+  the path passed as the first argument to the script (the build has it land at
+  `/usr/local/bin/chromedriver`). You need to make sure if you wish to run the tests you configure
+  accordingly.
+
+- **`install-imagemagick`** — Downloads the pinned **ImageMagick 7.1.2-18** AppImage from the
+  official GitHub releases page, extracts it, and installs it to `/opt/imagemagick/magick`. This
+  ensures the build environment uses the `magick`-first CLI syntax required by openEQUELLA (see the
+  contributing guide for details on why ImageMagick 6.x from `apt` must not be used).
 
 #### Building the image
 
