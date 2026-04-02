@@ -4395,10 +4395,6 @@
     <parameter id="path" value="/icon.do" />
     <parameter id="root" value="bean:com.tle.web.mimetypes.service.IconServer" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="javascriptService">
-    <parameter id="class" value="com.tle.common.javascript.RemoteJavascriptService" />
-    <parameter id="bean" value="bean:com.tle.core.javascript.JavascriptService" />
-  </extension>
   <extension plugin-id="com.tle.core.collection" point-id="collectionSave" id="itemCollectionSave">
     <parameter id="bean" value="bean:com.tle.core.item.standard.service.ItemStandardService" />
   </extension>
