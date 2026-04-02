@@ -40,7 +40,7 @@ class JavaScriptProvider @Inject() (javaScriptService: JavascriptService) {
   )
   def listLibraries: List[NameValue] = {
     LOGGER.debug("Listing all JavaScript library names and IDs")
-    javaScriptService.getAllJavascriptLibraryNames.asScala.map(NameValue(_)).toList
+    javaScriptService.listLibraries.asScala.map(NameValue(_)).toList
   }
 
   @RequiresLogin(message =
@@ -50,7 +50,7 @@ class JavaScriptProvider @Inject() (javaScriptService: JavascriptService) {
     LOGGER.debug(s"Getting all JavaScript module names and IDs for library ID: $libraryId")
 
     noneIfNotFound {
-      javaScriptService.getAllJavascriptModuleNames(libraryId)
+      javaScriptService.modulesByLibraryId(libraryId)
     }.map(modules => modules.asScala.map(NameValue(_)).toList)
   }
 }

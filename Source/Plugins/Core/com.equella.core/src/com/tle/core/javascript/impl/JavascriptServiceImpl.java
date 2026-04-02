@@ -59,7 +59,7 @@ public class JavascriptServiceImpl implements JavascriptService {
   }
 
   @Override
-  public List<NameValue> getAllJavascriptLibraryNames() {
+  public List<NameValue> listLibraries() {
     List<JavascriptLibrary> libs = tracker.getBeanList();
 
     List<NameValue> names = new ArrayList<NameValue>();
@@ -78,7 +78,7 @@ public class JavascriptServiceImpl implements JavascriptService {
   }
 
   @Override
-  public List<NameValue> getAllJavascriptModuleNames(String libraryId) {
+  public List<NameValue> modulesByLibraryId(String libraryId) {
     JavascriptLibrary lib = tracker.getBeanMap().get(libraryId);
     if (lib == null) {
       throw new NotFoundException("No JavaScript library with ID " + libraryId + " found");
