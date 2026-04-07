@@ -26,12 +26,60 @@ import org.scalatest.matchers.should.Matchers.{a, convertToAnyShouldWrapper}
 import org.scalatest.prop.Tables.Table
 import sttp.model.Uri
 
+import java.util.Properties
 import scala.annotation.tailrec
+import scala.util.{Failure, Success, Try, Using}
 
 object TestHelper {
   val CREDENTIALS_AUTOTEST: (String, String) = ("AutoTest", "automated")
   val CREDENTIALS_ADMIN: (String, String)    = ("TLE_ADMINISTRATOR", "autotestpassword")
   val INSTITUTION_REST: String               = "rest"
+
+  /** Load the test server port from configuration with CLI -D override support.
+    *
+    * Precedence order:
+    *   1. Default value: 8080
+    *   2. Value from test.properties (loaded from classpath if present)
+    *   3. CLI -D system property (highest priority)
+    *
+    * Users can copy test.properties.sample to test.properties and customize local settings.
+    * test.properties is gitignored — do not commit it.
+    */
+  private def loadServerPort(): Int =
+    cfgOption("oeq.test.port")
+      .map { portStr =>
+        Try(portStr.toInt) match {
+          case Success(port) => port
+          case Failure(_)    =>
+            throw new IllegalArgumentException(
+              s"Invalid oeq.test.port value '$portStr': must be a number. Check test.properties or -Doeq.test.port."
+            )
+        }
+      }
+      .getOrElse(8080)
+
+  private def cfgOption(configKey: String): Option[String] =
+    Option(System.getProperty(configKey)).orElse(loadFromPropertiesFile(configKey))
+
+  private def loadFromPropertiesFile(propertyKey: String): Option[String] =
+    Option(getClass.getClassLoader.getResourceAsStream("test.properties"))
+      .flatMap { inputStream =>
+        Using(inputStream) { stream =>
+          val props = new Properties()
+          props.load(stream)
+
+          Option(props.getProperty(propertyKey))
+        }.toOption.flatten
+      }
+
+  /** The port the test server is running on.
+    *
+    * Priority order:
+    *   1. Default: 8080 (for CI)
+    *   2. Value from test.properties file
+    *   3. CLI -D option (e.g., `-Doeq.test.port=9090`)
+    */
+  private val serverPort: Int = loadServerPort()
 
   /** Login to the REST institution with the automated test user.
     *
@@ -55,8 +103,9 @@ object TestHelper {
       institution: String,
       credentials: (String, String)
   ): ClientConfiguration = {
-    val instUrl                           = Uri("localhost").port(8080).withPath(institution)
-    implicit val cfg: ClientConfiguration = ClientConfiguration(instUrl)
+    val instUrl                           = Uri("localhost").port(serverPort).withPath(institution)
+    implicit val cfg: ClientConfiguration =
+      ClientConfiguration(instUrl, new java.net.CookieManager())
     login(credentials)
   }
 
@@ -73,7 +122,9 @@ object TestHelper {
   def loginSameInstitutionWithDifferentUser(credentials: (String, String))(implicit
       cfg: ClientConfiguration
   ): ClientConfiguration = {
-    val newCfg: ClientConfiguration = ClientConfiguration(cfg.institutionUrl)
+    // Create a fresh CookieManager so this user gets its own session.
+    val newCfg: ClientConfiguration =
+      ClientConfiguration(cfg.institutionUrl, new java.net.CookieManager())
     login(credentials)(newCfg)
   }
 
@@ -99,8 +150,9 @@ object TestHelper {
   def asUnauthenticatedUser[T](
       action: ClientConfiguration => T
   )(implicit cfg: ClientConfiguration): T = {
+    // Create a fresh CookieManager so this config has no session cookies.
     val unAuthenticatedCfg: ClientConfiguration =
-      cfg.copy(cookies = scala.collection.mutable.Set.empty)
+      ClientConfiguration(cfg.institutionUrl, new java.net.CookieManager())
     action(unAuthenticatedCfg)
   }
 

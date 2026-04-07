@@ -32,7 +32,7 @@ object StatusApi {
     */
   def heartbeat(implicit cfg: RestConfiguration): Either[RestError, Unit] = {
     val request = basicRequest.get(cfg.apiUrl().addPath(API_PATH, "heartbeat")).response(asString)
-    handleResult(extractAction(request), sendWithCookies(request)) { _ =>
+    handleResult(extractAction(request), send(request)) { _ =>
       Right(())
     }
   }

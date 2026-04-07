@@ -19,8 +19,9 @@
 package com.tle.admin
 
 import org.slf4j.Logger
-import sttp.client3.{Request, Response, SimpleHttpClient}
+import sttp.client3.{HttpClientSyncBackend, Identity, Request, Response, SttpBackend}
 
+import java.net.CookieHandler
 import scala.util.{Failure, Success, Try}
 
 /** The `rest` package contains the REST API client for the TLE Admin Console to utilise the
@@ -29,10 +30,20 @@ import scala.util.{Failure, Success, Try}
   */
 package object rest {
 
-  /** Sends a request with the cookies from the given configuration.
+  // Shared backend configured with the system CookieHandler for automatic cookie management.
+  // Uses java.net.http.HttpClient under the hood, which handles cookie storage and deduplication
+  // via the system CookieManager (set up in Bootstrap.java).
+  private lazy val sharedBackend: SttpBackend[Identity, Any] = {
+    val httpClient = java.net.http.HttpClient
+      .newBuilder()
+      .cookieHandler(CookieHandler.getDefault)
+      .build()
+    HttpClientSyncBackend.usingClient(httpClient)
+  }
+
+  /** Sends a request. Cookies are managed automatically by the system CookieHandler configured on
+    * the underlying HttpClient — no manual cookie attachment is needed.
     *
-    * @param cfg
-    *   the REST configuration to use for the request
     * @param request
     *   the request to send
     * @tparam T
@@ -40,19 +51,15 @@ package object rest {
     * @return
     *   the response from the server
     */
-  def sendWithCookies[T](
+  def send[T](
       request: Request[T, Any]
-  )(implicit cfg: RestConfiguration): Either[RestError, Response[T]] = {
-    val client = SimpleHttpClient()
-    Try(client.send(request.cookies(cfg.cookies))) match {
+  ): Either[RestError, Response[T]] =
+    Try(sharedBackend.send(request)) match {
       case Failure(exception) =>
-        client.close()
         Left(ClientError(s"Failed to send request to server: ${exception.getMessage}", exception))
       case Success(response) =>
-        client.close()
         Right(response)
     }
-  }
 
   /** Handles the result of a REST API call, logging the success or failure of the action.
     *

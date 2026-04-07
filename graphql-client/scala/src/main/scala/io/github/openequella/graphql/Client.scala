@@ -22,38 +22,66 @@ import caliban.client.CalibanClientError.ServerError
 import caliban.client.Operations.IsOperation
 import caliban.client.{CalibanClientError, GraphQLResponseError, Operations, SelectionBuilder}
 import io.github.openequella.graphql.api.{ApiError, ApiErrorCause, GraphQlError}
-import sttp.client4.{Backend, DefaultSyncBackend, Request, Response, asString, basicRequest}
-import sttp.model.headers.CookieWithMeta
+import sttp.client4.httpclient.HttpClientSyncBackend
+import sttp.client4.{Backend, Request, asString, basicRequest}
 import sttp.model.{MediaType, StatusCode, Uri}
 import sttp.shared.Identity
 
+import java.net.{CookieHandler, CookieManager}
+import java.net.http.{HttpClient => JHttpClient}
+
+/** Configuration for the GraphQL client.
+  *
+  * @param institutionUrl
+  *   The URL of the institution to connect to.
+  * @param cookieManager
+  *   The CookieManager to use for this configuration. If not provided, the system default
+  *   CookieHandler is used (or a new one is created if none is set).
+  */
 final case class ClientConfiguration(
     institutionUrl: Uri,
-    cookies: scala.collection.mutable.Set[CookieWithMeta] = scala.collection.mutable.Set.empty
-)
+    cookieManager: CookieManager = ClientConfiguration.ensureSystemCookieManager()
+) {
+
+  /** A lazily-initialised backend tied to this configuration's CookieManager. Created once and
+    * reused across all requests, allowing TCP/TLS connection reuse via the underlying HttpClient's
+    * connection pool.
+    *
+    * Lifecycle: in production, `ClientConfiguration` is provided as a Guice `@Singleton`, so this
+    * backend lives for the application lifetime and is cleaned up on JVM exit. In tests, each
+    * `ClientConfiguration` gets its own backend instance, which is likewise cleaned up on JVM exit.
+    */
+  lazy val backend: Backend[Identity] = {
+    val httpClient = JHttpClient
+      .newBuilder()
+      .cookieHandler(cookieManager)
+      .build()
+    HttpClientSyncBackend.usingClient(httpClient)
+  }
+}
+
+object ClientConfiguration {
+
+  /** Returns the system CookieManager, initialising it as the default `CookieHandler` if none has
+    * been set yet. Note: this method has the side effect of calling `CookieHandler.setDefault` on
+    * first use if no handler is configured.
+    */
+  def ensureSystemCookieManager(): CookieManager = {
+    if (CookieHandler.getDefault == null) {
+      CookieHandler.setDefault(new CookieManager())
+    }
+    CookieHandler.getDefault match {
+      case cm: CookieManager => cm
+      case _                 => new CookieManager()
+    }
+  }
+}
 
 final case class ServerResponse[A](data: A, responseErrors: List[GraphQLResponseError])
 
 object Client {
   private val GRAPHQL_PATH = Seq("graphql")
   private val LOGIN_PATH   = Seq("api", "auth", "login")
-
-  private lazy val backend: Backend[Identity] = {
-    val b = DefaultSyncBackend()
-    sys.addShutdownHook {
-      try {
-        b.close()
-      } catch {
-        case e: Exception =>
-          // Backend close failures during JVM shutdown are non-recoverable and should not
-          // prevent application termination. Log for diagnostics but don't propagate.
-          System.err.println(
-            s"Non-critical: HTTP backend cleanup failed during shutdown: ${e.getMessage}"
-          )
-      }
-    }
-    b
-  }
 
   def query[R](request: SelectionBuilder[Operations.RootQuery, R])(implicit
       cfg: ClientConfiguration
@@ -76,12 +104,12 @@ object Client {
       )
       .response(asString)
 
-    request.send(backend) match {
+    request.send(cfg.backend) match {
       case response if response.code == StatusCode.Ok =>
         // There is a slight short falling in this API. If you target an institution URL that is invalid,
         // you still get a 200 back with a cookie. Ideally, the API needs to reply with a body as well
         // so that we can confirm we have actually logged in.
-        cfg.cookies ++= extractCookies(response)
+        // Cookies (e.g. JSESSIONID) are automatically stored by the CookieManager.
         Right(())
       case response =>
         Left((response.code, s"Login failed with status code ${response.code}"))
@@ -122,7 +150,7 @@ object Client {
     }
 
     // Convert the request to a sttp request and send it. Then convert the response to a ServerResponse.
-    val response: Either[CalibanClientError, ServerResponse[R]] = send(cfg.cookies) {
+    val response: Either[CalibanClientError, ServerResponse[R]] = send {
       request.toRequestWith(cfg.institutionUrl.addPath(GRAPHQL_PATH)) { (a, errors, _) =>
         ServerResponse(a, errors)
       }
@@ -147,11 +175,9 @@ object Client {
     }
   }
 
-  /** Basic sending of a request and handling of cookies. Nothing in here should be specific to the
-    * library used for GraphQL.
+  /** Basic sending of a request. Cookies are managed automatically by the CookieManager configured
+    * on the underlying HttpClient for the given configuration.
     *
-    * @param cookieJar
-    *   The cookie jar to use for the request, and to update with any new cookies.
     * @param request
     *   The request to send.
     * @tparam T
@@ -159,19 +185,6 @@ object Client {
     * @return
     *   The response body.
     */
-  private def send[T](
-      cookieJar: scala.collection.mutable.Set[CookieWithMeta]
-  )(request: Request[T]): T = {
-    val authenticatedRequest = request.contentType(MediaType.ApplicationJson).cookies(cookieJar)
-    val response             = authenticatedRequest.send(backend)
-
-    cookieJar ++= extractCookies(response)
-
-    response.body
-  }
-
-  private def extractCookies(response: Identity[Response[_]]): Seq[CookieWithMeta] =
-    response.cookies.collect { case Right(cookie) =>
-      cookie
-    }
+  private def send[T](request: Request[T])(implicit cfg: ClientConfiguration): T =
+    request.contentType(MediaType.ApplicationJson).send(cfg.backend).body
 }
