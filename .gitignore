@@ -1,6 +1,9 @@
 # Local test configuration (users copy test.properties.sample to test.properties)
 graphql-client/scala/src/test/resources/test.properties
 
+# Local build configuration (users copy local.properties.sample to local.properties)
+graphql-client/scala/local.properties
+
 *.pyc
 *.pmd
 *.iml

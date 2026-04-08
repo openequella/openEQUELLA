@@ -37,6 +37,19 @@ location automatically, replacing the manual steps above:
 sbt downloadSchema
 ```
 
+By default the task targets `http://localhost:8080/vanilla`. To use a different institution URL,
+configure it in order of precedence (lowest → highest):
+
+1. **`local.properties` file** — copy `local.properties.sample` to `local.properties` (gitignored)
+   and set:
+   ```properties
+   oeq.institution.url=http://localhost:9090/myinst
+   ```
+2. **CLI `-D` flag** — override for a single run:
+   ```bash
+   sbt -Doeq.institution.url=http://localhost:9090/myinst downloadSchema
+   ```
+
 Once the schema is in place, open the SBT console and run the following task to generate the client
 classes:
 

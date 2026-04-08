@@ -59,10 +59,33 @@ downloadSchema := {
   import java.net.URI
   import java.net.http.{HttpClient, HttpRequest, HttpResponse}
   import java.nio.file.{Files, Paths, StandardOpenOption}
+  import java.util.Properties
+  import scala.util.Using
 
-  val url        = "http://localhost:8080/vanilla/graphql/schema"
-  val targetDir  = "src/main/resources"
-  val targetFile = s"$targetDir/schema.graphql"
+  /** Load a property value with the following precedence (lowest to highest):
+    *   1. Default value
+    *   2. `local.properties` file in the project root directory
+    *   3. CLI -D system property
+    */
+  def loadProperty(key: String, default: String): String = {
+    val fromFile: Option[String] =
+      Option(Paths.get("local.properties").toFile)
+        .filter(_.exists())
+        .flatMap { file =>
+          Using(new java.io.FileInputStream(file)) { stream =>
+            val props = new Properties()
+            props.load(stream)
+            Option(props.getProperty(key))
+          }.toOption.flatten
+        }
+
+    sys.props.get(key).orElse(fromFile).getOrElse(default)
+  }
+
+  val institutionUrl = loadProperty("oeq.institution.url", "http://localhost:8080/vanilla")
+  val url            = s"$institutionUrl/graphql/schema"
+  val targetDir      = "src/main/resources"
+  val targetFile     = s"$targetDir/schema.graphql"
 
   // Ensure the target directory exists
   Files.createDirectories(Paths.get(targetDir))
