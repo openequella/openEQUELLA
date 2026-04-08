@@ -67,7 +67,7 @@ object ClientConfiguration {
     * first use if no handler is configured.
     */
   def ensureSystemCookieManager(): CookieManager = {
-    if (CookieHandler.getDefault == null) {
+    if (Option(CookieHandler.getDefault).isEmpty) {
       CookieHandler.setDefault(new CookieManager())
     }
     CookieHandler.getDefault match {

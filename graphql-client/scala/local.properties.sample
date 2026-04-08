@@ -1,0 +1,14 @@
+# Local Build Configuration for graphql-client
+#
+# Copy this file to local.properties and adjust the values for your local development environment.
+# Do NOT commit local.properties to the repository — it contains local machine configuration.
+#
+# Configuration Precedence:
+#   1. Default value (http://localhost:8080/vanilla)
+#   2. Value from this file (local.properties)
+#   3. CLI -D option (e.g., -Doeq.institution.url=http://localhost:9090/myinst)
+
+# The full institution URL of the local openEQUELLA instance.
+# Default: http://localhost:8080/vanilla (used by the CI pipeline)
+# Override: -Doeq.institution.url=http://localhost:9090/myinst
+oeq.institution.url=http://localhost:8080/vanilla

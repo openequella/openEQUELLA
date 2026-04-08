@@ -167,6 +167,7 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     * @return
     *   `Left` containing a list of errors or `Right` if the operation was successful.
     */
+  @SuppressWarnings(Array("BooleanParameter"))
   def deleteGroup(uniqueId: String, deleteChildren: Boolean = true)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] = {
