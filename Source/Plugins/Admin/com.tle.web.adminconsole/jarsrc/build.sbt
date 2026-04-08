@@ -1,6 +1,6 @@
 val guiceVersion = "5.1.0"
 val slf4jVersion = "2.0.17"
-val sttpVersion  = "3.9.7"
+val sttpVersion  = "3.11.0"
 
 libraryDependencies ++= Seq(
   // Logging dependencies
@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "com.fifesoft"  % "rsyntaxtextarea" % "3.6.2",
   "com.miglayout" % "miglayout-swing" % "11.4.3",
   xstreamDep,
-  "io.github.openequella" %% "graphql-client" % "0.5.0-SNAPSHOT",
+  "io.github.openequella" %% "graphql-client" % "0.6.0-SNAPSHOT",
   "com.google.inject"      % "guice"          % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
     // Maybe it can be removed when all HTTP Invoker code is gone
@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "com.softwaremill.sttp.client3" %% "core"  % sttpVersion,
   "com.softwaremill.sttp.client3" %% "circe" % sttpVersion,
   // Circe generic for decoding REST JSON responses
-  "io.circe" %% "circe-generic" % "0.14.10"
+  "io.circe" %% "circe-generic" % "0.14.15"
 )
 
 excludeDependencies ++= Seq(
