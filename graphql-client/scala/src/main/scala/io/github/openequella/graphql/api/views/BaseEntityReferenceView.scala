@@ -37,7 +37,7 @@ import io.github.openequella.graphql.client.BaseEntityReference
   * @param forCollection
   *   Whether this entity is a collection
   */
-case class BaseEntityReferenceView(
+final case class BaseEntityReferenceView(
     id: Long,
     uuid: String,
     bundleId: Long,

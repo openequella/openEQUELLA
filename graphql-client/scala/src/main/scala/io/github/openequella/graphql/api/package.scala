@@ -79,11 +79,9 @@ package object api {
       queryBuilder: PaginatedQueryBuilder[A]
   )(implicit cfg: ClientConfiguration): Either[List[ApiError], PaginationResult[A]] = {
     val q = withPagination[A](pagination)(queryBuilder)
-    val r = withPaginationResult[A](pagination) {
+    withPaginationResult[A](pagination) {
       Client.query(q)(cfg)
     }
-
-    r
   }
 
   /** Call the supplied query builder with the given pagination, so that the query is built with the

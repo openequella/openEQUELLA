@@ -174,6 +174,7 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     * @return
     *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
     */
+  @SuppressWarnings(Array("BooleanParameter"))
   def exportSchema(id: Long, withSecurity: Boolean)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[Array[Byte]]] = {
@@ -284,6 +285,7 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     * @return
     *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
     */
+  @SuppressWarnings(Array("BooleanParameter"))
   def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
@@ -309,6 +311,7 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     *   Either a list of ApiError or a MetadataSchemaView containing the saved schema, or an error
     *   if the operation failed.
     */
+  @SuppressWarnings(Array("BooleanParameter"))
   def stopEdit(details: MetadataSchemaEditView, unlock: Boolean)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaView] =

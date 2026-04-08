@@ -28,7 +28,7 @@ import io.github.openequella.graphql.client.NameValue
   * @param value
   *   Value associated with the name.
   */
-case class NameValueView(name: String, value: String)
+final case class NameValueView(name: String, value: String)
 object NameValueView {
 
   /** The selection builder for NameValueView.
