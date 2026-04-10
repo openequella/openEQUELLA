@@ -209,23 +209,31 @@ class MagickCommandBuilder {
     List<String> cmd = new ArrayList<>();
 
     cmd.add(exePath);
-    if (subCommand != null) cmd.add(subCommand);
+    if (subCommand != null) {
+      cmd.add(subCommand);
+    }
     cmd.addAll(inputOptions);
-    if (inputFile != null) cmd.add(inputFile);
+    if (inputFile != null) {
+      cmd.add(inputFile);
+    }
     cmd.addAll(outputOptions);
-    if (outputFile != null) cmd.add(outputFile);
+    if (outputFile != null) {
+      cmd.add(outputFile);
+    }
 
     return cmd;
   }
 
   private void validateState() {
     if (subCommand == null) {
-      if (inputFile == null)
+      if (inputFile == null) {
         throw new IllegalStateException(
             "Cannot build magick command: An input file must be specified.");
-      if (outputFile == null)
+      }
+      if (outputFile == null) {
         throw new IllegalStateException(
             "Cannot build magick command: An output destination must be specified.");
+      }
     }
   }
 }
