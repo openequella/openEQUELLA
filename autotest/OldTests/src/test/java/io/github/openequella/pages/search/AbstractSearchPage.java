@@ -1,10 +1,17 @@
 package io.github.openequella.pages.search;
 
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
+
+import com.codeborne.selenide.SelenideElement;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.AbstractPage;
 import com.tle.webtests.pageobject.PageObject;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -17,6 +24,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
  * types of search pages, such as NewSearchPage, AdvancedSearchPage, and HierarchicalPage.
  */
 public abstract class AbstractSearchPage<T extends PageObject> extends AbstractPage<T> {
+
   @FindBy(id = "searchBar")
   protected WebElement searchBar;
 
@@ -33,6 +41,12 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
 
   private final By searchResultListBy = By.xpath(searchResultListXpath);
 
+  private static final String itemByTitleXpath = "//li[.//a[normalize-space()='%s']]";
+
+  private static final String itemButtonXpath = itemByTitleXpath + "//button[@aria-label='%s']";
+
+  private static final By dialogBy = By.xpath("//div[@role='dialog']");
+
   public AbstractSearchPage(PageContext context) {
     super(context);
   }
@@ -47,6 +61,11 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     return searchBar;
   }
 
+  /** Gets the current search query from the search bar. */
+  public String getQuery() {
+    return searchBar.getAttribute("value");
+  }
+
   /** Get the search list element. */
   public WebElement getSearchList() {
     return driver.findElement(searchResultListBy);
@@ -55,6 +74,11 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   /** Check if the search result list is present. */
   public Boolean hasSearchResultList() {
     return !driver.findElements(searchResultListBy).isEmpty();
+  }
+
+  /** Check if the search result list is empty. */
+  public boolean isSearchResultListEmpty() {
+    return isVisible(By.xpath("//p[text()='No results found.']"));
   }
 
   /**
@@ -76,9 +100,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    * @param itemTitle The title of an Item.
    */
   public SummaryPage selectItem(String itemTitle) {
-    By title = By.linkText(itemTitle);
-    WebElement titleLink = waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
-    titleLink.click();
+    selectLink(itemTitle);
     return new SummaryPage(context).get();
   }
 
@@ -89,6 +111,25 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
    */
   public boolean hasItem(String itemTitle) {
     return !driver.findElements(By.linkText(itemTitle)).isEmpty();
+  }
+
+  /**
+   * Check if an Item in the search result is marked as a favourite.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public boolean isItemFavourited(String itemTitle) {
+    By favButtonLocator = favouriteButtonLocator(itemTitle, "Remove from favourites");
+    return !driver.findElements(favButtonLocator).isEmpty();
+  }
+
+  /**
+   * Wait until an Item is displayed in the search result.
+   *
+   * @param itemTitle The title of an Item.
+   */
+  public WebElement waitForItem(String itemTitle) {
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(By.linkText(itemTitle)));
   }
 
   /**
@@ -183,10 +224,8 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     WebElement quickOptionSwitch =
         dateRangeSelector.findElement(By.id("modified_date_selector_mode_switch"));
     quickOptionSwitch.click();
-    WebElement startTextField = dateRangeSelector.findElement(By.id("date-range-selector-start"));
-    startTextField.sendKeys(start);
-    WebElement endTextField = dateRangeSelector.findElement(By.id("date-range-selector-end"));
-    endTextField.sendKeys(end);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-start-label", start);
+    setDatePickerValue(dateRangeSelector, "date-range-selector-end-label", end);
   }
 
   /**
@@ -235,8 +274,9 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     getWaiter()
         .until(
             driver ->
-                ownerSelectDialog.findElements(By.xpath(".//ul[@id='item-search-list']/div")).size()
-                    > 0);
+                !ownerSelectDialog
+                    .findElements(By.xpath(".//ul[@id='item-search-list']/div"))
+                    .isEmpty());
     // Click one of found users.
     WebElement owner =
         ownerSelectDialog.findElement(By.xpath(".//span[text()='" + ownerName + "']"));
@@ -247,6 +287,20 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     confirmButton.click();
     // Wait until the dialog is closed.
     waiter.until(ExpectedConditions.invisibilityOfElementLocated(By.className("MuiDialog-root")));
+  }
+
+  /**
+   * Select a classification option in the Classifications card in the Refine Panel.
+   *
+   * @param optionText The text of a classification option.
+   */
+  public void selectClassification(String optionText) {
+    SelenideElement classificationsCard =
+        $$("h5").findBy(text("Classifications")).parent().shouldBe(visible);
+
+    SelenideElement option = classificationsCard.$$("p").findBy(text(optionText)).shouldBe(visible);
+
+    option.click();
   }
 
   /**
@@ -353,13 +407,97 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
         driver.findElement(By.xpath("//button[@aria-label='Add search to favourites']"));
     favouriteButton.click();
 
-    WebElement favouriteDialog = driver.findElement(By.xpath("//div[@role='dialog']"));
+    WebElement favouriteDialog = driver.findElement(dialogBy);
     WebElement nameInput = favouriteDialog.findElement(By.tagName("input"));
     nameInput.sendKeys(name);
 
-    WebElement confirmButton = favouriteDialog.findElement(By.id("confirm-dialog-confirm-button"));
-    waiter.until(ExpectedConditions.elementToBeClickable(confirmButton));
-    confirmButton.click();
+    confirmDialog();
+  }
+
+  /**
+   * Add an item to favourites from the search results page using default settings.
+   *
+   * @param name The name of the item to add to favourites.
+   */
+  public void addItemToFavourites(String name) {
+    addItemToFavourites(name, null, true);
+  }
+
+  /**
+   * Add an item to favourites from the search results page with the specified tags.
+   *
+   * @param name The name of the item to add to favourites.
+   * @param tags An array of tags to associate with the favourite item.
+   */
+  public void addItemToFavourites(String name, String[] tags) {
+    addItemToFavourites(name, tags, true);
+  }
+
+  /**
+   * Add an item to favourites from the search results page.
+   *
+   * @param itemName The name of the item to add to favourites.
+   * @param tags An array of tags to associate with the favourite item.
+   * @param useLatestVersion If true, the favourite will track the latest version of the item.
+   */
+  public void addItemToFavourites(String itemName, String[] tags, boolean useLatestVersion) {
+    WebElement addToFavouritesButton =
+        driver.findElement(favouriteButtonLocator(itemName, "Add to favourites"));
+    addToFavouritesButton.click();
+
+    // Wait for the dialog to appear.
+    WebElement favouriteDialog = driver.findElement(dialogBy);
+
+    // Enter each tag followed by the Enter key.
+    Optional.ofNullable(tags)
+        .ifPresent(
+            ts -> {
+              WebElement tagsInput =
+                  favouriteDialog.findElement(By.xpath(".//input[@role='combobox']"));
+              Arrays.stream(ts).forEach(tag -> tagsInput.sendKeys(tag, Keys.ENTER));
+            });
+
+    // Select version radio based on the `useLatestVersion` value
+    String versionValue = useLatestVersion ? "latest" : "this";
+    WebElement versionRadio =
+        favouriteDialog.findElement(
+            By.xpath(".//input[@type='radio' and @value='" + versionValue + "']"));
+    if (!versionRadio.isSelected()) {
+      versionRadio.click();
+    }
+
+    // Click the confirmation button.
+    confirmDialog();
+
+    waiter.until(
+        ExpectedConditions.presenceOfElementLocated(
+            favouriteButtonLocator(itemName, "Remove from favourites")));
+  }
+
+  /**
+   * Unfavourite an item from the search results page.
+   *
+   * @param itemName The name of the item to remove from favourites.
+   */
+  public void removeFavouriteFromSearchResult(String itemName) {
+    By favRemoveButtonLocator = favouriteButtonLocator(itemName, "Remove from favourites");
+    WebElement removeButton = driver.findElement(favRemoveButtonLocator);
+    waiter.until(ExpectedConditions.elementToBeClickable(removeButton));
+    removeButton.click();
+    confirmDialog();
+
+    waiter.until(ExpectedConditions.numberOfElementsToBe(favRemoveButtonLocator, 0));
+  }
+
+  /**
+   * Build a 'By' locator for the favourite button of a search result item.
+   *
+   * @param itemTitle The title of the item.
+   * @param ariaLabel The aria-label of the button.
+   * @return A By locator for the favourite button.
+   */
+  private By favouriteButtonLocator(String itemTitle, String ariaLabel) {
+    return By.xpath(String.format(itemButtonXpath, itemTitle, ariaLabel));
   }
 
   /**
@@ -371,7 +509,7 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   public void addToKeyResource(String itemName, String hierarchyName) {
     By addToKeyResourceButtonXpath =
         By.xpath(
-            "//div[h6[a[text()='"
+            "//div[h6[a[string(.)='"
                 + itemName
                 + "']]]//button[@aria-label='Add as key resource to a hierarchy']");
 
@@ -379,13 +517,14 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
     addToKeyResourceButton.click();
 
     // wait for the dialog to loading
-    By hierarchyXpath =
-        By.xpath(
-            "//div[@aria-labelledby='modify-key-resource-dialog-title']//div[div[span[contains(text(),"
-                + " '"
-                + hierarchyName
-                + "')]]]");
+    String hierarchyXPathString =
+"""
+//div[@aria-labelledby='modify-key-resource-dialog-title']//p[contains(text(), '%s')]/ancestor::div[2]
+"""
+            .formatted(hierarchyName);
+    By hierarchyXpath = By.xpath(hierarchyXPathString);
     By plusButtonXpath = By.xpath(".//button[@aria-label='Add to hierarchy']");
+
     WebElement plusButton =
         waiter
             .until(ExpectedConditions.visibilityOfElementLocated(hierarchyXpath))
@@ -417,5 +556,60 @@ public abstract class AbstractSearchPage<T extends PageObject> extends AbstractP
   private void selectFromButtonGroup(WebElement buttonGroup, String buttonText) {
     WebElement button = buttonGroup.findElement(By.xpath(".//button[text()='" + buttonText + "']"));
     button.click();
+  }
+
+  // Starting with MUI v7, the Date Picker's TextField is no longer a single input element.
+  // Instead, it is composed of one or more editable <span> elements, depending on the date format.
+  // To input a value, the first span must be clicked before sending any keys.
+  // Once the first part of the date has been set, the remaining keys will automatically populate
+  // the subsequent span elements in sequence.
+  private void setDatePickerValue(WebElement parent, String label, String value) {
+    // Use '@data-sectionindex='0' to locate the first section, and then use '@inputmode='numeric'
+    // to locate the editable span.
+    WebElement firstSpan =
+        parent.findElement(
+            By.xpath(
+                "//div[@aria-labelledby='"
+                    + label
+                    + "']//span[@data-sectionindex='0']//span[@inputmode='numeric']"));
+    firstSpan.click();
+    firstSpan.sendKeys(value);
+  }
+
+  /**
+   * Returns all item thumbnail elements on the page.
+   *
+   * @return List of thumbnail elements with class "OEQThumb-thumbnail".
+   */
+  public List<WebElement> getAllItemThumbnails() {
+    return driver.findElements(By.cssSelector(".OEQThumb-thumbnail"));
+  }
+
+  /**
+   * Find a link by its title, waiting until it is visible.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public WebElement findLink(String linkTitle) {
+    By title = By.linkText(linkTitle);
+    return waiter.until(ExpectedConditions.visibilityOfElementLocated(title));
+  }
+
+  /**
+   * Click a link by its title.
+   *
+   * @param linkTitle The title of the link.
+   */
+  public void selectLink(String linkTitle) {
+    findLink(linkTitle).click();
+  }
+
+  /**
+   * Checks if the wildcard search toggle is visible.
+   *
+   * @return True if the wildcard toggle is visible, false otherwise.
+   */
+  public boolean hasWildcardToggle() {
+    return isVisible(By.xpath("//span[text()='Wildcard search']"));
   }
 }

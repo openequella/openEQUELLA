@@ -12,7 +12,7 @@ import com.tle.webtests.pageobject.cal.CALWizardPage;
 import com.tle.webtests.pageobject.viewitem.AdminTabPage;
 import org.testng.annotations.Test;
 
-@Test(sequential = true)
+@Test(singleThreaded = true)
 public class CALBookRulesTest extends AbstractActivationsTest {
   private static final String COURSE = "A Simple Course";
 

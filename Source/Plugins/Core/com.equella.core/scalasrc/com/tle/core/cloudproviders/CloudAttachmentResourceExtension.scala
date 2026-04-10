@@ -18,14 +18,9 @@
 
 package com.tle.core.cloudproviders
 
-import java.io.{InputStream, OutputStream}
-import java.nio.ByteBuffer
-import java.nio.channels.Channels
-import java.util
-import java.util.Collections
 import cats.data.OptionT
 import cats.effect.IO
-import sttp.client._
+import cats.effect.unsafe.implicits.global
 import com.tle.beans.item.Item
 import com.tle.beans.item.attachments.{CustomAttachment, IAttachment}
 import com.tle.common.NameValue
@@ -39,16 +34,16 @@ import com.tle.web.viewable.ViewableItem
 import com.tle.web.viewitem.section.RootItemFileSection
 import com.tle.web.viewurl.attachments.AttachmentResourceExtension
 import com.tle.web.viewurl.resource.AbstractWrappedResource
-import com.tle.web.viewurl.{
-  AttachmentDetail,
-  ResourceViewer,
-  ResourceViewerConfig,
-  ViewAttachmentUrl,
-  ViewableResource
-}
-import fs2.Stream
+import com.tle.web.viewurl._
 import io.circe.Json.Folder
 import io.circe.{Json, JsonNumber, JsonObject}
+import sttp.capabilities.fs2.Fs2Streams
+import sttp.client3._
+
+import java.io.{InputStream, OutputStream}
+import java.nio.channels.Channels
+import java.util
+import java.util.Collections
 import scala.jdk.CollectionConverters._
 
 class CloudAttachmentResourceExtension extends AttachmentResourceExtension[IAttachment] {
@@ -72,8 +67,8 @@ case class CloudAttachmentViewableResource(
 ) extends AbstractWrappedResource(parent) {
 
   import CloudAttachmentViewableResource._
-  val fields = CloudAttachmentFields(attach)
-  val itemId = parent.getViewableItem.getItemId
+  val fields   = CloudAttachmentFields(attach)
+  val itemId   = parent.getViewableItem.getItemId
   val viewerId = Option(info.lookupSection[RootItemFileSection, RootItemFileSection](classOf))
     .flatMap { rif =>
       Option(rif.getModel(info).getViewer)
@@ -175,7 +170,7 @@ case class CloudAttachmentViewableResource(
 
   override def getContentStream: ContentStream = {
     (for {
-      provider <- OptionT.fromOption[IO](providerO)
+      provider      <- OptionT.fromOption[IO](providerO)
       viewerDetails <- OptionT.fromOption[IO] {
         serviceUriForViewer(provider, cloudViewer(provider))
       }
@@ -184,11 +179,11 @@ case class CloudAttachmentViewableResource(
           viewerDetails._2,
           provider,
           uriParameters,
-          uri => basicRequest.get(uri).response(asStream[Stream[IO, Byte]])
+          uri => basicRequest.get(uri).response(asStreamUnsafe(Fs2Streams[IO]))
         )
       )
     } yield response).value map {
-      case None => EmptyResponseStream
+      case None           => EmptyResponseStream
       case Some(response) =>
         response.body match {
           case Right(responseStream) => SttpResponseContentStream(response, responseStream)
@@ -219,9 +214,9 @@ case class SttpResponseContentStream(
     response: Response[Either[String, fs2.Stream[IO, Byte]]],
     responseStream: fs2.Stream[IO, Byte]
 ) extends AbstractContentStream(null, response.contentType.orNull) {
-  override def getContentLength: Long      = response.contentLength.getOrElse(-1L)
-  override def getInputStream: InputStream = null
-  override def mustWrite(): Boolean        = true
+  override def getContentLength: Long         = response.contentLength.getOrElse(-1L)
+  override def getInputStream: InputStream    = null
+  override def mustWrite(): Boolean           = true
   override def write(out: OutputStream): Unit = {
     val channel = Channels.newChannel(out)
     responseStream.chunks.map(c => IO(channel.write(c.toByteBuffer))).compile.drain.unsafeRunSync()

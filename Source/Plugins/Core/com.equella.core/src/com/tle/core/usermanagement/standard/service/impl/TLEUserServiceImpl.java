@@ -28,7 +28,6 @@ import com.tle.common.beans.exception.InvalidDataException;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.beans.exception.ValidationError;
 import com.tle.common.hash.Hash;
-import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.institution.CurrentInstitution;
 import com.tle.common.security.SecurityConstants;
 import com.tle.common.security.SecurityConstants.Recipient;
@@ -45,6 +44,7 @@ import com.tle.core.events.listeners.GroupChangedListener;
 import com.tle.core.events.listeners.UserChangeListener;
 import com.tle.core.events.services.EventService;
 import com.tle.core.guice.Bind;
+import com.tle.core.i18n.CoreStrings;
 import com.tle.core.security.impl.RequiresPrivilege;
 import com.tle.core.services.ValidationHelper;
 import com.tle.core.services.user.UserService;
@@ -283,9 +283,7 @@ public class TLEUserServiceImpl
     // Make sure we have a valid email address
     if (!Check.isEmpty(user.getEmailAddress())
         && !emailService.isValidAddress(user.getEmailAddress())) {
-      errors.add(
-          new ValidationError(
-              "email", CurrentLocale.get("com.tle.web.userdetails.common.invalidemail")));
+      errors.add(new ValidationError("email", CoreStrings.text("common.invalidemail")));
     }
 
     validatePassword(user.getPassword(), passwordNotHashed, errors);
@@ -314,9 +312,7 @@ public class TLEUserServiceImpl
     if (passwordNotHashed) {
       int len = password == null ? 0 : password.length();
       if (len < PASSWORD_MIN_LENGTH) {
-        errors.add(
-            new ValidationError(
-                "password", CurrentLocale.get("com.tle.web.userdetails.common.passwordtooshort")));
+        errors.add(new ValidationError("password", CoreStrings.text("common.passwordtooshort")));
       }
     }
   }

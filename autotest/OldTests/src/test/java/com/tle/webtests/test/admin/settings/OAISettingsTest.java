@@ -37,7 +37,7 @@ public class OAISettingsTest extends AbstractSessionTest {
   private OAISettingsPage logonToOaiSettings() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.oaiSettingsPage();
+    return sp.clickOaiSetting();
   }
 
   @Override

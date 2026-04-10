@@ -42,7 +42,7 @@ public class UpgradeToTomcat6_0_26 extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 }

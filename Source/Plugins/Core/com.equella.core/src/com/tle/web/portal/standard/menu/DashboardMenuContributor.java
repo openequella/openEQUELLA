@@ -27,6 +27,8 @@ import com.tle.web.sections.render.Label;
 import com.tle.web.sections.result.util.KeyLabel;
 import com.tle.web.sections.standard.model.HtmlLinkState;
 import com.tle.web.sections.standard.model.SimpleBookmark;
+import com.tle.web.template.NewUiRoutes;
+import com.tle.web.template.RenderNewTemplate;
 import com.tle.web.template.section.MenuContributor;
 import java.util.Collections;
 import java.util.List;
@@ -52,9 +54,13 @@ public class DashboardMenuContributor implements MenuContributor {
       return Collections.emptyList();
     }
 
-    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark("home.do"));
+    boolean newUIEnabled = RenderNewTemplate.isNewUIEnabled();
+    String newUiRoute = newUIEnabled ? "/" + NewUiRoutes.PATH_DASHBOARD() : null;
+    String dashboardPath = newUIEnabled ? NewUiRoutes.PATH_DASHBOARD() : "home.do";
+
+    HtmlLinkState hls = new HtmlLinkState(new SimpleBookmark(dashboardPath));
     hls.setLabel(LABEL);
-    MenuContribution mc = new MenuContribution(hls, ICON_URL, 1, 1, "dashboard");
+    MenuContribution mc = new MenuContribution(hls, ICON_URL, 1, 1, "dashboard", newUiRoute);
     return Collections.singletonList(mc);
   }
 

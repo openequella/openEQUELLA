@@ -36,7 +36,7 @@ export interface JQueryDivProps extends React.HTMLAttributes<HTMLDivElement> {
  * clear.
  */
 const JQueryDiv = React.memo(({ html, ...withoutOthers }: JQueryDivProps) => {
-  const divElem = React.useRef<HTMLElement>();
+  const divElem = React.useRef<HTMLElement>(null);
 
   // Just a clean-up effect to clear out the div at un-mount time.
   // This is key for supporting the AJAXy stuff.

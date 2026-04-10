@@ -23,7 +23,6 @@ import com.tle.core.plugins.PluginService;
 import com.tle.web.resources.AbstractResourcesServlet;
 import java.io.IOException;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,12 +37,15 @@ public class AdminConsoleDownloadServlet extends AbstractResourcesServlet {
   @Inject private PluginService pluginService;
 
   public AdminConsoleDownloadServlet() {
+    // This file is updated with every release, so we want to make sure the correct version is
+    // always downloaded but in an efficient way. An ETag is a good way to achieve this, as the file
+    // will only be downloaded if it has changed since the last download.
     isCalculateETag = true;
   }
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+      throws IOException {
     response.setHeader("Cache-Control", "private, max-age=5, must-revalidate");
     service(request, response, "adminconsole.jar", "application/java-archive");
   }

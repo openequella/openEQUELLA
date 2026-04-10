@@ -19,9 +19,8 @@
 package com.tle.core.cloudproviders
 
 import cats.data.{Validated, ValidatedNec}
+import cats.effect.unsafe.implicits.global
 import cats.implicits._
-import sttp.client._
-import sttp.client.circe._
 import com.tle.beans.newentity.Entity
 import com.tle.common.i18n.CurrentLocale
 import com.tle.core.cloudproviders.CloudProviderHelper._
@@ -33,6 +32,8 @@ import com.tle.legacy.LegacyGuice
 import com.tle.web.DebugSettings
 import io.circe.syntax._
 import org.slf4j.LoggerFactory
+import sttp.client3._
+import sttp.client3.circe._
 
 import java.time.Instant
 import java.util.UUID

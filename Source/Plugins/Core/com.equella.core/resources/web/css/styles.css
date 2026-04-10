@@ -1483,6 +1483,11 @@ Bootstrap overrides
   top: -4px;
 }
 
+.alert.alert-warning .alert-title {
+  background: url(../images/warning.png) no-repeat;
+  padding: 7px 0 2px 30px;
+}
+
 /* this rule is from a later version of bootstrap.css - delete after upgrade */
 #mainDiv #affix-div {
   position: fixed;

@@ -7,7 +7,7 @@ import org.openqa.selenium.By
 abstract class BulkModerateMessage(commendFieldId: String) extends WaitingBrowserPage {
   override def pageBy = By.id(commendFieldId)
 
-  def comment: String = pageElement.getText
+  def comment: String            = pageElement.getText
   def comment_=(v: String): Unit = {
     pageElement.clear()
     pageElement.sendKeys(v)

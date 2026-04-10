@@ -27,6 +27,10 @@ import {
   getRenderData,
   SelectionSessionInfo,
 } from "../AppConfig";
+import { routes } from "../mainui/routes";
+import { simpleMatch } from "../util/match";
+import { getAdvancedSearchIdFromUrl } from "./AdvancedSearchModule";
+import { getTopicIdFromUrl } from "./HierarchyModule";
 import {
   ExternalRedirect,
   isChangeRoute,
@@ -34,9 +38,7 @@ import {
   isPageContent,
   LegacyContentResponse,
   SubmitResponse,
-} from "../legacycontent/LegacyContent";
-import { routes } from "../mainui/routes";
-import { simpleMatch } from "../util/match";
+} from "./LegacyContentModule";
 
 /**
  *  This Module is all about interacting with the Legacy AJAX endpoints
@@ -229,13 +231,13 @@ const submitSelection = <T>(
   callback: (result: T) => void,
 ): Promise<void> => Axios.post(path, data).then(({ data }) => callback(data));
 
-const buildSelectionSessionLink = (
+export const buildSelectionSessionLink = (
   routerPath: string,
   includeLayout = false,
   externalMimeTypes: string[] = [],
-) => {
+): string => {
   const { stateId, integId, layout } = getSelectionSessionInfo();
-  const url = new URL(routerPath.substr(1), getBaseUrl()); // Drop routerPath's first '/'.
+  const url = new URL(routerPath.slice(1), getBaseUrl()); // Drop routerPath's first '/'.
   url.searchParams.append("_sl.stateId", stateId);
 
   if (integId) {
@@ -274,21 +276,36 @@ export const buildSelectionSessionItemSummaryLink = (
 export const buildSelectionSessionRemoteSearchLink = (uuid: string): string =>
   buildSelectionSessionLink(routes.RemoteSearch.to(uuid));
 
+// Append search parameters to the base route if provided.
+const withSearchParams =
+  (searchParams: O.Option<URLSearchParams>) =>
+  (baseRoute: string): string => {
+    const separator = baseRoute.includes("?") ? "&" : "?";
+    return pipe(
+      searchParams,
+      O.map((params) => `${baseRoute}${separator}${params.toString()}`),
+      O.getOrElse(() => baseRoute),
+    );
+  };
+
 /**
  * Build a Selection Session specific Advanced search Link. The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
  * @param uuid The UUID of an Advanced search
- * @param externalMimeTypes A list of MIME types provided by LMS.
+ * @param searchParams The search parameters to be appended to the search URL
+ * @param externalMimeTypes A list of MIME types provided by LMS
  */
 export const buildSelectionSessionAdvancedSearchLink = (
   uuid: string,
-  externalMimeTypes?: string[],
+  searchParams: O.Option<URLSearchParams>,
+  externalMimeTypes: O.Option<string[]>,
 ): string =>
-  buildSelectionSessionLink(
+  pipe(
     routes.OldAdvancedSearch.to(uuid),
-    false,
-    externalMimeTypes,
+    withSearchParams(searchParams),
+    (path) =>
+      buildSelectionSessionLink(path, false, O.toUndefined(externalMimeTypes)),
   );
 
 /**
@@ -296,9 +313,15 @@ export const buildSelectionSessionAdvancedSearchLink = (
  * before use.
  *
  * @param uuid Compound UUID of the Hierarchy topic
+ * @param searchParams The search parameters to be appended to the hierarchy URL
  */
-export const buildSelectionSessionHierarchyLink = (uuid: string): string =>
-  buildSelectionSessionLink(routes.OldHierarchy.to(uuid), false, []);
+export const buildSelectionSessionHierarchyLink = (
+  uuid: string,
+  searchParams: O.Option<URLSearchParams>,
+): string =>
+  pipe(routes.OldHierarchy.to(uuid), withSearchParams(searchParams), (path) =>
+    buildSelectionSessionLink(path, false, []),
+  );
 
 /**
  * Given a URL used to access Scrapbook legacy pages in normal New UI mode, convert the URL into a Selection Session specific one.
@@ -313,10 +336,12 @@ export const buildSelectionSessionScrapbookLink = (url: string): string =>
  * The link will contain a list of MIME types if provided by LMS.
  * Recommended to first call `isSelectionSessionOpen()` before use.
  *
+ * @param searchParams The search parameters to be appended to the search URL
  * @param externalMimeTypes A list of MIME types provided by LMS.
  */
 export const buildSelectionSessionSearchPageLink = (
-  externalMimeTypes?: string[],
+  searchParams: O.Option<URLSearchParams>,
+  externalMimeTypes: O.Option<string[]>,
 ) => {
   const { layout } = getSelectionSessionInfo();
   const legacySelectionSessionPath = pipe(
@@ -331,10 +356,56 @@ export const buildSelectionSessionSearchPageLink = (
     }),
   );
 
-  return buildSelectionSessionLink(
-    `/${legacySelectionSessionPath}/searching.do`,
-    false,
-    externalMimeTypes,
+  const searchingPath = `/${legacySelectionSessionPath}/searching.do`;
+
+  return pipe(searchingPath, withSearchParams(searchParams), (routePath) =>
+    buildSelectionSessionLink(
+      routePath,
+      false,
+      O.toUndefined(externalMimeTypes),
+    ),
+  );
+};
+
+/**
+ * Build a Selection Session specific Favourite search Link for different search pages:
+ * 1. Hierarchy page
+ * 2. Advanced search page
+ * 3. Normal search page
+ *
+ * @param path URL of the favourite search. For example: "/favourites/search.do"
+ */
+export const buildFavouritesSearchSelectionSessionLink = (
+  path: string,
+): string => {
+  const url = O.tryCatch(() => new URL(path, getBaseUrl()));
+  const searchParams = pipe(
+    url,
+    O.map((u) => u.searchParams),
+  );
+
+  const hierarchyLink = pipe(
+    url,
+    O.chainNullableK(getTopicIdFromUrl),
+    O.map((uuid) => buildSelectionSessionHierarchyLink(uuid, searchParams)),
+  );
+
+  const buildAdvancedSearchLink = () =>
+    pipe(
+      url,
+      O.chainNullableK(getAdvancedSearchIdFromUrl),
+      O.map((uuid) =>
+        buildSelectionSessionAdvancedSearchLink(uuid, searchParams, O.none),
+      ),
+    );
+
+  const buildDefaultLink = () =>
+    buildSelectionSessionSearchPageLink(searchParams, O.none);
+
+  return pipe(
+    hierarchyLink,
+    O.alt(buildAdvancedSearchLink),
+    O.getOrElse(buildDefaultLink),
   );
 };
 
@@ -513,6 +584,7 @@ export const selectResourceForSkinny = (
       const mainDiv = document.querySelector<HTMLDivElement>("#mainDiv");
       if (mainDiv) {
         mainDiv.insertAdjacentHTML("beforeend", response.html["body"]);
+
         // eslint-disable-next-line no-eval
         window.eval(response.script);
       } else {

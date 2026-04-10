@@ -52,7 +52,7 @@ export const UploadActions = ({ actions }: UploadActionsProps) => (
   <Grid container spacing={1} className="actions" justifyContent="flex-end">
     {actions.map(({ onClick, text, icon }, index) => (
       <Fragment key={index}>
-        <Grid item>
+        <Grid>
           {icon ? (
             <IconButton
               onClick={onClick}
@@ -67,7 +67,7 @@ export const UploadActions = ({ actions }: UploadActionsProps) => (
           )}
         </Grid>
         {index < actions.length - 1 && (
-          <Grid item>
+          <Grid>
             <Divider orientation="vertical" />
           </Grid>
         )}

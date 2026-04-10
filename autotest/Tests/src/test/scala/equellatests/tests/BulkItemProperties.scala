@@ -19,8 +19,8 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
   object BulkItemOp extends Enumeration {
     type BulkItemOp = Value
     val removeWorkflow, resetToTask = Value
-    implicit val encJson            = Encoder.enumEncoder(BulkItemOp)
-    implicit val decJson            = Decoder.enumDecoder(BulkItemOp)
+    implicit val encJson            = Encoder.encodeEnumeration(BulkItemOp)
+    implicit val decJson            = Decoder.decodeEnumeration(BulkItemOp)
   }
 
   sealed trait BulkOp {
@@ -94,8 +94,8 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
   override def runCommandInBrowser(c: RunBulkOp, s: BulkItemState, b: SimpleSeleniumBrowser): Prop =
     b.verify {
       b.resetUnique()
-      val ctx    = b.page.ctx
-      val opType = c.op.typ
+      val ctx     = b.page.ctx
+      val opType  = c.op.typ
       val itemIds = ERest.run(ctx) {
         c.names.toVector.traverse[ERest, ItemId] { n =>
           val item = RCreateItem(
@@ -137,7 +137,7 @@ object BulkItemProperties extends StatefulProperties("BulkItemOps") with SimpleT
         for {
           opEnum   <- Gen.oneOf(remainingOps.toSeq)
           numItems <- Gen.chooseNum(3, 10)
-          names <- Gen
+          names    <- Gen
             .listOfN(numItems, Arbitrary.arbitrary[RandomWords])
             .map(Uniqueify.uniqueSeq(RandomWords.withNumberAfter))
             .map(_.map(_.asString))

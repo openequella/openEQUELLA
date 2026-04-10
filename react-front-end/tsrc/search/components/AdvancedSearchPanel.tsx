@@ -193,13 +193,13 @@ export const AdvancedSearchPanel = ({
                 buildVisibilityScriptContext(currentValues, currentUser),
               ).map((e) => (
                 // width is a tricky way to fix additional whitespace issue caused by user selector
-                <Grid key={e.props.id} item style={{ width: "100%" }}>
+                <Grid key={e.props.id} style={{ width: "100%" }}>
                   {e}
                 </Grid>
               ))}
             </WizardErrorContext.Provider>
             {hasRequiredFields && (
-              <Grid item>
+              <Grid>
                 <Typography variant="caption" color="textSecondary">
                   {languageStrings.common.required}
                 </Typography>

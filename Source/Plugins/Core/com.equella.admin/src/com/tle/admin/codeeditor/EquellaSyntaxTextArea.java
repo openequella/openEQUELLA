@@ -20,8 +20,6 @@ package com.tle.admin.codeeditor;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.HashMap;
-import java.util.Map;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -31,7 +29,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 
 public class EquellaSyntaxTextArea extends RSyntaxTextArea {
-  @SuppressWarnings("nls")
   public static final String SYNTAX_EQUELLA = "text/equellascript";
 
   public EquellaSyntaxTextArea(String syntax, int rows, int columns, String... extendedKeywords) {
@@ -43,7 +40,7 @@ public class EquellaSyntaxTextArea extends RSyntaxTextArea {
     setSyntaxEditingStyle(syntax);
 
     SyntaxScheme ss = getSyntaxScheme();
-    Style style = ss.styles[Token.PREPROCESSOR];
+    Style style = ss.getStyle(Token.PREPROCESSOR);
     style.foreground = new Color(20, 80, 20);
     style.font = getFont().deriveFont(Font.BOLD);
   }
@@ -66,18 +63,18 @@ public class EquellaSyntaxTextArea extends RSyntaxTextArea {
     }
 
     @Override
-    protected Map createTokenMakerKeyToClassNameMap() {
-      Map highlighters = new HashMap();
-      highlighters.put("text/equellascript", EquellaSyntaxTokenMaker.class.getName());
-      return highlighters;
-    }
-
-    @Override
     protected TokenMaker getTokenMakerImpl(String key) {
       if (key != null && key.equals(SYNTAX_EQUELLA)) {
         return new EquellaSyntaxTokenMaker(extendedKeywords);
       }
       return super.getTokenMakerImpl(key);
+    }
+
+    @Override
+    protected void initTokenMakerMap() {
+      if (!keySet().contains(SYNTAX_EQUELLA)) {
+        putMapping(SYNTAX_EQUELLA, EquellaSyntaxTokenMaker.class.getName());
+      }
     }
   }
 }

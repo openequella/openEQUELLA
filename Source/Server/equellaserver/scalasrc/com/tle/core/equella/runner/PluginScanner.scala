@@ -51,9 +51,9 @@ object PluginScanner {
   )
 
   def parseJPF(f: URL, base: File): ParsedJPF = {
-    val x        = saxBuilder().build(f)
-    val root     = x.getRootElement
-    val pluginId = root.getAttribute("id").getValue
+    val x               = saxBuilder().build(f)
+    val root            = x.getRootElement
+    val pluginId        = root.getAttribute("id").getValue
     val (extDeps, deps) = root
       .getChildren("requires")
       .asScala
@@ -146,7 +146,7 @@ object PluginScanner {
         val classesDir   = jpfBase / "target/scala-2.13/classes"
         val codeLibrary  = JPFLibrary("code", "code", classesDir.toURI.toString, Some("*"))
         val resourcesDir = Option(jpfBase / "resources").filter(_.isDirectory)
-        val resLibrary =
+        val resLibrary   =
           resourcesDir.map(d => JPFLibrary("resources", "resources", d.toURI.toString, None))
         val jpfJars = (jpfBase / "target/jpflibs" * "*.jar").get.map(j =>
           JPFLibrary(j.getName, "code", j.toURI.toString, Some("*"))

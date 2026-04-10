@@ -1,11 +1,11 @@
 import Path.{flat, rebase}
 import _root_.io.circe.parser._
 
-libraryDependencies += "org.mockito" % "mockito-core" % "5.16.1" % Test
+libraryDependencies += "org.mockito" % "mockito-core" % "5.23.0" % Test
 
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
-  val bundle =
+  val bundle  =
     decode[Map[String, String]](IO.read(reactFrontEndLanguageBundle.value))
       .fold(throw _, identity)
   val pluginLangStrings = langStrings.value
@@ -119,7 +119,7 @@ Compile / resourceGenerators += Def.task {
   val outDir = (Compile / resourceManaged).value
   val srcDir = buildReactFrontEnd.value
   IO.copy(
-    (srcDir ** ("*.js" | "*.css" | "*.json" | "*.html" | "*.woff" | "*.woff2"))
+    (srcDir ** ("*.js" | "*.css" | "*.json" | "*.html" | "*.woff" | "*.woff2" | "*.png" | "*.jpg" | "*.jpeg"))
       .pair(rebase(srcDir, outDir))
   ).toSeq
 }.taskValue

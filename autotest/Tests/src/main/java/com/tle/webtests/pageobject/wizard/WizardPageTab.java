@@ -2,14 +2,16 @@ package com.tle.webtests.pageobject.wizard;
 
 import com.tle.common.Utils;
 import com.tle.webtests.framework.PageContext;
-import com.tle.webtests.framework.factory.RefreshableElement;
 import com.tle.webtests.pageobject.ExpectWaiter;
 import com.tle.webtests.pageobject.ExpectedConditions2;
 import com.tle.webtests.pageobject.WaitingPageObject;
+import java.util.Map;
+import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -81,7 +83,7 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
 
   public WizardPageTab next() {
     int currentPage = getCurrentPageIndex();
-    return next(ExpectWaiter.waiter(new PageCondition(null, currentPage + 1), this));
+    return next(ExpectWaiter.waiter(new PageCondition(currentPage + 1), this));
   }
 
   public WizardPageTab prev(WaitingPageObject<WizardPageTab> expect) {
@@ -92,7 +94,7 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
 
   public WizardPageTab prev() {
     int currentPage = getCurrentPageIndex();
-    return prev(ExpectWaiter.waiter(new PageCondition(null, currentPage - 1), this));
+    return prev(ExpectWaiter.waiter(new PageCondition(currentPage - 1), this));
   }
 
   public boolean hasControl(int ctrlNum) {
@@ -129,22 +131,73 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
     return trackerStatus.equals(change);
   }
 
+  /**
+   * Retrieves the current active page index from the wizard page list.
+   *
+   * <p>This method identifies which page in the wizard navigation is currently active by locating
+   * the list item with the "active" class and parsing its ID attribute. The implementation handles
+   * transient DOM staleness that may occur during wizard page transitions.
+   *
+   * @return the zero-based index of the currently active wizard page
+   * @throws RuntimeException if the active page element cannot be found or its index cannot be
+   *     determined (e.g., if the wizard page list is not present or has an unexpected structure)
+   */
   public int getCurrentPageIndex() {
-    final WebElement realElement;
-    if (pageList instanceof RefreshableElement) {
-      realElement = ((RefreshableElement) pageList).findNonWrapped();
-    } else {
-      realElement = pageList;
-    }
+    return retrieveActivePageIndex()
+        .orElseThrow(
+            () ->
+                new RuntimeException("Failed to retrieve active page index from wizard page list"));
+  }
 
-    WebElement currentPageElement = realElement.findElement(By.xpath("li[@class='active']"));
-    String id = currentPageElement.getAttribute("id");
-    if (id.startsWith("pages_")) {
-      String numId = Utils.safeSubstring(id, "pages_".length());
-      return Integer.parseInt(numId);
-    } else {
-      throw new RuntimeException("Current page ID '" + id + "' is not prefixed with 'pages_'");
-    }
+  /**
+   * Retrieves the active page index from the wizard page list, handling transient staleness during
+   * DOM updates.
+   *
+   * <p>This method uses a waiter to retry the entire operation (finding the element AND reading its
+   * attributes) since both the element lookup and getAttribute() can trigger stale element
+   * exceptions.
+   *
+   * <p>Expected ID format: "pages_N" where N is the page index number.
+   *
+   * @return an Optional containing the parsed page index if successful, or empty if retrieval timed
+   *     out
+   */
+  private Optional<Integer> retrieveActivePageIndex() {
+    return Optional.ofNullable(
+        waiter.until(
+            driver -> {
+              try {
+                WebElement activePageElement =
+                    pageList.findElement(By.xpath("li[@class='active']"));
+                return parsePageId(activePageElement.getAttribute("id"));
+              } catch (StaleElementReferenceException | NoSuchElementException e) {
+                return null; // Waiter will retry
+              } catch (WebDriverException e) {
+                // Handle Chrome-specific stale node error
+                if (ExpectedConditions2.isChromeStaleNodeException(e)) {
+                  return null; // Waiter will retry
+                }
+                throw e;
+              }
+            }));
+  }
+
+  /**
+   * Parses the page index from a page element's ID attribute value.
+   *
+   * <p>Expected ID format: "pages_N" where N is the page index number.
+   *
+   * @param id the ID attribute value to parse
+   * @return the parsed page index, or null if parsing failed
+   */
+  private Integer parsePageId(String id) {
+    final String prefix = "pages_";
+
+    return Optional.ofNullable(id)
+        .filter(idValue -> idValue.startsWith(prefix))
+        .map(idValue -> Utils.safeSubstring(idValue, prefix.length()))
+        .map(Integer::parseInt)
+        .orElse(null);
   }
 
   public String getCurrentPageName() {
@@ -154,39 +207,48 @@ public class WizardPageTab extends AbstractWizardControlPage<WizardPageTab> {
   public WizardPageTab clickPage(String text, int pageNum) {
     if (hasPage(text, true)) {
       pageList.findElement(By.xpath("li/a[text()=" + quoteXPath(text) + "]")).click();
-      return ExpectWaiter.waiter(
-              new PageCondition(null, pageNum), new WizardPageTab(context, pageNum))
+      return ExpectWaiter.waiter(new PageCondition(pageNum), new WizardPageTab(context, pageNum))
           .get();
     } else {
       throw new RuntimeException("Page '" + text + "' is not present or is not clickable");
     }
   }
 
+  /**
+   * Fills multiple edit boxes on the wizard page.
+   *
+   * @param fields A map where the key is the control index(start from 1) and the value is the text
+   *     to enter.
+   */
+  public void fillFields(Map<Integer, String> fields) {
+    fields.forEach(this::editbox);
+  }
+
+  /**
+   * An {@link ExpectedCondition} that waits for the wizard to navigate to a specific page index.
+   *
+   * <p>This condition is used by Selenium's WebDriverWait to poll until the wizard's active page
+   * matches the expected page index. It's typically used after clicking navigation buttons or page
+   * links to ensure the page transition has completed before proceeding with further actions.
+   *
+   * <p>The condition relies on {@link #getCurrentPageIndex()} which handles all staleness and retry
+   * logic internally, so this class can simply compare the result to the expected value.
+   */
   private class PageCondition implements ExpectedCondition<Boolean> {
-    // private final WebElement realElement;
     private final int expectedPageIndex;
 
-    public PageCondition(WebElement element, int pageIndex) {
-      //			if( element instanceof RefreshableElement )
-      //			{
-      //				realElement = ((RefreshableElement) element).findNonWrapped();
-      //			}
-      //			else
-      //			{
-      //				realElement = element;
-      //			}
-      this.expectedPageIndex = pageIndex;
+    /**
+     * Creates a condition that waits for the wizard to reach the specified page.
+     *
+     * @param expectedPageIndex the zero-based index of the page to wait for
+     */
+    public PageCondition(int expectedPageIndex) {
+      this.expectedPageIndex = expectedPageIndex;
     }
 
     @Override
     public Boolean apply(WebDriver driver) {
-      try {
-        return getCurrentPageIndex() == expectedPageIndex;
-      } catch (StaleElementReferenceException ser) {
-        return false;
-      } catch (NoSuchElementException e) {
-        return false;
-      }
+      return getCurrentPageIndex() == expectedPageIndex;
     }
 
     @Override

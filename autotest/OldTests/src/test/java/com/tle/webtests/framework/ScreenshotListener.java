@@ -1,24 +1,27 @@
 package com.tle.webtests.framework;
 
+import static org.testng.internal.Utils.longStackTrace;
+import static org.testng.internal.Utils.shortStackTrace;
+
 import com.tle.common.Check;
 import java.io.File;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.openqa.selenium.*;
 import org.testng.*;
-import org.testng.internal.Utils;
 
-public class ScreenshotListener implements IInvokedMethodListener {
-
-  @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    // nothing
-  }
+public class ScreenshotListener implements ITestListener {
 
   @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (testResult.getStatus() != ITestResult.FAILURE) {
-      return;
-    }
+  public void onStart(ITestContext context) {}
+
+  @Override
+  public void onTestStart(ITestResult result) {}
+
+  @Override
+  public void onTestSuccess(ITestResult result) {}
+
+  @Override
+  public void onTestFailure(ITestResult testResult) {
     Reporter.setCurrentTestResult(testResult);
     try {
       Throwable throwable = testResult.getThrowable();
@@ -107,7 +110,8 @@ public class ScreenshotListener implements IInvokedMethodListener {
           StringBuffer sb = new StringBuffer();
 
           if (null != tw) {
-            String[] stackTraces = Utils.stackTrace(tw, true);
+            String[] stackTraces =
+                new String[] {shortStackTrace(tw, true), longStackTrace(tw, true)};
             fullStackTrace = stackTraces[1];
             stackTrace = "<div><pre>" + stackTraces[0] + "</pre></div>";
 
@@ -130,7 +134,16 @@ public class ScreenshotListener implements IInvokedMethodListener {
     }
   }
 
-  public static String takeScreenshot(
+  @Override
+  public void onTestSkipped(ITestResult result) {}
+
+  @Override
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
+
+  @Override
+  public void onFinish(ITestContext context) {}
+
+  private String takeScreenshot(
       WebDriver driver, File screenshotFolder, ITestResult testResult, boolean chrome) {
     ITestNGMethod method = testResult.getMethod();
     String filename = testResult.getTestClass().getName() + "_" + method.getMethodName();

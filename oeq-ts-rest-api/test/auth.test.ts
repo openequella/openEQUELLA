@@ -17,8 +17,9 @@
  */
 import * as OEQ from '../src';
 import * as TC from './TestConfig';
+import { logout } from './TestUtils';
 
-beforeEach(() => OEQ.Auth.logout(TC.API_PATH, true));
+beforeEach(() => logout(TC.API_PATH));
 
 test("That we're able to login", async () => {
   const sessionid = await OEQ.Auth.login(TC.API_PATH, TC.USERNAME, TC.PASSWORD);
@@ -43,7 +44,7 @@ test("That having logged in, we're able to properly log out.", async () => {
   );
   expect(userDetails).toHaveProperty('username', TC.USERNAME);
 
-  await OEQ.Auth.logout(TC.API_PATH);
+  await logout(TC.API_PATH, false);
   const guestDetails = await OEQ.LegacyContent.getCurrentUserDetails(
     TC.API_PATH
   );

@@ -1,4 +1,4 @@
-val tikaVersion = "2.9.1"
+val tikaVersion = "3.3.0"
 
 libraryDependencies ++= Seq(
   "org.slf4j"       % "slf4j-api"                     % "2.0.17",
@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
 
 excludeDependencies += "commons-logging" % "commons-logging"
 (assembly / assemblyOption)             := (assembly / assemblyOption).value.withIncludeScala(false)
-(assembly / assemblyMergeStrategy) := {
+(assembly / assemblyMergeStrategy)      := {
   // Three duplicate classes caused by upgrading tika to version 2.
   case PathList("org", "slf4j", "impl", "StaticMDCBinder.class")    => MergeStrategy.first
   case PathList("org", "slf4j", "impl", "StaticLoggerBinder.class") => MergeStrategy.first

@@ -55,7 +55,7 @@ public class LTISettingsTest extends AbstractSessionTest {
 
   private ShowExternalToolsPage logonToLTISettings() {
     logon("autotest", "automated");
-    return new SettingsPage(context).load().externalToolsSettings();
+    return new SettingsPage(context).load().clickExternalToolsSetting();
   }
 
   @Override

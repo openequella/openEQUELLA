@@ -56,6 +56,7 @@ public class IframePortletEditorSection
   protected SectionRenderable customRender(
       RenderEventContext context, IframePortletEditorModel model, PortletEditingBean portlet)
       throws Exception {
+    model.setIsDeprecated(true);
     return thisView.createResult("edit/editiframeportlet.ftl", context);
   }
 

@@ -25,6 +25,7 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
@@ -296,7 +297,7 @@ export const SearchResultAttachmentsList = ({
   const isAttachmentSelectable = (broken: boolean) =>
     inSelectionSession && isItemLive && !broken;
 
-  const buildSkeletonList = (howMany: number): JSX.Element[] =>
+  const buildSkeletonList = (howMany: number): React.JSX.Element[] =>
     pipe(
       NEA.range(1, howMany),
       NEA.map((id) => (
@@ -322,7 +323,7 @@ export const SearchResultAttachmentsList = ({
       const { id, description, brokenAttachment } = attachment;
 
       return (
-        <ListItem
+        <ListItemButton
           onClick={(event) => {
             if (brokenAttachment) {
               event.stopPropagation();
@@ -330,9 +331,10 @@ export const SearchResultAttachmentsList = ({
           }}
           key={id}
           id={id}
-          button
-          className={`${classes.nested} ${getSearchPageAttachmentClass()}`} // Give a class so each attachment can be dropped to the course list.
-          data-itemuuid={uuid} // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
+          // Give a class so each attachment can be dropped to the course list.
+          className={`${classes.nested} ${getSearchPageAttachmentClass()}`}
+          // These 'data-xx' attributes are used in the 'dropCallBack' of 'courselist.js'.
+          data-itemuuid={uuid}
           data-itemversion={version}
           data-attachmentuuid={id}
         >
@@ -358,7 +360,7 @@ export const SearchResultAttachmentsList = ({
               <Share />
             </TooltipIconButton>
           </ListItemSecondaryAction>
-        </ListItem>
+        </ListItemButton>
       );
     },
   );
@@ -372,7 +374,7 @@ export const SearchResultAttachmentsList = ({
     </ListItem>
   );
 
-  const buildAttachmentList = (): JSX.Element => (
+  const buildAttachmentList = (): React.JSX.Element => (
     <List disablePadding className={classes.attachmentListItem}>
       {error
         ? buildErrorListItem(error)
@@ -398,7 +400,7 @@ export const SearchResultAttachmentsList = ({
 
   const accordionSummaryContent = inSelectionSession ? (
     <Grid container alignItems="center">
-      <Grid item>{accordionText}</Grid>
+      <Grid>{accordionText}</Grid>
       <Grid>
         {isItemLive && atLeastOneIntactAttachment && !inSkinny && (
           <ResourceSelector
@@ -466,8 +468,8 @@ export const SearchResultAttachmentsList = ({
       >
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item>{attachFileBadge(keywordFoundInAttachment)}</Grid>
-            <Grid item>{accordionSummaryContent}</Grid>
+            <Grid>{attachFileBadge(keywordFoundInAttachment)}</Grid>
+            <Grid>{accordionSummaryContent}</Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails>

@@ -42,7 +42,7 @@ object FreemarkerDisplay {
     // The xmlService.getXmlForXslt call happens twice if you have both XSLT
     // and Freemarker. No harm but a bit ghetto
 
-    val context = new StandardRenderContext(info)
+    val context  = new StandardRenderContext(info)
     val itemPack = new ItemPack(
       itemInfo.getItem,
       LegacyGuice.itemXsltService.getXmlForXslt(context, itemInfo),

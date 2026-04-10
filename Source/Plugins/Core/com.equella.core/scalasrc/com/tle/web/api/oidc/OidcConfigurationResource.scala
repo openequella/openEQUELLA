@@ -49,6 +49,7 @@ final case class CommonDetailsResponse(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean
 )
 
@@ -74,6 +75,7 @@ object IdentityProviderResponse {
       usernameClaim = idp.commonDetails.usernameClaim,
       defaultRoles = idp.commonDetails.defaultRoles,
       roleConfig = idp.commonDetails.roleConfig,
+      userIdAttribute = idp.commonDetails.userIdAttribute,
       enabled = idp.commonDetails.enabled
     )
 

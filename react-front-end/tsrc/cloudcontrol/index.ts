@@ -100,8 +100,10 @@ function resetGlobalState() {
   commandQueue = [];
   controlValidators = [];
   listeners = [];
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   currentState = null!;
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   latestXml = null!;
 }
@@ -118,7 +120,7 @@ function wizardUri(path: string): string {
   return "api/wizard/" + encodeURIComponent(wizardIds.wizId) + "/" + path;
 }
 
-async function getState(wizid: string): Promise<VersionedItemState> {
+async function getState(): Promise<VersionedItemState> {
   const res = await Axios.get<ItemStateJSON>(wizardUri("state"));
   const nextState = {
     ...res.data,
@@ -229,7 +231,7 @@ export const CloudControl: CloudControlRegisterImpl = {
   async sendBatch(state: VersionedItemState): Promise<VersionedItemState> {
     if (reloadState) {
       reloadState = false;
-      let nextState = await getState(wizardIds.wizId);
+      let nextState = await getState();
       if (nextState.stateVersion < state.stateVersion) {
         console.log(
           `Out of order state detected, already had ${state.stateVersion} but got ${nextState.stateVersion}`,
@@ -308,7 +310,7 @@ export const CloudControl: CloudControlRegisterImpl = {
     }
     wizardIds = data;
     if (!currentState) {
-      currentState = getState(wizId);
+      currentState = getState();
     } else {
       CloudControl.forceReload();
     }

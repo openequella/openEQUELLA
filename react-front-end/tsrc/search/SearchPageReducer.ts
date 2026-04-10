@@ -32,27 +32,39 @@ export type SearchPageSearchResult =
   | {
       from: "gallery-search";
       content: OEQ.Search.SearchResult<GallerySearchResultItem>;
+    }
+  | {
+      from: "favourite-search";
+      content: OEQ.Search.SearchResult<OEQ.Favourite.FavouriteSearch>;
     };
 
 export type Action =
   | { type: "init"; options: SearchPageOptions }
   | {
       type: "search";
+      // A unique token to identify this search request.
+      requestToken: string;
       options: SearchPageOptions;
       updateClassifications: boolean;
       callback?: () => void;
     }
   | {
       type: "search-complete";
+      // A unique token to identify which search request triggered this action.
+      requestToken: string;
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
   | { type: "error"; cause: Error };
 
 export type State =
-  | { status: "initialising"; options: SearchPageOptions }
+  | {
+      status: "initialising";
+      options: SearchPageOptions;
+    }
   | {
       status: "searching";
+      requestToken: string;
       options: SearchPageOptions;
       previousResult?: SearchPageSearchResult;
       previousClassifications?: Classification[];
@@ -65,7 +77,11 @@ export type State =
       result: SearchPageSearchResult;
       classifications: Classification[];
     }
-  | { status: "failure"; options: SearchPageOptions; cause: Error };
+  | {
+      status: "failure";
+      options: SearchPageOptions;
+      cause: Error;
+    };
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -81,6 +97,7 @@ export const reducer = (state: State, action: Action): State => {
           : {},
         (prevResults) => ({
           status: "searching",
+          requestToken: action.requestToken,
           options: action.options,
           callback: action.callback,
           updateClassifications: action.updateClassifications,
@@ -88,12 +105,26 @@ export const reducer = (state: State, action: Action): State => {
         }),
       );
     case "search-complete":
-      return {
-        status: "success",
-        options: state.options,
-        result: action.result,
-        classifications: action.classifications,
-      };
+      // Explicitly define the valid state transition using positive logic.
+      // The requestToken in state represents the latest search request.
+      // If token from action is different, ignore the stale action.
+      if (
+        state.status === "searching" &&
+        state.requestToken === action.requestToken
+      ) {
+        return {
+          status: "success",
+          options: state.options,
+          result: action.result,
+          classifications: action.classifications,
+        };
+      }
+
+      // Fallback for stale requests or invalid states.
+      console.debug(
+        `Ignoring stale search-complete action (token: ${action.requestToken}).`,
+      );
+      return state;
     case "error":
       return {
         status: "failure",

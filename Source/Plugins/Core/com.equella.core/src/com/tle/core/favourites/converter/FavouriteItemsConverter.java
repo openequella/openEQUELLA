@@ -44,7 +44,7 @@ import javax.inject.Singleton;
 @Singleton
 @SuppressWarnings("nls")
 public class FavouriteItemsConverter extends AbstractMigratableConverter<Object> {
-  private static final String MY_FAVOURITES_IMPORT_EXPORT_FOLDER = "myfavourites";
+  private static final String FAVOURITE_ITEMS_IMPORT_EXPORT_FOLDER = "favourites/items";
 
   @Inject private BookmarkDao bookmarkDao;
 
@@ -69,7 +69,7 @@ public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
       throws IOException {
     if (!params.hasFlag(ConverterParams.NO_ITEMS)) {
       final SubTemporaryFile allBookmarksExportFolder =
-          new SubTemporaryFile(staging, MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
+          new SubTemporaryFile(staging, FAVOURITE_ITEMS_IMPORT_EXPORT_FOLDER);
       // write out the format details
       xmlHelper.writeExportFormatXmlFile(allBookmarksExportFolder, true);
 
@@ -88,7 +88,7 @@ public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
   public void doImport(TemporaryFileHandle staging, Institution institution, ConverterParams params)
       throws IOException {
     final SubTemporaryFile allBookmarksImportFolder =
-        new SubTemporaryFile(staging, MY_FAVOURITES_IMPORT_EXPORT_FOLDER);
+        new SubTemporaryFile(staging, FAVOURITE_ITEMS_IMPORT_EXPORT_FOLDER);
 
     final XStream locXstream = getXStream();
 
@@ -100,7 +100,7 @@ public class FavouriteItemsConverter extends AbstractMigratableConverter<Object>
 
       Map<Long, Long> itemMap = params.getItems();
       Long newItemId = itemMap.get(bookmark.getItem().getId());
-      bookmark.getItem().setId(newItemId.longValue());
+      bookmark.getItem().setId(newItemId);
 
       bookmarkDao.save(bookmark);
       bookmarkDao.flush();

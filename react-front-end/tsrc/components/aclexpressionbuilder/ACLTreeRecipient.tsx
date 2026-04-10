@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { Typography } from "@mui/material";
+import type { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
@@ -53,12 +53,12 @@ export interface ACLTreeRecipientProps extends TreeItemProps {
  * Tree item (node) which represents an ACL Recipient.
  */
 export const ACLTreeRecipient = ({
-  nodeId,
+  itemId,
   recipient,
   onDelete,
   aclEntityResolvers = defaultACLEntityResolvers,
   ...other
-}: ACLTreeRecipientProps): JSX.Element => {
+}: ACLTreeRecipientProps): React.JSX.Element => {
   const [expressionName, setExpressionName] = useState(
     recipient.name ?? showRecipient(recipient),
   );
@@ -80,7 +80,11 @@ export const ACLTreeRecipient = ({
       </Typography>
       <TooltipIconButton
         title={languageStrings.common.action.delete}
-        onClick={onDelete}
+        onClick={(event) => {
+          // Prevent the TreeItem from also being selected when clicking the delete button.
+          event.stopPropagation();
+          onDelete();
+        }}
       >
         <DeleteIcon />
       </TooltipIconButton>
@@ -89,7 +93,7 @@ export const ACLTreeRecipient = ({
 
   return (
     <ACLTreeItem
-      nodeId={nodeId}
+      itemId={itemId}
       label={treeRecipientLabel()}
       classes={{
         root: classes.root,

@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498646</id>
+  <uuid>0b0c3b08-484e-4b4f-a73b-c44710eae8c3</uuid>
+  <value>Questionaire</value>
+  <valueHash>ba18bdb8c5a2cc38f3a44876e97885f8</valueHash>
+  <fullValue>Learning Resource Type\Questionaire</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

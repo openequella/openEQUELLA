@@ -145,10 +145,17 @@ function postAjaxEvent(action, formData, name, params, callback) {
   return false;
 }
 
-function postAjaxJSON(form, name, params, callback, errorcallback) {
+// Since 25.2, there could be multiple custom EQ objects defined within the globol `window` object. This is to support
+// displaying the legacy content of some portlets in the new Dashboard. As a result, this function is refactored to
+// have an additional parameter `customEQ` to specify which EQ object to use. If not specified, it will default to
+// the standard `window.EQ` object. Also, the server side code that uses this function is updated accordingly.
+// For more details, please refer to `com.tle.web.sections.ajax.handler.AjaxFunction`.
+function postAjaxJSON(form, name, params, callback, errorcallback, customEQ) {
   _trigger("presubmit");
-  if (window.EQ) {
-    return window.EQ.postAjax(form, name, params, callback, errorcallback);
+  const eq = customEQ ? window[customEQ] : window.EQ;
+
+  if (eq) {
+    return eq.postAjax(form, name, params, callback, errorcallback);
   }
   var f = $(form);
   var formData = $("input, select, textarea", f).serializeArray();

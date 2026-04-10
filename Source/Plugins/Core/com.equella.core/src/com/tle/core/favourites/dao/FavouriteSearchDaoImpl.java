@@ -36,6 +36,7 @@ import org.hibernate.criterion.Restrictions;
 @Singleton
 public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteSearch, Long>
     implements FavouriteSearchDao {
+  public static final String ADD_AT = "addedAt";
 
   public FavouriteSearchDaoImpl() {
     super(FavouriteSearch.class);
@@ -104,7 +105,7 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     }
 
     private void addClause(StringBuilder query, String clause) {
-      if (query.length() > 0) {
+      if (!query.isEmpty()) {
         query.append(" AND ");
       }
       query.append(clause);
@@ -114,7 +115,8 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     public String getAdditionalWhere() {
       StringBuilder additional = new StringBuilder();
       if (freetext != null) {
-        addClause(additional, "be.name LIKE :freetext");
+        // Since the freetext is lowercased, lowercase the name as well.
+        addClause(additional, "LOWER(be.name) LIKE :freetext");
       }
       if (dates != null) {
         Date start = dates[0];
@@ -122,13 +124,13 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
 
         if (start != null && end != null) // BETWEEN and ON
         {
-          addClause(additional, "be.dateModified BETWEEN :start AND :end");
+          addClause(additional, "be.addedAt BETWEEN :start AND :end");
         } else if (start != null && end == null) // AFTER
         {
-          addClause(additional, "be.dateModified >= :start");
+          addClause(additional, "be.addedAt >= :start");
         } else if (start == null && end != null) // BEFORE
         {
-          addClause(additional, "be.dateModified <= :end");
+          addClause(additional, "be.addedAt <= :end");
         }
       }
       addClause(additional, "be.owner = :owner");
@@ -144,7 +146,7 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
     public String getOrderBy() {
       if (orderby != null) {
         String orderByString = orderby;
-        if (!reverse) {
+        if (reverse) {
           orderByString += " DESC";
         } else {
           orderByString += " ASC";
@@ -193,13 +195,13 @@ public class FavouriteSearchDaoImpl extends GenericInstitionalDaoImpl<FavouriteS
 
       if (start != null && end != null) // BETWEEN and ON
       {
-        dateRestriction = Restrictions.between("dateModified", start, end);
+        dateRestriction = Restrictions.between(ADD_AT, start, end);
       } else if (start != null && end == null) // AFTER
       {
-        dateRestriction = Restrictions.ge("dateModified", start);
+        dateRestriction = Restrictions.ge(ADD_AT, start);
       } else if (start == null && end != null) // BEFORE
       {
-        dateRestriction = Restrictions.le("dateModified", end);
+        dateRestriction = Restrictions.le(ADD_AT, end);
       }
     }
     if (dateRestriction != null) {

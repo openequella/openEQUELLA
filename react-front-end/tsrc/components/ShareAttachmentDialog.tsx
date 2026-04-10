@@ -87,12 +87,12 @@ const ShareDetails = ({
   title: string;
   details: string;
 }) => (
-  <Grid item container>
-    <Grid item container justifyContent="space-between" spacing={2}>
-      <Grid item>
+  <Grid container>
+    <Grid container justifyContent="space-between" spacing={2}>
+      <Grid>
         <Typography variant="h6">{title}</Typography>
       </Grid>
-      <Grid item>
+      <Grid>
         <TooltipIconButton
           title={actionCopy}
           onClick={(event) => {
@@ -104,7 +104,7 @@ const ShareDetails = ({
         </TooltipIconButton>
       </Grid>
     </Grid>
-    <Grid item className={classes.copyContent}>
+    <Grid className={classes.copyContent}>
       <code>{details}</code>
     </Grid>
   </Grid>

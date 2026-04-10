@@ -1,0 +1,140 @@
+<com.tle.beans.item.Item>
+  <id>400013</id>
+  <uuid>99234d7f-bb5b-4343-81ec-6524153234cc</uuid>
+  <version>1</version>
+  <owner>5451ab0d-4fee-4e44-b78c-5e86bac81827</owner>
+  <dateModified class="sql-timestamp">2025-07-11 13:13:43.719</dateModified>
+  <dateCreated class="sql-timestamp">2025-07-10 23:59:58.48</dateCreated>
+  <dateForIndex class="sql-timestamp">2025-07-11 13:13:43.719</dateForIndex>
+  <rating>-1.0</rating>
+  <moderating>false</moderating>
+  <status>LIVE</status>
+  <metadataSecurityTargets/>
+  <attachments>
+    <com.tle.beans.item.attachments.FileAttachment>
+      <id>400018</id>
+      <uuid>cb177c0e-41e1-4858-b1e5-68cb35a8be8b</uuid>
+      <url>cat2.png</url>
+      <description>cat2.png</description>
+      <value1>816932</value1>
+      <thumbnail>_THUMBS/cat2.png.jpeg</thumbnail>
+      <md5sum>4ca30f5bedfdc2c35b002c6ff0f407ff</md5sum>
+      <preview>false</preview>
+      <restricted>false</restricted>
+      <erroredIndexing>false</erroredIndexing>
+    </com.tle.beans.item.attachments.FileAttachment>
+  </attachments>
+  <itemDefinition entityclass="com.tle.beans.entity.itemdef.ItemDefinition" uuid="c115da19-e5f6-43c8-86a9-fe2819952274"/>
+  <collaborators/>
+  <referencedUrls/>
+  <moderation>
+    <id>400015</id>
+    <liveApprovalDate class="sql-timestamp">2025-07-10 23:59:58.479</liveApprovalDate>
+    <lastAction class="sql-timestamp">2025-07-10 23:59:58.479</lastAction>
+    <deletedStatus2>LIVE</deletedStatus2>
+    <deletedModerating>false</deletedModerating>
+    <needsReset>false</needsReset>
+    <statuses/>
+  </moderation>
+  <history>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400022</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-10 23:59:58.479</date>
+      <applies>false</applies>
+      <type>contributed</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400023</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-10 23:59:58.479</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>DRAFT</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400024</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-10 23:59:58.479</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400048</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 00:20:25.542</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400092</id>
+      <user>adfcaf58-241b-4eca-9740-6a26d1c3dd58</user>
+      <date class="sql-timestamp">2025-07-11 10:15:51.214</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400118</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 10:40:39.333</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>DELETED</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400121</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 10:40:43.903</date>
+      <applies>false</applies>
+      <type>statechange</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400123</id>
+      <user>5451ab0d-4fee-4e44-b78c-5e86bac81827</user>
+      <date class="sql-timestamp">2025-07-11 10:40:50.298</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+    <com.tle.beans.item.HistoryEvent>
+      <id>400298</id>
+      <user>TLE_ADMINISTRATOR</user>
+      <date class="sql-timestamp">2025-07-11 13:13:43.719</date>
+      <applies>false</applies>
+      <type>edit</type>
+      <state>LIVE</state>
+    </com.tle.beans.item.HistoryEvent>
+  </history>
+  <comments/>
+  <sharePasses/>
+  <acceptances/>
+  <treeNodes/>
+  <notifications/>
+  <name>
+    <id>400016</id>
+    <strings>
+      <entry>
+        <string>en_US</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>400017</id>
+          <locale>en_US</locale>
+          <priority>2</priority>
+          <text>Testing Thumbnail with Default</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <totalFileSize>0</totalFileSize>
+  <navigationSettings>
+    <showNextPrev>false</showNextPrev>
+    <showSplitOption>false</showSplitOption>
+    <manualNavigation>false</manualNavigation>
+  </navigationSettings>
+  <thumb>default</thumb>
+</com.tle.beans.item.Item>

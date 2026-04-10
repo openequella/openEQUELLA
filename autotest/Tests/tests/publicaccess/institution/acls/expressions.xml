@@ -1,0 +1,77 @@
+<list>
+  <com.tle.beans.security.AccessExpression>
+    <id>268</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>276</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>275</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:627130db-0da6-4ac2-b42e-cd597693b688 OR R:bfa5f737-f87f-4909-a822-65b0181ada1a OR R:e8a88448-cdeb-43d0-afc6-8c491266271a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54214</id>
+    <dynamic>false</dynamic>
+    <expression>R:e8a88448-cdeb-43d0-afc6-8c491266271a R:627130db-0da6-4ac2-b42e-cd597693b688 OR R:bfa5f737-f87f-4909-a822-65b0181ada1a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>265</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR R:627130db-0da6-4ac2-b42e-cd597693b688 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>273</id>
+    <dynamic>false</dynamic>
+    <expression>*</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>270</id>
+    <dynamic>false</dynamic>
+    <expression>R:351c2f38-b78a-4049-88d5-dc33693c9a9f R:e8a88448-cdeb-43d0-afc6-8c491266271a OR R:627130db-0da6-4ac2-b42e-cd597693b688 OR R:bfa5f737-f87f-4909-a822-65b0181ada1a OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>264</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>272</id>
+    <dynamic>true</dynamic>
+    <expression>$OWNER</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54208</id>
+    <dynamic>false</dynamic>
+    <expression>R:bfa5f737-f87f-4909-a822-65b0181ada1a R:1321ada9-7c29-4f02-b9a9-cd591afe48e4 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54213</id>
+    <dynamic>false</dynamic>
+    <expression>R:bfa5f737-f87f-4909-a822-65b0181ada1a R:627130db-0da6-4ac2-b42e-cd597693b688 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54219</id>
+    <dynamic>false</dynamic>
+    <expression>R:627130db-0da6-4ac2-b42e-cd597693b688</expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54206</id>
+    <dynamic>false</dynamic>
+    <expression>R:e8a88448-cdeb-43d0-afc6-8c491266271a R:627130db-0da6-4ac2-b42e-cd597693b688 OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>2498543</id>
+    <dynamic>false</dynamic>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE R:TLE_GUEST_USER_ROLE OR </expression>
+  </com.tle.beans.security.AccessExpression>
+  <com.tle.beans.security.AccessExpression>
+    <id>54200</id>
+    <dynamic>false</dynamic>
+    <expression>R:bfa5f737-f87f-4909-a822-65b0181ada1a</expression>
+  </com.tle.beans.security.AccessExpression>
+</list>

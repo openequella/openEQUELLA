@@ -1,0 +1,21 @@
+<com.tle.beans.item.Bookmark>
+  <id>202862</id>
+  <item>
+    <id>202826</id>
+  </item>
+  <keywords class="list">
+    <string>grassy</string>
+    <string>star</string>
+    <string>knoll</string>
+    <string>palermo</string>
+    <string>venus</string>
+  </keywords>
+  <addedAt class="sql-timestamp">2011-10-03 12:05:50.129</addedAt>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <institution>
+    <id>202538</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <alwaysLatest>true</alwaysLatest>
+</com.tle.beans.item.Bookmark>

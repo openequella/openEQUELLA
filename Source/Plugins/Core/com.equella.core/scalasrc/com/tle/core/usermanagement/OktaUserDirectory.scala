@@ -22,7 +22,6 @@ import cats.implicits._
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
-import com.tle.common.usermanagement.user.valuebean.{DefaultUserBean, UserBean}
 import com.tle.core.guice.Bind
 import com.tle.core.oauthclient.AssertionTokenRequest
 import com.tle.core.webkeyset.service.WebKeySetService
@@ -31,9 +30,8 @@ import com.tle.integration.oidc.idp.{IdentityProviderPlatform, OktaDetails}
 import com.tle.web.oauth.OAuthWebConstants
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
-import org.apache.http.client.utils.URIBuilder
+import sttp.model.Uri
 
-import java.net.URI
 import java.security.interfaces.RSAPrivateKey
 import java.time.Instant
 import javax.inject.Inject
@@ -67,32 +65,23 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
   override protected val targetPlatform: IdentityProviderPlatform.Value =
     IdentityProviderPlatform.OKTA
 
-  override protected type USER = OktaUser
-
-  override protected type USERS = List[OktaUser]
-
-  override protected implicit val userDecoder: Decoder[OktaUser] = deriveDecoder[OktaUser]
-
-  override protected implicit val usersDecoder: Decoder[List[OktaUser]] =
-    Decoder.decodeList[OktaUser]
-
-  override protected def toUserList(users: USERS): List[USER] = users
-
-  override protected def toUserBean(user: USER): UserBean = {
-    val profile = user.profile
-    new DefaultUserBean(
-      user.id,
-      profile.login,
-      profile.firstName.getOrElse(""),
-      profile.lastName.getOrElse(""),
-      profile.email.orNull
-    )
+  override implicit val userDecoder: Decoder[IdPUser] = Decoder.instance { cursor =>
+    for {
+      id <- cursor.downField("id").as[String]
+      profile = cursor.downField("profile")
+      username  <- profile.downField("username").as[Option[String]]
+      firstName <- profile.downField("given_name").as[Option[String]]
+      lastName  <- profile.downField("family_name").as[Option[String]]
+      email     <- profile.downField("email").as[Option[String]]
+    } yield IdPUser(id, username, firstName, lastName, email, cursor.value)
   }
+
+  override implicit val usersDecoder: Decoder[List[IdPUser]] = Decoder.decodeList[IdPUser]
 
   /** REST endpoint to get a single user with the provided ID.
     */
-  override protected def userEndpoint(idp: OktaDetails, id: String): URI =
-    URI.create(s"${idp.apiUrl.toString}users/$id")
+  override protected def userEndpoint(idp: OktaDetails, id: String): Uri =
+    ApiUserDirectory.buildCommonUserEndpoint(idp.apiUrl, Seq("users"), id)
 
   /** REST endpoint to list users with the provided query.
     *
@@ -104,14 +93,32 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
     * Reference:
     * https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers
     */
-  override protected def userListEndpoint(idp: OktaDetails, query: String): URI = {
-    val baseEndpoint = new URIBuilder(s"${idp.apiUrl.toString}users")
+  override protected def userListEndpoint(idp: OktaDetails, query: String): Uri = {
+    val baseEndpoint = Uri(idp.apiUrl.toURI).addPath("users")
     Option(query)
       .map(_.drop(1).dropRight(1)) // Remove the prefix and suffix of the query
       .filter(_.trim.nonEmpty)
-      .map(baseEndpoint.addParameter("q", _))
+      .map(baseEndpoint.addParam("q", _))
       .getOrElse(baseEndpoint)
-      .build()
+  }
+
+  /** Okta recommends using query parameter `search` to filter users based on custom attributes.
+    * Each filter must be in the format of `attr eq "value"`, and multiple filters can be combined
+    * using `OR` or `And`. Wildcard searches are not supported for custom attributes, which is why
+    * the operator `eq` (equals) is used instead of `co` (contains).
+    *
+    * Reference:
+    * https://developer.okta.com/docs/api/openapi/okta-management/management/tag/User/#tag/User/operation/listUsers!in=query&path=search&t=request
+    */
+  override protected def userListByAttrsEndpoint(
+      idp: OktaDetails,
+      value: String,
+      attrs: List[String]
+  ): Uri = {
+    val filters = attrs.map(attr => s"$attr eq \"$value\"").mkString(" OR ")
+    Uri(idp.apiUrl.toURI)
+      .addPath("users")
+      .addParam("search", filters)
   }
 
   /** According to the doco of Core Okta API, the request for a scoped access token through Client
@@ -194,4 +201,18 @@ class OktaUserDirectory @Inject() (webKeySetService: WebKeySetService) extends A
       )
     )
   }
+
+  /** Custom attributes are typically defined under field 'profile' in Okta. However, Okta does not
+    * support specifying what fields to be included in the response through query parameters, so use
+    * the default implementation to retrieve the full set of attributes which always includes
+    * 'profile'.
+    */
+  override protected def customUserIdUrl(
+      idp: IDP,
+      stdId: String,
+      attributePathSegments: Array[String]
+  ): Uri =
+    super.customUserIdUrl(idp, stdId, attributePathSegments)
+
+  override protected val customAttributeDelimiter: Char = '.'
 }

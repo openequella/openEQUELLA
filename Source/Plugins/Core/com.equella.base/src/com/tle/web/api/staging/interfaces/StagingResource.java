@@ -49,22 +49,22 @@ import javax.ws.rs.core.UriInfo;
 public interface StagingResource {
   @POST
   @ApiOperation(value = "Create a file area")
-  public Response createStaging();
+  Response createStaging();
 
   @GET
   @Path("/{uuid}")
   @ApiOperation(value = "Get a file area listing", response = StagingBean.class)
-  public StagingBean getStaging(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+  StagingBean getStaging(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
 
   @HEAD
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Get metadata for file")
-  public Response headFile(@PathParam("uuid") String uuid, @PathParam("filepath") String filepath);
+  Response headFile(@PathParam("uuid") String uuid, @PathParam("filepath") String filepath);
 
   @GET
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Read a file")
-  public Response getFile(
+  Response getFile(
       @Context HttpHeaders headers,
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath);
@@ -72,22 +72,19 @@ public interface StagingResource {
   @DELETE
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Delete a file")
-  public Response deleteFile(
-      @PathParam("uuid") String uuid,
-      @PathParam("filepath") String filepath,
-      @QueryParam("uploadId") String uploadId)
+  Response deleteFile(@PathParam("uuid") String uuid, @PathParam("filepath") String filepath)
       throws IOException;
 
   @DELETE
   @Path("/{uuid}")
   @ApiOperation(value = "Delete a staging area")
-  public Response deleteStaging(@PathParam("uuid") String uuid) throws IOException;
+  Response deleteStaging(@PathParam("uuid") String uuid) throws IOException;
 
   @POST
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Complete a multipart upload")
   @Consumes("application/json")
-  public Response completeMultipart(
+  Response completeMultipart(
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       @QueryParam("uploadId") String uploadId,
@@ -97,7 +94,7 @@ public interface StagingResource {
   @POST
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Start a multipart upload", response = MultipartBean.class)
-  public MultipartBean startMultipart(
+  MultipartBean startMultipart(
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       @QueryParam("uploads") Boolean uploads);
@@ -105,7 +102,7 @@ public interface StagingResource {
   @PUT
   @Path("/{uuid}/{filepath:(.*)}")
   @ApiOperation(value = "Put a file")
-  public Response putFile(
+  Response putFile(
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,

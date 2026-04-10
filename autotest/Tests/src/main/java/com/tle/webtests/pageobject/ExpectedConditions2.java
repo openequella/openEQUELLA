@@ -3,6 +3,7 @@ package com.tle.webtests.pageobject;
 import com.tle.common.Check;
 import com.tle.webtests.framework.factory.RefreshableElement;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -18,7 +19,11 @@ import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-public class ExpectedConditions2 {
+public final class ExpectedConditions2 {
+  private ExpectedConditions2() {
+    throw new UnsupportedOperationException("Utility class");
+  }
+
   public static final By XPATH_FIRSTELEM = By.xpath("*[1]");
 
   public static WebElement unwrappedElement(WebElement element) {
@@ -28,6 +33,22 @@ public class ExpectedConditions2 {
       return ((WrapsElement) element).getWrappedElement();
     }
     return element;
+  }
+
+  /**
+   * Checks if a WebDriverException represents Chrome's specific stale node error.
+   *
+   * <p>Chrome sometimes throws a WebDriverException with the message "Node with given id does not
+   * belong to the document" instead of StaleElementReferenceException when elements become stale.
+   *
+   * @param e the WebDriverException to check
+   * @return true if this is Chrome's stale node error, false otherwise
+   * @see <a href="https://github.com/SeleniumHQ/selenium/issues/15401">Selenium issue on GitHub</a>
+   */
+  public static boolean isChromeStaleNodeException(WebDriverException e) {
+    return Optional.ofNullable(e.getMessage())
+        .map(msg -> msg.contains("Node with given id does not belong to the document"))
+        .orElse(false);
   }
 
   public static ExpectedCondition<Boolean> updateOfElement(WebElement elem) {
@@ -104,9 +125,7 @@ public class ExpectedConditions2 {
         try {
           element.isDisplayed();
           return element;
-        } catch (StaleElementReferenceException ser) {
-          return null;
-        } catch (NoSuchElementException e) {
+        } catch (StaleElementReferenceException | NoSuchElementException e) {
           return null;
         }
       }
@@ -148,7 +167,7 @@ public class ExpectedConditions2 {
       realElement = element;
     }
 
-    return new ExpectedCondition<WebElement>() {
+    return new ExpectedCondition<>() {
       private String lastValue;
 
       @Override
@@ -197,7 +216,7 @@ public class ExpectedConditions2 {
 
   // Is this required?
   public static ExpectedCondition<WebElement> invisibilityOf(final WebElement element) {
-    return new ExpectedCondition<WebElement>() {
+    return new ExpectedCondition<>() {
       @Override
       public WebElement apply(WebDriver driver) {
         return element.isDisplayed() ? null : element;
@@ -217,14 +236,12 @@ public class ExpectedConditions2 {
    */
   public static ExpectedCondition<Boolean> invisibilityOfElementLocated(
       final SearchContext context, final By locator) {
-    return new ExpectedCondition<Boolean>() {
+    return new ExpectedCondition<>() {
       @Override
       public Boolean apply(WebDriver driver) {
         try {
           return !context.findElement(locator).isDisplayed();
-        } catch (NoSuchElementException e) {
-          return true;
-        } catch (StaleElementReferenceException e) {
+        } catch (NoSuchElementException | StaleElementReferenceException e) {
           return true;
         }
       }
@@ -238,15 +255,13 @@ public class ExpectedConditions2 {
 
   public static ExpectedCondition<WebDriver> frameToBeAvailableAndSwitchToIt(
       final SearchContext context, final By by) {
-    return new ExpectedCondition<WebDriver>() {
+    return new ExpectedCondition<>() {
       @Override
       public WebDriver apply(WebDriver from) {
         try {
           from.switchTo().defaultContent();
           return from.switchTo().frame(context.findElement(by));
-        } catch (NoSuchElementException nsee) {
-          return null;
-        } catch (NoSuchFrameException e) {
+        } catch (NoSuchElementException | NoSuchFrameException e) {
           return null;
         }
       }
@@ -464,5 +479,74 @@ public class ExpectedConditions2 {
 
   public static ExpectedCondition<?> ajaxUpdateEmpty(WebElement ajaxElem) {
     return ExpectedConditions2.invisibilityOfElementLocated(ajaxElem, XPATH_FIRSTELEM);
+  }
+
+  /**
+   * An expectation for checking that the given text is the value of the specified input. The
+   * difference between this and {@link ExpectedConditions#textToBe}, {@link
+   * ExpectedConditions#textToBePresentInElementValue} is that this use {@link
+   * WebElement#getDomProperty} to match the value of the element, which is used when the value is
+   * not stored in the HTML tag attribute, but controlled by JavaScript or other states.
+   *
+   * @param locator used to find the input.
+   * @param text the text to check for. Use empty string to check for empty input.
+   */
+  public static ExpectedCondition<Boolean> inputValueToBe(final By locator, final String text) {
+
+    return new ExpectedCondition<Boolean>() {
+      @Override
+      public Boolean apply(WebDriver driver) {
+        try {
+          String inputText =
+              Optional.ofNullable(driver.findElement(locator).getDomProperty("value")).orElse("");
+          return text.equals(inputText);
+        } catch (StaleElementReferenceException e) {
+          return false;
+        }
+      }
+
+      @Override
+      public String toString() {
+        return String.format("text ('%s') is found by %s", text, locator);
+      }
+    };
+  }
+
+  /**
+   * Wrapper for a condition, which allows for elements to update by redrawing.
+   *
+   * <p>This acts exactly like {@link ExpectedConditions#refreshed(ExpectedCondition)} but also
+   * handles the Chrome-specific "Node with given id does not belong to the document" error,
+   * treating it as a stale element reference.
+   *
+   * <p>See: <a href="https://github.com/SeleniumHQ/selenium/issues/15401">Selenium issue on
+   * GitHub</a>
+   *
+   * @param condition ExpectedCondition to wrap
+   * @param <T> return type of the condition provided
+   * @return the result of the provided condition
+   */
+  public static <T> ExpectedCondition<T> refreshed(final ExpectedCondition<T> condition) {
+    return new ExpectedCondition<>() {
+      @Override
+      public T apply(WebDriver driver) {
+        try {
+          return condition.apply(driver);
+        } catch (StaleElementReferenceException e) {
+          return null;
+        } catch (WebDriverException e) {
+          // Handle the specific Chrome inspector error regarding stale nodes
+          if (isChromeStaleNodeException(e)) {
+            return null;
+          }
+          throw e;
+        }
+      }
+
+      @Override
+      public String toString() {
+        return String.format("condition (%s) to be refreshed", condition);
+      }
+    };
   }
 }

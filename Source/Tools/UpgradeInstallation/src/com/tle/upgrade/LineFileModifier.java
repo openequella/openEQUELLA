@@ -31,14 +31,23 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@SuppressWarnings("nls")
+/**
+ * A utility class to help with line based file modifications. The file is backed up with a .bak
+ * extension before any changes are made. If an error occurs during processing, the original file is
+ * restored.
+ *
+ * <p>To use, extend this class and implement the processLine() or processLineMulti() methods. The
+ * former is simpler, but only allows a single line to be returned. If you need to return multiple
+ * lines, or remove a line, implement processLineMulti(). You can also override addLines() to add
+ * extra lines at the end of the file.
+ */
 public abstract class LineFileModifier {
   private final File file;
   private final UpgradeResult result;
-  private static String eol = System.getProperty("line.separator");
+  private static final String eol = System.lineSeparator();
 
-  public LineFileModifier(File propertiesFile, UpgradeResult result) {
-    this.file = propertiesFile;
+  public LineFileModifier(File targetFile, UpgradeResult result) {
+    this.file = targetFile;
     this.result = result;
   }
 
@@ -53,44 +62,92 @@ public abstract class LineFileModifier {
         BufferedWriter outFile =
             new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-      String line;
-      while ((line = inFile.readLine()) != null) {
-        String newLine = processLine(line);
-        if (newLine != null) {
-          outFile.write(newLine);
-          outFile.write(eol);
-          if (result != null && !line.equals(newLine)) {
-            result.addLogMessage("Changed '" + line + "' to '" + newLine + "'");
-          }
-        } else {
-          if (result != null) {
-            result.addLogMessage("Deleted line '" + line + "'");
-          }
-        }
-      }
-
-      // Add extra lines
-      List<String> linesToAdd = addLines();
-      if (!Check.isEmpty(linesToAdd)) {
-        for (String addLine : linesToAdd) {
-          outFile.write(addLine);
-          outFile.write(eol);
-          if (result != null) {
-            result.addLogMessage("Added line '" + addLine + "'");
-          }
-        }
-      }
-
+      processAllLines(inFile, outFile);
+      addExtraLines(outFile);
     } catch (IOException t) {
+      addLog("Error processing file - restoring original: " + t.getMessage());
       new FileCopier(bakFile, file, false).rename();
 
       throw new RuntimeException(t);
     }
+
     bakFile.delete();
   }
 
+  private void processAllLines(BufferedReader inFile, BufferedWriter outFile) throws IOException {
+    String line;
+    while ((line = inFile.readLine()) != null) {
+      List<String> newLines = processLineMulti(line);
+      if (newLines.isEmpty()) {
+        addLog("Deleted line '" + line + "'");
+      } else {
+        replaceLine(outFile, line, newLines);
+      }
+    }
+  }
+
+  private void addExtraLines(BufferedWriter outFile) throws IOException {
+    List<String> linesToAdd = addLines();
+    if (!Check.isEmpty(linesToAdd)) {
+      for (String addLine : linesToAdd) {
+        outFile.write(addLine);
+        outFile.write(eol);
+        addLog("Added line '" + addLine + "'");
+      }
+    }
+  }
+
+  private void replaceLine(BufferedWriter outFile, String line, List<String> newLines)
+      throws IOException {
+    boolean changeDetected = false;
+
+    for (String newLine : newLines) {
+      outFile.write(newLine);
+      outFile.write(eol);
+      if (!line.equals(newLine)) {
+        changeDetected = true;
+      }
+    }
+
+    if (changeDetected) {
+      addLog("Replaced line '" + line + "' with:");
+      for (String newLine : newLines) {
+        addLog("  " + newLine);
+      }
+    }
+  }
+
+  private void addLog(String message) {
+    if (result != null) {
+      result.addLogMessage(message);
+    }
+  }
+
+  /**
+   * Process a line. Return the modified line, or null to delete the line.
+   *
+   * @param line The line to process
+   * @return The modified line, or null to delete the line
+   */
   protected abstract String processLine(String line);
 
+  /**
+   * A convenience method to process a line and return multiple lines. The default implementation
+   * calls processLine() and returns a single item list or an empty list if null.
+   *
+   * @param line The line to process
+   * @return A list of lines to write, or an empty list to delete the line
+   */
+  protected List<String> processLineMulti(String line) {
+    String single = processLine(line);
+    return single != null ? Lists.newArrayList(single) : Lists.newArrayList();
+  }
+
+  /**
+   * Add extra lines at the end of the file. The default implementation returns an empty list.
+   *
+   * @return A list of lines to add at the end of the file
+   */
   protected List<String> addLines() {
     // Override this
     return Lists.newArrayList();

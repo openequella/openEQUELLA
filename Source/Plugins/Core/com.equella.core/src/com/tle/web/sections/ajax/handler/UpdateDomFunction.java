@@ -28,6 +28,7 @@ import com.tle.web.sections.js.JSExpression;
 import com.tle.web.sections.js.generic.expression.FunctionCallExpression;
 import com.tle.web.sections.js.generic.function.AnonymousFunction;
 import com.tle.web.sections.js.generic.statement.FunctionCallStatement;
+import java.util.Optional;
 
 public class UpdateDomFunction implements JSCallable {
   private final AjaxFunction ajaxFunction;
@@ -39,12 +40,27 @@ public class UpdateDomFunction implements JSCallable {
 
   public UpdateDomFunction(
       UpdateDomEvent domEvent, String ajaxId, JSCallable effectFunction, JSCallable onSuccess) {
+    this(domEvent, ajaxId, effectFunction, onSuccess, null);
+  }
+
+  public UpdateDomFunction(
+      UpdateDomEvent domEvent,
+      String ajaxId,
+      JSCallable effectFunction,
+      JSCallable onSuccess,
+      String customEQ) {
     this.domEvent = domEvent;
     this.onSuccess = onSuccess;
     this.effectFunction = effectFunction;
     divQuery = new JQuerySelector(Type.ID, ajaxId);
     afterPost = new FunctionCallExpression(effectFunction, divQuery, null, onSuccess);
-    ajaxFunction = new AjaxFunction(domEvent.getEventId(), domEvent.getParameterCount());
+
+    String eventId = domEvent.getEventId();
+    int paramCount = domEvent.getParameterCount();
+    ajaxFunction =
+        Optional.ofNullable(customEQ)
+            .map(eq -> new AjaxFunction(eventId, paramCount, eq))
+            .orElse(new AjaxFunction(eventId, paramCount));
   }
 
   @Override

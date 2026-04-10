@@ -49,7 +49,7 @@ public class SavedSearchConverter {
     FavouriteSearch fs = new FavouriteSearch();
     fs.setName(ss.getName());
     fs.setQuery(ss.getQuery());
-    fs.setDateModified(new Date()); // No date available.
+    fs.setAddedAt(new Date()); // No date available.
     fs.setOwner(pref.getKey().getUserID());
     fs.setInstitution(institution);
 

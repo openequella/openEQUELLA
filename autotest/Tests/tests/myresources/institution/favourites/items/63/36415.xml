@@ -1,0 +1,18 @@
+<com.tle.beans.item.Bookmark>
+  <id>36415</id>
+  <item>
+    <id>36286</id>
+  </item>
+  <keywords class="list">
+    <string>mathematical</string>
+    <string>anathema</string>
+  </keywords>
+  <addedAt class="sql-timestamp">2011-09-20 15:41:52.745</addedAt>
+  <owner>b09a4042-b091-87ed-eba9-6fb3c0fbe9a6</owner>
+  <institution>
+    <id>35074</id>
+    <uniqueId>0</uniqueId>
+    <enabled>true</enabled>
+  </institution>
+  <alwaysLatest>true</alwaysLatest>
+</com.tle.beans.item.Bookmark>

@@ -93,7 +93,7 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public StagingBean getStaging(UriInfo uriInfo, String stagingUuid) {
     checkPermissions();
-    StagingFile stagingFile = getStagingFile(stagingUuid);
+    StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
 
     try {
       FileEntry base = fileSystemService.enumerateTree(stagingFile, null, null);
@@ -168,7 +168,7 @@ public class StagingResourceImpl implements StagingResource {
   public Response headFile(String uuid, String filepath) {
     checkPermissions();
     try {
-      ensureFileExists(getStagingFile(uuid), filepath);
+      stagingService.ensureFileExists(uuid, filepath);
       FileInfo fileInfo = fileSystemService.getFileInfo(new StagingFile(uuid), filepath);
       if (fileInfo == null) {
         return Response.status(Status.NOT_FOUND).build();
@@ -183,8 +183,8 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public Response getFile(HttpHeaders headers, String uuid, String filepath) {
     checkPermissions();
-    final StagingFile stagingFile = getStagingFile(uuid);
-    ensureFileExists(stagingFile, filepath);
+    final StagingFile stagingFile = stagingService.getStagingFile(uuid);
+    stagingService.ensureFileExists(uuid, filepath);
 
     try {
       final String etag = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
@@ -224,14 +224,9 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   @Override
-  public Response deleteFile(String stagingUuid, String filepath, String uploadId)
-      throws IOException {
+  public Response deleteFile(String stagingUuid, String filepath) {
     checkPermissions();
-    final StagingFile stagingFile = getStagingFile(stagingUuid);
-    ensureFileExists(stagingFile, filepath);
-
-    boolean removed = fileSystemService.removeFile(stagingFile, filepath);
-    if (!removed) {
+    if (!stagingService.deleteFile(stagingUuid, filepath)) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
 
@@ -241,7 +236,7 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public Response deleteStaging(String uuid) throws IOException {
     checkPermissions();
-    StagingFile stagingFile = getStagingFile(uuid);
+    StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.removeStagingArea(stagingFile, true);
     return Response.status(Status.NO_CONTENT).build();
   }
@@ -251,7 +246,7 @@ public class StagingResourceImpl implements StagingResource {
       String uuid, String filepath, String uploadId, MultipartCompleteBean completion)
       throws IOException {
     checkPermissions();
-    StagingFile stagingFile = getStagingFile(uuid);
+    StagingFile stagingFile = stagingService.getStagingFile(uuid);
     List<PartBean> parts = completion.getParts();
     int[] partNumbers = new int[parts.size()];
     String[] etags = new String[parts.size()];
@@ -285,7 +280,7 @@ public class StagingResourceImpl implements StagingResource {
     if (uploads == null) {
       throw new BadRequestException("Must use PUT for uploading files");
     }
-    StagingFile stagingFile = getStagingFile(uuid);
+    StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String uploadId = UUID.randomUUID().toString();
     String folderPath = "multipart/" + uploadId;
     ensureMultipartDir(stagingFile);
@@ -320,7 +315,7 @@ public class StagingResourceImpl implements StagingResource {
       String contentType)
       throws IOException {
     checkPermissions();
-    final StagingFile stagingFile = getStagingFile(uuid);
+    final StagingFile stagingFile = stagingService.getStagingFile(uuid);
     if (fileSystemService.fileExists(stagingFile, filepath)) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
@@ -351,22 +346,11 @@ public class StagingResourceImpl implements StagingResource {
     }
   }
 
-  private void ensureFileExists(StagingFile staging, String filepath) {
-    if (!fileSystemService.fileExists(staging, filepath)) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
-  }
-
   private void checkValidContentType(String contentType) {
     if (contentType != null && contentType.startsWith("multipart/form-data")) {
       throw new BadRequestException(
           "Don't use multipart encoding to upload files, upload the file directly");
     }
-  }
-
-  private StagingFile getStagingFile(String stagingUuid) {
-    ensureStagingExists(stagingUuid);
-    return new StagingFile(stagingUuid);
   }
 
   private ResponseBuilder makeResponseHeaders(String uuid, String filepath) throws IOException {
@@ -381,13 +365,6 @@ public class StagingResourceImpl implements StagingResource {
     builder.header(
         HttpHeaders.ETAG, "\"" + fileSystemService.getMD5Checksum(handle, filepath) + "\"");
     return builder;
-  }
-
-  private void ensureStagingExists(String stagingUuid) {
-    if (!stagingService.stagingExists(stagingUuid)
-        || !fileSystemService.fileExists(new StagingFile(stagingUuid), null)) {
-      throw new WebApplicationException(Status.NOT_FOUND);
-    }
   }
 
   private URI stagingUri(String stagingUuid) {

@@ -17,7 +17,7 @@
  */
 import { CreateNewFolder } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TreeItemProps } from "@mui/x-tree-view/TreeItem";
+import type { TreeItemProps } from "@mui/x-tree-view/TreeItem";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import * as A from "fp-ts/Array";
 import { pipe } from "fp-ts/function";
@@ -46,6 +46,10 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
    */
   isRoot?: boolean;
   /**
+   * Handler to select the operator that is being clicked.
+   */
+  onClick: () => void;
+  /**
    * Fired when the node is deleted.
    */
   onDelete: () => void;
@@ -63,16 +67,16 @@ export interface ACLTreeOperatorProps extends TreeItemProps {
  * Tree item (node) which represents an ACL operator.
  */
 export const ACLTreeOperator = ({
-  nodeId,
+  itemId,
   groupOperators = ["OR", "AND", "NOT"],
   isRoot,
   operator,
-  onSelect,
+  onClick,
   onDelete,
   onOperatorChange,
   onAddGroup,
   ...other
-}: ACLTreeOperatorProps): JSX.Element => {
+}: ACLTreeOperatorProps): React.JSX.Element => {
   // default selected value is `OR`
   const buildMenuItemForOperator = (operator: ACLOperatorType) => (
     <MenuItem key={operator} selected={operator === "OR"} value={operator}>
@@ -87,9 +91,7 @@ export const ACLTreeOperator = ({
       </InputLabel>
       <Select
         value={operator}
-        onChange={(event) =>
-          onOperatorChange(event.target.value as ACLOperatorType)
-        }
+        onChange={(event) => onOperatorChange(event.target.value)}
         // prevent toggling tree item
         onClick={(event) => event.stopPropagation()}
         className={classes.labelSelect}
@@ -124,10 +126,15 @@ export const ACLTreeOperator = ({
   // the className `ACLTreeOperator` is used for testing purpose (find the element)
   return (
     <ACLTreeItem
-      id={nodeId}
-      nodeId={nodeId}
+      id={itemId}
+      itemId={itemId}
       label={treeOperatorLabel()}
-      onClick={onSelect}
+      onClick={(e) => {
+        // Since MUI-X TreeItem V7, this event will be propagated all the way up to the root so we must
+        // stop the propagation to make sure only this operator is selected.
+        e.stopPropagation();
+        onClick();
+      }}
       classes={{
         root: classes.root,
       }}

@@ -20,7 +20,7 @@ import { generateNewErrorID } from "../api/errors";
 import ErrorPage from "../mainui/ErrorPage";
 import { TemplateUpdateProps } from "../mainui/Template";
 import { languageStrings } from "../util/langstrings";
-import { getTopicIDFromURL } from "./HierarchyHelper";
+import { getTopicIDFromLocation } from "../modules/HierarchyModule";
 import HierarchyPage from "./HierarchyPage";
 
 const {
@@ -33,7 +33,7 @@ const {
  * will be displayed instead.
  */
 const RootHierarchyPage = (props: TemplateUpdateProps) => {
-  const compoundUuid = getTopicIDFromURL();
+  const compoundUuid = getTopicIDFromLocation();
 
   return compoundUuid ? (
     <HierarchyPage {...props} compoundUuid={compoundUuid} />

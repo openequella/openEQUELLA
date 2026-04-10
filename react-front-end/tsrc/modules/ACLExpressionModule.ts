@@ -29,7 +29,6 @@ import { ReadonlyNonEmptyArray } from "fp-ts/ReadonlyNonEmptyArray";
 import * as S from "fp-ts/string";
 import * as T from "fp-ts/Task";
 import * as TE from "fp-ts/TaskEither";
-import { v4 as uuidv4 } from "uuid";
 import { languageStrings } from "../util/langstrings";
 import { simpleUnionMatch } from "../util/match";
 import { pfTernary, pfTernaryTypeGuard } from "../util/pointfree";
@@ -125,7 +124,7 @@ export const createACLExpression = (
   recipients: ACLRecipient[] = [],
   children: ACLExpression[] = [],
 ): ACLExpression => ({
-  id: uuidv4(),
+  id: crypto.randomUUID(),
   operator: operator,
   recipients: [...recipients],
   children: [...children],
@@ -217,7 +216,7 @@ export const getACLExpressionById = (
         O.chainFirstEitherK(
           E.fromPredicate(
             (a) => A.size(a) <= 1,
-            (error) =>
+            (_) =>
               console.warn(`Find more than one ACLExpression with ID ${id}`),
           ),
         ),
@@ -484,7 +483,7 @@ export const parse = (
    * and the `previousExpressions` are updated to drop those which have been used with result appended to the end.
    */
   const handleKnownExpression = (
-    { result, previousExpressions }: AclExpressionBuildingState,
+    { previousExpressions }: AclExpressionBuildingState,
     currentExpression: ACLExpression,
   ): AclExpressionBuildingState =>
     pipe(
@@ -543,7 +542,7 @@ export const parse = (
             RA.reduce<ACLExpression, AclExpressionBuildingState>(
               {
                 result: {
-                  id: uuidv4(),
+                  id: crypto.randomUUID(),
                   operator: "UNKNOWN",
                   recipients: [],
                   children: [],

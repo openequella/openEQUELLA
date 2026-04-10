@@ -37,7 +37,7 @@ export interface SelectListProps {
    * program level, and the **values** are used for display purposes.
    * If **value** is react Element it will overwrite the main content which is displayed before `add icon`.
    */
-  options: Map<string, string | JSX.Element>;
+  options: Map<string, string | React.JSX.Element>;
   /**
    * On select handler which will return the currently `selected` `option`.
    */
@@ -51,13 +51,16 @@ export interface SelectListProps {
 export const SelectList = ({
   options,
   onSelect,
-}: SelectListProps): JSX.Element => {
+}: SelectListProps): React.JSX.Element => {
   return (
     <List>
       {pipe(
         options,
         collectUnOrd(
-          (key: string, content: string | JSX.Element): JSX.Element => (
+          (
+            key: string,
+            content: string | React.JSX.Element,
+          ): React.JSX.Element => (
             <ListItemButton key={key} dense>
               {S.isString(content) ? (
                 <ListItemText primary={content} />
@@ -68,7 +71,7 @@ export const SelectList = ({
               <ListItemSecondaryAction>
                 <TooltipIconButton
                   title={selectLabel}
-                  onClick={(event) => {
+                  onClick={(_) => {
                     onSelect(key);
                   }}
                 >

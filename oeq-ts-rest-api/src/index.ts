@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 import * as CommonCodec from './gen/Common';
-import * as SearchCodec from './gen/Search';
-import * as WizardControlCodec from './gen/WizardControl';
+import * as DashboardCodec from './gen/Dashboard';
 import * as LtiPlatformCodec from './gen/LtiPlatform';
 import * as OidcCodec from './gen/Oidc';
+import * as SearchCodec from './gen/Search';
+import * as WizardControlCodec from './gen/WizardControl';
 
 export * as Acl from './Acl';
 export * as AdvancedSearch from './AdvancedSearch';
@@ -29,6 +30,7 @@ export * as BrowseHierarchy from './BrowseHierarchy';
 export * as Collection from './Collection';
 export * as Common from './Common';
 export * as Drm from './Drm';
+export * as Dashboard from './Dashboard';
 export * as Errors from './Errors';
 export * as FacetedSearchSettings from './FacetedSearchSettings';
 export * as Favourite from './Favourite';
@@ -49,15 +51,19 @@ export * as Security from './Security';
 export * as Settings from './Settings';
 export * as Taxonomy from './Taxonomy';
 export * as Theme from './Theme';
+export * as Task from './Task';
 export * as UserQuery from './UserQuery';
 export * as Utils from './Utils';
 export * as WizardCommonTypes from './WizardCommonTypes';
 export * as WizardControl from './WizardControl';
+export * as Workflow from './Workflow';
+export * as MyResource from './MyResource';
 
 export const Codec = {
   Common: CommonCodec,
-  Search: SearchCodec,
-  WizardControl: WizardControlCodec,
+  Dashboard: DashboardCodec,
   LtiPlatform: LtiPlatformCodec,
   Oidc: OidcCodec,
+  Search: SearchCodec,
+  WizardControl: WizardControlCodec,
 };

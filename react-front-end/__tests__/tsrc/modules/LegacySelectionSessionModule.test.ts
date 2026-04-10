@@ -15,12 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as O from "fp-ts/Option";
 import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import type { RenderData, SelectionSessionInfo } from "../../../tsrc/AppConfig";
 import {
+  buildFavouritesSearchSelectionSessionLink,
   buildPostDataForSelectOrAdd,
   buildPostDataForStructured,
   buildSelectionSessionAdvancedSearchLink,
+  buildSelectionSessionHierarchyLink,
   buildSelectionSessionItemSummaryLink,
   buildSelectionSessionSearchPageLink,
   isSelectionSessionOpen,
@@ -239,18 +242,61 @@ describe("buildSelectionSessionAdvancedSearchLink", () => {
   const advSearchId = "72558c1d-8788-4515-86c8-b24a28cc451e";
 
   it("builds a link for accessing an Advanced search", () => {
-    const link = buildSelectionSessionAdvancedSearchLink(advSearchId);
+    const link = buildSelectionSessionAdvancedSearchLink(
+      advSearchId,
+      O.none,
+      O.none,
+    );
     expect(link).toBe(
       "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1",
     );
   });
 
+  it("supports including search parameters in the link", () => {
+    const link = buildSelectionSessionAdvancedSearchLink(
+      advSearchId,
+      O.some(new URLSearchParams("?query=orange")),
+      O.none,
+    );
+    expect(link).toBe(
+      "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&query=orange&_sl.stateId=1",
+    );
+  });
+
   it("supports including external MIME types in the link", () => {
-    const link = buildSelectionSessionAdvancedSearchLink(advSearchId, [
-      "image/gif",
-    ]);
+    const link = buildSelectionSessionAdvancedSearchLink(
+      advSearchId,
+      O.none,
+      O.some(["image/gif"]),
+    );
     expect(link).toBe(
       "http://localhost:8080/vanilla/advanced/searching.do?in=P72558c1d-8788-4515-86c8-b24a28cc451e&editquery=true&_sl.stateId=1&_int.mimeTypes=image%2Fgif",
+    );
+  });
+});
+
+describe("buildSelectionSessionHierarchyLink", () => {
+  beforeEach(() => {
+    updateMockGetRenderData(basicRenderData);
+    updateMockGetBaseUrl();
+  });
+
+  const hierarchyId = "19cd26d2-e08d-4dd4-a3a7-406eb26a8b40";
+
+  it("builds a link for accessing hierarchy", () => {
+    const link = buildSelectionSessionHierarchyLink(hierarchyId, O.none);
+    expect(link).toBe(
+      "http://localhost:8080/vanilla/hierarchy.do?topic=19cd26d2-e08d-4dd4-a3a7-406eb26a8b40&_sl.stateId=1",
+    );
+  });
+
+  it("supports including search parameters in the link", () => {
+    const link = buildSelectionSessionHierarchyLink(
+      hierarchyId,
+      O.some(new URLSearchParams("?query=banana")),
+    );
+    expect(link).toBe(
+      "http://localhost:8080/vanilla/hierarchy.do?topic=19cd26d2-e08d-4dd4-a3a7-406eb26a8b40&query=banana&_sl.stateId=1",
     );
   });
 });
@@ -273,11 +319,44 @@ describe("buildSelectionSessionSearchPageLink", () => {
     (layout: string, selectionSessionInfo: SelectionSessionInfo, path) => {
       updateMockGetRenderData({ ...basicRenderData, selectionSessionInfo });
       updateMockGetBaseUrl();
-      const link = buildSelectionSessionSearchPageLink(["image/gif"]);
+      const link = buildSelectionSessionSearchPageLink(
+        O.some(new URLSearchParams("?query=apple")),
+        O.some(["image/gif"]),
+      );
 
       expect(link).toBe(
-        `http://localhost:8080/vanilla/${path}/searching.do?_sl.stateId=1&_int.mimeTypes=image%2Fgif`,
+        `http://localhost:8080/vanilla/${path}/searching.do?query=apple&_sl.stateId=1&_int.mimeTypes=image%2Fgif`,
       );
     },
   );
+});
+
+describe("buildFavouritesSearchSelectionSessionLink", () => {
+  it.each<[string, string, string]>([
+    [
+      "hierarchy",
+      "/page/hierarchy/hierarchy-uuid?searchOptions=test",
+      "http://localhost:8080/vanilla/hierarchy.do?topic=hierarchy-uuid&searchOptions=test&_sl.stateId=1",
+    ],
+    [
+      "advanced search",
+      "/page/advancedsearch/advanced-uuid?searchOptions=test",
+      "http://localhost:8080/vanilla/advanced/searching.do?in=Padvanced-uuid&editquery=true&searchOptions=test&_sl.stateId=1",
+    ],
+    [
+      "normal search",
+      "/page/search?searchOptions=%7B%22query%22%3A%22apple%22%7D",
+      "http://localhost:8080/vanilla/access/course/searching.do?searchOptions=%7B%22query%22%3A%22apple%22%7D&_sl.stateId=1",
+    ],
+  ])("builds a link for accessing %s page", (_: string, path, exceptResult) => {
+    updateMockGetRenderData({
+      ...basicRenderData,
+      selectionSessionInfo: basicSelectionSessionInfo,
+    });
+    updateMockGetBaseUrl();
+
+    const link = buildFavouritesSearchSelectionSessionLink(path);
+
+    expect(link).toBe(exceptResult);
+  });
 });

@@ -32,9 +32,9 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   override type State   = SanityState
 
   override implicit val testCaseDecoder: Decoder[SanityTestProperties.Pages.Value] =
-    Decoder.enumDecoder(Pages)
+    Decoder.decodeEnumeration(Pages)
   override implicit val testCaseEncoder: Encoder[SanityTestProperties.Pages.Value] =
-    Encoder.enumEncoder(Pages)
+    Encoder.encodeEnumeration(Pages)
 
   override def initialState: SanityState = SanityState()
 
@@ -71,7 +71,7 @@ object SanityTestProperties extends StatefulProperties("Sanity test") with Simpl
   statefulProp("go to pages") {
     generateCommands {
       case s if s.completedPages == Pages.values => List()
-      case s =>
+      case s                                     =>
         Fairness.favourIncomplete(1, 0)(Pages.values.toSeq, s.completedPages.contains).map(List(_))
     }
   }

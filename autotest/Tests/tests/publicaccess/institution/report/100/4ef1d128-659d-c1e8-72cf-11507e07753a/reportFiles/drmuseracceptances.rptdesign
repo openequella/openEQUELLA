@@ -1,0 +1,217 @@
+<report id="1" version="3.2.22" xmlns="http://www.eclipse.org/birt/2005/design">
+    <property name="createdBy">Eclipse BIRT Designer Version 2.6.1.v20100902 Build &lt;2.6.1.v20100915-1750&gt;</property>
+    <property name="units">in</property>
+    <property name="theme">equella.defaultTheme</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">120</property>
+    <list-property name="libraries">
+        <structure>
+            <property name="fileName">equella.rptlibrary</property>
+            <property name="namespace">equella</property>
+        </structure>
+    </list-property>
+    <data-sources>
+        <oda-data-source extends="equella.EQUELLA" extensionID="com.tle.reporting.oda.datasource" id="7" name="EQUELLA">
+            <property name="webserviceUrl">http://boorah/dev/maestro</property>
+            <property name="webserviceUser"/>
+            <encrypted-property encryptionID="base64" name="webservicePassword"/>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="com.tle.reporting.oda.dataset.jdbc" id="9" name="Data Set">
+            <property name="nullsOrdering">nulls lowest</property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">user</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">acceptances</property>
+                        <property name="dataType">decimal</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">EQUELLA</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">user</property>
+                    <property name="nativeName">user</property>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">acceptances</property>
+                    <property name="nativeName">acceptances</property>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[SELECT d."user" AS "user", count(d."user") AS "acceptances" 
+FROM drm_acceptance d
+INNER JOIN item i
+ ON i.id = d.item_id
+ WHERE i.institution_id = CURRENT_INSTITUTION
+GROUP BY d."user"
+ORDER BY "acceptances" DESC]]></xml-property>
+        </oda-data-set>
+        <oda-data-set extends="equella.QueryUser" extensionID="com.tle.reporting.oda.dataset.ump" id="38" name="QueryUser"/>
+    </data-sets>
+    <styles>
+        <style id="4" name="report">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style id="5" name="crosstab-cell">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style id="6" name="crosstab">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page extends="equella.EQUELLA" id="8" name="EQUELLA">
+            <overridden-values>
+                <ref-entry baseId="96" id="96" name="Header"/>
+                <ref-entry baseId="97" id="97"/>
+                <ref-entry baseId="101" id="101"/>
+                <ref-entry baseId="98" id="98"/>
+                <ref-entry baseId="99" id="99"/>
+                <ref-entry baseId="7" id="102" name="Logo"/>
+                <ref-entry baseId="100" id="100"/>
+                <ref-entry baseId="102" id="103" name="TitleLabel">
+                    <property name="text">Top users by acceptance</property>
+                </ref-entry>
+                <ref-entry baseId="24" id="24" name="NewTextData"/>
+            </overridden-values>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="10">
+            <property name="width">7.9411764705882355in</property>
+            <property name="dataSet">Data Set</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">user</property>
+                    <text-property name="displayName">user</text-property>
+                    <expression name="expression" type="javascript">dataSetRow[&quot;user&quot;]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">acceptances</property>
+                    <text-property name="displayName">acceptances</text-property>
+                    <expression name="expression" type="javascript">dataSetRow[&quot;acceptances&quot;]</expression>
+                    <property name="dataType">decimal</property>
+                </structure>
+            </list-property>
+            <column id="36">
+                <property name="width">5.929411764705883in</property>
+            </column>
+            <column id="37">
+                <property name="width">2.011764705882353in</property>
+            </column>
+            <header>
+                <row id="11">
+                    <cell id="16">
+                        <label id="17">
+                            <text-property name="text">User</text-property>
+                        </label>
+                    </cell>
+                    <cell id="18">
+                        <label id="19">
+                            <text-property name="text">Acceptances</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="20">
+                    <cell id="25">
+                        <data id="26">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="dataSet">QueryUser</property>
+                            <list-property name="paramBindings">
+                                <structure>
+                                    <property name="paramName">param1</property>
+                                    <simple-property-list name="expression">
+                                        <value type="javascript">row[&quot;user&quot;]</value>
+                                    </simple-property-list>
+                                </structure>
+                            </list-property>
+                            <list-property name="boundDataColumns">
+                                <structure>
+                                    <property name="name">id</property>
+                                    <text-property name="displayName">id</text-property>
+                                    <expression name="expression" type="javascript">dataSetRow[&quot;id&quot;]</expression>
+                                    <property name="dataType">string</property>
+                                </structure>
+                                <structure>
+                                    <property name="name">username</property>
+                                    <text-property name="displayName">username</text-property>
+                                    <expression name="expression" type="javascript">dataSetRow[&quot;username&quot;]</expression>
+                                    <property name="dataType">string</property>
+                                </structure>
+                                <structure>
+                                    <property name="name">firstname</property>
+                                    <text-property name="displayName">firstname</text-property>
+                                    <expression name="expression" type="javascript">dataSetRow[&quot;firstname&quot;]</expression>
+                                    <property name="dataType">string</property>
+                                </structure>
+                                <structure>
+                                    <property name="name">lastname</property>
+                                    <text-property name="displayName">lastname</text-property>
+                                    <expression name="expression" type="javascript">dataSetRow[&quot;lastname&quot;]</expression>
+                                    <property name="dataType">string</property>
+                                </structure>
+                                <structure>
+                                    <property name="name">email</property>
+                                    <text-property name="displayName">email</text-property>
+                                    <expression name="expression" type="javascript">dataSetRow[&quot;email&quot;]</expression>
+                                    <property name="dataType">string</property>
+                                </structure>
+                            </list-property>
+                            <property name="resultSetColumn">username</property>
+                        </data>
+                    </cell>
+                    <cell id="27">
+                        <data id="28">
+                            <property name="whiteSpace">nowrap</property>
+                            <property name="resultSetColumn">acceptances</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="29">
+                    <cell id="32"/>
+                    <cell id="33"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

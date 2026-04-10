@@ -34,7 +34,7 @@ public class ModifyBirtConfig extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 

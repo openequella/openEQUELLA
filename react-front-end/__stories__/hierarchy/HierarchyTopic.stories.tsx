@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TreeView } from "@mui/x-tree-view/TreeView";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { Meta, StoryFn } from "@storybook/react";
 import * as React from "react";
 import {
@@ -34,9 +34,9 @@ export default {
 } as Meta<HierarchyTopicProps>;
 
 export const Simple: StoryFn<HierarchyTopicProps> = (args) => (
-  <TreeView>
+  <SimpleTreeView>
     <HierarchyTopic {...args} />
-  </TreeView>
+  </SimpleTreeView>
 );
 Simple.args = {
   topic: simpleTopic,
@@ -44,9 +44,9 @@ Simple.args = {
 };
 
 export const WithShortDesc: StoryFn<HierarchyTopicProps> = (args) => (
-  <TreeView>
+  <SimpleTreeView>
     <HierarchyTopic {...args} />
-  </TreeView>
+  </SimpleTreeView>
 );
 WithShortDesc.args = {
   topic: topicWithShortAndLongDesc,
@@ -54,9 +54,9 @@ WithShortDesc.args = {
 };
 
 export const WithHtmlShortDesc: StoryFn<HierarchyTopicProps> = (args) => (
-  <TreeView>
+  <SimpleTreeView>
     <HierarchyTopic {...args} />
-  </TreeView>
+  </SimpleTreeView>
 );
 WithHtmlShortDesc.args = {
   topic: topicWithHtmlDesc,
@@ -64,9 +64,9 @@ WithHtmlShortDesc.args = {
 };
 
 export const WithChildren: StoryFn<HierarchyTopicProps> = (args) => (
-  <TreeView>
+  <SimpleTreeView>
     <HierarchyTopic {...args} />
-  </TreeView>
+  </SimpleTreeView>
 );
 WithChildren.args = {
   topic: topicWithChildren,

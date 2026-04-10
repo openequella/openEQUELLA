@@ -31,7 +31,7 @@ import com.tle.core.freetext.service.FreeTextService;
 import com.tle.core.guice.Bind;
 import com.tle.core.i18n.BundleCache;
 import com.tle.core.security.TLEAclManager;
-import com.tle.web.favourites.FavouritesResultsSection.FavouritesSearch;
+import com.tle.search.FavouritesSearch;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.portal.renderer.PortletContentRenderer;
@@ -64,7 +64,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 @NonNullByDefault
-@SuppressWarnings("nls")
 @Bind
 public class FavouritesPortletRenderer
     extends PortletContentRenderer<FavouritesPortletRenderer.Model> {
@@ -185,14 +184,14 @@ public class FavouritesPortletRenderer
       linkLabel.setHtml(false);
       this.label = linkLabel;
       this.link = new HtmlLinkState(events.getNamedHandler("execSearch", search.getId()));
-      this.dateModified = search.getDateModified();
+      this.dateModified = search.getAddedAt();
     }
 
     public FavouriteRow(Bookmark bookmark, SectionInfo info) {
       this.label =
           new BundleLabel(bookmark.getItem().getName(), bookmark.getItem().getUuid(), bundleCache);
       this.link = new HtmlLinkState(itemUrls.createItemUrl(info, bookmark.getItem().getItemId()));
-      this.dateModified = bookmark.getDateModified();
+      this.dateModified = bookmark.getAddedAt();
     }
 
     public Label getLabel() {

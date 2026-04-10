@@ -34,7 +34,7 @@ public class LTI13PlatformsSettingsTest extends AbstractCleanupAutoTest {
     SettingsPage sp = new SettingsPage(context).load();
 
     // Load LTI1.3PlatformsSettings Page by clicking settings link
-    LTI13PlatformsSettingsPage lti13PlatformsSettingsPage = sp.lti13PlatformsSettingsPage();
+    LTI13PlatformsSettingsPage lti13PlatformsSettingsPage = sp.clickLti13PlatformsSetting();
 
     assertTrue(lti13PlatformsSettingsPage.isLoaded());
   }

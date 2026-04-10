@@ -77,19 +77,19 @@ NET STOP %SERVICE_NAME%
 goto :eof
 
 :install
-echo Installing the EQUELLA service
+echo Installing the openEQUELLA service
 "%_WRAPPER_EXE%" //IS//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartMethod=start --StopClass=%MAIN_CLASS% --StopMethod=stop --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="equellaserver" --PidFile="equellaserver.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :update
-echo Updating the EQUELLA service
+echo Updating the openEQUELLA service
 "%_WRAPPER_EXE%" //US//%SERVICE_NAME% --DisplayName="%DISPLAY_NAME%" --Description="%DISPLAY_NAME%" --ServiceUser="LocalSystem" --Jvm="%JAVA_VM%" --StartMode=jvm --StopMode=jvm --StartClass=%MAIN_CLASS% --StartMethod=start --StopClass=%MAIN_CLASS% --StopMethod=stop --StopParams=stop --Classpath="%CLASS_PATH%" --JvmOptions="%JAVA_ARGS%" --LogPath="%LOG_PATH%" --StdOutput=auto --StdError=auto --StartPath="%WORKING_DIR%." --Startup=%START_TYPE% --LogPrefix="equellaserver" --PidFile="equellaserver.pid" %SERVICE_FLAGS%
 COPY "prunmgr.exe" "%SERVICE_NAME%w.exe">NUL
 goto :eof
 
 :remove
-echo Removing the EQUELLA service
+echo Removing the openEQUELLA service
 "%_WRAPPER_EXE%" "//DS//%SERVICE_NAME%"
 goto :eof
 
@@ -123,7 +123,7 @@ goto :eof
 goto :eof
 
 :End
-echo Please install the EQUELLA service using the "install" command
+echo Please install the openEQUELLA service using the "install" command
 
 :exit
 if "%EXIT%" == "1" (

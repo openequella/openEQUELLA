@@ -46,7 +46,7 @@ public class AdvancedSearchApiTest extends AbstractRestApiTest {
     final HttpMethod method =
         new GetMethod(ADVANCEDSEARCH_API_ENDPOINT + "/" + ADVANCED_SEARCH_UUID);
     assertEquals(HttpStatus.SC_OK, makeClientRequest(method));
-    JsonNode result = mapper.readTree(method.getResponseBody());
+    JsonNode result = mapper.readTree(method.getResponseBodyAsStream());
 
     assertEquals("All Controls Power Search", result.get("name").asText());
 

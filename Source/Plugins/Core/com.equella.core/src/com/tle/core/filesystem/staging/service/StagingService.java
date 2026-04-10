@@ -18,6 +18,7 @@
 
 package com.tle.core.filesystem.staging.service;
 
+import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.StagingFile;
 
 public interface StagingService {
@@ -30,4 +31,46 @@ public interface StagingService {
   boolean stagingExists(String stagingId);
 
   void removeUnusedStagingAreas();
+
+  /**
+   * Deletes the file from the staging area. If the file does not exist, it will return false.
+   *
+   * @param stagingUuid The UUID of the staging area
+   * @param filepath The path of the file to delete
+   * @return true if the file was successfully deleted, false if it did not exist
+   * @throws NotFoundException if no staging area with the given UUID exists or if the file path is
+   *     invalid
+   */
+  boolean deleteFile(String stagingUuid, String filepath);
+
+  /**
+   * Retrieves a staging file by its UUID.
+   *
+   * @param stagingUuid The UUID of the staging area
+   * @return The StagingFile object corresponding to the given UUID
+   * @throws NotFoundException if no staging area with the given UUID exists
+   */
+  StagingFile getStagingFile(String stagingUuid);
+
+  /**
+   * Ensures that a file exists in the staging area. If the file does not exist, it will throw an
+   * exception.
+   *
+   * @param stagingUuid The UUID of the staging area
+   * @param filepath The path of the file to ensure exists
+   * @throws NotFoundException if no staging area with the given UUID exists or if the file path is
+   *     invalid
+   */
+  void ensureFileExists(String stagingUuid, String filepath);
+
+  /**
+   * Ensures that a file exists in the staging area. If the file does not exist, it will throw an
+   * exception.
+   *
+   * @param staging The StagingFile object representing the staging area
+   * @param filepath The path of the file to ensure exists
+   * @throws NotFoundException if no staging area with the given UUID exists or if the file path is
+   *     invalid
+   */
+  void ensureFileExists(StagingFile staging, String filepath);
 }

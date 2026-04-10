@@ -20,6 +20,7 @@ package com.tle.integration.oidc.idp
 
 import cats.data.ValidatedNel
 import cats.implicits._
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 /** Configuration for Okta including the common details for OIDC and the details required to
   * interact the Core Okta API.
@@ -34,6 +35,7 @@ case class Okta(
     usernameClaim: Option[String],
     defaultRoles: Set[String],
     roleConfig: Option[RoleConfiguration],
+    userIdAttribute: Option[String],
     enabled: Boolean,
     apiUrl: String,
     apiClientId: String

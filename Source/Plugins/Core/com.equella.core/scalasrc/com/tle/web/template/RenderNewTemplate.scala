@@ -96,7 +96,6 @@ object RenderNewTemplate {
     // add head resources
     val prerender: PreRenderable = info => {
       info.preRender(JQueryCore.PRERENDER)
-      supportIEPolyFills(info)
       info.preRender(bundleJs)
       addKalturaCss(info)
       info.addCss(RenderTemplate.CUSTOMER_CSS)
@@ -144,7 +143,7 @@ object RenderNewTemplate {
   // that are only available in New UI such as the Facet settings page.
   def isNewLayout(info: SectionInfo): Boolean = {
     Option(info.getAttribute(NewLayoutKey)).getOrElse {
-      val paramOverride = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
+      val paramOverride   = Option(info.getRequest.getParameter("old")).map(!_.toBoolean)
       val sessionOverride = paramOverride.fold(
         Option(LegacyGuice.userSessionService.getAttribute[Boolean](NewLayoutKey))
       ) { newUI =>
@@ -225,7 +224,7 @@ object RenderNewTemplate {
   }
 
   def renderNewHtml(context: RenderEventContext, viewFactory: FreemarkerFactory): SectionResult = {
-    val req = context.getRequest
+    val req         = context.getRequest
     val _renderData =
       new ObjectExpression(
         "baseResources",
@@ -259,22 +258,10 @@ object RenderNewTemplate {
     renderReact(context, viewFactory, renderData, html.head().html(), html.body().toString)
   }
 
-  def supportIEPolyFills(context: PreRenderContext): Unit = {
-    if (isInternetExplorer(context.getRequest)) {
-      context.addJs(
-        "https://polyfill.io/v3/polyfill.min.js?features=es6%2CURL%2CElement%2CArray.prototype.forEach%2Cdocument.querySelector%2CNodeList.prototype.forEach%2CNodeList.prototype.%40%40iterator%2CNode.prototype.contains%2CString.prototype.includes%2CArray.prototype.includes"
-      )
-      RenderTemplate.TINYMCE_CONTENT_CSS.preRender(context)
-      RenderTemplate.TINYMCE_CONTENT_MIN_CSS.preRender(context)
-      RenderTemplate.TINYMCE_SKIN_CSS.preRender(context)
-      RenderTemplate.IE11_COMPAT_CSS.preRender(context)
-    }
-  }
-
-  def isInternetExplorer(request: HttpServletRequest): Boolean =
+  private def isInternetExplorer(request: HttpServletRequest): Boolean =
     Option(request.getHeader("User-Agent")).exists(_.contains("Trident"))
 
-  def renderReact(
+  private def renderReact(
       context: RenderEventContext,
       viewFactory: FreemarkerFactory,
       renderData: ObjectExpression,

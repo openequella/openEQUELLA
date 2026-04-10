@@ -18,8 +18,8 @@
 import { debounce, Drawer, Grid, useMediaQuery } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
-import { constant, identity, pipe } from "fp-ts/function";
 import * as A from "fp-ts/Array";
+import { constant, identity, pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import * as TO from "fp-ts/TaskOption";
@@ -39,6 +39,7 @@ import { DateRangeSelector } from "../components/DateRangeSelector";
 import MessageInfo, { MessageInfoVariant } from "../components/MessageInfo";
 import { AppContext } from "../mainui/App";
 import { routes } from "../mainui/routes";
+import { HEADER_OFFSET } from "../mainui/Template";
 import { getAdvancedSearchIdFromLocation } from "../modules/AdvancedSearchModule";
 import { Collection } from "../modules/CollectionsModule";
 import { addFavouriteSearch, FavouriteURL } from "../modules/FavouriteModule";
@@ -86,6 +87,7 @@ import {
   defaultSearchPageHeaderConfig,
   defaultSearchPageOptions,
   defaultSearchPageRefinePanelConfig,
+  defaultSearchPageSearchBarConfig,
   generateExportErrorMessage,
   generateQueryStringFromSearchPageOptions,
   getPartialSearchOptions,
@@ -121,7 +123,7 @@ export interface SearchPageBodyProps {
   /**
    * Any panel that will be rendered in between SearchBar and SearchResultList.
    */
-  additionalPanels?: JSX.Element[];
+  additionalPanels?: React.JSX.Element[];
   /**
    * Configuration for Search page headers, including whether to enable some common components(e.g. Share search),
    * custom sorting options and custom components.
@@ -136,8 +138,8 @@ export interface SearchPageBodyProps {
    */
   enableClassification?: boolean;
   /**
-   * Configuration for any custom components in Search bar. Currently, only support enabling/disabling the
-   * Advanced search filter.
+   * Configuration for any custom components in Search bar.
+   * Supports enabling/disabling Advanced search filter and wildcard toggle.
    */
   searchBarConfig?: SearchPageSearchBarConfig;
   /**
@@ -194,6 +196,7 @@ export const SearchPageBody = ({
   const {
     enableCSVExportButton,
     enableShareSearchButton,
+    enableFavouriteSearchButton,
     additionalHeaders,
     customSortingOptions,
     newSearchConfig,
@@ -254,7 +257,8 @@ export const SearchPageBody = ({
           // It calculates top distance of the search bar, subtract 64px for the header height,
           // and an extra 10px to avoid the header's shadow. Result is the scroll distance.
           const distance =
-            (searchBarRef.current?.getBoundingClientRect().top ?? 0) - 74;
+            (searchBarRef.current?.getBoundingClientRect().top ?? 0) -
+            HEADER_OFFSET;
           window.scrollBy({ top: distance });
         }
         // Allow downloading new search result.
@@ -280,7 +284,9 @@ export const SearchPageBody = ({
         selectionSessionPathBuilder: () =>
           buildSelectionSessionAdvancedSearchLink(
             uuid,
-            searchPageOptions.externalMimeTypes,
+            // No need to keep search options when switching Advanced searches.
+            O.none,
+            O.fromNullable(searchPageOptions.externalMimeTypes),
           ),
       })),
       // Go to the normal Search page if none is selected.
@@ -447,7 +453,7 @@ export const SearchPageBody = ({
       },
       customFavouriteUrl,
       (url) => TO.tryCatch(() => addFavouriteSearch(name, url)),
-      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearchModel>(
+      TO.match<SnackBarDetails, OEQ.Favourite.FavouriteSearch>(
         constant({
           message: searchStrings.favouriteSearch.saveSearchFailedText,
           variant: "error",
@@ -502,6 +508,17 @@ export const SearchPageBody = ({
   const handleWildcardModeChanged = (wildcardMode: boolean) =>
     // `wildcardMode` is a presentation concept, in the lower levels its inverse is the value for `rawMode`.
     doSearch({ ...searchPageOptions, rawMode: !wildcardMode });
+
+  const mergedSearchBarConfig = {
+    ...defaultSearchPageSearchBarConfig,
+    ...searchBarConfig,
+  };
+  const wildcardSearch = mergedSearchBarConfig?.enableWildcardToggle
+    ? {
+        wildcardMode: !searchPageOptions.rawMode,
+        onWildcardModeChange: handleWildcardModeChanged,
+      }
+    : undefined;
 
   /**
    * Determines if any collapsible filters have been modified from their defaults
@@ -775,25 +792,31 @@ export const SearchPageBody = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item sm={12} md={8}>
+        <Grid
+          size={{
+            sm: 12,
+            md: 8,
+          }}
+        >
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <SearchBar
                 ref={searchBarRef}
                 query={searchPageOptions.query ?? ""}
-                wildcardMode={!searchPageOptions.rawMode}
                 onQueryChange={handleQueryChanged}
-                onWildcardModeChange={handleWildcardModeChanged}
                 doSearch={() => doSearch(searchPageOptions)}
-                advancedSearchFilter={searchBarConfig?.advancedSearchFilter}
+                advancedSearchFilter={
+                  mergedSearchBarConfig?.advancedSearchFilter
+                }
+                wildcardSearch={wildcardSearch}
               />
             </Grid>
             {additionalPanels?.map((panel, index) => (
-              <Grid item xs={12} key={`additionalPanel-${index}`}>
+              <Grid size={12} key={`additionalPanel-${index}`}>
                 {panel}
               </Grid>
             ))}
-            <Grid item xs={12}>
+            <Grid size={12}>
               <SearchResultList
                 title={searchResultTitle}
                 showSpinner={
@@ -825,14 +848,15 @@ export const SearchPageBody = ({
                     (enableCSVExportButton &&
                       currentUser?.canDownloadSearchResult) ??
                     false,
-                  linkRef: exportLinkRef,
                   exportLinkProps: {
                     url: buildExportUrl(searchPageOptions),
                     onExport: handleExport,
                     alreadyExported: alreadyDownloaded,
+                    linkRef: exportLinkRef,
                   },
                 }}
                 useShareSearchButton={enableShareSearchButton}
+                useFavouriteSearchButton={enableFavouriteSearchButton}
                 additionalHeaders={additionalHeaders}
               >
                 {pipe(
@@ -843,11 +867,7 @@ export const SearchPageBody = ({
             </Grid>
           </Grid>
         </Grid>
-        {isMdUp && (
-          <Grid item md={4}>
-            {renderSidePanel()}
-          </Grid>
-        )}
+        {isMdUp && <Grid size={{ md: 4 }}>{renderSidePanel()}</Grid>}
       </Grid>
       <MessageInfo
         open={!!snackBar.message}
@@ -861,7 +881,7 @@ export const SearchPageBody = ({
           open={showRefinePanel}
           anchor="right"
           onClose={() => setShowRefinePanel(false)}
-          PaperProps={{ style: { width: "50%" } }}
+          slotProps={{ paper: { style: { width: "50%" } } }}
         >
           {renderSidePanel()}
         </Drawer>

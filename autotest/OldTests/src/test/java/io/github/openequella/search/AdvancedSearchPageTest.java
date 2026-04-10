@@ -7,10 +7,10 @@ import static org.testng.Assert.assertTrue;
 
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.SettingsPage;
-import com.tle.webtests.pageobject.searching.FavouritesPage;
 import com.tle.webtests.test.AbstractSessionTest;
 import com.tle.webtests.test.searching.PowerSearchTest;
 import io.github.openequella.pages.advancedsearch.NewAdvancedSearchPage;
+import io.github.openequella.pages.favourites.FavouritesPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.AfterClass;
@@ -251,12 +251,15 @@ public class AdvancedSearchPageTest extends AbstractSessionTest {
 
     // Access Favorites Search Page
     FavouritesPage favouritePage = new FavouritesPage(context).load();
-    assertTrue(favouritePage.searches().results().doesResultExist(favouriteName));
-    favouritePage.accessSavedSearches(favouriteName);
+    favouritePage.selectFavouritesSearchesType();
+    assertTrue(favouritePage.hasSearch(favouriteName));
+    favouritePage.selectSearch(favouriteName);
 
     // There should be only 1 item in the search result.
     advancedSearchPage.waitForSearchCompleted(1);
-    assertEquals(advancedSearchPage.getItemNameByIndex(0), PowerSearchTest.FIRST);
+    // Use waitForItem to ensure the item is loaded to reduce test flakiness.
+    WebElement item = advancedSearchPage.waitForItem(PowerSearchTest.FIRST);
+    assertNotNull(item);
 
     // Advanced search panel should be opened with values populated.
     WebElement advancedSearchPanel = advancedSearchPage.getAdvancedSearchPanel();

@@ -48,7 +48,7 @@ abstract class AbstractScalaSection extends Section {
 
   override def getDefaultPropertyName: String = {
     val _className = getClass.getSimpleName
-    val className =
+    val className  =
       if (_className.endsWith("Section")) _className.substring(0, _className.length - 7)
       else _className
     val caps: Array[String] = className.split("[a-z0-9]*")

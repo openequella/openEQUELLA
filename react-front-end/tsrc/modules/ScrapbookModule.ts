@@ -18,7 +18,6 @@
 import * as OEQ from "@openequella/rest-api-client";
 import { History } from "history";
 import { MD5 } from "object-hash";
-import { v4 } from "uuid";
 import { API_BASE_URL } from "../AppConfig";
 import type {
   SearchPageNavigationConfig,
@@ -47,7 +46,7 @@ export type ScrapbookType = "file" | "page";
  * @param searchPageOptions
  */
 export const saveSearchPageOptions = (searchPageOptions: SearchPageOptions) => {
-  const uuid = v4();
+  const uuid = crypto.randomUUID();
 
   saveDataToStorage(
     uuid,

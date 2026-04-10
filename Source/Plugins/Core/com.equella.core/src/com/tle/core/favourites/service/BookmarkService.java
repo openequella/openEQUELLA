@@ -21,16 +21,27 @@ package com.tle.core.favourites.service;
 import com.tle.beans.item.Bookmark;
 import com.tle.beans.item.Item;
 import com.tle.beans.item.ItemKey;
+import com.tle.exceptions.AuthenticationException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface BookmarkService {
+  /**
+   * Add a bookmark for the current user.
+   *
+   * @throws AuthenticationException If the current user is a guest (unauthenticated) he is not
+   *     allowed to favourite items.
+   */
   Bookmark add(Item item, Set<String> tags, boolean latest);
 
   void delete(long id);
 
+  /** Delete the favourite item if the current user is the owner. */
+  void deleteIfOwned(long id);
+
+  /** Get the current user's bookmark for the given item. */
   Bookmark getByItem(ItemKey itemId);
 
   Bookmark getById(long id);
@@ -41,4 +52,11 @@ public interface BookmarkService {
   Map<Item, Bookmark> getBookmarksForItems(Collection<Item> items);
 
   List<Bookmark> getBookmarksForOwner(String ownerUuid, int maxResults);
+
+  /**
+   * Checks if the current user is the owner of the given bookmark.
+   *
+   * @param favouriteItem the favourite item to check.
+   */
+  boolean isOwner(Bookmark favouriteItem);
 }

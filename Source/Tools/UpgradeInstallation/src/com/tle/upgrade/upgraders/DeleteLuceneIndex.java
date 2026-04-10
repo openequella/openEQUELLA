@@ -33,7 +33,7 @@ public class DeleteLuceneIndex extends AbstractUpgrader {
   }
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     // It is marked as backwards compatible so
     // you dont have to keep creating
     // new classes for this

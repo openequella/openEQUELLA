@@ -26,7 +26,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -98,4 +106,32 @@ public interface WorkflowResource extends BaseEntityResource<WorkflowBean, BaseE
   @Path("/{uuid}/lock")
   @ApiOperation("Unlock a workflow")
   public Response unlock(@Context UriInfo uriInfo, @PathParam("uuid") String uuid);
+
+  @GET
+  @Path("/trends")
+  @ApiOperation(value = "Returns a list of all Task trends")
+  public Response getTrends(
+      @ApiParam(
+              value = "The trend period (WEEK or MONTH)",
+              required = true,
+              allowableValues = "WEEK, MONTH")
+          @QueryParam("trend")
+          String trend);
+
+  @GET
+  @Path("/{uuid}/statistics")
+  @ApiOperation(value = "Returns task trends and the current item count for the specified workflow")
+  public Response getStatisticsForWorkflow(
+      @ApiParam("The UUID of the workflow") @PathParam("uuid") String uuid,
+      @ApiParam(
+              value = "The trend period (WEEK or MONTH)",
+              required = true,
+              allowableValues = "WEEK, MONTH")
+          @QueryParam("trend")
+          String trend);
+
+  @GET
+  @Path("/manageable")
+  @ApiOperation("List all workflows the current user can manage")
+  public Response getManageableWorkflows();
 }

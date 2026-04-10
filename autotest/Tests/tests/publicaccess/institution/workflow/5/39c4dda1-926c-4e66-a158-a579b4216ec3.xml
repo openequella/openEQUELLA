@@ -1,0 +1,130 @@
+<com.tle.common.workflow.Workflow>
+  <id>2498560</id>
+  <uuid>39c4dda1-926c-4e66-a158-a579b4216ec3</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-22 13:25:11.784</dateModified>
+  <dateCreated class="sql-timestamp">2013-11-22 13:25:05.062</dateCreated>
+  <name>
+    <id>2498561</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498562</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>Learning Resources Workflow</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <movelive>false</movelive>
+  <nodes>
+    <com.tle.common.workflow.node.DecisionNode>
+      <id>2498563</id>
+      <uuid>4a18b82f-6f50-4633-9d85-b4405190dd3e</uuid>
+      <name>
+        <id>2498564</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>2498565</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Enter Workflow?</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.SerialNode">
+        <id>2498566</id>
+        <uuid>0e58de62-711d-404f-b77d-474f12c875f2</uuid>
+        <name>
+          <id>2498567</id>
+          <strings>
+            <entry>
+              <string>en_AU</string>
+              <com.tle.beans.entity.LanguageString>
+                <id>2498568</id>
+                <locale>en_AU</locale>
+                <priority>2</priority>
+                <text>Start</text>
+                <bundle reference="../../../.."/>
+              </com.tle.beans.entity.LanguageString>
+            </entry>
+          </strings>
+        </name>
+        <rejectPoint>false</rejectPoint>
+        <childIndex>0</childIndex>
+      </parent>
+      <childIndex>0</childIndex>
+      <script>var bRet = false; 
+if( xml.contains(&apos;/item/itembody/meta/switches/options&apos;, &apos;workflow&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+      <collectionUuid>241dfa27-5023-4b89-91ca-1f716cb2cf9b</collectionUuid>
+    </com.tle.common.workflow.node.DecisionNode>
+    <com.tle.common.workflow.node.SerialNode reference="../com.tle.common.workflow.node.DecisionNode/parent"/>
+    <com.tle.common.workflow.node.WorkflowItem>
+      <id>2498569</id>
+      <uuid>18ff2260-271e-4145-a321-42d48a7711e3</uuid>
+      <name>
+        <id>2498570</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>2498571</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Check &amp; QA resource</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </name>
+      <rejectPoint>false</rejectPoint>
+      <parent class="com.tle.common.workflow.node.DecisionNode" reference="../../com.tle.common.workflow.node.DecisionNode"/>
+      <childIndex>0</childIndex>
+      <users/>
+      <groups/>
+      <roles>
+        <string>627130db-0da6-4ac2-b42e-cd597693b688</string>
+      </roles>
+      <description>
+        <id>2498572</id>
+        <strings>
+          <entry>
+            <string>en</string>
+            <com.tle.beans.entity.LanguageString>
+              <id>2498573</id>
+              <locale>en</locale>
+              <priority>1</priority>
+              <text>Moderator, please check and QA the attached resource to ensure that it aligns with learning principles and has not violated any copyright or licence permissions.</text>
+              <bundle reference="../../../.."/>
+            </com.tle.beans.entity.LanguageString>
+          </entry>
+        </strings>
+      </description>
+      <unanimousacceptance>false</unanimousacceptance>
+      <escalate>true</escalate>
+      <escalationdays>30</escalationdays>
+      <allowEditing>true</allowEditing>
+      <movelive>false</movelive>
+      <moveliveAccept>false</moveliveAccept>
+      <priority>30</priority>
+      <actionDays>1</actionDays>
+      <autoAssigns/>
+    </com.tle.common.workflow.node.WorkflowItem>
+  </nodes>
+</com.tle.common.workflow.Workflow>

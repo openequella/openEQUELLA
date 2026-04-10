@@ -153,7 +153,7 @@ const buildTextBoxControl = (
   name: string,
   onChange: (value: string) => void,
 ): React.JSX.Element => (
-  <Grid item xs={3}>
+  <Grid size={3}>
     <TextField
       name={name}
       onChange={(e) => onChange(e.target.value)}
@@ -167,7 +167,7 @@ const buildCheckboxControl = (
   name: string,
   onChange: (value: boolean) => void,
 ): React.JSX.Element => (
-  <Grid item xs={3}>
+  <Grid size={3}>
     <FormControlLabel
       control={
         <Checkbox name={name} onChange={(e) => onChange(e.target.checked)} />
@@ -183,7 +183,7 @@ const buildTextareaControl = (
   onChange: (value: string) => void,
   value?: string,
 ): React.JSX.Element => (
-  <Grid item xs={12}>
+  <Grid size={12}>
     <TextareaAutosize
       name={name}
       placeholder={label}
@@ -200,7 +200,7 @@ const IntegTester = (props: IntegTesterProps) => {
   const [form, setForm] = useState<React.JSX.Element>();
 
   const Method = (
-    <Grid item xs={3}>
+    <Grid size={3}>
       <Select
         value={configuration.method}
         name="method"
@@ -221,7 +221,7 @@ const IntegTester = (props: IntegTesterProps) => {
   );
 
   const Action = (
-    <Grid item xs={3}>
+    <Grid size={3}>
       <Select
         id="select-action"
         value={configuration.action}
@@ -385,7 +385,7 @@ const IntegTester = (props: IntegTesterProps) => {
       <form method="POST" action={fullUrl}>
         <input type="hidden" name="itemXml" value={configuration.itemXml} />
         <input type="hidden" name="powerXml" value={configuration.powerXml} />
-        <a href={fullUrl}></a>
+        <a href={fullUrl} title="Full URL" />
         <Button type="submit" variant="outlined">
           Submit
         </Button>
@@ -418,26 +418,22 @@ const IntegTester = (props: IntegTesterProps) => {
       {AttachmentUuidUrls}
       {ItemXml}
       {PowerXml}
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Button variant="outlined" onClick={buildForm}>
           Generate request URL
         </Button>
       </Grid>
-      <Grid item xs={12}>
-        {form}
-      </Grid>
+      <Grid size={12}>{form}</Grid>
       {returnedValues.length > 0 && (
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card>
             <CardHeader title="IntegTester Return Info" />
             <CardContent>
               <Grid container spacing={2}>
                 {returnedValues.map(([field, value]) => (
                   <>
-                    <Grid item xs={2}>
-                      {field}
-                    </Grid>
-                    <Grid item xs={10}>
+                    <Grid size={2}>{field}</Grid>
+                    <Grid size={10}>
                       {buildTextareaControl(field, field, () => {}, value)}
                     </Grid>
                   </>

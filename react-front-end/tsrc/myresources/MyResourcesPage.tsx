@@ -405,23 +405,24 @@ export const MyResourcesPage = ({ updateTemplate }: TemplateUpdateProps) => {
                   ["file", createFile, <CloudUploadIcon />],
                   ["page", createPage, <PagesIcon />],
                 ],
-                A.map<[ScrapbookType, string, JSX.Element], JSX.Element>(
-                  ([scrapbookType, text, icon]) => (
-                    <MenuItem
-                      key={scrapbookType}
-                      onClick={() =>
-                        openLegacyFileCreatingPage(
-                          scrapbookType,
-                          history,
-                          searchContextProps.searchState.options,
-                        )
-                      }
-                    >
-                      <ListItemIcon>{icon}</ListItemIcon>
-                      <ListItemText>{text}</ListItemText>
-                    </MenuItem>
-                  ),
-                ),
+                A.map<
+                  [ScrapbookType, string, React.JSX.Element],
+                  React.JSX.Element
+                >(([scrapbookType, text, icon]) => (
+                  <MenuItem
+                    key={scrapbookType}
+                    onClick={() =>
+                      openLegacyFileCreatingPage(
+                        scrapbookType,
+                        history,
+                        searchContextProps.searchState.options,
+                      )
+                    }
+                  >
+                    <ListItemIcon>{icon}</ListItemIcon>
+                    <ListItemText>{text}</ListItemText>
+                  </MenuItem>
+                )),
               )}
             </Menu>
             {lightBoxProps && <Lightbox {...lightBoxProps} />}

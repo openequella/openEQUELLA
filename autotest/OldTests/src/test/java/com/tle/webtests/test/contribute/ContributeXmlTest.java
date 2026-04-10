@@ -5,17 +5,12 @@ import static org.testng.Assert.assertTrue;
 import com.tle.webtests.framework.TestInstitution;
 import com.tle.webtests.pageobject.IntegrationTesterPage;
 import com.tle.webtests.pageobject.wizard.WizardPageTab;
-import com.tle.webtests.test.AbstractCleanupTest;
+import com.tle.webtests.test.AbstractIntegrationTest;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 
-/**
- * Test Reference: http://time/DTEC/test/editTest.aspx?testId=14549
- *
- * @author larry
- */
 @TestInstitution("contribute")
-public class ContributeXmlTest extends AbstractCleanupTest {
+public class ContributeXmlTest extends AbstractIntegrationTest {
   private static String USERNAME = "AutoTest";
   private static String PASSWORD = "automated";
   private static String SHAREDID = "contribute";
@@ -65,5 +60,10 @@ public class ContributeXmlTest extends AbstractCleanupTest {
 
     assertTrue(theNameVal != null && theNameVal.equals(valueOfItemName));
     assertTrue(theDescriptionVal != null && theDescriptionVal.equals(valueOfItemDescription));
+  }
+
+  @Override
+  protected boolean isCleanupItems() {
+    return false;
   }
 }

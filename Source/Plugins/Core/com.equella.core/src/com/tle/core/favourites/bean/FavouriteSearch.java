@@ -54,7 +54,7 @@ public class FavouriteSearch {
   private String owner;
 
   @Column(nullable = false)
-  private Date dateModified;
+  private Date addedAt;
 
   @Column(length = WITHIN_MAX)
   private String within;
@@ -101,12 +101,12 @@ public class FavouriteSearch {
     this.owner = owner;
   }
 
-  public Date getDateModified() {
-    return dateModified;
+  public Date getAddedAt() {
+    return addedAt;
   }
 
-  public void setDateModified(Date dateModified) {
-    this.dateModified = dateModified;
+  public void setAddedAt(Date addedAt) {
+    this.addedAt = addedAt;
   }
 
   public String getCriteria() {

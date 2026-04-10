@@ -105,7 +105,14 @@ rather than this:
 ```
 
 ## Unsupported
+
 1. For `type alias` that accepts type arguments, use interface instead.
 2. For `interface` where type arguments and recursive types are both used, while this
    complicated type definition in theory can be supported, we don't have such a type yet and the implementation
    will require a lot more effort.
+3. Generic types which extend other generic types are not supported. For example:
+```typescript
+ interface A<T> extends B<T> {
+    aString: string;
+ }
+```

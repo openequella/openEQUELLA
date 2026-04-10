@@ -18,6 +18,7 @@
 import {
   buildOEQServerString,
   highlight,
+  sprintfFormatToRegex,
   validateGrouping,
 } from "../../../tsrc/util/TextUtils";
 
@@ -104,4 +105,22 @@ describe("validateGrouping", () => {
       expect(validateGrouping(input)).toBe(expected);
     },
   );
+});
+
+describe("sprintfFormatToRegex", () => {
+  it("replaces all %s with .+", () => {
+    const fmt = "From %s to %s";
+    const re = sprintfFormatToRegex(fmt);
+
+    expect(re.source).toBe(String.raw`From .+ to .+`);
+    expect(re.test("From A to B")).toBe(true);
+  });
+
+  it("escapes regex special characters and replaces %s with .+", () => {
+    const fmt = "Total resources (in workflow): %s?";
+    const re = sprintfFormatToRegex(fmt);
+
+    expect(re.source).toBe(String.raw`Total resources \(in workflow\): .+\?`);
+    expect(re.test("Total resources (in workflow): 9?")).toBe(true);
+  });
 });

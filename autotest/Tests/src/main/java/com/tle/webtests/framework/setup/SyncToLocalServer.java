@@ -7,13 +7,13 @@ import com.tle.webtests.framework.WebDriverPool;
 import com.tle.webtests.framework.setup.InstitutionModel.InstitutionData;
 import com.tle.webtests.pageobject.UndeterminedPage;
 import com.tle.webtests.pageobject.institution.*;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -22,7 +22,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -167,12 +166,6 @@ public class SyncToLocalServer {
   }
 
   private FirefoxDriver getDriver() {
-    FirefoxBinary binary;
-    if (testConfig.getFirefoxBinary() != null) {
-      binary = new FirefoxBinary(new File(testConfig.getFirefoxBinary()));
-    } else {
-      binary = new FirefoxBinary();
-    }
     FirefoxProfile profile = new FirefoxProfile();
     // profile.addExtension(getClass(), "firebug-1.7.3-fx.xpi");
     profile.setPreference("extensions.firebug.currentVersion", "999");
@@ -180,7 +173,7 @@ public class SyncToLocalServer {
     profile.setPreference("dom.max_chrome_script_run_time", 120);
 
     FirefoxOptions options = new FirefoxOptions();
-    options.setBinary(binary);
+    Optional.ofNullable(testConfig.getFirefoxBinary()).ifPresent(options::setBinary);
     options.setProfile(profile);
     return new FirefoxDriver(options);
   }

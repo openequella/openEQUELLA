@@ -2,15 +2,19 @@ name: SingleSuite
 threadCount: 1
 listeners:
   - testng.TestAnnotationTransformer
+  - com.tle.webtests.framework.ScreenshotListener
 tests:
   - name: OneAfterAnother
     packages:
+      - io.github.openequella.dashboard
+      - io.github.openequella.favourites
+      - io.github.openequella.hierarchy
+      - io.github.openequella.jwks
+      - io.github.openequella.oidc
+      - io.github.openequella.pages
       - io.github.openequella.rest
       - io.github.openequella.search
-      - io.github.openequella.jwks
-      - io.github.openequella.hierarchy
-      - io.github.openequella.pages
-      - io.github.openequella.oidc
+      - io.github.openequella.security
       - com.tle.webtests.test.accessibility
       - com.tle.webtests.test.acl
       - com.tle.webtests.test.admin

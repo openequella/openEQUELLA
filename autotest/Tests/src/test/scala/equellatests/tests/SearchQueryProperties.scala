@@ -85,7 +85,7 @@ object SearchQueryProperties extends ShotProperties("Search Query Properties") {
           )
           val title  = s"${rm.word} ${t1.mkString(" ")}"
           val title2 = s"${rm.word} ${t2.mkString(" ")}"
-          val query =
+          val query  =
             s"+${rm.word} +(${QueryParser.boolQuery(w1.cased, s"(${QueryParser.boolQuery(w2.cased, w3.cased, op2)})", op1)})"
           createItem(context, title)
           createItem(context, title2)

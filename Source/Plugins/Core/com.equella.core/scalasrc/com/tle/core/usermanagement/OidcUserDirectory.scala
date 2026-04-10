@@ -92,4 +92,14 @@ abstract class OidcUserDirectory extends AbstractUserDirectory {
       userState.setLoggedInUser(user)
       userState
     }.orNull
+
+  /** Retrieve a custom identifier for a user using the user's standard IdP identifier and the
+    * configured custom attribute.
+    *
+    * @param stdId
+    *   The user's standard IdP identifier (e.g. Entra ID 'oid').
+    * @param userIdAttribute
+    *   Attribute defined in the IdP to store the custom user ID, which must be an non-empty string.
+    */
+  def getCustomUserId(stdId: String, userIdAttribute: String): Either[Throwable, String]
 }

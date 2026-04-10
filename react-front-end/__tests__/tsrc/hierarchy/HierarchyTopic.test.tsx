@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import * as OEQ from "@openequella/rest-api-client";
 import { render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
@@ -33,7 +34,9 @@ const renderHierarchyTopic = (
   const history = createMemoryHistory();
   return render(
     <Router history={history}>
-      <HierarchyTopic topic={topic} expandedNodes={[]} />
+      <SimpleTreeView>
+        <HierarchyTopic topic={topic} expandedNodes={[]} />
+      </SimpleTreeView>
     </Router>,
   );
 };

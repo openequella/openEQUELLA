@@ -57,20 +57,11 @@ export interface SearchBarProps {
   /** Current value for the search field. */
   query: string;
 
-  /** Current value for the wildcard mode toggle. */
-  wildcardMode: boolean;
-
   /**
    * Callback fired when the user stops typing (debounced for 500 milliseconds).
    * @param query The string to search.
    */
   onQueryChange: (query: string) => void;
-
-  /**
-   * Callback fired when the user changes the wildcardMode.
-   * @param wildcardMode the new value for Wildcard Mode
-   */
-  onWildcardModeChange: (wildcardMode: boolean) => void;
 
   /** Called when search button clicked. */
   doSearch: () => void;
@@ -85,6 +76,21 @@ export interface SearchBarProps {
 
     /** If true the button wil be highlighted by the Secondary colour. */
     accent: boolean;
+  };
+
+  /**
+   * Properties to control the display and behavior of the wildcard toggle switch.
+   * If `undefined` the toggle is not displayed.
+   */
+  wildcardSearch?: {
+    /** Current value for the wildcard mode toggle. */
+    wildcardMode: boolean;
+
+    /**
+     * Callback fired when the user changes the wildcardMode.
+     * @param wildcardMode the new value for Wildcard Mode
+     */
+    onWildcardModeChange: (wildcardMode: boolean) => void;
   };
 }
 
@@ -123,11 +129,10 @@ const SearchBar = forwardRef(
   (
     {
       query,
-      wildcardMode,
       onQueryChange,
-      onWildcardModeChange,
       doSearch,
       advancedSearchFilter,
+      wildcardSearch,
     }: SearchBarProps,
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
@@ -216,22 +221,28 @@ const SearchBar = forwardRef(
             />
           </TooltipIconButton>
         )}
-        <Divider className={classes.divider} orientation="vertical" />
-        <FormControlLabel
-          style={{ opacity: 0.6 }}
-          label={searchStrings.wildcardSearch}
-          control={
-            <Switch
-              id="wildcardSearch"
-              onChange={(event) => onWildcardModeChange(event.target.checked)}
-              value={wildcardMode}
-              checked={wildcardMode}
-              name={searchStrings.wildcardSearch}
-              size="small"
-              color="secondary"
+        {wildcardSearch && (
+          <>
+            <Divider className={classes.divider} orientation="vertical" />
+            <FormControlLabel
+              style={{ opacity: 0.6 }}
+              label={searchStrings.wildcardSearch}
+              control={
+                <Switch
+                  id="wildcardSearch"
+                  onChange={(event) =>
+                    wildcardSearch.onWildcardModeChange(event.target.checked)
+                  }
+                  value={wildcardSearch.wildcardMode}
+                  checked={wildcardSearch.wildcardMode}
+                  name={searchStrings.wildcardSearch}
+                  size="small"
+                  color="secondary"
+                />
+              }
             />
-          }
-        />
+          </>
+        )}
       </StyledPaper>
     );
   },

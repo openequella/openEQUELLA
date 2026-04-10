@@ -48,6 +48,7 @@ import com.tle.common.search.searchset.SearchSet;
 import com.tle.common.security.Privilege;
 import com.tle.common.security.PrivilegeTree.Node;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.common.util.CollectionUtils;
 import com.tle.core.collection.event.listener.ItemDefinitionDeletionListener;
 import com.tle.core.dao.AbstractTreeDao.DeleteAction;
 import com.tle.core.entity.registry.EntityRegistry;
@@ -85,7 +86,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -156,20 +156,31 @@ public class HierarchyServiceImpl
 
   /** Build a search for counting the items matching this topic. */
   @Override
-  public PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
+  public PresetSearch buildSearch(
+      HierarchyTopic topic,
+      Map<String, String> compoundUuidMap,
+      Collection<String> collectionsFilter) {
     FreeTextBooleanQuery searchClause = getSearchClause(topic, compoundUuidMap);
     String freetextQuery = getFullFreetextQuery(topic);
 
     PresetSearch search = new PresetSearch(freetextQuery, searchClause, true);
-    getCollectionUuids(topic).ifPresent(search::setCollectionUuids);
+
+    // Intersect the collections from the hierarchy topic with the extra collections filter
+    Collection<String> collectionUuids =
+        CollectionUtils.intersectJava(getCollectionUuids(topic).orElse(null), collectionsFilter);
+    search.setCollectionUuids(collectionUuids);
+
     getAllSchema(topic).ifPresent(search::setSchemas);
 
     return search;
   }
 
   @Override
-  public int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap) {
-    PresetSearch search = buildSearch(topic, compoundUuidMap);
+  public int getMatchingItemCount(
+      HierarchyTopic topic,
+      Map<String, String> compoundUuidMap,
+      Collection<String> collectionsFilter) {
+    PresetSearch search = buildSearch(topic, compoundUuidMap, collectionsFilter);
     return Arrays.stream(freeTextService.countsFromFilters(Collections.singletonList(search)))
         .findFirst()
         .orElse(0);
@@ -556,9 +567,7 @@ public class HierarchyServiceImpl
     child.setAllParents(null);
 
     // Remove the child if it is already in this parent
-    if (children.contains(child)) {
-      children.remove(child);
-    }
+    children.remove(child);
 
     // Add the child back into the desired position
     if (position >= children.size()) {
@@ -584,12 +593,7 @@ public class HierarchyServiceImpl
 
   private <T extends BaseEntity, U extends EntityScript<T>> void removeEntity(
       List<U> queries, T entity) {
-    for (Iterator<U> iter = queries.iterator(); iter.hasNext(); ) {
-      EntityScript<T> script = iter.next();
-      if (Objects.equals(script.getEntity(), entity)) {
-        iter.remove();
-      }
-    }
+    queries.removeIf(script -> Objects.equals(script.getEntity(), entity));
   }
 
   @Override

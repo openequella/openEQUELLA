@@ -1,3 +1,21 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.webtests.test.admin;
 
 import static org.testng.Assert.assertFalse;
@@ -14,8 +32,12 @@ import com.tle.webtests.pageobject.portal.BrowsePortalSection;
 import com.tle.webtests.pageobject.portal.MenuSection;
 import com.tle.webtests.pageobject.portal.TopbarMenuSection;
 import com.tle.webtests.test.AbstractCleanupTest;
+import io.github.openequella.pages.dashboard.DashboardPage;
+import io.github.openequella.pages.dashboard.PortletType$;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import testng.annotation.NewUIOnly;
+import testng.annotation.OldUIOnly;
 
 @TestInstitution("fiveo")
 public class MultiLingualTest extends AbstractCleanupTest {
@@ -29,23 +51,18 @@ public class MultiLingualTest extends AbstractCleanupTest {
   }
 
   @Test
+  @OldUIOnly
   public void portletLanguage() {
     logon();
 
-    BrowsePortalEditPage edit =
-        new HomePage(context).load().addPortal(new BrowsePortalEditPage(context));
-    MultiLingualEditbox multiLang = edit.getTitleSection();
-    multiLang.allMode();
-    multiLang.editLangString("English", ENGLISH);
-    multiLang.editLangString("Afar", NOT_ENGLISH);
+    // Create a portlet with multi-language title.
+    new HomePage(context).load().addPortal(new BrowsePortalEditPage(context));
+    HomePage home = setupMultiLanguageTitleOldUI();
 
-    HomePage home = edit.save(new HomePage(context));
     assertTrue(home.portalExists(ENGLISH));
     assertFalse(home.portalExists(NOT_ENGLISH));
 
-    UserProfilePage details = new TopbarMenuSection(context).get().editMyDetails();
-    details.setLanguageByCode("aa_DJ");
-    details.saveSuccesful();
+    setupUserLanguage("aa_DJ");
 
     logon();
     home = new MenuSection(context).get().home();
@@ -53,20 +70,45 @@ public class MultiLingualTest extends AbstractCleanupTest {
     assertFalse(home.portalExists(ENGLISH));
     assertTrue(home.portalExists(NOT_ENGLISH));
 
-    details = new TopbarMenuSection(context).get().editMyDetails();
-    details.setLanguageByCode("en_AU");
-    details.saveSuccesful();
+    setupUserLanguage("en_AU");
 
     logon();
     home = new MenuSection(context).get().home();
     assertTrue(home.portalExists(ENGLISH));
     assertFalse(home.portalExists(NOT_ENGLISH));
 
-    details = new TopbarMenuSection(context).get().editMyDetails();
-    details.setLanguageByCode("");
-    details.saveSuccesful();
+    setupUserLanguage("");
 
     logon();
+  }
+
+  @Test
+  @NewUIOnly
+  public void portletLanguageNewUi() {
+    logon();
+
+    DashboardPage page = new DashboardPage(context).get();
+    // Create a portlet with multi-language title.
+    page.openCreatePortletPage(PortletType$.MODULE$.Browse());
+    DashboardPage dashboardPage = setupMultiLanguageTitleNewUI();
+    dashboardPage.get();
+
+    assertTrue(dashboardPage.hasPortlet(ENGLISH));
+    assertFalse(dashboardPage.hasPortlet(NOT_ENGLISH));
+
+    setupUserLanguage("aa_DJ");
+
+    dashboardPage = new DashboardPage(context).load();
+    assertFalse(dashboardPage.hasPortlet(ENGLISH));
+    assertTrue(dashboardPage.hasPortlet(NOT_ENGLISH));
+
+    setupUserLanguage("en_AU");
+
+    dashboardPage = new DashboardPage(context).load();
+    assertTrue(dashboardPage.hasPortlet(ENGLISH));
+    assertFalse(dashboardPage.hasPortlet(NOT_ENGLISH));
+
+    setupUserLanguage("");
   }
 
   @Test
@@ -142,5 +184,25 @@ public class MultiLingualTest extends AbstractCleanupTest {
   @Override
   protected boolean isCleanupItems() {
     return false;
+  }
+
+  private HomePage setupMultiLanguageTitleOldUI() {
+    return new BrowsePortalEditPage(context)
+        .get()
+        .setMultiLanguageTitle(ENGLISH, NOT_ENGLISH)
+        .save(new HomePage(context));
+  }
+
+  private DashboardPage setupMultiLanguageTitleNewUI() {
+    return new BrowsePortalEditPage(context)
+        .get()
+        .setMultiLanguageTitle(ENGLISH, NOT_ENGLISH)
+        .save(new DashboardPage(context));
+  }
+
+  private void setupUserLanguage(String languageCode) {
+    UserProfilePage details = new TopbarMenuSection(context).get().editMyDetails();
+    details.setLanguageByCode(languageCode);
+    details.saveSuccesful();
   }
 }

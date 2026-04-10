@@ -34,7 +34,8 @@ export type SortOrder =
   | 'name'
   | 'rating'
   | 'task_lastaction'
-  | 'task_submitted';
+  | 'task_submitted'
+  | 'added_at';
 
 interface SearchParamsBase {
   /**
@@ -310,6 +311,36 @@ export interface ThumbnailDetails {
 }
 
 /**
+ * Shared properties of raw and transformed Bookmark.
+ */
+export interface BookmarkBase {
+  /**
+   * Unique ID of the bookmark.
+   */
+  id: number;
+  /**
+   * Tags associated with this bookmark.
+   */
+  tags: string[];
+}
+
+/**
+ * Bookmark as it is returned in the API
+ */
+interface BookmarkRaw extends BookmarkBase {
+  /** The date when bookmark was added. */
+  addedAt: string;
+}
+
+/**
+ * Full details of a Bookmark.
+ */
+export interface Bookmark extends BookmarkBase {
+  /** The date when bookmark was added. */
+  addedAt: Date;
+}
+
+/**
  * Shared properties or raw and transformed search result item
  */
 interface SearchResultItemBase {
@@ -389,10 +420,6 @@ interface SearchResultItemBase {
     self: string;
   };
   /**
-   * ID of Bookmark linking to this Item.
-   */
-  bookmarkId?: number;
-  /**
    * True if this version is the latest version.
    */
   isLatestVersion: boolean;
@@ -431,6 +458,10 @@ export interface SearchResultItemRaw extends SearchResultItemBase {
      */
     rejectionMessage?: string;
   };
+  /**
+   * Bookmark linking to this Item.
+   */
+  bookmark?: BookmarkRaw;
 }
 
 /**
@@ -462,6 +493,10 @@ export interface SearchResultItem extends SearchResultItemBase {
      */
     rejectionMessage?: string;
   };
+  /**
+   * Bookmark linking to this Item.
+   */
+  bookmark?: Bookmark;
 }
 
 /**
@@ -491,11 +526,11 @@ export interface SearchResult<T> {
 }
 
 const isMustValid = ([field, values]: Must): boolean => {
-  const containsColon = (s: string): boolean => s.match(':') !== null;
-  const noColonsPresent = !containsColon(field) && !values.some(containsColon);
-  const noEmptyValues =
-    values.length > 0 && !values.some((v) => v.trim().length < 1);
-  return field.trim().length > 0 && noEmptyValues && noColonsPresent;
+  const isValidFieldName = field.trim().length > 0 && !field.includes(':');
+  const isValidValues =
+    values.length > 0 && values.every((v) => v.trim().length > 0);
+
+  return isValidFieldName && isValidValues;
 };
 
 // convert one

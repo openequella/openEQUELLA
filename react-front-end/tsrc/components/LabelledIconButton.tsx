@@ -56,8 +56,8 @@ export const LabelledIconButton = ({
 }: LabelledIconButtonProps) => (
   <Button id={id} onClick={onClick} title={buttonText} color={color}>
     <Grid container spacing={1}>
-      <Grid item>{icon}</Grid>
-      <Grid item>{buttonText}</Grid>
+      <Grid>{icon}</Grid>
+      <Grid>{buttonText}</Grid>
     </Grid>
   </Button>
 );

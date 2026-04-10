@@ -18,11 +18,26 @@
 
 package com.tle.admin.codeeditor;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.TokenMap;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 import org.fife.ui.rsyntaxtextarea.modes.JavaScriptTokenMaker;
 
-@SuppressWarnings("nls")
+/**
+ * A custom token maker for openEQUELLA scripts. This class extends the JavaScriptTokenMaker to
+ * highlight openEQUELLA-specific variables as preprocessor directives.
+ *
+ * <p>Although JavaScriptTokenMaker is a JFlex-based token maker, we can use the code here to extend
+ * the keywords to be highlighted. This is because the JavaScriptTokenMaker uses a JavaScriptParser,
+ * which is a subclass of the Parser class. The Parser class has a method called getTokenList that
+ * returns a list of tokens. We can override this method to add our own keywords.
+ *
+ * <p>Performance wise this is not as good as a JFlex-based token maker, but it is much easier to
+ * implement. Testing has shown though that it is still fast enough for our needs.
+ */
 public class EquellaSyntaxTokenMaker extends JavaScriptTokenMaker {
   /** Usually seen in source files as String DEFAULT_VARIABLE */
   private static final String[] EQUELLA_VARS =
@@ -55,95 +70,33 @@ public class EquellaSyntaxTokenMaker extends JavaScriptTokenMaker {
         "workflowstep"
       };
 
-  private final String[] extendedKeywords;
+  private final Set<String> keywords;
 
   public EquellaSyntaxTokenMaker(String... extendedKeywords) {
-    this.extendedKeywords = extendedKeywords;
+    keywords = new HashSet<>(Arrays.asList(EQUELLA_VARS));
+
+    // Add any extended keywords
+    if (extendedKeywords != null && extendedKeywords.length > 0) {
+      keywords.addAll(Arrays.asList(extendedKeywords));
+    }
   }
 
   @Override
-  public TokenMap getWordsToHighlight() {
-    TokenMap tokenMap =
-        new TokenMap(
-            52 + EQUELLA_VARS.length + (extendedKeywords == null ? 0 : extendedKeywords.length));
+  public Token getTokenList(Segment text, int initialTokenType, int startOffset) {
+    Token tokens = super.getTokenList(text, initialTokenType, startOffset);
 
-    int reservedWord = Token.RESERVED_WORD;
-    tokenMap.put("abstract", reservedWord);
-    tokenMap.put("as", reservedWord);
-    tokenMap.put("break", reservedWord);
-    tokenMap.put("case", reservedWord);
-    tokenMap.put("catch", reservedWord);
-    tokenMap.put("class", reservedWord);
-    tokenMap.put("const", reservedWord);
-    tokenMap.put("continue", reservedWord);
-    tokenMap.put("debugger", reservedWord);
-    tokenMap.put("default", reservedWord);
-    tokenMap.put("delete", reservedWord);
-    tokenMap.put("do", reservedWord);
-    tokenMap.put("else", reservedWord);
-    tokenMap.put("enum", reservedWord);
-    tokenMap.put("export", reservedWord);
-    tokenMap.put("extends", reservedWord);
-    tokenMap.put("final", reservedWord);
-    tokenMap.put("finally", reservedWord);
-    tokenMap.put("for", reservedWord);
-    tokenMap.put("function", reservedWord);
-    tokenMap.put("goto", reservedWord);
-    tokenMap.put("if", reservedWord);
-    tokenMap.put("implements", reservedWord);
-    tokenMap.put("import", reservedWord);
-    tokenMap.put("in", reservedWord);
-    tokenMap.put("instanceof", reservedWord);
-    tokenMap.put("interface", reservedWord);
-    tokenMap.put("item", reservedWord);
-    tokenMap.put("namespace", reservedWord);
-    tokenMap.put("native", reservedWord);
-    tokenMap.put("new", reservedWord);
-    tokenMap.put("null", reservedWord);
-    tokenMap.put("package", reservedWord);
-    tokenMap.put("private", reservedWord);
-    tokenMap.put("protected", reservedWord);
-    tokenMap.put("public", reservedWord);
-    tokenMap.put("return", reservedWord);
-    tokenMap.put("static", reservedWord);
-    tokenMap.put("super", reservedWord);
-    tokenMap.put("switch", reservedWord);
-    tokenMap.put("synchronized", reservedWord);
-    tokenMap.put("this", reservedWord);
-    tokenMap.put("throw", reservedWord);
-    tokenMap.put("throws", reservedWord);
-    tokenMap.put("transient", reservedWord);
-    tokenMap.put("try", reservedWord);
-    tokenMap.put("typeof", reservedWord);
-    tokenMap.put("var", reservedWord);
-    tokenMap.put("void", reservedWord);
-    tokenMap.put("while", reservedWord);
-    tokenMap.put("with", reservedWord);
-
-    int literalBoolean = Token.LITERAL_BOOLEAN;
-    tokenMap.put("false", literalBoolean);
-    tokenMap.put("true", literalBoolean);
-
-    int dataType = Token.DATA_TYPE;
-    tokenMap.put("boolean", dataType);
-    tokenMap.put("byte", dataType);
-    tokenMap.put("char", dataType);
-    tokenMap.put("double", dataType);
-    tokenMap.put("float", dataType);
-    tokenMap.put("int", dataType);
-    tokenMap.put("long", dataType);
-    tokenMap.put("short", dataType);
-
-    // int eq = Token.PREPROCESSOR;
-    for (String var : EQUELLA_VARS) {
-      tokenMap.put(var, Token.PREPROCESSOR);
-    }
-    if (extendedKeywords != null) {
-      for (String var : extendedKeywords) {
-        tokenMap.put(var, Token.PREPROCESSOR);
-      }
+    Token current = tokens;
+    while (current != null) {
+      flagKeywords(current);
+      current = current.getNextToken();
     }
 
-    return tokenMap;
+    return tokens;
+  }
+
+  private void flagKeywords(Token current) {
+    if (current.getType() == TokenTypes.IDENTIFIER && keywords.contains(current.getLexeme())) {
+      current.setType(TokenTypes.PREPROCESSOR);
+    }
   }
 }

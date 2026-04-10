@@ -1,3 +1,4 @@
+page(script, content, managerVersion) ::= <<
 <html>
 	<head>
 		<title>openEQUELLA Manager</title>
@@ -11,9 +12,9 @@
 		<script type="text/javascript" src="/jquery.js"></script>
 		<script type="text/javascript" src="/ui.core.js"></script>
 		<script type="text/javascript" src="/tabs/ui.tabs.js"></script>
-		
+
 		<script type="text/javascript">
-			$script$
+		$script$
 		</script>
 	</head>
 	<body>
@@ -24,10 +25,8 @@
 			$content$
         </div>
         <div id="footer">
-        	openEQUELLA Manager $managerversion$
+        	openEQUELLA Manager $managerVersion$
         </div>
 	</body>
 </html>
-	
-
-	
+>>

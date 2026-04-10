@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TreeItem } from "@mui/x-tree-view";
+import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { styled } from "@mui/material/styles";
 
 const PREFIX = "ACLTreeItem";

@@ -107,7 +107,7 @@ class UserQueryResource {
       ) groups: Array[String]
   ): Response = {
     hasAclOrThrow(SecurityConstants.LIST_USERS)
-    val us = LegacyGuice.userService
+    val us                         = LegacyGuice.userService
     val result: Iterable[UserBean] = groups match {
       case xs if xs.nonEmpty => xs.flatMap(g => us.searchUsers(q, g, true).asScala)
       case _                 => us.searchUsers(q).asScala

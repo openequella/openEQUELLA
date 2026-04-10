@@ -18,7 +18,7 @@
 import { ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, type RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryHistory } from "history";
 import * as React from "react";
@@ -71,7 +71,22 @@ const defaultSearchPageBodyProps: SearchPageBodyProps = {
 const mockSearch = jest.fn();
 const mockHistory = createMemoryHistory();
 
+const {
+  showAdvancedSearchFilter: advancedSearchButtonLabel,
+  wildcardSearch: wildcardSearchText,
+} = languageStrings.searchpage;
+
+const advancedSearchFilter = {
+  onClick: jest.fn(),
+  accent: false,
+};
+
 describe("<SearchPageBody />", () => {
+  const advancedSearchButtonLocator =
+    (roleSelector: RenderResult["queryByRole"] | RenderResult["getByRole"]) =>
+    () =>
+      roleSelector("button", { name: advancedSearchButtonLabel });
+
   const renderSearchPageBodyWithContext = async (
     props: SearchPageBodyProps,
     state: State = {
@@ -292,5 +307,52 @@ describe("<SearchPageBody />", () => {
     expect(container).toHaveTextContent(
       languageStrings.searchpage.noResultsFound,
     );
+  });
+
+  it("shows wildcard search toggle and hides advanced search filter button by default", async () => {
+    const { getByText, queryByRole } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+    });
+    const queryAdvancedSearchButton = advancedSearchButtonLocator(queryByRole);
+
+    expect(queryAdvancedSearchButton()).not.toBeInTheDocument();
+    expect(getByText(wildcardSearchText)).toBeInTheDocument();
+  });
+
+  it("shows advanced search filter button when configured", async () => {
+    const { getByRole } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        advancedSearchFilter: { ...advancedSearchFilter },
+      },
+    });
+    const getAdvancedSearchButton = advancedSearchButtonLocator(getByRole);
+
+    expect(getAdvancedSearchButton()).toBeInTheDocument();
+  });
+
+  it("can hide the wildcard search toggle when specified", async () => {
+    const { queryByText } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        enableWildcardToggle: false,
+      },
+    });
+
+    expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
+  });
+
+  it("can hide the wildcard search toggle while still showing the advanced search filter button", async () => {
+    const { queryByText, getByRole } = await renderSearchPageBody({
+      ...defaultSearchPageBodyProps,
+      searchBarConfig: {
+        advancedSearchFilter: { ...advancedSearchFilter },
+        enableWildcardToggle: false,
+      },
+    });
+    const getAdvancedSearchButton = advancedSearchButtonLocator(getByRole);
+
+    expect(getAdvancedSearchButton()).toBeInTheDocument();
+    expect(queryByText(wildcardSearchText)).not.toBeInTheDocument();
   });
 });

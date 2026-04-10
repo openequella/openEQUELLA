@@ -43,7 +43,7 @@ public class TaskStatisticsPortletEditor
     extends AbstractPortletEditorSection<
         TaskStatisticsPortletEditor.TaskStatisticsPortletEditorModel> {
   private static final String TYPE = "taskstatistics";
-  private static final String KEY_DEFAULT_TREND = "trend";
+  public static final String KEY_DEFAULT_TREND = "trend";
 
   @ViewFactory private FreemarkerFactory viewFactory;
 

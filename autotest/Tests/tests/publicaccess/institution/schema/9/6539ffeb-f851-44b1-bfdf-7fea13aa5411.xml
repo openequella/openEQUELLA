@@ -1,0 +1,81 @@
+<com.tle.beans.entity.Schema>
+  <id>2498587</id>
+  <uuid>6539ffeb-f851-44b1-bfdf-7fea13aa5411</uuid>
+  <owner>eb75a832-6533-4d72-93f4-2b7a1b108951</owner>
+  <dateModified class="sql-timestamp">2013-11-22 11:20:26.763</dateModified>
+  <dateCreated class="sql-timestamp">2013-10-04 16:40:05.061</dateCreated>
+  <name>
+    <id>2498588</id>
+    <strings>
+      <entry>
+        <string>en</string>
+        <com.tle.beans.entity.LanguageString>
+          <id>2498589</id>
+          <locale>en</locale>
+          <priority>1</priority>
+          <text>IEE LOM Extended Common Core for OER CwB</text>
+          <bundle reference="../../../.."/>
+        </com.tle.beans.entity.LanguageString>
+      </entry>
+    </strings>
+  </name>
+  <attributes/>
+  <systemType>false</systemType>
+  <disabled>false</disabled>
+  <expTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>server_identity_transform.xsl</filename>
+      <type>OAI_Identity</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </expTransforms>
+  <impTransforms>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>ConnexionsTransform.xsl</filename>
+      <type>Connexions</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>kentuckydepot.xsl</filename>
+      <type>OAI_KENTUCKYDEPOT</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>nclor.xsl</filename>
+      <type>OAI_NCLOR</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>TheOrangeGrove.xsl</filename>
+      <type>OAI_THEORANGEGROVE</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>U_of_Wollongong.xsl</filename>
+      <type>OAI_WOLLONGONG</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>BCcampus.xsl</filename>
+      <type>OAI_BCCAMPUS</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>NSDL.xsl</filename>
+      <type>OAI_NSDL</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>Coventry_University.xsl</filename>
+      <type>OAI_COVENTRY</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>OER_Commons.xsl</filename>
+      <type>OAI_OER_COMMONS</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>DLESE.xsl</filename>
+      <type>OAI_DLESE</type>
+    </com.tle.beans.entity.SchemaTransform>
+    <com.tle.beans.entity.SchemaTransform>
+      <filename>DRM_U_of_Wollongong.xsl</filename>
+      <type>OAI_DRM</type>
+    </com.tle.beans.entity.SchemaTransform>
+  </impTransforms>
+  <itemNamePath>/lom/general/title</itemNamePath>
+  <itemDescriptionPath>/lom/general/description</itemDescriptionPath>
+  <serialisedDefinition>&lt;xml&gt;&lt;item&gt;&lt;itemstatus attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;version attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;identifier attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;attachments&gt;&lt;attachment&gt;&lt;type attribute=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;thumbnail type=&quot;text&quot;/&gt;&lt;size type=&quot;text&quot;/&gt;&lt;file search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/attachment&gt;&lt;/attachments&gt;&lt;newitem search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;oai type=&quot;text&quot;&gt;&lt;id attribute=&quot;true&quot; field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/oai&gt;&lt;itembody&gt;&lt;collection type=&quot;text&quot;/&gt;&lt;origination field=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;originalContributor&gt;&lt;userId type=&quot;text&quot;/&gt;&lt;firstName type=&quot;text&quot;/&gt;&lt;lastName type=&quot;text&quot;/&gt;&lt;email type=&quot;text&quot;/&gt;&lt;/originalContributor&gt;&lt;meta&gt;&lt;switches&gt;&lt;itemType type=&quot;text&quot;/&gt;&lt;/switches&gt;&lt;/meta&gt;&lt;/itembody&gt;&lt;/item&gt;&lt;lom&gt;&lt;general&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;title search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;language field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;description search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;keyword field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;coverage type=&quot;text&quot;/&gt;&lt;structure type=&quot;text&quot;/&gt;&lt;aggregationLevel type=&quot;text&quot;/&gt;&lt;/general&gt;&lt;lifecycle&gt;&lt;version type=&quot;text&quot;/&gt;&lt;status type=&quot;text&quot;/&gt;&lt;contribute&gt;&lt;role type=&quot;text&quot;/&gt;&lt;entity search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;date&gt;&lt;datetime type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/date&gt;&lt;/contribute&gt;&lt;/lifecycle&gt;&lt;metametadata&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;contribute&gt;&lt;role type=&quot;text&quot;/&gt;&lt;entity type=&quot;text&quot;/&gt;&lt;date&gt;&lt;datetime type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/date&gt;&lt;/contribute&gt;&lt;metadataSchema type=&quot;text&quot;/&gt;&lt;language type=&quot;text&quot;/&gt;&lt;/metametadata&gt;&lt;technical&gt;&lt;format field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;size type=&quot;text&quot;/&gt;&lt;location type=&quot;text&quot;/&gt;&lt;requirement&gt;&lt;orComposite&gt;&lt;type type=&quot;text&quot;/&gt;&lt;name type=&quot;text&quot;/&gt;&lt;minimumVersion type=&quot;text&quot;/&gt;&lt;maximumVersion type=&quot;text&quot;/&gt;&lt;/orComposite&gt;&lt;/requirement&gt;&lt;installationRemarks type=&quot;text&quot;/&gt;&lt;otherPlatformRequirements type=&quot;text&quot;/&gt;&lt;duration&gt;&lt;datetime type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/duration&gt;&lt;/technical&gt;&lt;educational&gt;&lt;interactivityType type=&quot;text&quot;/&gt;&lt;learning.resource.type field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;interactivityLevel type=&quot;text&quot;/&gt;&lt;semanticDensity type=&quot;text&quot;/&gt;&lt;intendedEndUserRole type=&quot;text&quot;/&gt;&lt;context type=&quot;text&quot;/&gt;&lt;typicalagerange field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;difficulty type=&quot;text&quot;/&gt;&lt;typicalLearningTime&gt;&lt;datetime type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/typicalLearningTime&gt;&lt;description type=&quot;text&quot;/&gt;&lt;language type=&quot;text&quot;/&gt;&lt;/educational&gt;&lt;rights&gt;&lt;cost type=&quot;text&quot;/&gt;&lt;copyrightAndOtherRestrictions type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/rights&gt;&lt;relation&gt;&lt;kind type=&quot;text&quot;/&gt;&lt;resource&gt;&lt;identifier&gt;&lt;catalog type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/identifier&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/resource&gt;&lt;/relation&gt;&lt;annotation&gt;&lt;person type=&quot;text&quot;/&gt;&lt;date&gt;&lt;datetime type=&quot;text&quot;/&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/date&gt;&lt;description type=&quot;text&quot;/&gt;&lt;/annotation&gt;&lt;classification&gt;&lt;purpose type=&quot;text&quot;/&gt;&lt;taxonpath&gt;&lt;source type=&quot;text&quot;/&gt;&lt;taxon&gt;&lt;id type=&quot;text&quot;/&gt;&lt;entry type=&quot;text&quot;/&gt;&lt;/taxon&gt;&lt;/taxonpath&gt;&lt;description type=&quot;text&quot;/&gt;&lt;keyword type=&quot;text&quot;/&gt;&lt;common_core field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/classification&gt;&lt;/lom&gt;&lt;extended&gt;&lt;bccampus type=&quot;text&quot;/&gt;&lt;nclor type=&quot;text&quot;/&gt;&lt;orangegrove type=&quot;text&quot;/&gt;&lt;uen&gt;&lt;pbs_metadata&gt;&lt;externalID type=&quot;text&quot;/&gt;&lt;accessibility type=&quot;text&quot;/&gt;&lt;assetSubmitter type=&quot;text&quot;/&gt;&lt;copyrightYear type=&quot;text&quot;/&gt;&lt;descriptionShort type=&quot;text&quot;/&gt;&lt;descriptionType type=&quot;text&quot;/&gt;&lt;externalIDsource type=&quot;text&quot;/&gt;&lt;geographicAccessRestType type=&quot;text&quot;/&gt;&lt;languagePrimary type=&quot;text&quot;/&gt;&lt;mediaTypeGeneral type=&quot;text&quot;/&gt;&lt;rightsDistribution type=&quot;text&quot;/&gt;&lt;title type=&quot;text&quot;/&gt;&lt;vendedBy type=&quot;text&quot;/&gt;&lt;/pbs_metadata&gt;&lt;uen_metadata&gt;&lt;uen_logoID type=&quot;text&quot;/&gt;&lt;uenAttachmentName type=&quot;text&quot;/&gt;&lt;/uen_metadata&gt;&lt;umap_metadata&gt;&lt;citation_summary type=&quot;text&quot;/&gt;&lt;drm_copyright_notice type=&quot;text&quot;/&gt;&lt;drm_copyright_status type=&quot;text&quot;/&gt;&lt;drm_vended_by type=&quot;text&quot;/&gt;&lt;kw_genre type=&quot;text&quot;/&gt;&lt;umap_collection_name type=&quot;text&quot;/&gt;&lt;umap_media_manifestation type=&quot;text&quot;/&gt;&lt;umap_media_type_formal type=&quot;text&quot;/&gt;&lt;umap_subjects_defined_by type=&quot;text&quot;/&gt;&lt;umap_title type=&quot;text&quot;/&gt;&lt;umap_title_context_level1 type=&quot;text&quot;/&gt;&lt;umap_title_context_level2 type=&quot;text&quot;/&gt;&lt;usoe_k12_subject_areas type=&quot;text&quot;/&gt;&lt;vw_workflow_annotation type=&quot;text&quot;/&gt;&lt;vw_workflow_status type=&quot;text&quot;/&gt;&lt;/umap_metadata&gt;&lt;/uen&gt;&lt;usgshare type=&quot;text&quot;/&gt;&lt;Wizard&gt;&lt;Location type=&quot;text&quot;/&gt;&lt;academic_rigor search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;lexile_level search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;suggested_remediation search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;author field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/Wizard&gt;&lt;general&gt;&lt;institution field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;collection field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;logo type=&quot;text&quot;/&gt;&lt;country field=&quot;true&quot; search=&quot;true&quot; type=&quot;text&quot;/&gt;&lt;/general&gt;&lt;lcms_wizard&gt;&lt;rich_description type=&quot;html&quot;/&gt;&lt;/lcms_wizard&gt;&lt;/extended&gt;&lt;/xml&gt;</serialisedDefinition>
+  <citations/>
+</com.tle.beans.entity.Schema>

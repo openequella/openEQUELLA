@@ -62,8 +62,7 @@ public class FavouritesItemList extends StandardItemList {
 
         entry.addMetadata(
             new StdMetadataEntry(
-                DATE_FAVOURITED_LABEL,
-                dateRendererFactory.createDateRenderer(b.getDateModified())));
+                DATE_FAVOURITED_LABEL, dateRendererFactory.createDateRenderer(b.getAddedAt())));
       }
     }
   }

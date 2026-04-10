@@ -24,7 +24,7 @@ import {
 } from "@testing-library/react";
 import ContentIndexSettings from "../../../tsrc/settings/Search/ContentIndexSettings";
 import "@testing-library/jest-dom";
-import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule"; // eslint-disable-line
+import * as SearchSettingsModule from "../../../tsrc/modules/SearchSettingsModule";
 import { NavigationGuardProps } from "../../../tsrc/components/NavigationGuard";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 
@@ -33,7 +33,7 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
  */
 
 jest.mock("../../../tsrc/components/NavigationGuard", () => ({
-  NavigationGuard: (props: NavigationGuardProps) => {
+  NavigationGuard: (_: NavigationGuardProps) => {
     return <div />;
   },
 }));

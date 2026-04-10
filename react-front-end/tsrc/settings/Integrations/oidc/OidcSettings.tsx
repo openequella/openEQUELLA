@@ -60,19 +60,21 @@ const {
   name,
   generalDetails: { title: generalDetailsTitle },
   apiDetails: { title: apiDetailsTitle, desc: apiDetailsDesc },
-  roleMappings: {
-    title: roleMappingsTitle,
+  mappings: {
+    title: mappingsTitle,
     defaultRole: defaultRoleTitle,
     defaultRoleDesc,
     roleClaim: roleClaimTitle,
     roleClaimDesc,
     customRoleDialog: customRoleDialogStrings,
+    userIdAttributeLabel,
+    userIdAttributeDesc,
   },
 } = languageStrings.settings.integration.oidc;
 const { edit: editLabel } = languageStrings.common.action;
 const { checkForm } = languageStrings.common.result;
 
-export interface OidcSettingsProps extends TemplateUpdateProps {}
+export type OidcSettingsProps = TemplateUpdateProps;
 
 const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
   const { appErrorHandler } = useContext(AppContext);
@@ -292,7 +294,7 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
 
           {/* Role mappings section. */}
           <Grid mt={2}>
-            <SettingsList subHeading={roleMappingsTitle}>
+            <SettingsList subHeading={mappingsTitle}>
               <SelectRoleControl
                 ariaLabel={`${editLabel} ${defaultRoleTitle}`}
                 primaryText={defaultRoleTitle}
@@ -355,6 +357,19 @@ const OidcSettings = ({ updateTemplate }: OidcSettingsProps) => {
                 )),
                 O.toUndefined,
               )}
+
+              <SettingsListControl
+                primaryText={userIdAttributeLabel}
+                secondaryText={userIdAttributeDesc}
+                control={plainTextFiled({
+                  name: userIdAttributeLabel,
+                  value: config.userIdAttribute,
+                  disabled: false,
+                  required: false,
+                  onChange: (value) => onConfigChange("userIdAttribute", value),
+                  showValidationErrors,
+                })}
+              />
             </SettingsList>
           </Grid>
         </CardContent>

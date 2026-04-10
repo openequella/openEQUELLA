@@ -61,23 +61,10 @@ public class ManageResourcesFavouritesTest extends AbstractCleanupAutoTest {
 
   @Test(dependsOnMethods = "createFavourites")
   public void testFavourites() throws ParseException {
-    ItemAdminPage iap;
-
-    FavouriteSearchesPage fsp = new FavouritesPage(context).load().searches();
-    iap = fsp.open(PREFIX + OLD_ITEM, new ItemAdminPage(context));
-    assertOneResult(iap, OLD_ITEM);
-
-    fsp = new FavouritesPage(context).load().searches();
-    iap = fsp.open(PREFIX + NEW_ITEM, new ItemAdminPage(context));
-    assertOneResult(iap, NEW_ITEM);
-
-    fsp = new FavouritesPage(context).load().searches();
-    iap = fsp.open(PREFIX + NEW_ITEM + "2", new ItemAdminPage(context));
-    assertOneResult(iap, NEW_ITEM);
-
-    fsp = new FavouritesPage(context).load().searches();
-    iap = fsp.open(PREFIX + OTHER_COLLECTION_ITEM, new ItemAdminPage(context));
-    assertOneResult(iap, OTHER_COLLECTION_ITEM);
+    checkFavouriteSearch(PREFIX + OLD_ITEM, OLD_ITEM);
+    checkFavouriteSearch(PREFIX + NEW_ITEM, NEW_ITEM);
+    checkFavouriteSearch(PREFIX + NEW_ITEM + "2", NEW_ITEM);
+    checkFavouriteSearch(PREFIX + OTHER_COLLECTION_ITEM, OTHER_COLLECTION_ITEM);
   }
 
   public void assertOneResult(ItemAdminPage iap, String name) {
@@ -94,5 +81,29 @@ public class ManageResourcesFavouritesTest extends AbstractCleanupAutoTest {
         PREFIX + NEW_ITEM,
         PREFIX + NEW_ITEM + "2",
         PREFIX + OTHER_COLLECTION_ITEM);
+  }
+
+  private ItemAdminPage openSearchPageInOldUI(String searchName) {
+    FavouriteSearchesPage fsp = new FavouritesPage(context).load().searches();
+    return fsp.open(searchName, new ItemAdminPage(context));
+  }
+
+  private ItemAdminPage openSearchPageInNewUI(String searchName) {
+    io.github.openequella.pages.favourites.FavouritesPage favouritesPage =
+        new io.github.openequella.pages.favourites.FavouritesPage(context).load();
+    favouritesPage.selectFavouritesSearchesType();
+    favouritesPage.selectSearch(searchName);
+
+    return new ItemAdminPage(context);
+  }
+
+  // Make sure the saved favourite item manage search page can be accessed and returns the correct
+  // result.
+  private void checkFavouriteSearch(String searchName, String expectedItemName) {
+    ItemAdminPage itemAdminPage =
+        testConfig.isNewUI()
+            ? openSearchPageInNewUI(searchName)
+            : openSearchPageInOldUI(searchName);
+    assertOneResult(itemAdminPage, expectedItemName);
   }
 }

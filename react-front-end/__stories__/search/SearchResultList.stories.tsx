@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { action } from "@storybook/addon-actions";
+import { action } from "storybook/actions";
 import type { Meta, StoryFn } from "@storybook/react";
 import { createRef } from "react";
 import * as React from "react";
@@ -68,11 +68,11 @@ EmptyResultListComponent.args = {
   },
   exportProps: {
     isExportPermitted: true,
-    linkRef: createRef<HTMLAnchorElement>(),
     exportLinkProps: {
       url: "http://localhost:8080/export",
       onExport: action("Export search result"),
       alreadyExported: false,
+      linkRef: createRef<HTMLAnchorElement>(),
     },
   },
 };

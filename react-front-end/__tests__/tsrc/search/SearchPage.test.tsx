@@ -48,7 +48,13 @@ import { languageStrings } from "../../../tsrc/util/langstrings";
 import { updateMockGetBaseUrl } from "../BaseUrlHelper";
 import { queryPaginatorControls } from "../components/SearchPaginationTestHelper";
 import { updateMockGlobalCourseList } from "../CourseListHelper";
-import { clickSelect, getSelectOption, selectOption } from "../MuiTestHelpers";
+import {
+  clickSelect,
+  getSelectOption,
+  isToggleButtonChecked,
+  selectOption,
+  clickButton,
+} from "../MuiTestHelpers";
 import { basicRenderData, updateMockGetRenderData } from "../RenderDataHelper";
 import {
   clearSelection,
@@ -56,7 +62,6 @@ import {
 } from "./components/OwnerSelectTestHelpers";
 import {
   addSearchToFavourites,
-  changeQuery,
   getRefineSearchComponent,
   getRefineSearchPanel,
   initialiseEssentialMocks,
@@ -69,7 +74,10 @@ import {
   queryStatusSelector,
   renderSearchPage,
   SORTORDER_SELECT_ID,
-  waitForSearchCompleted,
+  changeQuery,
+  queryListItems,
+  queryGalleryItems,
+  queryWildcardSearchSwitch,
 } from "./SearchPageTestHelper";
 
 // This has some big tests for rendering the Search Page, so we need a longer timeout.
@@ -134,7 +142,7 @@ describe("<SearchPage/>", () => {
       "shows FavouriteItemDialog to %s",
       async (defaultIcon, updatedIcon, itemName: string) => {
         const searchResultItem = page
-          .getByText(itemName, { selector: "a" })
+          .getByText(itemName, { selector: "span" })
           .closest("li");
         if (!searchResultItem) {
           throw new Error("Failed to find the mocked search result Item.");
@@ -179,45 +187,18 @@ describe("<SearchPage/>", () => {
   describe("Changing display mode", () => {
     const { modeGalleryImage, modeGalleryVideo, modeItemList } =
       languageStrings.searchpage.displayModeSelector;
-    const {
-      searchResult: { ariaLabel: listItemAriaLabel },
-      gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
-    } = languageStrings.searchpage;
-
-    let page: RenderResult;
-
-    const queryListItems = () => page.queryAllByLabelText(listItemAriaLabel);
-
-    const queryGalleryItems = () =>
-      page.queryAllByLabelText(galleryItemAriaLabel);
-
-    const isChecked = (label: string): boolean => {
-      const button = page.getByLabelText(label);
-      const checkedState = button.getAttribute("aria-checked");
-      return (
-        checkedState === "true" &&
-        button.classList.contains("MuiButton-contained")
-      );
-    };
-
-    const changeMode = async (mode: string) => {
-      await userEvent.click(page.getByLabelText(mode));
-      expect(isChecked(mode)).toBeTruthy();
-    };
-
-    beforeEach(async () => {
-      page = await renderSearchPage();
-    });
 
     it("has a default of item list mode", async () => {
+      const { container } = await renderSearchPage();
+
       // Check that the button is visually correct
-      expect(isChecked(modeItemList)).toBeTruthy();
+      expect(isToggleButtonChecked(container, modeItemList)).toBeTruthy();
 
       // Check that it's all wired up correctly - i.e. no mime types were passed to the search
       expect(mockSearch).toHaveBeenLastCalledWith(defaultSearchPageOptions);
 
       // And lastly check that it was a item list display - not a gallery
-      expect(queryListItems().length).toBeGreaterThan(0);
+      expect(queryListItems(container).length).toBeGreaterThan(0);
     });
 
     it.each([
@@ -241,8 +222,10 @@ describe("<SearchPage/>", () => {
         listClassifications,
         mockResponse,
       ) => {
-        expect(queryListItems().length).toBeGreaterThan(0);
-        expect(queryGalleryItems()).toHaveLength(0);
+        const { container } = await renderSearchPage();
+
+        expect(queryListItems(container).length).toBeGreaterThan(0);
+        expect(queryGalleryItems(container)).toHaveLength(0);
 
         // Monitor the search and classifications functions, and change the mode
         await Promise.all([
@@ -250,7 +233,7 @@ describe("<SearchPage/>", () => {
           listClassifications.mockResolvedValue(
             CategorySelectorMock.classifications,
           ),
-          changeMode(mode),
+          clickButton(container, mode),
         ]);
 
         // Make sure the search has been triggered
@@ -258,9 +241,9 @@ describe("<SearchPage/>", () => {
         expect(listClassifications).toHaveBeenCalledTimes(1);
 
         // And now check the visual change
-        expect(queryGalleryItems().length).toBeGreaterThan(0);
-        expect(queryListItems()).toHaveLength(0);
-        expect(queryMimeTypesSelector(page.container)).not.toBeInTheDocument();
+        expect(queryGalleryItems(container).length).toBeGreaterThan(0);
+        expect(queryListItems(container)).toHaveLength(0);
+        expect(queryMimeTypesSelector(container)).not.toBeInTheDocument();
       },
     );
   });
@@ -776,9 +759,8 @@ describe("<SearchPage/>", () => {
       await _selectUser(page.container, testUser.username);
 
       // Now clear the selection and wait until the search is completed.
-      clearSelection();
+      await clearSelection();
       await waitFor(() => confirmSelectedUserCleared(testUser.username));
-      await waitForSearchCompleted();
 
       expect(SearchModule.searchItems).toHaveBeenCalledWith(
         defaultSearchPageOptions,
@@ -803,7 +785,6 @@ describe("<SearchPage/>", () => {
 
       expect(mockSearch).toHaveBeenLastCalledWith({
         ...defaultSearchPageOptions,
-        // @ts-ignore IntelliJ complains about missing flatMap - but works fine everywhere else
         mimeTypes: filters.flatMap((f) => f.mimeTypes),
         mimeTypeFilters: filters,
       });
@@ -927,7 +908,7 @@ describe("<SearchPage/>", () => {
       mockReadDataFromLocalStorage.mockReturnValueOnce(true);
       const { container } = await renderSearchPage();
       expect(mockReadDataFromLocalStorage).toHaveBeenCalled();
-      const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+      const wildcardModeSwitch = queryWildcardSearchSwitch(container);
 
       // Since rawMode is true, the checkbox should not be checked.
       expect(wildcardModeSwitch).not.toBeChecked();

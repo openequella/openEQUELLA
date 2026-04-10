@@ -37,6 +37,10 @@ export interface SettingsListWarningProps {
    * Type of the alert.
    */
   severity: AlertColor;
+  /**
+   * Optional CSS styles to apply to the component.
+   */
+  sx?: React.CSSProperties;
 }
 
 /**
@@ -49,6 +53,7 @@ const SettingsListAlert = ({
   divider,
   messages,
   severity,
+  sx,
 }: SettingsListWarningProps) => {
   const warning = (
     <Alert severity={severity}>
@@ -76,6 +81,7 @@ const SettingsListAlert = ({
         justifyContent: "space-between",
         paddingTop: 0,
         paddingBottom: 0,
+        ...sx,
       }}
       divider={divider}
     >

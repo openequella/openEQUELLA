@@ -1,0 +1,11 @@
+<com.tle.common.taxonomy.terms.Term>
+  <id>2498648</id>
+  <uuid>2f6ae2a5-dccc-426b-875c-8791fc891cf2</uuid>
+  <value>Simulation</value>
+  <valueHash>4f502b57d2835715eaa382c7d4c32e94</valueHash>
+  <fullValue>Learning Resource Type\Simulation</fullValue>
+  <parent>
+    <id>2498634</id>
+  </parent>
+  <attributes/>
+</com.tle.common.taxonomy.terms.Term>

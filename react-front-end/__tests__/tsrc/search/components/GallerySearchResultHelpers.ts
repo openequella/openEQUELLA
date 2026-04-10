@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 import { range } from "lodash";
-import { v4 as uuidV4 } from "uuid";
 import {
   GalleryEntry,
   GallerySearchResultItem,
@@ -34,7 +33,7 @@ const buildGalleryEntry = (name: string): GalleryEntry => ({
 export const buildItems = (howMany: number): GallerySearchResultItem[] =>
   range(howMany).map(
     (i: number): GallerySearchResultItem => ({
-      uuid: uuidV4(),
+      uuid: crypto.randomUUID(),
       version: 1,
       status: "live",
       name: `Test item ${i}`,
@@ -55,7 +54,7 @@ export const buildItems = (howMany: number): GallerySearchResultItem[] =>
   );
 
 export const galleryDrmItem: GallerySearchResultItem = {
-  uuid: uuidV4(),
+  uuid: crypto.randomUUID(),
   version: 1,
   status: "live",
   name: "Test item",
@@ -90,7 +89,7 @@ export const galleryDrmItemSummaryAllow = {
 };
 
 export const galleryScrapbook: GallerySearchResultItem = {
-  uuid: uuidV4(),
+  uuid: crypto.randomUUID(),
   version: 1,
   status: "personal",
   name: "Test item",

@@ -18,12 +18,10 @@
 
 package com.tle.web.favourites;
 
-import com.dytech.edge.queries.FreeTextQuery;
 import com.tle.common.search.DefaultSearch;
-import com.tle.common.searching.Field;
 import com.tle.common.settings.standard.SearchSettings;
-import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.settings.service.ConfigurationService;
+import com.tle.search.FavouritesSearch;
 import com.tle.web.freemarker.FreemarkerFactory;
 import com.tle.web.freemarker.annotations.ViewFactory;
 import com.tle.web.itemlist.item.AbstractItemList;
@@ -179,23 +177,6 @@ public class FavouritesResultsSection
       return LABEL_NOAVAILABLE;
     }
     return LABEL_NORESULTS;
-  }
-
-  public static class FavouritesSearch extends DefaultSearch {
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public void addExtraMusts(List<List<Field>> musts) {
-      musts.add(
-          Collections.singletonList(
-              new Field(FreeTextQuery.FIELD_BOOKMARK_OWNER, CurrentUser.getUserID())));
-    }
-
-    @Override
-    public List<String> getExtraQueries() {
-      return Collections.singletonList(
-          String.format("%s:(%s)", FreeTextQuery.FIELD_BOOKMARK_TAGS, getQuery()));
-    }
   }
 
   @Override

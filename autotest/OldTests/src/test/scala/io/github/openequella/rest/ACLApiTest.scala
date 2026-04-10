@@ -64,7 +64,7 @@ class ACLApiTest extends AbstractRestApiTest {
     val statusCode = makeClientRequest(method)
     assertEquals(statusCode, 200)
 
-    val response = mapper.readTree(method.getResponseBody)
+    val response = mapper.readTree(method.getResponseBodyAsStream)
     assertEquals(response.asBoolean(), testData.isGranted)
   }
 }

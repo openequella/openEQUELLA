@@ -32,6 +32,7 @@ import * as t from "io-ts";
 import { MD5 } from "object-hash";
 import * as React from "react";
 import { ReactNode } from "react";
+import { MyResourcesCategoryNameCodec } from "../../../oeq-ts-rest-api/src/gen/MyResource";
 import { getBaseUrl } from "../AppConfig";
 import { TooltipIconButton } from "../components/TooltipIconButton";
 import { buildStorageKey } from "../modules/BrowserStorageModule";
@@ -57,6 +58,7 @@ import SearchResult, {
   defaultActionButtonProps,
 } from "../search/components/SearchResult";
 import {
+  defaultSortingOptions,
   DehydratedSearchPageOptions,
   DehydratedSearchPageOptionsCodec,
   SearchPageOptions,
@@ -69,16 +71,7 @@ import { pfSplitAt, pfTernaryTypeGuard } from "../util/pointfree";
 
 export const PARAM_MYRESOURCES_TYPE = "myResourcesType";
 
-export const MyResourcesTypeRuntypes = t.union([
-  t.literal("Published"),
-  t.literal("Drafts"),
-  t.literal("Scrapbook"),
-  t.literal("Moderation queue"),
-  t.literal("Archive"),
-  t.literal("All resources"),
-]);
-
-export type MyResourcesType = t.TypeOf<typeof MyResourcesTypeRuntypes>;
+export type MyResourcesType = t.TypeOf<typeof MyResourcesCategoryNameCodec>;
 
 /**
  * Return a list of Item status that match the given MyResources type.
@@ -220,7 +213,7 @@ const getMyResourcesTypeFromNewUIQueryParam = (
 ): O.Option<MyResourcesType> =>
   pipe(
     params.get(PARAM_MYRESOURCES_TYPE),
-    O.fromPredicate(MyResourcesTypeRuntypes.is),
+    O.fromPredicate(MyResourcesCategoryNameCodec.is),
   );
 
 /**
@@ -367,15 +360,8 @@ export const getSortOrderFromQueryParam = (
 export const sortOrderOptions = (
   resourceType: MyResourcesType,
 ): SortOrderOptions => {
-  const {
-    dateCreated,
-    lastAction,
-    lastModified,
-    relevance,
-    submitted,
-    title,
-    userRating,
-  } = languageStrings.myResources.sortOptions;
+  const { dateCreated, lastAction, lastModified, submitted, title } =
+    languageStrings.myResources.sortOptions;
 
   switch (resourceType) {
     case "Moderation queue":
@@ -393,13 +379,7 @@ export const sortOrderOptions = (
         ["name", title],
       ]);
     default:
-      return new Map<OEQ.Search.SortOrder, string>([
-        ["rank", relevance],
-        ["datemodified", lastModified],
-        ["datecreated", dateCreated],
-        ["name", title],
-        ["rating", userRating],
-      ]);
+      return new Map<OEQ.Search.SortOrder, string>(defaultSortingOptions);
   }
 };
 
@@ -414,10 +394,10 @@ export const defaultSortOrder = (
 /**
  * Type definition for functions that render custom UI for SearchResult in My resources page.
  */
-export type RenderFunc = (
+type RenderFunc = (
   item: SearchResultItem,
   highlight: string[],
-) => JSX.Element;
+) => React.JSX.Element;
 
 /**
  * Function to render a standard SearchResult.
@@ -572,12 +552,22 @@ export const customUIForMyResources = (
   renderList: (
     searchResult: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
   ) => ReactNode,
-): ReactNode =>
-  searchPageSearchResult.from === "gallery-search" ? (
-    <GallerySearchResult items={searchPageSearchResult.content.results} />
-  ) : (
-    renderList(searchPageSearchResult.content)
-  );
+): ReactNode => {
+  const from = searchPageSearchResult.from;
+
+  switch (from) {
+    case "gallery-search":
+      return (
+        <GallerySearchResult items={searchPageSearchResult.content.results} />
+      );
+    case "item-search":
+      return renderList(searchPageSearchResult.content);
+    case "favourite-search":
+      return undefined;
+    default:
+      return absurd(from);
+  }
+};
 
 /**
  * Return a SearchPageOptions saved in browser session storage by steps listed below.

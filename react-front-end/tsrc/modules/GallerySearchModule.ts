@@ -30,8 +30,8 @@ import {
 } from "./AttachmentsModule";
 import * as kaltura from "./KalturaModule";
 import { CustomMimeTypes, getImageMimeTypes } from "./MimeTypesModule";
-import { Classification, listClassifications } from "./SearchFacetsModule";
-import { searchItems, SearchOptions } from "./SearchModule";
+import { type Classification, listClassifications } from "./SearchFacetsModule";
+import type { SearchOptions } from "./SearchModule";
 import * as yt from "./YouTubeModule";
 
 /**
@@ -470,71 +470,104 @@ export const buildGallerySearchResultItem =
       }));
 
 /**
- * Undertakes an `searchItems` based on the supplied `options` filtering out all attachments with
+ * Based on the supplied `searchResults`, filter out all attachments with
  * `attachmentFilter`. And most importantly, converts the output from `itemSearch` to
  * a collection of `GallerySearchResultItem`s.
  *
- * @param options Search options to be passed to `searchItems`.
+ * This is a higher-order function: provide an `attachmentFilter` and receive back a
+ * function that transforms raw `SearchResult<SearchResultItem>` into
+ * `SearchResult<GallerySearchResultItem>`.
+ *
  * @param attachmentFilter The filter to filter all items attachment's by.
  */
-const gallerySearch = async (
-  options: SearchOptions,
-  attachmentFilter: AttachmentFilter,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
-  const processSearchResultItem = (
-    sri: OEQ.Search.SearchResultItem,
-  ): E.Either<string, GallerySearchResultItem> =>
-    pipe(
-      sri,
-      buildGallerySearchResultItem(attachmentFilter),
-      E.mapLeft((error) => {
-        const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
-        console.error(msg);
-        return msg;
-      }),
+const toGallerySearchResult =
+  (attachmentFilter: AttachmentFilter) =>
+  (
+    searchResults: OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>,
+  ): OEQ.Search.SearchResult<GallerySearchResultItem> => {
+    const processSearchResultItem = (
+      sri: OEQ.Search.SearchResultItem,
+    ): E.Either<string, GallerySearchResultItem> =>
+      pipe(
+        sri,
+        buildGallerySearchResultItem(attachmentFilter),
+        E.mapLeft((error) => {
+          const msg = `Failed to create gallery item for item ${sri.uuid}: ${error}`;
+          console.error(msg);
+          return msg;
+        }),
+      );
+
+    const items: GallerySearchResultItem[] = pipe(
+      searchResults.results,
+      A.map(processSearchResultItem),
+      A.filter(E.isRight),
+      A.map((a) => a.right),
     );
 
-  const searchResults = await searchItems(options);
-  const items: GallerySearchResultItem[] = pipe(
-    searchResults.results,
-    A.map(processSearchResultItem),
-    A.filter(E.isRight),
-    A.map((a) => a.right),
-  );
-
-  return { ...searchResults, length: items.length, results: items };
-};
+    return { ...searchResults, length: items.length, results: items };
+  };
 
 /**
- * Perform a search as per `options` and also request filtering to all (institution) known image
+ * Perform a search as per `options` and the `searchProvider`, also request filtering to all (institution) known image
  * MIME types. The output ideally used to display a gallery of all available images at an institution
  * with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
+ * @param searchProvider A callback for executing the search
  */
 export const imageGallerySearch = async (
   options: SearchOptions,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
-  gallerySearch(
-    { ...options, mimeTypes: await getImageMimeTypes() },
-    filterAttachmentsByMimeType("image"),
+  searchProvider: (
+    options: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
+): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
+  const searchOptions = {
+    ...options,
+    mimeTypes: await getImageMimeTypes(),
+  };
+
+  return pipe(
+    await searchProvider(searchOptions),
+    toGallerySearchResult(filterAttachmentsByMimeType("image")),
   );
+};
 
 const videoGalleryMusts: OEQ.Search.Must[] = [["videothumb", ["true"]]];
 /**
- * Perform a search as per `options` and also request filtering to any items which potentially are
+ * Perform a search as per `options` and the `searchProvider` and also request filtering to any items which potentially
  * have video attachments. The output ideally used to display a gallery of all available videos at
  * an institution with links to their related item.
  *
  * @param options Standard `SearchOptions` to refine the search by
+ * @param searchProvider A callback for executing the search
  */
 export const videoGallerySearch = async (
   options: SearchOptions,
-): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> =>
-  gallerySearch(
-    { ...options, musts: videoGalleryMusts, mimeTypes: undefined },
-    filterAttachmentsByVideo,
+  searchProvider: (
+    options: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>,
+): Promise<OEQ.Search.SearchResult<GallerySearchResultItem>> => {
+  const searchOptions = {
+    ...options,
+    musts: pipe(
+      O.fromNullable(options.musts),
+      O.match(
+        () => videoGalleryMusts,
+        (existingMusts: OEQ.Search.Must[]) => [
+          ...existingMusts,
+          ...videoGalleryMusts,
+        ],
+      ),
+    ),
+    mimeTypes: undefined,
+  };
+
+  return pipe(
+    await searchProvider(searchOptions),
+    toGallerySearchResult(filterAttachmentsByVideo),
   );
+};
 
 /**
  * Perform a facet search as per `options` and also request facets to only be generated for items

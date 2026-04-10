@@ -21,6 +21,7 @@ import { createTheme } from "@mui/material/styles";
 import * as OEQ from "@openequella/rest-api-client";
 import {
   act,
+  queryAllByLabelText,
   render,
   RenderResult,
   screen,
@@ -57,6 +58,11 @@ import SearchPage from "../../../tsrc/search/SearchPage";
 import * as SearchPageHelper from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
 import { getMuiButtonByText, getMuiTextField } from "../MuiQueries";
+
+const {
+  searchResult: { ariaLabel: listItemAriaLabel },
+  gallerySearchResult: { ariaLabel: galleryItemAriaLabel },
+} = languageStrings.searchpage;
 
 export const SORTORDER_SELECT_ID = "#sort-order-select";
 
@@ -135,7 +141,7 @@ export const mockCollaborators = () => {
     ),
     mockConvertParamsToSearchOptions: jest.spyOn(
       SearchPageHelper,
-      "generateSearchPageOptionsFromQueryString",
+      "generateSearchPageOptionsFromLocation",
     ),
     mockMimeTypeFilters: jest
       .spyOn(SearchFilterSettingsModule, "getMimeTypeFiltersFromServer")
@@ -157,6 +163,7 @@ export const mockCollaborators = () => {
         id: 123,
         name: "test",
         url: "/page/search?searchOptions=%7B%22rowsPerPage%22%3A10%2C%22currentPage%22%3A0%2C%22sortOrder%22%3A%22RATING%22%2C%22rawMode%22%3Afalse%2C%22status%22%3A%5B%22LIVE%22%2C%22REVIEW%22%5D%2C%22searchAttachments%22%3Atrue%2C%22query%22%3A%22crab%22%2C%22collections%22%3A%5B%5D%2C%22lastModifiedDateRange%22%3A%7B%7D%2C%22mimeTypeFilters%22%3A%5B%5D%2C%22dateRangeQuickModeEnabled%22%3Atrue%7D",
+        addedAt: new Date("2025-08-01T01:42:02.960-05:00"),
       }),
   };
 };
@@ -437,6 +444,13 @@ export const getQueryBar = (container: Element): HTMLElement => {
 };
 
 /**
+ * Find the wildcard (asterisk) search mode toggle switch, or return null if it is not rendered.
+ * @param container Root element containing the Search Bar.
+ */
+export const queryWildcardSearchSwitch = (container: HTMLElement) =>
+  container.querySelector<HTMLElement>("#wildcardSearch");
+
+/**
  * Interact with the Search Bar to type the provided query. The wildcard mode is enabled by default.
  * In order to test the debouncing properly, this function will set up a testing environment to use the fake timer.
  * It's recommended to call 'useFakeTimer()' in `beforeEach` and call `runOnlyPendingTimers` and `useRealTimer`
@@ -447,7 +461,7 @@ export const getQueryBar = (container: Element): HTMLElement => {
  * @param wildcardMode `true` to enable wildcard mode.
  */
 export const changeQuery = async (
-  container: Element,
+  container: HTMLElement,
   query: string,
   wildcardMode: boolean = true,
 ) => {
@@ -456,7 +470,7 @@ export const changeQuery = async (
   });
 
   if (!wildcardMode) {
-    const wildcardModeSwitch = container.querySelector("#wildcardSearch");
+    const wildcardModeSwitch = queryWildcardSearchSwitch(container);
     if (!wildcardModeSwitch) {
       throw new Error("Failed to find the raw mode switch!");
     }
@@ -465,8 +479,8 @@ export const changeQuery = async (
 
   const queryBar = getQueryBar(container);
 
+  await fakeTimerUser.type(queryBar, query);
   await act(async () => {
-    await fakeTimerUser.type(queryBar, query);
     jest.advanceTimersByTime(1000);
   });
 
@@ -474,3 +488,19 @@ export const changeQuery = async (
     expect(queryBar).toHaveDisplayValue(query);
   });
 };
+
+/**
+ * Helper function to find all list items in a search result.
+ *
+ * @param container The root container to search within.
+ */
+export const queryListItems = (container: HTMLElement) =>
+  queryAllByLabelText(container, listItemAriaLabel);
+
+/**
+ * Helper function to find all gallery items in a search result.
+ *
+ * @param container The root container to search within.
+ */
+export const queryGalleryItems = (container: HTMLElement) =>
+  queryAllByLabelText(container, galleryItemAriaLabel);

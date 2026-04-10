@@ -641,7 +641,8 @@ public class UserServiceImpl
         .ifPresent(
             ext -> {
               OidcUserDirectory dir = oidcUserDirTracker.getBeanByParameter(ext, "bean");
-              uds.add(dir);
+              // If OIDC is enabled, add its User Directory support to the top of the chain.
+              uds.addFirst(dir);
             });
 
     Map<Object, Object> chainAttributes = Maps.newHashMap();

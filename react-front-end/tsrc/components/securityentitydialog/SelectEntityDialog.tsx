@@ -173,7 +173,7 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
       maxWidth="md"
     >
       <Grid container>
-        <Grid item xs>
+        <Grid size="grow">
           {searchComponent(handleOnAdd, handleOnSelectAll)}
         </Grid>
 
@@ -183,8 +183,8 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
           sx={{ opacity: 0.6, margin: "5px" }}
         />
 
-        <Grid container item xs direction="column" rowSpacing={2}>
-          <Grid item>
+        <Grid container direction="column" rowSpacing={2} size="grow">
+          <Grid>
             {/*paddingLeft is used to align title with the list item below it*/}
             <Typography variant="h6" sx={{ paddingLeft: 2 }} gutterBottom>
               {currentSelectionsLabel}
@@ -200,7 +200,7 @@ const SelectEntityDialog = <T extends BaseSecurityEntity>({
             </List>
           </Grid>
           {!RS.isEmpty(selectedEntities) && (
-            <Grid item>
+            <Grid>
               <Button
                 color="secondary"
                 onClick={() => setSelectedEntities(RS.empty)}

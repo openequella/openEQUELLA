@@ -390,18 +390,18 @@ const SelectCustomRoleDialog = ({
       maxWidth="lg"
     >
       <Grid container>
-        <Grid container item xs direction="column" rowSpacing={2}>
-          <Grid item>
+        <Grid container direction="column" rowSpacing={2} size="grow">
+          <Grid>
             {customRoleSelector?.(setSelectedCustomRole, selectedCustomRole) ??
               defaultCustomRoleSelector}
           </Grid>
-          <Grid item>{selectOeqRole}</Grid>
+          <Grid>{selectOeqRole}</Grid>
         </Grid>
 
         <StyledDivider orientation="vertical" flexItem sx={{ opacity: 0.6 }} />
 
-        <Grid container item xs rowSpacing={2} direction="column">
-          <Grid item>
+        <Grid container rowSpacing={2} direction="column" size="grow">
+          <Grid>
             <Typography variant="h6" gutterBottom>
               {currentMappings}
             </Typography>
@@ -409,7 +409,7 @@ const SelectCustomRoleDialog = ({
           </Grid>
 
           {!M.isEmpty(rolesMappings) && (
-            <Grid item>
+            <Grid>
               <Button
                 color="secondary"
                 onClick={() => setRolesMappings(new Map())}

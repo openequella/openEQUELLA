@@ -30,6 +30,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.thoughtworks.xstream.XStream;
+import com.tle.annotation.NonNull;
 import com.tle.annotation.NonNullByDefault;
 import com.tle.annotation.Nullable;
 import com.tle.beans.IdCloneable;
@@ -101,6 +102,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import javax.inject.Inject;
@@ -200,6 +202,14 @@ public abstract class AbstractEntityServiceImpl<
   // @Transactional
   public T getByUuid(String uuid) {
     return entityDao.findByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion());
+  }
+
+  @Override
+  @Transactional
+  public boolean existsByUuid(@NonNull String uuid) {
+    Objects.requireNonNull(uuid, "uuid must not be null");
+    Check.checkValidUuid(uuid);
+    return entityDao.countByCriteria(Restrictions.eq("uuid", uuid), getInstitutionCriterion()) > 0;
   }
 
   @Override

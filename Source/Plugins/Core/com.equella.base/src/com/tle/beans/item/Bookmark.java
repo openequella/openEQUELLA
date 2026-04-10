@@ -57,7 +57,7 @@ public class Bookmark implements Serializable, ForeignItemKey {
   @Column(name = "element")
   private Collection<String> keywords;
 
-  private Date dateModified;
+  private Date addedAt;
 
   @Column(nullable = false)
   private String owner;
@@ -110,12 +110,12 @@ public class Bookmark implements Serializable, ForeignItemKey {
     this.owner = owner;
   }
 
-  public Date getDateModified() {
-    return dateModified;
+  public Date getAddedAt() {
+    return addedAt;
   }
 
-  public void setDateModified(Date dateModified) {
-    this.dateModified = dateModified;
+  public void setAddedAt(Date addedAt) {
+    this.addedAt = addedAt;
   }
 
   public boolean isAlwaysLatest() {

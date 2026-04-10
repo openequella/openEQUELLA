@@ -1,8 +1,0 @@
-**/node_modules
-**/target
-**/output
-**/.psc-package
-**/storybook-static
-# below is legacy JS code that will only be modified under exceptional circumstances.
-**/Source/Plugins/Core/com.equella.core/resources/web/scripts
-**/Source/Plugins/Core/com.equella.core/resources/web/js

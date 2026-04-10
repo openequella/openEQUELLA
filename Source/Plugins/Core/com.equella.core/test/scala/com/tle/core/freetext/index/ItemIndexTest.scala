@@ -237,7 +237,10 @@ class ItemIndexTest
 
         def sorter = itemIndex.getSorter(searchConfig)
 
-        searcher.search(query, 10, sorter).scoreDocs.map(d => searcher.doc(d.doc))
+        searcher
+          .search(query, 10, sorter)
+          .scoreDocs
+          .map(d => searcher.storedFields().document(d.doc))
       }
     }
 
@@ -318,6 +321,37 @@ class ItemIndexTest
 
       Then("indexes of the Institution should be deleted")
       verifyDocumentNumber(itemIndex, 0)
+    }
+
+    it("skips indexing oversized terms") { f =>
+      val (itemIndex, searchConfig) = f
+      val oversizedField            = "bigvalue"
+      val oversizedItemName         = "Oversized Item"
+
+      Given("An document that has oversized terms")
+      def oversizedTerm: Field = {
+        val sb = new StringBuilder
+        for (i <- 1 to 100000) {
+          sb.append(s"hello world $i")
+        }
+        val fieldType = new FieldType()
+        fieldType.setTokenized(false)
+        fieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS)
+        new Field(oversizedField, sb.toString(), fieldType)
+      }
+
+      val normalItem    = generateIndexedItems()
+      val oversizedItem = generateIndexedItems(itemName = oversizedItemName)
+      oversizedItem.head.getItemdoc.add(oversizedTerm)
+
+      When("ItemIndex.indexBatch is invoked")
+      itemIndex.indexBatch((normalItem ++ oversizedItem).asJava)
+
+      Then("indexes should be created without oversized terms")
+      searchConfig.setQuery(oversizedItemName)
+      val result: SearchResult = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+      result.length shouldBe 1
+      result.head.get(oversizedField) shouldBe null
     }
   }
 
@@ -416,7 +450,7 @@ class ItemIndexTest
         val (itemIndex, searchConfig) = f
 
         Given("two Items where the first one requires ACL 'DISCOVER_ITEM'")
-        val itemName = "acl_item"
+        val itemName       = "acl_item"
         val permissionItem = generateIndexedItems(
           itemName = itemName,
           privilege = Option(SecurityConstants.DISCOVER_ITEM)
@@ -538,7 +572,7 @@ class ItemIndexTest
         val monday    = dateFormatter.parse("2023-07-10")
         val tuesday   = dateFormatter.parse("2023-07-11")
         val wednesday = dateFormatter.parse("2023-07-12")
-        val items = List(monday, wednesday, tuesday).flatMap(dateModified =>
+        val items     = List(monday, wednesday, tuesday).flatMap(dateModified =>
           generateIndexedItems(dateModified = dateModified)
         )
         createIndexes(itemIndex, items)
@@ -548,7 +582,7 @@ class ItemIndexTest
 
         Then("the search result should be ordered by by date modified")
         val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
-        val dates =
+        val dates  =
           result.map(d => dateFormatter.parse(d.get(FreeTextQuery.FIELD_REALLASTMODIFIED)))
         val isOrderedByLastModifiedDate = dates.tail
           .foldLeft((true, dates.head)) {
@@ -578,7 +612,7 @@ class ItemIndexTest
         Then(
           "the search result should include all the Items where names are in different forms of 'test'"
         )
-        val result = itemIndex.search(buildSearcher(itemIndex, searchConfig))
+        val result    = itemIndex.search(buildSearcher(itemIndex, searchConfig))
         val itemNames =
           result.map(_.get(FreeTextQuery.FIELD_NAME))
         itemNames shouldBe Array("testing", "tested")
@@ -691,7 +725,7 @@ class ItemIndexTest
       val successfulReading: AtomicInteger = new AtomicInteger(0)
 
       // Thread pools for Index writing and reading. Allocate half of the available processors to each pool.
-      val processors = Runtime.getRuntime.availableProcessors
+      val processors  = Runtime.getRuntime.availableProcessors
       val writingPool = ExecutionContext.fromExecutor(
         Executors.newScheduledThreadPool(processors / 2, new CustomThreadFactory("writing pool"))
       )

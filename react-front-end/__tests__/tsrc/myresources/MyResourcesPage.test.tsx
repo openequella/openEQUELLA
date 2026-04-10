@@ -68,7 +68,7 @@ import {
 } from "../../../tsrc/myresources/MyResourcesPageHelper";
 import { defaultSearchPageOptions } from "../../../tsrc/search/SearchPageHelper";
 import { languageStrings } from "../../../tsrc/util/langstrings";
-import { clickSelect, querySelectOption } from "../MuiTestHelpers";
+import { clickSelect, countPresentSelectOptions } from "../MuiTestHelpers";
 import {
   addSearchToFavourites,
   initialiseEssentialMocks,
@@ -364,7 +364,7 @@ describe("<MyResourcesPage/>", () => {
           },
         });
 
-      await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "a" }));
+      await user.click(getByText(IMAGE_SCRAPBOOK, { selector: "span" }));
       // Confirm that the image is displayed in the Lightbox now.
       const image = container.querySelector(".Lightbox-lightboxImage");
       expect(image).toBeInTheDocument();
@@ -394,7 +394,7 @@ describe("<MyResourcesPage/>", () => {
           url,
         });
 
-        await user.click(getByText(scrapbookTitle, { selector: "a" }));
+        await user.click(getByText(scrapbookTitle, { selector: "span" }));
 
         expect(mockWindowOpen).toHaveBeenLastCalledWith(url, "_blank");
       },
@@ -460,14 +460,6 @@ describe("<MyResourcesPage/>", () => {
   describe("Custom sort orders", () => {
     const sortOptions = languageStrings.myResources.sortOptions;
 
-    const countOptions = (options: string[]) =>
-      pipe(
-        options,
-        A.map(querySelectOption),
-        A.filter((r) => r !== null),
-        A.size,
-      );
-
     it.each<[MyResourcesType, string[]]>([
       [
         "Scrapbook",
@@ -490,7 +482,7 @@ describe("<MyResourcesPage/>", () => {
       await clickSelect(container, SORTORDER_SELECT_ID);
 
       // Check how many of the expected options are now on screen
-      const foundOptions = countOptions(options);
+      const foundOptions = countPresentSelectOptions(options);
 
       expect(foundOptions).toBe(options.length);
     });
@@ -514,7 +506,7 @@ describe("<MyResourcesPage/>", () => {
 
           const { container } = await renderMyResourcesPage(type);
           await clickSelect(container, SORTORDER_SELECT_ID);
-          return countOptions(moderationSortOptions);
+          return countPresentSelectOptions(moderationSortOptions);
         };
 
         expect(await countModOptions(nonModerationType)).toBe(0);

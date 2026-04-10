@@ -4,6 +4,7 @@
 .parcel-cache/
 .idea/.name
 
+.bsp/
 target/
 build.conf
 generated.keystore
@@ -13,7 +14,11 @@ generated.keystore
 .cache-main
 .cache-tests
 .code-workspace
+
 # Remove this one day
 Source/Plugins/Kaltura
 server.xml
 node_modules/
+
+# Library files downloaded and extracted as part of reporting module build
+Source/Plugins/Core/com.equella.reporting/lib

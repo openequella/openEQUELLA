@@ -20,7 +20,15 @@ import { getByLabelText, getByText } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
-import { absurd, constFalse, constTrue, flow, pipe } from "fp-ts/function";
+import {
+  absurd,
+  constant,
+  constFalse,
+  constTrue,
+  constVoid,
+  flow,
+  pipe,
+} from "fp-ts/function";
 import * as M from "fp-ts/Map";
 import * as NEA from "fp-ts/NonEmptyArray";
 import * as O from "fp-ts/Option";
@@ -553,10 +561,15 @@ export const updateControlValue = async (
       const pickDate =
         ([value, label]: [string, string]): T.Task<void> =>
         async () =>
-          await pipe(getByLabelText(calendar, label), async (input) => {
-            await userEvent.clear(input);
-            await userEvent.type(input, value);
-          });
+          pipe(
+            getByText(calendar, label, { selector: "label" }).parentElement,
+            O.fromNullable,
+            O.map((selector) => getByLabelText(selector, "Year")),
+            O.match(
+              constVoid,
+              async (input) => await userEvent.type(input, value),
+            ),
+          );
 
       const datePickerLabels: string[] = [
         languageStrings.dateRangeSelector.defaultStartDatePickerLabel,
@@ -699,7 +712,16 @@ export const getControlValue = (
         getWizardControlByTitle(container, labels[0]),
         (calendar) =>
           (dateLabel: string): string =>
-            (getByLabelText(calendar, dateLabel) as HTMLInputElement).value,
+            pipe(
+              getByText(calendar, dateLabel, { selector: "label" })
+                .parentElement,
+              O.fromNullable,
+              O.chain((f) =>
+                O.fromNullable(f.querySelector<HTMLInputElement>("input")),
+              ),
+              O.map((i) => i.value),
+              O.getOrElse(constant("")),
+            ),
         (getDateValue) =>
           M.singleton(
             labels[0],

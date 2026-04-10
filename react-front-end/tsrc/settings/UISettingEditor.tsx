@@ -95,7 +95,7 @@ const UISettingEditor = () => {
   return (
     <StyledAccordionDetails>
       <Grid container direction="column">
-        <Grid item>
+        <Grid>
           <div className={classes.enableNewUIColumn}>
             <FormControl>
               <FormControlLabel
@@ -112,7 +112,7 @@ const UISettingEditor = () => {
           </div>
         </Grid>
 
-        <Grid item>
+        <Grid>
           <div className={classes.enableNewSearchColumn}>
             <FormControl>
               <FormControlLabel
@@ -130,7 +130,7 @@ const UISettingEditor = () => {
           </div>
         </Grid>
 
-        <Grid item>
+        <Grid>
           <Link to={routes.ThemeConfig.path}>
             <Button variant="contained" disabled={!newUIEnabled}>
               {uiconfig.themeSettingsButton}

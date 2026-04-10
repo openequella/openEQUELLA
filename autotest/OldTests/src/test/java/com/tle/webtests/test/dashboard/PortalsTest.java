@@ -1,3 +1,21 @@
+/*
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.tle.webtests.test.dashboard;
 
 import static org.testng.Assert.assertEquals;
@@ -36,7 +54,9 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import testng.annotation.OldUIOnly;
 
+@OldUIOnly
 @TestInstitution("vanilla")
 public class PortalsTest extends AbstractCleanupTest {
   public PortalsTest() {
@@ -323,7 +343,7 @@ public class PortalsTest extends AbstractCleanupTest {
     RecentContributionsSection recent = new RecentContributionsSection(context, recentName).get();
     RecentContributionsEditPage edit = recent.edit(portal);
     edit.setStatus("draft");
-    edit.checkSelectedCollection();
+    edit.ensureAllResourcesSelected();
     waiter = edit.save(new HomePage(context)).getWaiter();
 
     // Check that the draft item is displayed
@@ -344,7 +364,7 @@ public class PortalsTest extends AbstractCleanupTest {
     edit = recent.edit(portal);
     edit.setQuery("query item");
     edit.setStatus("live");
-    edit.checkSelectedCollection();
+    edit.ensureAllResourcesSelected();
     waiter = edit.save(new HomePage(context)).getWaiter();
 
     // Check that the queried item is displayed
@@ -356,7 +376,7 @@ public class PortalsTest extends AbstractCleanupTest {
     recent = new RecentContributionsSection(context, recentName).get();
     edit = recent.edit(portal);
     edit.setDisplayTitleOnly(true);
-    edit.checkSelectedCollection();
+    edit.ensureAllResourcesSelected();
     edit.save(new HomePage(context));
 
     // Check that the description not displayed
@@ -436,7 +456,7 @@ public class PortalsTest extends AbstractCleanupTest {
   protected void cleanupAfterClass() throws Exception {
     logon("portlettest1", "``````");
     String prefix = context.getNamePrefix();
-    new DashboardAdminPage(context).load().deleteAll(prefix);
+    new DashboardAdminPage(context).load().deleteAllPortlet(prefix);
     super.cleanupAfterClass();
   }
 

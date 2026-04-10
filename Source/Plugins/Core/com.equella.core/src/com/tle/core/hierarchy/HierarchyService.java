@@ -60,8 +60,15 @@ public interface HierarchyService extends RemoteHierarchyService {
    * @param compoundUuidMap A map contains the topic and all virtual ancestor topic UUID and virtual
    *     name. It is used when the given topic is virtual topic or any of its ancestor is a virtual
    *     topic.
+   * @param collectionsFilter An additional filter of collection UUIDs that is applied together with
+   *     the collections defined in the hierarchy to restrict the search scope. Use 'null' if no
+   *     collection filtering is needed. An empty list means all resources are filtered out,
+   *     resulting in an empty search result.
    */
-  int getMatchingItemCount(HierarchyTopic topic, Map<String, String> compoundUuidMap);
+  int getMatchingItemCount(
+      HierarchyTopic topic,
+      Map<String, String> compoundUuidMap,
+      Collection<String> collectionsFilter);
 
   /** Fetch the UUIDs of Collections configured for a topic. */
   Optional<List<String>> getCollectionUuids(HierarchyTopic topic);
@@ -89,8 +96,15 @@ public interface HierarchyService extends RemoteHierarchyService {
    * @param compoundUuidMap A map linking any virtual ancestor topic and its UUID to the
    *     corresponding virtual topic name. It is used when the given topic is virtual topic or any
    *     of its ancestor is a virtual topic.
+   * @param collectionsFilter An additional filter of collection UUIDs that is applied
+   *     together(intersect) with the collections defined in the hierarchy to restrict the search
+   *     scope. Use 'null' if no collection filtering is needed. An empty list means all resources
+   *     are filtered out, resulting in an empty search result.
    */
-  PresetSearch buildSearch(HierarchyTopic topic, Map<String, String> compoundUuidMap);
+  PresetSearch buildSearch(
+      HierarchyTopic topic,
+      Map<String, String> compoundUuidMap,
+      Collection<String> collectionsFilter);
 
   /**
    * Legacy function to check weather user has permission to view the hierarchy topic. If user has
@@ -138,7 +152,10 @@ public interface HierarchyService extends RemoteHierarchyService {
    *     topics.
    * @param compoundUuidMap If parent is a virtual topic then it need parent's compound uuid map to
    *     filter the topics.
-   * @param collectionUuids The resolved virtual topic should be limited to parent's collections.
+   * @param collectionUuids An additional filter of collection UUIDs that is applied together with
+   *     the collections defined in the hierarchy to restrict the search scope. Use 'null' if no
+   *     collection filtering is needed. An empty list means all resources are filtered out,
+   *     resulting in an empty search result.
    * @return A list of the VirtualisableAndValue class instances, each containing a topic and extra
    *     attributes.
    */

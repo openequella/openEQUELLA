@@ -119,7 +119,7 @@ case class LoginNoticePage(ctx: PageContext)
 
   def save(): Unit = {
     def saveButtonActive: Boolean = saveButton.getAttribute("disabled") == null
-    def clickSaveButton(): Unit =
+    def clickSaveButton(): Unit   =
       new Actions(driver)
         .moveToElement(saveButton)
         .click()

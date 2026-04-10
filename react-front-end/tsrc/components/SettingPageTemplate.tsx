@@ -74,19 +74,17 @@ const SettingPageTemplate = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item container xs={9} spacing={2} mb={2}>
+        <Grid container spacing={2} mb={2} size={9}>
           {
             // Put each child in this nested Grid
             React.Children.map(children, (child) => (
-              <Grid item xs={12}>
-                {child}
-              </Grid>
+              <Grid size={12}>{child}</Grid>
             ))
           }
         </Grid>
 
-        <Grid item xs={3}>
-          <Grid item>
+        <Grid size={3}>
+          <Grid>
             <Button
               fullWidth
               id="_saveButton"
@@ -102,7 +100,7 @@ const SettingPageTemplate = ({
           </Grid>
 
           {onCancel && (
-            <Grid item mt={2}>
+            <Grid mt={2}>
               <Button
                 fullWidth
                 id="_cancelButton"

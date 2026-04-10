@@ -11,7 +11,7 @@ object RandomWord {
     chars <- Gen.listOfN(sz, Gen.alphaChar)
     ct    <- Gen.choose(0, 2)
   } yield {
-    val nc = new String(chars.toArray)
+    val nc    = new String(chars.toArray)
     val cased = ct match {
       case 0 => nc
       case 1 => nc.toLowerCase

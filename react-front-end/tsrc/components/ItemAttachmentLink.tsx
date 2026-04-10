@@ -60,7 +60,7 @@ const ItemAttachmentLink = ({
   const [lightBoxProps, setLightBoxProps] = useState<LightboxProps>();
   const { checkDrmPermission } = useContext(ItemDrmContext);
 
-  const buildSimpleLink = ({ url }: ViewerLinkConfig): JSX.Element => (
+  const buildSimpleLink = ({ url }: ViewerLinkConfig): React.JSX.Element => (
     <Link
       aria-label={`${attachmentLink} ${description}`}
       href={url}
@@ -77,7 +77,9 @@ const ItemAttachmentLink = ({
     </Link>
   );
 
-  const buildLightboxLink = ({ config }: ViewerLightboxConfig): JSX.Element => {
+  const buildLightboxLink = ({
+    config,
+  }: ViewerLightboxConfig): React.JSX.Element => {
     const openLightbox = () =>
       setLightBoxProps({
         open: true,

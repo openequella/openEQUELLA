@@ -67,15 +67,6 @@ public interface ItemSerializerService {
     }
   }
 
-  List<SerialisationCategory> ALL_EXCEPT_ATTACHMENT =
-      List.of(
-          SerialisationCategory.BASIC,
-          SerialisationCategory.DETAIL,
-          SerialisationCategory.DISPLAY,
-          SerialisationCategory.DRM,
-          SerialisationCategory.METADATA,
-          SerialisationCategory.NAVIGATION);
-
   /**
    * @param itemIds
    * @param categories

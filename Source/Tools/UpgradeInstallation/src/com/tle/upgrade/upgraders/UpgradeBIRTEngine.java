@@ -32,7 +32,7 @@ public class UpgradeBIRTEngine extends AbstractUpgrader {
   public static final String ID = "UpgradeBIRT2.6.1";
 
   @Override
-  public boolean isBackwardsCompatible() {
+  public boolean canBeRemoved() {
     return false;
   }
 

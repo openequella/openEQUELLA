@@ -19,6 +19,7 @@
 package com.tle.web.api.search.model
 
 import com.tle.common.interfaces.I18NString
+import com.tle.web.api.favourite.model.Bookmark
 import com.tle.web.api.item.equella.interfaces.beans.{DisplayField, DisplayOptions}
 
 import java.util.Date
@@ -59,8 +60,8 @@ import java.util.Date
   *   Indicates if a search term has been found inside attachment content
   * @param links
   *   Item's links.
-  * @param bookmarkId
-  *   ID of Bookmark linking to this Item.
+  * @param bookmark
+  *   Bookmark details linking to this Item.
   * @param isLatestVersion
   *   True if this version is the latest version.
   * @param drmStatus
@@ -86,7 +87,7 @@ case class SearchResultItem(
     displayOptions: Option[DisplayOptions],
     keywordFoundInAttachment: Boolean,
     links: java.util.Map[String, String],
-    bookmarkId: Option[Long],
+    bookmark: Option[Bookmark],
     isLatestVersion: Boolean,
     drmStatus: Option[DrmStatus],
     moderationDetails: Option[ModerationDetails]

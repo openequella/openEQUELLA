@@ -35,12 +35,10 @@ export const UploadInfo = ({ file }: UploadInfoProps) => {
   const { uploadPercentage, status, errorMessage } = file;
   return status === "uploading" ? (
     <Grid container alignItems="center" spacing={1}>
-      <Grid item xs={10}>
+      <Grid size={10}>
         <LinearProgress variant="determinate" value={uploadPercentage} />
       </Grid>
-      <Grid item xs={2}>
-        {`${uploadPercentage}%`}
-      </Grid>
+      <Grid size={2}>{`${uploadPercentage}%`}</Grid>
     </Grid>
   ) : (
     // MUI Typography brings in extra styles which break UI consistency in Old UI so

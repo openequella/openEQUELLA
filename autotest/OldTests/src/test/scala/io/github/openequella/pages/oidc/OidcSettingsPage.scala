@@ -23,7 +23,7 @@ import com.tle.webtests.pageobject.AbstractPage
 import io.github.openequella.pages.components.{SelectCustomRolesDialog, SelectRolesDialog}
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.{By, Keys, WebElement}
+import org.openqa.selenium.{By, WebElement}
 
 class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPage](context) {
   // Title of the page.
@@ -104,16 +104,7 @@ class OidcSettingsPage(context: PageContext) extends AbstractPage[OidcSettingsPa
 
   /** Select the identity provider.
     */
-  def selectIdP(idp: String): Unit = {
-    val idpSelect = driver.findElement(idpSelectBy)
-    idpSelect.click()
-    val idpOption = waiter.until(
-      ExpectedConditions.presenceOfElementLocated(
-        By.xpath(s"//li[@role='option' and contains(., '$idp')]")
-      )
-    )
-    idpOption.click()
-  }
+  def selectIdP(idp: String): Unit = selectOption(idpSelectBy, idp)
 
   /** Get the value of the identity provider.
     */

@@ -57,7 +57,7 @@ import {
   defaultGeneralSearchSettings,
   defaultSearchPageOptions,
   GeneralSearchSettings,
-  generateSearchPageOptionsFromQueryString,
+  generateSearchPageOptionsFromLocation,
   getRawModeFromStorage,
   SearchContext,
   SearchPageOptions,
@@ -128,7 +128,38 @@ interface SearchProps extends TemplateUpdateProps {
    * Title of the page where this component is used.
    */
   pageTitle?: string;
+  /**
+   * A function that will be called to get a list of results with its search type.
+   * This is used when the `displayMode` is `list`.
+   * The default search type is "item-search" and the search function is `searchItems` from `SearchModule`.
+   *
+   * @param searchOptions The options for the search.
+   */
+  listModeSearchProvider?: (
+    searchOptions: SearchOptions,
+  ) => Promise<SearchPageSearchResult>;
+
+  /**
+   * Optional provider used only for gallery mode search.
+   * This is used when the `displayMode` is `gallery-search`.
+   * Defaults to `searchItems`.
+   *
+   * @param searchOptions The options for the search.
+   */
+  galleryModeSearchItemsProvider?: (
+    searchOptions: SearchOptions,
+  ) => Promise<OEQ.Search.SearchResult<OEQ.Search.SearchResultItem>>;
 }
+
+const defaultListModeSearch = async (
+  options: SearchOptions,
+): Promise<SearchPageSearchResult> => ({
+  from: "item-search",
+  content: await searchItems({
+    ...options,
+    includeAttachments: false,
+  }),
+});
 
 /**
  * This component is responsible for managing the state of search and performing general initialisation tasks.
@@ -140,6 +171,8 @@ export const Search = ({
   children,
   initialSearchConfig = defaultInitialSearchConfig,
   pageTitle = searchStrings.title,
+  listModeSearchProvider = defaultListModeSearch,
+  galleryModeSearchItemsProvider = searchItems,
 }: SearchProps) => {
   const history = useHistory<SearchPageHistoryState>();
   const searchPageHistoryState: SearchPageHistoryState | undefined =
@@ -174,6 +207,7 @@ export const Search = ({
     ): void => {
       dispatch({
         type: "search",
+        requestToken: crypto.randomUUID(),
         options: searchPageOptions,
         updateClassifications,
         callback,
@@ -217,7 +251,7 @@ export const Search = ({
       // If the search options are available from browser history, ignore those in the query string.
       searchPageHistoryState
         ? Promise.resolve(undefined)
-        : generateSearchPageOptionsFromQueryString(history.location),
+        : generateSearchPageOptionsFromLocation(history.location),
       getAdvancedSearchesFromServer(),
     ])
       .then(
@@ -281,18 +315,22 @@ export const Search = ({
       console.debug("SearchPage: useEffect - searching");
       console.time(timerId);
 
-      const { options, updateClassifications, callback } = searchState;
+      const { requestToken, options, updateClassifications, callback } =
+        searchState;
 
       const gallerySearch = async (
         search: typeof imageGallerySearch | typeof videoGallerySearch,
         options: SearchPageOptions,
       ): Promise<SearchPageSearchResult> => ({
         from: "gallery-search",
-        content: await search({
-          ...options,
-          // `mimeTypeFilters` should be ignored in gallery modes
-          mimeTypeFilters: undefined,
-        }),
+        content: await search(
+          {
+            ...options,
+            // `mimeTypeFilters` should be ignored in gallery modes
+            mimeTypeFilters: undefined,
+          },
+          galleryModeSearchItemsProvider,
+        ),
       });
 
       const doSearch = async (
@@ -304,13 +342,7 @@ export const Search = ({
           case "gallery-video":
             return gallerySearch(videoGallerySearch, searchPageOptions);
           case "list":
-            return {
-              from: "item-search",
-              content: await searchItems({
-                ...searchPageOptions,
-                includeAttachments: false,
-              }),
-            };
+            return listModeSearchProvider(searchPageOptions);
           default:
             throw new TypeError("Unexpected `displayMode` for searching");
         }
@@ -344,6 +376,7 @@ export const Search = ({
 
           dispatch({
             type: "search-complete",
+            requestToken,
             result: { ...searchResult },
             classifications,
           });
@@ -375,6 +408,8 @@ export const Search = ({
     history,
     searchState,
     searchPageHistoryState,
+    listModeSearchProvider,
+    galleryModeSearchItemsProvider,
   ]);
 
   // In Selection Session, once a new search result is returned, make each

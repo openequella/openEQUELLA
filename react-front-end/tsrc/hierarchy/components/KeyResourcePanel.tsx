@@ -45,10 +45,11 @@ const KeyResourcePanel = ({
     {keyResources.map((keyResource) => (
       <Grid
         key={`${keyResource.item.uuid}/${keyResource.item.version}/${keyResource.isLatest}`}
-        item
-        xs={12}
-        lg={6}
-        xl={4}
+        size={{
+          xs: 12,
+          lg: 6,
+          xl: 4,
+        }}
       >
         <KeyResource
           keyResource={keyResource}

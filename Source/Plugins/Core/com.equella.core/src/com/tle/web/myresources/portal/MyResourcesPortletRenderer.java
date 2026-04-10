@@ -72,7 +72,7 @@ public class MyResourcesPortletRenderer
 
     List<Search> searches = new ArrayList<Search>();
     for (MyResourcesSubSearch search : sss) {
-      DefaultSearch defSearch = search.createDefaultSearch(context);
+      DefaultSearch defSearch = search.createDefaultSearch();
       defSearch.setOwner(CurrentUser.getUserID());
       searches.add(defSearch);
       List<MyResourcesSubSubSearch> subSubs = search.getSubSearches();

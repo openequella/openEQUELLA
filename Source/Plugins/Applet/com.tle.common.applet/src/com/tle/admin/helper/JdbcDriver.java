@@ -38,7 +38,7 @@ public class JdbcDriver implements Check.FieldEquality<JdbcDriver> {
                   "jdbc:sqlserver://<host>[:<1433>];SelectMethod=cursor;databaseName=<dbname>"),
               new JdbcDriver(
                   "oracle",
-                  "oracle.jdbc.driver.OracleDriver",
+                  "oracle.jdbc.OracleDriver",
                   "jdbc:oracle:thin:@<host>[:<1521>]:<dbname>"),
               new JdbcDriver(
                   "postgres",

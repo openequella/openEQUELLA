@@ -1549,6 +1549,12 @@ div[class*="fancy-bg"] {
   z-index: 9999;
 }
 
+.modal-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .modal-title h3 {
   -moz-background-clip: border;
   -moz-background-inline-policy: continuous;
@@ -1586,9 +1592,6 @@ div[class*="fancy-bg"] {
 }
 
 .modal img.modal_close {
-  position: absolute;
-  right: 28px;
-  top: 28px;
   cursor: pointer;
 }
 
@@ -1804,6 +1807,42 @@ Alerts
     &:after {
       @include materialIcon("\e86c", $color: white);
       padding-right: $singleMargin;
+    }
+  }
+
+  &.alert-warning {
+    color: initial;
+  }
+
+  // Static alert variant - Unlike the floating alert, this is used for displaying messages embedded with the page content.
+  &.alert-static {
+    position: static;
+    display: block;
+    box-shadow: none;
+    height: auto;
+    margin: $doubleMargin 0;
+    padding: $doubleMargin;
+    border-style: solid;
+    border-width: 1px;
+
+    .alert-title {
+      display: flex;
+      align-items: center;
+    }
+
+    &.alert-warning {
+      // Using secondary color to show the warning-alert border consistent with MUI warning alert.
+      border-color: $secondaryColor;
+      .alert-title::before {
+        // Adds Material Icon: warning (\e002) before the alert title.
+        // Using secondary color to keep it consistent with MUI warning alert.
+        @include materialIcon("\e002", $color: $secondaryColor);
+        margin-right: 10px;
+      }
+    }
+
+    p {
+      margin: 0;
     }
   }
 }
@@ -5889,6 +5928,35 @@ button:focus {
         font-size: 12px;
         color: grey;
       }
+    }
+  }
+}
+
+/*****************************************************************************
+  Styles applied to select thumbnail dialog
+*****************************************************************************/
+
+.thumbcontainer {
+  max-height: 275px;
+  overflow-y: auto;
+
+  .thumbs {
+    padding: $singleMargin;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $singleMargin;
+  }
+
+  .thumbrow {
+    padding: $minimalMargin;
+
+    img {
+      display: block;
+      cursor: pointer;
+    }
+
+    &.selected {
+      background-color: $secondaryColor;
     }
   }
 }

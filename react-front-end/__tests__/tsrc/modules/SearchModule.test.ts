@@ -21,7 +21,7 @@ import {
   BOOKS,
   VIDEOS,
 } from "../../../__mocks__/getCollectionsResp";
-import { getSearchResult } from ".. /../../__mocks__/SearchResult.mock";
+import { getSearchResult } from "../../../__mocks__/SearchResult.mock";
 import { mockedAdvancedSearchCriteria } from "../../../__mocks__/WizardHelper.mock";
 import type { SelectedCategories } from "../../../tsrc/modules/SearchFacetsModule";
 import * as SearchModule from "../../../tsrc/modules/SearchModule";
@@ -66,7 +66,7 @@ describe("searchItems", () => {
     expect(searchResult.results).toHaveLength(12);
   });
 
-  const expectSearchQueryToBeValid = (expectedQuery: string) => {
+  const expectSearchQueryToBeValid = (expectedQuery?: string) => {
     const calls = mockedSearch.mock.calls;
     const params = calls[0][1]; // Second parameter of the call is the 'params'
     expect(params.query).toEqual(expectedQuery);
@@ -77,7 +77,7 @@ describe("searchItems", () => {
       ...SearchModule.defaultSearchOptions,
       query: "   ",
     });
-    expectSearchQueryToBeValid("");
+    expectSearchQueryToBeValid(undefined);
   });
 
   it("should append a wildcard for a search non-rawMode, non-empty query", async () => {
@@ -128,20 +128,32 @@ describe("generateCategoryWhereQuery", () => {
     },
   ];
 
-  it("should generate a where clause for one category", () => {
+  const apostropheCategory: SelectedCategories = {
+    id: 766944,
+    schemaNode: "/item/author",
+    categories: ["Garry's Cousin"],
+  };
+
+  it("generates a where clause for one category", () => {
     const singleCategory = [selectedCategories[1]];
     expect(SearchModule.generateCategoryWhereQuery(singleCategory)).toBe(
       "(/xml/item/city='Hobart')",
     );
   });
 
-  it("should generate a where clause for multiple groups of categories", () => {
+  it("generates a where clause for multiple groups of categories", () => {
     expect(SearchModule.generateCategoryWhereQuery(selectedCategories)).toBe(
       "(/xml/item/language='Java' OR /xml/item/language='Scala') AND (/xml/item/city='Hobart')",
     );
   });
 
-  it("should return undefined if no categories are selected", () => {
+  it("generates a where clause with apostrophe characters properly escaped", () => {
+    expect(SearchModule.generateCategoryWhereQuery([apostropheCategory])).toBe(
+      "(/xml/item/author='Garry''s Cousin')",
+    );
+  });
+
+  it("returns undefined if no categories are selected", () => {
     expect(SearchModule.generateCategoryWhereQuery(undefined)).toBeUndefined();
     expect(SearchModule.generateCategoryWhereQuery([])).toBeUndefined();
   });
@@ -153,6 +165,7 @@ describe("search with configured Collections", () => {
   });
 
   const configuredCollections = [BASIC_ITEM.uuid, BOOKS.uuid];
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).configuredCollections = configuredCollections;
 
   const expectCollections = (expectedCollections: string[]) => {

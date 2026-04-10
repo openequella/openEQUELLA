@@ -21,11 +21,11 @@ object JPFPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion                  := "2.13.16",
+    scalaVersion                  := "2.13.18",
     jpfCodeDirs                   := Seq((Compile / classDirectory).value),
     (Compile / resourceDirectory) := baseDirectory.value / "resources",
     jpfResourceDirs               := (Compile / resourceDirectories).value,
-    jpfRuntime := JPFRuntime(
+    jpfRuntime                    := JPFRuntime(
       baseDirectory.value / "plugin-jpf.xml",
       jpfCodeDirs.value,
       jpfResourceDirs.value,
@@ -40,7 +40,7 @@ object JPFPlugin extends AutoPlugin {
     (Test / resourceDirectory) := baseDirectory.value / "test/resources",
     (Compile / scalaSource)    := baseDirectory.value / "scalasrc",
     updateOptions              := updateOptions.value.withCachedResolution(true),
-    jpfWriteDevJars := {
+    jpfWriteDevJars            := {
       val outBase = target.value / "jpflibs"
       IO.delete(outBase)
       val jarFiles = jpfLibraryJars.value.files

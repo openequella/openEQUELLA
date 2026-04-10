@@ -243,11 +243,11 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       with ViewerHandler
       with EditingHandler {
 
-    val updateFooter = controlState.getDialog.getFooterUpdate(tree, null)
+    val updateFooter     = controlState.getDialog.getFooterUpdate(tree, null)
     val scrapBookOnClick = Option(new AnonymousFunction(events.getNamedHandler("startSelection")))
       .filter(_ => myContentService.isMyContentContributionAllowed)
     val state: FileUploadState = new FileUploadState
-    val stagingContext = new FileStagingContext(
+    val stagingContext         = new FileStagingContext(
       Option(repo.getStagingid),
       repo.getItem.getItemId,
       fileSystemService,
@@ -263,7 +263,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
 
     val showRestrict = hasInstitutionPrivilege(AttachmentConfigConstants.RESTRICT_ATTACHMENTS)
     private def getEditingAttachment(info: SectionInfo) = getEditState.a
-    val fileEditDetails =
+    val fileEditDetails                                 =
       new FileEditDetails(id, tree, this, this, this, this, showRestrict, getEditingAttachment)
     val packageEditDetails =
       new PackageEditDetails(id, tree, this, this, showRestrict, getEditingAttachment)
@@ -364,7 +364,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     }
 
     def render(context: RenderContext, renderOptions: DialogRenderOptions) = {
-      val m = getModel(context)
+      val m      = getModel(context)
       val (r, f) =
         if (m.selecting) renderSelection(context)
         else if (m.isEditDetails) {
@@ -600,10 +600,10 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
       !aclManager.filterNonGrantedPrivileges(List(priv).asJava).isEmpty
 
     override def unzippedEntries: Seq[FileEntry] = {
-      val eds = getEditState
+      val eds       = getEditState
       val zipFolder = eds.commit match {
         case za: ZipFileCommit => za.unzippedPath
-        case _ =>
+        case _                 =>
           eds.a match {
             case zf: ZipAttachment => WebFileUploads.removeZipPath(zf.getUrl)
           }
@@ -631,7 +631,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
         val (newCommit, zp) = eds.commit match {
           // during creating file process
           case sf: StandardFileCommit =>
-            val target = sf.unzippedTo.getOrElse(newZipLocation())
+            val target   = sf.unzippedTo.getOrElse(newZipLocation())
             val progress =
               if (sf.unzippedTo.isEmpty) stagingContext.unzip(sf.uploaded.uploadPath, target)
               else EmptyZipProgress
@@ -668,7 +668,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
     /** Triggered when user chooses `remove unzip files`.
       */
     def removeUnzipped: Unit = {
-      val eds = getEditState
+      val eds       = getEditState
       val newCommit = (eds.commit, eds.a) match {
         // triggered if it's during during edit process
         case (ZipFileCommit(None, unzippedPath), _) => CleanupUnzipCommit(unzippedPath)
@@ -732,7 +732,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
               )
             }
             val mimeType = mimeTypeForFilename(uf.originalFilename)
-            val (fu, r) = WebFileUploads
+            val (fu, r)  = WebFileUploads
               .validateBeforeUpload(mimeType, request.getContentLengthLong, controlSettings)
               .map(illegal)
               .getOrElse {
@@ -760,7 +760,7 @@ class FileUploadHandlerNew extends AbstractAttachmentHandler[FileUploadHandlerMo
                         )
                     }
                   case IllegalFile(reason) => illegal(reason)
-                  case e @ Errored(t) =>
+                  case e @ Errored(t)      =>
                     (uf.failed(e), UploadFailed(Option(t.getMessage).getOrElse("Unknown error")))
                 }
               }
