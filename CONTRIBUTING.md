@@ -212,9 +212,9 @@ exclusively uses this `magick`-first syntax, making **ImageMagick 6 incompatible
 
 #### Docker Dev Cluster Users
 
-If you are running the server via the Docker configuration, the strictly pinned
-**ImageMagick 7.1.2-18** AppImage is automatically installed and mapped to `/opt/imagemagick`.
-No further configuration is required.
+The dev cluster image (`docker/Dockerfile`) uses the `eclipse-temurin:21-alpine` base which ships
+ImageMagick 7+ via `apk`. The `magick` binary lives at `/usr/bin` and `docker/defaults.xml` is
+already configured accordingly. No additional setup is needed.
 
 #### Native Linux Development (Recommended Setup)
 
