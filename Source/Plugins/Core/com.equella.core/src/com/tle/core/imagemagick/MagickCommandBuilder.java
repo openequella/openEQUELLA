@@ -18,7 +18,6 @@
 
 package com.tle.core.imagemagick;
 
-import com.tle.common.Check;
 import com.tle.common.util.ExecUtils;
 import com.tle.common.util.ExecUtils.ExecResult;
 import java.io.File;
@@ -27,45 +26,31 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Builder for assembling and executing ImageMagick CLI commands.
+ * Helper class for assembling and executing ImageMagick CLI commands.
  *
- * <p>Encapsulates the strict argument ordering required by {@code magick}:
- *
- * <pre>
- *   magick [input-options] input-file [output-options] output-file
- * </pre>
- *
- * <p>See <a href="https://imagemagick.org/script/command-line-processing.php">ImageMagick CLI
- * docs</a>.
- *
- * <p>Example usage for thumbnail generation:
- *
- * <pre>{@code
- * new MagickCommandBuilder(magickExePath)
- *     .withSizeHint(opts)
- *     .from(srcFile)
- *     .withTransforms(opts)
- *     .to(dstFile)
- *     .exec()
- *     .ensureOk();
- * }</pre>
- *
- * <p>Example usage for a simple operation (sample, crop, rotate):
- *
- * <pre>{@code
- * new MagickCommandBuilder(magickExePath)
- *     .from(src)
- *     .operation("-sample", "200x150")
- *     .to(dest)
- *     .exec()
- *     .ensureOk();
- * }</pre>
+ * <p>This builder is purely responsible for constructing the correct CLI syntax. All business logic
+ * (e.g. deciding <em>which</em> operations to apply) belongs in the calling service.
  */
 class MagickCommandBuilder {
+  /** Absolute path to the ImageMagick executable. */
+  private final String exePath;
 
-  private static final String BORDER_WIDTH_PX = "50";
+  /** Optional tool to run, placed immediately after the executable (e.g., "identify"). */
+  private String subCommand;
 
-  private final List<String> cmd = new ArrayList<>();
+  /**
+   * Flags applied strictly before reading the image to optimize memory or decoding (e.g., -size).
+   */
+  private final List<String> inputOptions = new ArrayList<>();
+
+  /** Path to the source image, optionally including a frame suffix like "[0]". */
+  private String inputFile;
+
+  /** Transformative operations applied to the image (e.g., -thumbnail, -crop, -gravity). */
+  private final List<String> outputOptions = new ArrayList<>();
+
+  /** Path to the destination file, or a pseudo-destination like "info:". */
+  private String outputFile;
 
   /**
    * Creates a new builder initialised with the path to the {@code magick} executable.
@@ -73,95 +58,133 @@ class MagickCommandBuilder {
    * @param exePath absolute path to the {@code magick} binary
    */
   MagickCommandBuilder(String exePath) {
-    cmd.add(exePath);
+    this.exePath = exePath;
+  }
+
+  /** Sets a subcommand (e.g. {@code "identify"}) placed immediately after the executable. */
+  MagickCommandBuilder subCommand(String subCommand) {
+    this.subCommand = subCommand;
+    return this;
   }
 
   /**
    * Appends a {@code -size} hint so ImageMagick can allocate memory efficiently before decoding the
-   * source image. Skipped when {@link ThumbnailOptions#isNoSize()} is {@code true}.
+   * source image.
    */
-  MagickCommandBuilder withSizeHint(ThumbnailOptions opts) {
-    if (!opts.isNoSize()) {
-      int w = opts.getImgWidth() == 0 ? opts.getWidth() * 2 : opts.getImgWidth();
-      int h = opts.getImgHeight() == 0 ? opts.getHeight() * 2 : opts.getImgHeight();
-      cmd.addAll(List.of("-size", w + "x" + h));
+  MagickCommandBuilder sizeHint(ImageDimensions hint) {
+    inputOptions.addAll(List.of("-size", hint.width() + "x" + hint.height()));
+    return this;
+  }
+
+  /** Appends an option that must strictly appear before the input file. */
+  MagickCommandBuilder inputOption(String flag, String param) {
+    inputOptions.add(flag);
+    if (param != null) {
+      inputOptions.add(param);
     }
     return this;
   }
 
+  /** Appends an option that takes no parameters. */
+  MagickCommandBuilder inputOption(String flag) {
+    return inputOption(flag, null);
+  }
+
   /**
-   * Appends the source file path.
+   * Sets the source file path.
    *
    * @param src the input image file
    */
   MagickCommandBuilder from(File src) {
-    cmd.add(src.getAbsolutePath());
+    return from(src, "");
+  }
+
+  /** Sets the source file path with a frame selector suffix. */
+  MagickCommandBuilder from(File src, String suffix) {
+    this.inputFile = src.getAbsolutePath() + suffix;
+    return this;
+  }
+
+  /** Appends a {@code -thumbnail} resize operation. */
+  MagickCommandBuilder thumbnail(ImageDimensions size, ResizeOperator resize) {
+    outputOptions.addAll(
+        List.of("-thumbnail", size.width() + "x" + size.height() + resize.getOperator()));
+    return this;
+  }
+
+  /** Appends a {@code -gravity} directive. */
+  MagickCommandBuilder gravity(String gravity) {
+    outputOptions.addAll(List.of("-gravity", gravity));
+    return this;
+  }
+
+  /** Appends {@code -bordercolor} and {@code -border} directives. */
+  MagickCommandBuilder border(String colour, String width) {
+    outputOptions.addAll(List.of("-bordercolor", colour, "-border", width));
+    return this;
+  }
+
+  /** Appends a {@code -crop} with structured dimensions and offset, followed by {@code +repage}. */
+  MagickCommandBuilder crop(ImageDimensions size, Offset offset) {
+    outputOptions.addAll(
+        List.of(
+            "-crop",
+            size.width() + "x" + size.height() + "+" + offset.x() + "+" + offset.y(),
+            "+repage"));
+    return this;
+  }
+
+  /** Appends a {@code -crop} with a raw geometry string (e.g. {@code "200x150"}). */
+  MagickCommandBuilder crop(String geometry) {
+    outputOptions.addAll(List.of("-crop", geometry));
+    return this;
+  }
+
+  /** Appends a {@code -sample} resize operation. */
+  MagickCommandBuilder sample(String width, String height, ResizeOperator resize) {
+    outputOptions.addAll(List.of("-sample", width + "x" + height + resize.getOperator()));
+    return this;
+  }
+
+  /** Appends a {@code -rotate} operation. */
+  MagickCommandBuilder rotate(int angle) {
+    outputOptions.addAll(List.of("-rotate", String.valueOf(angle)));
+    return this;
+  }
+
+  /** Appends a {@code -threshold} operation. */
+  MagickCommandBuilder threshold(String value) {
+    outputOptions.addAll(List.of("-threshold", value));
+    return this;
+  }
+
+  /** Appends a {@code -format} output option. */
+  MagickCommandBuilder format(String formatString) {
+    outputOptions.addAll(List.of("-format", formatString));
+    return this;
+  }
+
+  /** Appends arbitrary extra flags (e.g. additional options passed through from the caller). */
+  MagickCommandBuilder rawOptions(String... options) {
+    if (options != null) {
+      outputOptions.addAll(Arrays.asList(options));
+    }
     return this;
   }
 
   /**
-   * Appends thumbnail transform arguments: resize, gravity, border, and crop. Skipped when {@link
-   * ThumbnailOptions#isNoSize()} is {@code true}.
-   */
-  MagickCommandBuilder withTransforms(ThumbnailOptions opts) {
-    if (opts.isNoSize()) {
-      return this;
-    }
-
-    int thumbWidth = opts.getWidth();
-    int thumbHeight = opts.getHeight();
-
-    boolean shrinkOnly =
-        opts.isKeepAspect() || isAlreadySmallerThanTarget(opts, thumbWidth, thumbHeight);
-    String resizeOperator = shrinkOnly ? ">" : "^";
-    cmd.addAll(List.of("-thumbnail", thumbWidth + "x" + thumbHeight + resizeOperator));
-
-    if (opts.getGravity() != null) {
-      cmd.addAll(List.of("-gravity", opts.getGravity()));
-    }
-
-    if (!Check.isEmpty(opts.getBackgroundColour())) {
-      cmd.addAll(List.of("-bordercolor", opts.getBackgroundColour(), "-border", BORDER_WIDTH_PX));
-    }
-
-    int cropWidth = opts.getCropWidth();
-    int cropHeight = opts.getCropHeight();
-    if (cropWidth > 0 && cropHeight > 0) {
-      cmd.addAll(
-          List.of(
-              "-crop",
-              cropWidth + "x" + cropHeight + "+" + opts.getCropX() + "+" + opts.getCropY(),
-              "+repage"));
-    }
-    return this;
-  }
-
-  /**
-   * Appends the destination file path.
+   * Sets the destination file path.
    *
    * @param dst the output image file
    */
   MagickCommandBuilder to(File dst) {
-    cmd.add(dst.getAbsolutePath());
+    this.outputFile = dst.getAbsolutePath();
     return this;
   }
 
-  /**
-   * Appends a generic ImageMagick operation flag and its arguments. Useful for operations like
-   * {@code -sample}, {@code -crop}, {@code -rotate}, etc.
-   *
-   * @param op the operation flag (e.g. {@code "-sample"})
-   * @param param the primary parameter for the operation, or {@code null} to skip
-   * @param extra any additional arguments to append after the parameter
-   */
-  MagickCommandBuilder operation(String op, String param, String... extra) {
-    cmd.add(op);
-    if (param != null) {
-      cmd.add(param);
-    }
-    if (extra != null) {
-      cmd.addAll(Arrays.asList(extra));
-    }
+  /** Sets a pseudo-file output destination (e.g. {@code "info:"}). */
+  MagickCommandBuilder to(String dst) {
+    this.outputFile = dst;
     return this;
   }
 
@@ -171,11 +194,38 @@ class MagickCommandBuilder {
    * @return the {@link ExecResult} from the process execution
    */
   ExecResult exec() {
-    return ExecUtils.exec(cmd);
+    return ExecUtils.exec(buildCommandList());
   }
 
-  private boolean isAlreadySmallerThanTarget(
-      ThumbnailOptions opts, int targetWidth, int targetHeight) {
-    return opts.getImgHeight() < targetHeight && opts.getImgWidth() < targetWidth;
+  /** Executes the assembled command with a strict time limit. */
+  ExecResult execWithTimeLimit(int timeoutSeconds) {
+    List<String> finalCmd = buildCommandList();
+    return ExecUtils.execWithTimeLimit(timeoutSeconds, finalCmd.toArray(new String[0]));
+  }
+
+  private List<String> buildCommandList() {
+    validateState();
+
+    List<String> cmd = new ArrayList<>();
+
+    cmd.add(exePath);
+    if (subCommand != null) cmd.add(subCommand);
+    cmd.addAll(inputOptions);
+    if (inputFile != null) cmd.add(inputFile);
+    cmd.addAll(outputOptions);
+    if (outputFile != null) cmd.add(outputFile);
+
+    return cmd;
+  }
+
+  private void validateState() {
+    if (subCommand == null) {
+      if (inputFile == null)
+        throw new IllegalStateException(
+            "Cannot build magick command: An input file must be specified.");
+      if (outputFile == null)
+        throw new IllegalStateException(
+            "Cannot build magick command: An output destination must be specified.");
+    }
   }
 }

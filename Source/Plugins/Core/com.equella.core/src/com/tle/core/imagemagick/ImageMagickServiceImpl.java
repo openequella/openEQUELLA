@@ -37,8 +37,7 @@ import com.tle.core.zookeeper.ZookeeperService;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
@@ -62,6 +61,9 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   private static final int STD_THUMB_WIDTH = 88;
 
   private static final int STD_THUMB_HEIGHT = 66;
+
+  /** Border width in pixels applied when a background colour is specified. */
+  private static final String BORDER_WIDTH_PX = "50";
 
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
@@ -87,16 +89,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     try {
       updateDimensions(input, options);
       ensureParentDirectoryExists(dstFile);
-
-      // NOTE: Order is significant — magick requires: executable, size hint, src, transform args,
-      // dst. See: https://imagemagick.org/script/command-line-processing.php
-      new MagickCommandBuilder(getMagickExePath())
-          .withSizeHint(options)
-          .from(input)
-          .withTransforms(options)
-          .to(dstFile)
-          .exec()
-          .ensureOk();
+      buildThumbnailCommand(input, dstFile, options).exec().ensureOk();
     } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
@@ -130,39 +123,58 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public Dimension getImageDimensions(File image) throws IOException {
     ExecResult result =
-        ExecUtils.exec(getMagickExePath(), "identify", "-format", "%wx%h", image.getAbsolutePath());
+        newBuilder().subCommand("identify").inputOption("-format", "%wx%h").from(image).exec();
     result.ensureOk();
 
     Matcher m = DIMENSIONS_PATTERN.matcher(result.getStdout());
     if (m.matches()) {
       return new Dimension(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
     }
-    throw new RuntimeException(
-        "Output is not in expected format: "
-            + (Check.isEmpty(result.getStderr()) ? result.getStdout() : result.getStderr()));
+
+    String output =
+        Optional.of(result.getStderr()).filter(s -> !s.isEmpty()).orElse(result.getStdout());
+    throw new RuntimeException("Output is not in expected format: " + output);
   }
 
   @Override
   public void sample(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-sample", src, dest, null, width + "x" + height, options);
+    newBuilder()
+        .from(src)
+        .sample(width, height, ResizeOperator.DEFAULT)
+        .rawOptions(options)
+        .to(dest)
+        .exec()
+        .ensureOk();
   }
 
   @Override
   public void sampleNoRatio(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-sample", src, dest, null, width + "x" + height + "!", options);
+    newBuilder()
+        .from(src)
+        .sample(width, height, ResizeOperator.EXACT)
+        .rawOptions(options)
+        .to(dest)
+        .exec()
+        .ensureOk();
   }
 
   @Override
   public void crop(File src, File dest, String width, String height, String... options)
       throws IOException {
-    operation("-crop", src, dest, null, width + "x" + height, options);
+    newBuilder()
+        .from(src)
+        .crop(width + "x" + height)
+        .rawOptions(options)
+        .to(dest)
+        .exec()
+        .ensureOk();
   }
 
   @Override
   public void rotate(File src, File dest, int angle, String... options) throws IOException {
-    operation("-rotate", src, dest, Integer.toString(angle), null, options);
+    newBuilder().from(src).rotate(angle).rawOptions(options).to(dest).exec().ensureOk();
   }
 
   @Override
@@ -186,7 +198,8 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   public void checkServiceRequest(CheckServiceRequestEvent request) {
     ServiceStatus status = new ServiceStatus(ServiceName.IMAGEMAGICK);
     try {
-      ExecResult result = ExecUtils.exec(getMagickExePath(), "identify", "-version");
+      ExecResult result = newBuilder().subCommand("identify").inputOption("-version").exec();
+
       if (!result.getStderr().isEmpty()) {
         status.setServiceStatus(Status.BAD);
         status.setMoreInfo(
@@ -215,45 +228,17 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   }
 
   /**
-   * Runs a single ImageMagick operation (e.g. sample, crop, rotate).
-   *
-   * @param op the ImageMagick operation flag (e.g. "-sample", "-crop")
-   * @param src the source image file
-   * @param dest the destination image file
-   * @param opParam optional parameter for the operation (e.g. rotation angle), or {@code null}
-   * @param dimensions formatted dimension string (e.g. "200x150" or "200x150!" or null to skip)
-   * @param extraOptions any additional ImageMagick flags to append
-   */
-  private void operation(
-      String op, File src, File dest, String opParam, String dimensions, String[] extraOptions) {
-    MagickCommandBuilder builder =
-        new MagickCommandBuilder(getMagickExePath()).from(src).operation(op, opParam);
-
-    if (dimensions != null) {
-      builder.operation(dimensions, null);
-    }
-    if (extraOptions != null) {
-      for (String option : extraOptions) {
-        builder.operation(option, null);
-      }
-    }
-
-    builder.to(dest).exec().ensureOk();
-  }
-
-  /**
    * Validates the image against a timed process to prevent indefinite thumbnailing on problematic
    * files. The timeout is configured via {@code thumbnail.timeout} in config.properties; defaults
    * to 20 seconds, or 0 to disable.
    */
   private void validateAgainstTimer(File image) {
-    ExecResult result =
-        ExecUtils.execWithTimeLimit(
-            thumbnailingTimeout,
-            new String[] {
-              getMagickExePath(), "identify", "-format", "%wx%h", image.getAbsolutePath()
-            });
-    result.ensureOk();
+    newBuilder()
+        .subCommand("identify")
+        .inputOption("-format", "%wx%h")
+        .from(image)
+        .execWithTimeLimit(thumbnailingTimeout)
+        .ensureOk();
   }
 
   /**
@@ -266,10 +251,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
 
     File frameFile = new File(srcFile.getParent(), "frame.gif");
-    List<String> command =
-        Arrays.asList(
-            getMagickExePath(), srcFile.getAbsolutePath() + "[0]", frameFile.getAbsolutePath());
-    ExecUtils.exec(command);
+    newBuilder().from(srcFile, "[0]").to(frameFile).exec();
     return frameFile;
   }
 
@@ -314,15 +296,10 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     if (options.isSkipBlankCheck()) {
       return;
     }
+
     ExecResult result =
-        ExecUtils.exec(
-            getMagickExePath(),
-            dstFile.getAbsolutePath(),
-            "-threshold",
-            "99%",
-            "-format",
-            "\"%[fx:100*mean]\"", // Calculates average pixel brightness as percentage
-            "info:");
+        newBuilder().from(dstFile).threshold("99%").format("\"%[fx:100*mean]\"").to("info:").exec();
+
     result.ensureOk();
     if (result.getStdout().contains("100")) {
       if (!dstFile.delete()) {
@@ -331,11 +308,66 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
     }
   }
 
+  /** Assembles the full ImageMagick command for thumbnail generation. */
+  private MagickCommandBuilder buildThumbnailCommand(
+      File input, File dstFile, ThumbnailOptions options) {
+    MagickCommandBuilder builder = newBuilder();
+
+    if (!options.isNoSize()) {
+      applySizeHint(builder, options);
+    }
+
+    builder.from(input);
+
+    if (!options.isNoSize()) {
+      applyThumbnailTransforms(builder, options);
+    }
+
+    return builder.to(dstFile);
+  }
+
+  /** Calculates the optimal size hint for memory allocation and appends it to the builder. */
+  private void applySizeHint(MagickCommandBuilder builder, ThumbnailOptions options) {
+    int w = options.getImgWidth() == 0 ? options.getWidth() * 2 : options.getImgWidth();
+    int h = options.getImgHeight() == 0 ? options.getHeight() * 2 : options.getImgHeight();
+    builder.sizeHint(new ImageDimensions(w, h));
+  }
+
+  /** Appends resize, gravity, border and crop transforms. */
+  private void applyThumbnailTransforms(MagickCommandBuilder builder, ThumbnailOptions options) {
+    ImageDimensions thumbSize = new ImageDimensions(options.getWidth(), options.getHeight());
+    builder.thumbnail(thumbSize, determineResizeOperator(options));
+
+    Optional.ofNullable(options.getGravity()).ifPresent(builder::gravity);
+
+    if (!Check.isEmpty(options.getBackgroundColour())) {
+      builder.border(options.getBackgroundColour(), BORDER_WIDTH_PX);
+    }
+
+    if (options.getCropWidth() > 0 && options.getCropHeight() > 0) {
+      builder.crop(
+          new ImageDimensions(options.getCropWidth(), options.getCropHeight()),
+          new Offset(options.getCropX(), options.getCropY()));
+    }
+  }
+
+  private ResizeOperator determineResizeOperator(ThumbnailOptions options) {
+    boolean isAlreadySmaller =
+        options.getImgWidth() < options.getWidth() && options.getImgHeight() < options.getHeight();
+    return (options.isKeepAspect() || isAlreadySmaller)
+        ? ResizeOperator.SHRINK_ONLY
+        : ResizeOperator.FILL_AREA;
+  }
+
   private boolean hasExtension(File file, String ext) {
     return file.getName().toLowerCase().endsWith("." + ext.toLowerCase());
   }
 
   private String getMagickExePath() {
     return magickExe.getAbsolutePath();
+  }
+
+  private MagickCommandBuilder newBuilder() {
+    return new MagickCommandBuilder(getMagickExePath());
   }
 }
