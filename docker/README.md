@@ -153,9 +153,9 @@ tests. This could also be used for an image to run a CI type build, and so in a 
 also be used to diagnose CI build issues.
 
 It uses eclipse-temurin:11 as its base image. For the installation of dependent build tools,
-SBT relies on the ./sbt wrapper in the repository to ensure the correct version is always used.
+SBT relies on the `./sbt` wrapper in the repository to ensure the correct version is always used.
 NVM is installed directly in the Dockerfile via the official installation script, and the repository's
-.nvmrc is then used to set up the correct Node/NPM version. Both are therefore always in sync
+`.nvmrc` is then used to set up the correct Node/NPM version. Both are therefore always in sync
 with what is currently in the repository.
 
 As part of the build it clones the openEQUELLA repository and uses the `.nvmrc` to install an
@@ -187,9 +187,33 @@ installed in the build image via two helper scripts in the `docker-build` direct
 
 #### Building the image
 
-Building is very simple. Assuming you'd like to call the image `oeq-full-build` you would:
+Building is very simple. Assuming you'd like to call the image `oeq-full-build`, the standard
+command to build from the official public repository is:
 
-    docker build -t oeq-full-build .
+```bash
+docker build -t oeq-full-build .
+```
+
+**Using Custom or Private Repositories**
+
+By default, the Dockerfile clones the official openEQUELLA GitHub repository. If you are developing
+on a fork or a private internal repository, you can override the source location using the
+`REPO_URL` build argument.
+
+To build from a **public fork**:
+
+```bash
+docker build -t oeq-full-build \
+  --build-arg REPO_URL="https://github.com/your-username/openEQUELLA.git" .
+```
+
+To build from a **private repository**, you must inject a Personal Access Token (PAT) directly into the URL so the Docker builder can authenticate during the clone
+step:
+
+```bash
+docker build -t oeq-full-build \
+  --build-arg REPO_URL="https://<username>:<token>@gitlab.com/edalex-group/development/oeq/openequella.git" .
+```
 
 #### Running the image
 
@@ -232,13 +256,19 @@ To set up the minimum of environment variable you'd consider doing:
 export AUTOTEST_CONFIG=autotest/codebuild.conf  # set the configuration file to control things
 export EQ_EXIFTOOL_PATH=/usr/bin/exiftool
 export OLD_TEST_NEWUI=true                      # true if you want the tests in New UI mode
-```
 
-(You may want to modify the config file to where is says the chrome driver is.)
+# Override the ChromeDriver path to match where install-chromedriver placed it in the image.
+# codebuild.conf defaults to ${HOME}/chromedriver which won't exist here.
+export SBT_OPTS="-Dwebdriver.chrome.driver=/usr/local/bin/chromedriver"
+```
 
 Next to utilise the `autotest` project tasks to establish an environment:
 
-    ./sbt "project autotest" installEquella startEquella configureInstall setupForTests
+    ./sbt "project autotest" installEquella startEquella
+
+Treat server startup as asynchronous: only continue with configuration or test execution once openEQUELLA is actually reachable on the expected URL.
+
+    ./sbt "project autotest" configureInstall setupForTests
 
 Assuming that all passed, then you can run tests with:
 
