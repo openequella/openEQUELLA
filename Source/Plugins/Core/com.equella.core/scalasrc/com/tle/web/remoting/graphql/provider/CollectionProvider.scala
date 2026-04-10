@@ -24,6 +24,7 @@ import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.RemoteItemDefinitionService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
+import com.tle.web.remoting.graphql.ErrorCode
 import com.tle.web.remoting.graphql.schema.types.BaseEntityReference
 import org.slf4j.LoggerFactory
 
@@ -97,6 +98,10 @@ class CollectionProvider @Inject() (
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def importCollection(zipBase64: String): Either[ProviderError, BaseEntityReference] = {
     LOGGER.debug("Importing collection from base64 zip")
+    if (zipBase64.trim.isEmpty) {
+      LOGGER.debug("Import failed: empty zip data provided")
+      return Left(ProviderError("Import failed: empty zip data provided", ErrorCode.BAD_REQUEST))
+    }
     ProviderError.Try("Failed to import collection: ") {
       val zipBytes   = Base64.getDecoder.decode(zipBase64)
       val entityPack = itemDefinitionService.importEntity(zipBytes)

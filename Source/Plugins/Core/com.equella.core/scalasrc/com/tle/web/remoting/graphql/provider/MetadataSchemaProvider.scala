@@ -24,6 +24,7 @@ import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.schema.service.SchemaService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
+import com.tle.web.remoting.graphql.ErrorCode
 import com.tle.web.remoting.graphql.schema.conversion.EditableEntityConverter.toEntityPack
 import com.tle.web.remoting.graphql.schema.conversion.MetadataSchemaConverter
 import com.tle.web.remoting.graphql.schema.types._
@@ -99,6 +100,10 @@ class MetadataSchemaProvider @Inject() (
       zipBase64: String
   ): Either[ProviderError, EditableEntity[MetadataSchema]] = {
     LOGGER.debug("Importing metadata schema from base64 zip")
+    if (zipBase64.trim.isEmpty) {
+      LOGGER.debug("Import failed: empty zip data provided")
+      return Left(ProviderError("Import failed: empty zip data provided", ErrorCode.BAD_REQUEST))
+    }
     ProviderError.Try("Failed to import metadata schema: ") {
       val zipBytes = Base64.getDecoder.decode(zipBase64)
       EditableEntity(schemaService.importEntity(zipBytes), MetadataSchema.apply)
