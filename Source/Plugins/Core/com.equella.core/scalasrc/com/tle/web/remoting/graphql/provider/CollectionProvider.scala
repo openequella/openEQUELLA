@@ -24,8 +24,11 @@ import com.tle.core.filesystem.staging.service.StagingService
 import com.tle.core.guice.Bind
 import com.tle.core.remoting.RemoteItemDefinitionService
 import com.tle.core.security.impl.{RequiresPrivilege, SecureEntity}
-import com.tle.web.remoting.graphql.ErrorCode
-import com.tle.web.remoting.graphql.schema.types.BaseEntityReference
+import com.tle.web.remoting.graphql.schema.types.{
+  BaseEntityReference,
+  CollectionDefinition,
+  EditableEntity
+}
 import org.slf4j.LoggerFactory
 
 import java.util.Base64
@@ -92,28 +95,17 @@ class CollectionProvider @Inject() (
     * @param zipBase64
     *   a base64-encoded string representing the zip file to import.
     * @return
-    *   Either a ProviderError if the operation fails, or a BaseEntityReference for the imported
-    *   collection.
+    *   Either a ProviderError if the operation fails, or an EditableEntity containing the imported
+    *   collection ready for editing.
     */
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
-  def importCollection(zipBase64: String): Either[ProviderError, BaseEntityReference] = {
+  def importCollection(
+      zipBase64: String
+  ): Either[ProviderError, EditableEntity[CollectionDefinition]] = {
     LOGGER.debug("Importing collection from base64 zip")
-    if (zipBase64.trim.isEmpty) {
-      LOGGER.debug("Import failed: empty zip data provided")
-      return Left(ProviderError("Import failed: empty zip data provided", ErrorCode.BAD_REQUEST))
-    }
-    ProviderError.Try("Failed to import collection: ") {
-      val zipBytes   = Base64.getDecoder.decode(zipBase64)
-      val entityPack = itemDefinitionService.importEntity(zipBytes)
-      val entity     = entityPack.getEntity
-      BaseEntityReference(
-        id = entity.getId,
-        uuid = entity.getUuid,
-        bundleId = entity.getName.getId,
-        owner = entity.getOwner,
-        forCollection = true
-      )
-    }
+    importBaseEntity("collection", zipBase64, itemDefinitionService.importEntity)(
+      CollectionDefinition.apply
+    )
   }
 
   /** Get the collection ID for a given UUID.

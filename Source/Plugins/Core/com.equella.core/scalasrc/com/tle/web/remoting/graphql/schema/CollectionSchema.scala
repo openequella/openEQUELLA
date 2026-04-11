@@ -24,7 +24,11 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.CollectionProvider
-import com.tle.web.remoting.graphql.schema.types.BaseEntityReference
+import com.tle.web.remoting.graphql.schema.types.{
+  BaseEntityReference,
+  CollectionDefinition,
+  EditableEntity
+}
 
 import javax.inject.{Inject, Singleton}
 
@@ -99,7 +103,9 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
       @GQLDescription(
         "Import a collection from a base64-encoded zip file."
       )
-      importCollection: CollectionImportArgs => ResultWithErrors[BaseEntityReference],
+      importCollection: CollectionImportArgs => ResultWithErrors[
+        EditableEntity[CollectionDefinition]
+      ],
       @GQLDescription(
         "Cancel editing a collection - discarding any changes made and unlocking the collection."
       )
