@@ -37,6 +37,13 @@ object Queries {
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
     _root_.caliban.client.SelectionBuilder.Field("javaScript", Obj(innerSelection))
 
+  /** Queries for language
+    */
+  def language[A](
+      innerSelection: SelectionBuilder[LanguageQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("language", Obj(innerSelection))
+
   /** Queries for internal users
     */
   def internalUsers[A](
