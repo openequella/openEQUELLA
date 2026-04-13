@@ -19,7 +19,7 @@
 package io.github.openequella.graphql.api.views
 
 import caliban.client.SelectionBuilder
-import io.github.openequella.graphql.client.{LanguageBundle, LanguageString}
+import io.github.openequella.graphql.client.{LanguageBundle, LanguageBundleName, LanguageString}
 
 /** View model for a language string, representing a localized text entry.
   *
@@ -52,4 +52,17 @@ object LanguageBundleView {
     (
       LanguageBundle.id ~ LanguageBundle.strings(LanguageStringView.selector)
     ).mapN(LanguageBundleView.apply _)
+}
+
+/** View model for a resolved language bundle display name.
+  *
+  * @param id
+  *   Unique identifier for the language bundle.
+  * @param string
+  *   The closest resolved display name for the language bundle.
+  */
+final case class LanguageBundleNameView(id: Long, string: String)
+object LanguageBundleNameView {
+  val selector: SelectionBuilder[LanguageBundleName, LanguageBundleNameView] =
+    (LanguageBundleName.id ~ LanguageBundleName.string).mapN(LanguageBundleNameView.apply _)
 }

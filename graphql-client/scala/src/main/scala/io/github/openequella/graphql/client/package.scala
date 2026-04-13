@@ -34,7 +34,10 @@ package object client {
   type InternalUserQueries
   type JavaScriptQueries
   type KVStringString
+  type Language
   type LanguageBundle
+  type LanguageBundleName
+  type LanguageQueries
   type LanguageString
   type MetadataSchema
   type MetadataSchemaMutations

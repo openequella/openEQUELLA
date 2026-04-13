@@ -59,3 +59,14 @@ object LanguageBundle {
       }
     )
 }
+
+/** Unlike [[LanguageBundle]], it represents a resolved display text for a language bundle, where
+  * the most appropriate translation has been selected based on the system states.
+  */
+@GQLDescription("Resolved display text for a language bundle.")
+final case class LanguageBundleName(
+    @GQLDescription("The language bundle ID.")
+    id: Long,
+    @GQLDescription("The closest resolved display text for the language bundle.")
+    string: String
+)
