@@ -35,6 +35,7 @@ trait SchemaProvider {
 class Schema {
   @Inject private var baseEntitySchema: BaseEntitySchema         = _
   @Inject private var javaScriptSchema: JavaScriptSchema         = _
+  @Inject private var languageSchema: LanguageSchema             = _
   @Inject private var metadataSchemaSchema: MetadataSchemaSchema = _
   @Inject private var collectionSchema: CollectionSchema         = _
   @Inject private var tleUserSchema: TLEUserSchema               = _
@@ -49,6 +50,14 @@ class Schema {
     // Maybe we should have all API provider classes extend a common trait and then use that trait
     // to combine the APIs - by finding them all with introspection. But then the dependency injection
     // won't work. :thinking:
-    baseEntitySchema.getApi |+| collectionSchema.getApi |+| javaScriptSchema.getApi |+| metadataSchemaSchema.getApi |+| tleGroupSchema.getApi |+| tleUserSchema.getApi
+    List(
+      baseEntitySchema.getApi,
+      collectionSchema.getApi,
+      javaScriptSchema.getApi,
+      languageSchema.getApi,
+      tleUserSchema.getApi,
+      tleGroupSchema.getApi,
+      metadataSchemaSchema.getApi
+    ).reduce(_ |+| _)
   }
 }
