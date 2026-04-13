@@ -106,6 +106,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -125,6 +126,7 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.deployment.ModuleBuilder;
 import org.apache.axis2.description.AxisModule;
+import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisConfigurator;
 import org.apache.axis2.kernel.http.HTTPConstants;
@@ -136,9 +138,8 @@ import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.rampart.handler.WSSHandlerConstants;
-import org.apache.rampart.handler.config.OutflowConfiguration;
-import org.apache.ws.security.WSPasswordCallback;
-import org.apache.ws.security.handler.WSHandlerConstants;
+import org.apache.wss4j.common.ext.WSPasswordCallback;
+import org.apache.wss4j.dom.handler.WSHandlerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,6 +155,8 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
       AbstractPluginService.getMyPluginId(BlackboardConnectorService.class) + ".";
 
   private static final String KEY_PROXY_TOOL_PASS = "proxyToolPass";
+
+  private static final String RAMPART_MODULE_NAME = "rampart";
 
   private static final String VENDOR_ID = "Apereo";
   private static final String PROGRAM_ID = "EQUELLA";
@@ -974,7 +977,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
   }
 
   private class Stubs implements CallbackHandler {
-    private final OutflowConfiguration ofc;
+    private final Parameter outflowSecurityParam;
     private final ConfigurationContext ctx;
     private final String bbUrl;
     private final ContextWSStub contextWebservice;
@@ -989,15 +992,17 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
       this.bbUrl = bbUrl;
 
       /*
-       * Must use deprecated class of setting up security because the SOAP
-       * response doesn't include a security header. Using the deprecated
-       * OutflowConfiguration class we can specify that the security
-       * header is only for the outgoing SOAP message.
+       * Blackboard responses do not include a WS-Security header.
+       * To preserve legacy behaviour that previously relied on the removed
+       * OutflowConfiguration API, we configure equivalent outbound-only
+       * WS-Security properties here.
        */
-      ofc = new OutflowConfiguration();
-      ofc.setActionItems("UsernameToken Timestamp");
-      ofc.setUser("session");
-      ofc.setPasswordType("PasswordText");
+      final Properties outflowProps = new Properties();
+      outflowProps.setProperty(WSHandlerConstants.ACTION, "UsernameToken Timestamp");
+      outflowProps.setProperty(WSHandlerConstants.USER, "session");
+      outflowProps.setProperty(WSHandlerConstants.PASSWORD_TYPE, "PasswordText");
+      outflowSecurityParam = new Parameter(WSSHandlerConstants.OUTFLOW_SECURITY, outflowProps);
+      outflowSecurityParam.setParameterType(Parameter.ANY_PARAMETER);
 
       final MultiThreadedHttpConnectionManager conMan = new MultiThreadedHttpConnectionManager();
       final HttpConnectionManagerParams params = new HttpConnectionManagerParams();
@@ -1081,7 +1086,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
 
         final Options options = client.getOptions();
         options.setProperty(WSHandlerConstants.PW_CALLBACK_REF, this);
-        options.setProperty(WSSHandlerConstants.OUTFLOW_SECURITY, ofc.getProperty());
+        options.setProperty(WSSHandlerConstants.OUTFLOW_SECURITY, outflowSecurityParam);
         options.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, "true");
         options.setProperty(HTTPConstants.HTTP_PROTOCOL_VERSION, HTTPConstants.HEADER_PROTOCOL_11);
         URI uri = URI.create(bbUrl);
@@ -1089,7 +1094,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
           Protocol myhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
           options.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER, myhttps);
         }
-        client.engageModule("rampart-1.5.1");
+        client.engageModule(RAMPART_MODULE_NAME);
       }
     }
 
@@ -1129,7 +1134,7 @@ public class BlackboardConnectorServiceImpl extends AbstractIntegrationConnector
       AxisModule module = new AxisModule("rampart");
       module.setModuleClassLoader(getClass().getClassLoader());
       module.setParent(axisConfig);
-      module.setArchiveName("rampart-1.5.1");
+      module.setArchiveName(RAMPART_MODULE_NAME);
 
       ModuleBuilder moduleBuilder =
           new ModuleBuilder(
