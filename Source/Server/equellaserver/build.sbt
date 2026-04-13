@@ -405,6 +405,13 @@ run := {
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
 
+  // Rampart/WSS4J upgrade introduces duplicate schema resources via CXF policy and WSS4J stax.
+  // Keep one deterministic set to avoid assembly deduplicate failures.
+  case PathList("schemas", "xml.xsd")                                     => MergeStrategy.first
+  case PathList("schemas", "oasis-200401-wss-wssecurity-secext-1.0.xsd")  => MergeStrategy.first
+  case PathList("schemas", "oasis-200401-wss-wssecurity-utility-1.0.xsd") => MergeStrategy.first
+  case PathList("schemas", "xmldsig-core-schema.xsd")                     => MergeStrategy.first
+
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
   //  .../org.apache.cxf/cxf-rt-frontend-jaxrs/bundles/cxf-rt-frontend-jaxrs-3.3.6.jar:META-INF/blueprint.handlers
