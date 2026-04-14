@@ -19,7 +19,6 @@
 package com.tle.core.imagemagick;
 
 import com.google.inject.name.Named;
-import com.tle.common.Check;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.util.ExecUtils;
@@ -62,9 +61,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
 
   private static final int STD_THUMB_HEIGHT = 66;
 
-  /** Border width in pixels applied when a background colour is specified. */
-  private static final String BORDER_WIDTH_PX = "50";
-
   @Inject private FileSystemService fileSystem;
   @Inject private EventService eventService;
   @Inject private ZookeeperService zkService;
@@ -84,16 +80,17 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   @Override
   public void generateThumbnailAdvanced(File srcFile, File dstFile, ThumbnailOptions options) {
     validateAgainstTimer(srcFile);
-    File input = handleGifFrame(srcFile);
 
-    try {
-      updateDimensions(input, options);
-      ensureParentDirectoryExists(dstFile);
-      buildThumbnailCommand(input, dstFile, options).exec().ensureOk();
+    try (ThumbnailCommandBuilder thumbnailCmd =
+        new ThumbnailCommandBuilder(this::newBuilder, this::getImageDimensions)
+            .input(srcFile)
+            .output(dstFile)
+            .withOptions(options)) {
+
+      thumbnailCmd.execute().ensureOk();
+
     } catch (IOException e) {
       throw new RuntimeException(e);
-    } finally {
-      cleanupGifFrame(input);
     }
 
     checkForBlankThumbnail(dstFile, options);
@@ -242,53 +239,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   }
 
   /**
-   * If the source is a GIF, extracts its first frame to a temporary file and returns it. Otherwise
-   * returns the original file unchanged.
-   */
-  private File handleGifFrame(File srcFile) {
-    if (!hasExtension(srcFile, "gif")) {
-      return srcFile;
-    }
-
-    File frameFile = new File(srcFile.getParent(), "frame.gif");
-    newBuilder().from(srcFile, "[0]").to(frameFile).exec();
-    return frameFile;
-  }
-
-  /**
-   * Reads the actual dimensions of {@code imageFile} and stores them in {@code options} so that the
-   * command builder can make informed sizing decisions.
-   */
-  private void updateDimensions(File imageFile, ThumbnailOptions options) throws IOException {
-    Dimension imgDimensions = getImageDimensions(imageFile);
-    options.setImgWidth(imgDimensions.width);
-    options.setImgHeight(imgDimensions.height);
-  }
-
-  /** Ensures the parent directory of {@code file} exists, creating it if necessary. */
-  private void ensureParentDirectoryExists(File file) throws IOException {
-    File parent = file.getParentFile();
-    boolean created = parent.mkdirs();
-    boolean exists = parent.exists();
-    if (!created && !exists) {
-      throw new IOException(
-          String.format(
-              "Failed to create directory '%s'. Check filesystem permissions.",
-              parent.getAbsolutePath()));
-    }
-  }
-
-  /** Deletes a temporary GIF frame file after thumbnailing is complete. */
-  private void cleanupGifFrame(File srcFile) {
-    if (!srcFile.getAbsolutePath().endsWith("frame.gif")) {
-      return;
-    }
-    if (!srcFile.delete()) {
-      LOGGER.warn("Unable to delete generated gif frame: " + srcFile.getAbsolutePath());
-    }
-  }
-
-  /**
    * Checks whether the generated thumbnail is blank (all white). If it is, the file is deleted.
    * Skipped when {@link ThumbnailOptions#isSkipBlankCheck()} is {@code true}.
    */
@@ -306,61 +256,6 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
         LOGGER.warn("Unable to delete presumed blank thumbnail: " + dstFile.getAbsolutePath());
       }
     }
-  }
-
-  /** Assembles the full ImageMagick command for thumbnail generation. */
-  private MagickCommandBuilder buildThumbnailCommand(
-      File input, File dstFile, ThumbnailOptions options) {
-    MagickCommandBuilder builder = newBuilder();
-
-    if (!options.isNoSize()) {
-      applySizeHint(builder, options);
-    }
-
-    builder.from(input);
-
-    if (!options.isNoSize()) {
-      applyThumbnailTransforms(builder, options);
-    }
-
-    return builder.to(dstFile);
-  }
-
-  /** Calculates the optimal size hint for memory allocation and appends it to the builder. */
-  private void applySizeHint(MagickCommandBuilder builder, ThumbnailOptions options) {
-    int w = options.getImgWidth() == 0 ? options.getWidth() * 2 : options.getImgWidth();
-    int h = options.getImgHeight() == 0 ? options.getHeight() * 2 : options.getImgHeight();
-    builder.sizeHint(new ImageDimensions(w, h));
-  }
-
-  /** Appends resize, gravity, border and crop transforms. */
-  private void applyThumbnailTransforms(MagickCommandBuilder builder, ThumbnailOptions options) {
-    ImageDimensions thumbSize = new ImageDimensions(options.getWidth(), options.getHeight());
-    builder.thumbnail(thumbSize, determineResizeOperator(options));
-
-    Optional.ofNullable(options.getGravity()).ifPresent(builder::gravity);
-
-    if (!Check.isEmpty(options.getBackgroundColour())) {
-      builder.border(options.getBackgroundColour(), BORDER_WIDTH_PX);
-    }
-
-    if (options.getCropWidth() > 0 && options.getCropHeight() > 0) {
-      builder.crop(
-          new ImageDimensions(options.getCropWidth(), options.getCropHeight()),
-          new Offset(options.getCropX(), options.getCropY()));
-    }
-  }
-
-  private ResizeOperator determineResizeOperator(ThumbnailOptions options) {
-    boolean isAlreadySmaller =
-        options.getImgWidth() < options.getWidth() && options.getImgHeight() < options.getHeight();
-    return (options.isKeepAspect() || isAlreadySmaller)
-        ? ResizeOperator.SHRINK_ONLY
-        : ResizeOperator.FILL_AREA;
-  }
-
-  private boolean hasExtension(File file, String ext) {
-    return file.getName().toLowerCase().endsWith("." + ext.toLowerCase());
   }
 
   private String getMagickExePath() {
