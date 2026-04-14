@@ -210,9 +210,9 @@ exclusively uses this `magick`-first syntax, making **ImageMagick 6 incompatible
 > on the old `convert` syntax, installing it via `apt` will cause openEQUELLA's image processing
 > and test suites to fail.
 
-#### Docker Dev Cluster Users
+#### Docker Image Users
 
-The dev cluster image (`docker/Dockerfile`) uses the `eclipse-temurin:21-alpine` base which ships
+The docker image (`docker/Dockerfile`) uses the `eclipse-temurin:21-alpine` base which ships
 ImageMagick 7+ via `apk`. The `magick` binary lives at `/usr/bin` and `docker/defaults.xml` is
 already configured accordingly. No additional setup is needed.
 
