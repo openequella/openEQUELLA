@@ -134,9 +134,9 @@ class MagickCommandBuilder {
     return this;
   }
 
-  /** Appends a {@code -crop} with a raw geometry string (e.g. {@code "200x150"}). */
-  MagickCommandBuilder crop(String geometry) {
-    outputOptions.addAll(List.of("-crop", geometry));
+  /** Appends a {@code -crop} with structured dimensions (e.g. {@code "200x150"}). */
+  MagickCommandBuilder crop(ImageDimensions size) {
+    outputOptions.addAll(List.of("-crop", size.width() + "x" + size.height()));
     return this;
   }
 

@@ -165,7 +165,7 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       throws IOException {
     newBuilder()
         .from(src)
-        .crop(width + "x" + height)
+        .crop(new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)))
         .rawOptions(options)
         .to(dest)
         .exec()
