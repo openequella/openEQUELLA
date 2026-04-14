@@ -21,6 +21,8 @@ package com.tle.admin.graphql.conversion
 import com.tle.common.NameValue
 import io.github.openequella.graphql.api.views.NameValueView
 
+import scala.util.chaining.scalaUtilChainingOps
+
 /** Converter for transforming GraphQL [[NameValueView]] to the [[NameValue]].
   */
 object NameValueViewConverter {
@@ -34,11 +36,8 @@ object NameValueViewConverter {
     */
   def toNameValue(
       view: NameValueView
-  ): NameValue = {
-    val to = new NameValue
+  ): NameValue = new NameValue().tap { to =>
     to.setName(view.name)
     to.setValue(view.value)
-
-    to
   }
 }

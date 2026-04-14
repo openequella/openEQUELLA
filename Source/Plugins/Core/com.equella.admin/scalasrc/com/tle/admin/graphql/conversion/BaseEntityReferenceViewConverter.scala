@@ -21,16 +21,15 @@ package com.tle.admin.graphql.conversion
 import com.tle.beans.entity.BaseEntityLabel
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 
-object BaseEntityReferenceViewConverter {
-  def toBaseEntityLabel(view: BaseEntityReferenceView): BaseEntityLabel = {
-    val label = new BaseEntityLabel(
-      view.id,
-      view.uuid,
-      view.bundleId,
-      view.owner
-    )
-    label.setForCollection(view.forCollection)
+import scala.util.chaining.scalaUtilChainingOps
 
-    label
+object BaseEntityReferenceViewConverter {
+  def toBaseEntityLabel(view: BaseEntityReferenceView): BaseEntityLabel = new BaseEntityLabel(
+    view.id,
+    view.uuid,
+    view.bundleId,
+    view.owner
+  ).tap { label =>
+    label.setForCollection(view.forCollection)
   }
 }
