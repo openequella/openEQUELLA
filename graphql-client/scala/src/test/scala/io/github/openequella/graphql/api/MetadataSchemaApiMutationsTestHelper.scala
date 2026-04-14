@@ -20,8 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views._
-import io.github.openequella.graphql.test.TestHelper
-import org.scalatest.Assertions.fail
+import io.github.openequella.graphql.test.BaseEntityApiTestHelper
 import org.scalatest.EitherValues._
 
 import java.util.Locale
@@ -38,21 +37,11 @@ object MetadataSchemaApiMutationsTestHelper {
     * session, so we need to test with a different user.
     */
   def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean =
-    TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
-      val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
-      val isLocked            = editResultOtherUser match {
-        case Left(errors) =>
-          if (errors.exists(_.isInstanceOf[LockedError])) true
-          else
-            fail(s"Expected a LockedError, but got: $errors")
-        case Right(_) => false
-      }
-      // tidy-up by cancelling the edit session we just started (if it was successful)
-      if (!isLocked) {
-        MetadataSchemaApi.cancelEdit(schemaId)(otherSession)
-      }
-      isLocked
-    }
+    BaseEntityApiTestHelper.isEntityLockedForEditing(
+      schemaId,
+      (id, c) => MetadataSchemaApi.startEdit(id)(c),
+      (id, force, c) => MetadataSchemaApi.cancelEdit(id, force)(c)
+    )
 
   /** Gets the ID of the first schema in the system for use in tests.
     *
@@ -64,13 +53,7 @@ object MetadataSchemaApiMutationsTestHelper {
     *   if no schemas exist in the system.
     */
   def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long =
-    MetadataSchemaApi.listSchemas() match {
-      case Right(schemas) if schemas.nonEmpty => schemas.head.id
-      case Right(_)                           =>
-        fail("Test setup error: No schemas available in the system")
-      case Left(errors) =>
-        fail(s"Failed to retrieve schemas: ${errors.mkString(", ")}")
-    }
+    BaseEntityApiTestHelper.getFirstEntityId(MetadataSchemaApi.listSchemas _)
 
   /** Extracts the default locale name text from a MetadataSchemaView.
     *
@@ -209,14 +192,10 @@ object MetadataSchemaApiMutationsTestHelper {
     */
   def withEditSession(schemaId: Long)(test: MetadataSchemaEditView => Unit)(implicit
       cfg: ClientConfiguration
-  ): Unit = {
-    val editView = MetadataSchemaApi.startEdit(schemaId).value
-
-    try {
-      test(editView)
-    } finally {
-      // Best-effort cleanup: force-cancel to release any lingering lock.
-      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
-    }
-  }
+  ): Unit =
+    BaseEntityApiTestHelper.withEditSession(
+      schemaId,
+      MetadataSchemaApi.startEdit,
+      MetadataSchemaApi.cancelEdit
+    )(test)
 }
