@@ -99,10 +99,7 @@ class MetadataSchemaProvider @Inject() (
       zipBase64: String
   ): Either[ProviderError, EditableEntity[MetadataSchema]] = {
     LOGGER.debug("Importing metadata schema from base64 zip")
-    ProviderError.Try("Failed to import metadata schema: ") {
-      val zipBytes = Base64.getDecoder.decode(zipBase64)
-      EditableEntity(schemaService.importEntity(zipBytes), MetadataSchema.apply)
-    }
+    importBaseEntity("metadata schema", zipBase64, schemaService.importEntity)(MetadataSchema.apply)
   }
 
   /** Get the metadata schema ID for a given UUID.
@@ -115,7 +112,7 @@ class MetadataSchemaProvider @Inject() (
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def schemaIdForUuid(uuid: String): Option[Long] = {
     LOGGER.debug(s"Getting metadata schema ID for UUID $uuid")
-    Option(schemaService.identifyByUuid(uuid)).filterNot(_ == 0L)
+    idForUuid(uuid, schemaService.identifyByUuid)
   }
 
   /** Start editing an existing metadata schema. This method returns an `EditableBaseEntity` that

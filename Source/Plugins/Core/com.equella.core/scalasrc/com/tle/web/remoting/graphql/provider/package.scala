@@ -18,7 +18,11 @@
 
 package com.tle.web.remoting.graphql
 
+import com.tle.common.EntityPack
 import com.tle.common.beans.exception.NotFoundException
+import com.tle.web.remoting.graphql.schema.types.EditableEntity
+
+import java.util.Base64
 
 package object provider {
 
@@ -41,4 +45,64 @@ package object provider {
       case _: NotFoundException => None
     }
   }
+
+  /** Resolve an entity ID from UUID using a service identify function.
+    *
+    * Many legacy identify-by-UUID service methods return `0L` when no entity is found. This helper
+    * normalises that convention to `None` while preserving successful IDs as `Some(id)`.
+    *
+    * @param uuid
+    *   the UUID to resolve.
+    * @param identify
+    *   service lookup function which returns an entity ID or `0L` if not found.
+    * @return
+    *   `Some(id)` when found, otherwise `None`.
+    */
+  def idForUuid(uuid: String, identify: String => Long): Option[Long] =
+    Option(identify(uuid)).filterNot(_ == 0L)
+
+  /** Validates, decodes, and imports a Base64-encoded entity zip file, returning an
+    * [[EditableEntity]] ready for the edit lifecycle. This utility centralises the common pattern
+    * of validating and decoding Base64 zip input before calling an entity import service, and is
+    * intended to be reused across all entity provider import methods.
+    *
+    * Follows the same pattern as `ProviderError.Try` for consistent error handling.
+    *
+    * Example usage:
+    * {{{
+    *   importBaseEntity("metadata schema", zipBase64, schemaService.importEntity)(MetadataSchema.apply)
+    * }}}
+    *
+    * @param entityName
+    *   a human-readable name for the entity type, used in error messages and logging.
+    * @param zipBase64
+    *   the Base64-encoded zip file content to import.
+    * @param importFn
+    *   the service function to call with the decoded bytes, returning an `EntityPack`.
+    * @param convertFn
+    *   a function to convert the raw entity from the pack into the desired GraphQL type `T`.
+    * @tparam E
+    *   the Java entity type returned inside the `EntityPack`.
+    * @tparam T
+    *   the target GraphQL type to convert the entity into.
+    * @return
+    *   a `Right` containing the `EditableEntity[T]` on success, or a `Left` with a `ProviderError`
+    *   on failure (including empty input, invalid Base64, or service errors).
+    */
+  def importBaseEntity[E <: com.tle.beans.entity.BaseEntity, T](
+      entityName: String,
+      zipBase64: String,
+      importFn: Array[Byte] => EntityPack[E]
+  )(convertFn: E => T): Either[ProviderError, EditableEntity[T]] =
+    Either
+      .cond(
+        zipBase64.trim.nonEmpty,
+        zipBase64,
+        ProviderError("Import failed: empty zip data provided", ErrorCode.BAD_REQUEST)
+      )
+      .flatMap(zip =>
+        ProviderError.Try(s"Failed to import $entityName: ") {
+          EditableEntity(importFn(Base64.getDecoder.decode(zip)), convertFn)
+        }
+      )
 }
