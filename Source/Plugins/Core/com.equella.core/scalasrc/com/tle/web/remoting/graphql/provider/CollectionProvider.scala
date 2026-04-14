@@ -118,7 +118,7 @@ class CollectionProvider @Inject() (
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def collectionIdForUuid(uuid: String): Option[Long] = {
     LOGGER.debug(s"Getting collection ID for UUID $uuid")
-    Option(itemDefinitionService.identifyByUuid(uuid)).filterNot(_ == 0L)
+    idForUuid(uuid, itemDefinitionService.identifyByUuid)
   }
 
   /** Clone a collection, creating a copy with a new ID.

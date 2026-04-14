@@ -46,6 +46,21 @@ package object provider {
     }
   }
 
+  /** Resolve an entity ID from UUID using a service identify function.
+    *
+    * Many legacy identify-by-UUID service methods return `0L` when no entity is found. This helper
+    * normalises that convention to `None` while preserving successful IDs as `Some(id)`.
+    *
+    * @param uuid
+    *   the UUID to resolve.
+    * @param identify
+    *   service lookup function which returns an entity ID or `0L` if not found.
+    * @return
+    *   `Some(id)` when found, otherwise `None`.
+    */
+  def idForUuid(uuid: String, identify: String => Long): Option[Long] =
+    Option(identify(uuid)).filterNot(_ == 0L)
+
   /** Validates, decodes, and imports a Base64-encoded entity zip file, returning an
     * [[EditableEntity]] ready for the edit lifecycle. This utility centralises the common pattern
     * of validating and decoding Base64 zip input before calling an entity import service, and is

@@ -112,7 +112,7 @@ class MetadataSchemaProvider @Inject() (
   @RequiresPrivilege(priv = SecurityConstants.EDIT_VIRTUAL_BASE)
   def schemaIdForUuid(uuid: String): Option[Long] = {
     LOGGER.debug(s"Getting metadata schema ID for UUID $uuid")
-    Option(schemaService.identifyByUuid(uuid)).filterNot(_ == 0L)
+    idForUuid(uuid, schemaService.identifyByUuid)
   }
 
   /** Start editing an existing metadata schema. This method returns an `EditableBaseEntity` that
