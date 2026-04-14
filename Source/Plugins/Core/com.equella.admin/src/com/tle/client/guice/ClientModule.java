@@ -29,6 +29,8 @@ import com.tle.admin.service.AdminJavaScriptService;
 import com.tle.admin.service.AdminJavaScriptServiceImpl;
 import com.tle.admin.service.AdminKeepAliveService;
 import com.tle.admin.service.AdminKeepAliveServiceImpl;
+import com.tle.admin.service.AdminLanguageService;
+import com.tle.admin.service.AdminLanguageServiceImpl;
 import com.tle.admin.service.AdminLoginService;
 import com.tle.admin.service.AdminLoginServiceImpl;
 import com.tle.admin.service.AdminSchemaService;
@@ -61,6 +63,7 @@ public class ClientModule extends AbstractModule {
     bind(AdminBaseEntityService.class).to(AdminBaseEntityServiceImpl.class);
     bind(AdminJavaScriptService.class).to(AdminJavaScriptServiceImpl.class);
     bind(AdminKeepAliveService.class).to(AdminKeepAliveServiceImpl.class);
+    bind(AdminLanguageService.class).to(AdminLanguageServiceImpl.class);
     bind(AdminLoginService.class).to(AdminLoginServiceImpl.class);
     bind(AdminSchemaService.class).to(AdminSchemaServiceImpl.class);
     bind(AdminTLEGroupService.class).to(AdminTLEGroupServiceImpl.class);

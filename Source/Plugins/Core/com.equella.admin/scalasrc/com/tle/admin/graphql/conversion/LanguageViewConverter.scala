@@ -18,24 +18,20 @@
 
 package com.tle.admin.graphql.conversion
 
-import com.tle.beans.entity.schema.Citation
-import io.github.openequella.graphql.api.views.CitationView
+import com.tle.beans.Language
+import io.github.openequella.graphql.api.views.LanguageView
+
 import scala.util.chaining.scalaUtilChainingOps
 
-object CitationViewConverter {
-  def toCitation(view: CitationView): Citation = new Citation().tap { c =>
-    c.setName(view.name)
-    c.setTransformation(view.transformation)
-  }
-
-  def fromCitation(citation: Citation): CitationView = {
-    val name = Option(citation.getName).getOrElse(
-      throw new IllegalArgumentException("Citation name must not be null")
-    )
-    val transformation = Option(citation.getTransformation).getOrElse(
-      throw new IllegalArgumentException("Citation transformation must not be null")
-    )
-
-    CitationView(name = name, transformation = transformation)
+/** Converter for transforming GraphQL [[LanguageView]] to [[Language]].
+  */
+object LanguageViewConverter {
+  def toLanguage(view: LanguageView): Language = {
+    new Language().tap { language =>
+      language.setId(view.id)
+      language.setLanguage(view.language)
+      language.setCountry(view.country)
+      language.setVariant(view.variant)
+    }
   }
 }

@@ -16,26 +16,28 @@
  * limitations under the License.
  */
 
-package com.tle.admin.graphql.conversion
+package com.tle.admin.service
 
-import com.tle.beans.entity.schema.Citation
-import io.github.openequella.graphql.api.views.CitationView
-import scala.util.chaining.scalaUtilChainingOps
+import com.tle.beans.Language
+import java.util
+import java.lang
 
-object CitationViewConverter {
-  def toCitation(view: CitationView): Citation = new Citation().tap { c =>
-    c.setName(view.name)
-    c.setTransformation(view.transformation)
-  }
+/** Service class for admin language operations via the GraphQL library.
+  */
+trait AdminLanguageService {
 
-  def fromCitation(citation: Citation): CitationView = {
-    val name = Option(citation.getName).getOrElse(
-      throw new IllegalArgumentException("Citation name must not be null")
-    )
-    val transformation = Option(citation.getTransformation).getOrElse(
-      throw new IllegalArgumentException("Citation transformation must not be null")
-    )
+  /** Resolve display names for the provided language bundle IDs.
+    *
+    * @param bundleIds
+    *   the language bundle IDs to resolve.
+    * @return
+    *   Map from bundle ID to localized display name.
+    */
+  def getNames(
+      bundleIds: util.Collection[lang.Long]
+  ): util.Map[lang.Long, String]
 
-    CitationView(name = name, transformation = transformation)
-  }
+  /** List configured languages for the current institution.
+    */
+  def getLanguages: util.List[Language]
 }

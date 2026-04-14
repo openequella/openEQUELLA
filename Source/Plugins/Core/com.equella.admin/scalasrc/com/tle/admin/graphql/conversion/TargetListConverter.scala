@@ -26,6 +26,7 @@ import com.tle.common.security.{TargetList, TargetListEntry}
 import io.github.openequella.graphql.api.views.TargetListEntryView
 
 import scala.jdk.CollectionConverters._
+import scala.util.chaining.scalaUtilChainingOps
 
 object TargetListConverter {
   def toTargetList(views: List[TargetListEntryView]): TargetList = {
@@ -40,15 +41,13 @@ object TargetListConverter {
 }
 
 object TargetListEntryViewConverter {
-  def toTargetListEntry(view: TargetListEntryView): TargetListEntry = {
-    val entry = new TargetListEntry
-    entry.setGranted(view.granted)
-    entry.setOverride(view.overridden)
-    entry.setPrivilege(view.privilege)
-    entry.setWho(view.who)
-    entry.setPostfix(view.postfix)
-
-    entry
+  def toTargetListEntry(view: TargetListEntryView): TargetListEntry = new TargetListEntry().tap {
+    entry =>
+      entry.setGranted(view.granted)
+      entry.setOverride(view.overridden)
+      entry.setPrivilege(view.privilege)
+      entry.setWho(view.who)
+      entry.setPostfix(view.postfix)
   }
 
   def fromTargetListEntry(entry: TargetListEntry): TargetListEntryView =
