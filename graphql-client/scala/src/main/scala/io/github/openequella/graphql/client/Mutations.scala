@@ -23,12 +23,19 @@ import caliban.client._
 
 object Mutations {
 
-  /** Operations for managing internal users
+  /** Operations for managing Collections
     */
-  def internalUsers[A](
-      innerSelection: SelectionBuilder[InternalUserMutations, A]
+  def collection[A](
+      innerSelection: SelectionBuilder[CollectionMutations, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("collection", Obj(innerSelection))
+
+  /** Operations for managing Metadata Schemas
+    */
+  def metadataSchema[A](
+      innerSelection: SelectionBuilder[MetadataSchemaMutations, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
+    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
 
   /** Operations for managing internal groups
     */
@@ -37,10 +44,10 @@ object Mutations {
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
     _root_.caliban.client.SelectionBuilder.Field("internalGroups", Obj(innerSelection))
 
-  /** Operations for managing Metadata Schemas
+  /** Operations for managing internal users
     */
-  def metadataSchema[A](
-      innerSelection: SelectionBuilder[MetadataSchemaMutations, A]
+  def internalUsers[A](
+      innerSelection: SelectionBuilder[InternalUserMutations, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootMutation, A] =
-    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
 }

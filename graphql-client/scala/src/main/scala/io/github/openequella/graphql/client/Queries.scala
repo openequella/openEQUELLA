@@ -30,6 +30,13 @@ object Queries {
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
     _root_.caliban.client.SelectionBuilder.Field("baseEntities", Obj(innerSelection))
 
+  /** Queries for Collections
+    */
+  def collection[A](
+      innerSelection: SelectionBuilder[CollectionQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("collection", Obj(innerSelection))
+
   /** Queries for JavaScript
     */
   def javaScript[A](
@@ -44,12 +51,12 @@ object Queries {
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
     _root_.caliban.client.SelectionBuilder.Field("language", Obj(innerSelection))
 
-  /** Queries for internal users
+  /** Queries for Metadata Schemas
     */
-  def internalUsers[A](
-      innerSelection: SelectionBuilder[InternalUserQueries, A]
+  def metadataSchema[A](
+      innerSelection: SelectionBuilder[MetadataSchemaQueries, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
-    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
 
   /** Queries for internal groups
     */
@@ -58,10 +65,10 @@ object Queries {
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
     _root_.caliban.client.SelectionBuilder.Field("internalGroups", Obj(innerSelection))
 
-  /** Queries for Metadata Schemas
+  /** Queries for internal users
     */
-  def metadataSchema[A](
-      innerSelection: SelectionBuilder[MetadataSchemaQueries, A]
+  def internalUsers[A](
+      innerSelection: SelectionBuilder[InternalUserQueries, A]
   ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
-    _root_.caliban.client.SelectionBuilder.Field("metadataSchema", Obj(innerSelection))
+    _root_.caliban.client.SelectionBuilder.Field("internalUsers", Obj(innerSelection))
 }

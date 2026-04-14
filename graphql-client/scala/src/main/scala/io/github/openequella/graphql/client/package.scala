@@ -22,6 +22,10 @@ package object client {
   type BaseEntityQueries
   type BaseEntityReference
   type Citation
+  type CollectionDefinition
+  type CollectionMutations
+  type CollectionQueries
+  type EditableEntityCollectionDefinition
   type EditableEntityMetadataSchema
   type EditableEntitySkeleton
   type EntityDetails
