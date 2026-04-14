@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+# Leave empty to use the latest version of Google Chrome.
+CUSTOMIZE_CHROME_VERSION=143.0.7499.192
+# Get the full version of the latest chrome
+LATEST_CHROME_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE)
+# Use customized version if not empty, otherwise use the latest version.
+CHROME_VERSION=${CUSTOMIZE_CHROME_VERSION:-$LATEST_CHROME_VERSION}
+
+# Generate corresponding Google Chrome file name.
+GOOGLE_DEB_FILENAME=google-chrome-stable_${CHROME_VERSION}-1_amd64.deb
+
+wget -nv https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/$GOOGLE_DEB_FILENAME
+apt-get install -y ./$GOOGLE_DEB_FILENAME
+rm $GOOGLE_DEB_FILENAME
