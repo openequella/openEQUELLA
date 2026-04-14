@@ -25,4 +25,9 @@ public record ImageDimensions(int width, int height) {
       throw new IllegalArgumentException("Dimensions must be positive");
     }
   }
+
+  @Override
+  public String toString() {
+    return String.format("%dx%d", width, height);
+  }
 }

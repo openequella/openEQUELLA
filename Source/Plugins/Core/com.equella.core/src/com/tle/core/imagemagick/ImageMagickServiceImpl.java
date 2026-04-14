@@ -138,7 +138,9 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       throws IOException {
     newBuilder()
         .from(src)
-        .sample(width, height, ResizeOperator.DEFAULT)
+        .sample(
+            new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)),
+            ResizeOperator.DEFAULT)
         .rawOptions(options)
         .to(dest)
         .exec()
@@ -150,7 +152,9 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
       throws IOException {
     newBuilder()
         .from(src)
-        .sample(width, height, ResizeOperator.EXACT)
+        .sample(
+            new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)),
+            ResizeOperator.EXACT)
         .rawOptions(options)
         .to(dest)
         .exec()

@@ -19,4 +19,9 @@
 package com.tle.core.imagemagick;
 
 /** A two-dimensional pixel offset used for crop geometry. */
-public record Offset(int x, int y) {}
+public record Offset(int x, int y) {
+  @Override
+  public String toString() {
+    return String.format("%+d%+d", x, y);
+  }
+}

@@ -72,7 +72,7 @@ class MagickCommandBuilder {
    * source image.
    */
   MagickCommandBuilder sizeHint(ImageDimensions hint) {
-    inputOptions.addAll(List.of("-size", hint.width() + "x" + hint.height()));
+    inputOptions.addAll(List.of("-size", hint.toString()));
     return this;
   }
 
@@ -107,8 +107,7 @@ class MagickCommandBuilder {
 
   /** Appends a {@code -thumbnail} resize operation. */
   MagickCommandBuilder thumbnail(ImageDimensions size, ResizeOperator resize) {
-    outputOptions.addAll(
-        List.of("-thumbnail", size.width() + "x" + size.height() + resize.getOperator()));
+    outputOptions.addAll(List.of("-thumbnail", size.toString() + resize.getOperator()));
     return this;
   }
 
@@ -126,23 +125,19 @@ class MagickCommandBuilder {
 
   /** Appends a {@code -crop} with structured dimensions and offset, followed by {@code +repage}. */
   MagickCommandBuilder crop(ImageDimensions size, Offset offset) {
-    outputOptions.addAll(
-        List.of(
-            "-crop",
-            size.width() + "x" + size.height() + "+" + offset.x() + "+" + offset.y(),
-            "+repage"));
+    outputOptions.addAll(List.of("-crop", size.toString() + offset.toString(), "+repage"));
     return this;
   }
 
   /** Appends a {@code -crop} with structured dimensions (e.g. {@code "200x150"}). */
   MagickCommandBuilder crop(ImageDimensions size) {
-    outputOptions.addAll(List.of("-crop", size.width() + "x" + size.height()));
+    outputOptions.addAll(List.of("-crop", size.toString()));
     return this;
   }
 
   /** Appends a {@code -sample} resize operation. */
-  MagickCommandBuilder sample(String width, String height, ResizeOperator resize) {
-    outputOptions.addAll(List.of("-sample", width + "x" + height + resize.getOperator()));
+  MagickCommandBuilder sample(ImageDimensions size, ResizeOperator resize) {
+    outputOptions.addAll(List.of("-sample", size.toString() + resize.getOperator()));
     return this;
   }
 
