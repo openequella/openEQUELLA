@@ -30,9 +30,22 @@ public record DimensionValue(int value, Unit unit) {
   /** The unit of measurement for a dimension value. */
   public enum Unit {
     /** Absolute pixel value. */
-    PIXELS,
+    PIXELS {
+      @Override
+      public String format(int value) {
+        return Integer.toString(value);
+      }
+    },
     /** Relative percentage value. */
-    PERCENT
+    PERCENT {
+      @Override
+      public String format(int value) {
+        return value + "%";
+      }
+    };
+
+    /** Formats the value for ImageMagick command-line arguments. */
+    public abstract String format(int value);
   }
 
   /**
@@ -73,6 +86,6 @@ public record DimensionValue(int value, Unit unit) {
    */
   @Override
   public String toString() {
-    return unit == Unit.PERCENT ? value + "%" : Integer.toString(value);
+    return unit.format(value);
   }
 }
