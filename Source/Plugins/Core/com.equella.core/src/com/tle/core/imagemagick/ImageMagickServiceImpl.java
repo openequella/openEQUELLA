@@ -134,43 +134,21 @@ public class ImageMagickServiceImpl implements ImageMagickService, ServiceCheckR
   }
 
   @Override
-  public void sample(File src, File dest, String width, String height, String... options)
+  public void sample(File src, File dest, ImageDimensions size, String... options)
       throws IOException {
-    newBuilder()
-        .from(src)
-        .sample(
-            new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)),
-            ResizeOperator.DEFAULT)
-        .rawOptions(options)
-        .to(dest)
-        .exec()
-        .ensureOk();
+    newBuilder().from(src).sample(size).rawOptions(options).to(dest).exec().ensureOk();
   }
 
   @Override
-  public void sampleNoRatio(File src, File dest, String width, String height, String... options)
+  public void crop(File src, File dest, ImageDimensions size, String... options)
       throws IOException {
-    newBuilder()
-        .from(src)
-        .sample(
-            new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)),
-            ResizeOperator.EXACT)
-        .rawOptions(options)
-        .to(dest)
-        .exec()
-        .ensureOk();
+    newBuilder().from(src).crop(size).rawOptions(options).to(dest).exec().ensureOk();
   }
 
   @Override
-  public void crop(File src, File dest, String width, String height, String... options)
+  public void crop(File src, File dest, ImageDimensions size, Offset offset, String... options)
       throws IOException {
-    newBuilder()
-        .from(src)
-        .crop(new ImageDimensions(Integer.parseInt(width), Integer.parseInt(height)))
-        .rawOptions(options)
-        .to(dest)
-        .exec()
-        .ensureOk();
+    newBuilder().from(src).crop(size, offset).rawOptions(options).to(dest).exec().ensureOk();
   }
 
   @Override
