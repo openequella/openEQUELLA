@@ -23,11 +23,8 @@ import io.github.openequella.graphql.api.views.BaseEntityReferenceView
 import io.github.openequella.graphql.test.TestHelper
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks._
+import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
-
-import java.io.{BufferedReader, ByteArrayInputStream, InputStreamReader}
-import java.util.zip.ZipInputStream
 
 /** Tests for the query operations in the MetadataSchemaApi.
   *
@@ -37,10 +34,12 @@ import java.util.zip.ZipInputStream
   */
 class MetadataSchemaApiQueriesTest
     extends AnyFunSpec
+    with ExportTestBehaviours
     with Matchers
     with GivenWhenThen
     with EitherValues
-    with OptionValues {
+    with OptionValues
+    with TableDrivenPropertyChecks {
   private implicit val cfg: ClientConfiguration = TestHelper.loginToRestInstitution()
 
   describe("listSchemas") {
@@ -209,86 +208,15 @@ class MetadataSchemaApiQueriesTest
   }
 
   describe("exportSchema") {
-    it("exports a metadata schema as a ZIP file") {
-      val withSecurityOptions = Table(
-        "withSecurity",
-        true,
-        false
+    exportBehavior(
+      ExportBehaviorConfig(
+        entityName = "metadata schema",
+        getFirstIdFn = () => MetadataSchemaApi.listSchemas().value.head.id,
+        exportFn = MetadataSchemaApi.exportSchema,
+        expectedEntityClass = "com.tle.beans.entity.Schema",
+        unauthExportFn = cfg => MetadataSchemaApi.exportSchema(1, withSecurity = false)(cfg)
       )
-      forAll(withSecurityOptions) { withSecurity =>
-        Given(s"a valid metadata schema ID with withSecurity=$withSecurity")
-        val schemaId = MetadataSchemaApi.listSchemas().value.head.id
-
-        When("calling exportSchema with the schema ID and withSecurity")
-        val result = MetadataSchemaApi.exportSchema(schemaId, withSecurity)
-
-        // We convert the result to a ZipInputStream for easier testing.
-        // Most often in actual application the bytes are simply saved to a file.
-        // Here we just want to ensure that the bytes can be interpreted as a zip file.
-        Then("returns an Array[Byte] convertable to a ZipInputStream")
-        result.isRight shouldBe true
-        val zis = result.value.map(bytesToZipInputStream).get
-        zis shouldBe a[ZipInputStream]
-
-        And("the zip file includes a valid _entity.xml")
-        val entityXml = extractEntityXml(zis).value
-        entityXml should (startWith("<com.tle.common.ImportExportPack>") and include(
-          """<entity class="com.tle.beans.entity.Schema">"""
-        ))
-
-        And("the _entity.xml contains security information based on withSecurity")
-        val securityElement = "<targetList>"
-        if (withSecurity) {
-          entityXml should include(securityElement)
-        } else {
-          entityXml should not include securityElement
-        }
-
-        // Ensure we close the stream to free resources
-        zis.close()
-      }
-    }
-
-    it("returns None for an invalid schema ID") {
-      Given("an invalid schema ID")
-      val invalidSchemaId = -1L
-
-      When("calling exportSchema with the invalid schema ID")
-      val result = MetadataSchemaApi.exportSchema(invalidSchemaId, withSecurity = false)
-
-      Then("returns None")
-      result shouldBe Right(None)
-    }
-
-    it("denies access when not authenticated") {
-      When("an unauthenticated user calls exportSchema")
-      val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.exportSchema(1, withSecurity = false)(unauthenticated)
-      }
-
-      Then("returns an AccessDeniedError")
-      TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
-    }
-
-    def bytesToZipInputStream(bytes: Array[Byte]): ZipInputStream =
-      new ZipInputStream(new ByteArrayInputStream(bytes))
-
-    def extractEntityXml(zis: ZipInputStream): Option[String] =
-      Iterator
-        .continually(zis.getNextEntry)
-        .takeWhile(_ != null)
-        .find(_.getName == "_entity.xml")
-        .map { _ =>
-          readXmlFile(zis)
-        }
-
-    def readXmlFile(zis: ZipInputStream): String = {
-      val reader = new BufferedReader(new InputStreamReader(zis, "UTF-8"))
-      Iterator
-        .continually(reader.readLine())
-        .takeWhile(_ != null)
-        .mkString("\n")
-    }
+    )
   }
 
   describe("getById") {
