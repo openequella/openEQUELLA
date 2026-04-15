@@ -203,13 +203,11 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaEditView] = {
     val zipBase64 = Base64.getEncoder.encodeToString(zip)
-    flattenResult {
-      mutate(
-        MetadataSchemaMutations.`import`(zipBase64) {
-          MetadataSchemaEditView.selector
-        }
-      )
-    }
+    flatMutate(
+      MetadataSchemaMutations.`import`(zipBase64) {
+        MetadataSchemaEditView.selector
+      }
+    )
   }
 
   /** Start editing a metadata schema by its ID.
@@ -262,13 +260,8 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = MetadataSchemaMutations.cancelEdit(id, force)
-
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.cancelEdit(id, force))
 
   /** Add a new metadata schema.
     *
@@ -335,13 +328,8 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = MetadataSchemaMutations.delete(id, checkReferences)
-
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.delete(id, checkReferences))
 
   /** Clones a metadata schema, creating a copy with a new ID. The cloned schema's name will be
     * prefixed with "Copy of " in all language variants.
@@ -356,13 +344,11 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
   def clone(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    flattenResult {
-      mutate(
-        MetadataSchemaMutations.clone$(id) {
-          BaseEntityReferenceView.selector
-        }
-      )
-    }
+    flatMutate(
+      MetadataSchemaMutations.clone$(id) {
+        BaseEntityReferenceView.selector
+      }
+    )
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)
@@ -389,6 +375,6 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
         .leftMap(e =>
           List(UnknownError(s"Failed to convert details to input type: ${e.getMessage}"))
         )
-      result <- flattenResult { mutate(buildMutation(input)) }
+      result <- flatMutate(buildMutation(input))
     } yield result
 }

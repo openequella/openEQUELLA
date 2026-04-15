@@ -125,13 +125,11 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
       cfg: ClientConfiguration
   ): Either[List[ApiError], CollectionDefinitionEditView] = {
     val zipBase64 = Base64.getEncoder.encodeToString(zip)
-    flattenResult {
-      mutate(
-        CollectionMutations.`import`(zipBase64) {
-          CollectionDefinitionEditView.selector
-        }
-      )
-    }
+    flatMutate(
+      CollectionMutations.`import`(zipBase64) {
+        CollectionDefinitionEditView.selector
+      }
+    )
   }
 
   /** Cancel editing a collection, discarding any changes and unlocking the collection.
@@ -147,13 +145,8 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
     */
   def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = CollectionMutations.cancelEdit(id, force)
-
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    flatMutate(CollectionMutations.cancelEdit(id, force))
 
   /** Delete a collection.
     *
@@ -169,13 +162,8 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
     */
   def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = CollectionMutations.delete(id, checkReferences)
-
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    flatMutate(CollectionMutations.delete(id, checkReferences))
 
   /** Clones a collection, creating a copy with a new ID. The cloned collection's name will be
     * prefixed with "Copy of " in all language variants.
@@ -190,13 +178,11 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
   def clone(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    flattenResult {
-      mutate(
-        CollectionMutations.clone$(id) {
-          BaseEntityReferenceView.selector
-        }
-      )
-    }
+    flatMutate(
+      CollectionMutations.clone$(id) {
+        BaseEntityReferenceView.selector
+      }
+    )
 
   private def base64ToBytes(base64Zip: String): Array[Byte] =
     Base64.getDecoder.decode(base64Zip)

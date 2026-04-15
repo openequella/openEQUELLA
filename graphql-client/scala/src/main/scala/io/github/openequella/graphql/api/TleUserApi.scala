@@ -116,15 +116,10 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       firstName: String,
       lastName: String,
       password: String
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] = {
-    val m = InternalUserMutations.create(username, email, firstName, lastName, password) {
-      tleUser
-    }
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] =
+    flatMutate(
+      InternalUserMutations.create(username, email, firstName, lastName, password) { tleUser }
+    )
 
   /** Edits an existing user based on the unique identifier.
     *
@@ -153,16 +148,12 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       firstName: Option[String],
       lastName: Option[String],
       password: Option[String]
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] = {
-    val m =
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] =
+    flatMutate(
       InternalUserMutations.update(uniqueId, username, email, firstName, lastName, password) {
         tleUser
       }
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+    )
 
   /** Deletes a user.
     *
@@ -175,13 +166,8 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
     */
   def deleteUser(
       uniqueId: String
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Unit] = {
-    val m = InternalUserMutations.delete(uniqueId)
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Unit] =
+    flatMutate(InternalUserMutations.delete(uniqueId))
 
   /** Searches for users based on the provided query.
     *

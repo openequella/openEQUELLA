@@ -145,15 +145,8 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
     */
   def createGroup(name: String, parentId: Option[String] = None)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], TleGroupView] = {
-    val m = InternalGroupMutations.create(name, parentId) {
-      tleGroup
-    }
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+  ): Either[List[ApiError], TleGroupView] =
+    flatMutate(InternalGroupMutations.create(name, parentId) { tleGroup })
 
   /** Deletes a group.
     *
@@ -170,13 +163,8 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
   @SuppressWarnings(Array("BooleanParameter"))
   def deleteGroup(uniqueId: String, deleteChildren: Boolean = true)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val m = InternalGroupMutations.delete(uniqueId, deleteChildren)
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+  ): Either[List[ApiError], Unit] =
+    flatMutate(InternalGroupMutations.delete(uniqueId, deleteChildren))
 
   /** Updates a group, and the primary means to add users to a group.
     *
@@ -206,15 +194,10 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
       users: Option[List[String]] = None
   )(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], TleGroupView] = {
-    val m = InternalGroupMutations.update(uniqueId, name, description, parentId, users) {
-      tleGroup
-    }
-
-    flattenResult {
-      mutate(m)
-    }
-  }
+  ): Either[List[ApiError], TleGroupView] =
+    flatMutate(
+      InternalGroupMutations.update(uniqueId, name, description, parentId, users) { tleGroup }
+    )
 
   /** Lists a single level of groups. To retrieve the whole tree of groups, you will need to call
     * this method multiple times, once for each level of the hierarchy. (That is, use tree walking.)
