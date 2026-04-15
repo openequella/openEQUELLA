@@ -37,6 +37,7 @@ import com.tle.core.customlinks.service.CustomLinkEditingBean;
 import com.tle.core.customlinks.service.CustomLinkEditingSession;
 import com.tle.core.customlinks.service.CustomLinkService;
 import com.tle.core.filesystem.EntityFile;
+import com.tle.core.imagemagick.ImageDimensions;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.mimetypes.MimeTypeService;
@@ -490,7 +491,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
       if (dimensions.getHeight() > 20 || dimensions.getWidth() > 20) {
         File temp = fileSystemService.getExternalFile(stagingFile, tempFilename);
         File newFile = fileSystemService.getExternalFile(stagingFile, filename);
-        imageMagickService.sample(temp, newFile, String.valueOf(20), String.valueOf(20));
+        imageMagickService.sample(temp, newFile, ImageDimensions.pixels(20, 20));
       } else {
         fileSystemService.copy(stagingFile, tempFilename, filename);
       }
@@ -572,7 +573,7 @@ public class CustomLinksSection extends OneColumnLayout<CustomLinksModel> {
       if (dimensions.getHeight() > 20 || dimensions.getWidth() > 20) {
         File temp = fileSystemService.getExternalFile(stagingFile, tempFilename);
         File newFile = fileSystemService.getExternalFile(stagingFile, filename);
-        imageMagickService.sample(temp, newFile, String.valueOf(20), String.valueOf(20));
+        imageMagickService.sample(temp, newFile, ImageDimensions.pixels(20, 20));
       } else {
         fileSystemService.copy(stagingFile, tempFilename, filename);
       }

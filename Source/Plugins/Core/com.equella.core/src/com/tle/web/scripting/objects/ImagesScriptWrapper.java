@@ -21,6 +21,7 @@ package com.tle.web.scripting.objects;
 import com.google.inject.assistedinject.Assisted;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.scripting.objects.ImagesScriptObject;
+import com.tle.core.imagemagick.ImageDimensions;
 import com.tle.core.imagemagick.ImageMagickService;
 import com.tle.core.services.FileSystemService;
 import java.awt.*;
@@ -50,7 +51,6 @@ public class ImagesScriptWrapper extends AbstractScriptWrapper implements Images
     imageMagick.sample(
         fileSystem.getExternalFile(handle, path),
         fileSystem.getExternalFile(handle, newPath),
-        Integer.toString(newWidth),
-        Integer.toString(newHeight));
+        ImageDimensions.pixels(newWidth, newHeight));
   }
 }

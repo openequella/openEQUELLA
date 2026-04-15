@@ -207,12 +207,12 @@ class ThumbnailCommandBuilder implements AutoCloseable {
   private void applySizeHint(MagickCommandBuilder builder, ThumbnailOptions opts) {
     int w = opts.getImgWidth() == 0 ? opts.getWidth() * 2 : opts.getImgWidth();
     int h = opts.getImgHeight() == 0 ? opts.getHeight() * 2 : opts.getImgHeight();
-    builder.sizeHint(new ImageDimensions(w, h));
+    builder.sizeHint(ImageDimensions.pixels(w, h));
   }
 
   /** Appends resize, gravity, border and crop transforms. */
   private void applyThumbnailTransforms(MagickCommandBuilder builder, ThumbnailOptions opts) {
-    ImageDimensions thumbSize = new ImageDimensions(opts.getWidth(), opts.getHeight());
+    ImageDimensions thumbSize = ImageDimensions.pixels(opts.getWidth(), opts.getHeight());
     builder.thumbnail(thumbSize, determineResizeOperator(opts));
 
     Optional.ofNullable(opts.getGravity()).ifPresent(builder::gravity);
@@ -222,9 +222,11 @@ class ThumbnailCommandBuilder implements AutoCloseable {
     }
 
     if (opts.getCropWidth() > 0 && opts.getCropHeight() > 0) {
-      builder.crop(
-          new ImageDimensions(opts.getCropWidth(), opts.getCropHeight()),
-          new Offset(opts.getCropX(), opts.getCropY()));
+      builder
+          .crop(
+              ImageDimensions.pixels(opts.getCropWidth(), opts.getCropHeight()),
+              new Offset(opts.getCropX(), opts.getCropY()))
+          .repage();
     }
   }
 

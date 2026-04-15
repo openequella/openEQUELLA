@@ -125,7 +125,7 @@ class MagickCommandBuilder {
 
   /** Appends a {@code -crop} with structured dimensions and offset, followed by {@code +repage}. */
   MagickCommandBuilder crop(ImageDimensions size, Offset offset) {
-    outputOptions.addAll(List.of("-crop", size.toString() + offset.toString(), "+repage"));
+    outputOptions.addAll(List.of("-crop", size.toString() + offset.toString()));
     return this;
   }
 
@@ -135,9 +135,16 @@ class MagickCommandBuilder {
     return this;
   }
 
+  /** Appends a {@code +repage} operation to reset the virtual canvas. */
+  MagickCommandBuilder repage() {
+    outputOptions.add("+repage");
+    return this;
+  }
+
   /** Appends a {@code -sample} resize operation. */
-  MagickCommandBuilder sample(ImageDimensions size, ResizeOperator resize) {
-    outputOptions.addAll(List.of("-sample", size.toString() + resize.getOperator()));
+  MagickCommandBuilder sample(ImageDimensions size) {
+    outputOptions.addAll(
+        List.of("-sample", size.toString() + ResizeOperator.DEFAULT.getOperator()));
     return this;
   }
 

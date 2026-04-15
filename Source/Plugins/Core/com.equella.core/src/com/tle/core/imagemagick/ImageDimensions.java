@@ -18,16 +18,38 @@
 
 package com.tle.core.imagemagick;
 
-/** Represents the width and height of an image in pixels. */
-public record ImageDimensions(int width, int height) {
-  public ImageDimensions {
-    if (width < 0 || height < 0) {
-      throw new IllegalArgumentException("Dimensions must be positive");
-    }
+/** Represents the width and height of an image with unit (pixel/percent) awareness. */
+public record ImageDimensions(DimensionValue width, DimensionValue height) {
+
+  /**
+   * Creates pixel-based image dimensions.
+   *
+   * @param width the width in pixels
+   * @param height the height in pixels
+   * @return a new {@code ImageDimensions} with pixel units
+   */
+  public static ImageDimensions pixels(int width, int height) {
+    return new ImageDimensions(DimensionValue.pixels(width), DimensionValue.pixels(height));
   }
 
+  /**
+   * Creates percentage-based image dimensions.
+   *
+   * @param width the width percentage
+   * @param height the height percentage
+   * @return a new {@code ImageDimensions} with percentage units
+   */
+  public static ImageDimensions percent(int width, int height) {
+    return new ImageDimensions(DimensionValue.percent(width), DimensionValue.percent(height));
+  }
+
+  /**
+   * Returns the ImageMagick geometry string (e.g. {@code "256x256"} or {@code "50%x50%"}).
+   *
+   * @return the geometry string
+   */
   @Override
   public String toString() {
-    return String.format("%dx%d", width, height);
+    return width + "x" + height;
   }
 }

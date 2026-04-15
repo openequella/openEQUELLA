@@ -56,25 +56,35 @@ public interface ImageMagickService {
    *
    * @param src source image
    * @param dest destination image
-   * @param width target width
-   * @param height target height
+   * @param size the target dimensions (supports both pixel and percentage units)
    * @param options additional ImageMagick options
    * @throws IOException on processing failure
    */
-  void sample(File src, File dest, String width, String height, String... options)
-      throws IOException;
+  void sample(File src, File dest, ImageDimensions size, String... options) throws IOException;
 
   /**
    * Crops an image to the given dimensions.
    *
    * @param src source image
    * @param dest destination image
-   * @param width crop width
-   * @param height crop height
+   * @param size the crop dimensions
    * @param options additional ImageMagick options
    * @throws IOException on processing failure
    */
-  void crop(File src, File dest, String width, String height, String... options) throws IOException;
+  void crop(File src, File dest, ImageDimensions size, String... options) throws IOException;
+
+  /**
+   * Crops an image to the given dimensions at a specific offset.
+   *
+   * @param src source image
+   * @param dest destination image
+   * @param size the crop dimensions
+   * @param offset the x/y offset at which to begin the crop
+   * @param options additional ImageMagick options
+   * @throws IOException on processing failure
+   */
+  void crop(File src, File dest, ImageDimensions size, Offset offset, String... options)
+      throws IOException;
 
   /**
    * Rotates an image by the given angle.
@@ -103,18 +113,4 @@ public interface ImageMagickService {
    * @param dstFile destination thumbnail file
    */
   void generateStandardThumbnail(File srcFile, File dstFile);
-
-  /**
-   * Resamples an image to the exact given dimensions without preserving aspect ratio. This forces
-   * the image to stretch or compress to the target size.
-   *
-   * @param src source image
-   * @param dest destination image
-   * @param width target exact width
-   * @param height target exact height
-   * @param options additional ImageMagick options
-   * @throws IOException on processing failure
-   */
-  void sampleNoRatio(File src, File dest, String width, String height, String... options)
-      throws IOException;
 }
