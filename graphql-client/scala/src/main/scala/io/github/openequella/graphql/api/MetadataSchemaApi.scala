@@ -37,11 +37,10 @@ import io.github.openequella.graphql.client.{
   Queries
 }
 
-import java.util.Base64
-
 /** Provides access to the openEQUELLA metadata schema API.
   */
-object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchemaMutations] {
+object MetadataSchemaApi
+    extends ZipImportExportApi[MetadataSchemaQueries, MetadataSchemaMutations] {
 
   override protected def queryWrapper[A]
       : SelectionBuilder[MetadataSchemaQueries, A] => SelectionBuilder[RootQuery, A] =
@@ -177,14 +176,8 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
   @SuppressWarnings(Array("BooleanParameter"))
   def exportSchema(id: Long, withSecurity: Boolean)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[Array[Byte]]] = {
-    val q = MetadataSchemaQueries.export(id, withSecurity)
-
-    // The query returns a base64 encoded string (representing a zip file), which we need to decode
-    // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
-    // of the base64 encoding and decoding process.
-    query(q).map(_.map(base64ToBytes))
-  }
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(MetadataSchemaQueries.export(id, withSecurity))
 
   /** Imports a metadata schema from a ZIP file.
     *
@@ -201,14 +194,8 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def importSchema(zip: Array[Byte])(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], MetadataSchemaEditView] = {
-    val zipBase64 = Base64.getEncoder.encodeToString(zip)
-    flatMutate(
-      MetadataSchemaMutations.`import`(zipBase64) {
-        MetadataSchemaEditView.selector
-      }
-    )
-  }
+  ): Either[List[ApiError], MetadataSchemaEditView] =
+    importZip(zip)(MetadataSchemaMutations.`import`(_) { MetadataSchemaEditView.selector })
 
   /** Start editing a metadata schema by its ID.
     *
@@ -349,9 +336,6 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
         BaseEntityReferenceView.selector
       }
     )
-
-  private def base64ToBytes(base64Zip: String): Array[Byte] =
-    Base64.getDecoder.decode(base64Zip)
 
   /** Converts a [[MetadataSchemaEditView]] to the GraphQL input type, builds a mutation using that
     * input, and executes it - unwrapping the Option result.

@@ -32,11 +32,9 @@ import io.github.openequella.graphql.client.{
   Queries
 }
 
-import java.util.Base64
-
 /** Provides access to the openEQUELLA collection definition API.
   */
-object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMutations] {
+object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, CollectionMutations] {
 
   override protected def queryWrapper[A]
       : SelectionBuilder[CollectionQueries, A] => SelectionBuilder[RootQuery, A] =
@@ -99,14 +97,8 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
   @SuppressWarnings(Array("BooleanParameter"))
   def exportCollection(id: Long, withSecurity: Boolean)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[Array[Byte]]] = {
-    val q = CollectionQueries.export(id, withSecurity)
-
-    // The query returns a base64 encoded string (representing a zip file), which we need to decode
-    // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
-    // of the base64 encoding and decoding process.
-    query(q).map(_.map(base64ToBytes))
-  }
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(CollectionQueries.export(id, withSecurity))
 
   /** Imports a collection from a ZIP file.
     *
@@ -123,14 +115,8 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
     */
   def importCollection(zip: Array[Byte])(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], CollectionDefinitionEditView] = {
-    val zipBase64 = Base64.getEncoder.encodeToString(zip)
-    flatMutate(
-      CollectionMutations.`import`(zipBase64) {
-        CollectionDefinitionEditView.selector
-      }
-    )
-  }
+  ): Either[List[ApiError], CollectionDefinitionEditView] =
+    importZip(zip)(CollectionMutations.`import`(_) { CollectionDefinitionEditView.selector })
 
   /** Cancel editing a collection, discarding any changes and unlocking the collection.
     *
@@ -183,7 +169,4 @@ object CollectionDefinitionApi extends NestedApi[CollectionQueries, CollectionMu
         BaseEntityReferenceView.selector
       }
     )
-
-  private def base64ToBytes(base64Zip: String): Array[Byte] =
-    Base64.getDecoder.decode(base64Zip)
 }
