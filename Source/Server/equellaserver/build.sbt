@@ -31,6 +31,7 @@ val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.0"
 val luceneVersion     = "10.4.0"
 val nettyVersion      = "4.2.12.Final"
+val rampartVersion    = "1.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -177,16 +178,16 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
   "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
   "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
-  "org.apache.rampart"        % "rampart-core"           % "1.8.0" excludeAll (
+  "org.apache.rampart"        % "rampart-core"           % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
   ),
-  "org.apache.rampart" % "rampart-policy" % "1.8.0" excludeAll (
+  "org.apache.rampart" % "rampart-policy" % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-trust" % "1.8.0" excludeAll (
+  "org.apache.rampart" % "rampart-trust" % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
