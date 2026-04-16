@@ -31,6 +31,7 @@ val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.0"
 val luceneVersion     = "10.4.0"
 val nettyVersion      = "4.2.12.Final"
+val rampartVersion    = "1.8.0"
 
 libraryDependencies ++= Seq(
   "io.circe" %% "circe-core",
@@ -177,16 +178,16 @@ libraryDependencies ++= Seq(
   "org.apache.lucene"         % "lucene-queryparser"     % luceneVersion,
   "org.apache.lucene"         % "lucene-queries"         % luceneVersion,
   "org.apache.lucene"         % "lucene-backward-codecs" % luceneVersion,
-  "org.apache.rampart"        % "rampart-core"           % "1.6.3" excludeAll (
+  "org.apache.rampart"        % "rampart-core"           % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
   ),
-  "org.apache.rampart" % "rampart-policy" % "1.6.2" excludeAll (
+  "org.apache.rampart" % "rampart-policy" % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces")
   ),
-  "org.apache.rampart" % "rampart-trust" % "1.6.2" excludeAll (
+  "org.apache.rampart" % "rampart-trust" % rampartVersion excludeAll (
     ExclusionRule(organization = "org.apache.xalan"),
     ExclusionRule(organization = "org.apache.xerces"),
     ExclusionRule(organization = "org.bouncycastle")
@@ -404,6 +405,13 @@ run := {
   // ...
   // As per https://github.com/johnrengelman/shadow/issues/309 , combining the files.
   case PathList("META-INF", "cxf", "bus-extensions.txt") => MergeStrategy.filterDistinctLines
+
+  // Rampart/WSS4J upgrade introduces duplicate schema resources via CXF policy and WSS4J stax.
+  // Keep one deterministic set to avoid assembly deduplicate failures.
+  case PathList("schemas", "xml.xsd")                                     => MergeStrategy.first
+  case PathList("schemas", "oasis-200401-wss-wssecurity-secext-1.0.xsd")  => MergeStrategy.first
+  case PathList("schemas", "oasis-200401-wss-wssecurity-utility-1.0.xsd") => MergeStrategy.first
+  case PathList("schemas", "xmldsig-core-schema.xsd")                     => MergeStrategy.first
 
   // Due to the error: deduplicate: different file contents found in the following:
   // ...
