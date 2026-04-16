@@ -97,7 +97,6 @@ object CommonSettings extends AutoPlugin {
       )
     ),
     resolvers ++= Seq(
-      Resolver.bintrayRepo("omegat-org", "maven"),
       "JBoss Public Repository" at "https://repository.jboss.org/nexus/content/repositories/public/"
     ),
     libraryDependencies ++= Seq(
