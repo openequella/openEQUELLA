@@ -276,6 +276,8 @@ object MetadataSchemaApi
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
+    * @see
+    *   [[addAndLock]] to keep the schema locked after creation.
     */
   def add(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
@@ -297,6 +299,8 @@ object MetadataSchemaApi
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
+    * @see
+    *   [[add]] to create without keeping it locked.
     */
   def addAndLock(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
@@ -318,6 +322,8 @@ object MetadataSchemaApi
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    * @see
+    *   [[stopEditAndUnlock]] to save and release the lock in one step.
     */
   def stopEdit(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
@@ -339,6 +345,8 @@ object MetadataSchemaApi
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    * @see
+    *   [[stopEdit]] to save while keeping the lock.
     */
   def stopEditAndUnlock(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
