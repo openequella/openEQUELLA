@@ -319,12 +319,12 @@
 					<title>ImageMagick</title>
 				</control>
 				<control class="paragraph">
-					<description>The free third-party product ImageMagick is utilised by openEQUELLA for all image processing.  openEQUELLA requires version 6.4 or greater of ImageMagick to be installed on your system.  If you do not have ImageMagick installed, or would like more information about the product, please visit http://www.imagemagick.org</description>
-				</control>
+          <description>The free third-party product ImageMagick is utilised by openEQUELLA for all image processing. openEQUELLA requires version 7 or greater of ImageMagick to be installed on your system. If you do not have ImageMagick installed, or would like more information about the product, please visit https://imagemagick.org</description>
+        </control>
 				<control class="directoryselector">
 					<title>Directory to ImageMagick Programs</title>
-					<description>ImageMagick is comprised of a set of different programs, and openEQUELLA needs to know the directory that contains these programs.  For example, running 'which convert' on a Unix-like system may return '/usr/bin/convert' so you should enter '/usr/bin'.  On a Windows system, you may have installed to 'C:\ImageMagick6.4', then the programs can be found directly inside that path.</description>
-					<target>imagemagick/path</target>
+          <description>ImageMagick comprises a set of different programs, and openEQUELLA needs to know the directory that contains these programs. For example, running 'which magick' on a Unix-like system may return '/usr/bin/magick' so you should enter '/usr/bin'. On a Windows system, you may have installed to 'C:\ImageMagick', then the programs can be found directly inside that path.</description>
+          <target>imagemagick/path</target>
 					<items>
 						<item name="" value=""/>
 					</items>

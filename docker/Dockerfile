@@ -12,9 +12,10 @@ RUN apk update \
     ffmpeg \
     gcompat \
     ghostscript \
+    # The eclipse-temurin:21-alpine base image ships ImageMagick 7+. \
     imagemagick \
     unzip \
-  && adduser equella --disabled-password --gecos -shell /bin/bash
+  && adduser equella --disabled-password --shell /bin/bash
 
 # Install openEQUELLA
 FROM baseequella AS installer

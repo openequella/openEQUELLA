@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+# Note that both the _version_ number needs to be updated, as well as the embedded _git hash_ in the filename.
+# To find the latest release, go to https://github.com/ImageMagick/ImageMagick/releases/latest
+DOWNLOAD_URL=https://github.com/ImageMagick/ImageMagick/releases/download/7.1.2-18/ImageMagick-d4e4b2b-gcc-x86_64.AppImage
+
+wget -nv -O magick "$DOWNLOAD_URL"
+chmod +x magick
+./magick --appimage-extract
+mv squashfs-root /opt/imagemagick
+mv /opt/imagemagick/AppRun /opt/imagemagick/magick
+rm magick
