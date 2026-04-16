@@ -138,9 +138,9 @@ trait NestedMutationApi[M] {
   ): Either[List[ApiError], R] =
     Client.mutate(mutationWrapper(mutation))
 
-  /** Executes a mutation whose result is wrapped in [[Option]] and flattens it, treating [[None]]
-    * as an error. This is the standard pattern for Caliban mutations, which generate
-    * `Option`-wrapped return types due to GraphQL's nullable-by-default semantics.
+  /** Executes a mutation whose result is wrapped in `Option` and flattens it, treating `None` as an
+    * error. This is the standard pattern for Caliban mutations, which generate `Option`-wrapped
+    * return types due to GraphQL's nullable-by-default semantics.
     *
     * This is a convenience wrapper for `flattenResult(mutate(mutation))`.
     *
