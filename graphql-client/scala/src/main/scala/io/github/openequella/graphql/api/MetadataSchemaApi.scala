@@ -162,22 +162,37 @@ object MetadataSchemaApi
     query(q)
   }
 
-  /** Exports a metadata schema as a ZIP file.
+  /** Exports a metadata schema as a ZIP file, without security information.
     *
     * @param id
     *   The ID of the metadata schema to export.
-    * @param withSecurity
-    *   Whether to include security information in the export.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
+    * @see
+    *   [[exportSchemaWithSecurity]] to include security ACLs in the export.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def exportSchema(id: Long, withSecurity: Boolean)(implicit
+  def exportSchema(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[Array[Byte]]] =
-    exportZip(MetadataSchemaQueries.export(id, withSecurity))
+    exportZip(MetadataSchemaQueries.export(id, withSecurity = false))
+
+  /** Exports a metadata schema as a ZIP file, including security ACL information.
+    *
+    * @param id
+    *   The ID of the metadata schema to export.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
+    * @see
+    *   [[exportSchema]] to export without security ACLs.
+    */
+  def exportSchemaWithSecurity(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(MetadataSchemaQueries.export(id, withSecurity = true))
 
   /** Imports a metadata schema from a ZIP file.
     *
@@ -253,50 +268,83 @@ object MetadataSchemaApi
   /** Add a new metadata schema.
     *
     * Typically called after a `startCreate` operation, with the details for the new schema
-    * populated. The `MetadataSchemaEditView` type is used as input to maintain consistency with the
-    * view returned by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    * populated. The schema is not locked after creation — use [[addAndLock]] to keep it locked.
     *
     * @param details
     *   The metadata schema details to add, using the same view type returned by `startEdit`.
-    * @param lockAfterwards
-    *   If true, keeps the schema locked after creation for further editing.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
+  def add(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
     withConvertedInput(details) { input =>
-      MetadataSchemaMutations.add(input, lockAfterwards) {
+      MetadataSchemaMutations.add(input, lockAfterwards = false) {
         BaseEntityReferenceView.selector
       }
     }
 
-  /** Stop editing a metadata schema, saving changes and optionally unlocking.
+  /** Add a new metadata schema, keeping it locked for further editing.
     *
-    * Typically called after a `startEdit` operation to commit changes to a metadata schema. The
-    * `MetadataSchemaEditView` type is used as input to maintain consistency with the view returned
-    * by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    * Like [[add]] but keeps the schema locked after creation, allowing the caller to continue
+    * editing without a separate lock acquisition step.
     *
     * @param details
-    *   The metadata schema details to save, using the view type returned by `startEdit`.
-    * @param unlock
-    *   If true, unlocks the schema after saving; if false, keeps it locked for continued editing.
+    *   The metadata schema details to add, using the same view type returned by `startEdit`.
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema, or an error
-    *   if the operation failed.
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def stopEdit(details: MetadataSchemaEditView, unlock: Boolean)(implicit
+  def addAndLock(details: MetadataSchemaEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], BaseEntityReferenceView] =
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.add(input, lockAfterwards = true) {
+        BaseEntityReferenceView.selector
+      }
+    }
+
+  /** Stop editing a metadata schema, saving changes and keeping it locked.
+    *
+    * Use this when you want to persist changes but intend to continue editing. To save and release
+    * the lock in one step, use [[stopEditAndUnlock]] instead.
+    *
+    * @param details
+    *   The metadata schema details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    */
+  def stopEdit(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaView] =
     withConvertedInput(details) { input =>
-      MetadataSchemaMutations.stopEdit(input, unlock) {
+      MetadataSchemaMutations.stopEdit(input, unlock = false) {
+        MetadataSchemaView.selector
+      }
+    }
+
+  /** Stop editing a metadata schema, saving changes and releasing the lock.
+    *
+    * The standard way to finish an edit session. Use [[stopEdit]] instead if you want to save but
+    * continue editing under the same lock.
+    *
+    * @param details
+    *   The metadata schema details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    */
+  def stopEditAndUnlock(details: MetadataSchemaEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], MetadataSchemaView] =
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.stopEdit(input, unlock = true) {
         MetadataSchemaView.selector
       }
     }

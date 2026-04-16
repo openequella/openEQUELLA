@@ -199,26 +199,34 @@ class TleGroupApiTest
   }
 
   describe("deleteGroup") {
-    it("should be able to delete a known group, and it's children") {
-      val deleteChildrenOptions = Table(
-        ("deleteChildren", "expectedChildValidator"),
-        (true, (childGroup: Option[TleGroupView]) => childGroup shouldBe None),
-        (false, (childGroup: Option[TleGroupView]) => childGroup should not be None)
-      )
+    it("should delete a known group and all its children") {
       val groupName = "deleteGroupTest"
       val childName = s"$groupName-child"
 
-      forAll(deleteChildrenOptions) { (deleteChildren, validateChildGroupStatus) =>
-        val response = for {
-          group <- addGroup(groupName)
-          _     <- addGroup(childName, Some(group.uniqueId))
-          uniqueId = group.uniqueId
-        } yield TleGroupApi.deleteGroup(uniqueId, deleteChildren)
+      val response = for {
+        group <- addGroup(groupName)
+        _     <- addGroup(childName, Some(group.uniqueId))
+        uniqueId = group.uniqueId
+      } yield TleGroupApi.deleteGroup(uniqueId)
 
-        response shouldBe a[Right[_, _]]
-        TleGroupApi.getByName(groupName).value shouldBe None
-        validateChildGroupStatus(TleGroupApi.getByName(childName).value)
-      }
+      response shouldBe a[Right[_, _]]
+      TleGroupApi.getByName(groupName).value shouldBe None
+      TleGroupApi.getByName(childName).value shouldBe None
+    }
+
+    it("should delete a known group without deleting its children") {
+      val groupName = "deleteGroupTest"
+      val childName = s"$groupName-child"
+
+      val response = for {
+        group <- addGroup(groupName)
+        _     <- addGroup(childName, Some(group.uniqueId))
+        uniqueId = group.uniqueId
+      } yield TleGroupApi.deleteGroupOnly(uniqueId)
+
+      response shouldBe a[Right[_, _]]
+      TleGroupApi.getByName(groupName).value shouldBe None
+      TleGroupApi.getByName(childName).value should not be None
     }
 
     it("should return None for an unknown group") {
@@ -228,7 +236,7 @@ class TleGroupApiTest
 
     it("should return an AccessDeniedError if not authenticated") {
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        TleGroupApi.deleteGroup(knownGroup.uniqueId, deleteChildren = false)(unauthenticated)
+        TleGroupApi.deleteGroupOnly(knownGroup.uniqueId)(unauthenticated)
       }
 
       TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]

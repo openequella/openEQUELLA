@@ -82,23 +82,39 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     query(q)
   }
 
-  /** Exports a collection as a ZIP file.
+  /** Exports a collection as a ZIP file, without security information.
     *
     * @param id
     *   The ID of the collection to export.
-    * @param withSecurity
-    *   Whether to include security information in the export.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of errors or an Option[Array[Byte]] containing the exported collection as a
     *   zip file.
+    * @see
+    *   [[exportCollectionWithSecurity]] to include security ACLs in the export.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def exportCollection(id: Long, withSecurity: Boolean)(implicit
+  def exportCollection(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Option[Array[Byte]]] =
-    exportZip(CollectionQueries.export(id, withSecurity))
+    exportZip(CollectionQueries.export(id, withSecurity = false))
+
+  /** Exports a collection as a ZIP file, including security ACL information.
+    *
+    * @param id
+    *   The ID of the collection to export.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of errors or an Option[Array[Byte]] containing the exported collection as a
+    *   zip file.
+    * @see
+    *   [[exportCollection]] to export without security ACLs.
+    */
+  def exportCollectionWithSecurity(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(CollectionQueries.export(id, withSecurity = true))
 
   /** Imports a collection from a ZIP file.
     *

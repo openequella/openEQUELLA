@@ -150,21 +150,47 @@ object MetadataSchemaApiMutationsTestHelper {
     *   The name for the test schema. Defaults to "Test Schema".
     * @param description
     *   Optional description. Defaults to Some("A test schema").
-    * @param lockAfterwards
-    *   Whether to keep the schema locked after creation. Defaults to false.
     * @param test
-    *   The test body, receiving the newly created schema's numeric ID.
+    *   The test body, receiving the newly created schema reference.
     * @param cfg
     *   The client configuration.
     */
   def withTestSchema(
       name: String = "Test Schema",
-      description: Option[String] = Some("A test schema"),
-      lockAfterwards: Boolean = false
+      description: Option[String] = Some("A test schema")
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
+    withTestSchemaUsing(MetadataSchemaApi.add)(name, description)(test)
+
+  /** Loan-pattern helper that creates a locked test schema, runs the test body, and guarantees
+    * cleanup.
+    *
+    * Like [[withTestSchema]] but keeps the schema locked for editing after creation. Use this when
+    * the test needs to perform further edit operations without a separate `startEdit` call.
+    *
+    * @param name
+    *   The name for the test schema. Defaults to "Test Schema".
+    * @param description
+    *   Optional description. Defaults to Some("A test schema").
+    * @param test
+    *   The test body, receiving the newly created schema reference.
+    * @param cfg
+    *   The client configuration.
+    */
+  def withTestSchemaLocked(
+      name: String = "Test Schema",
+      description: Option[String] = Some("A test schema")
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
+    withTestSchemaUsing(MetadataSchemaApi.addAndLock)(name, description)(test)
+
+  private def withTestSchemaUsing(
+      addFn: MetadataSchemaEditView => Either[List[ApiError], BaseEntityReferenceView]
+  )(
+      name: String,
+      description: Option[String]
   )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit = {
     val skeleton  = MetadataSchemaApi.startCreate().value
     val details   = buildNewSchemaDetails(skeleton, name = name, description = description)
-    val reference = MetadataSchemaApi.add(details, lockAfterwards = lockAfterwards).value
+    val reference = addFn(details).value
     val schemaId  = reference.id
 
     try {

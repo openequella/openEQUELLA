@@ -23,7 +23,7 @@ import io.github.openequella.graphql.api.{AccessDeniedError, ApiError}
 import io.github.openequella.graphql.test.{TestHelper, ZipTestHelper}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
+import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.{EitherValues, GivenWhenThen, OptionValues}
 
 import java.util.zip.ZipInputStream
@@ -39,7 +39,9 @@ import java.util.zip.ZipInputStream
   *   Returns the ID of the first available entity; the caller's implicit [[ClientConfiguration]] is
   *   captured at the call site.
   * @param exportFn
-  *   The export function under test — takes `(id, withSecurity)`; cfg captured at call site.
+  *   Export function without security; cfg captured at call site.
+  * @param exportWithSecurityFn
+  *   Export function with security ACLs included; cfg captured at call site.
   * @param expectedEntityClass
   *   Fully-qualified Java class name expected inside `_entity.xml` (e.g.
   *   `"com.tle.beans.entity.Schema"`).
@@ -50,7 +52,8 @@ import java.util.zip.ZipInputStream
 case class ExportBehaviorConfig(
     entityName: String,
     getFirstIdFn: () => Long,
-    exportFn: (Long, Boolean) => Either[List[ApiError], Option[Array[Byte]]],
+    exportFn: Long => Either[List[ApiError], Option[Array[Byte]]],
+    exportWithSecurityFn: Long => Either[List[ApiError], Option[Array[Byte]]],
     expectedEntityClass: String,
     unauthExportFn: ClientConfiguration => Either[List[ApiError], Option[Array[Byte]]]
 )
@@ -58,7 +61,7 @@ case class ExportBehaviorConfig(
 /** ScalaTest shared behaviour mixin for entity export tests.
   *
   * Mix this trait into a [[AnyFunSpec]]-based test class and call [[exportBehavior]] inside a
-  * `describe` block to get three standard export test cases without any code duplication.
+  * `describe` block to get four standard export test cases without any code duplication.
   *
   * ===Usage example===
   * {{{
@@ -74,11 +77,12 @@ case class ExportBehaviorConfig(
   *
   *   describe("exportMyEntity") {
   *     exportBehavior(ExportBehaviorConfig(
-  *       entityName        = "my entity",
-  *       getFirstIdFn      = () => MyApi.listEntities().value.head.id,
-  *       exportFn          = MyApi.exportEntity,
-  *       expectedEntityClass = "com.example.MyEntity",
-  *       unauthExportFn    = cfg => MyApi.exportEntity(1, withSecurity = false)(cfg)
+  *       entityName            = "my entity",
+  *       getFirstIdFn          = () => MyApi.listEntities().value.head.id,
+  *       exportFn              = MyApi.exportEntity,
+  *       exportWithSecurityFn  = MyApi.exportEntityWithSecurity,
+  *       expectedEntityClass   = "com.example.MyEntity",
+  *       unauthExportFn        = cfg => MyApi.exportEntity(1)(cfg)
   *     ))
   *   }
   * }
@@ -92,7 +96,7 @@ trait ExportTestBehaviours {
     with OptionValues
     with TableDrivenPropertyChecks =>
 
-  /** Registers three `it` blocks covering the standard export scenarios.
+  /** Registers four `it` blocks covering the standard export scenarios.
     *
     * The tests are parameterised via [[ExportBehaviorConfig]] rather than through a long argument
     * list, keeping this method signature clean.
@@ -103,43 +107,53 @@ trait ExportTestBehaviours {
     *   Authenticated [[ClientConfiguration]] for the happy-path tests.
     */
   def exportBehavior(config: ExportBehaviorConfig)(implicit cfg: ClientConfiguration): Unit = {
+    val securityElement = "<targetList>"
 
-    it(s"exports a ${config.entityName} as a ZIP file") {
-      val withSecurityOptions = Tables.Table("withSecurity", true, false)
-      forAll(withSecurityOptions) { withSecurity =>
-        Given(s"a valid ${config.entityName} ID with withSecurity=$withSecurity")
-        val entityId = config.getFirstIdFn()
+    def checkExportZip(
+        result: Either[List[ApiError], Option[Array[Byte]]]
+    )(checkSecurity: String => Unit): Unit = {
+      result.isRight shouldBe true
+      val zis = result.value.map(ZipTestHelper.bytesToZipInputStream).get
+      zis shouldBe a[ZipInputStream]
+      val entityXml = ZipTestHelper.extractEntityXml(zis).value
+      entityXml should (startWith("<com.tle.common.ImportExportPack>") and include(
+        s"""<entity class="${config.expectedEntityClass}">"""
+      ))
+      checkSecurity(entityXml)
+      zis.close()
+    }
 
-        When(s"calling export with the ${config.entityName} ID and withSecurity")
-        val result = config.exportFn(entityId, withSecurity)
+    it(s"exports a ${config.entityName} as a ZIP file without security") {
+      Given(s"a valid ${config.entityName} ID")
+      val entityId = config.getFirstIdFn()
 
-        // We convert the result to a ZipInputStream for easier testing.
-        // Most often in actual application the bytes are simply saved to a file.
-        // Here we just want to ensure that the bytes can be interpreted as a zip file.
-        Then("returns an Array[Byte] convertable to a ZipInputStream")
-        result.isRight shouldBe true
-        val zis = result.value.map(ZipTestHelper.bytesToZipInputStream).get
-        zis shouldBe a[ZipInputStream]
+      When(s"calling export on the ${config.entityName} without security")
+      val result = config.exportFn(entityId)
 
-        And("the zip file includes a valid _entity.xml")
-        val entityXml = ZipTestHelper.extractEntityXml(zis).value
-        entityXml should (startWith("<com.tle.common.ImportExportPack>") and include(
-          s"""<entity class="${config.expectedEntityClass}">"""
-        ))
+      Then("returns an Array[Byte] convertable to a ZipInputStream")
+      checkExportZip(result) { xml =>
+        And("the _entity.xml does not contain security information")
+        xml should not include securityElement
+      }
+    }
 
-        And("the _entity.xml contains security information based on withSecurity")
-        val securityElement = "<targetList>"
-        if (withSecurity) entityXml should include(securityElement)
-        else entityXml should not include securityElement
+    it(s"exports a ${config.entityName} as a ZIP file with security") {
+      Given(s"a valid ${config.entityName} ID")
+      val entityId = config.getFirstIdFn()
 
-        // Ensure we close the stream to free resources
-        zis.close()
+      When(s"calling export on the ${config.entityName} with security")
+      val result = config.exportWithSecurityFn(entityId)
+
+      Then("returns an Array[Byte] convertable to a ZipInputStream")
+      checkExportZip(result) { xml =>
+        And("the _entity.xml contains security information")
+        xml should include(securityElement)
       }
     }
 
     it(s"returns None for an invalid ${config.entityName} ID") {
       Given(s"an invalid ${config.entityName} ID")
-      val result = config.exportFn(-1L, false)
+      val result = config.exportFn(-1L)
 
       Then("returns None")
       result shouldBe Right(None)

@@ -105,9 +105,9 @@ class CollectionDefinitionApiQueriesTest
         entityName = "collection",
         getFirstIdFn = () => CollectionDefinitionApi.listCollections().value.head.id,
         exportFn = CollectionDefinitionApi.exportCollection,
+        exportWithSecurityFn = CollectionDefinitionApi.exportCollectionWithSecurity,
         expectedEntityClass = "com.tle.beans.entity.itemdef.ItemDefinition",
-        unauthExportFn =
-          cfg => CollectionDefinitionApi.exportCollection(1, withSecurity = false)(cfg)
+        unauthExportFn = cfg => CollectionDefinitionApi.exportCollection(1)(cfg)
       )
     )
   }

@@ -213,8 +213,9 @@ class MetadataSchemaApiQueriesTest
         entityName = "metadata schema",
         getFirstIdFn = () => MetadataSchemaApi.listSchemas().value.head.id,
         exportFn = MetadataSchemaApi.exportSchema,
+        exportWithSecurityFn = MetadataSchemaApi.exportSchemaWithSecurity,
         expectedEntityClass = "com.tle.beans.entity.Schema",
-        unauthExportFn = cfg => MetadataSchemaApi.exportSchema(1, withSecurity = false)(cfg)
+        unauthExportFn = cfg => MetadataSchemaApi.exportSchema(1)(cfg)
       )
     )
   }

@@ -148,23 +148,39 @@ object TleGroupApi extends NestedApi[InternalGroupQueries, InternalGroupMutation
   ): Either[List[ApiError], TleGroupView] =
     flatMutate(InternalGroupMutations.create(name, parentId) { tleGroup })
 
-  /** Deletes a group.
+  /** Deletes a group and all its child subgroups and all contained users.
     *
     * @param uniqueId
     *   The unique identifier of the group.
-    * @param deleteChildren
-    *   Whether to delete all subgroups and users. If `false` and the group has subgroups, then
-    *   those groups will be moved to the parent of the group being deleted.
     * @param cfg
     *   The client configuration.
     * @return
     *   `Left` containing a list of errors or `Right` if the operation was successful.
+    * @see
+    *   [[deleteGroupOnly]] to delete the group while preserving its children.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def deleteGroup(uniqueId: String, deleteChildren: Boolean = true)(implicit
+  def deleteGroup(uniqueId: String)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
-    flatMutate(InternalGroupMutations.delete(uniqueId, deleteChildren))
+    flatMutate(InternalGroupMutations.delete(uniqueId, deleteChildren = true))
+
+  /** Deletes a group without deleting its children.
+    *
+    * Child subgroups are reparented to the deleted group's parent rather than being removed.
+    *
+    * @param uniqueId
+    *   The unique identifier of the group.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   `Left` containing a list of errors or `Right` if the operation was successful.
+    * @see
+    *   [[deleteGroup]] to delete the group and all its descendants.
+    */
+  def deleteGroupOnly(uniqueId: String)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(InternalGroupMutations.delete(uniqueId, deleteChildren = false))
 
   /** Updates a group, and the primary means to add users to a group.
     *

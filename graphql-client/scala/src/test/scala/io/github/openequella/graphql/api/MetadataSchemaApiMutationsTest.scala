@@ -25,7 +25,8 @@ import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
   getSchemaName,
   isSchemaLockedForEditing,
   withEditSession,
-  withTestSchema
+  withTestSchema,
+  withTestSchemaLocked
 }
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
@@ -208,9 +209,9 @@ class MetadataSchemaApiMutationsTest
       }
     }
 
-    it("can keep the schema locked after creation when lockAfterwards is true") {
-      When("creating a new metadata schema with lockAfterwards = true")
-      withTestSchema(lockAfterwards = true) { ref =>
+    it("can keep the schema locked after creation with addAndLock") {
+      When("creating a new metadata schema with addAndLock")
+      withTestSchemaLocked() { ref =>
         Then("the schema is locked for editing")
         isSchemaLockedForEditing(ref.id) shouldBe true
       }
@@ -225,7 +226,7 @@ class MetadataSchemaApiMutationsTest
 
       When("an unauthenticated user calls add")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.add(newSchemaDetails, lockAfterwards = false)(unauthenticated)
+        MetadataSchemaApi.add(newSchemaDetails)(unauthenticated)
       }
 
       Then("returns an AccessDeniedError")
@@ -234,14 +235,14 @@ class MetadataSchemaApiMutationsTest
   }
 
   describe("stopEdit") {
-    it("saves changes to a metadata schema and unlocks when unlock=true") {
+    it("saves changes to a metadata schema and unlocks") {
       Given("a metadata schema in edit mode")
-      withTestSchema(lockAfterwards = true) { reference =>
+      withTestSchemaLocked() { reference =>
         val schemaId = reference.id
 
-        When("calling stopEdit with unlock=true")
+        When("calling stopEditAndUnlock")
         val editView   = MetadataSchemaApi.startEdit(schemaId).value
-        val stopResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
+        val stopResult = MetadataSchemaApi.stopEditAndUnlock(editView)
 
         Then("completes without errors and returns the schema")
         stopResult.isRight shouldBe true
@@ -254,14 +255,14 @@ class MetadataSchemaApiMutationsTest
       }
     }
 
-    it("saves changes and keeps the schema locked when unlock=false") {
+    it("saves changes and keeps the schema locked") {
       Given("a metadata schema in edit mode")
-      withTestSchema(lockAfterwards = true) { reference =>
+      withTestSchemaLocked() { reference =>
         val schemaId = reference.id
 
-        When("calling stopEdit with unlock=false")
+        When("calling stopEdit (keeping locked)")
         val editView   = MetadataSchemaApi.startEdit(schemaId).value
-        val stopResult = MetadataSchemaApi.stopEdit(editView, unlock = false)
+        val stopResult = MetadataSchemaApi.stopEdit(editView)
 
         Then("completes without errors and returns the schema")
         stopResult.isRight shouldBe true
@@ -292,7 +293,7 @@ class MetadataSchemaApiMutationsTest
           details = editView.schema.details.copy(id = invalidSchemaId)
         )
       )
-      val result = MetadataSchemaApi.stopEdit(editViewWithBadId, unlock = true)
+      val result = MetadataSchemaApi.stopEditAndUnlock(editViewWithBadId)
 
       Then("returns a NotFoundError")
       TestHelper.checkApiError(result) shouldBe a[NotFoundError]
@@ -308,7 +309,7 @@ class MetadataSchemaApiMutationsTest
       try {
         When("an unauthenticated user calls stopEdit")
         val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-          MetadataSchemaApi.stopEdit(editView, unlock = true)(unauthenticated)
+          MetadataSchemaApi.stopEditAndUnlock(editView)(unauthenticated)
         }
 
         Then("returns an AccessDeniedError")
@@ -430,7 +431,7 @@ class MetadataSchemaApiMutationsTest
     ) {
       Given("a valid metadata schema export")
       val schemaId    = getFirstSchemaId()
-      val exportBytes = MetadataSchemaApi.exportSchema(schemaId, withSecurity = false).value.value
+      val exportBytes = MetadataSchemaApi.exportSchema(schemaId).value.value
 
       When("calling importSchema with the exported bytes")
       val importResult = MetadataSchemaApi.importSchema(exportBytes)
@@ -444,7 +445,7 @@ class MetadataSchemaApiMutationsTest
       var persistedId: Option[Long] = None
       try {
         And("calling stopEdit completes the import and persists the schema")
-        val savedResult = MetadataSchemaApi.stopEdit(editView, unlock = true)
+        val savedResult = MetadataSchemaApi.stopEditAndUnlock(editView)
         savedResult.isRight shouldBe true
         val savedSchema = savedResult.value
         savedSchema shouldBe a[MetadataSchemaView]
