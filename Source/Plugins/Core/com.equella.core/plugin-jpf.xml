@@ -614,10 +614,6 @@
     <parameter id="class" value="com.tle.core.remoting.RemotePowerSearchService" />
     <parameter id="bean" value="bean:remotePowerSearchService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="languageInvoker">
-    <parameter id="class" value="com.tle.core.remoting.RemoteLanguageService" />
-    <parameter id="bean" value="bean:remoteLanguageService" />
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="userInvoker">
     <parameter id="class" value="com.tle.core.remoting.RemoteUserService" />
     <parameter id="bean" value="bean:remoteUserService" />
