@@ -95,8 +95,12 @@ class AdminSchemaServiceImpl @Inject() (implicit
       throw new ClientRequestException(s"Error identifying schema by UUID: $uuid", errors)
   }
 
-  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
-    MetadataSchemaApi.exportSchema(id, withSecurity) match {
+  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] = {
+    val exportResult =
+      if (withSecurity) MetadataSchemaApi.exportSchemaWithSecurity(id)
+      else MetadataSchemaApi.exportSchema(id)
+
+    exportResult match {
       case Right(Some(bytes)) => bytes
       case Right(None)        =>
         throw new NotFoundException(
@@ -105,6 +109,7 @@ class AdminSchemaServiceImpl @Inject() (implicit
       case Left(errors) =>
         throw new ClientRequestException(s"Error exporting schema with ID: $id", errors)
     }
+  }
 
   override def importEntity(zip: Array[Byte]): EntityPack[Schema] =
     MetadataSchemaApi.importSchema(zip) match {
@@ -135,8 +140,13 @@ class AdminSchemaServiceImpl @Inject() (implicit
         throw new ClientRequestException(s"Error cancelling edit of schema with ID: $id", errors)
     }
 
-  override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema =
-    MetadataSchemaApi.stopEdit(pack convert fromEntityPack, unlock) match {
+  override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema = {
+    val details        = pack convert fromEntityPack
+    val stopEditResult =
+      if (unlock) MetadataSchemaApi.stopEditAndUnlock(details)
+      else MetadataSchemaApi.stopEdit(details)
+
+    stopEditResult match {
       case Right(updatedView) => updatedView convert toSchema
       case Left(errors)       =>
         throw new ClientRequestException(
@@ -144,6 +154,7 @@ class AdminSchemaServiceImpl @Inject() (implicit
           errors
         )
     }
+  }
 
   override def delete(entityid: Long, checkReferences: Boolean): Unit =
     MetadataSchemaApi.delete(entityid, Some(checkReferences)) match {
@@ -154,7 +165,11 @@ class AdminSchemaServiceImpl @Inject() (implicit
 
   override def add(pack: EntityPack[Schema], lockAfterwards: Boolean): BaseEntityLabel = {
     val details: MetadataSchemaEditView = pack convert fromEntityPack
-    MetadataSchemaApi.add(details, lockAfterwards) match {
+    val addResult                       =
+      if (lockAfterwards) MetadataSchemaApi.addAndLock(details)
+      else MetadataSchemaApi.add(details)
+
+    addResult match {
       case Right(ref)   => ref convert toBaseEntityLabel
       case Left(errors) =>
         throw new ClientRequestException(s"Error adding new schema.", errors)

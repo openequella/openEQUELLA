@@ -69,7 +69,11 @@ class AdminTLEGroupServiceImpl @Inject() (implicit val cfg: ClientConfiguration)
 
   override def delete(groupID: String, deleteChildren: Boolean): Unit = {
     LOGGER.debug("Deleting group: {}", groupID)
-    TleGroupApi.deleteGroup(groupID, deleteChildren) match {
+    val deleteResult =
+      if (deleteChildren) TleGroupApi.deleteGroup(groupID)
+      else TleGroupApi.deleteGroupOnly(groupID)
+
+    deleteResult match {
       case Right(_) =>
         LOGGER.debug("Group [{}] deleted", groupID)
       case Left(errors) =>
