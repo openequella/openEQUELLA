@@ -16,7 +16,7 @@ public class CourseDefaultsTest extends AbstractSessionTest {
   public void testChangeDates() {
     logon("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    CourseDefaultsPage cdp = sp.courseDefaultsSettings();
+    CourseDefaultsPage cdp = sp.clickCourseDefaultsSetting();
 
     // Midnight UTC dates, which are 'conceptual'
     java.util.Calendar[] nowAndTheFuture = getNowRange();
@@ -27,7 +27,7 @@ public class CourseDefaultsTest extends AbstractSessionTest {
 
     logon("AutoTest", "automated");
     sp = new SettingsPage(context).load();
-    cdp = sp.courseDefaultsSettings();
+    cdp = sp.clickCourseDefaultsSetting();
 
     com.tle.webtests.pageobject.generic.component.Calendar sd = cdp.getStartDate(context);
     assertTrue(sd.dateEquals(nowAndTheFuture[0]), "Reflected start date is incorrect");

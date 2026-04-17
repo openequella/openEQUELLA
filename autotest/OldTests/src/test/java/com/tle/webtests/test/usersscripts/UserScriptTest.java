@@ -87,7 +87,7 @@ public class UserScriptTest extends AbstractCleanupTest {
   @Test
   public void testCreateEntity() {
     logon();
-    ShowUserScriptsPage scriptsPage = new SettingsPage(context).load().userScriptsPage();
+    ShowUserScriptsPage scriptsPage = new SettingsPage(context).load().clickUserScriptsSetting();
 
     scriptsPage = createDisplayScript(scriptsPage);
     scriptsPage = createExecutableScriptFromDisplay(scriptsPage);

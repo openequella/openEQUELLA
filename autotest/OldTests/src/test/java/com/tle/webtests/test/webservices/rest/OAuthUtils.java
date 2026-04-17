@@ -21,6 +21,6 @@ public class OAuthUtils {
   private static OAuthSettingsPage openOAuthSettingsPage(PageContext context) {
     MenuSection menu = new MenuSection(context);
     SettingsPage settingsPage = menu.clickMenu("Settings", new SettingsPage(context));
-    return settingsPage.oauthSettingsPage();
+    return settingsPage.clickOAuthSetting();
   }
 }
