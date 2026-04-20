@@ -166,6 +166,11 @@ class CollectionDefinitionApiMutationsTest
   }
 
   describe("cancelEdit") {
+    // TODO: This test cannot be implemented until we have support for `startEdit` and `add`
+    //  operations, which are needed to set up the test conditions. Once those are available,
+    //  this test should verify that `cancelEdit` properly cancels an edit session and unlocks
+    //  the collection.
+
     it("denies access when not authenticated") {
       When("an unauthenticated user calls cancelEdit")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
