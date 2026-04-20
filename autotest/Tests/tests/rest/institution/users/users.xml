@@ -91,4 +91,13 @@
     <emailAddress/>
     <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
   </com.tle.beans.user.TLEUser>
+  <com.tle.beans.user.TLEUser>
+    <id>1659235</id>
+    <uuid>a35daca9-ba02-4ceb-8513-f437d5d9882b</uuid>
+    <username>Autotest_StagingLowPriv</username>
+    <firstName>Autotest</firstName>
+    <lastName>StagingLowPriv</lastName>
+    <emailAddress/>
+    <password>SHA256:7f79302f9f5af172d5827002b8a64badbe0e39deccb8673bcae901437b47e9f5</password>
+  </com.tle.beans.user.TLEUser>
 </list>
