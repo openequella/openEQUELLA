@@ -271,20 +271,45 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   @Override
-  public MultipartBean startMultipart(String uuid, Boolean uploads) {
+  public Response startMultipart(String uuid) {
     checkPermissions();
-    if (uploads == null) {
-      throw new BadRequestException("Must use PUT for uploading files");
-    }
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String uploadId = UUID.randomUUID().toString();
     String folderPath = multipartFolderPath(uploadId);
     ensureMultipartDir(stagingFile);
     try {
       fileSystemService.mkdir(stagingFile, folderPath);
-      return new MultipartBean(uploadId);
+      return Response.status(Status.CREATED)
+          .location(stagingUri(uuid))
+          .entity(new MultipartBean(uploadId))
+          .build();
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Override
+  public Response uploadChunk(
+      String uuid, String uploadId, int partNumber, InputStream data, String contentType)
+      throws IOException {
+    checkPermissions();
+    checkValidContentType(contentType);
+
+    if (partNumber <= 0) {
+      throw new BadRequestException("partNumber must be greater than 0.");
+    }
+
+    final StagingFile stagingFile = stagingService.getStagingFile(uuid);
+    final String chunkPath =
+        PathUtils.filePath(multipartFolderPath(uploadId), Integer.toString(partNumber));
+
+    if (fileSystemService.fileExists(stagingFile, chunkPath)) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+
+    try (InputStream stream = data) {
+      FileInfo info = fileSystemService.write(stagingFile, chunkPath, stream, false, true);
+      return buildChunkResponse(info.getMd5CheckSum());
     }
   }
 
@@ -305,55 +330,25 @@ public class StagingResourceImpl implements StagingResource {
       InputStream data,
       String unzipTo,
       String copySource,
-      int partNumber,
-      String uploadId,
-      long size,
       String contentType)
       throws IOException {
     checkPermissions();
     checkValidContentType(contentType);
 
-    final boolean isMultipart = !Strings.isNullOrEmpty(uploadId) || partNumber > 0;
     final boolean isCopy = !Strings.isNullOrEmpty(copySource);
     final boolean isUnzip = !Check.isEmpty(unzipTo);
 
-    validatePutFileParams(
-        isMultipart, isCopy, isUnzip, !Strings.isNullOrEmpty(uploadId), partNumber > 0);
-
-    final StagingFile stagingFile = stagingService.getStagingFile(uuid);
-    final String targetPath =
-        isMultipart
-            ? PathUtils.filePath(multipartFolderPath(uploadId), Integer.toString(partNumber))
-            : filepath;
-
-    if (fileSystemService.fileExists(stagingFile, targetPath)) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
-
-    return isCopy
-        ? handleCopy(stagingFile, copySource, targetPath, uuid)
-        : handleWrite(stagingFile, data, unzipTo, isUnzip, isMultipart, targetPath, uuid);
-  }
-
-  private void validatePutFileParams(
-      boolean isMultipart,
-      boolean isCopy,
-      boolean isUnzip,
-      boolean hasUploadId,
-      boolean hasPartNumber) {
-    if (isMultipart && (isCopy || isUnzip)) {
-      throw new BadRequestException(
-          "Multipart upload cannot be combined with copyfrom or unzipto.");
-    }
     if (isCopy && isUnzip) {
       throw new BadRequestException(
           "copyfrom and unzipto cannot be used together. Copy the file first, then unzip it"
               + " separately.");
     }
-    if (hasUploadId != hasPartNumber) {
-      throw new BadRequestException(
-          "uploadId and partNumber must be provided together for multipart upload.");
-    }
+
+    final StagingFile stagingFile = stagingService.getStagingFile(uuid);
+
+    return isCopy
+        ? handleCopy(stagingFile, copySource, filepath, uuid)
+        : handleWrite(stagingFile, data, unzipTo, isUnzip, filepath, uuid);
   }
 
   private void checkValidContentType(String contentType) {
@@ -412,7 +407,6 @@ public class StagingResourceImpl implements StagingResource {
       InputStream data,
       String unzipTo,
       boolean isUnzip,
-      boolean isMultipart,
       String targetPath,
       String uuid)
       throws IOException {
@@ -422,9 +416,7 @@ public class StagingResourceImpl implements StagingResource {
         fileSystemService.mkdir(stagingFile, unzipTo);
         info = fileSystemService.unzipFile(stagingFile, targetPath, unzipTo);
       }
-      return isMultipart
-          ? buildChunkResponse(info.getMd5CheckSum())
-          : buildFileResponse(info.getMd5CheckSum(), uuid, targetPath);
+      return buildFileResponse(info.getMd5CheckSum(), uuid, targetPath);
     }
   }
 

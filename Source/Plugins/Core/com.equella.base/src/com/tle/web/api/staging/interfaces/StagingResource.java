@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HeaderParam;
@@ -81,7 +80,7 @@ public interface StagingResource {
   Response deleteStaging(@PathParam("uuid") String uuid) throws IOException;
 
   @POST
-  @Path("/{uuid}/{filepath:(.*)}")
+  @Path("/{uuid}/{filepath:(.*)}/complete")
   @ApiOperation(value = "Complete a multipart upload")
   @Consumes("application/json")
   Response completeMultipart(
@@ -92,10 +91,20 @@ public interface StagingResource {
       throws IOException;
 
   @POST
-  @Path("/{uuid}")
+  @Path("/{uuid}/multipart")
   @ApiOperation(value = "Start a multipart upload", response = MultipartBean.class)
-  MultipartBean startMultipart(
-      @PathParam("uuid") String uuid, @QueryParam("uploads") Boolean uploads);
+  Response startMultipart(@PathParam("uuid") String uuid);
+
+  @PUT
+  @Path("/{uuid}/multipart/{uploadId}/{partNumber}")
+  @ApiOperation(value = "Upload a multipart chunk")
+  Response uploadChunk(
+      @PathParam("uuid") String uuid,
+      @PathParam("uploadId") String uploadId,
+      @PathParam("partNumber") int partNumber,
+      InputStream data,
+      @HeaderParam("content-type") String contentType)
+      throws IOException;
 
   @PUT
   @Path("/{uuid}/{filepath:(.*)}")
@@ -104,25 +113,12 @@ public interface StagingResource {
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,
-      @ApiParam(
-              "Folder to unzip the uploaded file into. Cannot be combined with 'copyfrom' or"
-                  + " multipart params.")
+      @ApiParam("Folder to unzip the uploaded file into. Cannot be combined with 'copyfrom'.")
           @QueryParam("unzipto")
           String unzipTo,
-      @ApiParam(
-              "Path of an existing staging file to copy from. Cannot be combined with 'unzipto' or"
-                  + " multipart params.")
+      @ApiParam("Path of an existing staging file to copy from. Cannot be combined with 'unzipto'.")
           @QueryParam("copyfrom")
           String copySource,
-      @ApiParam(
-              value =
-                  "Part number for multipart upload. Must be provided together with 'uploadId'.",
-              allowableValues = "range[1,10000]")
-          @QueryParam("partNumber")
-          int partNumber,
-      @ApiParam("Must be provided together with 'partNumber'.") @QueryParam("uploadId")
-          String uploadId,
-      @HeaderParam("content-length") @DefaultValue("-1") long size,
       @HeaderParam("content-type") String contentType)
       throws IOException;
 }
