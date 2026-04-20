@@ -42,7 +42,6 @@ import com.tle.web.api.staging.interfaces.beans.MultipartCompleteBean;
 import com.tle.web.api.staging.interfaces.beans.PartBean;
 import com.tle.web.api.staging.interfaces.beans.StagingBean;
 import com.tle.web.remoting.rest.service.UrlLinkService;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -246,43 +245,40 @@ public class StagingResourceImpl implements StagingResource {
       String uuid, String filepath, String uploadId, MultipartCompleteBean completion)
       throws IOException {
     checkPermissions();
+
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
-    List<PartBean> parts = completion.getParts();
-    int[] partNumbers = new int[parts.size()];
-    String[] etags = new String[parts.size()];
-    int i = 0;
+    String folderPath = multipartFolderPath(uploadId);
+
+    stagingService.ensureFileExists(stagingFile, folderPath);
+
+    List<PartBean> parts = Lists.newArrayList(completion.getParts());
+    parts.sort(Comparator.comparingInt(PartBean::getPartNumber));
+
     for (PartBean partBean : parts) {
-      partNumbers[i] = partBean.getPartNumber();
-      etags[i++] = partBean.getEtag();
-    }
-    String folderPath = "multipart/" + uploadId;
+      MultipartChunk chunk =
+          new MultipartChunk(
+              partBean.getPartNumber(),
+              partBean.getEtag(),
+              PathUtils.filePath(folderPath, Integer.toString(partBean.getPartNumber())));
 
-    if (!fileSystemService.fileExists(stagingFile, folderPath)) {
-      throw new BadRequestException("Multipart upload doesn't exist: " + uploadId);
+      stagingService.ensureFileExists(stagingFile, chunk.chunkPath());
+      validatePartEtag(stagingFile, chunk);
+      appendPartToFile(stagingFile, chunk, filepath);
     }
 
-    File folder = fileSystemService.getExternalFile(stagingFile, folderPath);
-    for (int partNumber : partNumbers) {
-      fileSystemService.write(
-          stagingFile,
-          filepath,
-          fileSystemService.read(stagingFile, folder + "/" + Integer.toString(partNumber)),
-          true);
-    }
     fileSystemService.removeFile(stagingFile, folderPath);
-    ResponseBuilder resp = Response.ok();
-    return resp.build();
+    return Response.ok().location(stagingUri(uuid, filepath)).build();
   }
 
   @Override
-  public MultipartBean startMultipart(String uuid, String filepath, Boolean uploads) {
+  public MultipartBean startMultipart(String uuid, Boolean uploads) {
     checkPermissions();
     if (uploads == null) {
       throw new BadRequestException("Must use PUT for uploading files");
     }
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String uploadId = UUID.randomUUID().toString();
-    String folderPath = "multipart/" + uploadId;
+    String folderPath = multipartFolderPath(uploadId);
     ensureMultipartDir(stagingFile);
     try {
       fileSystemService.mkdir(stagingFile, folderPath);
@@ -315,34 +311,48 @@ public class StagingResourceImpl implements StagingResource {
       String contentType)
       throws IOException {
     checkPermissions();
+    checkValidContentType(contentType);
+
+    final boolean isMultipart = !Strings.isNullOrEmpty(uploadId) || partNumber > 0;
+    final boolean isCopy = !Strings.isNullOrEmpty(copySource);
+    final boolean isUnzip = !Check.isEmpty(unzipTo);
+
+    validatePutFileParams(
+        isMultipart, isCopy, isUnzip, !Strings.isNullOrEmpty(uploadId), partNumber > 0);
+
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
-    if (fileSystemService.fileExists(stagingFile, filepath)) {
+    final String targetPath =
+        isMultipart
+            ? PathUtils.filePath(multipartFolderPath(uploadId), Integer.toString(partNumber))
+            : filepath;
+
+    if (fileSystemService.fileExists(stagingFile, targetPath)) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
-    if (!Strings.isNullOrEmpty(copySource)) {
-      fileSystemService.copy(stagingFile, copySource, stagingFile, filepath);
-      String md5 = fileSystemService.getMD5Checksum(stagingFile, filepath);
-      return Response.ok()
-          .header(HttpHeaders.ETAG, "\"" + md5 + "\"")
-          .location(stagingUri(uuid, filepath))
-          .build();
+
+    return isCopy
+        ? handleCopy(stagingFile, copySource, targetPath, uuid)
+        : handleWrite(stagingFile, data, unzipTo, isUnzip, isMultipart, targetPath, uuid);
+  }
+
+  private void validatePutFileParams(
+      boolean isMultipart,
+      boolean isCopy,
+      boolean isUnzip,
+      boolean hasUploadId,
+      boolean hasPartNumber) {
+    if (isMultipart && (isCopy || isUnzip)) {
+      throw new BadRequestException(
+          "Multipart upload cannot be combined with copyfrom or unzipto.");
     }
-
-    try (InputStream bd = data) {
-      checkValidContentType(contentType);
-      FileInfo info = fileSystemService.write(stagingFile, filepath, bd, false, true);
-
-      if (!Check.isEmpty(unzipTo)) {
-        fileSystemService.mkdir(stagingFile, unzipTo);
-        info = fileSystemService.unzipFile(stagingFile, filepath, unzipTo);
-      }
-
-      return Response.ok()
-          .header(HttpHeaders.ETAG, "\"" + info.getMd5CheckSum() + "\"")
-          .location(stagingUri(uuid, filepath))
-          .build();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    if (isCopy && isUnzip) {
+      throw new BadRequestException(
+          "copyfrom and unzipto cannot be used together. Copy the file first, then unzip it"
+              + " separately.");
+    }
+    if (hasUploadId != hasPartNumber) {
+      throw new BadRequestException(
+          "uploadId and partNumber must be provided together for multipart upload.");
     }
   }
 
@@ -382,6 +392,78 @@ public class StagingResourceImpl implements StagingResource {
   private void checkPermissions() {
     if (CurrentUser.isGuest()) {
       throw new AccessDeniedException("You need to be logged in to use a staging area.");
+    }
+  }
+
+  private String multipartFolderPath(String uploadId) {
+    return PathUtils.filePath("multipart", uploadId);
+  }
+
+  private Response handleCopy(
+      StagingFile stagingFile, String copySource, String targetPath, String uuid)
+      throws IOException {
+    fileSystemService.copy(stagingFile, copySource, stagingFile, targetPath);
+    String md5 = fileSystemService.getMD5Checksum(stagingFile, targetPath);
+    return buildFileResponse(md5, uuid, targetPath);
+  }
+
+  private Response handleWrite(
+      StagingFile stagingFile,
+      InputStream data,
+      String unzipTo,
+      boolean isUnzip,
+      boolean isMultipart,
+      String targetPath,
+      String uuid)
+      throws IOException {
+    try (InputStream stream = data) {
+      FileInfo info = fileSystemService.write(stagingFile, targetPath, stream, false, true);
+      if (isUnzip) {
+        fileSystemService.mkdir(stagingFile, unzipTo);
+        info = fileSystemService.unzipFile(stagingFile, targetPath, unzipTo);
+      }
+      return isMultipart
+          ? buildChunkResponse(info.getMd5CheckSum())
+          : buildFileResponse(info.getMd5CheckSum(), uuid, targetPath);
+    }
+  }
+
+  private Response buildFileResponse(String md5, String uuid, String targetPath) {
+    return Response.ok()
+        .header(HttpHeaders.ETAG, "\"" + md5 + "\"")
+        .location(stagingUri(uuid, targetPath))
+        .build();
+  }
+
+  private Response buildChunkResponse(String md5) {
+    return Response.ok().header(HttpHeaders.ETAG, "\"" + md5 + "\"").build();
+  }
+
+  private record MultipartChunk(int partNumber, String expectedEtag, String chunkPath) {}
+
+  private void validatePartEtag(StagingFile stagingFile, MultipartChunk chunk) throws IOException {
+    if (!Strings.isNullOrEmpty(chunk.expectedEtag())) {
+      String actualMd5 = fileSystemService.getMD5Checksum(stagingFile, chunk.chunkPath());
+      String unquotedEtag = chunk.expectedEtag().replace("\"", "");
+      if (!unquotedEtag.equals(actualMd5)) {
+        throw new BadRequestException(
+            "ETag mismatch for part "
+                + chunk.partNumber()
+                + ". Expected: "
+                + unquotedEtag
+                + ", Actual: "
+                + actualMd5);
+      }
+    }
+  }
+
+  private void appendPartToFile(StagingFile stagingFile, MultipartChunk chunk, String filepath) {
+    try (InputStream chunkStream = fileSystemService.read(stagingFile, chunk.chunkPath())) {
+      fileSystemService.write(stagingFile, filepath, chunkStream, true);
+    } catch (IOException e) {
+      LOGGER.error("Failed to append part {} to file {}", chunk.partNumber(), filepath, e);
+      throw new WebApplicationException(
+          "Failed to append multipart chunk: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR);
     }
   }
 }

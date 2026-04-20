@@ -92,12 +92,10 @@ public interface StagingResource {
       throws IOException;
 
   @POST
-  @Path("/{uuid}/{filepath:(.*)}")
+  @Path("/{uuid}")
   @ApiOperation(value = "Start a multipart upload", response = MultipartBean.class)
   MultipartBean startMultipart(
-      @PathParam("uuid") String uuid,
-      @PathParam("filepath") String filepath,
-      @QueryParam("uploads") Boolean uploads);
+      @PathParam("uuid") String uuid, @QueryParam("uploads") Boolean uploads);
 
   @PUT
   @Path("/{uuid}/{filepath:(.*)}")
@@ -106,12 +104,24 @@ public interface StagingResource {
       @PathParam("uuid") String uuid,
       @PathParam("filepath") String filepath,
       InputStream data,
-      @ApiParam("folder to unzip to") @QueryParam("unzipto") String unzipTo,
-      @ApiParam("path of existing file to copy from") @QueryParam("copyfrom") String copySource,
-      @ApiParam(value = "part number for multipart upload", allowableValues = "range[1,10000]")
+      @ApiParam(
+              "Folder to unzip the uploaded file into. Cannot be combined with 'copyfrom' or"
+                  + " multipart params.")
+          @QueryParam("unzipto")
+          String unzipTo,
+      @ApiParam(
+              "Path of an existing staging file to copy from. Cannot be combined with 'unzipto' or"
+                  + " multipart params.")
+          @QueryParam("copyfrom")
+          String copySource,
+      @ApiParam(
+              value =
+                  "Part number for multipart upload. Must be provided together with 'uploadId'.",
+              allowableValues = "range[1,10000]")
           @QueryParam("partNumber")
           int partNumber,
-      @ApiParam("id for multipart upload") @QueryParam("uploadId") String uploadId,
+      @ApiParam("Must be provided together with 'partNumber'.") @QueryParam("uploadId")
+          String uploadId,
       @HeaderParam("content-length") @DefaultValue("-1") long size,
       @HeaderParam("content-type") String contentType)
       throws IOException;
