@@ -19,6 +19,7 @@
 package com.tle.core.institution;
 
 import com.tle.beans.Institution;
+import com.tle.common.institution.CurrentInstitution;
 
 /**
  * A container of caches specific to institutions, facilitating the caching of values partitioned to
@@ -60,4 +61,20 @@ public interface InstitutionCache<T> {
    * @param institution the institution of the target cache to clear
    */
   void clear(Institution institution);
+
+  /**
+   * Creates a cache invalidation callback that is safe to execute after transaction commit.
+   *
+   * <p>The current {@link Institution} is captured at the time this method is called, when {@link
+   * CurrentInstitution#get()} is guaranteed to return the correct value. The returned callback uses
+   * this captured reference directly, avoiding any dependency on {@code CurrentInstitution}
+   * ThreadLocal state during execution.
+   *
+   * <p>This is important because the ThreadLocal context may have been cleared by the time the
+   * callback runs, which could otherwise lead to incorrect cache invalidation (such as falling back
+   * to {@link Institution#FAKE}).
+   *
+   * @return a {@link Runnable} that invalidates the cache for the captured institution.
+   */
+  Runnable createCacheInvalidationCallback();
 }
