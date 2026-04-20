@@ -133,12 +133,17 @@ class AdminSchemaServiceImpl @Inject() (implicit
         throw new ClientRequestException(s"Error starting creation of new schema.", errors)
     }
 
-  override def cancelEdit(id: Long, force: Boolean): Unit =
-    MetadataSchemaApi.cancelEdit(id, Some(force)) match {
+  override def cancelEdit(id: Long, force: Boolean): Unit = {
+    val cancelEditResult =
+      if (force) MetadataSchemaApi.cancelEditForced(id)
+      else MetadataSchemaApi.cancelEdit(id)
+
+    cancelEditResult match {
       case Right(_)     => // No content expected on success
       case Left(errors) =>
         throw new ClientRequestException(s"Error cancelling edit of schema with ID: $id", errors)
     }
+  }
 
   override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema = {
     val details        = pack convert fromEntityPack
@@ -156,12 +161,17 @@ class AdminSchemaServiceImpl @Inject() (implicit
     }
   }
 
-  override def delete(entityid: Long, checkReferences: Boolean): Unit =
-    MetadataSchemaApi.delete(entityid, Some(checkReferences)) match {
+  override def delete(entityid: Long, checkReferences: Boolean): Unit = {
+    val deleteResult =
+      if (checkReferences) MetadataSchemaApi.deleteWithReferenceCheck(entityid)
+      else MetadataSchemaApi.delete(entityid)
+
+    deleteResult match {
       case Right(_)     => // No content expected on success
       case Left(errors) =>
         throw new ClientRequestException(s"Error deleting schema with ID: $entityid", errors)
     }
+  }
 
   override def add(pack: EntityPack[Schema], lockAfterwards: Boolean): BaseEntityLabel = {
     val details: MetadataSchemaEditView = pack convert fromEntityPack

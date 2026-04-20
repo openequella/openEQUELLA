@@ -19,8 +19,8 @@
 package io.github.openequella.graphql.test
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.{ApiError, LockedError}
 import io.github.openequella.graphql.api.views.BaseEntityReferenceView
+import io.github.openequella.graphql.api.{ApiError, LockedError}
 import org.scalatest.Assertions.fail
 import org.scalatest.EitherValues._
 
@@ -62,14 +62,14 @@ object BaseEntityApiTestHelper {
     * @param cloneFn
     *   Function that clones an entity by ID.
     * @param deleteFn
-    *   Function that deletes an entity by ID (with optional checkReferences flag).
+    *   Function that deletes an entity by ID.
     * @param test
     *   The test body, receiving the cloned entity's BaseEntityReferenceView.
     */
   def withClonedEntity(
       listFn: () => Either[List[ApiError], List[BaseEntityReferenceView]],
       cloneFn: Long => Either[List[ApiError], BaseEntityReferenceView],
-      deleteFn: (Long, Option[Boolean]) => Either[List[ApiError], Unit]
+      deleteFn: Long => Either[List[ApiError], Unit]
   )(test: BaseEntityReferenceView => Unit): Unit = {
     val sourceId = getFirstEntityId(listFn)
     val cloneRef = cloneFn(sourceId).value
@@ -78,7 +78,7 @@ object BaseEntityApiTestHelper {
       test(cloneRef)
     } finally {
       // Best-effort cleanup: ignore errors — clone may already be deleted by test.
-      deleteFn(cloneRef.id, None)
+      deleteFn(cloneRef.id)
     }
   }
 
@@ -93,8 +93,8 @@ object BaseEntityApiTestHelper {
     *   The ID of the entity to check.
     * @param startEditFn
     *   Function that starts an edit session; takes (id, cfg).
-    * @param cancelEditFn
-    *   Function that cancels an edit session; takes (id, force, cfg).
+    * @param cancelEditForcedFn
+    *   Function that cancels an edit session; takes (id, cfg).
     * @param cfg
     *   The current user's client configuration (used to obtain the institution URL).
     * @return
@@ -103,7 +103,7 @@ object BaseEntityApiTestHelper {
   def isEntityLockedForEditing[E](
       entityId: Long,
       startEditFn: (Long, ClientConfiguration) => Either[List[ApiError], E],
-      cancelEditFn: (Long, Option[Boolean], ClientConfiguration) => Either[List[ApiError], Unit]
+      cancelEditForcedFn: (Long, ClientConfiguration) => Either[List[ApiError], Unit]
   )(implicit cfg: ClientConfiguration): Boolean =
     TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { otherSession =>
       val editResult = startEditFn(entityId, otherSession)
@@ -115,7 +115,7 @@ object BaseEntityApiTestHelper {
       }
       // Tidy up by cancelling the edit session we just started (if it was successful).
       if (!isLocked) {
-        cancelEditFn(entityId, None, otherSession)
+        cancelEditForcedFn(entityId, otherSession)
       }
       isLocked
     }
@@ -131,15 +131,15 @@ object BaseEntityApiTestHelper {
     *   The numeric ID of the entity to edit.
     * @param startEditFn
     *   Function that starts an edit session for the entity.
-    * @param cancelEditFn
-    *   Function that cancels an edit session for the entity (with optional force flag).
+    * @param cancelEditForcedFn
+    *   Function that force-cancels an edit session for the entity.
     * @param test
     *   The test body, receiving the edit view from `startEditFn`.
     */
   def withEditSession[E](
       entityId: Long,
       startEditFn: Long => Either[List[ApiError], E],
-      cancelEditFn: (Long, Option[Boolean]) => Either[List[ApiError], Unit]
+      cancelEditForcedFn: Long => Either[List[ApiError], Unit]
   )(test: E => Unit): Unit = {
     val editView = startEditFn(entityId).value
 
@@ -147,7 +147,7 @@ object BaseEntityApiTestHelper {
       test(editView)
     } finally {
       // Best-effort cleanup: force-cancel to release any lingering lock.
-      cancelEditFn(entityId, Some(true))
+      cancelEditForcedFn(entityId)
     }
   }
 }

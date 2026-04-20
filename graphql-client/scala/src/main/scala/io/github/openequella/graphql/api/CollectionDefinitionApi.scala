@@ -138,34 +138,73 @@ object CollectionDefinitionApi extends ZipImportExportApi[CollectionQueries, Col
     *
     * @param id
     *   The ID of the collection to cancel editing.
-    * @param force
-    *   If true, forcefully unlocks the collection even if locked by another user. Defaults to None.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEditForced]] to force-unlock even if locked by another user.
     */
-  def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
+  def cancelEdit(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
-    flatMutate(CollectionMutations.cancelEdit(id, force))
+    flatMutate(CollectionMutations.cancelEdit(id, None))
+
+  /** Cancel editing a collection and force-unlock it.
+    *
+    * Like [[cancelEdit]] but forcefully unlocks the collection even if it is locked by another
+    * user. Use this when you need to recover a collection that is stuck locked by a disconnected
+    * session.
+    *
+    * @param id
+    *   The ID of the collection to cancel editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEdit]] to cancel normally without forcing the unlock.
+    */
+  def cancelEditForced(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(CollectionMutations.cancelEdit(id, Some(true)))
 
   /** Delete a collection.
     *
     * @param id
     *   The ID of the collection to delete.
-    * @param checkReferences
-    *   If true, checks for references before deleting and fails if any exist. If false or None,
-    *   deletes without checking references.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[deleteWithReferenceCheck]] to check for references before deleting.
     */
-  def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
+  def delete(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
-    flatMutate(CollectionMutations.delete(id, checkReferences))
+    flatMutate(CollectionMutations.delete(id, None))
+
+  /** Delete a collection only if no references exist.
+    *
+    * Like [[delete]] but checks for references to the collection before deleting and fails if any
+    * exist. Use this to prevent accidental deletion of collections that other items depend on.
+    *
+    * @param id
+    *   The ID of the collection to delete.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful, or an error if references
+    *   exist.
+    * @see
+    *   [[delete]] to delete without checking references.
+    */
+  def deleteWithReferenceCheck(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(CollectionMutations.delete(id, Some(true)))
 
   /** Clones a collection, creating a copy with a new ID. The cloned collection's name will be
     * prefixed with "Copy of " in all language variants.

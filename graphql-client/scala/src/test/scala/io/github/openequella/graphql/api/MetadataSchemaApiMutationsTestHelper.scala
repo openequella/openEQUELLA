@@ -40,7 +40,7 @@ object MetadataSchemaApiMutationsTestHelper {
     BaseEntityApiTestHelper.isEntityLockedForEditing(
       schemaId,
       (id, c) => MetadataSchemaApi.startEdit(id)(c),
-      (id, force, c) => MetadataSchemaApi.cancelEdit(id, force)(c)
+      (id, c) => MetadataSchemaApi.cancelEditForced(id)(c)
     )
 
   /** Gets the ID of the first schema in the system for use in tests.
@@ -198,7 +198,7 @@ object MetadataSchemaApiMutationsTestHelper {
     } finally {
       // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
       // Errors are ignored — the schema may already be unlocked or deleted by the test.
-      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+      MetadataSchemaApi.cancelEditForced(schemaId)
       MetadataSchemaApi.delete(schemaId)
     }
   }
@@ -222,6 +222,6 @@ object MetadataSchemaApiMutationsTestHelper {
     BaseEntityApiTestHelper.withEditSession(
       schemaId,
       MetadataSchemaApi.startEdit,
-      MetadataSchemaApi.cancelEdit
+      MetadataSchemaApi.cancelEditForced
     )(test)
 }

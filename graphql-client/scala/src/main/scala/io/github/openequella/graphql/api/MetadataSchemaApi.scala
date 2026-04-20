@@ -253,17 +253,36 @@ object MetadataSchemaApi
     *
     * @param id
     *   The ID of the metadata schema to cancel editing.
-    * @param force
-    *   If true, forcefully unlocks the schema even if locked by another user. Defaults to None.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEditForced]] to force-unlock even if locked by another user.
     */
-  def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
+  def cancelEdit(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
-    flatMutate(MetadataSchemaMutations.cancelEdit(id, force))
+    flatMutate(MetadataSchemaMutations.cancelEdit(id, None))
+
+  /** Cancel editing a metadata schema and force-unlock it.
+    *
+    * Like [[cancelEdit]] but forcefully unlocks the schema even if it is locked by another user.
+    * Use this when you need to recover a schema that is stuck locked by a disconnected session.
+    *
+    * @param id
+    *   The ID of the metadata schema to cancel editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEdit]] to cancel normally without forcing the unlock.
+    */
+  def cancelEditForced(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.cancelEdit(id, Some(true)))
 
   /** Add a new metadata schema.
     *
@@ -361,18 +380,37 @@ object MetadataSchemaApi
     *
     * @param id
     *   The ID of the metadata schema to delete.
-    * @param checkReferences
-    *   If true, checks for references before deleting and fails if any exist. If false or None,
-    *   deletes without checking references.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[deleteWithReferenceCheck]] to check for references before deleting.
     */
-  def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
+  def delete(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], Unit] =
-    flatMutate(MetadataSchemaMutations.delete(id, checkReferences))
+    flatMutate(MetadataSchemaMutations.delete(id, None))
+
+  /** Delete a metadata schema only if no references exist.
+    *
+    * Like [[delete]] but checks for references to the schema before deleting and fails if any
+    * exist. Use this to prevent accidental deletion of schemas that other items depend on.
+    *
+    * @param id
+    *   The ID of the metadata schema to delete.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful, or an error if references
+    *   exist.
+    * @see
+    *   [[delete]] to delete without checking references.
+    */
+  def deleteWithReferenceCheck(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.delete(id, Some(true)))
 
   /** Clones a metadata schema, creating a copy with a new ID. The cloned schema's name will be
     * prefixed with "Copy of " in all language variants.

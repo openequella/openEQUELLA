@@ -123,7 +123,7 @@ class MetadataSchemaApiMutationsTest
       val editResult = MetadataSchemaApi.startEdit(schemaId)
       editResult.isRight shouldBe true
 
-      val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+      val cancelResult = MetadataSchemaApi.cancelEditForced(schemaId)
 
       Then("completes without errors")
       cancelResult.isRight shouldBe true
@@ -160,7 +160,7 @@ class MetadataSchemaApiMutationsTest
         blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
 
         When("calling cancelEdit with force=true to release the other user's lock")
-        val forceUnlockResult = MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+        val forceUnlockResult = MetadataSchemaApi.cancelEditForced(schemaId)
 
         Then("completes without errors")
         forceUnlockResult.isRight shouldBe true
@@ -170,19 +170,19 @@ class MetadataSchemaApiMutationsTest
         editResult.isRight shouldBe true
 
         And("after cancelling the edit, the schema is no longer locked")
-        val cancelResult = MetadataSchemaApi.cancelEdit(schemaId)
+        val cancelResult = MetadataSchemaApi.cancelEditForced(schemaId)
         cancelResult.isRight shouldBe true
         isSchemaLockedForEditing(schemaId) shouldBe false
       } finally {
         // Best-effort cleanup: force-cancel any lingering lock
-        MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+        MetadataSchemaApi.cancelEditForced(schemaId)
       }
     }
 
     it("denies access when not authenticated") {
       When("an unauthenticated user calls cancelEdit")
       val response = TestHelper.asUnauthenticatedUser { unauthenticated =>
-        MetadataSchemaApi.cancelEdit(1)(unauthenticated)
+        MetadataSchemaApi.cancelEditForced(1)(unauthenticated)
       }
 
       Then("returns an AccessDeniedError")
@@ -316,7 +316,7 @@ class MetadataSchemaApiMutationsTest
         TestHelper.checkApiError(response) shouldBe a[AccessDeniedError]
       } finally {
         // Best-effort cleanup: force-cancel to release any lingering lock.
-        MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+        MetadataSchemaApi.cancelEditForced(schemaId)
       }
     }
   }
@@ -360,7 +360,7 @@ class MetadataSchemaApiMutationsTest
       assume(hasRefs, "Test requires a schema with references")
 
       When("calling delete with checkReferences = true")
-      val result = MetadataSchemaApi.delete(schemaId, checkReferences = Some(true))
+      val result = MetadataSchemaApi.deleteWithReferenceCheck(schemaId)
 
       Then("returns an InUseError indicating references exist")
       TestHelper.checkApiError(result) shouldBe a[InUseError]
