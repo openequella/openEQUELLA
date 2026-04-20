@@ -346,6 +346,10 @@ public class StagingResourceImpl implements StagingResource {
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
+    if (fileSystemService.fileExists(stagingFile, filepath)) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+
     return isCopy
         ? handleCopy(stagingFile, copySource, filepath, uuid)
         : handleWrite(stagingFile, data, unzipTo, isUnzip, filepath, uuid);
