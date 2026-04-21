@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.web.plugin.download;
+package com.tle.core.download;
 
 import com.tle.core.guice.Bind;
 import com.tle.web.stream.ContentStreamWriter;
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * PluginDownloadService#getAllPluginDetails(String)}.
  *
  * @see PluginDownloadService
- * @see com.tle.core.remoting.RemotePluginDownloadService
+ * @see com.tle.core.download.RemotePluginDownloadService
  */
 @Bind
 @Singleton

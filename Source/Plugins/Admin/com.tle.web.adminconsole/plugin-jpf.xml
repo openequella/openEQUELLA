@@ -22,32 +22,5 @@
     </library>
     <library type="resources" path="resources/" id="resources"/>
   </runtime>
-  <extension plugin-id="com.tle.common.i18n" point-id="bundle" id="strings">
-    <parameter id="file" value="lang/i18n.properties"/>
-    <parameter id="group" value="resource-centre"/>
-  </extension>
-  <extension plugin-id="com.tle.core.guice" point-id="module" id="guiceModules">
-    <parameter id="class" value="com.tle.core.services.guice.ServicesModule"/>
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="pluginDownloadService">
-    <parameter id="class" value="com.tle.core.remoting.RemotePluginDownloadService"/>
-    <parameter id="bean" value="bean:com.tle.web.plugin.download.PluginDownloadService"/>
-  </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="remoteAdminService">
-    <parameter id="class" value="com.tle.common.adminconsole.RemoteAdminService"/>
-    <parameter id="bean" value="bean:com.tle.common.adminconsole.RemoteAdminService"/>
-  </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="downloadServletMapping">
-    <parameter id="url-pattern" value="/ds/*"/>
-    <parameter id="bean" value="bean:com.tle.web.plugin.download.DownloadServlet"/>
-  </extension>
-  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="adminConsoleServlet">
-    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleDownloadServlet"/>
-    <parameter id="url-pattern" value="/adminconsole.jar"/>
-  </extension>
-  <extension plugin-id="com.tle.core.application" point-id="onStartup" id="extensions">
-    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleExtensions"/>
-    <parameter id="type" value="web"/>
-    <parameter id="order" value="1"/>
-  </extension>
+  <!-- All extensions have been migrated to com.equella.core plugin -->
 </plugin>

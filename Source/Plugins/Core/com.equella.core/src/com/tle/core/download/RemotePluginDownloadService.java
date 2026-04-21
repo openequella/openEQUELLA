@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.core.download;
 
 import java.io.Serializable;
 import java.net.URL;

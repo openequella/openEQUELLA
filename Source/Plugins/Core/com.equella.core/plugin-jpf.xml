@@ -3491,6 +3491,14 @@
     <parameter id="class" value="com.tle.common.harvester.RemoteEQUELLAHarvesterService" />
     <parameter id="bean" value="bean:com.tle.core.harvester.EQUELLAHarvesterService" />
   </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="pluginDownloadService">
+    <parameter id="class" value="com.tle.core.download.RemotePluginDownloadService"/>
+    <parameter id="bean" value="bean:com.tle.core.download.PluginDownloadService"/>
+  </extension>
+  <extension plugin-id="com.tle.web.services" point-id="invoker" id="remoteAdminService">
+    <parameter id="class" value="com.tle.common.adminconsole.RemoteAdminService"/>
+    <parameter id="bean" value="bean:com.tle.common.adminconsole.RemoteAdminService"/>
+  </extension>
   <extension plugin-id="com.tle.core.hibernate" point-id="domainObjects" id="objects_3_3">
     <parameter id="class" value="com.tle.common.harvester.HarvesterProfile" />
   </extension>
@@ -4242,6 +4250,14 @@
   <extension plugin-id="com.tle.web.core" point-id="webServlet" id="userConfigurableServlet">
     <parameter id="bean" value="bean:com.tle.web.raw.servlet.UserConfigurableServlet" />
     <parameter id="url-pattern" value="/configurable/" />
+  </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="downloadServletMapping">
+    <parameter id="url-pattern" value="/ds/*"/>
+    <parameter id="bean" value="bean:com.tle.core.download.DownloadServlet"/>
+  </extension>
+  <extension plugin-id="com.tle.web.core" point-id="webServlet" id="adminConsoleServlet">
+    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleDownloadServlet"/>
+    <parameter id="url-pattern" value="/adminconsole.jar"/>
   </extension>
   <extension plugin-id="com.tle.core.connectors" point-id="connectorImplementation" id="blackboard">
     <parameter id="type" value="blackboard" />
@@ -5544,6 +5560,11 @@
     <parameter id="bean" value="bean:com.tle.core.institution.ClusterInfoService" />
     <parameter id="type" value="initial" />
     <parameter id="order" value="1000" />
+  </extension>
+  <extension plugin-id="com.tle.core.application" point-id="onStartup" id="adminConsoleExtensions">
+    <parameter id="bean" value="bean:com.tle.core.adminconsole.AdminConsoleExtensions"/>
+    <parameter id="type" value="web"/>
+    <parameter id="order" value="1"/>
   </extension>
   <extension plugin-id="com.tle.core.services" point-id="coreTasks" id="institutionsTask">
     <parameter id="id" value="InstitutionKeeper" />
