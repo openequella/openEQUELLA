@@ -19,15 +19,7 @@
 package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
-import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper.{
-  buildNewSchemaDetails,
-  getFirstSchemaId,
-  getSchemaName,
-  isSchemaLockedForEditing,
-  withEditSession,
-  withTestSchema,
-  withTestSchemaLocked
-}
+import io.github.openequella.graphql.api.MetadataSchemaApiMutationsTestHelper._
 import io.github.openequella.graphql.api.views.{
   BaseEntityReferenceView,
   EntitySkeletonView,
@@ -114,7 +106,7 @@ class MetadataSchemaApiMutationsTest
     }
   }
 
-  describe("cancelEdit") {
+  describe("cancelEdit/cancelEditForced") {
     it("cancels an edit session and releases the lock") {
       Given("a valid metadata schema ID in edit mode")
       val schemaId = getFirstSchemaId()
@@ -143,7 +135,7 @@ class MetadataSchemaApiMutationsTest
       TestHelper.checkApiError(result) shouldBe a[NotFoundError]
     }
 
-    it("forcefully releases locks when force parameter is true") {
+    it("forcefully releases locks when cancelEditForced is used") {
       Given("a schema locked by another user")
       val schemaId = getFirstSchemaId()
 
@@ -159,7 +151,7 @@ class MetadataSchemaApiMutationsTest
         blockedEditResult.isLeft shouldBe true
         blockedEditResult.swap.value.exists(_.isInstanceOf[LockedError]) shouldBe true
 
-        When("calling cancelEdit with force=true to release the other user's lock")
+        When("calling cancelEditForced to release the other user's lock")
         val forceUnlockResult = MetadataSchemaApi.cancelEditForced(schemaId)
 
         Then("completes without errors")
@@ -321,7 +313,7 @@ class MetadataSchemaApiMutationsTest
     }
   }
 
-  describe("delete") {
+  describe("delete/deleteWithReferenceCheck") {
     it("deletes an existing metadata schema") {
       Given("a valid metadata schema ID")
       withTestSchema(name = "Schema to Delete") { reference =>
@@ -350,7 +342,7 @@ class MetadataSchemaApiMutationsTest
       TestHelper.checkApiError(result) shouldBe a[NotFoundError]
     }
 
-    it("fails when checkReferences is true and schema has references") {
+    it("fails when deleteWithReferenceCheck is used and schema has references") {
       Given("a metadata schema that is in use")
       // Use a known schema that has references (typically the first one in the list)
       val schemaId = getFirstSchemaId()
@@ -359,7 +351,7 @@ class MetadataSchemaApiMutationsTest
       val hasRefs = MetadataSchemaApi.hasReferences(schemaId).value
       assume(hasRefs, "Test requires a schema with references")
 
-      When("calling delete with checkReferences = true")
+      When("calling deleteWithReferenceCheck")
       val result = MetadataSchemaApi.deleteWithReferenceCheck(schemaId)
 
       Then("returns an InUseError indicating references exist")
