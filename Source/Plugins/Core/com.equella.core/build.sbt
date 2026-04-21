@@ -3,6 +3,8 @@ import _root_.io.circe.parser._
 
 libraryDependencies += "org.mockito" % "mockito-core" % "5.23.0" % Test
 
+lazy val adminConsoleJar = project in file("jarsrc")
+
 langStrings := {
   val langDir = (Compile / resourceDirectory).value / "com/tle/core/i18n/service/impl"
   val bundle  =
@@ -105,6 +107,13 @@ Compile / resourceGenerators += Def.task {
 }.taskValue
 
 Compile / resourceGenerators += Def.task {
+  val outJar  = (Compile / resourceManaged).value / "web/adminconsole.jar"
+  val jarFile = (adminConsoleJar / assembly).value
+  IO.copyFile(jarFile, outJar)
+  Seq(outJar)
+}.taskValue
+
+Compile / resourceGenerators += Def.task {
   val baseSwagger = baseDirectory.value / "swaggerui"
   Common.nodeInstall(baseSwagger)
   Common.nodeScript("build", baseSwagger)
@@ -141,4 +150,5 @@ clean := {
 
   Common.nodeScript("clean", baseSwagger)
   Common.nodeScript("clean", baseGraphiQL)
+  (adminConsoleJar / clean).value
 }

@@ -53,7 +53,6 @@ object PluginRefactor {
     "com.tle.web.sections",
     "com.tle.web.sections.equella",
     "com.tle.core.guice",
-    "com.tle.web.adminconsole",
     "com.tle.core.remoterepo.srw"
   ) ++ platformPlugins
 
