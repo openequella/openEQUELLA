@@ -17,7 +17,7 @@ public class OidcSettingsPageTest extends AbstractCleanupAutoTest {
   @Test(description = "User should be able to see OIDC settings in settings page.")
   public void testNavigation() {
     SettingsPage sp = new SettingsPage(context).load();
-    OidcSettingsPage oidcSettingsPage = sp.oidcSettingsPage();
+    OidcSettingsPage oidcSettingsPage = sp.clickOidcSetting();
     assertTrue(oidcSettingsPage.isLoaded());
   }
 

@@ -16,26 +16,26 @@
  * limitations under the License.
  */
 
-package com.tle.admin.graphql.conversion
+package com.tle.core.imagemagick;
 
-import com.tle.beans.entity.schema.Citation
-import io.github.openequella.graphql.api.views.CitationView
-import scala.util.chaining.scalaUtilChainingOps
+/** Resize geometry operators appended to ImageMagick dimension strings. */
+public enum ResizeOperator {
+  /** Shrink only: resize down if larger than target, never enlarge. */
+  SHRINK_ONLY(">"),
+  /** Fill area: resize to completely cover the target dimensions (may exceed on one axis). */
+  FILL_AREA("^"),
+  /** Exact: force the exact dimensions, ignoring aspect ratio. */
+  EXACT("!"),
+  /** Default: no special operator, standard resize behaviour. */
+  DEFAULT("");
 
-object CitationViewConverter {
-  def toCitation(view: CitationView): Citation = new Citation().tap { c =>
-    c.setName(view.name)
-    c.setTransformation(view.transformation)
+  private final String operator;
+
+  ResizeOperator(String operator) {
+    this.operator = operator;
   }
 
-  def fromCitation(citation: Citation): CitationView = {
-    val name = Option(citation.getName).getOrElse(
-      throw new IllegalArgumentException("Citation name must not be null")
-    )
-    val transformation = Option(citation.getTransformation).getOrElse(
-      throw new IllegalArgumentException("Citation transformation must not be null")
-    )
-
-    CitationView(name = name, transformation = transformation)
+  public String getOperator() {
+    return operator;
   }
 }

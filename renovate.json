@@ -1,6 +1,7 @@
 {
   "extends": [
     "config:recommended",
+    ":separateMultipleMajorReleases",
     ":dependencyDashboard",
     ":maintainLockFilesMonthly",
     "group:definitelyTyped"
@@ -10,6 +11,20 @@
   "semanticCommits": "enabled",
   "ignorePaths": [".github/**", "docker/docker-build/**"],
   "packageRules": [
+    {
+      "description": "Wait 7 days before proposing any update to ensure stability",
+      "minimumReleaseAge": "7 days",
+      "internalChecksFilter": "strict",
+      "matchPackageNames": [
+        "*"
+      ]
+    },
+    {
+      "description": "Group all patch updates for devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "dev patch updates"
+    },
     {
       "groupName": "Apache Axiom packages",
       "matchPackageNames": [

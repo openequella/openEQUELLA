@@ -76,47 +76,47 @@ public class LegacyContentApiTest extends AbstractSessionTest {
 
   private ActiveCachingPage logonToActiveCachingSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().activeCachingSettings();
+    return new SettingsPage(context).load().clickActiveCachingSetting();
   }
 
   private ContentRestrictionsPage logonToContentRestrictionsSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().contentRestrictionsSettings();
+    return new SettingsPage(context).load().clickContentRestrictionsSetting();
   }
 
   private DateFormatSettingPage logonToDateFormatSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().dateFormatSettingPage();
+    return new SettingsPage(context).load().clickDateFormatSetting();
   }
 
   private GoogleApiSettingsPage logonToGoogleApiSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().googleApiSettings();
+    return new SettingsPage(context).load().clickGoogleApiSetting();
   }
 
   private GoogleSettingsPage logonToGoogleAnalyticsSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().googleSettings();
+    return new SettingsPage(context).load().clickGoogleSetting();
   }
 
   private HarvesterSkipDrmPage logonToHarvesterSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().harvestSkipDrmSettings();
+    return new SettingsPage(context).load().clickHarvestSkipDrmSetting();
   }
 
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().shortcutURLsSettingsPage();
+    return new SettingsPage(context).load().clickShortcutURLsSetting();
   }
 
   private LoginSettingsPage logonToLoginSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().loginSettings();
+    return new SettingsPage(context).load().clickLoginSetting();
   }
 
   private MailSettingsPage logonToMailSettingsPage() {
     logon(context, AUTOTEST_LOGON, AUTOTEST_PASSWD);
-    return new SettingsPage(context).load().mailSettingsPage();
+    return new SettingsPage(context).load().clickMailSetting();
   }
 
   /** Add each NameValuePair value to JsonNode (wrapped with Array) and `post` it with body. */

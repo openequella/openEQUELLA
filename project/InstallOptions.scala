@@ -1,4 +1,4 @@
-import sbt._
+import sbt.*
 
 import scala.xml.XML
 
@@ -71,7 +71,7 @@ case class InstallOptions(
         <max>512m</max>
       </memory>
       <imagemagick>
-        <path>/usr/bin</path>
+        <path>/opt/imagemagick</path>
       </imagemagick>
       <ffmpeg>
         <path>/usr/bin</path>

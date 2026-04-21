@@ -16,15 +16,28 @@
  * limitations under the License.
  */
 
-package com.tle.core.remoting;
+package com.tle.admin.service
 
-import com.tle.beans.Language;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import com.tle.beans.Language
+import java.util
+import java.lang
 
-public interface RemoteLanguageService {
-  Map<Long, String> getNames(Collection<Long> bundleRefs);
+/** Service class for admin language operations via the GraphQL library.
+  */
+trait AdminLanguageService {
 
-  List<Language> getLanguages();
+  /** Resolve display names for the provided language bundle IDs.
+    *
+    * @param bundleIds
+    *   the language bundle IDs to resolve.
+    * @return
+    *   Map from bundle ID to localized display name.
+    */
+  def getNames(
+      bundleIds: util.Collection[lang.Long]
+  ): util.Map[lang.Long, String]
+
+  /** List configured languages for the current institution.
+    */
+  def getLanguages: util.List[Language]
 }

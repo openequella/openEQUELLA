@@ -22,7 +22,9 @@ import com.dytech.common.io.FileUtils;
 import com.tle.common.Pair;
 import com.tle.common.filesystem.FileSystemHelper;
 import com.tle.core.guice.Bind;
+import com.tle.core.imagemagick.ImageDimensions;
 import com.tle.core.imagemagick.ImageMagickService;
+import com.tle.core.imagemagick.Offset;
 import com.tle.web.sections.SectionsRuntimeException;
 import java.awt.Dimension;
 import java.io.File;
@@ -222,7 +224,7 @@ public class ImageTiler {
   private void createTiles(final File src, final int zoomLevel, final int row, final File basePath)
       throws IOException {
     File result = new File(basePath, zoomLevel + "_" + row + "_%d.jpg");
-    imageMagickService.crop(src, result, "256", "0", "+repage");
+    imageMagickService.crop(src, result, ImageDimensions.pixels(256, 0), "+repage");
   }
 
   public void rotate(final File srcImage, final File destImage, final int angle)
@@ -238,8 +240,8 @@ public class ImageTiler {
     imageMagickService.crop(
         src,
         result,
-        "0",
-        "256+0+" + (row * 256),
+        ImageDimensions.pixels(0, 256),
+        new Offset(0, row * 256),
         "+repage",
         "-background",
         "black",
@@ -249,7 +251,7 @@ public class ImageTiler {
   }
 
   private void halveTheSize(final File src, final File dest) throws IOException {
-    imageMagickService.sample(src, dest, "50%", "50%");
+    imageMagickService.sample(src, dest, ImageDimensions.percent(50, 50));
   }
 
   private static void copyFile(final File src, final File dest) throws IOException {

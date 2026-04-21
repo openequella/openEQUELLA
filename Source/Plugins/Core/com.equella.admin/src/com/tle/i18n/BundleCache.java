@@ -18,6 +18,7 @@
 
 package com.tle.i18n;
 
+import com.tle.admin.service.AdminLanguageService;
 import com.tle.beans.Language;
 import com.tle.beans.NameId;
 import com.tle.beans.entity.BaseEntity;
@@ -27,25 +28,24 @@ import com.tle.beans.item.Item;
 import com.tle.common.Check;
 import com.tle.common.NameValue;
 import com.tle.common.i18n.BundleReference;
-import com.tle.core.remoting.RemoteLanguageService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class BundleCache {
-  private static final Map<Long, String> names = new HashMap<Long, String>();
+  private static final Map<Long, String> names = new ConcurrentHashMap<Long, String>();
   private static final long INVALID_KEY = -1;
 
   private static Set<Locale> languages;
-  private static RemoteLanguageService languageService;
+  private static AdminLanguageService languageService;
 
-  public static void initialise(RemoteLanguageService langService) {
+  public static void initialise(AdminLanguageService langService) {
     BundleCache.languageService = langService;
     refreshLanguages();
   }

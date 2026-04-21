@@ -19,6 +19,7 @@
 package com.tle.admin;
 
 import com.tle.admin.boot.LoadingDialog;
+import com.tle.admin.service.AdminLanguageService;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
 import com.tle.client.impl.ClientServiceImpl;
@@ -26,7 +27,6 @@ import com.tle.client.impl.CurrentTimeZoneClientSide;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.i18n.CurrentTimeZone;
-import com.tle.core.remoting.RemoteLanguageService;
 import com.tle.i18n.BundleCache;
 import java.awt.Window;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class AdminConsole implements HarnessInterface {
       clientService = new ClientServiceImpl(endpointURL);
 
       // Initialise bundle cache
-      BundleCache.initialise(clientService.getService(RemoteLanguageService.class));
+      BundleCache.initialise(clientService.getService(AdminLanguageService.class));
 
       // Make sure we are using the default XML Parser.
       System.setProperty(DOCUMENTBUILDERFACTORY, DEFAULT_XML_PARSER5);

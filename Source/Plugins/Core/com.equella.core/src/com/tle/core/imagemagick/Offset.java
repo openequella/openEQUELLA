@@ -16,26 +16,12 @@
  * limitations under the License.
  */
 
-package com.tle.admin.graphql.conversion
+package com.tle.core.imagemagick;
 
-import com.tle.beans.entity.schema.Citation
-import io.github.openequella.graphql.api.views.CitationView
-import scala.util.chaining.scalaUtilChainingOps
-
-object CitationViewConverter {
-  def toCitation(view: CitationView): Citation = new Citation().tap { c =>
-    c.setName(view.name)
-    c.setTransformation(view.transformation)
-  }
-
-  def fromCitation(citation: Citation): CitationView = {
-    val name = Option(citation.getName).getOrElse(
-      throw new IllegalArgumentException("Citation name must not be null")
-    )
-    val transformation = Option(citation.getTransformation).getOrElse(
-      throw new IllegalArgumentException("Citation transformation must not be null")
-    )
-
-    CitationView(name = name, transformation = transformation)
+/** A two-dimensional pixel offset used for crop geometry. */
+public record Offset(int x, int y) {
+  @Override
+  public String toString() {
+    return String.format("%+d%+d", x, y);
   }
 }
