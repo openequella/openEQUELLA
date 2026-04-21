@@ -26,7 +26,7 @@ public class MailSettingsTest extends AbstractSessionTest {
   public void testMailSettings() throws InterruptedException, HttpException, IOException {
     logon("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    MailSettingsPage msp = sp.mailSettingsPage();
+    MailSettingsPage msp = sp.clickMailSetting();
     msp.setServer(MAIL_SERVER);
     String fromEmail = String.valueOf(Math.random()) + MAIL_ADDRESS;
     msp.setEmailAddress(fromEmail);

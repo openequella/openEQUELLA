@@ -32,7 +32,7 @@ public class FileIndexingTest extends AbstractCleanupTest {
 
     // Set PPT mimetype freetext extractor
     SettingsPage settingsPage = new SettingsPage(context).load();
-    MimeSearchPage mimePage = settingsPage.mimeSettings();
+    MimeSearchPage mimePage = settingsPage.clickMimeSetting();
     mimePage.search("pptx");
     MimeEditorPage editMimePage = mimePage.editMime(1);
     editMimePage.selectTextExtractor("MS PowerPoint PPTX text extractor", true);
@@ -69,7 +69,7 @@ public class FileIndexingTest extends AbstractCleanupTest {
 
     // Set DOCX mimetype freetext extractor
     SettingsPage settingsPage = new SettingsPage(context).load();
-    MimeSearchPage mimePage = settingsPage.mimeSettings();
+    MimeSearchPage mimePage = settingsPage.clickMimeSetting();
     mimePage.search("docx");
     MimeEditorPage editMimePage = mimePage.editMime(1);
     editMimePage.selectTextExtractor("MS Word DOCX text extractor", true);

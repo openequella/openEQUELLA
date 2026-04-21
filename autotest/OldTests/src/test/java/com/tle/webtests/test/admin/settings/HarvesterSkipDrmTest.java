@@ -32,7 +32,7 @@ public class HarvesterSkipDrmTest extends AbstractSessionTest {
   private HarvesterSkipDrmPage logonToHarvestSkipDrm() {
     new LoginPage(context).load().login("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.harvestSkipDrmSettings();
+    return sp.clickHarvestSkipDrmSetting();
   }
 
   @Override

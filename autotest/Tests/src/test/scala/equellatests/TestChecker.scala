@@ -1,5 +1,6 @@
 package equellatests
 
+import com.codeborne.selenide.WebDriverRunner
 import com.tle.webtests.framework.{PageContext, ScreenshotTaker, StandardDriverFactory, TestConfig}
 import com.tle.webtests.pageobject.UndeterminedPage
 import com.tle.webtests.pageobject.institution._
@@ -32,6 +33,7 @@ object TestChecker {
   def withBrowserDriver[A](name: String, testConfig: TestConfig)(f: WebDriver => A): A = {
     val factory = new StandardDriverFactory(testConfig)
     val driver  = factory.getDriver(getClass)
+    WebDriverRunner.setWebDriver(driver)
     Try(f(driver))
       .transform(
         Success.apply,

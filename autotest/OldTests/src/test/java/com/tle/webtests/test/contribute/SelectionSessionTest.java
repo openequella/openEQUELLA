@@ -177,7 +177,7 @@ public class SelectionSessionTest extends AbstractIntegrationTest {
   public void selectSummaryPageButtonSettingTest() {
     logon(USERNAME, PASSWORD);
     SettingsPage settingsPage = new SettingsPage(context).load();
-    SelectionSessionSettingsPage settingPage = settingsPage.selectionSessionSettingsPage();
+    SelectionSessionSettingsPage settingPage = settingsPage.clickSelectionSessionSetting();
     settingPage.selectDisableBox();
     settingPage.save();
 
@@ -189,7 +189,7 @@ public class SelectionSessionTest extends AbstractIntegrationTest {
     assertFalse(searchPage.isSelectButtonExist());
 
     settingsPage = new SettingsPage(context).load();
-    settingPage = settingsPage.selectionSessionSettingsPage();
+    settingPage = settingsPage.clickSelectionSessionSetting();
     settingPage.unselectDisableBox();
     settingPage.save();
 

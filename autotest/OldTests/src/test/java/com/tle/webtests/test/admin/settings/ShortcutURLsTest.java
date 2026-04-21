@@ -69,7 +69,7 @@ public class ShortcutURLsTest extends AbstractIntegrationTest {
   private ShortcutURLsSettingsPage logonToShortcutURLsSettingsPage() {
     logon("AutoTest", "automated");
     SettingsPage sp = new SettingsPage(context).load();
-    return sp.shortcutURLsSettingsPage();
+    return sp.clickShortcutURLsSetting();
   }
 
   @Override

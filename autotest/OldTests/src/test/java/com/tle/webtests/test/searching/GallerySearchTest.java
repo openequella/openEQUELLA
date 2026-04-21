@@ -50,7 +50,7 @@ public class GallerySearchTest extends AbstractCleanupTest {
     assertFalse(searchPage.hasResults());
     logout();
     logon("TLE_ADMINISTRATOR", testConfig.getAdminPassword());
-    new SettingsPage(context).load().maualDataFixPage().generateMissingThumnails();
+    new SettingsPage(context).load().clickManualDataFixesSetting().generateMissingThumnails();
     logout();
     logon("admin", "``````");
     searchPage = new SearchPage(context).load();

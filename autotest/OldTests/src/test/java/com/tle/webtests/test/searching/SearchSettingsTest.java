@@ -58,7 +58,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     SettingsPage sp = new SettingsPage(context).load();
 
     // Load SearchSettings Page by clicking settings link
-    SearchSettingsPage searchSettingsPage = sp.searchSettings();
+    SearchSettingsPage searchSettingsPage = sp.clickSearchSetting();
     Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -69,7 +69,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = Order.datemodified;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting();
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -79,7 +79,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = SearchSettingsPage.Order.name;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting();
     searchSettingsPage.setOrder(sortOption).save();
 
     logon("AutoTest", "automated");
@@ -89,7 +89,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(searchPage.ensureSortSelected(sortOption.name()));
 
     sortOption = SearchSettingsPage.Order.rating;
-    searchSettingsPage = new SettingsPage(context).load().searchSettings().get();
+    searchSettingsPage = new SettingsPage(context).load().clickSearchSetting().get();
 
     searchSettingsPage.setOrder(sortOption).save();
 
@@ -104,7 +104,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   @Test
   public void testShowNonLive() {
     logon("AutoTest", "automated");
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings().load();
+    SearchSettingsPage ssp = new SettingsPage(context).load().clickSearchSetting().load();
     ssp.includeNonLive(true).save();
 
     SearchPage searchPage = new SearchPage(context).load();
@@ -115,7 +115,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     ItemListPage results = searchPage.search('"' + ITEM_NAME + '"');
     assertTrue(results.doesResultExist(ITEM_NAME, 1));
 
-    ssp = new SettingsPage(context).load().searchSettings();
+    ssp = new SettingsPage(context).load().clickSearchSetting();
     ssp.includeNonLive(false).save();
 
     sso = new SearchPage(context).load().openScreenOptions();
@@ -129,14 +129,24 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
   public void testDisableGallery() {
     // Disable Images Gallery view
     logon("AutoTest", "automated");
-    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(true).save();
+    new SettingsPage(context)
+        .load()
+        .clickSearchSetting()
+        .load()
+        .setDisableImageGallery(true)
+        .save();
 
     // Go to search page, test that gallery is disabled
     SearchPage searchPage = new SearchPage(context).load();
     assertFalse(searchPage.isImagesLinkAvailable());
 
     // Now reenable Images Gallery
-    new SettingsPage(context).load().searchSettings().load().setDisableImageGallery(false).save();
+    new SettingsPage(context)
+        .load()
+        .clickSearchSetting()
+        .load()
+        .setDisableImageGallery(false)
+        .save();
 
     // Go to search page, test that gallery is enabled
     searchPage = new SearchPage(context).load();
@@ -169,7 +179,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     assertTrue(checkAtomResponse(getResponse(soapService, atomUrl, null), true));
 
     // Enable authenticated results
-    SearchSettingsPage ssp = new SettingsPage(context).load().searchSettings();
+    SearchSettingsPage ssp = new SettingsPage(context).load().clickSearchSetting();
     ssp.setGenerateAuthFeeds(true).save();
 
     // Do a search and get RSS url
@@ -253,7 +263,7 @@ public class SearchSettingsTest extends AbstractCleanupAutoTest {
     SettingsPage sp = new SettingsPage(context).load();
 
     // Load SearchSettings Page by clicking settings link
-    SearchSettingsPage searchSettingsPage = sp.searchSettings();
+    SearchSettingsPage searchSettingsPage = sp.clickSearchSetting();
     Order sortOption = SearchSettingsPage.Order.rank;
     searchSettingsPage.setOrder(sortOption).save();
 

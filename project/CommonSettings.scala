@@ -43,7 +43,7 @@ object CommonSettings extends AutoPlugin {
     lazy val postgresDep     = "org.postgresql"          % "postgresql" % "42.7.10"
     lazy val sqlServerDep    = "com.microsoft.sqlserver" % "mssql-jdbc" % "13.2.1.jre11"
 
-    lazy val log4jVersion   = "2.25.3"
+    lazy val log4jVersion   = "2.25.4"
     lazy val log4j          = "org.apache.logging.log4j" % "log4j"             % log4jVersion
     lazy val log4jCore      = "org.apache.logging.log4j" % "log4j-core"        % log4jVersion
     lazy val log4jSlf4jImpl = "org.apache.logging.log4j" % "log4j-slf4j2-impl" % log4jVersion
@@ -56,7 +56,7 @@ object CommonSettings extends AutoPlugin {
     lazy val xstreamVersion = "1.4.21"
     lazy val xstreamDep     = "com.thoughtworks.xstream" % "xstream" % xstreamVersion
 
-    lazy val jacksonVersion = "2.21.1"
+    lazy val jacksonVersion = "2.21.2"
     // Jackson Annotations has chosen to split for sync versions.
     // See https://github.com/FasterXML/jackson-annotations/issues/294
     lazy val jacksonAnnotationsVersion = "2.20"
@@ -97,11 +97,11 @@ object CommonSettings extends AutoPlugin {
       )
     ),
     resolvers ++= Seq(
-      Resolver.bintrayRepo("omegat-org", "maven")
+      "JBoss Public Repository" at "https://repository.jboss.org/nexus/content/repositories/public/"
     ),
     libraryDependencies ++= Seq(
       "com.github.sbt" % "junit-interface" % "0.13.3" % Test,
-      "org.scalatest" %% "scalatest"       % "3.2.19" % Test
+      "org.scalatest" %% "scalatest"       % "3.2.20" % Test
     )
   )
 }
