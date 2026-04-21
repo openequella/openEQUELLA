@@ -19,6 +19,7 @@
 package com.tle.core.download;
 
 import com.tle.core.guice.Bind;
+import com.tle.core.remoting.RemotePluginDownloadService;
 import com.tle.web.stream.ContentStreamWriter;
 import com.tle.web.stream.FileContentStream;
 import java.io.File;
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * PluginDownloadService#getAllPluginDetails(String)}.
  *
  * @see PluginDownloadService
- * @see com.tle.core.download.RemotePluginDownloadService
+ * @see RemotePluginDownloadService
  */
 @Bind
 @Singleton

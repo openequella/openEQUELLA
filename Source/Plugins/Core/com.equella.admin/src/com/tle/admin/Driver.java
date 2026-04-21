@@ -29,7 +29,7 @@ import com.tle.admin.service.AdminLoginService;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.download.RemotePluginDownloadService;
+import com.tle.core.remoting.RemotePluginDownloadService;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;

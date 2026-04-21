@@ -20,9 +20,9 @@ package com.tle.admin;
 
 import com.google.common.io.CharStreams;
 import com.tle.common.URLUtils;
-import com.tle.core.download.RemotePluginDownloadService;
-import com.tle.core.download.RemotePluginDownloadService.PluginDetails;
 import com.tle.core.plugins.AbstractPluginService;
+import com.tle.core.remoting.RemotePluginDownloadService;
+import com.tle.core.remoting.RemotePluginDownloadService.PluginDetails;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

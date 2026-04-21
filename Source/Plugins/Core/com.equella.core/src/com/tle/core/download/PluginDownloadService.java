@@ -26,6 +26,7 @@ import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
 import com.tle.core.plugins.PluginService;
+import com.tle.core.remoting.RemotePluginDownloadService;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -107,8 +108,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Obtains a remote proxy to this service via {@code
  *       clientService.getService(RemotePluginDownloadService.class)}
  *   <li>Calls {@link #getAllPluginDetails(String)} with plugin type "admin-console"
- *   <li>Receives a list of {@link com.tle.core.download.RemotePluginDownloadService.PluginDetails}
- *       containing:
+ *   <li>Receives a list of {@link RemotePluginDownloadService.PluginDetails} containing:
  *       <ul>
  *         <li>JAR download URLs (rewritten to use {@link DownloadServlet} in production)
  *         <li>Plugin manifest XML content
@@ -125,7 +125,7 @@ import org.slf4j.LoggerFactory;
  * download URLs.
  *
  * @see DownloadServlet
- * @see com.tle.core.download.RemotePluginDownloadService
+ * @see RemotePluginDownloadService
  * @see com.tle.admin.PluginServiceImpl
  */
 @Bind
