@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
-import com.tle.common.Check;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.FileHandle;
@@ -291,7 +290,7 @@ public class StagingResourceImpl implements StagingResource {
         PathUtils.filePath(multipartFolderPath(uploadId), Integer.toString(partNumber));
 
     if (fileSystemService.fileExists(stagingFile, chunkPath)) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
+      throw new BadRequestException("Part " + partNumber + " has already been uploaded.");
     }
 
     try (InputStream stream = data) {
@@ -323,7 +322,7 @@ public class StagingResourceImpl implements StagingResource {
     checkValidContentType(contentType);
 
     final boolean isCopy = !Strings.isNullOrEmpty(copySource);
-    final boolean isUnzip = !Check.isEmpty(unzipTo);
+    final boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
 
     if (isCopy && isUnzip) {
       throw new BadRequestException(
