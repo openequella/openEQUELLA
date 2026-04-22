@@ -146,7 +146,7 @@ public class StagingResourceImpl implements StagingResource {
       final String filePath = PathUtils.filePath(currentPath, filename);
       try {
         String md5CheckSum = fileSystemService.getMD5Checksum(fileHandle, filePath);
-        blobBean.setEtag("\"" + md5CheckSum + "\"");
+        blobBean.setEtag(toQuotedEtag(md5CheckSum));
       } catch (IOException e) {
         // Whatever
       }
@@ -190,9 +190,8 @@ public class StagingResourceImpl implements StagingResource {
       final String etag = headers.getHeaderString(HttpHeaders.IF_NONE_MATCH);
       if (etag != null) {
         String md5Checksum = fileSystemService.getMD5Checksum(stagingFile, filepath);
-        String quotedChecksum = "\"" + md5Checksum + "\"";
-        if (Objects.equals(etag, quotedChecksum)) {
-          return Response.notModified(quotedChecksum).build();
+        if (Objects.equals(etag, toQuotedEtag(md5Checksum))) {
+          return Response.notModified().tag(md5Checksum).build();
         }
       }
       final String modifiedSince = headers.getHeaderString(HttpHeaders.IF_MODIFIED_SINCE);
@@ -359,8 +358,7 @@ public class StagingResourceImpl implements StagingResource {
     builder.header(HttpHeaders.CONTENT_LENGTH, fileInfo.getLength());
     builder.header(
         HttpHeaders.CONTENT_TYPE, mimeService.getMimeTypeForFilename(fileInfo.getFilename()));
-    builder.header(
-        HttpHeaders.ETAG, "\"" + fileSystemService.getMD5Checksum(handle, filepath) + "\"");
+    builder.tag(fileSystemService.getMD5Checksum(handle, filepath));
     return builder;
   }
 
@@ -413,14 +411,11 @@ public class StagingResourceImpl implements StagingResource {
   }
 
   private Response buildFileResponse(String md5, String uuid, String targetPath) {
-    return Response.ok()
-        .header(HttpHeaders.ETAG, "\"" + md5 + "\"")
-        .location(stagingUri(uuid, targetPath))
-        .build();
+    return Response.ok().tag(md5).location(stagingUri(uuid, targetPath)).build();
   }
 
   private Response buildChunkResponse(String md5) {
-    return Response.ok().header(HttpHeaders.ETAG, "\"" + md5 + "\"").build();
+    return Response.ok().tag(md5).build();
   }
 
   private void processUploadParts(
@@ -475,5 +470,9 @@ public class StagingResourceImpl implements StagingResource {
       throw new WebApplicationException(
           "Failed to append multipart chunk: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private String toQuotedEtag(String md5) {
+    return "\"" + md5 + "\"";
   }
 }
