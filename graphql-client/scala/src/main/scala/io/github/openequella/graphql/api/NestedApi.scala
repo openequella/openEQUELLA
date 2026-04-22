@@ -137,6 +137,26 @@ trait NestedMutationApi[M] {
       cfg: ClientConfiguration
   ): Either[List[ApiError], R] =
     Client.mutate(mutationWrapper(mutation))
+
+  /** Executes a mutation whose result is wrapped in `Option` and flattens it, treating `None` as an
+    * error. This is the standard pattern for Caliban mutations, which generate `Option`-wrapped
+    * return types due to GraphQL's nullable-by-default semantics.
+    *
+    * This is a convenience wrapper for `flattenResult(mutate(mutation))`.
+    *
+    * @param mutation
+    *   The selection builder for the mutation, returning `Option[A]`.
+    * @param cfg
+    *   The client configuration.
+    * @tparam A
+    *   The unwrapped result type.
+    * @return
+    *   Either a list of ApiError or the unwrapped result of type A.
+    */
+  protected def flatMutate[A](mutation: SelectionBuilder[M, Option[A]])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], A] =
+    flattenResult(mutate(mutation))
 }
 
 /** Mixin trait for APIs that have nested query and mutation structures.

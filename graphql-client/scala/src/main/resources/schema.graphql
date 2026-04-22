@@ -145,6 +145,44 @@ type Citation {
   transformation: String!
 }
 
+"A collection definition, defining the structure and configuration for a collection of items in openEQUELLA."
+type CollectionDefinition {
+  "Common details of the collection definition, including UUID and owner."
+  details: EntityDetails!
+}
+
+type CollectionMutations {
+  "Clone a collection - creating a copy of the collection with a new ID."
+  clone("ID of the collection to clone" id: Long!): BaseEntityReference
+  "Delete a collection - with consideration to references controllable by args."
+  delete("ID of the collection to delete" id: Long!, "Whether to check for referencing entities before deletion, if true, the deletion will only proceed if there are no referencing entities; if false, will attempt to delete the collection regardless of references which may fail. Defaults to true if not provided." checkReferences: Boolean): Unit
+  "Import a collection from a base64-encoded zip file."
+  import("Base64-encoded zip file of the collection to import" zipBase64: String!): EditableEntityCollectionDefinition
+  "Cancel editing a collection - discarding any changes made and unlocking the collection."
+  cancelEdit("ID of the collection edit session to cancel" id: Long!, "Whether to force cancel the edit session, if true, removes the lock regardless of which session owns it (forced unlock); if false, only removes the lock if the current session owns it. Defaults to false if not provided." force: Boolean): Unit
+}
+
+type CollectionQueries {
+  "List all collections"
+  list: [BaseEntityReference!]!
+  "Export a collection, returning a base64 encoded zip file"
+  export("ID of the collection to export" id: Long!, "Whether to include security information in the export" withSecurity: Boolean!): String
+  "Get the collection ID for a given UUID"
+  idForUuid(value: String!): Long
+}
+
+"The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
+type EditableEntityCollectionDefinition {
+  "Base entity being edited"
+  entity: CollectionDefinition!
+  "The ID of the staging area for this entity. This is used to store files before they are committed."
+  stagingId: String!
+  "The version of openEQUELLA this entity is being edited against. This is used to ensure that edits are applied to the correct version."
+  version: String
+  "A list of access control entries, each specifying a privilege granted to a user or group, along with whether it is overridden or granted."
+  targetList: [TargetListEntry!]!
+}
+
 "The details for an entity that is now ready to be edited, or the updated details for that entity after editing."
 type EditableEntityMetadataSchema {
   "Base entity being edited"
@@ -383,12 +421,14 @@ type MetadataSchemaTransform {
 }
 
 type Mutations {
-  "Operations for managing internal users"
-  internalUsers: InternalUserMutations!
-  "Operations for managing internal groups"
-  internalGroups: InternalGroupMutations!
+  "Operations for managing Collections"
+  collection: CollectionMutations!
   "Operations for managing Metadata Schemas"
   metadataSchema: MetadataSchemaMutations!
+  "Operations for managing internal groups"
+  internalGroups: InternalGroupMutations!
+  "Operations for managing internal users"
+  internalUsers: InternalUserMutations!
 }
 
 "A simple name/value pair."
@@ -409,16 +449,18 @@ type PageInfo {
 type Queries {
   "Queries for base entities"
   baseEntities: BaseEntityQueries!
+  "Queries for Collections"
+  collection: CollectionQueries!
   "Queries for JavaScript"
   javaScript: JavaScriptQueries!
   "Queries for language"
   language: LanguageQueries!
-  "Queries for internal users"
-  internalUsers: InternalUserQueries!
-  "Queries for internal groups"
-  internalGroups: InternalGroupQueries!
   "Queries for Metadata Schemas"
   metadataSchema: MetadataSchemaQueries!
+  "Queries for internal groups"
+  internalGroups: InternalGroupQueries!
+  "Queries for internal users"
+  internalUsers: InternalUserQueries!
 }
 
 "A Connection object paging through Strings as per the GraphQL Cursor Connections Specification"

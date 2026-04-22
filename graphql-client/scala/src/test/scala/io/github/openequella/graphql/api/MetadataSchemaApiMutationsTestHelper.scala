@@ -20,8 +20,7 @@ package io.github.openequella.graphql.api
 
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.views._
-import io.github.openequella.graphql.test.TestHelper
-import org.scalatest.Assertions.fail
+import io.github.openequella.graphql.test.BaseEntityApiTestHelper
 import org.scalatest.EitherValues._
 
 import java.util.Locale
@@ -38,21 +37,11 @@ object MetadataSchemaApiMutationsTestHelper {
     * session, so we need to test with a different user.
     */
   def isSchemaLockedForEditing(schemaId: Long)(implicit cfg: ClientConfiguration): Boolean =
-    TestHelper.withUser(TestHelper.CREDENTIALS_ADMIN) { implicit otherSession =>
-      val editResultOtherUser = MetadataSchemaApi.startEdit(schemaId)(otherSession)
-      val isLocked            = editResultOtherUser match {
-        case Left(errors) =>
-          if (errors.exists(_.isInstanceOf[LockedError])) true
-          else
-            fail(s"Expected a LockedError, but got: $errors")
-        case Right(_) => false
-      }
-      // tidy-up by cancelling the edit session we just started (if it was successful)
-      if (!isLocked) {
-        MetadataSchemaApi.cancelEdit(schemaId)(otherSession)
-      }
-      isLocked
-    }
+    BaseEntityApiTestHelper.isEntityLockedForEditing(
+      schemaId,
+      (id, c) => MetadataSchemaApi.startEdit(id)(c),
+      (id, c) => MetadataSchemaApi.cancelEditForced(id)(c)
+    )
 
   /** Gets the ID of the first schema in the system for use in tests.
     *
@@ -64,13 +53,7 @@ object MetadataSchemaApiMutationsTestHelper {
     *   if no schemas exist in the system.
     */
   def getFirstSchemaId()(implicit cfg: ClientConfiguration): Long =
-    MetadataSchemaApi.listSchemas() match {
-      case Right(schemas) if schemas.nonEmpty => schemas.head.id
-      case Right(_)                           =>
-        fail("Test setup error: No schemas available in the system")
-      case Left(errors) =>
-        fail(s"Failed to retrieve schemas: ${errors.mkString(", ")}")
-    }
+    BaseEntityApiTestHelper.getFirstEntityId(MetadataSchemaApi.listSchemas _)
 
   /** Extracts the default locale name text from a MetadataSchemaView.
     *
@@ -167,21 +150,47 @@ object MetadataSchemaApiMutationsTestHelper {
     *   The name for the test schema. Defaults to "Test Schema".
     * @param description
     *   Optional description. Defaults to Some("A test schema").
-    * @param lockAfterwards
-    *   Whether to keep the schema locked after creation. Defaults to false.
     * @param test
-    *   The test body, receiving the newly created schema's numeric ID.
+    *   The test body, receiving the newly created schema reference.
     * @param cfg
     *   The client configuration.
     */
   def withTestSchema(
       name: String = "Test Schema",
-      description: Option[String] = Some("A test schema"),
-      lockAfterwards: Boolean = false
+      description: Option[String] = Some("A test schema")
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
+    withTestSchemaUsing(MetadataSchemaApi.add)(name, description)(test)
+
+  /** Loan-pattern helper that creates a locked test schema, runs the test body, and guarantees
+    * cleanup.
+    *
+    * Like [[withTestSchema]] but keeps the schema locked for editing after creation. Use this when
+    * the test needs to perform further edit operations without a separate `startEdit` call.
+    *
+    * @param name
+    *   The name for the test schema. Defaults to "Test Schema".
+    * @param description
+    *   Optional description. Defaults to Some("A test schema").
+    * @param test
+    *   The test body, receiving the newly created schema reference.
+    * @param cfg
+    *   The client configuration.
+    */
+  def withTestSchemaLocked(
+      name: String = "Test Schema",
+      description: Option[String] = Some("A test schema")
+  )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit =
+    withTestSchemaUsing(MetadataSchemaApi.addAndLock)(name, description)(test)
+
+  private def withTestSchemaUsing(
+      addFn: MetadataSchemaEditView => Either[List[ApiError], BaseEntityReferenceView]
+  )(
+      name: String,
+      description: Option[String]
   )(test: BaseEntityReferenceView => Unit)(implicit cfg: ClientConfiguration): Unit = {
     val skeleton  = MetadataSchemaApi.startCreate().value
     val details   = buildNewSchemaDetails(skeleton, name = name, description = description)
-    val reference = MetadataSchemaApi.add(details, lockAfterwards = lockAfterwards).value
+    val reference = addFn(details).value
     val schemaId  = reference.id
 
     try {
@@ -189,7 +198,7 @@ object MetadataSchemaApiMutationsTestHelper {
     } finally {
       // Best-effort cleanup: force-cancel any lingering edit lock, then delete.
       // Errors are ignored — the schema may already be unlocked or deleted by the test.
-      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
+      MetadataSchemaApi.cancelEditForced(schemaId)
       MetadataSchemaApi.delete(schemaId)
     }
   }
@@ -209,14 +218,10 @@ object MetadataSchemaApiMutationsTestHelper {
     */
   def withEditSession(schemaId: Long)(test: MetadataSchemaEditView => Unit)(implicit
       cfg: ClientConfiguration
-  ): Unit = {
-    val editView = MetadataSchemaApi.startEdit(schemaId).value
-
-    try {
-      test(editView)
-    } finally {
-      // Best-effort cleanup: force-cancel to release any lingering lock.
-      MetadataSchemaApi.cancelEdit(schemaId, Some(true))
-    }
-  }
+  ): Unit =
+    BaseEntityApiTestHelper.withEditSession(
+      schemaId,
+      MetadataSchemaApi.startEdit,
+      MetadataSchemaApi.cancelEditForced
+    )(test)
 }

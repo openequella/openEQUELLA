@@ -37,11 +37,10 @@ import io.github.openequella.graphql.client.{
   Queries
 }
 
-import java.util.Base64
-
 /** Provides access to the openEQUELLA metadata schema API.
   */
-object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchemaMutations] {
+object MetadataSchemaApi
+    extends ZipImportExportApi[MetadataSchemaQueries, MetadataSchemaMutations] {
 
   override protected def queryWrapper[A]
       : SelectionBuilder[MetadataSchemaQueries, A] => SelectionBuilder[RootQuery, A] =
@@ -163,28 +162,37 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     query(q)
   }
 
-  /** Exports a metadata schema as a ZIP file.
+  /** Exports a metadata schema as a ZIP file, without security information.
     *
     * @param id
     *   The ID of the metadata schema to export.
-    * @param withSecurity
-    *   Whether to include security information in the export.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
+    * @see
+    *   [[exportSchemaWithSecurity]] to include security ACLs in the export.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def exportSchema(id: Long, withSecurity: Boolean)(implicit
+  def exportSchema(id: Long)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[Array[Byte]]] = {
-    val q = MetadataSchemaQueries.export(id, withSecurity)
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(MetadataSchemaQueries.export(id, withSecurity = false))
 
-    // The query returns a base64 encoded string (representing a zip file), which we need to decode
-    // into an Array[Byte]. Returning Array[Byte] removes the need for the client to be aware
-    // of the base64 encoding and decoding process.
-    query(q).map(_.map(base64ToBytes))
-  }
+  /** Exports a metadata schema as a ZIP file, including security ACL information.
+    *
+    * @param id
+    *   The ID of the metadata schema to export.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of errors or an Array[Byte] containing the exported schema as a zip file.
+    * @see
+    *   [[exportSchema]] to export without security ACLs.
+    */
+  def exportSchemaWithSecurity(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Option[Array[Byte]]] =
+    exportZip(MetadataSchemaQueries.export(id, withSecurity = true))
 
   /** Imports a metadata schema from a ZIP file.
     *
@@ -201,16 +209,8 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     */
   def importSchema(zip: Array[Byte])(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], MetadataSchemaEditView] = {
-    val zipBase64 = Base64.getEncoder.encodeToString(zip)
-    flattenResult {
-      mutate(
-        MetadataSchemaMutations.`import`(zipBase64) {
-          MetadataSchemaEditView.selector
-        }
-      )
-    }
-  }
+  ): Either[List[ApiError], MetadataSchemaEditView] =
+    importZip(zip)(MetadataSchemaMutations.`import`(_) { MetadataSchemaEditView.selector })
 
   /** Start editing a metadata schema by its ID.
     *
@@ -253,70 +253,125 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     *
     * @param id
     *   The ID of the metadata schema to cancel editing.
-    * @param force
-    *   If true, forcefully unlocks the schema even if locked by another user. Defaults to None.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEditForced]] to force-unlock even if locked by another user.
     */
-  def cancelEdit(id: Long, force: Option[Boolean] = None)(implicit
+  def cancelEdit(id: Long)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = MetadataSchemaMutations.cancelEdit(id, force)
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.cancelEdit(id, None))
 
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  /** Cancel editing a metadata schema and force-unlock it.
+    *
+    * Like [[cancelEdit]] but forcefully unlocks the schema even if it is locked by another user.
+    * Use this when you need to recover a schema that is stuck locked by a disconnected session.
+    *
+    * @param id
+    *   The ID of the metadata schema to cancel editing.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[cancelEdit]] to cancel normally without forcing the unlock.
+    */
+  def cancelEditForced(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.cancelEdit(id, Some(true)))
 
   /** Add a new metadata schema.
     *
     * Typically called after a `startCreate` operation, with the details for the new schema
-    * populated. The `MetadataSchemaEditView` type is used as input to maintain consistency with the
-    * view returned by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    * populated. The schema is not locked after creation — use [[addAndLock]] to keep it locked.
     *
     * @param details
     *   The metadata schema details to add, using the same view type returned by `startEdit`.
-    * @param lockAfterwards
-    *   If true, keeps the schema locked after creation for further editing.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
+    * @see
+    *   [[addAndLock]] to keep the schema locked after creation.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def add(details: MetadataSchemaEditView, lockAfterwards: Boolean)(implicit
+  def add(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
     withConvertedInput(details) { input =>
-      MetadataSchemaMutations.add(input, lockAfterwards) {
+      MetadataSchemaMutations.add(input, lockAfterwards = false) {
         BaseEntityReferenceView.selector
       }
     }
 
-  /** Stop editing a metadata schema, saving changes and optionally unlocking.
+  /** Add a new metadata schema, keeping it locked for further editing.
     *
-    * Typically called after a `startEdit` operation to commit changes to a metadata schema. The
-    * `MetadataSchemaEditView` type is used as input to maintain consistency with the view returned
-    * by `startEdit`, allowing the same type to be used throughout the edit lifecycle.
+    * Like [[add]] but keeps the schema locked after creation, allowing the caller to continue
+    * editing without a separate lock acquisition step.
     *
     * @param details
-    *   The metadata schema details to save, using the view type returned by `startEdit`.
-    * @param unlock
-    *   If true, unlocks the schema after saving; if false, keeps it locked for continued editing.
+    *   The metadata schema details to add, using the same view type returned by `startEdit`.
     * @param cfg
     *   The client configuration.
     * @return
-    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema, or an error
-    *   if the operation failed.
+    *   Either a list of ApiError or a BaseEntityReferenceView for the newly created schema.
+    * @see
+    *   [[add]] to create without keeping it locked.
     */
-  @SuppressWarnings(Array("BooleanParameter"))
-  def stopEdit(details: MetadataSchemaEditView, unlock: Boolean)(implicit
+  def addAndLock(details: MetadataSchemaEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], BaseEntityReferenceView] =
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.add(input, lockAfterwards = true) {
+        BaseEntityReferenceView.selector
+      }
+    }
+
+  /** Stop editing a metadata schema, saving changes and keeping it locked.
+    *
+    * Use this when you want to persist changes but intend to continue editing. To save and release
+    * the lock in one step, use [[stopEditAndUnlock]] instead.
+    *
+    * @param details
+    *   The metadata schema details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    * @see
+    *   [[stopEditAndUnlock]] to save and release the lock in one step.
+    */
+  def stopEdit(details: MetadataSchemaEditView)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], MetadataSchemaView] =
     withConvertedInput(details) { input =>
-      MetadataSchemaMutations.stopEdit(input, unlock) {
+      MetadataSchemaMutations.stopEdit(input, unlock = false) {
+        MetadataSchemaView.selector
+      }
+    }
+
+  /** Stop editing a metadata schema, saving changes and releasing the lock.
+    *
+    * The standard way to finish an edit session. Use [[stopEdit]] instead if you want to save but
+    * continue editing under the same lock.
+    *
+    * @param details
+    *   The metadata schema details to save, using the view type returned by `startEdit`.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or a MetadataSchemaView containing the saved schema.
+    * @see
+    *   [[stopEdit]] to save while keeping the lock.
+    */
+  def stopEditAndUnlock(details: MetadataSchemaEditView)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], MetadataSchemaView] =
+    withConvertedInput(details) { input =>
+      MetadataSchemaMutations.stopEdit(input, unlock = true) {
         MetadataSchemaView.selector
       }
     }
@@ -325,23 +380,37 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
     *
     * @param id
     *   The ID of the metadata schema to delete.
-    * @param checkReferences
-    *   If true, checks for references before deleting and fails if any exist. If false or None,
-    *   deletes without checking references.
     * @param cfg
     *   The client configuration.
     * @return
     *   Either a list of ApiError or Unit if the operation was successful.
+    * @see
+    *   [[deleteWithReferenceCheck]] to check for references before deleting.
     */
-  def delete(id: Long, checkReferences: Option[Boolean] = None)(implicit
+  def delete(id: Long)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Unit] = {
-    val mutation = MetadataSchemaMutations.delete(id, checkReferences)
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.delete(id, None))
 
-    flattenResult {
-      mutate(mutation)
-    }
-  }
+  /** Delete a metadata schema only if no references exist.
+    *
+    * Like [[delete]] but checks for references to the schema before deleting and fails if any
+    * exist. Use this to prevent accidental deletion of schemas that other items depend on.
+    *
+    * @param id
+    *   The ID of the metadata schema to delete.
+    * @param cfg
+    *   The client configuration.
+    * @return
+    *   Either a list of ApiError or Unit if the operation was successful, or an error if references
+    *   exist.
+    * @see
+    *   [[delete]] to delete without checking references.
+    */
+  def deleteWithReferenceCheck(id: Long)(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], Unit] =
+    flatMutate(MetadataSchemaMutations.delete(id, Some(true)))
 
   /** Clones a metadata schema, creating a copy with a new ID. The cloned schema's name will be
     * prefixed with "Copy of " in all language variants.
@@ -356,16 +425,11 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
   def clone(id: Long)(implicit
       cfg: ClientConfiguration
   ): Either[List[ApiError], BaseEntityReferenceView] =
-    flattenResult {
-      mutate(
-        MetadataSchemaMutations.clone$(id) {
-          BaseEntityReferenceView.selector
-        }
-      )
-    }
-
-  private def base64ToBytes(base64Zip: String): Array[Byte] =
-    Base64.getDecoder.decode(base64Zip)
+    flatMutate(
+      MetadataSchemaMutations.clone$(id) {
+        BaseEntityReferenceView.selector
+      }
+    )
 
   /** Converts a [[MetadataSchemaEditView]] to the GraphQL input type, builds a mutation using that
     * input, and executes it - unwrapping the Option result.
@@ -389,6 +453,6 @@ object MetadataSchemaApi extends NestedApi[MetadataSchemaQueries, MetadataSchema
         .leftMap(e =>
           List(UnknownError(s"Failed to convert details to input type: ${e.getMessage}"))
         )
-      result <- flattenResult { mutate(buildMutation(input)) }
+      result <- flatMutate(buildMutation(input))
     } yield result
 }
