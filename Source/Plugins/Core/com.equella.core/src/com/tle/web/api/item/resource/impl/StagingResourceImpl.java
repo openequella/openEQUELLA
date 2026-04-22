@@ -57,6 +57,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -242,8 +243,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response completeMultipart(
-      String uuid, String filepath, String uploadId, MultipartCompleteBean completion)
-      throws IOException {
+      String uuid, String filepath, String uploadId, MultipartCompleteBean completion) {
     checkPermissions();
 
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
@@ -251,20 +251,8 @@ public class StagingResourceImpl implements StagingResource {
 
     stagingService.ensureFileExists(stagingFile, folderPath);
 
-    List<PartBean> parts = Lists.newArrayList(completion.getParts());
-    parts.sort(Comparator.comparingInt(PartBean::getPartNumber));
-
-    for (PartBean partBean : parts) {
-      MultipartChunk chunk =
-          new MultipartChunk(
-              partBean.getPartNumber(),
-              partBean.getEtag(),
-              PathUtils.filePath(folderPath, Integer.toString(partBean.getPartNumber())));
-
-      stagingService.ensureFileExists(stagingFile, chunk.chunkPath());
-      validatePartEtag(stagingFile, chunk);
-      appendPartToFile(stagingFile, chunk, filepath);
-    }
+    processUploadParts(
+        stagingFile, folderPath, filepath, Lists.newArrayList(completion.getParts()));
 
     fileSystemService.removeFile(stagingFile, folderPath);
     return Response.ok().location(stagingUri(uuid, filepath)).build();
@@ -433,6 +421,32 @@ public class StagingResourceImpl implements StagingResource {
 
   private Response buildChunkResponse(String md5) {
     return Response.ok().header(HttpHeaders.ETAG, "\"" + md5 + "\"").build();
+  }
+
+  private void processUploadParts(
+      StagingFile file, String folder, String dest, List<PartBean> parts) {
+    parts.stream()
+        .sorted(Comparator.comparingInt(PartBean::getPartNumber))
+        .map(part -> toMultipartChunk(part, folder))
+        .forEach(
+            chunk -> {
+              try {
+                stagingService.ensureFileExists(file, chunk.chunkPath());
+                validatePartEtag(file, chunk);
+                appendPartToFile(file, chunk, dest);
+              } catch (IOException e) {
+                LOGGER.error("Failed to validate chunk during multipart assembly", e);
+                throw new InternalServerErrorException(
+                    "An error occurred while assembling the file parts.");
+              }
+            });
+  }
+
+  private MultipartChunk toMultipartChunk(PartBean partBean, String folderPath) {
+    return new MultipartChunk(
+        partBean.getPartNumber(),
+        partBean.getEtag(),
+        PathUtils.filePath(folderPath, Integer.toString(partBean.getPartNumber())));
   }
 
   private record MultipartChunk(int partNumber, String expectedEtag, String chunkPath) {}
