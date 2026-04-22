@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tle.web.plugin.download;
+package com.tle.core.download;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
@@ -108,8 +108,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Obtains a remote proxy to this service via {@code
  *       clientService.getService(RemotePluginDownloadService.class)}
  *   <li>Calls {@link #getAllPluginDetails(String)} with plugin type "admin-console"
- *   <li>Receives a list of {@link com.tle.core.remoting.RemotePluginDownloadService.PluginDetails}
- *       containing:
+ *   <li>Receives a list of {@link RemotePluginDownloadService.PluginDetails} containing:
  *       <ul>
  *         <li>JAR download URLs (rewritten to use {@link DownloadServlet} in production)
  *         <li>Plugin manifest XML content
@@ -126,7 +125,7 @@ import org.slf4j.LoggerFactory;
  * download URLs.
  *
  * @see DownloadServlet
- * @see com.tle.core.remoting.RemotePluginDownloadService
+ * @see RemotePluginDownloadService
  * @see com.tle.admin.PluginServiceImpl
  */
 @Bind
