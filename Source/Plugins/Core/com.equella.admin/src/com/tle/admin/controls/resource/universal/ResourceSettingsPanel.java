@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.tle.admin.Driver;
 import com.tle.admin.controls.EntityShuffler;
 import com.tle.admin.controls.universal.UniversalControlSettingPanel;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.common.NameValue;
 import com.tle.common.Pair;
 import com.tle.common.applet.gui.AppletGuiUtils;
@@ -31,7 +32,6 @@ import com.tle.common.wizard.controls.resource.ResourceSettings;
 import com.tle.common.wizard.controls.resource.ResourceSettings.AllowedSelection;
 import com.tle.common.wizard.controls.universal.UniversalSettings;
 import com.tle.core.remoting.RemoteAbstractEntityService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -78,7 +78,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
     restrictions.add(
         new RestrictEntities(
             strings.key("restrict.collections"),
-            RemoteItemDefinitionService.class,
+            AdminCollectionDefinitionService.class,
             ResourceSettings.KEY_RESTRICT_COLLECTIONS));
     restrictions.add(
         new RestrictEntities(
@@ -93,7 +93,7 @@ public class ResourceSettingsPanel extends UniversalControlSettingPanel {
     restrictions.add(
         new RestrictEntities(
             strings.key("restrict.contribution"),
-            RemoteItemDefinitionService.class,
+            AdminCollectionDefinitionService.class,
             ResourceSettings.KEY_RESTRICT_CONTRIBUTION));
 
     add(skipCheckoutPage, "span 2, gapbottom 8");

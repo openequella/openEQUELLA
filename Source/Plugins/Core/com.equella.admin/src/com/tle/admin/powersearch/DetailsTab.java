@@ -27,6 +27,7 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.PowerSearch;
@@ -37,7 +38,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
@@ -320,26 +320,23 @@ public class DetailsTab extends AbstractPowerSearchTab
 
     List<BaseEntityLabel> labels =
         clientService
-            .getService(RemoteItemDefinitionService.class)
+            .getService(AdminCollectionDefinitionService.class)
             .listUsableItemDefinitionsForSchema(schemaId);
     final List<NameValue> itemdefsForSchema = BundleCache.getNameValues(labels);
     Collections.sort(itemdefsForSchema, Format.NAME_VALUE_COMPARATOR);
 
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Load the schema
-            schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
+        () -> {
+          // Load the schema
+          schema.loadSchema(schemaBean.getDefinitionNonThreadSafe());
 
-            // Add all the item defs
-            itemdefs.removeAllFromLeft();
-            itemdefs.removeAllFromRight();
-            itemdefs.addToLeft(itemdefsForSchema);
+          // Add all the item defs
+          itemdefs.removeAllFromLeft();
+          itemdefs.removeAllFromRight();
+          itemdefs.addToLeft(itemdefsForSchema);
 
-            if (afterLoad != null) {
-              afterLoad.run();
-            }
+          if (afterLoad != null) {
+            afterLoad.run();
           }
         });
   }

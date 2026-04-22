@@ -20,6 +20,7 @@ package com.tle.admin.collection.tool;
 
 import com.tle.admin.baseentity.BaseEntityEditor;
 import com.tle.admin.itemdefinition.ItemEditor;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.tools.common.BaseEntityTool;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -27,16 +28,15 @@ import com.tle.common.EntityPack;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.core.remoting.RemoteAbstractEntityService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 
 public class ItemDefinitionTool extends BaseEntityTool<ItemDefinition> {
   public ItemDefinitionTool() throws Exception {
-    super(ItemDefinition.class, RemoteItemDefinitionService.ENTITY_TYPE);
+    super(ItemDefinition.class, AdminCollectionDefinitionService.ENTITY_TYPE());
   }
 
   @Override
   protected RemoteAbstractEntityService<ItemDefinition> getService(ClientService client) {
-    return client.getService(RemoteItemDefinitionService.class);
+    return client.getService(AdminCollectionDefinitionService.class);
   }
 
   @Override

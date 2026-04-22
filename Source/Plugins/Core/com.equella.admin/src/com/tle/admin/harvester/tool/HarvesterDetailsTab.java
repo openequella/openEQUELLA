@@ -27,6 +27,7 @@ import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.harvester.standard.HarvesterPlugin;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.common.Check;
@@ -35,7 +36,6 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.HarvesterProfileSettings;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -158,9 +158,9 @@ public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<List<NameValue>>() {
           @Override
-          public List<NameValue> construct() throws Exception {
+          public List<NameValue> construct() {
             List<BaseEntityLabel> cols =
-                clientService.getService(RemoteItemDefinitionService.class).listAll();
+                clientService.getService(AdminCollectionDefinitionService.class).listAll();
 
             List<NameValue> nvs = BundleCache.getNameUuidValues(cols);
             Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
@@ -207,7 +207,7 @@ public class HarvesterDetailsTab extends BaseEntityTab<HarvesterProfile>
           public List<String> construct() {
             long schemaId =
                 clientService
-                    .getService(RemoteItemDefinitionService.class)
+                    .getService(AdminCollectionDefinitionService.class)
                     .getSchemaIdForCollectionUuid(uuid);
 
             return clientService

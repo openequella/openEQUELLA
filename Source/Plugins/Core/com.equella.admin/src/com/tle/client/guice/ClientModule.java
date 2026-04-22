@@ -25,6 +25,8 @@ import com.tle.admin.helper.RestConfigurationHelper;
 import com.tle.admin.rest.RestConfiguration;
 import com.tle.admin.service.AdminBaseEntityService;
 import com.tle.admin.service.AdminBaseEntityServiceImpl;
+import com.tle.admin.service.AdminCollectionDefinitionService;
+import com.tle.admin.service.AdminCollectionDefinitionServiceImpl;
 import com.tle.admin.service.AdminJavaScriptService;
 import com.tle.admin.service.AdminJavaScriptServiceImpl;
 import com.tle.admin.service.AdminKeepAliveService;
@@ -40,6 +42,7 @@ import com.tle.admin.service.AdminTLEGroupServiceImpl;
 import com.tle.admin.service.AdminTLEUserService;
 import com.tle.admin.service.AdminTLEUserServiceImpl;
 import com.tle.common.applet.client.ClientService;
+import com.tle.core.remoting.RemoteItemDefinitionService;
 import io.github.openequella.graphql.ClientConfiguration;
 import java.net.URL;
 import javax.inject.Singleton;
@@ -61,6 +64,7 @@ public class ClientModule extends AbstractModule {
     // component scanning, but it is not used in the client code base. And our list of classes
     // here will be straightforward, so we can just list them out.
     bind(AdminBaseEntityService.class).to(AdminBaseEntityServiceImpl.class);
+    bind(AdminCollectionDefinitionService.class).to(AdminCollectionDefinitionServiceImpl.class);
     bind(AdminJavaScriptService.class).to(AdminJavaScriptServiceImpl.class);
     bind(AdminKeepAliveService.class).to(AdminKeepAliveServiceImpl.class);
     bind(AdminLanguageService.class).to(AdminLanguageServiceImpl.class);
@@ -80,5 +84,16 @@ public class ClientModule extends AbstractModule {
   @Singleton
   RestConfiguration provideRestConfiguration() {
     return RestConfigurationHelper.create(serverUrl);
+  }
+
+  /**
+   * A temporary provider while we are transitioning to the new GraphQL library. Once
+   * AdminSchemaService no longer delegates to RemoteSchemaService, this provider can be removed.
+   * (At the same time, RemoteSchemaService can be removed from the codebase.)
+   */
+  @Provides
+  @Singleton
+  RemoteItemDefinitionService provideRemoteItemDefinitionService() {
+    return clientService.getInvokerService(RemoteItemDefinitionService.class);
   }
 }

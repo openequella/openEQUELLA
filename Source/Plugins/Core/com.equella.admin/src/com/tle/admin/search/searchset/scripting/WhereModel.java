@@ -31,12 +31,12 @@ import com.dytech.gui.TableLayout;
 import com.tle.admin.Driver;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -158,7 +158,9 @@ public class WhereModel extends DefaultListModel implements ScriptModel {
     try {
       if (itemDefinition.getSchema() == null) {
         itemDefinition =
-            clientService.getService(RemoteItemDefinitionService.class).get(itemDefinition.getId());
+            clientService
+                .getService(AdminCollectionDefinitionService.class)
+                .get(itemDefinition.getId());
       }
 
       loadSchema(clientService, itemDefinition.getSchema());

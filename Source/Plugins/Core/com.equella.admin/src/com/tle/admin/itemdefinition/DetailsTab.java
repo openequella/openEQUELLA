@@ -25,6 +25,7 @@ import com.tle.admin.baseentity.BaseEntityEditor.AbstractDetailsTab;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextArea;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
@@ -40,7 +41,6 @@ import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
 import com.tle.common.workflow.RemoteWorkflowService;
 import com.tle.common.workflow.Workflow;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
@@ -79,7 +79,7 @@ public class DetailsTab extends AbstractItemdefTab
   private boolean advancedFilestore;
   private Collection<NameValue> filestores;
 
-  private RemoteItemDefinitionService itemdefService;
+  private AdminCollectionDefinitionService collectionDefinitionService;
   private RemoteFileSystemService remoteFileSystemService;
 
   @Override
@@ -90,7 +90,7 @@ public class DetailsTab extends AbstractItemdefTab
   @Override
   public void setDriver(Driver driver) {
     super.setDriver(driver);
-    itemdefService = clientService.getService(RemoteItemDefinitionService.class);
+    collectionDefinitionService = clientService.getService(AdminCollectionDefinitionService.class);
     remoteFileSystemService = clientService.getService(RemoteFileSystemService.class);
     advancedFilestore = remoteFileSystemService.isAdvancedFilestore();
     filestores = getFilestores();
@@ -161,7 +161,7 @@ public class DetailsTab extends AbstractItemdefTab
 
     if (filestoreList != null) {
       itemDef.setAttribute(
-          RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE,
+          AdminCollectionDefinitionService.ATTRIBUTE_KEY_FILESTORE(),
           ((NameValue) filestoreList.getSelectedItem()).getValue());
     }
   }
@@ -212,7 +212,7 @@ public class DetailsTab extends AbstractItemdefTab
 
     if (filestoreList != null) {
       String filestoreId =
-          itemDef.getAttribute(RemoteItemDefinitionService.ATTRIBUTE_KEY_FILESTORE);
+          itemDef.getAttribute(AdminCollectionDefinitionService.ATTRIBUTE_KEY_FILESTORE());
       if (filestoreId == null) {
         filestoreId = RemoteFileSystemService.DEFAULT_FILESTORE_ID;
       }
@@ -386,7 +386,7 @@ public class DetailsTab extends AbstractItemdefTab
 
   protected List<String> getCategories() {
     try {
-      List<String> list = new ArrayList<String>(itemdefService.enumerateCategories());
+      List<String> list = new ArrayList<String>(collectionDefinitionService.enumerateCategories());
       Collections.sort(list, Format.STRING_COMPARATOR);
       return list;
     } catch (Exception ex) {
