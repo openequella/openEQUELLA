@@ -243,16 +243,13 @@ public class StagingResourceImpl implements StagingResource {
   public Response completeMultipart(
       String uuid, String filepath, String uploadId, MultipartCompleteBean completion) {
     checkPermissions();
-
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String folderPath = multipartFolderPath(uploadId);
 
     stagingService.ensureFileExists(stagingFile, folderPath);
-
-    processUploadParts(
-        stagingFile, folderPath, filepath, Lists.newArrayList(completion.getParts()));
-
+    processUploadParts(stagingFile, folderPath, filepath, completion.getParts());
     fileSystemService.removeFile(stagingFile, folderPath);
+
     return Response.ok().location(stagingUri(uuid, filepath)).build();
   }
 
@@ -309,6 +306,14 @@ public class StagingResourceImpl implements StagingResource {
     }
   }
 
+  sealed interface PutAction {}
+
+  record CopyAction(String source) implements PutAction {}
+
+  record UnzipAction(String destination) implements PutAction {}
+
+  record WriteAction() implements PutAction {}
+
   @Override
   public Response putFile(
       String uuid,
@@ -321,24 +326,34 @@ public class StagingResourceImpl implements StagingResource {
     checkPermissions();
     checkValidContentType(contentType);
 
-    final boolean isCopy = !Strings.isNullOrEmpty(copySource);
-    final boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
-
-    if (isCopy && isUnzip) {
-      throw new BadRequestException(
-          "copyfrom and unzipto cannot be used together. Copy the file first, then unzip it"
-              + " separately.");
-    }
-
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
 
     if (fileSystemService.fileExists(stagingFile, filepath)) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
+      throw new BadRequestException("File " + filepath + " already exists in staging area.");
     }
 
-    return isCopy
-        ? handleCopy(stagingFile, copySource, filepath, uuid)
-        : handleWrite(stagingFile, data, unzipTo, isUnzip, filepath, uuid);
+    return switch (resolveAction(copySource, unzipTo)) {
+      case CopyAction c -> handleCopy(stagingFile, c.source(), filepath, uuid);
+      case UnzipAction u -> handleWriteAndUnzip(stagingFile, data, u.destination(), filepath, uuid);
+      case WriteAction ignored -> handleWrite(stagingFile, data, filepath, uuid);
+    };
+  }
+
+  private PutAction resolveAction(String copySource, String unzipTo) {
+    boolean isCopy = !Strings.isNullOrEmpty(copySource);
+    boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
+
+    if (isCopy && isUnzip) {
+      throw new BadRequestException("copyfrom and unzipto cannot be used together.");
+    }
+
+    if (isCopy) {
+      return new CopyAction(copySource);
+    } else if (isUnzip) {
+      return new UnzipAction(unzipTo);
+    } else {
+      return new WriteAction();
+    }
   }
 
   private void checkValidContentType(String contentType) {
@@ -387,26 +402,25 @@ public class StagingResourceImpl implements StagingResource {
       StagingFile stagingFile, String copySource, String targetPath, String uuid)
       throws IOException {
     fileSystemService.copy(stagingFile, copySource, stagingFile, targetPath);
-    String md5 = fileSystemService.getMD5Checksum(stagingFile, targetPath);
-    return buildFileResponse(md5, uuid, targetPath);
+    return buildFileResponse(
+        fileSystemService.getMD5Checksum(stagingFile, targetPath), uuid, targetPath);
   }
 
-  private Response handleWrite(
-      StagingFile stagingFile,
-      InputStream data,
-      String unzipTo,
-      boolean isUnzip,
-      String targetPath,
-      String uuid)
+  private Response handleWrite(StagingFile stagingFile, InputStream data, String path, String uuid)
       throws IOException {
-    try (InputStream stream = data) {
-      FileInfo info = fileSystemService.write(stagingFile, targetPath, stream, false, true);
-      if (isUnzip) {
-        fileSystemService.mkdir(stagingFile, unzipTo);
-        info = fileSystemService.unzipFile(stagingFile, targetPath, unzipTo);
-      }
-      return buildFileResponse(info.getMd5CheckSum(), uuid, targetPath);
+    try (data) {
+      FileInfo info = fileSystemService.write(stagingFile, path, data, false, true);
+      return buildFileResponse(info.getMd5CheckSum(), uuid, path);
     }
+  }
+
+  private Response handleWriteAndUnzip(
+      StagingFile stagingFile, InputStream data, String dest, String path, String uuid)
+      throws IOException {
+    handleWrite(stagingFile, data, path, uuid);
+    fileSystemService.mkdir(stagingFile, dest);
+    FileInfo info = fileSystemService.unzipFile(stagingFile, path, dest);
+    return buildFileResponse(info.getMd5CheckSum(), uuid, path);
   }
 
   private Response buildFileResponse(String md5, String uuid, String targetPath) {
