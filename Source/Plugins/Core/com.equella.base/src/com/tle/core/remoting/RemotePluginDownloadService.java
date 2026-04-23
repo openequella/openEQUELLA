@@ -23,6 +23,12 @@ import java.net.URL;
 import java.util.List;
 
 public interface RemotePluginDownloadService {
+  /**
+   * Get the details of all plugins of the specified type. Return empty list if no plugins of the
+   * specified type are found.
+   *
+   * @param pluginType The type of plugins to get details for.
+   */
   List<PluginDetails> getAllPluginDetails(String pluginType);
 
   class PluginDetails implements Serializable {
