@@ -85,6 +85,28 @@ trait NestedQueryApi[Q] {
   ): Either[List[ApiError], R] =
     Client.query(queryWrapper(query))
 
+  /** Executes a query whose result is wrapped in `Option` and flattens it, treating `None` as an
+    * error.
+    *
+    * This is a convenience wrapper for `flattenResult(query(selection))`.
+    *
+    * Use this only when a missing value is exceptional for the caller. Queries where `None`
+    * represents a normal "not found" result should continue to use `query` directly.
+    *
+    * @param selection
+    *   The selection builder for the query, returning `Option[A]`.
+    * @param cfg
+    *   The client configuration.
+    * @tparam A
+    *   The unwrapped result type.
+    * @return
+    *   Either a list of ApiError or the unwrapped result of type A.
+    */
+  protected def flatQuery[A](selection: SelectionBuilder[Q, Option[A]])(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], A] =
+    flattenResult(query(selection))
+
   /** Handles paginated query calls for nested query API structure. This method automatically wraps
     * the query builder with the `queryWrapper` before executing the paginated query, eliminating
     * the need to manually call `queryWrapper` in each paginated query method.

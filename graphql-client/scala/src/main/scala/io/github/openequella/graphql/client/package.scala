@@ -19,6 +19,7 @@
 package io.github.openequella.graphql
 
 package object client {
+  type AdminConsolePluginQueries
   type BaseEntityQueries
   type BaseEntityReference
   type Citation
@@ -49,6 +50,7 @@ package object client {
   type MetadataSchemaTransform
   type NameValue
   type PageInfo
+  type PluginDetails
   type StringConnection
   type StringEdge
   type TargetListEntry
