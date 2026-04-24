@@ -24,12 +24,12 @@ import com.dytech.gui.ExceptionDialog;
 import com.tle.admin.boot.Bootstrap;
 import com.tle.admin.controls.ControlRepositoryImpl;
 import com.tle.admin.controls.repository.ControlRepository;
+import com.tle.admin.service.AdminConsolePluginService;
 import com.tle.admin.service.AdminKeepAliveService;
 import com.tle.admin.service.AdminLoginService;
 import com.tle.common.Check;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemotePluginDownloadService;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -95,7 +95,7 @@ public final class Driver {
           new PluginServiceImpl(
               clientService.getServerURL(),
               version.getCommit(),
-              clientService.getService(RemotePluginDownloadService.class));
+              clientService.getService(AdminConsolePluginService.class));
     }
     this.pluginService = pluginService;
     try {

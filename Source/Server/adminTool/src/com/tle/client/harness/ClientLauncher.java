@@ -24,11 +24,10 @@ import com.dytech.gui.ComponentHelper;
 import com.dytech.gui.TableLayout;
 import com.dytech.gui.workers.GlassSwingWorker;
 import com.tle.admin.PluginServiceImpl;
+import com.tle.admin.service.AdminConsolePluginService;
+import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.security.streaming.XStreamSecurityManager;
 import com.tle.common.util.BlindSSLSocketFactory;
-import com.tle.core.plugins.PluginAwareObjectInputStream;
-import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import com.tle.core.remoting.RemotePluginDownloadService;
 import com.tle.core.remoting.SessionLogin;
 import java.awt.Color;
 import java.awt.Component;
@@ -45,15 +44,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,11 +68,7 @@ import javax.swing.JSeparator;
 import javax.swing.UIManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
-import org.springframework.remoting.support.RemoteInvocation;
 
-@SuppressWarnings("nls")
 public class ClientLauncher extends JFrame
     implements ActionListener, WindowListener, MouseListener {
   private static final long serialVersionUID = 1L;
@@ -358,15 +348,18 @@ public class ClientLauncher extends JFrame
             params.put("password", server.getPassword());
             SessionLogin.postLogin(endpointUrl, params);
 
+            ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
+
             PluginServiceImpl pluginService =
                 new PluginServiceImpl(
                     endpointUrl,
                     Version.load().getCommit(),
-                    createInvoker(RemotePluginDownloadService.class, endpointUrl));
+                    clientService.getService(AdminConsolePluginService.class));
             pluginService.registerPlugins();
             HarnessInterface client =
                 (HarnessInterface)
                     pluginService.getBean("com.equella.admin", "com.tle.admin.AdminConsole");
+            client.setClientService(clientService);
             client.setPluginService(pluginService);
             client.setLocale(Locale.getDefault());
 
@@ -390,43 +383,6 @@ public class ClientLauncher extends JFrame
 
     worker.setComponent(this);
     worker.start();
-  }
-
-  @SuppressWarnings({"unchecked"})
-  protected <T> T createInvoker(Class<T> clazz, URL endpointUrl) {
-    HttpInvokerProxyFactoryBean factory = new HttpInvokerProxyFactoryBean();
-    try {
-      URL url = new URL(endpointUrl, "invoker/" + clazz.getName() + ".service");
-      LOGGER.info("Invoking " + url.toString());
-      factory.setServiceUrl(url.toString());
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-    factory.setServiceInterface(clazz);
-    factory.setHttpInvokerRequestExecutor(new PluginAwareSimpleHttpInvokerRequestExecutor());
-    factory.afterPropertiesSet();
-    return (T) factory.getObject();
-  }
-
-  public static class PluginAwareSimpleHttpInvokerRequestExecutor
-      extends SimpleHttpInvokerRequestExecutor {
-    @Override
-    protected ObjectInputStream createObjectInputStream(InputStream is, String codebaseUrl)
-        throws IOException {
-      return new PluginAwareObjectInputStream(is);
-    }
-
-    @Override
-    protected void writeRemoteInvocation(RemoteInvocation invocation, OutputStream os)
-        throws IOException {
-      ObjectOutputStream oos = new PluginAwareObjectOutputStream(decorateOutputStream(os));
-      try {
-        doWriteRemoteInvocation(invocation, oos);
-        oos.flush();
-      } finally {
-        oos.close();
-      }
-    }
   }
 
   @Override
