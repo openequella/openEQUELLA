@@ -88,8 +88,9 @@ public class ClientModule extends AbstractModule {
 
   /**
    * A temporary provider while we are transitioning to the new GraphQL library. Once
-   * AdminCollectionDefinitionService no longer delegates to RemoteItemDefinitionService, this provider can be removed.
-   * (At the same time, RemoteItemDefinitionService can be removed from the codebase.)
+   * AdminCollectionDefinitionService no longer delegates to RemoteItemDefinitionService, this
+   * provider can be removed. (At the same time, RemoteItemDefinitionService can be removed from the
+   * codebase.)
    */
   @Provides
   @Singleton
