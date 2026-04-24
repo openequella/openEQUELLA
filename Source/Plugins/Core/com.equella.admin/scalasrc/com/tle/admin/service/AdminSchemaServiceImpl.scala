@@ -81,9 +81,7 @@ class AdminSchemaServiceImpl @Inject() (implicit
   override def listAll(): util.List[BaseEntityLabel] =
     MetadataSchemaApi.listSchemas() match {
       case Right(schemas) =>
-        schemas
-          .map(view => new BaseEntityLabel(view.id, view.uuid, view.bundleId, view.owner))
-          .asJava
+        schemas.map(toBaseEntityLabel).asJava
       case Left(errors) =>
         throw new ClientRequestException(s"Error listing schemas.", errors)
     }
