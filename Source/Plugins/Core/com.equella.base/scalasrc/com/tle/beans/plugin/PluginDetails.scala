@@ -16,26 +16,19 @@
  * limitations under the License.
  */
 
-package com.tle.client.harness;
+package com.tle.beans.plugin
 
-import com.tle.admin.PluginServiceImpl;
-import com.tle.common.applet.client.ClientService;
-import java.net.URL;
-import java.util.Locale;
+import java.net.URL
+import scala.beans.BeanProperty
 
-public interface HarnessInterface {
-  /**
-   * Method called after successful login result in JSESSIONID being set in the system cookie store.
-   */
-  void start();
-
-  void setLocale(Locale locale);
-
-  /** The endpoint for the openEQUELA server which has already been authenticated against. */
-  void setEndpointURL(URL url);
-
-  void setPluginService(PluginServiceImpl pluginService);
-
-  /** Set a pre-configured client service instance. */
-  void setClientService(ClientService clientService);
-}
+/** Details required to download and register a plugin.
+  *
+  * @param baseUrl
+  *   the base URL from which the plugin resources are served
+  * @param manifestXml
+  *   the JPF plugin manifest XML content
+  */
+case class PluginDetails(
+    @BeanProperty baseUrl: URL,
+    @BeanProperty manifestXml: String
+)

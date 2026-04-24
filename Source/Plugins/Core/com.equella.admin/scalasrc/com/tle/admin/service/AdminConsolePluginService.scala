@@ -16,26 +16,20 @@
  * limitations under the License.
  */
 
-package com.tle.client.harness;
+package com.tle.admin.service
 
-import com.tle.admin.PluginServiceImpl;
-import com.tle.common.applet.client.ClientService;
-import java.net.URL;
-import java.util.Locale;
+import com.tle.beans.plugin.PluginDetails
 
-public interface HarnessInterface {
-  /**
-   * Method called after successful login result in JSESSIONID being set in the system cookie store.
-   */
-  void start();
+import java.util
 
-  void setLocale(Locale locale);
+/** Service class for interacting with the list of admin console plugins.
+  */
+trait AdminConsolePluginService {
 
-  /** The endpoint for the openEQUELA server which has already been authenticated against. */
-  void setEndpointURL(URL url);
-
-  void setPluginService(PluginServiceImpl pluginService);
-
-  /** Set a pre-configured client service instance. */
-  void setClientService(ClientService clientService);
+  /** List all admin console plugins.
+    *
+    * @return
+    *   plugin details list, or empty list when no plugins are found.
+    */
+  def listPlugins(): util.List[PluginDetails]
 }

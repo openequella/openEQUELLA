@@ -21,21 +21,15 @@ package com.tle.admin.boot;
 import com.dytech.common.net.Proxy;
 import com.dytech.edge.common.Version;
 import com.tle.admin.PluginServiceImpl;
+import com.tle.admin.service.AdminConsolePluginService;
 import com.tle.client.harness.HarnessInterface;
+import com.tle.client.impl.ClientServiceImpl;
 import com.tle.common.Check;
-import com.tle.core.plugins.PluginAwareObjectInputStream;
-import com.tle.core.plugins.PluginAwareObjectOutputStream;
-import com.tle.core.remoting.RemotePluginDownloadService;
 import com.tle.core.remoting.SessionLogin;
 import com.tle.exceptions.BadCredentialsException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
@@ -43,9 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
-import org.springframework.remoting.support.RemoteInvocation;
 
 @SuppressWarnings("nls")
 public final class Bootstrap {
@@ -108,16 +99,18 @@ public final class Bootstrap {
     try {
       final URL endpointUrl = new URL(endpointParam);
       if (login(endpointUrl)) {
+        final ClientServiceImpl clientService = new ClientServiceImpl(endpointUrl);
         final PluginServiceImpl pluginService =
             new PluginServiceImpl(
                 endpointUrl,
                 Version.load().getCommit(),
-                createInvoker(RemotePluginDownloadService.class, endpointUrl));
+                clientService.getService(AdminConsolePluginService.class));
         pluginService.registerPlugins();
 
         final HarnessInterface client =
             (HarnessInterface)
                 pluginService.getBean("com.equella.admin", "com.tle.admin.AdminConsole");
+        client.setClientService(clientService);
         client.setPluginService(pluginService);
         client.setLocale(locale);
         client.setEndpointURL(endpointUrl);
@@ -200,41 +193,5 @@ public final class Bootstrap {
       }
     }
     throw new RuntimeException("Error parsing locale: " + localeString);
-  }
-
-  @SuppressWarnings("unchecked")
-  protected static <T> T createInvoker(Class<T> clazz, URL endpointUrl) {
-    HttpInvokerProxyFactoryBean factory = new HttpInvokerProxyFactoryBean();
-    try {
-      factory.setServiceUrl(
-          new URL(endpointUrl, "invoker/" + clazz.getName() + ".service").toString());
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-    factory.setServiceInterface(clazz);
-    factory.setHttpInvokerRequestExecutor(new PluginAwareSimpleHttpInvokerRequestExecutor());
-    factory.afterPropertiesSet();
-    return (T) factory.getObject();
-  }
-
-  public static class PluginAwareSimpleHttpInvokerRequestExecutor
-      extends SimpleHttpInvokerRequestExecutor {
-    @Override
-    protected ObjectInputStream createObjectInputStream(InputStream is, String codebaseUrl)
-        throws IOException {
-      return new PluginAwareObjectInputStream(is);
-    }
-
-    @Override
-    protected void writeRemoteInvocation(RemoteInvocation invocation, OutputStream os)
-        throws IOException {
-      ObjectOutputStream oos = new PluginAwareObjectOutputStream(decorateOutputStream(os));
-      try {
-        doWriteRemoteInvocation(invocation, oos);
-        oos.flush();
-      } finally {
-        oos.close();
-      }
-    }
   }
 }
