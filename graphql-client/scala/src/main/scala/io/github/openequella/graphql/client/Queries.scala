@@ -23,6 +23,13 @@ import caliban.client._
 
 object Queries {
 
+  /** Queries for admin console plugin
+    */
+  def adminConsolePlugin[A](
+      innerSelection: SelectionBuilder[AdminConsolePluginQueries, A]
+  ): SelectionBuilder[_root_.caliban.client.Operations.RootQuery, A] =
+    _root_.caliban.client.SelectionBuilder.Field("adminConsolePlugin", Obj(innerSelection))
+
   /** Queries for base entities
     */
   def baseEntities[A](

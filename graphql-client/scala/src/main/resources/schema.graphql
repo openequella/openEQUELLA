@@ -119,6 +119,11 @@ input TargetListEntryInput {
   postfix: String!
 }
 
+type AdminConsolePluginQueries {
+  "List all admin console plugins details. Returns an empty list if no plugins are found."
+  list: [PluginDetails!]
+}
+
 type BaseEntityQueries {
   "Retrieve the name of the base entity by its unique ID"
   nameById("The unique ID of the base entity to retrieve" id: Long!): LanguageBundle
@@ -446,7 +451,17 @@ type PageInfo {
   endCursor: String
 }
 
+"Details of a plugin available for download, including its base URL and manifest XML."
+type PluginDetails {
+  "The base URL from which the plugin can be downloaded."
+  baseUrl: String!
+  "The XML manifest content describing the plugin."
+  manifestXml: String!
+}
+
 type Queries {
+  "Queries for admin console plugin"
+  adminConsolePlugin: AdminConsolePluginQueries!
   "Queries for base entities"
   baseEntities: BaseEntityQueries!
   "Queries for Collections"
