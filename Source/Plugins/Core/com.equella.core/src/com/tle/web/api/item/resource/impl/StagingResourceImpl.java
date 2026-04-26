@@ -436,18 +436,18 @@ public class StagingResourceImpl implements StagingResource {
     parts.stream()
         .sorted(Comparator.comparingInt(PartBean::getPartNumber))
         .map(part -> toMultipartChunk(part, folder))
-        .forEach(
-            chunk -> {
-              try {
-                stagingService.ensureFileExists(file, chunk.chunkPath());
-                validatePartEtag(file, chunk);
-                appendPartToFile(file, chunk, dest);
-              } catch (IOException e) {
-                LOGGER.error("Failed to validate chunk during multipart assembly", e);
-                throw new InternalServerErrorException(
-                    "An error occurred while assembling the file parts.");
-              }
-            });
+        .forEach(chunk -> assembleChunk(file, chunk, dest));
+  }
+
+  private void assembleChunk(StagingFile file, MultipartChunk chunk, String dest) {
+    try {
+      stagingService.ensureFileExists(file, chunk.chunkPath());
+      validatePartEtag(file, chunk);
+      appendPartToFile(file, chunk, dest);
+    } catch (IOException e) {
+      LOGGER.error("Failed to validate chunk during multipart assembly", e);
+      throw new InternalServerErrorException("An error occurred while assembling the file parts.");
+    }
   }
 
   private MultipartChunk toMultipartChunk(PartBean partBean, String folderPath) {
@@ -460,18 +460,18 @@ public class StagingResourceImpl implements StagingResource {
   private record MultipartChunk(int partNumber, String expectedEtag, String chunkPath) {}
 
   private void validatePartEtag(StagingFile stagingFile, MultipartChunk chunk) throws IOException {
-    if (!Strings.isNullOrEmpty(chunk.expectedEtag())) {
-      String actualMd5 = fileSystemService.getMD5Checksum(stagingFile, chunk.chunkPath());
-      String unquotedEtag = chunk.expectedEtag().replace("\"", "");
-      if (!unquotedEtag.equals(actualMd5)) {
-        throw new BadRequestException(
-            "ETag mismatch for part "
-                + chunk.partNumber()
-                + ". Expected: "
-                + unquotedEtag
-                + ", Actual: "
-                + actualMd5);
-      }
+    String expectedEtag = chunk.expectedEtag();
+    if (!Strings.isNullOrEmpty(expectedEtag)) {
+      return;
+    }
+
+    String actualMd5 = fileSystemService.getMD5Checksum(stagingFile, chunk.chunkPath());
+    String unquotedEtag = expectedEtag.replace("\"", "");
+    if (!unquotedEtag.equals(actualMd5)) {
+      throw new BadRequestException(
+          String.format(
+              "ETag mismatch for part %s. Expected: %s, Actual: %s",
+              chunk.partNumber(), unquotedEtag, actualMd5));
     }
   }
 
