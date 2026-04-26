@@ -1,6 +1,6 @@
 package io.github.openequella.rest
 
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.tle.common.URLUtils
 import com.tle.webtests.pageobject.AbstractPage
@@ -12,20 +12,30 @@ import org.testng.annotations.Test
 
 import java.io.File
 
-case class StagingFile(name: String, size: Long)
-case class StagingArea(uuid: String, files: List[StagingFile])
+case class StagingFile(
+    name: String,
+    size: Long,
+    etag: String,
+    contentType: String,
+    links: Map[String, String]
+)
+case class StagingArea(
+    uuid: String,
+    files: List[StagingFile],
+    directUrl: String,
+    links: Map[String, String]
+)
 case class UploadedPart(partNumber: Int, etag: String)
 case class ApiResponse[T](status: Int, body: T)
 
 class StagingApiTest extends AbstractRestApiTest {
 
-  private val TEST_FILENAME = "Special characters - хцч test2.jpg"
-  private val AVATAR_FILE   = "avatar.png"
-  private val PACKAGE_FILE  = "package.zip"
+  private val TEST_FILENAME     = "Special characters - хцч test2.jpg"
+  private val AVATAR_FILENAME   = "avatar.png"
+  private val PACKAGE_FILENAME  = "package.zip"
+  private val TEST_TXT_FILENAME = "test.txt"
 
-  private val scalaMapper: ObjectMapper = new ObjectMapper()
-    .registerModule(DefaultScalaModule)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+  private val scalaMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
 
   override def loginAsLowPrivilegeUser(): Unit =
     makeClientRequest(authHelper.buildLoginMethod("AutoTest_StagingLowPriv", "``````"))
@@ -42,7 +52,7 @@ class StagingApiTest extends AbstractRestApiTest {
 
   @Test(description = "Guest users should not be able to access staging endpoints")
   def guestAccessDeniedTest(): Unit = withStaging { stagingUuid =>
-    val file = getTestFile(AVATAR_FILE)
+    val file = getTestFile(AVATAR_FILENAME)
     logout()
     assertFalse(hasAuthenticatedSession, "Session should be guest after logout")
 
@@ -52,8 +62,11 @@ class StagingApiTest extends AbstractRestApiTest {
       StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file, None).status,
       HttpStatus.SC_FORBIDDEN
     )
-    assertEquals(StagingApi.headFile(stagingUuid, AVATAR_FILE).status, HttpStatus.SC_FORBIDDEN)
-    assertEquals(StagingApi.deleteFile(stagingUuid, AVATAR_FILE).status, HttpStatus.SC_FORBIDDEN)
+    assertEquals(StagingApi.headFile(stagingUuid, AVATAR_FILENAME).status, HttpStatus.SC_FORBIDDEN)
+    assertEquals(
+      StagingApi.deleteFile(stagingUuid, AVATAR_FILENAME).status,
+      HttpStatus.SC_FORBIDDEN
+    )
     assertEquals(StagingApi.deleteStaging(stagingUuid), HttpStatus.SC_FORBIDDEN)
 
     // Restore the authenticated session so subsequent tests don't run as guest
@@ -91,7 +104,7 @@ class StagingApiTest extends AbstractRestApiTest {
   def uploadAndUnzipTest(): Unit = withStaging { stagingUuid =>
     assertEquals(
       StagingApi
-        .uploadFile(stagingUuid, PACKAGE_FILE, getTestFile(PACKAGE_FILE), Some("unzipped"))
+        .uploadFile(stagingUuid, PACKAGE_FILENAME, getTestFile(PACKAGE_FILENAME), Some("unzipped"))
         .status,
       HttpStatus.SC_OK
     )
@@ -104,10 +117,15 @@ class StagingApiTest extends AbstractRestApiTest {
   @Test(description = "Delete a specific file from the staging area")
   def deleteFileTest(): Unit = withStaging { stagingUuid =>
     assertEquals(
-      StagingApi.uploadFile(stagingUuid, "test.txt", getTestFile(AVATAR_FILE), None).status,
+      StagingApi
+        .uploadFile(stagingUuid, TEST_TXT_FILENAME, getTestFile(AVATAR_FILENAME), None)
+        .status,
       HttpStatus.SC_OK
     )
-    assertEquals(StagingApi.deleteFile(stagingUuid, "test.txt").status, HttpStatus.SC_NO_CONTENT)
+    assertEquals(
+      StagingApi.deleteFile(stagingUuid, TEST_TXT_FILENAME).status,
+      HttpStatus.SC_NO_CONTENT
+    )
 
     val response = StagingApi.getStaging(stagingUuid)
     assertEquals(response.status, HttpStatus.SC_OK)
@@ -116,13 +134,13 @@ class StagingApiTest extends AbstractRestApiTest {
 
   @Test(description = "Check file metadata using HEAD request")
   def headFileTest(): Unit = withStaging { stagingUuid =>
-    val file = getTestFile(AVATAR_FILE)
+    val file = getTestFile(AVATAR_FILENAME)
     assertEquals(
-      StagingApi.uploadFile(stagingUuid, AVATAR_FILE, file, None).status,
+      StagingApi.uploadFile(stagingUuid, AVATAR_FILENAME, file, None).status,
       HttpStatus.SC_OK
     )
 
-    val response = StagingApi.headFile(stagingUuid, AVATAR_FILE)
+    val response = StagingApi.headFile(stagingUuid, AVATAR_FILENAME)
     assertEquals(response.status, HttpStatus.SC_OK)
     response.body.foreach(contentLength => assertEquals(contentLength.toLong, file.length()))
   }
@@ -131,25 +149,25 @@ class StagingApiTest extends AbstractRestApiTest {
   def multipartUploadTest(): Unit = withStaging { stagingUuid =>
     val filename     = "multipart-dummy-file.txt"
     val expectedText = "First half of the file. Second half of the file."
+    val textChunks   = expectedText.grouped(5).toList
 
     val startResponse = StagingApi.startMultipart(stagingUuid)
     assertEquals(startResponse.status, HttpStatus.SC_CREATED)
     assertTrue(startResponse.body.isDefined, "Missing uploadId")
     val uploadId = startResponse.body.get
 
-    val p1Response =
-      StagingApi.uploadMultipartText(stagingUuid, uploadId, 1, "First half of the file. ")
-    assertEquals(p1Response.status, HttpStatus.SC_OK)
-    assertTrue(p1Response.body.isDefined, "Missing part1")
-    val part1 = p1Response.body.get
+    val uploadedParts = textChunks.zipWithIndex.map { case (chunk, index) =>
+      val partNumber = index + 1
+      val response   =
+        StagingApi.uploadMultipartText(stagingUuid, uploadId, partNumber, chunk)
 
-    val p2Response =
-      StagingApi.uploadMultipartText(stagingUuid, uploadId, 2, "Second half of the file.")
-    assertEquals(p2Response.status, HttpStatus.SC_OK)
-    assertTrue(p2Response.body.isDefined, "Missing part2")
-    val part2 = p2Response.body.get
+      assertEquals(response.status, HttpStatus.SC_OK)
+      assertTrue(response.body.isDefined, s"Missing part $partNumber")
+      response.body.get
+    }
 
-    val compResponse = StagingApi.completeMultipart(stagingUuid, filename, uploadId, part1, part2)
+    val compResponse =
+      StagingApi.completeMultipart(stagingUuid, filename, uploadId, uploadedParts: _*)
     assertEquals(compResponse.status, HttpStatus.SC_OK)
     assertTrue(
       compResponse.body.exists(_.endsWith(filename)),
@@ -182,6 +200,9 @@ class StagingApiTest extends AbstractRestApiTest {
   private object StagingApi {
     private val endpoint = getTestConfig.getInstitutionUrl + "api/staging/"
 
+    private def stagingUrl(uuid: String, path: String = ""): String =
+      if (path.isEmpty) s"$endpoint$uuid" else s"$endpoint$uuid/$path"
+
     private def getHeader(m: HttpMethod, name: String): Option[String] =
       Option(m.getResponseHeader(name)).map(_.getValue)
 
@@ -207,28 +228,28 @@ class StagingApiTest extends AbstractRestApiTest {
         file: File,
         unzipTo: Option[String]
     ): ApiResponse[Option[Unit]] = {
-      val method = new PutMethod(s"$endpoint$stagingUuid/$targetPath")
+      val method = new PutMethod(stagingUrl(stagingUuid, targetPath))
       method.setRequestEntity(new FileRequestEntity(file, "application/octet-stream"))
       unzipTo.foreach(u => method.setQueryString(Array(new NameValuePair("unzipto", u))))
       execute(method)(_ => ())
     }
 
     def deleteFile(stagingUuid: String, filePath: String): ApiResponse[Option[Unit]] =
-      execute(new DeleteMethod(s"$endpoint$stagingUuid/$filePath"))(_ => ())
+      execute(new DeleteMethod(stagingUrl(stagingUuid, filePath)))(_ => ())
 
     def deleteStaging(stagingUuid: String): Int =
-      makeClientRequest(new DeleteMethod(endpoint + stagingUuid))
+      makeClientRequest(new DeleteMethod(stagingUrl(stagingUuid)))
 
     def headFile(stagingUuid: String, filePath: String): ApiResponse[Option[String]] =
-      execute(new HeadMethod(s"$endpoint$stagingUuid/$filePath"))(m =>
+      execute(new HeadMethod(stagingUrl(stagingUuid, filePath)))(m =>
         getHeader(m, "Content-Length").get
       )
 
     def getFileContent(stagingUuid: String, filePath: String): ApiResponse[Option[String]] =
-      execute(new GetMethod(s"$endpoint$stagingUuid/$filePath"))(_.getResponseBodyAsString)
+      execute(new GetMethod(stagingUrl(stagingUuid, filePath)))(_.getResponseBodyAsString)
 
     def startMultipart(stagingUuid: String): ApiResponse[Option[String]] =
-      execute(new PostMethod(s"$endpoint$stagingUuid/multipart")) { m =>
+      execute(new PostMethod(stagingUrl(stagingUuid, "multipart"))) { m =>
         mapper.readTree(m.getResponseBodyAsStream).get("uploadId").asText()
       }
 
@@ -238,7 +259,7 @@ class StagingApiTest extends AbstractRestApiTest {
         partNumber: Int,
         content: String
     ): ApiResponse[Option[UploadedPart]] = {
-      val method = new PutMethod(s"$endpoint$stagingUuid/multipart/$uploadId/$partNumber")
+      val method = new PutMethod(stagingUrl(stagingUuid, s"multipart/$uploadId/$partNumber"))
       method.setRequestEntity(new StringRequestEntity(content, "text/plain", "UTF-8"))
       execute(method)(m => UploadedPart(partNumber, getHeader(m, "ETag").getOrElse("")))
     }
@@ -249,7 +270,7 @@ class StagingApiTest extends AbstractRestApiTest {
         uploadId: String,
         parts: UploadedPart*
     ): ApiResponse[Option[String]] = {
-      val method = new PostMethod(s"$endpoint$stagingUuid/$targetPath/complete")
+      val method = new PostMethod(stagingUrl(stagingUuid, s"$targetPath/complete"))
       method.setQueryString(Array(new NameValuePair("uploadId", uploadId)))
 
       val payload   = mapper.createObjectNode()
