@@ -29,6 +29,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.controls.scripting.BasicModel;
 import com.tle.admin.schema.SchemaModel;
 import com.tle.admin.schema.TargetListener;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.Schema;
@@ -38,7 +39,6 @@ import com.tle.common.Format;
 import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.i18n.BundleCache;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -72,7 +72,7 @@ public class WorkflowModel extends BasicModel {
 
   private JComboBox<NameValue> itemdefSelection;
 
-  private RemoteItemDefinitionService itemdefService;
+  private AdminCollectionDefinitionService collectionDefinitionService;
   private AdminSchemaService schemaService;
 
   public WorkflowModel(Driver driver, String idStr) {
@@ -122,7 +122,8 @@ public class WorkflowModel extends BasicModel {
 
   private void setup(Driver driver) {
     setup();
-    itemdefService = driver.getClientService().getService(RemoteItemDefinitionService.class);
+    collectionDefinitionService =
+        driver.getClientService().getService(AdminCollectionDefinitionService.class);
     schemaService = driver.getClientService().getService(AdminSchemaService.class);
   }
 
@@ -137,7 +138,7 @@ public class WorkflowModel extends BasicModel {
 
   private void loadItemDef(String uuid, boolean clear) {
     try {
-      ItemDefinition itemdef = itemdefService.getByUuid(uuid);
+      ItemDefinition itemdef = collectionDefinitionService.getByUuid(uuid);
       loadSchema(itemdef);
 
       targetMap = new TargetValueMap();
@@ -280,7 +281,7 @@ public class WorkflowModel extends BasicModel {
     List<BaseEntityLabel> result =
         Driver.instance()
             .getClientService()
-            .getService(RemoteItemDefinitionService.class)
+            .getService(AdminCollectionDefinitionService.class)
             .listAll();
     List<NameValue> nameValues = BundleCache.getNameUuidValues(result);
     Collections.sort(nameValues, Format.NAME_VALUE_COMPARATOR);

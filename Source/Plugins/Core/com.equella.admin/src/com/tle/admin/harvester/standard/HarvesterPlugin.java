@@ -23,6 +23,7 @@ import com.tle.admin.Driver;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.common.JNameValuePanel;
 import com.tle.admin.i18n.Lookup;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.Schema;
 import com.tle.beans.entity.itemdef.ItemDefinition;
@@ -31,7 +32,6 @@ import com.tle.common.NameValue;
 import com.tle.common.harvester.HarvesterProfile;
 import com.tle.common.harvester.HarvesterProfileSettings;
 import com.tle.common.i18n.StringLookup;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import java.util.Objects;
 import javax.swing.JComboBox;
 
@@ -97,7 +97,7 @@ public abstract class HarvesterPlugin<T extends HarvesterProfileSettings> {
     ItemDefinition itemDef =
         driver
             .getClientService()
-            .getService(RemoteItemDefinitionService.class)
+            .getService(AdminCollectionDefinitionService.class)
             .getByUuid(collection);
 
     AdminSchemaService schemaService =

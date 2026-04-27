@@ -18,11 +18,11 @@
 
 package com.tle.common.applet.client;
 
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.NameId;
 import com.tle.common.Format;
 import com.tle.core.remoting.RemoteAbstractEntityService;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import com.tle.i18n.BundleCache;
 import java.util.Collection;
@@ -49,7 +49,7 @@ public class EntityCache {
   public EntityCache(ClientService clientService) {
     LOGGER.debug("Loading entity cache ⌛");
 
-    itemDefinitions = transform(clientService.getService(RemoteItemDefinitionService.class));
+    itemDefinitions = transform(clientService.getService(AdminCollectionDefinitionService.class));
     powerSearches = transform(clientService.getService(RemotePowerSearchService.class));
     schemas = transform(clientService.getService(AdminSchemaService.class));
 

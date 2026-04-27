@@ -25,6 +25,7 @@ import com.tle.admin.baseentity.BaseEntityTab;
 import com.tle.admin.baseentity.JEntityFileUpload;
 import com.tle.admin.gui.EditorException;
 import com.tle.admin.gui.i18n.I18nTextField;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.admin.service.AdminSchemaService;
 import com.tle.beans.entity.BaseEntityLabel;
 import com.tle.beans.entity.FederatedSearch;
@@ -36,14 +37,12 @@ import com.tle.common.NameValue;
 import com.tle.common.applet.gui.AppletGuiUtils;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.recipientselector.SingleUserSelector;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemoteUserService;
 import com.tle.i18n.BundleCache;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyListener;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,11 +156,11 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
     GlassSwingWorker<?> worker =
         new GlassSwingWorker<List<NameValue>>() {
           @Override
-          public List<NameValue> construct() throws Exception {
+          public List<NameValue> construct() {
             List<BaseEntityLabel> cols =
-                clientService.getService(RemoteItemDefinitionService.class).listAll();
+                clientService.getService(AdminCollectionDefinitionService.class).listAll();
             List<NameValue> nvs = BundleCache.getNameUuidValues(cols);
-            Collections.sort(nvs, Format.NAME_VALUE_COMPARATOR);
+            nvs.sort(Format.NAME_VALUE_COMPARATOR);
             return nvs;
           }
 
@@ -243,7 +242,7 @@ public class SearchTab extends BaseEntityTab<FederatedSearch>
             if (tpc == null) {
               long schemaId =
                   clientService
-                      .getService(RemoteItemDefinitionService.class)
+                      .getService(AdminCollectionDefinitionService.class)
                       .getSchemaIdForCollectionUuid(selcol.getValue());
               tpc =
                   clientService.getService(AdminSchemaService.class).getImportSchemaTypes(schemaId);

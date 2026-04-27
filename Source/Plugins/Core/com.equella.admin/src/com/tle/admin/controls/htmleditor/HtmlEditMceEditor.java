@@ -28,10 +28,10 @@ import com.tle.admin.controls.EntityShuffler;
 import com.tle.admin.gui.i18n.I18nTextField;
 import com.tle.admin.schema.MultiTargetChooser;
 import com.tle.admin.schema.SchemaModel;
+import com.tle.admin.service.AdminCollectionDefinitionService;
 import com.tle.common.dynacollection.RemoteDynaCollectionService;
 import com.tle.common.i18n.CurrentLocale;
 import com.tle.common.wizard.controls.htmleditmce.HtmlEditMceControl;
-import com.tle.core.remoting.RemoteItemDefinitionService;
 import com.tle.core.remoting.RemotePowerSearchService;
 import com.tle.i18n.BundleCache;
 import java.awt.Rectangle;
@@ -108,7 +108,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
 
     restrictions.add(
         new EntityShuffler<HtmlEditMceControl>(
-            strings.text("selectedcollections.label"), RemoteItemDefinitionService.class) {
+            strings.text("selectedcollections.label"), AdminCollectionDefinitionService.class) {
           @Override
           protected boolean isRestricted(HtmlEditMceControl control) {
             return control.isRestrictCollections();
@@ -177,7 +177,7 @@ public class HtmlEditMceEditor extends AbstractControlEditor<HtmlEditMceControl>
         });
     restrictions.add(
         new EntityShuffler<>(
-            strings.text("selectedcontributables.label"), RemoteItemDefinitionService.class) {
+            strings.text("selectedcontributables.label"), AdminCollectionDefinitionService.class) {
           private static final long serialVersionUID = 1L;
 
           @Override
