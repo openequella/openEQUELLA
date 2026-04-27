@@ -24,16 +24,24 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.filesystem.handle.StagingFile;
 import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.filesystem.ItemFile;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.security.ItemSecurityConstants;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.AccessDeniedException;
+import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.staging.interfaces.StagingResource;
 import com.tle.web.api.staging.interfaces.beans.MultipartBean;
@@ -57,6 +65,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -74,19 +83,29 @@ import org.slf4j.LoggerFactory;
 public class StagingResourceImpl implements StagingResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(StagingResourceImpl.class);
 
+  private static final int INVALID_ITEM_VERSION = 0;
+  private static final String HEADER_EPS_STAGING_ID = "x-eps-stagingid";
+  private static final List<String> PRIVS_COPY_ITEM_FILES =
+      List.of(
+          ItemSecurityConstants.EDIT_ITEM,
+          ItemSecurityConstants.NEWVERSION_ITEM,
+          ItemSecurityConstants.CLONE_ITEM,
+          ItemSecurityConstants.REDRAFT_ITEM);
+
   @Inject private MimeTypeService mimeService;
   @Inject private StagingService stagingService;
   @Inject private FileSystemService fileSystemService;
   @Inject private UrlLinkService urlLinkService;
+  @Inject private ItemService itemService;
+  @Inject private TLEAclManager aclService;
+  @Inject private ItemFileService itemFileService;
 
   @Override
   public Response createStaging() {
     checkPermissions();
     final StagingFile stagingFile = stagingService.createStagingArea();
     // Need compatibility with EPS endpoint :(
-    return Response.created(stagingUri(stagingFile.getUuid()))
-        .header("x-eps-stagingid", stagingFile.getUuid())
-        .build();
+    return createdStagingResponse(stagingFile.getUuid());
   }
 
   @Override
@@ -339,6 +358,21 @@ public class StagingResourceImpl implements StagingResource {
     };
   }
 
+  @Override
+  public Response createStagingFromItem(String itemUuid, int itemVersion) {
+    validateCopyRequest(itemUuid, itemVersion);
+
+    Item item = fetchExistingItem(itemUuid, itemVersion);
+    checkCopyPrivileges(item);
+
+    ItemFile itemFile = fetchExistingItemFile(item);
+    StagingFile stagingFile = stagingService.createStagingArea();
+
+    fileSystemService.copy(itemFile, stagingFile);
+
+    return createdStagingResponse(stagingFile.getUuid());
+  }
+
   private PutAction resolveAction(String copySource, String unzipTo) {
     boolean isCopy = !Strings.isNullOrEmpty(copySource);
     boolean isUnzip = !Strings.isNullOrEmpty(unzipTo);
@@ -487,5 +521,49 @@ public class StagingResourceImpl implements StagingResource {
 
   private String toQuotedEtag(String md5) {
     return "\"" + md5 + "\"";
+  }
+
+  private void validateCopyRequest(String itemUuid, int itemVersion) {
+    if (Strings.isNullOrEmpty(itemUuid)) {
+      throw new BadRequestException("Item UUID is required");
+    }
+    if (itemVersion == INVALID_ITEM_VERSION) {
+      throw new BadRequestException("Valid item version is required");
+    }
+  }
+
+  private Item fetchExistingItem(String itemUuid, int itemVersion) {
+    var itemId = new ItemId(itemUuid, itemVersion);
+    var item = itemService.get(itemId);
+
+    if (item == null) {
+      LOGGER.warn("Attempted to copy from non-existent item: {}", itemId);
+      throw new NotFoundException("Item not found");
+    }
+    return item;
+  }
+
+  private void checkCopyPrivileges(Item item) {
+    if (aclService.filterNonGrantedPrivileges(item, PRIVS_COPY_ITEM_FILES).isEmpty()) {
+      LOGGER.warn(
+          "User {} denied access to copy item {} - insufficient privileges",
+          CurrentUser.getUserID(),
+          item.getId());
+      throw new PrivilegeRequiredException(PRIVS_COPY_ITEM_FILES);
+    }
+  }
+
+  private ItemFile fetchExistingItemFile(Item item) {
+    ItemFile itemFile = itemFileService.getItemFile(item);
+    if (!fileSystemService.fileExists(itemFile)) {
+      throw new NotFoundException("Item file not found");
+    }
+    return itemFile;
+  }
+
+  private Response createdStagingResponse(String stagingUuid) {
+    return Response.created(stagingUri(stagingUuid))
+        .header(HEADER_EPS_STAGING_ID, stagingUuid)
+        .build();
   }
 }

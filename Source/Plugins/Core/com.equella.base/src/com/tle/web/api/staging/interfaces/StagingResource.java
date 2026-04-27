@@ -121,4 +121,13 @@ public interface StagingResource {
           String copySource,
       @HeaderParam("content-type") String contentType)
       throws IOException;
+
+  @POST
+  @Path("/copy")
+  @ApiOperation(value = "Copy an item's files to a new staging area")
+  Response createStagingFromItem(
+      @ApiParam(value = "UUID of the source item", required = true) @QueryParam("itemUuid")
+          String itemUuid,
+      @ApiParam(value = "Version of the source item", required = true) @QueryParam("itemVersion")
+          int itemVersion);
 }
