@@ -3491,10 +3491,6 @@
     <parameter id="class" value="com.tle.common.harvester.RemoteEQUELLAHarvesterService" />
     <parameter id="bean" value="bean:com.tle.core.harvester.EQUELLAHarvesterService" />
   </extension>
-  <extension plugin-id="com.tle.web.services" point-id="invoker" id="pluginDownloadService">
-    <parameter id="class" value="com.tle.core.remoting.RemotePluginDownloadService"/>
-    <parameter id="bean" value="bean:com.tle.core.download.PluginDownloadService"/>
-  </extension>
   <extension plugin-id="com.tle.web.services" point-id="invoker" id="remoteAdminService">
     <parameter id="class" value="com.tle.common.adminconsole.RemoteAdminService"/>
     <parameter id="bean" value="bean:com.tle.common.adminconsole.RemoteAdminService"/>
