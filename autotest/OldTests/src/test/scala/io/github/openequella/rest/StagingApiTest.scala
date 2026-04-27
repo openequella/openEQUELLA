@@ -188,6 +188,24 @@ class StagingApiTest extends AbstractRestApiTest {
     )
   }
 
+  @Test(description =
+    "Completing a multipart upload with a mismatched ETag should return 400 Bad Request"
+  )
+  def multipartEtagMismatchTest(): Unit = withStaging { stagingUuid =>
+    val incorrectEtag = "bad-etag"
+    val chunkContent  = "Valid chunk content"
+    val uploadId      = StagingApi.startMultipart(stagingUuid).body.get
+
+    // Upload a valid chunk
+    StagingApi.uploadMultipartText(stagingUuid, uploadId, 1, chunkContent)
+
+    // Attempt to complete it using an incorrect ETag
+    val badPart  = UploadedPart(1, incorrectEtag)
+    val response = StagingApi.completeMultipart(stagingUuid, TEST_TXT_FILENAME, uploadId, badPart)
+
+    assertEquals(response.status, HttpStatus.SC_BAD_REQUEST)
+  }
+
   private def findFileInStaging(
       response: ApiResponse[Option[StagingArea]],
       exactFilePath: String
