@@ -16,26 +16,17 @@
  * limitations under the License.
  */
 
-package com.tle.client.harness;
+package io.github.openequella.graphql.client
 
-import com.tle.admin.PluginServiceImpl;
-import com.tle.common.applet.client.ClientService;
-import java.net.URL;
-import java.util.Locale;
+import caliban.client.FieldBuilder._
+import caliban.client._
 
-public interface HarnessInterface {
-  /**
-   * Method called after successful login result in JSESSIONID being set in the system cookie store.
-   */
-  void start();
+object AdminConsolePluginQueries {
 
-  void setLocale(Locale locale);
-
-  /** The endpoint for the openEQUELA server which has already been authenticated against. */
-  void setEndpointURL(URL url);
-
-  void setPluginService(PluginServiceImpl pluginService);
-
-  /** Set a pre-configured client service instance. */
-  void setClientService(ClientService clientService);
+  /** List all admin console plugins details. Returns an empty list if no plugins are found.
+    */
+  def list[A](
+      innerSelection: SelectionBuilder[PluginDetails, A]
+  ): SelectionBuilder[AdminConsolePluginQueries, scala.Option[List[A]]] =
+    _root_.caliban.client.SelectionBuilder.Field("list", OptionOf(ListOf(Obj(innerSelection))))
 }

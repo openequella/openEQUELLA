@@ -22,7 +22,6 @@ import com.tle.admin.boot.LoadingDialog;
 import com.tle.admin.service.AdminLanguageService;
 import com.tle.client.harness.HarnessInterface;
 import com.tle.client.impl.ClientLocaleImplementation;
-import com.tle.client.impl.ClientServiceImpl;
 import com.tle.client.impl.CurrentTimeZoneClientSide;
 import com.tle.common.applet.client.ClientService;
 import com.tle.common.i18n.CurrentLocale;
@@ -97,9 +96,6 @@ public class AdminConsole implements HarnessInterface {
         System.setProperty("java.io.tmpdir", tempDir);
       }
 
-      // Initialise services
-      clientService = new ClientServiceImpl(endpointURL);
-
       // Initialise bundle cache
       BundleCache.initialise(clientService.getService(AdminLanguageService.class));
 
@@ -156,5 +152,10 @@ public class AdminConsole implements HarnessInterface {
   @Override
   public void setPluginService(PluginServiceImpl pluginService) {
     this.pluginService = pluginService;
+  }
+
+  @Override
+  public void setClientService(ClientService clientService) {
+    this.clientService = clientService;
   }
 }

@@ -19,10 +19,10 @@
 package com.tle.admin;
 
 import com.google.common.io.CharStreams;
+import com.tle.admin.service.AdminConsolePluginService;
+import com.tle.beans.plugin.PluginDetails;
 import com.tle.common.URLUtils;
 import com.tle.core.plugins.AbstractPluginService;
-import com.tle.core.remoting.RemotePluginDownloadService;
-import com.tle.core.remoting.RemotePluginDownloadService.PluginDetails;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,12 +39,11 @@ import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.util.ExtendedProperties;
 
 public class PluginServiceImpl extends AbstractPluginService {
-  private final RemotePluginDownloadService downloadService;
+  private final AdminConsolePluginService adminConsolePluginService;
 
-  @SuppressWarnings("nls")
   public PluginServiceImpl(
-      URL serverUrl, String shortVersion, RemotePluginDownloadService downloadService) {
-    this.downloadService = downloadService;
+      URL serverUrl, String shortVersion, AdminConsolePluginService adminConsolePluginService) {
+    this.adminConsolePluginService = adminConsolePluginService;
 
     ExtendedProperties properties = new ExtendedProperties();
     properties.put(PathResolver.class.getName(), TleShadingPathResolver.class.getName());
@@ -84,10 +83,9 @@ public class PluginServiceImpl extends AbstractPluginService {
     }
   }
 
-  @SuppressWarnings("nls")
   public void registerPlugins() throws IOException, JpfException {
     List<TLEPluginLocation> locations = new ArrayList<TLEPluginLocation>();
-    List<PluginDetails> allPluginDetails = downloadService.getAllPluginDetails("admin-console");
+    List<PluginDetails> allPluginDetails = adminConsolePluginService.listPlugins();
     for (PluginDetails details : allPluginDetails) {
       File file = File.createTempFile("manifest", ".xml");
 

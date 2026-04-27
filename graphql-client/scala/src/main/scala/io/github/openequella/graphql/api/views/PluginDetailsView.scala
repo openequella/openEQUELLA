@@ -16,26 +16,25 @@
  * limitations under the License.
  */
 
-package com.tle.client.harness;
+package io.github.openequella.graphql.api.views
 
-import com.tle.admin.PluginServiceImpl;
-import com.tle.common.applet.client.ClientService;
-import java.net.URL;
-import java.util.Locale;
+import caliban.client.SelectionBuilder
+import io.github.openequella.graphql.client._
+import io.github.openequella.graphql.client.{PluginDetails => PluginDetailsGQL}
 
-public interface HarnessInterface {
-  /**
-   * Method called after successful login result in JSESSIONID being set in the system cookie store.
-   */
-  void start();
+/** View model for downloadable plugin details.
+  *
+  * @param baseUrl
+  *   Base URL from which the plugin can be downloaded.
+  * @param manifestXml
+  *   XML manifest content describing the plugin.
+  */
+final case class PluginDetailsView(baseUrl: String, manifestXml: String)
 
-  void setLocale(Locale locale);
+object PluginDetailsView {
 
-  /** The endpoint for the openEQUELA server which has already been authenticated against. */
-  void setEndpointURL(URL url);
-
-  void setPluginService(PluginServiceImpl pluginService);
-
-  /** Set a pre-configured client service instance. */
-  void setClientService(ClientService clientService);
+  /** The selection builder for [[PluginDetailsView]].
+    */
+  val selector: SelectionBuilder[PluginDetails, PluginDetailsView] =
+    (PluginDetailsGQL.baseUrl ~ PluginDetailsGQL.manifestXml).mapN(PluginDetailsView.apply _)
 }
