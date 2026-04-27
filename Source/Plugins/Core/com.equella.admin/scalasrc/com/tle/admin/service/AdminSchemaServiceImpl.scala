@@ -28,7 +28,6 @@ import com.tle.admin.graphql.conversion.{Converter, EntitySkeletonViewConverter}
 import com.tle.admin.helper.GraphQLQueryHelper.{getAllUnpaginated, getEntityOrNotFound}
 import com.tle.beans.entity.{BaseEntityLabel, Schema}
 import com.tle.common.EntityPack
-import com.tle.common.beans.exception.NotFoundException
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.MetadataSchemaApi
 import io.github.openequella.graphql.api.views.MetadataSchemaEditView
@@ -44,6 +43,8 @@ class AdminSchemaServiceImpl @Inject() (implicit
 ) extends AdminEntityService[Schema]
     with AdminSchemaService {
   private implicit val LOGGER: Logger = LoggerFactory.getLogger(classOf[AdminSchemaServiceImpl])
+
+  override def entityDescription: String = "schema"
 
   override def get(id: Long): Schema =
     getEntityOrNotFound("Schema [by id]", id, MetadataSchemaApi.getById) convert toSchema
@@ -72,42 +73,20 @@ class AdminSchemaServiceImpl @Inject() (implicit
     listAll()
 
   override def listAllIncludingSystem(): util.List[BaseEntityLabel] = {
-    // For schemas there doesn't seem value in including system ones, so just delegate to listAll.
-    // The only system scheme is the "My Content" schema used for Scrapbook items via MyContentService.
-    // There's also some ID constants for it in com.tle.mycontent.MyContentConstants.
     listAll()
   }
 
   override def listAll(): util.List[BaseEntityLabel] =
-    MetadataSchemaApi.listSchemas() match {
-      case Right(schemas) =>
-        schemas.map(toBaseEntityLabel).asJava
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error listing schemas.", errors)
-    }
+    listAllFrom(MetadataSchemaApi.listSchemas())
 
-  override def identifyByUuid(uuid: String): Long = MetadataSchemaApi.getIdByUuid(uuid) match {
-    case Right(Some(id)) => id
-    case Right(None)     => 0
-    case Left(errors)    =>
-      throw new ClientRequestException(s"Error identifying schema by UUID: $uuid", errors)
-  }
+  override def identifyByUuid(uuid: String): Long =
+    idByUuid(MetadataSchemaApi.getIdByUuid)(uuid)
 
-  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] = {
-    val exportResult =
-      if (withSecurity) MetadataSchemaApi.exportSchemaWithSecurity(id)
-      else MetadataSchemaApi.exportSchema(id)
-
-    exportResult match {
-      case Right(Some(bytes)) => bytes
-      case Right(None)        =>
-        throw new NotFoundException(
-          s"Schema with ID: $id not found or export failed."
-        )
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error exporting schema with ID: $id", errors)
-    }
-  }
+  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
+    exportWith(MetadataSchemaApi.exportSchema, MetadataSchemaApi.exportSchemaWithSecurity)(
+      id,
+      withSecurity
+    )
 
   override def importEntity(zip: Array[Byte]): EntityPack[Schema] =
     MetadataSchemaApi.importSchema(zip) match {
@@ -131,17 +110,8 @@ class AdminSchemaServiceImpl @Inject() (implicit
         throw new ClientRequestException(s"Error starting creation of new schema.", errors)
     }
 
-  override def cancelEdit(id: Long, force: Boolean): Unit = {
-    val cancelEditResult =
-      if (force) MetadataSchemaApi.cancelEditForced(id)
-      else MetadataSchemaApi.cancelEdit(id)
-
-    cancelEditResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error cancelling edit of schema with ID: $id", errors)
-    }
-  }
+  override def cancelEdit(id: Long, force: Boolean): Unit =
+    cancelEditWith(MetadataSchemaApi.cancelEdit, MetadataSchemaApi.cancelEditForced)(id, force)
 
   override def stopEdit(pack: EntityPack[Schema], unlock: Boolean): Schema = {
     val details        = pack convert fromEntityPack
@@ -159,17 +129,11 @@ class AdminSchemaServiceImpl @Inject() (implicit
     }
   }
 
-  override def delete(entityid: Long, checkReferences: Boolean): Unit = {
-    val deleteResult =
-      if (checkReferences) MetadataSchemaApi.deleteWithReferenceCheck(entityid)
-      else MetadataSchemaApi.delete(entityid)
-
-    deleteResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error deleting schema with ID: $entityid", errors)
-    }
-  }
+  override def delete(entityid: Long, checkReferences: Boolean): Unit =
+    deleteWith(MetadataSchemaApi.delete, MetadataSchemaApi.deleteWithReferenceCheck)(
+      entityid,
+      checkReferences
+    )
 
   override def add(pack: EntityPack[Schema], lockAfterwards: Boolean): BaseEntityLabel = {
     val details: MetadataSchemaEditView = pack convert fromEntityPack
@@ -184,11 +148,8 @@ class AdminSchemaServiceImpl @Inject() (implicit
     }
   }
 
-  override def clone(id: Long): BaseEntityLabel = MetadataSchemaApi.clone(id) match {
-    case Right(ref)   => ref convert toBaseEntityLabel
-    case Left(errors) =>
-      throw new ClientRequestException(s"Error cloning schema with ID: $id", errors)
-  }
+  override def clone(id: Long): BaseEntityLabel =
+    cloneWith(MetadataSchemaApi.clone)(id)
 
   override def isStartCreateSupported: Boolean = true
 }

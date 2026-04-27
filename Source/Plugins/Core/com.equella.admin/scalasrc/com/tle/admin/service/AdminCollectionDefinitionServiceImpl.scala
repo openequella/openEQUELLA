@@ -18,11 +18,8 @@
 
 package com.tle.admin.service
 
-import com.tle.admin.graphql.conversion.BaseEntityReferenceViewConverter.toBaseEntityLabel
-import com.tle.admin.graphql.conversion.Converter
 import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
-import com.tle.common.beans.exception.NotFoundException
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteItemDefinitionService}
 import io.github.openequella.graphql.ClientConfiguration
 import io.github.openequella.graphql.api.CollectionDefinitionApi
@@ -30,7 +27,6 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
 import javax.inject.{Inject, Singleton}
-import scala.jdk.CollectionConverters._
 
 @Singleton
 class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDefinitionService)(
@@ -39,6 +35,8 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     with AdminCollectionDefinitionService {
   private implicit val LOGGER: Logger =
     LoggerFactory.getLogger(classOf[AdminCollectionDefinitionServiceImpl])
+
+  override def entityDescription: String = "collection"
 
   override def enumerateCategories: util.Set[String] = withDelegate {
     _.enumerateCategories()
@@ -62,76 +60,35 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
   }
 
   override def listAll(): util.List[BaseEntityLabel] =
-    CollectionDefinitionApi.listCollections() match {
-      case Right(collections) => collections.map(toBaseEntityLabel).asJava
-      case Left(errors) => throw new ClientRequestException("Error listing collections.", errors)
-    }
+    listAllFrom(CollectionDefinitionApi.listCollections())
 
   override def listEditable(): util.List[BaseEntityLabel] = listAll()
 
   override def listAllIncludingSystem(): util.List[BaseEntityLabel] = listAll()
 
   override def identifyByUuid(uuid: String): Long =
-    CollectionDefinitionApi.getIdByUuid(uuid) match {
-      case Right(Some(id)) => id
-      case Right(None)     => 0
-      case Left(errors)    =>
-        throw new ClientRequestException(
-          s"Error identifying collection by UUID: $uuid",
-          errors
-        )
-    }
+    idByUuid(CollectionDefinitionApi.getIdByUuid)(uuid)
 
-  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] = {
-    val exportResult =
-      if (withSecurity) CollectionDefinitionApi.exportCollectionWithSecurity(id)
-      else CollectionDefinitionApi.exportCollection(id)
+  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
+    exportWith(
+      CollectionDefinitionApi.exportCollection,
+      CollectionDefinitionApi.exportCollectionWithSecurity
+    )(id, withSecurity)
 
-    exportResult match {
-      case Right(Some(bytes)) => bytes
-      case Right(None)        =>
-        throw new NotFoundException(s"Collection with ID: $id not found or export failed.")
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error exporting collection with ID: $id", errors)
-    }
-  }
+  override def cancelEdit(id: Long, force: Boolean): Unit =
+    cancelEditWith(CollectionDefinitionApi.cancelEdit, CollectionDefinitionApi.cancelEditForced)(
+      id,
+      force
+    )
 
-  override def cancelEdit(id: Long, force: Boolean): Unit = {
-    val cancelEditResult =
-      if (force) CollectionDefinitionApi.cancelEditForced(id)
-      else CollectionDefinitionApi.cancelEdit(id)
-
-    cancelEditResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error cancelling edit of collection with ID: $id",
-          errors
-        )
-    }
-  }
-
-  override def delete(entityid: Long, checkReferences: Boolean): Unit = {
-    val deleteResult =
-      if (checkReferences) CollectionDefinitionApi.deleteWithReferenceCheck(entityid)
-      else CollectionDefinitionApi.delete(entityid)
-
-    deleteResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error deleting collection with ID: $entityid",
-          errors
-        )
-    }
-  }
+  override def delete(entityid: Long, checkReferences: Boolean): Unit =
+    deleteWith(CollectionDefinitionApi.delete, CollectionDefinitionApi.deleteWithReferenceCheck)(
+      entityid,
+      checkReferences
+    )
 
   override def clone(id: Long): BaseEntityLabel =
-    CollectionDefinitionApi.clone(id) match {
-      case Right(ref)   => ref convert toBaseEntityLabel
-      case Left(errors) =>
-        throw new ClientRequestException(s"Error cloning collection with ID: $id", errors)
-    }
+    cloneWith(CollectionDefinitionApi.clone)(id)
 
   override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
     logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")
