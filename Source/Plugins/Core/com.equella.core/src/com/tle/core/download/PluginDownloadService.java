@@ -21,12 +21,12 @@ package com.tle.core.download;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
+import com.tle.beans.plugin.PluginDetails;
 import com.tle.common.filters.EqFilter;
 import com.tle.core.guice.Bind;
 import com.tle.core.institution.InstitutionService;
 import com.tle.core.plugins.AbstractPluginService.TLEPluginLocation;
 import com.tle.core.plugins.PluginService;
-import com.tle.core.remoting.RemotePluginDownloadService;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Service that manages plugin metadata and JAR file location for the Admin Console.
  *
- * <p>This service implements {@link RemotePluginDownloadService} and is remotely invoked by the
- * Admin Console to discover available plugins and their download locations. It works in conjunction
- * with {@link DownloadServlet} to enable plugin distribution in production environments.
+ * <p>This service is used by the GraphQL admin console plugin provider to discover available
+ * plugins and their download locations. It works in conjunction with {@link DownloadServlet} to
+ * enable plugin distribution in production environments.
  *
  * <h2>Architecture Overview</h2>
  *
@@ -105,10 +105,9 @@ import org.slf4j.LoggerFactory;
  * The Admin Console uses this service as follows:
  *
  * <ol>
- *   <li>Obtains a remote proxy to this service via {@code
- *       clientService.getService(RemotePluginDownloadService.class)}
+ *   <li>Calls the GraphQL admin console plugin API
  *   <li>Calls {@link #getAllPluginDetails(String)} with plugin type "admin-console"
- *   <li>Receives a list of {@link RemotePluginDownloadService.PluginDetails} containing:
+ *   <li>Receives a list of {@link com.tle.beans.plugin.PluginDetails} containing:
  *       <ul>
  *         <li>JAR download URLs (rewritten to use {@link DownloadServlet} in production)
  *         <li>Plugin manifest XML content
@@ -125,19 +124,16 @@ import org.slf4j.LoggerFactory;
  * download URLs.
  *
  * @see DownloadServlet
- * @see RemotePluginDownloadService
- * @see com.tle.admin.PluginServiceImpl
  */
 @Bind
 @Singleton
-public class PluginDownloadService implements RemotePluginDownloadService {
+public class PluginDownloadService {
   private final Logger LOGGER = LoggerFactory.getLogger(PluginDownloadService.class);
   private String jarPath;
 
   @Inject private PluginService pluginService;
   @Inject private InstitutionService institutionService;
 
-  @SuppressWarnings("nls")
   private final Set<String> DISALLOWED =
       ImmutableSet.of(
           "com.tle.core.guice",
@@ -148,14 +144,18 @@ public class PluginDownloadService implements RemotePluginDownloadService {
   /** Don't use directly - call getJarMap(). */
   private Map<String, TLEPluginLocation> jarMap;
 
-  @Override
-  @SuppressWarnings("nls")
+  /**
+   * Lists all plugins of the specified type.
+   *
+   * @param pluginType The type of plugins to list.
+   * @return A list of plugin details, or empty list when no plugins are found.
+   */
   public List<PluginDetails> getAllPluginDetails(String pluginType) {
     final Set<PluginDescriptor> plugins =
         pluginService.getAllPluginsAndDependencies(new FilterByType(pluginType), DISALLOWED, false);
     final Map<String, TLEPluginLocation> manifestToLocation = pluginService.getPluginIdToLocation();
 
-    List<PluginDetails> details = new ArrayList<PluginDetails>();
+    List<PluginDetails> details = new ArrayList<>();
     for (PluginDescriptor desc : plugins) {
       String descId = desc.getId();
       TLEPluginLocation location = manifestToLocation.get(descId);
@@ -198,7 +198,6 @@ public class PluginDownloadService implements RemotePluginDownloadService {
     return details;
   }
 
-  @SuppressWarnings("nls")
   @PostConstruct
   void setupMapping() {
     Extension extension =

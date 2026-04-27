@@ -21,7 +21,7 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 
 /** GraphQL representation of a plugin available for download. Constructed from
-  * [[com.tle.core.remoting.RemotePluginDownloadService#PluginDetails]].
+  * [[com.tle.beans.plugin.PluginDetails]].
   */
 @GQLDescription(
   "Details of a plugin available for download, including its base URL and manifest XML."
