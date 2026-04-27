@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -534,13 +535,12 @@ public class StagingResourceImpl implements StagingResource {
 
   private Item fetchExistingItem(String itemUuid, int itemVersion) {
     var itemId = new ItemId(itemUuid, itemVersion);
-    var item = itemService.get(itemId);
-
-    if (item == null) {
-      LOGGER.warn("Attempted to copy from non-existent item: {}", itemId);
-      throw new NotFoundException("Item not found");
-    }
-    return item;
+    return Optional.ofNullable(itemService.get(itemId))
+        .orElseThrow(
+            () -> {
+              LOGGER.warn("Attempted to copy from non-existent item: {}", itemId);
+              return new NotFoundException("Item not found");
+            });
   }
 
   private void checkCopyPrivileges(Item item) {
