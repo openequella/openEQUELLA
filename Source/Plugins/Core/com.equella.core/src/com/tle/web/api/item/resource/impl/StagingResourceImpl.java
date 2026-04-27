@@ -461,7 +461,7 @@ public class StagingResourceImpl implements StagingResource {
 
   private void validatePartEtag(StagingFile stagingFile, MultipartChunk chunk) throws IOException {
     String expectedEtag = chunk.expectedEtag();
-    if (!Strings.isNullOrEmpty(expectedEtag)) {
+    if (Strings.isNullOrEmpty(expectedEtag)) {
       return;
     }
 
