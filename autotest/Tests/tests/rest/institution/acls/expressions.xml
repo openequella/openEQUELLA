@@ -12,7 +12,7 @@
   <com.tle.beans.security.AccessExpression>
     <id>2923</id>
     <dynamic>false</dynamic>
-    <expression>R:TLE_LOGGED_IN_USER_ROLE </expression>
+    <expression>R:TLE_LOGGED_IN_USER_ROLE U:a35daca9-ba02-4ceb-8513-f437d5d9882b NOT AND</expression>
   </com.tle.beans.security.AccessExpression>
   <com.tle.beans.security.AccessExpression>
     <id>933466</id>
