@@ -77,6 +77,55 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
   // entity operation arguments second.
   // ---------------------------------------------------------------------------
 
+  /** Type alias for the standard GraphQL client result — either a list of API errors or a
+    * successful value of type `A`. Used throughout the helper method signatures below to reduce
+    * verbosity.
+    */
+  private type GraphQLClientResult[A] = Either[List[ApiError], A]
+
+  /** Unwraps a GraphQL `Either` result, delegating successful values to `onSuccess` and throwing a
+    * `ClientRequestException` on errors. All other GraphQL helpers delegate their `Either`
+    * pattern-match to this method.
+    *
+    * @param result
+    *   the `Either` result from a GraphQL call
+    * @param errorMessage
+    *   the message to include in the exception if the result is a `Left`
+    * @param onSuccess
+    *   function applied to the unwrapped value when the result is a `Right`
+    * @tparam A
+    *   the type of the successful result
+    * @tparam B
+    *   the return type of `onSuccess`
+    * @return
+    *   the value produced by `onSuccess`
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  private def handleEither[A, B](
+      result: GraphQLClientResult[A],
+      errorMessage: String
+  )(onSuccess: A => B): B = result match {
+    case Right(value) => onSuccess(value)
+    case Left(errors) => throw new ClientRequestException(errorMessage, errors)
+  }
+
+  /** Specialized handler for GraphQL operations that return `Unit` (operations with no result
+    * payload, such as cancel-edit or delete). Unwraps the result and throws
+    * `ClientRequestException` on errors; returns `()` on success.
+    *
+    * @param result
+    *   the `GraphQLClientResult[Unit]` from a GraphQL call
+    * @param errorMessage
+    *   the message to include in the exception if the result is a `Left`
+    * @throws ClientRequestException
+    *   on GraphQL errors
+    */
+  private def handleEitherUnit(
+      result: GraphQLClientResult[Unit],
+      errorMessage: String
+  ): Unit = handleEither(result, errorMessage)(_ => ())
+
   /** Lists all entities using a GraphQL lister that returns `BaseEntityReferenceView`, converting
     * each result to a `BaseEntityLabel`.
     *
@@ -88,12 +137,10 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def listAllFrom(
-      result: Either[List[ApiError], List[BaseEntityReferenceView]]
+      result: GraphQLClientResult[List[BaseEntityReferenceView]]
   ): util.List[BaseEntityLabel] =
-    result match {
-      case Right(entities) => entities.map(toBaseEntityLabel).asJava
-      case Left(errors)    =>
-        throw new ClientRequestException(s"Error listing ${entityDescription}s.", errors)
+    handleEither(result, s"Error listing ${entityDescription}s.") {
+      _.map(toBaseEntityLabel).asJava
     }
 
   /** Looks up an entity ID by UUID using a GraphQL getter.
@@ -108,16 +155,10 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def idByUuid(
-      getter: String => Either[List[ApiError], Option[Long]]
+      getter: String => GraphQLClientResult[Option[Long]]
   )(uuid: String): Long =
-    getter(uuid) match {
-      case Right(Some(id)) => id
-      case Right(None)     => 0
-      case Left(errors)    =>
-        throw new ClientRequestException(
-          s"Error identifying $entityDescription by UUID: $uuid",
-          errors
-        )
+    handleEither(getter(uuid), s"Error identifying $entityDescription by UUID: $uuid") {
+      _.getOrElse(0L)
     }
 
   /** Exports an entity as a ZIP file, choosing the appropriate API call based on the `useSecurity`
@@ -139,20 +180,19 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def exportWith(
-      withoutSecurity: Long => Either[List[ApiError], Option[Array[Byte]]],
-      withSecurity: Long => Either[List[ApiError], Option[Array[Byte]]]
+      withoutSecurity: Long => GraphQLClientResult[Option[Array[Byte]]],
+      withSecurity: Long => GraphQLClientResult[Option[Array[Byte]]]
   )(id: Long, useSecurity: Boolean): Array[Byte] = {
-    val result = if (useSecurity) withSecurity(id) else withoutSecurity(id)
-    result match {
-      case Right(Some(bytes)) => bytes
-      case Right(None)        =>
+    val exportResult = if (useSecurity) withSecurity(id) else withoutSecurity(id)
+
+    handleEither(
+      exportResult,
+      s"Error exporting $entityDescription with ID: $id"
+    ) {
+      case Some(bytes) => bytes
+      case None        =>
         throw new NotFoundException(
           s"${entityDescription.capitalize} with ID: $id not found or export failed."
-        )
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error exporting $entityDescription with ID: $id",
-          errors
         )
     }
   }
@@ -171,19 +211,15 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def cancelEditWith(
-      normal: Long => Either[List[ApiError], Unit],
-      forced: Long => Either[List[ApiError], Unit]
+      normal: Long => GraphQLClientResult[Unit],
+      forced: Long => GraphQLClientResult[Unit]
   )(id: Long, force: Boolean): Unit = {
     val cancelEditResult = if (force) forced(id) else normal(id)
 
-    cancelEditResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error cancelling edit of $entityDescription with ID: $id",
-          errors
-        )
-    }
+    handleEitherUnit(
+      cancelEditResult,
+      s"Error cancelling edit of $entityDescription with ID: $id"
+    )
   }
 
   /** Deletes an entity, optionally checking for references first.
@@ -200,19 +236,15 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def deleteWith(
-      withoutCheck: Long => Either[List[ApiError], Unit],
-      withCheck: Long => Either[List[ApiError], Unit]
+      withoutCheck: Long => GraphQLClientResult[Unit],
+      withCheck: Long => GraphQLClientResult[Unit]
   )(id: Long, checkReferences: Boolean): Unit = {
     val deleteResult = if (checkReferences) withCheck(id) else withoutCheck(id)
 
-    deleteResult match {
-      case Right(_)     => // No content expected on success
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error deleting $entityDescription with ID: $id",
-          errors
-        )
-    }
+    handleEitherUnit(
+      deleteResult,
+      s"Error deleting $entityDescription with ID: $id"
+    )
   }
 
   /** Clones an entity using a GraphQL cloner function.
@@ -227,15 +259,10 @@ abstract class AdminEntityService[E <: BaseEntity] extends RemoteAbstractEntityS
     *   on GraphQL errors
     */
   protected def cloneWith(
-      cloner: Long => Either[List[ApiError], BaseEntityReferenceView]
+      cloner: Long => GraphQLClientResult[BaseEntityReferenceView]
   )(id: Long): BaseEntityLabel =
-    cloner(id) match {
-      case Right(ref)   => toBaseEntityLabel(ref)
-      case Left(errors) =>
-        throw new ClientRequestException(
-          s"Error cloning $entityDescription with ID: $id",
-          errors
-        )
+    handleEither(cloner(id), s"Error cloning $entityDescription with ID: $id") {
+      toBaseEntityLabel
     }
 
   // ---------------------------------------------------------------------------
