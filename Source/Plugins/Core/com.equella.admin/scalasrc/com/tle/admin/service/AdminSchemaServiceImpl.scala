@@ -72,9 +72,8 @@ class AdminSchemaServiceImpl @Inject() (implicit
   override def listEditable(): util.List[BaseEntityLabel] =
     listAll()
 
-  override def listAllIncludingSystem(): util.List[BaseEntityLabel] = {
+  override def listAllIncludingSystem(): util.List[BaseEntityLabel] =
     listAll()
-  }
 
   override def listAll(): util.List[BaseEntityLabel] =
     listAllFrom(MetadataSchemaApi.listSchemas())
