@@ -150,8 +150,8 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
   }
 
   describe("searchUsers") {
-    // There are 10 users in the target institution
-    val TOTAL_USERS = 11
+    // There are 12 users in the target institution
+    val TOTAL_USERS = 12
     val BIG_LIMIT   = 100
 
     it("supports searching for all users") {
@@ -185,8 +185,8 @@ class TleUserApiTest extends AnyFunSpec with Matchers {
       val response = TleUserApi.searchUsers(ForwardPagination(BIG_LIMIT), Some("test"))
       response match {
         case Right(users) =>
-          // There are four known users with 'test' in their details
-          assert(users.items.size == 4)
+          // There are five known users with 'test' in their details
+          assert(users.items.size == 5)
         case Left(errors) => fail("Failed to search for users: " + errors)
       }
     }
