@@ -99,6 +99,12 @@ public class InstitutionCacheImpl<T> implements InstitutionCache<T> {
     cache.invalidate(inst);
   }
 
+  @Override
+  public Runnable createCacheInvalidationCallback() {
+    final Institution currentInstitution = getInstitution();
+    return () -> clear(currentInstitution);
+  }
+
   private Institution getInstitution() {
     Institution rv = CurrentInstitution.get();
     if (rv == null) {

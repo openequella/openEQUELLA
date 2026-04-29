@@ -7,7 +7,7 @@ dependsOn(LocalProject("IntegTester"), LocalProject("config"))
 inConfig(Serial)(Defaults.testTasks)
 
 val circeVersion  = "0.14.12"
-val http4sVersion = "0.23.33"
+val http4sVersion = "0.23.34"
 val catsVersion   = "2.13.0"
 val cxfVersion    = "3.6.10"
 
@@ -23,8 +23,8 @@ libraryDependencies ++= Seq(
   "org.scala-lang"            % "scala-reflect"            % scalaVersion.value,
   "javax.jws"                 % "javax.jws-api"            % "1.1",
   "org.apache.commons"        % "commons-lang3"            % "3.20.0",
-  "org.seleniumhq.selenium"   % "selenium-java"            % "4.41.0",
-  "com.codeborne"             % "selenide"                 % "7.15.0",
+  "org.seleniumhq.selenium"   % "selenium-java"            % "4.43.0",
+  "com.codeborne"             % "selenide"                 % "7.16.0",
   "org.easytesting"           % "fest-util"                % "1.2.5",
   "org.easytesting"           % "fest-swing"               % "1.2.1",
   "xalan"                     % "xalan"                    % "2.7.3",

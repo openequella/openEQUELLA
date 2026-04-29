@@ -325,32 +325,38 @@ public class ConfigurationServiceImpl implements ConfigurationService, Configura
    * invalidation only happens after the database changes are successfully committed, preventing
    * cache inconsistency issues where stale data could be cached between the cache clear and
    * transaction commit.
+   *
+   * <p><b>Important:</b> The cache invalidation callback is created immediately (before transaction
+   * synchronization registration) to capture the current {@link Institution} context from
+   * ThreadLocal. This prevents incorrect cache invalidation if the ThreadLocal context is cleared
+   * before the callback executes after commit.
    */
   private void invalidateCacheAfterCommit() {
+    Runnable clearInstitutionCache = cache.createCacheInvalidationCallback();
+
     // Check if we're in an active transaction with synchronization support
     if (TransactionSynchronizationManager.isSynchronizationActive()) {
       TransactionSynchronizationManager.registerSynchronization(
           new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-              invalidateCache();
+              invalidateCache(clearInstitutionCache);
             }
           });
     } else {
       // Fallback: if not in a transaction context, invalidate immediately
-      // This shouldn't normally happen for @Transactional methods, but provides safety
       LOGGER.warn(
           "invalidateCacheAfterCommit called outside transaction context - invalidating"
               + " immediately");
-      invalidateCache();
+      invalidateCache(clearInstitutionCache);
     }
   }
 
   // Invalidates the local cache first, then broadcasts the event.
-  private void invalidateCache() {
-    ConfigurationChangedEvent event = new ConfigurationChangedEvent();
+  private void invalidateCache(Runnable clearLocalCache) {
+    clearLocalCache.run();
 
-    configurationChangedEvent(event);
+    ConfigurationChangedEvent event = new ConfigurationChangedEvent();
     eventService.publishApplicationEvent(event);
   }
 
