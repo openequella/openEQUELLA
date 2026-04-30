@@ -164,7 +164,14 @@ public class TLEGroupServiceImpl
   public String edit(final TLEGroup group) {
     boolean parentSame;
     {
-      TLEGroup original = get(group.getUuid());
+      // Use the DAO directly rather than calling get() (which is annotated
+      // @Transactional(readOnly=true)). Because Guice AOP intercepts self-calls (unlike Spring
+      // CGLIB proxies), calling get() here would apply readOnly=true semantics to the
+      // already-active
+      // write transaction. On some JDBC driver versions this causes an implicit connection commit,
+      // making the subsequent rollback (on error) fail with:
+      //   "Cannot rollback transaction in current status [COMMITTED]"
+      TLEGroup original = dao.findByUuid(group.getUuid());
       Optional<TLEGroup> oldParent = Optional.ofNullable(original.getParent());
 
       dao.unlinkFromSession(original);
