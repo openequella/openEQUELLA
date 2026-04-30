@@ -22,6 +22,7 @@ import com.tle.beans.entity.BaseEntityLabel
 import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.core.remoting.{RemoteAbstractEntityService, RemoteItemDefinitionService}
 import io.github.openequella.graphql.ClientConfiguration
+import io.github.openequella.graphql.api.CollectionDefinitionApi
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.util
@@ -34,6 +35,8 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
     with AdminCollectionDefinitionService {
   private implicit val LOGGER: Logger =
     LoggerFactory.getLogger(classOf[AdminCollectionDefinitionServiceImpl])
+
+  override def entityDescription: String = "collection"
 
   override def enumerateCategories: util.Set[String] = withDelegate {
     _.enumerateCategories()
@@ -55,6 +58,37 @@ class AdminCollectionDefinitionServiceImpl @Inject() (val delegate: RemoteItemDe
   override def importControl(zipFileData: Array[Byte]): String = withDelegate {
     _.importControl(zipFileData)
   }
+
+  override def listAll(): util.List[BaseEntityLabel] =
+    listAllFrom(CollectionDefinitionApi.listCollections())
+
+  override def listEditable(): util.List[BaseEntityLabel] = listAll()
+
+  override def listAllIncludingSystem(): util.List[BaseEntityLabel] = listAll()
+
+  override def identifyByUuid(uuid: String): Long =
+    idByUuid(CollectionDefinitionApi.getIdByUuid)(uuid)
+
+  override def exportEntity(id: Long, withSecurity: Boolean): Array[Byte] =
+    exportWith(
+      CollectionDefinitionApi.exportCollection,
+      CollectionDefinitionApi.exportCollectionWithSecurity
+    )(id, withSecurity)
+
+  override def cancelEdit(id: Long, force: Boolean): Unit =
+    cancelEditWith(CollectionDefinitionApi.cancelEdit, CollectionDefinitionApi.cancelEditForced)(
+      id,
+      force
+    )
+
+  override def delete(entityid: Long, checkReferences: Boolean): Unit =
+    deleteWith(CollectionDefinitionApi.delete, CollectionDefinitionApi.deleteWithReferenceCheck)(
+      entityid,
+      checkReferences
+    )
+
+  override def clone(id: Long): BaseEntityLabel =
+    cloneWith(CollectionDefinitionApi.clone)(id)
 
   override def implementMe[T](f: RemoteAbstractEntityService[ItemDefinition] => T): T = {
     logNotImplemented("RemoteAbstractEntityService[ItemDefinition]")
