@@ -500,10 +500,7 @@ upgradeZip := {
     assembly.value -> "equella-server.jar",
     // This new JAR filename for UpgradeInstallation, must match the string at:
     // com.tle.upgrademanager.helpers.Deployer.UPGRADER_JAR
-    upgraderJar -> "installation-upgrader.jar",
-    // Temporary, for upgrades from before 2025.2 - remove as part of OEQ-2761
-    // This is it's OLD name, which was misleading as it implied it was only for DB upgrades.
-    upgraderJar                                         -> "database-upgrader.jar",
+    upgraderJar                                         -> "installation-upgrader.jar",
     (LocalProject("conversion") / assembly).value       -> "conversion-service.jar",
     (LocalProject("equella") / versionProperties).value -> "version.properties"
   )
