@@ -350,7 +350,17 @@ run := {
       "-cp",
       Path.makeString(cp.files),
       "-Dequella.devmode=true",
-      "-Dequella.autotest=true"
+      "-Dequella.autotest=true",
+      "--add-opens=java.base/java.io=ALL-UNNAMED",
+      "--add-opens=java.base/java.lang.ref=ALL-UNNAMED",
+      "--add-opens=java.base/java.lang=ALL-UNNAMED",
+      "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+      "--add-opens=java.base/java.util=ALL-UNNAMED",
+      "--add-opens=java.desktop/javax.swing.tree=ALL-UNNAMED",
+      "--add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming.directory=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming.ldap=ALL-UNNAMED",
+      "--add-opens=java.naming/javax.naming=ALL-UNNAMED"
     )
   )
   Fork.java(o, Seq("com.tle.core.equella.runner.EQUELLAServer"))
