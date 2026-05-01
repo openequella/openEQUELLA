@@ -25,11 +25,7 @@ import java.util.Map;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public final class ResourcesService {
-
-  private ResourcesService() {
-    throw new UnsupportedOperationException();
-  }
+public class ResourcesService {
 
   private static String baseUrl = "p/r/" + ApplicationVersion.get().getSemanticVersion() + '/';
 
