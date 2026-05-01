@@ -53,6 +53,7 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
 
   private val mutations = Mutations(
     collection = CollectionMutationOps(
+      startEdit = args => collectionProvider.startEdit(args.id),
       cloneCollection = args => collectionProvider.cloneCollection(args.id),
       delete =
         args => collectionProvider.deleteCollection(args.id, args.checkReferences.getOrElse(true)),
@@ -90,6 +91,10 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
 
   @GQLName("CollectionMutations")
   case class CollectionMutationOps(
+      @GQLDescription(
+        "Start editing an existing collection. Expected to be followed by a stopEdit or cancelEdit operation."
+      )
+      startEdit: CollectionStartEditArgs => EditableEntity[CollectionDefinition],
       @GQLName("clone")
       @GQLDescription(
         "Clone a collection - creating a copy of the collection with a new ID."
@@ -110,6 +115,11 @@ class CollectionSchema @Inject() (collectionProvider: CollectionProvider) extend
         "Cancel editing a collection - discarding any changes made and unlocking the collection."
       )
       cancelEdit: CollectionCancelEditArgs => ResultWithErrors[Unit]
+  )
+
+  case class CollectionStartEditArgs(
+      @GQLDescription("ID of the collection to edit")
+      id: Long
   )
 
   case class CollectionCloneArgs(
