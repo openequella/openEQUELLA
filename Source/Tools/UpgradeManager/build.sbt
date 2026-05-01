@@ -8,7 +8,7 @@ libraryDependencies ++= Seq(
   "commons-io"           % "commons-io"                % "2.22.0",
   "com.google.guava"     % "guava"                     % "33.6.0-jre",
   "org.antlr"            % "ST4"                       % "4.3.4",
-  "com.google.code.gson" % "gson"                      % "2.13.2",
+  "com.google.code.gson" % "gson"                      % "2.14.0",
   "org.slf4j"            % "jcl-over-slf4j"            % "2.0.17",
   "commons-io"           % "commons-io"                % "2.22.0",
   log4j,

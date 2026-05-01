@@ -81,7 +81,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "2.9.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260412-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.13.2",
+  "com.google.code.gson"  % "gson"                        % "2.14.0",
   "com.google.guava"      % "guava"                       % "33.6.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
