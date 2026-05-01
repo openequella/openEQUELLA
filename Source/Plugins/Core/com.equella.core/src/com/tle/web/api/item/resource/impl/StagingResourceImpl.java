@@ -348,6 +348,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response createStagingFromItem(String itemUuid, int itemVersion) {
+    stagingService.checkStagingPrivileges();
     validateCopyRequest(itemUuid, itemVersion);
 
     Item item = fetchExistingItem(itemUuid, itemVersion);
