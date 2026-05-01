@@ -62,7 +62,8 @@ class OidcAuthServiceTest extends AnyFunSpec with Matchers with GivenWhenThen {
     defaultRoles = Set.empty,
     roleConfig = None,
     userIdAttribute = None,
-    enabled = true
+    enabled = true,
+    seamlessSso = true
   )
   val auth0: GenericIdentityProviderDetails = GenericIdentityProviderDetails(
     commonDetails = commonDetails,
