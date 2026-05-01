@@ -47,6 +47,7 @@ import javax.ws.rs.core.UriInfo;
 @Api(value = "Staging files", description = "staging")
 public interface StagingResource {
   @POST
+  @StagingAreaCreatedResponse
   @ApiOperation(value = "Create a file area")
   Response createStaging();
 
@@ -124,7 +125,8 @@ public interface StagingResource {
 
   @POST
   @Path("/copy")
-  @ApiOperation(value = "Copy an item's files to a new staging area")
+  @StagingAreaCreatedResponse
+  @ApiOperation(value = "Creates a staging area and populates it with the specified item's files.")
   Response createStagingFromItem(
       @ApiParam(value = "UUID of the source item", required = true) @QueryParam("itemUuid")
           String itemUuid,
