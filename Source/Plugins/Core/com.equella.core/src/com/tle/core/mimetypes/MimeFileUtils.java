@@ -33,7 +33,7 @@ public final class MimeFileUtils {
     List<MimeEntry> entries = new ArrayList<MimeEntry>();
     try (BufferedReader reader = new BufferedReader(new InputStreamReader(inp, "UTF-8"))) {
       for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-        String parts[] = line.split("\\s+");
+        String[] parts = line.split("\\s+");
         if (parts.length <= 0 || parts[0].startsWith("#") || parts[0].length() == 0) {
           continue;
         }

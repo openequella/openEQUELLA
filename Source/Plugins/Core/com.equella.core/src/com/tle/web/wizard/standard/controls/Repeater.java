@@ -430,12 +430,12 @@ public class Repeater extends GroupWebControl<Repeater.RepeaterModel> {
     }
 
     /*
-    		public RepeaterUpdate(SectionInfo info)
-    		{
-    			Label message = Repeater.this.getMessage();
-    			this.message = message != null ? message.getText() : null;
-    			this.disabled = addButton.isDisabled(info);
-    		}
+            public RepeaterUpdate(SectionInfo info)
+            {
+                Label message = Repeater.this.getMessage();
+                this.message = message != null ? message.getText() : null;
+                this.disabled = addButton.isDisabled(info);
+            }
     */
     public boolean isDisabled() {
       return disabled;

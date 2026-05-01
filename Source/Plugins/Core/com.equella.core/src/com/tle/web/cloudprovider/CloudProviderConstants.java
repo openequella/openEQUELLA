@@ -19,5 +19,10 @@
 package com.tle.web.cloudprovider;
 
 public final class CloudProviderConstants {
+
+  private CloudProviderConstants() {
+    throw new UnsupportedOperationException();
+  }
+
   public static final String PRI_MANAGE_CLOUD_PROVIDER = "MANAGE_CLOUD_PROVIDER";
 }

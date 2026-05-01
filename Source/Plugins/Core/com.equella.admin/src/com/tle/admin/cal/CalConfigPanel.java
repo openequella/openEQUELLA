@@ -170,11 +170,11 @@ public class CalConfigPanel extends AbstractExtensionConfigPanel {
     agreementField = new JTextField();
     agreementField.setEditable(false);
 
-    int rows[] =
+    int[] rows =
         new int[] {
           TableLayout.PREFERRED, TableLayout.PREFERRED,
         };
-    int cols[] =
+    int[] cols =
         new int[] {
           TableLayout.FILL, upload.getPreferredSize().width, remove.getPreferredSize().width
         };

@@ -19,7 +19,12 @@
 package com.tle.core.connectors.canvas;
 
 @SuppressWarnings("nls")
-public class CanvasConnectorConstants {
+public final class CanvasConnectorConstants {
+
+  private CanvasConnectorConstants() {
+    throw new UnsupportedOperationException();
+  }
+
   public static final String CONNECTOR_TYPE = "canvas";
   public static final String FIELD_ACCESS_TOKEN = "canvasToken";
   public static final String FIELD_TOKEN_OK = "tokenOk";

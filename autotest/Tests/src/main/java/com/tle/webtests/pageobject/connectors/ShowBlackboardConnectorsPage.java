@@ -8,7 +8,11 @@ import com.tle.webtests.pageobject.PrefixedName;
  *
  * @author Aaron
  */
-public class ShowBlackboardConnectorsPage {
+public final class ShowBlackboardConnectorsPage {
+
+  private ShowBlackboardConnectorsPage() {
+    throw new UnsupportedOperationException();
+  }
 
   public static ShowConnectorsPage addBlackboardConnection(
       ShowConnectorsPage showConnectorsPage,

@@ -47,6 +47,7 @@ import com.tle.common.workflow.node.WorkflowNode;
 import java.util.Set;
 
 public class ClassDependencies {
+
   public static Set<Class<?>> item() {
     final Set<Class<?>> deps = Sets.newHashSet();
     deps.add(Item.class);
@@ -106,9 +107,7 @@ public class ClassDependencies {
     return deps;
   }
 
-  // Noli me tangere constructor, because Sonar likes it that way for
-  // non-instantiated utility classes
-  public ClassDependencies() {
-    throw new Error();
+  protected ClassDependencies() {
+    // Utility class - do not instantiate directly
   }
 }

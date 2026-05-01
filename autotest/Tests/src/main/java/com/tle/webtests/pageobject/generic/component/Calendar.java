@@ -95,7 +95,9 @@ public class Calendar extends AbstractPage<Calendar> {
     int offset = future ? 1 : 0;
     fromDate.add(java.util.Calendar.DAY_OF_YEAR, offset);
     untilDate.add(java.util.Calendar.DAY_OF_YEAR, offset + 2);
-    if (reverse) return new java.util.Calendar[] {untilDate, fromDate};
+    if (reverse) {
+      return new java.util.Calendar[] {untilDate, fromDate};
+    }
     return new java.util.Calendar[] {fromDate, untilDate};
   }
 

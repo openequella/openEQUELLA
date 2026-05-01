@@ -25,7 +25,12 @@ import java.util.Map;
 
 @SuppressWarnings("nls")
 @NonNullByDefault
-public class ResourcesService {
+public final class ResourcesService {
+
+  private ResourcesService() {
+    throw new UnsupportedOperationException();
+  }
+
   private static String baseUrl = "p/r/" + ApplicationVersion.get().getSemanticVersion() + '/';
 
   private static Map<String, String> renamed =

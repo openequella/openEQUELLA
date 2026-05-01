@@ -52,10 +52,6 @@ public class CommentApiTest extends AbstractItemApiTest {
       System.out.println(ex.toString());
       System.out.println(ex.getMessage());
       return null;
-    } finally {
-      if (content != null) {
-        // content.close();
-      }
     }
   }
 

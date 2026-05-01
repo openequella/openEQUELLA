@@ -64,7 +64,9 @@ public class Select2Select extends AbstractPage<Select2Select> {
       List<WebElement> allLinks = dropDiv.findElements(By.xpath(".//li"));
       if (allLinks.size() > index) {
         allLinks.get(index).click();
-      } else throw noseeum;
+      } else {
+        throw noseeum;
+      }
     }
   }
 

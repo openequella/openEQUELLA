@@ -176,22 +176,22 @@ public class CALSoapInterfaceTest extends AbstractCALTest {
       throws Exception {
     String searchReq =
         "<com.dytech.edge.common.valuebean.SearchRequest>"
-            + "	<query>"
+            + "    <query>"
             + "&quot;"
             + context.getFullName(defaultPortion)
             + "&quot;"
-            + "	</query>"
-            + "	<select>"
-            + "		*"
-            + "	</select>"
-            + "	<orderby>"
-            + "		/xml/item/name"
-            + "	</orderby>"
-            + "	<where>"
-            + "	</where>"
-            + "	<onlyLive>"
-            + "		true"
-            + "	</onlyLive>"
+            + "    </query>"
+            + "    <select>"
+            + "        *"
+            + "    </select>"
+            + "    <orderby>"
+            + "        /xml/item/name"
+            + "    </orderby>"
+            + "    <where>"
+            + "    </where>"
+            + "    <onlyLive>"
+            + "        true"
+            + "    </onlyLive>"
             + "</com.dytech.edge.common.valuebean.SearchRequest>";
     String searchItems = soapService.searchItems("", searchReq, 0, 5);
     PropBagEx searchProp = new PropBagEx(searchItems);

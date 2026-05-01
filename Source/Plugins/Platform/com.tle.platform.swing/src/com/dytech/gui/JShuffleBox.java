@@ -381,7 +381,7 @@ public class JShuffleBox<T> extends JPanel {
   // ////////////////////////////////////////////////////////////////
 
   @SuppressWarnings("nls")
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     JShuffleBox<String> sb = new JShuffleBox<String>("left", "right");
     sb.addToLeft("item 1");
     sb.addToLeft("item 2");

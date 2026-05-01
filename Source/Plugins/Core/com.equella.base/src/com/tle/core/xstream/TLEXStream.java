@@ -60,7 +60,9 @@ public class TLEXStream extends XStream {
   public void registerConverter(Converter converter) {
     if (!disallowAdd) {
       super.registerConverter(converter);
-    } else throw new Error("Can't add converters to this instance, use: new TLEXStream() instead");
+    } else {
+      throw new Error("Can't add converters to this instance, use: new TLEXStream() instead");
+    }
   }
 
   public static synchronized TLEXStream instance() {

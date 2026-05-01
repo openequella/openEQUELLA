@@ -46,12 +46,16 @@ public abstract class AbstractItemList<
    * @return
    */
   public static int parseAllAvailableFromSummaryString(String summaryString) {
-    if (Check.isEmpty(summaryString)) return 0;
-    int sum = 0, mult = 1;
+    if (Check.isEmpty(summaryString)) {
+      return 0;
+    }
+    int sum = 0;
+    int mult = 1;
     int charIndex = summaryString.length();
     // From the end of the string, bypass any non-digit trailing characters
-    while (!Character.isDigit(summaryString.charAt(--charIndex)) && charIndex > 0) {
-      // empty loop
+    charIndex--;
+    while (charIndex > 0 && !Character.isDigit(summaryString.charAt(charIndex))) {
+      charIndex--;
     }
     // We have at least one character left in the string
     for (char ch = summaryString.charAt(charIndex);

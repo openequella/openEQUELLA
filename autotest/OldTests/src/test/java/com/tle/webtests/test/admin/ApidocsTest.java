@@ -52,7 +52,7 @@ public class ApidocsTest extends AbstractSessionTest {
 
   //  This has passed locally, but fails at times with the following response.  Commenting out for
   // now.
-  //	[http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
+  //    [http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
   //  @Test
   //  public void testTleAdminAccessJson() {
   //    logout(context);
@@ -69,11 +69,11 @@ public class ApidocsTest extends AbstractSessionTest {
 
   //  This has passed locally, but fails at times with the following response.  Commenting out for
   // now.
-  //	[http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
+  //    [http://localhost:8080/fiveo/api/swagger.json] > {"swagger":"2.0","basePath":"/fiveo/api"}
   //    @Test
   //    public void testLoginWithAccessJson() {
-  //		logout(context);
-  //	logon(context,"AutoTestWithViewApidocs", "automated");
+  //        logout(context);
+  //    logon(context,"AutoTestWithViewApidocs", "automated");
   //      loadAndAssertSuccessJson();
   //    }
 

@@ -341,7 +341,6 @@ public class ScriptPanel extends JTabbedPane
         if (result.isOkayed()) {
           File f = result.getFile();
           try (Reader reader = new FileReader(f)) {
-            ;
             model.importScript(reader);
           } catch (IOException ex) {
             Driver.displayError(this, "script/importing", ex); // $NON-NLS-1$

@@ -98,53 +98,53 @@ public class CourseApiTest extends AbstractRestApiTest {
   }
 
   /*
-  	@Test(dependsOnMethods={"testCannotRePOSTSameCode"})
-  	public void testPUTCannotOverwriteCodeInUse() throws Exception
-  	{
-  		String token = requestToken(OAUTH_CLIENT_ID);
-  		URI targetUri = new URI(context.getBaseUrl() + API_TASK_PATH);
+      @Test(dependsOnMethods={"testCannotRePOSTSameCode"})
+      public void testPUTCannotOverwriteCodeInUse() throws Exception
+      {
+          String token = requestToken(OAUTH_CLIENT_ID);
+          URI targetUri = new URI(context.getBaseUrl() + API_TASK_PATH);
 
-  		JsonNode youAgainNode = createAndVerifyCourse(token, COURSE_CODE_SRM114,
-  				"in order to attempt to edit", targetUri);
+          JsonNode youAgainNode = createAndVerifyCourse(token, COURSE_CODE_SRM114,
+                  "in order to attempt to edit", targetUri);
 
-  		assertTrue(youAgainNode != null && youAgainNode.get("code").asText().equals(COURSE_CODE_SRM114));
+          assertTrue(youAgainNode != null && youAgainNode.get("code").asText().equals(COURSE_CODE_SRM114));
 
-  		JsonNode innocentBystanderCourse = createAndVerifyCourse(token, COURSE_CODE_INNOCENT,
-  				"in order to attempt to edit", targetUri);
+          JsonNode innocentBystanderCourse = createAndVerifyCourse(token, COURSE_CODE_INNOCENT,
+                  "in order to attempt to edit", targetUri);
 
-  		String innocentTrueUuid = innocentBystanderCourse.get("uuid").asText();
+          String innocentTrueUuid = innocentBystanderCourse.get("uuid").asText();
 
-  		// we going to use the 'edit' API but sending a JSON object which purports to set a
-  		// different uuid, (which would be legal) but attempting to use a code which we know
-  		// already exists
-  		ObjectNode innocentNodeReally = (ObjectNode)innocentBystanderCourse;
-  		innocentNodeReally.put("code", COURSE_CODE_SRM114);
-  		innocentNodeReally.put("name", "something seen nowhere else");
-  		innocentNodeReally.put("description", "Oh it was gorgeousness and gorgeosity made flesh. "
-  				+ "The trombones crunched redgold under my bed, and behind my gulliver the trumpets three-wise silverflamed, "
-  				+ "and there by the door the timps rolling through my guts and out again crunched like candy thunder. "
-  				+ "Oh, it was wonder of wonders. And then, a bird of like rarest spun heavenmetal, "
-  				+ "or like silvery wine flowing in a spaceship, gravity all nonsense now, came the violin solo above all the other strings, "
-  				+ "and those strings were like a cage of silk round my bed. Then flute and oboe bored, like worms of like platinum, "
-  				+ "into the thick thick toffee gold and silver. I was in such bliss, my brothers."); // Anthony Burgess: A clockwork orange
-  		innocentNodeReally.put("from", "2010-03-31");
-  		innocentNodeReally.put("until", "2010-12-25");
-  		innocentNodeReally.put("students", 31);
-  		innocentNodeReally.put("uuid", "deadbeef-f00d-cafe-feed-f0fffadef0ff");
+          // we going to use the 'edit' API but sending a JSON object which purports to set a
+          // different uuid, (which would be legal) but attempting to use a code which we know
+          // already exists
+          ObjectNode innocentNodeReally = (ObjectNode)innocentBystanderCourse;
+          innocentNodeReally.put("code", COURSE_CODE_SRM114);
+          innocentNodeReally.put("name", "something seen nowhere else");
+          innocentNodeReally.put("description", "Oh it was gorgeousness and gorgeosity made flesh. "
+                  + "The trombones crunched redgold under my bed, and behind my gulliver the trumpets three-wise silverflamed, "
+                  + "and there by the door the timps rolling through my guts and out again crunched like candy thunder. "
+                  + "Oh, it was wonder of wonders. And then, a bird of like rarest spun heavenmetal, "
+                  + "or like silvery wine flowing in a spaceship, gravity all nonsense now, came the violin solo above all the other strings, "
+                  + "and those strings were like a cage of silk round my bed. Then flute and oboe bored, like worms of like platinum, "
+                  + "into the thick thick toffee gold and silver. I was in such bliss, my brothers."); // Anthony Burgess: A clockwork orange
+          innocentNodeReally.put("from", "2010-03-31");
+          innocentNodeReally.put("until", "2010-12-25");
+          innocentNodeReally.put("students", 31);
+          innocentNodeReally.put("uuid", "deadbeef-f00d-cafe-feed-f0fffadef0ff");
 
-  		String editUrl = targetUri.toString();
-  		// I'm purporting to edit the Course created with the code COURSE_CODE_INNOCENT,
-  		// by identifying it with its UUID. When editing I attempt to change its code to one I know
-  		// already exists (the COURSE_CODE_SRM114). This should fail.
-  		editUrl += "/" + innocentTrueUuid;
-  		HttpResponse didIorDidntI = getPut(editUrl, innocentBystanderCourse, token);
-  		int postResponseCode = didIorDidntI.getStatusLine().getStatusCode();
-  		// 400 (bad request) 500 (internal server error)
-  		assertTrue(postResponseCode == 400 || postResponseCode == 500, "unexpected (" + postResponseCode + ") post response");
+          String editUrl = targetUri.toString();
+          // I'm purporting to edit the Course created with the code COURSE_CODE_INNOCENT,
+          // by identifying it with its UUID. When editing I attempt to change its code to one I know
+          // already exists (the COURSE_CODE_SRM114). This should fail.
+          editUrl += "/" + innocentTrueUuid;
+          HttpResponse didIorDidntI = getPut(editUrl, innocentBystanderCourse, token);
+          int postResponseCode = didIorDidntI.getStatusLine().getStatusCode();
+          // 400 (bad request) 500 (internal server error)
+          assertTrue(postResponseCode == 400 || postResponseCode == 500, "unexpected (" + postResponseCode + ") post response");
 
-  		int purged = purge(token);
-  		assertEquals( purged, 2, "Expected to purge 2.");
-  	}
+          int purged = purge(token);
+          assertEquals( purged, 2, "Expected to purge 2.");
+      }
   */
   private JsonNode createAndVerifyCourse(String token, String code, String name, URI uri)
       throws Exception {

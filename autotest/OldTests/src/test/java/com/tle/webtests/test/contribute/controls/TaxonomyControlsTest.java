@@ -365,7 +365,7 @@ public class TaxonomyControlsTest extends AbstractCleanupTest {
     }
   }
 
-  private void validate(String listTerms[], Collection<String> expected) {
+  private void validate(String[] listTerms, Collection<String> expected) {
     ArrayList<String> terms = new ArrayList<String>();
     for (String term : listTerms) {
       if (term.startsWith("Move")) {

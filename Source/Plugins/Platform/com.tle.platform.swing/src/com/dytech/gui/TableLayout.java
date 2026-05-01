@@ -374,8 +374,8 @@ public class TableLayout implements LayoutManager2 {
   public void layoutContainer(Container parent) {
     calculateTotals();
 
-    int rowPos[] = new int[rows.length + 1];
-    int columnPos[] = new int[columns.length + 1];
+    int[] rowPos = new int[rows.length + 1];
+    int[] columnPos = new int[columns.length + 1];
 
     Insets insets = parent.getInsets();
 

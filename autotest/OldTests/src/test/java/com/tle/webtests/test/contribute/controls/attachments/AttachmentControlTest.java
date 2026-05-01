@@ -156,26 +156,26 @@ public class AttachmentControlTest extends AbstractCleanupTest {
     assertTrue(context.getDriver().getCurrentUrl().contains(selectUuid));
   }
 
-  //	@Test
-  //	public void clickingBack()
-  //	{
-  //		throw new Error("Needs to be re-written because single files aren't edited");
-  //		String itemName = context.getFullName("a file");
-  //		WizardPageTab wizard = initialItem(itemName);
+  //    @Test
+  //    public void clickingBack()
+  //    {
+  //        throw new Error("Needs to be re-written because single files aren't edited");
+  //        String itemName = context.getFullName("a file");
+  //        WizardPageTab wizard = initialItem(itemName);
   //
-  //		UniversalControl universalControl = wizard.universalControl(2);
-  //		FileUniversalControlType file = universalControl.addResource(new
+  //        UniversalControl universalControl = wizard.universalControl(2);
+  //        FileUniversalControlType file = universalControl.addResource(new
   // FileUniversalControlType(universalControl));
-  //		PickAttachmentTypeDialog controlDialog =
+  //        PickAttachmentTypeDialog controlDialog =
   // file.uploadFile(Attachments.get("page.html")).backToStart();
   //
-  //		file = controlDialog.clickType(new FileUniversalControlType(universalControl));
-  //		file.uploadFile(Attachments.get("page2.html")).save();
+  //        file = controlDialog.clickType(new FileUniversalControlType(universalControl));
+  //        file.uploadFile(Attachments.get("page2.html")).save();
   //
-  //		SummaryPage item = wizard.save().publish();
-  //		assertFalse(item.attachments().attachmentExists("page.html"));
-  //		assertTrue(item.attachments().attachmentExists("page2.html"));
-  //	}
+  //        SummaryPage item = wizard.save().publish();
+  //        assertFalse(item.attachments().attachmentExists("page.html"));
+  //        assertTrue(item.attachments().attachmentExists("page2.html"));
+  //    }
 
   private WizardPageTab initialItem(String itemName) {
     WizardPageTab wizard = new ContributePage(context).load().openWizard(COLLECTION);

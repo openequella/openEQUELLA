@@ -20,7 +20,12 @@ package com.tle.common.security.streaming;
 
 import com.thoughtworks.xstream.XStream;
 
-public class XStreamSecurityManager {
+public final class XStreamSecurityManager {
+
+  private XStreamSecurityManager() {
+    throw new UnsupportedOperationException();
+  }
+
   public static void applyPolicy(XStream xstream) {
     // Anything you want to be XStream'd needs to be allowed here
     xstream.allowTypesByWildcard(

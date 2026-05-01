@@ -107,7 +107,7 @@ public class CreateOperation extends AbstractStandardWorkflowOperation {
     itemBean.setDateCreated(new Date());
 
     params.setItemPack(pack);
-    params.setItemKey(new ItemId(itemBean.getUuid(), 1), 0l);
+    params.setItemKey(new ItemId(itemBean.getUuid(), 1), 0L);
     params.setUpdateSecurity(true);
     return true;
   }

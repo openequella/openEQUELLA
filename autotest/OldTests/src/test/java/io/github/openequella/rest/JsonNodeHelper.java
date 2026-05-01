@@ -7,7 +7,12 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /** A helper class contains some functions to manipulate JsonNode. */
-public class JsonNodeHelper {
+public final class JsonNodeHelper {
+
+  private JsonNodeHelper() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
    * A helper function to get sub JsonNode from a given Array JsonNode. See {@link
    * #getNode(ArrayNode, String, String)} for an example.

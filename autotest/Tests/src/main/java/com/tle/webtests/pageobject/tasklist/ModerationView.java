@@ -85,12 +85,8 @@ public class ModerationView extends AbstractPage<ModerationView> {
 
   // When disabled they are rendered as spans, links (a) when enabled
   public boolean navigationDisabled() {
-    if (nextTaskButton.getTagName().equalsIgnoreCase("span")
-        && prevTaskButton.getTagName().equalsIgnoreCase("span")) {
-      return true;
-    } else {
-      return false;
-    }
+    return nextTaskButton.getTagName().equalsIgnoreCase("span")
+        && prevTaskButton.getTagName().equalsIgnoreCase("span");
   }
 
   // Return true if the approve/reject buttons are disabled

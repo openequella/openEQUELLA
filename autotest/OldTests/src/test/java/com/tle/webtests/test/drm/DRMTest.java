@@ -33,10 +33,10 @@ public class DRMTest extends AbstractSessionTest {
     // @formatter:off
     return new Object[][] {
       // {"DRM Allowing Composition - Package", true, false},
-      //	{"DRM Require Composition Acceptance - Package", false, false},
+      //    {"DRM Require Composition Acceptance - Package", false, false},
       {"DRM Show On Summary and Allowing Composition - Package", true, true}
       // ,
-      //	{"DRM Show On Summary and Require Composition Acceptance - Package", false, true}
+      //    {"DRM Show On Summary and Require Composition Acceptance - Package", false, true}
     };
     // @formatter:on
   }

@@ -988,19 +988,19 @@ public class ItemServiceImpl
   @Override
   public void userDeletedEvent(UserDeletedEvent event)
   {
-  	operateAll(filterFactory.userDeleted(event.getUserID()), null);
+      operateAll(filterFactory.userDeleted(event.getUserID()), null);
   }
 
   @Override
   public void userEditedEvent(UserEditEvent event)
   {
-  	// Nothing to do here
+      // Nothing to do here
   }
 
   @Override
   public void userIdChangedEvent(UserIdChangedEvent event)
   {
-  	operateAll(filterFactory.changeUserId(event.getFromUserId(), event.getToUserId()));
+      operateAll(filterFactory.changeUserId(event.getFromUserId(), event.getToUserId()));
   }
   */
 

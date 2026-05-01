@@ -56,12 +56,18 @@ public class XpathResolver implements Resolver {
       // evaluates to 'true'.
       case 'c':
         boolean not = command.charAt(1) == '!';
-        if (not) command = command.substring(2);
-        else command = command.substring(1);
+        if (not) {
+          command = command.substring(2);
+        } else {
+          command = command.substring(1);
+        }
 
         String result = resultBag.getNode(command);
-        if (result.equals("true") || (not && result.equals("false"))) return value;
-        else return "";
+        if (result.equals("true") || (not && result.equals("false"))) {
+          return value;
+        } else {
+          return "";
+        }
 
       // Literal: Replace current value with this literal
       case 'l':

@@ -244,7 +244,7 @@ public class SecurityAttributeSource {
    * @return The index of the parameter that is a domain object.
    */
   private int getDomainObjectParameter(Method method) {
-    Class<?> params[] = method.getParameterTypes();
+    Class<?>[] params = method.getParameterTypes();
     for (int i = 0; i < params.length; i++) {
       for (Class<?> type : getClassesToCheck()) {
         if (type.isAssignableFrom(params[i])) {

@@ -122,7 +122,9 @@ public class LoginSettingsPage extends AbstractPage<LoginSettingsPage> {
     if (!Check.isEmpty(trs)) {
       for (int i = 0; i < trs.size(); ++i) {
         WebElement we = trs.get(i);
-        if (we.findElement(By.xpath("./td[@class='name']")).getText().equals(ipAddress)) return i;
+        if (we.findElement(By.xpath("./td[@class='name']")).getText().equals(ipAddress)) {
+          return i;
+        }
       }
     }
     return -1;
