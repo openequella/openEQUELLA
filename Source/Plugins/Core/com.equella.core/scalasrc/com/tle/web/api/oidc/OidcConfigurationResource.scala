@@ -51,7 +51,7 @@ final case class CommonDetailsResponse(
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
     enabled: Boolean,
-    seamlessSso: Option[Boolean]
+    seamlessSso: Boolean
 )
 
 sealed trait IdentityProviderResponse {

@@ -18,7 +18,8 @@
 
 package com.tle.integration.oidc.idp
 
-import io.circe.DecodingFailure.Reason.CustomReason
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.semiauto.deriveConfiguredDecoder
 import io.circe.{Decoder, DecodingFailure, Encoder, Json, JsonObject}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
@@ -44,8 +45,10 @@ object IdentityProviderCodec {
   private implicit val commonDetailsEncoder: Encoder.AsObject[CommonDetails] =
     deriveEncoder[CommonDetails]
 
+  // This implicit config is required to support decoding new fields added to CommonDetails with default values.
+  private implicit val commonDetailsConfig: Configuration = Configuration.default.withDefaults
   private implicit val commonDetailsDecoder: Decoder[CommonDetails] =
-    deriveDecoder[CommonDetails]
+    deriveConfiguredDecoder[CommonDetails]
 
   private implicit val genericIdPDetailsEncoder: Encoder.AsObject[GenericIdentityProviderDetails] =
     deriveEncoder[GenericIdentityProviderDetails]

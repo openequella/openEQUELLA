@@ -56,8 +56,7 @@ import java.net.{URI, URL}
   *   attribute should then be used, along with the standard ID, in an API call to retrieve the OEQ
   *   user ID. If the standard ID is the same as the OEQ user ID, this attribute can be left empty.
   * @param seamlessSso
-  *   Optional configuration for seamless SSO, with only a Boolean to enable this feature in 2026.1,
-  *   but can be extended to include more configuration if needed in the future.
+  *   `true` to enable seamless SSO. Default to `false`.
   */
 final case class CommonDetails(
     platform: IdentityProviderPlatform.Value,
@@ -72,7 +71,7 @@ final case class CommonDetails(
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
     enabled: Boolean,
-    seamlessSso: Option[Boolean]
+    seamlessSso: Boolean = false
 )
 
 sealed trait IdentityProviderDetails {

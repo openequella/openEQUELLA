@@ -38,7 +38,7 @@ class OidcConfigurationServiceTest extends AnyFunSpec with Matchers with GivenWh
     roleConfig = None,
     userIdAttribute = None,
     enabled = true,
-    seamlessSso = Option(true),
+    seamlessSso = true,
     apiUrl = "https://dev-cqchwn4hfdb1p8xr.au.auth0.com/api/v2/users",
     apiClientId = "1GONnE1LtQ1dU0UU8WK0GR3SpCG8KOps",
     apiClientSecret = Option("JKpZOuwluzwHnNXR-rxhhq_p4dWmMz-EhtRHjyfza5nCiG-J2SHrdeXAkyv2GB4I")
