@@ -165,7 +165,11 @@ cmd_stop() {
 
   if kill -0 "${pid}" 2>/dev/null; then
     echo "WARNING: Process did not exit after 30s; sending SIGKILL..."
-    kill -KILL "${pid}" 2>/dev/null || true
+    if [[ -n "${pgid}" && "${pgid}" != "1" ]]; then
+      kill -KILL -"${pgid}" 2>/dev/null || true
+    else
+      kill -KILL "${pid}" 2>/dev/null || true
+    fi
   fi
 
   rm -f "${PID_FILE}"
