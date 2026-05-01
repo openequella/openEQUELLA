@@ -21,6 +21,7 @@ package com.tle.core.filesystem.staging.service.impl;
 import com.dytech.common.io.FileUtils;
 import com.dytech.common.io.FileUtils.GrepFunctor;
 import com.tle.beans.Staging;
+import com.tle.beans.item.Item;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.AllStagingFile;
 import com.tle.common.filesystem.handle.StagingFile;
@@ -29,6 +30,7 @@ import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.filesystem.staging.dao.StagingDao;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.security.ItemSecurityConstants;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
 import com.tle.exceptions.PrivilegeRequiredException;
@@ -48,6 +50,14 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("nls")
 public class StagingServiceImpl implements StagingService {
   private static final Logger LOGGER = LoggerFactory.getLogger(StagingServiceImpl.class);
+
+  private static final List<String> PRIVS_COPY_ITEM_FILES =
+      List.of(
+          ItemSecurityConstants.EDIT_ITEM,
+          ItemSecurityConstants.NEWVERSION_ITEM,
+          ItemSecurityConstants.CLONE_ITEM,
+          ItemSecurityConstants.REDRAFT_ITEM,
+          SecurityConstants.CREATE_ITEM);
 
   @Inject private StagingDao stagingDao;
   @Inject private FileSystemService fileSystemService;
@@ -155,6 +165,17 @@ public class StagingServiceImpl implements StagingService {
 
     if (aclService.filterNonGrantedPrivileges(requiredStagingPermissions).isEmpty()) {
       throw new PrivilegeRequiredException(requiredStagingPermissions);
+    }
+  }
+
+  @Override
+  public void checkCopyPrivileges(Item item) {
+    if (aclService.filterNonGrantedPrivileges(item, PRIVS_COPY_ITEM_FILES).isEmpty()) {
+      LOGGER.warn(
+          "User {} denied access to copy item {} - insufficient privileges",
+          CurrentUser.getUserID(),
+          item.getId());
+      throw new PrivilegeRequiredException(PRIVS_COPY_ITEM_FILES);
     }
   }
 
