@@ -7,7 +7,7 @@ version := "1.0"
 
 val CirceVersion  = "0.14.12"
 val Http4sVersion = "0.23.34"
-val jsoupVersion  = "1.22.1"
+val jsoupVersion  = "1.22.2"
 
 scalaVersion := "2.13.18"
 
@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava"             % "33.6.0-jre",
   jacksonDataBind,
   jacksonModuleScala,
-  "com.auth0" % "jwks-rsa" % "0.23.0",
+  "com.auth0" % "jwks-rsa" % "0.23.1",
   "com.auth0" % "java-jwt" % "4.5.1"
 )
 

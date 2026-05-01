@@ -25,7 +25,7 @@ val cxfVersion        = "3.6.10"
 val fs2Version        = "3.13.0"
 val guiceVersion      = "6.0.0"
 val jsassVersion      = "5.11.1"
-val jsoupVersion      = "1.22.1"
+val jsoupVersion      = "1.22.2"
 val prometheusVersion = "0.16.0"
 val sttpVersion       = "3.11.0"
 val tikaVersion       = "3.3.0"
@@ -50,7 +50,7 @@ libraryDependencies ++= Seq(
 // Libraries needed for JWT validation in LTI 1.3 / OpenID connect
 libraryDependencies ++= Seq(
   "com.auth0" % "java-jwt" % "4.5.1",
-  "com.auth0" % "jwks-rsa" % "0.23.0"
+  "com.auth0" % "jwks-rsa" % "0.23.1"
 )
 
 // Libraries needed for GraphQL
@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
   "com.google.api-client" % "google-api-client"           % "2.9.0",
   "com.google.apis"       % "google-api-services-books"   % "v1-rev20240214-2.0.0",
   "com.google.apis"       % "google-api-services-youtube" % "v3-rev20260412-2.0.0",
-  "com.google.code.gson"  % "gson"                        % "2.13.2",
+  "com.google.code.gson"  % "gson"                        % "2.14.0",
   "com.google.guava"      % "guava"                       % "33.6.0-jre",
   "com.google.inject"     % "guice"                       % guiceVersion excludeAll (
     // Due to deduplicates with aopalliance via Spring AOP.
@@ -226,7 +226,7 @@ libraryDependencies ++= Seq(
   "org.reactivestreams"                  % "reactive-streams"               % "1.0.4",
   "org.jboss.spec.javax.ws.rs"           % "jboss-jaxrs-api_2.1_spec"       % "2.0.2.Final",
   "org.eclipse.microprofile.rest.client" % "microprofile-rest-client-api"   % "3.0.1",
-  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.1",
+  "org.eclipse.microprofile.config"      % "microprofile-config-api"        % "3.1.1",
   "javax.json.bind"                      % "javax.json.bind-api"            % "1.0",
   "org.jsoup"                            % "jsoup"                          % jsoupVersion,
   xstreamDep,

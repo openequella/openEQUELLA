@@ -31,3 +31,6 @@ node_modules/
 
 # Library files downloaded and extracted as part of reporting module build
 Source/Plugins/Core/com.equella.reporting/lib
+
+# openEQUELLA dev server PID tracking file (created by .agents/skills/oeq-dev-server)
+.oeq-server.pid
