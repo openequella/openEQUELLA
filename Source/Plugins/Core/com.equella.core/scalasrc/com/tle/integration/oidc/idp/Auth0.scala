@@ -37,6 +37,7 @@ final case class Auth0(
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
     enabled: Boolean,
+    seamlessSso: Option[Boolean],
     apiUrl: String,
     apiClientId: String,
     apiClientSecret: Option[String]

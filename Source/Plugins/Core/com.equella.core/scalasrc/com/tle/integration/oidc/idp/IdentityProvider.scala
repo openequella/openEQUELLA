@@ -120,6 +120,10 @@ abstract class IdentityProvider extends ConfigurationProperties with Product {
     */
   def enabled: Boolean
 
+  /** Optional configuration to enable seamless SSO for this Identity Provider.
+    */
+  def seamlessSso: Option[Boolean]
+
   /** Validate the values of all the common fields configured for an IdentityProvider, and return
     * the IdentityProvider if the validation succeeds, or a list of errors captured during the
     * validation.

@@ -42,6 +42,7 @@ final case class EntraId(
     roleConfig: Option[RoleConfiguration],
     userIdAttribute: Option[String],
     enabled: Boolean,
+    seamlessSso: Option[Boolean],
     apiClientId: String,
     apiClientSecret: Option[String]
 ) extends IdentityProvider
