@@ -520,7 +520,7 @@ public class StagingResourceImpl implements StagingResource {
     if (Strings.isNullOrEmpty(itemUuid)) {
       throw new BadRequestException("Item UUID is required");
     }
-    if (itemVersion == INVALID_ITEM_VERSION) {
+    if (itemVersion < 1) {
       throw new BadRequestException("Valid item version is required");
     }
   }
