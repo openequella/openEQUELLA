@@ -20,6 +20,7 @@ package com.tle.core.filesystem.staging.service;
 
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.exceptions.PrivilegeRequiredException;
 
 public interface StagingService {
   StagingFile createStagingArea();
@@ -73,4 +74,11 @@ public interface StagingService {
    *     invalid
    */
   void ensureFileExists(StagingFile staging, String filepath);
+
+  /**
+   * Checks if the current user has the required privileges to create or modify staging areas.
+   *
+   * @throws PrivilegeRequiredException if the user does not have the necessary permissions
+   */
+  void checkStagingPrivileges();
 }

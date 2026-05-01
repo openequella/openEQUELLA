@@ -40,7 +40,6 @@ import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
-import com.tle.exceptions.AccessDeniedException;
 import com.tle.exceptions.PrivilegeRequiredException;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.staging.interfaces.StagingResource;
@@ -84,7 +83,6 @@ import org.slf4j.LoggerFactory;
 public class StagingResourceImpl implements StagingResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(StagingResourceImpl.class);
 
-  private static final int INVALID_ITEM_VERSION = 0;
   private static final String HEADER_EPS_STAGING_ID = "x-eps-stagingid";
   private static final List<String> PRIVS_COPY_ITEM_FILES =
       List.of(
@@ -103,7 +101,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response createStaging() {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.createStagingArea();
     // Need compatibility with EPS endpoint :(
     return createdStagingResponse(stagingFile.getUuid());
@@ -111,7 +109,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public StagingBean getStaging(UriInfo uriInfo, String stagingUuid) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
 
     try {
@@ -185,7 +183,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response headFile(String uuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     try {
       stagingService.ensureFileExists(uuid, filepath);
       FileInfo fileInfo = fileSystemService.getFileInfo(new StagingFile(uuid), filepath);
@@ -201,7 +199,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response getFile(HttpHeaders headers, String uuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.ensureFileExists(uuid, filepath);
 
@@ -243,7 +241,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response deleteFile(String stagingUuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     if (!stagingService.deleteFile(stagingUuid, filepath)) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
@@ -253,7 +251,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response deleteStaging(String uuid) throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.removeStagingArea(stagingFile, true);
     return Response.status(Status.NO_CONTENT).build();
@@ -262,7 +260,7 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public Response completeMultipart(
       String uuid, String filepath, String uploadId, MultipartCompleteBean completion) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String folderPath = multipartFolderPath(uploadId);
 
@@ -275,7 +273,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response startMultipart(String uuid) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String uploadId = UUID.randomUUID().toString();
     String folderPath = multipartFolderPath(uploadId);
@@ -295,7 +293,7 @@ public class StagingResourceImpl implements StagingResource {
   public Response uploadChunk(
       String uuid, String uploadId, int partNumber, InputStream data, String contentType)
       throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     if (partNumber <= 0) {
@@ -343,7 +341,7 @@ public class StagingResourceImpl implements StagingResource {
       String copySource,
       String contentType)
       throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
@@ -421,12 +419,6 @@ public class StagingResourceImpl implements StagingResource {
     return urlLinkService
         .getMethodUriBuilder(StagingResource.class, "getFile")
         .build(stagingUuid, filepath);
-  }
-
-  private void checkPermissions() {
-    if (CurrentUser.isGuest()) {
-      throw new AccessDeniedException("You need to be logged in to use a staging area.");
-    }
   }
 
   private String multipartFolderPath(String uploadId) {

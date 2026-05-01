@@ -24,13 +24,18 @@ import com.tle.beans.Staging;
 import com.tle.common.beans.exception.NotFoundException;
 import com.tle.common.filesystem.handle.AllStagingFile;
 import com.tle.common.filesystem.handle.StagingFile;
+import com.tle.common.security.SecurityConstants;
 import com.tle.common.usermanagement.user.CurrentUser;
 import com.tle.core.filesystem.staging.dao.StagingDao;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.security.TLEAclManager;
 import com.tle.core.services.FileSystemService;
+import com.tle.exceptions.PrivilegeRequiredException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +51,7 @@ public class StagingServiceImpl implements StagingService {
 
   @Inject private StagingDao stagingDao;
   @Inject private FileSystemService fileSystemService;
+  @Inject private TLEAclManager aclService;
 
   @Override
   @Transactional
@@ -139,6 +145,16 @@ public class StagingServiceImpl implements StagingService {
   public void ensureFileExists(StagingFile staging, String filepath) {
     if (!fileSystemService.fileExists(staging, filepath)) {
       throw new NotFoundException("File does not exist in staging area: " + filepath);
+    }
+  }
+
+  @Override
+  public void checkStagingPrivileges() {
+    final List<String> requiredStagingPermissions =
+        Arrays.asList(SecurityConstants.CREATE_ITEM, SecurityConstants.EDIT_ITEM);
+
+    if (aclService.filterNonGrantedPrivileges(requiredStagingPermissions).isEmpty()) {
+      throw new PrivilegeRequiredException(requiredStagingPermissions);
     }
   }
 
