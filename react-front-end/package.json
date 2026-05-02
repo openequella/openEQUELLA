@@ -86,7 +86,7 @@
     "shallow-equal-object": "1.1.1",
     "sprintf-js": "1.1.3",
     "tinymce": "8.3.1",
-    "uuid": "11.1.0",
+    "uuid": "14.0.0",
     "wicked-good-xpath": "1.3.0"
   },
   "license": "Apache-2.0",
@@ -94,7 +94,7 @@
     "@babel/core": "7.28.5",
     "@babel/preset-react": "7.28.5",
     "@babel/preset-typescript": "7.28.5",
-    "@html-validate/jest-config": "3.13.0",
+    "@html-validate/jest-config": "3.17.0",
     "@storybook/addon-a11y": "9.1.17",
     "@storybook/addon-docs": "9.1.17",
     "@storybook/addon-webpack5-compiler-swc": "4.0.2",
