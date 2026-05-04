@@ -22,8 +22,6 @@ import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.entity.itemdef.MetadataMapping
 import com.tle.beans.entity.itemdef.mapping.{HTMLMapping, IMSMapping, Literal, LiteralMapping}
 
-import scala.jdk.CollectionConverters._
-
 /** GraphQL representation of `com.tle.beans.entity.itemdef.MetadataMapping`.
   *
   * @see
@@ -42,15 +40,9 @@ final case class CollectionMetadataMapping(
 object CollectionMetadataMapping {
   def apply(mapping: MetadataMapping): CollectionMetadataMapping =
     CollectionMetadataMapping(
-      imsMapping = Option(mapping.getImsMapping)
-        .map(_.asScala.toList.map(CollectionImsMapping(_)))
-        .getOrElse(List.empty),
-      htmlMapping = Option(mapping.getHtmlMapping)
-        .map(_.asScala.toList.map(CollectionHtmlMapping(_)))
-        .getOrElse(List.empty),
-      literalMapping = Option(mapping.getLiteralMapping)
-        .map(_.asScala.toList.map(CollectionLiteralMapping(_)))
-        .getOrElse(List.empty)
+      imsMapping = convertJavaList(mapping.getImsMapping)(CollectionImsMapping(_)),
+      htmlMapping = convertJavaList(mapping.getHtmlMapping)(CollectionHtmlMapping(_)),
+      literalMapping = convertJavaList(mapping.getLiteralMapping)(CollectionLiteralMapping(_))
     )
 }
 
@@ -119,9 +111,7 @@ object CollectionLiteralMapping {
   def apply(mapping: LiteralMapping): CollectionLiteralMapping =
     CollectionLiteralMapping(
       value = Option(mapping.getValue),
-      literals = Option(mapping.getLiterals)
-        .map(_.asScala.toList.map(CollectionLiteral(_)))
-        .getOrElse(List.empty)
+      literals = convertJavaList(mapping.getLiterals)(CollectionLiteral(_))
     )
 }
 

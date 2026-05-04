@@ -21,8 +21,6 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.entity.itemdef.{SummaryDisplayTemplate, SummarySectionsConfig}
 
-import scala.jdk.CollectionConverters._
-
 /** GraphQL representation of `com.tle.beans.entity.itemdef.SummaryDisplayTemplate`.
   *
   * @see
@@ -41,9 +39,7 @@ final case class CollectionSummaryDisplayTemplate(
 object CollectionSummaryDisplayTemplate {
   def apply(template: SummaryDisplayTemplate): CollectionSummaryDisplayTemplate =
     CollectionSummaryDisplayTemplate(
-      configList = Option(template.getConfigList)
-        .map(_.asScala.toList.map(CollectionSummarySectionConfig(_)))
-        .getOrElse(List.empty),
+      configList = convertJavaList(template.getConfigList)(CollectionSummarySectionConfig(_)),
       hideOwner = template.isHideOwner,
       hideCollaborators = template.isHideCollaborators
     )

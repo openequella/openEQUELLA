@@ -21,8 +21,6 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.core.xml.service.XmlService
 
-import scala.jdk.CollectionConverters._
-
 /** GraphQL representation of `com.tle.beans.entity.itemdef.ItemDefinition`.
   *
   * @see
@@ -90,12 +88,10 @@ object CollectionDefinition {
       wizard = Option(entity.getWizard).map(CollectionWizard(_, xmlService)),
       searchDetails = Option(entity.getSearchDetails).map(CollectionSearchDetails(_)),
       metadataMapping = Option(entity.getMetadataMapping).map(CollectionMetadataMapping(_)),
-      itemMetadataRules = Option(entity.getItemMetadataRules)
-        .map(_.asScala.toList.map(CollectionItemMetadataRule(_)))
-        .getOrElse(List.empty),
-      dynamicMetadataRules = Option(entity.getDynamicMetadataRules)
-        .map(_.asScala.toList.map(CollectionDynamicMetadataRule(_)))
-        .getOrElse(List.empty),
+      itemMetadataRules =
+        convertJavaList(entity.getItemMetadataRules)(CollectionItemMetadataRule(_)),
+      dynamicMetadataRules =
+        convertJavaList(entity.getDynamicMetadataRules)(CollectionDynamicMetadataRule(_)),
       itemSummaryDisplayTemplate =
         Option(entity.getItemSummaryDisplayTemplate).map(CollectionSummaryDisplayTemplate(_))
     )

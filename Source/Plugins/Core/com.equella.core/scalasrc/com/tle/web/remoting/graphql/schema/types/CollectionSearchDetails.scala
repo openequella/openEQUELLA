@@ -21,8 +21,6 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.entity.itemdef.{DisplayNode, SearchDetails}
 
-import scala.jdk.CollectionConverters._
-
 /** GraphQL representation of `com.tle.beans.entity.itemdef.SearchDetails`.
   *
   * @see
@@ -49,9 +47,7 @@ object CollectionSearchDetails {
       disableThumbnail = searchDetails.isDisableThumbnail,
       standardOpen = searchDetails.isStandardOpen,
       integrationOpen = searchDetails.isIntegrationOpen,
-      displayNodes = Option(searchDetails.getDisplayNodes)
-        .map(_.asScala.toList.map(CollectionDisplayNode(_)))
-        .getOrElse(List.empty)
+      displayNodes = convertJavaList(searchDetails.getDisplayNodes)(CollectionDisplayNode(_))
     )
 }
 

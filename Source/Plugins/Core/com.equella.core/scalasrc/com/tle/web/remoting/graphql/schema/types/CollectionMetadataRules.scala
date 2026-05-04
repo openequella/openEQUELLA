@@ -21,8 +21,6 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.beans.entity.itemdef.{DynamicMetadataRule, ItemMetadataRule}
 
-import scala.jdk.CollectionConverters._
-
 /** GraphQL representation of `com.tle.beans.entity.itemdef.ItemMetadataRule`.
   *
   * @see
@@ -75,8 +73,6 @@ object CollectionDynamicMetadataRule {
       name = Option(rule.getName),
       path = Option(rule.getPath),
       ruleType = Option(rule.getType),
-      targetList = Option(rule.getTargetList.getEntries)
-        .map(_.asScala.toList.map(TargetListEntry(_)))
-        .getOrElse(List.empty)
+      targetList = convertJavaList(rule.getTargetList.getEntries)(TargetListEntry(_))
     )
 }

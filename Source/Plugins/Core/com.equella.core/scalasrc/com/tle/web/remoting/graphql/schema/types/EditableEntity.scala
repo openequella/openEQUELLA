@@ -21,8 +21,6 @@ package com.tle.web.remoting.graphql.schema.types
 import caliban.schema.Annotations.GQLDescription
 import com.tle.common.EntityPack
 
-import scala.jdk.CollectionConverters._
-
 /** Based on EntityPack with a focus on what's needed for GraphQL interactions.
   *
   * TODO: ImportExportPack (super class of EntityPack) also includes a `otherTargetLists`, but for
@@ -83,6 +81,6 @@ object EditableEntity {
       targetList: com.tle.common.security.TargetList
   ): List[TargetListEntry] =
     Option(targetList)
-      .map(_.getEntries.asScala.toList.map(TargetListEntry(_)))
+      .map(tl => convertJavaList(tl.getEntries)(TargetListEntry(_)))
       .getOrElse(List.empty)
 }
