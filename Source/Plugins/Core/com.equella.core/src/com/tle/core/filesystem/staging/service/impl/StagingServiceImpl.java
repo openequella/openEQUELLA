@@ -51,14 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class StagingServiceImpl implements StagingService {
   private static final Logger LOGGER = LoggerFactory.getLogger(StagingServiceImpl.class);
 
-  private static final List<String> PRIVS_COPY_ITEM_FILES =
-      List.of(
-          ItemSecurityConstants.EDIT_ITEM,
-          ItemSecurityConstants.NEWVERSION_ITEM,
-          ItemSecurityConstants.CLONE_ITEM,
-          ItemSecurityConstants.REDRAFT_ITEM,
-          SecurityConstants.CREATE_ITEM);
-
   @Inject private StagingDao stagingDao;
   @Inject private FileSystemService fileSystemService;
   @Inject private TLEAclManager aclService;
@@ -170,6 +162,13 @@ public class StagingServiceImpl implements StagingService {
 
   @Override
   public void checkCopyPrivileges(Item item) {
+    final List<String> PRIVS_COPY_ITEM_FILES =
+        List.of(
+            ItemSecurityConstants.EDIT_ITEM,
+            ItemSecurityConstants.NEWVERSION_ITEM,
+            ItemSecurityConstants.CLONE_ITEM,
+            ItemSecurityConstants.REDRAFT_ITEM);
+
     if (aclService.filterNonGrantedPrivileges(item, PRIVS_COPY_ITEM_FILES).isEmpty()) {
       LOGGER.warn(
           "User {} denied access to copy item {} - insufficient privileges",
