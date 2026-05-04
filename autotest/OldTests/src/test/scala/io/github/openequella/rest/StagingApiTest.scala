@@ -52,6 +52,30 @@ class StagingApiTest extends AbstractRestApiTest {
     finally StagingApi.deleteStaging(uuid)
   }
 
+  @Test(description = "Guest users should not be able to access staging endpoints")
+  def guestAccessDeniedTest(): Unit = withStaging { stagingUuid =>
+    val file = getTestFile(AVATAR_FILENAME)
+    logout()
+    assertFalse(hasAuthenticatedSession, "Session should be guest after logout")
+
+    assertEquals(StagingApi.createStaging().status, HttpStatus.SC_FORBIDDEN)
+    assertEquals(StagingApi.getStaging(stagingUuid).status, HttpStatus.SC_FORBIDDEN)
+    assertEquals(
+      StagingApi.uploadFile(stagingUuid, "guest-upload.txt", file, None).status,
+      HttpStatus.SC_FORBIDDEN
+    )
+    assertEquals(StagingApi.headFile(stagingUuid, AVATAR_FILENAME).status, HttpStatus.SC_FORBIDDEN)
+    assertEquals(
+      StagingApi.deleteFile(stagingUuid, AVATAR_FILENAME).status,
+      HttpStatus.SC_FORBIDDEN
+    )
+    assertEquals(StagingApi.deleteStaging(stagingUuid), HttpStatus.SC_FORBIDDEN)
+
+    // Restore the authenticated session so subsequent tests don't run as guest
+    login()
+    assertTrue(hasAuthenticatedSession, "Authenticated session should be restored")
+  }
+
   @Test(description = "Create an empty staging area")
   def createStagingTest(): Unit = withStaging { stagingUuid =>
     val response = StagingApi.getStaging(stagingUuid)
