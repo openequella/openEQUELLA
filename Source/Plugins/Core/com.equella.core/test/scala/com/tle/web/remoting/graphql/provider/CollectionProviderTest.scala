@@ -18,11 +18,12 @@
 
 package com.tle.web.remoting.graphql.provider
 
-import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.beans.entity.LanguageBundle
+import com.tle.beans.entity.itemdef.ItemDefinition
 import com.tle.common.EntityPack
 import com.tle.core.collection.service.ItemDefinitionService
 import com.tle.core.filesystem.staging.service.StagingService
+import com.tle.core.xml.service.XmlService
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.GivenWhenThen
 import org.scalatest.funspec.AnyFunSpec
@@ -36,7 +37,9 @@ class CollectionProviderTest
 
   private val mockItemDefService = mock(classOf[ItemDefinitionService])
   private val mockStagingService = mock(classOf[StagingService])
-  private val provider           = new CollectionProvider(mockItemDefService, mockStagingService)
+  private val mockXmlService     = mock(classOf[XmlService])
+  private val provider           =
+    new CollectionProvider(mockItemDefService, mockStagingService, mockXmlService)
 
   describe("CollectionProvider.importCollection") {
 
