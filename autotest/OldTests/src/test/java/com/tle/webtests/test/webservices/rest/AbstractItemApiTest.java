@@ -31,11 +31,10 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
 
   protected String[] createStaging() throws IOException {
     HttpResponse stagingResponse =
-        execute(new HttpPost(context.getBaseUrl() + "api/file/"), false, getToken());
+        execute(new HttpPost(context.getBaseUrl() + "api/staging/"), false, getToken());
     assertResponse(stagingResponse, 201, "201 not returned from staging creation");
-    ObjectNode stagingJson = readJson(mapper, stagingResponse);
-    String stagingUuid = stagingJson.get("uuid").asText();
-    String stagingDirUrl = stagingJson.get("links").get("content").asText();
+    String stagingUuid = stagingResponse.getFirstHeader("x-eps-stagingid").getValue();
+    String stagingDirUrl = stagingResponse.getFirstHeader("Location").getValue();
     return new String[] {stagingUuid, stagingDirUrl};
   }
 
@@ -49,7 +48,7 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     inputStreamEntity.setContentType("application/octet-stream");
     putfile.setEntity(inputStreamEntity);
     HttpResponse putfileResponse = execute(putfile, true, getToken());
-    assertResponse(putfileResponse, 201, "201 not returned from staging creation");
+    assertResponse(putfileResponse, 200, "200 not returned from staging creation");
   }
 
   protected JsonNode getItemJson(String itemUri, String info, String token) throws IOException {
