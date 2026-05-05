@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import com.tle.common.PathUtils;
+import com.tle.common.URLUtils;
 import com.tle.webtests.pageobject.viewitem.ItemId;
 import java.io.IOException;
 import java.net.URL;
@@ -29,25 +31,32 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected static final String COLLECTION_MODERATE = "3d31ac33-261e-404c-a157-487e51716268";
   protected static final String COLLECTION_SAVESCRIPT = "c7194cd0-f586-49b6-9fcc-4b1c5237efd9";
 
+  private static final String API_STAGING_PATH = "api/staging/";
+  private static final String HEADER_EPS_STAGING_ID = "x-eps-stagingid";
+  private static final String HEADER_LOCATION = "Location";
+
   protected String[] createStaging() throws IOException {
     HttpResponse stagingResponse =
-        execute(new HttpPost(context.getBaseUrl() + "api/staging/"), false, getToken());
+        execute(new HttpPost(context.getBaseUrl() + API_STAGING_PATH), false, getToken());
     assertResponse(stagingResponse, 201, "201 not returned from staging creation");
-    String stagingUuid = stagingResponse.getFirstHeader("x-eps-stagingid").getValue();
-    String stagingDirUrl = stagingResponse.getFirstHeader("Location").getValue();
+
+    String stagingUuid = getRequiredHeader(stagingResponse, HEADER_EPS_STAGING_ID);
+    String stagingDirUrl = getRequiredHeader(stagingResponse, HEADER_LOCATION);
     return new String[] {stagingUuid, stagingDirUrl};
   }
 
   protected void uploadFile(String stagingDirUrl, String filename, URL resource)
       throws IOException {
-    String avatarUrl = stagingDirUrl + '/' + com.tle.common.URLUtils.urlEncode(filename);
-    HttpPut putfile = new HttpPut(avatarUrl);
+    String fileUrl = PathUtils.filePath(stagingDirUrl, URLUtils.urlEncode(filename));
+    HttpPut putfile = new HttpPut(fileUrl);
+
     URLConnection file = resource.openConnection();
     InputStreamEntity inputStreamEntity =
         new InputStreamEntity(file.getInputStream(), file.getContentLength());
     inputStreamEntity.setContentType("application/octet-stream");
     putfile.setEntity(inputStreamEntity);
     HttpResponse putfileResponse = execute(putfile, true, getToken());
+
     assertResponse(putfileResponse, 200, "200 not returned from staging creation");
   }
 
@@ -252,5 +261,9 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     ObjectNode item = mapper.createObjectNode();
     item.with("collection").put("uuid", collection);
     return item;
+  }
+
+  private static String getRequiredHeader(HttpResponse response, String headerName) {
+    return response.getFirstHeader(headerName).getValue();
   }
 }
