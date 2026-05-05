@@ -46,6 +46,7 @@ public interface ItemLinkService {
    *
    * @param itemKey The item key.
    * @return The item URI.
+   * @throws RuntimeException if the generated URI syntax is invalid (should never happen)
    */
   URI getItemURI(ItemKey itemKey);
 }
