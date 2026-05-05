@@ -43,24 +43,27 @@ public class FileApiTest extends AbstractRestApiTest {
 
   @Test
   public void testUnzip() throws Exception {
+    final String token = getToken();
+
     // create staging
-    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true);
+    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true, token);
     assertResponse(response, 201, "201 not returned from staging creation");
 
     // extract Location and do a get
     final String stagingDirUrl = response.getFirstHeader("Location").getValue();
-    final ObjectNode deepRoot = (ObjectNode) getEntity(stagingDirUrl, null, "deep", true);
+    final ObjectNode deepRoot = (ObjectNode) getEntity(stagingDirUrl, token, "deep", true);
     final String contentUrl = getLink(deepRoot, "content");
 
     // put a file to the folder1 content url
     final File file = new File(AbstractPage.getPathFromUrl(Attachments.get("package.zip")));
 
     response =
-        execute(getPut(contentUrl + "/myzip.zip", file, "unzipto", "unzippedхцч/sub1"), true);
+        execute(
+            getPut(contentUrl + "/myzip.zip", file, "unzipto", "unzippedхцч/sub1"), true, token);
     assertResponse(response, 201, "201 not returned from PUT file");
 
     // check contents of zip
-    final ObjectNode deepRoot2 = (ObjectNode) getEntity(stagingDirUrl, null, "deep", true);
+    final ObjectNode deepRoot2 = (ObjectNode) getEntity(stagingDirUrl, token, "deep", true);
     // find the zip
     ObjectNode zipNode = findFile(deepRoot2, "myzip.zip");
 
@@ -78,14 +81,14 @@ public class FileApiTest extends AbstractRestApiTest {
     String cultureContentUrl = getLink(cultureNode, "content");
     final File dlFile = File.createTempFile("culture", "jpg");
     dlFile.deleteOnExit();
-    download(cultureContentUrl, dlFile, null);
+    download(cultureContentUrl, dlFile, token);
     assertEquals(
         "Wrong file size for culture.jpg", dlFile.length(), cultureNode.get("size").asInt());
   }
 
   @Test
   public void testFileCopyWithOAuthLogin() throws Exception {
-    final String token = requestToken(OAUTH_CLIENT_ID);
+    final String token = getToken();
     final String sourceItemUuid = "2f6e9be8-897d-45f1-98ea-7aa31b449c0e";
     final String sourceItemVersion = "1";
 
@@ -163,8 +166,10 @@ public class FileApiTest extends AbstractRestApiTest {
 
   @Test
   public void testEverything() throws Exception {
+    final String token = getToken();
+
     // create staging
-    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true);
+    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true, token);
     assertResponse(response, 201, "201 not returned from staging creation");
     // extract Location and do a get
     final String stagingDirUrl = response.getFirstHeader("Location").getValue();
@@ -172,11 +177,13 @@ public class FileApiTest extends AbstractRestApiTest {
     // create a sub folder (first method : post to root folder)
     response =
         execute(
-            getPost(stagingDirUrl, "{\"filename\":\"" + Utils.jsescape(FOLDER_1) + "\"}"), true);
+            getPost(stagingDirUrl, "{\"filename\":\"" + Utils.jsescape(FOLDER_1) + "\"}"),
+            true,
+            token);
     assertResponse(response, 201, "201 not returned from folder creation");
     // extract Location and do a get
     final String folder1Location = response.getFirstHeader("Location").getValue();
-    response = execute(new HttpGet(folder1Location), false);
+    response = execute(new HttpGet(folder1Location), false, token);
     final JsonNode folderNode = readJson(mapper, response);
     JsonNode links = folderNode.get("links");
     String folder1DirUrl = links.get("dir").asText();
@@ -187,11 +194,12 @@ public class FileApiTest extends AbstractRestApiTest {
     final String folder1ContentUrl = links.get("content").asText();
 
     // create a folder2 (second method : put to non existent URL)
-    response = execute(getPut(stagingDirUrl + "/folder2", "{\"filename\":\"folder2\"}"), true);
+    response =
+        execute(getPut(stagingDirUrl + "/folder2", "{\"filename\":\"folder2\"}"), true, token);
     assertResponse(response, 201, "201 not returned from folder2 creation");
     // extract Location and do a get
     final String folder2Location = response.getFirstHeader("Location").getValue();
-    response = execute(new HttpGet(folder2Location), false);
+    response = execute(new HttpGet(folder2Location), false, token);
     final JsonNode folder2Node = readJson(mapper, response);
     links = folder2Node.get("links");
     final String folder2DirUrl = links.get("dir").asText();
@@ -199,19 +207,19 @@ public class FileApiTest extends AbstractRestApiTest {
     // String folder2ContentUrl = links.get(2).get("href").asText();
 
     // create a folder3 (third method : put to non existent URL, no content sent)
-    response = execute(new HttpPut(stagingDirUrl + "/folder3"), true);
+    response = execute(new HttpPut(stagingDirUrl + "/folder3"), true, token);
     assertResponse(response, 201, "201 not returned from folder3 creation");
 
     // create a folder3/folder3.1
-    response = execute(new HttpPut(stagingDirUrl + "/folder3/folder3.1"), true);
+    response = execute(new HttpPut(stagingDirUrl + "/folder3/folder3.1"), true, token);
     assertResponse(response, 201, "201 not returned from folder3.1 creation");
 
     // create a folder4/folder4.1/folder4.1.1 (where folder4.1 does not yet exists)
-    response = execute(new HttpPut(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), true);
+    response = execute(new HttpPut(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), true, token);
     assertResponse(response, 201, "201 not returned from folder4.1.1 creation");
 
     // ensure it *really* exists
-    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), false);
+    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), false, token);
     assertResponse(response, 200, "200 not returned from getting folder4.1.1");
     final ObjectNode folder411Node = readJson(mapper, response);
 
@@ -220,17 +228,18 @@ public class FileApiTest extends AbstractRestApiTest {
     response =
         execute(
             getPut(stagingDirUrl + "/folder4/folder4.1/folder4.1.1", folder411Node.toString()),
-            true);
+            true,
+            token);
     assertResponse(response, 201, "201 not returned folder rename");
 
     // ensure new name is there, old name is not
-    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/newfilename"), true);
+    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/newfilename"), true, token);
     assertResponse(response, 200, "200 not returned from new folder name");
-    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), true);
+    response = execute(new HttpGet(stagingDirUrl + "/folder4/folder4.1/folder4.1.1"), true, token);
     assertResponse(response, 404, "404 not returned from olf folder name");
 
     // get a deep representation of the root
-    response = execute(new HttpGet(stagingDirUrl + "?deep=true"), false);
+    response = execute(new HttpGet(stagingDirUrl + "?deep=true"), false, token);
     assertResponse(response, 200, "200 not returned from getting root (deep)");
     final ObjectNode deepRootNode = readJson(mapper, response);
 
@@ -244,30 +253,33 @@ public class FileApiTest extends AbstractRestApiTest {
         !folder41Node.path("folders").path(0).isMissingNode());
 
     // delete folder2, ensure 204
-    response = execute(new HttpDelete(folder2DirUrl), true);
+    response = execute(new HttpDelete(folder2DirUrl), true, token);
     assertResponse(response, 204, "204 not returned from folder2 delete");
 
     // try to list contents of folder 2
-    response = execute(new HttpGet(folder2DirUrl), true);
+    response = execute(new HttpGet(folder2DirUrl), true, token);
     assertResponse(response, 404, "404 not returned from non existent folder2");
 
     // put again to folder1, ensure 200
     response =
-        execute(getPut(folder1DirUrl, "{\"filename\":\"" + Utils.jsescape(FOLDER_1) + "\"}"), true);
+        execute(
+            getPut(folder1DirUrl, "{\"filename\":\"" + Utils.jsescape(FOLDER_1) + "\"}"),
+            true,
+            token);
     assertResponse(response, 200, "200 not returned from folder put (existing)");
 
     // put a file to the folder1 content url
     final File file = new File(AbstractPage.getPathFromUrl(Attachments.get(TEST_FILE)));
     String myfileUrl = folder1ContentUrl + "/" + URLUtils.urlEncode(TEST_FILE, false);
-    response = execute(getPut(myfileUrl, file), true);
+    response = execute(getPut(myfileUrl, file), true, token);
     assertResponse(response, 201, "201 not returned from PUT file");
 
     // do it again, ensure 200 response this time
-    response = execute(getPut(myfileUrl, file), true);
+    response = execute(getPut(myfileUrl, file), true, token);
     assertResponse(response, 200, "200 not returned from PUT (replace) file");
 
     // get a file listing of folder1
-    response = execute(new HttpGet(folder1DirUrl), false);
+    response = execute(new HttpGet(folder1DirUrl), false, token);
     assertResponse(response, 200, "200 not returned from folder1 file listing");
     final JsonNode folder1ListingNode = readJson(mapper, response);
     final JsonNode folder1FilesNode = folder1ListingNode.get("files");
@@ -278,7 +290,7 @@ public class FileApiTest extends AbstractRestApiTest {
     // download it to disk
     final File echoed = File.createTempFile("echoed", "jpg");
     echoed.deleteOnExit();
-    response = download(myfileUrl, echoed);
+    response = download(myfileUrl, echoed, token);
 
     // byte match original file with echoed
     final String origMd5 = md5(file);
@@ -286,19 +298,19 @@ public class FileApiTest extends AbstractRestApiTest {
     assertEquals("File corrupted!", origMd5, echoedMd5);
 
     // delete file on server, ensure 204 repsonse
-    response = execute(new HttpDelete(myfileUrl), true);
+    response = execute(new HttpDelete(myfileUrl), true, token);
     assertResponse(response, 204, "File not deleted");
 
     // try to get it, ensure 404
-    response = execute(new HttpGet(myfileUrl), true);
+    response = execute(new HttpGet(myfileUrl), true, token);
     assertResponse(response, 404, "File still gettable");
 
     // delete staging area
-    response = execute(new HttpDelete(stagingDirUrl), true);
+    response = execute(new HttpDelete(stagingDirUrl), true, token);
     assertResponse(response, 204, "Staging area not deleted");
 
     // try to get it, ensure 404
-    response = execute(new HttpGet(stagingDirUrl), true);
+    response = execute(new HttpGet(stagingDirUrl), true, token);
     assertResponse(response, 404, "Staging still gettable");
   }
 
@@ -306,20 +318,22 @@ public class FileApiTest extends AbstractRestApiTest {
   public void testNestedFolders() throws Exception {
     // As per http://dev.equella.com/issues/6245
 
+    final String token = getToken();
+
     // create staging
-    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true);
+    HttpResponse response = execute(new HttpPost(context.getBaseUrl() + "api/file/"), true, token);
     assertResponse(response, 201, "201 not returned from staging creation");
     // extract Location and do a get
     final String stagingDirUrl = response.getFirstHeader("Location").getValue();
 
     // create a triple nested folder
-    response = execute(new HttpPut(stagingDirUrl + "/f1/f2/f3"), true);
+    response = execute(new HttpPut(stagingDirUrl + "/f1/f2/f3"), true, token);
     assertResponse(response, 201, "201 not returned from f3 creation");
     // extract Location and do a get
     final String f3Location = response.getFirstHeader("Location").getValue();
 
     // Get it, check the links
-    response = execute(new HttpGet(f3Location), false);
+    response = execute(new HttpGet(f3Location), false, token);
     assertResponse(response, 200, "200 not returned from f3 GET");
 
     final ObjectNode f3Node = readJson(mapper, response);
@@ -333,7 +347,7 @@ public class FileApiTest extends AbstractRestApiTest {
     assertEquals("f3 parent dir location is wrong", stagingDirUrl + "/f1/f2", f3ParentLoc);
 
     // get the parent parent (ie f1)
-    response = execute(new HttpGet(f3ParentLoc), false);
+    response = execute(new HttpGet(f3ParentLoc), false, token);
     assertResponse(response, 200, "200 not returned from f3ParentLoc GET");
     final ObjectNode f2Node = readJson(mapper, response);
     final String f2ParentLoc = getLink((ObjectNode) f2Node.get("parent"), "self");
@@ -343,11 +357,13 @@ public class FileApiTest extends AbstractRestApiTest {
     final File file = new File(AbstractPage.getPathFromUrl(Attachments.get(TEST_FILE)));
     response =
         execute(
-            getPut(f2ParentContentLoc + "/" + URLUtils.urlEncode(TEST_FILE, false), file), true);
+            getPut(f2ParentContentLoc + "/" + URLUtils.urlEncode(TEST_FILE, false), file),
+            true,
+            token);
     assertResponse(response, 201, "201 not returned from PUT file");
 
     // GET f1, check the file is in f1.files
-    response = execute(new HttpGet(f2ParentLoc), false);
+    response = execute(new HttpGet(f2ParentLoc), false, token);
     assertResponse(response, 200, "200 not returned from f2ParentLoc GET");
     final ObjectNode f1Node = readJson(mapper, response);
     ObjectNode myfileNode = findFile(f1Node, TEST_FILE);
@@ -357,11 +373,13 @@ public class FileApiTest extends AbstractRestApiTest {
     // Upload a file to f2
     response =
         execute(
-            getPut(f3ParentContentLoc + "/" + URLUtils.urlEncode(TEST_FILE, false), file), true);
+            getPut(f3ParentContentLoc + "/" + URLUtils.urlEncode(TEST_FILE, false), file),
+            true,
+            token);
     assertResponse(response, 201, "201 not returned from PUT file");
 
     // Do a deep GET, check all files and folders
-    ObjectNode deepRoot = (ObjectNode) getEntity(stagingDirUrl, null, "deep", true);
+    ObjectNode deepRoot = (ObjectNode) getEntity(stagingDirUrl, token, "deep", true);
 
     // get folder f1
     ObjectNode f1DeepNode = findFolder(deepRoot, "f1");

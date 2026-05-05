@@ -24,16 +24,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+import com.tle.beans.item.Item;
+import com.tle.beans.item.ItemId;
 import com.tle.common.PathUtils;
 import com.tle.common.filesystem.FileEntry;
 import com.tle.common.filesystem.handle.FileHandle;
 import com.tle.common.filesystem.handle.StagingFile;
-import com.tle.common.usermanagement.user.CurrentUser;
+import com.tle.core.filesystem.ItemFile;
 import com.tle.core.filesystem.staging.service.StagingService;
 import com.tle.core.guice.Bind;
+import com.tle.core.item.service.ItemFileService;
+import com.tle.core.item.service.ItemService;
 import com.tle.core.mimetypes.MimeTypeService;
 import com.tle.core.services.FileSystemService;
-import com.tle.exceptions.AccessDeniedException;
 import com.tle.web.api.interfaces.beans.BlobBean;
 import com.tle.web.api.staging.interfaces.StagingResource;
 import com.tle.web.api.staging.interfaces.beans.MultipartBean;
@@ -52,11 +55,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
@@ -74,24 +79,26 @@ import org.slf4j.LoggerFactory;
 public class StagingResourceImpl implements StagingResource {
   private static final Logger LOGGER = LoggerFactory.getLogger(StagingResourceImpl.class);
 
+  private static final String HEADER_EPS_STAGING_ID = "x-eps-stagingid";
+
   @Inject private MimeTypeService mimeService;
   @Inject private StagingService stagingService;
   @Inject private FileSystemService fileSystemService;
   @Inject private UrlLinkService urlLinkService;
+  @Inject private ItemService itemService;
+  @Inject private ItemFileService itemFileService;
 
   @Override
   public Response createStaging() {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.createStagingArea();
     // Need compatibility with EPS endpoint :(
-    return Response.created(stagingUri(stagingFile.getUuid()))
-        .header("x-eps-stagingid", stagingFile.getUuid())
-        .build();
+    return createdStagingResponse(stagingFile.getUuid());
   }
 
   @Override
   public StagingBean getStaging(UriInfo uriInfo, String stagingUuid) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(stagingUuid);
 
     try {
@@ -165,7 +172,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response headFile(String uuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     try {
       stagingService.ensureFileExists(uuid, filepath);
       FileInfo fileInfo = fileSystemService.getFileInfo(new StagingFile(uuid), filepath);
@@ -181,7 +188,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response getFile(HttpHeaders headers, String uuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.ensureFileExists(uuid, filepath);
 
@@ -223,7 +230,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response deleteFile(String stagingUuid, String filepath) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     if (!stagingService.deleteFile(stagingUuid, filepath)) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
@@ -233,7 +240,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response deleteStaging(String uuid) throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     stagingService.removeStagingArea(stagingFile, true);
     return Response.status(Status.NO_CONTENT).build();
@@ -242,7 +249,7 @@ public class StagingResourceImpl implements StagingResource {
   @Override
   public Response completeMultipart(
       String uuid, String filepath, String uploadId, MultipartCompleteBean completion) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String folderPath = multipartFolderPath(uploadId);
 
@@ -255,7 +262,7 @@ public class StagingResourceImpl implements StagingResource {
 
   @Override
   public Response startMultipart(String uuid) {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     StagingFile stagingFile = stagingService.getStagingFile(uuid);
     String uploadId = UUID.randomUUID().toString();
     String folderPath = multipartFolderPath(uploadId);
@@ -275,7 +282,7 @@ public class StagingResourceImpl implements StagingResource {
   public Response uploadChunk(
       String uuid, String uploadId, int partNumber, InputStream data, String contentType)
       throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     if (partNumber <= 0) {
@@ -323,7 +330,7 @@ public class StagingResourceImpl implements StagingResource {
       String copySource,
       String contentType)
       throws IOException {
-    checkPermissions();
+    stagingService.checkStagingPrivileges();
     checkValidContentType(contentType);
 
     final StagingFile stagingFile = stagingService.getStagingFile(uuid);
@@ -337,6 +344,22 @@ public class StagingResourceImpl implements StagingResource {
       case UnzipAction u -> handleWriteAndUnzip(stagingFile, data, u.destination(), filepath, uuid);
       case WriteAction ignored -> handleWrite(stagingFile, data, filepath, uuid);
     };
+  }
+
+  @Override
+  public Response createStagingFromItem(String itemUuid, int itemVersion) {
+    stagingService.checkStagingPrivileges();
+    validateCopyRequest(itemUuid, itemVersion);
+
+    Item item = fetchExistingItem(itemUuid, itemVersion);
+    stagingService.checkCopyPrivileges(item);
+
+    ItemFile itemFile = fetchExistingItemFile(item);
+    StagingFile stagingFile = stagingService.createStagingArea();
+
+    fileSystemService.copy(itemFile, stagingFile);
+
+    return createdStagingResponse(stagingFile.getUuid());
   }
 
   private PutAction resolveAction(String copySource, String unzipTo) {
@@ -386,12 +409,6 @@ public class StagingResourceImpl implements StagingResource {
     return urlLinkService
         .getMethodUriBuilder(StagingResource.class, "getFile")
         .build(stagingUuid, filepath);
-  }
-
-  private void checkPermissions() {
-    if (CurrentUser.isGuest()) {
-      throw new AccessDeniedException("You need to be logged in to use a staging area.");
-    }
   }
 
   private String multipartFolderPath(String uploadId) {
@@ -487,5 +504,38 @@ public class StagingResourceImpl implements StagingResource {
 
   private String toQuotedEtag(String md5) {
     return "\"" + md5 + "\"";
+  }
+
+  private void validateCopyRequest(String itemUuid, int itemVersion) {
+    if (Strings.isNullOrEmpty(itemUuid)) {
+      throw new BadRequestException("Item UUID is required");
+    }
+    if (itemVersion < 1) {
+      throw new BadRequestException("Valid item version is required");
+    }
+  }
+
+  private Item fetchExistingItem(String itemUuid, int itemVersion) {
+    var itemId = new ItemId(itemUuid, itemVersion);
+    return Optional.ofNullable(itemService.get(itemId))
+        .orElseThrow(
+            () -> {
+              LOGGER.warn("Attempted to copy from non-existent item: {}", itemId);
+              return new NotFoundException("Item not found");
+            });
+  }
+
+  private ItemFile fetchExistingItemFile(Item item) {
+    ItemFile itemFile = itemFileService.getItemFile(item);
+    if (!fileSystemService.fileExists(itemFile)) {
+      throw new NotFoundException("Item file not found");
+    }
+    return itemFile;
+  }
+
+  private Response createdStagingResponse(String stagingUuid) {
+    return Response.created(stagingUri(stagingUuid))
+        .header(HEADER_EPS_STAGING_ID, stagingUuid)
+        .build();
   }
 }

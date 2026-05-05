@@ -8,7 +8,7 @@ import com.tle.webtests.test.files.Attachments
 import org.apache.commons.httpclient.methods._
 import org.apache.commons.httpclient.{HttpMethod, HttpStatus, NameValuePair}
 import org.testng.Assert._
-import org.testng.annotations.Test
+import org.testng.annotations.{DataProvider, Test}
 
 import java.io.File
 
@@ -30,10 +30,12 @@ case class ApiResponse[T](status: Int, body: T)
 
 class StagingApiTest extends AbstractRestApiTest {
 
-  private val TEST_FILENAME     = "Special characters - хцч test2.jpg"
-  private val AVATAR_FILENAME   = "avatar.png"
-  private val PACKAGE_FILENAME  = "package.zip"
-  private val TEST_TXT_FILENAME = "test.txt"
+  private val TEST_FILENAME         = "Special characters - хцч test2.jpg"
+  private val AVATAR_FILENAME       = "avatar.png"
+  private val PACKAGE_FILENAME      = "package.zip"
+  private val TEST_TXT_FILENAME     = "test.txt"
+  private val ITEM_UUID             = "2f6e9be8-897d-45f1-98ea-7aa31b449c0e"
+  private val HEADER_EPS_STAGING_ID = "x-eps-stagingid"
 
   private val scalaMapper: ObjectMapper = new ObjectMapper().registerModule(DefaultScalaModule)
 
@@ -206,6 +208,54 @@ class StagingApiTest extends AbstractRestApiTest {
     assertEquals(response.status, HttpStatus.SC_BAD_REQUEST)
   }
 
+  @DataProvider(name = "badCopyData")
+  def badCopyData(): Array[Array[AnyRef]] = Array(
+    Array(ITEM_UUID, null),
+    Array(null, "1"),
+    Array("", "1"),
+    Array(ITEM_UUID, "0")
+  )
+
+  @Test(
+    description = "Attempt to copy an item with missing or invalid parameters",
+    dataProvider = "badCopyData"
+  )
+  def copyFromItemBadParamsTest(uuid: String, version: String): Unit = {
+    val response = StagingApi.copyFromItem(uuid, version)
+    assertEquals(response.status, HttpStatus.SC_BAD_REQUEST)
+  }
+
+  @Test(description = "Copy files from an existing item into a new staging area")
+  def copyFromItemTest(): Unit = {
+    val response = StagingApi.copyFromItem(ITEM_UUID, "1")
+    assertEquals(response.status, HttpStatus.SC_CREATED)
+
+    val stagingUuid = response.body.get
+    val getResponse = StagingApi.getStaging(stagingUuid)
+    assertEquals(getResponse.status, HttpStatus.SC_OK)
+
+    getResponse.body.foreach { staging =>
+      assertFalse(staging.files.isEmpty, "Files should have been copied from the item")
+      assertTrue(
+        staging.files.exists(_.name == AVATAR_FILENAME),
+        s"$AVATAR_FILENAME should have been copied"
+      )
+    }
+
+    // Cleanup staging area
+    StagingApi.deleteStaging(stagingUuid)
+  }
+
+  @Test(description = "Low-privilege user is denied access to copy item files")
+  def lowPrivilegeCopyFromItemTest(): Unit = {
+    loginAsLowPrivilegeUser()
+    val response = StagingApi.copyFromItem(ITEM_UUID, "1")
+    assertEquals(response.status, HttpStatus.SC_FORBIDDEN)
+
+    // Ensure to log in back as normal user
+    login()
+  }
+
   private def findFileInStaging(
       response: ApiResponse[Option[StagingArea]],
       exactFilePath: String
@@ -233,7 +283,7 @@ class StagingApiTest extends AbstractRestApiTest {
     }
 
     def createStaging(): ApiResponse[Option[String]] =
-      execute(new PostMethod(endpoint))(m => getHeader(m, "x-eps-stagingid").get)
+      execute(new PostMethod(endpoint))(m => getHeader(m, HEADER_EPS_STAGING_ID).get)
 
     def getStaging(stagingUuid: String): ApiResponse[Option[StagingArea]] =
       execute(new GetMethod(endpoint + stagingUuid)) { m =>
@@ -304,6 +354,17 @@ class StagingApiTest extends AbstractRestApiTest {
         new StringRequestEntity(payload.toString, "application/json", "UTF-8")
       )
       execute(method)(m => getHeader(m, "Location").get)
+    }
+
+    def copyFromItem(itemUuid: String, itemVersion: String): ApiResponse[Option[String]] = {
+      val method = new PostMethod(s"${endpoint}copy")
+      val params = Seq(
+        Option(itemUuid).map(u => new NameValuePair("itemUuid", u)),
+        Option(itemVersion).map(v => new NameValuePair("itemVersion", v))
+      ).flatten.toArray
+
+      method.setQueryString(params)
+      execute(method)(m => getHeader(m, HEADER_EPS_STAGING_ID).get)
     }
   }
 }
