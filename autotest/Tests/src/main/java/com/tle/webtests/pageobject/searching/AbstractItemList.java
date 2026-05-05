@@ -4,6 +4,9 @@ import com.tle.common.Check;
 import com.tle.webtests.framework.PageContext;
 import com.tle.webtests.pageobject.PrefixedName;
 import com.tle.webtests.pageobject.viewitem.SummaryPage;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -38,36 +41,26 @@ public abstract class AbstractItemList<
   }
 
   /**
-   * convenient static method to dig out the numeric value (23345) from a string such as "Showing 21
-   * to 30 of 23,345 results" We assume the 'real' number is the last sequence of digits from the
-   * end
+   * Convenient static method to dig out the numeric value (23345) from a string such as "Showing 21
+   * to 30 of 23,345 results". We assume the 'real' number is the last sequence of digits (with
+   * optional comma separators) from the end.
    *
-   * @param summaryString
-   * @return
+   * @return the number of results, or 0 if the string is empty or doesn't contain any numbers
    */
   public static int parseAllAvailableFromSummaryString(String summaryString) {
     if (Check.isEmpty(summaryString)) {
       return 0;
     }
-    int sum = 0;
-    int mult = 1;
-    int charIndex = summaryString.length();
-    // From the end of the string, bypass any non-digit trailing characters
-    charIndex--;
-    while (charIndex > 0 && !Character.isDigit(summaryString.charAt(charIndex))) {
-      charIndex--;
+    Matcher matcher = Pattern.compile("[\\d,]+").matcher(summaryString);
+    String lastMatch = null;
+    while (matcher.find()) {
+      lastMatch = matcher.group();
     }
-    // We have at least one character left in the string
-    for (char ch = summaryString.charAt(charIndex);
-        ch == ',' || Character.isDigit(ch);
-        ch = summaryString.charAt(--charIndex)) {
-      if (Character.isDigit(ch)) {
-        int digit = Integer.parseInt(Character.toString(ch));
-        sum += (digit * mult);
-        mult *= 10;
-      }
-    }
-    return sum;
+
+    return Optional.ofNullable(lastMatch)
+        .map(s -> s.replace(",", ""))
+        .map(Integer::parseInt)
+        .orElse(0);
   }
 
   public int getTotalAvailable() {
