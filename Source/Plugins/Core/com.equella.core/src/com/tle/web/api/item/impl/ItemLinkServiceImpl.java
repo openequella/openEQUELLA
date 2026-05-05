@@ -29,10 +29,8 @@ import com.tle.web.api.item.interfaces.beans.ItemBean;
 import com.tle.web.viewable.ViewItemLinkFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -84,26 +82,28 @@ public class ItemLinkServiceImpl implements ItemLinkService {
   }
 
   private Map<String, String> buildItemLinks(ItemId itemId) {
-    Map<String, String> links =
-        Map.of(
-            REL_SELF, getItemURLStr(itemId),
-            REL_VIEW, linkFactory.createViewLink(itemId).getHref());
-    return new HashMap<>(links);
+    return Map.of(
+        REL_SELF, getItemURLStr(itemId),
+        REL_VIEW, linkFactory.createViewLink(itemId).getHref());
   }
 
   private void processAttachments(ItemId itemId, List<AttachmentBean> attachments) {
-    Optional.ofNullable(attachments).stream()
-        .flatMap(List::stream)
-        .forEach(attachment -> populateAttachmentLinks(itemId, attachment));
+    if (attachments == null || attachments.isEmpty()) {
+      return;
+    }
+
+    for (AttachmentBean attachment : attachments) {
+      populateAttachmentLinks(itemId, attachment);
+    }
   }
 
   private void populateAttachmentLinks(ItemId itemId, AttachmentBean attachmentBean) {
     String uuid = attachmentBean.getUuid();
-    Map<String, String> attachLinks =
+
+    attachmentBean.set(
+        LINKS_KEY,
         Map.of(
             REL_VIEW, linkFactory.createViewAttachmentLink(itemId, uuid).getHref(),
-            REL_THUMB, linkFactory.createThumbnailAttachmentLink(itemId, uuid).getHref());
-
-    attachmentBean.set(LINKS_KEY, new HashMap<>(attachLinks));
+            REL_THUMB, linkFactory.createThumbnailAttachmentLink(itemId, uuid).getHref()));
   }
 }
