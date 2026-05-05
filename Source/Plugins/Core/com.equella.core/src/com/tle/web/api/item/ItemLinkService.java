@@ -24,9 +24,28 @@ import com.tle.web.api.item.interfaces.beans.ItemBean;
 import java.net.URI;
 
 public interface ItemLinkService {
+
+  /**
+   * Adds standard links to an item bean.
+   *
+   * @param itemBean The item bean to update.
+   * @return The item bean with links added.
+   */
   ItemBean addLinks(ItemBean itemBean);
 
+  /**
+   * Adds standard links to an Equella item bean.
+   *
+   * @param itemBean The item bean to update.
+   * @return The item bean with links added.
+   */
   EquellaItemBean addLinks(EquellaItemBean itemBean);
 
+  /**
+   * Gets the URI for an item.
+   *
+   * @param itemKey The item key.
+   * @return The item URI.
+   */
   URI getItemURI(ItemKey itemKey);
 }
