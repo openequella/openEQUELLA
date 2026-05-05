@@ -89,7 +89,7 @@ public class ItemApiContributeTest extends AbstractItemApiTest {
     String[] stagingParams = createStaging();
     String stagingUuid = stagingParams[0];
     String stagingDirUrl = stagingParams[1];
-    uploadFile(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
+    uploadFileToStaging(stagingDirUrl, "avatar.png", Attachments.get("avatar.png"));
     ObjectNode newItem =
         createItem(
             node.toString(), token, "file", stagingUuid, "draft", true, "waitforindex", true);
