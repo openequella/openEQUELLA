@@ -33,7 +33,8 @@ package object types {
     Option(date).map(_.toInstant.atZone(java.time.ZoneId.systemDefault()).toLocalDateTime)
 
   /** Converts a nullable Java `Collection` to a Scala `List`, applying a mapping function to each
-    * element. Returns an empty list if the Java collection is `null`.
+    * element. Returns an empty list if the Java collection is `null`. Any exception thrown by `f`
+    * propagates naturally to the caller.
     */
   def convertJavaList[A, B](list: java.util.Collection[A])(f: A => B): List[B] =
     Option(list).map(_.asScala.toList.map(f)).getOrElse(List.empty)

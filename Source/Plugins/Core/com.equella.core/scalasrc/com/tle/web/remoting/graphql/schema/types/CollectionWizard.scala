@@ -42,12 +42,12 @@ final case class CollectionWizard(
     @GQLDescription("Additional CSS class applied to the wizard container")
     additionalCssClass: Option[String],
     @GQLDescription(
-      "XStream-serialised XML of the wizard pages (List<WizardPage>). " +
-        "Treated as an opaque blob due to the plugin-extensible nature of wizard controls."
+      "Internal use only. Opaque serialised XML of the wizard pages. " +
+        "Do not parse this field directly — use dedicated APIs for wizard page manipulation."
     )
     pages: Option[String],
     @GQLDescription(
-      "XStream-serialised XML of the fixed metadata (FixedMetadata) applied by the wizard."
+      "Internal use only. Opaque serialised XML of the fixed metadata applied by the wizard."
     )
     fixedMetadata: Option[String]
 )

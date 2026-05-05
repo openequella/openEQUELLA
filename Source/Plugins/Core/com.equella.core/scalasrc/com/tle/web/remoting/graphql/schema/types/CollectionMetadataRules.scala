@@ -73,6 +73,6 @@ object CollectionDynamicMetadataRule {
       name = Option(rule.getName),
       path = Option(rule.getPath),
       ruleType = Option(rule.getType),
-      targetList = convertJavaList(rule.getTargetList.getEntries)(TargetListEntry(_))
+      targetList = TargetListEntry.fromTargetList(rule.getTargetList)
     )
 }

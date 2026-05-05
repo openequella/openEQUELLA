@@ -73,14 +73,7 @@ object EditableEntity {
       entity = convertEntity(pack.getEntity),
       stagingId = pack.getStagingID,
       version = Option(pack.getVersion),
-      targetList = convertTargetList(pack.getTargetList)
+      targetList = TargetListEntry.fromTargetList(pack.getTargetList)
     )
   }
-
-  private def convertTargetList(
-      targetList: com.tle.common.security.TargetList
-  ): List[TargetListEntry] =
-    Option(targetList)
-      .map(tl => convertJavaList(tl.getEntries)(TargetListEntry(_)))
-      .getOrElse(List.empty)
 }
