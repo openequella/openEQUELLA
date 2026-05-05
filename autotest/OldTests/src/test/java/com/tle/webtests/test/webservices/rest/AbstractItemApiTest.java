@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -31,21 +32,22 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected static final String COLLECTION_MODERATE = "3d31ac33-261e-404c-a157-487e51716268";
   protected static final String COLLECTION_SAVESCRIPT = "c7194cd0-f586-49b6-9fcc-4b1c5237efd9";
 
-  private static final String API_STAGING_PATH = "api/staging/";
-  private static final String HEADER_EPS_STAGING_ID = "x-eps-stagingid";
-  private static final String HEADER_LOCATION = "Location";
-
   protected String[] createStaging() throws IOException {
-    HttpResponse stagingResponse =
-        execute(new HttpPost(context.getBaseUrl() + API_STAGING_PATH), false, getToken());
-    assertResponse(stagingResponse, 201, "201 not returned from staging creation");
+    final String pathStagingApi = "api/staging/";
+    final String headerStagingId = "x-eps-stagingid";
+    final String headerLocation = "Location";
 
-    String stagingUuid = getRequiredHeader(stagingResponse, HEADER_EPS_STAGING_ID);
-    String stagingDirUrl = getRequiredHeader(stagingResponse, HEADER_LOCATION);
+    HttpResponse stagingResponse =
+        execute(new HttpPost(context.getBaseUrl() + pathStagingApi), false, getToken());
+    assertResponse(
+        stagingResponse, HttpStatus.SC_CREATED, "201 not returned from staging creation");
+
+    String stagingUuid = getRequiredHeader(stagingResponse, headerStagingId);
+    String stagingDirUrl = getRequiredHeader(stagingResponse, headerLocation);
     return new String[] {stagingUuid, stagingDirUrl};
   }
 
-  protected void uploadFile(String stagingDirUrl, String filename, URL resource)
+  protected void uploadFileToStaging(String stagingDirUrl, String filename, URL resource)
       throws IOException {
     String fileUrl = PathUtils.filePath(stagingDirUrl, URLUtils.urlEncode(filename));
     HttpPut putfile = new HttpPut(fileUrl);
@@ -57,7 +59,8 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     putfile.setEntity(inputStreamEntity);
     HttpResponse putfileResponse = execute(putfile, true, getToken());
 
-    assertResponse(putfileResponse, 200, "200 not returned from staging creation");
+    // Staging API returns 200 for file uploads (not 201 like deprecated File API)
+    assertResponse(putfileResponse, HttpStatus.SC_OK, "200 not returned from staging creation");
   }
 
   protected JsonNode getItemJson(String itemUri, String info, String token) throws IOException {
@@ -112,14 +115,14 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
   protected ObjectNode createItem(String json, String token, Object... paramNameValues)
       throws IOException {
     HttpResponse response = postItem(json, token, paramNameValues);
-    assertResponse(response, 201, "Should have created the item");
+    assertResponse(response, HttpStatus.SC_CREATED, "Should have created the item");
     String itemUri = response.getFirstHeader("Location").getValue();
     return getItem(itemUri, null, token);
   }
 
   protected ObjectNode createComment(String token, Object... paramNameValues) throws IOException {
     HttpResponse response = postItem("", token, paramNameValues);
-    assertResponse(response, 201, "Should have created the item");
+    assertResponse(response, HttpStatus.SC_CREATED, "Should have created the item");
     return null;
   }
 
@@ -153,7 +156,9 @@ public abstract class AbstractItemApiTest extends AbstractRestApiTest {
     HttpResponse putItem = putItem(itemUri, item.toString(), token, false, paramNameValues);
     try {
       assertResponse(
-          putItem, 200, "Should have been able to edit. " + superSerialResponse(putItem));
+          putItem,
+          HttpStatus.SC_OK,
+          "Should have been able to edit. " + superSerialResponse(putItem));
     } finally {
       EntityUtils.consume(putItem.getEntity());
     }
