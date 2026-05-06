@@ -30,9 +30,9 @@ package object client {
   type EditableEntityMetadataSchema
   type EditableEntitySkeleton
   type EntityDetails
-  type Group
-  type GroupConnection
-  type GroupEdge
+  type InternalGroup
+  type InternalGroupConnection
+  type InternalGroupEdge
   type InternalGroupMutations
   type InternalGroupQueries
   type InternalUserMutations

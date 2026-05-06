@@ -25,7 +25,11 @@ import caliban.schema.ArgBuilder.auto._
 import caliban.schema.Schema.auto._
 import com.tle.core.guice.Bind
 import com.tle.web.remoting.graphql.provider.TLEGroupProvider
-import com.tle.web.remoting.graphql.schema.types.{Group, GroupConnection, StringConnection}
+import com.tle.web.remoting.graphql.schema.types.{
+  InternalGroup,
+  InternalGroupConnection,
+  StringConnection
+}
 import zio.IO
 
 import javax.inject.{Inject, Singleton}
@@ -135,17 +139,17 @@ class TLEGroupSchema @Inject() (tleGroupProvider: TLEGroupProvider) extends Sche
   @GQLName("InternalGroupQueries")
   case class InternalGroupQueryOps(
       @GQLDescription("Retrieve a group by its unique ID")
-      byId: GroupByIdArgs => Option[Group],
+      byId: GroupByIdArgs => Option[InternalGroup],
       @GQLDescription("Retrieve a group by its name")
-      byName: GroupByNameArgs => Option[Group],
+      byName: GroupByNameArgs => Option[InternalGroup],
       @GQLDescription(
         "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
       )
-      list: ListGroupsArgs => IO[CalibanError, GroupConnection],
+      list: ListGroupsArgs => IO[CalibanError, InternalGroupConnection],
       @GQLDescription("List multiple groups by their unique IDs, invalid IDs will be ignored")
-      listByIds: ListGroupsByIdsArgs => IO[CalibanError, GroupConnection],
+      listByIds: ListGroupsByIdsArgs => IO[CalibanError, InternalGroupConnection],
       @GQLDescription("Search for groups anywhere within the hierarchy by name (wildcard search)")
-      search: GroupSearchArgs => IO[CalibanError, GroupConnection],
+      search: GroupSearchArgs => IO[CalibanError, InternalGroupConnection],
       @GQLDescription("List user ids for all users in the specified group")
       users: ListGroupUsersArgs => IO[CalibanError, StringConnection]
   )
@@ -191,13 +195,13 @@ class TLEGroupSchema @Inject() (tleGroupProvider: TLEGroupProvider) extends Sche
   @GQLName("InternalGroupMutations")
   case class InternalGroupMutationOps(
       @GQLDescription("Create a new group")
-      create: GroupCreateArgs => ResultWithErrors[Group],
+      create: GroupCreateArgs => ResultWithErrors[InternalGroup],
       @GQLDescription("Delete a group by its unique ID")
       delete: GroupDeleteArgs => ResultWithErrors[Unit],
       @GQLDescription(
         "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
       )
-      update: GroupUpdateArgs => ResultWithErrors[Group]
+      update: GroupUpdateArgs => ResultWithErrors[InternalGroup]
   )
 
   case class Mutations(

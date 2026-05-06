@@ -25,7 +25,7 @@ object InternalGroupQueries {
 
   /** Retrieve a group by its unique ID
     */
-  def byId[A](uniqueId: String)(innerSelection: SelectionBuilder[Group, A])(implicit
+  def byId[A](uniqueId: String)(innerSelection: SelectionBuilder[InternalGroup, A])(implicit
       encoder0: ArgEncoder[String]
   ): SelectionBuilder[InternalGroupQueries, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
@@ -36,7 +36,7 @@ object InternalGroupQueries {
 
   /** Retrieve a group by its name
     */
-  def byName[A](name: String)(innerSelection: SelectionBuilder[Group, A])(implicit
+  def byName[A](name: String)(innerSelection: SelectionBuilder[InternalGroup, A])(implicit
       encoder0: ArgEncoder[String]
   ): SelectionBuilder[InternalGroupQueries, scala.Option[A]] =
     _root_.caliban.client.SelectionBuilder.Field(
@@ -54,7 +54,7 @@ object InternalGroupQueries {
       last: scala.Option[Int] = None,
       before: scala.Option[String] = None,
       after: scala.Option[String] = None
-  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+  )(innerSelection: SelectionBuilder[InternalGroupConnection, A])(implicit
       encoder0: ArgEncoder[scala.Option[String]],
       encoder1: ArgEncoder[scala.Option[Int]]
   ): SelectionBuilder[InternalGroupQueries, scala.Option[A]] =
@@ -78,7 +78,7 @@ object InternalGroupQueries {
       last: scala.Option[Int] = None,
       before: scala.Option[String] = None,
       after: scala.Option[String] = None
-  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+  )(innerSelection: SelectionBuilder[InternalGroupConnection, A])(implicit
       encoder0: ArgEncoder[List[String]],
       encoder1: ArgEncoder[scala.Option[Int]],
       encoder2: ArgEncoder[scala.Option[String]]
@@ -103,7 +103,7 @@ object InternalGroupQueries {
       last: scala.Option[Int] = None,
       before: scala.Option[String] = None,
       after: scala.Option[String] = None
-  )(innerSelection: SelectionBuilder[GroupConnection, A])(implicit
+  )(innerSelection: SelectionBuilder[InternalGroupConnection, A])(implicit
       encoder0: ArgEncoder[String],
       encoder1: ArgEncoder[scala.Option[Int]],
       encoder2: ArgEncoder[scala.Option[String]]

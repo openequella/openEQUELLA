@@ -21,35 +21,35 @@ package io.github.openequella.graphql.client
 import caliban.client.FieldBuilder._
 import caliban.client._
 
-object Group {
+object InternalGroup {
 
   /** The unique identifier for the group - typically a UUID
     */
-  def uniqueId: SelectionBuilder[Group, String] =
+  def uniqueId: SelectionBuilder[InternalGroup, String] =
     _root_.caliban.client.SelectionBuilder.Field("uniqueId", Scalar())
 
   /** The name of the group
     */
-  def name: SelectionBuilder[Group, String] =
+  def name: SelectionBuilder[InternalGroup, String] =
     _root_.caliban.client.SelectionBuilder.Field("name", Scalar())
 
   /** The description for the group
     */
-  def description: SelectionBuilder[Group, scala.Option[String]] =
+  def description: SelectionBuilder[InternalGroup, scala.Option[String]] =
     _root_.caliban.client.SelectionBuilder.Field("description", OptionOf(Scalar()))
 
   /** The unique identifier of the parent group, or null if this is a top-level group
     */
-  def parentId: SelectionBuilder[Group, scala.Option[String]] =
+  def parentId: SelectionBuilder[InternalGroup, scala.Option[String]] =
     _root_.caliban.client.SelectionBuilder.Field("parentId", OptionOf(Scalar()))
 
   /** Whether this group has sub-groups
     */
-  def hasGroups: SelectionBuilder[Group, Boolean] =
+  def hasGroups: SelectionBuilder[InternalGroup, Boolean] =
     _root_.caliban.client.SelectionBuilder.Field("hasGroups", Scalar())
 
   /** Whether this group has users
     */
-  def hasUsers: SelectionBuilder[Group, Boolean] =
+  def hasUsers: SelectionBuilder[InternalGroup, Boolean] =
     _root_.caliban.client.SelectionBuilder.Field("hasUsers", Scalar())
 }

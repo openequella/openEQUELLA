@@ -36,7 +36,7 @@ import io.github.openequella.graphql.client._
   * @param lastName
   *   The last name of the user.
   */
-final case class TleUserView(
+final case class InternalUserView(
     uniqueId: String,
     username: String,
     email: Option[String],
@@ -46,7 +46,7 @@ final case class TleUserView(
 
 /** Provides access to the openEQUELLA internal user API.
   */
-object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] {
+object InternalUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] {
 
   override protected def queryWrapper[A]
       : SelectionBuilder[InternalUserQueries, A] => SelectionBuilder[RootQuery, A] =
@@ -60,7 +60,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
 
   private val tleUser = (
     User.uniqueId ~ User.username ~ User.email ~ User.firstName ~ User.lastName
-  ).mapN(TleUserView)
+  ).mapN(InternalUserView)
 
   /** Retrieves the details of an individual user by their unique identifier.
     *
@@ -74,7 +74,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
     */
   def getByUniqueId(uniqueId: String)(implicit
       cfg: ClientConfiguration
-  ): Either[List[ApiError], Option[TleUserView]] = {
+  ): Either[List[ApiError], Option[InternalUserView]] = {
     val q = InternalUserQueries.byId(uniqueId) {
       tleUser
     }
@@ -94,7 +94,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
     */
   def getByUsername(
       username: String
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Option[TleUserView]] = {
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], Option[InternalUserView]] = {
     val q = InternalUserQueries.byUsername(username) {
       tleUser
     }
@@ -116,7 +116,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       firstName: String,
       lastName: String,
       password: String
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] =
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], InternalUserView] =
     flatMutate(
       InternalUserMutations.create(username, email, firstName, lastName, password) { tleUser }
     )
@@ -148,7 +148,7 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
       firstName: Option[String],
       lastName: Option[String],
       password: Option[String]
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], TleUserView] =
+  )(implicit cfg: ClientConfiguration): Either[List[ApiError], InternalUserView] =
     flatMutate(
       InternalUserMutations.update(uniqueId, username, email, firstName, lastName, password) {
         tleUser
@@ -185,13 +185,15 @@ object TleUserApi extends NestedApi[InternalUserQueries, InternalUserMutations] 
   def searchUsers(
       pagination: Pagination,
       query: Option[String] = None
-  )(implicit cfg: ClientConfiguration): Either[List[ApiError], PaginationResult[TleUserView]] = {
+  )(implicit
+      cfg: ClientConfiguration
+  ): Either[List[ApiError], PaginationResult[InternalUserView]] = {
     // Set up the various selectors
     val userEdge =
-      (UserEdge.cursor ~ UserEdge.node { tleUser }).mapN(NodeWithCursorView[TleUserView](_, _))
+      (UserEdge.cursor ~ UserEdge.node { tleUser }).mapN(NodeWithCursorView[InternalUserView](_, _))
     val userConnection =
       (UserConnection.pageInfo { PageInfoView.selector } ~ UserConnection.edges { userEdge })
-        .mapN(ConnectionView[TleUserView](_, _))
+        .mapN(ConnectionView[InternalUserView](_, _))
 
     queryPaginated(pagination) { (first, last, before, after) =>
       InternalUserQueries.list(query, first, last, before, after) {

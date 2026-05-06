@@ -161,6 +161,7 @@ public class CachingUserServiceImpl implements RemoteUserService {
     return remoteUserService.getPluginConfig(settingsConfig);
   }
 
+  // TODO: OEQ-2931 remove me.
   @Override
   public UserManagementSettings getReadOnlyPluginConfig(String settingsConfig) {
     return remoteUserService.getReadOnlyPluginConfig(settingsConfig);
@@ -171,6 +172,7 @@ public class CachingUserServiceImpl implements RemoteUserService {
     remoteUserService.setPluginConfig(config);
   }
 
+  // TODO: OEQ-2931 remove "override"
   @Override
   public void removeFromCache(String userid) {
     USER_CACHE.invalidate(userid);

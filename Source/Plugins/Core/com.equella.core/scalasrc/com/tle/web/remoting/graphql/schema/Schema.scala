@@ -41,6 +41,7 @@ class Schema {
   @Inject private var metadataSchemaSchema: MetadataSchemaSchema         = _
   @Inject private var tleGroupSchema: TLEGroupSchema                     = _
   @Inject private var tleUserSchema: TLEUserSchema                       = _
+  @Inject private var userDirectorySchema: UserDirectorySchema           = _
 
   /** Get the full API for the GraphQL interface.
     */
@@ -59,7 +60,8 @@ class Schema {
       languageSchema,
       metadataSchemaSchema,
       tleGroupSchema,
-      tleUserSchema
+      tleUserSchema,
+      userDirectorySchema
     ).map(_.getApi).reduce(_ |+| _)
   }
 }

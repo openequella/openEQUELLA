@@ -21,9 +21,11 @@ package io.github.openequella.graphql.client
 import caliban.client.FieldBuilder._
 import caliban.client._
 
-object GroupEdge {
-  def cursor: SelectionBuilder[GroupEdge, String] =
+object InternalGroupEdge {
+  def cursor: SelectionBuilder[InternalGroupEdge, String] =
     _root_.caliban.client.SelectionBuilder.Field("cursor", Scalar())
-  def node[A](innerSelection: SelectionBuilder[Group, A]): SelectionBuilder[GroupEdge, A] =
+  def node[A](
+      innerSelection: SelectionBuilder[InternalGroup, A]
+  ): SelectionBuilder[InternalGroupEdge, A] =
     _root_.caliban.client.SelectionBuilder.Field("node", Obj(innerSelection))
 }

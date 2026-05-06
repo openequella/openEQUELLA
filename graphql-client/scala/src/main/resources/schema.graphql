@@ -232,7 +232,7 @@ type EntityDetails {
   disabled: Boolean!
 }
 
-type Group {
+type InternalGroup {
   "The unique identifier for the group - typically a UUID"
   uniqueId: String!
   "The name of the group"
@@ -247,38 +247,38 @@ type Group {
   hasUsers: Boolean!
 }
 
-"A Connection object paging through Groups as per the GraphQL Cursor Connections Specification"
-type GroupConnection {
+"A Connection object paging through internal Groups as per the GraphQL Cursor Connections Specification"
+type InternalGroupConnection {
   pageInfo: PageInfo!
-  edges: [GroupEdge!]!
+  edges: [InternalGroupEdge!]!
 }
 
-"An Edge object for Groups as per the GraphQL Cursor Connections Specification"
-type GroupEdge {
+"An Edge object for internal Groups as per the GraphQL Cursor Connections Specification"
+type InternalGroupEdge {
   cursor: String!
-  node: Group!
+  node: InternalGroup!
 }
 
 type InternalGroupMutations {
   "Create a new group"
-  create("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): Group
+  create("The name of the group to create" name: String!, "The unique ID of the parent group to create the new group under - or none for the root" parentId: String): InternalGroup
   "Delete a group by its unique ID"
   delete("The unique ID of the group to delete" uniqueId: String!, "Whether to delete all children of the group, or move them to the parent of the group being deleted" deleteChildren: Boolean!): Unit
   "Update a group by its unique ID - can also be used to move group within the hierarchy by changing the parent ID"
-  update("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): Group
+  update("The unique ID of the group to update" uniqueId: String!, "The new name of the group" name: String, "The new description for the group" description: String, "The new parent ID of the group" parentId: String, "The updated list of users in the group - replacing what was previously there." users: [String!]): InternalGroup
 }
 
 type InternalGroupQueries {
   "Retrieve a group by its unique ID"
-  byId("The unique ID of the group to retrieve" uniqueId: String!): Group
+  byId("The unique ID of the group to retrieve" uniqueId: String!): InternalGroup
   "Retrieve a group by its name"
-  byName("The name of the group to retrieve" name: String!): Group
+  byName("The name of the group to retrieve" name: String!): InternalGroup
   "List all groups at a specific level in the hierarchy determined by the parent ID - or none for the root."
-  list("The unique ID of the parent group to list groups for - or none for the root" parentId: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  list("The unique ID of the parent group to list groups for - or none for the root" parentId: String, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
   "List multiple groups by their unique IDs, invalid IDs will be ignored"
-  listByIds("The unique IDs of the groups to retrieve" uniqueIds: [String!]!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  listByIds("The unique IDs of the groups to retrieve" uniqueIds: [String!]!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
   "Search for groups anywhere within the hierarchy by name (wildcard search)"
-  search("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): GroupConnection
+  search("The query string to search for groups by (server will surround with wildcard)" query: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): InternalGroupConnection
   "List user ids for all users in the specified group"
   users("The unique ID of the group to list users for" uniqueId: String!, "Pagination - how many items to return from the start of the possible list of items" first: Int, "Pagination - how many items to return from the end of the possible list of items" last: Int, "Pagination - the cursor for a item before which all items should be returned" before: String, "Pagination - the cursor for a item after which all items should be returned" after: String): StringConnection
 }
